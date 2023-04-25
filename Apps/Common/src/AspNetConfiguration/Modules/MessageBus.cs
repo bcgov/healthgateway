@@ -37,6 +37,5 @@ public static class MessageBus
         var settings = configuration.GetSection("PhsaV2:ServiceBus").Get<AzureServiceBusSettings>();
         services.Configure<AzureServiceBusSettings>(settings => configuration.GetSection("PhsaV2:ServiceBus").Bind(settings));
         services.AddMessaging(settings);
-        services.AddSingleton<IMessageSender, AzureServiceBus>();
     }
 }
