@@ -49,7 +49,7 @@ namespace HealthGateway.PatientTests.Services
             IPatientService service = GetPatientService(Phn);
 
             // Act
-            PatientDetails actual = Task.Run(async () => await service.GetPatient(Hdid).ConfigureAwait(true)).Result;
+            PatientDetails actual = Task.Run(async () => await service.GetPatientAsync(Hdid).ConfigureAwait(true)).Result;
 
             // Verify
             Assert.Equal(Hdid, actual.HdId);
@@ -65,7 +65,7 @@ namespace HealthGateway.PatientTests.Services
             IPatientService service = GetPatientService(Phn, true);
 
             // Act
-            PatientDetails actual = Task.Run(async () => await service.GetPatient(Hdid).ConfigureAwait(true)).Result;
+            PatientDetails actual = Task.Run(async () => await service.GetPatientAsync(Hdid).ConfigureAwait(true)).Result;
 
             // Verify
             Assert.Equal(Hdid, actual.HdId);
@@ -81,7 +81,7 @@ namespace HealthGateway.PatientTests.Services
             IPatientService service = GetPatientService(Phn, true);
 
             // Act
-            PatientDetails actual = Task.Run(async () => await service.GetPatient(Phn, PatientIdentifierType.Phn).ConfigureAwait(true)).Result;
+            PatientDetails actual = Task.Run(async () => await service.GetPatientAsync(Phn, PatientIdentifierType.Phn).ConfigureAwait(true)).Result;
 
             // Verify
             Assert.Equal(Hdid, actual.HdId);
@@ -97,7 +97,7 @@ namespace HealthGateway.PatientTests.Services
             IPatientService service = GetPatientService(Phn);
 
             // Act
-            PatientDetails actual = Task.Run(async () => await service.GetPatient(Phn, PatientIdentifierType.Phn).ConfigureAwait(true)).Result;
+            PatientDetails actual = Task.Run(async () => await service.GetPatientAsync(Phn, PatientIdentifierType.Phn).ConfigureAwait(true)).Result;
 
             // Verify
             Assert.Equal(Phn, actual.PersonalHealthNumber);
@@ -116,7 +116,7 @@ namespace HealthGateway.PatientTests.Services
             // Act
             async Task Actual()
             {
-                await patientService.GetPatient(Phn, PatientIdentifierType.Phn).ConfigureAwait(true);
+                await patientService.GetPatientAsync(Phn, PatientIdentifierType.Phn).ConfigureAwait(true);
             }
 
             // Verify
@@ -137,7 +137,7 @@ namespace HealthGateway.PatientTests.Services
             // Act
             async Task Actual()
             {
-                await patientService.GetPatient(Phn, PatientIdentifierType.Phn).ConfigureAwait(true);
+                await patientService.GetPatientAsync(Phn, PatientIdentifierType.Phn).ConfigureAwait(true);
             }
 
             // Verify
@@ -158,7 +158,7 @@ namespace HealthGateway.PatientTests.Services
             // Act
             async Task Actual()
             {
-                await patientService.GetPatient(Phn, PatientIdentifierType.Phn).ConfigureAwait(true);
+                await patientService.GetPatientAsync(Phn, PatientIdentifierType.Phn).ConfigureAwait(true);
             }
 
             // Verify
@@ -179,7 +179,7 @@ namespace HealthGateway.PatientTests.Services
             // Act
             async Task Actual()
             {
-                await patientService.GetPatient(Phn, PatientIdentifierType.Phn).ConfigureAwait(true);
+                await patientService.GetPatientAsync(Phn, PatientIdentifierType.Phn).ConfigureAwait(true);
             }
 
             // Verify

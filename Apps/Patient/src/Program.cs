@@ -66,7 +66,7 @@ namespace HealthGateway.Patient
 
             PhsaV2.ConfigurePhsaV2Access(services, logger, configuration);
             services.AddPatientDataAccess(new PatientDataAccessConfiguration(configuration.GetSection("PhsaV2:BaseUrl").Get<Uri>()!));
-            services.AddAccountDataAccess();
+            services.AddPatientRepositoryConfiguration();
 
             Utility.ConfigureTracing(services, logger, configuration);
 

@@ -74,7 +74,7 @@ namespace HealthGateway.AccountDataAccess.Patient
         public string ResponseCode { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets if the patient is deceased.
+        /// Gets or sets a value indicating whether the patient is deceased.
         /// </summary>
         public bool? IsDeceased { get; set; }
     }

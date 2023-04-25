@@ -33,7 +33,7 @@ namespace HealthGateway.Patient.Services
         /// <param name="disableIdValidation">Disables the validation on HDID/PHN when true.</param>
         /// <param name="ct">The cancellation token.</param>
         /// <returns>The patient model.</returns>
-        Task<PatientDetails> GetPatient(
+        Task<PatientDetails> GetPatientAsync(
             string identifier,
             PatientIdentifierType identifierType = PatientIdentifierType.Hdid,
             bool disableIdValidation = false,

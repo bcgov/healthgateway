@@ -52,7 +52,7 @@ namespace HealthGateway.Patient.Services
         private static ActivitySource Source { get; } = new(nameof(PatientService));
 
         /// <inheritdoc/>
-        public async Task<PatientDetails> GetPatient(
+        public async Task<PatientDetails> GetPatientAsync(
             string identifier,
             PatientIdentifierType identifierType = PatientIdentifierType.Hdid,
             bool disableIdValidation = false,

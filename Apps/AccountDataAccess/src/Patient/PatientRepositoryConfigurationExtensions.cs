@@ -22,15 +22,16 @@ namespace HealthGateway.AccountDataAccess.Patient
     /// Helper class to add and configure <see cref="IPatientRepository"/> dependencies.
     /// </summary>
     [ExcludeFromCodeCoverage]
-    public static class AccountDataAccessConfigurationExtensions
+    public static class PatientRepositoryConfigurationExtensions
     {
         /// <summary>
         /// Register AccountDataAccess in DI.
         /// </summary>
         /// <param name="services">DI service collection.</param>
         /// <returns>The service collection.</returns>
-        public static IServiceCollection AddAccountDataAccess(this IServiceCollection services)
+        public static IServiceCollection AddPatientRepositoryConfiguration(this IServiceCollection services)
         {
+            services.AddTransient<IClientRegistriesDelegate, ClientRegistriesDelegate>();
             services.AddTransient<IPatientRepository, PatientRepository>();
 
             return services;
