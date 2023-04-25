@@ -253,8 +253,10 @@ export default class NewDependentComponent extends Vue {
                     <b-row data-testid="newDependentModalText">
                         <b-col>
                             <b-row>
-                                <b-col class="col-12 col-md-4 mb-2">
-                                    <label for="firstName">Given Names</label>
+                                <b-col class="col-12 col-sm-6 mb-2">
+                                    <label for="firstName">
+                                        First and Middle Names
+                                    </label>
                                     <b-form-input
                                         id="firstName"
                                         v-model.trim="dependent.firstName"
@@ -272,7 +274,7 @@ export default class NewDependentComponent extends Vue {
                                         Given names are required
                                     </b-form-invalid-feedback>
                                 </b-col>
-                                <b-col class="col-12 col-md-4 mb-2">
+                                <b-col class="col-12 col-sm-6 mb-2">
                                     <label for="lastName">Last Name</label>
                                     <b-form-input
                                         id="lastName"
@@ -291,10 +293,10 @@ export default class NewDependentComponent extends Vue {
                                         Last name is required
                                     </b-form-invalid-feedback>
                                 </b-col>
-                                <b-col class="col-12 col-md-4 mb-2">
-                                    <label for="dateOfBirth"
-                                        >Date of Birth</label
-                                    >
+                                <b-col class="col-12 col-sm-6 col-lg-4 mb-2">
+                                    <label for="dateOfBirth">
+                                        Date of Birth
+                                    </label>
                                     <DatePickerComponent
                                         id="dateOfBirth"
                                         v-model="dependent.dateOfBirth"
@@ -336,9 +338,7 @@ export default class NewDependentComponent extends Vue {
                                         {{ webClientConfig.maxDependentAge }}
                                     </b-form-invalid-feedback>
                                 </b-col>
-                            </b-row>
-                            <b-row class="mb-2">
-                                <b-col class="col-12 col-md-6 mb-2">
+                                <b-col class="col-12 col-sm-6 col-lg-4 mb-2">
                                     <label for="phn">PHN</label>
                                     <b-form-input
                                         id="phn"
