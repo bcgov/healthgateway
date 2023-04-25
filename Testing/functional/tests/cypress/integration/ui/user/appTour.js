@@ -72,7 +72,7 @@ describe("App Tour Authenticated", () => {
     });
 
     // This greatly depends on the tour content, and isn't a great test but will test if the content is there
-    it("User should be able to navigate forwards and backwards if ", () => {
+    it("User should be able to navigate forwards and backwards if greater than 2 slides", () => {
         cy.get("[data-testid=app-tour-button]").should("be.visible").click();
         cy.get("[data-testid=app-tour-modal]").should("be.visible");
 
