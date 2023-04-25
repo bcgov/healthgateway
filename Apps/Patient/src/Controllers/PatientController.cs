@@ -100,7 +100,8 @@ namespace HealthGateway.Patient.Controllers
         [Authorize(Policy = PatientPolicy.Read)]
         public async Task<IActionResult> GetPatientV2(string hdid)
         {
-            return this.Ok(await this.serviceV2.GetPatientAsync(hdid).ConfigureAwait(true));
+            var patientDetails = await this.serviceV2.GetPatientAsync(hdid).ConfigureAwait(true);
+            return this.Ok(new ApiResult<PatientDetails> { ResourcePayload = patientDetails });
         }
     }
 }
