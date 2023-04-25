@@ -13,33 +13,24 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.PatientTests.Utils
+namespace HealthGateway.Patient.Mappings
 {
     using AutoMapper;
-    using HealthGateway.Patient.Mappings;
+    using HealthGateway.AccountDataAccess.Patient;
+    using HealthGateway.Patient.Models;
 
     /// <summary>
-    /// Static utility class to provide a fully initialized AutoMapper.
-    /// NOTE: Any newly added profiles will have to be registered.
+    /// Patient data access mappings.
     /// </summary>
-    public static class MapperUtil
+    public class AccountDataAccessMappings : Profile
     {
         /// <summary>
-        /// Creates an AutoMapper.
+        /// Initializes a new instance of the <see cref="AccountDataAccessMappings"/> class.
         /// </summary>
-        /// <returns>A configured AutoMapper.</returns>
-        public static IMapper InitializeAutoMapper()
+        public AccountDataAccessMappings()
         {
-            MapperConfiguration config = new(
-                cfg =>
-                {
-                    cfg.AddProfile(new OrganDonorRegistrationProfile());
-                    cfg.AddProfile(new DiagnosticImagingExamProfile());
-                    cfg.AddProfile(new PatientDataAccessMappings());
-                    cfg.AddProfile(new AccountDataAccessMappings());
-                });
-
-            return config.CreateMapper();
+            this.CreateMap<PatientModel, PatientDetails>();
+            this.CreateMap<Address, Common.Data.Models.Address>();
         }
     }
 }

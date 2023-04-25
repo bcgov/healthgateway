@@ -18,9 +18,9 @@ namespace HealthGateway.Patient
     using System;
     using System.Diagnostics.CodeAnalysis;
     using System.Threading.Tasks;
+    using HealthGateway.AccountDataAccess.Patient;
     using HealthGateway.Common.AspNetConfiguration;
     using HealthGateway.Common.AspNetConfiguration.Modules;
-    using HealthGateway.Patient.Delegates;
     using HealthGateway.Patient.Services;
     using HealthGateway.PatientDataAccess;
     using Microsoft.AspNetCore.Builder;
@@ -60,13 +60,13 @@ namespace HealthGateway.Patient
             Patient.ConfigurePatientAccess(services, logger, configuration);
             PersonalAccount.ConfigurePersonalAccountAccess(services, logger, configuration);
 
-            services.AddTransient<IClientRegistriesDelegate, ClientRegistriesDelegate>();
             services.AddTransient<IPatientService, PatientService>();
             services.AddTransient<IPatientDataService, PatientDataService>();
             services.AddAutoMapper(typeof(Program));
 
             PhsaV2.ConfigurePhsaV2Access(services, logger, configuration);
             services.AddPatientDataAccess(new PatientDataAccessConfiguration(configuration.GetSection("PhsaV2:BaseUrl").Get<Uri>()!));
+            services.AddPatientRepositoryConfiguration();
 
             Utility.ConfigureTracing(services, logger, configuration);
 

@@ -14,57 +14,48 @@
 // limitations under the License.
 //-------------------------------------------------------------------------
 
-namespace HealthGateway.Patient.Models
+namespace HealthGateway.AccountDataAccess.Patient
 {
     using System;
-    using System.Text.Json.Serialization;
-    using HealthGateway.Common.Data.Models;
 
     /// <summary>
     /// The patient data model.
     /// </summary>
-    public class PatientModelV2
+    public class PatientModel
     {
         /// <summary>
         /// Gets or sets the health directed identifier.
         /// </summary>
-        [JsonPropertyName("hdid")]
-        public string HdId { get; set; } = string.Empty;
+        public string Hdid { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the patient's PHN.
         /// </summary>
-        [JsonPropertyName("personalHealthNumber")]
-        public string PersonalHealthNumber { get; set; } = string.Empty;
+        public string Phn { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the patient's common name.
         /// </summary>
-        [JsonPropertyName("commonName")]
         public Name? CommonName { get; set; }
 
         /// <summary>
         /// Gets or sets the patient's legal name.
         /// </summary>
-        [JsonPropertyName("legalName")]
         public Name? LegalName { get; set; }
 
         /// <summary>
         /// Gets the patient's preferred name.
         /// </summary>
-        [JsonPropertyName("preferredName")]
         public Name PreferredName => this.CommonName ?? this.LegalName!;
 
         /// <summary>
         /// Gets or sets the patient's date of birth.
         /// </summary>
-        [JsonPropertyName("birthdate")]
         public DateTime Birthdate { get; set; }
 
         /// <summary>
         /// Gets or sets the patient's gender.
         /// </summary>
-        [JsonPropertyName("gender")]
         public string Gender { get; set; } = string.Empty;
 
         /// <summary>
@@ -81,5 +72,10 @@ namespace HealthGateway.Patient.Models
         /// Gets or sets the response code for the patient.
         /// </summary>
         public string ResponseCode { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the patient is deceased.
+        /// </summary>
+        public bool? IsDeceased { get; set; }
     }
 }

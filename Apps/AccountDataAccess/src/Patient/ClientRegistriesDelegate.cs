@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Patient.Delegates
+namespace HealthGateway.AccountDataAccess.Patient
 {
     using System;
     using System.Collections.Generic;
@@ -24,16 +24,14 @@ namespace HealthGateway.Patient.Delegates
     using System.Threading.Tasks;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.ErrorHandling;
-    using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Data.ViewModels;
-    using HealthGateway.Patient.Models;
     using Microsoft.Extensions.Logging;
     using ServiceReference;
 
     /// <summary>
     /// The Client Registries delegate.
     /// </summary>
-    public class ClientRegistriesDelegate : IClientRegistriesDelegate
+    internal class ClientRegistriesDelegate : IClientRegistriesDelegate
     {
         private readonly QUPA_AR101102_PortType clientRegistriesClient;
         private readonly ILogger<ClientRegistriesDelegate> logger;
@@ -55,10 +53,10 @@ namespace HealthGateway.Patient.Delegates
         private static ActivitySource Source { get; } = new(nameof(ClientRegistriesDelegate));
 
         /// <inheritdoc/>
-        public async Task<ApiResult<PatientModelV2>> GetDemographicsAsync(OidType type, string identifier, bool disableIdValidation = false)
+        public async Task<ApiResult<PatientModel>> GetDemographicsAsync(OidType type, string identifier, bool disableIdValidation = false)
         {
             this.logger.LogDebug("Getting patient for type: {Type} and value: {Identifier} started", type, identifier);
-            ApiResult<PatientModelV2> apiResult = new();
+            ApiResult<PatientModel> apiResult = new();
             using Activity? activity = Source.StartActivity();
 
             // Create request object
@@ -171,11 +169,7 @@ namespace HealthGateway.Patient.Delegates
                     switch (item)
                     {
                         case ADStreetAddressLine { Text: { } } line:
-                            foreach (string s in line.Text)
-                            {
-                                retAddress.AddLine(s ?? string.Empty);
-                            }
-
+                            retAddress.StreetLines = line.Text;
                             break;
                         case ADCity city:
                             retAddress.City = city.Text[0] ?? string.Empty;
@@ -223,13 +217,6 @@ namespace HealthGateway.Patient.Delegates
 
         private void CheckResponseCode(string responseCode)
         {
-            if (responseCode.Contains("BCHCIM.GD.2.0018", StringComparison.InvariantCulture))
-            {
-                // BCHCIM.GD.2.0018 Not found
-                this.logger.LogWarning("Client Registry did not find any records. Returned message code: {ResponseCode}", responseCode);
-                throw new ProblemDetailsException(ExceptionUtility.CreateProblemDetails(ErrorMessages.ClientRegistryRecordsNotFound, HttpStatusCode.NotFound, nameof(ClientRegistriesDelegate)));
-            }
-
             if (responseCode.Contains("BCHCIM.GD.2.0006", StringComparison.InvariantCulture))
             {
                 // Returned BCHCIM.GD.2.0006 Invalid PHN
@@ -253,7 +240,7 @@ namespace HealthGateway.Patient.Delegates
             }
         }
 
-        private void ParseResponse(ApiResult<PatientModelV2> apiResult, HCIM_IN_GetDemographicsResponse1 reply, bool disableIdValidation)
+        private void ParseResponse(ApiResult<PatientModel> apiResult, HCIM_IN_GetDemographicsResponse1 reply, bool disableIdValidation)
         {
             using (Source.StartActivity())
             {
@@ -264,19 +251,16 @@ namespace HealthGateway.Patient.Delegates
 
                 HCIM_IN_GetDemographicsResponseIdentifiedPerson retrievedPerson = reply.HCIM_IN_GetDemographicsResponse.controlActProcess.subject[0].target;
 
-                // If the deceased indicator is set and true, return an empty person.
-                bool deceasedInd = retrievedPerson.identifiedPerson.deceasedInd?.value ?? false;
-                if (deceasedInd)
+                // Date of birth
+                string? dobStr = retrievedPerson.identifiedPerson.birthTime.value; // yyyyMMdd
+                if (!DateTime.TryParseExact(dobStr, "yyyyMMdd", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime dob))
                 {
-                    this.logger.LogWarning("Client Registry returned a person with the deceased indicator set to true. No PHN was populated. {ActionType}", ActionType.Deceased.Value);
-                    throw new ProblemDetailsException(
-                        ExceptionUtility.CreateProblemDetails(ErrorMessages.ClientRegistryReturnedDeceasedPerson, HttpStatusCode.NotFound, nameof(ClientRegistriesDelegate)));
+                    this.logger.LogWarning("Client Registry is unable to determine date of birth due to bad data format. Action Type: {ActionType}", ActionType.DataMismatch.Value);
+                    throw new ProblemDetailsException(ExceptionUtility.CreateProblemDetails(ErrorMessages.InvalidServicesCard, HttpStatusCode.NotFound, nameof(ClientRegistriesDelegate)));
                 }
 
                 // Initialize model
-                string? dobStr = retrievedPerson.identifiedPerson.birthTime.value; // yyyyMMdd
-                DateTime dob = DateTime.ParseExact(dobStr, "yyyyMMdd", CultureInfo.InvariantCulture);
-                PatientModelV2 patient = new()
+                PatientModel patientModel = new()
                 {
                     Birthdate = dob,
                     Gender = retrievedPerson.identifiedPerson.administrativeGenderCode.code switch
@@ -285,29 +269,22 @@ namespace HealthGateway.Patient.Delegates
                         "M" => "Male",
                         _ => "NotSpecified",
                     },
+                    IsDeceased = retrievedPerson.identifiedPerson.deceasedInd?.value ?? false,
                 };
 
                 // Populate names
-                if (!this.PopulateNames(retrievedPerson, patient))
-                {
-                    this.logger.LogWarning("Client Registry is unable to determine patient name due to missing legal name. Action Type: {ActionType}", ActionType.InvalidName.Value);
-                    throw new ProblemDetailsException(ExceptionUtility.CreateProblemDetails(ErrorMessages.InvalidServicesCard, HttpStatusCode.NotFound, nameof(ClientRegistriesDelegate)));
-                }
+                this.PopulateNames(retrievedPerson, patientModel);
 
                 // Populate the PHN and HDID
                 this.logger.LogDebug("ID Validation is set to {DisableIdValidation}", disableIdValidation);
-                if (!this.PopulateIdentifiers(retrievedPerson, patient) && !disableIdValidation)
-                {
-                    this.logger.LogWarning("Client Registry was unable to retrieve identifiers. Action Type: {ActionType}", ActionType.NoHdId.Value);
-                    throw new ProblemDetailsException(ExceptionUtility.CreateProblemDetails(ErrorMessages.InvalidServicesCard, HttpStatusCode.NotFound, nameof(ClientRegistriesDelegate)));
-                }
+                this.PopulateIdentifiers(retrievedPerson, patientModel);
 
                 // Populate addresses
                 AD[] addresses = retrievedPerson.addr;
                 if (addresses != null)
                 {
-                    patient.PhysicalAddress = MapAddress(addresses.FirstOrDefault(a => a.use.Any(u => u == cs_PostalAddressUse.PHYS)));
-                    patient.PostalAddress = MapAddress(addresses.FirstOrDefault(a => a.use.Any(u => u == cs_PostalAddressUse.PST)));
+                    patientModel.PhysicalAddress = MapAddress(addresses.FirstOrDefault(a => a.use.Any(u => u == cs_PostalAddressUse.PHYS)));
+                    patientModel.PostalAddress = MapAddress(addresses.FirstOrDefault(a => a.use.Any(u => u == cs_PostalAddressUse.PST)));
                 }
 
                 if (responseCode.Contains("BCHCIM.GD.0.0019", StringComparison.InvariantCulture) ||
@@ -315,14 +292,19 @@ namespace HealthGateway.Patient.Delegates
                     responseCode.Contains("BCHCIM.GD.0.0022", StringComparison.InvariantCulture) ||
                     responseCode.Contains("BCHCIM.GD.0.0023", StringComparison.InvariantCulture))
                 {
-                    patient.ResponseCode = responseCode;
+                    patientModel.ResponseCode = responseCode;
                 }
 
-                apiResult.ResourcePayload = patient;
+                apiResult.ResourcePayload = patientModel;
+
+                if (responseCode.Contains("BCHCIM.GD.2.0018", StringComparison.InvariantCulture))
+                {
+                    apiResult.ResourcePayload = null;
+                }
             }
         }
 
-        private bool PopulateNames(HCIM_IN_GetDemographicsResponseIdentifiedPerson retrievedPerson, PatientModelV2 patient)
+        private void PopulateNames(HCIM_IN_GetDemographicsResponseIdentifiedPerson retrievedPerson, PatientModel patientModel)
         {
             PN? documentedName = retrievedPerson.identifiedPerson.name.FirstOrDefault(x => x.use.Any(u => u == cs_EntityNameUse.C));
             PN? legalName = retrievedPerson.identifiedPerson.name.FirstOrDefault(x => x.use.Any(u => u == cs_EntityNameUse.L));
@@ -333,24 +315,21 @@ namespace HealthGateway.Patient.Delegates
                 if (legalName == null)
                 {
                     this.logger.LogWarning("Client Registry returned a person without a Legal Name.");
-                    return false;
                 }
             }
 
             if (documentedName != null)
             {
-                patient.CommonName = ExtractName(documentedName);
+                patientModel.CommonName = ExtractName(documentedName);
             }
 
             if (legalName != null)
             {
-                patient.LegalName = ExtractName(legalName);
+                patientModel.LegalName = ExtractName(legalName);
             }
-
-            return true;
         }
 
-        private bool PopulateIdentifiers(HCIM_IN_GetDemographicsResponseIdentifiedPerson retrievedPerson, PatientModelV2 patient)
+        private void PopulateIdentifiers(HCIM_IN_GetDemographicsResponseIdentifiedPerson retrievedPerson, PatientModel patientModel)
         {
             II? identifiedPersonId = retrievedPerson.identifiedPerson?.id?.FirstOrDefault(x => x.root == OidType.Phn.ToString());
             if (identifiedPersonId == null)
@@ -359,7 +338,7 @@ namespace HealthGateway.Patient.Delegates
             }
             else
             {
-                patient.PersonalHealthNumber = identifiedPersonId.extension;
+                patientModel.Phn = identifiedPersonId.extension;
             }
 
             II? subjectId = retrievedPerson.id?.FirstOrDefault(x => x.displayable && x.root == OidType.Hdid.ToString());
@@ -369,10 +348,8 @@ namespace HealthGateway.Patient.Delegates
             }
             else
             {
-                patient.HdId = subjectId.extension;
+                patientModel.Hdid = subjectId.extension;
             }
-
-            return identifiedPersonId != null && subjectId != null;
         }
     }
 }
