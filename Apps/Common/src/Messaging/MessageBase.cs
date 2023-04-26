@@ -1,4 +1,4 @@
-// -------------------------------------------------------------------------
+﻿// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,20 +16,13 @@
 
 namespace HealthGateway.Common.Messaging;
 
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
+using System.Text.Json.Serialization;
+using HealthGateway.Common.Utils;
 
 /// <summary>
-/// Send messages
+/// Base record for messages
+/// It uses PolymorphicJsonConverter to ensure the type is always serialized in the payload
 /// </summary>
-public interface IMessageSender
-{
-    /// <summary>
-    /// TBD.
-    /// </summary>
-    /// <param name="messages">The messages to send</param>
-    /// <param name="ct">An optional cancellation token</param>
-    /// <returns>Awaitable task</returns>
-    Task SendAsync(IEnumerable<MessageBase> messages, CancellationToken ct = default);
-}
+/// <param name="SessionId">Optional session identifier to support FIFO behaviour for a particular subject</param>
+[JsonConverter(typeof(PolymorphicJsonConverter<MessageBase>))]
+public abstract record MessageBase(string? SessionId = null);
