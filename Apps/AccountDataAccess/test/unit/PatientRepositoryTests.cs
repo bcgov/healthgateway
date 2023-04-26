@@ -57,18 +57,17 @@ namespace AccountDataAccessTest
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
         [Fact]
-        public Task ShouldGetDemographicsByHdid()
+        public async Task ShouldGetDemographicsByHdid()
         {
             // Arrange
             PatientRepository patientRepository = GetPatientRepository(Phn, Hdid);
             PatientQuery patientQuery = new PatientDetailsQuery(Hdid: Hdid);
 
             // Act
-            PatientQueryResult result = Task.Run(async () => await patientRepository.Query(patientQuery, new CancellationToken(false)).ConfigureAwait(true)).Result;
+            PatientQueryResult result = await patientRepository.Query(patientQuery, new CancellationToken(false)).ConfigureAwait(true);
 
             // Verify
             Assert.Equal(Phn, result.Items.SingleOrDefault()?.Phn);
-            return Task.CompletedTask;
         }
 
         /// <summary>
