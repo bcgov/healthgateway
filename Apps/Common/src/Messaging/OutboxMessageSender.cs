@@ -23,18 +23,18 @@ using Microsoft.Extensions.Logging;
 
 internal class OutboxMessageSender : IMessageSender
 {
-    private readonly IOutboxStore outboxPublisher;
+    private readonly IOutboxStore outbox;
     private readonly ILogger<OutboxMessageSender> logger;
 
-    public OutboxMessageSender(IOutboxStore outboxPublisher, ILogger<OutboxMessageSender> logger)
+    public OutboxMessageSender(IOutboxStore outbox, ILogger<OutboxMessageSender> logger)
     {
-        this.outboxPublisher = outboxPublisher;
+        this.outbox = outbox;
         this.logger = logger;
     }
 
     public async Task SendAsync(IEnumerable<MessageBase> messages, CancellationToken ct = default)
     {
         this.logger.LogDebug("Sending messages to outbox");
-        await this.outboxPublisher.StoreAsync(messages, ct);
+        await this.outbox.StoreAsync(messages, ct);
     }
 }

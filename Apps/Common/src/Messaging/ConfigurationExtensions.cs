@@ -59,12 +59,12 @@ namespace HealthGateway.Common.Messaging
                 {
                     var sender = (IMessageSender)sp.GetRequiredService<AzureServiceBus>();
                     var hangFireJobClient = sp.GetRequiredService<IBackgroundJobClient>();
-                    var logger = sp.GetRequiredService<ILogger<HangFireOutboxDispatcher>>();
-                    return new HangFireOutboxDispatcher(hangFireJobClient, sender, logger);
+                    var logger = sp.GetRequiredService<ILogger<HangFireOutboxStore>>();
+                    return new HangFireOutboxStore(hangFireJobClient, sender, logger);
                 });
 
                 // ensure Hangfire server instantiate the correct object and dependencies
-                services.AddSingleton<IOutboxStore>(sp => sp.GetRequiredService<HangFireOutboxDispatcher>());
+                services.AddSingleton<IOutboxStore>(sp => sp.GetRequiredService<HangFireOutboxStore>());
             }
             else
             {

@@ -22,13 +22,13 @@ using System.Threading.Tasks;
 using Hangfire;
 using Microsoft.Extensions.Logging;
 
-internal class HangFireOutboxDispatcher : IOutboxStore
+internal class HangFireOutboxStore : IOutboxStore
 {
     private readonly IBackgroundJobClient backgroundJobClient;
     private readonly IMessageSender messageSender;
-    private readonly ILogger<HangFireOutboxDispatcher> logger;
+    private readonly ILogger<HangFireOutboxStore> logger;
 
-    public HangFireOutboxDispatcher(IBackgroundJobClient backgroundJobClient, IMessageSender messageSender, ILogger<HangFireOutboxDispatcher> logger)
+    public HangFireOutboxStore(IBackgroundJobClient backgroundJobClient, IMessageSender messageSender, ILogger<HangFireOutboxStore> logger)
     {
         this.backgroundJobClient = backgroundJobClient;
         this.messageSender = messageSender;
