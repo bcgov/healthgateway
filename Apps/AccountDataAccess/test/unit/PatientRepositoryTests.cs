@@ -45,7 +45,7 @@ namespace AccountDataAccessTest
             PatientQuery patientQuery = new PatientDetailsQuery(Phn: Phn);
 
             // Act
-            PatientQueryResult result = await patientRepository.Query(patientQuery, new CancellationToken(false)).ConfigureAwait(true);
+            PatientQueryResult result = await patientRepository.Query(patientQuery, CancellationToken.None).ConfigureAwait(true);
 
             // Verify
             Assert.Equal(Phn, result.Items.SingleOrDefault()?.Phn);
@@ -63,7 +63,7 @@ namespace AccountDataAccessTest
             PatientQuery patientQuery = new PatientDetailsQuery(Hdid: Hdid);
 
             // Act
-            PatientQueryResult result = await patientRepository.Query(patientQuery, new CancellationToken(false)).ConfigureAwait(true);
+            PatientQueryResult result = await patientRepository.Query(patientQuery, CancellationToken.None).ConfigureAwait(true);
 
             // Verify
             Assert.Equal(Phn, result.Items.SingleOrDefault()?.Phn);
@@ -85,7 +85,7 @@ namespace AccountDataAccessTest
             // Act
             async Task Actual()
             {
-                await patientRepository.Query(patientQuery, new CancellationToken(false)).ConfigureAwait(true);
+                await patientRepository.Query(patientQuery, CancellationToken.None).ConfigureAwait(true);
             }
 
             // Verify
