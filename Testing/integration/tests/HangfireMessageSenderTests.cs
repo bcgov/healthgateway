@@ -17,6 +17,7 @@
 namespace HealthGateway.IntegrationTests;
 
 using System.Collections.Concurrent;
+using System.Transactions;
 using Hangfire;
 using Hangfire.PostgreSql;
 using HealthGateway.Common.Messaging;
@@ -32,7 +33,7 @@ public class HangfireMessageSenderTests : ScenarioContextBase<GatewayApi.Startup
     private readonly CancellationTokenSource cts;
     private IMessageSender sender = null!;
     private IMessageReceiver receiver = null!;
-    // private BackgroundJobServer hangfireBackgroundJobServer = null!;
+    private BackgroundJobServer hangfireBackgroundJobServer = null!;
 
     public HangfireMessageSenderTests(ITestOutputHelper output, WebAppFixture fixture) : base(output, fixture)
     {
@@ -54,10 +55,10 @@ public class HangfireMessageSenderTests : ScenarioContextBase<GatewayApi.Startup
 
 #pragma warning restore CA2326 // Do not use TypeNameHandling values other than None
 
-        //this.hangfireBackgroundJobServer = new BackgroundJobServer(new BackgroundJobServerOptions
-        //{
-        //    Queues = new[] { AzureServiceBusSettings.OutboxQueueName },
-        //});
+        this.hangfireBackgroundJobServer = new BackgroundJobServer(new BackgroundJobServerOptions
+        {
+            Queues = new[] { AzureServiceBusSettings.OutboxQueueName },
+        });
     }
 
     private async Task SendMessages(IEnumerable<MessageBase>[] messages, CancellationToken ct)
@@ -113,6 +114,9 @@ public class HangfireMessageSenderTests : ScenarioContextBase<GatewayApi.Startup
         await WaitForMessages(() => !responses.IsEmpty);
 
         responses.Count.ShouldBe(4);
+        var results = responses.Cast<TestMessage>().ToArray();
+        results.Count(m => m.SessionId == s1).ShouldBe(2);
+        results.Count(m => m.SessionId == s2).ShouldBe(2);
     }
 
     [Fact]
@@ -136,10 +140,28 @@ public class HangfireMessageSenderTests : ScenarioContextBase<GatewayApi.Startup
         results.ShouldAllBe(m => m.SessionId == s2);
     }
 
+    [Fact]
+    public async Task SendMessagesInTransaction_Rollback_ReveiveNoMessages()
+    {
+        var sessionId = GenerateSessionId();
+        var messages = Enumerable.Range(0, 2).Select(_ => new TestMessage(_.ToString(), sessionId)).ToArray();
+
+        var responses = await ReceiveMessages(cts.Token);
+
+        using (var tx = new TransactionScope())
+        {
+            await SendMessages(new[] { messages }, this.cts.Token);
+        }
+
+        await WaitForMessages(() => !responses.IsEmpty);
+
+        responses.Count.ShouldBe(0);
+    }
+
     public void Dispose()
     {
         this.cts.Dispose();
-        //this.hangfireBackgroundJobServer.Dispose();
+        this.hangfireBackgroundJobServer.Dispose();
         GC.SuppressFinalize(this);
     }
 
