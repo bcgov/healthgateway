@@ -27,14 +27,14 @@ using Xunit.Abstractions;
 
 #pragma warning disable CA1063 // Implement IDisposable Correctly
 
-public class MessagingTests : ScenarioContextBase<GatewayApi.Startup>, IDisposable
+public class HangfireMessageSenderTests : ScenarioContextBase<GatewayApi.Startup>, IDisposable
 {
     private readonly CancellationTokenSource cts;
     private IMessageSender sender = null!;
     private IMessageReceiver receiver = null!;
-    private BackgroundJobServer hangfireBackgroundJobServer = null!;
+    // private BackgroundJobServer hangfireBackgroundJobServer = null!;
 
-    public MessagingTests(ITestOutputHelper output, WebAppFixture fixture) : base(output, fixture)
+    public HangfireMessageSenderTests(ITestOutputHelper output, WebAppFixture fixture) : base(output, fixture)
     {
         this.cts = new CancellationTokenSource();
     }
@@ -46,11 +46,18 @@ public class MessagingTests : ScenarioContextBase<GatewayApi.Startup>, IDisposab
         this.sender = this.Host.Services.GetRequiredService<IMessageSender>();
         this.receiver = this.Host.Services.GetRequiredService<IMessageReceiver>();
 
-        GlobalConfiguration.Configuration.UsePostgreSqlStorage(this.Host.Services.GetRequiredService<IConfiguration>().GetConnectionString("GatewayConnection"));
-        this.hangfireBackgroundJobServer = new BackgroundJobServer(new BackgroundJobServerOptions
-        {
-            Queues = new[] { HangFireOutboxDispatcher.OutboxQueueName },
-        });
+#pragma warning disable CA2326 // Do not use TypeNameHandling values other than None
+
+        GlobalConfiguration.Configuration
+            .UseSerializerSettings(new Newtonsoft.Json.JsonSerializerSettings { TypeNameHandling = Newtonsoft.Json.TypeNameHandling.All })
+            .UsePostgreSqlStorage(this.Host.Services.GetRequiredService<IConfiguration>().GetConnectionString("GatewayConnection"));
+
+#pragma warning restore CA2326 // Do not use TypeNameHandling values other than None
+
+        //this.hangfireBackgroundJobServer = new BackgroundJobServer(new BackgroundJobServerOptions
+        //{
+        //    Queues = new[] { AzureServiceBusSettings.OutboxQueueName },
+        //});
     }
 
     private async Task SendMessages(IEnumerable<MessageBase>[] messages, CancellationToken ct)
@@ -132,7 +139,7 @@ public class MessagingTests : ScenarioContextBase<GatewayApi.Startup>, IDisposab
     public void Dispose()
     {
         this.cts.Dispose();
-        this.hangfireBackgroundJobServer.Dispose();
+        //this.hangfireBackgroundJobServer.Dispose();
         GC.SuppressFinalize(this);
     }
 

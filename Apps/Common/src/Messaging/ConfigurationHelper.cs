@@ -55,13 +55,14 @@ namespace HealthGateway.Common.Messaging
                 services.AddSingleton<AzureServiceBus>();
                 services.AddSingleton<IMessageSender, OutboxMessageSender>();
                 services.AddSingleton<IMessageReceiver>(sp => sp.GetRequiredService<AzureServiceBus>());
-                services.AddSingleton<IOutboxStore>(sp =>
+                services.AddSingleton(sp =>
                 {
-                    var sender = sp.GetRequiredService<AzureServiceBus>();
+                    var sender = (IMessageSender)sp.GetRequiredService<AzureServiceBus>();
                     var hangFireJobClient = sp.GetRequiredService<IBackgroundJobClient>();
                     var logger = sp.GetRequiredService<ILogger<HangFireOutboxDispatcher>>();
                     return new HangFireOutboxDispatcher(hangFireJobClient, sender, logger);
                 });
+                services.AddSingleton<IOutboxStore>(sp => sp.GetRequiredService<HangFireOutboxDispatcher>());
             }
             else
             {
@@ -83,6 +84,11 @@ namespace HealthGateway.Common.Messaging
     /// </summary>
     public record AzureServiceBusSettings : MessagingSettings
     {
+        /// <summary>
+        /// The name of the Hangfire outbox queue
+        /// </summary>
+        public const string OutboxQueueName = "outbox";
+
         /// <summary>
         /// Azure service bus connection string
         /// </summary>
