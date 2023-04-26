@@ -1399,7 +1399,7 @@ INSERT INTO gateway."DependentAudit"(
 VALUES (
 	uuid_generate_v4(), 
 	'35224807075386271', 
-	'agent@idir', 
+	'admin_agent@idir', 
 	'Protecting dependent', 
 	'Protect', 
 	current_timestamp,
@@ -1424,7 +1424,7 @@ INSERT INTO gateway."DependentAudit"(
 VALUES (
 	uuid_generate_v4(), 
 	'35224807075386271', 
-	'agent@idir', 
+	'support_agent@idir', 
 	'Unprotecting dependent', 
 	'Unprotect', 
 	current_timestamp - INTERVAL '1 day', 
@@ -1449,7 +1449,7 @@ INSERT INTO gateway."DependentAudit"(
 VALUES (
 	uuid_generate_v4(), 
 	'35224807075386271', 
-	'agent@idir', 
+	'reviewer_agent@idir', 
 	'Protecting dependent', 
 	'Protect', 
 	current_timestamp - INTERVAL '2 day', 

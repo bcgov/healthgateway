@@ -27,6 +27,11 @@ namespace HealthGateway.PatientDataAccess
         /// Gets or sets the health data's id.
         /// </summary>
         public string? Id { get; set; }
+
+        /// <summary>
+        /// Gets or sets the health data's report file id.
+        /// </summary>
+        public string? FileId { get; set; }
     }
 
     /// <summary>
@@ -63,11 +68,6 @@ namespace HealthGateway.PatientDataAccess
         /// Gets or sets the exam's status.
         /// </summary>
         public DiagnosticImagingStatus Status { get; set; }
-
-        /// <summary>
-        /// Gets or sets the exam's file id.
-        /// </summary>
-        public string? FileId { get; set; }
 
         /// <summary>
         /// Gets or sets the exam's date.

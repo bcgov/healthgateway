@@ -39,6 +39,8 @@ namespace HealthGateway.CommonTests.Services
         private const string CategoryName = "Test Category Name";
         private const string ThrownExceptionMessage = "Error with HTTP Request";
 
+        private static readonly DateTime Today = new(2022, 12, 21, 0, 0, 0, DateTimeKind.Utc);
+
         /// <summary>
         /// CreateBroadcastAsync.
         /// </summary>
@@ -47,15 +49,43 @@ namespace HealthGateway.CommonTests.Services
         {
             // Arrange
             IBroadcastService service = GetBroadcastService(null, false);
+            Broadcast broadcast = new()
+            {
+                ScheduledDateUtc = Today,
+                ExpirationDateUtc = Today.AddDays(1),
+            };
 
             // Act
-            RequestResult<Broadcast> actualResult = service.CreateBroadcastAsync(new Broadcast()).Result;
+            RequestResult<Broadcast> actualResult = service.CreateBroadcastAsync(broadcast).Result;
 
             // Assert
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             Assert.NotNull(actualResult.ResourcePayload);
             Assert.True(actualResult.TotalResultCount == 1);
             Assert.Equal(CategoryName, actualResult.ResourcePayload.CategoryName);
+        }
+
+        /// <summary>
+        /// CreateBroadcastAsync fails effective expiry date validation.
+        /// </summary>
+        [Fact]
+        public void CreateBroadcastFailDateValidation()
+        {
+            // Arrange
+            IBroadcastService service = GetBroadcastService(null, false);
+            Broadcast broadcast = new()
+            {
+                ScheduledDateUtc = Today,
+                ExpirationDateUtc = Today,
+            };
+
+            // Act
+            RequestResult<Broadcast> actualResult = service.CreateBroadcastAsync(broadcast).Result;
+
+            // Assert
+            Assert.Equal(ResultType.Error, actualResult.ResultStatus);
+            Assert.Null(actualResult.ResourcePayload);
+            Assert.NotNull(actualResult.ResultError?.ResultMessage);
         }
 
         /// <summary>
@@ -66,9 +96,14 @@ namespace HealthGateway.CommonTests.Services
         {
             // Arrange
             IBroadcastService service = GetBroadcastService(null, true);
+            Broadcast broadcast = new()
+            {
+                ScheduledDateUtc = Today,
+                ExpirationDateUtc = Today.AddDays(1),
+            };
 
             // Act
-            RequestResult<Broadcast> actualResult = service.CreateBroadcastAsync(new Broadcast()).Result;
+            RequestResult<Broadcast> actualResult = service.CreateBroadcastAsync(broadcast).Result;
 
             // Assert
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
@@ -148,6 +183,8 @@ namespace HealthGateway.CommonTests.Services
             Broadcast broadcast = new()
             {
                 Id = expectedId,
+                ScheduledDateUtc = Today,
+                ExpirationDateUtc = Today.AddDays(1),
             };
             IBroadcastService service = GetBroadcastService(expectedId, false);
 
@@ -162,6 +199,32 @@ namespace HealthGateway.CommonTests.Services
         }
 
         /// <summary>
+        /// UpdateBroadcastAsync fails effective expiry date validation.
+        /// </summary>
+        [Fact]
+        public void UpdateBroadcastFailsDateValidation()
+        {
+            Guid expectedId = Guid.NewGuid();
+
+            // Arrange
+            Broadcast broadcast = new()
+            {
+                Id = expectedId,
+                ScheduledDateUtc = Today,
+                ExpirationDateUtc = Today,
+            };
+            IBroadcastService service = GetBroadcastService(expectedId, false);
+
+            // Act
+            RequestResult<Broadcast> actualResult = service.UpdateBroadcastAsync(broadcast).Result;
+
+            // Assert
+            Assert.Equal(ResultType.Error, actualResult.ResultStatus);
+            Assert.Null(actualResult.ResourcePayload);
+            Assert.NotNull(actualResult.ResultError?.ResultMessage);
+        }
+
+        /// <summary>
         /// CreateBroadcastAsync - api throws exception.
         /// </summary>
         [Fact]
@@ -173,6 +236,8 @@ namespace HealthGateway.CommonTests.Services
             Broadcast broadcast = new()
             {
                 Id = expectedId,
+                ScheduledDateUtc = Today,
+                ExpirationDateUtc = Today.AddDays(1),
             };
             IBroadcastService service = GetBroadcastService(null, true);
 

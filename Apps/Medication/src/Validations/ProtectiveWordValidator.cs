@@ -22,7 +22,7 @@ namespace HealthGateway.Medication.Validations
     /// <summary>
     /// validates a protective word.
     /// </summary>
-    public class ProtectiveWordValidator : AbstractValidator<string?>
+    public class ProtectiveWordValidator : AbstractValidator<string>
     {
         private const int MaxLengthProtectiveWord = 8;
         private const int MinLengthProtectiveWord = 6;
@@ -41,12 +41,6 @@ namespace HealthGateway.Medication.Validations
                     .WithMessage(ErrorMessages.ProtectiveWordTooLong)
                     .Matches(@"^[0-9A-Za-z_]+$")
                     .WithMessage(ErrorMessages.ProtectiveWordInvalidChars));
-        }
-
-        /// <inheritdoc/>
-        protected override void EnsureInstanceNotNull(object instanceToValidate)
-        {
-            // see https://github.com/FluentValidation/FluentValidation/issues/486
         }
     }
 }

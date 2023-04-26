@@ -122,61 +122,57 @@ describe("Public COVID-19 Test Results", () => {
         cy.visit(covidTestUrl);
     });
 
-    it("See AB#12590", () => {
-        // Intentionally blank
+    it("Successful Response: Negative Result", () => {
+        enterFormInputs(
+            negativeCollectionDateYear,
+            negativeCollectionDateMonth,
+            negativeCollectionDateDay
+        );
+        checkResult("Negative", "Final", "text-success");
     });
 
-    // it("Successful Response: Negative Result", () => {
-    //     enterFormInputs(
-    //         negativeCollectionDateYear,
-    //         negativeCollectionDateMonth,
-    //         negativeCollectionDateDay
-    //     );
-    //     checkResult("Negative", "Final", "text-success");
-    // });
+    it("Successful Response: Positive Result", () => {
+        enterFormInputs(
+            positiveCollectionDateYear,
+            positiveCollectionDateMonth,
+            positiveCollectionDateDay
+        );
+        checkResult("Positive", "Final", "text-danger");
+    });
 
-    // it("Successful Response: Positive Result", () => {
-    //     enterFormInputs(
-    //         positiveCollectionDateYear,
-    //         positiveCollectionDateMonth,
-    //         positiveCollectionDateDay
-    //     );
-    //     checkResult("Positive", "Final", "text-danger");
-    // });
+    it("Successful Response: Indeterminate Result", () => {
+        enterFormInputs(
+            indeterminateCollectionDateYear,
+            indeterminateCollectionDateMonth,
+            indeterminateCollectionDateDay
+        );
+        checkResult("Indeterminate", "Final");
+    });
 
-    // it("Successful Response: Indeterminate Result", () => {
-    //     enterFormInputs(
-    //         indeterminateCollectionDateYear,
-    //         indeterminateCollectionDateMonth,
-    //         indeterminateCollectionDateDay
-    //     );
-    //     checkResult("Indeterminate", "Final");
-    // });
+    it("Successful Response: Pending Result", () => {
+        enterFormInputs(
+            pendingCollectionDateYear,
+            pendingCollectionDateMonth,
+            pendingCollectionDateDay
+        );
+        checkResult("Pending", "Pending");
+    });
 
-    // it("Successful Response: Pending Result", () => {
-    //     enterFormInputs(
-    //         pendingCollectionDateYear,
-    //         pendingCollectionDateMonth,
-    //         pendingCollectionDateDay
-    //     );
-    //     checkResult("Not Set", "Pending");
-    // });
+    it("Successful Response: Cancelled Result", () => {
+        enterFormInputs(
+            cancelledCollectionDateYear,
+            cancelledCollectionDateMonth,
+            cancelledCollectionDateDay
+        );
+        checkResult("Cancelled", "Cancelled");
+    });
 
-    // it("Successful Response: Cancelled Result", () => {
-    //     enterFormInputs(
-    //         cancelledCollectionDateYear,
-    //         cancelledCollectionDateMonth,
-    //         cancelledCollectionDateDay
-    //     );
-    //     checkResult("Cancelled", "Cancelled");
-    // });
-
-    // it("Successful Response: Multiple Results", () => {
-    //     enterFormInputs(
-    //         multipleCollectionDateYear,
-    //         multipleCollectionDateMonth,
-    //         multipleCollectionDateDay
-    //     );
-    //     cy.get(".covid-test-result").should("have.length.at.least", 2);
-    // });
+    it("Successful Response: Multiple Results", () => {
+        enterFormInputs(
+            multipleCollectionDateYear,
+            multipleCollectionDateMonth,
+            multipleCollectionDateDay
+        );
+        cy.get(".covid-test-result").should("have.length.at.least", 2);
+    });
 });
