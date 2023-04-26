@@ -60,7 +60,7 @@ internal class AzureServiceBus : IMessageSender, IMessageReceiver, IAsyncDisposa
             });
 
         ServiceBusMessageBatch batch = await this.sender.CreateMessageBatchAsync(ct);
-        int batchId = 1;
+        var batchId = 1;
         foreach (ServiceBusMessage message in sbMessages)
         {
             this.logger.LogDebug("adding message {Type} to batch {BatchId}", message.ApplicationProperties["$type"], batchId);
@@ -88,12 +88,11 @@ internal class AzureServiceBus : IMessageSender, IMessageReceiver, IAsyncDisposa
     {
         this.sessionProcessor.ProcessMessageAsync += async args =>
         {
-            using var scope = this.logger.BeginScope("Receive");
             this.logger.LogDebug("received message {Session}:{SequenceNumber}", args.Message.SessionId, args.Message.SequenceNumber);
-            var sessionState = (await args.GetSessionStateAsync(ct))?.ToObjectFromJson<SessionState>();
 
             try
             {
+                var sessionState = (await args.GetSessionStateAsync(ct))?.ToObjectFromJson<SessionState>();
                 if (sessionState != null && sessionState.IsFaulted && args.Message.Subject != "unlock")
                 {
                     // session is blocked, do not process this message and this message is not marked to unblock the session
@@ -122,7 +121,9 @@ internal class AzureServiceBus : IMessageSender, IMessageReceiver, IAsyncDisposa
                 await errorHandler(e);
             }
         };
+
         this.sessionProcessor.ProcessErrorAsync += args => errorHandler(args.Exception);
+
         if (!this.sessionProcessor.IsProcessing)
         {
             await this.sessionProcessor.StartProcessingAsync(ct);

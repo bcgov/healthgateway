@@ -25,7 +25,7 @@ namespace HealthGateway.Common.Messaging
     /// <summary>
     /// DI Configuration helper for Service Bus
     /// </summary>
-    public static class ConfigurationHelper
+    public static class ConfigurationExtensions
     {
         /// <summary>
         /// Add service bus and related dependencies to DI container
@@ -62,6 +62,8 @@ namespace HealthGateway.Common.Messaging
                     var logger = sp.GetRequiredService<ILogger<HangFireOutboxDispatcher>>();
                     return new HangFireOutboxDispatcher(hangFireJobClient, sender, logger);
                 });
+
+                // ensure Hangfire server instantiate the correct object and dependencies
                 services.AddSingleton<IOutboxStore>(sp => sp.GetRequiredService<HangFireOutboxDispatcher>());
             }
             else
