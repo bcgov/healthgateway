@@ -56,7 +56,11 @@ internal class AzureServiceBus : IMessageSender, IMessageReceiver, IAsyncDisposa
                 Body = new BinaryData(m.Serialize(false)),
                 SessionId = m.SessionId ?? string.Empty,
                 ContentType = ContentType.ApplicationJson.ToString(),
-                ApplicationProperties = { { "$type", m.GetType().FullName } }
+                ApplicationProperties =
+                {
+                    { "$type", m.GetType().FullName },
+                    { "$created-on", DateTime.UtcNow.ToString("o") }
+                }
             });
 
         ServiceBusMessageBatch batch = await this.sender.CreateMessageBatchAsync(ct);
