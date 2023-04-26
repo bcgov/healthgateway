@@ -75,10 +75,21 @@ namespace HealthGateway.Patient.Services
                 throw new ProblemDetailsException(ExceptionUtility.CreateProblemDetails(ErrorMessages.ClientRegistryRecordsNotFound, HttpStatusCode.NotFound, nameof(PatientService)));
             }
 
-            if (patientDetails.LegalName == null && patientDetails.CommonName == null)
+            if (patientDetails.IsDeceased == true)
             {
-                this.logger.LogWarning("Client Registry is unable to determine patient name due to missing legal name. Action Type: {ActionType}", ActionType.InvalidName.Value);
-                throw new ProblemDetailsException(ExceptionUtility.CreateProblemDetails(ErrorMessages.InvalidServicesCard, HttpStatusCode.NotFound, nameof(PatientService)));
+                this.logger.LogWarning("Client Registry returned a person with the deceased indicator set to true. No PHN was populated. {ActionType}", ActionType.Deceased.Value);
+                throw new ProblemDetailsException(
+                    ExceptionUtility.CreateProblemDetails(ErrorMessages.ClientRegistryReturnedDeceasedPerson, HttpStatusCode.NotFound, nameof(PatientService)));
+            }
+
+            if (patientDetails.CommonName == null)
+            {
+                this.logger.LogWarning("Client Registry returned a person without a Documented Name.");
+                if (patientDetails.LegalName == null)
+                {
+                    this.logger.LogWarning("Client Registry is unable to determine patient name due to missing legal name. Action Type: {ActionType}", ActionType.InvalidName.Value);
+                    throw new ProblemDetailsException(ExceptionUtility.CreateProblemDetails(ErrorMessages.InvalidServicesCard, HttpStatusCode.NotFound, nameof(PatientService)));
+                }
             }
 
             if (string.IsNullOrEmpty(patientDetails.Hdid) && string.IsNullOrEmpty(patientDetails.Phn) && !disableIdValidation)
