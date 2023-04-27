@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,19 +13,32 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Common.Jobs
+namespace HealthGateway.JobScheduler.Models.Notify
 {
     using System;
+    using System.Text.Json.Serialization;
 
     /// <summary>
-    /// A Job to send emails.
+    /// Represents an instance of a template.
     /// </summary>
-    public interface IEmailJob
+    public class GcTemplate
     {
         /// <summary>
-        /// Sends an email immediately if Priority is standard or higher.
+        /// Gets or sets the template id.
         /// </summary>
-        /// <param name="emailId">The stored emailId to send.</param>
-        void SendEmail(Guid emailId);
+        [JsonPropertyName("id")]
+        public required Guid Id { get; set; }
+
+        /// <summary>
+        /// Gets or sets the version.
+        /// </summary>
+        [JsonPropertyName("version")]
+        public int Version { get; set; }
+
+        /// <summary>
+        /// Gets or sets the template uri.
+        /// </summary>
+        [JsonPropertyName("uri")]
+        public Uri? Uri { get; set; }
     }
 }

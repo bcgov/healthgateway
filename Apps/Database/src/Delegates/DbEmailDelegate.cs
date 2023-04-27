@@ -25,6 +25,7 @@ namespace HealthGateway.Database.Delegates
     using HealthGateway.Database.Context;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
+    using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging;
 
     /// <inheritdoc/>
@@ -57,16 +58,16 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public Email? GetNewEmail(Guid emailId)
+        public Email? GetStandardEmail(Guid emailId)
         {
             this.logger.LogTrace("Getting new email from DB... {EmailId}", emailId);
-            Email? retVal = this.dbContext.Email.Where(p => p.Id == emailId && p.EmailStatusCode == EmailStatus.New && p.Priority >= EmailPriority.Standard).SingleOrDefault();
-            this.logger.LogDebug("Finished getting new email {EmailId} from DB.", emailId);
+            Email? retVal = this.dbContext.Email.SingleOrDefault(p => p.Id == emailId && p.Priority >= EmailPriority.Standard);
+            this.logger.LogDebug("Finished getting new email {EmailId} from DB", emailId);
             return retVal;
         }
 
         /// <inheritdoc/>
-        public IList<Email> GetLowPriorityEmail(int maxRows)
+        public IList<Email> GetUnSentEmails(int maxRows)
         {
             this.logger.LogTrace("Getting list of low priority emails from DB... {MaxRows}", maxRows);
             IList<Email> retVal = this.dbContext.Email.Where(p => p.EmailStatusCode == EmailStatus.New && p.Priority < EmailPriority.Standard)
@@ -75,42 +76,6 @@ namespace HealthGateway.Database.Delegates
                 .Take(maxRows)
                 .ToList();
             this.logger.LogDebug("Finished getting list of low priority emails from DB.");
-            return retVal;
-        }
-
-        /// <inheritdoc/>
-        public IList<Email> GetStandardPriorityEmail(int maxRows)
-        {
-            this.logger.LogTrace("Getting list of standard priority emails from DB... {MaxRows}", maxRows);
-            IList<Email> retVal = this.dbContext.Email.Where(p => p.EmailStatusCode == EmailStatus.New && p.Priority >= EmailPriority.Standard && p.Priority < EmailPriority.High)
-                .OrderByDescending(s => s.Priority)
-                .Take(maxRows)
-                .ToList();
-            this.logger.LogDebug("Finished getting list of standard priority emails from DB.");
-            return retVal;
-        }
-
-        /// <inheritdoc/>
-        public IList<Email> GetHighPriorityEmail(int maxRows)
-        {
-            this.logger.LogTrace("Getting list of high priority emails from DB... {MaxRows}", maxRows);
-            IList<Email> retVal = this.dbContext.Email.Where(p => p.EmailStatusCode == EmailStatus.New && p.Priority >= EmailPriority.High && p.Priority < EmailPriority.Urgent)
-                .OrderByDescending(s => s.Priority)
-                .Take(maxRows)
-                .ToList();
-            this.logger.LogDebug("Finished getting list of high priority emails from DB.");
-            return retVal;
-        }
-
-        /// <inheritdoc/>
-        public IList<Email> GetUrgentPriorityEmail(int maxRows)
-        {
-            this.logger.LogTrace("Getting list of urgent priority emails from DB... {MaxRows}", maxRows);
-            IList<Email> retVal = this.dbContext.Email.Where(p => p.EmailStatusCode == EmailStatus.New && p.Priority >= EmailPriority.Urgent)
-                .OrderByDescending(s => s.Priority)
-                .Take(maxRows)
-                .ToList();
-            this.logger.LogDebug("Finished getting list of urgent priority emails from DB.");
             return retVal;
         }
 
@@ -167,30 +132,15 @@ namespace HealthGateway.Database.Delegates
         /// <inheritdoc/>
         public int Delete(uint daysAgo, int maxRows, bool shouldCommit = true)
         {
-            IList<Email> oldIds = this.dbContext.Email
+            int deletedCount = this.dbContext.Email
                 .Where(
                     email => email.EmailStatusCode == EmailStatus.Processed &&
                              email.CreatedDateTime <= GatewayDbContext.DateTrunc("days", DateTime.UtcNow.AddDays(daysAgo * -1)))
                 .Where(email => !this.dbContext.MessagingVerification.Any(msgVerification => msgVerification.EmailId == email.Id))
                 .OrderBy(email => email.CreatedDateTime)
-                .Select(email => new Email { Id = email.Id, Version = email.Version })
                 .Take(maxRows)
-                .ToList();
-            if (oldIds.Count > 0)
-            {
-                this.logger.LogDebug("Deleting {Count} Emails out of a maximum of {MaxRows}", oldIds.Count, maxRows);
-                this.dbContext.RemoveRange(oldIds);
-                if (shouldCommit)
-                {
-                    this.dbContext.SaveChanges();
-                }
-            }
-            else
-            {
-                this.logger.LogDebug("No emails to delete that are older than {DaysAgo} days", daysAgo);
-            }
-
-            return oldIds.Count;
+                .ExecuteDelete();
+            return deletedCount;
         }
     }
 }

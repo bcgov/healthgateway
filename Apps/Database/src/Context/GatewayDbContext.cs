@@ -241,6 +241,12 @@ namespace HealthGateway.Database.Context
                 .HasForeignKey(k => k.VerificationType)
                 .OnDelete(DeleteBehavior.Restrict);
 
+            modelBuilder.Entity<MessagingVerification>()
+                .HasOne(mv => mv.Email)
+                .WithMany()
+                .HasForeignKey(e => e.EmailId)
+                .OnDelete(DeleteBehavior.SetNull);
+
             // Create Composite Key for User Preference
             modelBuilder.Entity<UserPreference>()
                 .HasKey(c => new { c.HdId, c.Preference });
