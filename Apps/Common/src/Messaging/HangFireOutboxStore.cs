@@ -47,8 +47,8 @@ internal class HangFireOutboxStore : IOutboxStore
     /// <inheritdoc/>
     public async Task StoreAsync(IEnumerable<MessageBase> messages, CancellationToken ct = default)
     {
-        this.logger.LogDebug("Storing messages");
         await Task.CompletedTask;
+        this.logger.LogDebug("Storing messages");
         this.backgroundJobClient.Enqueue(() => this.ForwardAsync(messages, CancellationToken.None));
     }
 
