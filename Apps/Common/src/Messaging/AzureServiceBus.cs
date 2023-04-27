@@ -59,11 +59,11 @@ internal class AzureServiceBus : IMessageSender, IMessageReceiver, IAsyncDisposa
                 ApplicationProperties =
                 {
                     { "$type", m.GetType().FullName },
-                    { "$created-on", DateTime.UtcNow.ToString("o") }
+                    { "$createdon", DateTime.UtcNow.ToString("o") }
                 }
             });
 
-        ServiceBusMessageBatch batch = await this.sender.CreateMessageBatchAsync(ct);
+        var batch = await this.sender.CreateMessageBatchAsync(ct);
         var batchId = 1;
         foreach (ServiceBusMessage message in sbMessages)
         {
@@ -119,7 +119,7 @@ internal class AzureServiceBus : IMessageSender, IMessageReceiver, IAsyncDisposa
             catch (Exception e)
             {
                 // send message to DLQ and set the state to fault
-                this.logger.LogError(e, "Failed to receive message");
+                this.logger.LogError(e, "failed to receive message");
                 await args.DeadLetterMessageAsync(args.Message, e.Message, e.ToString(), ct);
                 await args.SetSessionStateAsync(BinaryData.FromObjectAsJson(new SessionState(true)), ct);
                 await errorHandler(e);
