@@ -277,7 +277,10 @@ export default class RegistrationView extends Vue {
                 },
             });
 
-            await this.$router.push("/home");
+            await this.$router.push({
+                path: "home",
+                query: { registration: "success" },
+            });
         } catch {
             this.logger.error("Error while registering.");
         } finally {

@@ -357,10 +357,4 @@ export const actions: UserActions = {
             );
         }
     },
-    setSeenTutorialComment: function (
-        context,
-        params: { value: boolean }
-    ): void {
-        context.commit("setSeenTutorialComment", params.value);
-    },
 };
