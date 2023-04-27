@@ -29,48 +29,68 @@ export default class AppTourComponent extends Vue {
     isMobile!: boolean;
 
     private mobileSlides: TourSlide[] = [
-        // TODO: Final configuration in AB#15392
-        {
-            title: "MB-Add a Quick Link",
-            description:
-                "Add a quick link to easily access a health record type from your home screen.",
-            imageUri: new URL(
-                "@/assets/images/tour/add-quicklink.png",
-                import.meta.url
-            ).href,
-            imageAlt: "First slide",
-        },
-        {
-            title: "MB-Filter Timeline Data",
-            description: "Follow the demo above to filter your timeline data.",
-            imageUri: new URL(
-                "@/assets/images/tour/filter-timeline.gif",
-                import.meta.url
-            ).href,
-            imageAlt: "Second slide",
-        },
-    ];
-
-    private desktopSlides: TourSlide[] = [
-        // TODO: Final configuration in AB#15392
         {
             title: "Add a Quick Link",
             description:
                 "Add a quick link to easily access a health record type from your home screen.",
             imageUri: new URL(
-                "@/assets/images/tour/add-quicklink.png",
+                "@/assets/images/tour/mobile/app-tour-home-quick-link-mobile.gif",
                 import.meta.url
             ).href,
-            imageAlt: "First slide",
+            imageAlt: "Quick link mobile demo",
         },
         {
-            title: "Filter Timeline Data",
-            description: "Follow the demo above to filter your timeline data.",
+            title: "Filter your Timeline records",
+            description:
+                "Filter by health record type, date or keyword to find what you need.",
             imageUri: new URL(
-                "@/assets/images/tour/filter-timeline.gif",
+                "@/assets/images/tour/mobile/app-tour-timeline-filter-mobile.gif",
                 import.meta.url
             ).href,
-            imageAlt: "Second slide",
+            imageAlt: "Timeline filter mobile demo",
+        },
+        {
+            title: "Notifications centre",
+            description:
+                "You'll be notified of updates to the app and your health records.",
+            imageUri: new URL(
+                "@/assets/images/tour/mobile/app-tour-notifications-mobile.gif",
+                import.meta.url
+            ).href,
+            imageAlt: "Notifications centre mobile demo",
+        },
+    ];
+
+    private desktopSlides: TourSlide[] = [
+        {
+            title: "Add a Quick Link",
+            description:
+                "Add a quick link to easily access a health record type from your home screen.",
+            imageUri: new URL(
+                "@/assets/images/tour/web/app-tour-home-quick-link-web.gif",
+                import.meta.url
+            ).href,
+            imageAlt: "Quick link web demo",
+        },
+        {
+            title: "Filter your Timeline records",
+            description:
+                "Filter by health record type, date or keyword to find what you need.",
+            imageUri: new URL(
+                "@/assets/images/tour/web/app-tour-timeline-filter-web.gif",
+                import.meta.url
+            ).href,
+            imageAlt: "Timeline filter web demo",
+        },
+        {
+            title: "Notifications centre",
+            description:
+                "You'll be notified of updates to the app and your health records.",
+            imageUri: new URL(
+                "@/assets/images/tour/web/app-tour-notification-centre-web.gif",
+                import.meta.url
+            ).href,
+            imageAlt: "Notifications centre web demo",
         },
     ];
 
@@ -158,7 +178,7 @@ export default class AppTourComponent extends Vue {
                     </p>
                 </b-col>
             </b-row>
-            <b-row v-if="!isFinalSlide">
+            <b-row v-if="!isFinalSlide" class="mt-3">
                 <b-col>
                     <hg-button
                         variant="link"
@@ -187,7 +207,7 @@ export default class AppTourComponent extends Vue {
                     </hg-button>
                 </b-col>
             </b-row>
-            <b-row v-else>
+            <b-row v-else class="mt-3">
                 <b-col class="d-flex justify-content-center">
                     <hg-button
                         variant="primary"
@@ -207,8 +227,10 @@ export default class AppTourComponent extends Vue {
 @import "@/assets/scss/_variables.scss";
 .carousel-indicators {
     li {
-        border: 1px solid $hg-text-primary !important;
+        border: 1px solid $hg-text-secondary !important;
+        background-color: $hg-text-secondary !important;
         &.active {
+            border: 1px solid $hg-text-primary !important;
             background-color: $hg-text-primary !important;
         }
     }
