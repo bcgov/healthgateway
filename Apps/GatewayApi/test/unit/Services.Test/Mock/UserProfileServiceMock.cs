@@ -18,6 +18,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test.Mock
     using System;
     using System.Collections.Generic;
     using HealthGateway.Common.AccessManagement.Authentication;
+    using HealthGateway.Common.CacheProviders;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Delegates;
@@ -27,6 +28,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test.Mock
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
+    using HealthGateway.GatewayApi.Constants;
     using HealthGateway.GatewayApi.Services;
     using HealthGateway.GatewayApiTests.Services.Test.Utils;
     using Microsoft.AspNetCore.Http;
@@ -54,6 +56,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test.Mock
         /// <param name="patientModel">patient model.</param>
         /// <param name="configuration">configuration.</param>
         /// <param name="userProfileHistoryDbResult">user profile history from DbResult.</param>
+        /// <param name="tourLatestChangeDateTime">result of application setting for tour latestChangeDateTime.</param>
         public UserProfileServiceMock(
             string hdId,
             UserProfile userProfileData,
@@ -62,9 +65,21 @@ namespace HealthGateway.GatewayApiTests.Services.Test.Mock
             LegalAgreement termsOfService,
             PatientModel patientModel,
             IConfiguration configuration,
-            DbResult<IEnumerable<UserProfileHistory>> userProfileHistoryDbResult)
+            DbResult<IEnumerable<UserProfileHistory>> userProfileHistoryDbResult,
+            DateTime? tourLatestChangeDateTime = null)
         {
             int limit = configuration.GetSection(this.webClientConfigSection).GetValue(this.userProfileHistoryRecordLimitKey, 2);
+
+            Mock<ICacheProvider> mockCacheProvider = new();
+            if (tourLatestChangeDateTime != null)
+            {
+                mockCacheProvider.Setup(
+                        cp => cp.GetOrSet(
+                            It.Is<string>(key => key.Contains($"{TourApplicationSettings.Application}:{TourApplicationSettings.Component}")),
+                            It.IsAny<Func<DateTime?>>(),
+                            It.IsAny<TimeSpan?>()))
+                    .Returns(tourLatestChangeDateTime);
+            }
 
             this.userProfileService = new UserProfileService(
                 new Mock<ILogger<UserProfileService>>().Object,
@@ -81,7 +96,9 @@ namespace HealthGateway.GatewayApiTests.Services.Test.Mock
                 new Mock<IHttpContextAccessor>().Object,
                 configuration,
                 MapperUtil.InitializeAutoMapper(),
-                new Mock<IAuthenticationDelegate>().Object);
+                new Mock<IAuthenticationDelegate>().Object,
+                new Mock<IApplicationSettingsDelegate>().Object,
+                mockCacheProvider.Object);
         }
 
         /// <summary>
@@ -110,7 +127,9 @@ namespace HealthGateway.GatewayApiTests.Services.Test.Mock
                 new Mock<IHttpContextAccessor>().Object,
                 configuration,
                 MapperUtil.InitializeAutoMapper(),
-                new Mock<IAuthenticationDelegate>().Object);
+                new Mock<IAuthenticationDelegate>().Object,
+                new Mock<IApplicationSettingsDelegate>().Object,
+                new Mock<ICacheProvider>().Object);
         }
 
         /// <summary>
@@ -136,7 +155,9 @@ namespace HealthGateway.GatewayApiTests.Services.Test.Mock
                 new Mock<IHttpContextAccessor>().Object,
                 configuration,
                 MapperUtil.InitializeAutoMapper(),
-                new Mock<IAuthenticationDelegate>().Object);
+                new Mock<IAuthenticationDelegate>().Object,
+                new Mock<IApplicationSettingsDelegate>().Object,
+                new Mock<ICacheProvider>().Object);
         }
 
         /// <summary>
@@ -175,7 +196,9 @@ namespace HealthGateway.GatewayApiTests.Services.Test.Mock
                 new Mock<IHttpContextAccessor>().Object,
                 configuration,
                 MapperUtil.InitializeAutoMapper(),
-                new Mock<IAuthenticationDelegate>().Object);
+                new Mock<IAuthenticationDelegate>().Object,
+                new Mock<IApplicationSettingsDelegate>().Object,
+                new Mock<ICacheProvider>().Object);
         }
 
         /// <summary>
@@ -201,7 +224,9 @@ namespace HealthGateway.GatewayApiTests.Services.Test.Mock
                 new Mock<IHttpContextAccessor>().Object,
                 configuration,
                 MapperUtil.InitializeAutoMapper(),
-                new Mock<IAuthenticationDelegate>().Object);
+                new Mock<IAuthenticationDelegate>().Object,
+                new Mock<IApplicationSettingsDelegate>().Object,
+                new Mock<ICacheProvider>().Object);
         }
 
         /// <summary>
@@ -238,7 +263,9 @@ namespace HealthGateway.GatewayApiTests.Services.Test.Mock
                 new HttpContextAccessorMock(headerDictionary).Object,
                 configuration,
                 MapperUtil.InitializeAutoMapper(),
-                new Mock<IAuthenticationDelegate>().Object);
+                new Mock<IAuthenticationDelegate>().Object,
+                new Mock<IApplicationSettingsDelegate>().Object,
+                new Mock<ICacheProvider>().Object);
         }
 
         /// <summary>

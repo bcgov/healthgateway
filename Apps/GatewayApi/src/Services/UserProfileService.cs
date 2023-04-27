@@ -23,6 +23,7 @@ namespace HealthGateway.GatewayApi.Services
     using AutoMapper;
     using FluentValidation.Results;
     using HealthGateway.Common.AccessManagement.Authentication;
+    using HealthGateway.Common.CacheProviders;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.Models;
@@ -53,6 +54,8 @@ namespace HealthGateway.GatewayApi.Services
         private const string RegistrationStatusKey = "RegistrationStatus";
         private const string MinPatientAgeKey = "MinPatientAge";
         private readonly IAuthenticationDelegate authenticationDelegate;
+        private readonly IApplicationSettingsDelegate applicationSettingsDelegate;
+        private readonly ICacheProvider cacheProvider;
         private readonly IMapper autoMapper;
         private readonly ICryptoDelegate cryptoDelegate;
         private readonly IEmailQueueService emailQueueService;
@@ -88,6 +91,8 @@ namespace HealthGateway.GatewayApi.Services
         /// <param name="configuration">The injected configuration provider.</param>
         /// <param name="autoMapper">The inject automapper provider.</param>
         /// <param name="authenticationDelegate">The injected authentication delegate.</param>
+        /// <param name="applicationSettingsDelegate">The injected Application Settings delegate.</param>
+        /// <param name="cacheProvider">The injected cache provider.</param>
         public UserProfileService(
             ILogger<UserProfileService> logger,
             IPatientService patientService,
@@ -103,7 +108,9 @@ namespace HealthGateway.GatewayApi.Services
             IHttpContextAccessor httpContextAccessor,
             IConfiguration configuration,
             IMapper autoMapper,
-            IAuthenticationDelegate authenticationDelegate)
+            IAuthenticationDelegate authenticationDelegate,
+            IApplicationSettingsDelegate applicationSettingsDelegate,
+            ICacheProvider cacheProvider)
         {
             this.logger = logger;
             this.patientService = patientService;
@@ -124,16 +131,18 @@ namespace HealthGateway.GatewayApi.Services
             this.minPatientAge = configuration.GetSection(WebClientConfigSection).GetValue(MinPatientAgeKey, 12);
             this.autoMapper = autoMapper;
             this.authenticationDelegate = authenticationDelegate;
+            this.applicationSettingsDelegate = applicationSettingsDelegate;
+            this.cacheProvider = cacheProvider;
         }
 
         /// <inheritdoc/>
         public async Task<RequestResult<UserProfileModel>> GetUserProfile(string hdid, DateTime jwtAuthTime)
         {
             this.logger.LogTrace("Getting user profile... {Hdid}", hdid);
-            DbResult<UserProfile> retVal = this.userProfileDelegate.GetUserProfile(hdid);
+            DbResult<UserProfile> userProfileDbResult = this.userProfileDelegate.GetUserProfile(hdid);
             this.logger.LogDebug("Finished getting user profile...{Hdid}", hdid);
 
-            if (retVal.Status == DbStatusCode.NotFound)
+            if (userProfileDbResult.Status == DbStatusCode.NotFound)
             {
                 return new RequestResult<UserProfileModel>
                 {
@@ -142,30 +151,28 @@ namespace HealthGateway.GatewayApi.Services
                 };
             }
 
-            DateTime previousLastLogin = retVal.Payload.LastLoginDateTime;
+            DateTime previousLastLogin = userProfileDbResult.Payload.LastLoginDateTime;
             if (DateTime.Compare(previousLastLogin, jwtAuthTime) != 0)
             {
                 this.logger.LogTrace("Updating user last login and year of birth... {Hdid}", hdid);
-                retVal.Payload.LastLoginDateTime = jwtAuthTime;
-                retVal.Payload.LastLoginClientCode = this.authenticationDelegate.FetchAuthenticatedUserClientType();
+                userProfileDbResult.Payload.LastLoginDateTime = jwtAuthTime;
+                userProfileDbResult.Payload.LastLoginClientCode = this.authenticationDelegate.FetchAuthenticatedUserClientType();
 
                 // Update user year of birth.
                 RequestResult<PatientModel> patientResult = await this.patientService.GetPatient(hdid).ConfigureAwait(true);
                 DateTime? birthDate = patientResult.ResourcePayload?.Birthdate;
-                retVal.Payload.YearOfBirth = birthDate?.Year.ToString(CultureInfo.InvariantCulture);
+                userProfileDbResult.Payload.YearOfBirth = birthDate?.Year.ToString(CultureInfo.InvariantCulture);
 
-                this.userProfileDelegate.Update(retVal.Payload);
+                this.userProfileDelegate.Update(userProfileDbResult.Payload);
                 this.logger.LogDebug("Finished updating user last login and year of birth... {Hdid}", hdid);
             }
 
-            RequestResult<TermsOfServiceModel> termsOfServiceResult = this.GetActiveTermsOfService();
-            UserProfileModel userProfile =
-                UserProfileMapUtils.CreateFromDbModel(retVal.Payload, termsOfServiceResult.ResourcePayload?.Id, this.autoMapper);
             DbResult<IEnumerable<UserProfileHistory>> userProfileHistoryDbResult =
                 this.userProfileDelegate.GetUserProfileHistories(hdid, this.userProfileHistoryRecordLimit);
+            UserProfileModel userProfile = this.BuildUserProfileModel(userProfileDbResult.Payload, userProfileHistoryDbResult.Payload.ToArray());
 
             // Populate most recent login date time
-            userProfile.LastLoginDateTimes.Add(retVal.Payload.LastLoginDateTime);
+            userProfile.LastLoginDateTimes.Add(userProfileDbResult.Payload.LastLoginDateTime);
             foreach (UserProfileHistory userProfileHistory in userProfileHistoryDbResult.Payload)
             {
                 userProfile.LastLoginDateTimes.Add(userProfileHistory.LastLoginDateTime);
@@ -191,12 +198,12 @@ namespace HealthGateway.GatewayApi.Services
 
             return new RequestResult<UserProfileModel>
             {
-                ResultStatus = retVal.Status != DbStatusCode.Error ? ResultType.Success : ResultType.Error,
-                ResultError = retVal.Status != DbStatusCode.Error
+                ResultStatus = userProfileDbResult.Status != DbStatusCode.Error ? ResultType.Success : ResultType.Error,
+                ResultError = userProfileDbResult.Status != DbStatusCode.Error
                     ? null
                     : new RequestResultError
                     {
-                        ResultMessage = retVal.Message,
+                        ResultMessage = userProfileDbResult.Message,
                         ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database),
                     },
                 ResourcePayload = userProfile,
@@ -252,8 +259,7 @@ namespace HealthGateway.GatewayApi.Services
             string? requestedSmsNumber = createProfileRequest.Profile.SmsNumber;
             string? requestedEmail = createProfileRequest.Profile.Email;
 
-            RequestResult<TermsOfServiceModel> termsOfServiceResult = this.GetActiveTermsOfService();
-            UserProfileModel userProfileModel = UserProfileMapUtils.CreateFromDbModel(dbModel, termsOfServiceResult.ResourcePayload?.Id, this.autoMapper);
+            UserProfileModel userProfileModel = this.BuildUserProfileModel(dbModel);
 
             NotificationSettingsRequest notificationRequest = new(dbModel, requestedEmail, requestedSmsNumber);
 
@@ -293,13 +299,11 @@ namespace HealthGateway.GatewayApi.Services
                 return RequestResultFactory.ServiceError<UserProfileModel>(ErrorType.CommunicationInternal, ServiceType.Database, retrieveResult.Message);
             }
 
-            RequestResult<TermsOfServiceModel> termsOfServiceResult = this.GetActiveTermsOfService();
-
             UserProfile profile = retrieveResult.Payload;
             if (profile.ClosedDateTime != null)
             {
                 this.logger.LogTrace("Finished. Profile already Closed");
-                return RequestResultFactory.Success(UserProfileMapUtils.CreateFromDbModel(profile, termsOfServiceResult.ResourcePayload?.Id, this.autoMapper));
+                return RequestResultFactory.Success(this.BuildUserProfileModel(profile));
             }
 
             profile.ClosedDateTime = DateTime.UtcNow;
@@ -310,7 +314,7 @@ namespace HealthGateway.GatewayApi.Services
                 this.QueueEmail(profile.Email, EmailTemplateName.AccountClosedTemplate);
             }
 
-            UserProfileModel payload = UserProfileMapUtils.CreateFromDbModel(updateResult.Payload, termsOfServiceResult.ResourcePayload?.Id, this.autoMapper);
+            UserProfileModel payload = this.BuildUserProfileModel(updateResult.Payload);
             return RequestResultFactory.Success(payload);
         }
 
@@ -326,12 +330,11 @@ namespace HealthGateway.GatewayApi.Services
                 return RequestResultFactory.ServiceError<UserProfileModel>(ErrorType.CommunicationInternal, ServiceType.Database, retrieveResult.Message);
             }
 
-            RequestResult<TermsOfServiceModel> termsOfServiceResult = this.GetActiveTermsOfService();
             UserProfile profile = retrieveResult.Payload;
             if (profile.ClosedDateTime == null)
             {
                 this.logger.LogTrace("Finished. Profile already is active, recover not needed.");
-                return RequestResultFactory.Success(UserProfileMapUtils.CreateFromDbModel(profile, termsOfServiceResult.ResourcePayload?.Id, this.autoMapper));
+                return RequestResultFactory.Success(this.BuildUserProfileModel(profile));
             }
 
             // Remove values set for deletion
@@ -343,7 +346,7 @@ namespace HealthGateway.GatewayApi.Services
                 this.QueueEmail(profile.Email, EmailTemplateName.AccountRecoveredTemplate);
             }
 
-            return RequestResultFactory.Success(UserProfileMapUtils.CreateFromDbModel(updateResult.Payload, termsOfServiceResult.ResourcePayload?.Id, this.autoMapper));
+            return RequestResultFactory.Success(this.BuildUserProfileModel(updateResult.Payload));
         }
 
         /// <inheritdoc/>
@@ -443,9 +446,7 @@ namespace HealthGateway.GatewayApi.Services
                 return RequestResultFactory.ServiceError<UserProfileModel>(ErrorType.CommunicationInternal, ServiceType.Database, "Unable to update the terms of service: DB Error");
             }
 
-            RequestResult<TermsOfServiceModel> termsOfServiceResult = this.GetActiveTermsOfService();
-
-            return RequestResultFactory.Success(UserProfileMapUtils.CreateFromDbModel(profileResult.Payload, termsOfServiceResult.ResourcePayload?.Id, this.autoMapper));
+            return RequestResultFactory.Success(this.BuildUserProfileModel(profileResult.Payload));
         }
 
         /// <inheritdoc/>
@@ -491,6 +492,33 @@ namespace HealthGateway.GatewayApi.Services
             }
 
             return null;
+        }
+
+        private UserProfileModel BuildUserProfileModel(UserProfile userProfile, UserProfileHistory[]? profileHistoryCollection = null)
+        {
+            Guid? termsOfServiceId = this.GetActiveTermsOfService().ResourcePayload?.Id;
+            DateTime? latestTourChangeDateTime = this.GetLatestTourChangeDateTime();
+            UserProfileModel userProfileModel = UserProfileMapUtils.CreateFromDbModel(userProfile, termsOfServiceId, this.autoMapper);
+            userProfileModel.HasTourUpdated = profileHistoryCollection != null &&
+                                              profileHistoryCollection.Any() &&
+                                              latestTourChangeDateTime != null &&
+                                              profileHistoryCollection.Max(x => x.LastLoginDateTime) < latestTourChangeDateTime;
+            return userProfileModel;
+        }
+
+        private DateTime? GetLatestTourChangeDateTime()
+        {
+            return this.cacheProvider.GetOrSet<DateTime?>(
+                $"{TourApplicationSettings.Application}:{TourApplicationSettings.Component}:{TourApplicationSettings.LatestChangeDateTime}",
+                () =>
+                {
+                    ApplicationSetting? applicationSetting = this.applicationSettingsDelegate.GetApplicationSetting(
+                        TourApplicationSettings.Application,
+                        TourApplicationSettings.Component,
+                        TourApplicationSettings.LatestChangeDateTime);
+                    return applicationSetting?.Value != null ? DateTime.Parse(applicationSetting.Value, CultureInfo.InvariantCulture).ToUniversalTime() : null;
+                },
+                TimeSpan.FromMinutes(30));
         }
     }
 }

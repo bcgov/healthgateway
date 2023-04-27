@@ -14,28 +14,8 @@
             "2021-11-21T05:49:16Z"
         ],
         "closedDateTime": null,
-        "preferences": {
-            "tutorialMenuExport": {
-                "hdId": "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A",
-                "preference": "tutorialMenuExport",
-                "value": "false",
-                "version": 3177,
-                "createdDateTime": "2021-10-14T16:15:40.794376Z",
-                "createdBy": "System",
-                "updatedDateTime": "2021-10-14T16:15:40.794376Z",
-                "updatedBy": "System"
-            },
-            "tutorialMenuNote": {
-                "hdId": "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A",
-                "preference": "tutorialMenuNote",
-                "value": "false",
-                "version": 3177,
-                "createdDateTime": "2021-10-14T16:15:40.794376Z",
-                "createdBy": "System",
-                "updatedDateTime": "2021-10-14T16:15:40.794376Z",
-                "updatedBy": "System"
-            }
-        }
+        "preferences": {},
+        "hasTourUpdated": true
     },
     "totalResultCount": null,
     "pageIndex": null,
