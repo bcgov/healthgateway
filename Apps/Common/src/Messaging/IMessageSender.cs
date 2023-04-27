@@ -26,7 +26,7 @@ using System.Threading.Tasks;
 public interface IMessageSender
 {
     /// <summary>
-    /// TBD.
+    /// Sends one-way messages.
     /// </summary>
     /// <param name="messages">The messages to send.</param>
     /// <param name="ct">An optional cancellation token.</param>
