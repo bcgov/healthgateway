@@ -21,15 +21,15 @@ using System.Threading;
 using System.Threading.Tasks;
 
 /// <summary>
-/// Send messages
+/// Send messages.
 /// </summary>
 public interface IMessageSender
 {
     /// <summary>
     /// TBD.
     /// </summary>
-    /// <param name="messages">The messages to send</param>
-    /// <param name="ct">An optional cancellation token</param>
-    /// <returns>Awaitable task</returns>
+    /// <param name="messages">The messages to send.</param>
+    /// <param name="ct">An optional cancellation token.</param>
+    /// <returns>Awaitable task.</returns>
     Task SendAsync(IEnumerable<MessageBase> messages, CancellationToken ct = default);
 }

@@ -23,23 +23,23 @@ namespace HealthGateway.Common.Messaging
     using Microsoft.Extensions.Logging;
 
     /// <summary>
-    /// DI Configuration helper for Service Bus
+    /// DI Configuration helper for Service Bus.
     /// </summary>
     public static class ConfigurationExtensions
     {
         /// <summary>
-        /// Add service bus and related dependencies to DI container
+        /// Add service bus and related dependencies to DI container.
         /// </summary>
-        /// <param name="services">Services</param>
-        /// <param name="settings">Service bus settings</param>
-        /// <returns>Same services</returns>
+        /// <param name="services">Services.</param>
+        /// <param name="settings">Service bus settings.</param>
+        /// <returns>Same services.</returns>
         public static IServiceCollection AddMessaging(this IServiceCollection services, MessagingSettings settings)
         {
             return settings switch
             {
                 AzureServiceBusSettings s => AddAzureServiceBus(services, s),
 
-                _ => throw new NotImplementedException($"{settings.GetType().FullName}")
+                _ => throw new NotImplementedException($"{settings.GetType().FullName}"),
             };
         }
 
@@ -77,32 +77,32 @@ namespace HealthGateway.Common.Messaging
     }
 
     /// <summary>
-    /// Base class for Messaging configuration settings
+    /// Base class for Messaging configuration settings.
     /// </summary>
     public abstract record MessagingSettings();
 
     /// <summary>
-    /// Configuration settings for service bus
+    /// Configuration settings for service bus.
     /// </summary>
     public record AzureServiceBusSettings : MessagingSettings
     {
         /// <summary>
-        /// The name of the Hangfire outbox queue
+        /// Gets or sets the name of the Hangfire outbox queue.
         /// </summary>
         public const string OutboxQueueName = "outbox";
 
         /// <summary>
-        /// Azure service bus connection string
+        /// Gets or sets azure service bus connection string.
         /// </summary>
         public string ConnectionString { get; set; } = null!;
 
         /// <summary>
-        /// The queue name
+        /// Gets or sets the queue name.
         /// </summary>
         public string QueueName { get; set; } = null!;
 
         /// <summary>
-        /// Should use transactional outbox pattern when sending messages
+        /// Gets or sets a value indicating whether sending messages should use transactional outbox pattern when sending messages.
         /// </summary>
         public bool UseOutbox { get; set; } = true;
     }

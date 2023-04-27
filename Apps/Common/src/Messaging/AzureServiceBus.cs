@@ -29,7 +29,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 /// <summary>
-/// Azure Service Bus messaging implementation
+/// Azure Service Bus messaging implementation.
 /// </summary>
 internal class AzureServiceBus : IMessageSender, IMessageReceiver, IAsyncDisposable
 {
@@ -37,6 +37,12 @@ internal class AzureServiceBus : IMessageSender, IMessageReceiver, IAsyncDisposa
     private readonly ServiceBusSessionProcessor sessionProcessor;
     private readonly ILogger<AzureServiceBus> logger;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="AzureServiceBus"/> class.
+    /// </summary>
+    /// <param name="serviceBusClientFactory">Azure Service Bus client factory.</param>
+    /// <param name="settingsOptions">Settings to configure Azure Service Bus.</param>
+    /// <param name="logger">A logger.</param>
     public AzureServiceBus(IAzureClientFactory<ServiceBusClient> serviceBusClientFactory, IOptions<AzureServiceBusSettings> settingsOptions, ILogger<AzureServiceBus> logger)
     {
         this.logger = logger;
@@ -59,8 +65,8 @@ internal class AzureServiceBus : IMessageSender, IMessageReceiver, IAsyncDisposa
                 ApplicationProperties =
                 {
                     { "$type", m.GetType().FullName },
-                    { "$createdon", DateTime.UtcNow.ToString("o") }
-                }
+                    { "$createdon", DateTime.UtcNow.ToString("o") },
+                },
             });
 
         var batch = await this.sender.CreateMessageBatchAsync(ct);
@@ -136,6 +142,7 @@ internal class AzureServiceBus : IMessageSender, IMessageReceiver, IAsyncDisposa
 
 #pragma warning restore CA1031 // Do not catch general exception types
 
+    /// <inheritdoc/>
     public async ValueTask DisposeAsync()
     {
         await this.sender.DisposeAsync();

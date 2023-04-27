@@ -21,17 +21,26 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 
+/// <summary>
+/// message sender with Transactional Outbox support.
+/// </summary>
 internal class OutboxMessageSender : IMessageSender
 {
     private readonly IOutboxStore outbox;
     private readonly ILogger<OutboxMessageSender> logger;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="OutboxMessageSender"/> class.
+    /// </summary>
+    /// <param name="outbox">The outbox store to use.</param>
+    /// <param name="logger">A logger.</param>
     public OutboxMessageSender(IOutboxStore outbox, ILogger<OutboxMessageSender> logger)
     {
         this.outbox = outbox;
         this.logger = logger;
     }
 
+    /// <inheritdoc/>
     public async Task SendAsync(IEnumerable<MessageBase> messages, CancellationToken ct = default)
     {
         this.logger.LogDebug("Sending messages to outbox");

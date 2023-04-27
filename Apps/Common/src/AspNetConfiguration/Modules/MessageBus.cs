@@ -22,7 +22,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 /// <summary>
-/// Adds and configures Message bus DI services
+/// Adds and configures Message bus DI services.
 /// </summary>
 [ExcludeFromCodeCoverage]
 public static class MessageBus

@@ -257,7 +257,7 @@ namespace HealthGateway.Common.AspNetConfiguration
         }
 
         /// <summary>
-        /// Configures the app to use messaging
+        /// Configures the app to use messaging.
         /// </summary>
         /// <param name="services">The service collection provider.</param>
         public void ConfigureMessaging(IServiceCollection services)

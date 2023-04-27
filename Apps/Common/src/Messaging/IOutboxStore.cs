@@ -22,15 +22,15 @@ using System.Threading.Tasks;
 
 /// <summary>
 /// Enables storing messages in an outbox table and forward later to a messaging middleware,
-/// implementing a Transactional Outbox reliable messaging transport pattern
+/// implementing a Transactional Outbox reliable messaging transport pattern.
 /// </summary>
 internal interface IOutboxStore
 {
     /// <summary>
-    /// Store messages in a transactional outbox store
+    /// Store messages in a transactional outbox store.
     /// </summary>
-    /// <param name="messages">The messages to store</param>
-    /// <param name="ct">A cancellation token</param>
-    /// <returns>Awaitable task</returns>
+    /// <param name="messages">The messages to store.</param>
+    /// <param name="ct">A cancellation token.</param>
+    /// <returns>Awaitable task.</returns>
     Task StoreAsync(IEnumerable<MessageBase> messages, CancellationToken ct = default);
 }

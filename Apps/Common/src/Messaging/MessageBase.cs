@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,8 +21,8 @@ using HealthGateway.Common.Utils;
 
 /// <summary>
 /// Base record for messages
-/// It uses PolymorphicJsonConverter to ensure the type is always serialized in the payload
+/// It uses PolymorphicJsonConverter to ensure the type is always serialized in the payload.
 /// </summary>
-/// <param name="SessionId">Optional session identifier to support FIFO behaviour for a particular subject</param>
+/// <param name="SessionId">Optional session identifier to support FIFO behaviour for a particular subject.</param>
 [JsonConverter(typeof(PolymorphicJsonConverter<MessageBase>))]
 public abstract record MessageBase(string? SessionId = null);

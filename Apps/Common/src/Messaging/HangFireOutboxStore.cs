@@ -22,12 +22,21 @@ using System.Threading.Tasks;
 using Hangfire;
 using Microsoft.Extensions.Logging;
 
+/// <summary>
+/// Hangfire Outbox store.
+/// </summary>
 internal class HangFireOutboxStore : IOutboxStore
 {
     private readonly IBackgroundJobClient backgroundJobClient;
     private readonly IMessageSender messageSender;
     private readonly ILogger<HangFireOutboxStore> logger;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="HangFireOutboxStore"/> class.
+    /// </summary>
+    /// <param name="backgroundJobClient">Hangfire background job client.</param>
+    /// <param name="messageSender">The message sender to forward messages to.</param>
+    /// <param name="logger">A logger.</param>
     public HangFireOutboxStore(IBackgroundJobClient backgroundJobClient, IMessageSender messageSender, ILogger<HangFireOutboxStore> logger)
     {
         this.backgroundJobClient = backgroundJobClient;
@@ -35,6 +44,7 @@ internal class HangFireOutboxStore : IOutboxStore
         this.logger = logger;
     }
 
+    /// <inheritdoc/>
     public async Task StoreAsync(IEnumerable<MessageBase> messages, CancellationToken ct = default)
     {
         this.logger.LogDebug("Storing messages");
@@ -42,6 +52,12 @@ internal class HangFireOutboxStore : IOutboxStore
         this.backgroundJobClient.Enqueue(() => this.ForwardAsync(messages, CancellationToken.None));
     }
 
+    /// <summary>
+    /// Forwards stored messages to the destination messaging middleware.
+    /// </summary>
+    /// <param name="messages">The messages to forward.</param>
+    /// <param name="ct">A cancellation token.</param>
+    /// <returns>Awaitable task.</returns>
     [Queue(AzureServiceBusSettings.OutboxQueueName)]
     public async Task ForwardAsync(IEnumerable<MessageBase> messages, CancellationToken ct = default)
     {
