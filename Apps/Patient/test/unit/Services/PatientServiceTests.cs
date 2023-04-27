@@ -94,6 +94,27 @@ namespace HealthGateway.PatientTests.Services
         }
 
         /// <summary>
+        /// Client registry get demographics throws api patient exception given patient is deceased.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+        [Fact]
+        public async Task GetPatientThrowsProblemDetailsExceptionGivenPatientIsDeceased()
+        {
+            // Setup
+            IPatientService patientService = GetPatientService(Phn, Phn, isDeceased: true);
+
+            // Act
+            async Task Actual()
+            {
+                await patientService.GetPatientAsync(Phn, PatientIdentifierType.Phn).ConfigureAwait(true);
+            }
+
+            // Verify
+            ProblemDetailsException exception = await Assert.ThrowsAsync<ProblemDetailsException>(Actual).ConfigureAwait(true);
+            Assert.Equal(ErrorMessages.ClientRegistryReturnedDeceasedPerson, exception.ProblemDetails!.Detail);
+        }
+
+        /// <summary>
         /// Client registry get demographics throws api exception given client registry could not find any ids.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
@@ -162,6 +183,7 @@ namespace HealthGateway.PatientTests.Services
             bool notFound = false,
             bool noNames = false,
             bool noIds = false,
+            bool isDeceased = false,
             bool throwsException = false)
         {
             PatientModel patientModel = new()
@@ -199,6 +221,10 @@ namespace HealthGateway.PatientTests.Services
                 requestResult = new PatientQueryResult(
                     new List<PatientModel>
                         { patient });
+            }
+            else if (isDeceased)
+            {
+                requestResult.Items.First().IsDeceased = true;
             }
 
             Mock<IPatientRepository> patientRepositoryMock = new();
