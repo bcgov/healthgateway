@@ -16,37 +16,37 @@
 
 namespace HealthGateway.Admin.Client.Models;
 
-using HealthGateway.Common.Data.ViewModels;
+using HealthGateway.Admin.Common.Models;
 
 /// <summary>
-/// A system communication with additional state information.
+/// Patient support details with additional state information.
 /// </summary>
-public class ExtendedSupportUser : SupportUser
+public class ExtendedPatientSupportDetails : PatientSupportDetails
 {
     /// <summary>
-    /// Initializes a new instance of the <see cref="ExtendedSupportUser"/> class.
+    /// Initializes a new instance of the <see cref="ExtendedPatientSupportDetails"/> class.
     /// </summary>
-    /// <param name="model">The support user model.</param>
-    public ExtendedSupportUser(SupportUser model)
+    /// <param name="model">The patient support details model.</param>
+    public ExtendedPatientSupportDetails(PatientSupportDetails model)
     {
         this.PopulateFromModel(model);
     }
 
     /// <summary>
-    /// Gets or sets a value indicating whether the support user details have been expanded.
+    /// Gets or sets a value indicating whether the details have been expanded.
     /// </summary>
     public bool IsExpanded { get; set; }
 
     /// <summary>
-    /// Populates all properties from a support user model.
+    /// Populates all properties from a patient support details model.
     /// </summary>
-    /// <param name="model">The support user model.</param>
-    public void PopulateFromModel(SupportUser model)
+    /// <param name="model">The patient support details model.</param>
+    public void PopulateFromModel(PatientSupportDetails model)
     {
         this.PersonalHealthNumber = model.PersonalHealthNumber;
         this.Hdid = model.Hdid;
-        this.CreatedDateTime = model.CreatedDateTime;
-        this.LastLoginDateTime = model.LastLoginDateTime;
+        this.ProfileCreatedDateTime = model.ProfileCreatedDateTime;
+        this.ProfileLastLoginDateTime = model.ProfileLastLoginDateTime;
         this.PhysicalAddress = model.PhysicalAddress;
         this.PostalAddress = model.PostalAddress;
     }

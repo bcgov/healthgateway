@@ -91,22 +91,32 @@ namespace HealthGateway.Database.Delegates
         /// <summary>
         /// Search resource delegates by criteria specified in the query.
         /// </summary>
-        /// <param name="query">the query criteria.</param>
+        /// <param name="query">The query criteria.</param>
         /// <returns>A <see cref="Task{TResult}"/> representing the result of the asynchronous operation.</returns>
-        public Task<ResourceDelegateQueryResult> Search(ResourceDelegateQuery query);
+        public Task<ResourceDelegateQueryResult> SearchAsync(ResourceDelegateQuery query);
     }
 
     public record ResourceDelegateQuery
     {
         /// <summary>
-        /// Gets or sets search by owner's hdid.
+        /// Gets the resource owner HDID to search by.
         /// </summary>
-        public string? ByOwnerHdid { get; set; }
+        public string? ByOwnerHdid { get; init; }
 
         /// <summary>
-        /// Gets or sets search by delegate hdid.
+        /// Gets the delegate HDID to search by.
         /// </summary>
-        public string? ByDelegateHdid { get; set; }
+        public string? ByDelegateHdid { get; init; }
+
+        /// <summary>
+        /// Gets a value indicating whether the associated UserProfile data should be included in the result.
+        /// </summary>
+        public bool IncludeProfile { get; init; }
+
+        /// <summary>
+        /// Gets the maximum number of records to return. If null, all matching records will be returned.
+        /// </summary>
+        public int? TakeAmount { get; init; }
     }
 
     public record ResourceDelegateQueryResult

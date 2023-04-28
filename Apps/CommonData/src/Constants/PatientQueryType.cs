@@ -19,7 +19,7 @@ namespace HealthGateway.Common.Data.Constants
     /// <summary>
     /// Represents the type of query being performed.
     /// </summary>
-    public enum UserQueryType
+    public enum PatientQueryType
     {
         /// <summary>
         /// Query by Personal Health Number.

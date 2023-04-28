@@ -13,28 +13,31 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Common.MapProfiles
+namespace HealthGateway.AdminWebClientTests.Utils
 {
-    using System;
     using AutoMapper;
-    using HealthGateway.Common.Data.Models;
-    using HealthGateway.Common.Data.ViewModels;
+    using HealthGateway.Admin.MapProfiles;
 
     /// <summary>
-    /// An AutoMapper profile class which defines mapping between DB Model UserProfile and API Model UserProfileModel.
+    /// Static utility class to provide a fully initialized AutoMapper.
+    /// NOTE: Any newly added profiles will have to be registered.
     /// </summary>
-    public class UserProfileProfile : Profile
+    public static class MapperUtil
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="UserProfileProfile"/> class.
+        /// Creates an AutoMapper.
         /// </summary>
-        public UserProfileProfile()
+        /// <returns>A configured AutoMapper.</returns>
+        public static IMapper InitializeAutoMapper()
         {
-            this.CreateMap<UserProfile, UserProfileModel>()
-                .ForMember(dest => dest.IsEmailVerified, opt => opt.MapFrom(src => !string.IsNullOrEmpty(src.Email)))
-                .ForMember(dest => dest.IsSmsNumberVerified, opt => opt.MapFrom(src => !string.IsNullOrEmpty(src.SmsNumber)))
-                .ForMember(dest => dest.AcceptedTermsOfService, opt => opt.MapFrom(src => src.TermsOfServiceId != Guid.Empty))
-                .ReverseMap();
+            MapperConfiguration config = new(
+                cfg =>
+                {
+                    cfg.AddProfile(new Common.MapProfiles.MessagingVerificationProfile());
+                    cfg.AddProfile(new PatientSupportDetailsProfile());
+                });
+
+            return config.CreateMapper();
         }
     }
 }

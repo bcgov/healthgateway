@@ -13,10 +13,12 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Common.Services
+namespace HealthGateway.Admin.Server.Services
 {
     using System.Collections.Generic;
+    using System.Threading;
     using System.Threading.Tasks;
+    using HealthGateway.Admin.Common.Models;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ViewModels;
 
@@ -26,18 +28,20 @@ namespace HealthGateway.Common.Services
     public interface ISupportService
     {
         /// <summary>
-        /// Retrieves a list of message verifications matching the query.
+        /// Retrieves a list of messaging verifications matching the query.
         /// </summary>
-        /// <param name="hdid">The hdid associated with the messaging verification.</param>
-        /// <returns>A list of users matching the query.</returns>
-        RequestResult<IEnumerable<MessagingVerificationModel>> GetMessageVerifications(string hdid);
+        /// <param name="hdid">The HDID associated with the messaging verifications.</param>
+        /// <param name="ct">A cancellation token.</param>
+        /// <returns>A list of messaging verifications matching the query.</returns>
+        Task<RequestResult<IEnumerable<MessagingVerificationModel>>> GetMessageVerificationsAsync(string hdid, CancellationToken ct = default);
 
         /// <summary>
-        /// Retrieves a list of users matching the query.
+        /// Retrieves the collection of patients that match the query.
         /// </summary>
         /// <param name="queryType">The type of query to perform.</param>
         /// <param name="queryString">The value to query on.</param>
-        /// <returns>A list of users matching the query.</returns>
-        Task<RequestResult<IEnumerable<SupportUser>>> GetUsers(UserQueryType queryType, string queryString);
+        /// <param name="ct">A cancellation token.</param>
+        /// <returns>The collection of patient support details that match the query.</returns>
+        Task<IList<PatientSupportDetails>> GetPatientsAsync(PatientQueryType queryType, string queryString, CancellationToken ct = default);
     }
 }

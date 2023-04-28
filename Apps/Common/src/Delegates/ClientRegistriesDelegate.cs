@@ -184,7 +184,7 @@ namespace HealthGateway.Common.Delegates
                         case ADStreetAddressLine line when line.Text != null:
                             foreach (string s in line.Text)
                             {
-                                retAddress.AddLine(s ?? string.Empty);
+                                retAddress.StreetLines = retAddress.StreetLines.Append(s ?? string.Empty);
                             }
 
                             break;

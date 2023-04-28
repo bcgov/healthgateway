@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Admin.Client.Store.SupportUser
+namespace HealthGateway.Admin.Client.Store.PatientSupport
 {
     using System.Collections.Generic;
     using System.Linq;
@@ -21,10 +21,10 @@ namespace HealthGateway.Admin.Client.Store.SupportUser
     using HealthGateway.Admin.Client.Models;
 
 #pragma warning disable CS1591, SA1600
-    public static class SupportUserReducers
+    public static class PatientSupportReducers
     {
-        [ReducerMethod(typeof(SupportUserActions.LoadAction))]
-        public static SupportUserState ReduceLoadAction(SupportUserState state)
+        [ReducerMethod(typeof(PatientSupportActions.LoadAction))]
+        public static PatientSupportState ReduceLoadAction(PatientSupportState state)
         {
             return state with
             {
@@ -33,7 +33,7 @@ namespace HealthGateway.Admin.Client.Store.SupportUser
         }
 
         [ReducerMethod]
-        public static SupportUserState ReduceLoadSuccessAction(SupportUserState state, SupportUserActions.LoadSuccessAction action)
+        public static PatientSupportState ReduceLoadSuccessAction(PatientSupportState state, PatientSupportActions.LoadSuccessAction action)
         {
             return state with
             {
@@ -41,12 +41,12 @@ namespace HealthGateway.Admin.Client.Store.SupportUser
                 Result = action.Data,
                 Error = null,
                 WarningMessage = action.Data.ResultError?.ResultMessage,
-                Data = action.Data.ResourcePayload?.Select(u => new ExtendedSupportUser(u)).ToList(),
+                Data = action.Data.ResourcePayload?.Select(u => new ExtendedPatientSupportDetails(u)).ToList(),
             };
         }
 
         [ReducerMethod]
-        public static SupportUserState ReduceLoadFailAction(SupportUserState state, SupportUserActions.LoadFailAction action)
+        public static PatientSupportState ReduceLoadFailAction(PatientSupportState state, PatientSupportActions.LoadFailAction action)
         {
             return state with
             {
@@ -55,8 +55,8 @@ namespace HealthGateway.Admin.Client.Store.SupportUser
             };
         }
 
-        [ReducerMethod(typeof(SupportUserActions.ResetStateAction))]
-        public static SupportUserState ReduceResetStateAction(SupportUserState state)
+        [ReducerMethod(typeof(PatientSupportActions.ResetStateAction))]
+        public static PatientSupportState ReduceResetStateAction(PatientSupportState state)
         {
             return state with
             {
@@ -69,11 +69,11 @@ namespace HealthGateway.Admin.Client.Store.SupportUser
         }
 
         [ReducerMethod]
-        public static SupportUserState ReduceToggleIsExpandedAction(SupportUserState state, SupportUserActions.ToggleIsExpandedAction action)
+        public static PatientSupportState ReduceToggleIsExpandedAction(PatientSupportState state, PatientSupportActions.ToggleIsExpandedAction action)
         {
-            IEnumerable<ExtendedSupportUser> data = state.Data ?? Enumerable.Empty<ExtendedSupportUser>();
+            IEnumerable<ExtendedPatientSupportDetails> data = state.Data ?? Enumerable.Empty<ExtendedPatientSupportDetails>();
 
-            ExtendedSupportUser? user = data.SingleOrDefault(c => c.Hdid == action.Hdid);
+            ExtendedPatientSupportDetails? user = data.SingleOrDefault(c => c.Hdid == action.Hdid);
             if (user != null)
             {
                 user.IsExpanded = !user.IsExpanded;

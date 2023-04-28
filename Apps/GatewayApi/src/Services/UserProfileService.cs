@@ -17,6 +17,7 @@ namespace HealthGateway.GatewayApi.Services
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.Globalization;
     using System.Linq;
     using System.Threading.Tasks;
@@ -127,6 +128,7 @@ namespace HealthGateway.GatewayApi.Services
         }
 
         /// <inheritdoc/>
+        [SuppressMessage("Performance", "CA1849:Call async methods when in an async method", Justification = "Requires refactoring")]
         public async Task<RequestResult<UserProfileModel>> GetUserProfile(string hdid, DateTime jwtAuthTime)
         {
             this.logger.LogTrace("Getting user profile... {Hdid}", hdid);

@@ -183,7 +183,7 @@ public partial class FeedbackPage : FluxorComponent
 
     private void NavigateToSupport(string hdid)
     {
-        this.NavigationManager.NavigateTo($"support?{UserQueryType.Hdid}={hdid}");
+        this.NavigationManager.NavigateTo($"support?{PatientQueryType.Hdid}={hdid}");
     }
 
     private string DescribeTags(List<string> tagIds)
