@@ -235,8 +235,8 @@ namespace HealthGateway.PatientTests.Services
             }
             else
             {
-                patientRepositoryMock.Setup(p => p.Query(new PatientDetailsQuery(null, expectedIdentifier), It.IsAny<CancellationToken>())).ReturnsAsync(requestResult);
-                patientRepositoryMock.Setup(p => p.Query(new PatientDetailsQuery(expectedIdentifier, null), It.IsAny<CancellationToken>())).ReturnsAsync(requestResult);
+                patientRepositoryMock.Setup(p => p.Query(new PatientDetailsQuery(null, expectedIdentifier, PatientDetailSource.AllCache), It.IsAny<CancellationToken>())).ReturnsAsync(requestResult);
+                patientRepositoryMock.Setup(p => p.Query(new PatientDetailsQuery(expectedIdentifier, null, PatientDetailSource.AllCache), It.IsAny<CancellationToken>())).ReturnsAsync(requestResult);
             }
 
             return new PatientService(

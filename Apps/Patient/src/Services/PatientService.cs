@@ -63,8 +63,8 @@ namespace HealthGateway.Patient.Services
             this.logger.LogDebug("Starting GetPatient for identifier type: {IdentifierType}", identifierType);
 
             PatientDetailsQuery query = identifierType == PatientIdentifierType.Hdid
-                ? new PatientDetailsQuery(Hdid: identifier)
-                : new PatientDetailsQuery(Phn: identifier);
+                ? new PatientDetailsQuery(Hdid: identifier, Source: PatientDetailSource.AllCache)
+                : new PatientDetailsQuery(identifier, Source: PatientDetailSource.AllCache);
 
             PatientModel? patientDetails = (await this.patientRepository.Query(query, ct).ConfigureAwait(true)).Items.SingleOrDefault();
 

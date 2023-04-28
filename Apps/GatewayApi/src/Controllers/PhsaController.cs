@@ -24,6 +24,7 @@ namespace HealthGateway.GatewayApi.Controllers
     using HealthGateway.GatewayApi.Models;
     using HealthGateway.GatewayApi.Services;
     using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
 
     /// <summary>
@@ -36,14 +37,17 @@ namespace HealthGateway.GatewayApi.Controllers
     public class PhsaController : ControllerBase
     {
         private readonly IDependentService dependentService;
+        private readonly IPatientDetailsService patientDetailsService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PhsaController"/> class.
         /// </summary>
         /// <param name="dependentService">The injected dependent service.</param>
-        public PhsaController(IDependentService dependentService)
+        /// <param name="patientDetailsService">The injected user patient details service.</param>
+        public PhsaController(IDependentService dependentService, IPatientDetailsService patientDetailsService)
         {
             this.dependentService = dependentService;
+            this.patientDetailsService = patientDetailsService;
         }
 
         /// <summary>
@@ -89,6 +93,33 @@ namespace HealthGateway.GatewayApi.Controllers
             [FromQuery] int pageSize = 5000)
         {
             return this.dependentService.GetDependents(fromDateUtc, toDateUtc, page, pageSize);
+        }
+
+        /// <summary>
+        /// Gets a json of patient record.
+        /// </summary>
+        /// <param name="hdid">The patient hdid.</param>
+        /// <returns>The patient record.</returns>
+        /// <response code="200">Returns the patient record.</response>
+        /// <response code="401">The client must authenticate itself to get the requested response.</response>
+        /// <response code="404">The patient could not be found.</response>
+        /// <response code="403">
+        /// The client does not have access rights to the content; that is, it is unauthorized, so the server
+        /// is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.
+        /// </response>
+        /// <response code="502">Unable to get response from client registry.</response>
+        [HttpGet]
+        [Produces("application/json")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status502BadGateway)]
+        [Route("Patients")]
+        [Authorize(Policy = SystemDelegatedPatientPolicy.Read)]
+        public async Task<ActionResult<PatientDetails>> GetPatient(string hdid)
+        {
+            return await this.patientDetailsService.GetPatientAsync(hdid).ConfigureAwait(true);
         }
     }
 }

@@ -13,28 +13,47 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.AccountDataAccess.Patient
+namespace HealthGateway.AccountDataAccess
 {
+    using System;
     using System.Diagnostics.CodeAnalysis;
+    using HealthGateway.AccountDataAccess.Patient;
+    using HealthGateway.AccountDataAccess.Patient.Api;
+    using HealthGateway.Common.Utils.Phsa;
     using Microsoft.Extensions.DependencyInjection;
+    using Refit;
 
     /// <summary>
     /// Helper class to add and configure <see cref="IPatientRepository"/> dependencies.
     /// </summary>
     [ExcludeFromCodeCoverage]
-    public static class PatientRepositoryConfigurationExtensions
+    public static class ConfigurationExtensions
     {
         /// <summary>
         /// Register AccountDataAccess in DI.
         /// </summary>
         /// <param name="services">DI service collection.</param>
+        /// <param name="configuration">configuration settings.</param>
         /// <returns>The service collection.</returns>
-        public static IServiceCollection AddPatientRepositoryConfiguration(this IServiceCollection services)
+        public static IServiceCollection AddPatientRepositoryConfiguration(this IServiceCollection services, AccountDataAccessConfiguration configuration)
         {
             services.AddTransient<IClientRegistriesDelegate, ClientRegistriesDelegate>();
             services.AddTransient<IPatientRepository, PatientRepository>();
 
+            services.AddRefitClient<IPatientIdentityApi>()
+                .ConfigureHttpClient(c => c.BaseAddress = configuration.PhsaApiBaseUrl)
+                .AddHttpMessageHandler<AuthHeaderHandler>();
+
+            services.AddRefitClient<IPersonalAccountsApi>()
+                .ConfigureHttpClient(c => c.BaseAddress = configuration.PhsaApiBaseUrl)
+                .AddHttpMessageHandler<AuthHeaderHandler>();
+
             return services;
         }
     }
+
+    /// <summary>
+    /// Configuration settings for AccountDataAccess.
+    /// </summary>
+    public record AccountDataAccessConfiguration(Uri PhsaApiBaseUrl);
 }

@@ -24,7 +24,6 @@ namespace HealthGateway.AccountDataAccess.Patient
     using System.Threading.Tasks;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.ErrorHandling;
-    using HealthGateway.Common.Data.ViewModels;
     using Microsoft.Extensions.Logging;
     using ServiceReference;
 
@@ -53,10 +52,9 @@ namespace HealthGateway.AccountDataAccess.Patient
         private static ActivitySource Source { get; } = new(nameof(ClientRegistriesDelegate));
 
         /// <inheritdoc/>
-        public async Task<ApiResult<PatientModel>> GetDemographicsAsync(OidType type, string identifier, bool disableIdValidation = false)
+        public async Task<PatientModel?> GetDemographicsAsync(OidType type, string identifier, bool disableIdValidation = false)
         {
             this.logger.LogDebug("Getting patient for type: {Type} and value: {Identifier} started", type, identifier);
-            ApiResult<PatientModel> apiResult = new();
             using Activity? activity = Source.StartActivity();
 
             // Create request object
@@ -64,9 +62,7 @@ namespace HealthGateway.AccountDataAccess.Patient
 
             // Perform the request
             HCIM_IN_GetDemographicsResponse1 reply = await this.clientRegistriesClient.HCIM_IN_GetDemographicsAsync(request).ConfigureAwait(true);
-            this.ParseResponse(apiResult, reply, disableIdValidation);
-            this.logger.LogDebug("Getting patient finished.");
-            return apiResult;
+            return this.ParseResponse(reply, disableIdValidation);
         }
 
         private static HCIM_IN_GetDemographicsRequest CreateRequest(OidType oidType, string identifierValue)
@@ -240,7 +236,7 @@ namespace HealthGateway.AccountDataAccess.Patient
             }
         }
 
-        private void ParseResponse(ApiResult<PatientModel> apiResult, HCIM_IN_GetDemographicsResponse1 reply, bool disableIdValidation)
+        private PatientModel? ParseResponse(HCIM_IN_GetDemographicsResponse1 reply, bool disableIdValidation)
         {
             using (Source.StartActivity())
             {
@@ -260,7 +256,7 @@ namespace HealthGateway.AccountDataAccess.Patient
                 }
 
                 // Initialize model
-                PatientModel patientModel = new()
+                PatientModel? patientModel = new()
                 {
                     Birthdate = dob,
                     Gender = retrievedPerson.identifiedPerson.administrativeGenderCode.code switch
@@ -295,12 +291,13 @@ namespace HealthGateway.AccountDataAccess.Patient
                     patientModel.ResponseCode = responseCode;
                 }
 
-                apiResult.ResourcePayload = patientModel;
-
                 if (responseCode.Contains("BCHCIM.GD.2.0018", StringComparison.InvariantCulture))
                 {
-                    apiResult.ResourcePayload = null;
+                    this.logger.LogDebug("Return null for patient as response code is BCHCIM.GD.2.0018");
+                    patientModel = null;
                 }
+
+                return patientModel;
             }
         }
 

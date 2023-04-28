@@ -16,10 +16,10 @@
 namespace AccountDataAccessTest
 {
     using HealthGateway.AccountDataAccess.Patient;
+    using HealthGateway.AccountDataAccess.Patient.Api;
     using HealthGateway.Common.CacheProviders;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.ErrorHandling;
-    using HealthGateway.Common.Data.ViewModels;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using Moq;
@@ -95,18 +95,15 @@ namespace AccountDataAccessTest
 
         private static PatientRepository GetPatientRepository(string expectedPhn, string expectedIdentifier)
         {
-            ApiResult<PatientModel> requestResult = new()
+            PatientModel patient = new()
             {
-                ResourcePayload = new PatientModel
+                CommonName = new Name
                 {
-                    CommonName = new Name
-                    {
-                        GivenName = "John",
-                        Surname = "Doe",
-                    },
-                    Phn = expectedPhn,
-                    Hdid = Hdid,
+                    GivenName = "John",
+                    Surname = "Doe",
                 },
+                Phn = expectedPhn,
+                Hdid = Hdid,
             };
 
             Mock<IClientRegistriesDelegate> patientDelegateMock = new();
@@ -117,14 +114,16 @@ namespace AccountDataAccessTest
             IConfigurationRoot configuration = new ConfigurationBuilder()
                 .AddInMemoryCollection(configDictionary.ToList())
                 .Build();
-            patientDelegateMock.Setup(p => p.GetDemographicsAsync(OidType.Hdid, expectedIdentifier, false)).ReturnsAsync(requestResult);
-            patientDelegateMock.Setup(p => p.GetDemographicsAsync(OidType.Phn, expectedIdentifier, false)).ReturnsAsync(requestResult);
+            patientDelegateMock.Setup(p => p.GetDemographicsAsync(OidType.Hdid, expectedIdentifier, false)).ReturnsAsync(patient);
+            patientDelegateMock.Setup(p => p.GetDemographicsAsync(OidType.Phn, expectedIdentifier, false)).ReturnsAsync(patient);
 
             PatientRepository patientRepository = new(
                 patientDelegateMock.Object,
                 new Mock<ICacheProvider>().Object,
                 configuration,
-                new Mock<ILogger<PatientRepository>>().Object);
+                new Mock<ILogger<PatientRepository>>().Object,
+                new Mock<IPersonalAccountsApi>().Object,
+                new Mock<IPatientIdentityApi>().Object);
             return patientRepository;
         }
     }

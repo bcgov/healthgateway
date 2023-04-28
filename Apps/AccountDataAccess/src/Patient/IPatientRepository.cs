@@ -20,6 +20,42 @@ namespace HealthGateway.AccountDataAccess.Patient
     using System.Threading.Tasks;
 
     /// <summary>
+    /// Represents the patient detail source to determine what to query.
+    /// </summary>
+    public enum PatientDetailSource
+    {
+        /// <summary>
+        /// Specifies that the EMPI data source is to be queried against.
+        /// </summary>
+        Empi,
+
+        /// <summary>
+        /// Specifies that the EMPI data source is to be queried against using cache if available.
+        /// </summary>
+        EmpiCache,
+
+        /// <summary>
+        /// Specifies that the PHSA data source is to be queried against.
+        /// </summary>
+        Phsa,
+
+        /// <summary>
+        /// Specifies that the PHSA data source is to be queried against using cache if available.
+        /// </summary>
+        PhsaCache,
+
+        /// <summary>
+        /// Specifies that all data sources are to be queried against.
+        /// </summary>
+        All,
+
+        /// <summary>
+        /// Specifies that all data sources are to be queried against using cache if available.
+        /// </summary>
+        AllCache,
+    }
+
+    /// <summary>
     /// Handle Patient data.
     /// </summary>
     public interface IPatientRepository
@@ -49,5 +85,6 @@ namespace HealthGateway.AccountDataAccess.Patient
     /// </summary>
     /// <param name="Phn">The phn to search.</param>
     /// <param name="Hdid">The Hdid to search.</param>
-    public record PatientDetailsQuery(string? Phn = null, string? Hdid = null) : PatientQuery;
+    /// <param name="Source">The patient detail source to query.</param>
+    public record PatientDetailsQuery(string? Phn = null, string? Hdid = null, PatientDetailSource Source = PatientDetailSource.All) : PatientQuery;
 }
