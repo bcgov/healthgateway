@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,19 +13,16 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Common.Jobs
+namespace HealthGateway.JobScheduler.Jobs
 {
-    using System;
-
     /// <summary>
-    /// A Job to send emails.
+    /// A Job to send emails that were not queued directly.
     /// </summary>
-    public interface IEmailJob
+    public interface IOtherEmailJob
     {
         /// <summary>
-        /// Sends an email immediately if Priority is standard or higher.
+        /// Attempts to send any emails that haven't been sent.
         /// </summary>
-        /// <param name="emailId">The stored emailId to send.</param>
-        void SendEmail(Guid emailId);
+        void SendEmails();
     }
 }
