@@ -31,5 +31,5 @@ public interface IMessageSender
     /// <param name="messages">The messages to send.</param>
     /// <param name="ct">An optional cancellation token.</param>
     /// <returns>Awaitable task.</returns>
-    Task SendAsync(IEnumerable<MessageBase> messages, CancellationToken ct = default);
+    Task SendAsync(IEnumerable<MessageEnvelope> messages, CancellationToken ct = default);
 }

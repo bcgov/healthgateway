@@ -16,6 +16,7 @@
 
 namespace HealthGateway.Common.Messaging;
 
+using System;
 using System.Text.Json.Serialization;
 using HealthGateway.Common.Utils;
 
@@ -23,6 +24,26 @@ using HealthGateway.Common.Utils;
 /// Base record for messages
 /// It uses PolymorphicJsonConverter to ensure the type is always serialized in the payload.
 /// </summary>
-/// <param name="SessionId">Optional session identifier to support FIFO behaviour for a particular subject.</param>
 [JsonConverter(typeof(PolymorphicJsonConverter<MessageBase>))]
-public abstract record MessageBase(string? SessionId = null);
+public abstract record MessageBase();
+
+/// <summary>
+/// Message envelope that contains a message and metadata.
+/// </summary>
+/// <param name="SessionId">The session id to manage FIFO.</param>
+/// <param name="MessageType">An optional message type, defaults to the name of the Content type</param>
+/// <param name="Content">The message.</param>
+public record MessageEnvelope(MessageBase Content, string? SessionId = null)
+{
+    private readonly DateTime createdOn = DateTime.UtcNow;
+
+    /// <summary>
+    /// Gets the timestamp of the message creation time.
+    /// </summary>
+    public string CreatedOn => this.createdOn.ToString("o");
+
+    /// <summary>
+    /// Gets an optional message type, defaults to the Content type name.
+    /// </summary>
+    public string MessageType { get; init; } = Content.GetType().Name;
+}

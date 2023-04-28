@@ -54,18 +54,19 @@ internal class AzureServiceBus : IMessageSender, IMessageReceiver, IAsyncDisposa
     }
 
     /// <inheritdoc/>
-    public virtual async Task SendAsync(IEnumerable<MessageBase> messages, CancellationToken ct = default)
+    public virtual async Task SendAsync(IEnumerable<MessageEnvelope> messages, CancellationToken ct = default)
     {
         var sbMessages = messages.Select(m =>
             new ServiceBusMessage()
             {
-                Body = new BinaryData(m.Serialize(false)),
+                Body = new BinaryData(m.Content.Serialize(false)),
                 SessionId = m.SessionId ?? string.Empty,
                 ContentType = ContentType.ApplicationJson.ToString(),
                 ApplicationProperties =
                 {
-                    { "$type", m.GetType().FullName },
-                    { "$createdon", DateTime.UtcNow.ToString("o") },
+                    { "$type", m.MessageType },
+                    { "$createdon", m.CreatedOn },
+                    { "$aqn", m.Content.GetType().AssemblyQualifiedName! },
                 },
             });
 
@@ -94,7 +95,7 @@ internal class AzureServiceBus : IMessageSender, IMessageReceiver, IAsyncDisposa
 #pragma warning disable CA1031 // Do not catch general exception types - need to handle all exception types thrown from receive handlers
 
     /// <inheritdoc/>
-    public virtual async Task Subscribe(Func<string, IEnumerable<MessageBase>, Task<bool>> receiveHandler, Func<Exception, Task> errorHandler, CancellationToken ct = default)
+    public virtual async Task Subscribe(Func<string, IEnumerable<MessageEnvelope>, Task<bool>> receiveHandler, Func<Exception, Task> errorHandler, CancellationToken ct = default)
     {
         this.sessionProcessor.ProcessMessageAsync += async args =>
         {
@@ -109,7 +110,21 @@ internal class AzureServiceBus : IMessageSender, IMessageReceiver, IAsyncDisposa
                     throw new InvalidOperationException($"Session {args.SessionId} is in error mode");
                 }
 
-                var receiveResult = await receiveHandler(args.SessionId, new[] { args.Message.Body.ToArray().Deserialize<MessageBase>()! });
+                var typeName = (args.Message.ApplicationProperties["$aqn"] ?? args.Message.ApplicationProperties["$type"])?.ToString();
+                if (string.IsNullOrEmpty(typeName))
+                {
+                    throw new InvalidOperationException($"message {args.Message.SessionId}:{args.Message.SequenceNumber} is missing the type property");
+                }
+
+                var type = Type.GetType(typeName, true);
+
+                var message = (MessageBase?)args.Message.Body.ToArray().Deserialize(type);
+                if (message == null)
+                {
+                    throw new InvalidOperationException($"message {args.Message.SessionId}:{args.Message.SequenceNumber} failed to deserialize to type {typeName}");
+                }
+
+                var receiveResult = await receiveHandler(args.SessionId, new[] { new MessageEnvelope(message, args.Message.SessionId) });
                 if (!receiveResult)
                 {
                     // put back in the queue if the handler rejected the messages

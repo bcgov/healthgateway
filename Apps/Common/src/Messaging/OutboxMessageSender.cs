@@ -41,7 +41,7 @@ internal class OutboxMessageSender : IMessageSender
     }
 
     /// <inheritdoc/>
-    public async Task SendAsync(IEnumerable<MessageBase> messages, CancellationToken ct = default)
+    public async Task SendAsync(IEnumerable<MessageEnvelope> messages, CancellationToken ct = default)
     {
         this.logger.LogDebug("Sending messages to outbox");
         await this.outbox.StoreAsync(messages, ct);

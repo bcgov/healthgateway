@@ -14,23 +14,23 @@
 //  limitations under the License.
 // -------------------------------------------------------------------------
 
-namespace HealthGateway.Common.Messaging;
+namespace HealthGateway.Database.Models;
 
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
+using System;
 
-/// <summary>
-/// Enables storing messages in an outbox table and forward later to a messaging middleware,
-/// implementing a Transactional Outbox reliable messaging transport pattern.
-/// </summary>
-internal interface IOutboxStore
+public record MessageOutboxEntry
 {
-    /// <summary>
-    /// Store messages in a transactional outbox store.
-    /// </summary>
-    /// <param name="messages">The messages to store.</param>
-    /// <param name="ct">A cancellation token.</param>
-    /// <returns>Awaitable task.</returns>
-    Task StoreAsync(IEnumerable<MessageEnvelope> messages, CancellationToken ct = default);
+    public Guid Id { get; init; }
+    public DateTime CreatedOn { get; init; }
+    public OutboxEntryStatus Status { get; init; }
+    public OutboxMessage Message { get; set; }
+}
+
+public record OutboxMessage();
+
+public enum OutboxEntryStatus
+{
+    Pending,
+    Completed,
+    Failed
 }

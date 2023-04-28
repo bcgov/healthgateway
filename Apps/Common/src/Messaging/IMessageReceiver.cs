@@ -34,5 +34,5 @@ public interface IMessageReceiver
     /// <param name="errorHandler">Error handler that receives the exception when an error occurred.</param>
     /// <param name="ct">Cancellation token.</param>
     /// <returns>Awaitable task.</returns>
-    Task Subscribe(Func<string, IEnumerable<MessageBase>, Task<bool>> receiveHandler, Func<Exception, Task> errorHandler, CancellationToken ct = default);
+    Task Subscribe(Func<string, IEnumerable<MessageEnvelope>, Task<bool>> receiveHandler, Func<Exception, Task> errorHandler, CancellationToken ct = default);
 }

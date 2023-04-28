@@ -33,8 +33,20 @@ public static class SerializationHelper
     /// <returns>The deserialized instance.</returns>
     public static T? Deserialize<T>(this byte[]? data, JsonSerializerOptions? options = null) =>
         data == null || data.Length == 0
-        ? default :
-        JsonSerializer.Deserialize<T?>(data, options);
+            ? default
+            : JsonSerializer.Deserialize<T?>(data, options);
+
+    /// <summary>
+    /// Deserialize a json byte array to a concrete instance.
+    /// </summary>
+    /// <param name="data">The byte array payload to deserialize.</param>
+    /// <param name="returnType">The type of the object to return.</param>
+    /// <param name="options">Optional JsonSerializationOptions.</param>
+    /// <returns>A deserialized instance of the return type.</returns>
+    public static object? Deserialize(this byte[]? data, Type returnType, JsonSerializerOptions? options = null) =>
+        data == null || data.Length == 0
+            ? default
+            : JsonSerializer.Deserialize(data, returnType, options);
 
     /// <summary>
     /// Serialize an instance to a Json byte array.

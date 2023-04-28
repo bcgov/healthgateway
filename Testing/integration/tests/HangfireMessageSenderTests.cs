@@ -21,6 +21,7 @@ using System.Transactions;
 using Hangfire;
 using Hangfire.PostgreSql;
 using HealthGateway.Common.Messaging;
+using HealthGateway.Common.Utils;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
@@ -46,36 +47,32 @@ public class HangfireMessageSenderTests : ScenarioContextBase<GatewayApi.Startup
 
         this.sender = this.Host.Services.GetRequiredService<IMessageSender>();
         this.receiver = this.Host.Services.GetRequiredService<IMessageReceiver>();
-
 #pragma warning disable CA2326 // Do not use TypeNameHandling values other than None
-
         GlobalConfiguration.Configuration
             .UseSerializerSettings(new Newtonsoft.Json.JsonSerializerSettings { TypeNameHandling = Newtonsoft.Json.TypeNameHandling.All })
             .UsePostgreSqlStorage(this.Host.Services.GetRequiredService<IConfiguration>().GetConnectionString("GatewayConnection"));
-
 #pragma warning restore CA2326 // Do not use TypeNameHandling values other than None
-
         this.hangfireBackgroundJobServer = new BackgroundJobServer(new BackgroundJobServerOptions
         {
             Queues = new[] { AzureServiceBusSettings.OutboxQueueName },
         });
     }
 
-    private async Task SendMessages(IEnumerable<MessageBase>[] messages, CancellationToken ct)
+    private async Task SendMessages(IEnumerable<TestMessage>[] messages, CancellationToken ct)
     {
-        var sendTasks = messages.Select(m => this.sender.SendAsync(m, ct));
+        var sendTasks = messages.Select(messages => this.sender.SendAsync(messages.Select(m => new MessageEnvelope(m, m.SessionId)), ct));
         await Task.WhenAll(sendTasks);
     }
 
-    private async Task<ConcurrentBag<MessageBase>> ReceiveMessages(CancellationToken ct)
+    private async Task<ConcurrentBag<MessageEnvelope>> ReceiveMessages(CancellationToken ct)
     {
-        var receivedMessages = new ConcurrentBag<MessageBase>();
+        var receivedMessages = new ConcurrentBag<MessageEnvelope>();
         await this.receiver.Subscribe(
             async (sessionId, messages) => await Task.Run(() =>
             {
                 foreach (var m in messages)
                 {
-                    if (m is TestMessage tm && tm.ShouldError)
+                    if (m.Content is TestMessage tm && tm.ShouldError)
                     {
                         throw new InvalidOperationException($"Test {tm.SessionId}:{tm.Id} message failed");
                     }
@@ -114,9 +111,8 @@ public class HangfireMessageSenderTests : ScenarioContextBase<GatewayApi.Startup
         await WaitForMessages(() => !responses.IsEmpty);
 
         responses.Count.ShouldBe(4);
-        var results = responses.Cast<TestMessage>().ToArray();
-        results.Count(m => m.SessionId == s1).ShouldBe(2);
-        results.Count(m => m.SessionId == s2).ShouldBe(2);
+        responses.Count(m => m.SessionId == s1).ShouldBe(2);
+        responses.Count(m => m.SessionId == s2).ShouldBe(2);
     }
 
     [Fact]
@@ -136,8 +132,7 @@ public class HangfireMessageSenderTests : ScenarioContextBase<GatewayApi.Startup
         await WaitForMessages(() => !responses.IsEmpty);
 
         responses.Count.ShouldBe(2);
-        var results = responses.Cast<TestMessage>();
-        results.ShouldAllBe(m => m.SessionId == s2);
+        responses.ShouldAllBe(m => m.SessionId == s2);
     }
 
     [Fact]
@@ -158,6 +153,19 @@ public class HangfireMessageSenderTests : ScenarioContextBase<GatewayApi.Startup
         responses.Count.ShouldBe(0);
     }
 
+    [Fact]
+    public void CanSerializeMessageEnvelopeArray()
+    {
+        var sessionId = GenerateSessionId();
+        var messages = Enumerable.Range(0, 2).Select(_ => new TestMessage(_.ToString(), sessionId));
+        var envelopes = messages.Select(m => new MessageEnvelope(m, m.SessionId)).ToArray();
+        var serialized = envelopes.Serialize();
+
+        var deserializedMessage = serialized.Deserialize<IEnumerable<MessageEnvelope>>();
+
+        deserializedMessage.ShouldNotBeNull().Count().ShouldBe(envelopes.Length);
+    }
+
     public void Dispose()
     {
         this.cts.Dispose();
@@ -168,7 +176,7 @@ public class HangfireMessageSenderTests : ScenarioContextBase<GatewayApi.Startup
 #pragma warning restore CA1063 // Implement IDisposable Correctly
 }
 
-public record TestMessage(string? Id = null, string? SessionId = null, bool ShouldError = false) : MessageBase(SessionId)
+public record TestMessage(string? Id = null, string? SessionId = null, bool ShouldError = false) : MessageBase()
 {
     public string Id { get; init; } = Id ?? Guid.NewGuid().ToString().Substring(0, 6);
 }

@@ -20,6 +20,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Hangfire;
+using HealthGateway.Common.Utils;
 using Microsoft.Extensions.Logging;
 
 /// <summary>
@@ -45,23 +46,25 @@ internal class HangFireOutboxStore : IOutboxStore
     }
 
     /// <inheritdoc/>
-    public async Task StoreAsync(IEnumerable<MessageBase> messages, CancellationToken ct = default)
+    public async Task StoreAsync(IEnumerable<MessageEnvelope> messages, CancellationToken ct = default)
     {
-        this.logger.LogDebug("Storing messages");
         await Task.CompletedTask;
-        this.backgroundJobClient.Enqueue(() => this.ForwardAsync(messages, CancellationToken.None));
+        this.logger.LogDebug("Storing messages");
+        var serializedMessages = messages.Serialize(false);
+        this.backgroundJobClient.Enqueue(() => this.ForwardAsync(serializedMessages, CancellationToken.None));
     }
 
     /// <summary>
     /// Forwards stored messages to the destination messaging middleware.
     /// </summary>
-    /// <param name="messages">The messages to forward.</param>
+    /// <param name="serializedMessages">The serialized messages to forward.</param>
     /// <param name="ct">A cancellation token.</param>
     /// <returns>Awaitable task.</returns>
     [Queue(AzureServiceBusSettings.OutboxQueueName)]
-    public async Task ForwardAsync(IEnumerable<MessageBase> messages, CancellationToken ct = default)
+    public async Task ForwardAsync(byte[] serializedMessages, CancellationToken ct = default)
     {
         this.logger.LogDebug("Forwarding messages");
+        var messages = serializedMessages.Deserialize<IEnumerable<MessageEnvelope>>();
         await this.messageSender.SendAsync(messages, ct);
     }
 }
