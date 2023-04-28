@@ -15,10 +15,8 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Admin.Client.Store.PatientSupport
 {
-    using System.Collections.Generic;
-    using System.Linq;
+    using System.Collections.Immutable;
     using Fluxor;
-    using HealthGateway.Admin.Client.Models;
 
 #pragma warning disable CS1591, SA1600
     public static class PatientSupportReducers
@@ -38,10 +36,8 @@ namespace HealthGateway.Admin.Client.Store.PatientSupport
             return state with
             {
                 IsLoading = false,
-                Result = action.Data,
+                Result = action.Data.ToImmutableList(),
                 Error = null,
-                WarningMessage = action.Data.ResultError?.ResultMessage,
-                Data = action.Data.ResourcePayload?.Select(u => new ExtendedPatientSupportDetails(u)).ToList(),
             };
         }
 
@@ -63,23 +59,7 @@ namespace HealthGateway.Admin.Client.Store.PatientSupport
                 IsLoading = false,
                 Result = null,
                 Error = null,
-                Data = null,
-                WarningMessage = null,
             };
-        }
-
-        [ReducerMethod]
-        public static PatientSupportState ReduceToggleIsExpandedAction(PatientSupportState state, PatientSupportActions.ToggleIsExpandedAction action)
-        {
-            IEnumerable<ExtendedPatientSupportDetails> data = state.Data ?? Enumerable.Empty<ExtendedPatientSupportDetails>();
-
-            ExtendedPatientSupportDetails? user = data.SingleOrDefault(c => c.Hdid == action.Hdid);
-            if (user != null)
-            {
-                user.IsExpanded = !user.IsExpanded;
-            }
-
-            return state;
         }
     }
 }

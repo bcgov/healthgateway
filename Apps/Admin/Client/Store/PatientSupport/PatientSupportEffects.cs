@@ -24,8 +24,6 @@ namespace HealthGateway.Admin.Client.Store.PatientSupport
     using HealthGateway.Admin.Client.Api;
     using HealthGateway.Admin.Client.Utils;
     using HealthGateway.Admin.Common.Models;
-    using HealthGateway.Common.Data.Constants;
-    using HealthGateway.Common.Data.ViewModels;
     using Microsoft.AspNetCore.Components;
     using Microsoft.Extensions.Logging;
     using Refit;
@@ -52,23 +50,9 @@ namespace HealthGateway.Admin.Client.Store.PatientSupport
 
             try
             {
-                RequestResult<IEnumerable<PatientSupportDetails>> response = await this.SupportApi.GetPatientsAsync(action.QueryType, action.QueryString).ConfigureAwait(true);
-                if (response.ResultStatus == ResultType.Success)
-                {
-                    this.Logger.LogInformation("Patients loaded successfully!");
-                    dispatcher.Dispatch(new PatientSupportActions.LoadSuccessAction(response));
-                }
-                else if (response.ResultStatus == ResultType.ActionRequired)
-                {
-                    this.Logger.LogInformation("Patients loaded with warning message: {WarningMessage}", response.ResultError?.ResultMessage);
-                    dispatcher.Dispatch(new PatientSupportActions.LoadSuccessAction(response));
-                }
-                else
-                {
-                    RequestError error = StoreUtility.FormatRequestError(response.ResultError);
-                    this.Logger.LogError("Error loading patients, reason: {ErrorMessage}", error.Message);
-                    dispatcher.Dispatch(new PatientSupportActions.LoadFailAction(error));
-                }
+                IList<PatientSupportDetails> response = await this.SupportApi.GetPatientsAsync(action.QueryType, action.QueryString).ConfigureAwait(true);
+                this.Logger.LogInformation("Patients loaded successfully!");
+                dispatcher.Dispatch(new PatientSupportActions.LoadSuccessAction(response));
             }
             catch (Exception e) when (e is ApiException or HttpRequestException)
             {

@@ -19,7 +19,6 @@ namespace HealthGateway.Admin.Client.Store.PatientSupport
     using System.Diagnostics.CodeAnalysis;
     using HealthGateway.Admin.Common.Models;
     using HealthGateway.Common.Data.Constants;
-    using HealthGateway.Common.Data.ViewModels;
 
     /// <summary>
     /// Static class that implements all actions for the feature.
@@ -72,13 +71,13 @@ namespace HealthGateway.Admin.Client.Store.PatientSupport
         /// <summary>
         /// The action representing a successful load.
         /// </summary>
-        public class LoadSuccessAction : BaseSuccessAction<RequestResult<IEnumerable<PatientSupportDetails>>>
+        public class LoadSuccessAction : BaseSuccessAction<IList<PatientSupportDetails>>
         {
             /// <summary>
             /// Initializes a new instance of the <see cref="LoadSuccessAction"/> class.
             /// </summary>
             /// <param name="data">Result data.</param>
-            public LoadSuccessAction(RequestResult<IEnumerable<PatientSupportDetails>> data)
+            public LoadSuccessAction(IList<PatientSupportDetails> data)
                 : base(data)
             {
             }
@@ -89,26 +88,6 @@ namespace HealthGateway.Admin.Client.Store.PatientSupport
         /// </summary>
         public class ResetStateAction
         {
-        }
-
-        /// <summary>
-        /// The action that toggles whether a particular user is expanded.
-        /// </summary>
-        public class ToggleIsExpandedAction
-        {
-            /// <summary>
-            /// Initializes a new instance of the <see cref="ToggleIsExpandedAction"/> class.
-            /// </summary>
-            /// <param name="hdid">Represents the Hdid of the user.</param>
-            public ToggleIsExpandedAction(string hdid)
-            {
-                this.Hdid = hdid;
-            }
-
-            /// <summary>
-            /// Gets or sets the Hdid of the user.
-            /// </summary>
-            public string Hdid { get; set; }
         }
     }
 }

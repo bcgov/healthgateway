@@ -17,26 +17,22 @@
 namespace HealthGateway.Admin.Client.Store.PatientSupport
 {
     using System.Collections.Generic;
+    using System.Collections.Immutable;
+    using System.Linq;
     using Fluxor;
-    using HealthGateway.Admin.Client.Models;
     using HealthGateway.Admin.Common.Models;
-    using HealthGateway.Common.Data.ViewModels;
 
     /// <summary>
     /// The state for the feature.
     /// State should be decorated with [FeatureState] for automatic discovery when services.AddFluxor is called.
     /// </summary>
     [FeatureState]
-    public record PatientSupportState : BaseRequestState<RequestResult<IEnumerable<PatientSupportDetails>>>
+    public record PatientSupportState : BaseRequestState<IImmutableList<PatientSupportDetails>>
     {
         /// <summary>
-        /// Gets the collection of data.
+        /// Gets the warning messages for display.
         /// </summary>
-        public IList<ExtendedPatientSupportDetails>? Data { get; init; }
-
-        /// <summary>
-        /// Gets the warning message for display.
-        /// </summary>
-        public string? WarningMessage { get; init; }
+        public IEnumerable<string> WarningMessages =>
+            this.Result?.Select(patient => patient.WarningMessage).Where(m => !string.IsNullOrEmpty(m)) ?? Enumerable.Empty<string>();
     }
 }
