@@ -90,18 +90,18 @@ namespace HealthGateway.JobScheduler.Models.Notify
         /// Gets or sets the created date of the notification.
         /// </summary>
         [JsonPropertyName("created_at")]
-        public string? CreatedAt { get; set; }
+        public DateTime? CreatedAt { get; set; }
 
         /// <summary>
         /// Gets or sets the Sent date of the notification.
         /// </summary>
         [JsonPropertyName("sent_at")]
-        public string? SentAt { get; set; }
+        public DateTime? SentAt { get; set; }
 
         /// <summary>
         /// Gets or sets the completed date of the notification.
         /// </summary>
         [JsonPropertyName("completed_at")]
-        public string? CompletedAt { get; set; }
+        public DateTime? CompletedAt { get; set; }
     }
 }
