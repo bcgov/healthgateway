@@ -17,20 +17,19 @@ namespace HealthGateway.Admin.Client.Pages
 {
     using System;
     using System.Collections.Generic;
+    using System.Collections.Immutable;
     using System.Linq;
     using System.Threading.Tasks;
     using Fluxor;
     using Fluxor.Blazor.Web.Components;
-    using HealthGateway.Admin.Client.Models;
-    using HealthGateway.Admin.Client.Store.MessageVerification;
     using HealthGateway.Admin.Client.Store.PatientSupport;
+    using HealthGateway.Admin.Common.Constants;
+    using HealthGateway.Admin.Common.Models;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.Utils;
     using HealthGateway.Common.Data.Validations;
-    using HealthGateway.Common.Data.ViewModels;
     using Microsoft.AspNetCore.Components;
     using Microsoft.AspNetCore.WebUtilities;
-    using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Primitives;
     using MudBlazor;
 
@@ -47,16 +46,10 @@ namespace HealthGateway.Admin.Client.Pages
         private IDispatcher Dispatcher { get; set; } = default!;
 
         [Inject]
-        private IState<MessageVerificationState> MessageVerificationState { get; set; } = default!;
-
-        [Inject]
         private IState<PatientSupportState> PatientSupportState { get; set; } = default!;
 
         [Inject]
         private NavigationManager NavigationManager { get; set; } = default!;
-
-        [Inject]
-        private IConfiguration Configuration { get; set; } = default!;
 
         private PatientQueryType QueryType { get; set; } = PatientQueryType.Phn;
 
@@ -76,13 +69,7 @@ namespace HealthGateway.Admin.Client.Pages
 
         private MudForm Form { get; set; } = default!;
 
-        private bool MessagingVerificationsLoading => this.MessageVerificationState.Value.IsLoading;
-
         private bool PhnOrDependentSelected => this.SelectedQueryType is PatientQueryType.Phn or PatientQueryType.Dependent;
-
-        private bool HasMessagingVerificationsError => this.MessageVerificationState.Value.Error is { Message.Length: > 0 };
-
-        private IEnumerable<MessagingVerificationModel> MessagingVerifications => this.MessageVerificationState.Value.Data ?? Enumerable.Empty<MessagingVerificationModel>();
 
         private bool PatientsLoading => this.PatientSupportState.Value.IsLoading;
 
@@ -90,12 +77,11 @@ namespace HealthGateway.Admin.Client.Pages
 
         private bool HasPatientsError => this.PatientSupportState.Value.Error is { Message.Length: > 0 };
 
-        private bool HasPatientsWarning => this.PatientSupportState.Value.WarningMessage is { Length: > 0 };
+        private bool HasPatientsWarning => this.PatientSupportState.Value.WarningMessages.Any();
 
-        private IEnumerable<ExtendedPatientSupportDetails> Patients =>
-            this.PatientSupportState.Value.Data ?? Enumerable.Empty<ExtendedPatientSupportDetails>();
+        private IImmutableList<PatientSupportDetails> Patients => this.PatientSupportState.Value.Result ?? ImmutableList<PatientSupportDetails>.Empty;
 
-        private IEnumerable<PatientRow> PatientRows => this.Patients.Select(v => new PatientRow(v, this.GetTimeZone()));
+        private IEnumerable<PatientRow> PatientRows => this.Patients.Select(v => new PatientRow(v));
 
         private Func<string, string?> ValidateQueryParameter => parameter =>
         {
@@ -109,17 +95,14 @@ namespace HealthGateway.Admin.Client.Pages
                 return "Invalid PHN";
             }
 
-            if ((this.SelectedQueryType == PatientQueryType.Email || this.SelectedQueryType == PatientQueryType.Sms) && StringManipulator.StripWhitespace(parameter)?.Length < 5)
+            return this.SelectedQueryType switch
             {
-                return "Email/SMS must be minimum 5 characters";
-            }
-
-            if (this.SelectedQueryType == PatientQueryType.Sms && !StringManipulator.IsPositiveNumeric(parameter))
-            {
-                return "SMS must contain digits only";
-            }
-
-            return null;
+                PatientQueryType.Email or PatientQueryType.Sms when StringManipulator.StripWhitespace(parameter)?.Length < 5
+                    => "Email/SMS must be minimum 5 characters",
+                PatientQueryType.Sms when !StringManipulator.IsPositiveNumeric(parameter)
+                    => "SMS must contain digits only",
+                _ => null,
+            };
         };
 
         /// <inheritdoc/>
@@ -127,7 +110,6 @@ namespace HealthGateway.Admin.Client.Pages
         {
             base.OnInitialized();
             this.ResetPatientSupportState();
-            this.ResetMessageVerificationState();
 
             Uri uri = this.NavigationManager.ToAbsoluteUri(this.NavigationManager.Uri);
 
@@ -150,39 +132,9 @@ namespace HealthGateway.Admin.Client.Pages
             };
         }
 
-        private IList<MessagingVerificationModel> GetMessagingVerificationModels(string hdid)
-        {
-            return this.MessagingVerifications.Where(v => v.UserProfileId == hdid).ToList();
-        }
-
-        private TimeZoneInfo GetTimeZone()
-        {
-            return DateFormatter.GetLocalTimeZone(this.Configuration);
-        }
-
-        private bool HasMessagingVerification(string hdid)
-        {
-            return this.MessagingVerifications.ToList().Exists(v => v.UserProfileId == hdid);
-        }
-
         private void ResetPatientSupportState()
         {
             this.Dispatcher.Dispatch(new PatientSupportActions.ResetStateAction());
-        }
-
-        private void ResetMessageVerificationState()
-        {
-            this.Dispatcher.Dispatch(new MessageVerificationActions.ResetStateAction());
-        }
-
-        private void ToggleExpandRow(string hdid)
-        {
-            if (!this.HasMessagingVerification(hdid))
-            {
-                this.Dispatcher.Dispatch(new MessageVerificationActions.LoadAction(hdid));
-            }
-
-            this.Dispatcher.Dispatch(new PatientSupportActions.ToggleIsExpandedAction(hdid));
         }
 
         private async Task SearchAsync()
@@ -191,47 +143,33 @@ namespace HealthGateway.Admin.Client.Pages
             if (this.Form.IsValid)
             {
                 this.ResetPatientSupportState();
-                this.ResetMessageVerificationState();
                 this.Dispatcher.Dispatch(new PatientSupportActions.LoadAction(this.SelectedQueryType, StringManipulator.StripWhitespace(this.QueryParameter)));
             }
         }
 
         private sealed record PatientRow
         {
-            public PatientRow(ExtendedPatientSupportDetails model, TimeZoneInfo timezone)
+            public PatientRow(PatientSupportDetails model)
             {
-                this.Hdid = model.Hdid;
+                this.Status = model.Status;
+                this.Name = StringManipulator.JoinWithoutBlanks(new[] { model.PreferredName?.GivenName, model.PreferredName?.Surname });
+                this.SortName = $"{model.PreferredName?.Surname}, {model.PreferredName?.GivenName}";
+                this.Birthdate = model.Birthdate;
                 this.PersonalHealthNumber = model.PersonalHealthNumber;
-                this.CreatedDateTime = model.ProfileCreatedDateTime != null ? TimeZoneInfo.ConvertTimeFromUtc((DateTime)model.ProfileCreatedDateTime, timezone) : model.ProfileCreatedDateTime;
-                this.LastLoginDateTime = model.ProfileLastLoginDateTime != null ? TimeZoneInfo.ConvertTimeFromUtc((DateTime)model.ProfileLastLoginDateTime, timezone) : model.ProfileLastLoginDateTime;
-                this.IsExpanded = model.IsExpanded;
-                this.PhysicalAddress = model.PhysicalAddress;
-                this.PostalAddress = model.PostalAddress;
+                this.Hdid = model.Hdid;
             }
 
-            public string Hdid { get; }
+            public PatientStatus Status { get; }
+
+            public string Name { get; }
+
+            public string SortName { get; }
+
+            public DateOnly? Birthdate { get; }
 
             public string PersonalHealthNumber { get; }
 
-            public DateTime? CreatedDateTime { get; }
-
-            public DateTime? LastLoginDateTime { get; }
-
-            public bool IsExpanded { get; }
-
-            public string PhysicalAddress { get; }
-
-            public string PostalAddress { get; }
-
-            public string PostalAddressLabel => !this.IsSameAddress || (this.PhysicalAddress.Length > 0 && this.PostalAddress.Length == 0) ? "Mailing Address" : "Address";
-
-            public bool IsSameAddress => this.PhysicalAddress.Equals(this.PostalAddress, StringComparison.OrdinalIgnoreCase);
-
-            public bool IsPhysicalAddressShown => this.PhysicalAddress.Length > 0 && !this.IsSameAddress;
-
-            public bool IsPostalAddressShown => this.PostalAddress.Length > 0;
-
-            public static string NoAddressMessage => "No address on record";
+            public string Hdid { get; }
         }
     }
 }

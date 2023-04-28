@@ -34,7 +34,7 @@ public interface ISupportApi
     /// <param name="queryString">The value to query on.</param>
     /// <returns>The collection of patient support details that match the query.</returns>
     [Get("/Users?queryType={queryType}&queryString={queryString}")]
-    Task<RequestResult<IEnumerable<PatientSupportDetails>>> GetPatientsAsync(PatientQueryType queryType, string queryString);
+    Task<IList<PatientSupportDetails>> GetPatientsAsync(PatientQueryType queryType, string queryString);
 
     /// <summary>
     /// Gets the list of messaging verification models from the server.
