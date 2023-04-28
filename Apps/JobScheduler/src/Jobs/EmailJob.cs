@@ -17,61 +17,81 @@ namespace HealthGateway.JobScheduler.Jobs
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics.Contracts;
+    using System.Diagnostics.CodeAnalysis;
+    using System.Threading.Tasks;
     using Hangfire;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Jobs;
     using HealthGateway.Database.Delegates;
+    using HealthGateway.JobScheduler.Api;
+    using HealthGateway.JobScheduler.Models;
+    using HealthGateway.JobScheduler.Models.Notify;
     using MailKit.Net.Smtp;
     using MailKit.Security;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
+    using Microsoft.Extensions.Options;
     using MimeKit;
     using MimeKit.Text;
 
-    /// <inheritdoc/>
-    public class EmailJob : IEmailJob
+    /// <summary>
+    /// Performs email related batch jobs.
+    /// </summary>
+    [SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "Team decision")]
+    public class EmailJob : IEmailJob, IOtherEmailJob
     {
         private const int ConcurrencyTimeout = 5 * 60; // 5 minutes
         private readonly IEmailDelegate emailDelegate;
+        private readonly INotifyApi notifyApi;
         private readonly string host;
         private readonly ILogger<EmailJob> logger;
         private readonly int maxRetries;
         private readonly int port;
         private readonly int retryFetchSize;
+        private readonly NotifyConfiguration notifyConfiguration;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="EmailJob"/> class.
         /// </summary>
         /// <param name="configuration">The configuration to use.</param>
         /// <param name="logger">The logger to use.</param>
+        /// <param name="notifyOptions">The Notify options to use.</param>
         /// <param name="emailDelegate">The email delegate to use.</param>
-        public EmailJob(IConfiguration configuration, ILogger<EmailJob> logger, IEmailDelegate emailDelegate)
+        /// <param name="notifyApi">The GC Notify API for sending email.</param>
+        public EmailJob(IConfiguration configuration, ILogger<EmailJob> logger, IOptions<NotifyConfiguration> notifyOptions, IEmailDelegate emailDelegate, INotifyApi notifyApi)
         {
-            Contract.Requires(configuration != null && emailDelegate != null);
             this.logger = logger;
-            this.emailDelegate = emailDelegate!;
-            IConfigurationSection section = configuration!.GetSection("Smtp");
+            this.emailDelegate = emailDelegate;
+            this.notifyApi = notifyApi;
+            IConfigurationSection section = configuration.GetSection("Smtp");
             this.host = section.GetValue<string>("Host") ?? throw new ArgumentNullException(nameof(configuration), "SMTP Host is null");
             this.port = section.GetValue<int>("Port");
             section = configuration.GetSection("EmailJob");
             this.maxRetries = section.GetValue("MaxRetries", 9);
             this.retryFetchSize = section.GetValue("MaxRetryFetchSize", 250);
+            this.notifyConfiguration = notifyOptions.Value;
         }
 
         /// <inheritdoc/>
         public void SendEmail(Guid emailId)
         {
             this.logger.LogTrace("Sending email... {EmailId}", emailId.ToString());
-            Email? email = this.emailDelegate.GetNewEmail(emailId);
+            Email? email = this.emailDelegate.GetStandardEmail(emailId);
             if (email != null)
             {
-                this.SendEmail(email);
+                if (this.notifyConfiguration.Enabled)
+                {
+                    this.SendEmailUsingNotify(email).GetAwaiter().GetResult();
+                }
+                else
+                {
+                    this.SendEmail(email);
+                }
             }
             else
             {
-                this.logger.LogInformation("Email {EmailId} was not returned from DB, skipping.", emailId.ToString());
+                this.logger.LogInformation("Email {EmailId} was not returned from DB, skipping", emailId.ToString());
             }
 
             this.logger.LogDebug("Finished sending email.");
@@ -79,42 +99,12 @@ namespace HealthGateway.JobScheduler.Jobs
 
         /// <inheritdoc/>
         [DisableConcurrentExecution(ConcurrencyTimeout)]
-        public void SendLowPriorityEmails()
+        public void SendEmails()
         {
             this.logger.LogDebug("Sending low priority emails... Looking for up to {RetryFetchSize} emails to send", this.retryFetchSize);
-            IList<Email> resendEmails = this.emailDelegate.GetLowPriorityEmail(this.retryFetchSize);
+            IList<Email> resendEmails = this.emailDelegate.GetUnsentEmails(this.retryFetchSize);
             this.ProcessEmails(resendEmails);
-            this.logger.LogDebug("Finished sending low priority emails.");
-        }
-
-        /// <inheritdoc/>
-        [DisableConcurrentExecution(ConcurrencyTimeout)]
-        public void SendStandardPriorityEmails()
-        {
-            this.logger.LogDebug("Sending standard priority emails... Looking for up to {RetryFetchSize} emails to send", this.retryFetchSize);
-            IList<Email> resendEmails = this.emailDelegate.GetStandardPriorityEmail(this.retryFetchSize);
-            this.ProcessEmails(resendEmails);
-            this.logger.LogDebug("Finished sending standard priority emails.");
-        }
-
-        /// <inheritdoc/>
-        [DisableConcurrentExecution(ConcurrencyTimeout)]
-        public void SendHighPriorityEmails()
-        {
-            this.logger.LogDebug("Sending high priority emails... Looking for up to {RetryFetchSize} emails to send", this.retryFetchSize);
-            IList<Email> resendEmails = this.emailDelegate.GetHighPriorityEmail(this.retryFetchSize);
-            this.ProcessEmails(resendEmails);
-            this.logger.LogDebug("Finished sending high priority emails");
-        }
-
-        /// <inheritdoc/>
-        [DisableConcurrentExecution(ConcurrencyTimeout)]
-        public void SendUrgentPriorityEmails()
-        {
-            this.logger.LogDebug("Sending urgent priority emails... Looking for up to {RetryFetchSize} emails to send", this.retryFetchSize);
-            IList<Email> resendEmails = this.emailDelegate.GetUrgentPriorityEmail(this.retryFetchSize);
-            this.ProcessEmails(resendEmails);
-            this.logger.LogDebug("Finished sending urgent priority emails.");
+            this.logger.LogDebug("Finished sending low priority emails");
         }
 
         private static MimeMessage PrepareMessage(Email email)
@@ -137,18 +127,55 @@ namespace HealthGateway.JobScheduler.Jobs
                 this.logger.LogInformation("Found {Count} emails to send", resendEmails.Count);
                 foreach (Email email in resendEmails)
                 {
-#pragma warning disable CA1031 //We want to catch exception.
                     try
                     {
-                        this.SendEmail(email);
+                        if (this.notifyConfiguration.Enabled)
+                        {
+                            this.SendEmailUsingNotify(email).GetAwaiter().GetResult();
+                        }
+                        else
+                        {
+                            this.SendEmail(email);
+                        }
                     }
                     catch (Exception e)
                     {
                         // log the exception as a warning but we can continue
                         this.logger.LogWarning("Error while sending {Id} - skipping for now\n{Exception}", email.Id.ToString(), e.ToString());
                     }
-#pragma warning restore CA1031 // Restore warnings.
                 }
+            }
+        }
+
+        private async Task SendEmailUsingNotify(Email email)
+        {
+            email.Attempts++;
+            try
+            {
+                _ = email.Template ?? throw new MissingFieldException("TemplateId is null");
+                EmailRequest emailRequest = new()
+                {
+                    EmailAddress = email.To!,
+                    TemplateId = this.notifyConfiguration.Templates[email.Template],
+                    Personalization = email.Personalization,
+                    Reference = email.Id.ToString("D"),
+                };
+                EmailResponse response = await this.notifyApi.SendEmail(emailRequest).ConfigureAwait(true);
+                email.NotificationId = response.Id;
+                email.EmailStatusCode = EmailStatus.Processed;
+                email.SentDateTime = DateTime.UtcNow;
+                this.emailDelegate.UpdateEmail(email);
+            }
+            catch (Exception e)
+            {
+                this.logger.LogError(
+                    "Unexpected error while communicating to GC Notify API for email {Id}, Error = {Exception}",
+                    email.Id.ToString(),
+                    e.ToString());
+                email.LastRetryDateTime = DateTime.UtcNow;
+                email.EmailStatusCode = email.Attempts < this.maxRetries ? EmailStatus.Pending : EmailStatus.Error;
+                this.emailDelegate.UpdateEmail(email);
+                throw;
             }
         }
 
@@ -191,13 +218,11 @@ namespace HealthGateway.JobScheduler.Jobs
                     }
                 }
             }
-#pragma warning disable CA1031 // Disable catching exception as we want to update the DB in all cases.
             catch (Exception e)
             {
                 caught = e;
                 this.logger.LogError("Unexpected error while sending email {Id} {Exception}", email.Id.ToString(), e.ToString());
             }
-#pragma warning restore CA1031 // Restore check
 
             if (caught != null)
             {

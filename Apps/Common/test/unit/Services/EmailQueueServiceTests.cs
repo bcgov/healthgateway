@@ -17,7 +17,6 @@ namespace HealthGateway.CommonTests.Services
 {
     using System;
     using System.Collections.Generic;
-    using DeepEqual.Syntax;
     using Hangfire;
     using Hangfire.Common;
     using Hangfire.States;
@@ -282,7 +281,9 @@ namespace HealthGateway.CommonTests.Services
             Email actual = emailService.ProcessTemplate(emailTo, template, d);
             expected.Id = actual.Id;
 
-            expected.ShouldDeepEqual(actual);
+            Assert.True(expected.To == actual.To);
+            Assert.True(expected.Subject == actual.Subject);
+            Assert.True(expected.Body == actual.Body);
         }
 
         /// <summary>

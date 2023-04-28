@@ -24,7 +24,6 @@ export interface UserState {
     patient: Patient;
     patientRetrievalFailed: boolean;
     smsResendDateTime?: DateWrapper;
-    seenTutorialComment: boolean;
     statusMessage: string;
     error: boolean;
     status: LoadStatus;
@@ -38,7 +37,6 @@ export interface UserGetters extends GetterTree<UserState, RootState> {
     userIsRegistered(state: UserState): boolean;
     userIsActive(state: UserState): boolean;
     smsResendDateTime(state: UserState): DateWrapper | undefined;
-    seenTutorialComment(state: UserState): boolean;
     hasTermsOfServiceUpdated(state: UserState): boolean;
     quickLinks(state: UserState): QuickLink[] | undefined;
     patient(state: UserState): Patient;
@@ -76,10 +74,6 @@ export interface UserActions extends ActionTree<UserState, RootState> {
     closeUserAccount(context: StoreContext): Promise<void>;
     recoverUserAccount(context: StoreContext): Promise<void>;
     retrieveEssentialData(context: StoreContext): Promise<void>;
-    setSeenTutorialComment(
-        context: StoreContext,
-        params: { value: boolean }
-    ): void;
     handleError(
         context: StoreContext,
         params: { error: ResultError; errorType: ErrorType }
@@ -95,7 +89,6 @@ export interface UserMutation extends MutationTree<UserState> {
     setPatient(state: UserState, patient: Patient): void;
     setPatientRetrievalFailed(state: UserState): void;
     clearUserData(state: UserState): void;
-    setSeenTutorialComment(state: UserState, value: boolean): void;
     userError(state: UserState, errorMessage: string): void;
 }
 

@@ -195,7 +195,7 @@ namespace HealthGateway.GatewayApi.Services
                         && !string.IsNullOrEmpty(lastEmailVerification.Email.To)
                         && emailAddress.Equals(lastEmailVerification.Email.To, StringComparison.OrdinalIgnoreCase))
                     {
-                        this.AddVerificationEmail(hdid, emailAddress, lastEmailVerification.InviteKey);
+                        this.AddVerificationEmail(hdid, emailAddress, lastEmailVerification.InviteKey!.Value);
                     }
                     else
                     {
@@ -235,6 +235,7 @@ namespace HealthGateway.GatewayApi.Services
                 UserProfileId = hdid,
                 ExpireDate = DateTime.UtcNow.AddSeconds(this.emailVerificationExpirySeconds),
                 Email = this.emailQueueService.ProcessTemplate(toEmail, EmailTemplateName.RegistrationTemplate, keyValues),
+                EmailAddress = toEmail,
             };
 
             if (isVerified)

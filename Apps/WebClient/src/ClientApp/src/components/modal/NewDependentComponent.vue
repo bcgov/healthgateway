@@ -196,7 +196,6 @@ export default class NewDependentComponent extends Vue {
         id="new-dependent-modal"
         v-model="isVisible"
         data-testid="newDependentModal"
-        content-class="mt-5"
         title="Dependent Registration"
         size="lg"
         header-bg-variant="primary"
@@ -247,165 +246,125 @@ export default class NewDependentComponent extends Vue {
                 >.
             </span>
         </b-alert>
-        <b-row>
-            <b-col>
-                <form>
-                    <b-row data-testid="newDependentModalText">
-                        <b-col>
-                            <b-row>
-                                <b-col class="col-12 col-md-4 mb-2">
-                                    <label for="firstName">Given Names</label>
-                                    <b-form-input
-                                        id="firstName"
-                                        v-model.trim="dependent.firstName"
-                                        data-testid="firstNameInput"
-                                        class="dependentCardInput"
-                                        placeholder="John Alexander"
-                                        :state="isValid($v.dependent.firstName)"
-                                        @blur.native="
-                                            $v.dependent.firstName.$touch()
-                                        "
-                                    ></b-form-input>
-                                    <b-form-invalid-feedback
-                                        :state="isValid($v.dependent.firstName)"
-                                    >
-                                        Given names are required
-                                    </b-form-invalid-feedback>
-                                </b-col>
-                                <b-col class="col-12 col-md-4 mb-2">
-                                    <label for="lastName">Last Name</label>
-                                    <b-form-input
-                                        id="lastName"
-                                        v-model.trim="dependent.lastName"
-                                        data-testid="lastNameInput"
-                                        class="dependentCardInput"
-                                        placeholder="Doe"
-                                        :state="isValid($v.dependent.lastName)"
-                                        @blur.native="
-                                            $v.dependent.lastName.$touch()
-                                        "
-                                    ></b-form-input>
-                                    <b-form-invalid-feedback
-                                        :state="isValid($v.dependent.lastName)"
-                                    >
-                                        Last name is required
-                                    </b-form-invalid-feedback>
-                                </b-col>
-                                <b-col class="col-12 col-md-4 mb-2">
-                                    <label for="dateOfBirth"
-                                        >Date of Birth</label
-                                    >
-                                    <DatePickerComponent
-                                        id="dateOfBirth"
-                                        v-model="dependent.dateOfBirth"
-                                        data-testid="dateOfBirthInput"
-                                        :max-date="maxDate"
-                                        :state="
-                                            isValid($v.dependent.dateOfBirth)
-                                        "
-                                        @blur.native="
-                                            $v.dependent.dateOfBirth.$touch()
-                                        "
-                                        @change.native="
-                                            $v.dependent.dateOfBirth.$touch()
-                                        "
-                                        @is-date-valid="
-                                            isDateOfBirthValidDate = $event
-                                        "
-                                    />
-                                    <b-form-invalid-feedback
-                                        :state="
-                                            !$v.dependent.dateOfBirth.$dirty ||
-                                            ($v.dependent.dateOfBirth
-                                                .required &&
-                                                $v.dependent.dateOfBirth
-                                                    .minLength &&
-                                                $v.dependent.dateOfBirth
-                                                    .maxValue)
-                                        "
-                                    >
-                                        Invalid date
-                                    </b-form-invalid-feedback>
-                                    <b-form-invalid-feedback
-                                        :state="
-                                            !$v.dependent.dateOfBirth.$dirty ||
-                                            $v.dependent.dateOfBirth.minValue
-                                        "
-                                    >
-                                        Dependent must be under the age of
-                                        {{ webClientConfig.maxDependentAge }}
-                                    </b-form-invalid-feedback>
-                                </b-col>
-                            </b-row>
-                            <b-row class="mb-2">
-                                <b-col class="col-12 col-md-6 mb-2">
-                                    <label for="phn">PHN</label>
-                                    <b-form-input
-                                        id="phn"
-                                        v-model="dependent.PHN"
-                                        v-mask="'#### ### ###'"
-                                        data-testid="phnInput"
-                                        class="dependentCardInput"
-                                        placeholder="1234 567 890"
-                                        :state="isValid($v.dependent.PHN)"
-                                        @blur.native="$v.dependent.PHN.$touch()"
-                                    ></b-form-input>
-                                    <b-form-invalid-feedback
-                                        v-if="!isDependentAlreadyAdded"
-                                        :state="isValid($v.dependent.PHN)"
-                                    >
-                                        Valid PHN is required
-                                    </b-form-invalid-feedback>
-                                    <b-form-invalid-feedback
-                                        v-if="isDependentAlreadyAdded"
-                                        data-testid="errorDependentAlreadyAdded"
-                                        :state="isValid($v.dependent.PHN)"
-                                    >
-                                        This dependent has already been added
-                                    </b-form-invalid-feedback>
-                                </b-col>
-                            </b-row>
-                            <b-row class="mb-2">
-                                <b-col>
-                                    <b-checkbox
-                                        id="termsCheckbox"
-                                        v-model="accepted"
-                                        data-testid="termsCheckbox"
-                                        :state="isValid($v.accepted)"
-                                    >
-                                        <p>
-                                            By providing the child’s name, date
-                                            of birth, and personal health
-                                            number, I declare that I am the
-                                            child’s guardian and that I have the
-                                            authority to request and receive
-                                            health information respecting the
-                                            child from third parties.
-                                        </p>
-                                        <p>
-                                            If I either: (a) cease to be
-                                            guardian of this child; (b) or lose
-                                            the right to request or receive
-                                            health information from third
-                                            parties respecting this child, I
-                                            will remove them as a dependent
-                                            under my Health Gateway account
-                                            immediately.
-                                        </p>
-                                        <p>
-                                            I understand that I will no longer
-                                            be able to access my child’s health
-                                            records once they are 12 years of
-                                            age.
-                                        </p>
-                                    </b-checkbox>
-                                </b-col>
-                            </b-row>
-                        </b-col>
-                    </b-row>
-                </form>
-            </b-col>
-        </b-row>
+        <form data-testid="newDependentModalText">
+            <b-row class="mb-2">
+                <b-col class="col-12 col-sm-6 mb-2">
+                    <label for="firstName">First and Middle Names</label>
+                    <b-form-input
+                        id="firstName"
+                        v-model.trim="dependent.firstName"
+                        data-testid="firstNameInput"
+                        class="dependentCardInput"
+                        placeholder="John Alexander"
+                        :state="isValid($v.dependent.firstName)"
+                        @blur.native="$v.dependent.firstName.$touch()"
+                    />
+                    <b-form-invalid-feedback
+                        :state="isValid($v.dependent.firstName)"
+                    >
+                        Given names are required
+                    </b-form-invalid-feedback>
+                </b-col>
+                <b-col class="col-12 col-sm-6 mb-2">
+                    <label for="lastName">Last Name</label>
+                    <b-form-input
+                        id="lastName"
+                        v-model.trim="dependent.lastName"
+                        data-testid="lastNameInput"
+                        class="dependentCardInput"
+                        placeholder="Doe"
+                        :state="isValid($v.dependent.lastName)"
+                        @blur.native="$v.dependent.lastName.$touch()"
+                    />
+                    <b-form-invalid-feedback
+                        :state="isValid($v.dependent.lastName)"
+                    >
+                        Last name is required
+                    </b-form-invalid-feedback>
+                </b-col>
+                <b-col class="col-12 col-sm-6 col-lg-4 mb-2">
+                    <label for="dateOfBirth">Date of Birth</label>
+                    <DatePickerComponent
+                        id="dateOfBirth"
+                        v-model="dependent.dateOfBirth"
+                        data-testid="dateOfBirthInput"
+                        :max-date="maxDate"
+                        :state="isValid($v.dependent.dateOfBirth)"
+                        @blur.native="$v.dependent.dateOfBirth.$touch()"
+                        @change.native="$v.dependent.dateOfBirth.$touch()"
+                        @is-date-valid="isDateOfBirthValidDate = $event"
+                    />
+                    <b-form-invalid-feedback
+                        :state="
+                            !$v.dependent.dateOfBirth.$dirty ||
+                            ($v.dependent.dateOfBirth.required &&
+                                $v.dependent.dateOfBirth.minLength &&
+                                $v.dependent.dateOfBirth.maxValue)
+                        "
+                    >
+                        Invalid date
+                    </b-form-invalid-feedback>
+                    <b-form-invalid-feedback
+                        :state="
+                            !$v.dependent.dateOfBirth.$dirty ||
+                            $v.dependent.dateOfBirth.minValue
+                        "
+                    >
+                        Dependent must be under the age of
+                        {{ webClientConfig.maxDependentAge }}
+                    </b-form-invalid-feedback>
+                </b-col>
+                <b-col class="col-12 col-sm-6 col-lg-4 mb-2">
+                    <label for="phn">PHN</label>
+                    <b-form-input
+                        id="phn"
+                        v-model="dependent.PHN"
+                        v-mask="'#### ### ###'"
+                        data-testid="phnInput"
+                        class="dependentCardInput"
+                        placeholder="1234 567 890"
+                        :state="isValid($v.dependent.PHN)"
+                        @blur.native="$v.dependent.PHN.$touch()"
+                    />
+                    <b-form-invalid-feedback
+                        v-if="!isDependentAlreadyAdded"
+                        :state="isValid($v.dependent.PHN)"
+                    >
+                        Valid PHN is required
+                    </b-form-invalid-feedback>
+                    <b-form-invalid-feedback
+                        v-if="isDependentAlreadyAdded"
+                        data-testid="errorDependentAlreadyAdded"
+                        :state="isValid($v.dependent.PHN)"
+                    >
+                        This dependent has already been added
+                    </b-form-invalid-feedback>
+                </b-col>
+            </b-row>
+            <b-checkbox
+                id="termsCheckbox"
+                v-model="accepted"
+                data-testid="termsCheckbox"
+                :state="isValid($v.accepted)"
+            >
+                <p>
+                    By providing the child’s name, date of birth, and personal
+                    health number, I declare that I am the child’s guardian and
+                    that I have the authority to request and receive health
+                    information respecting the child from third parties.
+                </p>
+                <p>
+                    If I either: (a) cease to be guardian of this child; (b) or
+                    lose the right to request or receive health information from
+                    third parties respecting this child, I will remove them as a
+                    dependent under my Health Gateway account immediately.
+                </p>
+                <p class="mb-0">
+                    I understand that I will no longer be able to access my
+                    child’s health records once they are 12 years of age.
+                </p>
+            </b-checkbox>
+        </form>
         <template #modal-footer>
             <b-row>
                 <div class="mr-2">

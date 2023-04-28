@@ -10,6 +10,7 @@ import {
     AvatarPlugin,
     ButtonPlugin,
     CardPlugin,
+    CarouselPlugin,
     FormCheckboxPlugin,
     FormDatepickerPlugin,
     FormGroupPlugin,
@@ -79,6 +80,7 @@ Vue.use(FormSelectPlugin);
 Vue.use(FormDatepickerPlugin);
 Vue.use(IconsPlugin);
 Vue.use(VueTheMask);
+Vue.use(CarouselPlugin);
 
 // Prevent auto adding CSS to the header since that breaks Content security policies.
 config.autoAddCss = false;

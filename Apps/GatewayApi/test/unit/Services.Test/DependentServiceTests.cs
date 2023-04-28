@@ -46,10 +46,10 @@ namespace HealthGateway.GatewayApiTests.Services.Test
     {
         private readonly string mismatchedError = "The information you entered does not match our records. Please try again.";
         private readonly DateTime mockDateOfBirth = DateTime.UtcNow.Date.AddYears(-12).AddDays(1);
-        private readonly string mockFirstName = "MockFirstName";
+        private readonly string mockFirstName = "Tory D'Bill"; // First name with regular apostrophe
         private readonly string mockGender = "Male";
         private readonly string mockHdId = "MockHdId";
-        private readonly string mockLastName = "MockLastName";
+        private readonly string mockLastName = "O'Neil"; // Last name with regular apostrophe
         private readonly string mockParentHdid = "MockFirstName";
         private readonly string mockPhn = "9735353315";
         private readonly string noHdidError = "Please ensure you are using a current BC Services Card.";
@@ -129,6 +129,25 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         public async Task ValidateAddDependent()
         {
             AddDependentRequest addDependentRequest = this.SetupMockInput();
+            IDependentService service = this.SetupMockDependentService(addDependentRequest);
+
+            RequestResult<DependentModel> actualResult = await service.AddDependentAsync(this.mockParentHdid, addDependentRequest).ConfigureAwait(true);
+
+            Assert.Equal(ResultType.Success, actualResult.ResultStatus);
+            Dictionary<string, int> delegateCounts = this.GenerateMockDelegateCounts(true);
+            Assert.Equal(delegateCounts[actualResult.ResourcePayload?.OwnerId], actualResult.ResourcePayload?.TotalDelegateCount);
+        }
+
+        /// <summary>
+        /// AddDependentAsync - Ensure names with smart quotes are transformed to regular quotes and validated.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+        [Fact]
+        public async Task ValidateAddDependentWithNamesContainingSmartApostrophe()
+        {
+            AddDependentRequest addDependentRequest = this.SetupMockInput();
+            addDependentRequest.FirstName = "Tory D’Bill"; // First name with smart apostrophe
+            addDependentRequest.LastName = "O’Neil"; // Last name with smart apostrophe
             IDependentService service = this.SetupMockDependentService(addDependentRequest);
 
             RequestResult<DependentModel> actualResult = await service.AddDependentAsync(this.mockParentHdid, addDependentRequest).ConfigureAwait(true);

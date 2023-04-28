@@ -30,6 +30,45 @@ namespace AccountDataAccessTest
     /// </summary>
     public class PatientRepositoryTests
     {
+        private const string Hdid = "abc123";
+        private const string Phn = "9735353315";
+
+        /// <summary>
+        /// GetDemographics by PHN - happy path.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
+        [Fact]
+        public async Task ShouldGetDemographicsByPhn()
+        {
+            // Arrange
+            PatientRepository patientRepository = GetPatientRepository(Phn, Phn);
+            PatientQuery patientQuery = new PatientDetailsQuery(Phn: Phn);
+
+            // Act
+            PatientQueryResult result = await patientRepository.Query(patientQuery, CancellationToken.None).ConfigureAwait(true);
+
+            // Verify
+            Assert.Equal(Phn, result.Items.SingleOrDefault()?.Phn);
+        }
+
+        /// <summary>
+        /// GetDemographics by Hdid - happy path.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
+        [Fact]
+        public async Task ShouldGetDemographicsByHdid()
+        {
+            // Arrange
+            PatientRepository patientRepository = GetPatientRepository(Phn, Hdid);
+            PatientQuery patientQuery = new PatientDetailsQuery(Hdid: Hdid);
+
+            // Act
+            PatientQueryResult result = await patientRepository.Query(patientQuery, CancellationToken.None).ConfigureAwait(true);
+
+            // Verify
+            Assert.Equal(Phn, result.Items.SingleOrDefault()?.Phn);
+        }
+
         /// <summary>
         /// Client registry get demographics throws api patient exception given client registry records not found.
         /// </summary>
@@ -37,9 +76,25 @@ namespace AccountDataAccessTest
         [Fact]
         public async Task GetDemographicsThrowsProblemDetailsExceptionGivenClientRegistryPhnNotValid()
         {
-            string hdid = "abc123";
-            string phn = "9735353315";
+            const string invalidPhn = "abc123";
 
+            // Arrange
+            PatientRepository patientRepository = GetPatientRepository(Phn, invalidPhn);
+            PatientQuery patientQuery = new PatientDetailsQuery(Phn: invalidPhn);
+
+            // Act
+            async Task Actual()
+            {
+                await patientRepository.Query(patientQuery, CancellationToken.None).ConfigureAwait(true);
+            }
+
+            // Verify
+            ProblemDetailsException exception = await Assert.ThrowsAsync<ProblemDetailsException>(Actual).ConfigureAwait(true);
+            Assert.Equal(ErrorMessages.PhnInvalid, exception.ProblemDetails!.Detail);
+        }
+
+        private static PatientRepository GetPatientRepository(string expectedPhn, string expectedIdentifier)
+        {
             ApiResult<PatientModel> requestResult = new()
             {
                 ResourcePayload = new PatientModel
@@ -49,8 +104,8 @@ namespace AccountDataAccessTest
                         GivenName = "John",
                         Surname = "Doe",
                     },
-                    Phn = phn,
-                    Hdid = hdid,
+                    Phn = expectedPhn,
+                    Hdid = Hdid,
                 },
             };
 
@@ -62,21 +117,15 @@ namespace AccountDataAccessTest
             IConfigurationRoot configuration = new ConfigurationBuilder()
                 .AddInMemoryCollection(configDictionary.ToList())
                 .Build();
-            patientDelegateMock.Setup(p => p.GetDemographicsAsync(OidType.Hdid, hdid, false)).ReturnsAsync(requestResult);
-            patientDelegateMock.Setup(p => p.GetDemographicsAsync(OidType.Phn, phn, false)).ReturnsAsync(requestResult);
+            patientDelegateMock.Setup(p => p.GetDemographicsAsync(OidType.Hdid, expectedIdentifier, false)).ReturnsAsync(requestResult);
+            patientDelegateMock.Setup(p => p.GetDemographicsAsync(OidType.Phn, expectedIdentifier, false)).ReturnsAsync(requestResult);
 
-            PatientRepository patientRepository = new(patientDelegateMock.Object, new Mock<ICacheProvider>().Object, configuration, new Mock<ILogger<PatientRepository>>().Object);
-            PatientQuery patientQuery = new PatientDetailsQuery(Phn: "abc123");
-
-            // Act
-            async Task Actual()
-            {
-                await patientRepository.Query(patientQuery, new CancellationToken(false)).ConfigureAwait(true);
-            }
-
-            // Verify
-            ProblemDetailsException exception = await Assert.ThrowsAsync<ProblemDetailsException>(Actual).ConfigureAwait(true);
-            Assert.Equal(ErrorMessages.PhnInvalid, exception.ProblemDetails!.Detail);
+            PatientRepository patientRepository = new(
+                patientDelegateMock.Object,
+                new Mock<ICacheProvider>().Object,
+                configuration,
+                new Mock<ILogger<PatientRepository>>().Object);
+            return patientRepository;
         }
     }
 }

@@ -14,6 +14,7 @@ export default class User {
     public lastLoginDateTimes: StringISODateTime[] = [];
     public closedDateTime?: StringISODateTime;
     public preferences: Dictionary<UserPreference> = {};
+    public hasTourUpdated = false;
 }
 
 export interface OidcUserInfo {
