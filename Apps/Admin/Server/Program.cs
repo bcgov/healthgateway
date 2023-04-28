@@ -18,6 +18,7 @@ namespace HealthGateway.Admin.Server
     using System;
     using System.Diagnostics.CodeAnalysis;
     using System.Threading.Tasks;
+    using HealthGateway.AccountDataAccess.Patient;
     using HealthGateway.Admin.Server.Services;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.Api;
@@ -119,6 +120,7 @@ namespace HealthGateway.Admin.Server
 
         private static void AddServices(IServiceCollection services)
         {
+            services.AddPatientRepositoryConfiguration();
             services.AddTransient<IBroadcastService, BroadcastService>();
             services.AddTransient<IConfigurationService, ConfigurationService>();
             services.AddTransient<IUserFeedbackService, UserFeedbackService>();

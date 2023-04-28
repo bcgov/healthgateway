@@ -14,7 +14,7 @@
 // limitations under the License.
 //-------------------------------------------------------------------------
 
-namespace HealthGateway.Admin.Client.Store.SupportUser
+namespace HealthGateway.Admin.Client.Store.PatientSupport
 {
     using System;
     using System.Collections.Generic;
@@ -23,6 +23,7 @@ namespace HealthGateway.Admin.Client.Store.SupportUser
     using Fluxor;
     using HealthGateway.Admin.Client.Api;
     using HealthGateway.Admin.Client.Utils;
+    using HealthGateway.Admin.Common.Models;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ViewModels;
     using Microsoft.AspNetCore.Components;
@@ -30,51 +31,50 @@ namespace HealthGateway.Admin.Client.Store.SupportUser
     using Refit;
 
 #pragma warning disable CS1591, SA1600
-    public class SupportUserEffects
+    public class PatientSupportEffects
     {
-        public SupportUserEffects(ILogger<SupportUserEffects> logger, ISupportApi supportApi)
+        public PatientSupportEffects(ILogger<PatientSupportEffects> logger, ISupportApi supportApi)
         {
             this.Logger = logger;
             this.SupportApi = supportApi;
         }
 
         [Inject]
-        private ILogger<SupportUserEffects> Logger { get; set; }
+        private ILogger<PatientSupportEffects> Logger { get; set; }
 
         [Inject]
         private ISupportApi SupportApi { get; set; }
 
         [EffectMethod]
-        public async Task HandleLoadAction(SupportUserActions.LoadAction action, IDispatcher dispatcher)
+        public async Task HandleLoadAction(PatientSupportActions.LoadAction action, IDispatcher dispatcher)
         {
-            this.Logger.LogInformation("Loading users!");
+            this.Logger.LogInformation("Loading patients!");
 
             try
             {
-                RequestResult<IEnumerable<SupportUser>> response = await this.SupportApi.GetSupportUsersAsync(action.QueryType, action.QueryString).ConfigureAwait(true);
+                RequestResult<IEnumerable<PatientSupportDetails>> response = await this.SupportApi.GetPatientsAsync(action.QueryType, action.QueryString).ConfigureAwait(true);
                 if (response.ResultStatus == ResultType.Success)
                 {
-                    this.Logger.LogInformation("Users loaded successfully!");
-                    dispatcher.Dispatch(new SupportUserActions.LoadSuccessAction(response));
+                    this.Logger.LogInformation("Patients loaded successfully!");
+                    dispatcher.Dispatch(new PatientSupportActions.LoadSuccessAction(response));
                 }
                 else if (response.ResultStatus == ResultType.ActionRequired)
                 {
-                    this.Logger.LogInformation("Users loaded with warning message: {WarningMessage}", response.ResultError?.ResultMessage);
-                    dispatcher.Dispatch(new SupportUserActions.LoadSuccessAction(response));
+                    this.Logger.LogInformation("Patients loaded with warning message: {WarningMessage}", response.ResultError?.ResultMessage);
+                    dispatcher.Dispatch(new PatientSupportActions.LoadSuccessAction(response));
                 }
                 else
                 {
                     RequestError error = StoreUtility.FormatRequestError(response.ResultError);
-                    this.Logger.LogError("Error loading users, reason: {ErrorMessage}", error.Message);
-                    dispatcher.Dispatch(new SupportUserActions.LoadFailAction(error));
+                    this.Logger.LogError("Error loading patients, reason: {ErrorMessage}", error.Message);
+                    dispatcher.Dispatch(new PatientSupportActions.LoadFailAction(error));
                 }
             }
             catch (Exception e) when (e is ApiException or HttpRequestException)
             {
-                this.Logger.LogError("Error loading users...{Error}", e);
                 RequestError error = StoreUtility.FormatRequestError(e);
-                this.Logger.LogError("Error loading users, reason: {ErrorMessage}", error.Message);
-                dispatcher.Dispatch(new SupportUserActions.LoadFailAction(error));
+                this.Logger.LogError("Error loading patients, reason: {ErrorMessage}", error.Message);
+                dispatcher.Dispatch(new PatientSupportActions.LoadFailAction(error));
             }
         }
     }

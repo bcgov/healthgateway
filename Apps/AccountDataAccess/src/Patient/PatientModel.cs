@@ -17,6 +17,7 @@
 namespace HealthGateway.AccountDataAccess.Patient
 {
     using System;
+    using HealthGateway.Common.Data.ViewModels;
 
     /// <summary>
     /// The patient data model.

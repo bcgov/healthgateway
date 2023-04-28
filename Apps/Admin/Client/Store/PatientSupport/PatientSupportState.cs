@@ -14,11 +14,12 @@
 // limitations under the License.
 //-------------------------------------------------------------------------
 
-namespace HealthGateway.Admin.Client.Store.SupportUser
+namespace HealthGateway.Admin.Client.Store.PatientSupport
 {
     using System.Collections.Generic;
     using Fluxor;
     using HealthGateway.Admin.Client.Models;
+    using HealthGateway.Admin.Common.Models;
     using HealthGateway.Common.Data.ViewModels;
 
     /// <summary>
@@ -26,12 +27,12 @@ namespace HealthGateway.Admin.Client.Store.SupportUser
     /// State should be decorated with [FeatureState] for automatic discovery when services.AddFluxor is called.
     /// </summary>
     [FeatureState]
-    public record SupportUserState : BaseRequestState<RequestResult<IEnumerable<SupportUser>>>
+    public record PatientSupportState : BaseRequestState<RequestResult<IEnumerable<PatientSupportDetails>>>
     {
         /// <summary>
         /// Gets the collection of data.
         /// </summary>
-        public IList<ExtendedSupportUser>? Data { get; init; }
+        public IList<ExtendedPatientSupportDetails>? Data { get; init; }
 
         /// <summary>
         /// Gets the warning message for display.

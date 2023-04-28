@@ -13,7 +13,7 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.AccountDataAccess.Patient
+namespace HealthGateway.Common.Data.ViewModels
 {
     /// <summary>
     ///  Represents the name of a person.

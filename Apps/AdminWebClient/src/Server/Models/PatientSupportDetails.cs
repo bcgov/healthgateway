@@ -13,14 +13,14 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Common.Data.ViewModels
+namespace HealthGateway.Admin.Models
 {
     using System;
 
     /// <summary>
-    /// Represents a Support User.
+    /// Represents details associated with a patient retrieved by a support query.
     /// </summary>
-    public class SupportUser
+    public class PatientSupportDetails
     {
         /// <summary>
         /// Gets or sets the patient's PHN.
@@ -28,17 +28,17 @@ namespace HealthGateway.Common.Data.ViewModels
         public string PersonalHealthNumber { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the user's hdid.
+        /// Gets or sets the patient's hdid.
         /// </summary>
         public string Hdid { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the user's created date time.
+        /// Gets or sets the user's created datetime.
         /// </summary>
         public DateTime? CreatedDateTime { get; set; }
 
         /// <summary>
-        /// Gets or sets the user's last login date time.
+        /// Gets or sets the user's last login datetime.
         /// </summary>
         public DateTime? LastLoginDateTime { get; set; }
 

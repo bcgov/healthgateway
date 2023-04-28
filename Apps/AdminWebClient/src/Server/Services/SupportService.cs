@@ -13,13 +13,15 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Common.Services
+namespace HealthGateway.Admin.Services
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
     using AutoMapper;
+    using HealthGateway.Admin.MapUtils;
+    using HealthGateway.Admin.Models;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ErrorHandling;
@@ -29,13 +31,13 @@ namespace HealthGateway.Common.Services
     using HealthGateway.Common.Factories;
     using HealthGateway.Common.MapUtils;
     using HealthGateway.Common.Models;
+    using HealthGateway.Common.Services;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
     using Microsoft.Extensions.Configuration;
     using Microsoft.IdentityModel.Tokens;
-    using UserQueryType = HealthGateway.Common.Data.Constants.UserQueryType;
 
     /// <inheritdoc/>
     public class SupportService : ISupportService
@@ -75,45 +77,40 @@ namespace HealthGateway.Common.Services
         /// <inheritdoc/>
         public RequestResult<IEnumerable<MessagingVerificationModel>> GetMessageVerifications(string hdid)
         {
-            DbResult<IEnumerable<MessagingVerification>> dbResult = this.messagingVerificationDelegate.GetUserMessageVerifications(hdid);
+            IEnumerable<MessagingVerification> dbResult = this.messagingVerificationDelegate.GetUserMessageVerificationsAsync(hdid).Result;
             TimeZoneInfo localTimezone = DateFormatter.GetLocalTimeZone(this.configuration);
-            IList<MessagingVerificationModel>
-                verificationModels =
-                    dbResult.Payload.Select(
-                            m => MessagingVerificationMapUtils.ToUiModel(m, this.autoMapper, localTimezone))
-                        .ToList();
             RequestResult<IEnumerable<MessagingVerificationModel>> result = new()
             {
                 ResultStatus = ResultType.Success,
-                ResourcePayload = verificationModels,
+                ResourcePayload = dbResult.Select(m => MessagingVerificationMapUtils.ToUiModel(m, this.autoMapper, localTimezone)),
             };
             return result;
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResult<IEnumerable<SupportUser>>> GetUsers(UserQueryType queryType, string queryString)
+        public async Task<RequestResult<IEnumerable<PatientSupportDetails>>> GetPatientsAsync(PatientQueryType queryType, string queryString)
         {
-            RequestResult<IEnumerable<SupportUser>> result = new()
+            RequestResult<IEnumerable<PatientSupportDetails>> result = new()
             {
                 ResultStatus = ResultType.Error,
-                ResourcePayload = Enumerable.Empty<SupportUser>(),
+                ResourcePayload = Enumerable.Empty<PatientSupportDetails>(),
             };
 
             switch (queryType)
             {
-                case UserQueryType.Phn:
-                    this.PopulateSupportUser(result, PatientIdentifierType.Phn, queryString);
+                case PatientQueryType.Phn:
+                    this.PopulatePatientSupportDetails(result, PatientIdentifierType.Phn, queryString);
                     break;
-                case UserQueryType.Email:
-                    this.PopulateSupportUser(result, Database.Constants.UserQueryType.Email, queryString);
+                case PatientQueryType.Email:
+                    await this.PopulatePatientSupportDetails(result, UserQueryType.Email, queryString).ConfigureAwait(true);
                     break;
-                case UserQueryType.Sms:
-                    this.PopulateSupportUser(result, Database.Constants.UserQueryType.Sms, queryString);
+                case PatientQueryType.Sms:
+                    await this.PopulatePatientSupportDetails(result, UserQueryType.Sms, queryString).ConfigureAwait(true);
                     break;
-                case UserQueryType.Hdid:
-                    this.PopulateSupportUser(result, PatientIdentifierType.Hdid, queryString);
+                case PatientQueryType.Hdid:
+                    this.PopulatePatientSupportDetails(result, PatientIdentifierType.Hdid, queryString);
                     break;
-                case UserQueryType.Dependent:
+                case PatientQueryType.Dependent:
                     result = await this.SearchDelegates(queryString).ConfigureAwait(true);
                     break;
             }
@@ -140,18 +137,18 @@ namespace HealthGateway.Common.Services
             return error;
         }
 
-        private void PopulateSupportUser(RequestResult<IEnumerable<SupportUser>> result, PatientIdentifierType patientIdentifierType, string queryString)
+        private void PopulatePatientSupportDetails(RequestResult<IEnumerable<PatientSupportDetails>> result, PatientIdentifierType patientIdentifierType, string queryString)
         {
             RequestResult<PatientModel> patientResult = Task.Run(async () => await this.patientService.GetPatient(queryString, patientIdentifierType).ConfigureAwait(true)).Result;
             if (patientResult.ResultStatus == ResultType.Success && patientResult.ResourcePayload != null)
             {
-                List<SupportUser> supportUsers = new();
-                DbResult<UserProfile> dbResult = this.userProfileDelegate.GetUserProfile(patientResult.ResourcePayload.HdId);
+                List<PatientSupportDetails> patients = new();
+                DbResult<Common.Data.Models.UserProfile> dbResult = this.userProfileDelegate.GetUserProfile(patientResult.ResourcePayload.HdId);
                 if (dbResult.Status == DbStatusCode.Read)
                 {
-                    SupportUser supportUser = SupportUserMapUtils.ToUiModel(dbResult.Payload, patientResult.ResourcePayload, this.autoMapper);
-                    supportUsers.Add(supportUser);
-                    result.ResourcePayload = supportUsers;
+                    PatientSupportDetails patientSupportDetails = PatientSupportDetailsMapUtils.ToUiModel(dbResult.Payload, patientResult.ResourcePayload, this.autoMapper);
+                    patients.Add(patientSupportDetails);
+                    result.ResourcePayload = patients;
                     result.ResultStatus = ResultType.Success;
                 }
                 else
@@ -173,24 +170,24 @@ namespace HealthGateway.Common.Services
             }
         }
 
-        private void PopulateSupportUser(RequestResult<IEnumerable<SupportUser>> result, Database.Constants.UserQueryType queryType, string queryString)
+        private async Task PopulatePatientSupportDetails(RequestResult<IEnumerable<PatientSupportDetails>> result, UserQueryType queryType, string queryString)
         {
-            DbResult<List<UserProfile>> dbResult = this.userProfileDelegate.GetUserProfiles(queryType, queryString);
-            result.ResourcePayload = this.autoMapper.Map<IEnumerable<SupportUser>>(dbResult.Payload);
+            IEnumerable<Common.Data.Models.UserProfile> profiles = await this.userProfileDelegate.GetUserProfilesAsync(queryType, queryString).ConfigureAwait(true);
+            result.ResourcePayload = this.autoMapper.Map<IEnumerable<PatientSupportDetails>>(profiles);
             result.ResultStatus = ResultType.Success;
         }
 
-        private async Task<RequestResult<IEnumerable<SupportUser>>> SearchDelegates(string forOwnerByPhn)
+        private async Task<RequestResult<IEnumerable<PatientSupportDetails>>> SearchDelegates(string forOwnerByPhn)
         {
             string ownerHdid = await this.patientService.GetPatientHdid(forOwnerByPhn).ConfigureAwait(true);
-            IEnumerable<ResourceDelegate> results = (await this.resourceDelegateDelegate.Search(
+            IEnumerable<ResourceDelegate> results = (await this.resourceDelegateDelegate.SearchAsync(
                     new ResourceDelegateQuery
                     {
                         ByOwnerHdid = ownerHdid,
                     })
                 .ConfigureAwait(true)).Items;
 
-            return RequestResultFactory.Success(this.autoMapper.Map<IEnumerable<SupportUser>>(results));
+            return RequestResultFactory.Success(this.autoMapper.Map<IEnumerable<PatientSupportDetails>>(results));
         }
     }
 }

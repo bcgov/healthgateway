@@ -17,6 +17,7 @@ namespace HealthGateway.Database.Delegates
 {
     using System;
     using System.Collections.Generic;
+    using System.Threading.Tasks;
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Models;
@@ -63,6 +64,13 @@ namespace HealthGateway.Database.Delegates
         DbResult<UserProfile> GetUserProfile(string hdId);
 
         /// <summary>
+        /// Fetches a UserProfile from the database by HDID.
+        /// </summary>
+        /// <param name="hdid">The unique profile key to find.</param>
+        /// <returns>The matching UserProfile, or null if not found.</returns>
+        Task<UserProfile?> GetUserProfileAsync(string hdid);
+
+        /// <summary>
         /// Fetches UserProfiles from the database.
         /// </summary>
         /// <param name="hdIds">The unique profile keys to find.</param>
@@ -75,7 +83,7 @@ namespace HealthGateway.Database.Delegates
         /// <param name="queryType">The type of query to perform.</param>
         /// <param name="queryString">The value to query on.</param>
         /// <returns>A DB result which encapsulates the return object and status.</returns>
-        DbResult<List<UserProfile>> GetUserProfiles(UserQueryType queryType, string queryString);
+        Task<IList<UserProfile>> GetUserProfilesAsync(UserQueryType queryType, string queryString);
 
         /// <summary>
         /// Returns the list of all UserProfiles who have an email address and have

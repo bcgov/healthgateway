@@ -741,7 +741,7 @@ namespace HealthGateway.Admin.Tests.Services
                 },
             };
             Mock<IResourceDelegateDelegate> resourceDelegateDelegate = new();
-            resourceDelegateDelegate.Setup(r => r.Search(It.IsAny<ResourceDelegateQuery>())).ReturnsAsync(result);
+            resourceDelegateDelegate.Setup(r => r.SearchAsync(It.IsAny<ResourceDelegateQuery>())).ReturnsAsync(result);
 
             Mock<IDelegationDelegate> delegationDelegate = new();
             delegationDelegate.Setup(p => p.GetDependentAsync(DependentHdid, true)).ReturnsAsync(protectedDependent);
@@ -769,7 +769,7 @@ namespace HealthGateway.Admin.Tests.Services
             authenticationDelegate.Setup(a => a.FetchAuthenticatedPreferredUsername()).Returns(authenticatedPreferredUsername);
 
             Mock<IResourceDelegateDelegate> resourceDelegateDelegate = new();
-            resourceDelegateDelegate.Setup(r => r.Search(new() { ByOwnerHdid = resourceOwnerHdid })).ReturnsAsync(resourceDelegates);
+            resourceDelegateDelegate.Setup(r => r.SearchAsync(new() { ByOwnerHdid = resourceOwnerHdid })).ReturnsAsync(resourceDelegates);
 
             delegationDelegate.Setup(p => p.GetDependentAsync(resourceOwnerHdid, true)).ReturnsAsync(dependent);
 

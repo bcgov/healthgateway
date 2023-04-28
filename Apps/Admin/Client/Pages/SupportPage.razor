@@ -2,7 +2,7 @@
 @layout MainLayout
 @attribute [Authorize(Roles = $"{Roles.Admin},{Roles.Reviewer}")]
 @using HealthGateway.Admin.Client.Store.MessageVerification
-@using HealthGateway.Admin.Client.Store.SupportUser
+@using HealthGateway.Admin.Client.Store.PatientSupport
 @using HealthGateway.Common.Data.Constants
 @using HealthGateway.Common.Data.Utils
 @using HealthGateway.Common.Ui.Constants
@@ -15,21 +15,21 @@
 <HgBannerFeedback Severity="Severity.Error" IsEnabled="HasMessagingVerificationsError" TResetAction="MessageVerificationActions.ResetStateAction" DataTestId="messaging-verification-banner-feedback-error-message">
     @MessageVerificationState.Value.Error?.Message
 </HgBannerFeedback>
-<HgBannerFeedback Severity="Severity.Error" IsEnabled="HasSupportUsersError" TResetAction="SupportUserActions.ResetStateAction" DataTestId="user-banner-feedback-error-message">
-    @SupportUserState.Value.Error?.Message
+<HgBannerFeedback Severity="Severity.Error" IsEnabled="HasPatientsError" TResetAction="PatientSupportActions.ResetStateAction" DataTestId="user-banner-feedback-error-message">
+    @PatientSupportState.Value.Error?.Message
 </HgBannerFeedback>
 
 <MudForm @ref="Form">
     <MudGrid Spacing="0">
         <MudItem xs="12" sm="3">
             <HgSelect
-                T="UserQueryType"
+                T="PatientQueryType"
                 Label="Query Type"
                 Required="@true"
                 @bind-Value="SelectedQueryType"
                 TopMargin="Breakpoint.None"
                 data-testid="query-type-select">
-                @foreach (UserQueryType queryType in QueryTypes)
+                @foreach (PatientQueryType queryType in QueryTypes)
                 {
                     <MudSelectItem Value="@queryType" data-testid="query-type">@FormatQueryType(queryType)</MudSelectItem>
                 }
@@ -41,7 +41,7 @@
                 {
                     <HgTextField
                         T="string"
-                        Label="@FormatQueryType(UserQueryType.Phn)"
+                        Label="@FormatQueryType(PatientQueryType.Phn)"
                         Required="@true"
                         Validation="@ValidateQueryParameter"
                         Mask="@(new PatternMask(Mask.PhnMaskTemplate))"
@@ -79,11 +79,11 @@
     </MudGrid>
 </MudForm>
 
-<HgBannerFeedback Severity="@Severity.Info" IsEnabled="HasSupportUsersWarning" TResetAction="SupportUserActions.ResetStateAction" DataTestId="user-banner-feedback-warning-message">
-    @SupportUserState.Value.WarningMessage
+<HgBannerFeedback Severity="@Severity.Info" IsEnabled="HasPatientsWarning" TResetAction="PatientSupportActions.ResetStateAction" DataTestId="user-banner-feedback-warning-message">
+    @PatientSupportState.Value.WarningMessage
 </HgBannerFeedback>
 
-@if (SupportUsersLoaded || SupportUsersLoading)
+@if (PatientsLoaded || PatientsLoading)
 {
     <MudGrid>
         <MudItem xs="12" lg="12">
@@ -91,8 +91,8 @@
                 @FormatQueryType(SelectedQueryType) Query Results
             </MudText>
             <MudTable Class="mt-3"
-                      Items="SupportUserRows"
-                      Loading="SupportUsersLoading"
+                      Items="PatientRows"
+                      Loading="PatientsLoading"
                       AllowUnsorted="false"
                       Breakpoint="Breakpoint.Md"
                       HorizontalScrollbar="true"
@@ -101,23 +101,23 @@
                       data-testid="user-table">
                 <HeaderContent>
                     <MudTh>
-                        <MudTableSortLabel SortBy="new Func<SupportUserRow, object>(x => x.Hdid)">
+                        <MudTableSortLabel SortBy="new Func<PatientRow, object>(x => x.Hdid)">
                             HDID
                         </MudTableSortLabel>
                     </MudTh>
                     <MudTh>
-                        <MudTableSortLabel SortBy="new Func<SupportUserRow, object>(x => x.PersonalHealthNumber)">
+                        <MudTableSortLabel SortBy="new Func<PatientRow, object>(x => x.PersonalHealthNumber)">
                             PHN
                         </MudTableSortLabel>
                     </MudTh>
                     <MudTh>
-                        <MudTableSortLabel SortBy="new Func<SupportUserRow, object>(x => x.LastLoginDateTime ?? DateTime.MinValue)"
+                        <MudTableSortLabel SortBy="new Func<PatientRow, object>(x => x.LastLoginDateTime ?? DateTime.MinValue)"
                                            InitialDirection="@SortDirection.Descending">
                             Last Login
                         </MudTableSortLabel>
                     </MudTh>
                     <MudTh>
-                        <MudTableSortLabel SortBy="new Func<SupportUserRow, object>(x => x.CreatedDateTime ?? DateTime.MinValue)"
+                        <MudTableSortLabel SortBy="new Func<PatientRow, object>(x => x.CreatedDateTime ?? DateTime.MinValue)"
                                            InitialDirection="@SortDirection.Descending">
                             Account Created
                         </MudTableSortLabel>
@@ -142,7 +142,7 @@
                     </MudTd>
                 </RowTemplate>
                 <ChildRowContent>
-                    @if (!context.IsSameAddress && SelectedQueryType is UserQueryType.Phn or UserQueryType.Hdid)
+                    @if (!context.IsSameAddress && SelectedQueryType is PatientQueryType.Phn or PatientQueryType.Hdid)
                     {
                         <div Class="mx-4 my-3">
                             <MudText Typo="Typo.subtitle1" data-testid=@($"physical-address-label-{context.Hdid}")>
@@ -155,12 +155,12 @@
                                 }
                                 else
                                 {
-                                    @SupportUserRow.NoAddressMessage
+                                    @PatientRow.NoAddressMessage
                                 }
                             </MudText>
                         </div>
                     }
-                    @if (SelectedQueryType is UserQueryType.Phn or UserQueryType.Hdid)
+                    @if (SelectedQueryType is PatientQueryType.Phn or PatientQueryType.Hdid)
                     {
                         <div Class="mx-4 my-3">
                             <MudText Typo="Typo.subtitle1" data-testid=@($"postal-address-label-{context.Hdid}")>
@@ -173,7 +173,7 @@
                                 }
                                 else
                                 {
-                                    @SupportUserRow.NoAddressMessage
+                                    @PatientRow.NoAddressMessage
                                 }
                             </MudText>
                         </div>

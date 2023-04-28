@@ -17,23 +17,24 @@ namespace HealthGateway.Admin.Client.Api;
 
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using HealthGateway.Admin.Common.Models;
 using HealthGateway.Common.Data.Constants;
 using HealthGateway.Common.Data.ViewModels;
 using Refit;
 
 /// <summary>
-/// APIs to fetch support related data from the server.
+/// APIs to fetch support-related data from the server.
 /// </summary>
 public interface ISupportApi
 {
     /// <summary>
-    /// Gets the list of users from the server.
+    /// Retrieves the collection of patients that match the query.
     /// </summary>
-    /// <param name="queryType">queryType.</param>
-    /// <param name="queryString">queryString.</param>
-    /// <returns>The list of SupportUser objects.</returns>
+    /// <param name="queryType">The type of query to perform.</param>
+    /// <param name="queryString">The value to query on.</param>
+    /// <returns>The collection of patient support details that match the query.</returns>
     [Get("/Users?queryType={queryType}&queryString={queryString}")]
-    Task<RequestResult<IEnumerable<SupportUser>>> GetSupportUsersAsync(UserQueryType queryType, string queryString);
+    Task<RequestResult<IEnumerable<PatientSupportDetails>>> GetPatientsAsync(PatientQueryType queryType, string queryString);
 
     /// <summary>
     /// Gets the list of messaging verification models from the server.
