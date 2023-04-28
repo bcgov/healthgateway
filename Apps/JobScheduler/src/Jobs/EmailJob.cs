@@ -102,7 +102,7 @@ namespace HealthGateway.JobScheduler.Jobs
         public void SendEmails()
         {
             this.logger.LogDebug("Sending low priority emails... Looking for up to {RetryFetchSize} emails to send", this.retryFetchSize);
-            IList<Email> resendEmails = this.emailDelegate.GetUnSentEmails(this.retryFetchSize);
+            IList<Email> resendEmails = this.emailDelegate.GetUnsentEmails(this.retryFetchSize);
             this.ProcessEmails(resendEmails);
             this.logger.LogDebug("Finished sending low priority emails");
         }

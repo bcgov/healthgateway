@@ -67,7 +67,7 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public IList<Email> GetUnSentEmails(int maxRows)
+        public IList<Email> GetUnsentEmails(int maxRows)
         {
             this.logger.LogTrace("Getting list of low priority emails from DB... {MaxRows}", maxRows);
             IList<Email> retVal = this.dbContext.Email.Where(p => p.EmailStatusCode == EmailStatus.New && p.Priority < EmailPriority.Standard)

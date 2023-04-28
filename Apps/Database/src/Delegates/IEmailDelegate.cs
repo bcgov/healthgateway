@@ -47,7 +47,7 @@ namespace HealthGateway.Database.Delegates
         /// </summary>
         /// <param name="maxRows">The maximum amount of emails to return.</param>
         /// <returns>The list of emails.</returns>
-        IList<Email> GetUnSentEmails(int maxRows);
+        IList<Email> GetUnsentEmails(int maxRows);
 
         /// <summary>
         /// Inserts an email using a populated Email object.
