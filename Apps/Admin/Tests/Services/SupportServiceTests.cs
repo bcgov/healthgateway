@@ -348,17 +348,25 @@ namespace HealthGateway.Admin.Tests.Services
         public async Task ShouldGetPatientsByDependentHdid()
         {
             // Arrange
+            const string dependentPhn = "dependentPhn";
             const string dependentHdid = "dependentHdid";
-            PatientDetailsQuery firstQuery = new() { Hdid = Hdid };
+            PatientDetailsQuery dependentQuery = new() { Phn = dependentPhn };
+            PatientModel dependentPatient = GeneratePatientModel(dependentPhn, dependentHdid, Birthdate);
+
+            PatientDetailsQuery firstDelegateQuery = new() { Hdid = Hdid };
             Name commonName = GenerateName();
             Name legalName = GenerateName("Jim", "Bo");
             AccountDataAccess.Patient.Address physicalAddress = GenerateAddress(GenerateStreetLines());
             AccountDataAccess.Patient.Address postalAddress = GenerateAddress(new List<string> { "PO BOX 1234" });
-            PatientModel firstPatient = GeneratePatientModel(Phn, Hdid, Birthdate, commonName, legalName, physicalAddress, postalAddress);
+            PatientModel firstDelegatePatient = GeneratePatientModel(Phn, Hdid, Birthdate, commonName, legalName, physicalAddress, postalAddress);
 
-            PatientDetailsQuery secondQuery = new() { Hdid = Hdid2 };
-            PatientModel secondPatient = GeneratePatientModel(Phn2, Hdid2, Birthdate2);
-            Mock<IPatientRepository> patientRepositoryMock = GetPatientRepositoryMock((firstQuery, firstPatient), (secondQuery, secondPatient));
+            PatientDetailsQuery secondDelegateQuery = new() { Hdid = Hdid2 };
+            PatientModel secondDelegatePatient = GeneratePatientModel(Phn2, Hdid2, Birthdate2);
+
+            Mock<IPatientRepository> patientRepositoryMock = GetPatientRepositoryMock(
+                (dependentQuery, dependentPatient),
+                (firstDelegateQuery, firstDelegatePatient),
+                (secondDelegateQuery, secondDelegatePatient));
 
             ResourceDelegateQuery resourceDelegateQuery = new() { ByOwnerHdid = dependentHdid, IncludeProfile = true, TakeAmount = 25 };
             IList<ResourceDelegate> resourceDelegates = GenerateResourceDelegates(dependentHdid, new List<string> { Hdid, Hdid2 }, DateTime.Now.Subtract(TimeSpan.FromDays(1)), DateTime.Now);
@@ -368,12 +376,12 @@ namespace HealthGateway.Admin.Tests.Services
 
             IEnumerable<PatientSupportDetails> expectedResult = new List<PatientSupportDetails>
             {
-                GetExpectedPatientSupportDetails(firstPatient, resourceDelegates.ElementAt(0).UserProfile),
-                GetExpectedPatientSupportDetails(secondPatient, resourceDelegates.ElementAt(1).UserProfile),
+                GetExpectedPatientSupportDetails(firstDelegatePatient, resourceDelegates.ElementAt(0).UserProfile),
+                GetExpectedPatientSupportDetails(secondDelegatePatient, resourceDelegates.ElementAt(1).UserProfile),
             };
 
             // Act
-            IEnumerable<PatientSupportDetails> actualResult = await supportService.GetPatientsAsync(PatientQueryType.Dependent, dependentHdid).ConfigureAwait(true);
+            IEnumerable<PatientSupportDetails> actualResult = await supportService.GetPatientsAsync(PatientQueryType.Dependent, dependentPhn).ConfigureAwait(true);
 
             // Assert
             Assert.Equal(resourceDelegates.Count, actualResult.Count());
