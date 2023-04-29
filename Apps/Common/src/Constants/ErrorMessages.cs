@@ -89,10 +89,5 @@ namespace HealthGateway.Common.Constants
         /// Error message to return when Keycloak already has the user being added.
         /// </summary>
         public const string KeycloakUserAlreadyExists = "Keycloak user already exists";
-
-        /// <summary>
-        /// Error message to return when PHSA did not return a person.
-        /// </summary>
-        public const string PhsaDoesNotReturnPerson = "PHSA did not return a person";
     }
 }

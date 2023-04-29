@@ -47,7 +47,6 @@ namespace HealthGateway.AccountDataAccess.Patient
         private readonly ILogger<PatientRepository> logger;
 
         private readonly IClientRegistriesDelegate clientRegistriesDelegate;
-        private readonly IPersonalAccountsApi personalAccountsApi;
         private readonly IPatientIdentityApi patientIdentityApi;
 
         /// <summary>
@@ -57,21 +56,18 @@ namespace HealthGateway.AccountDataAccess.Patient
         /// <param name="cacheProvider">The provider responsible for caching.</param>
         /// <param name="logger">The service Logger.</param>
         /// <param name="configuration">The Configuration to use.</param>
-        /// <param name="personalAccountsApi">The personal accounts api to use.</param>
         /// <param name="patientIdentityApi">The patient identity api to use.</param>
         public PatientRepository(
             IClientRegistriesDelegate clientRegistriesDelegate,
             ICacheProvider cacheProvider,
             IConfiguration configuration,
             ILogger<PatientRepository> logger,
-            IPersonalAccountsApi personalAccountsApi,
             IPatientIdentityApi patientIdentityApi)
         {
             this.clientRegistriesDelegate = clientRegistriesDelegate;
             this.cacheProvider = cacheProvider;
             this.cacheTtl = configuration.GetSection("PatientService").GetValue("CacheTTL", 0);
             this.logger = logger;
-            this.personalAccountsApi = personalAccountsApi;
             this.patientIdentityApi = patientIdentityApi;
         }
 
@@ -183,26 +179,16 @@ namespace HealthGateway.AccountDataAccess.Patient
 
         private async Task<PatientModel> GetPatientIdentityAsync(string hdid)
         {
-            // Get Pid
-            PersonalAccountResult personalAccountResult = await this.personalAccountsApi.AccountLookupByHdidAsync(hdid).ConfigureAwait(true) ??
-                                                          new(new PersonalAccountMetadata(), null);
+            PatientIdentityResult? patientIdentityResult = await this.patientIdentityApi.PatientLookupByHdidAsync(hdid).ConfigureAwait(true);
 
-            if (personalAccountResult.Data != null)
+            // Map patientIdentityResult to patient model
+            if (patientIdentityResult != null)
             {
-                PatientResult? patientResult = await this.patientIdentityApi.PatientLookupByHdidAsync(personalAccountResult.Data.PatientIdentity.Pid.ToString()).ConfigureAwait(true);
-
-                // Map patientResult to patient model
-                if (patientResult != null)
-                {
-                    return new PatientModel();
-                }
-
-                throw new ProblemDetailsException(
-                    ExceptionUtility.CreateProblemDetails(ErrorMessages.ClientRegistryDoesNotReturnPerson, HttpStatusCode.NotFound, nameof(PatientRepository)));
+                return new PatientModel();
             }
 
             throw new ProblemDetailsException(
-                ExceptionUtility.CreateProblemDetails(ErrorMessages.PhsaDoesNotReturnPerson, HttpStatusCode.NotFound, nameof(PatientRepository)));
+                ExceptionUtility.CreateProblemDetails(ErrorMessages.ClientRegistryDoesNotReturnPerson, HttpStatusCode.NotFound, nameof(PatientRepository)));
         }
 
         /// <summary>

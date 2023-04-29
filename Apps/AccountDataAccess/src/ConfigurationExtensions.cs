@@ -44,10 +44,6 @@ namespace HealthGateway.AccountDataAccess
                 .ConfigureHttpClient(c => c.BaseAddress = configuration.PhsaApiBaseUrl)
                 .AddHttpMessageHandler<AuthHeaderHandler>();
 
-            services.AddRefitClient<IPersonalAccountsApi>()
-                .ConfigureHttpClient(c => c.BaseAddress = configuration.PhsaApiBaseUrl)
-                .AddHttpMessageHandler<AuthHeaderHandler>();
-
             return services;
         }
     }
