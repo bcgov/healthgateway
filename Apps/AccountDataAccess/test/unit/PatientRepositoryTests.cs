@@ -276,32 +276,6 @@ namespace AccountDataAccessTest
             Assert.Equal(ErrorMessages.PhnInvalid, exception.ProblemDetails!.Detail);
         }
 
-        /// <summary>
-        /// Patient repository query throws problem details exception when PHSA patient identity endpoint returns null.
-        /// </summary>
-        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
-        public async Task GetPatientIdentityThrowsProblemDetailsExceptionWhenNoDataReturned()
-        {
-            // Arrange
-            PatientDetailsQuery patientQuery = new(Hdid: Hdid, Source: PatientDetailSource.AllCache);
-
-            PatientModel? patient = null;
-            PatientIdentityResult? patientResult = null;
-
-            PatientRepository patientRepository = GetPatientRepository(patient, patientQuery, patientResult);
-
-            // Act
-            async Task Actual()
-            {
-                await patientRepository.Query(patientQuery, CancellationToken.None).ConfigureAwait(true);
-            }
-
-            // Verify
-            ProblemDetailsException exception = await Assert.ThrowsAsync<ProblemDetailsException>(Actual).ConfigureAwait(true);
-            Assert.Equal(ErrorMessages.PhsaDoesNotReturnPerson, exception.ProblemDetails!.Detail);
-        }
-
         private static PatientRepository GetPatientRepository(
             PatientModel patient,
             PatientDetailsQuery patientDetailsQuery,

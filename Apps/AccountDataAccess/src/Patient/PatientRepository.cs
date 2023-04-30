@@ -183,15 +183,7 @@ namespace HealthGateway.AccountDataAccess.Patient
         private async Task<PatientModel> GetPatientIdentityAsync(string hdid)
         {
             PatientIdentityResult? patientIdentityResult = await this.patientIdentityApi.PatientLookupByHdidAsync(hdid).ConfigureAwait(true);
-
-            // Map patientIdentityResult to patient model
-            if (patientIdentityResult != null)
-            {
-                return this.mapper.Map<PatientModel>(patientIdentityResult.Data);
-            }
-
-            throw new ProblemDetailsException(
-                ExceptionUtility.CreateProblemDetails(ErrorMessages.PhsaDoesNotReturnPerson, HttpStatusCode.NotFound, nameof(PatientRepository)));
+            return this.mapper.Map<PatientModel>(patientIdentityResult?.Data);
         }
 
         /// <summary>
