@@ -20,6 +20,7 @@ namespace HealthGateway.AccountDataAccess.Patient
     using System.Net;
     using System.Threading;
     using System.Threading.Tasks;
+    using AutoMapper;
     using HealthGateway.AccountDataAccess.Patient.Api;
     using HealthGateway.Common.CacheProviders;
     using HealthGateway.Common.Constants;
@@ -48,6 +49,7 @@ namespace HealthGateway.AccountDataAccess.Patient
 
         private readonly IClientRegistriesDelegate clientRegistriesDelegate;
         private readonly IPatientIdentityApi patientIdentityApi;
+        private readonly IMapper mapper;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PatientRepository"/> class.
@@ -57,18 +59,21 @@ namespace HealthGateway.AccountDataAccess.Patient
         /// <param name="logger">The service Logger.</param>
         /// <param name="configuration">The Configuration to use.</param>
         /// <param name="patientIdentityApi">The patient identity api to use.</param>
+        /// <param name="mapper">The injected mapper.</param>
         public PatientRepository(
             IClientRegistriesDelegate clientRegistriesDelegate,
             ICacheProvider cacheProvider,
             IConfiguration configuration,
             ILogger<PatientRepository> logger,
-            IPatientIdentityApi patientIdentityApi)
+            IPatientIdentityApi patientIdentityApi,
+            IMapper mapper)
         {
             this.clientRegistriesDelegate = clientRegistriesDelegate;
             this.cacheProvider = cacheProvider;
             this.cacheTtl = configuration.GetSection("PatientService").GetValue("CacheTTL", 0);
             this.logger = logger;
             this.patientIdentityApi = patientIdentityApi;
+            this.mapper = mapper;
         }
 
         private static ActivitySource Source { get; } = new(nameof(PatientRepository));
@@ -119,9 +124,9 @@ namespace HealthGateway.AccountDataAccess.Patient
             };
         }
 
-        private async Task<PatientModel?> GetDemographicsAsync(OidType type, string identifier, PatientIdentifierType identifierType, bool disableIdValidation = false)
+        private async Task<PatientModel?> GetDemographicsAsync(OidType type, string identifier, bool disableIdValidation = false)
         {
-            if (identifierType == PatientIdentifierType.Phn && !PhnValidator.IsValid(identifier))
+            if (type == OidType.Phn && !PhnValidator.IsValid(identifier))
             {
                 this.logger.LogDebug("The PHN provided is invalid");
                 throw new ProblemDetailsException(ExceptionUtility.CreateProblemDetails(ErrorMessages.PhnInvalid, HttpStatusCode.NotFound, nameof(PatientRepository)));
@@ -140,6 +145,8 @@ namespace HealthGateway.AccountDataAccess.Patient
 
         private async Task<PatientQueryResult> Handle(PatientDetailsQuery query, CancellationToken ct)
         {
+            this.logger.LogDebug("Patient details query source: {Source}", query.Source);
+
             if (ct.IsCancellationRequested)
             {
                 throw new InvalidOperationException("cancellation was requested");
@@ -151,7 +158,7 @@ namespace HealthGateway.AccountDataAccess.Patient
 
                 if (patient == null && ShouldCheckEmpi(query.Source))
                 {
-                    patient = await this.GetDemographicsAsync(OidType.Hdid, query.Hdid, PatientIdentifierType.Hdid).ConfigureAwait(true);
+                    patient = await this.GetDemographicsAsync(OidType.Hdid, query.Hdid).ConfigureAwait(true);
                 }
 
                 if (patient == null && ShouldCheckPhsa(query.Source))
@@ -164,12 +171,8 @@ namespace HealthGateway.AccountDataAccess.Patient
 
             if (query.Phn != null)
             {
-                PatientModel? patient = ShouldCheckCache(query.Source) ? this.GetFromCache(query.Phn, PatientIdentifierType.Phn) : null;
-
-                if (patient == null)
-                {
-                    patient = await this.GetDemographicsAsync(OidType.Phn, query.Phn, PatientIdentifierType.Phn).ConfigureAwait(true);
-                }
+                PatientModel? patient = (ShouldCheckCache(query.Source) ? this.GetFromCache(query.Phn, PatientIdentifierType.Phn) : null) ??
+                                        await this.GetDemographicsAsync(OidType.Phn, query.Phn).ConfigureAwait(true);
 
                 return new PatientQueryResult(new[] { patient! });
             }
@@ -184,11 +187,11 @@ namespace HealthGateway.AccountDataAccess.Patient
             // Map patientIdentityResult to patient model
             if (patientIdentityResult != null)
             {
-                return new PatientModel();
+                return this.mapper.Map<PatientModel>(patientIdentityResult.Data);
             }
 
             throw new ProblemDetailsException(
-                ExceptionUtility.CreateProblemDetails(ErrorMessages.ClientRegistryDoesNotReturnPerson, HttpStatusCode.NotFound, nameof(PatientRepository)));
+                ExceptionUtility.CreateProblemDetails(ErrorMessages.PhsaDoesNotReturnPerson, HttpStatusCode.NotFound, nameof(PatientRepository)));
         }
 
         /// <summary>

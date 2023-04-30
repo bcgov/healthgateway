@@ -15,6 +15,9 @@
 // -------------------------------------------------------------------------
 namespace AccountDataAccessTest
 {
+    using AccountDataAccessTest.Utils;
+    using AutoMapper;
+    using DeepEqual.Syntax;
     using HealthGateway.AccountDataAccess.Patient;
     using HealthGateway.AccountDataAccess.Patient.Api;
     using HealthGateway.Common.CacheProviders;
@@ -33,6 +36,37 @@ namespace AccountDataAccessTest
         private const string PatientCacheDomain = "PatientV2";
         private const string Hdid = "abc123";
         private const string Phn = "9735353315";
+        private const string Gender = "Male";
+
+        // PHSA Preferred Names
+        private const string PhsaPreferredFirstName = "Ted";
+        private const string PhsaPreferredSecondName = "Fido";
+        private const string PhsaPreferredThirdName = "Shaw";
+        private const string PhsaPreferredLastName = "Rogers";
+
+        // PHSA Legal Names
+        private const string PhsaLegalFirstName = "TSN";
+        private const string PhsaLegalSecondName = "CTV";
+        private const string PhsaLegalThirdName = "City";
+        private const string PhsaLegalLastName = "Bell";
+
+        // PHSA Home Address
+        private const string PhsaHomeAddressStreetOne = "200 Main Street";
+        private const string PhsaHomeAddressCity = "Victoria";
+        private const string PhsaHomeAddressProvState = "BC";
+        private const string PhsaHomeAddressPostal = "V8V 2L9";
+        private const string PhsaHomeAddressCountry = "Canada";
+
+        // PHSA Mail Address
+        private const string PhsaMailAddressStreetOne = "200 Sutlej Street";
+        private const string PhsaMailAddressStreetTwo = "Suite 303";
+        private const string PhsaMailAddressStreetThree = "Buzz 303";
+        private const string PhsaMailAddressCity = "Victoria";
+        private const string PhsaMailAddressProvState = "BC";
+        private const string PhsaMailAddressPostal = "V8V 2L9";
+        private const string PhsaMailAddressCountry = "Canada";
+
+        private static readonly IMapper Mapper = MapperUtil.InitializeAutoMapper();
 
         /// <summary>
         /// GetDemographics by PHN - happy path.
@@ -120,6 +154,54 @@ namespace AccountDataAccessTest
         [Fact]
         public async Task ShouldGetPatientIdentityByHdid()
         {
+            const string delimiter = " ";
+
+            string expectedPreferredGivenName = PhsaPreferredFirstName + delimiter + PhsaPreferredSecondName + delimiter + PhsaPreferredThirdName;
+            string expectedPreferredSurname = PhsaPreferredLastName;
+
+            string expectedCommonGivenName = expectedPreferredGivenName;
+            string expectedCommonSurname = expectedPreferredSurname;
+
+            string expectedLegalGivenName = PhsaLegalFirstName + delimiter + PhsaLegalSecondName + delimiter + PhsaLegalThirdName;
+            string expectedLegalSurname = PhsaLegalLastName;
+
+            PatientModel expectedPatient = new()
+            {
+                Phn = Phn,
+                Hdid = Hdid,
+                Gender = Gender,
+                ResponseCode = string.Empty,
+                IsDeceased = false,
+                CommonName = new Name
+                    { GivenName = expectedCommonGivenName, Surname = expectedCommonSurname },
+                LegalName = new Name
+                    { GivenName = expectedLegalGivenName, Surname = expectedLegalSurname },
+                PhysicalAddress = new Address
+                {
+                    StreetLines = new List<string>
+                    {
+                        PhsaHomeAddressStreetOne,
+                    },
+                    City = PhsaHomeAddressCity,
+                    State = PhsaHomeAddressProvState,
+                    PostalCode = PhsaHomeAddressPostal,
+                    Country = PhsaHomeAddressCountry,
+                },
+                PostalAddress = new Address
+                {
+                    StreetLines = new List<string>
+                    {
+                        PhsaMailAddressStreetOne,
+                        PhsaMailAddressStreetTwo,
+                        PhsaMailAddressStreetThree,
+                    },
+                    City = PhsaMailAddressCity,
+                    State = PhsaMailAddressProvState,
+                    PostalCode = PhsaMailAddressPostal,
+                    Country = PhsaMailAddressCountry,
+                },
+            };
+
             // Arrange
             PatientDetailsQuery patientDetailsQuery = new(Hdid: Hdid, Source: PatientDetailSource.AllCache);
 
@@ -130,6 +212,27 @@ namespace AccountDataAccessTest
             {
                 Phn = Phn,
                 HdId = Hdid,
+                Gender = Gender,
+                PreferredFirstName = PhsaPreferredFirstName,
+                PreferredSecondName = PhsaPreferredSecondName,
+                PreferredThirdName = PhsaPreferredThirdName,
+                PreferredLastName = PhsaPreferredLastName,
+                LegalFirstName = PhsaLegalFirstName,
+                LegalSecondName = PhsaLegalSecondName,
+                LegalThirdName = PhsaLegalThirdName,
+                LegalLastName = PhsaLegalLastName,
+                HomeAddressStreetOne = PhsaHomeAddressStreetOne,
+                HomeAddressCity = PhsaHomeAddressCity,
+                HomeAddressProvState = PhsaHomeAddressProvState,
+                HomeAddressPostal = PhsaHomeAddressPostal,
+                HomeAddressCountry = PhsaHomeAddressCountry,
+                MailAddressStreetOne = PhsaMailAddressStreetOne,
+                MailAddressStreetTwo = PhsaMailAddressStreetTwo,
+                MailAddressStreetThree = PhsaMailAddressStreetThree,
+                MailAddressCity = PhsaMailAddressCity,
+                MailAddressProvState = PhsaMailAddressProvState,
+                MailAddressPostal = PhsaMailAddressPostal,
+                MailAddressCountry = PhsaMailAddressCountry,
             };
 
             PatientIdentityResult patientIdentityResult = new(new PatientIdentityMetadata(), patientIdentity);
@@ -137,10 +240,10 @@ namespace AccountDataAccessTest
             PatientRepository patientRepository = GetPatientRepository(patient, patientDetailsQuery, patientIdentityResult, cachedPatient);
 
             // Act
-            PatientQueryResult result = await patientRepository.Query(patientDetailsQuery, CancellationToken.None).ConfigureAwait(true);
+            PatientQueryResult actual = await patientRepository.Query(patientDetailsQuery, CancellationToken.None).ConfigureAwait(true);
 
             // Verify
-            Assert.Equal(Phn, result.Items.SingleOrDefault()?.Phn);
+            expectedPatient.ShouldDeepEqual(actual.Items.SingleOrDefault());
         }
 
         /// <summary>
@@ -196,7 +299,7 @@ namespace AccountDataAccessTest
 
             // Verify
             ProblemDetailsException exception = await Assert.ThrowsAsync<ProblemDetailsException>(Actual).ConfigureAwait(true);
-            Assert.Equal(ErrorMessages.ClientRegistryDoesNotReturnPerson, exception.ProblemDetails!.Detail);
+            Assert.Equal(ErrorMessages.PhsaDoesNotReturnPerson, exception.ProblemDetails!.Detail);
         }
 
         private static PatientRepository GetPatientRepository(
@@ -229,7 +332,8 @@ namespace AccountDataAccessTest
                 cacheProvider.Object,
                 configuration,
                 new Mock<ILogger<PatientRepository>>().Object,
-                patientIdentityApi.Object);
+                patientIdentityApi.Object,
+                Mapper);
             return patientRepository;
         }
     }

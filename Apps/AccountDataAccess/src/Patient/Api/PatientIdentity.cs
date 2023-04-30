@@ -71,7 +71,7 @@ namespace HealthGateway.AccountDataAccess.Patient.Api
 
         public string? HomeAddressCountry { get; set; }
 
-        public string? MailAddressStreet { get; set; }
+        public string? MailAddressStreetOne { get; set; }
 
         public string? MailAddressStreetTwo { get; set; }
 
@@ -79,7 +79,7 @@ namespace HealthGateway.AccountDataAccess.Patient.Api
 
         public string? MailAddressCity { get; set; }
 
-        public string? MailAddressStreetProvState { get; set; }
+        public string? MailAddressProvState { get; set; }
 
         public string? MailAddressPostal { get; set; }
 
