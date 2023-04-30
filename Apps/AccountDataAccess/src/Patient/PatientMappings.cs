@@ -17,7 +17,6 @@ namespace HealthGateway.AccountDataAccess.Patient
 {
 #pragma warning disable SA1600 // Disables documentation for internal class.
     using System.Collections.Generic;
-    using System.Text;
     using AutoMapper;
     using HealthGateway.AccountDataAccess.Patient.Api;
 
@@ -40,32 +39,26 @@ namespace HealthGateway.AccountDataAccess.Patient
 
         private static Name ExtractPreferredName(PatientIdentity patientIdentity)
         {
-            StringBuilder sb = new();
-            sb.Append(patientIdentity.PreferredFirstName);
-            sb.Append(patientIdentity.PreferredSecondName != null ? Delimiter : string.Empty);
-            sb.Append(patientIdentity.PreferredSecondName);
-            sb.Append(patientIdentity.PreferredThirdName != null ? Delimiter : string.Empty);
-            sb.Append(patientIdentity.PreferredThirdName);
+            string? preferredName = AddToString(string.Empty, patientIdentity.PreferredFirstName);
+            preferredName = AddToString(preferredName, patientIdentity.PreferredSecondName);
+            preferredName = AddToString(preferredName, patientIdentity.PreferredThirdName);
 
             return new()
             {
-                GivenName = sb.ToString().Trim(),
+                GivenName = preferredName ?? string.Empty,
                 Surname = patientIdentity.PreferredLastName ?? string.Empty,
             };
         }
 
         private static Name ExtractLegalName(PatientIdentity patientIdentity)
         {
-            StringBuilder sb = new();
-            sb.Append(patientIdentity.LegalFirstName);
-            sb.Append(patientIdentity.LegalSecondName != null ? Delimiter : string.Empty);
-            sb.Append(patientIdentity.LegalSecondName);
-            sb.Append(patientIdentity.LegalThirdName != null ? Delimiter : string.Empty);
-            sb.Append(patientIdentity.LegalThirdName);
+            string? legalName = AddToString(string.Empty, patientIdentity.LegalFirstName);
+            legalName = AddToString(legalName, patientIdentity.LegalSecondName);
+            legalName = AddToString(legalName, patientIdentity.LegalThirdName);
 
             return new()
             {
-                GivenName = sb.ToString().Trim(),
+                GivenName = legalName ?? string.Empty,
                 Surname = patientIdentity.LegalLastName ?? string.Empty,
             };
         }
@@ -104,11 +97,26 @@ namespace HealthGateway.AccountDataAccess.Patient
             };
         }
 
-        private static void AddToList(List<string> list, string? value)
+        private static string? AddToString(string? existingString, string? value)
+        {
+            if (string.IsNullOrWhiteSpace(existingString))
+            {
+                return value;
+            }
+
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                return existingString;
+            }
+
+            return $"{existingString}{Delimiter}{value}";
+        }
+
+        private static void AddToList(List<string> existingList, string? value)
         {
             if (value != null)
             {
-                list.Add(value);
+                existingList.Add(value);
             }
         }
     }

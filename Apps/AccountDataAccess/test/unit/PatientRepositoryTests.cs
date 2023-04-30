@@ -156,13 +156,13 @@ namespace AccountDataAccessTest
         {
             const string delimiter = " ";
 
-            string expectedPreferredGivenName = PhsaPreferredFirstName + delimiter + PhsaPreferredSecondName + delimiter + PhsaPreferredThirdName;
+            string expectedPreferredGivenName = $"{PhsaPreferredFirstName}{delimiter}{PhsaPreferredSecondName}{delimiter}{PhsaPreferredThirdName}";
             string expectedPreferredSurname = PhsaPreferredLastName;
 
             string expectedCommonGivenName = expectedPreferredGivenName;
             string expectedCommonSurname = expectedPreferredSurname;
 
-            string expectedLegalGivenName = PhsaLegalFirstName + delimiter + PhsaLegalSecondName + delimiter + PhsaLegalThirdName;
+            string expectedLegalGivenName = $"{PhsaLegalFirstName}{delimiter}{PhsaLegalSecondName}{delimiter}{PhsaLegalThirdName}";
             string expectedLegalSurname = PhsaLegalLastName;
 
             PatientModel expectedPatient = new()
