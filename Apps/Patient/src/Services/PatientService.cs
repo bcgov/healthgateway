@@ -60,11 +60,11 @@ namespace HealthGateway.Patient.Services
         {
             using Activity? activity = Source.StartActivity();
 
-            this.logger.LogDebug("Starting GetPatient for identifier type: {IdentifierType}", identifierType);
-
             PatientDetailsQuery query = identifierType == PatientIdentifierType.Hdid
                 ? new PatientDetailsQuery(Hdid: identifier, Source: PatientDetailSource.AllCache)
                 : new PatientDetailsQuery(identifier, Source: PatientDetailSource.AllCache);
+
+            this.logger.LogDebug("Starting GetPatient for identifier type: {IdentifierType} and patient data source: {Source}", identifierType, query.Source);
 
             PatientModel? patientDetails = (await this.patientRepository.Query(query, ct).ConfigureAwait(true)).Items.SingleOrDefault();
 
