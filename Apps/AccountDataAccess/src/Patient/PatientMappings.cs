@@ -31,7 +31,6 @@ namespace HealthGateway.AccountDataAccess.Patient
                 .ForMember(d => d.Birthdate, opts => opts.MapFrom(s => s.Dob))
                 .ForMember(d => d.CommonName, opts => opts.MapFrom(s => ExtractPreferredName(s)))
                 .ForMember(d => d.LegalName, opts => opts.MapFrom(s => ExtractLegalName(s)))
-                .ForMember(d => d.PreferredName, opts => opts.MapFrom(s => ExtractPreferredName(s)))
                 .ForMember(d => d.PhysicalAddress, opts => opts.MapFrom(s => ExtractPhysicalAddress(s)))
                 .ForMember(d => d.PostalAddress, opts => opts.MapFrom(s => ExtractPostalAddress(s)))
                 .ForMember(d => d.IsDeceased, opts => opts.MapFrom(s => s.HasDeathIndicator));
@@ -63,38 +62,70 @@ namespace HealthGateway.AccountDataAccess.Patient
             };
         }
 
-        private static Address ExtractPhysicalAddress(PatientIdentity patientIdentity)
+        private static Address? ExtractPhysicalAddress(PatientIdentity patientIdentity)
         {
-            List<string> streetLines = new();
-            AddToList(streetLines, patientIdentity.HomeAddressStreetOne);
-            AddToList(streetLines, patientIdentity.HomeAddressStreetTwo);
-            AddToList(streetLines, patientIdentity.HomeAddressStreetThree);
-
-            return new()
+            if (ShouldReturnHomeAddress(patientIdentity))
             {
-                StreetLines = streetLines,
-                City = patientIdentity.HomeAddressCity ?? string.Empty,
-                PostalCode = patientIdentity.HomeAddressPostal ?? string.Empty,
-                State = patientIdentity.HomeAddressProvState ?? string.Empty,
-                Country = patientIdentity.HomeAddressCountry ?? string.Empty,
-            };
+                List<string> streetLines = new();
+                AddToList(streetLines, patientIdentity.HomeAddressStreetOne);
+                AddToList(streetLines, patientIdentity.HomeAddressStreetTwo);
+                AddToList(streetLines, patientIdentity.HomeAddressStreetThree);
+
+                return new()
+                {
+                    StreetLines = streetLines,
+                    City = patientIdentity.HomeAddressCity ?? string.Empty,
+                    PostalCode = patientIdentity.HomeAddressPostal ?? string.Empty,
+                    State = patientIdentity.HomeAddressProvState ?? string.Empty,
+                    Country = patientIdentity.HomeAddressCountry ?? string.Empty,
+                };
+            }
+
+            return null;
         }
 
-        private static Address ExtractPostalAddress(PatientIdentity patientIdentity)
+        private static Address? ExtractPostalAddress(PatientIdentity patientIdentity)
         {
-            List<string> streetLines = new();
-            AddToList(streetLines, patientIdentity.MailAddressStreetOne);
-            AddToList(streetLines, patientIdentity.MailAddressStreetTwo);
-            AddToList(streetLines, patientIdentity.MailAddressStreetThree);
-
-            return new()
+            if (ShouldReturnPostalAddress(patientIdentity))
             {
-                StreetLines = streetLines,
-                City = patientIdentity.MailAddressCity ?? string.Empty,
-                PostalCode = patientIdentity.MailAddressPostal ?? string.Empty,
-                State = patientIdentity.MailAddressProvState ?? string.Empty,
-                Country = patientIdentity.MailAddressCountry ?? string.Empty,
-            };
+                List<string> streetLines = new();
+                AddToList(streetLines, patientIdentity.MailAddressStreetOne);
+                AddToList(streetLines, patientIdentity.MailAddressStreetTwo);
+                AddToList(streetLines, patientIdentity.MailAddressStreetThree);
+
+                return new()
+                {
+                    StreetLines = streetLines,
+                    City = patientIdentity.MailAddressCity ?? string.Empty,
+                    PostalCode = patientIdentity.MailAddressPostal ?? string.Empty,
+                    State = patientIdentity.MailAddressProvState ?? string.Empty,
+                    Country = patientIdentity.MailAddressCountry ?? string.Empty,
+                };
+            }
+
+            return null;
+        }
+
+        private static bool ShouldReturnHomeAddress(PatientIdentity patientIdentity)
+        {
+            return !string.IsNullOrWhiteSpace(patientIdentity.HomeAddressStreetOne) ||
+                   !string.IsNullOrWhiteSpace(patientIdentity.HomeAddressStreetTwo) ||
+                   !string.IsNullOrWhiteSpace(patientIdentity.HomeAddressStreetThree) ||
+                   !string.IsNullOrWhiteSpace(patientIdentity.HomeAddressCity) ||
+                   !string.IsNullOrWhiteSpace(patientIdentity.HomeAddressPostal) ||
+                   !string.IsNullOrWhiteSpace(patientIdentity.HomeAddressProvState) ||
+                   !string.IsNullOrWhiteSpace(patientIdentity.HomeAddressCountry);
+        }
+
+        private static bool ShouldReturnPostalAddress(PatientIdentity patientIdentity)
+        {
+            return !string.IsNullOrWhiteSpace(patientIdentity.MailAddressStreetOne) ||
+                   !string.IsNullOrWhiteSpace(patientIdentity.MailAddressStreetTwo) ||
+                   !string.IsNullOrWhiteSpace(patientIdentity.MailAddressStreetThree) ||
+                   !string.IsNullOrWhiteSpace(patientIdentity.MailAddressCity) ||
+                   !string.IsNullOrWhiteSpace(patientIdentity.MailAddressPostal) ||
+                   !string.IsNullOrWhiteSpace(patientIdentity.MailAddressProvState) ||
+                   !string.IsNullOrWhiteSpace(patientIdentity.MailAddressCountry);
         }
 
         private static string? AddToString(string? existingString, string? value)
