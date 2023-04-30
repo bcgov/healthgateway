@@ -24,7 +24,7 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
     using Microsoft.Extensions.Logging;
 
     /// <summary>
-    /// Provides ASP.Net Services related to Authentication and Authorization services.
+    /// Provides ASP.Net Services related to Audit services.
     /// </summary>
     [ExcludeFromCodeCoverage]
     public static class Audit

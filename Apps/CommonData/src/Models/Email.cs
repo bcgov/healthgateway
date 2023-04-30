@@ -16,6 +16,7 @@
 namespace HealthGateway.Common.Data.Models
 {
     using System;
+    using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Diagnostics.CodeAnalysis;
@@ -51,16 +52,32 @@ namespace HealthGateway.Common.Data.Models
         /// <summary>
         /// Gets or sets the Subject line of the email.
         /// </summary>
-        [Required]
         [MaxLength(100)]
         public string? Subject { get; set; }
 
         /// <summary>
         /// Gets or sets the Body of the email.
         /// </summary>
-        [Required]
         [Column(TypeName = "text")]
         public string? Body { get; set; }
+
+        /// <summary>
+        /// Gets or sets the external template id to use to generate the email.
+        /// </summary>
+        [MaxLength(60)]
+        public string? Template { get; set; }
+
+        /// <summary>
+        /// Gets or sets the GC Notify notification id if sent using GC Notify.
+        /// </summary>
+        public Guid? NotificationId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the Body personalization for the email.
+        /// </summary>
+        [Column(TypeName = "jsonb")]
+        [SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "Team decision")]
+        public Dictionary<string, string>? Personalization { get; set; }
 
         /// <summary>
         /// Gets or sets the Email Format (HTML/Text).

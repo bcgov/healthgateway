@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,19 +13,25 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Common.Jobs
+namespace HealthGateway.JobScheduler.Models.Notify
 {
-    using System;
+    using System.Text.Json.Serialization;
 
     /// <summary>
-    /// A Job to send emails.
+    /// Represents the content of an SMS.
     /// </summary>
-    public interface IEmailJob
+    public class SmsContent
     {
         /// <summary>
-        /// Sends an email immediately if Priority is standard or higher.
+        /// Gets or sets the SMS body.
         /// </summary>
-        /// <param name="emailId">The stored emailId to send.</param>
-        void SendEmail(Guid emailId);
+        [JsonPropertyName("body")]
+        public string? Body { get; set; }
+
+        /// <summary>
+        /// Gets or sets the from number.
+        /// </summary>
+        [JsonPropertyName("from_number")]
+        public string? FromNumber { get; set; }
     }
 }
