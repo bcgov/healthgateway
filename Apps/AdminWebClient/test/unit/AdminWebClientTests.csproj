@@ -37,9 +37,6 @@
     <ProjectReference Include="..\..\src\AdminWebClient.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Services.Test\" />
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="UnitTest.json">
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

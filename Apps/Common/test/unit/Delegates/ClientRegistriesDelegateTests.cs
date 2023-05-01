@@ -16,7 +16,9 @@
 namespace HealthGateway.CommonTests.Delegates
 {
     using System;
+    using System.Collections.Generic;
     using System.Globalization;
+    using System.Linq;
     using System.Net;
     using System.Security.Claims;
     using System.Security.Principal;
@@ -149,7 +151,7 @@ namespace HealthGateway.CommonTests.Delegates
             string expectedGender = "Female";
             Address expectedPhysicalAddr = new()
             {
-                StreetLines = { "Line 1", "Line 2", "Physical" },
+                StreetLines = new List<string> { "Line 1", "Line 2", "Physical" },
                 City = "city",
                 Country = "CA",
                 PostalCode = "N0N0N0",
@@ -157,7 +159,7 @@ namespace HealthGateway.CommonTests.Delegates
             };
             Address expectedPostalAddr = new()
             {
-                StreetLines = { "Line 1", "Line 2", "Postal" },
+                StreetLines = new List<string> { "Line 1", "Line 2", "Postal" },
                 City = "city",
                 Country = "CA",
                 PostalCode = "N0N0N0",
@@ -190,9 +192,9 @@ namespace HealthGateway.CommonTests.Delegates
                             {
                                 Text = new[]
                                 {
-                                    expectedPhysicalAddr.StreetLines[0],
-                                    expectedPhysicalAddr.StreetLines[1],
-                                    expectedPhysicalAddr.StreetLines[2],
+                                    expectedPhysicalAddr.StreetLines.ElementAt(0),
+                                    expectedPhysicalAddr.StreetLines.ElementAt(1),
+                                    expectedPhysicalAddr.StreetLines.ElementAt(2),
                                 },
                             },
                             new ADCity
@@ -237,9 +239,9 @@ namespace HealthGateway.CommonTests.Delegates
                             {
                                 Text = new[]
                                 {
-                                    expectedPostalAddr.StreetLines[0],
-                                    expectedPostalAddr.StreetLines[1],
-                                    expectedPostalAddr.StreetLines[2],
+                                    expectedPostalAddr.StreetLines.ElementAt(0),
+                                    expectedPostalAddr.StreetLines.ElementAt(1),
+                                    expectedPostalAddr.StreetLines.ElementAt(2),
                                 },
                             },
                             new ADCity

@@ -15,6 +15,7 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Common.Data.Tests.Utils
 {
+    using System.Collections.Generic;
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Data.Utils;
     using Xunit;
@@ -35,7 +36,7 @@ namespace HealthGateway.Common.Data.Tests.Utils
             // Arrange
             Address address = new()
             {
-                StreetLines = { "1025 Sutlej Street" },
+                StreetLines = new List<string> { "1025 Sutlej Street" },
                 City = "Victoria",
                 State = "BC",
                 PostalCode = "V8V2V8",
@@ -59,7 +60,7 @@ namespace HealthGateway.Common.Data.Tests.Utils
             // Arrange
             Address address = new()
             {
-                StreetLines = { "1025 Sutlej Street", "Suite 310" },
+                StreetLines = new List<string> { "1025 Sutlej Street", "Suite 310" },
                 City = "Victoria",
                 State = "BC",
                 PostalCode = "V8V2V8",
@@ -83,7 +84,7 @@ namespace HealthGateway.Common.Data.Tests.Utils
             // Arrange
             Address address = new()
             {
-                StreetLines = { "1025 Sutlej Street", "Suite 310" },
+                StreetLines = new List<string> { "1025 Sutlej Street", "Suite 310" },
                 City = "Victoria",
                 PostalCode = "V8V2V8",
             };
@@ -106,7 +107,7 @@ namespace HealthGateway.Common.Data.Tests.Utils
             // Arrange
             Address address = new()
             {
-                StreetLines = { "1025 Sutlej Street", "Suite 310" },
+                StreetLines = new List<string> { "1025 Sutlej Street", "Suite 310" },
                 City = "Victoria",
                 State = "BC",
             };

@@ -19,8 +19,8 @@ using System.Runtime.CompilerServices;
 
 namespace HealthGateway.AccountDataAccess.Patient
 {
-    using System;
     using System.Collections.Generic;
+    using System.Linq;
 
     /// <summary>
     /// Represents an address.
@@ -28,16 +28,9 @@ namespace HealthGateway.AccountDataAccess.Patient
     public class Address
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="Address"/> class.
-        /// </summary>
-        public Address()
-        {
-        }
-
-        /// <summary>
         /// Gets or sets the street lines.
         /// </summary>
-        public IEnumerable<string> StreetLines { get; set; } = Array.Empty<string>();
+        public IEnumerable<string> StreetLines { get; set; } = Enumerable.Empty<string>();
 
         /// <summary>
         /// Gets or sets the city name.

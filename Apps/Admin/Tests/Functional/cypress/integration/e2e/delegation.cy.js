@@ -14,7 +14,7 @@ function performSearch(phn) {
 
 function getTableRows(tableSelector) {
     cy.get(tableSelector).should("be.visible");
-    return cy.get(`${tableSelector} tbody`).find("tr");
+    return cy.get(`${tableSelector} tbody`).find("tr.mud-table-row");
 }
 
 describe("Delegation Search", () => {
@@ -34,7 +34,7 @@ describe("Delegation Search", () => {
 
         getTableRows("[data-testid=dependent-table]")
             .should("have.length", 1)
-            .within(($rows) => {
+            .within((_$rows) => {
                 cy.get("[data-testid=dependent-name]").should("not.be.empty");
                 cy.get("[data-testid=dependent-dob]").should("not.be.empty");
                 cy.get("[data-testid=dependent-address]").should(
@@ -53,7 +53,7 @@ describe("Delegation Search", () => {
 
         getTableRows("[data-testid=dependent-table]")
             .should("have.length", 1)
-            .within(($rows) => {
+            .within((_$rows) => {
                 cy.get("[data-testid=dependent-name]").should("not.be.empty");
                 cy.get("[data-testid=dependent-dob]").should("not.be.empty");
                 cy.get("[data-testid=dependent-address]").should(
@@ -69,7 +69,7 @@ describe("Delegation Search", () => {
             .within(($rows) => {
                 cy.wrap($rows)
                     .eq(0)
-                    .within(($row) => {
+                    .within((_$row) => {
                         cy.get("[data-testid=delegate-name]").should(
                             "not.be.empty"
                         );

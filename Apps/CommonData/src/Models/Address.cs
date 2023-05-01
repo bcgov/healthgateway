@@ -16,7 +16,7 @@
 namespace HealthGateway.Common.Data.Models
 {
     using System.Collections.Generic;
-    using System.Text.Json.Serialization;
+    using System.Linq;
 
     /// <summary>
     /// Represents an address.
@@ -24,27 +24,9 @@ namespace HealthGateway.Common.Data.Models
     public class Address
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="Address"/> class.
+        /// Gets or sets the street lines.
         /// </summary>
-        public Address()
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Address"/> class.
-        /// </summary>
-        /// <param name="streetLines">The list of address street lines.</param>
-        [JsonConstructor]
-        public Address(
-            IList<string> streetLines)
-        {
-            this.StreetLines = streetLines;
-        }
-
-        /// <summary>
-        /// Gets the street lines.
-        /// </summary>
-        public IList<string> StreetLines { get; } = new List<string>();
+        public IEnumerable<string> StreetLines { get; set; } = Enumerable.Empty<string>();
 
         /// <summary>
         /// Gets or sets the city name.
@@ -65,14 +47,5 @@ namespace HealthGateway.Common.Data.Models
         /// Gets or sets the country.
         /// </summary>
         public string Country { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Adds an address line to the internal lines list.
-        /// </summary>
-        /// <param name="line">The address line to add.</param>
-        public void AddLine(string line)
-        {
-            this.StreetLines.Add(line);
-        }
     }
 }

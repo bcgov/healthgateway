@@ -19,6 +19,7 @@ namespace HealthGateway.Database.Delegates
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using System.Linq;
+    using System.Threading.Tasks;
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Context;
@@ -167,6 +168,12 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
+        public async Task<UserProfile?> GetUserProfileAsync(string hdid)
+        {
+            return await this.dbContext.UserProfile.FindAsync(hdid).ConfigureAwait(true);
+        }
+
+        /// <inheritdoc/>
         public DbResult<List<UserProfile>> GetUserProfiles(IList<string> hdIds)
         {
             this.logger.LogTrace("Getting user profiles from DB...");
@@ -181,32 +188,18 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public DbResult<List<UserProfile>> GetUserProfiles(UserQueryType queryType, string queryString)
+        public async Task<IList<UserProfile>> GetUserProfilesAsync(UserQueryType queryType, string queryString)
         {
-            this.logger.LogTrace("Getting user profiles via message verification from DB for type {QueryType}: {QueryString}", queryType, queryString);
-            DbResult<List<UserProfile>> result = new();
-
-            switch (queryType)
+            IQueryable<UserProfile> dbQuery = this.dbContext.UserProfile;
+            dbQuery = queryType switch
             {
-                case UserQueryType.Email:
-                    result.Payload = this.dbContext.UserProfile
-                        .Where(user => user.Verifications.Any(v => v.Email != null && EF.Functions.ILike(v.Email.To, $"%{queryString}%")))
-                        .GroupBy(user => user.HdId)
-                        .Select(x => x.First())
-                        .ToList();
-                    break;
-                case UserQueryType.Sms:
-                    result.Payload = this.dbContext.UserProfile
-                        .Where(user => user.Verifications.Any(v => EF.Functions.ILike(v.SmsNumber, $"%{queryString}%")))
-                        .GroupBy(user => user.HdId)
-                        .Select(x => x.First())
-                        .ToList();
-                    break;
-            }
+                UserQueryType.Email => dbQuery.Where(user => user.Verifications.Any(v => v.Email != null && EF.Functions.ILike(v.Email.To, $"%{queryString}%"))),
+                UserQueryType.Sms => dbQuery.Where(user => user.Verifications.Any(v => EF.Functions.ILike(v.SmsNumber, $"%{queryString}%"))),
+                _ => throw new ArgumentOutOfRangeException(nameof(queryType)),
+            };
+            dbQuery = dbQuery.GroupBy(user => user.HdId).Select(x => x.First());
 
-            result.Status = DbStatusCode.Read;
-            this.logger.LogDebug("Finished getting user profiles from DB");
-            return result;
+            return await dbQuery.ToArrayAsync().ConfigureAwait(true);
         }
 
         /// <inheritdoc/>

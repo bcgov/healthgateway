@@ -18,10 +18,11 @@ namespace HealthGateway.PatientTests.Controllers
     using System;
     using System.Threading;
     using DeepEqual.Syntax;
-    using HealthGateway.AccountDataAccess.Patient;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.Constants;
+    using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Data.ViewModels;
+    using HealthGateway.Common.Models;
     using HealthGateway.Common.Services;
     using HealthGateway.Patient.Controllers;
     using HealthGateway.Patient.Models;
@@ -29,8 +30,6 @@ namespace HealthGateway.PatientTests.Controllers
     using Microsoft.AspNetCore.Mvc;
     using Moq;
     using Xunit;
-    using Address = HealthGateway.Common.Data.Models.Address;
-    using PatientModel = HealthGateway.Common.Models.PatientModel;
 
     /// <summary>
     /// Unit Tests for PatientController.
