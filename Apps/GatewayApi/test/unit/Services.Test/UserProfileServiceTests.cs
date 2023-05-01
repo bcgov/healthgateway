@@ -54,7 +54,6 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         private readonly string hdid = Guid.NewGuid().ToString();
         private readonly Guid termsOfServiceGuid = Guid.Parse("c99fd839-b4a2-40f9-b103-529efccd0dcd");
 
-
         /// <summary>
         /// GetUserProfile call - test for status Read, Error and NotFound.
         /// </summary>
@@ -131,8 +130,8 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 Value = true.ToString(),
             };
 
-            List<UserPreference> userPreferences = new();
-            userPreferences.Add(dbUserPreference);
+            List<UserPreference> userPreferences = new()
+                { dbUserPreference };
 
             DbResult<IEnumerable<UserPreference>> readResult = new()
             {
@@ -194,64 +193,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         [InlineData(DbStatusCode.Read, DbStatusCode.Error, ResultType.Error)]
         public void ShouldUpdateTerms(DbStatusCode readStatus, DbStatusCode updatedStatus, ResultType resultStatus)
         {
-            UserProfile userProfile = new()
-            {
-                HdId = this.hdid,
-                TermsOfServiceId = this.termsOfServiceGuid,
-                Email = "unit.test@hgw.ca",
-            };
-
-            DbResult<UserProfile> readProfileDbResult = new()
-            {
-                Payload = userProfile,
-                Status = readStatus,
-            };
-
-            DbResult<UserProfile> updatedProfileDbResult = new()
-            {
-                Payload = userProfile,
-                Status = updatedStatus,
-            };
-
-            DbResult<LegalAgreement> tosDbResult = new()
-            {
-                Status = DbStatusCode.Read,
-                Payload = new LegalAgreement
-                {
-                    Id = Guid.Empty,
-                    CreatedBy = "MockData",
-                    CreatedDateTime = DateTime.UtcNow,
-                    EffectiveDate = DateTime.UtcNow,
-                    LegalAgreementCode = LegalAgreementType.TermsOfService,
-                    LegalText = "Mock Terms of Service",
-                },
-            };
-
-            Mock<ICacheProvider> mockCacheProvider = new();
-            Mock<IApplicationSettingsDelegate> mockApplicationSettingsDelegate = new();
-            Mock<ILegalAgreementDelegate> mockLegalAgreementDelegate = new();
-            mockLegalAgreementDelegate.Setup(s => s.GetActiveByAgreementType(LegalAgreementType.TermsOfService)).Returns(tosDbResult);
-            Mock<IUserProfileDelegate> mockUserProfileDelegate = new();
-            mockUserProfileDelegate.Setup(s => s.GetUserProfile(It.IsAny<string>())).Returns(readProfileDbResult);
-            mockUserProfileDelegate.Setup(s => s.Update(It.IsAny<UserProfile>(), true)).Returns(updatedProfileDbResult);
-            IUserProfileService service = new UserProfileService(
-                new Mock<ILogger<UserProfileService>>().Object,
-                new Mock<IPatientService>().Object,
-                new Mock<IUserEmailService>().Object,
-                new Mock<IUserSmsService>().Object,
-                new Mock<IEmailQueueService>().Object,
-                new Mock<INotificationSettingsService>().Object,
-                mockUserProfileDelegate.Object,
-                new Mock<IUserPreferenceDelegate>().Object,
-                mockLegalAgreementDelegate.Object,
-                new Mock<IMessagingVerificationDelegate>().Object,
-                new Mock<ICryptoDelegate>().Object,
-                new Mock<IHttpContextAccessor>().Object,
-                GetIConfigurationRoot(null),
-                MapperUtil.InitializeAutoMapper(),
-                new Mock<IAuthenticationDelegate>().Object,
-                mockApplicationSettingsDelegate.Object,
-                mockCacheProvider.Object);
+            IUserProfileService service = this.BuildCustomUserProfileServiceMock(readStatus, updatedStatus);
             RequestResult<UserProfileModel> actualResult = service.UpdateAcceptedTerms(this.hdid, Guid.Empty);
 
             Assert.True(actualResult.ResultStatus == resultStatus);
@@ -431,8 +373,8 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 Value = true.ToString(),
             };
 
-            List<UserPreferenceModel> userPreferences = new();
-            userPreferences.Add(userPreferenceModel);
+            List<UserPreferenceModel> userPreferences = new()
+                { userPreferenceModel };
 
             List<UserPreference> dbUserPreferences = new();
             IMapper autoMapper = MapperUtil.InitializeAutoMapper();
@@ -621,7 +563,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         }
 
         /// <summary>
-        /// CloseUserProfile - Happy Path with email notificaition.
+        /// CloseUserProfile - Happy Path with email notification.
         /// </summary>
         [Fact]
         public void ShouldCloseUserProfileAndQueueNewEmail()
@@ -737,6 +679,70 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 .AddJsonFile("UnitTest.json", true)
                 .AddInMemoryCollection(myConfiguration.ToList())
                 .Build();
+        }
+
+        private IUserProfileService BuildCustomUserProfileServiceMock(DbStatusCode readStatus, DbStatusCode updatedStatus)
+        {
+            UserProfile userProfile = new()
+            {
+                HdId = this.hdid,
+                TermsOfServiceId = this.termsOfServiceGuid,
+                Email = "unit.test@hgw.ca",
+            };
+
+            DbResult<UserProfile> readProfileDbResult = new()
+            {
+                Payload = userProfile,
+                Status = readStatus,
+            };
+
+            DbResult<UserProfile> updatedProfileDbResult = new()
+            {
+                Payload = userProfile,
+                Status = updatedStatus,
+            };
+
+            DbResult<LegalAgreement> tosDbResult = new()
+            {
+                Status = DbStatusCode.Read,
+                Payload = new LegalAgreement
+                {
+                    Id = Guid.Empty,
+                    CreatedBy = "MockData",
+                    CreatedDateTime = DateTime.UtcNow,
+                    EffectiveDate = DateTime.UtcNow,
+                    LegalAgreementCode = LegalAgreementType.TermsOfService,
+                    LegalText = "Mock Terms of Service",
+                },
+            };
+
+            Mock<ICacheProvider> mockCacheProvider = new();
+            Mock<IApplicationSettingsDelegate> mockApplicationSettingsDelegate = new();
+            Mock<ILegalAgreementDelegate> mockLegalAgreementDelegate = new();
+            mockLegalAgreementDelegate.Setup(s => s.GetActiveByAgreementType(LegalAgreementType.TermsOfService)).Returns(tosDbResult);
+            Mock<IUserProfileDelegate> mockUserProfileDelegate = new();
+            mockUserProfileDelegate.Setup(s => s.GetUserProfile(It.IsAny<string>())).Returns(readProfileDbResult);
+            mockUserProfileDelegate.Setup(s => s.Update(It.IsAny<UserProfile>(), true)).Returns(updatedProfileDbResult);
+            IUserProfileService service = new UserProfileService(
+                new Mock<ILogger<UserProfileService>>().Object,
+                new Mock<IPatientService>().Object,
+                new Mock<IUserEmailService>().Object,
+                new Mock<IUserSmsService>().Object,
+                new Mock<IEmailQueueService>().Object,
+                new Mock<INotificationSettingsService>().Object,
+                mockUserProfileDelegate.Object,
+                new Mock<IUserPreferenceDelegate>().Object,
+                mockLegalAgreementDelegate.Object,
+                new Mock<IMessagingVerificationDelegate>().Object,
+                new Mock<ICryptoDelegate>().Object,
+                new Mock<IHttpContextAccessor>().Object,
+                GetIConfigurationRoot(null),
+                MapperUtil.InitializeAutoMapper(),
+                new Mock<IAuthenticationDelegate>().Object,
+                mockApplicationSettingsDelegate.Object,
+                mockCacheProvider.Object);
+
+            return service;
         }
     }
 }
