@@ -1,6 +1,7 @@
 const email = "fakeemail@healthgateway.gov.bc.ca";
 const emailNotFound = "fakeemail_noresults@healthgateway.gov.bc.ca";
 const emailHdid = "DEV4FPEGCXG2NB5K2USBL52S66SC3GOUHWRP3GTXR2BTY5HEC4YA";
+const emailPhn = "9735353759";
 const phn = "9735353315";
 const hdid = "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A";
 const hdidNotFound = "P123456789";
@@ -8,18 +9,20 @@ const sms = "2506715000";
 const smsNotFound = "5551234567";
 const dependentPhn = "9874307175";
 
-function verifyUserTableResults(queryType) {
-    // Expecting 1 row to return but you also need to consider the table headers. As a result, length should be 2.
-    cy.get("[data-testid=user-table]").find("tr").should("have.length", 2);
+function getTableRows(tableSelector) {
+    cy.get(tableSelector).should("be.visible");
+    return cy.get(`${tableSelector} tbody`).find("tr.mud-table-row");
+}
 
-    // Hdid is unique and is used as a unique identifier for each row in the table.
-    cy.get(`[data-testid=user-table-hdid-${hdid}]`).contains(hdid);
-
-    if (queryType === "SMS") {
-        cy.get(`[data-testid=user-table-phn-${hdid}]`).should("be.empty");
-    } else {
-        cy.get(`[data-testid=user-table-phn-${hdid}]`).contains(phn);
-    }
+function verifyUserTableResults(expectedRowCount = 1) {
+    getTableRows("[data-testid=user-table]")
+        .should("have.length", expectedRowCount)
+        .first((_$rows) => {
+            cy.get(`[data-testid=user-table-hdid-${hdid}]`).contains(
+                hdid.slice(0, 8)
+            );
+            cy.get(`[data-testid=user-table-phn-${hdid}]`).contains(phn);
+        });
 }
 
 describe("Support", () => {
@@ -39,7 +42,7 @@ describe("Support", () => {
             .click({ force: true });
         cy.get("[data-testid=query-input]").clear().type(phn);
         cy.get("[data-testid=search-btn]").click();
-        verifyUserTableResults("PHN");
+        verifyUserTableResults();
 
         // Search by HDID.
         cy.get("[data-testid=query-type-select]").click({ force: true });
@@ -48,20 +51,7 @@ describe("Support", () => {
             .click({ force: true });
         cy.get("[data-testid=query-input]").clear().type(hdid);
         cy.get("[data-testid=search-btn]").click();
-        verifyUserTableResults("HDID");
-
-        // Click user expand details button to verify messaging verification table results
-        cy.get(
-            `[data-testid=messaging-verification-table-expand-btn-${hdid}]`
-        ).click({ force: true });
-
-        // Verify MessagingVerifiction table - expecting 2 rows to return but you also need to consider the table headers. As a result, length should be 3.
-        cy.get("[data-testid=messaging-verification-table]")
-            .find("tr")
-            .should("have.length", 3);
-        cy.get("[data-testid=messaging-verification-table-email-sms").contains(
-            sms
-        );
+        verifyUserTableResults();
 
         // Search by SMS.
         cy.get("[data-testid=query-type-select]").click({ force: true });
@@ -70,7 +60,7 @@ describe("Support", () => {
             .click({ force: true });
         cy.get("[data-testid=query-input]").clear().type(sms);
         cy.get("[data-testid=search-btn]").click();
-        verifyUserTableResults("SMS");
+        verifyUserTableResults(2);
 
         // Search by Email.
         cy.get("[data-testid=query-type-select]").click({ force: true });
@@ -79,11 +69,11 @@ describe("Support", () => {
             .click({ force: true });
         cy.get("[data-testid=query-input]").clear().type(email);
         cy.get("[data-testid=search-btn]").click();
-        cy.get("[data-testid=user-table]").find("tr").should("have.length", 2);
+        getTableRows("[data-testid=user-table]").should("have.length", 1);
         cy.get(`[data-testid=user-table-hdid-${emailHdid}]`).contains(
-            emailHdid
+            emailHdid.slice(0, 8)
         );
-        cy.get(`[data-testid=user-table-phn-${emailHdid}]`).should("be.empty");
+        cy.get(`[data-testid=user-table-phn-${emailHdid}]`).contains(emailPhn);
     });
 
     it("Verify no results hdid query.", () => {
@@ -112,7 +102,7 @@ describe("Support", () => {
             .click({ force: true });
         cy.get("[data-testid=query-input]").clear().type(smsNotFound);
         cy.get("[data-testid=search-btn]").click();
-        cy.get("[data-testid=user-table]").find("tr").should("have.length", 1);
+        getTableRows("[data-testid=user-table]").should("have.length", 0);
     });
 
     it("Verify no results email query.", () => {
@@ -122,7 +112,7 @@ describe("Support", () => {
             .click({ force: true });
         cy.get("[data-testid=query-input]").clear().type(emailNotFound);
         cy.get("[data-testid=search-btn]").click();
-        cy.get("[data-testid=user-table]").find("tr").should("have.length", 1);
+        getTableRows("[data-testid=user-table]").should("have.length", 0);
     });
 
     it("Verify dependents query returns results.", () => {
@@ -132,6 +122,6 @@ describe("Support", () => {
             .click({ force: true });
         cy.get("[data-testid=query-input]").clear().type(dependentPhn);
         cy.get("[data-testid=search-btn]").click();
-        cy.get("[data-testid=user-table]").find("tr").should("have.length", 2);
+        getTableRows("[data-testid=user-table]").should("have.length", 1);
     });
 });

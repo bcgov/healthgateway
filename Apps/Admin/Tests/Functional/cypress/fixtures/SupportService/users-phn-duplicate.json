@@ -1,21 +1,25 @@
-{
-    "resourcePayload": [
-        {
-            "personalHealthNumber": "9873967163",
-            "hdid": "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A",
-            "lastLoginDateTime": "2022-10-14T19:00:26.631761Z",
-            "physicalAddress": "3815 HILLSPOINT STREET, CHATHAM, BC, V0G8B8",
-            "postalAddress": "2000 MAIN STREET, VICTORIA, BC, V0G8B8"
-        }
-    ],
-    "totalResultCount": null,
-    "pageIndex": null,
-    "pageSize": null,
-    "resultStatus": 2,
-    "resultError": {
-        "resultMessage": "Warning: The person returned is the subject of an potential duplicate",
-        "errorCode": "BCHCIM.GD.0.0021",
-        "traceId": "beb0fde2de3c599e1570bd0cb49162e7",
-        "actionCode": "WARNING"
+[
+    {
+        "status": "Default",
+        "warningMessage": "Warning: The person returned is the subject of an potential duplicate",
+        "hdid": "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A",
+        "personalHealthNumber": "9873967163",
+        "commonName": {
+            "givenName": "BONNET",
+            "surname": "PROTERVITY"
+        },
+        "legalName": {
+            "givenName": "BONNET",
+            "surname": "PROTERVITY"
+        },
+        "preferredName": {
+            "givenName": "BONNET",
+            "surname": "PROTERVITY"
+        },
+        "birthdate": "1967-06-02",
+        "physicalAddress": "3815 HILLSPOINT STREET, CHATHAM, BC, V0G8B8",
+        "postalAddress": "3815 HILLSPOINT STREET, CHATHAM, BC, V0G8B8",
+        "profileCreatedDateTime": "2023-04-29T16:47:23.554687Z",
+        "profileLastLoginDateTime": "2023-05-01T16:47:23.554687Z"
     }
-}
+]

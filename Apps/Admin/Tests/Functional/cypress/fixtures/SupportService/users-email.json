@@ -1,14 +1,25 @@
-{
-    "resourcePayload": [
-        {
-            "personalHealthNumber": "",
-            "hdid": "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A",
-            "lastLoginDateTime": "2022-10-14T19:00:26.631761Z"
-        }
-    ],
-    "totalResultCount": null,
-    "pageIndex": null,
-    "pageSize": null,
-    "resultStatus": 1,
-    "resultError": null
-}
+[
+    {
+        "status": "Default",
+        "warningMessage": "",
+        "hdid": "DEV4FPEGCXG2NB5K2USBL52S66SC3GOUHWRP3GTXR2BTY5HEC4YA",
+        "personalHealthNumber": "9735353759",
+        "commonName": {
+            "givenName": "CHOIR",
+            "surname": "ORPHANING"
+        },
+        "legalName": {
+            "givenName": "CHOIR",
+            "surname": "ORPHANING"
+        },
+        "preferredName": {
+            "givenName": "CHOIR",
+            "surname": "ORPHANING"
+        },
+        "birthdate": "1964-06-04",
+        "physicalAddress": "2854 POYLE STREET, AXBRIDGE, BC, V0C6J8",
+        "postalAddress": "",
+        "profileCreatedDateTime": "2023-01-01T16:47:24.674743Z",
+        "profileLastLoginDateTime": "2023-05-01T16:47:24.674743Z"
+    }
+]
