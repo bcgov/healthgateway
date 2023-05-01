@@ -165,7 +165,7 @@ namespace AccountDataAccessTest
         }
 
         /// <summary>
-        /// Client registry get demographics throws api patient exception given client registry records not found.
+        /// Client registry get demographics throws problem detials exception given an invalid phn.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
