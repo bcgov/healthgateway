@@ -38,7 +38,7 @@ namespace HealthGateway.AccountDataAccess.Patient
 
         private static Name ExtractPreferredName(PatientIdentity patientIdentity)
         {
-            string? preferredName = AddToString(string.Empty, patientIdentity.PreferredFirstName);
+            string? preferredName = patientIdentity.PreferredFirstName;
             preferredName = AddToString(preferredName, patientIdentity.PreferredSecondName);
             preferredName = AddToString(preferredName, patientIdentity.PreferredThirdName);
 
