@@ -145,7 +145,7 @@ namespace HealthGateway.AccountDataAccess.Patient
 
         private static void AddToList(List<string> existingList, string? value)
         {
-            if (value != null)
+            if (!string.IsNullOrEmpty(value))
             {
                 existingList.Add(value);
             }
