@@ -17,6 +17,7 @@ namespace HealthGateway.Common.Utils
 {
     using System;
     using System.Text.Json;
+    using System.Text.Json.Nodes;
     using System.Text.Json.Serialization;
 
     /// <summary>
@@ -34,14 +35,14 @@ namespace HealthGateway.Common.Utils
         /// <inheritdoc/>
         public override T Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
-            var clonedReader = reader;
+            Utf8JsonReader clonedReader = reader;
             Type? actualType = null;
             while (clonedReader.Read())
             {
                 if (clonedReader.TokenType == JsonTokenType.PropertyName && this.Discriminator.Equals(clonedReader.GetString(), StringComparison.OrdinalIgnoreCase))
                 {
                     clonedReader.Read();
-                    var typeValue = clonedReader.GetString();
+                    string? typeValue = clonedReader.GetString();
                     if (string.IsNullOrEmpty(typeValue))
                     {
                         continue;
@@ -72,7 +73,7 @@ namespace HealthGateway.Common.Utils
                 return;
             }
 
-            var serializedValue = JsonSerializer.SerializeToNode(value, value.GetType(), options)!.AsObject();
+            JsonObject serializedValue = JsonSerializer.SerializeToNode(value, value.GetType(), options)!.AsObject();
             serializedValue.Add(this.Discriminator, this.ResolveDiscriminatorValue(value));
             serializedValue.WriteTo(writer, options);
         }
@@ -83,20 +84,29 @@ namespace HealthGateway.Common.Utils
         /// <param name="typeToConvert">The type to convert to.</param>
         /// <param name="actualType">The type parsed from the json payload.</param>
         /// <returns>True if actual type can be converted.</returns>
-        protected virtual bool CanConvert(Type typeToConvert, Type actualType) => typeToConvert.IsAssignableFrom(actualType);
+        protected virtual bool CanConvert(Type typeToConvert, Type actualType)
+        {
+            return typeToConvert.IsAssignableFrom(actualType);
+        }
 
         /// <summary>
         /// Resolves a type for deserialization by the discriminator value.
         /// </summary>
         /// <param name="discriminatorValue">The discovered discriminator value.</param>
         /// <returns>Type to use for deserialization, null if type not found.</returns>
-        protected virtual Type? ResolveType(string discriminatorValue) => Type.GetType(discriminatorValue);
+        protected virtual Type? ResolveType(string discriminatorValue)
+        {
+            return Type.GetType(discriminatorValue);
+        }
 
         /// <summary>
         /// Resolves a discriminator value by the serialized type.
         /// </summary>
         /// <param name="value">The serialized value.</param>
         /// <returns>The discriminator value.</returns>
-        protected virtual string ResolveDiscriminatorValue(T value) => value!.GetType().AssemblyQualifiedName!;
+        protected virtual string ResolveDiscriminatorValue(T value)
+        {
+            return value!.GetType().AssemblyQualifiedName!;
+        }
     }
 }

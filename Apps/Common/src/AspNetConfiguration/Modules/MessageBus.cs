@@ -34,7 +34,7 @@ public static class MessageBus
     /// <param name="configuration">The configuration to use.</param>
     public static void ConfigureMessageBus(IServiceCollection services, IConfiguration configuration)
     {
-        var settings = configuration.GetSection("PhsaV2:ServiceBus").Get<AzureServiceBusSettings>();
+        AzureServiceBusSettings? settings = configuration.GetSection("PhsaV2:ServiceBus").Get<AzureServiceBusSettings>();
         services.Configure<AzureServiceBusSettings>(settings => configuration.GetSection("PhsaV2:ServiceBus").Bind(settings));
         services.AddMessaging(settings);
     }

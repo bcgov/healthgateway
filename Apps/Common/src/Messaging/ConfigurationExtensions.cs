@@ -45,23 +45,21 @@ namespace HealthGateway.Common.Messaging
 
         private static IServiceCollection AddAzureServiceBus(this IServiceCollection services, AzureServiceBusSettings settings)
         {
-            services.AddAzureClients(builder =>
-            {
-                builder.AddServiceBusClient(settings.ConnectionString).WithName(settings.QueueName);
-            });
+            services.AddAzureClients(builder => { builder.AddServiceBusClient(settings.ConnectionString).WithName(settings.QueueName); });
 
             if (settings.UseOutbox)
             {
                 services.AddSingleton<AzureServiceBus>();
                 services.AddSingleton<IMessageSender, OutboxMessageSender>();
                 services.AddSingleton<IMessageReceiver>(sp => sp.GetRequiredService<AzureServiceBus>());
-                services.AddSingleton(sp =>
-                {
-                    var sender = (IMessageSender)sp.GetRequiredService<AzureServiceBus>();
-                    var hangFireJobClient = sp.GetRequiredService<IBackgroundJobClient>();
-                    var logger = sp.GetRequiredService<ILogger<HangFireOutboxStore>>();
-                    return new HangFireOutboxStore(hangFireJobClient, sender, logger);
-                });
+                services.AddSingleton(
+                    sp =>
+                    {
+                        IMessageSender sender = (IMessageSender)sp.GetRequiredService<AzureServiceBus>();
+                        IBackgroundJobClient hangFireJobClient = sp.GetRequiredService<IBackgroundJobClient>();
+                        ILogger<HangFireOutboxStore> logger = sp.GetRequiredService<ILogger<HangFireOutboxStore>>();
+                        return new HangFireOutboxStore(hangFireJobClient, sender, logger);
+                    });
 
                 // ensure Hangfire server instantiate the correct object and dependencies
                 services.AddSingleton<IOutboxStore>(sp => sp.GetRequiredService<HangFireOutboxStore>());
@@ -79,7 +77,7 @@ namespace HealthGateway.Common.Messaging
     /// <summary>
     /// Base class for Messaging configuration settings.
     /// </summary>
-    public abstract record MessagingSettings();
+    public abstract record MessagingSettings;
 
     /// <summary>
     /// Configuration settings for service bus.

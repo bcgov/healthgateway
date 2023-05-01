@@ -46,8 +46,8 @@ internal class AzureServiceBus : IMessageSender, IMessageReceiver, IAsyncDisposa
     public AzureServiceBus(IAzureClientFactory<ServiceBusClient> serviceBusClientFactory, IOptions<AzureServiceBusSettings> settingsOptions, ILogger<AzureServiceBus> logger)
     {
         this.logger = logger;
-        var queueName = settingsOptions.Value.QueueName;
-        var client = serviceBusClientFactory.CreateClient(queueName);
+        string queueName = settingsOptions.Value.QueueName;
+        ServiceBusClient? client = serviceBusClientFactory.CreateClient(queueName);
 
         this.sender = client.CreateSender(queueName);
         this.sessionProcessor = client.CreateSessionProcessor(queueName);
@@ -56,22 +56,23 @@ internal class AzureServiceBus : IMessageSender, IMessageReceiver, IAsyncDisposa
     /// <inheritdoc/>
     public virtual async Task SendAsync(IEnumerable<MessageEnvelope> messages, CancellationToken ct = default)
     {
-        var sbMessages = messages.Select(m =>
-            new ServiceBusMessage()
-            {
-                Body = new BinaryData(m.Content.Serialize(false)),
-                SessionId = m.SessionId ?? string.Empty,
-                ContentType = ContentType.ApplicationJson.ToString(),
-                ApplicationProperties =
+        IEnumerable<ServiceBusMessage> sbMessages = messages.Select(
+            m =>
+                new ServiceBusMessage
                 {
-                    { "$type", m.MessageType },
-                    { "$createdon", m.CreatedOn },
-                    { "$aqn", m.Content.GetType().AssemblyQualifiedName! },
-                },
-            });
+                    Body = new BinaryData(m.Content.Serialize(false)),
+                    SessionId = m.SessionId ?? string.Empty,
+                    ContentType = ContentType.ApplicationJson.ToString(),
+                    ApplicationProperties =
+                    {
+                        { "$type", m.MessageType },
+                        { "$createdon", m.CreatedOn },
+                        { "$aqn", m.Content.GetType().AssemblyQualifiedName! },
+                    },
+                });
 
-        var batch = await this.sender.CreateMessageBatchAsync(ct);
-        var batchId = 1;
+        ServiceBusMessageBatch? batch = await this.sender.CreateMessageBatchAsync(ct);
+        int batchId = 1;
         foreach (ServiceBusMessage message in sbMessages)
         {
             this.logger.LogDebug("adding message {Type} to batch {BatchId}", message.ApplicationProperties["$type"], batchId);
@@ -103,28 +104,28 @@ internal class AzureServiceBus : IMessageSender, IMessageReceiver, IAsyncDisposa
 
             try
             {
-                var sessionState = (await args.GetSessionStateAsync(ct))?.ToObjectFromJson<SessionState>();
+                SessionState? sessionState = (await args.GetSessionStateAsync(ct))?.ToObjectFromJson<SessionState>();
                 if (sessionState != null && sessionState.IsFaulted && args.Message.Subject != "unlock")
                 {
                     // session is blocked, do not process this message and this message is not marked to unblock the session
                     throw new InvalidOperationException($"Session {args.SessionId} is in error mode");
                 }
 
-                var typeName = (args.Message.ApplicationProperties["$aqn"] ?? args.Message.ApplicationProperties["$type"])?.ToString();
+                string? typeName = (args.Message.ApplicationProperties["$aqn"] ?? args.Message.ApplicationProperties["$type"])?.ToString();
                 if (string.IsNullOrEmpty(typeName))
                 {
                     throw new InvalidOperationException($"message {args.Message.SessionId}:{args.Message.SequenceNumber} is missing the type property");
                 }
 
-                var type = Type.GetType(typeName, true);
+                Type? type = Type.GetType(typeName, true);
 
-                var message = (MessageBase?)args.Message.Body.ToArray().Deserialize(type);
+                MessageBase? message = (MessageBase?)args.Message.Body.ToArray().Deserialize(type);
                 if (message == null)
                 {
                     throw new InvalidOperationException($"message {args.Message.SessionId}:{args.Message.SequenceNumber} failed to deserialize to type {typeName}");
                 }
 
-                var receiveResult = await receiveHandler(args.SessionId, new[] { new MessageEnvelope(message, args.Message.SessionId) });
+                bool receiveResult = await receiveHandler(args.SessionId, new[] { new MessageEnvelope(message, args.Message.SessionId) });
                 if (!receiveResult)
                 {
                     // put back in the queue if the handler rejected the messages

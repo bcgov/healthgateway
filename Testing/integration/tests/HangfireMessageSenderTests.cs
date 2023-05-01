@@ -52,63 +52,77 @@ public class HangfireMessageSenderTests : ScenarioContextBase<GatewayApi.Startup
             .UseSerializerSettings(new Newtonsoft.Json.JsonSerializerSettings { TypeNameHandling = Newtonsoft.Json.TypeNameHandling.All })
             .UsePostgreSqlStorage(this.Host.Services.GetRequiredService<IConfiguration>().GetConnectionString("GatewayConnection"));
 #pragma warning restore CA2326 // Do not use TypeNameHandling values other than None
-        this.hangfireBackgroundJobServer = new BackgroundJobServer(new BackgroundJobServerOptions
-        {
-            Queues = new[] { AzureServiceBusSettings.OutboxQueueName },
-        });
+        this.hangfireBackgroundJobServer = new BackgroundJobServer(
+            new BackgroundJobServerOptions
+            {
+                Queues = new[] { AzureServiceBusSettings.OutboxQueueName },
+            });
     }
 
     private async Task SendMessages(IEnumerable<TestMessage>[] messages, CancellationToken ct)
     {
-        var sendTasks = messages.Select(messages => this.sender.SendAsync(messages.Select(m => new MessageEnvelope(m, m.SessionId)), ct));
+        IEnumerable<Task> sendTasks = messages.Select(messages => this.sender.SendAsync(messages.Select(m => new MessageEnvelope(m, m.SessionId)), ct));
         await Task.WhenAll(sendTasks);
     }
 
     private async Task<ConcurrentBag<MessageEnvelope>> ReceiveMessages(CancellationToken ct)
     {
-        var receivedMessages = new ConcurrentBag<MessageEnvelope>();
+        ConcurrentBag<MessageEnvelope> receivedMessages = new();
         await this.receiver.Subscribe(
-            async (sessionId, messages) => await Task.Run(() =>
-            {
-                foreach (var m in messages)
+            async (sessionId, messages) => await Task.Run(
+                () =>
                 {
-                    if (m.Content is TestMessage tm && tm.ShouldError)
+                    foreach (MessageEnvelope m in messages)
                     {
-                        throw new InvalidOperationException($"Test {tm.SessionId}:{tm.Id} message failed");
+                        if (m.Content is TestMessage tm && tm.ShouldError)
+                        {
+                            throw new InvalidOperationException($"Test {tm.SessionId}:{tm.Id} message failed");
+                        }
+
+                        receivedMessages.Add(m);
                     }
-                    receivedMessages.Add(m);
-                }
-                return true;
-            }, ct),
-            async e => await Task.Run(() => this.Output.WriteLine("RECEIVE ERROR: {0}", e)), ct);
+
+                    return true;
+                },
+                ct),
+            async e => await Task.Run(() => this.Output.WriteLine("RECEIVE ERROR: {0}", e)),
+            ct);
 
         return receivedMessages;
     }
 
     private async Task<bool> WaitForMessages(Func<bool> stopCondition, TimeSpan? timeout = null)
     {
-        cts.CancelAfter(timeout ?? TimeSpan.FromSeconds(10));
-        while (!cts.IsCancellationRequested)
+        this.cts.CancelAfter(timeout ?? TimeSpan.FromSeconds(10));
+        while (!this.cts.IsCancellationRequested)
         {
-            if (stopCondition()) return true;
+            if (stopCondition())
+            {
+                return true;
+            }
+
             await Task.Delay(1000);
         }
+
         return false;
     }
 
-    private static string GenerateSessionId() => Guid.NewGuid().ToString().Substring(0, 4);
+    private static string GenerateSessionId()
+    {
+        return Guid.NewGuid().ToString().Substring(0, 4);
+    }
 
     [Fact]
     public async Task SendSession_ReceiveAllSessions()
     {
-        var s1 = GenerateSessionId();
-        var s2 = GenerateSessionId();
-        var s1Messages = Enumerable.Range(0, 2).Select(_ => new TestMessage(_.ToString(), s1)).ToArray();
-        var s2Messages = Enumerable.Range(0, 2).Select(_ => new TestMessage(_.ToString(), s2)).ToArray();
+        string s1 = GenerateSessionId();
+        string s2 = GenerateSessionId();
+        TestMessage[] s1Messages = Enumerable.Range(0, 2).Select(_ => new TestMessage(_.ToString(), s1)).ToArray();
+        TestMessage[] s2Messages = Enumerable.Range(0, 2).Select(_ => new TestMessage(_.ToString(), s2)).ToArray();
 
-        var responses = await ReceiveMessages(cts.Token);
-        await SendMessages(new[] { s1Messages, s2Messages }, this.cts.Token);
-        await WaitForMessages(() => !responses.IsEmpty);
+        ConcurrentBag<MessageEnvelope> responses = await this.ReceiveMessages(this.cts.Token);
+        await this.SendMessages(new[] { s1Messages, s2Messages }, this.cts.Token);
+        await this.WaitForMessages(() => !responses.IsEmpty);
 
         responses.Count.ShouldBe(4);
         responses.Count(m => m.SessionId == s1).ShouldBe(2);
@@ -118,18 +132,18 @@ public class HangfireMessageSenderTests : ScenarioContextBase<GatewayApi.Startup
     [Fact]
     public async Task SendSession1Fails_ReceiveOnlySession2()
     {
-        var s1 = GenerateSessionId();
-        var s2 = GenerateSessionId();
-        var s1Messages = new[]
+        string s1 = GenerateSessionId();
+        string s2 = GenerateSessionId();
+        TestMessage[] s1Messages =
         {
-            new TestMessage("1", s1, true),
-            new TestMessage("2", s1, false)
+            new("1", s1, true),
+            new("2", s1),
         };
-        var s2Messages = Enumerable.Range(0, 2).Select(_ => new TestMessage(_.ToString(), s2)).ToArray();
+        TestMessage[] s2Messages = Enumerable.Range(0, 2).Select(_ => new TestMessage(_.ToString(), s2)).ToArray();
 
-        var responses = await ReceiveMessages(cts.Token);
-        await SendMessages(new[] { s1Messages, s2Messages }, this.cts.Token);
-        await WaitForMessages(() => !responses.IsEmpty);
+        ConcurrentBag<MessageEnvelope> responses = await this.ReceiveMessages(this.cts.Token);
+        await this.SendMessages(new[] { s1Messages, s2Messages }, this.cts.Token);
+        await this.WaitForMessages(() => !responses.IsEmpty);
 
         responses.Count.ShouldBe(2);
         responses.ShouldAllBe(m => m.SessionId == s2);
@@ -138,17 +152,17 @@ public class HangfireMessageSenderTests : ScenarioContextBase<GatewayApi.Startup
     [Fact]
     public async Task SendMessagesInTransaction_Rollback_ReveiveNoMessages()
     {
-        var sessionId = GenerateSessionId();
-        var messages = Enumerable.Range(0, 2).Select(_ => new TestMessage(_.ToString(), sessionId)).ToArray();
+        string sessionId = GenerateSessionId();
+        TestMessage[] messages = Enumerable.Range(0, 2).Select(_ => new TestMessage(_.ToString(), sessionId)).ToArray();
 
-        var responses = await ReceiveMessages(cts.Token);
+        ConcurrentBag<MessageEnvelope> responses = await this.ReceiveMessages(this.cts.Token);
 
-        using (var tx = new TransactionScope())
+        using (TransactionScope tx = new())
         {
-            await SendMessages(new[] { messages }, this.cts.Token);
+            await this.SendMessages(new[] { messages }, this.cts.Token);
         }
 
-        await WaitForMessages(() => !responses.IsEmpty);
+        await this.WaitForMessages(() => !responses.IsEmpty);
 
         responses.Count.ShouldBe(0);
     }
@@ -156,12 +170,12 @@ public class HangfireMessageSenderTests : ScenarioContextBase<GatewayApi.Startup
     [Fact]
     public void CanSerializeMessageEnvelopeArray()
     {
-        var sessionId = GenerateSessionId();
-        var messages = Enumerable.Range(0, 2).Select(_ => new TestMessage(_.ToString(), sessionId));
-        var envelopes = messages.Select(m => new MessageEnvelope(m, m.SessionId)).ToArray();
-        var serialized = envelopes.Serialize();
+        string sessionId = GenerateSessionId();
+        IEnumerable<TestMessage> messages = Enumerable.Range(0, 2).Select(_ => new TestMessage(_.ToString(), sessionId));
+        MessageEnvelope[] envelopes = messages.Select(m => new MessageEnvelope(m, m.SessionId)).ToArray();
+        byte[] serialized = envelopes.Serialize();
 
-        var deserializedMessage = serialized.Deserialize<IEnumerable<MessageEnvelope>>();
+        IEnumerable<MessageEnvelope>? deserializedMessage = serialized.Deserialize<IEnumerable<MessageEnvelope>>();
 
         deserializedMessage.ShouldNotBeNull().Count().ShouldBe(envelopes.Length);
     }
@@ -176,7 +190,7 @@ public class HangfireMessageSenderTests : ScenarioContextBase<GatewayApi.Startup
 #pragma warning restore CA1063 // Implement IDisposable Correctly
 }
 
-public record TestMessage(string? Id = null, string? SessionId = null, bool ShouldError = false) : MessageBase()
+public record TestMessage(string? Id = null, string? SessionId = null, bool ShouldError = false) : MessageBase
 {
     public string Id { get; init; } = Id ?? Guid.NewGuid().ToString().Substring(0, 6);
 }

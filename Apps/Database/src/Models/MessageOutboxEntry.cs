@@ -21,16 +21,19 @@ using System;
 public record MessageOutboxEntry
 {
     public Guid Id { get; init; }
+
     public DateTime CreatedOn { get; init; }
+
     public OutboxEntryStatus Status { get; init; }
+
     public OutboxMessage Message { get; set; }
 }
 
-public record OutboxMessage();
+public record OutboxMessage;
 
 public enum OutboxEntryStatus
 {
     Pending,
     Completed,
-    Failed
+    Failed,
 }

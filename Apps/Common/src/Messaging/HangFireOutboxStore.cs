@@ -50,7 +50,7 @@ internal class HangFireOutboxStore : IOutboxStore
     {
         await Task.CompletedTask;
         this.logger.LogDebug("Storing messages");
-        var serializedMessages = messages.Serialize(false);
+        byte[] serializedMessages = messages.Serialize(false);
         this.backgroundJobClient.Enqueue(() => this.ForwardAsync(serializedMessages, CancellationToken.None));
     }
 
@@ -64,7 +64,7 @@ internal class HangFireOutboxStore : IOutboxStore
     public async Task ForwardAsync(byte[] serializedMessages, CancellationToken ct = default)
     {
         this.logger.LogDebug("Forwarding messages");
-        var messages = serializedMessages.Deserialize<IEnumerable<MessageEnvelope>>();
+        IEnumerable<MessageEnvelope>? messages = serializedMessages.Deserialize<IEnumerable<MessageEnvelope>>();
         await this.messageSender.SendAsync(messages, ct);
     }
 }

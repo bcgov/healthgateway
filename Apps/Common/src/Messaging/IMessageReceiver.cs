@@ -29,8 +29,10 @@ public interface IMessageReceiver
     /// <summary>
     /// Subscribes handlers to receive one-way messages.
     /// </summary>
-    /// <param name="receiveHandler">Message receive handler that receives a session id and array of messages,
-    /// it can return false to reject the messages or true when processed successfully.</param>
+    /// <param name="receiveHandler">
+    /// Message receive handler that receives a session id and array of messages,
+    /// it can return false to reject the messages or true when processed successfully.
+    /// </param>
     /// <param name="errorHandler">Error handler that receives the exception when an error occurred.</param>
     /// <param name="ct">Cancellation token.</param>
     /// <returns>Awaitable task.</returns>

@@ -14,14 +14,14 @@
 //  limitations under the License.
 // -------------------------------------------------------------------------
 
+namespace HealthGateway.IntegrationTests;
+
 using System.Reflection;
 using Alba;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Xunit.Abstractions;
-
-namespace HealthGateway.IntegrationTests;
 
 #pragma warning disable CA1822 // Mark members as static
 #pragma warning disable S3220 // Method calls should not resolve ambiguously to overloads with "params"
@@ -31,14 +31,8 @@ public class WebAppFixture
     public async Task<IAlbaHost> CreateHost<TStartup>(ITestOutputHelper output, IConfiguration configuration)
         where TStartup : class
     {
-        var host = await AlbaHost.For<TStartup>(
-            builder =>
-            {
-                builder.ConfigureServices((ctx, services) =>
-                {
-                    services.AddLogging((builder) => builder.AddXUnit(output));
-                });
-            });
+        IAlbaHost host = await AlbaHost.For<TStartup>(
+            builder => { builder.ConfigureServices((ctx, services) => { services.AddLogging(builder => builder.AddXUnit(output)); }); });
 
         return host;
     }
@@ -53,28 +47,30 @@ public class ScenarioCollection : ICollectionFixture<WebAppFixture>
 public abstract class ScenarioContextBase<TStartup> : IAsyncLifetime, IClassFixture<WebAppFixture>
     where TStartup : class
 {
-    private readonly ITestOutputHelper output;
     private readonly WebAppFixture fixture;
     private readonly IConfiguration configuration;
 
     protected IAlbaHost Host { get; private set; } = null!;
 
-    protected ITestOutputHelper Output => this.output;
+    protected ITestOutputHelper Output { get; }
 
     protected ScenarioContextBase(ITestOutputHelper output, WebAppFixture fixture)
     {
-        this.output = output;
+        this.Output = output;
         this.fixture = fixture;
         this.configuration = new ConfigurationBuilder().AddUserSecrets(Assembly.GetExecutingAssembly(), false).Build();
     }
 
     public virtual async Task InitializeAsync()
     {
-        this.Host = await this.fixture.CreateHost<TStartup>(this.output, this.configuration);
+        this.Host = await this.fixture.CreateHost<TStartup>(this.Output, this.configuration);
     }
 
     public async Task DisposeAsync()
     {
-        if (this.Host != null) await this.Host.DisposeAsync();
+        if (this.Host != null)
+        {
+            await this.Host.DisposeAsync();
+        }
     }
 }

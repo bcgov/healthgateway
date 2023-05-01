@@ -25,7 +25,7 @@ using HealthGateway.Common.Utils;
 /// It uses PolymorphicJsonConverter to ensure the type is always serialized in the payload.
 /// </summary>
 [JsonConverter(typeof(PolymorphicJsonConverter<MessageBase>))]
-public abstract record MessageBase();
+public abstract record MessageBase;
 
 /// <summary>
 /// Message envelope that contains a message and metadata.

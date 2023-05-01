@@ -31,10 +31,12 @@ public static class SerializationHelper
     /// <param name="data">The byte array payload to deserialize.</param>
     /// <param name="options">Optional JsonSerializationOptions.</param>
     /// <returns>The deserialized instance.</returns>
-    public static T? Deserialize<T>(this byte[]? data, JsonSerializerOptions? options = null) =>
-        data == null || data.Length == 0
+    public static T? Deserialize<T>(this byte[]? data, JsonSerializerOptions? options = null)
+    {
+        return data == null || data.Length == 0
             ? default
             : JsonSerializer.Deserialize<T?>(data, options);
+    }
 
     /// <summary>
     /// Deserialize a json byte array to a concrete instance.
@@ -43,10 +45,12 @@ public static class SerializationHelper
     /// <param name="returnType">The type of the object to return.</param>
     /// <param name="options">Optional JsonSerializationOptions.</param>
     /// <returns>A deserialized instance of the return type.</returns>
-    public static object? Deserialize(this byte[]? data, Type returnType, JsonSerializerOptions? options = null) =>
-        data == null || data.Length == 0
+    public static object? Deserialize(this byte[]? data, Type returnType, JsonSerializerOptions? options = null)
+    {
+        return data == null || data.Length == 0
             ? default
             : JsonSerializer.Deserialize(data, returnType, options);
+    }
 
     /// <summary>
     /// Serialize an instance to a Json byte array.
@@ -68,7 +72,13 @@ public static class SerializationHelper
             : SerializeUsingGenericType(obj, options);
     }
 
-    private static byte[] SerializeUsingConcreteType<T>(T obj, JsonSerializerOptions? options = null) => JsonSerializer.SerializeToUtf8Bytes(obj, obj!.GetType(), options);
+    private static byte[] SerializeUsingConcreteType<T>(T obj, JsonSerializerOptions? options = null)
+    {
+        return JsonSerializer.SerializeToUtf8Bytes(obj, obj!.GetType(), options);
+    }
 
-    private static byte[] SerializeUsingGenericType<T>(T obj, JsonSerializerOptions? options = null) => JsonSerializer.SerializeToUtf8Bytes(obj, options);
+    private static byte[] SerializeUsingGenericType<T>(T obj, JsonSerializerOptions? options = null)
+    {
+        return JsonSerializer.SerializeToUtf8Bytes(obj, options);
+    }
 }
