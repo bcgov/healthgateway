@@ -19,11 +19,10 @@ namespace HealthGateway.AccountDataAccess.Patient
     using System.Collections.Generic;
     using AutoMapper;
     using HealthGateway.AccountDataAccess.Patient.Api;
+    using HealthGateway.Common.Data.Utils;
 
     internal class PatientMappings : Profile
     {
-        private const string Delimiter = " ";
-
         public PatientMappings()
         {
             this.CreateMap<PatientIdentity, PatientModel>()
@@ -38,9 +37,8 @@ namespace HealthGateway.AccountDataAccess.Patient
 
         private static Name ExtractPreferredName(PatientIdentity patientIdentity)
         {
-            string? preferredName = patientIdentity.PreferredFirstName;
-            preferredName = AddToString(preferredName, patientIdentity.PreferredSecondName);
-            preferredName = AddToString(preferredName, patientIdentity.PreferredThirdName);
+            string preferredName = StringManipulator.JoinWithoutBlanks(
+                new[] { patientIdentity.PreferredFirstName, patientIdentity.PreferredSecondName, patientIdentity.PreferredThirdName });
 
             return new()
             {
@@ -51,9 +49,8 @@ namespace HealthGateway.AccountDataAccess.Patient
 
         private static Name ExtractLegalName(PatientIdentity patientIdentity)
         {
-            string? legalName = patientIdentity.LegalFirstName;
-            legalName = AddToString(legalName, patientIdentity.LegalSecondName);
-            legalName = AddToString(legalName, patientIdentity.LegalThirdName);
+            string legalName = StringManipulator.JoinWithoutBlanks(
+                new[] { patientIdentity.LegalFirstName, patientIdentity.LegalSecondName, patientIdentity.LegalThirdName });
 
             return new()
             {
@@ -66,10 +63,8 @@ namespace HealthGateway.AccountDataAccess.Patient
         {
             if (ShouldReturnHomeAddress(patientIdentity))
             {
-                List<string> streetLines = new();
-                AddToList(streetLines, patientIdentity.HomeAddressStreetOne);
-                AddToList(streetLines, patientIdentity.HomeAddressStreetTwo);
-                AddToList(streetLines, patientIdentity.HomeAddressStreetThree);
+                IEnumerable<string> streetLines = StringManipulator.ExcludeBlanks(
+                    new[] { patientIdentity.HomeAddressStreetOne, patientIdentity.HomeAddressStreetTwo, patientIdentity.HomeAddressStreetThree });
 
                 return new()
                 {
@@ -88,10 +83,8 @@ namespace HealthGateway.AccountDataAccess.Patient
         {
             if (ShouldReturnPostalAddress(patientIdentity))
             {
-                List<string> streetLines = new();
-                AddToList(streetLines, patientIdentity.MailAddressStreetOne);
-                AddToList(streetLines, patientIdentity.MailAddressStreetTwo);
-                AddToList(streetLines, patientIdentity.MailAddressStreetThree);
+                IEnumerable<string> streetLines = StringManipulator.ExcludeBlanks(
+                    new[] { patientIdentity.MailAddressStreetOne, patientIdentity.MailAddressStreetTwo, patientIdentity.MailAddressStreetThree });
 
                 return new()
                 {
@@ -126,29 +119,6 @@ namespace HealthGateway.AccountDataAccess.Patient
                    !string.IsNullOrWhiteSpace(patientIdentity.MailAddressPostal) ||
                    !string.IsNullOrWhiteSpace(patientIdentity.MailAddressProvState) ||
                    !string.IsNullOrWhiteSpace(patientIdentity.MailAddressCountry);
-        }
-
-        private static string? AddToString(string? existingString, string? value)
-        {
-            if (string.IsNullOrWhiteSpace(existingString))
-            {
-                return value;
-            }
-
-            if (string.IsNullOrWhiteSpace(value))
-            {
-                return existingString;
-            }
-
-            return $"{existingString}{Delimiter}{value}";
-        }
-
-        private static void AddToList(List<string> existingList, string? value)
-        {
-            if (!string.IsNullOrEmpty(value))
-            {
-                existingList.Add(value);
-            }
         }
     }
 }
