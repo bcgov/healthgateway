@@ -42,7 +42,7 @@ namespace HealthGateway.AccountDataAccess.Patient
 
             return new()
             {
-                GivenName = preferredName ?? string.Empty,
+                GivenName = preferredName,
                 Surname = patientIdentity.PreferredLastName ?? string.Empty,
             };
         }
