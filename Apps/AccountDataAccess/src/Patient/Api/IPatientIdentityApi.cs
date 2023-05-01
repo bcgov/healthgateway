@@ -24,15 +24,11 @@ namespace HealthGateway.AccountDataAccess.Patient.Api
     internal interface IPatientIdentityApi
     {
         /// <summary>
-        /// Retrieves the patient by Hdid.
+        /// Get patient identity by Hdid.
         /// </summary>
         /// <param name="hdid">The Hdid to lookup.</param>
-        /// <returns>The Patient matching the id.</returns>
+        /// <returns>The patient identity matching the id.</returns>
         [Get("/patient-identity/hdid/{hdid}")]
-        Task<PatientIdentityResult?> PatientLookupByHdidAsync(string hdid);
+        Task<PatientIdentity> GetPatientIdentityAsync(string hdid);
     }
-
-    internal record PatientIdentityResult(PatientIdentityMetadata Metadata, PatientIdentity Data);
-
-    internal record PatientIdentityMetadata;
 }

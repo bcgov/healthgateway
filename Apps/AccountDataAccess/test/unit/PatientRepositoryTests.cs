@@ -15,6 +15,7 @@
 // -------------------------------------------------------------------------
 namespace AccountDataAccessTest
 {
+    using System.ServiceModel;
     using AccountDataAccessTest.Utils;
     using AutoMapper;
     using DeepEqual.Syntax;
@@ -35,6 +36,7 @@ namespace AccountDataAccessTest
     {
         private const string PatientCacheDomain = "PatientV2";
         private const string Hdid = "abc123";
+        private const string PhsaHdid = "phsa123";
         private const string Phn = "9735353315";
         private const string Gender = "Male";
 
@@ -108,7 +110,7 @@ namespace AccountDataAccessTest
                 Hdid = Hdid,
             };
 
-            PatientIdentityResult? patientResult = null;
+            PatientIdentity? patientResult = null;
 
             PatientRepository patientRepository = GetPatientRepository(patient, patientDetailsQuery, patientResult, cachedPatient);
 
@@ -130,7 +132,7 @@ namespace AccountDataAccessTest
             PatientModel expectedPatient = new()
             {
                 Phn = Phn,
-                Hdid = Hdid,
+                Hdid = PhsaHdid,
                 Gender = Gender,
                 ResponseCode = string.Empty,
                 IsDeceased = false,
@@ -140,7 +142,7 @@ namespace AccountDataAccessTest
                     { GivenName = string.Empty, Surname = string.Empty },
             };
 
-            PatientDetailsQuery patientDetailsQuery = new(Hdid: Hdid, Source: PatientDetailSource.AllCache);
+            PatientDetailsQuery patientDetailsQuery = new(Hdid: PhsaHdid, Source: PatientDetailSource.AllCache);
 
             PatientModel? patient = null;
             PatientModel? cachedPatient = null;
@@ -148,14 +150,12 @@ namespace AccountDataAccessTest
             PatientIdentity patientIdentity = new()
             {
                 Phn = Phn,
-                HdId = Hdid,
+                HdId = PhsaHdid,
                 Gender = Gender,
                 HasDeathIndicator = false,
             };
 
-            PatientIdentityResult patientIdentityResult = new(new PatientIdentityMetadata(), patientIdentity);
-
-            PatientRepository patientRepository = GetPatientRepository(patient, patientDetailsQuery, patientIdentityResult, cachedPatient);
+            PatientRepository patientRepository = GetPatientRepository(patient, patientDetailsQuery, patientIdentity, cachedPatient);
 
             // Act
             PatientQueryResult actual = await patientRepository.Query(patientDetailsQuery, CancellationToken.None).ConfigureAwait(true);
@@ -197,7 +197,7 @@ namespace AccountDataAccessTest
         private static PatientRepository GetPatientRepository(
             PatientModel patient,
             PatientDetailsQuery patientDetailsQuery,
-            PatientIdentityResult? patientIdentityResult = null,
+            PatientIdentity? patientIdentity = null,
             PatientModel? cachedPatient = null)
         {
             Dictionary<string, string?> configDictionary = new()
@@ -213,11 +213,13 @@ namespace AccountDataAccessTest
             cacheProvider.Setup(p => p.GetItem<PatientModel>($"{PatientCacheDomain}:HDID:{patientDetailsQuery.Hdid}")).Returns(cachedPatient);
 
             Mock<IPatientIdentityApi> patientIdentityApi = new();
-            patientIdentityApi.Setup(p => p.PatientLookupByHdidAsync(patientDetailsQuery.Hdid)).ReturnsAsync(patientIdentityResult);
+            patientIdentityApi.Setup(p => p.GetPatientIdentityAsync(PhsaHdid))!.ReturnsAsync(patientIdentity);
 
             Mock<IClientRegistriesDelegate> clientRegistriesDelegate = new();
             clientRegistriesDelegate.Setup(p => p.GetDemographicsAsync(OidType.Hdid, patientDetailsQuery.Hdid, false)).ReturnsAsync(patient);
             clientRegistriesDelegate.Setup(p => p.GetDemographicsAsync(OidType.Phn, patientDetailsQuery.Phn, false)).ReturnsAsync(patient);
+            clientRegistriesDelegate.Setup(p => p.GetDemographicsAsync(OidType.Hdid, PhsaHdid, false))
+                .Throws(new CommunicationException("Unit test PHSA get patient identity."));
 
             PatientRepository patientRepository = new(
                 clientRegistriesDelegate.Object,

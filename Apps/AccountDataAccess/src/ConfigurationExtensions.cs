@@ -37,6 +37,7 @@ namespace HealthGateway.AccountDataAccess
         /// <returns>The service collection.</returns>
         public static IServiceCollection AddPatientRepositoryConfiguration(this IServiceCollection services, AccountDataAccessConfiguration configuration)
         {
+            services.AddAutoMapper(typeof(PatientMappings));
             services.AddTransient<IClientRegistriesDelegate, ClientRegistriesDelegate>();
             services.AddTransient<IPatientRepository, PatientRepository>();
 

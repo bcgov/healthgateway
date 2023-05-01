@@ -18,6 +18,7 @@ namespace HealthGateway.AccountDataAccess.Patient
     using System;
     using System.Diagnostics;
     using System.Net;
+    using System.ServiceModel;
     using System.Threading;
     using System.Threading.Tasks;
     using AutoMapper;
@@ -158,12 +159,22 @@ namespace HealthGateway.AccountDataAccess.Patient
 
                 if (patient == null && ShouldCheckEmpi(query.Source))
                 {
-                    patient = await this.GetDemographicsAsync(OidType.Hdid, query.Hdid).ConfigureAwait(true);
-                }
-
-                if (patient == null && ShouldCheckPhsa(query.Source))
-                {
-                    patient = await this.GetPatientIdentityAsync(query.Hdid).ConfigureAwait(true);
+                    try
+                    {
+                        patient = await this.GetDemographicsAsync(OidType.Hdid, query.Hdid).ConfigureAwait(true);
+                    }
+                    catch (CommunicationException e)
+                    {
+                        if (ShouldCheckPhsa(query.Source))
+                        {
+                            this.logger.LogError("Will call PHSA for patient due to EMPI Communication Exception when trying to retrieve patient information: {Exception}", e);
+                            patient = await this.GetPatientIdentityAsync(query.Hdid).ConfigureAwait(true);
+                        }
+                        else
+                        {
+                            throw;
+                        }
+                    }
                 }
 
                 return new PatientQueryResult(new[] { patient! });
@@ -182,8 +193,8 @@ namespace HealthGateway.AccountDataAccess.Patient
 
         private async Task<PatientModel> GetPatientIdentityAsync(string hdid)
         {
-            PatientIdentityResult? patientIdentityResult = await this.patientIdentityApi.PatientLookupByHdidAsync(hdid).ConfigureAwait(true);
-            return this.mapper.Map<PatientModel>(patientIdentityResult?.Data);
+            PatientIdentity result = await this.patientIdentityApi.GetPatientIdentityAsync(hdid).ConfigureAwait(true);
+            return this.mapper.Map<PatientModel>(result);
         }
 
         /// <summary>
