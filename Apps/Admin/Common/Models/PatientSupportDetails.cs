@@ -1,4 +1,4 @@
-// -------------------------------------------------------------------------
+﻿// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,73 +13,75 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Patient.Models
+namespace HealthGateway.Admin.Common.Models
 {
     using System;
-    using System.Text.Json.Serialization;
-    using HealthGateway.AccountDataAccess.Patient;
+    using HealthGateway.Admin.Common.Constants;
     using HealthGateway.Common.Data.ViewModels;
 
     /// <summary>
-    /// The patient details.
+    /// Represents details associated with a patient retrieved by a support query.
     /// </summary>
-    public class PatientDetails
+    public class PatientSupportDetails
     {
         /// <summary>
-        /// Gets or sets the health directed identifier.
+        /// Gets or sets the patient's status.
         /// </summary>
-        [JsonPropertyName("hdid")]
-        public string HdId { get; set; } = string.Empty;
+        public PatientStatus Status { get; set; }
+
+        /// <summary>
+        /// Gets or sets a warning message associated with the patient.
+        /// </summary>
+        public string WarningMessage { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets the patient's HDID.
+        /// </summary>
+        public string Hdid { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the patient's PHN.
         /// </summary>
-        [JsonPropertyName("personalHealthNumber")]
-        public string Phn { get; set; } = string.Empty;
+        public string PersonalHealthNumber { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the patient's common name.
         /// </summary>
-        [JsonPropertyName("commonName")]
         public Name? CommonName { get; set; }
 
         /// <summary>
         /// Gets or sets the patient's legal name.
         /// </summary>
-        [JsonPropertyName("legalName")]
         public Name? LegalName { get; set; }
 
         /// <summary>
         /// Gets the patient's preferred name.
         /// </summary>
-        [JsonPropertyName("preferredName")]
-        public Name PreferredName => this.CommonName ?? this.LegalName!;
+        public Name? PreferredName => this.CommonName ?? this.LegalName;
 
         /// <summary>
         /// Gets or sets the patient's date of birth.
         /// </summary>
-        [JsonPropertyName("birthdate")]
-        public DateTime Birthdate { get; set; }
-
-        /// <summary>
-        /// Gets or sets the patient's gender.
-        /// </summary>
-        [JsonPropertyName("gender")]
-        public string Gender { get; set; } = string.Empty;
+        public DateOnly? Birthdate { get; set; }
 
         /// <summary>
         /// Gets or sets the physical address for the patient.
         /// </summary>
-        public Address? PhysicalAddress { get; set; }
+        public string PhysicalAddress { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the postal address for the patient.
         /// </summary>
-        public Address? PostalAddress { get; set; }
+        public string PostalAddress { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the response code for the patient.
+        /// Gets or sets the user's created datetime.
         /// </summary>
-        public string ResponseCode { get; set; } = string.Empty;
+        public DateTime? ProfileCreatedDateTime { get; set; }
+
+        /// <summary>
+        /// Gets or sets the user's last login datetime.
+        /// </summary>
+        public DateTime? ProfileLastLoginDateTime { get; set; }
     }
 }

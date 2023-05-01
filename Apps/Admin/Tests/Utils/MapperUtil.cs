@@ -17,6 +17,7 @@ namespace HealthGateway.Admin.Tests.Utils
 {
     using AutoMapper;
     using HealthGateway.Admin.Server.MapProfiles;
+    using HealthGateway.Common.MapProfiles;
 
     /// <summary>
     /// Static utility class to provide a fully initialized AutoMapper.
@@ -33,10 +34,13 @@ namespace HealthGateway.Admin.Tests.Utils
             MapperConfiguration config = new(
                 cfg =>
                 {
+                    cfg.AddProfile(new AddressProfile());
                     cfg.AddProfile(new AdminUserProfileViewProfile());
                     cfg.AddProfile(new DependentInfoProfile());
                     cfg.AddProfile(new DelegateInfoProfile());
                     cfg.AddProfile(new DelegationChangeProfile());
+                    cfg.AddProfile(new MessagingVerificationProfile());
+                    cfg.AddProfile(new PatientSupportDetailsProfile());
                 });
 
             return config.CreateMapper();

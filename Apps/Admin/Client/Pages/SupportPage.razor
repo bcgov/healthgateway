@@ -1,35 +1,36 @@
 @page "/support"
 @layout MainLayout
 @attribute [Authorize(Roles = $"{Roles.Admin},{Roles.Reviewer}")]
-@using HealthGateway.Admin.Client.Store.MessageVerification
-@using HealthGateway.Admin.Client.Store.SupportUser
+@using HealthGateway.Admin.Client.Store.PatientSupport
 @using HealthGateway.Common.Data.Constants
 @using HealthGateway.Common.Data.Utils
 @using HealthGateway.Common.Ui.Constants
-@using HealthGateway.Admin.Client.Components.Support
+@using HealthGateway.Admin.Common.Constants
 @inherits Fluxor.Blazor.Web.Components.FluxorComponent
 
 <PageTitle>Health Gateway Admin Support</PageTitle>
 <HgPageHeading>Support</HgPageHeading>
 
-<HgBannerFeedback Severity="Severity.Error" IsEnabled="HasMessagingVerificationsError" TResetAction="MessageVerificationActions.ResetStateAction" DataTestId="messaging-verification-banner-feedback-error-message">
-    @MessageVerificationState.Value.Error?.Message
-</HgBannerFeedback>
-<HgBannerFeedback Severity="Severity.Error" IsEnabled="HasSupportUsersError" TResetAction="SupportUserActions.ResetStateAction" DataTestId="user-banner-feedback-error-message">
-    @SupportUserState.Value.Error?.Message
+<HgBannerFeedback
+    Severity="Severity.Error"
+    IsEnabled="HasPatientsError"
+    TResetAction="PatientSupportActions.ResetStateAction"
+    Class="mb-3"
+    DataTestId="user-banner-feedback-error-message">
+    @PatientSupportState.Value.Error?.Message
 </HgBannerFeedback>
 
 <MudForm @ref="Form">
     <MudGrid Spacing="0">
         <MudItem xs="12" sm="3">
             <HgSelect
-                T="UserQueryType"
+                T="PatientQueryType"
                 Label="Query Type"
                 Required="@true"
                 @bind-Value="SelectedQueryType"
                 TopMargin="Breakpoint.None"
                 data-testid="query-type-select">
-                @foreach (UserQueryType queryType in QueryTypes)
+                @foreach (PatientQueryType queryType in QueryTypes)
                 {
                     <MudSelectItem Value="@queryType" data-testid="query-type">@FormatQueryType(queryType)</MudSelectItem>
                 }
@@ -41,7 +42,7 @@
                 {
                     <HgTextField
                         T="string"
-                        Label="@FormatQueryType(UserQueryType.Phn)"
+                        Label="@FormatQueryType(PatientQueryType.Phn)"
                         Required="@true"
                         Validation="@ValidateQueryParameter"
                         Mask="@(new PatternMask(Mask.PhnMaskTemplate))"
@@ -79,11 +80,21 @@
     </MudGrid>
 </MudForm>
 
-<HgBannerFeedback Severity="@Severity.Info" IsEnabled="HasSupportUsersWarning" TResetAction="SupportUserActions.ResetStateAction" DataTestId="user-banner-feedback-warning-message">
-    @SupportUserState.Value.WarningMessage
+<HgBannerFeedback
+    Severity="@Severity.Info"
+    IsEnabled="HasPatientsWarning"
+    TResetAction="PatientSupportActions.ResetStateAction"
+    Class="mt-3"
+    DataTestId="user-banner-feedback-warning-message">
+    <ul>
+        @foreach (string warning in PatientSupportState.Value.WarningMessages)
+        {
+            <li>@warning</li>
+        }
+    </ul>
 </HgBannerFeedback>
 
-@if (SupportUsersLoaded || SupportUsersLoading)
+@if (PatientsLoaded || PatientsLoading)
 {
     <MudGrid>
         <MudItem xs="12" lg="12">
@@ -91,98 +102,68 @@
                 @FormatQueryType(SelectedQueryType) Query Results
             </MudText>
             <MudTable Class="mt-3"
-                      Items="SupportUserRows"
-                      Loading="SupportUsersLoading"
+                      Items="PatientRows"
+                      Loading="PatientsLoading"
                       AllowUnsorted="false"
-                      Breakpoint="Breakpoint.Md"
+                      Breakpoint="Breakpoint.Sm"
                       HorizontalScrollbar="true"
                       Striped="true"
                       Dense="true"
                       data-testid="user-table">
+                <ColGroup>
+                    <MudHidden Breakpoint="@Breakpoint.SmAndDown">
+                        <col />
+                        <col style="min-width: 125px;" />
+                        <col style="min-width: 125px;" />
+                        <col style="min-width: 125px;" />
+                    </MudHidden>
+                </ColGroup>
                 <HeaderContent>
                     <MudTh>
-                        <MudTableSortLabel SortBy="new Func<SupportUserRow, object>(x => x.Hdid)">
-                            HDID
+                        <MudTableSortLabel SortBy="new Func<PatientRow, object>(x => x.SortName)" InitialDirection="@SortDirection.Ascending">
+                            Name
                         </MudTableSortLabel>
                     </MudTh>
                     <MudTh>
-                        <MudTableSortLabel SortBy="new Func<SupportUserRow, object>(x => x.PersonalHealthNumber)">
+                        <MudTableSortLabel SortBy="new Func<PatientRow, object>(x => x.Birthdate ?? DateOnly.MinValue)">
+                            DOB
+                        </MudTableSortLabel>
+                    </MudTh>
+                    <MudTh>
+                        <MudTableSortLabel SortBy="new Func<PatientRow, object>(x => x.PersonalHealthNumber)">
                             PHN
                         </MudTableSortLabel>
                     </MudTh>
                     <MudTh>
-                        <MudTableSortLabel SortBy="new Func<SupportUserRow, object>(x => x.LastLoginDateTime ?? DateTime.MinValue)"
-                                           InitialDirection="@SortDirection.Descending">
-                            Last Login
+                        <MudTableSortLabel SortBy="new Func<PatientRow, object>(x => x.Hdid)">
+                            HDID
                         </MudTableSortLabel>
                     </MudTh>
-                    <MudTh>
-                        <MudTableSortLabel SortBy="new Func<SupportUserRow, object>(x => x.CreatedDateTime ?? DateTime.MinValue)"
-                                           InitialDirection="@SortDirection.Descending">
-                            Account Created
-                        </MudTableSortLabel>
-                    </MudTh>
-                    <MudTh Style="text-align:right"></MudTh>
                 </HeaderContent>
                 <RowTemplate>
-                    <MudTd DataLabel="HDID" data-testid=@($"user-table-hdid-{context.Hdid}")>@context.Hdid</MudTd>
+                    <MudTd DataLabel="Name" data-testid=@($"user-table-name-{context.Hdid}")>
+                        @if (context.Status != PatientStatus.Default)
+                        {
+                            <MudIcon Icon="fas fa-triangle-exclamation" Size="Size.Small" Class="mr-2" data-testid="warning-icon" />
+                        }
+                        @context.Name
+                    </MudTd>
+                    <MudTd DataLabel="Date of Birth" data-testid=@($"user-table-dob-{context.Hdid}")>
+                        @if (context.Birthdate != null)
+                        {
+                            @DateFormatter.ToShortDate(context.Birthdate.Value)
+                        }
+                    </MudTd>
                     <MudTd DataLabel="PHN" data-testid=@($"user-table-phn-{context.Hdid}")>@context.PersonalHealthNumber</MudTd>
-                    <MudTd DataLabel="Last Login" data-testid=@($"user-table-last-login-{context.Hdid}")>@DateFormatter.ToShortDateAndTime(context.LastLoginDateTime)</MudTd>
-                    <MudTd DataLabel="Account Created" data-testid=@($"user-table-account-created-{context.Hdid}")>@DateFormatter.ToShortDateAndTime(context.CreatedDateTime)</MudTd>
-                    <MudTd Style="text-align:right">
-                        <div>
-                            <MudTooltip Text="@(context.IsExpanded ? "Collapse" : "Expand")">
-                                <MudIconButton OnClick="@(() => ToggleExpandRow(context.Hdid))"
-                                               Icon="@(context.IsExpanded ? "fas fa-chevron-up" : "fas fa-chevron-down")"
-                                               Color="@Color.Primary"
-                                               data-testid=@($"messaging-verification-table-expand-btn-{context.Hdid}")>
-                                </MudIconButton>
-                            </MudTooltip>
-                        </div>
+                    <MudTd DataLabel="HDID" data-testid=@($"user-table-hdid-{context.Hdid}")>
+                        @if (!string.IsNullOrEmpty(context.Hdid))
+                        {
+                            <abbr title="@context.Hdid">
+                                @context.Hdid[..Math.Min(8, context.Hdid.Length)]
+                            </abbr>
+                        }
                     </MudTd>
                 </RowTemplate>
-                <ChildRowContent>
-                    @if (!context.IsSameAddress && SelectedQueryType is UserQueryType.Phn or UserQueryType.Hdid)
-                    {
-                        <div Class="mx-4 my-3">
-                            <MudText Typo="Typo.subtitle1" data-testid=@($"physical-address-label-{context.Hdid}")>
-                                Physical Address
-                            </MudText>
-                            <MudText Typo="Typo.body2" data-testid=@($"physical-address-{context.Hdid}")>
-                                @if (context.IsPhysicalAddressShown)
-                                {
-                                    @context.PhysicalAddress
-                                }
-                                else
-                                {
-                                    @SupportUserRow.NoAddressMessage
-                                }
-                            </MudText>
-                        </div>
-                    }
-                    @if (SelectedQueryType is UserQueryType.Phn or UserQueryType.Hdid)
-                    {
-                        <div Class="mx-4 my-3">
-                            <MudText Typo="Typo.subtitle1" data-testid=@($"postal-address-label-{context.Hdid}")>
-                                @context.PostalAddressLabel
-                            </MudText>
-                            <MudText Typo="Typo.body2" data-testid=@($"postal-address-{context.Hdid}")>
-                                @if (context.IsPostalAddressShown)
-                                {
-                                    @context.PostalAddress
-                                }
-                                else
-                                {
-                                    @SupportUserRow.NoAddressMessage
-                                }
-                            </MudText>
-                        </div>
-                    }
-                    @if (context.IsExpanded)
-                    {
-                        <MessageVerificationTable Data="@GetMessagingVerificationModels(context.Hdid)" IsLoading="@MessagingVerificationsLoading" />
-                    }
-                </ChildRowContent>
                 <PagerContent>
                     <MudTablePager />
                 </PagerContent>

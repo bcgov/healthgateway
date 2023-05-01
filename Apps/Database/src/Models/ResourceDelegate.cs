@@ -60,5 +60,10 @@ namespace HealthGateway.Database.Models
         /// Gets or sets the resource delegation Reason object.
         /// </summary>
         public JsonDocument? ReasonObject { get; set; }
+
+        /// <summary>
+        /// Gets or sets the UserProfile associated with <see cref="ProfileHdid"/>.
+        /// </summary>
+        public virtual UserProfile UserProfile { get; set; } = null!;
     }
 }

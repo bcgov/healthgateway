@@ -68,7 +68,6 @@ namespace HealthGateway.Common.Data.Models
         /// <summary>
         /// Gets or sets the email invite key.
         /// </summary>
-        [Required]
         public Guid? InviteKey { get; set; }
 
         /// <summary>

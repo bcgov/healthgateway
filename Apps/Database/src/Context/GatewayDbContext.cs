@@ -308,7 +308,7 @@ namespace HealthGateway.Database.Context
                 .HasForeignKey(k => k.ReasonCode);
 
             modelBuilder.Entity<ResourceDelegate>()
-                .HasOne<UserProfile>()
+                .HasOne<UserProfile>(d => d.UserProfile)
                 .WithMany()
                 .HasPrincipalKey(k => k.HdId)
                 .HasForeignKey(k => k.ProfileHdid);

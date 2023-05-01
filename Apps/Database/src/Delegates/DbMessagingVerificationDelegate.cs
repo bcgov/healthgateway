@@ -19,11 +19,10 @@ namespace HealthGateway.Database.Delegates
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using System.Linq;
+    using System.Threading.Tasks;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.Models;
-    using HealthGateway.Database.Constants;
     using HealthGateway.Database.Context;
-    using HealthGateway.Database.Wrapper;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging;
 
@@ -136,21 +135,14 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public DbResult<IEnumerable<MessagingVerification>> GetUserMessageVerifications(string hdid)
+        public async Task<IList<MessagingVerification>> GetUserMessageVerificationsAsync(string hdid)
         {
-            IList<MessagingVerification> verifications = this.dbContext.MessagingVerification.Where(mv => mv.UserProfileId == hdid)
+            return await this.dbContext.MessagingVerification.Where(mv => mv.UserProfileId == hdid)
                 .Include(mv => mv.Email)
                 .OrderByDescending(mv => mv.CreatedDateTime)
                 .AsNoTracking()
-                .ToList();
-
-            DbResult<IEnumerable<MessagingVerification>> result = new()
-            {
-                Payload = verifications,
-                Status = DbStatusCode.Read,
-            };
-
-            return result;
+                .ToListAsync()
+                .ConfigureAwait(true);
         }
     }
 }

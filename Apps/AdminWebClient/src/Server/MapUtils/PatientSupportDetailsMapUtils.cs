@@ -1,4 +1,4 @@
-// -------------------------------------------------------------------------
+﻿// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,29 +13,28 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Common.MapUtils
+namespace HealthGateway.Admin.MapUtils
 {
     using AutoMapper;
-    using HealthGateway.Common.Data.Models;
+    using HealthGateway.Admin.Models;
     using HealthGateway.Common.Data.Utils;
-    using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Models;
 
     /// <summary>
     /// Static Helper classes for conversion of model objects.
     /// </summary>
-    public static class SupportUserMapUtils
+    public static class PatientSupportDetailsMapUtils
     {
         /// <summary>
-        /// Creates a UI model from a DB model.
+        /// Creates a UI model from a user profile model and a patient model.
         /// </summary>
-        /// <param name="userProfile">The DB model to convert.</param>
+        /// <param name="userProfile">The user profile model to convert.</param>
         /// <param name="patientModel">The patient model to convert.</param>
         /// <param name="mapper">The AutoMapper IMapper.</param>
         /// <returns>The created UI model.</returns>
-        public static SupportUser ToUiModel(UserProfile userProfile, PatientModel patientModel, IMapper mapper)
+        public static PatientSupportDetails ToUiModel(Common.Data.Models.UserProfile userProfile, PatientModel patientModel, IMapper mapper)
         {
-            SupportUser supportUser = mapper.Map<UserProfile, SupportUser>(
+            PatientSupportDetails patientSupportDetails = mapper.Map<Common.Data.Models.UserProfile, PatientSupportDetails>(
                 userProfile,
                 opts => opts.AfterMap(
                     (_, dest) =>
@@ -44,7 +43,7 @@ namespace HealthGateway.Common.MapUtils
                         dest.PhysicalAddress = AddressUtility.GetAddressAsSingleLine(patientModel.PhysicalAddress);
                         dest.PostalAddress = AddressUtility.GetAddressAsSingleLine(patientModel.PostalAddress);
                     }));
-            return supportUser;
+            return patientSupportDetails;
         }
     }
 }

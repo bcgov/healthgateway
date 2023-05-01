@@ -13,13 +13,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.CommonTests.Services
+namespace HealthGateway.AdminWebClientTests.Services.Test
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
     using AutoMapper;
+    using HealthGateway.Admin.Models;
+    using HealthGateway.Admin.Services;
+    using HealthGateway.AdminWebClientTests.Utils;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ErrorHandling;
@@ -27,7 +30,6 @@ namespace HealthGateway.CommonTests.Services
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Services;
-    using HealthGateway.CommonTests.Utils;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
@@ -35,7 +37,7 @@ namespace HealthGateway.CommonTests.Services
     using Microsoft.Extensions.Configuration;
     using Moq;
     using Xunit;
-    using UserQueryType = HealthGateway.Common.Data.Constants.UserQueryType;
+    using UserProfile = HealthGateway.Common.Data.Models.UserProfile;
 
     /// <summary>
     /// SupportService's Unit Tests.
@@ -65,7 +67,7 @@ namespace HealthGateway.CommonTests.Services
             ISupportService supportService = CreateSupportService(GetPatient(ResultType.Success), GetUserProfile(DbStatusCode.Read));
 
             // Act
-            RequestResult<IEnumerable<SupportUser>> actualResult = await supportService.GetUsers(UserQueryType.Hdid, Hdid).ConfigureAwait(true);
+            RequestResult<IEnumerable<PatientSupportDetails>> actualResult = await supportService.GetPatientsAsync(PatientQueryType.Hdid, Hdid).ConfigureAwait(true);
 
             // Assert
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
@@ -85,7 +87,7 @@ namespace HealthGateway.CommonTests.Services
             ISupportService supportService = CreateSupportService(GetPatient(ResultType.Success), GetUserProfile(DbStatusCode.Read));
 
             // Act
-            RequestResult<IEnumerable<SupportUser>> actualResult = await supportService.GetUsers(UserQueryType.Phn, Phn).ConfigureAwait(true);
+            RequestResult<IEnumerable<PatientSupportDetails>> actualResult = await supportService.GetPatientsAsync(PatientQueryType.Phn, Phn).ConfigureAwait(true);
 
             // Assert
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
@@ -103,7 +105,7 @@ namespace HealthGateway.CommonTests.Services
             ISupportService supportService = CreateSupportService(GetPatient(ResultType.Success), GetUserProfile(DbStatusCode.Read), GetUserProfiles());
 
             // Act
-            RequestResult<IEnumerable<SupportUser>> actualResult = await supportService.GetUsers(UserQueryType.Email, Email).ConfigureAwait(true);
+            RequestResult<IEnumerable<PatientSupportDetails>> actualResult = await supportService.GetPatientsAsync(PatientQueryType.Email, Email).ConfigureAwait(true);
 
             // Assert
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
@@ -121,7 +123,7 @@ namespace HealthGateway.CommonTests.Services
             ISupportService supportService = CreateSupportService(GetPatient(ResultType.Success), GetUserProfile(DbStatusCode.Read), GetUserProfiles());
 
             // Act
-            RequestResult<IEnumerable<SupportUser>> actualResult = await supportService.GetUsers(UserQueryType.Sms, SmsNumber).ConfigureAwait(true);
+            RequestResult<IEnumerable<PatientSupportDetails>> actualResult = await supportService.GetPatientsAsync(PatientQueryType.Sms, SmsNumber).ConfigureAwait(true);
 
             // Assert
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
@@ -139,7 +141,7 @@ namespace HealthGateway.CommonTests.Services
             ISupportService supportService = CreateSupportService(GetPatient(ResultType.Success), GetUserProfile(DbStatusCode.NotFound));
 
             // Act
-            RequestResult<IEnumerable<SupportUser>> actualResult = await supportService.GetUsers(UserQueryType.Hdid, Hdid).ConfigureAwait(true);
+            RequestResult<IEnumerable<PatientSupportDetails>> actualResult = await supportService.GetPatientsAsync(PatientQueryType.Hdid, Hdid).ConfigureAwait(true);
 
             // Assert
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
@@ -158,7 +160,7 @@ namespace HealthGateway.CommonTests.Services
             ISupportService supportService = CreateSupportService(GetPatient(ResultType.ActionRequired), GetUserProfile(DbStatusCode.Read));
 
             // Act
-            RequestResult<IEnumerable<SupportUser>> actualResult = await supportService.GetUsers(UserQueryType.Hdid, Hdid).ConfigureAwait(true);
+            RequestResult<IEnumerable<PatientSupportDetails>> actualResult = await supportService.GetPatientsAsync(PatientQueryType.Hdid, Hdid).ConfigureAwait(true);
 
             // Assert
             Assert.Equal(ResultType.ActionRequired, actualResult.ResultStatus);
@@ -177,7 +179,7 @@ namespace HealthGateway.CommonTests.Services
             ISupportService supportService = CreateSupportService(GetPatient(ResultType.Error));
 
             // Act
-            RequestResult<IEnumerable<SupportUser>> actualResult = await supportService.GetUsers(UserQueryType.Hdid, Hdid).ConfigureAwait(true);
+            RequestResult<IEnumerable<PatientSupportDetails>> actualResult = await supportService.GetPatientsAsync(PatientQueryType.Hdid, Hdid).ConfigureAwait(true);
 
             // Assert
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
@@ -220,7 +222,7 @@ namespace HealthGateway.CommonTests.Services
 
             Mock<IResourceDelegateDelegate> resourceDelegateDelegateMock = new();
             resourceDelegateDelegateMock
-                .Setup(d => d.Search(It.IsAny<ResourceDelegateQuery>()))
+                .Setup(d => d.SearchAsync(It.IsAny<ResourceDelegateQuery>()))
                 .ReturnsAsync(
                     (ResourceDelegateQuery query) =>
                     {
@@ -242,11 +244,11 @@ namespace HealthGateway.CommonTests.Services
 
             ISupportService supportService = CreateSupportService(patientServiceMock: patientServiceMock, resourceDelegateDelegateMock: resourceDelegateDelegateMock);
 
-            RequestResult<IEnumerable<SupportUser>> result = await supportService.GetUsers(UserQueryType.Dependent, dependentPhn).ConfigureAwait(true);
+            RequestResult<IEnumerable<PatientSupportDetails>> result = await supportService.GetPatientsAsync(PatientQueryType.Dependent, dependentPhn).ConfigureAwait(true);
 
             Assert.Equal(ResultType.Success, result.ResultStatus);
             Assert.NotNull(result.ResourcePayload);
-            SupportUser[] actualDelegates = result.ResourcePayload.ToArray();
+            PatientSupportDetails[] actualDelegates = result.ResourcePayload.ToArray();
             Assert.NotEmpty(actualDelegates);
             foreach (string expectedDelegateHdid in expectedDelegateHdids)
             {
@@ -268,14 +270,14 @@ namespace HealthGateway.CommonTests.Services
                             PersonalHealthNumber = Phn,
                             PhysicalAddress = new()
                             {
-                                StreetLines = { "1025 Sutlej Street", "Suite 310" },
+                                StreetLines = new List<string> { "1025 Sutlej Street", "Suite 310" },
                                 City = "Victoria",
                                 State = "BC",
                                 PostalCode = "V8V2V8",
                             },
                             PostalAddress = new()
                             {
-                                StreetLines = { "1535 Belcher Avenue", "Suite 202" },
+                                StreetLines = new List<string> { "1535 Belcher Avenue", "Suite 202" },
                                 City = "Victoria",
                                 State = "BC",
                                 PostalCode = "V8R4N2",
@@ -334,49 +336,41 @@ namespace HealthGateway.CommonTests.Services
             }
         }
 
-        private static DbResult<List<UserProfile>> GetUserProfiles()
+        private static IList<UserProfile> GetUserProfiles()
         {
-            return new DbResult<List<UserProfile>>
+            return new List<UserProfile>
             {
-                Status = DbStatusCode.Read,
-                Payload = new List<UserProfile>
+                new()
                 {
-                    new()
+                    HdId = Hdid,
+                    LastLoginDateTime = DateTime.UtcNow,
+                },
+            };
+        }
+
+        private static IList<MessagingVerification> GetVerifications()
+        {
+            return new List<MessagingVerification>
+            {
+                new()
+                {
+                    Id = Guid.NewGuid(),
+                    Validated = true,
+                    SmsNumber = SmsNumber,
+                },
+                new()
+                {
+                    Id = Guid.NewGuid(),
+                    Validated = false,
+                    Email = new()
                     {
-                        HdId = Hdid,
-                        LastLoginDateTime = DateTime.UtcNow,
+                        To = Email,
                     },
                 },
             };
         }
 
-        private static DbResult<IEnumerable<MessagingVerification>> GetVerifications()
-        {
-            return new DbResult<IEnumerable<MessagingVerification>>
-            {
-                Status = DbStatusCode.Read,
-                Payload = new List<MessagingVerification>
-                {
-                    new()
-                    {
-                        Id = Guid.NewGuid(),
-                        Validated = true,
-                        SmsNumber = SmsNumber,
-                    },
-                    new()
-                    {
-                        Id = Guid.NewGuid(),
-                        Validated = false,
-                        Email = new()
-                        {
-                            To = Email,
-                        },
-                    },
-                },
-            };
-        }
-
-        private static ISupportService CreateSupportService(DbResult<IEnumerable<MessagingVerification>> verificationResult)
+        private static ISupportService CreateSupportService(IList<MessagingVerification> verificationResult)
         {
             return CreateSupportService(GetPatient(ResultType.Success), null, null, verificationResult);
         }
@@ -384,11 +378,11 @@ namespace HealthGateway.CommonTests.Services
         private static ISupportService CreateSupportService(
             RequestResult<PatientModel>? patientResult = null,
             DbResult<UserProfile>? userProfileResult = null,
-            DbResult<List<UserProfile>>? userProfilesResult = null,
-            DbResult<IEnumerable<MessagingVerification>>? verificationResult = null)
+            IList<UserProfile>? userProfilesResult = null,
+            IList<MessagingVerification>? verificationResult = null)
         {
             Mock<IMessagingVerificationDelegate> mockMessagingVerificationDelegate = new();
-            mockMessagingVerificationDelegate.Setup(d => d.GetUserMessageVerifications(It.IsAny<string>())).Returns(verificationResult);
+            mockMessagingVerificationDelegate.Setup(d => d.GetUserMessageVerificationsAsync(It.IsAny<string>())).ReturnsAsync(verificationResult ?? Array.Empty<MessagingVerification>());
 
             Mock<IPatientService> mockPatientService = new();
             if (patientResult != null)
@@ -398,7 +392,7 @@ namespace HealthGateway.CommonTests.Services
 
             Mock<IUserProfileDelegate> mockUserProfileDelegate = new();
             mockUserProfileDelegate.Setup(u => u.GetUserProfile(It.IsAny<string>())).Returns(userProfileResult);
-            mockUserProfileDelegate.Setup(u => u.GetUserProfiles(It.IsAny<Database.Constants.UserQueryType>(), It.IsAny<string>())).Returns(userProfilesResult);
+            mockUserProfileDelegate.Setup(u => u.GetUserProfilesAsync(It.IsAny<UserQueryType>(), It.IsAny<string>())).ReturnsAsync(userProfilesResult ?? new List<UserProfile>());
 
             return CreateSupportService(
                 mockUserProfileDelegate,
