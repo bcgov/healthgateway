@@ -54,7 +54,7 @@ namespace HealthGateway.AccountDataAccess.Patient
 
             return new()
             {
-                GivenName = legalName ?? string.Empty,
+                GivenName = legalName,
                 Surname = patientIdentity.LegalLastName ?? string.Empty,
             };
         }
