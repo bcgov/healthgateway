@@ -105,17 +105,17 @@
                       Items="PatientRows"
                       Loading="PatientsLoading"
                       AllowUnsorted="false"
-                      Breakpoint="Breakpoint.Sm"
+                      Breakpoint="Breakpoint.Md"
                       HorizontalScrollbar="true"
                       Striped="true"
                       Dense="true"
                       data-testid="user-table">
                 <ColGroup>
-                    <MudHidden Breakpoint="@Breakpoint.SmAndDown">
+                    <MudHidden Breakpoint="@Breakpoint.MdAndDown">
                         <col />
                         <col style="min-width: 125px;" />
                         <col style="min-width: 125px;" />
-                        <col style="min-width: 125px;" />
+                        <col style="min-width: 550px;" />
                     </MudHidden>
                 </ColGroup>
                 <HeaderContent>
@@ -155,14 +155,7 @@
                         }
                     </MudTd>
                     <MudTd DataLabel="PHN" data-testid=@($"user-table-phn-{context.Hdid}")>@context.PersonalHealthNumber</MudTd>
-                    <MudTd DataLabel="HDID" data-testid=@($"user-table-hdid-{context.Hdid}")>
-                        @if (!string.IsNullOrEmpty(context.Hdid))
-                        {
-                            <abbr title="@context.Hdid">
-                                @context.Hdid[..Math.Min(8, context.Hdid.Length)]
-                            </abbr>
-                        }
-                    </MudTd>
+                    <MudTd DataLabel="HDID" data-testid=@($"user-table-hdid-{context.Hdid}")>@context.Hdid</MudTd>
                 </RowTemplate>
                 <PagerContent>
                     <MudTablePager />

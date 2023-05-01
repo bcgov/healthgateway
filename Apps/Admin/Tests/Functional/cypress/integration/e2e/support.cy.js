@@ -18,9 +18,7 @@ function verifyUserTableResults(expectedRowCount = 1) {
     getTableRows("[data-testid=user-table]")
         .should("have.length", expectedRowCount)
         .first((_$rows) => {
-            cy.get(`[data-testid=user-table-hdid-${hdid}]`).contains(
-                hdid.slice(0, 8)
-            );
+            cy.get(`[data-testid=user-table-hdid-${hdid}]`).contains(hdid);
             cy.get(`[data-testid=user-table-phn-${hdid}]`).contains(phn);
         });
 }
@@ -71,7 +69,7 @@ describe("Support", () => {
         cy.get("[data-testid=search-btn]").click();
         getTableRows("[data-testid=user-table]").should("have.length", 1);
         cy.get(`[data-testid=user-table-hdid-${emailHdid}]`).contains(
-            emailHdid.slice(0, 8)
+            emailHdid
         );
         cy.get(`[data-testid=user-table-phn-${emailHdid}]`).contains(emailPhn);
     });

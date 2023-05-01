@@ -22,7 +22,7 @@ function verifyUserTableResults(
         .should("have.length", expectedRowCount)
         .first((_$rows) => {
             cy.get(`[data-testid=user-table-hdid-${expectedHdid}]`).contains(
-                expectedHdid.slice(0, 8)
+                expectedHdid
             );
 
             cy.get(`[data-testid=user-table-phn-${expectedHdid}]`).contains(
