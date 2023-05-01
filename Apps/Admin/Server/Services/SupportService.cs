@@ -97,7 +97,7 @@ namespace HealthGateway.Admin.Server.Services
             IEnumerable<UserProfile> profiles = queryType switch
             {
                 PatientQueryType.Dependent =>
-                    await this.GetDelegateProfilesAsync(queryString).ConfigureAwait(true),
+                    await this.GetDelegateProfilesAsync(queryString, ct).ConfigureAwait(true),
                 PatientQueryType.Email =>
                     await this.userProfileDelegate.GetUserProfilesAsync(UserQueryType.Email, queryString).ConfigureAwait(true),
                 PatientQueryType.Sms =>
@@ -110,11 +110,17 @@ namespace HealthGateway.Admin.Server.Services
             return await Task.WhenAll(tasks).ConfigureAwait(true);
         }
 
-        private async Task<IEnumerable<UserProfile>> GetDelegateProfilesAsync(string dependentHdid)
+        private async Task<IEnumerable<UserProfile>> GetDelegateProfilesAsync(string dependentPhn, CancellationToken ct)
         {
+            PatientModel? dependent = await this.GetPatientAsync(PatientIdentifierType.Phn, dependentPhn, ct).ConfigureAwait(true);
+            if (dependent == null)
+            {
+                return Enumerable.Empty<UserProfile>();
+            }
+
             ResourceDelegateQuery query = new()
             {
-                ByOwnerHdid = dependentHdid,
+                ByOwnerHdid = dependent.Hdid,
                 IncludeProfile = true,
                 TakeAmount = 25,
             };
