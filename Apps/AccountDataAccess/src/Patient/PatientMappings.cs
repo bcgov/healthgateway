@@ -51,7 +51,7 @@ namespace HealthGateway.AccountDataAccess.Patient
 
         private static Name ExtractLegalName(PatientIdentity patientIdentity)
         {
-            string? legalName = AddToString(string.Empty, patientIdentity.LegalFirstName);
+            string? legalName = patientIdentity.LegalFirstName;
             legalName = AddToString(legalName, patientIdentity.LegalSecondName);
             legalName = AddToString(legalName, patientIdentity.LegalThirdName);
 
