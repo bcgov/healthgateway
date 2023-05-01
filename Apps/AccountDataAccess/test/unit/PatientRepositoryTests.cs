@@ -165,7 +165,7 @@ namespace AccountDataAccessTest
         }
 
         /// <summary>
-        /// Client registry get demographics throws problem detials exception given an invalid phn.
+        /// Client registry get demographics throws problem details exception given an invalid phn.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
