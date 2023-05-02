@@ -15,6 +15,7 @@
 // -------------------------------------------------------------------------
 namespace AccountDataAccessTest
 {
+    using System.Net;
     using System.ServiceModel;
     using AccountDataAccessTest.Utils;
     using AutoMapper;
@@ -24,6 +25,7 @@ namespace AccountDataAccessTest
     using HealthGateway.Common.CacheProviders;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.ErrorHandling;
+    using HealthGateway.Common.Utils;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using Moq;
@@ -37,6 +39,7 @@ namespace AccountDataAccessTest
         private const string PatientCacheDomain = "PatientV2";
         private const string Hdid = "abc123";
         private const string PhsaHdid = "phsa123";
+        private const string PhsaHdidNotFound = "phsa123NotFound";
         private const string Phn = "9735353315";
         private const string Gender = "Male";
 
@@ -122,7 +125,7 @@ namespace AccountDataAccessTest
         }
 
         /// <summary>
-        /// GetPatientIdentity by Hdid.
+        /// Get patient identity by hdid.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
         [Fact]
@@ -162,6 +165,29 @@ namespace AccountDataAccessTest
 
             // Verify
             expectedPatient.ShouldDeepEqual(actual.Items.SingleOrDefault());
+        }
+
+        /// <summary>
+        /// Get patient identity by hdid throws not found api exception.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
+        [Fact]
+        public async Task ShouldGetPatientIdentityThrowsNotFoundApiException()
+        {
+            // Arrange
+            PatientDetailsQuery patientDetailsQuery = new(Hdid: PhsaHdidNotFound, Source: PatientDetailSource.AllCache);
+
+            PatientModel? patient = null;
+            PatientModel? cachedPatient = null;
+            PatientIdentity? patientIdentity = null;
+
+            PatientRepository patientRepository = GetPatientRepository(patient, patientDetailsQuery, patientIdentity, cachedPatient);
+
+            // Act
+            PatientQueryResult actual = await patientRepository.Query(patientDetailsQuery, CancellationToken.None).ConfigureAwait(true);
+
+            // Verify
+            Assert.Null(actual.Items.SingleOrDefault());
         }
 
         /// <summary>
@@ -214,6 +240,7 @@ namespace AccountDataAccessTest
 
             Mock<IPatientIdentityApi> patientIdentityApi = new();
             patientIdentityApi.Setup(p => p.GetPatientIdentityAsync(PhsaHdid))!.ReturnsAsync(patientIdentity);
+            patientIdentityApi.Setup(p => p.GetPatientIdentityAsync(PhsaHdidNotFound)).Throws(MockRefitExceptionHelper.CreateApiException(HttpStatusCode.NotFound, HttpMethod.Get));
 
             Mock<IClientRegistriesDelegate> clientRegistriesDelegate = new();
             clientRegistriesDelegate.Setup(p => p.GetDemographicsAsync(OidType.Hdid, patientDetailsQuery.Hdid, false)).ReturnsAsync(patient);

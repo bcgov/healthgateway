@@ -29,6 +29,7 @@ namespace HealthGateway.AccountDataAccess.Patient
     using HealthGateway.Common.Data.Validations;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
+    using Refit;
 
     /// <summary>
     /// Handle Patient data.
@@ -191,10 +192,18 @@ namespace HealthGateway.AccountDataAccess.Patient
             throw new InvalidOperationException("Must specify either Hdid or Phn to query patient details");
         }
 
-        private async Task<PatientModel> GetPatientIdentityAsync(string hdid)
+        private async Task<PatientModel?> GetPatientIdentityAsync(string hdid)
         {
-            PatientIdentity result = await this.patientIdentityApi.GetPatientIdentityAsync(hdid).ConfigureAwait(true);
-            return this.mapper.Map<PatientModel>(result);
+            try
+            {
+                PatientIdentity result = await this.patientIdentityApi.GetPatientIdentityAsync(hdid).ConfigureAwait(true);
+                return this.mapper.Map<PatientModel>(result);
+            }
+            catch (ApiException e) when (e.StatusCode == HttpStatusCode.NotFound)
+            {
+                this.logger.LogInformation("PHSA could not find patient identity for {Hdid}", hdid);
+                return null;
+            }
         }
 
         /// <summary>
