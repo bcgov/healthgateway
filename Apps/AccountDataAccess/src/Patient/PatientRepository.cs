@@ -201,7 +201,7 @@ namespace HealthGateway.AccountDataAccess.Patient
             }
             catch (ApiException e) when (e.StatusCode == HttpStatusCode.NotFound)
             {
-                this.logger.LogError("PHSA could not find patient identity for {Hdid}", hdid);
+                this.logger.LogInformation("PHSA could not find patient identity for {Hdid}", hdid);
                 return null;
             }
         }
