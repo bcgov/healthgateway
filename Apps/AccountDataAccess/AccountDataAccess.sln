@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AccountDataAccess", "src\AccountDataAccess.csproj", "{47C85EE4-C54E-4307-89DE-5A4626A79FBB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AccountDataAccessTest", "test\unit\AccountDataAccessTest.csproj", "{14166666-F22A-4E9C-8079-128C32E40620}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{47C85EE4-C54E-4307-89DE-5A4626A79FBB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{47C85EE4-C54E-4307-89DE-5A4626A79FBB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{47C85EE4-C54E-4307-89DE-5A4626A79FBB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{47C85EE4-C54E-4307-89DE-5A4626A79FBB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{14166666-F22A-4E9C-8079-128C32E40620}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{14166666-F22A-4E9C-8079-128C32E40620}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{14166666-F22A-4E9C-8079-128C32E40620}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{14166666-F22A-4E9C-8079-128C32E40620}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

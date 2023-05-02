@@ -15,10 +15,15 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Admin.Server.Controllers
 {
+    using System.Collections.Generic;
+    using System.Threading;
     using System.Threading.Tasks;
+    using HealthGateway.Admin.Common.Models;
+    using HealthGateway.Admin.Server.Services;
     using HealthGateway.Common.Data.Constants;
-    using HealthGateway.Common.Services;
+    using HealthGateway.Common.Data.ViewModels;
     using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
 
     /// <summary>
@@ -37,37 +42,45 @@ namespace HealthGateway.Admin.Server.Controllers
         /// Initializes a new instance of the <see cref="SupportController"/> class.
         /// </summary>
         /// <param name="supportService">The injected support service.</param>
-        public SupportController(
-            ISupportService supportService)
+        public SupportController(ISupportService supportService)
         {
             this.supportService = supportService;
         }
 
         /// <summary>
-        /// Retrieves a list of users matching the query.
+        /// Retrieves the collection of patients that match the query.
         /// </summary>
         /// <param name="queryType">The type of query to perform.</param>
         /// <param name="queryString">The value to query on.</param>
-        /// <returns>A list of users matching the query.</returns>
-        /// <response code="200">Returns the list of users matching the query.</response>
-        /// <response code="401">The client must authenticate itself to get the requested response.</response>
+        /// <param name="ct">A cancellation token.</param>
+        /// <returns>The collection of patient support details that match the query.</returns>
+        /// <response code="200">Returns the collection of patient support details matching the query.</response>
+        /// <response code="400">The request parameters did not pass validation.</response>
+        /// <response code="401">The client must authenticate itself to get the requested resource.</response>
         /// <response code="403">
         /// The client does not have access rights to the content; that is, it is unauthorized, so the server
         /// is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.
         /// </response>
+        /// <response code="502">Unable to get response from EMPI.</response>
         [HttpGet]
         [Route("Users")]
-        public async Task<IActionResult> GetSupportUsers([FromQuery] UserQueryType queryType, [FromQuery] string queryString)
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status502BadGateway, Type = typeof(ProblemDetails))]
+        public async Task<IEnumerable<PatientSupportDetails>> GetPatients([FromQuery] PatientQueryType queryType, [FromQuery] string queryString, CancellationToken ct)
         {
-            return new JsonResult(await this.supportService.GetUsers(queryType, queryString).ConfigureAwait(true));
+            return await this.supportService.GetPatientsAsync(queryType, queryString, ct).ConfigureAwait(true);
         }
 
         /// <summary>
-        /// Retrieves a list of message verifications matching the query.
+        /// Retrieves a list of messaging verifications matching the query.
         /// </summary>
-        /// <param name="hdid">The hdid associated with the messaging verification.</param>
-        /// <returns>A list of users matching the query.</returns>
-        /// <response code="200">Returns the list of users matching the query.</response>
+        /// <param name="hdid">The HDID associated with the messaging verifications.</param>
+        /// <param name="ct">A cancellation token.</param>
+        /// <returns>A list of messaging verifications matching the query.</returns>
+        /// <response code="200">Returns the list of messaging verifications matching the query.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
         /// <response code="403">
         /// The client does not have access rights to the content; that is, it is unauthorized, so the server
@@ -75,9 +88,9 @@ namespace HealthGateway.Admin.Server.Controllers
         /// </response>
         [HttpGet]
         [Route("Verifications")]
-        public IActionResult GetMessageVerifications([FromQuery] string hdid)
+        public async Task<RequestResult<IEnumerable<MessagingVerificationModel>>> GetMessageVerifications([FromQuery] string hdid, CancellationToken ct)
         {
-            return new JsonResult(this.supportService.GetMessageVerifications(hdid));
+            return await this.supportService.GetMessageVerificationsAsync(hdid, ct).ConfigureAwait(true);
         }
     }
 }

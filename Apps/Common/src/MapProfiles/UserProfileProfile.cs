@@ -19,7 +19,6 @@ namespace HealthGateway.Common.MapProfiles
     using AutoMapper;
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Data.ViewModels;
-    using HealthGateway.Database.Models;
 
     /// <summary>
     /// An AutoMapper profile class which defines mapping between DB Model UserProfile and API Model UserProfileModel.
@@ -36,16 +35,6 @@ namespace HealthGateway.Common.MapProfiles
                 .ForMember(dest => dest.IsSmsNumberVerified, opt => opt.MapFrom(src => !string.IsNullOrEmpty(src.SmsNumber)))
                 .ForMember(dest => dest.AcceptedTermsOfService, opt => opt.MapFrom(src => src.TermsOfServiceId != Guid.Empty))
                 .ReverseMap();
-
-            this.CreateMap<UserProfile, SupportUser>()
-                .ForMember(dest => dest.Hdid, opt => opt.MapFrom(src => src.HdId))
-                .ReverseMap();
-
-            this.CreateMap<ResourceDelegate, SupportUser>()
-                .ForMember(d => d.Hdid, opts => opts.MapFrom(s => s.ProfileHdid))
-                .ForMember(d => d.PersonalHealthNumber, opts => opts.Ignore())
-                .ForMember(d => d.LastLoginDateTime, opts => opts.Ignore())
-                .ForMember(d => d.CreatedDateTime, opts => opts.Ignore());
         }
     }
 }

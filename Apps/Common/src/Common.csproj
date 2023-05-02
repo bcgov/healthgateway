@@ -21,7 +21,7 @@
         <PackageReference Include="Microsoft.Extensions.Azure" Version="1.6.3" />
         <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="7.0.5" />
         <PackageReference Include="Microsoft.OpenApi" Version="1.6.3" />
-        <PackageReference Include="Npgsql.OpenTelemetry" Version="7.0.2" />
+        <PackageReference Include="Npgsql.OpenTelemetry" Version="7.0.4" />
         <PackageReference Include="Refit" Version="6.3.2" />
         <PackageReference Include="Refit.HttpClientFactory" Version="6.3.2" />
         <PackageReference Include="StackExchange.Redis" Version="2.6.104" />
@@ -36,7 +36,7 @@
         <PackageReference Include="OpenTelemetry.Instrumentation.Http" Version="1.0.0-rc8" />
         <PackageReference Include="OpenTelemetry.Api" Version="1.4.0" />
         <PackageReference Include="System.Diagnostics.DiagnosticSource" Version="7.0.2" />
-        <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.28.1" />
+        <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.30.0" />
         <PackageReference Include="System.ServiceModel.Duplex" Version="4.10.2" />
         <PackageReference Include="System.ServiceModel.Http" Version="4.10.2" />
         <PackageReference Include="System.ServiceModel.NetTcp" Version="4.10.2" />

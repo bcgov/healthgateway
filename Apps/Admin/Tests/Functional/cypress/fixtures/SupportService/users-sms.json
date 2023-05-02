@@ -1,14 +1,48 @@
-{
-    "resourcePayload": [
-        {
-            "personalHealthNumber": "",
-            "hdid": "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A",
-            "lastLoginDateTime": "2022-10-14T19:00:26.631761Z"
-        }
-    ],
-    "totalResultCount": null,
-    "pageIndex": null,
-    "pageSize": null,
-    "resultStatus": 1,
-    "resultError": null
-}
+[
+    {
+        "status": "Default",
+        "warningMessage": "",
+        "hdid": "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A",
+        "personalHealthNumber": "9735353315",
+        "commonName": {
+            "givenName": "BONNET",
+            "surname": "PROTERVITY"
+        },
+        "legalName": {
+            "givenName": "BONNET",
+            "surname": "PROTERVITY"
+        },
+        "preferredName": {
+            "givenName": "BONNET",
+            "surname": "PROTERVITY"
+        },
+        "birthdate": "1967-06-02",
+        "physicalAddress": "3815 HILLSPOINT STREET, CHATHAM, BC, V0G8B8",
+        "postalAddress": "3815 HILLSPOINT STREET, CHATHAM, BC, V0G8B8",
+        "profileCreatedDateTime": "2023-04-29T16:47:23.554687Z",
+        "profileLastLoginDateTime": "2023-05-01T16:47:23.554687Z"
+    },
+    {
+        "status": "Default",
+        "warningMessage": "",
+        "hdid": "RD33Y2LJEUZCY2TCMOIECUTKS3E62MEQ62CSUL6Q553IHHBI3AWQ",
+        "personalHealthNumber": "9735361219",
+        "commonName": {
+            "givenName": "ORIGANIUM",
+            "surname": "E'PISTEMICS"
+        },
+        "legalName": {
+            "givenName": "ORIGANIUM",
+            "surname": "E'PISTEMICS"
+        },
+        "preferredName": {
+            "givenName": "ORIGANIUM",
+            "surname": "E'PISTEMICS"
+        },
+        "birthdate": "1994-06-09",
+        "physicalAddress": "1234 LEE AVENUE, VICTORIA, BC, V9C6P1",
+        "postalAddress": "8128 WILD CREEK DR, HOLBORN, BC, V3A3P1",
+        "profileCreatedDateTime": "2023-05-01T16:47:24.388611Z",
+        "profileLastLoginDateTime": "2023-05-01T16:47:24.388611Z"
+    }
+]

@@ -34,7 +34,7 @@ namespace HealthGateway.PatientDataAccess.Api
     internal enum HealthDataCategory
     {
         Laboratory,
-        COVID19Laboratory,
+        Covid19Laboratory,
         ClinicalDocument,
         DiagnosticImaging,
     }

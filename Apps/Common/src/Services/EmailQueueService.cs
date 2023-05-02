@@ -112,6 +112,8 @@ namespace HealthGateway.Common.Services
                     Body = oldEmail.Body,
                     FormatCode = oldEmail.FormatCode,
                     Priority = oldEmail.Priority,
+                    Personalization = oldEmail.Personalization,
+                    Template = oldEmail.Template,
                 };
                 this.QueueNewEmail(email, shouldCommit);
             }
@@ -160,6 +162,8 @@ namespace HealthGateway.Common.Services
                 Subject = StringManipulator.Replace(emailTemplate.Subject!, keyValues),
                 Body = StringManipulator.Replace(emailTemplate.Body!, keyValues),
                 FormatCode = emailTemplate.FormatCode,
+                Personalization = keyValues,
+                Template = emailTemplate.Name,
             };
         }
     }

@@ -179,6 +179,7 @@ export default class NotificationCentreComponent extends Vue {
             v-for="notification in notifications"
             :key="notification.id"
             class="mt-3"
+            data-testid="notifications-div"
         >
             <small :class="{ 'text-muted': !isNew(notification) }">
                 {{ formatDate(notification.scheduledDateTimeUtc) }}

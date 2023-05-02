@@ -54,7 +54,8 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
             dependentServiceMock.Setup(s => s.GetDependentsAsync(this.hdid, 0, 500)).ReturnsAsync(expectedResult);
 
             PhsaController phsaController = new(
-                dependentServiceMock.Object);
+                dependentServiceMock.Object,
+                new Mock<IPatientDetailsService>().Object);
             ActionResult<RequestResult<IEnumerable<DependentModel>>> actualResult = await phsaController.GetAll(this.hdid).ConfigureAwait(true);
 
             RequestResult<IEnumerable<DependentModel>>? actualRequestResult = actualResult.Value;
@@ -77,7 +78,8 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
             dependentServiceMock.Setup(s => s.GetDependents(this.fromDate, this.toDate, 0, 5000)).Returns(expectedResult);
 
             PhsaController phsaController = new(
-                dependentServiceMock.Object);
+                dependentServiceMock.Object,
+                new Mock<IPatientDetailsService>().Object);
             ActionResult<RequestResult<IEnumerable<GetDependentResponse>>> actualResult = phsaController.GetAll(this.fromDate, this.toDate);
 
             RequestResult<IEnumerable<GetDependentResponse>>? actualRequestResult = actualResult.Value;

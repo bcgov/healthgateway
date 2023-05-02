@@ -17,6 +17,7 @@ namespace HealthGateway.GatewayApi
 {
     using System;
     using System.Diagnostics.CodeAnalysis;
+    using HealthGateway.AccountDataAccess;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.Api;
     using HealthGateway.Common.AspNetConfiguration;
@@ -31,6 +32,7 @@ namespace HealthGateway.GatewayApi
     using HealthGateway.Common.Utils.Phsa;
     using HealthGateway.Database.Delegates;
     using HealthGateway.GatewayApi.Api;
+    using HealthGateway.GatewayApi.MapProfiles;
     using HealthGateway.GatewayApi.Services;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
@@ -94,6 +96,7 @@ namespace HealthGateway.GatewayApi
             services.AddTransient<IReportService, ReportService>();
             services.AddTransient<IPersonalAccountsService, PersonalAccountsService>();
             services.AddTransient<IWebAlertService, WebAlertService>();
+            services.AddTransient<IPatientDetailsService, PatientDetailsService>();
 
             // Add delegates
             services.AddTransient<IUserProfileDelegate, DbProfileDelegate>();
@@ -111,6 +114,7 @@ namespace HealthGateway.GatewayApi
             services.AddTransient<IDelegationDelegate, DbDelegationDelegate>();
             services.AddTransient<IResourceDelegateDelegate, DbResourceDelegateDelegate>();
             services.AddTransient<ICDogsDelegate, CDogsDelegate>();
+            services.AddTransient<IApplicationSettingsDelegate, DbApplicationSettingsDelegate>();
 
             // Add API Clients
             CDogsConfig cdogsConfig = new();
@@ -137,11 +141,13 @@ namespace HealthGateway.GatewayApi
                 .ConfigureHttpClient(c => c.BaseAddress = phsaConfig.BaseUrl)
                 .AddHttpMessageHandler<AuthHeaderHandler>();
 
+            services.AddPatientRepositoryConfiguration(new AccountDataAccessConfiguration(phsaConfig.BaseUrl));
+
             services.Configure<ApiBehaviorOptions>(options => options.SuppressModelStateInvalidFilter = true);
 
             services.AddControllers().AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new DateOnlyJsonConverter()));
 
-            services.AddAutoMapper(typeof(Startup), typeof(UserProfileProfile));
+            services.AddAutoMapper(typeof(Startup), typeof(UserProfileProfile), typeof(PatientDetailsProfile));
         }
 
         /// <summary>

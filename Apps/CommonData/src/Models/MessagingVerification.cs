@@ -49,21 +49,26 @@ namespace HealthGateway.Common.Data.Models
 
         /// <summary>
         /// Gets or sets the associated email that was sent for this verification.
-        /// Required if the VerificationType = MessagingVerificationType.Email.
+        /// Set if the VerificationType = MessagingVerificationType.Email.
         /// </summary>
         public Guid? EmailId { get; set; }
 
         /// <summary>
         /// Gets or sets the associated email for this verification.
-        /// Required if the VerificationType = MessagingVerificationType.Email.
+        /// Set if the VerificationType = MessagingVerificationType.Email.
         /// </summary>
         public virtual Email? Email { get; set; }
 
         /// <summary>
+        /// Gets or sets the email address for this verification.
+        /// </summary>
+        [MaxLength(254)]
+        public string? EmailAddress { get; set; }
+
+        /// <summary>
         /// Gets or sets the email invite key.
         /// </summary>
-        [Required]
-        public Guid InviteKey { get; set; }
+        public Guid? InviteKey { get; set; }
 
         /// <summary>
         /// Gets or sets the Verification type as defined by MessagingVerificationTypeCode.

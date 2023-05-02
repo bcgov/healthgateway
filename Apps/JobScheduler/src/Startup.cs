@@ -33,6 +33,7 @@ namespace HealthGateway.JobScheduler
     using HealthGateway.Database.Delegates;
     using HealthGateway.DBMaintainer.FileDownload;
     using HealthGateway.DBMaintainer.Parsers;
+    using HealthGateway.JobScheduler.AspNetConfiguration.Modules;
     using HealthGateway.JobScheduler.Jobs;
     using HealthGateway.JobScheduler.Listeners;
     using HealthGateway.JobScheduler.Utils;
@@ -125,6 +126,8 @@ namespace HealthGateway.JobScheduler
             this.startupConfig.Configuration.Bind(NotificationSettingsConfig.NotificationSettingsConfigSectionKey, notificationSettingsConfig);
             services.AddRefitClient<INotificationSettingsApi>().ConfigureHttpClient(c => c.BaseAddress = new Uri(notificationSettingsConfig.Endpoint));
 
+            GcNotify.Configure(services, this.logger, this.configuration);
+
             // Add injection for KeyCloak User Admin
             services.AddTransient<IAuthenticationDelegate, AuthenticationDelegate>();
             Uri? baseUri = this.startupConfig.Configuration.GetValue<Uri>("KeycloakAdmin:BaseUrl");
@@ -195,10 +198,7 @@ namespace HealthGateway.JobScheduler
 
             // Schedule Health Gateway Jobs
             BackgroundJob.Enqueue<DbMigrationsJob>(j => j.Migrate());
-            SchedulerHelper.ScheduleJob<IEmailJob>(this.configuration, "SendLowPriorityEmail", j => j.SendLowPriorityEmails());
-            SchedulerHelper.ScheduleJob<IEmailJob>(this.configuration, "SendStandardPriorityEmail", j => j.SendStandardPriorityEmails());
-            SchedulerHelper.ScheduleJob<IEmailJob>(this.configuration, "SendHighPriorityEmail", j => j.SendHighPriorityEmails());
-            SchedulerHelper.ScheduleJob<IEmailJob>(this.configuration, "SendUrgentPriorityEmail", j => j.SendUrgentPriorityEmails());
+            SchedulerHelper.ScheduleJob<EmailJob>(this.configuration, "ResendEmails", j => j.SendEmails());
             SchedulerHelper.ScheduleDrugLoadJob<FedDrugJob>(this.configuration, "FedApprovedDatabase");
             SchedulerHelper.ScheduleDrugLoadJob<FedDrugJob>(this.configuration, "FedMarketedDatabase");
             SchedulerHelper.ScheduleDrugLoadJob<FedDrugJob>(this.configuration, "FedCancelledDatabase");

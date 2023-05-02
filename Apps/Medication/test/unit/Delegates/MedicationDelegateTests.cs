@@ -109,7 +109,7 @@ namespace HealthGateway.MedicationTests.Delegates
                             },
                             GenericName = "Generic Name",
                             Id = 0,
-                            Practitioner = new Name
+                            Practitioner = new Medication.Models.ODR.Name
                             {
                                 GivenName = "Given",
                                 MiddleInitial = "I",

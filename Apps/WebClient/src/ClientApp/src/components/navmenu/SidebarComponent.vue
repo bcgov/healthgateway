@@ -14,8 +14,6 @@ import { Component, Watch } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 
 import FeedbackComponent from "@/components/FeedbackComponent.vue";
-import TutorialComponent from "@/components/shared/TutorialComponent.vue";
-import UserPreferenceType from "@/constants/userPreferenceType";
 import type { WebClientConfiguration } from "@/models/configData";
 import User from "@/models/user";
 import container from "@/plugins/container";
@@ -36,7 +34,6 @@ library.add(
 const options: any = {
     components: {
         FeedbackComponent,
-        TutorialComponent,
     },
 };
 
@@ -130,10 +127,6 @@ export default class SidebarComponent extends Vue {
         }
     }
 
-    private get exportTutorialPreference(): string {
-        return UserPreferenceType.TutorialMenuExport;
-    }
-
     private get isQueuePage(): boolean {
         return (
             this.$route.path.toLowerCase() === "/queue" ||
@@ -151,10 +144,6 @@ export default class SidebarComponent extends Vue {
             !this.patientRetrievalFailed &&
             !this.isQueuePage
         );
-    }
-
-    private get showExportTutorial(): boolean {
-        return (this.isOpen || !this.isMobileWidth) && !this.isAnimating;
     }
 
     private get isFullyOpen(): boolean {
@@ -382,21 +371,6 @@ export default class SidebarComponent extends Vue {
                                 <span>Export Records</span>
                             </b-col>
                         </b-row>
-                        <TutorialComponent
-                            :preference-type="exportTutorialPreference"
-                            target="menuBtnReports"
-                            :show="showExportTutorial"
-                            custom-class="elevation-1"
-                            placement="right"
-                        >
-                            <div
-                                data-testid="exportRecordsPopover"
-                                class="popover-content"
-                            >
-                                Download and print health records, such as your
-                                immunization history and more.
-                            </div>
-                        </TutorialComponent>
                     </hg-button>
                     <br />
                 </b-col>

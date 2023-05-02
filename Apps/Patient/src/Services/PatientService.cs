@@ -15,18 +15,16 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Patient.Services
 {
-    using System;
     using System.Diagnostics;
+    using System.Linq;
     using System.Net;
+    using System.Threading;
     using System.Threading.Tasks;
-    using HealthGateway.Common.CacheProviders;
+    using AutoMapper;
+    using HealthGateway.AccountDataAccess.Patient;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.ErrorHandling;
-    using HealthGateway.Common.Data.Validations;
-    using HealthGateway.Common.Data.ViewModels;
-    using HealthGateway.Patient.Delegates;
     using HealthGateway.Patient.Models;
-    using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
 
     /// <summary>
@@ -34,139 +32,75 @@ namespace HealthGateway.Patient.Services
     /// </summary>
     public class PatientService : IPatientService
     {
-        /// <summary>
-        /// The generic cache domain to store patients against.
-        /// </summary>
-        private const string PatientCacheDomain = "PatientV2";
-
-        private readonly ICacheProvider cacheProvider;
-        private readonly int cacheTtl;
-
-        /// <summary>
-        /// The injected logger delegate.
-        /// </summary>
         private readonly ILogger<PatientService> logger;
-
-        private readonly IClientRegistriesDelegate clientRegistriesDelegate;
+        private readonly IMapper mapper;
+        private readonly IPatientRepository patientRepository;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PatientService"/> class.
         /// </summary>
         /// <param name="logger">The service Logger.</param>
-        /// <param name="configuration">The Configuration to use.</param>
-        /// <param name="clientRegistriesDelegate">The injected client registries delegate.</param>
-        /// <param name="cacheProvider">The provider responsible for caching.</param>
-        public PatientService(ILogger<PatientService> logger, IConfiguration configuration, IClientRegistriesDelegate clientRegistriesDelegate, ICacheProvider cacheProvider)
+        /// <param name="patientRepository">The injected patient repository.</param>
+        /// <param name="mapper">The mapper.</param>
+        public PatientService(ILogger<PatientService> logger, IPatientRepository patientRepository, IMapper mapper)
         {
             this.logger = logger;
-            this.clientRegistriesDelegate = clientRegistriesDelegate;
-            this.cacheProvider = cacheProvider;
-            this.cacheTtl = configuration.GetSection("PatientService").GetValue("CacheTTL", 0);
+            this.patientRepository = patientRepository;
+            this.mapper = mapper;
         }
 
         private static ActivitySource Source { get; } = new(nameof(PatientService));
 
         /// <inheritdoc/>
-        public async Task<ApiResult<PatientModelV2>> GetPatient(string identifier, PatientIdentifierType identifierType = PatientIdentifierType.Hdid, bool disableIdValidation = false)
+        public async Task<PatientDetails> GetPatientAsync(
+            string identifier,
+            PatientIdentifierType identifierType = PatientIdentifierType.Hdid,
+            bool disableIdValidation = false,
+            CancellationToken ct = default)
         {
             using Activity? activity = Source.StartActivity();
 
-            ApiResult<PatientModelV2> apiResult = new()
+            PatientDetailsQuery query = identifierType == PatientIdentifierType.Hdid
+                ? new PatientDetailsQuery(Hdid: identifier, Source: PatientDetailSource.AllCache)
+                : new PatientDetailsQuery(identifier, Source: PatientDetailSource.AllCache);
+
+            this.logger.LogDebug("Starting GetPatient for identifier type: {IdentifierType} and patient data source: {Source}", identifierType, query.Source);
+
+            PatientModel? patientDetails = (await this.patientRepository.Query(query, ct).ConfigureAwait(true)).Items.SingleOrDefault();
+
+            if (patientDetails == null)
             {
-                ResourcePayload = this.GetFromCache(identifier, identifierType),
-            };
+                // BCHCIM.GD.2.0018 Not found
+                this.logger.LogWarning("Client Registry did not find any records. Returned message code: {ResponseCode}", "Not found");
+                throw new ProblemDetailsException(ExceptionUtility.CreateProblemDetails(ErrorMessages.ClientRegistryRecordsNotFound, HttpStatusCode.NotFound, nameof(PatientService)));
+            }
 
-            if (apiResult.ResourcePayload == null)
+            if (patientDetails.IsDeceased == true)
             {
-                OidType type = GetOidType(identifierType);
-                this.logger.LogDebug("Starting GetPatient for identifier type: {IdentifierType}", identifierType);
+                this.logger.LogWarning("Client Registry returned a person with the deceased indicator set to true. No PHN was populated. {ActionType}", ActionType.Deceased.Value);
+                throw new ProblemDetailsException(
+                    ExceptionUtility.CreateProblemDetails(ErrorMessages.ClientRegistryReturnedDeceasedPerson, HttpStatusCode.NotFound, nameof(PatientService)));
+            }
 
-                if (identifierType == PatientIdentifierType.Phn && !PhnValidator.IsValid(identifier))
+            if (patientDetails.CommonName == null)
+            {
+                this.logger.LogWarning("Client Registry returned a person without a Documented Name.");
+                if (patientDetails.LegalName == null)
                 {
-                    this.logger.LogDebug("The PHN provided is invalid");
-                    throw new ProblemDetailsException(ExceptionUtility.CreateProblemDetails(ErrorMessages.PhnInvalid, HttpStatusCode.NotFound, nameof(PatientService)));
+                    this.logger.LogWarning("Client Registry is unable to determine patient name due to missing legal name. Action Type: {ActionType}", ActionType.InvalidName.Value);
+                    throw new ProblemDetailsException(ExceptionUtility.CreateProblemDetails(ErrorMessages.InvalidServicesCard, HttpStatusCode.NotFound, nameof(PatientService)));
                 }
+            }
 
-                apiResult = await this.clientRegistriesDelegate.GetDemographicsAsync(type, identifier, disableIdValidation).ConfigureAwait(true);
-
-                // Only cache if validation is enabled (as some clients could get invalid data) and when successful.
-                if (!disableIdValidation && apiResult.ResourcePayload != null)
-                {
-                    this.CachePatient(apiResult.ResourcePayload);
-                }
+            if (string.IsNullOrEmpty(patientDetails.Hdid) && string.IsNullOrEmpty(patientDetails.Phn) && !disableIdValidation)
+            {
+                this.logger.LogWarning("Client Registry was unable to retrieve identifiers. Action Type: {ActionType}", ActionType.NoHdId.Value);
+                throw new ProblemDetailsException(ExceptionUtility.CreateProblemDetails(ErrorMessages.InvalidServicesCard, HttpStatusCode.NotFound, nameof(PatientService)));
             }
 
             activity?.Stop();
 
-            return apiResult;
-        }
-
-        private static OidType GetOidType(PatientIdentifierType type)
-        {
-            return type == PatientIdentifierType.Phn ? OidType.Phn : OidType.Hdid;
-        }
-
-        /// <summary>
-        /// Attempts to get the Patient model from the Generic Cache.
-        /// </summary>
-        /// <param name="identifier">The resource identifier used to determine the key to use.</param>
-        /// <param name="identifierType">The type of patient identifier we are searching for.</param>
-        /// <returns>The found Patient model or null.</returns>
-        private PatientModelV2? GetFromCache(string identifier, PatientIdentifierType identifierType)
-        {
-            using Activity? activity = Source.StartActivity();
-            PatientModelV2? retPatient = null;
-            if (this.cacheTtl > 0)
-            {
-                switch (identifierType)
-                {
-                    case PatientIdentifierType.Hdid:
-                        this.logger.LogDebug("Querying Patient Cache by HDID");
-                        retPatient = this.cacheProvider.GetItem<PatientModelV2>($"{PatientCacheDomain}:HDID:{identifier}");
-                        break;
-
-                    case PatientIdentifierType.Phn:
-                        this.logger.LogDebug("Querying Patient Cache by PHN");
-                        retPatient = this.cacheProvider.GetItem<PatientModelV2>($"{PatientCacheDomain}:PHN:{identifier}");
-                        break;
-                }
-
-                string message = $"Patient with identifier {identifier} was {(retPatient == null ? "not" : string.Empty)} found in cache";
-                this.logger.LogDebug("{Message}", message);
-            }
-
-            activity?.Stop();
-            return retPatient;
-        }
-
-        /// <summary>
-        /// Caches the Patient model if enabled.
-        /// </summary>
-        /// <param name="patient">The patient to cache.</param>
-        private void CachePatient(PatientModelV2 patient)
-        {
-            using Activity? activity = Source.StartActivity();
-            string hdid = patient.HdId;
-            if (this.cacheTtl > 0)
-            {
-                this.logger.LogDebug("Attempting to cache patient: {Hdid}", hdid);
-                TimeSpan expiry = TimeSpan.FromMinutes(this.cacheTtl);
-                if (!string.IsNullOrEmpty(patient.HdId))
-                {
-                    this.cacheProvider.AddItem($"{PatientCacheDomain}:HDID:{patient.HdId}", patient, expiry);
-                }
-
-                if (!string.IsNullOrEmpty(patient.PersonalHealthNumber))
-                {
-                    this.cacheProvider.AddItem($"{PatientCacheDomain}:PHN:{patient.PersonalHealthNumber}", patient, expiry);
-                }
-            }
-            else
-            {
-                this.logger.LogDebug("Patient caching is disabled will not cache patient: {Hdid}", hdid);
-            }
-
-            activity?.Stop();
+            return this.mapper.Map<PatientDetails>(patientDetails);
         }
     }
 }
