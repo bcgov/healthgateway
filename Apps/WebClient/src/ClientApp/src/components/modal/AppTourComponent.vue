@@ -211,7 +211,6 @@ export default class AppTourComponent extends Vue {
                 <b-col class="d-flex justify-content-center">
                     <hg-button
                         variant="primary"
-                        class="ml-3"
                         data-testid="app-tour-start"
                         @click="next($event)"
                     >
