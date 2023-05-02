@@ -30,6 +30,16 @@ export default class AppTourComponent extends Vue {
 
     private mobileSlides: TourSlide[] = [
         {
+            title: "App Tour",
+            description:
+                "Take this brief tour to learn how to use Health Gateway. You can always get here again by clicking the light bulb.",
+            imageUri: new URL(
+                "@/assets/images/tour/mobile/app-tour-start-mobile.png",
+                import.meta.url
+            ).href,
+            imageAlt: "App tour start mobile splash",
+        },
+        {
             title: "Add a Quick Link",
             description:
                 "Add a quick link to easily access a health record type from your home screen.",
@@ -62,6 +72,16 @@ export default class AppTourComponent extends Vue {
     ];
 
     private desktopSlides: TourSlide[] = [
+        {
+            title: "App Tour",
+            description:
+                "Take this brief tour to learn how to use Health Gateway. You can always get here again by clicking the light bulb.",
+            imageUri: new URL(
+                "@/assets/images/tour/web/app-tour-start.png",
+                import.meta.url
+            ).href,
+            imageAlt: "App tour start splash",
+        },
         {
             title: "Add a Quick Link",
             description:
@@ -178,7 +198,28 @@ export default class AppTourComponent extends Vue {
                     </p>
                 </b-col>
             </b-row>
-            <b-row v-if="!isFinalSlide" class="mt-3">
+            <b-row v-if="isFirstSlide" class="mt-3">
+                <div class="ml-2 skipFirst">
+                    <hg-button
+                        variant="link"
+                        data-testid="app-tour-skip"
+                        @click="hideModal"
+                    >
+                        Skip
+                    </hg-button>
+                </div>
+                <b-col class="d-flex justify-content-center">
+                    <hg-button
+                        variant="primary"
+                        class="ml-3"
+                        data-testid="app-tour-start"
+                        @click="next($event)"
+                    >
+                        Start App Tour
+                    </hg-button>
+                </b-col>
+            </b-row>
+            <b-row v-else-if="!isFirstSlide && !isFinalSlide" class="mt-3">
                 <b-col>
                     <hg-button
                         variant="link"
@@ -190,7 +231,6 @@ export default class AppTourComponent extends Vue {
                 </b-col>
                 <b-col class="d-flex justify-content-end">
                     <hg-button
-                        :disabled="isFirstSlide"
                         data-testid="app-tour-back"
                         variant="secondary"
                         @click="previous($event)"
@@ -234,5 +274,10 @@ export default class AppTourComponent extends Vue {
             background-color: $hg-text-primary !important;
         }
     }
+}
+
+.skipFirst {
+    z-index: 100;
+    position: absolute;
 }
 </style>
