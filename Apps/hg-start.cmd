@@ -1,9 +1,9 @@
 @echo off
-start /d "%~dp0\Apps\WebClient\src" dotnet run .
-start /d "%~dp0\Apps\Patient\src" dotnet run .
-start /d "%~dp0\Apps\GatewayApi\src" dotnet run .
-start /d "%~dp0\Apps\Encounter\src" dotnet run .
-start /d "%~dp0\Apps\Immunization\src" dotnet run .
-start /d "%~dp0\Apps\Laboratory\src" dotnet run .
-start /d "%~dp0\Apps\Medication\src" dotnet run .
-start /d "%~dp0\Apps\ClinicalDocument\src" dotnet run .
+start /d "%~dp0\WebClient\src" dotnet run .
+start /d "%~dp0\Patient\src" dotnet run .
+start /d "%~dp0\GatewayApi\src" dotnet run .
+start /d "%~dp0\Encounter\src" dotnet run .
+start /d "%~dp0\Immunization\src" dotnet run .
+start /d "%~dp0\Laboratory\src" dotnet run .
+start /d "%~dp0\Medication\src" dotnet run .
+start /d "%~dp0\ClinicalDocument\src" dotnet run .
