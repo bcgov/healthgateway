@@ -115,7 +115,7 @@ namespace HealthGateway.GatewayApi.Controllers
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status502BadGateway)]
-        [Route("Patient")]
+        [Route("patients/{hdid}")]
         [Authorize(Policy = SystemDelegatedPatientPolicy.Read)]
         public async Task<ActionResult<PatientDetails>> GetPatient(string hdid)
         {
