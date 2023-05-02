@@ -199,7 +199,7 @@ export default class AppTourComponent extends Vue {
                 </b-col>
             </b-row>
             <b-row v-if="isFirstSlide" class="mt-3">
-                <div class="ml-2 skipFirst">
+                <b-col cols="3">
                     <hg-button
                         variant="link"
                         data-testid="app-tour-skip"
@@ -207,8 +207,8 @@ export default class AppTourComponent extends Vue {
                     >
                         Skip
                     </hg-button>
-                </div>
-                <b-col class="d-flex justify-content-center">
+                </b-col>
+                <b-col cols="6" class="d-flex justify-content-center">
                     <hg-button
                         variant="primary"
                         data-testid="app-tour-start"
@@ -264,6 +264,7 @@ export default class AppTourComponent extends Vue {
 
 <style lang="scss">
 @import "@/assets/scss/_variables.scss";
+
 .carousel-indicators {
     li {
         border: 1px solid $hg-text-secondary !important;
@@ -273,10 +274,5 @@ export default class AppTourComponent extends Vue {
             background-color: $hg-text-primary !important;
         }
     }
-}
-
-.skipFirst {
-    z-index: 100;
-    position: absolute;
 }
 </style>
