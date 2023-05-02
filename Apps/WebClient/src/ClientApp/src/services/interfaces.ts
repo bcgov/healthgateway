@@ -1,7 +1,6 @@
 import { Store } from "vuex";
 
 import AddDependentRequest from "@/models/addDependentRequest";
-import ApiResult from "@/models/apiResult";
 import { Dictionary } from "@/models/baseTypes";
 import { CheckInRequest } from "@/models/checkInRequest";
 import { ClinicalDocument } from "@/models/clinicalDocument";
@@ -90,7 +89,7 @@ export interface IVaccinationStatusService {
 
 export interface IPatientService {
     initialize(config: ExternalConfiguration, http: IHttpDelegate): void;
-    getPatient(hdid: string): Promise<ApiResult<Patient>>;
+    getPatient(hdid: string): Promise<Patient>;
 }
 
 export interface IMedicationService {

@@ -267,8 +267,8 @@ export const actions: UserActions = {
             patientService
                 .getPatient(context.state.user.hdid)
                 .then((result) => {
-                    if (result.resourcePayload) {
-                        context.commit("setPatient", result.resourcePayload);
+                    if (result) {
+                        context.commit("setPatient", result);
 
                         userProfileService
                             .getProfile(context.state.user.hdid)

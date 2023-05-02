@@ -17,6 +17,7 @@ namespace HealthGateway.PatientTests.Controllers
 {
     using System;
     using System.Threading;
+    using System.Threading.Tasks;
     using DeepEqual.Syntax;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.Constants;
@@ -29,6 +30,7 @@ namespace HealthGateway.PatientTests.Controllers
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Moq;
+    using Shouldly;
     using Xunit;
 
     /// <summary>
@@ -36,7 +38,7 @@ namespace HealthGateway.PatientTests.Controllers
     /// </summary>
     public class PatientControllerTests
     {
-        private const string MockedHdId = "mockedHdId";
+        private const string MockedHdid = "mockedHdid";
         private const string MockedFirstName = "mockedFirstName";
         private const string MockedLastName = "mockedLastName";
         private const string MockedGender = "Male";
@@ -50,7 +52,7 @@ namespace HealthGateway.PatientTests.Controllers
         public void ShouldGetPatientsV1()
         {
             // Arrange
-            PatientController patientController = GetPatientController();
+            PatientController patientController = CreatePatientController();
             PatientModel patientModel = GetPatientModel();
             RequestResult<PatientModel> expectedResult = new()
             {
@@ -78,21 +80,21 @@ namespace HealthGateway.PatientTests.Controllers
         /// <summary>
         /// GetPatients V2 Test.
         /// </summary>
+        /// <returns>representing the asynchronous unit test.</returns>
         [Fact]
-        public void ShouldGetPatientsV2()
+        public async Task ShouldGetPatientsV2()
         {
             // Arrange
-            PatientController patientController = GetPatientController();
+            PatientController patientController = CreatePatientController();
 
             // Act
-            IActionResult actualResult = patientController.GetPatientV2("123").Result;
+            var actualResult = await patientController.GetPatientV2(MockedHdid).ConfigureAwait(false);
 
             // Assert
-            Assert.IsType<OkObjectResult>(actualResult);
-            OkObjectResult? okResult = actualResult as OkObjectResult;
-            Assert.Equal(StatusCodes.Status200OK, okResult?.StatusCode);
-            ApiResult<PatientDetails> apiResult = Assert.IsAssignableFrom<ApiResult<PatientDetails>>(okResult?.Value);
-            Assert.Equal(MockedHdId, apiResult.ResourcePayload!.HdId);
+            var ok = actualResult.Result.ShouldBeOfType<OkObjectResult>();
+            ok.StatusCode.ShouldBe(StatusCodes.Status200OK);
+            var patientDetails = ok.Value.ShouldBeOfType<PatientDetails>();
+            patientDetails.HdId.ShouldBe(MockedHdid);
         }
 
         private static PatientModel GetPatientModel()
@@ -103,7 +105,7 @@ namespace HealthGateway.PatientTests.Controllers
                 FirstName = MockedFirstName,
                 LastName = MockedLastName,
                 Gender = MockedGender,
-                HdId = MockedHdId,
+                HdId = MockedHdid,
                 PersonalHealthNumber = MockedPersonalHealthNumber,
                 PhysicalAddress = new Address
                 {
@@ -131,7 +133,7 @@ namespace HealthGateway.PatientTests.Controllers
                     Surname = MockedLastName,
                 },
                 Gender = MockedGender,
-                HdId = MockedHdId,
+                HdId = MockedHdid,
                 Phn = MockedPersonalHealthNumber,
                 PhysicalAddress = new AccountDataAccess.Patient.Address
                 {
@@ -148,7 +150,7 @@ namespace HealthGateway.PatientTests.Controllers
             };
         }
 
-        private static PatientController GetPatientController()
+        private static PatientController CreatePatientController()
         {
             Mock<IPatientService> patientServiceV1 = new();
             Mock<Patient.Services.IPatientService> patientServiceV2 = new();
