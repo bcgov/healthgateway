@@ -1,3 +1,8 @@
+import {
+    performSearch,
+    verifySupportTableResults,
+} from "../../utilities/supportUtilities";
+
 const email = "fakeemail@healthgateway.gov.bc.ca";
 const emailHdid = "DEV4FPEGCXG2NB5K2USBL52S66SC3GOUHWRP3GTXR2BTY5HEC4YA";
 const emailPhn = "9735353759";
@@ -7,44 +12,6 @@ const phnInvalid = "9999999999";
 const phnError = "9735361219";
 const hdid = "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A";
 const sms = "2506715000";
-
-function getTableRows(tableSelector) {
-    cy.get(tableSelector).should("be.visible");
-    return cy.get(`${tableSelector} tbody`).find("tr.mud-table-row");
-}
-
-function verifyUserTableResults(
-    expectedHdid,
-    expectedPhn,
-    expectedRowCount = 1
-) {
-    getTableRows("[data-testid=user-table]")
-        .should("have.length", expectedRowCount)
-        .first((_$rows) => {
-            cy.get(`[data-testid=user-table-hdid-${expectedHdid}]`).contains(
-                expectedHdid.slice(0, 8)
-            );
-
-            cy.get(`[data-testid=user-table-phn-${expectedHdid}]`).contains(
-                expectedPhn
-            );
-        });
-}
-
-function performSearch(queryType, queryString) {
-    cy.get("[data-testid=query-type-select]").click({ force: true });
-    cy.get("[data-testid=query-type]")
-        .contains(queryType)
-        .click({ force: true });
-
-    if (queryString) {
-        cy.get("[data-testid=query-input]").clear().type(queryString);
-    } else {
-        cy.get("[data-testid=query-input]").clear();
-    }
-
-    cy.get("[data-testid=search-btn]").click();
-}
 
 function verifyParameterIsRequired(queryType) {
     performSearch(queryType, null);
@@ -95,12 +62,12 @@ describe("Support", () => {
             "GET",
             `**/Support/Users?queryString=${phnError}&queryType=Phn`,
             {
-                statusCode: 404,
+                statusCode: 502,
                 body: {
                     type: "Health Gateway Exception",
                     title: "Error during processing",
-                    status: 404,
-                    detail: "Client Registry did not return a person",
+                    status: 502,
+                    detail: "Communication error",
                 },
             }
         );
@@ -122,21 +89,17 @@ describe("Support", () => {
     });
 
     it("Verify support queries", () => {
-        // Search by PHN
         performSearch("PHN", phn);
-        verifyUserTableResults(hdid, phn);
+        verifySupportTableResults(hdid, phn);
 
-        // Search by HDID.
         performSearch("HDID", hdid);
-        verifyUserTableResults(hdid, phn);
+        verifySupportTableResults(hdid, phn);
 
-        // Search by SMS.
         performSearch("SMS", sms);
-        verifyUserTableResults(hdid, phn, 2);
+        verifySupportTableResults(hdid, phn, 2);
 
-        // Search by Email.
         performSearch("Email", email);
-        verifyUserTableResults(emailHdid, emailPhn);
+        verifySupportTableResults(emailHdid, emailPhn);
     });
 
     it("Verify support query warnings", () => {
@@ -144,7 +107,7 @@ describe("Support", () => {
         cy.get("[data-testid=user-banner-feedback-warning-message]").should(
             "be.visible"
         );
-        verifyUserTableResults(hdid, phnDuplicate);
+        verifySupportTableResults(hdid, phnDuplicate);
         cy.get("[data-testid=user-banner-feedback-warning-message]").within(
             () => {
                 cy.get("button").parent(".mud-alert-close").click();
@@ -152,7 +115,7 @@ describe("Support", () => {
         );
     });
 
-    it("Verify error when person not found", () => {
+    it("Verify error handling", () => {
         performSearch("PHN", phnError);
         cy.get("[data-testid=user-banner-feedback-error-message]").should(
             "be.visible"

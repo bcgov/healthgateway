@@ -160,8 +160,15 @@ namespace HealthGateway.Admin.Server.Services
                 ? new PatientDetailsQuery(Hdid: queryString)
                 : new PatientDetailsQuery(Phn: queryString);
 
-            PatientQueryResult result = await this.patientRepository.Query(query, ct).ConfigureAwait(true);
-            return result.Items.SingleOrDefault();
+            try
+            {
+                PatientQueryResult result = await this.patientRepository.Query(query, ct).ConfigureAwait(true);
+                return result.Items.SingleOrDefault();
+            }
+            catch (ProblemDetailsException e) when (e.ProblemDetails?.StatusCode == HttpStatusCode.NotFound)
+            {
+                return null;
+            }
         }
 
         private PatientSupportDetails MapToPatientSupportDetails(PatientModel? patient, UserProfile? userProfile)
