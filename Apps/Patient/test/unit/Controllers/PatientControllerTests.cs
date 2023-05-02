@@ -125,7 +125,7 @@ namespace HealthGateway.PatientTests.Controllers
             return new()
             {
                 Birthdate = MockedBirthDate,
-                CommonName = new Name
+                CommonName = new AccountDataAccess.Patient.Name
                 {
                     GivenName = MockedFirstName,
                     Surname = MockedLastName,

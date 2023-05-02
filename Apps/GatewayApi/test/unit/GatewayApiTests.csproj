@@ -32,6 +32,7 @@
     <PackageReference Include="Microsoft.Extensions.Http" Version="7.0.0" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\AccountDataAccess\src\AccountDataAccess.csproj" />
     <ProjectReference Include="..\..\src\GatewayApi.csproj" />
   </ItemGroup>
   <ItemGroup>

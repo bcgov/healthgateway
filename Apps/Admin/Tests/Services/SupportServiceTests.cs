@@ -92,8 +92,8 @@ namespace HealthGateway.Admin.Tests.Services
         {
             // Arrange
             PatientDetailsQuery query = new() { Hdid = Hdid };
-            Name commonName = GenerateName();
-            Name legalName = GenerateName("Jim", "Bo");
+            AccountDataAccess.Patient.Name commonName = GenerateName();
+            AccountDataAccess.Patient.Name legalName = GenerateName("Jim", "Bo");
             AccountDataAccess.Patient.Address physicalAddress = GenerateAddress(GenerateStreetLines());
             AccountDataAccess.Patient.Address postalAddress = GenerateAddress(new List<string> { "PO BOX 1234" });
             PatientModel patient = GeneratePatientModel(Phn, Hdid, Birthdate, commonName, legalName, physicalAddress, postalAddress);
@@ -184,8 +184,8 @@ namespace HealthGateway.Admin.Tests.Services
         {
             // Arrange
             PatientDetailsQuery query = new() { Hdid = Hdid };
-            Name commonName = GenerateName();
-            Name legalName = GenerateName("Jim", "Bo");
+            AccountDataAccess.Patient.Name commonName = GenerateName();
+            AccountDataAccess.Patient.Name legalName = GenerateName("Jim", "Bo");
             AccountDataAccess.Patient.Address physicalAddress = GenerateAddress(GenerateStreetLines());
             AccountDataAccess.Patient.Address postalAddress = GenerateAddress(new List<string> { "PO BOX 1234" });
             PatientModel patient = GeneratePatientModel(Phn, Hdid, Birthdate, commonName, legalName, physicalAddress, postalAddress, isDeceased: true);
@@ -219,8 +219,8 @@ namespace HealthGateway.Admin.Tests.Services
         {
             // Arrange
             PatientDetailsQuery query = new() { Hdid = Hdid };
-            Name commonName = GenerateName();
-            Name legalName = GenerateName("Jim", "Bo");
+            AccountDataAccess.Patient.Name commonName = GenerateName();
+            AccountDataAccess.Patient.Name legalName = GenerateName("Jim", "Bo");
             AccountDataAccess.Patient.Address physicalAddress = GenerateAddress(GenerateStreetLines());
             AccountDataAccess.Patient.Address postalAddress = GenerateAddress(new List<string> { "PO BOX 1234" });
             PatientModel patient = GeneratePatientModel(Phn, Hdid, Birthdate, commonName, legalName, physicalAddress, postalAddress);
@@ -275,8 +275,8 @@ namespace HealthGateway.Admin.Tests.Services
         {
             // Arrange
             PatientDetailsQuery query = new() { Phn = Phn };
-            Name commonName = GenerateName();
-            Name legalName = GenerateName("Jim", "Bo");
+            AccountDataAccess.Patient.Name commonName = GenerateName();
+            AccountDataAccess.Patient.Name legalName = GenerateName("Jim", "Bo");
             AccountDataAccess.Patient.Address physicalAddress = GenerateAddress(GenerateStreetLines());
             AccountDataAccess.Patient.Address postalAddress = GenerateAddress(new List<string> { "PO BOX 1234" });
             PatientModel patient = GeneratePatientModel(Phn, Hdid, Birthdate, commonName, legalName, physicalAddress, postalAddress);
@@ -354,8 +354,8 @@ namespace HealthGateway.Admin.Tests.Services
             PatientModel dependentPatient = GeneratePatientModel(dependentPhn, dependentHdid, Birthdate);
 
             PatientDetailsQuery firstDelegateQuery = new() { Hdid = Hdid };
-            Name commonName = GenerateName();
-            Name legalName = GenerateName("Jim", "Bo");
+            AccountDataAccess.Patient.Name commonName = GenerateName();
+            AccountDataAccess.Patient.Name legalName = GenerateName("Jim", "Bo");
             AccountDataAccess.Patient.Address physicalAddress = GenerateAddress(GenerateStreetLines());
             AccountDataAccess.Patient.Address postalAddress = GenerateAddress(new List<string> { "PO BOX 1234" });
             PatientModel firstDelegatePatient = GeneratePatientModel(Phn, Hdid, Birthdate, commonName, legalName, physicalAddress, postalAddress);
@@ -404,8 +404,8 @@ namespace HealthGateway.Admin.Tests.Services
             Mock<IUserProfileDelegate> userProfileDelegateMock = GetUserProfileDelegateMock(profiles: profiles);
 
             PatientDetailsQuery firstQuery = new() { Hdid = Hdid };
-            Name commonName = GenerateName();
-            Name legalName = GenerateName("Jim", "Bo");
+            AccountDataAccess.Patient.Name commonName = GenerateName();
+            AccountDataAccess.Patient.Name legalName = GenerateName("Jim", "Bo");
             AccountDataAccess.Patient.Address physicalAddress = GenerateAddress(GenerateStreetLines());
             AccountDataAccess.Patient.Address postalAddress = GenerateAddress(new List<string> { "PO BOX 1234" });
             PatientModel firstPatient = GeneratePatientModel(Phn, Hdid, Birthdate, commonName, legalName, physicalAddress, postalAddress);
@@ -446,8 +446,8 @@ namespace HealthGateway.Admin.Tests.Services
             Mock<IUserProfileDelegate> userProfileDelegateMock = GetUserProfileDelegateMock(profiles: profiles);
 
             PatientDetailsQuery firstQuery = new() { Hdid = Hdid };
-            Name commonName = GenerateName();
-            Name legalName = GenerateName("Jim", "Bo");
+            AccountDataAccess.Patient.Name commonName = GenerateName();
+            AccountDataAccess.Patient.Name legalName = GenerateName("Jim", "Bo");
             AccountDataAccess.Patient.Address physicalAddress = GenerateAddress(GenerateStreetLines());
             AccountDataAccess.Patient.Address postalAddress = GenerateAddress(new List<string> { "PO BOX 1234" });
             PatientModel firstPatient = GeneratePatientModel(Phn, Hdid, Birthdate, commonName, legalName, physicalAddress, postalAddress);
@@ -494,8 +494,8 @@ namespace HealthGateway.Admin.Tests.Services
                 WarningMessage = string.Empty,
                 Hdid = patient?.Hdid ?? profile?.HdId ?? string.Empty,
                 PersonalHealthNumber = patient?.Phn ?? string.Empty,
-                CommonName = patient?.CommonName,
-                LegalName = patient?.LegalName,
+                CommonName = Map(patient?.CommonName),
+                LegalName = Map(patient?.LegalName),
                 Birthdate = patient == null ? null : DateOnly.FromDateTime(patient.Birthdate),
                 PhysicalAddress = AddressUtility.GetAddressAsSingleLine(AutoMapper.Map<HealthGateway.Common.Data.Models.Address?>(patient?.PhysicalAddress)),
                 PostalAddress = AddressUtility.GetAddressAsSingleLine(AutoMapper.Map<HealthGateway.Common.Data.Models.Address?>(patient?.PostalAddress)),
@@ -503,6 +503,9 @@ namespace HealthGateway.Admin.Tests.Services
                 ProfileLastLoginDateTime = profile?.LastLoginDateTime,
             };
         }
+
+        private static Common.Models.Name? Map(AccountDataAccess.Patient.Name? name)
+            => name == null ? null : new Common.Models.Name { GivenName = name.GivenName, Surname = name.Surname };
 
         private static IList<MessagingVerification> GenerateMessagingVerifications(string sms, string email)
         {
@@ -529,9 +532,9 @@ namespace HealthGateway.Admin.Tests.Services
                 .ToList();
         }
 
-        private static Name GenerateName(string givenName = "John", string surname = "Doe")
+        private static AccountDataAccess.Patient.Name GenerateName(string givenName = "John", string surname = "Doe")
         {
-            return new Name { GivenName = givenName, Surname = surname };
+            return new AccountDataAccess.Patient.Name { GivenName = givenName, Surname = surname };
         }
 
         private static IEnumerable<string> GenerateStreetLines()
@@ -555,8 +558,8 @@ namespace HealthGateway.Admin.Tests.Services
             string phn,
             string hdid,
             DateTime birthdate,
-            Name? commonName = null,
-            Name? legalName = null,
+            AccountDataAccess.Patient.Name? commonName = null,
+            AccountDataAccess.Patient.Name? legalName = null,
             AccountDataAccess.Patient.Address? physicalAddress = null,
             AccountDataAccess.Patient.Address? postalAddress = null,
             string? responseCode = null,

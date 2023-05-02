@@ -15,23 +15,32 @@
 // -------------------------------------------------------------------------
 namespace AccountDataAccessTest
 {
+    using System.ServiceModel;
+    using AccountDataAccessTest.Utils;
+    using AutoMapper;
+    using DeepEqual.Syntax;
     using HealthGateway.AccountDataAccess.Patient;
+    using HealthGateway.AccountDataAccess.Patient.Api;
     using HealthGateway.Common.CacheProviders;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.ErrorHandling;
-    using HealthGateway.Common.Data.ViewModels;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using Moq;
     using Xunit;
 
     /// <summary>
-    /// ClientRegistriesDelegate's Unit Tests.
+    /// Patient Repository Unit Tests.
     /// </summary>
     public class PatientRepositoryTests
     {
+        private const string PatientCacheDomain = "PatientV2";
         private const string Hdid = "abc123";
+        private const string PhsaHdid = "phsa123";
         private const string Phn = "9735353315";
+        private const string Gender = "Male";
+
+        private static readonly IMapper Mapper = MapperUtil.InitializeAutoMapper();
 
         /// <summary>
         /// GetDemographics by PHN - happy path.
@@ -41,11 +50,18 @@ namespace AccountDataAccessTest
         public async Task ShouldGetDemographicsByPhn()
         {
             // Arrange
-            PatientRepository patientRepository = GetPatientRepository(Phn, Phn);
-            PatientQuery patientQuery = new PatientDetailsQuery(Phn: Phn);
+            PatientDetailsQuery patientDetailsQuery = new(Phn, Source: PatientDetailSource.AllCache);
+
+            PatientModel patient = new()
+            {
+                Phn = Phn,
+                Hdid = Hdid,
+            };
+
+            PatientRepository patientRepository = GetPatientRepository(patient, patientDetailsQuery);
 
             // Act
-            PatientQueryResult result = await patientRepository.Query(patientQuery, CancellationToken.None).ConfigureAwait(true);
+            PatientQueryResult result = await patientRepository.Query(patientDetailsQuery, CancellationToken.None).ConfigureAwait(true);
 
             // Verify
             Assert.Equal(Phn, result.Items.SingleOrDefault()?.Phn);
@@ -59,28 +75,113 @@ namespace AccountDataAccessTest
         public async Task ShouldGetDemographicsByHdid()
         {
             // Arrange
-            PatientRepository patientRepository = GetPatientRepository(Phn, Hdid);
-            PatientQuery patientQuery = new PatientDetailsQuery(Hdid: Hdid);
+            PatientDetailsQuery patientDetailsQuery = new(Hdid: Hdid, Source: PatientDetailSource.AllCache);
+
+            PatientModel patient = new()
+            {
+                Phn = Phn,
+                Hdid = Hdid,
+            };
+
+            PatientRepository patientRepository = GetPatientRepository(patient, patientDetailsQuery);
 
             // Act
-            PatientQueryResult result = await patientRepository.Query(patientQuery, CancellationToken.None).ConfigureAwait(true);
+            PatientQueryResult result = await patientRepository.Query(patientDetailsQuery, CancellationToken.None).ConfigureAwait(true);
 
             // Verify
             Assert.Equal(Phn, result.Items.SingleOrDefault()?.Phn);
         }
 
         /// <summary>
-        /// Client registry get demographics throws api patient exception given client registry records not found.
+        /// GetDemographics by Hdid - using cache.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
+        [Fact]
+        public async Task ShouldGetDemographicsByHdidUsingCache()
+        {
+            // Arrange
+            PatientDetailsQuery patientDetailsQuery = new(Hdid: Hdid, Source: PatientDetailSource.AllCache);
+
+            PatientModel? patient = null;
+
+            PatientModel cachedPatient = new()
+            {
+                Phn = Phn,
+                Hdid = Hdid,
+            };
+
+            PatientIdentity? patientResult = null;
+
+            PatientRepository patientRepository = GetPatientRepository(patient, patientDetailsQuery, patientResult, cachedPatient);
+
+            // Act
+            PatientQueryResult result = await patientRepository.Query(patientDetailsQuery, CancellationToken.None).ConfigureAwait(true);
+
+            // Verify
+            Assert.Equal(Phn, result.Items.SingleOrDefault()?.Phn);
+        }
+
+        /// <summary>
+        /// GetPatientIdentity by Hdid.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
+        [Fact]
+        public async Task ShouldGetPatientIdentityByHdid()
+        {
+            // Arrange
+            PatientModel expectedPatient = new()
+            {
+                Phn = Phn,
+                Hdid = PhsaHdid,
+                Gender = Gender,
+                ResponseCode = string.Empty,
+                IsDeceased = false,
+                CommonName = new Name
+                    { GivenName = string.Empty, Surname = string.Empty },
+                LegalName = new Name
+                    { GivenName = string.Empty, Surname = string.Empty },
+            };
+
+            PatientDetailsQuery patientDetailsQuery = new(Hdid: PhsaHdid, Source: PatientDetailSource.AllCache);
+
+            PatientModel? patient = null;
+            PatientModel? cachedPatient = null;
+
+            PatientIdentity patientIdentity = new()
+            {
+                Phn = Phn,
+                HdId = PhsaHdid,
+                Gender = Gender,
+                HasDeathIndicator = false,
+            };
+
+            PatientRepository patientRepository = GetPatientRepository(patient, patientDetailsQuery, patientIdentity, cachedPatient);
+
+            // Act
+            PatientQueryResult actual = await patientRepository.Query(patientDetailsQuery, CancellationToken.None).ConfigureAwait(true);
+
+            // Verify
+            expectedPatient.ShouldDeepEqual(actual.Items.SingleOrDefault());
+        }
+
+        /// <summary>
+        /// Client registry get demographics throws problem details exception given an invalid phn.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
         public async Task GetDemographicsThrowsProblemDetailsExceptionGivenClientRegistryPhnNotValid()
         {
-            const string invalidPhn = "abc123";
-
             // Arrange
-            PatientRepository patientRepository = GetPatientRepository(Phn, invalidPhn);
-            PatientQuery patientQuery = new PatientDetailsQuery(Phn: invalidPhn);
+            const string invalidPhn = "abc123";
+            PatientDetailsQuery patientQuery = new(invalidPhn, Source: PatientDetailSource.AllCache);
+
+            PatientModel patient = new()
+            {
+                Phn = Phn,
+                Hdid = Hdid,
+            };
+
+            PatientRepository patientRepository = GetPatientRepository(patient, patientQuery);
 
             // Act
             async Task Actual()
@@ -93,38 +194,40 @@ namespace AccountDataAccessTest
             Assert.Equal(ErrorMessages.PhnInvalid, exception.ProblemDetails!.Detail);
         }
 
-        private static PatientRepository GetPatientRepository(string expectedPhn, string expectedIdentifier)
+        private static PatientRepository GetPatientRepository(
+            PatientModel patient,
+            PatientDetailsQuery patientDetailsQuery,
+            PatientIdentity? patientIdentity = null,
+            PatientModel? cachedPatient = null)
         {
-            ApiResult<PatientModel> requestResult = new()
-            {
-                ResourcePayload = new PatientModel
-                {
-                    CommonName = new Name
-                    {
-                        GivenName = "John",
-                        Surname = "Doe",
-                    },
-                    Phn = expectedPhn,
-                    Hdid = Hdid,
-                },
-            };
-
-            Mock<IClientRegistriesDelegate> patientDelegateMock = new();
             Dictionary<string, string?> configDictionary = new()
             {
                 { "PatientService:CacheTTL", "90" },
             };
+
             IConfigurationRoot configuration = new ConfigurationBuilder()
                 .AddInMemoryCollection(configDictionary.ToList())
                 .Build();
-            patientDelegateMock.Setup(p => p.GetDemographicsAsync(OidType.Hdid, expectedIdentifier, false)).ReturnsAsync(requestResult);
-            patientDelegateMock.Setup(p => p.GetDemographicsAsync(OidType.Phn, expectedIdentifier, false)).ReturnsAsync(requestResult);
+
+            Mock<ICacheProvider> cacheProvider = new();
+            cacheProvider.Setup(p => p.GetItem<PatientModel>($"{PatientCacheDomain}:HDID:{patientDetailsQuery.Hdid}")).Returns(cachedPatient);
+
+            Mock<IPatientIdentityApi> patientIdentityApi = new();
+            patientIdentityApi.Setup(p => p.GetPatientIdentityAsync(PhsaHdid))!.ReturnsAsync(patientIdentity);
+
+            Mock<IClientRegistriesDelegate> clientRegistriesDelegate = new();
+            clientRegistriesDelegate.Setup(p => p.GetDemographicsAsync(OidType.Hdid, patientDetailsQuery.Hdid, false)).ReturnsAsync(patient);
+            clientRegistriesDelegate.Setup(p => p.GetDemographicsAsync(OidType.Phn, patientDetailsQuery.Phn, false)).ReturnsAsync(patient);
+            clientRegistriesDelegate.Setup(p => p.GetDemographicsAsync(OidType.Hdid, PhsaHdid, false))
+                .Throws(new CommunicationException("Unit test PHSA get patient identity."));
 
             PatientRepository patientRepository = new(
-                patientDelegateMock.Object,
-                new Mock<ICacheProvider>().Object,
+                clientRegistriesDelegate.Object,
+                cacheProvider.Object,
                 configuration,
-                new Mock<ILogger<PatientRepository>>().Object);
+                new Mock<ILogger<PatientRepository>>().Object,
+                patientIdentityApi.Object,
+                Mapper);
             return patientRepository;
         }
     }
