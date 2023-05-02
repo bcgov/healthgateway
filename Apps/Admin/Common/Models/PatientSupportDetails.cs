@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,7 +17,6 @@ namespace HealthGateway.Admin.Common.Models
 {
     using System;
     using HealthGateway.Admin.Common.Constants;
-    using HealthGateway.Common.Data.ViewModels;
 
     /// <summary>
     /// Represents details associated with a patient retrieved by a support query.

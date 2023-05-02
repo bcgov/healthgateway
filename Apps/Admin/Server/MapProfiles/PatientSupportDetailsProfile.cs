@@ -40,6 +40,8 @@ namespace HealthGateway.Admin.Server.MapProfiles
                 .ForMember(dest => dest.Birthdate, opt => opt.MapFrom(src => src == null ? null : (DateOnly?)DateOnly.FromDateTime(src.Birthdate)))
                 .ForMember(dest => dest.ProfileCreatedDateTime, opt => opt.Ignore())
                 .ForMember(dest => dest.ProfileLastLoginDateTime, opt => opt.Ignore());
+
+            this.CreateMap<AccountDataAccess.Patient.Name, Common.Models.Name>();
         }
 
         private static string? GetWarningFromResponseCode(string? responseCode)

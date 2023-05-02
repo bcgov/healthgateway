@@ -18,7 +18,7 @@ namespace HealthGateway.Admin.Server
     using System;
     using System.Diagnostics.CodeAnalysis;
     using System.Threading.Tasks;
-    using HealthGateway.AccountDataAccess.Patient;
+    using HealthGateway.AccountDataAccess;
     using HealthGateway.Admin.Server.Services;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.Api;
@@ -64,7 +64,7 @@ namespace HealthGateway.Admin.Server
             services.AddControllersWithViews();
 
             AddModules(services, configuration, logger, environment);
-            AddServices(services);
+            AddServices(services, configuration);
             AddDelegates(services);
 
             // Add Refit clients
@@ -118,9 +118,8 @@ namespace HealthGateway.Admin.Server
             ExceptionHandling.ConfigureProblemDetails(services, environment);
         }
 
-        private static void AddServices(IServiceCollection services)
+        private static void AddServices(IServiceCollection services, IConfiguration configuration)
         {
-            services.AddPatientRepositoryConfiguration();
             services.AddTransient<IBroadcastService, BroadcastService>();
             services.AddTransient<IConfigurationService, ConfigurationService>();
             services.AddTransient<IUserFeedbackService, UserFeedbackService>();
@@ -131,6 +130,7 @@ namespace HealthGateway.Admin.Server
             services.AddTransient<ISupportService, SupportService>();
             services.AddTransient<IAgentAccessService, AgentAccessService>();
             services.AddTransient<IDelegationService, DelegationService>();
+            services.AddPatientRepositoryConfiguration(new AccountDataAccessConfiguration(configuration.GetSection("PhsaV2:BaseUrl").Get<Uri>()!));
         }
 
         private static void AddDelegates(IServiceCollection services)

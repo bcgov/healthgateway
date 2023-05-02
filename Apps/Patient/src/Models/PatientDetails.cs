@@ -18,7 +18,6 @@ namespace HealthGateway.Patient.Models
     using System;
     using System.Text.Json.Serialization;
     using HealthGateway.AccountDataAccess.Patient;
-    using HealthGateway.Common.Data.ViewModels;
 
     /// <summary>
     /// The patient details.
