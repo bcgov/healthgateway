@@ -105,6 +105,9 @@ namespace HealthGateway.GatewayApi.Services
                 case ResultType.Error:
                     return RequestResultFactory.ServiceError<DependentModel>(ErrorType.CommunicationExternal, ServiceType.Patient, "Communication Exception when trying to retrieve the Dependent");
 
+                case ResultType.ActionRequired when patientResult.ResultError?.ActionCodeValue == ActionType.NoHdId.Value:
+                    return RequestResultFactory.ActionRequired<DependentModel>(ActionType.NoHdId, ErrorMessages.InvalidServicesCard);
+
                 case ResultType.ActionRequired:
                     return RequestResultFactory.ActionRequired<DependentModel>(ActionType.DataMismatch, ErrorMessages.DataMismatch);
 
