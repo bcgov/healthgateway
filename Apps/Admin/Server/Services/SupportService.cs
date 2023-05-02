@@ -165,7 +165,7 @@ namespace HealthGateway.Admin.Server.Services
                 PatientQueryResult result = await this.patientRepository.Query(query, ct).ConfigureAwait(true);
                 return result.Items.SingleOrDefault();
             }
-            catch (ProblemDetailsException)
+            catch (ProblemDetailsException e) when (e.ProblemDetails?.StatusCode == HttpStatusCode.NotFound)
             {
                 return null;
             }
