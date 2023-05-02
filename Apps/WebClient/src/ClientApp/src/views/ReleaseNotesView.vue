@@ -31,6 +31,15 @@ export default class ReleaseNotesView extends Vue {
     <div>
         <BreadcrumbComponent :items="breadcrumbItems" />
         <page-title title="Health Gateway Release Notes" />
+        <release-note date="May 2, 2023" version="v2023.5.02" title="App Tour">
+            <ul>
+                <li>
+                    We added an app tour which provides a quick highlight of key
+                    features. The app tour will be updated as new features are
+                    released.
+                </li>
+            </ul>
+        </release-note>
         <release-note
             date="March 16, 2023"
             version="v2023.3.16"
