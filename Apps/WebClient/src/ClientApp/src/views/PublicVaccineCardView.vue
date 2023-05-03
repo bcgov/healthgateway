@@ -123,12 +123,15 @@ export default class PublicVaccineCardView extends Vue {
         ) {
             return this.vaccinationStatusError;
         }
+
         if (
             this.vaccinationStatusError === undefined &&
             this.vaccineRecordError !== undefined
         ) {
             return this.vaccineRecordError;
         }
+
+        return undefined;
     }
 
     private logger!: ILogger;
