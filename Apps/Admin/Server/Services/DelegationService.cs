@@ -247,7 +247,7 @@ namespace HealthGateway.Admin.Server.Services
         private async Task<IEnumerable<ResourceDelegate>> SearchDelegates(string ownerHdid)
         {
             ResourceDelegateQuery query = new() { ByOwnerHdid = ownerHdid };
-            ResourceDelegateQueryResult result = await this.resourceDelegateDelegate.Search(query).ConfigureAwait(true);
+            ResourceDelegateQueryResult result = await this.resourceDelegateDelegate.SearchAsync(query).ConfigureAwait(true);
             return result.Items;
         }
 

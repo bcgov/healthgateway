@@ -11,9 +11,7 @@ import { Prop, Watch } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 
 import DatePickerComponent from "@/components/DatePickerComponent.vue";
-import TutorialComponent from "@/components/shared/TutorialComponent.vue";
 import { EntryType, entryTypeMap } from "@/constants/entryType";
-import UserPreferenceType from "@/constants/userPreferenceType";
 import { PatientDataType } from "@/models/patientDataResponse";
 import TimelineFilter, { TimelineFilterBuilder } from "@/models/timelineFilter";
 import User from "@/models/user";
@@ -30,7 +28,6 @@ interface EntryTypeFilter {
 const options: any = {
     components: {
         DatePickerComponent,
-        TutorialComponent,
     },
 };
 
@@ -114,10 +111,6 @@ export default class FilterComponent extends Vue {
 
     get hasFilterSelected(): boolean {
         return this.activeFilter.hasActiveFilter();
-    }
-
-    get timelineFilterTutorialPreference(): string {
-        return UserPreferenceType.TutorialTimelineFilter;
     }
 
     mounted(): void {
@@ -259,16 +252,6 @@ export default class FilterComponent extends Vue {
                 />
             </hg-button>
         </div>
-        <TutorialComponent
-            :preference-type="timelineFilterTutorialPreference"
-            target="filter-button-container"
-            placement="bottom"
-        >
-            <div data-testid="filter-tutorial-popover">
-                Filter by health record type, date or keyword to find what you
-                need.
-            </div>
-        </TutorialComponent>
         <b-popover
             target="filterBtn"
             :show.sync="isMenuVisible"

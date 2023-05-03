@@ -1,12 +1,11 @@
-const dependentWithAudit = "9872868128";
+const dependentWithAudit = "9872868128"; // Leroy Desmond Tobias
 const dependentWithoutGuardian = { phn: "9874307168" };
 const dependentWithGuardian = { phn: "9874307175", guardianPhn: "9735353315" };
 const dependentExceedingAgeCutoff = { phn: "9735353315" };
 const dependentToProtect = "9872868095"; // Jeffrey Lawrence Stallings
-const dependentToValidate = "9872868135"; // Oscar Calvin Gartner
 const guardianToAdd = "9735352488"; // Turpentine Garlandry
 const guardianNotFound = "9735352489";
-const guardianAlreadyAdded = "9735352495"; // Byline Ballistas
+const guardianAlreadyAdded = "9735353315"; // BONNET PROTERVITY
 
 function performSearch(phn) {
     cy.get("[data-testid=query-input]").clear().type(phn);
@@ -15,7 +14,7 @@ function performSearch(phn) {
 
 function getTableRows(tableSelector) {
     cy.get(tableSelector).should("be.visible");
-    return cy.get(`${tableSelector} tbody`).find("tr");
+    return cy.get(`${tableSelector} tbody`).find("tr.mud-table-row");
 }
 
 describe("Delegation Search", () => {
@@ -35,7 +34,7 @@ describe("Delegation Search", () => {
 
         getTableRows("[data-testid=dependent-table]")
             .should("have.length", 1)
-            .within(($rows) => {
+            .within((_$rows) => {
                 cy.get("[data-testid=dependent-name]").should("not.be.empty");
                 cy.get("[data-testid=dependent-dob]").should("not.be.empty");
                 cy.get("[data-testid=dependent-address]").should(
@@ -54,7 +53,7 @@ describe("Delegation Search", () => {
 
         getTableRows("[data-testid=dependent-table]")
             .should("have.length", 1)
-            .within(($rows) => {
+            .within((_$rows) => {
                 cy.get("[data-testid=dependent-name]").should("not.be.empty");
                 cy.get("[data-testid=dependent-dob]").should("not.be.empty");
                 cy.get("[data-testid=dependent-address]").should(
@@ -70,7 +69,7 @@ describe("Delegation Search", () => {
             .within(($rows) => {
                 cy.wrap($rows)
                     .eq(0)
-                    .within(($row) => {
+                    .within((_$row) => {
                         cy.get("[data-testid=delegate-name]").should(
                             "not.be.empty"
                         );
@@ -220,24 +219,11 @@ describe("Delegation Protect", () => {
     });
 
     it("Verify add delegate dialog guardian not found and guardian already added.", () => {
-        cy.get("[data-testid=query-input]").clear().type(dependentToValidate);
+        cy.get("[data-testid=query-input]").clear().type(dependentWithAudit);
         cy.get("[data-testid=search-button]").click();
 
         // Protect dependent toggle
-        cy.get("[data-testid=dependent-protected-switch]").should(
-            "not.be.checked"
-        );
-
-        // Protect
-        cy.get("[data-testid=dependent-protected-switch]").click();
         cy.get("[data-testid=dependent-protected-switch]").should("be.checked");
-
-        // Delegation Save button
-        cy.get("[data-testid=save-button]").click();
-
-        // Delegation Confirmation button
-        cy.get("[data-testid=protect-reason-input]").type("test");
-        cy.get("[data-testid=confirm-button]").click({ force: true });
 
         // Add guardian
         cy.get("[data-testid=add-button]").click();
@@ -253,6 +239,16 @@ describe("Delegation Protect", () => {
             "be.visible"
         );
 
+        // Cancel add guardian to list dialog
+        cy.get("[data-testid=delegate-dialog-cancel-button]").click();
+
+        // Add guardian
+        cy.get("[data-testid=add-button]").click();
+
+        cy.get("[data-testid=delegate-search-error-message]").should(
+            "not.exist"
+        );
+
         // Delegate dialog - phn already added
         cy.get("[data-testid=delegate-phn-input]")
             .clear()
@@ -260,7 +256,7 @@ describe("Delegation Protect", () => {
         cy.get("[data-testid=communication-dialog-modal-text]").within(() => {
             cy.get("[data-testid=search-button]").click();
         });
-        cy.get("[data-testid=delegate-search-error-message]").should(
+        cy.get("[data-testid=delegate-search-warning-message]").should(
             "be.visible"
         );
     });

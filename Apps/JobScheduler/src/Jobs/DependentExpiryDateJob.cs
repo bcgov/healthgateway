@@ -20,6 +20,7 @@ namespace HealthGateway.JobScheduler.Jobs
     using System.Linq;
     using System.Threading.Tasks;
     using Hangfire;
+    using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Models;
@@ -77,7 +78,7 @@ namespace HealthGateway.JobScheduler.Jobs
             foreach (ResourceDelegate resourceDelegate in resourceDelegates)
             {
                 Task<RequestResult<PatientModel>> patientResult = this.patientService.GetPatient(resourceDelegate.ResourceOwnerHdid);
-                if (patientResult.Result.ResultStatus != ResultType.Error && patientResult.Result.ResourcePayload != null)
+                if (patientResult.Result is { ResultStatus: ResultType.Success, ResourcePayload: { } })
                 {
                     DateOnly expiryDate = DateOnly.FromDateTime(patientResult.Result.ResourcePayload.Birthdate.AddYears(this.maxDependentAge));
                     resourceDelegate.ExpiryDate = expiryDate;
@@ -85,13 +86,47 @@ namespace HealthGateway.JobScheduler.Jobs
                 }
                 else
                 {
-                    this.logger.LogError("Unable to find patient record for dependent Hdid: {ResourceOwnerHdid}", resourceDelegate.ResourceOwnerHdid);
+                    DateOnly? expiryDate = this.GetDefaultDate(patientResult.Result, resourceDelegate.ResourceOwnerHdid);
+
+                    if (expiryDate != null)
+                    {
+                        resourceDelegate.ExpiryDate = expiryDate;
+                        this.dbContext.Update(resourceDelegate);
+                    }
+                    else
+                    {
+                        this.logger.LogError(
+                            "Unable to find patient record for dependent Hdid: {ResourceOwnerHdid} with Result Status: {ResultStatus} and {ResultMessage}",
+                            resourceDelegate.ResourceOwnerHdid,
+                            patientResult.Result.ResultStatus,
+                            patientResult.Result.ResultError?.ResultMessage);
+                    }
                 }
             }
 
             this.dbContext.SaveChanges();
 
-            this.logger.LogInformation("Completed updating {ResourceDelegatesCount}", resourceDelegates.Count);
+            this.logger.LogInformation("Completed number of rows processed: {ResourceDelegatesCount}", resourceDelegates.Count);
+        }
+
+        private DateOnly? GetDefaultDate(RequestResult<PatientModel> patientResult, string resourceOwnerHdid)
+        {
+            DateOnly now = DateOnly.FromDateTime(DateTime.UtcNow);
+
+            switch (patientResult)
+            {
+                case { ResultStatus: ResultType.Error, ResultError: { ResultMessage: ErrorMessages.ClientRegistryDoesNotReturnPerson } }:
+                    this.logger.LogInformation("Expiry date set to {Now} because Client Registry could not return person for dependent Hdid: {ResourceOwnerHdid}", now, resourceOwnerHdid);
+                    return now;
+                case { ResultStatus: ResultType.Error, ResultError: { ResultMessage: ErrorMessages.ClientRegistryReturnedDeceasedPerson } }:
+                    this.logger.LogInformation(
+                        "Expiry date set to {Now} because Client Registry returned a person with the deceased indicator set to true for dependent Hdid: {ResourceOwnerHdid}",
+                        now,
+                        resourceOwnerHdid);
+                    return now;
+                default:
+                    return null;
+            }
         }
     }
 }

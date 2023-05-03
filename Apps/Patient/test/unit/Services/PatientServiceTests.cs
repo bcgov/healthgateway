@@ -16,16 +16,17 @@
 namespace HealthGateway.PatientTests.Services
 {
     using System.Collections.Generic;
-    using System.Linq;
+    using System.Net;
+    using System.Threading;
     using System.Threading.Tasks;
-    using HealthGateway.Common.CacheProviders;
+    using AutoMapper;
+    using HealthGateway.AccountDataAccess.Patient;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.ErrorHandling;
     using HealthGateway.Common.Data.ViewModels;
-    using HealthGateway.Patient.Delegates;
     using HealthGateway.Patient.Models;
     using HealthGateway.Patient.Services;
-    using Microsoft.Extensions.Configuration;
+    using HealthGateway.PatientTests.Utils;
     using Microsoft.Extensions.Logging;
     using Moq;
     using Xunit;
@@ -37,6 +38,7 @@ namespace HealthGateway.PatientTests.Services
     {
         private const string Hdid = "abc123";
         private const string Phn = "9735353315";
+        private static readonly IMapper Mapper = MapperUtil.InitializeAutoMapper();
 
         /// <summary>
         /// GetPatient - Happy Path.
@@ -45,45 +47,14 @@ namespace HealthGateway.PatientTests.Services
         public void ShouldGetPatient()
         {
             // Arrange
-            IPatientService service = GetPatientService(Phn, Hdid);
+            PatientModel patient = GetPatient();
+            IPatientService patientService = GetPatientService(patient);
 
             // Act
-            ApiResult<PatientModelV2> actual = Task.Run(async () => await service.GetPatient(Hdid).ConfigureAwait(true)).Result;
+            PatientDetails actual = Task.Run(async () => await patientService.GetPatientAsync(patient.Hdid).ConfigureAwait(true)).Result;
 
             // Verify
-            Assert.Equal(Hdid, actual.ResourcePayload?.HdId);
-        }
-
-        /// <summary>
-        /// GetPatient - Happy Path (Cached).
-        /// </summary>
-        [Fact]
-        public void ShouldGetPatientFromCache()
-        {
-            // Arrange
-            IPatientService service = GetPatientService(Phn, Hdid, true);
-
-            // Act
-            ApiResult<PatientModelV2> actual = Task.Run(async () => await service.GetPatient(Hdid).ConfigureAwait(true)).Result;
-
-            // Verify
-            Assert.Equal(Hdid, actual.ResourcePayload?.HdId);
-        }
-
-        /// <summary>
-        /// GetPatient - Happy Path (Using PHN).
-        /// </summary>
-        [Fact]
-        public void ShouldGetPatientFromCacheWithPhn()
-        {
-            // Arrange
-            IPatientService service = GetPatientService(Phn, Phn, true);
-
-            // Act
-            ApiResult<PatientModelV2> actual = Task.Run(async () => await service.GetPatient(Phn, PatientIdentifierType.Phn).ConfigureAwait(true)).Result;
-
-            // Verify
-            Assert.Equal(Hdid, actual.ResourcePayload?.HdId);
+            Assert.Equal(patient.Hdid, actual.HdId);
         }
 
         /// <summary>
@@ -93,31 +64,128 @@ namespace HealthGateway.PatientTests.Services
         public void ShouldGetPatientByValidPhn()
         {
             // Arrange
-            IPatientService service = GetPatientService(Phn, Phn);
+            PatientModel patient = GetPatient();
+            IPatientService patientService = GetPatientService(patient);
 
             // Act
-            ApiResult<PatientModelV2> actual = Task.Run(async () => await service.GetPatient(Phn, PatientIdentifierType.Phn).ConfigureAwait(true)).Result;
+            PatientDetails actual = Task.Run(async () => await patientService.GetPatientAsync(patient.Phn, PatientIdentifierType.Phn).ConfigureAwait(true)).Result;
 
             // Verify
-            Assert.Equal(Phn, actual.ResourcePayload?.PersonalHealthNumber);
+            Assert.Equal(patient.Phn, actual.Phn);
         }
 
         /// <summary>
-        /// GetPatient throws api patient exception given invalid phn.
+        /// Client registry get demographics throws problem details exception given client registry records not found.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public async Task ShouldThrowApiPatientExceptionGivenInvalidPhn()
+        public async Task GetPatientThrowsProblemDetailsExceptionGivenClientRegistryRecordsNotFound()
         {
-            string expectedPhn = "abc123";
-
-            // Arrange
-            IPatientService service = GetPatientService(expectedPhn, expectedPhn);
+            // Setup
+            IPatientService patientService = GetPatientService();
 
             // Act
             async Task Actual()
             {
-                await service.GetPatient("abc123", PatientIdentifierType.Phn).ConfigureAwait(true);
+                await patientService.GetPatientAsync(Phn, PatientIdentifierType.Phn).ConfigureAwait(true);
+            }
+
+            // Verify
+            ProblemDetailsException exception = await Assert.ThrowsAsync<ProblemDetailsException>(Actual).ConfigureAwait(true);
+            Assert.Equal(ErrorMessages.ClientRegistryRecordsNotFound, exception.ProblemDetails!.Detail);
+        }
+
+        /// <summary>
+        /// Client registry get demographics throws problem details exception given patient is deceased.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+        [Fact]
+        public async Task GetPatientThrowsProblemDetailsExceptionGivenPatientIsDeceased()
+        {
+            // Setup
+            PatientModel patient = GetPatient();
+            patient.IsDeceased = true;
+            IPatientService patientService = GetPatientService(patient);
+
+            // Act
+            async Task Actual()
+            {
+                await patientService.GetPatientAsync(Phn, PatientIdentifierType.Phn).ConfigureAwait(true);
+            }
+
+            // Verify
+            ProblemDetailsException exception = await Assert.ThrowsAsync<ProblemDetailsException>(Actual).ConfigureAwait(true);
+            Assert.Equal(ErrorMessages.ClientRegistryReturnedDeceasedPerson, exception.ProblemDetails!.Detail);
+        }
+
+        /// <summary>
+        /// Client registry get demographics throws problem details exception given client registry could not find any ids.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+        [Fact]
+        public async Task GetPatientThrowsProblemDetailsExceptionGivenNoIds()
+        {
+            // Setup
+            PatientModel patient = GetPatient();
+            patient.Phn = string.Empty;
+            patient.Hdid = string.Empty;
+            IPatientService patientService = GetPatientService(patient);
+
+            // Act
+            async Task Actual()
+            {
+                await patientService.GetPatientAsync(Phn, PatientIdentifierType.Phn).ConfigureAwait(true);
+            }
+
+            // Verify
+            ProblemDetailsException exception = await Assert.ThrowsAsync<ProblemDetailsException>(Actual).ConfigureAwait(true);
+            Assert.Equal(ErrorMessages.InvalidServicesCard, exception.ProblemDetails!.Detail);
+        }
+
+        /// <summary>
+        /// Client registry get demographics throws problem details exception given client registry could not find legal name.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+        [Fact]
+        public async Task GetPatientThrowsProblemDetailsExceptionGivenNoLegalName()
+        {
+            // Setup
+            PatientModel patient = GetPatient();
+            patient.CommonName = null;
+            IPatientService patientService = GetPatientService(patient);
+
+            // Act
+            async Task Actual()
+            {
+                await patientService.GetPatientAsync(Phn, PatientIdentifierType.Phn).ConfigureAwait(true);
+            }
+
+            // Verify
+            ProblemDetailsException exception = await Assert.ThrowsAsync<ProblemDetailsException>(Actual).ConfigureAwait(true);
+            Assert.Equal(ErrorMessages.InvalidServicesCard, exception.ProblemDetails!.Detail);
+        }
+
+        /// <summary>
+        /// Client registry get demographics throws problem details exception given client registry records not found.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+        [Fact]
+        public async Task GetPatientThrowsProblemDetailsExceptionGivenClientRegistryPhnNotValid()
+        {
+            // Setup
+            string invalidPhn = "987654321x";
+            PatientDetailsQuery patientDetailsQuery = new()
+            {
+                Phn = invalidPhn,
+                Source = PatientDetailSource.AllCache,
+            };
+            PatientModel patient = GetPatient();
+            IPatientService patientService = GetPatientService(patient, patientDetailsQuery);
+
+            // Act
+            async Task Actual()
+            {
+                await patientService.GetPatientAsync(invalidPhn, PatientIdentifierType.Phn).ConfigureAwait(true);
             }
 
             // Verify
@@ -125,44 +193,40 @@ namespace HealthGateway.PatientTests.Services
             Assert.Equal(ErrorMessages.PhnInvalid, exception.ProblemDetails!.Detail);
         }
 
-        private static IPatientService GetPatientService(string expectedPhn, string expectedIdentifier, bool returnValidCache = false)
+        private static IPatientService GetPatientService(PatientModel? patient = null, PatientDetailsQuery? patientDetailsQuery = null)
         {
-            ApiResult<PatientModelV2> requestResult = new()
-            {
-                ResourcePayload = new PatientModelV2
-                {
-                    CommonName = new Name
-                    {
-                        GivenName = "John",
-                        Surname = "Doe",
-                    },
-                    PersonalHealthNumber = expectedPhn,
-                    HdId = Hdid,
-                },
-            };
+            PatientQueryResult patientQueryResult = new(new List<PatientModel> { patient });
 
-            Mock<IClientRegistriesDelegate> patientDelegateMock = new();
-            Dictionary<string, string?> configDictionary = new()
+            Mock<IPatientRepository> patientRepository = new();
+            if (patientDetailsQuery != null)
             {
-                { "PatientService:CacheTTL", "90" },
-            };
-            IConfigurationRoot configuration = new ConfigurationBuilder()
-                .AddInMemoryCollection(configDictionary.ToList())
-                .Build();
-            patientDelegateMock.Setup(p => p.GetDemographicsAsync(OidType.Hdid, expectedIdentifier, false)).ReturnsAsync(requestResult);
-            patientDelegateMock.Setup(p => p.GetDemographicsAsync(OidType.Phn, expectedIdentifier, false)).ReturnsAsync(requestResult);
-
-            Mock<ICacheProvider> cacheProviderMock = new();
-            if (returnValidCache)
+                patientRepository.Setup(p => p.Query(patientDetailsQuery, It.IsAny<CancellationToken>()))
+                    .Throws(new ProblemDetailsException(ExceptionUtility.CreateProblemDetails(ErrorMessages.PhnInvalid, HttpStatusCode.NotFound, nameof(PatientRepository))));
+            }
+            else
             {
-                cacheProviderMock.Setup(p => p.GetItem<PatientModelV2>(It.IsAny<string>())).Returns(requestResult.ResourcePayload);
+                patientRepository.Setup(p => p.Query(new PatientDetailsQuery(null, Hdid, PatientDetailSource.AllCache), It.IsAny<CancellationToken>())).ReturnsAsync(patientQueryResult);
+                patientRepository.Setup(p => p.Query(new PatientDetailsQuery(Phn, null, PatientDetailSource.AllCache), It.IsAny<CancellationToken>())).ReturnsAsync(patientQueryResult);
             }
 
             return new PatientService(
                 new Mock<ILogger<PatientService>>().Object,
-                configuration,
-                patientDelegateMock.Object,
-                new Mock<ICacheProvider>().Object);
+                patientRepository.Object,
+                Mapper);
+        }
+
+        private static PatientModel GetPatient()
+        {
+            return new()
+            {
+                CommonName = new Name
+                {
+                    GivenName = "John",
+                    Surname = "Doe",
+                },
+                Phn = Phn,
+                Hdid = Hdid,
+            };
         }
     }
 }

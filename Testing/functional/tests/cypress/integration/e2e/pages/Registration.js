@@ -28,7 +28,7 @@ describe("Registration Page", () => {
         cy.get("[data-testid=footer]").should("not.exist");
     });
 
-    it("Registering leads to home page", () => {
+    it("Registering leads to home page and opens app tour", () => {
         cy.login(
             Cypress.env("keycloak.unregistered.username"),
             Cypress.env("keycloak.password"),
@@ -56,6 +56,7 @@ describe("Registration Page", () => {
             .should("be.visible", "be.enabled")
             .click();
         cy.location("pathname").should("eq", homePath);
+        cy.get("[data-testid=app-tour-modal").should("be.visible");
         cy.get("[data-testid=incomplete-profile-banner]").should("be.visible");
     });
 

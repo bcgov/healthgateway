@@ -17,8 +17,8 @@ namespace HealthGateway.Database.Delegates
 {
     using System;
     using System.Collections.Generic;
+    using System.Threading.Tasks;
     using HealthGateway.Common.Data.Models;
-    using HealthGateway.Database.Wrapper;
 
     /// <summary>
     /// Delegate that performs operations for the MessageVerification model.
@@ -68,10 +68,10 @@ namespace HealthGateway.Database.Delegates
         void Expire(MessagingVerification messageVerification, bool markDeleted);
 
         /// <summary>
-        /// Retrieves a list of message verifications matching the query.
+        /// Retrieves a list of messaging verifications matching the query.
         /// </summary>
-        /// <param name="hdid">The hdid associated with the messaging verification.</param>
-        /// <returns>A list of users matching the query.</returns>
-        DbResult<IEnumerable<MessagingVerification>> GetUserMessageVerifications(string hdid);
+        /// <param name="hdid">The HDID associated with the messaging verifications.</param>
+        /// <returns>A list of messaging verifications matching the query.</returns>
+        Task<IList<MessagingVerification>> GetUserMessageVerificationsAsync(string hdid);
     }
 }

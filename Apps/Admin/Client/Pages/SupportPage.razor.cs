@@ -17,20 +17,19 @@ namespace HealthGateway.Admin.Client.Pages
 {
     using System;
     using System.Collections.Generic;
+    using System.Collections.Immutable;
     using System.Linq;
     using System.Threading.Tasks;
     using Fluxor;
     using Fluxor.Blazor.Web.Components;
-    using HealthGateway.Admin.Client.Models;
-    using HealthGateway.Admin.Client.Store.MessageVerification;
-    using HealthGateway.Admin.Client.Store.SupportUser;
+    using HealthGateway.Admin.Client.Store.PatientSupport;
+    using HealthGateway.Admin.Common.Constants;
+    using HealthGateway.Admin.Common.Models;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.Utils;
     using HealthGateway.Common.Data.Validations;
-    using HealthGateway.Common.Data.ViewModels;
     using Microsoft.AspNetCore.Components;
     using Microsoft.AspNetCore.WebUtilities;
-    using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Primitives;
     using MudBlazor;
 
@@ -41,32 +40,26 @@ namespace HealthGateway.Admin.Client.Pages
     {
         private static readonly PhnValidator PhnValidator = new();
 
-        private static List<UserQueryType> QueryTypes => new() { UserQueryType.Phn, UserQueryType.Email, UserQueryType.Sms, UserQueryType.Hdid, UserQueryType.Dependent };
+        private static List<PatientQueryType> QueryTypes => new() { PatientQueryType.Phn, PatientQueryType.Email, PatientQueryType.Sms, PatientQueryType.Hdid, PatientQueryType.Dependent };
 
         [Inject]
         private IDispatcher Dispatcher { get; set; } = default!;
 
         [Inject]
-        private IState<MessageVerificationState> MessageVerificationState { get; set; } = default!;
-
-        [Inject]
-        private IState<SupportUserState> SupportUserState { get; set; } = default!;
+        private IState<PatientSupportState> PatientSupportState { get; set; } = default!;
 
         [Inject]
         private NavigationManager NavigationManager { get; set; } = default!;
 
-        [Inject]
-        private IConfiguration Configuration { get; set; } = default!;
+        private PatientQueryType QueryType { get; set; } = PatientQueryType.Phn;
 
-        private UserQueryType QueryType { get; set; } = UserQueryType.Phn;
-
-        private UserQueryType SelectedQueryType
+        private PatientQueryType SelectedQueryType
         {
             get => this.QueryType;
 
             set
             {
-                this.ResetSupportUserState();
+                this.ResetPatientSupportState();
                 this.QueryParameter = string.Empty;
                 this.QueryType = value;
             }
@@ -76,26 +69,19 @@ namespace HealthGateway.Admin.Client.Pages
 
         private MudForm Form { get; set; } = default!;
 
-        private bool MessagingVerificationsLoading => this.MessageVerificationState.Value.IsLoading;
+        private bool PhnOrDependentSelected => this.SelectedQueryType is PatientQueryType.Phn or PatientQueryType.Dependent;
 
-        private bool PhnOrDependentSelected => this.SelectedQueryType is UserQueryType.Phn or UserQueryType.Dependent;
+        private bool PatientsLoading => this.PatientSupportState.Value.IsLoading;
 
-        private bool HasMessagingVerificationsError => this.MessageVerificationState.Value.Error is { Message.Length: > 0 };
+        private bool PatientsLoaded => this.PatientSupportState.Value.Loaded;
 
-        private IEnumerable<MessagingVerificationModel> MessagingVerifications => this.MessageVerificationState.Value.Data ?? Enumerable.Empty<MessagingVerificationModel>();
+        private bool HasPatientsError => this.PatientSupportState.Value.Error is { Message.Length: > 0 };
 
-        private bool SupportUsersLoading => this.SupportUserState.Value.IsLoading;
+        private bool HasPatientsWarning => this.PatientSupportState.Value.WarningMessages.Any();
 
-        private bool SupportUsersLoaded => this.SupportUserState.Value.Loaded;
+        private IImmutableList<PatientSupportDetails> Patients => this.PatientSupportState.Value.Result ?? ImmutableList<PatientSupportDetails>.Empty;
 
-        private bool HasSupportUsersError => this.SupportUserState.Value.Error is { Message.Length: > 0 };
-
-        private bool HasSupportUsersWarning => this.SupportUserState.Value.WarningMessage is { Length: > 0 };
-
-        private IEnumerable<ExtendedSupportUser> SupportUsers =>
-            this.SupportUserState.Value.Data ?? Enumerable.Empty<ExtendedSupportUser>();
-
-        private IEnumerable<SupportUserRow> SupportUserRows => this.SupportUsers.Select(v => new SupportUserRow(v, this.GetTimeZone()));
+        private IEnumerable<PatientRow> PatientRows => this.Patients.Select(v => new PatientRow(v));
 
         private Func<string, string?> ValidateQueryParameter => parameter =>
         {
@@ -109,86 +95,46 @@ namespace HealthGateway.Admin.Client.Pages
                 return "Invalid PHN";
             }
 
-            if ((this.SelectedQueryType == UserQueryType.Email || this.SelectedQueryType == UserQueryType.Sms) && StringManipulator.StripWhitespace(parameter)?.Length < 5)
+            return this.SelectedQueryType switch
             {
-                return "Email/SMS must be minimum 5 characters";
-            }
-
-            if (this.SelectedQueryType == UserQueryType.Sms && !StringManipulator.IsPositiveNumeric(parameter))
-            {
-                return "SMS must contain digits only";
-            }
-
-            return null;
+                PatientQueryType.Email or PatientQueryType.Sms when StringManipulator.StripWhitespace(parameter)?.Length < 5
+                    => "Email/SMS must be minimum 5 characters",
+                PatientQueryType.Sms when !StringManipulator.IsPositiveNumeric(parameter)
+                    => "SMS must contain digits only",
+                _ => null,
+            };
         };
 
         /// <inheritdoc/>
         protected override void OnInitialized()
         {
             base.OnInitialized();
-            this.ResetSupportUserState();
-            this.ResetMessageVerificationState();
+            this.ResetPatientSupportState();
 
             Uri uri = this.NavigationManager.ToAbsoluteUri(this.NavigationManager.Uri);
 
-            if (QueryHelpers.ParseQuery(uri.Query).TryGetValue(UserQueryType.Hdid.ToString(), out StringValues hdid))
+            if (QueryHelpers.ParseQuery(uri.Query).TryGetValue(PatientQueryType.Hdid.ToString(), out StringValues hdid))
             {
-                this.Dispatcher.Dispatch(new SupportUserActions.LoadAction(UserQueryType.Hdid, StringManipulator.StripWhitespace(hdid)));
+                this.Dispatcher.Dispatch(new PatientSupportActions.LoadAction(PatientQueryType.Hdid, StringManipulator.StripWhitespace(hdid)));
                 this.QueryParameter = hdid!;
-                this.SelectedQueryType = UserQueryType.Hdid;
+                this.SelectedQueryType = PatientQueryType.Hdid;
             }
         }
 
-        private static string FormatQueryType(UserQueryType queryType)
+        private static string FormatQueryType(PatientQueryType queryType)
         {
             return queryType switch
             {
-                UserQueryType.Hdid => "HDID",
-                UserQueryType.Phn => "PHN",
-                UserQueryType.Sms => "SMS",
+                PatientQueryType.Hdid => "HDID",
+                PatientQueryType.Phn => "PHN",
+                PatientQueryType.Sms => "SMS",
                 _ => queryType.ToString(),
             };
         }
 
-        private IList<MessagingVerificationModel> GetMessagingVerificationModels(string hdid)
+        private void ResetPatientSupportState()
         {
-            return this.MessagingVerifications.Where(v => v.UserProfileId == hdid).ToList();
-        }
-
-        private TimeZoneInfo GetTimeZone()
-        {
-            return DateFormatter.GetLocalTimeZone(this.Configuration);
-        }
-
-        private bool HasMessagingVerification(string hdid)
-        {
-            return this.MessagingVerifications.ToList().Exists(v => v.UserProfileId == hdid);
-        }
-
-        /// <summary>
-        /// Resets the component to its initial state.
-        /// </summary>
-        private void ResetSupportUserState()
-        {
-            this.Dispatcher.Dispatch(new SupportUserActions.ResetStateAction());
-        }
-
-        /// <summary>
-        /// Resets the component to its initial state.
-        /// </summary>
-        private void ResetMessageVerificationState()
-        {
-            this.Dispatcher.Dispatch(new MessageVerificationActions.ResetStateAction());
-        }
-
-        private void ToggleExpandRow(string hdid)
-        {
-            if (!this.HasMessagingVerification(hdid))
-            {
-                this.Dispatcher.Dispatch(new MessageVerificationActions.LoadAction(hdid));
-            }
-
-            this.Dispatcher.Dispatch(new SupportUserActions.ToggleIsExpandedAction(hdid));
+            this.Dispatcher.Dispatch(new PatientSupportActions.ResetStateAction());
         }
 
         private async Task SearchAsync()
@@ -196,48 +142,34 @@ namespace HealthGateway.Admin.Client.Pages
             await this.Form.Validate().ConfigureAwait(true);
             if (this.Form.IsValid)
             {
-                this.ResetSupportUserState();
-                this.ResetMessageVerificationState();
-                this.Dispatcher.Dispatch(new SupportUserActions.LoadAction(this.SelectedQueryType, StringManipulator.StripWhitespace(this.QueryParameter)));
+                this.ResetPatientSupportState();
+                this.Dispatcher.Dispatch(new PatientSupportActions.LoadAction(this.SelectedQueryType, StringManipulator.StripWhitespace(this.QueryParameter)));
             }
         }
 
-        private sealed record SupportUserRow
+        private sealed record PatientRow
         {
-            public SupportUserRow(ExtendedSupportUser model, TimeZoneInfo timezone)
+            public PatientRow(PatientSupportDetails model)
             {
-                this.Hdid = model.Hdid;
+                this.Status = model.Status;
+                this.Name = StringManipulator.JoinWithoutBlanks(new[] { model.PreferredName?.GivenName, model.PreferredName?.Surname });
+                this.SortName = $"{model.PreferredName?.Surname}, {model.PreferredName?.GivenName}";
+                this.Birthdate = model.Birthdate;
                 this.PersonalHealthNumber = model.PersonalHealthNumber;
-                this.CreatedDateTime = model.CreatedDateTime != null ? TimeZoneInfo.ConvertTimeFromUtc((DateTime)model.CreatedDateTime, timezone) : model.CreatedDateTime;
-                this.LastLoginDateTime = model.LastLoginDateTime != null ? TimeZoneInfo.ConvertTimeFromUtc((DateTime)model.LastLoginDateTime, timezone) : model.LastLoginDateTime;
-                this.IsExpanded = model.IsExpanded;
-                this.PhysicalAddress = model.PhysicalAddress;
-                this.PostalAddress = model.PostalAddress;
+                this.Hdid = model.Hdid;
             }
 
-            public string Hdid { get; }
+            public PatientStatus Status { get; }
+
+            public string Name { get; }
+
+            public string SortName { get; }
+
+            public DateOnly? Birthdate { get; }
 
             public string PersonalHealthNumber { get; }
 
-            public DateTime? CreatedDateTime { get; }
-
-            public DateTime? LastLoginDateTime { get; }
-
-            public bool IsExpanded { get; }
-
-            public string PhysicalAddress { get; }
-
-            public string PostalAddress { get; }
-
-            public string PostalAddressLabel => !this.IsSameAddress || (this.PhysicalAddress.Length > 0 && this.PostalAddress.Length == 0) ? "Mailing Address" : "Address";
-
-            public bool IsSameAddress => this.PhysicalAddress.Equals(this.PostalAddress, StringComparison.OrdinalIgnoreCase);
-
-            public bool IsPhysicalAddressShown => this.PhysicalAddress.Length > 0 && !this.IsSameAddress;
-
-            public bool IsPostalAddressShown => this.PostalAddress.Length > 0;
-
-            public static string NoAddressMessage => "No address on record";
+            public string Hdid { get; }
         }
     }
 }

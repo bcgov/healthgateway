@@ -18,7 +18,7 @@ namespace HealthGateway.Common.Jobs
     using System;
 
     /// <summary>
-    /// A Job to send/retry sending emails.
+    /// A Job to send emails.
     /// </summary>
     public interface IEmailJob
     {
@@ -27,25 +27,5 @@ namespace HealthGateway.Common.Jobs
         /// </summary>
         /// <param name="emailId">The stored emailId to send.</param>
         void SendEmail(Guid emailId);
-
-        /// <summary>
-        /// Attempts to send low priority emails.
-        /// </summary>
-        void SendLowPriorityEmails();
-
-        /// <summary>
-        /// Attempts to send standard priority emails.
-        /// </summary>
-        void SendStandardPriorityEmails();
-
-        /// <summary>
-        /// Attempts to send high priority emails.
-        /// </summary>
-        void SendHighPriorityEmails();
-
-        /// <summary>
-        /// Attempts to send urgent priority emails.
-        /// </summary>
-        void SendUrgentPriorityEmails();
     }
 }

@@ -181,26 +181,31 @@ namespace HealthGateway.Database.Delegates
         /// <inheritdoc/>
         public bool Exists(string ownerId, string delegateId)
         {
-            if (this.dbContext.ResourceDelegate.Any(rd => rd.ResourceOwnerHdid == ownerId && rd.ProfileHdid == delegateId))
-            {
-                return true;
-            }
-
-            return false;
+            return this.dbContext.ResourceDelegate.Any(rd => rd.ResourceOwnerHdid == ownerId && rd.ProfileHdid == delegateId);
         }
 
         /// <inheritdoc/>
-        public async Task<ResourceDelegateQueryResult> Search(ResourceDelegateQuery query)
+        public async Task<ResourceDelegateQueryResult> SearchAsync(ResourceDelegateQuery query)
         {
             IQueryable<ResourceDelegate> dbQuery = this.dbContext.ResourceDelegate;
             if (query.ByOwnerHdid != null)
             {
-                dbQuery = dbQuery.Where(d => d.ResourceOwnerHdid == query.ByOwnerHdid);
+                dbQuery = dbQuery.Where(rd => rd.ResourceOwnerHdid == query.ByOwnerHdid);
             }
 
             if (query.ByDelegateHdid != null)
             {
                 dbQuery = dbQuery.Where(rd => rd.ProfileHdid == query.ByDelegateHdid);
+            }
+
+            if (query.IncludeProfile)
+            {
+                dbQuery = dbQuery.Include(rd => rd.UserProfile).OrderByDescending(rd => rd.UserProfile.LastLoginDateTime);
+            }
+
+            if (query.TakeAmount != null)
+            {
+                dbQuery = dbQuery.Take(query.TakeAmount.Value);
             }
 
             IEnumerable<ResourceDelegate> items = await dbQuery.ToArrayAsync().ConfigureAwait(true);

@@ -184,7 +184,7 @@ namespace HealthGateway.Common.Delegates
                         case ADStreetAddressLine line when line.Text != null:
                             foreach (string s in line.Text)
                             {
-                                retAddress.AddLine(s ?? string.Empty);
+                                retAddress.StreetLines = retAddress.StreetLines.Append(s ?? string.Empty);
                             }
 
                             break;
@@ -262,7 +262,7 @@ namespace HealthGateway.Common.Delegates
                     ResultStatus = ResultType.Error,
                     ResultError = new RequestResultError
                     {
-                        ResultMessage = "Client Registry did not return a person",
+                        ResultMessage = ErrorMessages.ClientRegistryDoesNotReturnPerson,
                         ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.ClientRegistries),
                     },
                 };
@@ -299,7 +299,7 @@ namespace HealthGateway.Common.Delegates
                         ResultStatus = ResultType.Error,
                         ResultError = new RequestResultError
                         {
-                            ResultMessage = "Client Registry returned a person with the deceased indicator set to true",
+                            ResultMessage = ErrorMessages.ClientRegistryReturnedDeceasedPerson,
                             ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.ClientRegistries),
                         },
                     };

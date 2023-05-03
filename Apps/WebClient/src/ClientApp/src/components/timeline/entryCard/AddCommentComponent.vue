@@ -2,11 +2,9 @@
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faArrowCircleUp, faLock } from "@fortawesome/free-solid-svg-icons";
 import Vue from "vue";
-import { Component, Emit, Prop, Watch } from "vue-property-decorator";
+import { Component, Emit, Prop } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 
-import TutorialComponent from "@/components/shared/TutorialComponent.vue";
-import UserPreferenceType from "@/constants/userPreferenceType";
 import { DateWrapper } from "@/models/dateWrapper";
 import { ResultError } from "@/models/errors";
 import User from "@/models/user";
@@ -18,11 +16,7 @@ import { ILogger } from "@/services/interfaces";
 library.add(faArrowCircleUp, faLock);
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const options: any = {
-    components: {
-        TutorialComponent,
-    },
-};
+const options: any = {};
 
 @Component(options)
 export default class AddCommentComponent extends Vue {
@@ -44,27 +38,12 @@ export default class AddCommentComponent extends Vue {
     @Action("setTooManyRequestsError", { namespace: "errorBanner" })
     setTooManyRequestsError!: (params: { key: string }) => void;
 
-    @Action("setSeenTutorialComment", { namespace: "user" })
-    setSeenTutorialComment!: (params: { value: boolean }) => void;
-
-    @Getter("seenTutorialComment", { namespace: "user" })
-    seenTutorialComment!: boolean;
-
     @Getter("user", { namespace: "user" })
     user!: User;
 
     private commentInput = "";
     private logger!: ILogger;
     private isSaving = false;
-    private isCommentTutorialHidden = true;
-
-    private get showCommentTutorial(): boolean {
-        return this.visible && !this.isCommentTutorialHidden;
-    }
-
-    private get commentTutorialPreference(): string {
-        return UserPreferenceType.TutorialComment;
-    }
 
     private get privacyInfoId(): string {
         const id = `privacy-icon-${this.comment.parentEntryId}`;
@@ -113,22 +92,6 @@ export default class AddCommentComponent extends Vue {
             .finally(() => (this.isSaving = false));
     }
 
-    @Watch("visible")
-    private async onVisibleChanged(): Promise<void> {
-        if (
-            this.visible &&
-            (!this.seenTutorialComment || this.isMobileDetails)
-        ) {
-            // wait 2 ticks for animations to complete
-            await this.$nextTick();
-            await this.$nextTick();
-
-            // enable popover
-            this.isCommentTutorialHidden = false;
-            this.setSeenTutorialComment({ value: true });
-        }
-    }
-
     @Emit()
     private onCommentAdded(comment: UserComment): UserComment {
         return comment;
@@ -153,17 +116,6 @@ export default class AddCommentComponent extends Vue {
         >
             Only you can see comments added to your medical records.
         </b-tooltip>
-        <TutorialComponent
-            :preference-type="commentTutorialPreference"
-            :target="privacyInfoId"
-            :show="showCommentTutorial"
-            placement="topright"
-        >
-            <div data-testid="comment-tutorial-popover">
-                You can add comments to help you keep track of important health
-                details. Only you can see them.
-            </div>
-        </TutorialComponent>
         <b-col class="ml-2">
             <b-input-group>
                 <b-form-textarea

@@ -47,6 +47,8 @@ namespace HealthGateway.GatewayApi.Services
     {
         private const string WebClientConfigSection = "WebClient";
         private const string MaxDependentAgeKey = "MaxDependentAge";
+        private const string SmartApostrophe = "’";
+        private const string RegularApostrophe = "'";
         private readonly IMapper autoMapper;
         private readonly ILogger logger;
         private readonly int maxDependentAge;
@@ -102,6 +104,9 @@ namespace HealthGateway.GatewayApi.Services
             {
                 case ResultType.Error:
                     return RequestResultFactory.ServiceError<DependentModel>(ErrorType.CommunicationExternal, ServiceType.Patient, "Communication Exception when trying to retrieve the Dependent");
+
+                case ResultType.ActionRequired when patientResult.ResultError?.ActionCodeValue == ActionType.NoHdId.Value:
+                    return RequestResultFactory.ActionRequired<DependentModel>(ActionType.NoHdId, ErrorMessages.InvalidServicesCard);
 
                 case ResultType.ActionRequired:
                     return RequestResultFactory.ActionRequired<DependentModel>(ActionType.DataMismatch, ErrorMessages.DataMismatch);
@@ -275,12 +280,12 @@ namespace HealthGateway.GatewayApi.Services
                 return false;
             }
 
-            if (!patientModel.LastName.Equals(dependent.LastName, StringComparison.OrdinalIgnoreCase))
+            if (!patientModel.LastName.Equals(ReplaceSmartApostrophe(dependent.LastName), StringComparison.OrdinalIgnoreCase))
             {
                 return false;
             }
 
-            if (!patientModel.FirstName.Equals(dependent.FirstName, StringComparison.OrdinalIgnoreCase))
+            if (!patientModel.FirstName.Equals(ReplaceSmartApostrophe(dependent.FirstName), StringComparison.OrdinalIgnoreCase))
             {
                 return false;
             }
@@ -293,6 +298,12 @@ namespace HealthGateway.GatewayApi.Services
             }
 
             return true;
+        }
+
+        private static string ReplaceSmartApostrophe(string value)
+        {
+            string replacedValue = value.Replace(SmartApostrophe, RegularApostrophe, StringComparison.Ordinal);
+            return replacedValue;
         }
 
         private void UpdateNotificationSettings(string dependentHdid, string delegateHdid, bool isDelete = false)

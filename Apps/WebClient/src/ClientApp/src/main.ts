@@ -26,7 +26,6 @@ import {
     BTab,
     BTabs,
 } from "bootstrap-vue";
-import IdleVue from "idle-vue";
 import Vue from "vue";
 import VueContentPlaceholders from "vue-content-placeholders";
 import VueRouter from "vue-router";
@@ -230,13 +229,6 @@ configService
         patientDataService.initialize(config, httpDelegate);
 
         authInitializePromise.then(async () => {
-            Vue.use(IdleVue, {
-                eventEmitter: new Vue(),
-                idleTime: config.webClient.timeouts.idle,
-                store,
-                startAtIdle: false,
-            });
-
             if (window.location.pathname !== "/loginCallback") {
                 const signedIn = await store.dispatch("auth/checkStatus");
                 if (signedIn) {

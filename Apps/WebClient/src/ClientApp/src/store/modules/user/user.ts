@@ -11,7 +11,6 @@ const state: UserState = {
     user: new User(),
     patient: new Patient(),
     patientRetrievalFailed: false,
-    seenTutorialComment: false,
     statusMessage: "",
     error: false,
     status: LoadStatus.NONE,

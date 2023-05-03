@@ -33,7 +33,6 @@ namespace HealthGateway.CommonTests.Utils
             MapperConfiguration config = new(
                 cfg =>
                 {
-                    cfg.AddProfile(new MessagingVerificationProfile());
                     cfg.AddProfile(new UserProfileProfile());
                     cfg.AddProfile(new BroadcastProfile());
                 });

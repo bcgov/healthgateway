@@ -235,7 +235,6 @@ export default class NoteEditComponent extends Vue {
         id="note-edit-modal"
         v-model="isVisible"
         data-testid="noteEditModal"
-        content-class="mt-5"
         size="lg"
         header-class="edit-modal-header"
         header-text-variant="light"
