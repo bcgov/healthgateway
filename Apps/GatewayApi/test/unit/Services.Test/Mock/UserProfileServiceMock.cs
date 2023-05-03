@@ -71,8 +71,6 @@ namespace HealthGateway.GatewayApiTests.Services.Test.Mock
                 LegalText = "Mock Terms of Service",
             });
 
-        private UserProfileService? userProfileService;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="UserProfileServiceMock"/> class.
         /// </summary>
@@ -89,7 +87,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test.Mock
         /// <returns>UserProfileService.</returns>
         public UserProfileService UserProfileServiceMockInstance()
         {
-            this.userProfileService = new UserProfileService(
+            return new UserProfileService(
                 this.loggerMock.Object,
                 this.patientServiceMock.Object,
                 this.userEmailServiceMock.Object,
@@ -107,8 +105,6 @@ namespace HealthGateway.GatewayApiTests.Services.Test.Mock
                 this.authenticationDelegateMock.Object,
                 this.applicationSettingsDelegateMock.Object,
                 this.cacheProviderMock.Object);
-
-            return this.userProfileService;
         }
 
         /// <summary>
