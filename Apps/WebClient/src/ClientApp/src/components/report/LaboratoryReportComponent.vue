@@ -49,7 +49,7 @@ export default class LaboratoryReportComponent extends Vue {
     }
 
     private get visibleRecords(): LaboratoryOrder[] {
-        let records = this.laboratoryOrders(this.hdid).filter((record) =>
+        const records = this.laboratoryOrders(this.hdid).filter((record) =>
             this.filter.allowsDate(record.timelineDateTime)
         );
         records.sort((a, b) => {

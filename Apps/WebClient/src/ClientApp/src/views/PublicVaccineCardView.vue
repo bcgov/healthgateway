@@ -30,7 +30,7 @@ import SnowPlow from "@/utility/snowPlow";
 library.add(faInfoCircle);
 
 const validPersonalHealthNumber = (value: string) => {
-    let phn = value.replace(/ /g, "");
+    const phn = value.replace(/ /g, "");
     return PHNValidator.IsValid(phn);
 };
 

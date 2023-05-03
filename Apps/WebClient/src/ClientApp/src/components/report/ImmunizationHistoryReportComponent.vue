@@ -75,7 +75,7 @@ export default class ImmunizationHistoryReportComponent extends Vue {
     }
 
     private get visibleImmunizations(): ImmunizationEvent[] {
-        let records = this.patientImmunizations(this.hdid).filter((record) =>
+        const records = this.patientImmunizations(this.hdid).filter((record) =>
             this.filter.allowsDate(record.dateOfImmunization)
         );
 
@@ -107,7 +107,7 @@ export default class ImmunizationHistoryReportComponent extends Vue {
     }
 
     private get visibleRecomendations(): Recommendation[] {
-        let records = this.patientRecommendations(this.hdid).filter(
+        const records = this.patientRecommendations(this.hdid).filter(
             (x) => x.recommendedVaccinations
         );
 

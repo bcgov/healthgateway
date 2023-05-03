@@ -59,11 +59,11 @@ export default class MonthYearPickerComponent extends Vue {
     }
 
     private get monthsToDisplay(): MonthToDisplay[] {
-        let availableMonthsOfSelectedYear = this.availableMonths.filter(
+        const availableMonthsOfSelectedYear = this.availableMonths.filter(
             (m) => m.year() === this.selectedYear
         );
 
-        let monthsToDisplay = [
+        const monthsToDisplay = [
             { title: "Jan", hasData: false },
             { title: "Feb", hasData: false },
             { title: "Mar", hasData: false },

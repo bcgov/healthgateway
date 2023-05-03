@@ -49,7 +49,7 @@ export default class MSPVisitsReportComponent extends Vue {
     }
 
     private get visibleRecords(): Encounter[] {
-        let records = this.healthVisits(this.hdid).filter((record) =>
+        const records = this.healthVisits(this.hdid).filter((record) =>
             this.filter.allowsDate(record.encounterDate)
         );
         records.sort((a, b) => {

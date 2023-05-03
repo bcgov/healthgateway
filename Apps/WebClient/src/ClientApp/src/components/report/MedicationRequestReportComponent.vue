@@ -58,7 +58,7 @@ export default class MedicationRequestReportComponent extends Vue {
     }
 
     private get visibleRecords(): MedicationRequest[] {
-        let records = this.specialAuthorityRequests(this.hdid).filter(
+        const records = this.specialAuthorityRequests(this.hdid).filter(
             (record) => this.filter.allowsDate(record.requestedDate)
         );
         records.sort((a, b) => {

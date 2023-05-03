@@ -66,7 +66,7 @@ export default class CommentSectionComponent extends Vue {
 
     private mounted(): void {
         // Some comments dont have entry type. This code updates them if they dont.
-        let commentsToUpdate: UserComment[] = [];
+        const commentsToUpdate: UserComment[] = [];
         if (this.parentEntry.comments !== null) {
             this.parentEntry.comments.forEach((x) => {
                 if (x.entryTypeCode === CommentEntryType.None) {
@@ -84,7 +84,7 @@ export default class CommentSectionComponent extends Vue {
             this.updateComment({ hdid: this.user.hdid, comment: x });
         });
 
-        let commentsSection = (
+        const commentsSection = (
             this.$refs["entryComments" + this.parentEntry.id] as Vue
         ).$el;
         commentsSection?.addEventListener(
@@ -105,10 +105,10 @@ export default class CommentSectionComponent extends Vue {
 
     private onSectionExpand(event: Event): void {
         if (this.isMobileDetails && this.showComments) {
-            let commentsSection = (
+            const commentsSection = (
                 this.$refs["entryComments" + this.parentEntry.id] as Vue
             ).$el;
-            let transitionEvent = event as TransitionEvent;
+            const transitionEvent = event as TransitionEvent;
             if (
                 commentsSection !== transitionEvent.target ||
                 transitionEvent.propertyName !== "height"

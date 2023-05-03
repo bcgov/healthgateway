@@ -48,7 +48,7 @@ export default class NotesReportComponent extends Vue {
     }
 
     private get visibleRecords(): UserNote[] {
-        let records = this.notes.filter((record) =>
+        const records = this.notes.filter((record) =>
             this.filter.allowsDate(record.journalDate)
         );
         records.sort((a, b) => {

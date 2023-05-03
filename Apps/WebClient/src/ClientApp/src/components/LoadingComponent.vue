@@ -58,7 +58,7 @@ export default class LoadingComponent extends Vue {
     }
 
     private resetAnimation(elementId: string): boolean {
-        let el = document.getElementById(elementId);
+        const el = document.getElementById(elementId);
         if (el == null) {
             return false;
         }

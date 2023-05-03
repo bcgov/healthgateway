@@ -67,7 +67,7 @@ export default class MedicationHistoryReportComponent extends Vue {
     }
 
     private get visibleRecords(): MedicationStatementHistory[] {
-        let records = this.medications(this.hdid).filter(
+        const records = this.medications(this.hdid).filter(
             (record) =>
                 this.filter.allowsDate(record.dispensedDate) &&
                 this.filter.allowsMedication(record.medicationSummary.brandName)
