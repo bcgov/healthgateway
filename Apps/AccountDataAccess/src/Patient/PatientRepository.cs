@@ -197,7 +197,14 @@ namespace HealthGateway.AccountDataAccess.Patient
             try
             {
                 PatientIdentity result = await this.patientIdentityApi.GetPatientIdentityAsync(hdid).ConfigureAwait(true);
-                return this.mapper.Map<PatientModel>(result);
+                PatientModel? patient = this.mapper.Map<PatientModel>(result);
+
+                if (patient != null)
+                {
+                    this.CachePatient(patient);
+                }
+
+                return patient;
             }
             catch (ApiException e) when (e.StatusCode == HttpStatusCode.NotFound)
             {
