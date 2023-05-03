@@ -137,10 +137,16 @@ namespace HealthGateway.GatewayApiTests.Services.Test.Mock
         /// <param name="userProfileData">The mocked user profile linked with the hdid.</param>
         /// <param name="userProfileDbResult">the mocked result from the database.</param>
         /// <param name="shouldProfileCommit">mock commit db.</param>
+        /// <param name="userProfileDbResultUpdate">Optional update db result, fallback is userProfileDbResult.</param>
         /// <returns>UserProfileServiceMock.</returns>
-        public UserProfileServiceMock SetupUserProfileDelegateMockGetAndUpdate(string hdid, UserProfile userProfileData, DbResult<UserProfile> userProfileDbResult, bool shouldProfileCommit = true)
+        public UserProfileServiceMock SetupUserProfileDelegateMockGetAndUpdate(
+            string hdid,
+            UserProfile userProfileData,
+            DbResult<UserProfile> userProfileDbResult,
+            bool shouldProfileCommit = true,
+            DbResult<UserProfile>? userProfileDbResultUpdate = null)
         {
-            this.userProfileDelegateMock = new UserProfileDelegateMock(hdid, userProfileData, userProfileDbResult, shouldProfileCommit);
+            this.userProfileDelegateMock = new UserProfileDelegateMock(hdid, userProfileData, userProfileDbResult, shouldProfileCommit, userProfileDbResultUpdate);
             return this;
         }
 
