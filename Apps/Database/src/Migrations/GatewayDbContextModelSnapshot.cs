@@ -3665,7 +3665,7 @@ namespace HealthGateway.Database.Migrations
 
             modelBuilder.Entity("HealthGateway.Database.Models.ResourceDelegate", b =>
                 {
-                    b.HasOne("HealthGateway.Common.Data.Models.UserProfile", null)
+                    b.HasOne("HealthGateway.Common.Data.Models.UserProfile", "UserProfile")
                         .WithMany()
                         .HasForeignKey("ProfileHdid")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -3676,6 +3676,8 @@ namespace HealthGateway.Database.Migrations
                         .HasForeignKey("ReasonCode")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("UserProfile");
                 });
 
             modelBuilder.Entity("HealthGateway.Database.Models.Route", b =>
