@@ -48,6 +48,9 @@ namespace HealthGateway.Admin.Client.Pages
         [Inject]
         private NavigationManager NavigationManager { get; set; } = default!;
 
+        [Inject]
+        private IActionSubscriber ActionSubscriber { get; set; } = default!;
+
         private bool MessagingVerificationsLoading => this.MessageVerificationState.Value.IsLoading;
 
         private bool HasMessagingVerificationsError => this.MessageVerificationState.Value.Error is { Message.Length: > 0 };
@@ -65,7 +68,7 @@ namespace HealthGateway.Admin.Client.Pages
 
         private string PatientName => StringManipulator.JoinWithoutBlanks(new[] { this.Patient?.PreferredName?.GivenName, this.Patient?.PreferredName?.Surname });
 
-        private string? Warning => this.Patient == null ? null : MapStatusToWarning(this.Patient.Status);
+        private string? StatusWarning => this.Patient == null ? null : MapStatusToWarning(this.Patient.Status);
 
         private string? Hdid { get; set; }
 
@@ -79,6 +82,7 @@ namespace HealthGateway.Admin.Client.Pages
             {
                 this.Hdid = hdid;
                 this.RetrievePatientData();
+                this.ActionSubscriber.SubscribeToAction<PatientSupportActions.LoadSuccessAction>(this, _ => this.RetrieveMessagingVerifications());
             }
             else
             {
@@ -99,15 +103,23 @@ namespace HealthGateway.Admin.Client.Pages
 
         private void RetrievePatientData()
         {
-            if (this.Patient?.Hdid != this.Hdid)
+            if (this.Patient == null)
             {
                 this.Dispatcher.Dispatch(new PatientSupportActions.ResetStateAction());
+                this.Dispatcher.Dispatch(new MessageVerificationActions.ResetStateAction());
                 this.Dispatcher.Dispatch(new PatientSupportActions.LoadAction(PatientQueryType.Hdid, this.Hdid));
             }
-
-            if (this.Patient?.Status == PatientStatus.Default)
+            else
             {
-                this.Dispatcher.Dispatch(new MessageVerificationActions.ResetStateAction());
+                this.RetrieveMessagingVerifications();
+            }
+        }
+
+        private void RetrieveMessagingVerifications()
+        {
+            this.Dispatcher.Dispatch(new MessageVerificationActions.ResetStateAction());
+            if (this.Patient?.ProfileCreatedDateTime != null)
+            {
                 this.Dispatcher.Dispatch(new MessageVerificationActions.LoadAction(this.Hdid));
             }
         }
