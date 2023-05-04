@@ -185,6 +185,19 @@ export default class HeaderComponent extends Vue {
         );
     }
 
+    private get isAppTourAvailable(): boolean {
+        return (
+            !this.isOffline &&
+            !this.isQueuePage &&
+            !this.isPcrTest &&
+            this.oidcIsAuthenticated &&
+            this.isValidIdentityProvider &&
+            this.userIsRegistered &&
+            this.userIsActive &&
+            !this.patientRetrievalFailed
+        );
+    }
+
     private get isLoggedInMenuShown(): boolean {
         return this.oidcIsAuthenticated && !this.isPcrTest && !this.isQueuePage;
     }
@@ -325,7 +338,7 @@ export default class HeaderComponent extends Vue {
             <!-- Navbar links -->
             <b-navbar-nav class="nav-pills ml-auto">
                 <b-avatar
-                    v-if="isLoggedInMenuShown"
+                    v-if="isAppTourAvailable"
                     button
                     variant="transparent"
                     :badge="highlightTourChangeIndicator"

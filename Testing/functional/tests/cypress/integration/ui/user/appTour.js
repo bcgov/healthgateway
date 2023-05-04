@@ -22,7 +22,6 @@ describe("App Tour Authenticated", () => {
             .should("have.class", "b-avatar-badge badge-danger");
 
         cy.get("[data-testid=app-tour-button").click();
-
         cy.get("[data-testid=app-tour-modal]").should("be.visible");
 
         // Badge should be removed once tour is opened
@@ -51,14 +50,13 @@ describe("App Tour Authenticated", () => {
         cy.get("[data-testid=app-tour-button]").should("be.visible").click();
         cy.get("[data-testid=app-tour-modal]").should("be.visible");
 
-        cy.get("[data-testid=app-tour-back]")
-            .should("be.visible")
-            .should("be.disabled");
-
         cy.get("[data-testid=app-tour-skip]").should("be.visible").click();
         cy.get("[data-testid=app-tour-modal]").should("not.exist");
 
         cy.get("[data-testid=app-tour-button]").click();
+        cy.get("[data-testid=app-tour-start]")
+            .should("be.visible", "be.enabled")
+            .click();
 
         new Cypress.Promise((resolve) => {
             keepClickingNext(resolve);
@@ -77,12 +75,11 @@ describe("App Tour Authenticated", () => {
         cy.get("[data-testid=app-tour-modal]").should("be.visible");
 
         // first slide: back should be disabled
-        cy.get("[data-testid=app-tour-back]").should(
-            "be.visible",
-            "be.disabled"
-        );
+        cy.get("[data-testid=app-tour-back]").should("not.exist");
 
-        cy.get("[data-testid=app-tour-next]").should("be.visible").click();
+        cy.get("[data-testid=app-tour-start]")
+            .should("be.visible", "be.enabled")
+            .click();
 
         // second slide: either back should be enabled or done should be visible
         cy.get("[data-testid=app-tour-modal]")
@@ -92,7 +89,11 @@ describe("App Tour Authenticated", () => {
                     cy.get("[data-testid=app-tour-back]")
                         .should("be.visible", "be.enabled")
                         .click()
-                        .should("be.visible", "be.disabled");
+                        .wait(1000); // Wait for animations to complete
+                    cy.get("[data-testid=app-tour-start]").should(
+                        "be.visible",
+                        "be.enabled"
+                    );
                 } else {
                     cy.get("[data-testid=app-tour-done]").should("be.visible");
                 }
