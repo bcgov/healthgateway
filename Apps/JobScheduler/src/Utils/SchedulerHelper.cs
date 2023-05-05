@@ -63,7 +63,13 @@ namespace HealthGateway.JobScheduler.Utils
         /// <param name="methodCall">The expression to run on the class.</param>
         public static void ScheduleJob<T>(JobConfiguration cfg, TimeZoneInfo tz, Expression<Action<T>> methodCall)
         {
-            RecurringJob.AddOrUpdate(cfg.Id, methodCall, cfg.Schedule, tz);
+            RecurringJobOptions recurringJobOptions = new()
+            {
+                TimeZone = tz,
+                MisfireHandling = MisfireHandlingMode.Relaxed,
+            };
+
+            RecurringJob.AddOrUpdate(cfg.Id, methodCall, cfg.Schedule, recurringJobOptions);
             if (cfg.Immediate)
             {
                 BackgroundJob.Schedule(methodCall, TimeSpan.FromSeconds(cfg.Delay));
