@@ -1,0 +1,21 @@
+@inherits HgComponentBase
+
+<div
+    class="@CombinedClass"
+    style="@Style">
+    <MudPaper Elevation="0" Class="pa-3" Tag="@Tag">
+        <MudText Typo="Typo.body1" Color="@Color.Primary">
+            @Label
+        </MudText>
+        <MudText Typo="Typo.body1">
+            @if (string.IsNullOrEmpty(Value))
+            {
+                <text>&nbsp;</text>
+            }
+            else
+            {
+                @Value
+            }
+        </MudText>
+    </MudPaper>
+</div>

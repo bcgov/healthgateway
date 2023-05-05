@@ -1,0 +1,109 @@
+@page "/patient-details"
+@layout MainLayout
+@attribute [Authorize(Roles = $"{Roles.Admin},{Roles.Reviewer}")]
+@using HealthGateway.Admin.Client.Store.MessageVerification
+@using HealthGateway.Admin.Client.Store.PatientSupport
+@using HealthGateway.Admin.Common.Constants
+@using HealthGateway.Admin.Client.Components.Support
+@inherits Fluxor.Blazor.Web.Components.FluxorComponent
+
+<PageTitle>Health Gateway Admin Patient Details</PageTitle>
+
+<MudLink Href="/support?details">
+    <MudText Typo="Typo.h5"><MudIcon Icon="fas fa-arrow-left" /> Back</MudText>
+</MudLink>
+
+<HgBannerFeedback
+    Severity="Severity.Error"
+    IsEnabled="HasMessagingVerificationsError"
+    TResetAction="MessageVerificationActions.ResetStateAction"
+    DataTestId="messaging-verification-banner-feedback-error-message">
+    @MessageVerificationState.Value.Error?.Message
+</HgBannerFeedback>
+
+<HgBannerFeedback
+    Severity="Severity.Error"
+    IsEnabled="HasPatientsError"
+    TResetAction="PatientSupportActions.ResetStateAction"
+    DataTestId="user-banner-feedback-error-message">
+    @PatientSupportState.Value.Error?.Message
+</HgBannerFeedback>
+
+<HgBannerFeedback
+    Severity="@Severity.Info"
+    IsEnabled="HasPatientsWarning"
+    TResetAction="PatientSupportActions.ResetStateAction"
+    Class="mt-3"
+    DataTestId="user-banner-feedback-warning-message">
+    <ul>
+        @foreach (string warning in PatientSupportState.Value.WarningMessages)
+        {
+            <li>@warning</li>
+        }
+    </ul>
+</HgBannerFeedback>
+
+<HgBannerFeedback
+    Severity="@Severity.Info"
+    IsEnabled="@(StatusWarning != null)"
+    TResetAction="PatientSupportActions.ResetStateAction"
+    Class="mt-3"
+    DataTestId="user-banner-feedback-status-warning-message">
+    @StatusWarning
+</HgBannerFeedback>
+
+@if (Patient != null)
+{
+    <HgPageHeading Class="mt-3">User Details</HgPageHeading>
+    <MudGrid>
+        <MudItem xs="12" lg="4">
+            <HgField Label="Name" Value="@PatientName" data-testid="patient-name" />
+        </MudItem>
+        <MudItem xs="12" lg="4">
+            <HgField Label="Birthdate" Value="@Patient.Birthdate.ToString()" data-testid="patient-dob" />
+        </MudItem>
+        <MudItem xs="12" lg="4">
+            <HgField Label="PHN" Value="@Patient.PersonalHealthNumber" data-testid="patient-phn" />
+        </MudItem>
+        <MudItem xs="12">
+            <HgField Label="HDID" Value="@Patient.Hdid" data-testid="patient-hdid" />
+        </MudItem>
+        <MudItem xs="12" lg="6">
+            <HgField Label="Physical Address" Value="@Patient.PhysicalAddress" data-testid="patient-physical-address" />
+        </MudItem>
+        <MudItem xs="12" lg="6">
+            <HgField Label="Mailing Address" Value="@Patient.PostalAddress" data-testid="patient-mailing-address" />
+        </MudItem>
+    </MudGrid>
+    <MudText Class="my-3" Typo="Typo.subtitle1">
+        Account Details
+    </MudText>
+    @if (Patient.Status == PatientStatus.Default)
+    {
+        <MudGrid>
+            <MudItem xs="12" lg="6">
+                <HgField Label="Account Created" Value="@Patient.ProfileCreatedDateTime.ToString()" data-testid="profile-created-datetime" />
+            </MudItem>
+            <MudItem xs="12" lg="6">
+                <HgField Label="Last Login" Value="@Patient.ProfileLastLoginDateTime.ToString()" data-testid="profile-last-login-datetime" />
+            </MudItem>
+        </MudGrid>
+        <MessageVerificationTable Data="@MessagingVerifications" IsLoading="@MessagingVerificationsLoading" />
+    }
+    else
+    {
+        <MudText Class="my-3">
+            No Health Gateway Profile
+        </MudText>
+    }
+}
+else if (PatientsLoaded)
+{
+    <MudText Class="my-3" Typo="Typo.subtitle1">
+        No user found with the specified HDID.
+    </MudText>
+}
+else
+{
+    <MudProgressCircular Indeterminate="true" Size="Size.Large" Class="mt-3" />
+}
