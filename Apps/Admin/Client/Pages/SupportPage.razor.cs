@@ -134,7 +134,11 @@ namespace HealthGateway.Admin.Client.Pages
 
         private void ResetPatientSupportState()
         {
-            this.Dispatcher.Dispatch(new PatientSupportActions.ResetStateAction());
+            Uri uri = this.NavigationManager.ToAbsoluteUri(this.NavigationManager.Uri);
+            if (!QueryHelpers.ParseQuery(uri.Query).TryGetValue("details", out StringValues _))
+            {
+                this.Dispatcher.Dispatch(new PatientSupportActions.ResetStateAction());
+            }
         }
 
         private async Task SearchAsync()
@@ -145,6 +149,11 @@ namespace HealthGateway.Admin.Client.Pages
                 this.ResetPatientSupportState();
                 this.Dispatcher.Dispatch(new PatientSupportActions.LoadAction(this.SelectedQueryType, StringManipulator.StripWhitespace(this.QueryParameter)));
             }
+        }
+
+        private void RowClickEvent(TableRowClickEventArgs<PatientRow> tableRowClickEventArgs)
+        {
+            this.NavigationManager.NavigateTo($"patient-details?hdid={tableRowClickEventArgs.Item.Hdid}");
         }
 
         private sealed record PatientRow

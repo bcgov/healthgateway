@@ -63,9 +63,7 @@ export default class OrganDonorDetailsCard extends Vue {
         const data = this.patientData(this.hdid, [
             PatientDataType.OrganDonorRegistrationStatus,
         ]);
-        if (data) {
-            return data[0] as OrganDonorRegistration;
-        }
+        return data ? (data[0] as OrganDonorRegistration) : undefined;
     }
 
     async created(): Promise<void> {
