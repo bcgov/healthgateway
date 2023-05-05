@@ -1,19 +1,12 @@
-<script lang="ts">
-import Vue from "vue";
-import { Component, Prop } from "vue-property-decorator";
-
-@Component
-export default class HtmlTextAreaComponent extends Vue {
-    @Prop() input!: string;
-
-    private mounted(): void {
-        this.$el.innerHTML = this.input;
-    }
+<script setup lang="ts">
+interface Props {
+    input: string;
 }
+defineProps<Props>();
 </script>
 
 <template>
-    <div class="textArea p-4"></div>
+    <div class="textArea p-4" v-html="input" />
 </template>
 
 <style lang="scss" scoped>

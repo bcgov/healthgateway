@@ -1,4 +1,4 @@
-﻿<script lang="ts">
+﻿<script setup lang="ts">
 import "vue-loading-overlay/dist/vue-loading.css";
 
 import { library } from "@fortawesome/fontawesome-svg-core";
@@ -8,65 +8,59 @@ import {
     faSyringe,
     faVial,
 } from "@fortawesome/free-solid-svg-icons";
-import Vue from "vue";
-import Loading from "vue-loading-overlay";
-import { Component, Prop } from "vue-property-decorator";
+import { computed, onMounted, onUnmounted, ref } from "vue";
+import LoadingOverlay from "vue-loading-overlay";
 
 library.add(faEdit, faVial, faPills, faSyringe);
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const options: any = {
-    components: {
-        Loading,
-    },
-};
+interface Props {
+    isLoading: boolean;
+    isCustom?: boolean;
+    fullScreen?: boolean;
+    text?: string;
+}
+const props = withDefaults(defineProps<Props>(), {
+    isCustom: false,
+    fullScreen: true,
+    text: undefined,
+});
 
-@Component(options)
-export default class LoadingComponent extends Vue {
-    @Prop() isLoading!: boolean;
-    @Prop() isCustom!: boolean;
-    @Prop({ default: true }) fullScreen!: boolean;
-    @Prop() text!: string | undefined;
-    private step = 0;
-    private intervalId = 0;
+const step = ref(0);
+const intervalId = ref(0);
+const ellipsis = computed(() => ".".padEnd(step.value + 1, "."));
 
-    private get ellipsis(): string {
-        return ".".padEnd(this.step + 1, ".");
+onMounted(() => {
+    if (props.isCustom) {
+        resetTimeout();
     }
+});
 
-    private mounted(): void {
-        if (this.isCustom) {
-            this.resetTimeout();
+onUnmounted(() => {
+    window.clearInterval(intervalId.value);
+});
+
+function resetTimeout(): void {
+    intervalId.value = window.setInterval(() => {
+        step.value++;
+        if (step.value >= 4) {
+            step.value = 0;
+            resetAnimation("first");
+            resetAnimation("second");
+            resetAnimation("third");
+            resetAnimation("fourth");
         }
-    }
+    }, 2000);
+}
 
-    private destroyed(): void {
-        window.clearInterval(this.intervalId);
+function resetAnimation(elementId: string): boolean {
+    const el = document.getElementById(elementId);
+    if (el == null) {
+        return false;
     }
-
-    private resetTimeout(): void {
-        this.intervalId = window.setInterval(() => {
-            this.step++;
-            if (this.step >= 4) {
-                this.step = 0;
-                this.resetAnimation("first");
-                this.resetAnimation("second");
-                this.resetAnimation("third");
-                this.resetAnimation("fourth");
-            }
-        }, 2000);
-    }
-
-    private resetAnimation(elementId: string): boolean {
-        const el = document.getElementById(elementId);
-        if (el == null) {
-            return false;
-        }
-        el.style.animation = "none";
-        el.offsetHeight; /* trigger reflow */
-        el.style.animation = "";
-        return true;
-    }
+    el.style.animation = "none";
+    el.offsetHeight; /* trigger reflow */
+    el.style.animation = "";
+    return true;
 }
 </script>
 
@@ -76,16 +70,16 @@ export default class LoadingComponent extends Vue {
         class="vld-parent"
         :class="isCustom && fullScreen ? 'fullScreen' : 'block'"
     >
-        <loading
+        <LoadingOverlay
             v-if="!isCustom"
-            :active.sync="isLoading"
+            :active="isLoading"
             data-testid="loadingSpinner"
             :is-full-page="true"
         >
             <template v-if="text" #after>
                 <div class="m-3">{{ text }}</div>
             </template>
-        </loading>
+        </LoadingOverlay>
         <div v-else>
             <div class="spinner" data-testid="timelineLoading">
                 <div id="first" class="double-bounce">
