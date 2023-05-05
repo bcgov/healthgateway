@@ -17,6 +17,7 @@
 namespace HealthGateway.IntegrationTests;
 
 using System.Collections.Concurrent;
+using System.Linq;
 using System.Transactions;
 using Hangfire;
 using Hangfire.PostgreSql;
@@ -32,37 +33,35 @@ using Xunit.Abstractions;
 public class HangfireMessageSenderTests : ScenarioContextBase<GatewayApi.Startup>, IDisposable
 {
     private readonly CancellationTokenSource cts;
-    private IMessageSender sender = null!;
     private IMessageReceiver receiver = null!;
-    private BackgroundJobServer hangfireBackgroundJobServer = null!;
 
     public HangfireMessageSenderTests(ITestOutputHelper output, WebAppFixture fixture) : base(output, fixture)
     {
         this.cts = new CancellationTokenSource();
+        fixture.Services.AddHangfireServer((sp, opts) =>
+        {
+            opts.Queues = new[] { AzureServiceBusSettings.OutboxQueueName };
+            opts.IsLightweightServer = true;
+        });
     }
 
     public override async Task InitializeAsync()
     {
         await base.InitializeAsync();
-
-        this.sender = this.Host.Services.GetRequiredService<IMessageSender>();
         this.receiver = this.Host.Services.GetRequiredService<IMessageReceiver>();
-#pragma warning disable CA2326 // Do not use TypeNameHandling values other than None
-        GlobalConfiguration.Configuration
-            .UseSerializerSettings(new Newtonsoft.Json.JsonSerializerSettings { TypeNameHandling = Newtonsoft.Json.TypeNameHandling.All })
-            .UsePostgreSqlStorage(this.Host.Services.GetRequiredService<IConfiguration>().GetConnectionString("GatewayConnection"));
-#pragma warning restore CA2326 // Do not use TypeNameHandling values other than None
-        this.hangfireBackgroundJobServer = new BackgroundJobServer(
-            new BackgroundJobServerOptions
-            {
-                Queues = new[] { AzureServiceBusSettings.OutboxQueueName },
-            });
+
+        GlobalConfiguration.Configuration.UsePostgreSqlStorage(this.Host.Services.GetRequiredService<IConfiguration>().GetConnectionString("GatewayConnection"));
     }
 
-    private async Task SendMessages(IEnumerable<TestMessage>[] messages, CancellationToken ct)
+    private async Task SendMessages(IEnumerable<TestMessage>[] messageGroups, CancellationToken ct)
     {
-        IEnumerable<Task> sendTasks = messages.Select(messages => this.sender.SendAsync(messages.Select(m => new MessageEnvelope(m, m.SessionId)), ct));
-        await Task.WhenAll(sendTasks);
+        await Parallel.ForEachAsync(messageGroups, ct, async (messages, ct) =>
+        {
+            this.Output.WriteLine("sending messages");
+            using var scope = this.Host.Services.CreateScope();
+            var sender = scope.ServiceProvider.GetRequiredService<IMessageSender>();
+            await sender.SendAsync(messages.Select(m => new MessageEnvelope(m, m.SessionId)), ct);
+        });
     }
 
     private async Task<ConcurrentBag<MessageEnvelope>> ReceiveMessages(CancellationToken ct)
@@ -157,7 +156,7 @@ public class HangfireMessageSenderTests : ScenarioContextBase<GatewayApi.Startup
 
         ConcurrentBag<MessageEnvelope> responses = await this.ReceiveMessages(this.cts.Token);
 
-        using (TransactionScope tx = new())
+        using (TransactionScope tx = new(TransactionScopeAsyncFlowOption.Enabled))
         {
             await this.SendMessages(new[] { messages }, this.cts.Token);
         }
@@ -182,9 +181,8 @@ public class HangfireMessageSenderTests : ScenarioContextBase<GatewayApi.Startup
 
     public void Dispose()
     {
-        this.cts.Dispose();
-        this.hangfireBackgroundJobServer.Dispose();
         GC.SuppressFinalize(this);
+        this.cts.Dispose();
     }
 
 #pragma warning restore CA1063 // Implement IDisposable Correctly

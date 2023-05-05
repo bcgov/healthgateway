@@ -23,16 +23,29 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Xunit.Abstractions;
 
-#pragma warning disable CA1822 // Mark members as static
 #pragma warning disable S3220 // Method calls should not resolve ambiguously to overloads with "params"
 
 public class WebAppFixture
 {
+    private readonly ServiceCollection services = new ServiceCollection();
+
+    public IServiceCollection Services => this.services;
+
     public async Task<IAlbaHost> CreateHost<TStartup>(ITestOutputHelper output, IConfiguration configuration)
         where TStartup : class
     {
         IAlbaHost host = await AlbaHost.For<TStartup>(
-            builder => { builder.ConfigureServices((ctx, services) => { services.AddLogging(builder => builder.AddXUnit(output)); }); });
+            builder =>
+            {
+                builder.ConfigureServices((ctx, services) =>
+                {
+                    foreach (var service in this.services)
+                    {
+                        services.Add(service);
+                    }
+                    services.AddLogging(builder => builder.AddXUnit(output));
+                });
+            });
 
         return host;
     }

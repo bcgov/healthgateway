@@ -47,27 +47,27 @@ namespace HealthGateway.Common.Messaging
         {
             services.AddAzureClients(builder => { builder.AddServiceBusClient(settings.ConnectionString).WithName(settings.QueueName); });
 
+            services.AddSingleton<AzureServiceBus>();
             if (settings.UseOutbox)
             {
-                services.AddSingleton<AzureServiceBus>();
-                services.AddSingleton<IMessageSender, OutboxMessageSender>();
+                services.AddTransient<IMessageSender, OutboxMessageSender>();
                 services.AddSingleton<IMessageReceiver>(sp => sp.GetRequiredService<AzureServiceBus>());
-                services.AddSingleton(
+                services.AddScoped(
                     sp =>
                     {
-                        IMessageSender sender = (IMessageSender)sp.GetRequiredService<AzureServiceBus>();
+                        IMessageSender sender = sp.GetRequiredService<AzureServiceBus>();
                         IBackgroundJobClient hangFireJobClient = sp.GetRequiredService<IBackgroundJobClient>();
                         ILogger<HangFireOutboxStore> logger = sp.GetRequiredService<ILogger<HangFireOutboxStore>>();
                         return new HangFireOutboxStore(hangFireJobClient, sender, logger);
                     });
 
                 // ensure Hangfire server instantiate the correct object and dependencies
-                services.AddSingleton<IOutboxStore>(sp => sp.GetRequiredService<HangFireOutboxStore>());
+                services.AddScoped<IOutboxStore>(sp => sp.GetRequiredService<HangFireOutboxStore>());
             }
             else
             {
-                services.AddSingleton<IMessageSender, AzureServiceBus>();
-                services.AddSingleton<IMessageReceiver, AzureServiceBus>();
+                services.AddSingleton<IMessageSender>(sp => sp.GetRequiredService<AzureServiceBus>());
+                services.AddSingleton<IMessageReceiver>(sp => sp.GetRequiredService<AzureServiceBus>());
             }
 
             return services;
