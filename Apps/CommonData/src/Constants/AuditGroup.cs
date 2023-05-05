@@ -13,25 +13,25 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Admin.Server.MapProfiles
+namespace HealthGateway.Common.Data.Constants
 {
-    using AutoMapper;
-    using HealthGateway.Admin.Common.Models;
-    using HealthGateway.Database.Models;
+    using System.Runtime.Serialization;
 
     /// <summary>
-    /// An AutoMapper profile class which defines mapping between agent audit and delegation change models.
+    /// Represents the group the audit operations belong to.
     /// </summary>
-    public class DelegationChangeProfile : Profile
+    public enum AuditGroup
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="DelegationChangeProfile"/> class.
+        /// Audit operations belonging to dependents.
         /// </summary>
-        public DelegationChangeProfile()
-        {
-            this.CreateMap<AgentAudit, DelegationChange>()
-                .ForMember(dest => dest.DependentHdId, opt => opt.MapFrom(src => src.Hdid))
-                .ForMember(dest => dest.Reason, opt => opt.MapFrom(src => src.Reason));
-        }
+        [EnumMember(Value = "Dependent")]
+        Dependent,
+
+        /// <summary>
+        /// Audit operations belonging to blocked access.
+        /// </summary>
+        [EnumMember(Value = "BlckAccess")]
+        BlockedAccess,
     }
 }

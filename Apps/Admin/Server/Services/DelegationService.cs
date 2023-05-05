@@ -130,9 +130,10 @@ namespace HealthGateway.Admin.Server.Services
 
                 delegationInfo.Delegates = delegates;
 
-                // Get dependent audits
-                IEnumerable<DependentAudit> dependentAudits = await this.delegationDelegate.GetDependentAuditsAsync(dependentPatientInfo.HdId).ConfigureAwait(true);
-                delegationInfo.DelegationChanges = dependentAudits.Select(da => this.autoMapper.Map<DelegationChange>(da));
+                // Get agent audits
+                AgentAuditQuery agentAuditQuery = new() { GroupCode = AuditGroup.Dependent, Hdid = dependentPatientInfo.HdId };
+                AgentAuditQueryResult result = await this.delegationDelegate.GetAgentAuditsAsync(agentAuditQuery).ConfigureAwait(true);
+                delegationInfo.DelegationChanges = result.Items.Select(audit => this.autoMapper.Map<DelegationChange>(audit));
             }
 
             return delegationInfo;
@@ -164,11 +165,12 @@ namespace HealthGateway.Admin.Server.Services
             dependent.Protected = true;
             dependent.UpdatedBy = authenticatedUserId;
 
-            DependentAudit dependentAudit = new()
+            AgentAudit agentAudit = new()
             {
-                HdId = dependentHdid,
-                ProtectedReason = reason,
-                OperationCode = DependentAuditOperation.Protect,
+                Hdid = dependentHdid,
+                Reason = reason,
+                OperationCode = AuditOperation.ProtectDependent,
+                GroupCode = AuditGroup.Dependent,
                 AgentUsername = this.authenticationDelegate.FetchAuthenticatedPreferredUsername() ?? authenticatedUserId,
                 TransactionDateTime = DateTime.UtcNow,
                 CreatedBy = authenticatedUserId,
@@ -208,9 +210,9 @@ namespace HealthGateway.Admin.Server.Services
             IEnumerable<ResourceDelegate> resourceDelegatesToDelete = resourceDelegates.Where(r => delegateHdidList.All(a => a != r.ProfileHdid));
 
             // Update dependent, allow delegation and resource delegate in database
-            await this.delegationDelegate.UpdateDelegationAsync(dependent, resourceDelegatesToDelete, dependentAudit).ConfigureAwait(true);
+            await this.delegationDelegate.UpdateDelegationAsync(dependent, resourceDelegatesToDelete, agentAudit).ConfigureAwait(true);
 
-            return this.autoMapper.Map<DependentAudit, DelegationChange>(dependentAudit);
+            return this.autoMapper.Map<AgentAudit, DelegationChange>(agentAudit);
         }
 
         /// <inheritdoc/>
@@ -228,20 +230,21 @@ namespace HealthGateway.Admin.Server.Services
             dependent.UpdatedBy = authenticatedUserId;
             dependent.AllowedDelegations.Clear();
 
-            DependentAudit dependentAudit = new()
+            AgentAudit agentAudit = new()
             {
-                HdId = dependentHdid,
-                ProtectedReason = reason,
-                OperationCode = DependentAuditOperation.Unprotect,
+                Hdid = dependentHdid,
+                Reason = reason,
+                OperationCode = AuditOperation.UnprotectDependent,
+                GroupCode = AuditGroup.Dependent,
                 AgentUsername = this.authenticationDelegate.FetchAuthenticatedPreferredUsername() ?? authenticatedUserId,
                 TransactionDateTime = DateTime.UtcNow,
                 CreatedBy = authenticatedUserId,
                 UpdatedBy = authenticatedUserId,
             };
 
-            await this.delegationDelegate.UpdateDelegationAsync(dependent, Enumerable.Empty<ResourceDelegate>(), dependentAudit).ConfigureAwait(true);
+            await this.delegationDelegate.UpdateDelegationAsync(dependent, Enumerable.Empty<ResourceDelegate>(), agentAudit).ConfigureAwait(true);
 
-            return this.autoMapper.Map<DependentAudit, DelegationChange>(dependentAudit);
+            return this.autoMapper.Map<AgentAudit, DelegationChange>(agentAudit);
         }
 
         private async Task<IEnumerable<ResourceDelegate>> SearchDelegates(string ownerHdid)

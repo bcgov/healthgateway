@@ -39,10 +39,10 @@ namespace HealthGateway.Admin.Common.Models
         public string Reason { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets a value representing the type of dependent audit operation.
-        /// The value is one of <see cref="DependentAuditOperation"/>.
+        /// Gets or sets a value representing the type of audit operation.
+        /// The value is one of <see cref="AuditOperation"/>.
         /// </summary>
-        public DependentAuditOperation OperationCode { get; set; } = DependentAuditOperation.Unprotect;
+        public AuditOperation OperationCode { get; set; } = AuditOperation.UnprotectDependent;
 
         /// <summary>
         /// Gets or sets the transaction datetime.

@@ -21,12 +21,12 @@ namespace HealthGateway.Database.Models
 
 #pragma warning disable CS1591 // self explanatory simple model
 #pragma warning disable SA1600 // self explanatory simple model
-    public class DependentAuditOperationCode : AuditableEntity
+    public class AuditOperationCode : AuditableEntity
     {
         [Key]
         [Required]
         [MaxLength(10)]
-        public DependentAuditOperation Code { get; set; }
+        public AuditOperation Code { get; set; }
 
         [Required]
         [MaxLength(50)]

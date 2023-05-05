@@ -13,24 +13,32 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Common.Data.Constants
+namespace HealthGateway.Database.Models
 {
-    using System.Text.Json.Serialization;
+    using System.Collections.Generic;
+    using System.ComponentModel.DataAnnotations;
+    using System.ComponentModel.DataAnnotations.Schema;
+    using System.Diagnostics.CodeAnalysis;
+    using HealthGateway.Common.Data.Models;
 
     /// <summary>
-    /// The set of dependent audit operations.
+    /// The blocked access model.
     /// </summary>
-    [JsonConverter(typeof(JsonStringEnumConverter))]
-    public enum DependentAuditOperation
+    public class BlockedAccess : AuditableEntity
     {
         /// <summary>
-        /// Operation to protect a dependent.
+        /// Gets or sets the hdid.
         /// </summary>
-        Protect,
+        [Key]
+        [MaxLength(52)]
+        public string Hdid { get; set; } = null!;
 
         /// <summary>
-        /// Operation to unprotect a dependent.
+        /// Gets or sets the access for the data sets.
         /// </summary>
-        Unprotect,
+        [Required]
+        [Column(TypeName = "jsonb")]
+        [SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "Team decision")]
+        public Dictionary<string, string> DataSources { get; set; } = new();
     }
 }

@@ -22,24 +22,24 @@ namespace HealthGateway.Database.Models
     using HealthGateway.Common.Data.Models;
 
     /// <summary>
-    /// The dependent audit model.
+    /// The agent audit model.
     /// </summary>
-    public class DependentAudit : AuditableEntity
+    public class AgentAudit : AuditableEntity
     {
         /// <summary>
         /// Gets or sets the id.
         /// </summary>
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        [Column("DependentAuditId")]
+        [Column("AgentAuditId")]
         public Guid Id { get; set; }
 
         /// <summary>
-        /// Gets or sets the dependent hdid.
+        /// Gets or sets the hdid that is affected by the audit operation.
         /// </summary>
         [Required]
         [MaxLength(52)]
-        public string HdId { get; set; } = string.Empty;
+        public string Hdid { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the agent username.
@@ -49,19 +49,26 @@ namespace HealthGateway.Database.Models
         public string AgentUsername { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the protected reason.
+        /// Gets or sets the reason.
         /// </summary>
         [Required]
         [MaxLength(500)]
-        public string ProtectedReason { get; set; } = string.Empty;
+        public string Reason { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets a value representing the type of dependent audit operation.
-        /// The value is one of <see cref="DependentAuditOperation"/>.
+        /// Gets or sets a value representing the type of audit operation.
+        /// The value is one of <see cref="AuditOperation"/>.
         /// </summary>
         [Required]
         [MaxLength(10)]
-        public DependentAuditOperation OperationCode { get; set; } = DependentAuditOperation.Unprotect;
+        public AuditOperation OperationCode { get; set; } = AuditOperation.UnprotectDependent;
+
+        /// <summary>
+        /// Gets or sets the group.
+        /// </summary>
+        [Required]
+        [MaxLength(10)]
+        public AuditGroup GroupCode { get; set; } = AuditGroup.Dependent;
 
         /// <summary>
         /// Gets or sets the transaction datetime.
