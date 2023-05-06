@@ -33,6 +33,13 @@ namespace HealthGateway.Database.Delegates
         Task DeleteBlockedAccessAsync(BlockedAccess blockedAccess, AgentAudit agentAudit);
 
         /// <summary>
+        /// Fetches the blocked access by hdid from the database.
+        /// </summary>
+        /// <param name="hdid">The hdid to search by.</param>
+        /// <returns>The blocked access or null if not found.</returns>
+        Task<BlockedAccess?> GetBlockedAccessAsync(string hdid);
+
+        /// <summary>
         /// Fetches the blocked access's data sources from the database.
         /// </summary>
         /// <param name="hdid">The hdid to search by.</param>

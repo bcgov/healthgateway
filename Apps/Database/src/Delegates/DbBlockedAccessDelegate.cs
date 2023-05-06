@@ -50,6 +50,17 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
+        public async Task<BlockedAccess?> GetBlockedAccessAsync(string hdid)
+        {
+            this.logger.LogTrace("Getting blocked access for hdid: {Hdid}", hdid);
+
+            IQueryable<BlockedAccess> query = this.dbContext.BlockedAccess
+                .Where(d => d.Hdid == hdid);
+
+            return await query.SingleOrDefaultAsync().ConfigureAwait(true);
+        }
+
+        /// <inheritdoc/>
         public async Task<Dictionary<string, string>> GetDataSourcesAsync(string hdid)
         {
             this.logger.LogTrace("Getting data sources from blocked access for hdid : {Hdid}", hdid);

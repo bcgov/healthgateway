@@ -18,7 +18,6 @@ namespace HealthGateway.Database.Delegates
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
-    using HealthGateway.Common.Data.Constants;
     using HealthGateway.Database.Context;
     using HealthGateway.Database.Models;
     using Microsoft.EntityFrameworkCore;
@@ -63,17 +62,7 @@ namespace HealthGateway.Database.Delegates
             this.logger.LogTrace("Getting agent audit for group: {Group} - hdid : {Hdid}", query.GroupCode, query.Hdid);
 
             IQueryable<AgentAudit> dbQuery = this.dbContext.AgentAudit;
-
-            if (query.GroupCode == AuditGroup.Dependent)
-            {
-                dbQuery = dbQuery.Where(d => d.Hdid == query.Hdid && d.GroupCode == query.GroupCode);
-            }
-
-            if (query.GroupCode == AuditGroup.BlockedAccess)
-            {
-                dbQuery = dbQuery.Where(d => d.Hdid == query.Hdid && d.OperationCode == AuditOperation.ChangeDataSourceAccess);
-            }
-
+            dbQuery = dbQuery.Where(d => d.Hdid == query.Hdid && d.GroupCode == query.GroupCode);
             IEnumerable<AgentAudit> items = await dbQuery.ToListAsync().ConfigureAwait(true);
 
             return new AgentAuditQueryResult
