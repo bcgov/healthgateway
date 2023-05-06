@@ -31,6 +31,15 @@ namespace HealthGateway.Database.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            // Store DependentAudit data into a temporary table to be used later to populate AgentAddit
+            string dependentAuditTempTable = "TempDependentAudit";
+            string dependentAuditTempTableSql = @$"
+                SELECT ""DependentAuditId"", ""HdId"", ""AgentUsername"", ""ProtectedReason"", ""OperationCode"",
+                'Dependent' AS ""GroupCode"", ""TransactionDateTime"", ""CreatedBy"", ""CreatedDateTime"", ""UpdatedBy"", ""UpdatedDateTime""
+                INTO TEMPORARY {dependentAuditTempTable} FROM gateway.""DependentAudit"";
+                ";
+            migrationBuilder.Sql(dependentAuditTempTableSql);
+
             migrationBuilder.DropTable(
                 name: "DependentAudit",
                 schema: "gateway");
@@ -162,11 +171,33 @@ namespace HealthGateway.Database.Migrations
                 schema: "gateway",
                 table: "AgentAudit",
                 column: "OperationCode");
+
+            // Populate AgentAudit table with DependentAudit data stored in a temperory table
+            string insertAgentAuditSql = @$"
+                INSERT INTO gateway.""AgentAudit"" (""AgentAuditId"", ""Hdid"", ""AgentUsername"", ""Reason"",
+                                                    ""OperationCode"", ""GroupCode"", ""TransactionDateTime"",
+                                                    ""CreatedBy"", ""CreatedDateTime"", ""UpdatedBy"", ""UpdatedDateTime"")
+                SELECT * FROM {dependentAuditTempTable};
+                ";
+            migrationBuilder.Sql(insertAgentAuditSql);
+
+            // Drop temporary table
+            string dropAgentAuditTableSql = @$"DROP TABLE {dependentAuditTempTable};";
+            migrationBuilder.Sql(dropAgentAuditTableSql);
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            // Store AgentAudit data into a temporary table to be used later to populate DependentAddit
+            string agentAuditTempTable = "TempAgentAudit";
+            string agentAuditTempTableSql = @$"
+                SELECT ""AgentAuditId"", ""Hdid"", ""AgentUsername"", ""Reason"", ""OperationCode"",
+                ""TransactionDateTime"", ""CreatedBy"", ""CreatedDateTime"", ""UpdatedBy"", ""UpdatedDateTime""
+                INTO TEMPORARY {agentAuditTempTable} FROM gateway.""AgentAudit"";
+                ";
+            migrationBuilder.Sql(agentAuditTempTableSql);
+
             migrationBuilder.DropTable(
                 name: "AgentAudit",
                 schema: "gateway");
@@ -245,6 +276,19 @@ namespace HealthGateway.Database.Migrations
                 schema: "gateway",
                 table: "DependentAudit",
                 column: "OperationCode");
+
+            // Populate DependentAudit table with AgentAudit data stored in a temporary table
+            string insertDependentAuditSql = @$"
+                INSERT INTO gateway.""DependentAudit"" (""DependentAuditId"", ""HdId"", ""AgentUsername"", ""ProtectedReason"",
+                                                        ""OperationCode"", ""TransactionDateTime"", ""CreatedBy"",
+                                                        ""CreatedDateTime"", ""UpdatedBy"", ""UpdatedDateTime"")
+                SELECT * FROM {agentAuditTempTable};
+                ";
+            migrationBuilder.Sql(insertDependentAuditSql);
+
+            // Drop temporary table
+            string dropAgentAuditTableSql = @$"DROP TABLE {agentAuditTempTable};";
+            migrationBuilder.Sql(dropAgentAuditTableSql);
         }
     }
 }
