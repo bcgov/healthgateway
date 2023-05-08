@@ -23,6 +23,7 @@ export const monthNames = [
 export const Dataset = {
     ClinicalDocument: "clinicalDocument",
     Covid19TestResult: "covid19TestResult",
+    DiagnosticImaging: "diagnosticImaging",
     HealthVisit: "healthVisit",
     HospitalVisit: "hospitalVisit",
     Immunization: "immunization",
@@ -30,5 +31,4 @@ export const Dataset = {
     Medication: "medication",
     Note: "note",
     SpecialAuthorityRequest: "specialAuthorityRequest",
-    DiagnosticImaging: "diagnosticImaging",
 };
