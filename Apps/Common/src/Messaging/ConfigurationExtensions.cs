@@ -18,6 +18,7 @@ namespace HealthGateway.Common.Messaging
 {
     using System;
     using Hangfire;
+    using HealthGateway.Database.Context;
     using Microsoft.Extensions.Azure;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
@@ -57,12 +58,13 @@ namespace HealthGateway.Common.Messaging
                     {
                         IMessageSender sender = sp.GetRequiredService<AzureServiceBus>();
                         IBackgroundJobClient hangFireJobClient = sp.GetRequiredService<IBackgroundJobClient>();
-                        ILogger<HangFireOutboxStore> logger = sp.GetRequiredService<ILogger<HangFireOutboxStore>>();
-                        return new HangFireOutboxStore(hangFireJobClient, sender, logger);
+                        ILogger<DbOutboxStore> logger = sp.GetRequiredService<ILogger<DbOutboxStore>>();
+                        GatewayDbContext gatewayDbContext = sp.GetRequiredService<GatewayDbContext>();
+                        return new DbOutboxStore(gatewayDbContext, hangFireJobClient, sender, logger);
                     });
 
                 // ensure Hangfire server instantiate the correct object and dependencies
-                services.AddScoped<IOutboxStore>(sp => sp.GetRequiredService<HangFireOutboxStore>());
+                services.AddScoped<IOutboxStore>(sp => sp.GetRequiredService<DbOutboxStore>());
             }
             else
             {

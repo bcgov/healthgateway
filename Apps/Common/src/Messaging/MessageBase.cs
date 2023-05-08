@@ -31,19 +31,21 @@ public abstract record MessageBase;
 /// Message envelope that contains a message and metadata.
 /// </summary>
 /// <param name="SessionId">The session id to manage FIFO.</param>
-/// <param name="MessageType">An optional message type, defaults to the name of the Content type</param>
 /// <param name="Content">The message.</param>
 public record MessageEnvelope(MessageBase Content, string? SessionId = null)
 {
-    private readonly DateTime createdOn = DateTime.UtcNow;
+    /// <summary>
+    /// Gets or sets the message creation timestamp.
+    /// </summary>
+    public DateTime CreatedOn { get; set; } = DateTime.UtcNow;
 
     /// <summary>
-    /// Gets the timestamp of the message creation time.
+    /// Gets the message type name.
     /// </summary>
-    public string CreatedOn => this.createdOn.ToString("o");
+    public string MessageType => this.Content.GetType().Name;
 
     /// <summary>
-    /// Gets an optional message type, defaults to the Content type name.
+    /// Gets the creation time timestamp as as string.
     /// </summary>
-    public string MessageType { get; init; } = Content.GetType().Name;
+    public string CreatedOnTimestamp => this.CreatedOn.ToString("o");
 }
