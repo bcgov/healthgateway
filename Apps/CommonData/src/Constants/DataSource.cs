@@ -71,8 +71,8 @@ namespace HealthGateway.Common.Data.Constants
         DiagnosticImaging,
 
         /// <summary>
-        /// Represents a data source for odr.
+        /// Represents a data source for Organ Donor Registration service.
         /// </summary>
-        Odr,
+        OrganDonorRegistration,
     }
 }
