@@ -13,40 +13,26 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Admin.Common.Models
+namespace HealthGateway.Common.Data.Constants
 {
-    using System;
-    using HealthGateway.Common.Data.Constants;
-
     /// <summary>
-    /// The delegation change model.
+    /// The set of audit operations.
     /// </summary>
-    public class DelegationChange
+    public enum AuditOperation
     {
         /// <summary>
-        /// Gets or sets the dependent's hdid.
+        /// Operation to change data source access.
         /// </summary>
-        public string DependentHdId { get; set; } = string.Empty;
+        ChangeDataSourceAccess,
 
         /// <summary>
-        /// Gets or sets the agent username.
+        /// Operation to protect a dependent.
         /// </summary>
-        public string AgentUsername { get; set; } = string.Empty;
+        ProtectDependent,
 
         /// <summary>
-        /// Gets or sets the reason for the change.
+        /// Operation to unprotect a dependent.
         /// </summary>
-        public string Reason { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Gets or sets a value representing the type of audit operation.
-        /// The value is one of <see cref="AuditOperation"/>.
-        /// </summary>
-        public AuditOperation OperationCode { get; set; }
-
-        /// <summary>
-        /// Gets or sets the transaction datetime.
-        /// </summary>
-        public DateTime TransactionDateTime { get; set; } = DateTime.MaxValue;
+        UnprotectDependent,
     }
 }

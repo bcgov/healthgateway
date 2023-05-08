@@ -81,9 +81,9 @@ namespace HealthGateway.Admin.Tests.Services
         {
             RequestResult<PatientModel> dependentResult = GetDependentResult(DateTime.Now.AddYears(-11));
             RequestResult<PatientModel> delegateResult = GetDelegateResult();
-            IEnumerable<DependentAudit> dependentAudits = new List<DependentAudit>
+            IEnumerable<AgentAudit> agentAudits = new List<AgentAudit>
             {
-                GetDependentAudit(DependentHdid, DependentAuditOperation.Protect),
+                GetAgentAudit(DependentHdid, AuditOperation.ProtectDependent, AuditGroup.Dependent),
             };
 
             DelegationInfo expectedDelegationInfo = GetExpectedDelegationInfo(dependentResult.ResourcePayload, delegateResult.ResourcePayload, true);
@@ -94,7 +94,7 @@ namespace HealthGateway.Admin.Tests.Services
             RequestResult<PatientModel> patientResult1 = GetPatientResult(patient1);
             RequestResult<PatientModel> patientResult2 = GetPatientResult(patient2);
 
-            IDelegationService delegationService = this.GetDelegationService(dependentResult, delegateResult, protectedDependent, patientResult1, patientResult2, dependentAudits);
+            IDelegationService delegationService = this.GetDelegationService(dependentResult, delegateResult, protectedDependent, patientResult1, patientResult2, agentAudits);
             DelegationInfo actualResult = await delegationService.GetDelegationInformationAsync(DependentPhn).ConfigureAwait(true);
 
             Assert.NotNull(actualResult);
@@ -110,9 +110,9 @@ namespace HealthGateway.Admin.Tests.Services
         {
             RequestResult<PatientModel> dependentResult = GetDependentResult(DateTime.Now.AddYears(-11));
             RequestResult<PatientModel> delegateResult = GetDelegateResult();
-            IEnumerable<DependentAudit> dependentAudits = new List<DependentAudit>
+            IEnumerable<AgentAudit> agentAudits = new List<AgentAudit>
             {
-                GetDependentAudit(DependentHdid, DependentAuditOperation.Unprotect),
+                GetAgentAudit(DependentHdid, AuditOperation.UnprotectDependent, AuditGroup.Dependent),
             };
 
             DelegationInfo expectedDelegationInfo = GetExpectedDelegationInfo(dependentResult.ResourcePayload, delegateResult.ResourcePayload, false);
@@ -123,7 +123,7 @@ namespace HealthGateway.Admin.Tests.Services
             RequestResult<PatientModel> patientResult1 = GetPatientResult(patient1);
             RequestResult<PatientModel> patientResult2 = GetPatientResult(patient2);
 
-            IDelegationService delegationService = this.GetDelegationService(dependentResult, delegateResult, unprotectedDependent, patientResult1, patientResult2, dependentAudits);
+            IDelegationService delegationService = this.GetDelegationService(dependentResult, delegateResult, unprotectedDependent, patientResult1, patientResult2, agentAudits);
             DelegationInfo actualResult = await delegationService.GetDelegationInformationAsync(DependentPhn).ConfigureAwait(true);
 
             Assert.NotNull(actualResult);
@@ -202,7 +202,7 @@ namespace HealthGateway.Admin.Tests.Services
                     { ResourceOwnerHdid = NewDependentHdid, ProfileHdid = ProtectedDelegateHdid2, ReasonCode = ResourceDelegateReason.Guardian },
             };
 
-            DependentAudit expectedDependentAudit = GetDependentAudit(NewDependentHdid, DependentAuditOperation.Protect);
+            AgentAudit expectedAgentAudit = GetAgentAudit(NewDependentHdid, AuditOperation.ProtectDependent, AuditGroup.Dependent);
 
             IEnumerable<string> delegateHdids = new List<string>
             {
@@ -220,7 +220,7 @@ namespace HealthGateway.Admin.Tests.Services
                 v => v.UpdateDelegationAsync(
                     It.Is<Dependent>(d => AssertProtectedDependant(expectedDependent, d)),
                     It.Is<IEnumerable<ResourceDelegate>>(rd => AssertProtectedDependentResourceDelegates(expectedDeletedResourceDelegates.ToList(), rd.ToList())),
-                    It.Is<DependentAudit>(da => AssertDependentAudit(expectedDependentAudit, da))));
+                    It.Is<AgentAudit>(da => AssertAgentAudit(expectedAgentAudit, da))));
         }
 
         /// <summary>
@@ -241,7 +241,7 @@ namespace HealthGateway.Admin.Tests.Services
 
             IEnumerable<ResourceDelegate> expectedDeletedResourceDelegates = Enumerable.Empty<ResourceDelegate>();
 
-            DependentAudit expectedDependentAudit = GetDependentAudit(DependentHdid, DependentAuditOperation.Unprotect);
+            AgentAudit expectedAgentAudit = GetAgentAudit(DependentHdid, AuditOperation.UnprotectDependent, AuditGroup.Dependent);
 
             Mock<IDelegationDelegate> delegationDelegate = new();
             Dependent protectedDependent = GetDependent(DependentHdid, true);
@@ -262,7 +262,7 @@ namespace HealthGateway.Admin.Tests.Services
                 v => v.UpdateDelegationAsync(
                     It.Is<Dependent>(d => AssertProtectedDependant(expectedDependent, d)),
                     It.Is<IEnumerable<ResourceDelegate>>(rd => AssertProtectedDependentResourceDelegates(expectedDeletedResourceDelegates.ToList(), rd.ToList())),
-                    It.Is<DependentAudit>(da => AssertDependentAudit(expectedDependentAudit, da))));
+                    It.Is<AgentAudit>(da => AssertAgentAudit(expectedAgentAudit, da))));
         }
 
         /// <summary>
@@ -299,7 +299,7 @@ namespace HealthGateway.Admin.Tests.Services
                     { ResourceOwnerHdid = DependentHdid, ProfileHdid = ProtectedDelegateHdid2, ReasonCode = ResourceDelegateReason.Guardian },
             };
 
-            DependentAudit expectedDependentAudit = GetDependentAudit(DependentHdid, DependentAuditOperation.Protect);
+            AgentAudit expectedAgentAudit = GetAgentAudit(DependentHdid, AuditOperation.ProtectDependent, AuditGroup.Dependent);
 
             IEnumerable<string> delegateHdids = new List<string>
             {
@@ -324,7 +324,7 @@ namespace HealthGateway.Admin.Tests.Services
                 v => v.UpdateDelegationAsync(
                     It.Is<Dependent>(d => AssertProtectedDependant(expectedDependent, d)),
                     It.Is<IEnumerable<ResourceDelegate>>(rd => AssertProtectedDependentResourceDelegates(expectedDeletedResourceDelegates.ToList(), rd.ToList())),
-                    It.Is<DependentAudit>(da => AssertDependentAudit(expectedDependentAudit, da))));
+                    It.Is<AgentAudit>(da => AssertAgentAudit(expectedAgentAudit, da))));
         }
 
         /// <summary>
@@ -367,7 +367,7 @@ namespace HealthGateway.Admin.Tests.Services
             RequestResult<PatientModel> patientResult1 = GetPatientResult(patient1);
             RequestResult<PatientModel> patientResult2 = GetPatientResult(patient2);
 
-            IDelegationService delegationService = this.GetDelegationService(dependentResult, delegateResult, protectedDependent, patientResult1, patientResult2, new List<DependentAudit>());
+            IDelegationService delegationService = this.GetDelegationService(dependentResult, delegateResult, protectedDependent, patientResult1, patientResult2, new List<AgentAudit>());
             await Assert.ThrowsAsync<ProblemDetailsException>(() => delegationService.GetDelegationInformationAsync(DependentPhn)).ConfigureAwait(true);
         }
 
@@ -486,9 +486,9 @@ namespace HealthGateway.Admin.Tests.Services
             return true;
         }
 
-        private static bool AssertDependentAudit(DependentAudit expected, DependentAudit actual)
+        private static bool AssertAgentAudit(AgentAudit expected, AgentAudit actual)
         {
-            Assert.Equal(expected.HdId, actual.HdId);
+            Assert.Equal(expected.Hdid, actual.Hdid);
             Assert.Equal(expected.AgentUsername, actual.AgentUsername);
             Assert.Equal(expected.OperationCode, actual.OperationCode);
             Assert.Equal(expected.CreatedBy, actual.CreatedBy);
@@ -596,7 +596,7 @@ namespace HealthGateway.Admin.Tests.Services
                         DependentHdId = DependentHdid,
                         AgentUsername = AuthenticatedPreferredUsername,
                         Reason = "Test",
-                        OperationCode = isProtected ? DependentAuditOperation.Protect : DependentAuditOperation.Unprotect,
+                        OperationCode = isProtected ? AuditOperation.ProtectDependent : AuditOperation.UnprotectDependent,
                         TransactionDateTime = TransactionDateTime,
                     },
                 },
@@ -682,14 +682,15 @@ namespace HealthGateway.Admin.Tests.Services
             };
         }
 
-        private static DependentAudit GetDependentAudit(string hdid, DependentAuditOperation operationCode)
+        private static AgentAudit GetAgentAudit(string hdid, AuditOperation operationCode, AuditGroup groupCode)
         {
             return new()
             {
-                HdId = hdid,
+                Hdid = hdid,
                 AgentUsername = AuthenticatedPreferredUsername,
-                ProtectedReason = "Test",
+                Reason = "Test",
                 OperationCode = operationCode,
+                GroupCode = groupCode,
                 TransactionDateTime = TransactionDateTime,
                 CreatedBy = AuthenticatedUser,
                 UpdatedBy = AuthenticatedUser,
@@ -716,7 +717,7 @@ namespace HealthGateway.Admin.Tests.Services
             Dependent protectedDependent,
             RequestResult<PatientModel> patientResult1,
             RequestResult<PatientModel> patientResult2,
-            IEnumerable<DependentAudit> dependentAudit)
+            IEnumerable<AgentAudit> agentAudits)
         {
             Mock<IPatientService> patientService = new();
 
@@ -745,7 +746,10 @@ namespace HealthGateway.Admin.Tests.Services
 
             Mock<IDelegationDelegate> delegationDelegate = new();
             delegationDelegate.Setup(p => p.GetDependentAsync(DependentHdid, true)).ReturnsAsync(protectedDependent);
-            delegationDelegate.Setup(p => p.GetDependentAuditsAsync(It.IsAny<string>())).ReturnsAsync(dependentAudit);
+            delegationDelegate.Setup(p => p.GetAgentAuditsAsync(It.IsAny<AgentAuditQuery>()))
+                .ReturnsAsync(
+                    new AgentAuditQueryResult
+                        { Items = agentAudits });
 
             return new DelegationService(
                 this.configuration,
