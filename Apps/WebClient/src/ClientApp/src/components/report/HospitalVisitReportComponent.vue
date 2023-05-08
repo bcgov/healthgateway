@@ -50,7 +50,7 @@ export default class HospitalVisitReportComponent extends Vue {
     }
 
     private get visibleRecords(): HospitalVisit[] {
-        let records = this.hospitalVisits(this.hdid).filter((record) =>
+        const records = this.hospitalVisits(this.hdid).filter((record) =>
             this.filter.allowsDate(record.admitDateTime)
         );
         records.sort((a, b) => {

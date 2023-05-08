@@ -259,7 +259,7 @@ export default class HomeView extends Vue {
 
     private get quickLinkCards(): QuickLinkCard[] {
         return this.enabledQuickLinks.map((quickLink, index) => {
-            let card: QuickLinkCard = {
+            const card: QuickLinkCard = {
                 index,
                 title: quickLink.name,
                 description: "View your filtered health records.",

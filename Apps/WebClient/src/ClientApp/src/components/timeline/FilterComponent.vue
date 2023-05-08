@@ -144,7 +144,7 @@ export default class FilterComponent extends Vue {
     }
 
     apply(): void {
-        let builder = TimelineFilterBuilder.create()
+        const builder = TimelineFilterBuilder.create()
             .withKeyword(this.keywordInputText)
             .withStartDate(this.startDate)
             .withEndDate(this.endDate)
