@@ -34,7 +34,7 @@ namespace HealthGateway.Database.Migrations
             // Store DependentAudit data into a temporary table to be used later to populate AgentAddit
             string dependentAuditTempTable = "TempDependentAudit";
             string dependentAuditTempTableSql = @$"
-                SELECT ""DependentAuditId"", ""HdId"", ""AgentUsername"", ""ProtectedReason"", ""OperationCode"",
+                SELECT ""DependentAuditId"", ""HdId"", ""AgentUsername"", ""ProtectedReason"", ""OperationCode""||'Dependent',
                 'Dependent' AS ""GroupCode"", ""TransactionDateTime"", ""CreatedBy"", ""CreatedDateTime"", ""UpdatedBy"", ""UpdatedDateTime""
                 INTO TEMPORARY {dependentAuditTempTable} FROM gateway.""DependentAudit"";
                 ";
@@ -53,7 +53,7 @@ namespace HealthGateway.Database.Migrations
                 schema: "gateway",
                 columns: table => new
                 {
-                    Code = table.Column<string>(type: "character varying(10)", maxLength: 10, nullable: false),
+                    Code = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
                     Description = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
                     CreatedBy = table.Column<string>(type: "character varying(60)", maxLength: 60, nullable: false),
                     CreatedDateTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
@@ -71,7 +71,7 @@ namespace HealthGateway.Database.Migrations
                 schema: "gateway",
                 columns: table => new
                 {
-                    Code = table.Column<string>(type: "character varying(10)", maxLength: 10, nullable: false),
+                    Code = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
                     Description = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
                     CreatedBy = table.Column<string>(type: "character varying(60)", maxLength: 60, nullable: false),
                     CreatedDateTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
@@ -111,8 +111,8 @@ namespace HealthGateway.Database.Migrations
                     Hdid = table.Column<string>(type: "character varying(52)", maxLength: 52, nullable: false),
                     AgentUsername = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
                     Reason = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: false),
-                    OperationCode = table.Column<string>(type: "character varying(10)", maxLength: 10, nullable: false),
-                    GroupCode = table.Column<string>(type: "character varying(10)", maxLength: 10, nullable: false),
+                    OperationCode = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
+                    GroupCode = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
                     TransactionDateTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     CreatedBy = table.Column<string>(type: "character varying(60)", maxLength: 60, nullable: false),
                     CreatedDateTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
@@ -145,7 +145,7 @@ namespace HealthGateway.Database.Migrations
                 columns: new[] { "Code", "CreatedBy", "CreatedDateTime", "Description", "UpdatedBy", "UpdatedDateTime" },
                 values: new object[,]
                 {
-                    { "BlckAccess", "System", new DateTime(2019, 5, 1, 7, 0, 0, 0, DateTimeKind.Utc), "Audit Blocked Access Group Code", "System", new DateTime(2019, 5, 1, 7, 0, 0, 0, DateTimeKind.Utc) },
+                    { "BlockedAccess", "System", new DateTime(2019, 5, 1, 7, 0, 0, 0, DateTimeKind.Utc), "Audit Blocked Access Group Code", "System", new DateTime(2019, 5, 1, 7, 0, 0, 0, DateTimeKind.Utc) },
                     { "Dependent", "System", new DateTime(2019, 5, 1, 7, 0, 0, 0, DateTimeKind.Utc), "Audit Dependent Group Code", "System", new DateTime(2019, 5, 1, 7, 0, 0, 0, DateTimeKind.Utc) }
                 });
 
@@ -155,9 +155,9 @@ namespace HealthGateway.Database.Migrations
                 columns: new[] { "Code", "CreatedBy", "CreatedDateTime", "Description", "UpdatedBy", "UpdatedDateTime" },
                 values: new object[,]
                 {
-                    { "ChngAccess", "System", new DateTime(2019, 5, 1, 7, 0, 0, 0, DateTimeKind.Utc), "Change Data Source Access Operation Code", "System", new DateTime(2019, 5, 1, 7, 0, 0, 0, DateTimeKind.Utc) },
-                    { "Protect", "System", new DateTime(2019, 5, 1, 7, 0, 0, 0, DateTimeKind.Utc), "Protect Dependent Operation Code", "System", new DateTime(2019, 5, 1, 7, 0, 0, 0, DateTimeKind.Utc) },
-                    { "Unprotect", "System", new DateTime(2019, 5, 1, 7, 0, 0, 0, DateTimeKind.Utc), "Unprotect Dependent Operation Code", "System", new DateTime(2019, 5, 1, 7, 0, 0, 0, DateTimeKind.Utc) }
+                    { "ChangeDataSourceAccess", "System", new DateTime(2019, 5, 1, 7, 0, 0, 0, DateTimeKind.Utc), "Change Data Source Access Operation Code", "System", new DateTime(2019, 5, 1, 7, 0, 0, 0, DateTimeKind.Utc) },
+                    { "ProtectDependent", "System", new DateTime(2019, 5, 1, 7, 0, 0, 0, DateTimeKind.Utc), "Protect Dependent Operation Code", "System", new DateTime(2019, 5, 1, 7, 0, 0, 0, DateTimeKind.Utc) },
+                    { "UnprotectDependent", "System", new DateTime(2019, 5, 1, 7, 0, 0, 0, DateTimeKind.Utc), "Unprotect Dependent Operation Code", "System", new DateTime(2019, 5, 1, 7, 0, 0, 0, DateTimeKind.Utc) }
                 });
 
             migrationBuilder.CreateIndex(
@@ -172,7 +172,7 @@ namespace HealthGateway.Database.Migrations
                 table: "AgentAudit",
                 column: "OperationCode");
 
-            // Populate AgentAudit table with DependentAudit data stored in a temperory table
+            // Populate AgentAudit table with DependentAudit data stored in a temporary table
             string insertAgentAuditSql = @$"
                 INSERT INTO gateway.""AgentAudit"" (""AgentAuditId"", ""Hdid"", ""AgentUsername"", ""Reason"",
                                                     ""OperationCode"", ""GroupCode"", ""TransactionDateTime"",
@@ -192,8 +192,8 @@ namespace HealthGateway.Database.Migrations
             // Store AgentAudit data into a temporary table to be used later to populate DependentAddit
             string agentAuditTempTable = "TempAgentAudit";
             string agentAuditTempTableSql = @$"
-                SELECT ""AgentAuditId"", ""Hdid"", ""AgentUsername"", ""Reason"", ""OperationCode"",
-                ""TransactionDateTime"", ""CreatedBy"", ""CreatedDateTime"", ""UpdatedBy"", ""UpdatedDateTime""
+                SELECT ""AgentAuditId"", ""Hdid"", ""AgentUsername"", ""Reason"", TRIM(TRAILING 'D' FROM TRIM(TRAILING 'ependent' FROM ""OperationCode"")),
+                       ""TransactionDateTime"", ""CreatedBy"", ""CreatedDateTime"", ""UpdatedBy"", ""UpdatedDateTime""
                 INTO TEMPORARY {agentAuditTempTable} FROM gateway.""AgentAudit"";
                 ";
             migrationBuilder.Sql(agentAuditTempTableSql);
@@ -279,11 +279,11 @@ namespace HealthGateway.Database.Migrations
 
             // Populate DependentAudit table with AgentAudit data stored in a temporary table
             string insertDependentAuditSql = @$"
-                INSERT INTO gateway.""DependentAudit"" (""DependentAuditId"", ""HdId"", ""AgentUsername"", ""ProtectedReason"",
-                                                        ""OperationCode"", ""TransactionDateTime"", ""CreatedBy"",
-                                                        ""CreatedDateTime"", ""UpdatedBy"", ""UpdatedDateTime"")
-                SELECT * FROM {agentAuditTempTable};
-                ";
+            INSERT INTO gateway.""DependentAudit"" (""DependentAuditId"", ""HdId"", ""AgentUsername"", ""ProtectedReason"",
+                                                ""OperationCode"", ""TransactionDateTime"", ""CreatedBy"",
+                                                ""CreatedDateTime"", ""UpdatedBy"", ""UpdatedDateTime"")
+            SELECT * FROM {agentAuditTempTable};
+            ";
             migrationBuilder.Sql(insertDependentAuditSql);
 
             // Drop temporary table

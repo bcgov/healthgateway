@@ -15,8 +15,6 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Common.Data.Constants
 {
-    using System.Runtime.Serialization;
-
     /// <summary>
     /// Represents the group the audit operations belong to.
     /// </summary>
@@ -25,13 +23,11 @@ namespace HealthGateway.Common.Data.Constants
         /// <summary>
         /// Audit operations belonging to dependents.
         /// </summary>
-        [EnumMember(Value = "Dependent")]
         Dependent,
 
         /// <summary>
         /// Audit operations belonging to blocked access.
         /// </summary>
-        [EnumMember(Value = "BlckAccess")]
         BlockedAccess,
     }
 }

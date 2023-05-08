@@ -404,8 +404,8 @@ namespace HealthGateway.Database.Context
                 .OnDelete(DeleteBehavior.Restrict);
 
             ValueConverter<AuditOperation, string> auditOperationCodeConverter = new(
-                v => EnumUtility.ToEnumString(v, true),
-                v => EnumUtility.ToEnum<AuditOperation>(v, true));
+                v => EnumUtility.ToEnumString(v, false),
+                v => EnumUtility.ToEnum<AuditOperation>(v, false));
 
             modelBuilder.Entity<AgentAudit>()
                 .Property(e => e.OperationCode)
@@ -424,8 +424,8 @@ namespace HealthGateway.Database.Context
                 .OnDelete(DeleteBehavior.Restrict);
 
             ValueConverter<AuditGroup, string> auditGroupCodeConverter = new(
-                v => EnumUtility.ToEnumString(v, true),
-                v => EnumUtility.ToEnum<AuditGroup>(v, true));
+                v => EnumUtility.ToEnumString(v, false),
+                v => EnumUtility.ToEnum<AuditGroup>(v, false));
 
             modelBuilder.Entity<AgentAudit>()
                 .Property(e => e.GroupCode)

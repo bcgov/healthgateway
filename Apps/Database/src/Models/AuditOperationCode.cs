@@ -25,7 +25,7 @@ namespace HealthGateway.Database.Models
     {
         [Key]
         [Required]
-        [MaxLength(10)]
+        [MaxLength(50)]
         public AuditOperation Code { get; set; }
 
         [Required]

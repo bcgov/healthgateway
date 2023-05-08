@@ -30,7 +30,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace HealthGateway.Database.Migrations
 {
     [DbContext(typeof(GatewayDbContext))]
-    [Migration("20230505235024_CreateBlockedAccessTable")]
+    [Migration("20230508204917_CreateBlockedAccessTable")]
     partial class CreateBlockedAccessTable
     {
         /// <inheritdoc />
@@ -618,8 +618,8 @@ namespace HealthGateway.Database.Migrations
 
                     b.Property<string>("GroupCode")
                         .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("character varying(10)");
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
 
                     b.Property<string>("Hdid")
                         .IsRequired()
@@ -628,8 +628,8 @@ namespace HealthGateway.Database.Migrations
 
                     b.Property<string>("OperationCode")
                         .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("character varying(10)");
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
 
                     b.Property<string>("Reason")
                         .IsRequired()
@@ -849,8 +849,8 @@ namespace HealthGateway.Database.Migrations
             modelBuilder.Entity("HealthGateway.Database.Models.AuditGroupCode", b =>
                 {
                     b.Property<string>("Code")
-                        .HasMaxLength(10)
-                        .HasColumnType("character varying(10)");
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
@@ -896,7 +896,7 @@ namespace HealthGateway.Database.Migrations
                         },
                         new
                         {
-                            Code = "BlckAccess",
+                            Code = "BlockedAccess",
                             CreatedBy = "System",
                             CreatedDateTime = new DateTime(2019, 5, 1, 7, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Audit Blocked Access Group Code",
@@ -909,8 +909,8 @@ namespace HealthGateway.Database.Migrations
             modelBuilder.Entity("HealthGateway.Database.Models.AuditOperationCode", b =>
                 {
                     b.Property<string>("Code")
-                        .HasMaxLength(10)
-                        .HasColumnType("character varying(10)");
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
@@ -946,7 +946,7 @@ namespace HealthGateway.Database.Migrations
                     b.HasData(
                         new
                         {
-                            Code = "ChngAccess",
+                            Code = "ChangeDataSourceAccess",
                             CreatedBy = "System",
                             CreatedDateTime = new DateTime(2019, 5, 1, 7, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Change Data Source Access Operation Code",
@@ -956,7 +956,7 @@ namespace HealthGateway.Database.Migrations
                         },
                         new
                         {
-                            Code = "Protect",
+                            Code = "ProtectDependent",
                             CreatedBy = "System",
                             CreatedDateTime = new DateTime(2019, 5, 1, 7, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Protect Dependent Operation Code",
@@ -966,7 +966,7 @@ namespace HealthGateway.Database.Migrations
                         },
                         new
                         {
-                            Code = "Unprotect",
+                            Code = "UnprotectDependent",
                             CreatedBy = "System",
                             CreatedDateTime = new DateTime(2019, 5, 1, 7, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Unprotect Dependent Operation Code",

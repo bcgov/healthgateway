@@ -60,14 +60,14 @@ namespace HealthGateway.Database.Models
         /// The value is one of <see cref="AuditOperation"/>.
         /// </summary>
         [Required]
-        [MaxLength(10)]
+        [MaxLength(50)]
         public AuditOperation OperationCode { get; set; } = AuditOperation.UnprotectDependent;
 
         /// <summary>
         /// Gets or sets the group.
         /// </summary>
         [Required]
-        [MaxLength(10)]
+        [MaxLength(50)]
         public AuditGroup GroupCode { get; set; } = AuditGroup.Dependent;
 
         /// <summary>

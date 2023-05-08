@@ -15,8 +15,6 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Common.Data.Constants
 {
-    using System.Runtime.Serialization;
-
     /// <summary>
     /// The set of audit operations.
     /// </summary>
@@ -25,19 +23,16 @@ namespace HealthGateway.Common.Data.Constants
         /// <summary>
         /// Operation to change data source access.
         /// </summary>
-        [EnumMember(Value = "ChngAccess")]
         ChangeDataSourceAccess,
 
         /// <summary>
         /// Operation to protect a dependent.
         /// </summary>
-        [EnumMember(Value = "Protect")]
         ProtectDependent,
 
         /// <summary>
         /// Operation to unprotect a dependent.
         /// </summary>
-        [EnumMember(Value = "Unprotect")]
         UnprotectDependent,
     }
 }
