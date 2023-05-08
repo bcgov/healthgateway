@@ -17,7 +17,6 @@
 namespace HealthGateway.IntegrationTests;
 
 using System.Collections.Concurrent;
-using System.Linq;
 using System.Transactions;
 using Hangfire;
 using Hangfire.PostgreSql;
@@ -38,11 +37,12 @@ public class HangfireMessageSenderTests : ScenarioContextBase<GatewayApi.Startup
     public HangfireMessageSenderTests(ITestOutputHelper output, WebAppFixture fixture) : base(output, fixture)
     {
         this.cts = new CancellationTokenSource();
-        fixture.Services.AddHangfireServer((sp, opts) =>
-        {
-            opts.Queues = new[] { AzureServiceBusSettings.OutboxQueueName };
-            opts.IsLightweightServer = true;
-        });
+        fixture.Services.AddHangfireServer(
+            opts =>
+            {
+                opts.Queues = new[] { AzureServiceBusSettings.OutboxQueueName };
+                opts.IsLightweightServer = true;
+            });
     }
 
     public override async Task InitializeAsync()
@@ -53,22 +53,25 @@ public class HangfireMessageSenderTests : ScenarioContextBase<GatewayApi.Startup
         GlobalConfiguration.Configuration.UsePostgreSqlStorage(this.Host.Services.GetRequiredService<IConfiguration>().GetConnectionString("GatewayConnection"));
     }
 
-    private async Task SendMessages(IEnumerable<TestMessage>[] messageGroups, CancellationToken ct)
+    private async Task SendMessages(IEnumerable<IEnumerable<TestMessage>> messageGroups, CancellationToken ct)
     {
-        await Parallel.ForEachAsync(messageGroups, ct, async (messages, ct) =>
-        {
-            this.Output.WriteLine("sending messages");
-            using var scope = this.Host.Services.CreateScope();
-            var sender = scope.ServiceProvider.GetRequiredService<IMessageSender>();
-            await sender.SendAsync(messages.Select(m => new MessageEnvelope(m, m.SessionId)), ct);
-        });
+        await Parallel.ForEachAsync(
+            messageGroups,
+            ct,
+            async (messages, ct1) =>
+            {
+                this.Output.WriteLine("sending messages");
+                using IServiceScope scope = this.Host.Services.CreateScope();
+                IMessageSender sender = scope.ServiceProvider.GetRequiredService<IMessageSender>();
+                await sender.SendAsync(messages.Select(m => new MessageEnvelope(m, m.SessionId)), ct1);
+            });
     }
 
     private async Task<ConcurrentBag<MessageEnvelope>> ReceiveMessages(CancellationToken ct)
     {
         ConcurrentBag<MessageEnvelope> receivedMessages = new();
         await this.receiver.Subscribe(
-            async (sessionId, messages) => await Task.Run(
+            async (_, messages) => await Task.Run(
                 () =>
                 {
                     foreach (MessageEnvelope m in messages)
@@ -90,25 +93,23 @@ public class HangfireMessageSenderTests : ScenarioContextBase<GatewayApi.Startup
         return receivedMessages;
     }
 
-    private async Task<bool> WaitForMessages(Func<bool> stopCondition, TimeSpan? timeout = null)
+    private async Task WaitForMessages(Func<bool> stopCondition, TimeSpan? timeout = null)
     {
         this.cts.CancelAfter(timeout ?? TimeSpan.FromSeconds(10));
         while (!this.cts.IsCancellationRequested)
         {
             if (stopCondition())
             {
-                return true;
+                return;
             }
 
             await Task.Delay(1000);
         }
-
-        return false;
     }
 
     private static string GenerateSessionId()
     {
-        return Guid.NewGuid().ToString().Substring(0, 4);
+        return Guid.NewGuid().ToString()[..4];
     }
 
     [Fact]
@@ -121,7 +122,7 @@ public class HangfireMessageSenderTests : ScenarioContextBase<GatewayApi.Startup
 
         ConcurrentBag<MessageEnvelope> responses = await this.ReceiveMessages(this.cts.Token);
         await this.SendMessages(new[] { s1Messages, s2Messages }, this.cts.Token);
-        await this.WaitForMessages(() => !responses.IsEmpty);
+        await this.WaitForMessages(() => responses.Count >= 4);
 
         responses.Count.ShouldBe(4);
         responses.Count(m => m.SessionId == s1).ShouldBe(2);
@@ -142,21 +143,21 @@ public class HangfireMessageSenderTests : ScenarioContextBase<GatewayApi.Startup
 
         ConcurrentBag<MessageEnvelope> responses = await this.ReceiveMessages(this.cts.Token);
         await this.SendMessages(new[] { s1Messages, s2Messages }, this.cts.Token);
-        await this.WaitForMessages(() => !responses.IsEmpty);
+        await this.WaitForMessages(() => responses.Count >= 2);
 
         responses.Count.ShouldBe(2);
         responses.ShouldAllBe(m => m.SessionId == s2);
     }
 
     [Fact]
-    public async Task SendMessagesInTransaction_Rollback_ReveiveNoMessages()
+    public async Task SendMessagesInTransaction_Rollback_ReceiveNoMessages()
     {
         string sessionId = GenerateSessionId();
         TestMessage[] messages = Enumerable.Range(0, 2).Select(_ => new TestMessage(_.ToString(), sessionId)).ToArray();
 
         ConcurrentBag<MessageEnvelope> responses = await this.ReceiveMessages(this.cts.Token);
 
-        using (TransactionScope tx = new(TransactionScopeAsyncFlowOption.Enabled))
+        using (TransactionScope _ = new(TransactionScopeAsyncFlowOption.Enabled))
         {
             await this.SendMessages(new[] { messages }, this.cts.Token);
         }
@@ -190,5 +191,5 @@ public class HangfireMessageSenderTests : ScenarioContextBase<GatewayApi.Startup
 
 public record TestMessage(string? Id = null, string? SessionId = null, bool ShouldError = false) : MessageBase
 {
-    public string Id { get; init; } = Id ?? Guid.NewGuid().ToString().Substring(0, 6);
+    public string Id { get; init; } = Id ?? Guid.NewGuid().ToString()[..6];
 }

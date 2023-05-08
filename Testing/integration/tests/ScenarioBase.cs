@@ -27,9 +27,9 @@ using Xunit.Abstractions;
 
 public class WebAppFixture
 {
-    private readonly ServiceCollection services = new ServiceCollection();
+    private readonly ServiceCollection testRelatedServices = new();
 
-    public IServiceCollection Services => this.services;
+    public IServiceCollection Services => this.testRelatedServices;
 
     public async Task<IAlbaHost> CreateHost<TStartup>(ITestOutputHelper output, IConfiguration configuration)
         where TStartup : class
@@ -37,14 +37,16 @@ public class WebAppFixture
         IAlbaHost host = await AlbaHost.For<TStartup>(
             builder =>
             {
-                builder.ConfigureServices((ctx, services) =>
-                {
-                    foreach (var service in this.services)
+                builder.ConfigureServices(
+                    services =>
                     {
-                        services.Add(service);
-                    }
-                    services.AddLogging(builder => builder.AddXUnit(output));
-                });
+                        foreach (ServiceDescriptor service in this.testRelatedServices)
+                        {
+                            services.Add(service);
+                        }
+
+                        services.AddLogging(loggingBuilder => loggingBuilder.AddXUnit(output));
+                    });
             });
 
         return host;
@@ -81,9 +83,6 @@ public abstract class ScenarioContextBase<TStartup> : IAsyncLifetime, IClassFixt
 
     public async Task DisposeAsync()
     {
-        if (this.Host != null)
-        {
-            await this.Host.DisposeAsync();
-        }
+        await this.Host.DisposeAsync();
     }
 }
