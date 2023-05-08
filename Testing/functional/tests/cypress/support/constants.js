@@ -30,4 +30,5 @@ export const Dataset = {
     Medication: "medication",
     Note: "note",
     SpecialAuthorityRequest: "specialAuthorityRequest",
+    DiagnosticImaging: "diagnosticImaging",
 };
