@@ -74,51 +74,47 @@ namespace HealthGateway.JobScheduler.Jobs
         public void PushNotificationSettings(string notificationSettingsJson)
         {
             this.logger.LogDebug("Queueing Notification Settings push to PHSA...");
-            if (this.jobEnabled)
+            if (!this.jobEnabled)
             {
-                NotificationSettingsRequest? notificationSettings = JsonSerializer.Deserialize<NotificationSettingsRequest>(notificationSettingsJson);
-                if (notificationSettings != null)
-                {
-                    string? accessToken = this.authDelegate.AuthenticateAsSystem(this.tokenUri, this.tokenRequest).AccessToken;
+                this.logger.LogInformation("Job has been disabled by configuration");
+                return;
+            }
 
-                    if (string.IsNullOrEmpty(accessToken))
-                    {
-                        this.logger.LogError("Authenticated as User System access token is null or empty, Error:\n{AccessToken}", accessToken);
-                        throw new FormatException($"Authenticated as User System access token is null or empty, Error:\n{accessToken}");
-                    }
+            NotificationSettingsRequest? notificationSettings = JsonSerializer.Deserialize<NotificationSettingsRequest>(notificationSettingsJson);
+            if (notificationSettings == null)
+            {
+                this.logger.LogError("Unable to deserialize JSON Notification Settings");
+                throw new FormatException("Unable to deserialize JSON Notification Settings");
+            }
 
-                    RequestResult<NotificationSettingsResponse> retVal = this.notificationSettingsDelegate.SetNotificationSettingsAsync(notificationSettings, accessToken).GetAwaiter().GetResult();
-                    if (retVal.ResultStatus == ResultType.ActionRequired)
-                    {
-                        EventLog eventLog = new()
-                        {
-                            EventSource = this.notificationSettingsDelegate.GetType().Name,
-                            EventName = "SMS Rejected",
-                            EventDescription = notificationSettings.SmsNumber ?? string.Empty,
-                        };
-                        this.eventLogDelegate.WriteEventLog(eventLog);
-                    }
-                    else
-                    {
-                        if (retVal.ResultStatus != ResultType.Success)
-                        {
-                            this.logger.LogError("Unable to send Notification Settings to PHSA, Error:\n{ResultMessage}", retVal.ResultError?.ResultMessage);
-                            if (!string.Equals(retVal.ResultError?.ErrorCode, ErrorTranslator.ServiceError(ErrorType.SmsInvalid, ServiceType.Phsa), StringComparison.OrdinalIgnoreCase))
-                            {
-                                throw new FormatException($"Unable to send Notification Settings to PHSA, Error:\n{retVal.ResultError?.ResultMessage}");
-                            }
-                        }
-                    }
-                }
-                else
+            string? accessToken = this.authDelegate.AuthenticateAsSystem(this.tokenUri, this.tokenRequest).AccessToken;
+            if (string.IsNullOrEmpty(accessToken))
+            {
+                this.logger.LogError("Authenticated as User System access token is null or empty, Error:\n{AccessToken}", accessToken);
+                throw new FormatException($"Authenticated as User System access token is null or empty, Error:\n{accessToken}");
+            }
+
+            RequestResult<NotificationSettingsResponse> retVal = this.notificationSettingsDelegate.SetNotificationSettingsAsync(notificationSettings, accessToken).GetAwaiter().GetResult();
+            if (retVal.ResultStatus == ResultType.ActionRequired)
+            {
+                EventLog eventLog = new()
                 {
-                    this.logger.LogError("Unable to deserialize JSON Notification Settings");
-                    throw new FormatException("Unable to deserialize JSON Notification Settings");
-                }
+                    EventSource = this.notificationSettingsDelegate.GetType().Name,
+                    EventName = "SMS Rejected",
+                    EventDescription = notificationSettings.SmsNumber ?? string.Empty,
+                };
+                this.eventLogDelegate.WriteEventLog(eventLog);
             }
             else
             {
-                this.logger.LogInformation("Job has been disabled by configuration");
+                if (retVal.ResultStatus != ResultType.Success)
+                {
+                    this.logger.LogError("Unable to send Notification Settings to PHSA, Error:\n{ResultMessage}", retVal.ResultError?.ResultMessage);
+                    if (!string.Equals(retVal.ResultError?.ErrorCode, ErrorTranslator.ServiceError(ErrorType.SmsInvalid, ServiceType.Phsa), StringComparison.OrdinalIgnoreCase))
+                    {
+                        throw new FormatException($"Unable to send Notification Settings to PHSA, Error:\n{retVal.ResultError?.ResultMessage}");
+                    }
+                }
             }
 
             this.logger.LogDebug("Finished queueing Notification Settings push.");

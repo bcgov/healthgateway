@@ -34,7 +34,7 @@ export default class AppTourComponent extends Vue {
             description:
                 "Take this brief tour to learn how to use Health Gateway. You can always get here again by clicking the light bulb.",
             imageUri: new URL(
-                "@/assets/images/tour/mobile/app-tour-start-mobile.png",
+                "@/assets/images/tour/mobile/at-intro-mobile.png",
                 import.meta.url
             ).href,
             imageAlt: "App tour start mobile splash",
@@ -44,7 +44,7 @@ export default class AppTourComponent extends Vue {
             description:
                 "Add a quick link to easily access a health record type from your home screen.",
             imageUri: new URL(
-                "@/assets/images/tour/mobile/app-tour-home-quick-link-mobile.gif",
+                "@/assets/images/tour/mobile/at-quick-link-mobile.gif",
                 import.meta.url
             ).href,
             imageAlt: "Quick link mobile demo",
@@ -54,7 +54,7 @@ export default class AppTourComponent extends Vue {
             description:
                 "Filter by health record type, date or keyword to find what you need.",
             imageUri: new URL(
-                "@/assets/images/tour/mobile/app-tour-timeline-filter-mobile.gif",
+                "@/assets/images/tour/mobile/at-filter-mobile.gif",
                 import.meta.url
             ).href,
             imageAlt: "Timeline filter mobile demo",
@@ -64,7 +64,7 @@ export default class AppTourComponent extends Vue {
             description:
                 "You'll be notified of updates to the app and your health records.",
             imageUri: new URL(
-                "@/assets/images/tour/mobile/app-tour-notifications-mobile.gif",
+                "@/assets/images/tour/mobile/at-notifications-mobile.gif",
                 import.meta.url
             ).href,
             imageAlt: "Notifications centre mobile demo",
@@ -77,7 +77,7 @@ export default class AppTourComponent extends Vue {
             description:
                 "Take this brief tour to learn how to use Health Gateway. You can always get here again by clicking the light bulb.",
             imageUri: new URL(
-                "@/assets/images/tour/web/app-tour-start.png",
+                "@/assets/images/tour/web/at-intro.png",
                 import.meta.url
             ).href,
             imageAlt: "App tour start splash",
@@ -87,7 +87,7 @@ export default class AppTourComponent extends Vue {
             description:
                 "Add a quick link to easily access a health record type from your home screen.",
             imageUri: new URL(
-                "@/assets/images/tour/web/app-tour-home-quick-link-web.gif",
+                "@/assets/images/tour/web/at-quick-link.png",
                 import.meta.url
             ).href,
             imageAlt: "Quick link web demo",
@@ -97,7 +97,7 @@ export default class AppTourComponent extends Vue {
             description:
                 "Filter by health record type, date or keyword to find what you need.",
             imageUri: new URL(
-                "@/assets/images/tour/web/app-tour-timeline-filter-web.gif",
+                "@/assets/images/tour/web/at-filter.png",
                 import.meta.url
             ).href,
             imageAlt: "Timeline filter web demo",
@@ -107,7 +107,7 @@ export default class AppTourComponent extends Vue {
             description:
                 "You'll be notified of updates to the app and your health records.",
             imageUri: new URL(
-                "@/assets/images/tour/web/app-tour-notification-centre-web.gif",
+                "@/assets/images/tour/web/at-notifications-web.png",
                 import.meta.url
             ).href,
             imageAlt: "Notifications centre web demo",
@@ -144,7 +144,9 @@ export default class AppTourComponent extends Vue {
     }
 
     private get slides(): TourSlide[] {
-        return this.isMobile ? this.mobileSlides : this.desktopSlides;
+        // Requires new assets for mobile, currently returning only the desktopSlides
+        // return this.isMobile ? this.mobileSlides : this.desktopSlides;
+        return this.desktopSlides;
     }
 
     private get currentSlide(): TourSlide | undefined {
@@ -274,5 +276,8 @@ export default class AppTourComponent extends Vue {
             background-color: $hg-text-primary !important;
         }
     }
+}
+.carousel-item {
+    transition: transform 0.3s ease-in-out;
 }
 </style>

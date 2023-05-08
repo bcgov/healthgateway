@@ -47,6 +47,17 @@ const noteReport = "note-report";
 const laboratoryReport = "laboratory-report";
 const hospitalVisitReport = "hospital-visit-report";
 
+const reportNameMap = new Map<EntryType, string>([
+    [EntryType.Medication, medicationReport],
+    [EntryType.HealthVisit, mspVisitReport],
+    [EntryType.Covid19TestResult, covid19Report],
+    [EntryType.Immunization, immunizationReport],
+    [EntryType.SpecialAuthorityRequest, medicationRequestReport],
+    [EntryType.Note, noteReport],
+    [EntryType.LabResult, laboratoryReport],
+    [EntryType.HospitalVisit, hospitalVisitReport],
+]);
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const options: any = {
     components: {
@@ -214,7 +225,6 @@ export default class ReportsComponent extends Vue {
         return DateWrapper.format(date);
     }
 
-    // eslint-disable-next-line sonarjs/cognitive-complexity
     created(): void {
         this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
 
@@ -222,55 +232,13 @@ export default class ReportsComponent extends Vue {
             ? ConfigUtil.isDependentDatasetEnabled
             : ConfigUtil.isDatasetEnabled;
 
-        if (isEnabled(EntryType.Medication)) {
-            this.reportTypeOptions.push({
-                value: medicationReport,
-                text: entryTypeMap.get(EntryType.Medication)?.name ?? "",
-            });
-        }
-        if (isEnabled(EntryType.HealthVisit)) {
-            this.reportTypeOptions.push({
-                value: mspVisitReport,
-                text: entryTypeMap.get(EntryType.HealthVisit)?.name ?? "",
-            });
-        }
-        if (isEnabled(EntryType.Covid19TestResult)) {
-            this.reportTypeOptions.push({
-                value: covid19Report,
-                text: entryTypeMap.get(EntryType.Covid19TestResult)?.name ?? "",
-            });
-        }
-        if (isEnabled(EntryType.Immunization)) {
-            this.reportTypeOptions.push({
-                value: immunizationReport,
-                text: entryTypeMap.get(EntryType.Immunization)?.name ?? "",
-            });
-        }
-        if (isEnabled(EntryType.SpecialAuthorityRequest)) {
-            this.reportTypeOptions.push({
-                value: medicationRequestReport,
-                text:
-                    entryTypeMap.get(EntryType.SpecialAuthorityRequest)?.name ??
-                    "",
-            });
-        }
-        if (isEnabled(EntryType.Note)) {
-            this.reportTypeOptions.push({
-                value: noteReport,
-                text: entryTypeMap.get(EntryType.Note)?.name ?? "",
-            });
-        }
-        if (isEnabled(EntryType.LabResult)) {
-            this.reportTypeOptions.push({
-                value: laboratoryReport,
-                text: entryTypeMap.get(EntryType.LabResult)?.name ?? "",
-            });
-        }
-        if (isEnabled(EntryType.HospitalVisit)) {
-            this.reportTypeOptions.push({
-                value: hospitalVisitReport,
-                text: entryTypeMap.get(EntryType.HospitalVisit)?.name ?? "",
-            });
+        for (const [entryType, componentName] of reportNameMap) {
+            if (isEnabled(entryType)) {
+                this.reportTypeOptions.push({
+                    value: componentName,
+                    text: entryTypeMap.get(entryType)?.name ?? "",
+                });
+            }
         }
     }
 
