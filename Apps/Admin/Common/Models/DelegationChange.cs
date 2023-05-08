@@ -42,7 +42,7 @@ namespace HealthGateway.Admin.Common.Models
         /// Gets or sets a value representing the type of audit operation.
         /// The value is one of <see cref="AuditOperation"/>.
         /// </summary>
-        public AuditOperation OperationCode { get; set; } = AuditOperation.UnprotectDependent;
+        public AuditOperation OperationCode { get; set; }
 
         /// <summary>
         /// Gets or sets the transaction datetime.
