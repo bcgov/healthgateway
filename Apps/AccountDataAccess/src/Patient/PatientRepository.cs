@@ -156,40 +156,49 @@ namespace HealthGateway.AccountDataAccess.Patient
 
             if (query.Hdid != null)
             {
-                PatientModel? patient = ShouldCheckCache(query.Source) ? this.GetFromCache(query.Hdid, PatientIdentifierType.Hdid) : null;
-
-                if (patient == null && ShouldCheckEmpi(query.Source))
-                {
-                    try
-                    {
-                        patient = await this.GetDemographicsAsync(OidType.Hdid, query.Hdid).ConfigureAwait(true);
-                    }
-                    catch (CommunicationException e)
-                    {
-                        if (ShouldCheckPhsa(query.Source))
-                        {
-                            this.logger.LogError("Will call PHSA for patient due to EMPI Communication Exception when trying to retrieve patient information: {Exception}", e);
-                            patient = await this.GetPatientIdentityAsync(query.Hdid).ConfigureAwait(true);
-                        }
-                        else
-                        {
-                            throw;
-                        }
-                    }
-                }
-
-                return new PatientQueryResult(new[] { patient! });
+                return await this.GetPatientByHdidAsync(query.Hdid, query.Source).ConfigureAwait(true);
             }
 
             if (query.Phn != null)
             {
-                PatientModel? patient = (ShouldCheckCache(query.Source) ? this.GetFromCache(query.Phn, PatientIdentifierType.Phn) : null) ??
-                                        await this.GetDemographicsAsync(OidType.Phn, query.Phn).ConfigureAwait(true);
-
-                return new PatientQueryResult(new[] { patient! });
+                return await this.GetPatientByPhnAsync(query.Phn, query.Source).ConfigureAwait(true);
             }
 
             throw new InvalidOperationException("Must specify either Hdid or Phn to query patient details");
+        }
+
+        private async Task<PatientQueryResult> GetPatientByHdidAsync(string hdid, PatientDetailSource source)
+        {
+            PatientModel? patient = ShouldCheckCache(source) ? this.GetFromCache(hdid, PatientIdentifierType.Hdid) : null;
+            if (patient == null && ShouldCheckEmpi(source))
+            {
+                try
+                {
+                    patient = await this.GetDemographicsAsync(OidType.Hdid, hdid).ConfigureAwait(true);
+                }
+                catch (CommunicationException e)
+                {
+                    if (ShouldCheckPhsa(source))
+                    {
+                        this.logger.LogError("Will call PHSA for patient due to EMPI Communication Exception when trying to retrieve patient information: {Exception}", e);
+                        patient = await this.GetPatientIdentityAsync(hdid).ConfigureAwait(true);
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+            }
+
+            return new PatientQueryResult(new[] { patient! });
+        }
+
+        private async Task<PatientQueryResult> GetPatientByPhnAsync(string phn, PatientDetailSource source)
+        {
+            PatientModel? patient = (ShouldCheckCache(source) ? this.GetFromCache(phn, PatientIdentifierType.Phn) : null) ??
+                                    await this.GetDemographicsAsync(OidType.Phn, phn).ConfigureAwait(true);
+
+            return new PatientQueryResult(new[] { patient! });
         }
 
         private async Task<PatientModel?> GetPatientIdentityAsync(string hdid)
@@ -197,7 +206,9 @@ namespace HealthGateway.AccountDataAccess.Patient
             try
             {
                 PatientIdentity result = await this.patientIdentityApi.GetPatientIdentityAsync(hdid).ConfigureAwait(true);
-                return this.mapper.Map<PatientModel>(result);
+                PatientModel patient = this.mapper.Map<PatientModel>(result);
+                this.CachePatient(patient);
+                return patient;
             }
             catch (ApiException e) when (e.StatusCode == HttpStatusCode.NotFound)
             {
