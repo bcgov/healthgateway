@@ -1,24 +1,26 @@
-<script lang="ts">
-import Vue from "vue";
-import { Component, Prop } from "vue-property-decorator";
+<script setup lang="ts">
+import { computed } from "vue";
 
-@Component
-export default class StatusLabelComponent extends Vue {
-    @Prop({ required: true }) status!: string;
-    @Prop({ required: false, default: "" }) variant!: string;
-    @Prop({ required: false, default: "Status" }) heading!: string;
-
-    private get classes(): string[] {
-        switch (this.variant) {
-            case "success":
-                return ["text-success"];
-            case "danger":
-                return ["text-danger"];
-            default:
-                return [];
-        }
-    }
+interface Props {
+    status: string;
+    variant?: string;
+    heading?: string;
 }
+const props = withDefaults(defineProps<Props>(), {
+    variant: "",
+    heading: "Status",
+});
+
+const classes = computed(() => {
+    switch (props.variant) {
+        case "success":
+            return ["text-success"];
+        case "danger":
+            return ["text-danger"];
+        default:
+            return [];
+    }
+});
 </script>
 
 <template>

@@ -22,7 +22,7 @@ import { IDependentService } from "@/services/interfaces";
 import PHNValidator from "@/utility/phnValidator";
 
 const validPersonalHealthNumber = (value: string) => {
-    let phn = value.replace(/\D/g, "");
+    const phn = value.replace(/\D/g, "");
     return PHNValidator.IsValid(phn);
 };
 

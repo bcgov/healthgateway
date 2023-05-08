@@ -1,43 +1,39 @@
-<script lang="ts">
-import Vue from "vue";
-import { Component, Prop } from "vue-property-decorator";
-import { Getter } from "vuex-class";
+<script setup lang="ts">
+import { computed } from "vue";
 
 import BreadcrumbItem from "@/models/breadcrumbItem";
 import container from "@/plugins/container";
-import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import { ILogger } from "@/services/interfaces";
+import { STORE_IDENTIFIER } from "@/plugins/inversify";
+import { IStoreProvider } from "@/services/interfaces";
 
-@Component
-export default class BreadcrumbComponent extends Vue {
-    @Getter("oidcIsAuthenticated", { namespace: "auth" })
-    isAuthenticated!: boolean;
+const storeProvider = container.get<IStoreProvider>(
+    STORE_IDENTIFIER.StoreProvider
+);
+const store = storeProvider.getStore();
 
-    @Getter("isValidIdentityProvider", { namespace: "user" })
-    isValidIdentityProvider!: boolean;
-
-    private logger!: ILogger;
-
-    @Prop({ required: false, default: [] }) items!: BreadcrumbItem[];
-
-    private baseBreadcrumbItem: BreadcrumbItem = {
-        text: "Home",
-        to: "/home",
-        dataTestId: "breadcrumb-home",
-    };
-
-    private created(): void {
-        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-    }
-
-    private get allBreadcrumbItems(): BreadcrumbItem[] {
-        return [this.baseBreadcrumbItem, ...this.items];
-    }
-
-    private get displayBreadcrumbs(): boolean {
-        return this.isAuthenticated && this.isValidIdentityProvider;
-    }
+interface Props {
+    items?: BreadcrumbItem[];
 }
+const props = withDefaults(defineProps<Props>(), {
+    items: () => [],
+});
+
+const homeBreadcrumbItem: BreadcrumbItem = {
+    text: "Home",
+    to: "/home",
+    dataTestId: "breadcrumb-home",
+};
+
+const isAuthenticated = computed(
+    () => store.getters["auth/oidcIsAuthenticated"]
+);
+const isValidIdentityProvider = computed(
+    () => store.getters["user/isValidIdentityProvider"]
+);
+const allBreadcrumbItems = computed(() => [homeBreadcrumbItem, ...props.items]);
+const displayBreadcrumbs = computed(
+    () => isAuthenticated.value && isValidIdentityProvider.value
+);
 </script>
 
 <template>

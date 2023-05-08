@@ -254,10 +254,10 @@ export default class DependentCardComponent extends Vue {
     }
 
     public get isExpired(): boolean {
-        let birthDate = new DateWrapper(
+        const birthDate = new DateWrapper(
             this.dependent.dependentInformation.dateOfBirth
         );
-        let now = new DateWrapper();
+        const now = new DateWrapper();
         return (
             now.diff(birthDate, "year").years >
             this.webClientConfig.maxDependentAge
@@ -361,7 +361,7 @@ export default class DependentCardComponent extends Vue {
 
     private downloadCovid19Report(): void {
         this.isReportDownloading = true;
-        let test = this.selectedTestRow.test;
+        const test = this.selectedTestRow.test;
         this.laboratoryService
             .getReportDocument(
                 this.selectedTestRow.id,
@@ -946,8 +946,8 @@ export default class DependentCardComponent extends Vue {
 
     private sortEntries(): void {
         this.testRows.sort((a, b) => {
-            let dateA = new DateWrapper(a.test.collectedDateTime);
-            let dateB = new DateWrapper(b.test.collectedDateTime);
+            const dateA = new DateWrapper(a.test.collectedDateTime);
+            const dateB = new DateWrapper(b.test.collectedDateTime);
             if (dateA.isBefore(dateB)) {
                 return 1;
             }

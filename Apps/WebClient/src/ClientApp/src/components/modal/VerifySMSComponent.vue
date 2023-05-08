@@ -193,7 +193,7 @@ export default class VerifySMSComponent extends Vue {
     private getTimeout(): number {
         let resendTime: DateWrapper;
         if (!this.smsResendDateTime) {
-            let now = new DateWrapper();
+            const now = new DateWrapper();
             this.updateSMSResendDateTime({
                 hdid: this.user.hdid,
                 dateTime: now,
@@ -213,8 +213,8 @@ export default class VerifySMSComponent extends Vue {
     }
 
     private formatPhoneNumber(phoneNumber: string): string | null {
-        let cleaned = ("" + phoneNumber).replace(/\D/g, "");
-        let match = cleaned.match(/^(\d{3})(\d{3})(\d{4})$/);
+        const cleaned = ("" + phoneNumber).replace(/\D/g, "");
+        const match = cleaned.match(/^(\d{3})(\d{3})(\d{4})$/);
         if (match) {
             return "(" + match[1] + ") " + match[2] + "-" + match[3];
         }

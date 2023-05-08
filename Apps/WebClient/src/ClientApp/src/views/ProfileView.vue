@@ -211,7 +211,7 @@ export default class ProfileView extends Vue {
             return "Your account will be closed imminently";
         }
 
-        let duration = Duration.fromMillis(this.timeForDeletion);
+        const duration = Duration.fromMillis(this.timeForDeletion);
         let timeRemaining = duration.as("days");
         if (timeRemaining > 1) {
             return this.pluralize(timeRemaining, "day");
@@ -230,7 +230,7 @@ export default class ProfileView extends Vue {
     }
 
     private get formattedLoginDateTimes(): string[] {
-        let items: string[] = [];
+        const items: string[] = [];
         if (
             this.loginDateTimes !== undefined &&
             this.loginDateTimes.length > 0
@@ -348,7 +348,7 @@ export default class ProfileView extends Vue {
     }
 
     private pluralize(count: number, message: string): string {
-        let roundCount = Math.floor(count);
+        const roundCount = Math.floor(count);
         return (
             roundCount.toString() + " " + message + (roundCount > 1 ? "s" : "")
         );
@@ -627,7 +627,7 @@ export default class ProfileView extends Vue {
     }
 
     private getNewAddress(address: Address | undefined): Address {
-        let newAddress = new Address();
+        const newAddress = new Address();
         newAddress.streetLines = address?.streetLines ?? [];
         newAddress.city = address?.city ?? "";
         newAddress.postalCode = address?.postalCode ?? "";
