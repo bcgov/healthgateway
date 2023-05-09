@@ -98,5 +98,5 @@ public record OutboxItemMetadata
     /// <summary>
     /// Gets or sets the assembly qualified name of the message for deserialization purposes.
     /// </summary>
-    public string Aqn { get; set; } = null!;
+    public string AssemblyQualifiedName { get; set; } = null!;
 }

@@ -34,7 +34,7 @@ using Microsoft.Extensions.Logging;
 /// </summary>
 internal class DbOutboxStore : IOutboxStore
 {
-    private readonly GatewayDbContext ctx;
+    private readonly GatewayDbContext dbContext;
     private readonly IBackgroundJobClient backgroundJobClient;
     private readonly IMessageSender messageSender;
     private readonly ILogger<DbOutboxStore> logger;
@@ -42,13 +42,13 @@ internal class DbOutboxStore : IOutboxStore
     /// <summary>
     /// Initializes a new instance of the <see cref="DbOutboxStore"/> class.
     /// </summary>
-    /// <param name="ctx">The EF database context.</param>
+    /// <param name="dbContext">The EF database context.</param>
     /// <param name="backgroundJobClient">Hangfire background job client.</param>
     /// <param name="messageSender">The destination message sender to forward messages to.</param>
     /// <param name="logger">A logger.</param>
-    public DbOutboxStore(GatewayDbContext ctx, IBackgroundJobClient backgroundJobClient, IMessageSender messageSender, ILogger<DbOutboxStore> logger)
+    public DbOutboxStore(GatewayDbContext dbContext, IBackgroundJobClient backgroundJobClient, IMessageSender messageSender, ILogger<DbOutboxStore> logger)
     {
-        this.ctx = ctx;
+        this.dbContext = dbContext;
         this.backgroundJobClient = backgroundJobClient;
         this.messageSender = messageSender;
         this.logger = logger;
@@ -66,11 +66,11 @@ internal class DbOutboxStore : IOutboxStore
                 CreatedOn = m.CreatedOn,
                 Type = m.MessageType,
                 SessionId = m.SessionId,
-                Aqn = m.Content.GetType().AssemblyQualifiedName!,
+                AssemblyQualifiedName = m.Content.GetType().AssemblyQualifiedName!,
             },
         });
-        await this.ctx.AddRangeAsync(outboxItems, ct);
-        await this.ctx.SaveChangesAsync(ct);
+        await this.dbContext.AddRangeAsync(outboxItems, ct);
+        await this.dbContext.SaveChangesAsync(ct);
 
         this.backgroundJobClient.Enqueue<DbOutboxStore>(store => store.DispatchOutboxItems(CancellationToken.None));
     }
@@ -86,17 +86,17 @@ internal class DbOutboxStore : IOutboxStore
     {
         this.logger.LogDebug("Forwarding messages to destination");
 
-        using var tx = await this.ctx.Database.BeginTransactionAsync(System.Data.IsolationLevel.Serializable, ct);
+        using var tx = await this.dbContext.Database.BeginTransactionAsync(System.Data.IsolationLevel.Serializable, ct);
 
         try
         {
-            var pendingItems = await this.ctx.Outbox.OrderBy(i => i.CreatedOn).ToListAsync(ct);
-            this.ctx.RemoveRange(pendingItems);
-            await this.ctx.SaveChangesAsync(ct);
+            var pendingItems = await this.dbContext.Outbox.OrderBy(i => i.CreatedOn).ToListAsync(ct);
+            this.dbContext.RemoveRange(pendingItems);
+            await this.dbContext.SaveChangesAsync(ct);
 
             var messages = pendingItems.Select(i =>
             {
-                var message = (MessageBase)Encoding.UTF8.GetBytes(i.Content).Deserialize(Type.GetType(i.Metadata.Aqn, true))!;
+                var message = (MessageBase)Encoding.UTF8.GetBytes(i.Content).Deserialize(Type.GetType(i.Metadata.AssemblyQualifiedName, true))!;
                 return new MessageEnvelope(message, i.Metadata.SessionId);
             });
             await this.messageSender.SendAsync(messages, ct);
