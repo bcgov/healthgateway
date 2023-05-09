@@ -72,6 +72,10 @@ namespace HealthGateway.Admin.Client.Pages
 
         private string? Hdid { get; set; }
 
+        private DateTime? ProfileCreatedDateTime { get; set; }
+
+        private DateTime? ProfileLastLoginDateTime { get; set; }
+
         /// <inheritdoc/>
         protected override void OnInitialized()
         {
@@ -112,6 +116,18 @@ namespace HealthGateway.Admin.Client.Pages
             else
             {
                 this.RetrieveMessagingVerifications();
+            }
+
+            DateTime? patientProfileCreatedDateTime = this.Patient?.ProfileCreatedDateTime;
+            if (patientProfileCreatedDateTime != null)
+            {
+                this.ProfileCreatedDateTime = patientProfileCreatedDateTime.Value.ToLocalTime();
+            }
+
+            DateTime? profileLastLoginDateTime = this.Patient?.ProfileLastLoginDateTime;
+            if (profileLastLoginDateTime != null)
+            {
+                this.ProfileLastLoginDateTime = profileLastLoginDateTime.Value.ToLocalTime();
             }
         }
 
