@@ -14,7 +14,6 @@
         <RootNamespace>HealthGateway.IntegrationTests</RootNamespace>
         <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(MSBuildThisFileName).xml</DocumentationFile>
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-        <UserSecretsId>84e2fe9a-a1f5-4de7-bef6-4518a33fa8b9</UserSecretsId>
         <NoWarn>CA1848, S2094, SA1201, SA1402, CS1591, SA1600, SA1200, SA1649, S125, CA1707, CA2201, CA1305, S3881</NoWarn>
     </PropertyGroup>
 
@@ -25,9 +24,11 @@
     <ItemGroup>
         <PackageReference Include="Alba" Version="7.4.0" />
         <PackageReference Include="MartinCostello.Logging.XUnit" Version="0.3.0" />
-        <PackageReference Include="Shouldly" Version="4.1.0" />
+        <PackageReference Include="Shouldly" Version="4.2.1" />
         <PackageReference Include="Microsoft.Extensions.Configuration" Version="7.0.0" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.5.0" />
+        <PackageReference Include="Testcontainers.PostgreSql" Version="3.1.0" />
+        <PackageReference Include="Testcontainers.Redis" Version="3.1.0" />
         <PackageReference Include="xunit" Version="2.4.2" />
         <PackageReference Include="xunit.runner.visualstudio" Version="2.4.5">
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
