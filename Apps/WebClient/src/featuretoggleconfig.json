@@ -21,6 +21,10 @@
             "enabled": true
         },
         {
+            "name": "diagnosticImaging",
+            "enabled": true
+        },
+        {
             "name": "healthVisit",
             "enabled": true
         },
@@ -46,10 +50,6 @@
         },
         {
             "name": "specialAuthorityRequest",
-            "enabled": true
-        },
-        {
-            "name": "diagnosticImaging",
             "enabled": true
         }
     ],
