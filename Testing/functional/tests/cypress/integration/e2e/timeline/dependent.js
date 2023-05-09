@@ -138,6 +138,10 @@ describe("Dependent Timeline", () => {
                     enabled: true,
                 },
                 {
+                    name: "diagnosticImaging",
+                    enabled: true,
+                },
+                {
                     name: "healthVisit",
                     enabled: true,
                 },
@@ -297,6 +301,11 @@ describe("Dependent Timeline Datasets", () => {
     it("Validate (lack of) notes on dependent timeline", () => {
         disabledDatasetShouldNotBePresent(Dataset.Note);
         disabledDependentDatasetShouldNotBePresent(Dataset.Note);
+    });
+    it("Validate Diagnostic Imaging requests on dependent timeline", () => {
+        enabledDatasetShouldBePresent(Dataset.DiagnosticImaging);
+        disabledDatasetShouldNotBePresent(Dataset.DiagnosticImaging);
+        disabledDependentDatasetShouldNotBePresent(Dataset.DiagnosticImaging);
     });
     it("Validate Special Authority requests on dependent timeline", () => {
         enabledDatasetShouldBePresent(Dataset.SpecialAuthorityRequest);

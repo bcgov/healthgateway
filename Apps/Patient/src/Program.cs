@@ -55,6 +55,7 @@ namespace HealthGateway.Patient
             Audit.ConfigureAuditServices(services, logger, configuration);
             Auth.ConfigureAuthServicesForJwtBearer(services, logger, configuration, environment);
             Auth.ConfigureAuthorizationServices(services, logger, configuration);
+            Auth.ConfigureDelegateAuthorizationServices(services, logger, configuration);
             SwaggerDoc.ConfigureSwaggerServices(services, configuration);
 
             Patient.ConfigurePatientAccess(services, logger, configuration);

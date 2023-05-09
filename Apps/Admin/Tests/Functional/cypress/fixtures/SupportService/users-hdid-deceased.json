@@ -1,0 +1,25 @@
+[
+    {
+        "status": "Deceased",
+        "warningMessage": "",
+        "hdid": "MPOLGP66AV4PPDB6ZMYEWQ63WKRYPM4EPDW5MSXA2LA65EQOEMCQ",
+        "personalHealthNumber": "9873224879",
+        "commonName": {
+            "givenName": "Gateway",
+            "surname": "Deceased"
+        },
+        "legalName": {
+            "givenName": "GATEWAY",
+            "surname": "DECEASED"
+        },
+        "preferredName": {
+            "givenName": "Gateway",
+            "surname": "Deceased"
+        },
+        "birthdate": "1942-08-09",
+        "physicalAddress": "818 FORT ST, Victoria, BC, V8W 1H8",
+        "postalAddress": "",
+        "profileCreatedDateTime": null,
+        "profileLastLoginDateTime": null
+    }
+]

@@ -1,0 +1,16 @@
+[
+    {
+        "status": "NotFound",
+        "warningMessage": "",
+        "hdid": "RD33Y2LJEUZCY2TCMOIECUTKS3E62MEQ62CSUL6Q553IHHBI3AWZ",
+        "personalHealthNumber": "",
+        "commonName": null,
+        "legalName": null,
+        "preferredName": null,
+        "birthdate": null,
+        "physicalAddress": "",
+        "postalAddress": "",
+        "profileCreatedDateTime": "2023-05-08T21:18:08.312207Z",
+        "profileLastLoginDateTime": "2023-05-08T21:18:08.312207Z"
+    }
+]
