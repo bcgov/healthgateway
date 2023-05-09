@@ -142,12 +142,7 @@ namespace HealthGateway.JobScheduler
             services.AddTransient<DependentExpiryDateJob>();
 
             // Enable Hangfire
-#pragma warning disable CA2326 // Do not use TypeNameHandling values other than None
-            services.AddHangfire(
-                x => x
-                    .UseSerializerSettings(new Newtonsoft.Json.JsonSerializerSettings { TypeNameHandling = Newtonsoft.Json.TypeNameHandling.All })
-                    .UsePostgreSqlStorage(this.configuration.GetConnectionString("GatewayConnection")));
-#pragma warning restore CA2326 // Do not use TypeNameHandling values other than None
+            services.AddHangfire(x => x.UsePostgreSqlStorage(this.configuration.GetConnectionString("GatewayConnection")));
 
             // Add processing server as IHostedService
             services.AddHangfireServer(opts => { opts.Queues = new[] { "default", AzureServiceBusSettings.OutboxQueueName }; });
