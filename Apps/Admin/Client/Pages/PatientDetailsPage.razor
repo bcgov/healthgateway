@@ -82,10 +82,10 @@
     {
         <MudGrid>
             <MudItem xs="12" lg="6">
-                <HgField Label="Account Created" Value="@Patient.ProfileCreatedDateTime.ToString()" data-testid="profile-created-datetime" />
+                <HgField Label="Account Created" Value="@ProfileCreatedDateTime.ToString()" data-testid="profile-created-datetime" />
             </MudItem>
             <MudItem xs="12" lg="6">
-                <HgField Label="Last Login" Value="@Patient.ProfileLastLoginDateTime.ToString()" data-testid="profile-last-login-datetime" />
+                <HgField Label="Last Login" Value="@ProfileLastLoginDateTime.ToString()" data-testid="profile-last-login-datetime" />
             </MudItem>
         </MudGrid>
         <MessageVerificationTable Data="@MessagingVerifications" IsLoading="@MessagingVerificationsLoading" />
