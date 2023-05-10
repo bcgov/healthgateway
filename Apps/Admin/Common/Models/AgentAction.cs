@@ -19,14 +19,14 @@ namespace HealthGateway.Admin.Common.Models
     using HealthGateway.Common.Data.Constants;
 
     /// <summary>
-    /// The delegation change model.
+    /// Th agent action model.
     /// </summary>
-    public class DelegationChange
+    public class AgentAction
     {
         /// <summary>
-        /// Gets or sets the dependent's hdid.
+        /// Gets or sets the action's hdid.
         /// </summary>
-        public string DependentHdId { get; set; } = string.Empty;
+        public string Hdid { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the agent username.

@@ -73,9 +73,9 @@ namespace HealthGateway.Admin.Client.Store.Delegation
             public required DependentInfo Dependent { get; init; }
 
             /// <summary>
-            /// Gets the collection of delegation changes.
+            /// Gets the collection of agent actions.
             /// </summary>
-            public required IEnumerable<DelegationChange> DelegationChanges { get; init; }
+            public required IEnumerable<AgentAction> AgentActions { get; init; }
 
             /// <summary>
             /// Gets the collection of delegate info.
@@ -175,7 +175,7 @@ namespace HealthGateway.Admin.Client.Store.Delegation
         public class ProtectDependentAction
         {
             /// <summary>
-            /// Gets the reason associated with the delegation change.
+            /// Gets the reason associated with the agent action.
             /// </summary>
             public required string Reason { get; init; }
         }
@@ -201,9 +201,9 @@ namespace HealthGateway.Admin.Client.Store.Delegation
         public class ProtectDependentSuccessAction
         {
             /// <summary>
-            /// Gets the delegation change entry created from the operation.
+            /// Gets the agent action entry created from the operation.
             /// </summary>
-            public required DelegationChange DelegationChange { get; init; }
+            public required AgentAction AgentAction { get; init; }
         }
 
         /// <summary>
@@ -212,7 +212,7 @@ namespace HealthGateway.Admin.Client.Store.Delegation
         public class UnprotectDependentAction
         {
             /// <summary>
-            /// Gets the reason associated with the delegation change.
+            /// Gets the reason associated with the agent action.
             /// </summary>
             public required string Reason { get; init; }
         }
@@ -238,9 +238,9 @@ namespace HealthGateway.Admin.Client.Store.Delegation
         public class UnprotectDependentSuccessAction
         {
             /// <summary>
-            /// Gets the delegation change entry created from the operation.
+            /// Gets the agent action entry created from the operation.
             /// </summary>
-            public required DelegationChange DelegationChange { get; init; }
+            public required AgentAction AgentAction { get; init; }
         }
 
         /// <summary>

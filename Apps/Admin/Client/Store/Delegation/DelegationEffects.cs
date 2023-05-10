@@ -63,7 +63,7 @@ namespace HealthGateway.Admin.Client.Store.Delegation
                     new DelegationActions.SearchSuccessAction
                     {
                         Dependent = response.Dependent,
-                        DelegationChanges = response.DelegationChanges,
+                        AgentActions = response.AgentActions,
                         Delegates = this.AutoMapper.Map<IEnumerable<DelegateInfo>, IEnumerable<ExtendedDelegateInfo>>(response.Delegates),
                     });
             }
@@ -123,9 +123,9 @@ namespace HealthGateway.Admin.Client.Store.Delegation
 
                 ProtectDependentRequest protectDependentRequest = new(delegateHdids, action.Reason);
 
-                DelegationChange change = await this.Api.ProtectDependentAsync(dependentHdid, protectDependentRequest).ConfigureAwait(true);
+                AgentAction change = await this.Api.ProtectDependentAsync(dependentHdid, protectDependentRequest).ConfigureAwait(true);
                 this.Logger.LogInformation("Dependent protected successfully");
-                dispatcher.Dispatch(new DelegationActions.ProtectDependentSuccessAction { DelegationChange = change });
+                dispatcher.Dispatch(new DelegationActions.ProtectDependentSuccessAction { AgentAction = change });
             }
             catch (Exception e) when (e is ApiException or HttpRequestException)
             {
@@ -151,9 +151,9 @@ namespace HealthGateway.Admin.Client.Store.Delegation
 
                 UnprotectDependentRequest unprotectDependentRequest = new(action.Reason);
 
-                DelegationChange change = await this.Api.UnprotectDependentAsync(dependentHdid, unprotectDependentRequest).ConfigureAwait(true);
+                AgentAction change = await this.Api.UnprotectDependentAsync(dependentHdid, unprotectDependentRequest).ConfigureAwait(true);
                 this.Logger.LogInformation("Dependent unprotected successfully");
-                dispatcher.Dispatch(new DelegationActions.UnprotectDependentSuccessAction { DelegationChange = change });
+                dispatcher.Dispatch(new DelegationActions.UnprotectDependentSuccessAction { AgentAction = change });
             }
             catch (Exception e) when (e is ApiException or HttpRequestException)
             {

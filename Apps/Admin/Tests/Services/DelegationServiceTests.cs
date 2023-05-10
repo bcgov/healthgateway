@@ -589,11 +589,11 @@ namespace HealthGateway.Admin.Tests.Services
             {
                 Dependent = expectedDependentInfo,
                 Delegates = new List<DelegateInfo> { expectedDelegateInfo1, expectedDelegateInfo2, expectedDelegateInfo3 },
-                DelegationChanges = new List<DelegationChange>
+                AgentActions = new List<AgentAction>
                 {
                     new()
                     {
-                        DependentHdId = DependentHdid,
+                        Hdid = DependentHdid,
                         AgentUsername = AuthenticatedPreferredUsername,
                         Reason = "Test",
                         OperationCode = isProtected ? AuditOperation.ProtectDependent : AuditOperation.UnprotectDependent,

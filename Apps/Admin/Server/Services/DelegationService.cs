@@ -133,7 +133,7 @@ namespace HealthGateway.Admin.Server.Services
                 // Get agent audits
                 AgentAuditQuery agentAuditQuery = new() { GroupCode = AuditGroup.Dependent, Hdid = dependentPatientInfo.HdId };
                 AgentAuditQueryResult result = await this.delegationDelegate.GetAgentAuditsAsync(agentAuditQuery).ConfigureAwait(true);
-                delegationInfo.DelegationChanges = result.Items.Select(audit => this.autoMapper.Map<DelegationChange>(audit));
+                delegationInfo.AgentActions = result.Items.Select(audit => this.autoMapper.Map<AgentAction>(audit));
             }
 
             return delegationInfo;
@@ -156,7 +156,7 @@ namespace HealthGateway.Admin.Server.Services
         }
 
         /// <inheritdoc/>
-        public async Task<DelegationChange> ProtectDependentAsync(string dependentHdid, IEnumerable<string> delegateHdids, string reason)
+        public async Task<AgentAction> ProtectDependentAsync(string dependentHdid, IEnumerable<string> delegateHdids, string reason)
         {
             string authenticatedUserId = this.authenticationDelegate.FetchAuthenticatedUserId() ?? UserId.DefaultUser;
             Dependent? dependent = await this.delegationDelegate.GetDependentAsync(dependentHdid, true).ConfigureAwait(true);
@@ -212,11 +212,11 @@ namespace HealthGateway.Admin.Server.Services
             // Update dependent, allow delegation and resource delegate in database
             await this.delegationDelegate.UpdateDelegationAsync(dependent, resourceDelegatesToDelete, agentAudit).ConfigureAwait(true);
 
-            return this.autoMapper.Map<AgentAudit, DelegationChange>(agentAudit);
+            return this.autoMapper.Map<AgentAudit, AgentAction>(agentAudit);
         }
 
         /// <inheritdoc/>
-        public async Task<DelegationChange> UnprotectDependentAsync(string dependentHdid, string reason)
+        public async Task<AgentAction> UnprotectDependentAsync(string dependentHdid, string reason)
         {
             string authenticatedUserId = this.authenticationDelegate.FetchAuthenticatedUserId() ?? UserId.DefaultUser;
             Dependent? dependent = await this.delegationDelegate.GetDependentAsync(dependentHdid, true).ConfigureAwait(true);
@@ -244,7 +244,7 @@ namespace HealthGateway.Admin.Server.Services
 
             await this.delegationDelegate.UpdateDelegationAsync(dependent, Enumerable.Empty<ResourceDelegate>(), agentAudit).ConfigureAwait(true);
 
-            return this.autoMapper.Map<AgentAudit, DelegationChange>(agentAudit);
+            return this.autoMapper.Map<AgentAudit, AgentAction>(agentAudit);
         }
 
         private async Task<IEnumerable<ResourceDelegate>> SearchDelegates(string ownerHdid)

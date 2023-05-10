@@ -45,8 +45,8 @@ namespace HealthGateway.Admin.Server.Services
         /// <param name="dependentHdid">The hdid of the dependent to protect.</param>
         /// <param name="delegateHdids">The list of delegate hdid(s) to allow delegation for the dependent.</param>
         /// <param name="reason">The reason to protect.</param>
-        /// <returns>The delegation change entry created from the operation.</returns>
-        Task<DelegationChange> ProtectDependentAsync(string dependentHdid, IEnumerable<string> delegateHdids, string reason);
+        /// <returns>The agent action entry created from the operation.</returns>
+        Task<AgentAction> ProtectDependentAsync(string dependentHdid, IEnumerable<string> delegateHdids, string reason);
 
         /// <summary>
         /// Unprotects the dependent and if necessary creates the allowed delegation(s) and keeps the resource delegates
@@ -54,7 +54,7 @@ namespace HealthGateway.Admin.Server.Services
         /// </summary>
         /// <param name="dependentHdid">The hdid of the dependent to unprotect.</param>
         /// <param name="reason">The reason to protect.</param>
-        /// <returns>The delegation change entry created from the operation.</returns>
-        Task<DelegationChange> UnprotectDependentAsync(string dependentHdid, string reason);
+        /// <returns>The agent action entry created from the operation.</returns>
+        Task<AgentAction> UnprotectDependentAsync(string dependentHdid, string reason);
     }
 }
