@@ -29,6 +29,7 @@ namespace HealthGateway.Admin.Client.Pages
     using HealthGateway.Common.Data.ViewModels;
     using Microsoft.AspNetCore.Components;
     using Microsoft.AspNetCore.WebUtilities;
+    using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Primitives;
 
     /// <summary>
@@ -50,6 +51,9 @@ namespace HealthGateway.Admin.Client.Pages
 
         [Inject]
         private IActionSubscriber ActionSubscriber { get; set; } = default!;
+
+        [Inject]
+        private IConfiguration Configuration { get; set; } = default!;
 
         private bool MessagingVerificationsLoading => this.MessageVerificationState.Value.IsLoading;
 
@@ -121,13 +125,13 @@ namespace HealthGateway.Admin.Client.Pages
             DateTime? patientProfileCreatedDateTime = this.Patient?.ProfileCreatedDateTime;
             if (patientProfileCreatedDateTime != null)
             {
-                this.ProfileCreatedDateTime = patientProfileCreatedDateTime.Value.ToLocalTime();
+                this.ProfileCreatedDateTime = TimeZoneInfo.ConvertTimeFromUtc(patientProfileCreatedDateTime.Value, this.GetTimeZone());
             }
 
             DateTime? profileLastLoginDateTime = this.Patient?.ProfileLastLoginDateTime;
             if (profileLastLoginDateTime != null)
             {
-                this.ProfileLastLoginDateTime = profileLastLoginDateTime.Value.ToLocalTime();
+                this.ProfileLastLoginDateTime = TimeZoneInfo.ConvertTimeFromUtc(profileLastLoginDateTime.Value, this.GetTimeZone());
             }
         }
 
@@ -138,6 +142,11 @@ namespace HealthGateway.Admin.Client.Pages
             {
                 this.Dispatcher.Dispatch(new MessageVerificationActions.LoadAction(this.Hdid));
             }
+        }
+
+        private TimeZoneInfo GetTimeZone()
+        {
+            return DateFormatter.GetLocalTimeZone(this.Configuration);
         }
     }
 }
