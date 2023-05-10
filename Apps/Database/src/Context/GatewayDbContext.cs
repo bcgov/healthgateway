@@ -86,6 +86,7 @@ namespace HealthGateway.Database.Context
         public DbSet<AgentAudit> AgentAudit { get; set; } = null!;
         public DbSet<AllowedDelegation> AllowedDelegation { get; set; } = null!;
         public DbSet<BlockedAccess> BlockedAccess { get; set; } = null!;
+        public DbSet<OutboxItem> Outbox { get; set; } = null!;
 
 #pragma warning restore CS1591, SA1600
 

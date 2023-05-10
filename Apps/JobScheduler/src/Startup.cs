@@ -27,6 +27,7 @@ namespace HealthGateway.JobScheduler
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.Delegates.PHSA;
     using HealthGateway.Common.Jobs;
+    using HealthGateway.Common.Messaging;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Services;
     using HealthGateway.Database.Delegates;
@@ -144,13 +145,14 @@ namespace HealthGateway.JobScheduler
             services.AddHangfire(x => x.UsePostgreSqlStorage(this.configuration.GetConnectionString("GatewayConnection")));
 
             // Add processing server as IHostedService
-            services.AddHangfireServer();
+            services.AddHangfireServer(opts => { opts.Queues = new[] { "default", AzureServiceBusSettings.OutboxQueueName }; });
 
             // Add Background Services
             services.AddHostedService<BannerListener>();
 
             GatewayCache.EnableRedis(services, this.logger, this.configuration);
             services.AddHostedService<AuditQueueListener>();
+            MessageBus.ConfigureMessageBus(services, this.configuration);
         }
 
         /// <summary>
