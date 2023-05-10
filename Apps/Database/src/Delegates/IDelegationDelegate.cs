@@ -48,7 +48,8 @@ namespace HealthGateway.Database.Delegates
         /// <param name="dependent">The dependent to update.</param>
         /// <param name="resourceDelegatesToRemove">The resource delegates to remove.</param>
         /// <param name="dependentAudit">The dependent audit to create.</param>
+        /// <param name="commit">Should commit, default to true.</param>
         /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
-        Task UpdateDelegationAsync(Dependent dependent, IEnumerable<ResourceDelegate> resourceDelegatesToRemove, DependentAudit dependentAudit);
+        Task UpdateDelegationAsync(Dependent dependent, IEnumerable<ResourceDelegate> resourceDelegatesToRemove, DependentAudit dependentAudit, bool commit = true);
     }
 }
