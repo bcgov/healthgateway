@@ -6,6 +6,7 @@ using HealthGateway.Database.Context;
 using HealthGateway.Database.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -14,9 +15,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace HealthGateway.Database.Migrations
 {
     [DbContext(typeof(GatewayDbContext))]
-    partial class GatewayDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230504184240_CreateMessagingOutbox")]
+    partial class CreateMessagingOutbox
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -578,72 +581,6 @@ namespace HealthGateway.Database.Migrations
                     b.ToTable("AdminUserProfile", "gateway");
                 });
 
-            modelBuilder.Entity("HealthGateway.Database.Models.AgentAudit", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasColumnName("AgentAuditId");
-
-                    b.Property<string>("AgentUsername")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
-
-                    b.Property<string>("CreatedBy")
-                        .IsRequired()
-                        .HasMaxLength(60)
-                        .HasColumnType("character varying(60)");
-
-                    b.Property<DateTime>("CreatedDateTime")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("GroupCode")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
-
-                    b.Property<string>("Hdid")
-                        .IsRequired()
-                        .HasMaxLength(52)
-                        .HasColumnType("character varying(52)");
-
-                    b.Property<string>("OperationCode")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
-
-                    b.Property<string>("Reason")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
-
-                    b.Property<DateTime>("TransactionDateTime")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("UpdatedBy")
-                        .IsRequired()
-                        .HasMaxLength(60)
-                        .HasColumnType("character varying(60)");
-
-                    b.Property<DateTime>("UpdatedDateTime")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<uint>("Version")
-                        .IsConcurrencyToken()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("xid")
-                        .HasColumnName("xmin");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("GroupCode");
-
-                    b.HasIndex("OperationCode");
-
-                    b.ToTable("AgentAudit", "gateway");
-                });
-
             modelBuilder.Entity("HealthGateway.Database.Models.AllowedDelegation", b =>
                 {
                     b.Property<string>("DependentHdId")
@@ -828,136 +765,6 @@ namespace HealthGateway.Database.Migrations
                     b.ToTable("AuditEvent", "gateway");
                 });
 
-            modelBuilder.Entity("HealthGateway.Database.Models.AuditGroupCode", b =>
-                {
-                    b.Property<string>("Code")
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
-
-                    b.Property<string>("CreatedBy")
-                        .IsRequired()
-                        .HasMaxLength(60)
-                        .HasColumnType("character varying(60)");
-
-                    b.Property<DateTime>("CreatedDateTime")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
-
-                    b.Property<string>("UpdatedBy")
-                        .IsRequired()
-                        .HasMaxLength(60)
-                        .HasColumnType("character varying(60)");
-
-                    b.Property<DateTime>("UpdatedDateTime")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<uint>("Version")
-                        .IsConcurrencyToken()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("xid")
-                        .HasColumnName("xmin");
-
-                    b.HasKey("Code");
-
-                    b.ToTable("AuditGroupCode", "gateway");
-
-                    b.HasData(
-                        new
-                        {
-                            Code = "Dependent",
-                            CreatedBy = "System",
-                            CreatedDateTime = new DateTime(2019, 5, 1, 7, 0, 0, 0, DateTimeKind.Utc),
-                            Description = "Audit Dependent Group Code",
-                            UpdatedBy = "System",
-                            UpdatedDateTime = new DateTime(2019, 5, 1, 7, 0, 0, 0, DateTimeKind.Utc),
-                            Version = 0u
-                        },
-                        new
-                        {
-                            Code = "BlockedAccess",
-                            CreatedBy = "System",
-                            CreatedDateTime = new DateTime(2019, 5, 1, 7, 0, 0, 0, DateTimeKind.Utc),
-                            Description = "Audit Blocked Access Group Code",
-                            UpdatedBy = "System",
-                            UpdatedDateTime = new DateTime(2019, 5, 1, 7, 0, 0, 0, DateTimeKind.Utc),
-                            Version = 0u
-                        });
-                });
-
-            modelBuilder.Entity("HealthGateway.Database.Models.AuditOperationCode", b =>
-                {
-                    b.Property<string>("Code")
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
-
-                    b.Property<string>("CreatedBy")
-                        .IsRequired()
-                        .HasMaxLength(60)
-                        .HasColumnType("character varying(60)");
-
-                    b.Property<DateTime>("CreatedDateTime")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
-
-                    b.Property<string>("UpdatedBy")
-                        .IsRequired()
-                        .HasMaxLength(60)
-                        .HasColumnType("character varying(60)");
-
-                    b.Property<DateTime>("UpdatedDateTime")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<uint>("Version")
-                        .IsConcurrencyToken()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("xid")
-                        .HasColumnName("xmin");
-
-                    b.HasKey("Code");
-
-                    b.ToTable("AuditOperationCode", "gateway");
-
-                    b.HasData(
-                        new
-                        {
-                            Code = "ChangeDataSourceAccess",
-                            CreatedBy = "System",
-                            CreatedDateTime = new DateTime(2019, 5, 1, 7, 0, 0, 0, DateTimeKind.Utc),
-                            Description = "Change Data Source Access Operation Code",
-                            UpdatedBy = "System",
-                            UpdatedDateTime = new DateTime(2019, 5, 1, 7, 0, 0, 0, DateTimeKind.Utc),
-                            Version = 0u
-                        },
-                        new
-                        {
-                            Code = "ProtectDependent",
-                            CreatedBy = "System",
-                            CreatedDateTime = new DateTime(2019, 5, 1, 7, 0, 0, 0, DateTimeKind.Utc),
-                            Description = "Protect Dependent Operation Code",
-                            UpdatedBy = "System",
-                            UpdatedDateTime = new DateTime(2019, 5, 1, 7, 0, 0, 0, DateTimeKind.Utc),
-                            Version = 0u
-                        },
-                        new
-                        {
-                            Code = "UnprotectDependent",
-                            CreatedBy = "System",
-                            CreatedDateTime = new DateTime(2019, 5, 1, 7, 0, 0, 0, DateTimeKind.Utc),
-                            Description = "Unprotect Dependent Operation Code",
-                            UpdatedBy = "System",
-                            UpdatedDateTime = new DateTime(2019, 5, 1, 7, 0, 0, 0, DateTimeKind.Utc),
-                            Version = 0u
-                        });
-                });
-
             modelBuilder.Entity("HealthGateway.Database.Models.AuditTransactionResultCode", b =>
                 {
                     b.Property<string>("ResultCode")
@@ -1036,43 +843,6 @@ namespace HealthGateway.Database.Migrations
                             UpdatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Version = 0u
                         });
-                });
-
-            modelBuilder.Entity("HealthGateway.Database.Models.BlockedAccess", b =>
-                {
-                    b.Property<string>("Hdid")
-                        .HasMaxLength(52)
-                        .HasColumnType("character varying(52)");
-
-                    b.Property<string>("CreatedBy")
-                        .IsRequired()
-                        .HasMaxLength(60)
-                        .HasColumnType("character varying(60)");
-
-                    b.Property<DateTime>("CreatedDateTime")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<Dictionary<string, string>>("DataSources")
-                        .IsRequired()
-                        .HasColumnType("jsonb");
-
-                    b.Property<string>("UpdatedBy")
-                        .IsRequired()
-                        .HasMaxLength(60)
-                        .HasColumnType("character varying(60)");
-
-                    b.Property<DateTime>("UpdatedDateTime")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<uint>("Version")
-                        .IsConcurrencyToken()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("xid")
-                        .HasColumnName("xmin");
-
-                    b.HasKey("Hdid");
-
-                    b.ToTable("BlockedAccess", "gateway");
                 });
 
             modelBuilder.Entity("HealthGateway.Database.Models.Comment", b =>
@@ -1644,6 +1414,125 @@ namespace HealthGateway.Database.Migrations
                     b.HasKey("HdId");
 
                     b.ToTable("Dependent", "gateway");
+                });
+
+            modelBuilder.Entity("HealthGateway.Database.Models.DependentAudit", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("DependentAuditId");
+
+                    b.Property<string>("AgentUsername")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)");
+
+                    b.Property<DateTime>("CreatedDateTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("HdId")
+                        .IsRequired()
+                        .HasMaxLength(52)
+                        .HasColumnType("character varying(52)");
+
+                    b.Property<string>("OperationCode")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)");
+
+                    b.Property<string>("ProtectedReason")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<DateTime>("TransactionDateTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .IsRequired()
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)");
+
+                    b.Property<DateTime>("UpdatedDateTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<uint>("Version")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OperationCode");
+
+                    b.ToTable("DependentAudit", "gateway");
+                });
+
+            modelBuilder.Entity("HealthGateway.Database.Models.DependentAuditOperationCode", b =>
+                {
+                    b.Property<string>("Code")
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)");
+
+                    b.Property<DateTime>("CreatedDateTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("UpdatedBy")
+                        .IsRequired()
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)");
+
+                    b.Property<DateTime>("UpdatedDateTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<uint>("Version")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
+
+                    b.HasKey("Code");
+
+                    b.ToTable("DependentAuditOperationCode", "gateway");
+
+                    b.HasData(
+                        new
+                        {
+                            Code = "Protect",
+                            CreatedBy = "System",
+                            CreatedDateTime = new DateTime(2019, 5, 1, 7, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "Protect Dependent Operation Code",
+                            UpdatedBy = "System",
+                            UpdatedDateTime = new DateTime(2019, 5, 1, 7, 0, 0, 0, DateTimeKind.Utc),
+                            Version = 0u
+                        },
+                        new
+                        {
+                            Code = "Unprotect",
+                            CreatedBy = "System",
+                            CreatedDateTime = new DateTime(2019, 5, 1, 7, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "Unprotect Dependent Operation Code",
+                            UpdatedBy = "System",
+                            UpdatedDateTime = new DateTime(2019, 5, 1, 7, 0, 0, 0, DateTimeKind.Utc),
+                            Version = 0u
+                        });
                 });
 
             modelBuilder.Entity("HealthGateway.Database.Models.DrugProduct", b =>
@@ -3640,21 +3529,6 @@ namespace HealthGateway.Database.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("HealthGateway.Database.Models.AgentAudit", b =>
-                {
-                    b.HasOne("HealthGateway.Database.Models.AuditGroupCode", null)
-                        .WithMany()
-                        .HasForeignKey("GroupCode")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("HealthGateway.Database.Models.AuditOperationCode", null)
-                        .WithMany()
-                        .HasForeignKey("OperationCode")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("HealthGateway.Database.Models.AllowedDelegation", b =>
                 {
                     b.HasOne("HealthGateway.Database.Models.Dependent", "Dependent")
@@ -3728,6 +3602,15 @@ namespace HealthGateway.Database.Migrations
                         .WithOne("Company")
                         .HasForeignKey("HealthGateway.Database.Models.Company", "DrugProductId")
                         .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("HealthGateway.Database.Models.DependentAudit", b =>
+                {
+                    b.HasOne("HealthGateway.Database.Models.DependentAuditOperationCode", null)
+                        .WithMany()
+                        .HasForeignKey("OperationCode")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });
 

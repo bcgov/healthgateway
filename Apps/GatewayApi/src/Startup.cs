@@ -13,7 +13,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-#pragma warning disable CA1303 //disable literal strings check
 namespace HealthGateway.GatewayApi
 {
     using System;
@@ -79,6 +78,7 @@ namespace HealthGateway.GatewayApi
             this.startupConfig.ConfigurePhsaV2Access(services);
             this.startupConfig.ConfigureTracing(services);
             this.startupConfig.ConfigureAccessControl(services);
+            this.startupConfig.ConfigureMessaging(services);
 
             // Add services
             services.AddTransient<IUserProfileService, UserProfileService>();

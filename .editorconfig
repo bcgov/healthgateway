@@ -299,7 +299,7 @@ dotnet_diagnostic.ca2000.severity = warning
 dotnet_diagnostic.ca2002.severity = warning
 
 # CA2007: Consider calling ConfigureAwait on the awaited task
-dotnet_diagnostic.ca2007.severity = warning
+dotnet_diagnostic.ca2007.severity = none
 
 # CA2008: Do not create tasks without passing a TaskScheduler
 dotnet_diagnostic.ca2008.severity = warning
