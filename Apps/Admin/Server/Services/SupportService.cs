@@ -22,6 +22,7 @@ namespace HealthGateway.Admin.Server.Services
     using System.Threading;
     using System.Threading.Tasks;
     using AutoMapper;
+    using HealthGateway.AccountDataAccess.Audit;
     using HealthGateway.AccountDataAccess.Patient;
     using HealthGateway.Admin.Common.Constants;
     using HealthGateway.Admin.Common.Models;
@@ -45,6 +46,7 @@ namespace HealthGateway.Admin.Server.Services
         private readonly IPatientRepository patientRepository;
         private readonly IResourceDelegateDelegate resourceDelegateDelegate;
         private readonly IUserProfileDelegate userProfileDelegate;
+        private readonly IAuditRepository auditRepository;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SupportService"/> class.
@@ -55,13 +57,15 @@ namespace HealthGateway.Admin.Server.Services
         /// <param name="patientRepository">The injected patient repository.</param>
         /// <param name="resourceDelegateDelegate">The resource delegate used to lookup delegates and owners.</param>
         /// <param name="userProfileDelegate">The user profile delegate to interact with the DB.</param>
+        /// <param name="auditRepository">The injected audit repository.</param>
         public SupportService(
             IMapper autoMapper,
             IConfiguration configuration,
             IMessagingVerificationDelegate messagingVerificationDelegate,
             IPatientRepository patientRepository,
             IResourceDelegateDelegate resourceDelegateDelegate,
-            IUserProfileDelegate userProfileDelegate)
+            IUserProfileDelegate userProfileDelegate,
+            IAuditRepository auditRepository)
         {
             this.autoMapper = autoMapper;
             this.configuration = configuration;
@@ -69,13 +73,15 @@ namespace HealthGateway.Admin.Server.Services
             this.patientRepository = patientRepository;
             this.resourceDelegateDelegate = resourceDelegateDelegate;
             this.userProfileDelegate = userProfileDelegate;
+            this.auditRepository = auditRepository;
         }
 
         /// <inheritdoc/>
         public async Task<PatientSupportDetails> GetMessageVerificationsAsync(string hdid, CancellationToken ct = default)
         {
             IList<MessagingVerification> messagingVerifications = await this.messagingVerificationDelegate.GetUserMessageVerificationsAsync(hdid).ConfigureAwait(true);
-            IEnumerable<AgentAudit> agentAudits = await this.patientRepository.AgentAuditQuery(hdid, AuditGroup.BlockedAccess, ct).ConfigureAwait(true);
+            AgentAuditQuery agentAuditQuery = new(hdid, AuditGroup.BlockedAccess);
+            IEnumerable<AgentAudit> agentAudits = await this.auditRepository.Handle(agentAuditQuery, ct).ConfigureAwait(true);
             Dictionary<string, string> dataSources = await this.patientRepository.DataSourceQuery(hdid, ct).ConfigureAwait(true);
             TimeZoneInfo localTimezone = DateFormatter.GetLocalTimeZone(this.configuration);
 
@@ -116,10 +122,10 @@ namespace HealthGateway.Admin.Server.Services
         }
 
         /// <inheritdoc/>
-        public async Task<AgentAction> BlockAccessAsync(string hdid, IEnumerable<DataSource> dataSources, string reason, CancellationToken ct = default)
+        public async Task BlockAccessAsync(string hdid, IEnumerable<DataSource> dataSources, string reason, CancellationToken ct = default)
         {
-            AgentAudit agentAudit = await this.patientRepository.BlockAccessCommand(hdid, dataSources, reason, ct).ConfigureAwait(true);
-            return this.autoMapper.Map<AgentAction>(agentAudit);
+            BlockAccessCommand blockAccessCommand = new(hdid, dataSources, reason);
+            await this.patientRepository.BlockAccess(blockAccessCommand, ct).ConfigureAwait(true);
         }
 
         private async Task<IEnumerable<UserProfile>> GetDelegateProfilesAsync(string dependentPhn, CancellationToken ct)

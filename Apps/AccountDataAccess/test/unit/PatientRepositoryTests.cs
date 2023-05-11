@@ -261,7 +261,6 @@ namespace AccountDataAccessTest
                 patientIdentityApi.Object,
                 new Mock<DbBlockedAccessDelegate>().Object,
                 new Mock<IAuthenticationDelegate>().Object,
-                new Mock<IAgentAuditDelegate>().Object,
                 Mapper);
             return patientRepository;
         }

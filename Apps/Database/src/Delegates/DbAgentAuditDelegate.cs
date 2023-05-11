@@ -18,6 +18,7 @@ namespace HealthGateway.Database.Delegates
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
+    using HealthGateway.Common.Data.Constants;
     using HealthGateway.Database.Context;
     using HealthGateway.Database.Models;
     using Microsoft.EntityFrameworkCore;
@@ -41,12 +42,12 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public async Task<IEnumerable<AgentAudit>> GetAgentAuditsAsync(AgentAuditQuery query)
+        public async Task<IEnumerable<AgentAudit>> GetAgentAuditsAsync(string hdid, AuditGroup group)
         {
-            this.logger.LogTrace("Getting agent audit for group: {Group} - hdid : {Hdid}", query.GroupCode, query.Hdid);
+            this.logger.LogTrace("Getting agent audit for group: {Group} - hdid : {Hdid}", group, hdid);
 
             IQueryable<AgentAudit> dbQuery = this.dbContext.AgentAudit;
-            dbQuery = dbQuery.Where(d => d.Hdid == query.Hdid && d.GroupCode == query.GroupCode);
+            dbQuery = dbQuery.Where(d => d.Hdid == hdid && d.GroupCode == group);
             return await dbQuery.ToListAsync().ConfigureAwait(true);
         }
     }

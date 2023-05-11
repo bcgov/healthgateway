@@ -13,24 +13,34 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Database.Delegates
+namespace HealthGateway.AccountDataAccess.Audit
 {
     using System.Collections.Generic;
+    using System.Threading;
     using System.Threading.Tasks;
-    using HealthGateway.Common.Data.Constants;
+    using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
 
     /// <summary>
-    /// Delegate that performs operations for models relating to AgentAudit.
+    /// Handle audit data.
     /// </summary>
-    public interface IAgentAuditDelegate
+    public class AuditRepository : IAuditRepository
     {
+        private readonly IAgentAuditDelegate agentAuditDelegate;
+
         /// <summary>
-        /// Fetches the agent audit(s) by query options from the database.
+        /// Initializes a new instance of the <see cref="AuditRepository"/> class.
         /// </summary>
-        /// <param name="hdid">The hdid to search.</param>
-        /// <param name="group">The group to search.</param>
-        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
-        Task<IEnumerable<AgentAudit>> GetAgentAuditsAsync(string hdid, AuditGroup group);
+        /// <param name="agentAuditDelegate">The inject agent audit delegate.</param>
+        public AuditRepository(IAgentAuditDelegate agentAuditDelegate)
+        {
+            this.agentAuditDelegate = agentAuditDelegate;
+        }
+
+        /// <inheritdoc/>
+        public async Task<IEnumerable<AgentAudit>> Handle(AgentAuditQuery query, CancellationToken ct = default)
+        {
+            return await this.agentAuditDelegate.GetAgentAuditsAsync(query.Hdid, query.Group).ConfigureAwait(true);
+        }
     }
 }

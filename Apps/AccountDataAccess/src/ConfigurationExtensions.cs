@@ -17,6 +17,7 @@ namespace HealthGateway.AccountDataAccess
 {
     using System;
     using System.Diagnostics.CodeAnalysis;
+    using HealthGateway.AccountDataAccess.Audit;
     using HealthGateway.AccountDataAccess.Patient;
     using HealthGateway.AccountDataAccess.Patient.Api;
     using HealthGateway.Common.Utils.Phsa;
@@ -43,6 +44,7 @@ namespace HealthGateway.AccountDataAccess
             services.AddTransient<IBlockedAccessDelegate, DbBlockedAccessDelegate>();
             services.AddTransient<IAgentAuditDelegate, DbAgentAuditDelegate>();
             services.AddTransient<IPatientRepository, PatientRepository>();
+            services.AddTransient<IAuditRepository, AuditRepository>();
 
             services.AddRefitClient<IPatientIdentityApi>()
                 .ConfigureHttpClient(c => c.BaseAddress = configuration.PhsaApiBaseUrl)

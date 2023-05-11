@@ -52,7 +52,6 @@ namespace HealthGateway.AccountDataAccess.Patient
         private readonly ILogger<PatientRepository> logger;
 
         private readonly IClientRegistriesDelegate clientRegistriesDelegate;
-        private readonly IAgentAuditDelegate agentAuditDelegate;
         private readonly IAuthenticationDelegate authenticationDelegate;
         private readonly IBlockedAccessDelegate blockedAccessDelegate;
         private readonly IPatientIdentityApi patientIdentityApi;
@@ -68,7 +67,6 @@ namespace HealthGateway.AccountDataAccess.Patient
         /// <param name="patientIdentityApi">The patient identity api to use.</param>
         /// <param name="blockedAccessDelegate">The injected blocked access delegate.</param>
         /// <param name="authenticationDelegate">The injected authentication delegate.</param>
-        /// <param name="agentAuditDelegate">The injected agent audit delegate.</param>
         /// <param name="mapper">The injected mapper.</param>
         public PatientRepository(
             IClientRegistriesDelegate clientRegistriesDelegate,
@@ -78,7 +76,6 @@ namespace HealthGateway.AccountDataAccess.Patient
             IPatientIdentityApi patientIdentityApi,
             IBlockedAccessDelegate blockedAccessDelegate,
             IAuthenticationDelegate authenticationDelegate,
-            IAgentAuditDelegate agentAuditDelegate,
             IMapper mapper)
         {
             this.clientRegistriesDelegate = clientRegistriesDelegate;
@@ -88,14 +85,13 @@ namespace HealthGateway.AccountDataAccess.Patient
             this.patientIdentityApi = patientIdentityApi;
             this.blockedAccessDelegate = blockedAccessDelegate;
             this.authenticationDelegate = authenticationDelegate;
-            this.agentAuditDelegate = agentAuditDelegate;
             this.mapper = mapper;
         }
 
         private static ActivitySource Source { get; } = new(nameof(PatientRepository));
 
         /// <inheritdoc/>
-        public async Task<PatientQueryResult> Query(PatientQuery query, CancellationToken ct)
+        public async Task<PatientQueryResult> Query(PatientQuery query, CancellationToken ct = default)
         {
             return query switch
             {
@@ -106,26 +102,14 @@ namespace HealthGateway.AccountDataAccess.Patient
         }
 
         /// <inheritdoc/>
-        public async Task<IEnumerable<AgentAudit>> AgentAuditQuery(string hdid, AuditGroup group, CancellationToken ct)
-        {
-            AgentAuditQuery agentAuditQuery = new()
-            {
-                Hdid = hdid,
-                GroupCode = group,
-            };
-
-            return await this.agentAuditDelegate.GetAgentAuditsAsync(agentAuditQuery).ConfigureAwait(true);
-        }
-
-        /// <inheritdoc/>
-        public async Task<AgentAudit> BlockAccessCommand(string hdid, IEnumerable<DataSource> dataSources, string reason, CancellationToken ct)
+        public async Task BlockAccess(BlockAccessCommand command, CancellationToken ct = default)
         {
             string authenticatedUserId = this.authenticationDelegate.FetchAuthenticatedUserId() ?? UserId.DefaultUser;
 
             AgentAudit agentAudit = new()
             {
-                Hdid = hdid,
-                Reason = reason,
+                Hdid = command.Hdid,
+                Reason = command.Reason,
                 OperationCode = AuditOperation.ChangeDataSourceAccess,
                 GroupCode = AuditGroup.BlockedAccess,
                 AgentUsername = this.authenticationDelegate.FetchAuthenticatedPreferredUsername() ?? authenticatedUserId,
@@ -134,15 +118,15 @@ namespace HealthGateway.AccountDataAccess.Patient
                 UpdatedBy = authenticatedUserId,
             };
 
-            BlockedAccess? blockedAccess = await this.blockedAccessDelegate.GetBlockedAccessAsync(hdid).ConfigureAwait(true) ?? new()
+            BlockedAccess? blockedAccess = await this.blockedAccessDelegate.GetBlockedAccessAsync(command.Hdid).ConfigureAwait(true) ?? new()
             {
-                Hdid = hdid,
+                Hdid = command.Hdid,
                 CreatedBy = authenticatedUserId,
             };
 
             blockedAccess.UpdatedBy = authenticatedUserId;
 
-            Dictionary<string, string> sources = dataSources.ToDictionary(x => x.ToString(), _ => "true");
+            Dictionary<string, string> sources = command.DataSources.ToDictionary(x => x.ToString(), _ => "true");
 
             if (sources.Any())
             {
@@ -155,12 +139,10 @@ namespace HealthGateway.AccountDataAccess.Patient
             {
                 await this.blockedAccessDelegate.DeleteBlockedAccessAsync(blockedAccess, agentAudit);
             }
-
-            return agentAudit;
         }
 
         /// <inheritdoc/>
-        public async Task<BlockedAccess?> BlockedAccessQuery(string hdid, CancellationToken ct)
+        public async Task<BlockedAccess?> BlockedAccessQuery(string hdid, CancellationToken ct = default)
         {
             if (ct.IsCancellationRequested)
             {
@@ -171,7 +153,7 @@ namespace HealthGateway.AccountDataAccess.Patient
         }
 
         /// <inheritdoc/>
-        public async Task<Dictionary<string, string>> DataSourceQuery(string hdid, CancellationToken ct)
+        public async Task<Dictionary<string, string>> DataSourceQuery(string hdid, CancellationToken ct = default)
         {
             if (ct.IsCancellationRequested)
             {

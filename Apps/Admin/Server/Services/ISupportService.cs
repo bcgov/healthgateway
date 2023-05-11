@@ -51,7 +51,7 @@ namespace HealthGateway.Admin.Server.Services
         /// <param name="dataSources">The list of data sources that will be blocked.</param>
         /// <param name="reason">The reason to block access to data source(s)..</param>
         /// <param name="ct">A cancellation token.</param>
-        /// <returns>The agent action entry created from the operation.</returns>
-        Task<AgentAction> BlockAccessAsync(string hdid, IEnumerable<DataSource> dataSources, string reason, CancellationToken ct = default);
+        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
+        Task BlockAccessAsync(string hdid, IEnumerable<DataSource> dataSources, string reason, CancellationToken ct = default);
     }
 }

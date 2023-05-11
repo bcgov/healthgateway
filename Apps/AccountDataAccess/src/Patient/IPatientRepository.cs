@@ -53,7 +53,7 @@ namespace HealthGateway.AccountDataAccess.Patient
         /// <param name="query">The query.</param>
         /// <param name="ct">The cancellation token.</param>
         /// <returns>The patient model wrapped in a patient query result object.</returns>
-        Task<PatientQueryResult> Query(PatientQuery query, CancellationToken ct);
+        Task<PatientQueryResult> Query(PatientQuery query, CancellationToken ct = default);
 
         /// <summary>
         /// Gets the blocked access record.
@@ -61,7 +61,7 @@ namespace HealthGateway.AccountDataAccess.Patient
         /// <param name="hdid">The hdid to query on.</param>
         /// <param name="ct">The cancellation token.</param>
         /// <returns>The blocked access or null if not found.</returns>
-        Task<BlockedAccess?> BlockedAccessQuery(string hdid, CancellationToken ct);
+        Task<BlockedAccess?> BlockedAccessQuery(string hdid, CancellationToken ct = default);
 
         /// <summary>
         /// Gets the blocked access's data sources for the hdid.
@@ -69,26 +69,15 @@ namespace HealthGateway.AccountDataAccess.Patient
         /// <param name="hdid">The hdid to query on.</param>
         /// <param name="ct">The cancellation token.</param>
         /// <returns>A dictionary of blocked access data source values.</returns>
-        Task<Dictionary<string, string>> DataSourceQuery(string hdid, CancellationToken ct);
-
-        /// <summary>
-        /// Gets the agent audits.
-        /// </summary>
-        /// <param name="hdid">The hdid to query on.</param>
-        /// <param name="group">The audit group to search.</param>
-        /// <param name="ct">The cancellation token.</param>
-        /// <returns>The list of agent audits..</returns>
-        Task<IEnumerable<AgentAudit>> AgentAuditQuery(string hdid, AuditGroup group, CancellationToken ct);
+        Task<Dictionary<string, string>> DataSourceQuery(string hdid, CancellationToken ct = default);
 
         /// <summary>
         /// Block access to data sources associated with the hdid.
         /// </summary>
-        /// <param name="hdid">The blocked access record to add or update.</param>
-        /// <param name="dataSources">The list of data sources that will be blocked.</param>
-        /// <param name="reason">The reason to block access.</param>
+        /// <param name="command">The command details used to block access.</param>
         /// <param name="ct">The cancellation token.</param>
         /// <returns>The agent audit entry created from the operation.</returns>
-        Task<AgentAudit> BlockAccessCommand(string hdid, IEnumerable<DataSource> dataSources, string reason, CancellationToken ct);
+        Task BlockAccess(BlockAccessCommand command, CancellationToken ct = default);
     }
 
     /// <summary>
@@ -114,4 +103,15 @@ namespace HealthGateway.AccountDataAccess.Patient
         string? Hdid = null,
         PatientDetailSource Source = PatientDetailSource.All,
         bool UseCache = true) : PatientQuery;
+
+    /// <summary>
+    /// The blocked access command to add, update or delete.
+    /// </summary>
+    /// <param name="Hdid">The hdid associated with the blocked access record.</param>
+    /// <param name="DataSources">The data sources to block access.</param>
+    /// <param name="Reason">The reason to block access.</param>
+    public record BlockAccessCommand(
+        string Hdid,
+        IEnumerable<DataSource> DataSources,
+        string Reason);
 }

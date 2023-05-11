@@ -98,16 +98,16 @@ namespace HealthGateway.Admin.Server.Controllers
         /// </summary>
         /// <param name="hdid">The hdid belonging to the data sources to block.</param>
         /// <param name="request">The request object containing data sources to block.</param>
-        /// <returns>The agent action entry created from the operation.</returns>
+        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
         /// <response code="200">The dependent is protected.</response>
         /// <response code="401">The client must authenticate itself to get the requested resource.</response>
         [HttpPut]
         [Route("{hdid}/BlockAccess")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<AgentAction> BlockAccess(string hdid, BlockAccessRequest request)
+        public async Task BlockAccess(string hdid, BlockAccessRequest request)
         {
-            return await this.supportService.BlockAccessAsync(hdid, request.DataSources, request.Reason).ConfigureAwait(true);
+            await this.supportService.BlockAccessAsync(hdid, request.DataSources, request.Reason).ConfigureAwait(true);
         }
     }
 }
