@@ -1,7 +1,5 @@
-<script lang="ts">
-import Vue from "vue";
-import { Component } from "vue-property-decorator";
-import { Action } from "vuex-class";
+<script setup lang="ts">
+import { onMounted, ref } from "vue";
 
 import HtmlTextAreaComponent from "@/components/HtmlTextAreaComponent.vue";
 import LoadingComponent from "@/components/LoadingComponent.vue";
@@ -9,71 +7,66 @@ import BreadcrumbComponent from "@/components/navmenu/BreadcrumbComponent.vue";
 import BreadcrumbItem from "@/models/breadcrumbItem";
 import { ResultError } from "@/models/errors";
 import container from "@/plugins/container";
-import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import { ILogger, IUserProfileService } from "@/services/interfaces";
+import { SERVICE_IDENTIFIER, STORE_IDENTIFIER } from "@/plugins/inversify";
+import {
+    ILogger,
+    IStoreProvider,
+    IUserProfileService,
+} from "@/services/interfaces";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const options: any = {
-    components: {
-        BreadcrumbComponent,
-        LoadingComponent,
-        HtmlTextAreaComponent,
+const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+const storeProvider = container.get<IStoreProvider>(
+    STORE_IDENTIFIER.StoreProvider
+);
+const store = storeProvider.getStore();
+const userProfileService = container.get<IUserProfileService>(
+    SERVICE_IDENTIFIER.UserProfileService
+);
+
+const breadcrumbItems: BreadcrumbItem[] = [
+    {
+        text: "Terms of Service",
+        to: "/termsOfService",
+        active: true,
+        dataTestId: "breadcrumb-terms-of-service",
     },
-};
+];
 
-@Component(options)
-export default class TermsOfServiceView extends Vue {
-    @Action("setTooManyRequestsWarning", { namespace: "errorBanner" })
-    setTooManyRequestsWarning!: (params: { key: string }) => void;
+const isLoading = ref(true);
+const hasErrors = ref(false);
+const errorMessage = ref("");
+const termsOfService = ref("");
 
-    private logger!: ILogger;
-    private userProfileService!: IUserProfileService;
-    private isLoading = true;
-    private hasErrors = false;
-    private errorMessage = "";
+onMounted(() => {
+    loadTermsOfService();
+});
 
-    private termsOfService = "";
+function setTooManyRequestsWarning(params: { key: string }): void {
+    store.dispatch("errorBanner/setTooManyRequestsWarning", params);
+}
 
-    private breadcrumbItems: BreadcrumbItem[] = [
-        {
-            text: "Terms of Service",
-            to: "/termsOfService",
-            active: true,
-            dataTestId: "breadcrumb-terms-of-service",
-        },
-    ];
-
-    private mounted(): void {
-        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-        this.userProfileService = container.get(
-            SERVICE_IDENTIFIER.UserProfileService
-        );
-        this.loadTermsOfService();
-    }
-
-    private loadTermsOfService(): void {
-        this.isLoading = true;
-        this.userProfileService
-            .getTermsOfService()
-            .then((result) => {
-                this.logger.debug(
-                    "Terms Of Service retrieved: " + JSON.stringify(result)
-                );
-                this.termsOfService = result.content;
-            })
-            .catch((err: ResultError) => {
-                this.logger.error(err.resultMessage);
-                if (err.statusCode === 429) {
-                    this.setTooManyRequestsWarning({ key: "page" });
-                } else {
-                    this.hasErrors = true;
-                    this.errorMessage = "Please refresh your browser.";
-                }
-            })
-            .finally(() => {
-                this.isLoading = false;
-            });
-    }
+function loadTermsOfService(): void {
+    isLoading.value = true;
+    userProfileService
+        .getTermsOfService()
+        .then((result) => {
+            logger.debug(
+                "Terms Of Service retrieved: " + JSON.stringify(result)
+            );
+            termsOfService.value = result.content;
+        })
+        .catch((err: ResultError) => {
+            logger.error(err.resultMessage);
+            if (err.statusCode === 429) {
+                setTooManyRequestsWarning({ key: "page" });
+            } else {
+                hasErrors.value = true;
+                errorMessage.value = "Please refresh your browser.";
+            }
+        })
+        .finally(() => {
+            isLoading.value = false;
+        });
 }
 </script>
 

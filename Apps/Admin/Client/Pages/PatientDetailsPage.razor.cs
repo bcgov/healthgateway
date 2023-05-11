@@ -29,6 +29,7 @@ namespace HealthGateway.Admin.Client.Pages
     using HealthGateway.Common.Data.ViewModels;
     using Microsoft.AspNetCore.Components;
     using Microsoft.AspNetCore.WebUtilities;
+    using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Primitives;
 
     /// <summary>
@@ -51,6 +52,9 @@ namespace HealthGateway.Admin.Client.Pages
         [Inject]
         private IActionSubscriber ActionSubscriber { get; set; } = default!;
 
+        [Inject]
+        private IConfiguration Configuration { get; set; } = default!;
+
         private bool MessagingVerificationsLoading => this.MessageVerificationState.Value.IsLoading;
 
         private bool HasMessagingVerificationsError => this.MessageVerificationState.Value.Error is { Message.Length: > 0 };
@@ -71,6 +75,10 @@ namespace HealthGateway.Admin.Client.Pages
         private string? StatusWarning => this.Patient == null ? null : MapStatusToWarning(this.Patient.Status);
 
         private string? Hdid { get; set; }
+
+        private DateTime? ProfileCreatedDateTime { get; set; }
+
+        private DateTime? ProfileLastLoginDateTime { get; set; }
 
         /// <inheritdoc/>
         protected override void OnInitialized()
@@ -113,6 +121,18 @@ namespace HealthGateway.Admin.Client.Pages
             {
                 this.RetrieveMessagingVerifications();
             }
+
+            DateTime? patientProfileCreatedDateTime = this.Patient?.ProfileCreatedDateTime;
+            if (patientProfileCreatedDateTime != null)
+            {
+                this.ProfileCreatedDateTime = TimeZoneInfo.ConvertTimeFromUtc(patientProfileCreatedDateTime.Value, this.GetTimeZone());
+            }
+
+            DateTime? profileLastLoginDateTime = this.Patient?.ProfileLastLoginDateTime;
+            if (profileLastLoginDateTime != null)
+            {
+                this.ProfileLastLoginDateTime = TimeZoneInfo.ConvertTimeFromUtc(profileLastLoginDateTime.Value, this.GetTimeZone());
+            }
         }
 
         private void RetrieveMessagingVerifications()
@@ -122,6 +142,11 @@ namespace HealthGateway.Admin.Client.Pages
             {
                 this.Dispatcher.Dispatch(new MessageVerificationActions.LoadAction(this.Hdid));
             }
+        }
+
+        private TimeZoneInfo GetTimeZone()
+        {
+            return DateFormatter.GetLocalTimeZone(this.Configuration);
         }
     }
 }

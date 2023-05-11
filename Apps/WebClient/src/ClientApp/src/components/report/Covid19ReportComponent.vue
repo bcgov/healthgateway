@@ -51,8 +51,9 @@ export default class Covid19ReportComponent extends Vue {
     }
 
     private get visibleRecords(): Covid19LaboratoryOrder[] {
-        let records = this.covid19LaboratoryOrders(this.hdid).filter((record) =>
-            this.filter.allowsDate(record.labResults[0].collectedDateTime)
+        const records = this.covid19LaboratoryOrders(this.hdid).filter(
+            (record) =>
+                this.filter.allowsDate(record.labResults[0].collectedDateTime)
         );
         records.sort((a, b) => {
             const firstDate = new DateWrapper(

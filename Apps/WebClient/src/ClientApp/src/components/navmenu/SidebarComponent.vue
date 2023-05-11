@@ -103,9 +103,9 @@ export default class SidebarComponent extends Vue {
         await this.$nextTick();
 
         // set up listener to monitor sidebar collapsing and expanding
-        let sidebar = document.querySelector("#sidebar");
+        const sidebar = document.querySelector("#sidebar");
         sidebar?.addEventListener("transitionend", (event: Event) => {
-            let transitionEvent = event as TransitionEvent;
+            const transitionEvent = event as TransitionEvent;
             if (
                 sidebar !== transitionEvent.target ||
                 transitionEvent.propertyName !== "max-width"

@@ -63,7 +63,7 @@ export default class HgDateDropdownComponent extends Vue {
             maxYear = this.currentYear;
         }
 
-        let yearOptions: ISelectOption[] = [{ value: null, text: "Year" }];
+        const yearOptions: ISelectOption[] = [{ value: null, text: "Year" }];
         for (let i = maxYear; i >= minYear; i--) {
             yearOptions.push({ value: i, text: i.toString() });
         }
@@ -81,7 +81,7 @@ export default class HgDateDropdownComponent extends Vue {
             end = this.currentMonth;
         }
 
-        let monthOptions: ISelectOption[] = [{ value: null, text: "Month" }];
+        const monthOptions: ISelectOption[] = [{ value: null, text: "Month" }];
         for (let monthNo = start; monthNo <= end; monthNo++) {
             monthOptions.push({
                 value: monthNo,
@@ -106,7 +106,7 @@ export default class HgDateDropdownComponent extends Vue {
             start = this.currentDay;
         }
 
-        let numDaysInMonth = new Date(
+        const numDaysInMonth = new Date(
             this.year ?? this.currentYear,
             this.month ?? this.currentMonth,
             0
@@ -124,7 +124,7 @@ export default class HgDateDropdownComponent extends Vue {
             end = this.currentDay;
         }
 
-        let dayOptions: ISelectOption[] = [{ value: null, text: "Day" }];
+        const dayOptions: ISelectOption[] = [{ value: null, text: "Day" }];
 
         for (let j = start; j <= end; j++) {
             day = j;

@@ -7,7 +7,7 @@ export default class HgDropdownComponent extends Vue {
     @Prop({ required: true }) variant!: string;
 
     private get classes(): string[] {
-        let result = [];
+        const result = [];
         result.push("hg-dropdown", "hg-primary");
         return result;
     }

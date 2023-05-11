@@ -8,7 +8,7 @@ export default class HgButtonComponent extends Vue {
     @Prop({ required: false, default: "" }) size!: string;
 
     private get classes(): string[] {
-        let result = [];
+        const result = [];
 
         switch (this.variant) {
             case "primary":

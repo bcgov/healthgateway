@@ -237,7 +237,9 @@ export default class TimelineComponent extends Vue {
             return [];
         }
 
-        let newGroupArray = DateGroup.createGroups(this.visibleTimelineEntries);
+        const newGroupArray = DateGroup.createGroups(
+            this.visibleTimelineEntries
+        );
         return DateGroup.sortGroups(newGroupArray);
     }
 
@@ -353,7 +355,7 @@ export default class TimelineComponent extends Vue {
 
     get unfilteredTimelineEntries(): TimelineEntry[] {
         const getComments = this.getEntryComments;
-        let entries = [];
+        const entries = [];
 
         // Add the Special Authority request entries to the timeline list
         for (const request of this.specialAuthorityRequests(this.hdid)) {
@@ -436,8 +438,8 @@ export default class TimelineComponent extends Vue {
         }
 
         // Get the section of the array that contains the paginated section
-        let lowerIndex = (this.currentPage - 1) * this.pageSize;
-        let upperIndex = Math.min(
+        const lowerIndex = (this.currentPage - 1) * this.pageSize;
+        const upperIndex = Math.min(
             this.currentPage * this.pageSize,
             this.filteredTimelineEntries.length
         );
@@ -603,7 +605,7 @@ export default class TimelineComponent extends Vue {
     }
 
     setPageFromDate(eventDate: DateWrapper): boolean {
-        let index = this.filteredTimelineEntries.findIndex((entry) => {
+        const index = this.filteredTimelineEntries.findIndex((entry) => {
             entry.date.isSame(eventDate);
         });
 

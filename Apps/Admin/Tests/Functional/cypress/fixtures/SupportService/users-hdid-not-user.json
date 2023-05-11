@@ -1,0 +1,25 @@
+[
+    {
+        "status": "NotUser",
+        "warningMessage": "",
+        "hdid": "C54JQKXANHJK7TIYBRCHJBOKXOIXASNQE76WSRCTOPKOXRMI5OAA",
+        "personalHealthNumber": "9874270539",
+        "commonName": {
+            "givenName": "HLTHGW Idella",
+            "surname": "ONE"
+        },
+        "legalName": {
+            "givenName": "HLTHGW IDELLA",
+            "surname": "ONE"
+        },
+        "preferredName": {
+            "givenName": "HLTHGW Idella",
+            "surname": "ONE"
+        },
+        "birthdate": "2015-07-06",
+        "physicalAddress": "6860 BRIARWOOD ROW, TRAIL, BC, V1R 4J6",
+        "postalAddress": "",
+        "profileCreatedDateTime": null,
+        "profileLastLoginDateTime": null
+    }
+]
