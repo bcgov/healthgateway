@@ -17,26 +17,41 @@ namespace HealthGateway.CommonTests.CacheProviders
 {
     using System;
     using System.Threading;
+    using System.Threading.Tasks;
     using HealthGateway.Common.CacheProviders;
+    using HealthGateway.Common.Models.Cacheable;
     using Microsoft.Extensions.Caching.Memory;
     using Xunit;
 
     /// <summary>
-    /// Integration Tests for the MemoryCacheProvider.
+    /// Integration Tests for the RedisCacheProvider.
     /// </summary>
     public class MemoryCacheProviderTests
     {
+        private readonly ICacheProvider cacheProvider;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MemoryCacheProviderTests"/> class.
+        /// </summary>
+        public MemoryCacheProviderTests()
+        {
+#pragma warning disable CA2000
+            this.cacheProvider = new MemoryCacheProvider(new MemoryCache(new MemoryCacheOptions()));
+#pragma warning restore CA2000
+        }
+
         /// <summary>
         /// Validates adding items to the cache.
         /// </summary>
         [Fact]
         public void AddItemToCache()
         {
-            string key = "key";
-            using IMemoryCache memoryCache = new MemoryCache(new MemoryCacheOptions());
-            ICacheProvider cacheProvider = new MemoryCacheProvider(memoryCache);
-            cacheProvider.AddItem(key, "value", TimeSpan.FromMilliseconds(500));
-            Assert.True(memoryCache.TryGetValue(key, out _));
+            string key = $"key_{GenerateRandomString()}";
+            string value = $"value_{GenerateRandomString()}";
+
+            this.cacheProvider.AddItem(key, value, TimeSpan.FromMilliseconds(5000));
+
+            Assert.NotNull(this.cacheProvider.GetItem<string>(key));
         }
 
         /// <summary>
@@ -45,13 +60,13 @@ namespace HealthGateway.CommonTests.CacheProviders
         [Fact]
         public void AddItemToCacheExpired()
         {
-            string key = "key";
-            using IMemoryCache memoryCache = new MemoryCache(new MemoryCacheOptions());
-            ICacheProvider cacheProvider = new MemoryCacheProvider(memoryCache);
-            cacheProvider.AddItem(key, "value", TimeSpan.FromMilliseconds(100));
+            string key = $"key_{GenerateRandomString()}";
+            string value = $"value_{GenerateRandomString()}";
+
+            this.cacheProvider.AddItem(key, value, TimeSpan.FromMilliseconds(100));
             Thread.Sleep(101);
-            string? cacheItem = cacheProvider.GetItem<string>(key);
-            Assert.True(cacheItem is null);
+
+            Assert.Null(this.cacheProvider.GetItem<string>(key));
         }
 
         /// <summary>
@@ -60,14 +75,165 @@ namespace HealthGateway.CommonTests.CacheProviders
         [Fact]
         public void GetItemFromCache()
         {
-            string key = "key";
-            string value = "value";
-            using IMemoryCache memoryCache = new MemoryCache(new MemoryCacheOptions());
-            memoryCache.Set(key, value);
+            string key = $"key_{GenerateRandomString()}";
+            string value = $"value_{GenerateRandomString()}";
 
-            ICacheProvider cacheProvider = new MemoryCacheProvider(memoryCache);
-            string? cacheItem = cacheProvider.GetItem<string>(key);
-            Assert.True(value == cacheItem);
+            this.cacheProvider.AddItem(key, value);
+            string? cacheItem = this.cacheProvider.GetItem<string>(key);
+
+            Assert.Equal(value, cacheItem);
+        }
+
+        /// <summary>
+        /// Validates getting items from the cache.
+        /// </summary>
+        [Fact]
+        public void RemoveItemFromCache()
+        {
+            string key = $"key_{GenerateRandomString()}";
+            string value = $"value_{GenerateRandomString()}";
+
+            this.cacheProvider.AddItem(key, value);
+            string? cacheItem = this.cacheProvider.GetItem<string>(key);
+            Assert.NotNull(cacheItem);
+
+            this.cacheProvider.RemoveItem(key);
+            cacheItem = this.cacheProvider.GetItem<string>(key);
+            Assert.Null(cacheItem);
+        }
+
+        /// <summary>
+        /// Validates getting or setting items from the cache.
+        /// </summary>
+        [Fact]
+        public void GetOrSetItemFromCache()
+        {
+            string key = $"key_{GenerateRandomString()}";
+            string value = $"value_{GenerateRandomString()}";
+
+            Assert.Null(this.cacheProvider.GetItem<string>(key));
+
+            string? cacheItem = this.cacheProvider.GetOrSet(key, () => value);
+
+            Assert.Equal(value, cacheItem);
+        }
+
+        /// <summary>
+        /// Validates adding items to the cache.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="Task"/> representing the asynchronous unit test.
+        /// </returns>
+        [Fact]
+        public async Task AddItemAsyncToCache()
+        {
+            string key = $"key_{GenerateRandomString()}";
+            string value = $"value_{GenerateRandomString()}";
+
+            await this.cacheProvider.AddItemAsync(key, value, TimeSpan.FromMilliseconds(5000)).ConfigureAwait(true);
+
+            Assert.NotNull(await this.cacheProvider.GetItemAsync<string>(key).ConfigureAwait(true));
+        }
+
+        /// <summary>
+        /// Validates items in the cache expire.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="Task"/> representing the asynchronous unit test.
+        /// </returns>
+        [Fact]
+        public async Task AddItemAsyncToCacheExpired()
+        {
+            string key = $"key_{GenerateRandomString()}";
+            string value = $"value_{GenerateRandomString()}";
+
+            await this.cacheProvider.AddItemAsync(key, value, TimeSpan.FromMilliseconds(100)).ConfigureAwait(true);
+            Thread.Sleep(101);
+
+            Assert.Null(await this.cacheProvider.GetItemAsync<string>(key).ConfigureAwait(true));
+        }
+
+        /// <summary>
+        /// Validates getting items from the cache.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="Task"/> representing the asynchronous unit test.
+        /// </returns>
+        [Fact]
+        public async Task GetItemAsyncFromCache()
+        {
+            string key = $"key_{GenerateRandomString()}";
+            string value = $"value_{GenerateRandomString()}";
+
+            await this.cacheProvider.AddItemAsync(key, value).ConfigureAwait(true);
+            string? cacheItem = await this.cacheProvider.GetItemAsync<string>(key).ConfigureAwait(true);
+
+            Assert.Equal(value, cacheItem);
+        }
+
+        /// <summary>
+        /// Validates getting items from the cache.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="Task"/> representing the asynchronous unit test.
+        /// </returns>
+        [Fact]
+        public async Task RemoveItemAsyncFromCache()
+        {
+            string key = $"key_{GenerateRandomString()}";
+            string value = $"value_{GenerateRandomString()}";
+
+            await this.cacheProvider.AddItemAsync(key, value).ConfigureAwait(true);
+            string? cacheItem = await this.cacheProvider.GetItemAsync<string>(key).ConfigureAwait(true);
+            Assert.NotNull(cacheItem);
+
+            await this.cacheProvider.RemoveItemAsync(key).ConfigureAwait(true);
+            cacheItem = await this.cacheProvider.GetItemAsync<string>(key).ConfigureAwait(true);
+            Assert.Null(cacheItem);
+        }
+
+        /// <summary>
+        /// Validates getting or setting items from the cache.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="Task"/> representing the asynchronous unit test.
+        /// </returns>
+        [Fact]
+        public async Task GetOrSetItemAsyncFromCache()
+        {
+            string key = $"key_{GenerateRandomString()}";
+            string value = $"value_{GenerateRandomString()}";
+
+            Assert.Null(await this.cacheProvider.GetItemAsync<string>(key).ConfigureAwait(true));
+
+            string? cacheItem = await this.cacheProvider.GetOrSetAsync(key, () => Task.FromResult(value)).ConfigureAwait(true);
+
+            Assert.Equal(value, cacheItem);
+        }
+
+        /// <summary>
+        /// Validates complex object serialization.
+        /// </summary>
+        [Fact]
+        public void CanCacheComplexObject()
+        {
+            string key = $"key_{GenerateRandomString()}";
+            IHash expected = new HmacHash
+            {
+                Hash = "1234",
+                Salt = "5678",
+            };
+            this.cacheProvider.AddItem(key, expected, TimeSpan.FromSeconds(30));
+
+            IHash? actual = this.cacheProvider.GetItem<HmacHash>(key);
+            Assert.NotNull(actual);
+            Assert.Equal(expected.Hash, actual.Hash);
+            Assert.Equal(((HmacHash)expected).Salt, ((HmacHash)actual).Salt);
+        }
+
+        private static string GenerateRandomString()
+        {
+            return Guid.NewGuid().ToString()[..5];
         }
     }
 }
