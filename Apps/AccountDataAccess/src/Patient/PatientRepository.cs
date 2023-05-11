@@ -108,11 +108,6 @@ namespace HealthGateway.AccountDataAccess.Patient
         /// <inheritdoc/>
         public async Task<IEnumerable<AgentAudit>> AgentAuditQuery(string hdid, AuditGroup group, CancellationToken ct)
         {
-            if (ct.IsCancellationRequested)
-            {
-                throw new InvalidOperationException("cancellation was requested");
-            }
-
             AgentAuditQuery agentAuditQuery = new()
             {
                 Hdid = hdid,
@@ -125,11 +120,6 @@ namespace HealthGateway.AccountDataAccess.Patient
         /// <inheritdoc/>
         public async Task<AgentAudit> BlockAccessCommand(string hdid, IEnumerable<DataSource> dataSources, string reason, CancellationToken ct)
         {
-            if (ct.IsCancellationRequested)
-            {
-                throw new InvalidOperationException("cancellation was requested");
-            }
-
             string authenticatedUserId = this.authenticationDelegate.FetchAuthenticatedUserId() ?? UserId.DefaultUser;
 
             AgentAudit agentAudit = new()

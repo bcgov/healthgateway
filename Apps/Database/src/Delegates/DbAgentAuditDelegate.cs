@@ -34,7 +34,7 @@ namespace HealthGateway.Database.Delegates
         /// </summary>
         /// <param name="logger">The injected logger provider.</param>
         /// <param name="dbContext">The context to be used when accessing the database.</param>
-        public DbAgentAuditDelegate(ILogger<DbDelegationDelegate> logger, GatewayDbContext dbContext)
+        public DbAgentAuditDelegate(ILogger<DbAgentAuditDelegate> logger, GatewayDbContext dbContext)
         {
             this.logger = logger;
             this.dbContext = dbContext;
