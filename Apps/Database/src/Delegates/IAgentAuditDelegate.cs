@@ -13,32 +13,39 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Admin.Common.Models
+namespace HealthGateway.Database.Delegates
 {
     using System.Collections.Generic;
-    using System.Diagnostics.CodeAnalysis;
-    using System.Linq;
-    using HealthGateway.Common.Data.ViewModels;
+    using System.Threading.Tasks;
+    using HealthGateway.Common.Data.Constants;
+    using HealthGateway.Database.Models;
 
     /// <summary>
-    /// Represents details associated with a patient retrieved by a support query.
+    /// Delegate that performs operations for models relating to AgentAudit.
     /// </summary>
-    public class PatientSupportDetails
+    public interface IAgentAuditDelegate
     {
         /// <summary>
-        /// Gets or sets the patient's status.
+        /// Fetches the agent audit(s) by query options from the database.
         /// </summary>
-        public IEnumerable<MessagingVerificationModel> MessagingVerifications { get; set; } = Enumerable.Empty<MessagingVerificationModel>();
+        /// <param name="query">The query criteria.</param>
+        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
+        Task<IEnumerable<AgentAudit>> GetAgentAuditsAsync(AgentAuditQuery query);
+    }
+
+    /// <summary>
+    /// Agent audit query options to determine the agent audit results to return.
+    /// </summary>
+    public record AgentAuditQuery
+    {
+        /// <summary>
+        /// Gets the audit group to search by.
+        /// </summary>
+        public AuditGroup? GroupCode { get; init; }
 
         /// <summary>
-        /// Gets or sets a warning message associated with the patient.
+        /// Gets the hdid to search by.
         /// </summary>
-        public IEnumerable<AgentAction> AgentActions { get; set; } = Enumerable.Empty<AgentAction>();
-
-        /// <summary>
-        /// Gets or sets the blocked access data sources.
-        /// </summary>
-        [SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "Team decision")]
-        public Dictionary<string, string> DataSources { get; set; } = new();
+        public string Hdid { get; init; } = string.Empty;
     }
 }

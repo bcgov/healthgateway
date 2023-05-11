@@ -63,7 +63,7 @@ namespace HealthGateway.Admin.Client.Pages
 
         private bool HasPatientsWarning => this.PatientSupportState.Value.WarningMessages.Any();
 
-        private PatientSupportDetails? Patient =>
+        private PatientSupportResult? Patient =>
             this.PatientSupportState.Value.Result?.SingleOrDefault(x => x.Hdid == this.Hdid);
 
         private string PatientName => StringManipulator.JoinWithoutBlanks(new[] { this.Patient?.PreferredName?.GivenName, this.Patient?.PreferredName?.Surname });

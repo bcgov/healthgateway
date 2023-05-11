@@ -15,33 +15,27 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.AccountDataAccess.Patient.Strategy
 {
-    using System.Net;
     using System.Threading.Tasks;
-    using HealthGateway.AccountDataAccess.Patient.Api;
+    using HealthGateway.Common.Constants;
+    using HealthGateway.Common.Data.ErrorHandling;
+    using HealthGateway.Common.Data.Validations;
     using Microsoft.Extensions.Logging;
-    using Refit;
 
     /// <summary>
-    /// Strategy implementation for patient data source HdidPhsa.
+    /// Strategy implementation for patient data source PhnEmpi.
     /// </summary>
-    internal class PatientQueryHdidPhsa : IPatientQuery
+    internal class PatientPhnEmpiStrategy : IPatientQueryStrategy
     {
         /// <inheritdoc/>
         public async Task<PatientModel?> GetPatientAsync(PatientRequest request)
         {
-            PatientModel? patient = null;
-
-            try
+            if (!PhnValidator.IsValid(request.Identifier))
             {
-                PatientIdentity result = await request.PatientIdentityApi.GetPatientIdentityAsync(request.Hdid).ConfigureAwait(true);
-                patient = request.Mapper.Map<PatientModel>(result);
-            }
-            catch (ApiException e) when (e.StatusCode == HttpStatusCode.NotFound)
-            {
-                request.Logger.LogInformation("PHSA could not find patient identity for {Hdid}", request.Hdid);
+                request.Logger.LogDebug("The PHN provided is invalid");
+                throw new ProblemDetailsException(ExceptionUtility.CreateValidationError(nameof(PatientPhnEmpiStrategy), ErrorMessages.PhnInvalid));
             }
 
-            return patient;
+            return await request.ClientRegistriesDelegate.GetDemographicsAsync(OidType.Phn, request.Identifier, request.DisabledValidation).ConfigureAwait(true);
         }
     }
 }

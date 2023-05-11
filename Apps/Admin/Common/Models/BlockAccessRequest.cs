@@ -13,20 +13,15 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.AccountDataAccess.Patient.Strategy
+namespace HealthGateway.Admin.Common.Models
 {
-    using System.Threading.Tasks;
-    using HealthGateway.Common.Constants;
+    using System.Collections.Generic;
+    using HealthGateway.Common.Data.Constants;
 
     /// <summary>
-    /// Strategy implementation for patient data source PhnEmpi.
+    /// Request data to block data source access.
     /// </summary>
-    internal class PatientQueryPhnEmpi : IPatientQuery
-    {
-        /// <inheritdoc/>
-        public async Task<PatientModel?> GetPatientAsync(PatientRequest request)
-        {
-            return await request.ClientRegistriesDelegate.GetDemographicsAsync(OidType.Phn, request.Phn, request.DisabledValidation).ConfigureAwait(true);
-        }
-    }
+    /// <param name="DataSources">The list of data sources to block.</param>
+    /// <param name="Reason">The reason to block data source(s).</param>
+    public record BlockAccessRequest(IEnumerable<DataSource> DataSources, string Reason);
 }

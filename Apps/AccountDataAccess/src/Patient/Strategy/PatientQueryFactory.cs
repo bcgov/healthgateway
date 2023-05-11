@@ -18,29 +18,29 @@ namespace HealthGateway.AccountDataAccess.Patient.Strategy
     using System.Collections.Generic;
 
     /// <summary>
-    /// Factory for <see cref="IPatientQuery"/> instances.
+    /// Factory for <see cref="IPatientQueryStrategy"/> instances.
     /// </summary>
     internal static class PatientQueryFactory
     {
-        private static readonly IDictionary<PatientStrategy, IPatientQuery>
-            Strategies = new Dictionary<PatientStrategy, IPatientQuery>
+        private static readonly IDictionary<PatientStrategy, IPatientQueryStrategy>
+            Strategies = new Dictionary<PatientStrategy, IPatientQueryStrategy>
             {
-                { PatientStrategy.HdidAll, new PatientQueryHdidAll() },
-                { PatientStrategy.HdidAllCache, new PatientQueryHdidAllCache() },
-                { PatientStrategy.HdidEmpi, new PatientQueryHdidEmpi() },
-                { PatientStrategy.HdidEmpiCache, new PatientQueryHdidEmpiCache() },
-                { PatientStrategy.HdidPhsa, new PatientQueryHdidPhsa() },
-                { PatientStrategy.HdidPhsaCache, new PatientQueryHdidPhsaCache() },
-                { PatientStrategy.PhnEmpi, new PatientQueryPhnEmpi() },
-                { PatientStrategy.PhnEmpiCache, new PatientQueryPhnEmpiCache() },
+                { PatientStrategy.HdidAll, new PatientHdidAllStrategy() },
+                { PatientStrategy.HdidAllCache, new PatientHdidAllCacheStrategy() },
+                { PatientStrategy.HdidEmpi, new PatientHdidEmpiStrategy() },
+                { PatientStrategy.HdidEmpiCache, new PatientHdidEmpiCacheStrategy() },
+                { PatientStrategy.HdidPhsa, new PatientHdidPhsaStrategy() },
+                { PatientStrategy.HdidPhsaCache, new PatientHdidPhsaCacheStrategy() },
+                { PatientStrategy.PhnEmpi, new PatientPhnEmpiStrategy() },
+                { PatientStrategy.PhnEmpiCache, new PatientPhnEmpiCacheStrategy() },
             };
 
         /// <summary>
-        /// Returns an instance of the patient query associated with the patient strategy.
+        /// Returns an instance of the patient query strategy associated with the patient query strategy enum.
         /// </summary>
         /// <param name="source">The patient strategy associated with the patient query.</param>
-        /// <returns>The patient patient query.</returns>
-        public static IPatientQuery GetStrategy(PatientStrategy source)
+        /// <returns>The patient query strategy implementation.</returns>
+        public static IPatientQueryStrategy GetStrategy(PatientStrategy source)
         {
             return Strategies[source];
         }

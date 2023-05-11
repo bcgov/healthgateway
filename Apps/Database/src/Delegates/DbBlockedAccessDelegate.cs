@@ -43,7 +43,15 @@ namespace HealthGateway.Database.Delegates
         /// <inheritdoc/>
         public async Task DeleteBlockedAccessAsync(BlockedAccess blockedAccess, AgentAudit agentAudit)
         {
-            this.dbContext.BlockedAccess.Remove(blockedAccess);
+            this.logger.LogDebug("Blocked access version: {Version} for hdid: {Hdid}", blockedAccess.Version, blockedAccess.Hdid);
+
+            // Only attempt to remove entity if version is not 0
+            if (blockedAccess.Version != 0)
+            {
+                this.dbContext.BlockedAccess.Remove(blockedAccess);
+                this.logger.LogDebug("Blocked access removed for Hdid: {Hdid}", blockedAccess.Hdid);
+            }
+
             this.dbContext.AgentAudit.Add(agentAudit);
 
             await this.dbContext.SaveChangesAsync().ConfigureAwait(true);
@@ -52,8 +60,6 @@ namespace HealthGateway.Database.Delegates
         /// <inheritdoc/>
         public async Task<BlockedAccess?> GetBlockedAccessAsync(string hdid)
         {
-            this.logger.LogTrace("Getting blocked access for hdid: {Hdid}", hdid);
-
             IQueryable<BlockedAccess> query = this.dbContext.BlockedAccess
                 .Where(d => d.Hdid == hdid);
 
@@ -63,8 +69,6 @@ namespace HealthGateway.Database.Delegates
         /// <inheritdoc/>
         public async Task<Dictionary<string, string>> GetDataSourcesAsync(string hdid)
         {
-            this.logger.LogTrace("Getting data sources from blocked access for hdid : {Hdid}", hdid);
-
             IQueryable<BlockedAccess> query = this.dbContext.BlockedAccess.Where(d => d.Hdid == hdid);
             BlockedAccess? blockedAccess = await query.SingleOrDefaultAsync().ConfigureAwait(true);
 

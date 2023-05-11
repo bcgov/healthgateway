@@ -25,34 +25,34 @@ namespace HealthGateway.AccountDataAccess.Patient.Strategy
         // The Context maintains a reference to one of the Strategy objects. The
         // Context does not know the concrete class of a request. It should
         // work with all strategies via the Strategy interface.
-        private IPatientQuery patientQuery;
+        private IPatientQueryStrategy patientQueryStrategy;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PatientQueryContext"/> class.
         /// </summary>
-        /// <param name="patientQuery">The implemented request to use.</param>
-        public PatientQueryContext(IPatientQuery patientQuery)
+        /// <param name="patientQueryStrategy">The implemented request to use.</param>
+        public PatientQueryContext(IPatientQueryStrategy patientQueryStrategy)
         {
-            this.patientQuery = patientQuery;
+            this.patientQueryStrategy = patientQueryStrategy;
         }
 
         /// <summary>
-        /// Sets implemented request to use.
+        /// Sets implemented strategy to use.
         /// </summary>
-        /// <param name="strategy">The implemented request to set.</param>
-        public void SetStrategy(IPatientQuery strategy)
+        /// <param name="strategy">The implemented strategy to set.</param>
+        public void SetStrategy(IPatientQueryStrategy strategy)
         {
-            this.patientQuery = strategy;
+            this.patientQueryStrategy = strategy;
         }
 
         /// <summary>
-        /// Returns patient from the database.
+        /// Returns patient from the specified source in the patient request.
         /// </summary>
         /// <param name="patientRequest">The patient request parameters to use.</param>
         /// <returns>The patient model.</returns>
         public async Task<PatientModel?> GetPatientAsync(PatientRequest patientRequest)
         {
-            return await this.patientQuery.GetPatientAsync(patientRequest).ConfigureAwait(true);
+            return await this.patientQueryStrategy.GetPatientAsync(patientRequest).ConfigureAwait(true);
         }
     }
 }

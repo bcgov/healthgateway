@@ -57,21 +57,6 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public async Task<AgentAuditQueryResult> GetAgentAuditsAsync(AgentAuditQuery query)
-        {
-            this.logger.LogTrace("Getting agent audit for group: {Group} - hdid : {Hdid}", query.GroupCode, query.Hdid);
-
-            IQueryable<AgentAudit> dbQuery = this.dbContext.AgentAudit;
-            dbQuery = dbQuery.Where(d => d.Hdid == query.Hdid && d.GroupCode == query.GroupCode);
-            IEnumerable<AgentAudit> items = await dbQuery.ToListAsync().ConfigureAwait(true);
-
-            return new AgentAuditQueryResult
-            {
-                Items = items,
-            };
-        }
-
-        /// <inheritdoc/>
         public async Task UpdateDelegationAsync(Dependent dependent, IEnumerable<ResourceDelegate> resourceDelegatesToRemove, AgentAudit agentAudit)
         {
             if (dependent.Version == 0)

@@ -15,37 +15,18 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.AccountDataAccess.Patient.Strategy
 {
-    using System.Net;
     using System.Threading.Tasks;
-    using HealthGateway.AccountDataAccess.Patient.Api;
     using HealthGateway.Common.Constants;
-    using Microsoft.Extensions.Logging;
-    using Refit;
 
     /// <summary>
-    /// Strategy implementation for patient data source HdidAllCache.
+    /// Strategy implementation for patient data source HdidEmpi.
     /// </summary>
-    internal class PatientQueryHdidAllCache : IPatientQuery
+    internal class PatientHdidEmpiStrategy : IPatientQueryStrategy
     {
         /// <inheritdoc/>
         public async Task<PatientModel?> GetPatientAsync(PatientRequest request)
         {
-            PatientModel? patient = request.CachedPatient ?? await request.ClientRegistriesDelegate.GetDemographicsAsync(OidType.Hdid, request.Hdid, request.DisabledValidation).ConfigureAwait(true);
-
-            if (patient == null)
-            {
-                try
-                {
-                    PatientIdentity result = await request.PatientIdentityApi.GetPatientIdentityAsync(request.Hdid).ConfigureAwait(true);
-                    patient = request.Mapper.Map<PatientModel>(result);
-                }
-                catch (ApiException e) when (e.StatusCode == HttpStatusCode.NotFound)
-                {
-                    request.Logger.LogInformation("PHSA could not find patient identity for {Hdid}", request.Hdid);
-                }
-            }
-
-            return patient;
+            return await request.ClientRegistriesDelegate.GetDemographicsAsync(OidType.Hdid, request.Identifier, request.DisabledValidation).ConfigureAwait(true);
         }
     }
 }

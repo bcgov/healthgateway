@@ -20,7 +20,6 @@ namespace HealthGateway.Admin.Server.Services
     using System.Threading.Tasks;
     using HealthGateway.Admin.Common.Models;
     using HealthGateway.Common.Data.Constants;
-    using HealthGateway.Common.Data.ViewModels;
 
     /// <summary>
     /// Service that provides functionality to admin support.
@@ -28,12 +27,13 @@ namespace HealthGateway.Admin.Server.Services
     public interface ISupportService
     {
         /// <summary>
-        /// Retrieves a list of messaging verifications matching the query.
+        /// Retrieves patient support details, which includes messaging verifications, agent changes and blocked data sources
+        /// matching the query.
         /// </summary>
-        /// <param name="hdid">The HDID associated with the messaging verifications.</param>
+        /// <param name="hdid">The HDID associated with the patient support details.</param>
         /// <param name="ct">A cancellation token.</param>
-        /// <returns>A list of messaging verifications matching the query.</returns>
-        Task<RequestResult<IEnumerable<MessagingVerificationModel>>> GetMessageVerificationsAsync(string hdid, CancellationToken ct = default);
+        /// <returns>A patient support details matching the query.</returns>
+        Task<PatientSupportDetails> GetMessageVerificationsAsync(string hdid, CancellationToken ct = default);
 
         /// <summary>
         /// Retrieves the collection of patients that match the query.
@@ -42,6 +42,16 @@ namespace HealthGateway.Admin.Server.Services
         /// <param name="queryString">The value to query on.</param>
         /// <param name="ct">A cancellation token.</param>
         /// <returns>The collection of patient support details that match the query.</returns>
-        Task<IList<PatientSupportDetails>> GetPatientsAsync(PatientQueryType queryType, string queryString, CancellationToken ct = default);
+        Task<IList<PatientSupportResult>> GetPatientsAsync(PatientQueryType queryType, string queryString, CancellationToken ct = default);
+
+        /// <summary>
+        /// Block access to data sources associated with the hdid.
+        /// </summary>
+        /// <param name="hdid">The hdid that is associated with the data sources.</param>
+        /// <param name="dataSources">The list of data sources that will be blocked.</param>
+        /// <param name="reason">The reason to block access to data source(s)..</param>
+        /// <param name="ct">A cancellation token.</param>
+        /// <returns>The agent action entry created from the operation.</returns>
+        Task<AgentAction> BlockAccessAsync(string hdid, IEnumerable<DataSource> dataSources, string reason, CancellationToken ct = default);
     }
 }

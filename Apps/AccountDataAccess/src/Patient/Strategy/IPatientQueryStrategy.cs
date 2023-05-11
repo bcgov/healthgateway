@@ -72,7 +72,7 @@ namespace HealthGateway.AccountDataAccess.Patient.Strategy
     /// The Context uses this interface to call the algorithm defined by Concrete
     /// Strategies.
     /// </summary>
-    internal interface IPatientQuery
+    internal interface IPatientQueryStrategy
     {
         /// <summary>
         /// Returns patient from the database.
@@ -86,8 +86,7 @@ namespace HealthGateway.AccountDataAccess.Patient.Strategy
     /// The patient request.
     /// </summary>
     internal record PatientRequest(
-        string? Hdid,
-        string? Phn,
+        string Identifier,
         IClientRegistriesDelegate ClientRegistriesDelegate,
         IPatientIdentityApi PatientIdentityApi,
         ILogger<PatientRepository> Logger,

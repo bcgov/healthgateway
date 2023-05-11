@@ -16,20 +16,22 @@
 namespace HealthGateway.AccountDataAccess.Patient
 {
     using System;
+    using System.Collections.Generic;
     using System.Diagnostics;
-    using System.Net;
-    using System.ServiceModel;
+    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using AutoMapper;
     using HealthGateway.AccountDataAccess.Patient.Api;
+    using HealthGateway.AccountDataAccess.Patient.Strategy;
+    using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.CacheProviders;
     using HealthGateway.Common.Constants;
-    using HealthGateway.Common.Data.ErrorHandling;
-    using HealthGateway.Common.Data.Validations;
+    using HealthGateway.Common.Data.Constants;
+    using HealthGateway.Database.Delegates;
+    using HealthGateway.Database.Models;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
-    using Refit;
 
     /// <summary>
     /// Handle Patient data.
@@ -50,6 +52,9 @@ namespace HealthGateway.AccountDataAccess.Patient
         private readonly ILogger<PatientRepository> logger;
 
         private readonly IClientRegistriesDelegate clientRegistriesDelegate;
+        private readonly IAgentAuditDelegate agentAuditDelegate;
+        private readonly IAuthenticationDelegate authenticationDelegate;
+        private readonly IBlockedAccessDelegate blockedAccessDelegate;
         private readonly IPatientIdentityApi patientIdentityApi;
         private readonly IMapper mapper;
 
@@ -61,6 +66,9 @@ namespace HealthGateway.AccountDataAccess.Patient
         /// <param name="logger">The service Logger.</param>
         /// <param name="configuration">The Configuration to use.</param>
         /// <param name="patientIdentityApi">The patient identity api to use.</param>
+        /// <param name="blockedAccessDelegate">The injected blocked access delegate.</param>
+        /// <param name="authenticationDelegate">The injected authentication delegate.</param>
+        /// <param name="agentAuditDelegate">The injected agent audit delegate.</param>
         /// <param name="mapper">The injected mapper.</param>
         public PatientRepository(
             IClientRegistriesDelegate clientRegistriesDelegate,
@@ -68,6 +76,9 @@ namespace HealthGateway.AccountDataAccess.Patient
             IConfiguration configuration,
             ILogger<PatientRepository> logger,
             IPatientIdentityApi patientIdentityApi,
+            IBlockedAccessDelegate blockedAccessDelegate,
+            IAuthenticationDelegate authenticationDelegate,
+            IAgentAuditDelegate agentAuditDelegate,
             IMapper mapper)
         {
             this.clientRegistriesDelegate = clientRegistriesDelegate;
@@ -75,6 +86,9 @@ namespace HealthGateway.AccountDataAccess.Patient
             this.cacheTtl = configuration.GetSection("PatientService").GetValue("CacheTTL", 0);
             this.logger = logger;
             this.patientIdentityApi = patientIdentityApi;
+            this.blockedAccessDelegate = blockedAccessDelegate;
+            this.authenticationDelegate = authenticationDelegate;
+            this.agentAuditDelegate = agentAuditDelegate;
             this.mapper = mapper;
         }
 
@@ -91,130 +105,139 @@ namespace HealthGateway.AccountDataAccess.Patient
             };
         }
 
-        private static bool ShouldCheckCache(PatientDetailSource source)
+        /// <inheritdoc/>
+        public async Task<IEnumerable<AgentAudit>> AgentAuditQuery(string hdid, AuditGroup group, CancellationToken ct)
         {
-            return source switch
+            if (ct.IsCancellationRequested)
             {
-                PatientDetailSource.AllCache => true,
-                PatientDetailSource.EmpiCache => true,
-                PatientDetailSource.PhsaCache => true,
-                _ => false,
-            };
-        }
-
-        private static bool ShouldCheckPhsa(PatientDetailSource source)
-        {
-            return source switch
-            {
-                PatientDetailSource.All => true,
-                PatientDetailSource.AllCache => true,
-                PatientDetailSource.Phsa => true,
-                PatientDetailSource.PhsaCache => true,
-                _ => false,
-            };
-        }
-
-        private static bool ShouldCheckEmpi(PatientDetailSource source)
-        {
-            return source switch
-            {
-                PatientDetailSource.All => true,
-                PatientDetailSource.AllCache => true,
-                PatientDetailSource.Empi => true,
-                PatientDetailSource.EmpiCache => true,
-                _ => false,
-            };
-        }
-
-        private async Task<PatientModel?> GetDemographicsAsync(OidType type, string identifier, bool disableIdValidation = false)
-        {
-            if (type == OidType.Phn && !PhnValidator.IsValid(identifier))
-            {
-                this.logger.LogDebug("The PHN provided is invalid");
-                throw new ProblemDetailsException(ExceptionUtility.CreateProblemDetails(ErrorMessages.PhnInvalid, HttpStatusCode.NotFound, nameof(PatientRepository)));
+                throw new InvalidOperationException("cancellation was requested");
             }
 
-            PatientModel? patient = await this.clientRegistriesDelegate.GetDemographicsAsync(type, identifier, disableIdValidation).ConfigureAwait(true);
-
-            // Only cache if validation is enabled (as some clients could get invalid data) and when successful.
-            if (!disableIdValidation && patient != null)
+            AgentAuditQuery agentAuditQuery = new()
             {
-                this.CachePatient(patient);
+                Hdid = hdid,
+                GroupCode = group,
+            };
+
+            return await this.agentAuditDelegate.GetAgentAuditsAsync(agentAuditQuery).ConfigureAwait(true);
+        }
+
+        /// <inheritdoc/>
+        public async Task<AgentAudit> BlockAccessCommand(string hdid, IEnumerable<DataSource> dataSources, string reason, CancellationToken ct)
+        {
+            if (ct.IsCancellationRequested)
+            {
+                throw new InvalidOperationException("cancellation was requested");
             }
 
-            return patient;
+            string authenticatedUserId = this.authenticationDelegate.FetchAuthenticatedUserId() ?? UserId.DefaultUser;
+
+            AgentAudit agentAudit = new()
+            {
+                Hdid = hdid,
+                Reason = reason,
+                OperationCode = AuditOperation.ChangeDataSourceAccess,
+                GroupCode = AuditGroup.BlockedAccess,
+                AgentUsername = this.authenticationDelegate.FetchAuthenticatedPreferredUsername() ?? authenticatedUserId,
+                TransactionDateTime = DateTime.UtcNow,
+                CreatedBy = authenticatedUserId,
+                UpdatedBy = authenticatedUserId,
+            };
+
+            BlockedAccess? blockedAccess = await this.blockedAccessDelegate.GetBlockedAccessAsync(hdid).ConfigureAwait(true) ?? new()
+            {
+                Hdid = hdid,
+                CreatedBy = authenticatedUserId,
+            };
+
+            blockedAccess.UpdatedBy = authenticatedUserId;
+
+            Dictionary<string, string> sources = dataSources.ToDictionary(x => x.ToString(), _ => "true");
+
+            if (sources.Any())
+            {
+                blockedAccess.DataSources = sources;
+                blockedAccess.CreatedDateTime = DateTime.UtcNow;
+                blockedAccess.UpdatedDateTime = DateTime.UtcNow;
+                await this.blockedAccessDelegate.UpdateBlockedAccessAsync(blockedAccess, agentAudit).ConfigureAwait(true);
+            }
+            else
+            {
+                await this.blockedAccessDelegate.DeleteBlockedAccessAsync(blockedAccess, agentAudit);
+            }
+
+            return agentAudit;
+        }
+
+        /// <inheritdoc/>
+        public async Task<BlockedAccess?> BlockedAccessQuery(string hdid, CancellationToken ct)
+        {
+            if (ct.IsCancellationRequested)
+            {
+                throw new InvalidOperationException("cancellation was requested");
+            }
+
+            return await this.blockedAccessDelegate.GetBlockedAccessAsync(hdid).ConfigureAwait(true);
+        }
+
+        /// <inheritdoc/>
+        public async Task<Dictionary<string, string>> DataSourceQuery(string hdid, CancellationToken ct)
+        {
+            if (ct.IsCancellationRequested)
+            {
+                throw new InvalidOperationException("cancellation was requested");
+            }
+
+            return await this.blockedAccessDelegate.GetDataSourcesAsync(hdid).ConfigureAwait(true);
         }
 
         private async Task<PatientQueryResult> Handle(PatientDetailsQuery query, CancellationToken ct)
         {
-            this.logger.LogDebug("Patient details query source: {Source}", query.Source);
+            this.logger.LogDebug("Patient details query source: {Source} - cache: {Cache}", query.Source, query.UseCache);
 
             if (ct.IsCancellationRequested)
             {
                 throw new InvalidOperationException("cancellation was requested");
             }
 
-            if (query.Hdid != null)
+            if (query.Hdid == null && query.Phn == null)
             {
-                return await this.GetPatientByHdidAsync(query.Hdid, query.Source).ConfigureAwait(true);
+                throw new InvalidOperationException("Must specify either Hdid or Phn to query patient details");
             }
 
-            if (query.Phn != null)
-            {
-                return await this.GetPatientByPhnAsync(query.Phn, query.Source).ConfigureAwait(true);
-            }
-
-            throw new InvalidOperationException("Must specify either Hdid or Phn to query patient details");
+            return await this.GetPatient(query).ConfigureAwait(true);
         }
 
-        private async Task<PatientQueryResult> GetPatientByHdidAsync(string hdid, PatientDetailSource source)
+        private async Task<PatientQueryResult> GetPatient(PatientDetailsQuery query, bool disabledValidation = false)
         {
-            PatientModel? patient = ShouldCheckCache(source) ? this.GetFromCache(hdid, PatientIdentifierType.Hdid) : null;
-            if (patient == null && ShouldCheckEmpi(source))
+            PatientModel? cachedPatient = query.Hdid != null ? this.GetFromCache(query.Hdid, PatientIdentifierType.Hdid) : this.GetFromCache(query.Phn, PatientIdentifierType.Phn);
+            PatientRequest patientRequest = new(query.Hdid ?? query.Phn, this.clientRegistriesDelegate, this.patientIdentityApi, this.logger, this.mapper, cachedPatient, disabledValidation);
+
+            // Create enum string to derive actual enum to be used to extract the appropriate strategy for querying patient
+            string prefix = query.Hdid != null ? "Hdid" : "Phn";
+            string suffix = query.UseCache ? "Cache" : string.Empty;
+            string strategy = $"{prefix}{query.Source}{suffix}";
+            this.logger.LogDebug("Strategy: {Strategy}", strategy);
+
+            if (Enum.TryParse(strategy, out PatientStrategy strategyKey))
             {
-                try
+                this.logger.LogDebug("Strategy key: {Strategy}", strategyKey);
+
+                // Get the appropriate strategy from factory to query patient
+                IPatientQueryStrategy patientQueryStrategy = PatientQueryFactory.GetStrategy(strategyKey);
+                PatientQueryContext context = new(patientQueryStrategy);
+                PatientModel? patient = await context.GetPatientAsync(patientRequest).ConfigureAwait(true);
+
+                // Only cache if validation is enabled (as some clients could get invalid data) and when successful.
+                if (!disabledValidation && patient != null)
                 {
-                    patient = await this.GetDemographicsAsync(OidType.Hdid, hdid).ConfigureAwait(true);
+                    this.CachePatient(patient);
                 }
-                catch (CommunicationException e)
-                {
-                    if (ShouldCheckPhsa(source))
-                    {
-                        this.logger.LogError("Will call PHSA for patient due to EMPI Communication Exception when trying to retrieve patient information: {Exception}", e);
-                        patient = await this.GetPatientIdentityAsync(hdid).ConfigureAwait(true);
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
+
+                return new PatientQueryResult(new[] { patient! });
             }
 
-            return new PatientQueryResult(new[] { patient! });
-        }
-
-        private async Task<PatientQueryResult> GetPatientByPhnAsync(string phn, PatientDetailSource source)
-        {
-            PatientModel? patient = (ShouldCheckCache(source) ? this.GetFromCache(phn, PatientIdentifierType.Phn) : null) ??
-                                    await this.GetDemographicsAsync(OidType.Phn, phn).ConfigureAwait(true);
-
-            return new PatientQueryResult(new[] { patient! });
-        }
-
-        private async Task<PatientModel?> GetPatientIdentityAsync(string hdid)
-        {
-            try
-            {
-                PatientIdentity result = await this.patientIdentityApi.GetPatientIdentityAsync(hdid).ConfigureAwait(true);
-                PatientModel patient = this.mapper.Map<PatientModel>(result);
-                this.CachePatient(patient);
-                return patient;
-            }
-            catch (ApiException e) when (e.StatusCode == HttpStatusCode.NotFound)
-            {
-                this.logger.LogInformation("PHSA could not find patient identity for {Hdid}", hdid);
-                return null;
-            }
+            throw new InvalidOperationException($"Unable to retrieve patient query strategy due to invalid key: {strategy}");
         }
 
         /// <summary>

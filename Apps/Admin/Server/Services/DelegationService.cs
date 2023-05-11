@@ -46,6 +46,7 @@ namespace HealthGateway.Admin.Server.Services
         private readonly IResourceDelegateDelegate resourceDelegateDelegate;
         private readonly IDelegationDelegate delegationDelegate;
         private readonly IAuthenticationDelegate authenticationDelegate;
+        private readonly IAgentAuditDelegate agentAuditDelegate;
         private readonly IMapper autoMapper;
         private readonly int maxDependentAge;
         private readonly int minDelegateAge;
@@ -58,6 +59,7 @@ namespace HealthGateway.Admin.Server.Services
         /// <param name="resourceDelegateDelegate">The injected resource delegate delegate.</param>
         /// <param name="delegationDelegate">The injected delegation delegate.</param>
         /// <param name="authenticationDelegate">The injected authentication delegate.</param>
+        /// <param name="agentAuditDelegate">The injected agent audit delegate.</param>
         /// <param name="autoMapper">The injected automapper provider.</param>
         public DelegationService(
             IConfiguration configuration,
@@ -65,12 +67,14 @@ namespace HealthGateway.Admin.Server.Services
             IResourceDelegateDelegate resourceDelegateDelegate,
             IDelegationDelegate delegationDelegate,
             IAuthenticationDelegate authenticationDelegate,
+            IAgentAuditDelegate agentAuditDelegate,
             IMapper autoMapper)
         {
             this.patientService = patientService;
             this.resourceDelegateDelegate = resourceDelegateDelegate;
             this.delegationDelegate = delegationDelegate;
             this.authenticationDelegate = authenticationDelegate;
+            this.agentAuditDelegate = agentAuditDelegate;
             this.autoMapper = autoMapper;
             this.maxDependentAge = configuration.GetSection(DelegationConfigSection).GetValue(MaxDependentAgeKey, 12);
             this.minDelegateAge = configuration.GetSection(DelegationConfigSection).GetValue(MinDelegateAgeKey, 12);
@@ -132,8 +136,8 @@ namespace HealthGateway.Admin.Server.Services
 
                 // Get agent audits
                 AgentAuditQuery agentAuditQuery = new() { GroupCode = AuditGroup.Dependent, Hdid = dependentPatientInfo.HdId };
-                AgentAuditQueryResult result = await this.delegationDelegate.GetAgentAuditsAsync(agentAuditQuery).ConfigureAwait(true);
-                delegationInfo.AgentActions = result.Items.Select(audit => this.autoMapper.Map<AgentAction>(audit));
+                IEnumerable<AgentAudit> agentAudits = await this.agentAuditDelegate.GetAgentAuditsAsync(agentAuditQuery).ConfigureAwait(true);
+                delegationInfo.AgentActions = agentAudits.Select(audit => this.autoMapper.Map<AgentAction>(audit));
             }
 
             return delegationInfo;

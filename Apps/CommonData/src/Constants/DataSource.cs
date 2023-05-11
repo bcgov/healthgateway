@@ -15,53 +15,62 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Common.Data.Constants
 {
+    using System.Text.Json.Serialization;
+
     /// <summary>
     /// Data sources for blocked access.
     /// </summary>
+    [JsonStringEnumMemberConverterOptions(deserializationFailureFallbackValue: Unknown)]
+    [JsonConverter(typeof(JsonStringEnumMemberConverter))]
     public enum DataSource
     {
         /// <summary>
-        /// Represents a data source for clinical document.
+        /// Represents an unknown data source.
+        /// </summary>
+        Unknown,
+
+        /// <summary>
+        /// Represents a data source for clinical documents.
         /// </summary>
         ClinicalDocument,
 
         /// <summary>
-        /// Represents a data source for covid 19 test result.
+        /// Represents a data source for covid 19 test results.
         /// </summary>
         Covid19TestResult,
 
         /// <summary>
-        /// Represents a data source for health visit.
+        /// Represents a data source for health visits.
         /// </summary>
         HealthVisit,
 
         /// <summary>
-        /// Represents a data source for hospitalVisit.
+        /// Represents a data source for hospitalVisits.
         /// </summary>
         HospitalVisit,
 
         /// <summary>
-        /// Represents a data source for immunization.
+        /// Represents a data source for immunizations.
         /// </summary>
         Immunization,
 
         /// <summary>
-        /// Represents a data source for lab result.
+        /// Represents a data source for lab results.
         /// </summary>
         LabResult,
 
         /// <summary>
-        /// Represents a data source for medication.
+        /// Represents a data source for medications.
         /// </summary>
         Medication,
 
         /// <summary>
-        /// Represents a data source for note.
+        /// Represents a data source for notes.
         /// </summary>
         Note,
 
         /// <summary>
-        /// Represents a data source for special authority request.
+        /// Represents a data source for special authority requests.
         /// </summary>
         SpecialAuthorityRequest,
 
@@ -71,7 +80,7 @@ namespace HealthGateway.Common.Data.Constants
         DiagnosticImaging,
 
         /// <summary>
-        /// Represents a data source for Organ Donor Registration service.
+        /// Represents a data source for the Organ Donor Registration service.
         /// </summary>
         OrganDonorRegistration,
     }

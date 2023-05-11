@@ -20,6 +20,7 @@ namespace HealthGateway.AccountDataAccess
     using HealthGateway.AccountDataAccess.Patient;
     using HealthGateway.AccountDataAccess.Patient.Api;
     using HealthGateway.Common.Utils.Phsa;
+    using HealthGateway.Database.Delegates;
     using Microsoft.Extensions.DependencyInjection;
     using Refit;
 
@@ -39,6 +40,8 @@ namespace HealthGateway.AccountDataAccess
         {
             services.AddAutoMapper(typeof(PatientMappings));
             services.AddTransient<IClientRegistriesDelegate, ClientRegistriesDelegate>();
+            services.AddTransient<IBlockedAccessDelegate, DbBlockedAccessDelegate>();
+            services.AddTransient<IAgentAuditDelegate, DbAgentAuditDelegate>();
             services.AddTransient<IPatientRepository, PatientRepository>();
 
             services.AddRefitClient<IPatientIdentityApi>()
