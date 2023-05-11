@@ -18,7 +18,7 @@ namespace HealthGateway.Common.Messaging
 {
     using System;
     using Hangfire;
-    using HealthGateway.Database.Context;
+    using HealthGateway.Database.Delegates;
     using Microsoft.Extensions.Azure;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
@@ -52,6 +52,7 @@ namespace HealthGateway.Common.Messaging
             if (settings.UseOutbox)
             {
                 services.AddTransient<IMessageSender, OutboxMessageSender>();
+                services.AddTransient<IOutboxDelegate, DbOutboxDelegate>();
                 services.AddSingleton<IMessageReceiver>(sp => sp.GetRequiredService<AzureServiceBus>());
                 services.AddScoped(
                     sp =>
@@ -59,8 +60,8 @@ namespace HealthGateway.Common.Messaging
                         IMessageSender sender = sp.GetRequiredService<AzureServiceBus>();
                         IBackgroundJobClient hangFireJobClient = sp.GetRequiredService<IBackgroundJobClient>();
                         ILogger<DbOutboxStore> logger = sp.GetRequiredService<ILogger<DbOutboxStore>>();
-                        GatewayDbContext gatewayDbContext = sp.GetRequiredService<GatewayDbContext>();
-                        return new DbOutboxStore(gatewayDbContext, hangFireJobClient, sender, logger);
+                        IOutboxDelegate outboxDelegate = sp.GetRequiredService<IOutboxDelegate>();
+                        return new DbOutboxStore(outboxDelegate, hangFireJobClient, sender, logger);
                     });
 
                 // ensure Hangfire server instantiate the correct object and dependencies
