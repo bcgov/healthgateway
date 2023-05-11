@@ -7,12 +7,13 @@ import {
 } from "vuex";
 
 import { ErrorType } from "@/constants/errorType";
+import { Dictionary } from "@/models/baseTypes";
 import CovidVaccineRecord from "@/models/covidVaccineRecord";
 import { StringISODate } from "@/models/dateWrapper";
 import { CustomBannerError, ResultError } from "@/models/errors";
 import { LoadStatus } from "@/models/storeOperations";
-import VaccinationRecord from "@/models/vaccinationRecord";
 import VaccinationStatus from "@/models/vaccinationStatus";
+import VaccineRecordState from "@/models/vaccineRecordState";
 import { RootState } from "@/store/types";
 
 export interface VaccinationStatusState {
@@ -34,11 +35,7 @@ export interface VaccinationStatusState {
         status: LoadStatus;
         statusMessage: string;
     };
-    authenticatedVaccineRecord: {
-        activeHdid: string;
-        statusChanges: number;
-        vaccinationRecords: Map<string, VaccinationRecord>;
-    };
+    authenticatedVaccineRecordStates: Dictionary<VaccineRecordState>;
 }
 
 export interface VaccinationStatusGetters
@@ -63,13 +60,9 @@ export interface VaccinationStatusGetters
     authenticatedIsLoading(state: VaccinationStatusState): boolean;
     authenticatedError(state: VaccinationStatusState): ResultError | undefined;
     authenticatedStatusMessage(state: VaccinationStatusState): string;
-    authenticatedVaccineRecords(
+    authenticatedVaccineRecordState(
         state: VaccinationStatusState
-    ): Map<string, VaccinationRecord>;
-    authenticatedVaccineRecordStatusChanges(
-        state: VaccinationStatusState
-    ): number;
-    authenticatedVaccineRecordActiveHdid(state: VaccinationStatusState): string;
+    ): (hdid: string) => VaccineRecordState;
 }
 
 type StoreContext = ActionContext<VaccinationStatusState, RootState>;
@@ -172,7 +165,7 @@ export interface VaccinationStatusMutations
     ): void;
     setAuthenticatedVaccineRecord(
         state: VaccinationStatusState,
-        params: { hdid: string; vaccinationRecord: CovidVaccineRecord }
+        params: { hdid: string; record: CovidVaccineRecord }
     ): void;
     setAuthenticatedVaccineRecordError(
         state: VaccinationStatusState,

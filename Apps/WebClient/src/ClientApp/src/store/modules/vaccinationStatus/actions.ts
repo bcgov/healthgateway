@@ -323,7 +323,7 @@ export const actions: VaccinationStatusActions = {
                         logger.info("Vaccination Record loaded");
                         context.commit("setAuthenticatedVaccineRecord", {
                             hdid: params.hdid,
-                            vaccinationRecord: payload,
+                            record: payload,
                         });
                         resolve(payload);
                     } else if (
