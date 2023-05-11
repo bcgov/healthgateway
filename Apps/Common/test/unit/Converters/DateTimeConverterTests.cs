@@ -16,7 +16,7 @@
 namespace HealthGateway.CommonTests.Converters
 {
     using System;
-    using System.Collections.Generic;
+    using System.IO;
     using System.Text;
     using System.Text.Json;
     using HealthGateway.Common.Converters;
@@ -27,30 +27,34 @@ namespace HealthGateway.CommonTests.Converters
     /// </summary>
     public class DateTimeConverterTests
     {
-        private static readonly Dictionary<string, DateTime> ExpectedMap = new()
-        {
-            {
-                "9pm", new DateTime(2023, 5, 8, 21, 0, 0)
-            },
-            {
-                "midnight", new DateTime(2020, 1, 1, 0, 0, 0)
-            },
-        };
-
         /// <summary>
         /// Should convert a postgres date time to a universal date.
         /// </summary>
-        /// <param name="input">Postgres Date Time string.</param>
-        /// <param name="expectedKey">Key to the expected datetime object.</param>
-        [Theory]
-        [InlineData("\"2023-05-08T21:00:00.000000+00\"", "9pm")]
-        [InlineData("\"2020-01-01T00:00:00+00\"", "midnight")]
-        public void ShouldConvertPostgresDateTime(string input, string expectedKey)
+        [Fact]
+        public void ShouldConvertPostgresDateTime()
         {
+            const string input = "\"2023-05-08T21:00:00.000000+00\"";
+            DateTime expected = new(2023, 5, 8, 21, 0, 0, DateTimeKind.Utc);
             Utf8JsonReader reader = new(Encoding.UTF8.GetBytes(input).AsSpan());
             reader.Read();
             DateTime actual = new DateTimeConverter().Read(ref reader, typeof(DateTime), JsonSerializerOptions.Default);
-            Assert.Equal(ExpectedMap[expectedKey], actual);
+            Assert.Equal(expected, actual);
+        }
+
+        /// <summary>
+        /// Should write date to json string.
+        /// </summary>
+        [Fact]
+        public void ShouldConvertToPostgresDateTime()
+        {
+            DateTime input = new(2020, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+            using MemoryStream stream = new();
+            using Utf8JsonWriter writer = new(stream);
+            new DateTimeConverter().Write(writer, input, JsonSerializerOptions.Default);
+            writer.Flush();
+            stream.Position = 0;
+            using JsonDocument document = JsonDocument.Parse(stream);
+            Assert.Equal("\"2020-01-01T00:00:00Z\"", document.RootElement.GetRawText());
         }
     }
 }
