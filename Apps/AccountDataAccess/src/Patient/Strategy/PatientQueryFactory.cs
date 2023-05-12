@@ -15,34 +15,39 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.AccountDataAccess.Patient.Strategy
 {
-    using System.Collections.Generic;
+    using System;
 
     /// <summary>
-    /// Factory for <see cref="IPatientQueryStrategy"/> instances.
+    /// Factory for <see cref="PatientQueryStrategy"/> instances.
     /// </summary>
-    internal static class PatientQueryFactory
+    internal class PatientQueryFactory
     {
-        private static readonly IDictionary<PatientStrategy, IPatientQueryStrategy>
-            Strategies = new Dictionary<PatientStrategy, IPatientQueryStrategy>
-            {
-                { PatientStrategy.HdidAll, new PatientHdidAllStrategy() },
-                { PatientStrategy.HdidAllCache, new PatientHdidAllCacheStrategy() },
-                { PatientStrategy.HdidEmpi, new PatientHdidEmpiStrategy() },
-                { PatientStrategy.HdidEmpiCache, new PatientHdidEmpiCacheStrategy() },
-                { PatientStrategy.HdidPhsa, new PatientHdidPhsaStrategy() },
-                { PatientStrategy.HdidPhsaCache, new PatientHdidPhsaCacheStrategy() },
-                { PatientStrategy.PhnEmpi, new PatientPhnEmpiStrategy() },
-                { PatientStrategy.PhnEmpiCache, new PatientPhnEmpiCacheStrategy() },
-            };
+        private readonly IServiceProvider serviceProvider;
 
         /// <summary>
-        /// Returns an instance of the patient query strategy associated with the patient query strategy enum.
+        /// Initializes a new instance of the <see cref="PatientQueryFactory"/> class.
         /// </summary>
-        /// <param name="source">The patient strategy associated with the patient query.</param>
-        /// <returns>The patient query strategy implementation.</returns>
-        public static IPatientQueryStrategy GetStrategy(PatientStrategy source)
+        /// <param name="serviceProvider">The injected service provider.</param>
+        public PatientQueryFactory(IServiceProvider serviceProvider)
         {
-            return Strategies[source];
+            this.serviceProvider = serviceProvider;
+        }
+
+        /// <summary>
+        /// Returns an instance of the requested <see cref="PatientQueryStrategy"/> class.
+        /// </summary>
+        /// <param name="strategy">The strategy instance to retrieve.</param>
+        /// <returns>Requested instance of <see cref="PatientQueryStrategy"/> class.</returns>
+        public PatientQueryStrategy? GetPatientQueryStrategy(string strategy)
+        {
+            Type? type = Type.GetType(strategy);
+
+            if (type == null)
+            {
+                return null;
+            }
+
+            return this.serviceProvider.GetService(type) != null ? (PatientQueryStrategy)this.serviceProvider.GetService(type)! : null;
         }
     }
 }

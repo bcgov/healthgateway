@@ -17,11 +17,10 @@ namespace AccountDataAccessTest
 {
     using System.Net;
     using System.ServiceModel;
-    using AccountDataAccessTest.Utils;
-    using AutoMapper;
     using DeepEqual.Syntax;
     using HealthGateway.AccountDataAccess.Patient;
     using HealthGateway.AccountDataAccess.Patient.Api;
+    using HealthGateway.AccountDataAccess.Patient.Strategy;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.CacheProviders;
     using HealthGateway.Common.Constants;
@@ -44,8 +43,6 @@ namespace AccountDataAccessTest
         private const string PhsaHdidNotFound = "phsa123NotFound";
         private const string Phn = "9735353315";
         private const string Gender = "Male";
-
-        private static readonly IMapper Mapper = MapperUtil.InitializeAutoMapper();
 
         /// <summary>
         /// GetDemographics by PHN - happy path.
@@ -254,14 +251,11 @@ namespace AccountDataAccessTest
                 .Throws(new CommunicationException("Unit test PHSA get patient identity."));
 
             PatientRepository patientRepository = new(
-                clientRegistriesDelegate.Object,
-                cacheProvider.Object,
                 GetConfiguration(),
                 new Mock<ILogger<PatientRepository>>().Object,
-                patientIdentityApi.Object,
                 new Mock<DbBlockedAccessDelegate>().Object,
                 new Mock<IAuthenticationDelegate>().Object,
-                Mapper);
+                new Mock<PatientQueryFactory>().Object);
             return patientRepository;
         }
     }

@@ -749,7 +749,7 @@ namespace HealthGateway.Admin.Tests.Services
             delegationDelegate.Setup(p => p.GetDependentAsync(DependentHdid, true)).ReturnsAsync(protectedDependent);
 
             Mock<IAgentAuditDelegate> agentAuditDelegate = new();
-            agentAuditDelegate.Setup(p => p.GetAgentAuditsAsync(It.IsAny<AgentAuditQuery>()))
+            agentAuditDelegate.Setup(p => p.GetAgentAuditsAsync(It.IsAny<string>(), It.IsAny<AuditGroup>()))
                 .ReturnsAsync(agentAudits);
 
             return new DelegationService(

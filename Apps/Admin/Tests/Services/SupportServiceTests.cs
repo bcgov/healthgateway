@@ -23,6 +23,7 @@ namespace HealthGateway.Admin.Tests.Services
     using System.Threading.Tasks;
     using AutoMapper;
     using DeepEqual.Syntax;
+    using HealthGateway.AccountDataAccess.Audit;
     using HealthGateway.AccountDataAccess.Patient;
     using HealthGateway.Admin.Common.Constants;
     using HealthGateway.Admin.Common.Models;
@@ -632,7 +633,8 @@ namespace HealthGateway.Admin.Tests.Services
                 messagingVerificationDelegateMock.Object,
                 patientRepositoryMock.Object,
                 resourceDelegateDelegateMock.Object,
-                userProfileDelegateMock.Object);
+                userProfileDelegateMock.Object,
+                new Mock<IAuditRepository>().Object);
         }
 
         private static IConfigurationRoot GetIConfigurationRoot()
