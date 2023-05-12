@@ -16,6 +16,7 @@
 namespace HealthGateway.AccountDataAccess.Patient.Strategy
 {
     using System;
+    using Microsoft.Extensions.DependencyInjection;
 
     /// <summary>
     /// Factory for <see cref="PatientQueryStrategy"/> instances.
@@ -38,16 +39,16 @@ namespace HealthGateway.AccountDataAccess.Patient.Strategy
         /// </summary>
         /// <param name="strategy">The strategy instance to retrieve.</param>
         /// <returns>Requested instance of <see cref="PatientQueryStrategy"/> class.</returns>
-        public PatientQueryStrategy? GetPatientQueryStrategy(string strategy)
+        public PatientQueryStrategy GetPatientQueryStrategy(string strategy)
         {
             Type? type = Type.GetType(strategy);
 
             if (type == null)
             {
-                return null;
+                throw new ArgumentException($"Invalid strategy type: {strategy}");
             }
 
-            return this.serviceProvider.GetService(type) != null ? (PatientQueryStrategy)this.serviceProvider.GetService(type)! : null;
+            return (PatientQueryStrategy)this.serviceProvider.GetRequiredService(type);
         }
     }
 }

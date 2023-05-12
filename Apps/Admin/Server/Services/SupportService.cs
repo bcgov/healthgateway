@@ -82,7 +82,7 @@ namespace HealthGateway.Admin.Server.Services
             IList<MessagingVerification> messagingVerifications = await this.messagingVerificationDelegate.GetUserMessageVerificationsAsync(hdid).ConfigureAwait(true);
             AgentAuditQuery agentAuditQuery = new(hdid);
             IEnumerable<AgentAudit> agentAudits = await this.auditRepository.Handle(agentAuditQuery, ct).ConfigureAwait(true);
-            IEnumerable<DataSource> dataSources = await this.patientRepository.DataSourceQuery(hdid, ct).ConfigureAwait(true);
+            IEnumerable<DataSource> dataSources = await this.patientRepository.GetDataSources(hdid, ct).ConfigureAwait(true);
             TimeZoneInfo localTimezone = DateFormatter.GetLocalTimeZone(this.configuration);
 
             PatientSupportDetails details = new()

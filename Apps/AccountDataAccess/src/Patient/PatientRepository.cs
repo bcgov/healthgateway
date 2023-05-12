@@ -117,13 +117,13 @@ namespace HealthGateway.AccountDataAccess.Patient
         }
 
         /// <inheritdoc/>
-        public async Task<BlockedAccess?> BlockedAccessQuery(string hdid, CancellationToken ct = default)
+        public async Task<BlockedAccess?> GetBlockedAccessRecords(string hdid, CancellationToken ct = default)
         {
             return await this.blockedAccessDelegate.GetBlockedAccessAsync(hdid).ConfigureAwait(true);
         }
 
         /// <inheritdoc/>
-        public async Task<IEnumerable<DataSource>> DataSourceQuery(string hdid, CancellationToken ct = default)
+        public async Task<IEnumerable<DataSource>> GetDataSources(string hdid, CancellationToken ct = default)
         {
             return await this.blockedAccessDelegate.GetDataSourcesAsync(hdid).ConfigureAwait(true);
         }
