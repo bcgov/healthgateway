@@ -119,22 +119,12 @@ namespace HealthGateway.AccountDataAccess.Patient
         /// <inheritdoc/>
         public async Task<BlockedAccess?> BlockedAccessQuery(string hdid, CancellationToken ct = default)
         {
-            if (ct.IsCancellationRequested)
-            {
-                throw new InvalidOperationException("cancellation was requested");
-            }
-
             return await this.blockedAccessDelegate.GetBlockedAccessAsync(hdid).ConfigureAwait(true);
         }
 
         /// <inheritdoc/>
         public async Task<IEnumerable<DataSource>> DataSourceQuery(string hdid, CancellationToken ct = default)
         {
-            if (ct.IsCancellationRequested)
-            {
-                throw new InvalidOperationException("cancellation was requested");
-            }
-
             return await this.blockedAccessDelegate.GetDataSourcesAsync(hdid).ConfigureAwait(true);
         }
 
