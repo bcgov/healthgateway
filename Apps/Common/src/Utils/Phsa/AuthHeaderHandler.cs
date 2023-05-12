@@ -15,6 +15,7 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Common.Utils.Phsa
 {
+    using System.Diagnostics.CodeAnalysis;
     using System.Net.Http;
     using System.Net.Http.Headers;
     using System.Threading;
@@ -28,6 +29,7 @@ namespace HealthGateway.Common.Utils.Phsa
     /// <summary>
     /// Delegating access handler that swaps the user token for a PHSA token and injects it.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public class AuthHeaderHandler : DelegatingHandler
     {
         private readonly ILogger<AuthHeaderHandler> logger;
@@ -44,22 +46,20 @@ namespace HealthGateway.Common.Utils.Phsa
             this.tokenService = tokenService;
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
             RequestResult<TokenSwapResponse> phsaTokenResponse = await this.tokenService.GetPhsaAccessToken().ConfigureAwait(true);
             if (phsaTokenResponse.ResultStatus == ResultType.Success)
             {
-                this.logger.LogTrace($"Fetched Token for hdid");
+                this.logger.LogTrace("Fetched Token for hdid");
                 string? token = phsaTokenResponse.ResourcePayload?.AccessToken;
                 request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
                 return await base.SendAsync(request, cancellationToken).ConfigureAwait(false);
             }
-            else
-            {
-                this.logger.LogError("Error while retrieving PHSA Token {ErrorMessage}", phsaTokenResponse.ResultError?.ResultMessage);
-                throw new HttpRequestException(phsaTokenResponse.ResultError?.ResultMessage);
-            }
+
+            this.logger.LogError("Error while retrieving PHSA Token {ErrorMessage}", phsaTokenResponse.ResultError?.ResultMessage);
+            throw new HttpRequestException(phsaTokenResponse.ResultError?.ResultMessage);
         }
     }
 }
