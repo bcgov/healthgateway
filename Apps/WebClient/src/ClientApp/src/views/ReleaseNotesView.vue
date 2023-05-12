@@ -1,30 +1,16 @@
-<script lang="ts">
-import Vue from "vue";
-import { Component } from "vue-property-decorator";
-
+<script setup lang="ts">
 import BreadcrumbComponent from "@/components/navmenu/BreadcrumbComponent.vue";
-import ReleaseNoteComponent from "@/components/ReleaseNoteComponent.vue";
+import ReleaseNote from "@/components/ReleaseNoteComponent.vue";
 import BreadcrumbItem from "@/models/breadcrumbItem";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const options: any = {
-    components: {
-        BreadcrumbComponent,
-        "release-note": ReleaseNoteComponent,
+const breadcrumbItems: BreadcrumbItem[] = [
+    {
+        text: "Release Notes",
+        to: "/release-notes",
+        active: true,
+        dataTestId: "breadcrumb-release-notes",
     },
-};
-
-@Component(options)
-export default class ReleaseNotesView extends Vue {
-    private breadcrumbItems: BreadcrumbItem[] = [
-        {
-            text: "Release Notes",
-            to: "/release-notes",
-            active: true,
-            dataTestId: "breadcrumb-release-notes",
-        },
-    ];
-}
+];
 </script>
 
 <template>
