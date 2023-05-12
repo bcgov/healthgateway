@@ -24,7 +24,7 @@ namespace HealthGateway.AccountDataAccess.Patient.Strategy
     using Microsoft.Extensions.Logging;
 
     /// <summary>
-    /// The Strategy interface declares operations common to all supported
+    /// The Patient Query Strategy interface declares operations common to all supported
     /// versions of the get patient async algorithm.
     /// The Context uses this interface to call the algorithm defined by Concrete
     /// Strategies.
@@ -43,7 +43,10 @@ namespace HealthGateway.AccountDataAccess.Patient.Strategy
         /// <param name="configuration">The Configuration to use.</param>
         /// <param name="cacheProvider">The injected cache provider.</param>
         /// <param name="logger">The injected logger.</param>
-        protected PatientQueryStrategy(IConfiguration configuration, ICacheProvider cacheProvider, ILogger<PatientQueryStrategy> logger)
+        protected PatientQueryStrategy(
+            IConfiguration configuration,
+            ICacheProvider cacheProvider,
+            ILogger<PatientQueryStrategy> logger)
         {
             this.cacheProvider = cacheProvider;
             this.logger = logger;
@@ -53,11 +56,20 @@ namespace HealthGateway.AccountDataAccess.Patient.Strategy
         private static ActivitySource Source { get; } = new(nameof(PatientQueryStrategy));
 
         /// <summary>
-        /// Returns patient model based on the implemented rule.
+        /// Returns patient model based on the implemented Strategy.
         /// </summary>
         /// <param name="request">The request parameter values to use in the query..</param>
-        /// <returns>A <see cref="Task{TResult}"/> representing the result of the asynchronous operation.</returns>
+        /// <returns>A <see cref="PatientQueryStrategy"/> class.</returns>
         public abstract Task<PatientModel?> GetPatientAsync(PatientRequest request);
+
+        /// <summary>
+        /// Returns the logger.
+        /// </summary>
+        /// <returns>A <see cref="ILogger"/> class.</returns>
+        protected ILogger GetLogger()
+        {
+            return this.logger;
+        }
 
         /// <summary>
         /// Attempts to get the Patient model from the Generic Cache.
@@ -93,7 +105,7 @@ namespace HealthGateway.AccountDataAccess.Patient.Strategy
         }
 
         /// <summary>
-        /// Caches the Patient model if patient is not null and disabled validation was not enabled..
+        /// Caches the Patient model if patient is not null and validation is enabled.
         /// </summary>
         /// <param name="patient">The patient to cache.</param>
         /// <param name="disabledValidation">bool indicating if disabledValidation was set.</param>

@@ -27,13 +27,12 @@ namespace HealthGateway.AccountDataAccess.Patient.Strategy
     using Refit;
 
     /// <summary>
-    /// Strategy implementation for patient data source HdidAll.
+    /// Strategy implementation for all hdid patient data sources with or without cache.
     /// </summary>
     internal class HdidAllStrategy : PatientQueryStrategy
     {
         private readonly IClientRegistriesDelegate clientRegistriesDelegate;
         private readonly IPatientIdentityApi patientIdentityApi;
-        private readonly ILogger<HdidAllStrategy> logger;
         private readonly IMapper mapper;
 
         /// <summary>
@@ -56,7 +55,6 @@ namespace HealthGateway.AccountDataAccess.Patient.Strategy
         {
             this.clientRegistriesDelegate = clientRegistriesDelegate;
             this.patientIdentityApi = patientIdentityApi;
-            this.logger = logger;
             this.mapper = mapper;
         }
 
@@ -71,7 +69,7 @@ namespace HealthGateway.AccountDataAccess.Patient.Strategy
             }
             catch (CommunicationException ce)
             {
-                this.logger.LogError("Will call PHSA for patient due to EMPI Communication Exception when trying to retrieve patient information: {Exception}", ce);
+                this.GetLogger().LogError("Will call PHSA for patient due to EMPI Communication Exception when trying to retrieve patient information: {Exception}", ce);
 
                 try
                 {
@@ -80,7 +78,7 @@ namespace HealthGateway.AccountDataAccess.Patient.Strategy
                 }
                 catch (ApiException e) when (e.StatusCode == HttpStatusCode.NotFound)
                 {
-                    this.logger.LogInformation("PHSA could not find patient identity for {Hdid}", request.Identifier);
+                    this.GetLogger().LogInformation("PHSA could not find patient identity for {Hdid}", request.Identifier);
                 }
             }
 

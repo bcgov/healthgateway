@@ -22,7 +22,7 @@ namespace HealthGateway.AccountDataAccess.Patient.Strategy
     using Microsoft.Extensions.Logging;
 
     /// <summary>
-    /// Strategy implementation for patient data source HdidEmpi.
+    /// Strategy implementation for EMPI hdid patient data source with or without cache.
     /// </summary>
     internal class HdidEmpiStrategy : PatientQueryStrategy
     {

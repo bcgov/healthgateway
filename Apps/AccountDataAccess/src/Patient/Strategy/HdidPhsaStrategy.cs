@@ -26,12 +26,11 @@ namespace HealthGateway.AccountDataAccess.Patient.Strategy
     using Refit;
 
     /// <summary>
-    /// Strategy implementation for patient data source HdidPhsa.
+    /// Strategy implementation for PHSA phn patient data source with or without cache.
     /// </summary>
     internal class HdidPhsaStrategy : PatientQueryStrategy
     {
         private readonly IPatientIdentityApi patientIdentityApi;
-        private readonly ILogger<HdidPhsaStrategy> logger;
         private readonly IMapper mapper;
 
         /// <summary>
@@ -51,7 +50,6 @@ namespace HealthGateway.AccountDataAccess.Patient.Strategy
             : base(configuration, cacheProvider, logger)
         {
             this.patientIdentityApi = patientIdentityApi;
-            this.logger = logger;
             this.mapper = mapper;
         }
 
@@ -69,7 +67,7 @@ namespace HealthGateway.AccountDataAccess.Patient.Strategy
                 }
                 catch (ApiException e) when (e.StatusCode == HttpStatusCode.NotFound)
                 {
-                    this.logger.LogInformation("PHSA could not find patient identity for {Hdid}", request.Identifier);
+                    this.GetLogger().LogInformation("PHSA could not find patient identity for {Hdid}", request.Identifier);
                 }
             }
 

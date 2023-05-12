@@ -24,12 +24,11 @@ namespace HealthGateway.AccountDataAccess.Patient.Strategy
     using Microsoft.Extensions.Logging;
 
     /// <summary>
-    /// Strategy implementation for patient data source PhnEmpi.
+    /// Strategy implementation for EMPI phn patient data source with or without cache.
     /// </summary>
     internal class PhnEmpiStrategy : PatientQueryStrategy
     {
         private readonly IClientRegistriesDelegate clientRegistriesDelegate;
-        private readonly ILogger<PhnEmpiStrategy> logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PhnEmpiStrategy"/> class.
@@ -46,7 +45,6 @@ namespace HealthGateway.AccountDataAccess.Patient.Strategy
             : base(configuration, cacheProvider, logger)
         {
             this.clientRegistriesDelegate = clientRegistriesDelegate;
-            this.logger = logger;
         }
 
         /// <inheritdoc/>
@@ -54,7 +52,7 @@ namespace HealthGateway.AccountDataAccess.Patient.Strategy
         {
             if (!PhnValidator.IsValid(request.Identifier))
             {
-                this.logger.LogDebug("The PHN provided is invalid");
+                this.GetLogger().LogDebug("The PHN provided is invalid");
                 throw new ProblemDetailsException(ExceptionUtility.CreateValidationError(nameof(PhnEmpiStrategy), ErrorMessages.PhnInvalid));
             }
 
