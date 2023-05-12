@@ -19,9 +19,11 @@ namespace HealthGateway.Admin.Server.Services
     using System.Collections.Generic;
     using System.Linq;
     using System.Net;
+    using System.Threading;
     using System.Threading.Tasks;
     using AutoMapper;
     using FluentValidation.Results;
+    using HealthGateway.AccountDataAccess.Audit;
     using HealthGateway.Admin.Common.Constants;
     using HealthGateway.Admin.Common.Models;
     using HealthGateway.Admin.Server.Validations;
@@ -46,7 +48,7 @@ namespace HealthGateway.Admin.Server.Services
         private readonly IResourceDelegateDelegate resourceDelegateDelegate;
         private readonly IDelegationDelegate delegationDelegate;
         private readonly IAuthenticationDelegate authenticationDelegate;
-        private readonly IAgentAuditDelegate agentAuditDelegate;
+        private readonly IAuditRepository auditRepository;
         private readonly IMapper autoMapper;
         private readonly int maxDependentAge;
         private readonly int minDelegateAge;
@@ -59,7 +61,7 @@ namespace HealthGateway.Admin.Server.Services
         /// <param name="resourceDelegateDelegate">The injected resource delegate delegate.</param>
         /// <param name="delegationDelegate">The injected delegation delegate.</param>
         /// <param name="authenticationDelegate">The injected authentication delegate.</param>
-        /// <param name="agentAuditDelegate">The injected agent audit delegate.</param>
+        /// <param name="auditRepository">The injected agent audit repository.</param>
         /// <param name="autoMapper">The injected automapper provider.</param>
         public DelegationService(
             IConfiguration configuration,
@@ -67,27 +69,27 @@ namespace HealthGateway.Admin.Server.Services
             IResourceDelegateDelegate resourceDelegateDelegate,
             IDelegationDelegate delegationDelegate,
             IAuthenticationDelegate authenticationDelegate,
-            IAgentAuditDelegate agentAuditDelegate,
+            IAuditRepository auditRepository,
             IMapper autoMapper)
         {
             this.patientService = patientService;
             this.resourceDelegateDelegate = resourceDelegateDelegate;
             this.delegationDelegate = delegationDelegate;
             this.authenticationDelegate = authenticationDelegate;
-            this.agentAuditDelegate = agentAuditDelegate;
+            this.auditRepository = auditRepository;
             this.autoMapper = autoMapper;
             this.maxDependentAge = configuration.GetSection(DelegationConfigSection).GetValue(MaxDependentAgeKey, 12);
             this.minDelegateAge = configuration.GetSection(DelegationConfigSection).GetValue(MinDelegateAgeKey, 12);
         }
 
         /// <inheritdoc/>
-        public async Task<DelegationInfo> GetDelegationInformationAsync(string phn)
+        public async Task<DelegationInfo> GetDelegationInformationAsync(string phn, CancellationToken ct = default)
         {
             // Get dependent patient information
             RequestResult<PatientModel> dependentPatientResult = await this.patientService.GetPatient(phn, PatientIdentifierType.Phn).ConfigureAwait(true);
             this.ValidatePatientResult(dependentPatientResult);
 
-            ValidationResult? validationResults = await new DependentPatientValidator(this.maxDependentAge).ValidateAsync(dependentPatientResult.ResourcePayload).ConfigureAwait(true);
+            ValidationResult? validationResults = await new DependentPatientValidator(this.maxDependentAge).ValidateAsync(dependentPatientResult.ResourcePayload, ct).ConfigureAwait(true);
             if (!validationResults.IsValid)
             {
                 throw new ProblemDetailsException(
@@ -135,8 +137,9 @@ namespace HealthGateway.Admin.Server.Services
                 delegationInfo.Delegates = delegates;
 
                 // Get agent audits
-                IEnumerable<AgentAudit> agentAudits = await this.agentAuditDelegate.GetAgentAuditsAsync(dependentPatientInfo.HdId, AuditGroup.Dependent).ConfigureAwait(true);
-                delegationInfo.AgentActions = agentAudits.Select(audit => this.autoMapper.Map<AgentAction>(audit));
+                AgentAuditQuery agentAuditQuery = new(dependentPatientInfo.HdId, AuditGroup.Dependent);
+                IEnumerable<AgentAudit> agentAudits = await this.auditRepository.Handle(agentAuditQuery, ct).ConfigureAwait(true);
+                delegationInfo.AgentActions = agentAudits.Select(a => this.autoMapper.Map<AgentAction>(a));
             }
 
             return delegationInfo;

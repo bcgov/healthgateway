@@ -16,6 +16,7 @@
 namespace HealthGateway.Admin.Server.Services
 {
     using System.Collections.Generic;
+    using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Admin.Common.Models;
 
@@ -28,8 +29,9 @@ namespace HealthGateway.Admin.Server.Services
         /// Retrieves delegation information for a person.
         /// </summary>
         /// <param name="phn">The phn to query on.</param>
+        /// <param name="ct">A cancellation token.</param>
         /// <returns>Information about the person and their delegates.</returns>
-        Task<DelegationInfo> GetDelegationInformationAsync(string phn);
+        Task<DelegationInfo> GetDelegationInformationAsync(string phn, CancellationToken ct = default);
 
         /// <summary>
         /// Retrieves information about a potential delegate.

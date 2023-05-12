@@ -18,9 +18,11 @@ namespace HealthGateway.Admin.Tests.Services
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading;
     using System.Threading.Tasks;
     using AutoMapper;
     using DeepEqual.Syntax;
+    using HealthGateway.AccountDataAccess.Audit;
     using HealthGateway.Admin.Common.Constants;
     using HealthGateway.Admin.Common.Models;
     using HealthGateway.Admin.Server.Services;
@@ -394,7 +396,7 @@ namespace HealthGateway.Admin.Tests.Services
                 new Mock<IResourceDelegateDelegate>().Object,
                 new Mock<IDelegationDelegate>().Object,
                 new Mock<IAuthenticationDelegate>().Object,
-                new Mock<IAgentAuditDelegate>().Object,
+                new Mock<IAuditRepository>().Object,
                 this.autoMapper);
 
             await Assert.ThrowsAsync<ProblemDetailsException>(() => delegationService.GetDelegationInformationAsync(DependentPhn)).ConfigureAwait(true);
@@ -748,8 +750,8 @@ namespace HealthGateway.Admin.Tests.Services
             Mock<IDelegationDelegate> delegationDelegate = new();
             delegationDelegate.Setup(p => p.GetDependentAsync(DependentHdid, true)).ReturnsAsync(protectedDependent);
 
-            Mock<IAgentAuditDelegate> agentAuditDelegate = new();
-            agentAuditDelegate.Setup(p => p.GetAgentAuditsAsync(It.IsAny<string>(), It.IsAny<AuditGroup>()))
+            Mock<IAuditRepository> agentAuditRepository = new();
+            agentAuditRepository.Setup(p => p.Handle(It.IsAny<AgentAuditQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(agentAudits);
 
             return new DelegationService(
@@ -758,7 +760,7 @@ namespace HealthGateway.Admin.Tests.Services
                 resourceDelegateDelegate.Object,
                 delegationDelegate.Object,
                 new Mock<IAuthenticationDelegate>().Object,
-                agentAuditDelegate.Object,
+                agentAuditRepository.Object,
                 this.autoMapper);
         }
 
@@ -785,7 +787,7 @@ namespace HealthGateway.Admin.Tests.Services
                 resourceDelegateDelegate.Object,
                 delegationDelegate.Object,
                 authenticationDelegate.Object,
-                new Mock<IAgentAuditDelegate>().Object,
+                new Mock<IAuditRepository>().Object,
                 this.autoMapper);
         }
 
@@ -799,7 +801,7 @@ namespace HealthGateway.Admin.Tests.Services
                 new Mock<IResourceDelegateDelegate>().Object,
                 new Mock<IDelegationDelegate>().Object,
                 new Mock<IAuthenticationDelegate>().Object,
-                new Mock<IAgentAuditDelegate>().Object,
+                new Mock<IAuditRepository>().Object,
                 this.autoMapper);
         }
     }
