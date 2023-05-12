@@ -68,8 +68,8 @@ namespace HealthGateway.AccountDataAccess.Patient
         /// </summary>
         /// <param name="hdid">The hdid to query on.</param>
         /// <param name="ct">The cancellation token.</param>
-        /// <returns>A dictionary of blocked access data source values.</returns>
-        Task<Dictionary<string, string>> DataSourceQuery(string hdid, CancellationToken ct = default);
+        /// <returns>A list of blocked access data source values.</returns>
+        Task<IEnumerable<DataSource>> DataSourceQuery(string hdid, CancellationToken ct = default);
 
         /// <summary>
         /// Block access to data sources associated with the hdid.

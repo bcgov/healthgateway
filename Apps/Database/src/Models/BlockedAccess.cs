@@ -19,6 +19,7 @@ namespace HealthGateway.Database.Models
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Diagnostics.CodeAnalysis;
+    using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.Models;
 
     /// <summary>
@@ -39,6 +40,6 @@ namespace HealthGateway.Database.Models
         [Required]
         [Column(TypeName = "jsonb")]
         [SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "Team decision")]
-        public Dictionary<string, string> DataSources { get; set; } = new();
+        public HashSet<DataSource> DataSources { get; set; } = new();
     }
 }

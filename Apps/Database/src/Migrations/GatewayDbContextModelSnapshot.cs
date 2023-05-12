@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text.Json;
+using HealthGateway.Common.Data.Constants;
 using HealthGateway.Database.Context;
 using HealthGateway.Database.Models;
 using Microsoft.EntityFrameworkCore;
@@ -1052,7 +1053,7 @@ namespace HealthGateway.Database.Migrations
                     b.Property<DateTime>("CreatedDateTime")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<Dictionary<string, string>>("DataSources")
+                    b.Property<HashSet<DataSource>>("DataSources")
                         .IsRequired()
                         .HasColumnType("jsonb");
 

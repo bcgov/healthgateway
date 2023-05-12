@@ -16,8 +16,8 @@
 namespace HealthGateway.Admin.Common.Models
 {
     using System.Collections.Generic;
-    using System.Diagnostics.CodeAnalysis;
     using System.Linq;
+    using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ViewModels;
 
     /// <summary>
@@ -38,7 +38,6 @@ namespace HealthGateway.Admin.Common.Models
         /// <summary>
         /// Gets or sets the blocked access data sources.
         /// </summary>
-        [SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "Team decision")]
-        public Dictionary<string, string> DataSources { get; set; } = new();
+        public IEnumerable<DataSource> BlockedDataSources { get; set; } = Enumerable.Empty<DataSource>();
     }
 }

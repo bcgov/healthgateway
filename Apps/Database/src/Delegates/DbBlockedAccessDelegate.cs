@@ -18,6 +18,7 @@ namespace HealthGateway.Database.Delegates
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
+    using HealthGateway.Common.Data.Constants;
     using HealthGateway.Database.Context;
     using HealthGateway.Database.Models;
     using Microsoft.EntityFrameworkCore;
@@ -67,12 +68,12 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public async Task<Dictionary<string, string>> GetDataSourcesAsync(string hdid)
+        public async Task<IEnumerable<DataSource>> GetDataSourcesAsync(string hdid)
         {
             IQueryable<BlockedAccess> query = this.dbContext.BlockedAccess.Where(d => d.Hdid == hdid);
             BlockedAccess? blockedAccess = await query.SingleOrDefaultAsync().ConfigureAwait(true);
 
-            return blockedAccess?.DataSources ?? new Dictionary<string, string>();
+            return blockedAccess?.DataSources ?? new HashSet<DataSource>();
         }
 
         /// <inheritdoc/>

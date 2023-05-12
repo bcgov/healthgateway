@@ -82,14 +82,14 @@ namespace HealthGateway.Admin.Server.Services
             IList<MessagingVerification> messagingVerifications = await this.messagingVerificationDelegate.GetUserMessageVerificationsAsync(hdid).ConfigureAwait(true);
             AgentAuditQuery agentAuditQuery = new(hdid, AuditGroup.BlockedAccess);
             IEnumerable<AgentAudit> agentAudits = await this.auditRepository.Handle(agentAuditQuery, ct).ConfigureAwait(true);
-            Dictionary<string, string> dataSources = await this.patientRepository.DataSourceQuery(hdid, ct).ConfigureAwait(true);
+            IEnumerable<DataSource> dataSources = await this.patientRepository.DataSourceQuery(hdid, ct).ConfigureAwait(true);
             TimeZoneInfo localTimezone = DateFormatter.GetLocalTimeZone(this.configuration);
 
             PatientSupportDetails details = new()
             {
                 MessagingVerifications = messagingVerifications.Select(m => MessagingVerificationMapUtils.ToUiModel(m, this.autoMapper, localTimezone)),
                 AgentActions = agentAudits.Select(audit => this.autoMapper.Map<AgentAction>(audit)),
-                DataSources = dataSources,
+                BlockedDataSources = dataSources,
             };
 
             return details;
@@ -101,7 +101,7 @@ namespace HealthGateway.Admin.Server.Services
             if (queryType is PatientQueryType.Hdid or PatientQueryType.Phn)
             {
                 PatientIdentifierType identifierType = queryType == PatientQueryType.Phn ? PatientIdentifierType.Phn : PatientIdentifierType.Hdid;
-                PatientSupportResult? patientSupportDetails = await this.GetPatientSupportDetailsAsync(identifierType, queryString, ct).ConfigureAwait(true);
+                PatientSupportResult? patientSupportDetails = await this.GetPatientSupportResultAsync(identifierType, queryString, ct).ConfigureAwait(true);
                 return patientSupportDetails == null ? Array.Empty<PatientSupportResult>() : new List<PatientSupportResult> { patientSupportDetails };
             }
 
@@ -117,7 +117,7 @@ namespace HealthGateway.Admin.Server.Services
                     throw new ProblemDetailsException(ExceptionUtility.CreateProblemDetails($"Unknown {nameof(queryType)}", HttpStatusCode.BadRequest, nameof(SupportService))),
             };
 
-            IEnumerable<Task<PatientSupportResult>> tasks = profiles.Select(profile => this.GetPatientSupportDetailsAsync(profile, ct));
+            IEnumerable<Task<PatientSupportResult>> tasks = profiles.Select(profile => this.GetPatientSupportResultAsync(profile, ct));
             return await Task.WhenAll(tasks).ConfigureAwait(true);
         }
 
@@ -146,7 +146,7 @@ namespace HealthGateway.Admin.Server.Services
             return result.Items.Select(rd => rd.UserProfile);
         }
 
-        private async Task<PatientSupportResult?> GetPatientSupportDetailsAsync(PatientIdentifierType identifierType, string identifier, CancellationToken ct)
+        private async Task<PatientSupportResult?> GetPatientSupportResultAsync(PatientIdentifierType identifierType, string identifier, CancellationToken ct)
         {
             PatientModel? patient = await this.GetPatientAsync(identifierType, identifier, ct).ConfigureAwait(true);
             UserProfile? profile = null;
@@ -162,14 +162,14 @@ namespace HealthGateway.Admin.Server.Services
                 return null;
             }
 
-            return this.MapToPatientSupportDetails(patient, profile);
+            return this.MapToPatientSupportResult(patient, profile);
         }
 
-        private async Task<PatientSupportResult> GetPatientSupportDetailsAsync(UserProfile profile, CancellationToken ct)
+        private async Task<PatientSupportResult> GetPatientSupportResultAsync(UserProfile profile, CancellationToken ct)
         {
             PatientModel? patient = await this.GetPatientAsync(PatientIdentifierType.Hdid, profile.HdId, ct).ConfigureAwait(true);
 
-            return this.MapToPatientSupportDetails(patient, profile);
+            return this.MapToPatientSupportResult(patient, profile);
         }
 
         private async Task<PatientModel?> GetPatientAsync(PatientIdentifierType identifierType, string queryString, CancellationToken ct)
@@ -189,7 +189,7 @@ namespace HealthGateway.Admin.Server.Services
             }
         }
 
-        private PatientSupportResult MapToPatientSupportDetails(PatientModel? patient, UserProfile? userProfile)
+        private PatientSupportResult MapToPatientSupportResult(PatientModel? patient, UserProfile? userProfile)
         {
             PatientSupportResult patientSupportResult = this.autoMapper.Map<PatientModel?, PatientSupportResult>(patient) ?? new PatientSupportResult();
 

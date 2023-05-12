@@ -101,7 +101,7 @@ namespace HealthGateway.AccountDataAccess.Patient
 
             blockedAccess.UpdatedBy = authenticatedUserId;
 
-            Dictionary<string, string> sources = command.DataSources.ToDictionary(x => x.ToString(), _ => "true");
+            HashSet<DataSource> sources = command.DataSources.ToHashSet();
 
             if (sources.Any())
             {
@@ -128,7 +128,7 @@ namespace HealthGateway.AccountDataAccess.Patient
         }
 
         /// <inheritdoc/>
-        public async Task<Dictionary<string, string>> DataSourceQuery(string hdid, CancellationToken ct = default)
+        public async Task<IEnumerable<DataSource>> DataSourceQuery(string hdid, CancellationToken ct = default)
         {
             if (ct.IsCancellationRequested)
             {
