@@ -16,6 +16,7 @@
 namespace HealthGateway.AccountDataAccess.Patient.Strategy
 {
     using System.Net;
+    using System.ServiceModel;
     using System.Threading.Tasks;
     using AutoMapper;
     using HealthGateway.AccountDataAccess.Patient.Api;
@@ -62,11 +63,16 @@ namespace HealthGateway.AccountDataAccess.Patient.Strategy
         /// <inheritdoc/>
         public override async Task<PatientModel?> GetPatientAsync(PatientRequest request)
         {
-            PatientModel? patient = (request.UseCache ? this.GetFromCache(request.Identifier, PatientIdentifierType.Hdid) : null) ??
-                                    await this.clientRegistriesDelegate.GetDemographicsAsync(OidType.Hdid, request.Identifier, request.DisabledValidation).ConfigureAwait(true);
+            PatientModel? patient = request.UseCache ? this.GetFromCache(request.Identifier, PatientIdentifierType.Hdid) : null;
 
-            if (patient == null)
+            try
             {
+                patient ??= await this.clientRegistriesDelegate.GetDemographicsAsync(OidType.Hdid, request.Identifier, request.DisabledValidation).ConfigureAwait(true);
+            }
+            catch (CommunicationException ce)
+            {
+                this.logger.LogError("Will call PHSA for patient due to EMPI Communication Exception when trying to retrieve patient information: {Exception}", ce);
+
                 try
                 {
                     PatientIdentity result = await this.patientIdentityApi.GetPatientIdentityAsync(request.Identifier).ConfigureAwait(true);
