@@ -93,10 +93,24 @@ namespace HealthGateway.AccountDataAccess.Patient.Strategy
         }
 
         /// <summary>
+        /// Caches the Patient model if patient is not null and disabled validation was not enabled..
+        /// </summary>
+        /// <param name="patient">The patient to cache.</param>
+        /// <param name="disabledValidation">bool indicating if disabledValidation was set.</param>
+        protected void CachePatient(PatientModel? patient, bool disabledValidation)
+        {
+            // Only cache if validation is enabled (as some clients could get invalid data) and when successful.
+            if (patient != null && !disabledValidation)
+            {
+                this.CachePatient(patient);
+            }
+        }
+
+        /// <summary>
         /// Caches the Patient model if enabled.
         /// </summary>
         /// <param name="patientModel">The patient to cache.</param>
-        protected void CachePatient(PatientModel patientModel)
+        private void CachePatient(PatientModel patientModel)
         {
             using Activity? activity = Source.StartActivity();
             string hdid = patientModel.Hdid;
@@ -120,20 +134,6 @@ namespace HealthGateway.AccountDataAccess.Patient.Strategy
             }
 
             activity?.Stop();
-        }
-
-        /// <summary>
-        /// Caches the Patient model if patient is not null and disabled validation was not enabled..
-        /// </summary>
-        /// <param name="patient">The patient to cache.</param>
-        /// <param name="disabledValidation">bool indicating if disabledValidation was set.</param>
-        protected void CachePatient(PatientModel? patient, bool disabledValidation)
-        {
-            // Only cache if validation is enabled (as some clients could get invalid data) and when successful.
-            if (patient != null && !disabledValidation)
-            {
-                this.CachePatient(patient);
-            }
         }
     }
 

@@ -78,7 +78,7 @@ namespace HealthGateway.AccountDataAccess.Patient.Strategy
                 }
             }
 
-            this.CachePatient(patient);
+            this.CachePatient(patient, request.DisabledValidation);
             return patient;
         }
     }

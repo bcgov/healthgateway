@@ -51,7 +51,7 @@ namespace HealthGateway.AccountDataAccess.Patient.Strategy
             PatientModel? patient = (request.UseCache ? this.GetFromCache(request.Identifier, PatientIdentifierType.Hdid) : null) ??
                                     await this.clientRegistriesDelegate.GetDemographicsAsync(OidType.Hdid, request.Identifier, request.DisabledValidation).ConfigureAwait(true);
 
-            this.CachePatient(patient);
+            this.CachePatient(patient, request.DisabledValidation);
             return patient;
         }
     }
