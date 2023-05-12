@@ -42,5 +42,5 @@ namespace HealthGateway.AccountDataAccess.Audit
     /// <param name="Group">The group to search.</param>
     public record AgentAuditQuery(
         string Hdid,
-        AuditGroup Group);
+        AuditGroup? Group = null);
 }

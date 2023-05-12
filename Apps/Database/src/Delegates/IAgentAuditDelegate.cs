@@ -31,6 +31,6 @@ namespace HealthGateway.Database.Delegates
         /// <param name="hdid">The hdid to search.</param>
         /// <param name="group">The group to search.</param>
         /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
-        Task<IEnumerable<AgentAudit>> GetAgentAuditsAsync(string hdid, AuditGroup group);
+        Task<IEnumerable<AgentAudit>> GetAgentAuditsAsync(string hdid, AuditGroup? group = null);
     }
 }
