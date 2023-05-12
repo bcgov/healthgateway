@@ -24,7 +24,7 @@ namespace HealthGateway.CommonTests.CacheProviders
     using Xunit;
 
     /// <summary>
-    /// Integration Tests for the RedisCacheProvider.
+    /// Integration Tests for the MemoryCacheProvider.
     /// </summary>
     public class MemoryCacheProviderTests
     {

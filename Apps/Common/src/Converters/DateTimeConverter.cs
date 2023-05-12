@@ -16,7 +16,6 @@
 namespace HealthGateway.Common.Converters
 {
     using System;
-    using System.Diagnostics.CodeAnalysis;
     using System.Text.Json;
     using System.Text.Json.Serialization;
 
@@ -32,7 +31,6 @@ namespace HealthGateway.Common.Converters
         }
 
         /// <inheritdoc/>
-        [ExcludeFromCodeCoverage]
         public override void Write(Utf8JsonWriter writer, DateTime value, JsonSerializerOptions options)
         {
             writer.WriteStringValue(value.ToUniversalTime());

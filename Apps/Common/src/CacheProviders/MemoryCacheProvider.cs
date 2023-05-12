@@ -16,14 +16,12 @@
 namespace HealthGateway.Common.CacheProviders
 {
     using System;
-    using System.Diagnostics.CodeAnalysis;
     using System.Threading.Tasks;
     using Microsoft.Extensions.Caching.Memory;
 
     /// <summary>
     /// Provides a cache Provider for InMemory Cache.
     /// </summary>
-    [ExcludeFromCodeCoverage]
     public class MemoryCacheProvider : ICacheProvider
     {
         private readonly IMemoryCache memoryCache;
