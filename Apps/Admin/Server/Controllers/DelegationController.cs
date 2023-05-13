@@ -15,6 +15,7 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Admin.Server.Controllers
 {
+    using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Admin.Common.Models;
     using HealthGateway.Admin.Server.Services;
@@ -47,6 +48,7 @@ namespace HealthGateway.Admin.Server.Controllers
         /// Retrieves delegation information for a person.
         /// </summary>
         /// <param name="phn">The phn to query on.</param>
+        /// <param name="ct">A cancellation token.</param>
         /// <returns>Information about the person and their delegates.</returns>
         /// <response code="200">Returns the requested delegation information.</response>
         /// <response code="400">The request parameters did not pass validation.</response>
@@ -64,9 +66,9 @@ namespace HealthGateway.Admin.Server.Controllers
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status502BadGateway, Type = typeof(ProblemDetails))]
-        public async Task<DelegationInfo> GetDelegationInformation([FromHeader] string phn)
+        public async Task<DelegationInfo> GetDelegationInformation([FromHeader] string phn, CancellationToken ct)
         {
-            return await this.delegationService.GetDelegationInformationAsync(phn).ConfigureAwait(true);
+            return await this.delegationService.GetDelegationInformationAsync(phn, ct).ConfigureAwait(true);
         }
 
         /// <summary>

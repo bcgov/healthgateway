@@ -250,12 +250,13 @@ namespace AccountDataAccessTest
             clientRegistriesDelegate.Setup(p => p.GetDemographicsAsync(OidType.Hdid, PhsaHdid, false))
                 .Throws(new CommunicationException("Unit test PHSA get patient identity."));
 
+            Mock<IServiceProvider> serviceProviderMock = new();
             PatientRepository patientRepository = new(
                 GetConfiguration(),
                 new Mock<ILogger<PatientRepository>>().Object,
-                new Mock<DbBlockedAccessDelegate>().Object,
+                new Mock<IBlockedAccessDelegate>().Object,
                 new Mock<IAuthenticationDelegate>().Object,
-                new Mock<PatientQueryFactory>().Object);
+                new Mock<PatientQueryFactory>(serviceProviderMock.Object).Object);
             return patientRepository;
         }
     }

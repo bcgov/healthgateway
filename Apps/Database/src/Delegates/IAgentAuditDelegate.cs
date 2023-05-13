@@ -16,6 +16,7 @@
 namespace HealthGateway.Database.Delegates
 {
     using System.Collections.Generic;
+    using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Database.Models;
@@ -30,7 +31,8 @@ namespace HealthGateway.Database.Delegates
         /// </summary>
         /// <param name="hdid">The hdid to search.</param>
         /// <param name="group">The group to search.</param>
+        /// <param name="ct">A cancellation token.</param>
         /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
-        Task<IEnumerable<AgentAudit>> GetAgentAuditsAsync(string hdid, AuditGroup? group = null);
+        Task<IEnumerable<AgentAudit>> GetAgentAuditsAsync(string hdid, AuditGroup? group = null, CancellationToken ct = default);
     }
 }

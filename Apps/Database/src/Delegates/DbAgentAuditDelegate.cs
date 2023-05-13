@@ -17,6 +17,7 @@ namespace HealthGateway.Database.Delegates
 {
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Database.Context;
@@ -42,7 +43,7 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public async Task<IEnumerable<AgentAudit>> GetAgentAuditsAsync(string hdid, AuditGroup? group = null)
+        public async Task<IEnumerable<AgentAudit>> GetAgentAuditsAsync(string hdid, AuditGroup? group = null, CancellationToken ct = default)
         {
             this.logger.LogTrace("Getting agent audit for group: {Group} - hdid : {Hdid}", group, hdid);
 
@@ -53,7 +54,7 @@ namespace HealthGateway.Database.Delegates
                 dbQuery = dbQuery.Where(d => d.Hdid == hdid && d.GroupCode == group);
             }
 
-            return await dbQuery.ToListAsync().ConfigureAwait(true);
+            return await dbQuery.ToListAsync(ct).ConfigureAwait(true);
         }
     }
 }
