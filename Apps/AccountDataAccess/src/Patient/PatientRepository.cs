@@ -160,20 +160,14 @@ namespace HealthGateway.AccountDataAccess.Patient
                 query.UseCache,
                 disabledValidation);
 
-            string strategyKey = GetStrategyKey(query.Hdid, query.Source);
-            this.logger.LogDebug("Strategy: {Strategy}", strategyKey);
+            string strategy = GetStrategyKey(query.Hdid, query.Source);
+            this.logger.LogDebug("Strategy: {Strategy}", strategy);
 
             // Get the appropriate strategy from factory to query patient
-            PatientQueryStrategy? patientQueryStrategy = this.patientQueryFactory.GetPatientQueryStrategy(strategyKey);
-
-            if (patientQueryStrategy != null)
-            {
-                PatientQueryContext context = new(patientQueryStrategy);
-                PatientModel? patient = await context.GetPatientAsync(patientRequest).ConfigureAwait(true);
-                return new PatientQueryResult(new[] { patient! });
-            }
-
-            throw new InvalidOperationException($"Unable to retrieve patient query strategy due to invalid key: {strategyKey}");
+            PatientQueryStrategy patientQueryStrategy = this.patientQueryFactory.GetPatientQueryStrategy(strategy);
+            PatientQueryContext context = new(patientQueryStrategy);
+            PatientModel? patient = await context.GetPatientAsync(patientRequest).ConfigureAwait(true);
+            return new PatientQueryResult(new[] { patient! });
         }
     }
 }
