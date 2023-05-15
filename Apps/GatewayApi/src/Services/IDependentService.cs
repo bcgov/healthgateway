@@ -17,6 +17,7 @@ namespace HealthGateway.GatewayApi.Services
 {
     using System;
     using System.Collections.Generic;
+    using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.GatewayApi.Models;
@@ -50,14 +51,16 @@ namespace HealthGateway.GatewayApi.Services
         /// </summary>
         /// <param name="delegateHdId">The HdId of the Delegate (parent or guardian).</param>
         /// <param name="addDependentRequest">The request to create a User Delegate model.</param>
+        /// <param name="ct">A cancellation token.</param>
         /// <returns>A dependent model wrapped in a RequestResult.</returns>
-        Task<RequestResult<DependentModel>> AddDependentAsync(string delegateHdId, AddDependentRequest addDependentRequest);
+        Task<RequestResult<DependentModel>> AddDependentAsync(string delegateHdId, AddDependentRequest addDependentRequest, CancellationToken ct = default);
 
         /// <summary>
         /// Removes a dependent delegate relation.
         /// </summary>
         /// <param name="dependent">The dependent model to be deleted.</param>
+        /// <param name="ct">A cancellation token.</param>
         /// <returns>A dependent model wrapped in a RequestResult.</returns>
-        RequestResult<DependentModel> Remove(DependentModel dependent);
+        Task<RequestResult<DependentModel>> RemoveAsync(DependentModel dependent, CancellationToken ct = default);
     }
 }

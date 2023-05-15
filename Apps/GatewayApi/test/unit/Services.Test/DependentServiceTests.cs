@@ -18,6 +18,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.Constants;
@@ -25,6 +26,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.ErrorHandling;
+    using HealthGateway.Common.Messaging;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Services;
     using HealthGateway.Database.Constants;
@@ -37,6 +39,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using Moq;
+    using Shouldly;
     using Xunit;
 
     /// <summary>
@@ -193,11 +196,11 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             AddDependentRequest addDependentRequest = this.SetupMockInput();
             IDependentService service = this.SetupMockDependentService(addDependentRequest, insertResult);
 
-            RequestResult<DependentModel> actualResult = await service.AddDependentAsync(this.mockParentHdid, addDependentRequest).ConfigureAwait(true);
+            var exception =
+                (await Should.ThrowAsync<ProblemDetailsException>(async () => await service.AddDependentAsync(this.mockParentHdid, addDependentRequest)))
+                .ShouldNotBeNull();
 
-            Assert.Equal(ResultType.Error, actualResult.ResultStatus);
-            string serviceError = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database);
-            Assert.Equal(serviceError, actualResult.ResultError!.ErrorCode);
+            exception.ProblemDetails!.StatusCode.ShouldBe(System.Net.HttpStatusCode.InternalServerError);
         }
 
         /// <summary>
@@ -336,12 +339,13 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         /// <summary>
         /// ValidateRemove - Happy Path.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void ValidateRemove()
+        public async Task ValidateRemove()
         {
             DependentModel delegateModel = new() { OwnerId = this.mockHdId, DelegateId = this.mockParentHdid };
             Mock<IResourceDelegateDelegate> mockDependentDelegate = new();
-            mockDependentDelegate.Setup(s => s.Delete(It.Is<ResourceDelegate>(d => d.ResourceOwnerHdid == this.mockHdId && d.ProfileHdid == this.mockParentHdid), true))
+            mockDependentDelegate.Setup(s => s.Delete(It.Is<ResourceDelegate>(d => d.ResourceOwnerHdid == this.mockHdId && d.ProfileHdid == this.mockParentHdid), It.IsAny<bool>()))
                 .Returns(
                     new DbResult<ResourceDelegate>
                     {
@@ -353,6 +357,10 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 .Returns(new DbResult<UserProfile> { Payload = new UserProfile() });
             Mock<INotificationSettingsService> mockNotificationSettingsService = new();
             mockNotificationSettingsService.Setup(s => s.QueueNotificationSettings(It.IsAny<NotificationSettingsRequest>()));
+
+            Mock<IMessageSender> mockMessageSender = new();
+            mockMessageSender.Setup(s => s.SendAsync(It.IsAny<IEnumerable<MessageEnvelope>>(), It.IsAny<CancellationToken>()));
+
             IDependentService service = new DependentService(
                 GetIConfigurationRoot(null),
                 new Mock<ILogger<DependentService>>().Object,
@@ -361,9 +369,10 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 new Mock<IDelegationDelegate>().Object,
                 mockDependentDelegate.Object,
                 mockUserProfileDelegate.Object,
+                mockMessageSender.Object,
                 MapperUtil.InitializeAutoMapper());
 
-            RequestResult<DependentModel> actualResult = service.Remove(delegateModel);
+            RequestResult<DependentModel> actualResult = await service.RemoveAsync(delegateModel);
 
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
         }
@@ -464,6 +473,9 @@ namespace HealthGateway.GatewayApiTests.Services.Test
 
             mockPatientService.Setup(s => s.GetPatient(It.IsAny<string>(), It.IsAny<PatientIdentifierType>(), false)).Returns(Task.FromResult(patientResult));
 
+            Mock<IMessageSender> mockMessageSender = new();
+            mockMessageSender.Setup(s => s.SendAsync(It.IsAny<IEnumerable<MessageEnvelope>>(), It.IsAny<CancellationToken>()));
+
             // (3) Setup other common Mocks
             Mock<IDelegationDelegate> mockDelegationDelegate = new();
             Mock<IUserProfileDelegate> mockUserProfileDelegate = new();
@@ -477,6 +489,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 mockDelegationDelegate.Object,
                 mockDependentDelegate.Object,
                 mockUserProfileDelegate.Object,
+                mockMessageSender.Object,
                 MapperUtil.InitializeAutoMapper());
         }
 
@@ -528,7 +541,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
 
             Mock<IResourceDelegateDelegate> mockDependentDelegate = new();
             mockDependentDelegate.Setup(
-                    s => s.Insert(It.Is<ResourceDelegate>(r => r.ProfileHdid == expectedDbDependent.ProfileHdid && r.ResourceOwnerHdid == expectedDbDependent.ResourceOwnerHdid), true))
+                    s => s.Insert(It.Is<ResourceDelegate>(r => r.ProfileHdid == expectedDbDependent.ProfileHdid && r.ResourceOwnerHdid == expectedDbDependent.ResourceOwnerHdid), It.IsAny<bool>()))
                 .Returns(insertResult);
             DbResult<Dictionary<string, int>> mockDelegateCountsResult = new()
             {
@@ -547,6 +560,9 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             Mock<INotificationSettingsService> mockNotificationSettingsService = new();
             mockNotificationSettingsService.Setup(s => s.QueueNotificationSettings(It.IsAny<NotificationSettingsRequest>()));
 
+            Mock<IMessageSender> mockMessageSender = new();
+            mockMessageSender.Setup(s => s.SendAsync(It.IsAny<IEnumerable<MessageEnvelope>>(), It.IsAny<CancellationToken>()));
+
             return new DependentService(
                 GetIConfigurationRoot(null),
                 new Mock<ILogger<DependentService>>().Object,
@@ -555,6 +571,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 delegationDelegate.Object,
                 mockDependentDelegate.Object,
                 mockUserProfileDelegate.Object,
+                mockMessageSender.Object,
                 MapperUtil.InitializeAutoMapper());
         }
 
