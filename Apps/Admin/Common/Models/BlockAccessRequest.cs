@@ -16,26 +16,12 @@
 namespace HealthGateway.Admin.Common.Models
 {
     using System.Collections.Generic;
-    using System.Linq;
+    using HealthGateway.Common.Data.Constants;
 
     /// <summary>
-    /// The delegation info model.
+    /// Request data to block data source access.
     /// </summary>
-    public class DelegationInfo
-    {
-        /// <summary>
-        /// Gets or sets the dependent info.
-        /// </summary>
-        public DependentInfo Dependent { get; set; } = new();
-
-        /// <summary>
-        /// Gets or sets the collection of delegate info.
-        /// </summary>
-        public IEnumerable<DelegateInfo> Delegates { get; set; } = Enumerable.Empty<DelegateInfo>();
-
-        /// <summary>
-        /// Gets or sets the agent actions.
-        /// </summary>
-        public IEnumerable<AgentAction> AgentActions { get; set; } = Enumerable.Empty<AgentAction>();
-    }
+    /// <param name="DataSources">The list of data sources to block.</param>
+    /// <param name="Reason">The reason to block data source(s).</param>
+    public record BlockAccessRequest(IEnumerable<DataSource> DataSources, string Reason);
 }

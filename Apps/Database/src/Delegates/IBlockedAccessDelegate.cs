@@ -17,6 +17,7 @@ namespace HealthGateway.Database.Delegates
 {
     using System.Collections.Generic;
     using System.Threading.Tasks;
+    using HealthGateway.Common.Data.Constants;
     using HealthGateway.Database.Models;
 
     /// <summary>
@@ -44,7 +45,7 @@ namespace HealthGateway.Database.Delegates
         /// </summary>
         /// <param name="hdid">The hdid to search by.</param>
         /// <returns>A <see cref="Task{TResult}"/> representing the result of the asynchronous operation.</returns>
-        Task<Dictionary<string, string>> GetDataSourcesAsync(string hdid);
+        Task<IEnumerable<DataSource>> GetDataSourcesAsync(string hdid);
 
         /// <summary>
         /// Adds or updates the blocked access object including agent audit to the DB.

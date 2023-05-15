@@ -75,7 +75,7 @@ namespace HealthGateway.Admin.Client.Pages
 
         private DependentInfo? Dependent => this.DelegationState.Value.Dependent;
 
-        private IEnumerable<DelegationChange> DelegationChanges => this.DelegationState.Value.DelegationChanges;
+        private IEnumerable<AgentAction> AgentActions => this.DelegationState.Value.AgentActions;
 
         private IEnumerable<ExtendedDelegateInfo> Delegates => this.DelegationState.Value.Delegates;
 

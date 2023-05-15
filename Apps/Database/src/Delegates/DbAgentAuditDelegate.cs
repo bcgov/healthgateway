@@ -17,65 +17,44 @@ namespace HealthGateway.Database.Delegates
 {
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading;
     using System.Threading.Tasks;
+    using HealthGateway.Common.Data.Constants;
     using HealthGateway.Database.Context;
     using HealthGateway.Database.Models;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging;
 
     /// <inheritdoc/>
-    public class DbDelegationDelegate : IDelegationDelegate
+    public class DbAgentAuditDelegate : IAgentAuditDelegate
     {
         private readonly ILogger logger;
         private readonly GatewayDbContext dbContext;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DbDelegationDelegate"/> class.
+        /// Initializes a new instance of the <see cref="DbAgentAuditDelegate"/> class.
         /// </summary>
         /// <param name="logger">The injected logger provider.</param>
         /// <param name="dbContext">The context to be used when accessing the database.</param>
-        public DbDelegationDelegate(ILogger<DbDelegationDelegate> logger, GatewayDbContext dbContext)
+        public DbAgentAuditDelegate(ILogger<DbAgentAuditDelegate> logger, GatewayDbContext dbContext)
         {
             this.logger = logger;
             this.dbContext = dbContext;
         }
 
         /// <inheritdoc/>
-        public async Task<Dependent?> GetDependentAsync(string hdid, bool includeAllowedDelegation = false)
+        public async Task<IEnumerable<AgentAudit>> GetAgentAuditsAsync(string hdid, AuditGroup? group = null, CancellationToken ct = default)
         {
-            this.logger.LogTrace("Getting dependent - includeAllowedDelegation : {IncludeAllowedDelegation}", includeAllowedDelegation.ToString());
+            this.logger.LogTrace("Getting agent audit for group: {Group} - hdid : {Hdid}", group, hdid);
 
-            IQueryable<Dependent> query = this.dbContext.Dependent
-                .Where(d => d.HdId == hdid);
+            IQueryable<AgentAudit> dbQuery = this.dbContext.AgentAudit;
 
-            if (includeAllowedDelegation)
+            if (group != null)
             {
-                query = query.Include(d => d.AllowedDelegations);
+                dbQuery = dbQuery.Where(d => d.Hdid == hdid && d.GroupCode == group);
             }
 
-            return await query.SingleOrDefaultAsync().ConfigureAwait(true);
-        }
-
-        /// <inheritdoc/>
-        public async Task UpdateDelegationAsync(Dependent dependent, IEnumerable<ResourceDelegate> resourceDelegatesToRemove, AgentAudit agentAudit)
-        {
-            if (dependent.Version == 0)
-            {
-                this.dbContext.Dependent.Add(dependent);
-            }
-            else
-            {
-                this.dbContext.Dependent.Update(dependent);
-            }
-
-            foreach (ResourceDelegate resourceDelegate in resourceDelegatesToRemove)
-            {
-                this.dbContext.ResourceDelegate.Remove(resourceDelegate);
-            }
-
-            this.dbContext.AgentAudit.Add(agentAudit);
-
-            await this.dbContext.SaveChangesAsync().ConfigureAwait(true);
+            return await dbQuery.ToListAsync(ct).ConfigureAwait(true);
         }
     }
 }

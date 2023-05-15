@@ -20,17 +20,17 @@ namespace HealthGateway.Admin.Server.MapProfiles
     using HealthGateway.Database.Models;
 
     /// <summary>
-    /// An AutoMapper profile class which defines mapping between agent audit and delegation change models.
+    /// An AutoMapper profile class which defines mapping between agent audit and agent action models.
     /// </summary>
-    public class DelegationChangeProfile : Profile
+    public class AgentActionProfile : Profile
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="DelegationChangeProfile"/> class.
+        /// Initializes a new instance of the <see cref="AgentActionProfile"/> class.
         /// </summary>
-        public DelegationChangeProfile()
+        public AgentActionProfile()
         {
-            this.CreateMap<AgentAudit, DelegationChange>()
-                .ForMember(dest => dest.DependentHdId, opt => opt.MapFrom(src => src.Hdid))
+            this.CreateMap<AgentAudit, AgentAction>()
+                .ForMember(dest => dest.Hdid, opt => opt.MapFrom(src => src.Hdid))
                 .ForMember(dest => dest.Reason, opt => opt.MapFrom(src => src.Reason));
         }
     }

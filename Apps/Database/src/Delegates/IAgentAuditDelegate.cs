@@ -13,29 +13,26 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Admin.Common.Models
+namespace HealthGateway.Database.Delegates
 {
     using System.Collections.Generic;
-    using System.Linq;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using HealthGateway.Common.Data.Constants;
+    using HealthGateway.Database.Models;
 
     /// <summary>
-    /// The delegation info model.
+    /// Delegate that performs operations for models relating to AgentAudit.
     /// </summary>
-    public class DelegationInfo
+    public interface IAgentAuditDelegate
     {
         /// <summary>
-        /// Gets or sets the dependent info.
+        /// Fetches the agent audit(s) by query options from the database.
         /// </summary>
-        public DependentInfo Dependent { get; set; } = new();
-
-        /// <summary>
-        /// Gets or sets the collection of delegate info.
-        /// </summary>
-        public IEnumerable<DelegateInfo> Delegates { get; set; } = Enumerable.Empty<DelegateInfo>();
-
-        /// <summary>
-        /// Gets or sets the agent actions.
-        /// </summary>
-        public IEnumerable<AgentAction> AgentActions { get; set; } = Enumerable.Empty<AgentAction>();
+        /// <param name="hdid">The hdid to search.</param>
+        /// <param name="group">The group to search.</param>
+        /// <param name="ct">A cancellation token.</param>
+        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
+        Task<IEnumerable<AgentAudit>> GetAgentAuditsAsync(string hdid, AuditGroup? group = null, CancellationToken ct = default);
     }
 }

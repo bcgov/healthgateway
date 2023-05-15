@@ -13,29 +13,34 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Admin.Common.Models
+namespace HealthGateway.AccountDataAccess.Audit
 {
     using System.Collections.Generic;
-    using System.Linq;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using HealthGateway.Common.Data.Constants;
+    using HealthGateway.Database.Models;
 
     /// <summary>
-    /// The delegation info model.
+    /// Represents the audit source to determine what to query.
     /// </summary>
-    public class DelegationInfo
+    public interface IAuditRepository
     {
         /// <summary>
-        /// Gets or sets the dependent info.
+        /// Gets the agent audits.
         /// </summary>
-        public DependentInfo Dependent { get; set; } = new();
-
-        /// <summary>
-        /// Gets or sets the collection of delegate info.
-        /// </summary>
-        public IEnumerable<DelegateInfo> Delegates { get; set; } = Enumerable.Empty<DelegateInfo>();
-
-        /// <summary>
-        /// Gets or sets the agent actions.
-        /// </summary>
-        public IEnumerable<AgentAction> AgentActions { get; set; } = Enumerable.Empty<AgentAction>();
+        /// <param name="query">The query.</param>
+        /// <param name="ct">The cancellation token.</param>
+        /// <returns>The list of agent audits..</returns>
+        Task<IEnumerable<AgentAudit>> Handle(AgentAuditQuery query, CancellationToken ct = default);
     }
+
+    /// <summary>
+    /// The agent change query.
+    /// </summary>
+    /// <param name="Hdid">The hdid to search.</param>
+    /// <param name="Group">The group to search.</param>
+    public record AgentAuditQuery(
+        string Hdid,
+        AuditGroup? Group = null);
 }

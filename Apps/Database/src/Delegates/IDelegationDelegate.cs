@@ -15,10 +15,8 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Database.Delegates
 {
-    using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;
-    using HealthGateway.Common.Data.Constants;
     using HealthGateway.Database.Models;
 
     /// <summary>
@@ -38,13 +36,6 @@ namespace HealthGateway.Database.Delegates
         Task<Dependent?> GetDependentAsync(string hdid, bool includeAllowedDelegation = false);
 
         /// <summary>
-        /// Fetches the agent audit(s) by query options from the database.
-        /// </summary>
-        /// <param name="query">The query criteria.</param>
-        /// <returns>A <see cref="Task{TResult}"/> representing the result of the asynchronous operation.</returns>
-        Task<AgentAuditQueryResult> GetAgentAuditsAsync(AgentAuditQuery query);
-
-        /// <summary>
         /// Adds or updates the dependent object including allowed delegation associations as well as resource delegates and agent
         /// audit to the DB.
         /// </summary>
@@ -53,32 +44,5 @@ namespace HealthGateway.Database.Delegates
         /// <param name="agentAudit">The agent audit to create.</param>
         /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
         Task UpdateDelegationAsync(Dependent dependent, IEnumerable<ResourceDelegate> resourceDelegatesToRemove, AgentAudit agentAudit);
-    }
-
-    /// <summary>
-    /// Agent audit query options to determine the agent audit results to return.
-    /// </summary>
-    public record AgentAuditQuery
-    {
-        /// <summary>
-        /// Gets the audit group to search by.
-        /// </summary>
-        public AuditGroup? GroupCode { get; init; }
-
-        /// <summary>
-        /// Gets the hdid to search by.
-        /// </summary>
-        public string Hdid { get; init; } = string.Empty;
-    }
-
-    /// <summary>
-    /// Returns agent audit query results.
-    /// </summary>
-    public record AgentAuditQueryResult
-    {
-        /// <summary>
-        /// gets or sets the found items.
-        /// </summary>
-        public IEnumerable<AgentAudit> Items { get; set; } = Array.Empty<AgentAudit>();
     }
 }

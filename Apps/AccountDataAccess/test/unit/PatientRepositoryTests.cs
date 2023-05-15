@@ -17,15 +17,16 @@ namespace AccountDataAccessTest
 {
     using System.Net;
     using System.ServiceModel;
-    using AccountDataAccessTest.Utils;
-    using AutoMapper;
     using DeepEqual.Syntax;
     using HealthGateway.AccountDataAccess.Patient;
     using HealthGateway.AccountDataAccess.Patient.Api;
+    using HealthGateway.AccountDataAccess.Patient.Strategy;
+    using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.CacheProviders;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.ErrorHandling;
     using HealthGateway.Common.Utils;
+    using HealthGateway.Database.Delegates;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using Moq;
@@ -43,8 +44,6 @@ namespace AccountDataAccessTest
         private const string Phn = "9735353315";
         private const string Gender = "Male";
 
-        private static readonly IMapper Mapper = MapperUtil.InitializeAutoMapper();
-
         /// <summary>
         /// GetDemographics by PHN - happy path.
         /// </summary>
@@ -53,7 +52,7 @@ namespace AccountDataAccessTest
         public async Task ShouldGetDemographicsByPhn()
         {
             // Arrange
-            PatientDetailsQuery patientDetailsQuery = new(Phn, Source: PatientDetailSource.AllCache);
+            PatientDetailsQuery patientDetailsQuery = new(Phn, Source: PatientDetailSource.Empi);
 
             PatientModel patient = new()
             {
@@ -78,7 +77,7 @@ namespace AccountDataAccessTest
         public async Task ShouldGetDemographicsByHdid()
         {
             // Arrange
-            PatientDetailsQuery patientDetailsQuery = new(Hdid: Hdid, Source: PatientDetailSource.AllCache);
+            PatientDetailsQuery patientDetailsQuery = new(Hdid: Hdid, Source: PatientDetailSource.All);
 
             PatientModel patient = new()
             {
@@ -103,7 +102,7 @@ namespace AccountDataAccessTest
         public async Task ShouldGetDemographicsByHdidUsingCache()
         {
             // Arrange
-            PatientDetailsQuery patientDetailsQuery = new(Hdid: Hdid, Source: PatientDetailSource.AllCache);
+            PatientDetailsQuery patientDetailsQuery = new(Hdid: Hdid, Source: PatientDetailSource.All);
 
             PatientModel? patient = null;
 
@@ -145,7 +144,7 @@ namespace AccountDataAccessTest
                     { GivenName = string.Empty, Surname = string.Empty },
             };
 
-            PatientDetailsQuery patientDetailsQuery = new(Hdid: PhsaHdid, Source: PatientDetailSource.AllCache);
+            PatientDetailsQuery patientDetailsQuery = new(Hdid: PhsaHdid, Source: PatientDetailSource.All);
 
             PatientModel? patient = null;
             PatientModel? cachedPatient = null;
@@ -175,7 +174,7 @@ namespace AccountDataAccessTest
         public async Task ShouldGetPatientIdentityThrowsNotFoundApiException()
         {
             // Arrange
-            PatientDetailsQuery patientDetailsQuery = new(Hdid: PhsaHdidNotFound, Source: PatientDetailSource.AllCache);
+            PatientDetailsQuery patientDetailsQuery = new(Hdid: PhsaHdidNotFound, Source: PatientDetailSource.All);
 
             PatientModel? patient = null;
             PatientModel? cachedPatient = null;
@@ -199,7 +198,7 @@ namespace AccountDataAccessTest
         {
             // Arrange
             const string invalidPhn = "abc123";
-            PatientDetailsQuery patientQuery = new(invalidPhn, Source: PatientDetailSource.AllCache);
+            PatientDetailsQuery patientQuery = new(invalidPhn, Source: PatientDetailSource.All);
 
             PatientModel patient = new()
             {
@@ -220,21 +219,24 @@ namespace AccountDataAccessTest
             Assert.Equal(ErrorMessages.PhnInvalid, exception.ProblemDetails!.Detail);
         }
 
-        private static PatientRepository GetPatientRepository(
-            PatientModel patient,
-            PatientDetailsQuery patientDetailsQuery,
-            PatientIdentity? patientIdentity = null,
-            PatientModel? cachedPatient = null)
+        private static IConfigurationRoot GetConfiguration()
         {
             Dictionary<string, string?> configDictionary = new()
             {
                 { "PatientService:CacheTTL", "90" },
             };
 
-            IConfigurationRoot configuration = new ConfigurationBuilder()
+            return new ConfigurationBuilder()
                 .AddInMemoryCollection(configDictionary.ToList())
                 .Build();
+        }
 
+        private static PatientRepository GetPatientRepository(
+            PatientModel patient,
+            PatientDetailsQuery patientDetailsQuery,
+            PatientIdentity? patientIdentity = null,
+            PatientModel? cachedPatient = null)
+        {
             Mock<ICacheProvider> cacheProvider = new();
             cacheProvider.Setup(p => p.GetItem<PatientModel>($"{PatientCacheDomain}:HDID:{patientDetailsQuery.Hdid}")).Returns(cachedPatient);
 
@@ -248,13 +250,13 @@ namespace AccountDataAccessTest
             clientRegistriesDelegate.Setup(p => p.GetDemographicsAsync(OidType.Hdid, PhsaHdid, false))
                 .Throws(new CommunicationException("Unit test PHSA get patient identity."));
 
+            Mock<IServiceProvider> serviceProviderMock = new();
             PatientRepository patientRepository = new(
-                clientRegistriesDelegate.Object,
-                cacheProvider.Object,
-                configuration,
+                GetConfiguration(),
                 new Mock<ILogger<PatientRepository>>().Object,
-                patientIdentityApi.Object,
-                Mapper);
+                new Mock<IBlockedAccessDelegate>().Object,
+                new Mock<IAuthenticationDelegate>().Object,
+                new Mock<PatientQueryFactory>(serviceProviderMock.Object).Object);
             return patientRepository;
         }
     }

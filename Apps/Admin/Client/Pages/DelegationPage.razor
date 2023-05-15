@@ -63,7 +63,7 @@
             <ChildContent>
                 <MudPaper Class="mud-background mx-4 pa-4 overflow-auto" MaxHeight="400px">
                     <MudGrid Spacing="4">
-                        @foreach ((DelegationChange change, int index) in DelegationChanges.Select((c, i) => (c, i)))
+                        @foreach ((AgentAction change, int index) in AgentActions.Select((c, i) => (c, i)))
                         {
                             <MudItem xs="12" data-testid=@($"delegation-change-{index}")>
                                 <DelegationChangeEntry Data="@change" />
