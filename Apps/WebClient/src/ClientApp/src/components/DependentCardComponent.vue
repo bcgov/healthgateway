@@ -1,4 +1,4 @@
-<script lang="ts">
+<script setup lang="ts">
 import { library } from "@fortawesome/fontawesome-svg-core";
 import {
     faDownload,
@@ -6,11 +6,10 @@ import {
     faInfoCircle,
 } from "@fortawesome/free-solid-svg-icons";
 import { saveAs } from "file-saver";
-import Vue from "vue";
-import { Component, Emit, Prop, Ref, Watch } from "vue-property-decorator";
-import { Action, Getter } from "vuex-class";
+import { computed, ref, watch } from "vue";
 
 import Covid19LaboratoryTestDescriptionComponent from "@/components/laboratory/Covid19LaboratoryTestDescriptionComponent.vue";
+import LoadingComponent from "@/components/LoadingComponent.vue";
 import DeleteModalComponent from "@/components/modal/DeleteModalComponent.vue";
 import MessageModalComponent from "@/components/modal/MessageModalComponent.vue";
 import { ActionType } from "@/constants/actionType";
@@ -19,7 +18,6 @@ import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import { ResultType } from "@/constants/resulttype";
 import { ClinicalDocument } from "@/models/clinicalDocument";
 import type { WebClientConfiguration } from "@/models/configData";
-import CovidVaccineRecord from "@/models/covidVaccineRecord";
 import { DateWrapper, StringISODate } from "@/models/dateWrapper";
 import type { Dependent } from "@/models/dependent";
 import EncodedMedia from "@/models/encodedMedia";
@@ -36,9 +34,8 @@ import { ReportFormatType, TemplateType } from "@/models/reportRequest";
 import RequestResult from "@/models/requestResult";
 import { LoadStatus } from "@/models/storeOperations";
 import User from "@/models/user";
-import VaccinationRecord from "@/models/vaccinationRecord";
 import container from "@/plugins/container";
-import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import { SERVICE_IDENTIFIER, STORE_IDENTIFIER } from "@/plugins/inversify";
 import {
     IClinicalDocumentService,
     IDependentService,
@@ -46,13 +43,31 @@ import {
     ILaboratoryService,
     ILogger,
     IReportService,
+    IStoreProvider,
 } from "@/services/interfaces";
 import ConfigUtil from "@/utility/configUtil";
 import SnowPlow from "@/utility/snowPlow";
 
-import LoadingComponent from "./LoadingComponent.vue";
-
 library.add(faEllipsisV, faDownload, faInfoCircle);
+
+const storeProvider = container.get<IStoreProvider>(
+    STORE_IDENTIFIER.StoreProvider
+);
+const store = storeProvider.getStore();
+
+const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+const clinicalDocumentService = container.get<IClinicalDocumentService>(
+    SERVICE_IDENTIFIER.ClinicalDocumentService
+);
+const immunizationService = container.get<IImmunizationService>(
+    SERVICE_IDENTIFIER.ImmunizationService
+);
+const laboratoryService = container.get<ILaboratoryService>(
+    SERVICE_IDENTIFIER.LaboratoryService
+);
+const dependentService = container.get<IDependentService>(
+    SERVICE_IDENTIFIER.DependentService
+);
 
 interface Covid19LaboratoryTestRow {
     id: string;
@@ -74,844 +89,709 @@ interface RecommendationRow {
     due_date: string;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const options: any = {
-    components: {
-        LoadingComponent,
-        MessageModalComponent,
-        DeleteModalComponent,
-        Covid19LaboratoryTestDescriptionComponent,
-    },
-};
+const emit = defineEmits<{
+    (e: "needs-update"): void;
+}>();
 
-@Component(options)
-export default class DependentCardComponent extends Vue {
-    @Prop() dependent!: Dependent;
+interface Props {
+    dependent: Dependent;
+}
+const props = defineProps<Props>();
 
-    @Getter("user", { namespace: "user" }) user!: User;
+const reportFormatType = ref(ReportFormatType.PDF);
+const csvFormatType = ref(ReportFormatType.CSV);
+const pdfFormatType = ref(ReportFormatType.PDF);
+const xlsxFormatType = ref(ReportFormatType.XLSX);
+const isLoading = ref(false);
+const laboratoryOrders = ref<LaboratoryOrder[]>([]);
+const clinicalDocuments = ref<ClinicalDocument[]>([]);
+const testRows = ref<Covid19LaboratoryTestRow[]>([]);
+const immunizations = ref<ImmunizationEvent[]>([]);
+const recommendations = ref<Recommendation[]>([]);
+const isCovid19DataLoading = ref(false);
+const isImmunizationDataLoaded = ref(false);
+const isLaboratoryOrdersDataLoaded = ref(false);
+const isClinicalDocumentsDataLoaded = ref(false);
+const isReport = ref(false);
+const isReportDownloading = ref(false);
+const selectedTabIndex = ref(0);
+const selectedTestRow = ref<Covid19LaboratoryTestRow>();
+const selectedLaboratoryOrderRow = ref<LaboratoryOrder>();
+const selectedClinicalDocumentRow = ref<ClinicalDocument>();
 
-    @Getter("webClient", { namespace: "config" })
-    webClientConfig!: WebClientConfiguration;
+const reportDownloadModal = ref<MessageModalComponent>();
+const vaccineRecordResultModal = ref<MessageModalComponent>();
+const deleteModal = ref<DeleteModalComponent>();
 
-    @Action("addError", { namespace: "errorBanner" })
-    addError!: (params: {
-        errorType: ErrorType;
-        source: ErrorSourceType;
-        traceId: string | undefined;
-    }) => void;
+const user = computed<User>(() => store.getters["user/user"]);
 
-    @Action("retrieveAuthenticatedVaccineRecord", {
-        namespace: "vaccinationStatus",
-    })
-    retrieveAuthenticatedVaccineRecord!: (params: {
-        hdid: string;
-    }) => Promise<CovidVaccineRecord>;
+const webClientConfig = computed<WebClientConfiguration>(
+    () => store.getters["config/webClient"]
+);
 
-    @Action("stopAuthenticatedVaccineRecordDownload", {
-        namespace: "vaccinationStatus",
-    })
-    stopAuthenticatedVaccineRecordDownload!: (params: { hdid: string }) => void;
+const headerData = computed<ReportHeader>(() => {
+    return {
+        phn: props.dependent.dependentInformation.PHN,
+        dateOfBirth: formatDate(
+            props.dependent.dependentInformation.dateOfBirth || ""
+        ),
+        name: props.dependent.dependentInformation
+            ? props.dependent.dependentInformation.firstname +
+              " " +
+              props.dependent.dependentInformation.lastname
+            : "",
+        isRedacted: false,
+        datePrinted: new DateWrapper().format(),
+        filterText: "",
+    };
+});
 
-    @Getter("authenticatedVaccineRecordStatusChanges", {
-        namespace: "vaccinationStatus",
-    })
-    vaccineRecordStatusChanges!: number;
+const isVaccineRecordDownloading = computed<boolean>(
+    () => vaccineRecordState.value.status === LoadStatus.REQUESTED
+);
 
-    @Getter("authenticatedVaccineRecordActiveHdid", {
-        namespace: "vaccinationStatus",
-    })
-    vaccineRecordActiveHdid!: string;
+const isDownloadImmunizationReportButtonDisabled = computed<boolean>(
+    () =>
+        isReportDownloading.value ||
+        selectedTabIndex.value !== tabIndicesMap.value[2] ||
+        (immunizationItems.value.length == 0 &&
+            recommendationItems.value.length == 0)
+);
 
-    @Getter("authenticatedVaccineRecords", { namespace: "vaccinationStatus" })
-    vaccineRecords!: Map<string, VaccinationRecord>;
+const isExpired = computed<boolean>(() => {
+    const birthDate = new DateWrapper(
+        props.dependent.dependentInformation.dateOfBirth
+    );
+    const now = new DateWrapper();
+    return (
+        now.diff(birthDate, "year").years >
+        webClientConfig.value.maxDependentAge
+    );
+});
 
-    @Action("setTooManyRequestsError", { namespace: "errorBanner" })
-    setTooManyRequestsError!: (params: { key: string }) => void;
+const isCovid19TabShown = computed<boolean>(() =>
+    ConfigUtil.isDependentDatasetEnabled(EntryType.Covid19TestResult)
+);
 
-    @Action("setTooManyRequestsWarning", { namespace: "errorBanner" })
-    setTooManyRequestsWarning!: (params: { key: string }) => void;
+const isImmunizationTabShown = computed<boolean>(() =>
+    ConfigUtil.isDependentDatasetEnabled(EntryType.Immunization)
+);
 
-    @Ref("reportDownloadModal")
-    readonly reportDownloadModal!: MessageModalComponent;
+const isLaboratoryOrderTabShown = computed<boolean>(() =>
+    ConfigUtil.isDependentDatasetEnabled(EntryType.LabResult)
+);
 
-    @Ref("vaccineProofDownloadModal")
-    readonly vaccineProofDownloadModal!: MessageModalComponent;
+const isClinicalDocumentTabShown = computed<boolean>(() =>
+    ConfigUtil.isDependentDatasetEnabled(EntryType.ClinicalDocument)
+);
 
-    @Ref("vaccineRecordResultModal")
-    readonly vaccineRecordResultModal!: MessageModalComponent;
+const tabIndicesMap = computed<(number | undefined)[]>(() => {
+    const tabIndices: (number | undefined)[] = [0];
+    const optionalTabs = [
+        isCovid19TabShown.value,
+        isImmunizationTabShown.value,
+        isLaboratoryOrderTabShown.value,
+        isClinicalDocumentTabShown.value,
+    ];
 
-    @Ref("deleteModal")
-    readonly deleteModal!: DeleteModalComponent;
+    let index = 0;
+    optionalTabs.forEach((shown) =>
+        tabIndices.push(shown ? ++index : undefined)
+    );
 
-    @Emit()
-    private needsUpdate(): void {
+    return tabIndices;
+});
+
+const immunizationItems = computed<ImmunizationRow[]>(() =>
+    immunizations.value.map<ImmunizationRow>((x) => ({
+        date: DateWrapper.format(x.dateOfImmunization),
+        immunization: x.immunization.name,
+        agent: getAgentNames(x.immunization.immunizationAgents),
+        product: getProductNames(x.immunization.immunizationAgents),
+        provider_clinic: x.providerOrClinic,
+        lotNumber: getAgentLotNumbers(x.immunization.immunizationAgents),
+    }))
+);
+
+const recommendationItems = computed<RecommendationRow[]>(() =>
+    recommendations.value.map<RecommendationRow>((x) => ({
+        immunization: x.recommendedVaccinations,
+        due_date:
+            x.agentDueDate === undefined || x.agentDueDate === null
+                ? ""
+                : DateWrapper.format(x.agentDueDate),
+    }))
+);
+
+const vaccineRecordState = computed<VaccinationRecord>(() =>
+    store.getters["vaccinationStatus/authenticatedVaccineRecordState"](
+        props.dependent.ownerId
+    )
+);
+
+function addError(
+    errorType: ErrorType,
+    source: ErrorSourceType,
+    traceId: string | undefined
+): void {
+    store.dispatch("errorBanner/addError", { errorType, source, traceId });
+}
+
+function setTooManyRequestsError(key: string): void {
+    store.dispatch("errorBanner/setTooManyRequestsError", { key });
+}
+
+function setTooManyRequestsWarning(key: string): void {
+    store.dispatch("errorBanner/setTooManyRequestsWarning", { key });
+}
+
+function deleteDependent(): void {
+    isLoading.value = true;
+    dependentService
+        .removeDependent(user.value.hdid, props.dependent)
+        .then(() => emit("needs-update"))
+        .catch((err: ResultError) => {
+            if (err.statusCode === 429) {
+                setTooManyRequestsError("page");
+            } else {
+                addError(
+                    ErrorType.Delete,
+                    ErrorSourceType.Dependent,
+                    err.traceId
+                );
+            }
+        })
+        .finally(() => {
+            isLoading.value = false;
+        });
+}
+
+function downloadCovid19Report(): void {
+    if (selectedTestRow.value === undefined) {
         return;
     }
 
-    private message =
-        "Are you sure you want to remove " +
-        this.dependent.dependentInformation.firstname +
-        " " +
-        this.dependent.dependentInformation.lastname +
-        " from your list of dependents?";
-
-    public isLoading = false;
-    private logger!: ILogger;
-    private clinicalDocumentService!: IClinicalDocumentService;
-    private immunizationService!: IImmunizationService;
-    private laboratoryService!: ILaboratoryService;
-    private dependentService!: IDependentService;
-    public laboratoryOrders: LaboratoryOrder[] = [];
-    public clinicalDocuments: ClinicalDocument[] = [];
-    public testRows: Covid19LaboratoryTestRow[] = [];
-    private immunizations: ImmunizationEvent[] = [];
-    private recommendations: Recommendation[] = [];
-    private isCovid19DataLoaded = false;
-    private isImmunizationDataLoaded = false;
-    private isLaboratoryOrdersDataLoaded = false;
-    private isClinicalDocumentsDataLoaded = false;
-    private isReport = false;
-    public isReportDownloading = false;
-    private reportFormatType = ReportFormatType.PDF;
-    public csvFormatType = ReportFormatType.CSV;
-    public pdfFormatType = ReportFormatType.PDF;
-    public xlsxFormatType = ReportFormatType.XLSX;
-    public selectedTabIndex = 0;
-
-    private selectedTestRow!: Covid19LaboratoryTestRow;
-    private selectedLaboratoryOrderRow!: LaboratoryOrder;
-    private selectedClinicalDocumentRow!: ClinicalDocument;
-
-    private get headerData(): ReportHeader {
-        return {
-            phn: this.dependent.dependentInformation.PHN,
-            dateOfBirth: this.formatDate(
-                this.dependent.dependentInformation.dateOfBirth || ""
-            ),
-            name: this.dependent.dependentInformation
-                ? this.dependent.dependentInformation.firstname +
-                  " " +
-                  this.dependent.dependentInformation.lastname
-                : "",
-            isRedacted: false,
-            datePrinted: new DateWrapper().format(),
-            filterText: "",
-        };
-    }
-
-    public get isVaccineRecordDownloading(): boolean {
-        if (
-            this.vaccineRecordActiveHdid === this.dependent.ownerId &&
-            this.vaccineRecordStatusChanges > 0
-        ) {
-            const vaccinationRecord: VaccinationRecord | undefined =
-                this.getVaccinationRecord();
-            if (vaccinationRecord !== undefined) {
-                return vaccinationRecord.status === LoadStatus.REQUESTED;
-            }
-        }
-        return false;
-    }
-
-    public get vaccineRecordStatusMessage(): string {
-        if (
-            this.vaccineRecordActiveHdid === this.dependent.ownerId &&
-            this.vaccineRecordStatusChanges > 0
-        ) {
-            const vaccinationRecord: VaccinationRecord | undefined =
-                this.getVaccinationRecord();
-            if (vaccinationRecord !== undefined) {
-                return vaccinationRecord.statusMessage;
-            }
-        }
-        return "";
-    }
-
-    public get vaccineRecordResultMessage(): string {
-        if (
-            this.vaccineRecordActiveHdid === this.dependent.ownerId &&
-            this.vaccineRecordStatusChanges > 0
-        ) {
-            const vaccinationRecord: VaccinationRecord | undefined =
-                this.getVaccinationRecord();
-            if (vaccinationRecord !== undefined) {
-                return vaccinationRecord.resultMessage;
-            }
-        }
-        return "";
-    }
-
-    public get isDownloadImmunizationReportButtonDisabled(): boolean {
-        this.logger.debug(
-            `isReportDownloading: ${this.isReportDownloading} immunizationItems:  ${this.immunizationItems.length} and recommendationItems: ${this.recommendationItems.length}`
-        );
-        return (
-            this.isReportDownloading ||
-            this.selectedTabIndex !== this.tabIndicesMap[2] ||
-            (this.immunizationItems.length == 0 &&
-                this.recommendationItems.length == 0)
-        );
-    }
-
-    public get isExpired(): boolean {
-        let birthDate = new DateWrapper(
-            this.dependent.dependentInformation.dateOfBirth
-        );
-        let now = new DateWrapper();
-        return (
-            now.diff(birthDate, "year").years >
-            this.webClientConfig.maxDependentAge
-        );
-    }
-
-    public get isCovid19TabShown(): boolean {
-        return ConfigUtil.isDependentDatasetEnabled(
-            EntryType.Covid19TestResult
-        );
-    }
-
-    public get isImmunizationTabShown(): boolean {
-        return ConfigUtil.isDependentDatasetEnabled(EntryType.Immunization);
-    }
-
-    public get isLaboratoryOrderTabShown(): boolean {
-        return ConfigUtil.isDependentDatasetEnabled(EntryType.LabResult);
-    }
-
-    public get isClinicalDocumentTabShown(): boolean {
-        return ConfigUtil.isDependentDatasetEnabled(EntryType.ClinicalDocument);
-    }
-
-    public get tabIndicesMap(): (number | undefined)[] {
-        const tabIndices: (number | undefined)[] = [0];
-        const optionalTabs = [
-            this.isCovid19TabShown,
-            this.isImmunizationTabShown,
-            this.isLaboratoryOrderTabShown,
-            this.isClinicalDocumentTabShown,
-        ];
-
-        let index = 0;
-        optionalTabs.forEach((shown) =>
-            tabIndices.push(shown ? ++index : undefined)
-        );
-
-        return tabIndices;
-    }
-
-    public get immunizationItems(): ImmunizationRow[] {
-        return this.immunizations.map<ImmunizationRow>((x) => ({
-            date: DateWrapper.format(x.dateOfImmunization),
-            immunization: x.immunization.name,
-            agent: this.getAgentNames(x.immunization.immunizationAgents),
-            product: this.getProductNames(x.immunization.immunizationAgents),
-            provider_clinic: x.providerOrClinic,
-            lotNumber: this.getAgentLotNumbers(
-                x.immunization.immunizationAgents
-            ),
-        }));
-    }
-
-    public get recommendationItems(): RecommendationRow[] {
-        return this.recommendations.map<RecommendationRow>((x) => ({
-            immunization: x.recommendedVaccinations,
-            due_date:
-                x.agentDueDate === undefined || x.agentDueDate === null
-                    ? ""
-                    : DateWrapper.format(x.agentDueDate),
-        }));
-    }
-
-    private created(): void {
-        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-        this.immunizationService = container.get<IImmunizationService>(
-            SERVICE_IDENTIFIER.ImmunizationService
-        );
-        this.laboratoryService = container.get<ILaboratoryService>(
-            SERVICE_IDENTIFIER.LaboratoryService
-        );
-        this.dependentService = container.get<IDependentService>(
-            SERVICE_IDENTIFIER.DependentService
-        );
-        this.clinicalDocumentService = container.get<IClinicalDocumentService>(
-            SERVICE_IDENTIFIER.ClinicalDocumentService
-        );
-    }
-
-    public deleteDependent(): void {
-        this.isLoading = true;
-        this.dependentService
-            .removeDependent(this.user.hdid, this.dependent)
-            .then(() => this.needsUpdate())
-            .catch((err: ResultError) => {
-                if (err.statusCode === 429) {
-                    this.setTooManyRequestsError({ key: "page" });
-                } else {
-                    this.addError({
-                        errorType: ErrorType.Delete,
-                        source: ErrorSourceType.Dependent,
-                        traceId: err.traceId,
-                    });
-                }
-            })
-            .finally(() => {
-                this.isLoading = false;
-            });
-    }
-
-    private downloadCovid19Report(): void {
-        this.isReportDownloading = true;
-        let test = this.selectedTestRow.test;
-        this.laboratoryService
-            .getReportDocument(
-                this.selectedTestRow.id,
-                this.dependent.ownerId,
-                true
-            )
-            .then((result) => {
-                const report = result.resourcePayload;
-                fetch(
-                    `data:${report.mediaType};${report.encoding},${report.data}`
-                )
-                    .then((response) => response.blob())
-                    .then((blob) =>
-                        saveAs(
-                            blob,
-                            `COVID_Result_${this.dependent.dependentInformation.firstname}${this.dependent.dependentInformation.lastname}_${test.collectedDateTime}.pdf`
-                        )
-                    );
-            })
-            .catch((err: ResultError) => {
-                this.logger.error(err.resultMessage);
-                if (err.statusCode === 429) {
-                    this.setTooManyRequestsError({ key: "page" });
-                } else {
-                    this.addError({
-                        errorType: ErrorType.Download,
-                        source: ErrorSourceType.Covid19LaboratoryReport,
-                        traceId: err.traceId,
-                    });
-                }
-            })
-            .finally(() => {
-                this.isReportDownloading = false;
-            });
-    }
-
-    private downloadLaboratoryOrderReport(): void {
-        this.isReportDownloading = true;
-        this.trackClickLink("download_report", "Dependent Lab PDF");
-
-        this.laboratoryService
-            .getReportDocument(
-                this.selectedLaboratoryOrderRow.reportId,
-                this.dependent.ownerId,
-                false
-            )
-            .then((result) => {
-                const report = result.resourcePayload;
-                const dateString = new DateWrapper(
-                    this.selectedLaboratoryOrderRow.timelineDateTime,
-                    { hasTime: true }
-                ).format("yyyy_MM_dd-HH_mm");
-                fetch(
-                    `data:${report.mediaType};${report.encoding},${report.data}`
-                )
-                    .then((response) => response.blob())
-                    .then((blob) =>
-                        saveAs(
-                            blob,
-                            `Laboratory_Report_${this.dependent.dependentInformation.firstname}_${this.dependent.dependentInformation.lastname}_${dateString}.pdf`
-                        )
-                    );
-            })
-            .catch((err: ResultError) => {
-                this.logger.error(err.resultMessage);
-                if (err.statusCode === 429) {
-                    this.setTooManyRequestsError({ key: "page" });
-                } else {
-                    this.addError({
-                        errorType: ErrorType.Download,
-                        source: ErrorSourceType.LaboratoryReport,
-                        traceId: err.traceId,
-                    });
-                }
-            })
-            .finally(() => {
-                this.isReportDownloading = false;
-            });
-    }
-
-    private downloadImmunizationReport(): void {
-        this.isReportDownloading = true;
-
-        const action = "download_report";
-        const reportName = "Dependent Immunization";
-        const formatTypeName = ReportFormatType[this.reportFormatType];
-        const eventName = `${reportName} (${formatTypeName})`;
-        this.trackClickLink(action, eventName);
-
-        this.generateReport(
-            TemplateType.DependentImmunization,
-            this.reportFormatType,
-            this.headerData
+    isReportDownloading.value = true;
+    const test = selectedTestRow.value.test;
+    laboratoryService
+        .getReportDocument(
+            selectedTestRow.value.id,
+            props.dependent.ownerId,
+            true
         )
-            .then((result: RequestResult<Report>) => {
-                const mimeType = this.getMimeType(this.reportFormatType);
-                const downloadLink = `data:${mimeType};base64,${result.resourcePayload.data}`;
-                fetch(downloadLink).then((res) =>
-                    res
-                        .blob()
-                        .then((blob) =>
-                            saveAs(blob, result.resourcePayload.fileName)
-                        )
+        .then((result) => {
+            const report = result.resourcePayload;
+            fetch(`data:${report.mediaType};${report.encoding},${report.data}`)
+                .then((response) => response.blob())
+                .then((blob) =>
+                    saveAs(
+                        blob,
+                        `COVID_Result_${props.dependent.dependentInformation.firstname}${props.dependent.dependentInformation.lastname}_${test.collectedDateTime}.pdf`
+                    )
                 );
-            })
-            .catch((err: ResultError) => {
-                this.logger.error(err.resultMessage);
-                if (err.statusCode === 429) {
-                    this.setTooManyRequestsError({ key: "page" });
-                } else {
-                    this.addError({
-                        errorType: ErrorType.Download,
-                        source: ErrorSourceType.DependentImmunizationReport,
-                        traceId: err.traceId,
-                    });
-                }
-            })
-            .finally(() => {
-                this.isReportDownloading = false;
-            });
+        })
+        .catch((err: ResultError) => {
+            logger.error(err.resultMessage);
+            if (err.statusCode === 429) {
+                setTooManyRequestsError("page");
+            } else {
+                addError(
+                    ErrorType.Download,
+                    ErrorSourceType.Covid19LaboratoryReport,
+                    err.traceId
+                );
+            }
+        })
+        .finally(() => {
+            isReportDownloading.value = false;
+        });
+}
+
+function downloadLaboratoryOrderReport(): void {
+    if (selectedLaboratoryOrderRow.value === undefined) {
+        return;
     }
 
-    private downloadClinicalDocument(): void {
-        this.isReportDownloading = true;
-        this.trackClickLink("download_report", "Dependent Clinical Doc");
+    isReportDownloading.value = true;
+    trackClickLink("download_report", "Dependent Lab PDF");
 
-        this.clinicalDocumentService
-            .getFile(
-                this.selectedClinicalDocumentRow.fileId,
-                this.dependent.ownerId
-            )
-            .then((result: RequestResult<EncodedMedia>) => {
-                fetch(
-                    `data:${result.resourcePayload.mediaType};${result.resourcePayload.encoding},${result.resourcePayload.data}`
-                )
-                    .then((response) => response.blob())
+    laboratoryService
+        .getReportDocument(
+            selectedLaboratoryOrderRow.value.reportId,
+            props.dependent.ownerId,
+            false
+        )
+        .then((result) => {
+            const report = result.resourcePayload;
+            const dateString = new DateWrapper(
+                selectedLaboratoryOrderRow.value.timelineDateTime,
+                { hasTime: true }
+            ).format("yyyy_MM_dd-HH_mm");
+            fetch(`data:${report.mediaType};${report.encoding},${report.data}`)
+                .then((response) => response.blob())
+                .then((blob) =>
+                    saveAs(
+                        blob,
+                        `Laboratory_Report_${props.dependent.dependentInformation.firstname}_${props.dependent.dependentInformation.lastname}_${dateString}.pdf`
+                    )
+                );
+        })
+        .catch((err: ResultError) => {
+            logger.error(err.resultMessage);
+            if (err.statusCode === 429) {
+                setTooManyRequestsError("page");
+            } else {
+                addError(
+                    ErrorType.Download,
+                    ErrorSourceType.LaboratoryReport,
+                    err.traceId
+                );
+            }
+        })
+        .finally(() => {
+            isReportDownloading.value = false;
+        });
+}
+
+function downloadImmunizationReport(): void {
+    isReportDownloading.value = true;
+
+    const action = "download_report";
+    const reportName = "Dependent Immunization";
+    const formatTypeName = ReportFormatType[reportFormatType.value];
+    const eventName = `${reportName} (${formatTypeName})`;
+    trackClickLink(action, eventName);
+
+    generateReport(
+        TemplateType.DependentImmunization,
+        reportFormatType.value,
+        headerData.value
+    )
+        .then((result: RequestResult<Report>) => {
+            const mimeType = getMimeType(reportFormatType.value);
+            const downloadLink = `data:${mimeType};base64,${result.resourcePayload.data}`;
+            fetch(downloadLink).then((res) =>
+                res
+                    .blob()
                     .then((blob) =>
-                        saveAs(
-                            blob,
-                            `Clinical_Document_${this.dependent.dependentInformation.firstname}_${this.dependent.dependentInformation.lastname}.pdf`
-                        )
-                    );
-            })
-            .catch((err: ResultError) => {
-                this.logger.error(err.resultMessage);
-                if (err.statusCode === 429) {
-                    this.setTooManyRequestsError({ key: "page" });
-                } else {
-                    this.addError({
-                        errorType: ErrorType.Download,
-                        source: ErrorSourceType.ClinicalDocument,
-                        traceId: err.traceId,
-                    });
-                }
-            })
-            .finally(() => {
-                this.isReportDownloading = false;
-            });
-    }
-
-    public downloadDocument(): void {
-        if (this.isReport) {
-            this.logger.debug(
-                `Download document from dependent tab: ${this.selectedTabIndex}`
+                        saveAs(blob, result.resourcePayload.fileName)
+                    )
             );
-
-            const tabIndicesMap = this.tabIndicesMap;
-
-            if (this.selectedTabIndex === tabIndicesMap[1]) {
-                this.downloadCovid19Report();
-            } else if (this.selectedTabIndex === tabIndicesMap[2]) {
-                this.downloadImmunizationReport();
-            } else if (this.selectedTabIndex === tabIndicesMap[3]) {
-                this.downloadLaboratoryOrderReport();
-            } else if (this.selectedTabIndex === tabIndicesMap[4]) {
-                this.downloadClinicalDocument();
+        })
+        .catch((err: ResultError) => {
+            logger.error(err.resultMessage);
+            if (err.statusCode === 429) {
+                setTooManyRequestsError("page");
+            } else {
+                addError(
+                    ErrorType.Download,
+                    ErrorSourceType.DependentImmunizationReport,
+                    err.traceId
+                );
             }
-        } else {
-            this.downloadVaccinePdf();
-        }
-    }
-
-    private downloadVaccinePdf(): void {
-        this.logger.debug(
-            `Downloading vaccine PDF for hdid: ${this.dependent.ownerId}`
-        );
-        this.trackClickLink("Click Button", "Dependent Proof");
-        this.retrieveAuthenticatedVaccineRecord({
-            hdid: this.dependent.ownerId,
+        })
+        .finally(() => {
+            isReportDownloading.value = false;
         });
-    }
+}
 
-    public formatDate(date: StringISODate): string {
-        return new DateWrapper(date).format();
-    }
+function downloadClinicalDocument(): void {
+    isReportDownloading.value = true;
+    trackClickLink("download_report", "Dependent Clinical Doc");
 
-    public fetchClinicalDocuments(): void {
-        const hdid = this.dependent.ownerId;
-        this.logger.debug(`Fetching Clinical Documents for Hdid: ${hdid}`);
-        if (this.isClinicalDocumentsDataLoaded) {
-            return;
-        }
-        this.isLoading = true;
-        this.clinicalDocumentService
-            .getRecords(hdid)
-            .then((result) => {
-                if (result.resultStatus == ResultType.Success) {
-                    const payload = result.resourcePayload;
-                    this.setClinicalDocuments(payload);
-                    this.isClinicalDocumentsDataLoaded = true;
-                } else {
-                    this.logger.error(
-                        `Error returned from the Clinical Documents call:
-                            ${JSON.stringify(result.resultError)}`
-                    );
-                    this.addError({
-                        errorType: ErrorType.Retrieve,
-                        source: ErrorSourceType.ClinicalDocument,
-                        traceId: result.resultError?.traceId,
-                    });
-                }
-            })
-            .catch((err: ResultError) => {
-                this.logger.error(err.resultMessage);
-                if (err.statusCode === 429) {
-                    this.setTooManyRequestsWarning({ key: "page" });
-                } else {
-                    this.addError({
-                        errorType: ErrorType.Retrieve,
-                        source: ErrorSourceType.ClinicalDocument,
-                        traceId: err.traceId,
-                    });
-                }
-            })
-            .finally(() => {
-                this.isLoading = false;
-            });
-    }
+    clinicalDocumentService
+        .getFile(
+            selectedClinicalDocumentRow.value.fileId,
+            props.dependent.ownerId
+        )
+        .then((result: RequestResult<EncodedMedia>) => {
+            fetch(
+                `data:${result.resourcePayload.mediaType};${result.resourcePayload.encoding},${result.resourcePayload.data}`
+            )
+                .then((response) => response.blob())
+                .then((blob) =>
+                    saveAs(
+                        blob,
+                        `Clinical_Document_${props.dependent.dependentInformation.firstname}_${props.dependent.dependentInformation.lastname}.pdf`
+                    )
+                );
+        })
+        .catch((err: ResultError) => {
+            logger.error(err.resultMessage);
+            if (err.statusCode === 429) {
+                setTooManyRequestsError("page");
+            } else {
+                addError(
+                    ErrorType.Download,
+                    ErrorSourceType.ClinicalDocument,
+                    err.traceId
+                );
+            }
+        })
+        .finally(() => {
+            isReportDownloading.value = false;
+        });
+}
 
-    public fetchCovid19LaboratoryTests(): void {
-        this.logger.debug(
-            `Fetching COVID 19 Laboratory Tests for Hdid: ${this.dependent.ownerId}`
+function downloadDocument(): void {
+    if (isReport.value) {
+        logger.debug(
+            `Download document from dependent tab: ${selectedTabIndex.value}`
         );
-        if (this.isCovid19DataLoaded) {
-            return;
+
+        if (selectedTabIndex.value === tabIndicesMap.value[1]) {
+            downloadCovid19Report();
+        } else if (selectedTabIndex.value === tabIndicesMap.value[2]) {
+            downloadImmunizationReport();
+        } else if (selectedTabIndex.value === tabIndicesMap.value[3]) {
+            downloadLaboratoryOrderReport();
+        } else if (selectedTabIndex.value === tabIndicesMap.value[4]) {
+            downloadClinicalDocument();
         }
-        this.isLoading = true;
-        this.laboratoryService
-            .getCovid19LaboratoryOrders(this.dependent.ownerId)
-            .then((result) => {
+    } else {
+        downloadVaccinePdf();
+    }
+}
+
+function downloadVaccinePdf(): void {
+    logger.debug(
+        `Downloading vaccine PDF for hdid: ${props.dependent.ownerId}`
+    );
+    trackClickLink("Click Button", "Dependent Proof");
+    store.dispatch("vaccinationStatus/retrieveAuthenticatedVaccineRecord", {
+        hdid: props.dependent.ownerId,
+    });
+}
+
+function formatDate(date: StringISODate): string {
+    return new DateWrapper(date).format();
+}
+
+function fetchClinicalDocuments(): void {
+    const hdid = props.dependent.ownerId;
+    logger.debug(`Fetching Clinical Documents for Hdid: ${hdid}`);
+    if (isClinicalDocumentsDataLoaded.value) {
+        return;
+    }
+    isLoading.value = true;
+    clinicalDocumentService
+        .getRecords(hdid)
+        .then((result) => {
+            if (result.resultStatus == ResultType.Success) {
                 const payload = result.resourcePayload;
-                if (result.resultStatus == ResultType.Success) {
-                    this.testRows =
-                        payload.orders.flatMap<Covid19LaboratoryTestRow>((o) =>
-                            o.labResults.map<Covid19LaboratoryTestRow>((r) => ({
-                                id: o.id,
-                                reportAvailable: o.reportAvailable,
-                                test: r,
-                            }))
-                        );
-                    this.sortEntries();
-                    this.isCovid19DataLoaded = true;
-                } else if (
-                    result.resultError?.actionCode === ActionType.Refresh &&
-                    !payload.loaded &&
-                    payload.retryin > 0
-                ) {
-                    this.logger.info(
-                        "Re-querying for COVID-19 Laboratory Orders"
-                    );
-                    setTimeout(
-                        () => this.fetchCovid19LaboratoryTests(),
-                        payload.retryin
-                    );
-                } else {
-                    this.logger.error(
-                        "Error returned from the COVID-19 Laboratory Orders call: " +
-                            JSON.stringify(result.resultError)
-                    );
-                    this.addError({
-                        errorType: ErrorType.Retrieve,
-                        source: ErrorSourceType.Covid19Laboratory,
-                        traceId: result.resultError?.traceId,
-                    });
-                }
-            })
-            .catch((err: ResultError) => {
-                this.logger.error(err.resultMessage);
-                if (err.statusCode === 429) {
-                    this.setTooManyRequestsWarning({ key: "page" });
-                } else {
-                    this.addError({
-                        errorType: ErrorType.Retrieve,
-                        source: ErrorSourceType.Covid19Laboratory,
-                        traceId: err.traceId,
-                    });
-                }
-            })
-            .finally(() => {
-                this.isLoading = false;
-            });
-    }
+                setClinicalDocuments(payload);
+                isClinicalDocumentsDataLoaded.value = true;
+            } else {
+                logger.error(
+                    `Error returned from the Clinical Documents call:
+                        ${JSON.stringify(result.resultError)}`
+                );
+                addError(
+                    ErrorType.Retrieve,
+                    ErrorSourceType.ClinicalDocument,
+                    result.resultError?.traceId
+                );
+            }
+        })
+        .catch((err: ResultError) => {
+            logger.error(err.resultMessage);
+            if (err.statusCode === 429) {
+                setTooManyRequestsWarning("page");
+            } else {
+                addError(
+                    ErrorType.Retrieve,
+                    ErrorSourceType.ClinicalDocument,
+                    err.traceId
+                );
+            }
+        })
+        .finally(() => {
+            isLoading.value = false;
+        });
+}
 
-    public fetchLaboratoryOrders(): void {
-        this.logger.debug(
-            `Fetching Lab Results for Hdid: ${this.dependent.ownerId}`
-        );
-        if (this.isLaboratoryOrdersDataLoaded) {
-            return;
-        }
-        this.isLoading = true;
-        this.laboratoryService
-            .getLaboratoryOrders(this.dependent.ownerId)
-            .then((result) => {
+function fetchCovid19LaboratoryTests(): void {
+    logger.debug(
+        `Fetching COVID 19 Laboratory Tests for Hdid: ${props.dependent.ownerId}`
+    );
+    if (isCovid19DataLoading.value) {
+        return;
+    }
+    isLoading.value = true;
+    laboratoryService
+        .getCovid19LaboratoryOrders(props.dependent.ownerId)
+        .then((result) => {
+            const payload = result.resourcePayload;
+            if (result.resultStatus == ResultType.Success) {
+                testRows.value =
+                    payload.orders.flatMap<Covid19LaboratoryTestRow>((o) =>
+                        o.labResults.map<Covid19LaboratoryTestRow>((r) => ({
+                            id: o.id,
+                            reportAvailable: o.reportAvailable,
+                            test: r,
+                        }))
+                    );
+                sortEntries();
+                isCovid19DataLoading.value = true;
+            } else if (
+                result.resultError?.actionCode === ActionType.Refresh &&
+                !payload.loaded &&
+                payload.retryin > 0
+            ) {
+                logger.info("Re-querying for COVID-19 Laboratory Orders");
+                setTimeout(
+                    () => fetchCovid19LaboratoryTests(),
+                    payload.retryin
+                );
+            } else {
+                logger.error(
+                    "Error returned from the COVID-19 Laboratory Orders call: " +
+                        JSON.stringify(result.resultError)
+                );
+                addError(
+                    ErrorType.Retrieve,
+                    ErrorSourceType.Covid19Laboratory,
+                    result.resultError?.traceId
+                );
+            }
+        })
+        .catch((err: ResultError) => {
+            logger.error(err.resultMessage);
+            if (err.statusCode === 429) {
+                setTooManyRequestsWarning("page");
+            } else {
+                addError(
+                    ErrorType.Retrieve,
+                    ErrorSourceType.Covid19Laboratory,
+                    err.traceId
+                );
+            }
+        })
+        .finally(() => {
+            isLoading.value = false;
+        });
+}
+
+function fetchLaboratoryOrders(): void {
+    logger.debug(`Fetching Lab Results for Hdid: ${props.dependent.ownerId}`);
+    if (isLaboratoryOrdersDataLoaded.value) {
+        return;
+    }
+    isLoading.value = true;
+    laboratoryService
+        .getLaboratoryOrders(props.dependent.ownerId)
+        .then((result) => {
+            const payload = result.resourcePayload;
+            if (result.resultStatus == ResultType.Success) {
+                setLaboratoryOrders(payload.orders);
+                isLaboratoryOrdersDataLoaded.value = true;
+                isLoading.value = false;
+            } else if (
+                result.resultError?.actionCode === ActionType.Refresh &&
+                !payload.loaded &&
+                payload.retryin > 0
+            ) {
+                logger.info("Re-querying for Laboratory Orders");
+                setTimeout(() => fetchLaboratoryOrders(), payload.retryin);
+            } else {
+                logger.error(
+                    "Error returned from the Laboratory Orders call: " +
+                        JSON.stringify(result.resultError)
+                );
+                addError(
+                    ErrorType.Retrieve,
+                    ErrorSourceType.Laboratory,
+                    result.resultError?.traceId
+                );
+                isLoading.value = false;
+            }
+        })
+        .catch((err: ResultError) => {
+            logger.error(err.resultMessage);
+            if (err.statusCode === 429) {
+                setTooManyRequestsWarning("page");
+            } else {
+                addError(
+                    ErrorType.Retrieve,
+                    ErrorSourceType.Laboratory,
+                    err.traceId
+                );
+            }
+            isLoading.value = false;
+        });
+}
+
+function fetchPatientImmunizations(): void {
+    const hdid = props.dependent.ownerId;
+    logger.debug(`Fetching Patient Immunizations for Hdid: ${hdid}`);
+    if (isImmunizationDataLoaded.value) {
+        return;
+    }
+    isLoading.value = true;
+    immunizationService
+        .getPatientImmunizations(hdid)
+        .then((result) => {
+            if (result.resultStatus == ResultType.Success) {
                 const payload = result.resourcePayload;
-                if (result.resultStatus == ResultType.Success) {
-                    this.setLaboratoryOrders(payload.orders);
-                    this.isLaboratoryOrdersDataLoaded = true;
-                    this.isLoading = false;
-                } else if (
-                    result.resultError?.actionCode === ActionType.Refresh &&
-                    !payload.loaded &&
-                    payload.retryin > 0
-                ) {
-                    this.logger.info("Re-querying for Laboratory Orders");
-                    setTimeout(
-                        () => this.fetchLaboratoryOrders(),
-                        payload.retryin
+                if (payload.loadState.refreshInProgress) {
+                    logger.info("Re-querying Patient Immunizations");
+                    setTimeout(() => fetchPatientImmunizations(), 10000);
+                } else {
+                    setImmunizations(payload.immunizations);
+                    setRecommendations(payload.recommendations);
+                    isImmunizationDataLoaded.value = true;
+                    logger.debug(
+                        `Patient Immunizations:
+                            ${JSON.stringify(immunizations.value)}`
                     );
-                } else {
-                    this.logger.error(
-                        "Error returned from the Laboratory Orders call: " +
-                            JSON.stringify(result.resultError)
+                    logger.debug(
+                        `Patient Recommendations:
+                            ${JSON.stringify(recommendations.value)}`
                     );
-                    this.addError({
-                        errorType: ErrorType.Retrieve,
-                        source: ErrorSourceType.Laboratory,
-                        traceId: result.resultError?.traceId,
-                    });
-                    this.isLoading = false;
                 }
-            })
-            .catch((err: ResultError) => {
-                this.logger.error(err.resultMessage);
-                if (err.statusCode === 429) {
-                    this.setTooManyRequestsWarning({ key: "page" });
-                } else {
-                    this.addError({
-                        errorType: ErrorType.Retrieve,
-                        source: ErrorSourceType.Laboratory,
-                        traceId: err.traceId,
-                    });
-                }
-                this.isLoading = false;
-            });
-    }
+            } else {
+                logger.error(
+                    `Error returned from the Patient Immunizations call:
+                        ${JSON.stringify(result.resultError)}`
+                );
+                addError(
+                    ErrorType.Retrieve,
+                    ErrorSourceType.Immunization,
+                    result.resultError?.traceId
+                );
+            }
+        })
+        .catch((err: ResultError) => {
+            logger.error(err.resultMessage);
+            if (err.statusCode === 429) {
+                setTooManyRequestsWarning("page");
+            } else {
+                addError(
+                    ErrorType.Retrieve,
+                    ErrorSourceType.Immunization,
+                    err.traceId
+                );
+            }
+        })
+        .finally(() => {
+            isLoading.value = false;
+        });
+}
 
-    public fetchPatientImmunizations(): void {
-        const hdid = this.dependent.ownerId;
-        this.logger.debug(`Fetching Patient Immunizations for Hdid: ${hdid}`);
-        if (this.isImmunizationDataLoaded) {
-            return;
+function generateReport(
+    templateType: TemplateType,
+    reportFormatType: ReportFormatType,
+    headerData: ReportHeader
+): Promise<RequestResult<Report>> {
+    const reportService = container.get<IReportService>(
+        SERVICE_IDENTIFIER.ReportService
+    );
+    return reportService.generateReport({
+        data: {
+            header: headerData,
+            records: immunizationItems.value,
+            recommendations: recommendationItems.value,
+        },
+        template: templateType,
+        type: reportFormatType,
+    });
+}
+
+function getAgentLotNumbers(immunizationAgents: ImmunizationAgent[]): string {
+    return immunizationAgents.map<string>((x) => x.lotNumber).join(", ");
+}
+
+function getAgentNames(immunizationAgents: ImmunizationAgent[]): string {
+    return immunizationAgents.map<string>((x) => x.name).join(", ");
+}
+
+function getProductNames(immunizationAgents: ImmunizationAgent[]): string {
+    return immunizationAgents.map<string>((x) => x.productName).join(", ");
+}
+
+function getMimeType(reportFormatType: ReportFormatType): string {
+    switch (reportFormatType) {
+        case ReportFormatType.PDF:
+            return "application/pdf";
+        case ReportFormatType.CSV:
+            return "text/csv";
+        case ReportFormatType.XLSX:
+            return "application/vnd.openxmlformats";
+        default:
+            return "";
+    }
+}
+
+function getOutcomeClasses(outcome: string): string[] {
+    switch (outcome?.toUpperCase()) {
+        case "NEGATIVE":
+            return ["text-success"];
+        case "POSITIVE":
+            return ["text-danger"];
+        default:
+            return ["text-muted"];
+    }
+}
+
+function setLaboratoryOrders(records: LaboratoryOrder[]): void {
+    laboratoryOrders.value = [...records].sort((a, b) => {
+        const firstDate = new DateWrapper(a.timelineDateTime, {
+            hasTime: true,
+        });
+        const secondDate = new DateWrapper(b.timelineDateTime, {
+            hasTime: true,
+        });
+
+        if (firstDate.isBefore(secondDate)) {
+            return 1;
         }
-        this.isLoading = true;
-        this.immunizationService
-            .getPatientImmunizations(hdid)
-            .then((result) => {
-                if (result.resultStatus == ResultType.Success) {
-                    const payload = result.resourcePayload;
-                    if (payload.loadState.refreshInProgress) {
-                        this.logger.info("Re-querying Patient Immunizations");
-                        setTimeout(
-                            () => this.fetchPatientImmunizations(),
-                            10000
-                        );
-                    } else {
-                        this.setImmunizations(payload.immunizations);
-                        this.setRecommendations(payload.recommendations);
-                        this.isImmunizationDataLoaded = true;
-                        this.logger.debug(
-                            `Patient Immunizations:
-                                ${JSON.stringify(this.immunizations)}`
-                        );
-                        this.logger.debug(
-                            `Patient Recommendations:
-                                ${JSON.stringify(this.recommendations)}`
-                        );
-                    }
-                } else {
-                    this.logger.error(
-                        `Error returned from the Patient Immunizations call:
-                            ${JSON.stringify(result.resultError)}`
-                    );
-                    this.addError({
-                        errorType: ErrorType.Retrieve,
-                        source: ErrorSourceType.Immunization,
-                        traceId: result.resultError?.traceId,
-                    });
-                }
-            })
-            .catch((err: ResultError) => {
-                this.logger.error(err.resultMessage);
-                if (err.statusCode === 429) {
-                    this.setTooManyRequestsWarning({ key: "page" });
-                } else {
-                    this.addError({
-                        errorType: ErrorType.Retrieve,
-                        source: ErrorSourceType.Immunization,
-                        traceId: err.traceId,
-                    });
-                }
-            })
-            .finally(() => {
-                this.isLoading = false;
-            });
-    }
 
-    private generateReport(
-        templateType: TemplateType,
-        reportFormatType: ReportFormatType,
-        headerData: ReportHeader
-    ): Promise<RequestResult<Report>> {
-        const reportService = container.get<IReportService>(
-            SERVICE_IDENTIFIER.ReportService
-        );
-        return reportService.generateReport({
-            data: {
-                header: headerData,
-                records: this.immunizationItems,
-                recommendations: this.recommendationItems,
-            },
-            template: templateType,
-            type: reportFormatType,
-        });
-    }
-
-    private getAgentLotNumbers(
-        immunizationAgents: ImmunizationAgent[]
-    ): string {
-        const lotNumbers = immunizationAgents.map<string>((x) => x.lotNumber);
-        return lotNumbers.join(", ");
-    }
-
-    private getAgentNames(immunizationAgents: ImmunizationAgent[]): string {
-        const agents = immunizationAgents.map<string>((x) => x.name);
-        return agents.join(", ");
-    }
-
-    private getMimeType(reportFormatType: ReportFormatType): string {
-        switch (reportFormatType) {
-            case ReportFormatType.PDF:
-                return "application/pdf";
-            case ReportFormatType.CSV:
-                return "text/csv";
-            case ReportFormatType.XLSX:
-                return "application/vnd.openxmlformats";
-            default:
-                return "";
+        if (firstDate.isAfter(secondDate)) {
+            return -1;
         }
-    }
 
-    public getOutcomeClasses(outcome: string): string[] {
-        switch (outcome?.toUpperCase()) {
-            case "NEGATIVE":
-                return ["text-success"];
-            case "POSITIVE":
-                return ["text-danger"];
-            default:
-                return ["text-muted"];
+        return 0;
+    });
+}
+
+function setClinicalDocuments(records: ClinicalDocument[]): void {
+    clinicalDocuments.value = [...records].sort((a, b) => {
+        const firstDate = new DateWrapper(a.serviceDate);
+        const secondDate = new DateWrapper(b.serviceDate);
+
+        if (firstDate.isBefore(secondDate)) {
+            return 1;
         }
-    }
 
-    private getProductNames(immunizationAgents: ImmunizationAgent[]): string {
-        const productNames = immunizationAgents.map<string>(
-            (x) => x.productName
-        );
-        return productNames.join(", ");
-    }
+        if (firstDate.isAfter(secondDate)) {
+            return -1;
+        }
 
-    private getVaccinationRecord(): VaccinationRecord | undefined {
-        return this.vaccineRecords.get(this.dependent.ownerId);
-    }
+        return 0;
+    });
+}
 
-    private setLaboratoryOrders(orders: LaboratoryOrder[]): void {
-        this.laboratoryOrders = orders;
+function setImmunizations(records: ImmunizationEvent[]): void {
+    immunizations.value = [...records].sort((a, b) => {
+        const firstDate = new DateWrapper(a.dateOfImmunization);
+        const secondDate = new DateWrapper(b.dateOfImmunization);
 
-        this.laboratoryOrders.sort((a, b) => {
-            const firstDate = new DateWrapper(a.timelineDateTime, {
-                hasTime: true,
-            });
-            const secondDate = new DateWrapper(b.timelineDateTime, {
-                hasTime: true,
-            });
+        if (firstDate.isBefore(secondDate)) {
+            return 1;
+        }
 
-            if (firstDate.isBefore(secondDate)) {
-                return 1;
-            }
+        if (firstDate.isAfter(secondDate)) {
+            return -1;
+        }
 
-            if (firstDate.isAfter(secondDate)) {
-                return -1;
-            }
+        return 0;
+    });
+}
 
-            return 0;
-        });
-    }
-
-    private setClinicalDocuments(clinicalDocuments: ClinicalDocument[]): void {
-        this.clinicalDocuments = clinicalDocuments;
-
-        this.clinicalDocuments.sort((a, b) => {
-            const firstDate = new DateWrapper(a.serviceDate);
-            const secondDate = new DateWrapper(b.serviceDate);
-
-            if (firstDate.isBefore(secondDate)) {
-                return 1;
-            }
-
-            if (firstDate.isAfter(secondDate)) {
-                return -1;
-            }
-
-            return 0;
-        });
-    }
-
-    private setImmunizations(immunizations: ImmunizationEvent[]): void {
-        this.immunizations = immunizations;
-
-        this.immunizations.sort((a, b) => {
-            const firstDate = new DateWrapper(a.dateOfImmunization);
-            const secondDate = new DateWrapper(b.dateOfImmunization);
-
-            if (firstDate.isBefore(secondDate)) {
-                return 1;
-            }
-
-            if (firstDate.isAfter(secondDate)) {
-                return -1;
-            }
-
-            return 0;
-        });
-    }
-
-    private setRecommendations(recommendations: Recommendation[]): void {
-        this.recommendations = recommendations.filter(
-            (x) => x.recommendedVaccinations
-        );
-
-        this.recommendations.sort((a, b) => {
+function setRecommendations(records: Recommendation[]): void {
+    recommendations.value = records
+        .filter((x) => x.recommendedVaccinations)
+        .sort((a, b) => {
             const firstDateEmpty =
                 a.agentDueDate === null || a.agentDueDate === undefined;
             const secondDateEmpty =
@@ -942,110 +822,94 @@ export default class DependentCardComponent extends Vue {
 
             return 0;
         });
-    }
+}
 
-    private sortEntries(): void {
-        this.testRows.sort((a, b) => {
-            let dateA = new DateWrapper(a.test.collectedDateTime);
-            let dateB = new DateWrapper(b.test.collectedDateTime);
-            if (dateA.isBefore(dateB)) {
-                return 1;
-            }
-            if (dateA.isAfter(dateB)) {
-                return -1;
-            }
-            return 0;
+function sortEntries(): void {
+    testRows.value.sort((a, b) => {
+        const dateA = new DateWrapper(a.test.collectedDateTime);
+        const dateB = new DateWrapper(b.test.collectedDateTime);
+        if (dateA.isBefore(dateB)) {
+            return 1;
+        }
+        if (dateA.isAfter(dateB)) {
+            return -1;
+        }
+        return 0;
+    });
+}
+
+function showVaccineProofDownloadConfirmationModal(): void {
+    isReport.value = false;
+    reportDownloadModal.value?.showModal();
+}
+
+function showCovid19DownloadConfirmationModal(
+    row: Covid19LaboratoryTestRow
+): void {
+    isReport.value = true;
+    selectedTestRow.value = row;
+    reportDownloadModal.value?.showModal();
+}
+
+function showImmunizationDownloadConfirmationModal(
+    type: ReportFormatType
+): void {
+    isReport.value = true;
+    reportFormatType.value = type;
+    reportDownloadModal.value?.showModal();
+}
+
+function showClinicalDocumentDownloadConfirmationModal(
+    row: ClinicalDocument
+): void {
+    isReport.value = true;
+    selectedClinicalDocumentRow.value = row;
+    reportDownloadModal.value?.showModal();
+}
+
+function showLaboratoryOrderDownloadConfirmationModal(
+    row: LaboratoryOrder
+): void {
+    isReport.value = true;
+    selectedLaboratoryOrderRow.value = row;
+    reportDownloadModal.value?.showModal();
+}
+
+function showDeleteConfirmationModal(): void {
+    deleteModal.value?.showModal();
+}
+
+function trackClickLink(action: string, linkType: string | undefined): void {
+    if (linkType) {
+        SnowPlow.trackEvent({
+            action: `${action}`,
+            text: `${linkType}`,
         });
     }
-
-    public showVaccineProofDownloadConfirmaationModal(): void {
-        this.isReport = false;
-        this.reportDownloadModal.showModal();
-    }
-
-    public showCovid19DownloadConfirmationModal(
-        row: Covid19LaboratoryTestRow
-    ): void {
-        this.isReport = true;
-        this.selectedTestRow = row;
-        this.reportDownloadModal.showModal();
-    }
-
-    public showImmunizationDownloadConfirmationModal(
-        reportFormatType: ReportFormatType
-    ): void {
-        this.isReport = true;
-        this.reportFormatType = reportFormatType;
-        this.reportDownloadModal.showModal();
-    }
-
-    public showClinicalDocumentDownloadConfirmationModal(
-        row: ClinicalDocument
-    ): void {
-        this.isReport = true;
-        this.selectedClinicalDocumentRow = row;
-        this.reportDownloadModal.showModal();
-    }
-
-    public showLaboratoryOrderDownloadConfirmationModal(
-        row: LaboratoryOrder
-    ): void {
-        this.isReport = true;
-        this.selectedLaboratoryOrderRow = row;
-        this.reportDownloadModal.showModal();
-    }
-
-    public showDeleteConfirmationModal(): void {
-        this.deleteModal.showModal();
-    }
-
-    private trackClickLink(action: string, linkType: string | undefined): void {
-        if (linkType) {
-            SnowPlow.trackEvent({
-                action: `${action}`,
-                text: `${linkType}`,
-            });
-        }
-    }
-
-    @Watch("vaccineRecordStatusChanges")
-    private showVaccineRecordResultModal(): void {
-        if (this.vaccineRecordActiveHdid === this.dependent.ownerId) {
-            const vaccinationRecord: VaccinationRecord | undefined =
-                this.getVaccinationRecord();
-            if (
-                vaccinationRecord !== undefined &&
-                vaccinationRecord.resultMessage.length > 0
-            ) {
-                this.vaccineRecordResultModal.showModal();
-            }
-        }
-    }
-
-    @Watch("vaccineRecordStatusChanges")
-    private saveVaccinePdf(): void {
-        if (this.vaccineRecordActiveHdid === this.dependent.ownerId) {
-            const vaccinationRecord: VaccinationRecord | undefined =
-                this.getVaccinationRecord();
-            if (
-                vaccinationRecord?.record !== undefined &&
-                vaccinationRecord.hdid === this.dependent.ownerId &&
-                vaccinationRecord.status === LoadStatus.LOADED &&
-                vaccinationRecord.download
-            ) {
-                const mimeType = vaccinationRecord.record.document.mediaType;
-                const downloadLink = `data:${mimeType};base64,${vaccinationRecord.record.document.data}`;
-                fetch(downloadLink).then((res) => {
-                    this.trackClickLink("Download Card", "Dependent Proof");
-                    res.blob().then((blob) => saveAs(blob, "VaccineProof.pdf"));
-                });
-                this.stopAuthenticatedVaccineRecordDownload({
-                    hdid: this.dependent.ownerId,
-                });
-            }
-        }
-    }
 }
+
+watch(vaccineRecordState, () => {
+    if (vaccineRecordState.value.resultMessage.length > 0) {
+        vaccineRecordResultModal.value?.showModal();
+    }
+
+    if (
+        vaccineRecordState.value.record !== undefined &&
+        vaccineRecordState.value.status === LoadStatus.LOADED &&
+        vaccineRecordState.value.download
+    ) {
+        const mimeType = vaccineRecordState.value.record.document.mediaType;
+        const downloadLink = `data:${mimeType};base64,${vaccineRecordState.value.record.document.data}`;
+        fetch(downloadLink).then((res) => {
+            trackClickLink("Download Card", "Dependent Proof");
+            res.blob().then((blob) => saveAs(blob, "VaccineProof.pdf"));
+        });
+        store.dispatch(
+            "vaccinationStatus/stopAuthenticatedVaccineRecordDownload",
+            { hdid: props.dependent.ownerId }
+        );
+    }
+});
 </script>
 
 <template>
@@ -1092,7 +956,7 @@ export default class DependentCardComponent extends Vue {
                                     <b-col class="col-12">PHN</b-col>
                                     <b-col class="col-12">
                                         <b-form-input
-                                            v-model="
+                                            :value="
                                                 dependent.dependentInformation
                                                     .PHN
                                             "
@@ -1140,7 +1004,7 @@ export default class DependentCardComponent extends Vue {
                                 :data-testid="`download-proof-of-vaccination-btn-${dependent.ownerId}`"
                                 variant="secondary"
                                 @click="
-                                    showVaccineProofDownloadConfirmaationModal
+                                    showVaccineProofDownloadConfirmationModal
                                 "
                             >
                                 <hg-icon
@@ -1894,7 +1758,7 @@ export default class DependentCardComponent extends Vue {
         />
         <LoadingComponent
             :is-loading="isVaccineRecordDownloading"
-            :text="vaccineRecordStatusMessage"
+            :text="vaccineRecordState.statusMessage"
             :full-screen="false"
         />
         <delete-modal-component
@@ -1914,7 +1778,7 @@ export default class DependentCardComponent extends Vue {
             ref="vaccineRecordResultModal"
             ok-only
             title="Alert"
-            :message="vaccineRecordResultMessage"
+            :message="vaccineRecordState.resultMessage"
         />
     </div>
 </template>

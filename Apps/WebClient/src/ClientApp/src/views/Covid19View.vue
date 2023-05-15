@@ -25,8 +25,8 @@ import { ImmunizationEvent } from "@/models/immunizationModel";
 import { LoadStatus } from "@/models/storeOperations";
 import TimelineEntry from "@/models/timelineEntry";
 import User from "@/models/user";
-import VaccinationRecord from "@/models/vaccinationRecord";
 import VaccinationStatus from "@/models/vaccinationStatus";
+import VaccineRecordState from "@/models/vaccineRecordState";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ILogger } from "@/services/interfaces";
@@ -103,13 +103,10 @@ export default class Covid19View extends Vue {
     @Getter("immunizationsError", { namespace: "immunization" })
     immunizationsError!: (hdid: string) => ResultError | undefined;
 
-    @Getter("authenticatedVaccineRecords", { namespace: "vaccinationStatus" })
-    vaccineRecords!: Map<string, VaccinationRecord>;
-
-    @Getter("authenticatedVaccineRecordStatusChanges", {
+    @Getter("authenticatedVaccineRecordState", {
         namespace: "vaccinationStatus",
     })
-    vaccineRecordStatusChanges!: number;
+    getVaccineRecordState!: (hdid: string) => VaccineRecordState;
 
     @Ref("vaccineCardMessageModal")
     readonly vaccineCardMessageModal!: MessageModalComponent;
@@ -152,14 +149,7 @@ export default class Covid19View extends Vue {
     }
 
     private get isVaccineRecordDownloading(): boolean {
-        if (this.vaccineRecordStatusChanges > 0) {
-            const vaccinationRecord: VaccinationRecord | undefined =
-                this.getVaccinationRecord();
-            if (vaccinationRecord !== undefined) {
-                return vaccinationRecord.status === LoadStatus.REQUESTED;
-            }
-        }
-        return false;
+        return this.vaccineRecordState.status === LoadStatus.REQUESTED;
     }
 
     private get isVaccinationNotFound(): boolean {
@@ -171,14 +161,8 @@ export default class Covid19View extends Vue {
             return "Downloading....";
         }
 
-        const vaccinationRecord: VaccinationRecord | undefined =
-            this.getVaccinationRecord();
-
-        if (
-            this.isVaccineRecordDownloading &&
-            vaccinationRecord !== undefined
-        ) {
-            return vaccinationRecord.statusMessage;
+        if (this.isVaccineRecordDownloading) {
+            return this.vaccineRecordState.statusMessage;
         }
 
         return "";
@@ -272,23 +256,20 @@ export default class Covid19View extends Vue {
         );
     }
 
-    private getVaccinationRecord(): VaccinationRecord | undefined {
-        return this.vaccineRecords.get(this.user.hdid);
+    private get vaccineRecordState(): VaccineRecordState {
+        return this.getVaccineRecordState(this.user.hdid);
     }
 
-    @Watch("vaccineRecordStatusChanges")
-    private saveVaccinePdf(): void {
-        this.logger.info(`Downloading PDF for hdid: ${this.user.hdid}`);
-        const vaccinationRecord: VaccinationRecord | undefined =
-            this.getVaccinationRecord();
+    @Watch("vaccineRecordState")
+    private watchVaccineRecordState(): void {
         if (
-            vaccinationRecord?.record !== undefined &&
-            vaccinationRecord.hdid === this.user.hdid &&
-            vaccinationRecord.status === LoadStatus.LOADED &&
-            vaccinationRecord.download
+            this.vaccineRecordState.record !== undefined &&
+            this.vaccineRecordState.status === LoadStatus.LOADED &&
+            this.vaccineRecordState.download
         ) {
-            const mimeType = vaccinationRecord.record.document.mediaType;
-            const downloadLink = `data:${mimeType};base64,${vaccinationRecord.record.document.data}`;
+            this.logger.info(`Downloading PDF for hdid: ${this.user.hdid}`);
+            const mimeType = this.vaccineRecordState.record.document.mediaType;
+            const downloadLink = `data:${mimeType};base64,${this.vaccineRecordState.record.document.data}`;
             fetch(downloadLink).then((res) => {
                 SnowPlow.trackEvent({
                     action: "download_card",

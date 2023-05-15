@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text.Json;
 using HealthGateway.Database.Context;
+using HealthGateway.Database.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
@@ -2227,6 +2228,31 @@ namespace HealthGateway.Database.Migrations
                     b.HasIndex("HdId");
 
                     b.ToTable("Note", "gateway");
+                });
+
+            modelBuilder.Entity("HealthGateway.Database.Models.OutboxItem", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("jsonb");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<OutboxItemMetadata>("Metadata")
+                        .IsRequired()
+                        .HasColumnType("jsonb");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Outbox", "gateway");
                 });
 
             modelBuilder.Entity("HealthGateway.Database.Models.Packaging", b =>

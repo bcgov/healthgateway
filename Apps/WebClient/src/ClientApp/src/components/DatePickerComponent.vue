@@ -87,7 +87,7 @@ export default class DatePickerComponent extends Vue {
     }
 
     private get getState(): boolean | undefined {
-        let isValid = this.isValid(this.$v.inputValue);
+        const isValid = this.isValid(this.$v.inputValue);
         if (isValid || isValid == undefined) {
             return this.state;
         }

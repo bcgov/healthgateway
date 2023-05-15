@@ -41,7 +41,7 @@ import { LoadStatus } from "@/models/storeOperations";
 import { TimelineFilterBuilder } from "@/models/timelineFilter";
 import User from "@/models/user";
 import { UserPreference } from "@/models/userPreference";
-import VaccinationRecord from "@/models/vaccinationRecord";
+import VaccineRecordState from "@/models/vaccineRecordState";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ILogger } from "@/services/interfaces";
@@ -129,13 +129,10 @@ export default class HomeView extends Vue {
     @Getter("quickLinks", { namespace: "user" })
     quickLinks!: QuickLink[] | undefined;
 
-    @Getter("authenticatedVaccineRecordStatusChanges", {
+    @Getter("authenticatedVaccineRecordState", {
         namespace: "vaccinationStatus",
     })
-    vaccineRecordStatusChanges!: number;
-
-    @Getter("authenticatedVaccineRecords", { namespace: "vaccinationStatus" })
-    vaccineRecords!: Map<string, VaccinationRecord>;
+    getVaccineRecordState!: (hdid: string) => VaccineRecordState;
 
     @Ref("sensitivedocumentDownloadModal")
     readonly sensitivedocumentDownloadModal!: MessageModalComponent;
@@ -148,40 +145,20 @@ export default class HomeView extends Vue {
 
     private logger!: ILogger;
 
+    private get vaccineRecordState(): VaccineRecordState {
+        return this.getVaccineRecordState(this.user.hdid);
+    }
+
     private get isVaccineRecordDownloading(): boolean {
-        const vaccinationRecord: VaccinationRecord | undefined =
-            this.getVaccinationRecord();
-        if (
-            this.vaccineRecordStatusChanges > 0 &&
-            vaccinationRecord !== undefined
-        ) {
-            return vaccinationRecord.status === LoadStatus.REQUESTED;
-        }
-        return false;
+        return this.vaccineRecordState.status === LoadStatus.REQUESTED;
     }
 
     private get vaccineRecordStatusMessage(): string {
-        const vaccinationRecord: VaccinationRecord | undefined =
-            this.getVaccinationRecord();
-        if (
-            this.vaccineRecordStatusChanges > 0 &&
-            vaccinationRecord !== undefined
-        ) {
-            return vaccinationRecord.statusMessage;
-        }
-        return "";
+        return this.vaccineRecordState.statusMessage;
     }
 
     private get vaccineRecordResultMessage(): string {
-        const vaccinationRecord: VaccinationRecord | undefined =
-            this.getVaccinationRecord();
-        if (
-            this.vaccineRecordStatusChanges > 0 &&
-            vaccinationRecord !== undefined
-        ) {
-            return vaccinationRecord.resultMessage;
-        }
-        return "";
+        return this.vaccineRecordState.resultMessage;
     }
 
     private get unverifiedEmail(): boolean {
@@ -259,7 +236,7 @@ export default class HomeView extends Vue {
 
     private get quickLinkCards(): QuickLinkCard[] {
         return this.enabledQuickLinks.map((quickLink, index) => {
-            let card: QuickLinkCard = {
+            const card: QuickLinkCard = {
                 index,
                 title: quickLink.name,
                 description: "View your filtered health records.",
@@ -338,10 +315,6 @@ export default class HomeView extends Vue {
                 });
             }
         });
-    }
-
-    private getVaccinationRecord(): VaccinationRecord | undefined {
-        return this.vaccineRecords.get(this.user.hdid);
     }
 
     private handleClickHealthRecords(): void {
@@ -438,31 +411,19 @@ export default class HomeView extends Vue {
         this.$router.push({ path: "/timeline" });
     }
 
-    @Watch("vaccineRecordStatusChanges")
-    private showVaccineRecordResultModal(): void {
-        const vaccinationRecord: VaccinationRecord | undefined =
-            this.getVaccinationRecord();
-        if (
-            vaccinationRecord !== undefined &&
-            vaccinationRecord.resultMessage.length > 0
-        ) {
+    @Watch("vaccineRecordState")
+    private watchVaccineRecordState(): void {
+        if (this.vaccineRecordState.resultMessage.length > 0) {
             this.vaccineRecordResultModal.showModal();
         }
-    }
-
-    @Watch("vaccineRecordStatusChanges")
-    private saveVaccinePdf(): void {
-        const vaccinationRecord: VaccinationRecord | undefined =
-            this.getVaccinationRecord();
 
         if (
-            vaccinationRecord?.record !== undefined &&
-            vaccinationRecord.hdid === this.user.hdid &&
-            vaccinationRecord.status === LoadStatus.LOADED &&
-            vaccinationRecord.download
+            this.vaccineRecordState.record !== undefined &&
+            this.vaccineRecordState.status === LoadStatus.LOADED &&
+            this.vaccineRecordState.download
         ) {
-            const mimeType = vaccinationRecord.record.document.mediaType;
-            const downloadLink = `data:${mimeType};base64,${vaccinationRecord.record.document.data}`;
+            const mimeType = this.vaccineRecordState.record.document.mediaType;
+            const downloadLink = `data:${mimeType};base64,${this.vaccineRecordState.record.document.data}`;
             fetch(downloadLink).then((res) => {
                 SnowPlow.trackEvent({
                     action: "click_button",

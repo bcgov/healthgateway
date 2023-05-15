@@ -23,13 +23,6 @@ namespace HealthGateway.Common.Models
         /// <summary>
         /// Initializes a new instance of the <see cref="NotificationSettingsResponse"/> class.
         /// </summary>
-        public NotificationSettingsResponse()
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="NotificationSettingsResponse"/> class.
-        /// </summary>
         /// <param name="notificationSettings">Initialize values from passed in object.</param>
         public NotificationSettingsResponse(NotificationSettingsBase notificationSettings)
             : base(notificationSettings)

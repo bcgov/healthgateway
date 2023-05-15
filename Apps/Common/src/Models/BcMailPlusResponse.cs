@@ -15,11 +15,13 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Common.Models
 {
+    using System.Diagnostics.CodeAnalysis;
     using System.Text.Json.Serialization;
 
     /// <summary>
     /// The response from the BCMailPlusVaccineProofDelegate.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public class BcMailPlusResponse
     {
         /// <summary>

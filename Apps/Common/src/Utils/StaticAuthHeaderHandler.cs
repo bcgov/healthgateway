@@ -15,6 +15,7 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Common.Utils
 {
+    using System.Diagnostics.CodeAnalysis;
     using System.Net.Http;
     using System.Threading;
     using System.Threading.Tasks;
@@ -22,6 +23,7 @@ namespace HealthGateway.Common.Utils
     /// <summary>
     /// Delegating access handler that sets the bearer token to a configurable value.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public class StaticAuthHeaderHandler : DelegatingHandler
     {
         private readonly string apiKey;
@@ -35,7 +37,7 @@ namespace HealthGateway.Common.Utils
             this.apiKey = apiKey;
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
             request.Headers.Add("Authorization", $"ApiKey-v1 {this.apiKey}");

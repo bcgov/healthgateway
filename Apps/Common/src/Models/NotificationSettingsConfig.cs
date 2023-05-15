@@ -15,9 +15,12 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Common.Models
 {
+    using System.Diagnostics.CodeAnalysis;
+
     /// <summary>
     /// Provides configuration data for the PHSA notifications settings API.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public class NotificationSettingsConfig
     {
         /// <summary>

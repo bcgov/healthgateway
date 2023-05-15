@@ -134,7 +134,7 @@ export default class NoteEditComponent extends Vue {
     }
 
     private update(): void {
-        let entry = this.entry as NoteTimelineEntry;
+        const entry = this.entry as NoteTimelineEntry;
         this.isSaving = true;
         this.updateNote({
             hdid: this.user.hdid,
