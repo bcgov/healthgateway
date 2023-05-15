@@ -26,6 +26,7 @@ namespace HealthGateway.Common.Auditing
     /// <summary>
     /// A Redis Audit Logger.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public class RedisAuditLogger : AuditLogger
     {
         /// <summary>

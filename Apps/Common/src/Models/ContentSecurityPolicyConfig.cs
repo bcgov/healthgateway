@@ -15,9 +15,12 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Common.Models
 {
+    using System.Diagnostics.CodeAnalysis;
+
     /// <summary>
     /// Provides configuration data for the ContentSecurityPolicy header.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public class ContentSecurityPolicyConfig
     {
         /// <summary>
