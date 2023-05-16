@@ -129,7 +129,7 @@ namespace AccountDataAccessTest.Strategy
                 GetConfiguration(),
                 cacheProvider.Object,
                 patientIdentityApi.Object,
-                logger.Object,
+                new Mock<ILogger<HdidPhsaStrategy>>().Object,
                 Mapper);
             return hdidPhsaStrategy;
         }

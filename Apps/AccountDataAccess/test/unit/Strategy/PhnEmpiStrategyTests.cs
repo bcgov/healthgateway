@@ -128,7 +128,7 @@ namespace AccountDataAccessTest.Strategy
                 GetConfiguration(),
                 cacheProvider.Object,
                 clientRegistriesDelegate.Object,
-                logger.Object);
+                new Mock<ILogger<PhnEmpiStrategy>>().Object);
             return phnEmpiStrategy;
         }
 

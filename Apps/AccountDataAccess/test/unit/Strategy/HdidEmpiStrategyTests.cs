@@ -97,13 +97,11 @@ namespace AccountDataAccessTest.Strategy
             Mock<IClientRegistriesDelegate> clientRegistriesDelegate = new();
             clientRegistriesDelegate.Setup(p => p.GetDemographicsAsync(OidType.Hdid, Hdid, false)).ReturnsAsync(patient);
 
-            Mock<ILogger<HdidEmpiStrategy>> logger = new();
-
             HdidEmpiStrategy hdidEmpiStrategy = new(
                 GetConfiguration(),
                 cacheProvider.Object,
                 clientRegistriesDelegate.Object,
-                logger.Object);
+                new Mock<ILogger<HdidEmpiStrategy>>().Object);
             return hdidEmpiStrategy;
         }
 
