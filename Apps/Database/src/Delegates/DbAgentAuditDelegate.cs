@@ -48,7 +48,7 @@ namespace HealthGateway.Database.Delegates
             this.logger.LogTrace("Getting agent audit for group: {Group} - hdid : {Hdid}", group, hdid);
 
             IQueryable<AgentAudit> dbQuery = this.dbContext.AgentAudit
-                .Where(aa => aa.Hdid == hdid);
+                .Where(a => a.Hdid == hdid);
 
             if (group != null)
             {

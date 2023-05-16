@@ -48,7 +48,7 @@ public interface ISupportApi
     /// Creates, updates, or deletes block access configuration for the passed HDID.
     /// </summary>
     /// <param name="hdid">HDID of the patient to restrict access.</param>
-    /// <param name="request">The request containing all datasource names to block for a patient.</param>
+    /// <param name="request">The request containing all datasources to block for the patient.</param>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Put("/{hdid}/BlockAccess")]
     Task BlockAccessAsync(string hdid, BlockAccessRequest request);
