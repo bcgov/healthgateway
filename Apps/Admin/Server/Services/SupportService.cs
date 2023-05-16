@@ -175,8 +175,8 @@ namespace HealthGateway.Admin.Server.Services
         private async Task<PatientModel?> GetPatientAsync(PatientIdentifierType identifierType, string queryString, CancellationToken ct)
         {
             PatientDetailsQuery query = identifierType == PatientIdentifierType.Hdid
-                ? new PatientDetailsQuery(Hdid: queryString, Source: PatientDetailSource.All, UseCache: true)
-                : new PatientDetailsQuery(queryString, Source: PatientDetailSource.Empi, UseCache: true);
+                ? new PatientDetailsQuery(Hdid: queryString, Source: PatientDetailSource.All, UseCache: false)
+                : new PatientDetailsQuery(queryString, Source: PatientDetailSource.Empi, UseCache: false);
 
             try
             {

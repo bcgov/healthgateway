@@ -128,7 +128,7 @@ namespace HealthGateway.AccountDataAccess.Patient
             return await this.blockedAccessDelegate.GetDataSourcesAsync(hdid).ConfigureAwait(true);
         }
 
-        private static string GetStrategyKey(string? hdid, PatientDetailSource source)
+        private static string GetStrategy(string? hdid, PatientDetailSource source)
         {
             string prefix = "HealthGateway.AccountDataAccess.Patient.Strategy.";
             string type = hdid != null ? "Hdid" : "Phn";
@@ -160,7 +160,7 @@ namespace HealthGateway.AccountDataAccess.Patient
                 query.UseCache,
                 disabledValidation);
 
-            string strategy = GetStrategyKey(query.Hdid, query.Source);
+            string strategy = GetStrategy(query.Hdid, query.Source);
             this.logger.LogDebug("Strategy: {Strategy}", strategy);
 
             // Get the appropriate strategy from factory to query patient
