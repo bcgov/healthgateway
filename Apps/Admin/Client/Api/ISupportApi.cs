@@ -19,7 +19,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using HealthGateway.Admin.Common.Models;
 using HealthGateway.Common.Data.Constants;
-using HealthGateway.Common.Data.ViewModels;
 using Refit;
 
 /// <summary>
@@ -41,6 +40,16 @@ public interface ISupportApi
     /// </summary>
     /// <param name="hdid">The hdid associated with the messaging verification.</param>
     /// <returns>The list of MessagingVerificationModel objects.</returns>
-    [Get("/Verifications?hdid={hdid}")]
-    Task<RequestResult<IEnumerable<MessagingVerificationModel>>> GetMessagingVerificationsAsync(string hdid);
+    [Get("/PatientSupportDetails?hdid={hdid}")]
+    Task<PatientSupportDetails> GetPatientSupportDetailsAsync(string hdid);
+
+
+    /// <summary>
+    /// Creates, updates, or deletes block access configuration for the passed HDID.
+    /// </summary>
+    /// <param name="hdid">HDID of the patient to restrict access.</param>
+    /// <param name="request">The request containing all datasource names to block for a patient.</param>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Put("/{hdid}/BlockAccess")]
+    Task BlockAccessAsync(string hdid, BlockAccessRequest request);
 }

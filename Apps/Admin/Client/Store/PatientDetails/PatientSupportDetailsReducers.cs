@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Admin.Client.Store.MessageVerification
+namespace HealthGateway.Admin.Client.Store.PatientDetails
 {
     using System.Collections.Generic;
     using System.Collections.Immutable;
@@ -21,10 +21,10 @@ namespace HealthGateway.Admin.Client.Store.MessageVerification
     using HealthGateway.Common.Data.ViewModels;
 
 #pragma warning disable CS1591, SA1600
-    public static class MessageVerificationReducers
+    public static class PatientSupportDetailsReducers
     {
-        [ReducerMethod(typeof(MessageVerificationActions.LoadAction))]
-        public static MessageVerificationState ReduceLoadAction(MessageVerificationState state)
+        [ReducerMethod(typeof(PatientSupportDetailsActions.LoadAction))]
+        public static PatientSupportDetailsState ReduceLoadAction(PatientSupportDetailsState state)
         {
             return state with
             {
@@ -33,14 +33,14 @@ namespace HealthGateway.Admin.Client.Store.MessageVerification
         }
 
         [ReducerMethod]
-        public static MessageVerificationState ReduceLoadSuccessAction(MessageVerificationState state, MessageVerificationActions.LoadSuccessAction action)
+        public static PatientSupportDetailsState ReduceLoadSuccessAction(PatientSupportDetailsState state, PatientSupportDetailsActions.LoadSuccessAction action)
         {
-            ImmutableList<MessagingVerificationModel> data = state.Data ?? new List<MessagingVerificationModel>().ToImmutableList();
+            ImmutableList<MessagingVerificationModel> messageVerifications = state.MessagingVerifications ?? new List<MessagingVerificationModel>().ToImmutableList();
 
-            IEnumerable<MessagingVerificationModel>? verifications = action.Data.ResourcePayload;
+            IEnumerable<MessagingVerificationModel>? verifications = action.Data?.MessagingVerifications;
             if (verifications != null)
             {
-                data = data.RemoveAll(x => x.UserProfileId == action.Hdid).AddRange(verifications);
+                messageVerifications = messageVerifications.RemoveAll(x => x.UserProfileId == action.Hdid).AddRange(verifications);
             }
 
             return state with
@@ -48,12 +48,14 @@ namespace HealthGateway.Admin.Client.Store.MessageVerification
                 IsLoading = false,
                 Result = action.Data,
                 Error = null,
-                Data = data,
+                MessagingVerifications = messageVerifications,
+                BlockedDataSources = action.Data?.BlockedDataSources,
+                AgentActions = action.Data?.AgentActions,
             };
         }
 
         [ReducerMethod]
-        public static MessageVerificationState ReduceLoadFailAction(MessageVerificationState state, MessageVerificationActions.LoadFailAction action)
+        public static PatientSupportDetailsState ReduceLoadFailAction(PatientSupportDetailsState state, PatientSupportDetailsActions.LoadFailAction action)
         {
             return state with
             {
@@ -62,15 +64,17 @@ namespace HealthGateway.Admin.Client.Store.MessageVerification
             };
         }
 
-        [ReducerMethod(typeof(MessageVerificationActions.ResetStateAction))]
-        public static MessageVerificationState ReduceResetStateAction(MessageVerificationState state)
+        [ReducerMethod(typeof(PatientSupportDetailsActions.ResetStateAction))]
+        public static PatientSupportDetailsState ReduceResetStateAction(PatientSupportDetailsState state)
         {
             return state with
             {
                 IsLoading = false,
                 Result = null,
                 Error = null,
-                Data = null,
+                MessagingVerifications = null,
+                BlockedDataSources = null,
+                AgentActions = null,
             };
         }
     }

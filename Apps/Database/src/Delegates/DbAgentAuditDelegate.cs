@@ -47,11 +47,12 @@ namespace HealthGateway.Database.Delegates
         {
             this.logger.LogTrace("Getting agent audit for group: {Group} - hdid : {Hdid}", group, hdid);
 
-            IQueryable<AgentAudit> dbQuery = this.dbContext.AgentAudit;
+            IQueryable<AgentAudit> dbQuery = this.dbContext.AgentAudit
+                .Where(aa => aa.Hdid == hdid);
 
             if (group != null)
             {
-                dbQuery = dbQuery.Where(d => d.Hdid == hdid && d.GroupCode == group);
+                dbQuery = dbQuery.Where(d => d.GroupCode == group);
             }
 
             return await dbQuery.ToListAsync(ct).ConfigureAwait(true);

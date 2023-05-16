@@ -78,7 +78,7 @@ namespace HealthGateway.Admin.Tests.Services
             ISupportService supportService = CreateSupportService(GetMessagingVerificationDelegateMock(messagingVerifications));
 
             // Act
-            PatientSupportDetails actualResult = await supportService.GetMessageVerificationsAsync(Hdid).ConfigureAwait(true);
+            PatientSupportDetails actualResult = await supportService.GetPatientSupportDetailsAsync(Hdid).ConfigureAwait(true);
 
             // Assert
             Assert.Equal(2, actualResult.MessagingVerifications.Count());

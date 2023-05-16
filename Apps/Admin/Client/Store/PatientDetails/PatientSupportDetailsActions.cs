@@ -13,17 +13,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Admin.Client.Store.MessageVerification
+namespace HealthGateway.Admin.Client.Store.PatientDetails
 {
-    using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
-    using HealthGateway.Common.Data.ViewModels;
+    using HealthGateway.Admin.Common.Models;
 
     /// <summary>
     /// Static class that implements all actions for the feature.
     /// </summary>
     [SuppressMessage("Design", "CA1034:Nested types should not be visible", Justification = "Team decision")]
-    public static class MessageVerificationActions
+    public static class PatientSupportDetailsActions
     {
         /// <summary>
         /// The action representing the initiation of a load.
@@ -63,14 +62,14 @@ namespace HealthGateway.Admin.Client.Store.MessageVerification
         /// <summary>
         /// The action representing a successful load.
         /// </summary>
-        public class LoadSuccessAction : BaseSuccessAction<RequestResult<IEnumerable<MessagingVerificationModel>>>
+        public class LoadSuccessAction : BaseSuccessAction<PatientSupportDetails>
         {
             /// <summary>
             /// Initializes a new instance of the <see cref="LoadSuccessAction"/> class.
             /// </summary>
             /// <param name="data">Result data.</param>
             /// <param name="hdid">hdid associated with the data.</param>
-            public LoadSuccessAction(RequestResult<IEnumerable<MessagingVerificationModel>> data, string hdid)
+            public LoadSuccessAction(PatientSupportDetails data, string hdid)
                 : base(data)
             {
                 this.Hdid = hdid;
