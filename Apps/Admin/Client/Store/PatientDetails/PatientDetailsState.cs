@@ -28,7 +28,7 @@ namespace HealthGateway.Admin.Client.Store.PatientDetails
     /// State should be decorated with [FeatureState] for automatic discovery when services.AddFluxor is called.
     /// </summary>
     [FeatureState]
-    public record PatientSupportDetailsState : BaseRequestState<PatientSupportDetails>
+    public record PatientDetailsState : BaseRequestState<PatientSupportDetails>
     {
         /// <summary>
         /// Gets the message verifications linked to the patient support details.
@@ -44,5 +44,10 @@ namespace HealthGateway.Admin.Client.Store.PatientDetails
         /// Gets the blocked data sources linked to the patient support details.
         /// </summary>
         public IEnumerable<DataSource>? BlockedDataSources { get; init; }
+
+        /// <summary>
+        /// Gets the request state for block access requests.
+        /// </summary>
+        public BaseRequestState BlockAccess { get; init; } = new();
     }
 }

@@ -41,7 +41,7 @@ namespace HealthGateway.Admin.Client.Pages
         private IDispatcher Dispatcher { get; set; } = default!;
 
         [Inject]
-        private IState<PatientSupportDetailsState> PatientSupportDetailsState { get; set; } = default!;
+        private IState<PatientDetailsState> PatientSupportDetailsState { get; set; } = default!;
 
         [Inject]
         private IState<PatientSupportState> PatientSupportState { get; set; } = default!;
@@ -114,7 +114,7 @@ namespace HealthGateway.Admin.Client.Pages
             if (this.Patient == null)
             {
                 this.Dispatcher.Dispatch(new PatientSupportActions.ResetStateAction());
-                this.Dispatcher.Dispatch(new PatientSupportDetailsActions.ResetStateAction());
+                this.Dispatcher.Dispatch(new PatientDetailsActions.ResetStateAction());
                 this.Dispatcher.Dispatch(new PatientSupportActions.LoadAction(PatientQueryType.Hdid, this.Hdid));
             }
             else
@@ -137,10 +137,10 @@ namespace HealthGateway.Admin.Client.Pages
 
         private void RetrieveMessagingVerifications()
         {
-            this.Dispatcher.Dispatch(new PatientSupportDetailsActions.ResetStateAction());
+            this.Dispatcher.Dispatch(new PatientDetailsActions.ResetStateAction());
             if (this.Patient?.ProfileCreatedDateTime != null)
             {
-                this.Dispatcher.Dispatch(new PatientSupportDetailsActions.LoadAction(this.Hdid));
+                this.Dispatcher.Dispatch(new PatientDetailsActions.LoadAction(this.Hdid));
             }
         }
 

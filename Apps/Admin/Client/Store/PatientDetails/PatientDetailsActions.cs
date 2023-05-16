@@ -15,14 +15,16 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Admin.Client.Store.PatientDetails
 {
+    using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using HealthGateway.Admin.Common.Models;
+    using HealthGateway.Common.Data.Constants;
 
     /// <summary>
     /// Static class that implements all actions for the feature.
     /// </summary>
     [SuppressMessage("Design", "CA1034:Nested types should not be visible", Justification = "Team decision")]
-    public static class PatientSupportDetailsActions
+    public static class PatientDetailsActions
     {
         /// <summary>
         /// The action representing the initiation of a load.
@@ -86,6 +88,62 @@ namespace HealthGateway.Admin.Client.Store.PatientDetails
         /// </summary>
         public class ResetStateAction
         {
+        }
+
+        /// <summary>
+        /// The action representing the configuring of a patient's level of access.
+        /// </summary>
+        public class BlockAccessAction
+        {
+            /// <summary>
+            /// Initializes a new instance of the <see cref="BlockAccessAction"/> class.
+            /// </summary>
+            /// <param name="hdid">The patient's HDID to configure access for.</param>
+            /// <param name="reason">The agent's reason for the access change.</param>
+            /// <param name="dataSources">The list of Dataset names that will be affected, empty will grant full access.</param>
+            public BlockAccessAction(string hdid, string reason, IEnumerable<DataSource> dataSources)
+            {
+                this.Reason = reason;
+                this.DataSources = dataSources;
+                this.Hdid = hdid;
+            }
+
+            /// <summary>
+            /// Gets the patient's HDID to configure access for.
+            /// </summary>
+            public string Hdid { get; init; }
+
+            /// <summary>
+            /// Gets the list of data sources to block.
+            /// </summary>
+            public IEnumerable<DataSource> DataSources { get; init; }
+
+            /// <summary>
+            /// Gets the reason to block data source(s).
+            /// </summary>
+            public string Reason { get; init; }
+        }
+
+        /// <summary>
+        /// The action representing a successful update of a patient's blocked access.
+        /// </summary>
+        public class BlockAccessSuccessAction
+        {
+        }
+
+        /// <summary>
+        /// The action representing a failed update of a patient's blocked access.
+        /// </summary>
+        public class BlockAccessFailureAction : BaseFailAction
+        {
+            /// <summary>
+            /// Initializes a new instance of the <see cref="BlockAccessFailureAction"/> class.
+            /// </summary>
+            /// <param name="error">The request error.</param>
+            public BlockAccessFailureAction(RequestError error)
+                : base(error)
+            {
+            }
         }
     }
 }

@@ -21,10 +21,10 @@ namespace HealthGateway.Admin.Client.Store.PatientDetails
     using HealthGateway.Common.Data.ViewModels;
 
 #pragma warning disable CS1591, SA1600
-    public static class PatientSupportDetailsReducers
+    public static class PatientDetailsReducers
     {
-        [ReducerMethod(typeof(PatientSupportDetailsActions.LoadAction))]
-        public static PatientSupportDetailsState ReduceLoadAction(PatientSupportDetailsState state)
+        [ReducerMethod(typeof(PatientDetailsActions.LoadAction))]
+        public static PatientDetailsState ReduceLoadAction(PatientDetailsState state)
         {
             return state with
             {
@@ -33,7 +33,7 @@ namespace HealthGateway.Admin.Client.Store.PatientDetails
         }
 
         [ReducerMethod]
-        public static PatientSupportDetailsState ReduceLoadSuccessAction(PatientSupportDetailsState state, PatientSupportDetailsActions.LoadSuccessAction action)
+        public static PatientDetailsState ReduceLoadSuccessAction(PatientDetailsState state, PatientDetailsActions.LoadSuccessAction action)
         {
             ImmutableList<MessagingVerificationModel> messageVerifications = state.MessagingVerifications ?? new List<MessagingVerificationModel>().ToImmutableList();
 
@@ -55,7 +55,7 @@ namespace HealthGateway.Admin.Client.Store.PatientDetails
         }
 
         [ReducerMethod]
-        public static PatientSupportDetailsState ReduceLoadFailAction(PatientSupportDetailsState state, PatientSupportDetailsActions.LoadFailAction action)
+        public static PatientDetailsState ReduceLoadFailAction(PatientDetailsState state, PatientDetailsActions.LoadFailAction action)
         {
             return state with
             {
@@ -64,8 +64,8 @@ namespace HealthGateway.Admin.Client.Store.PatientDetails
             };
         }
 
-        [ReducerMethod(typeof(PatientSupportDetailsActions.ResetStateAction))]
-        public static PatientSupportDetailsState ReduceResetStateAction(PatientSupportDetailsState state)
+        [ReducerMethod(typeof(PatientDetailsActions.ResetStateAction))]
+        public static PatientDetailsState ReduceResetStateAction(PatientDetailsState state)
         {
             return state with
             {
@@ -75,6 +75,44 @@ namespace HealthGateway.Admin.Client.Store.PatientDetails
                 MessagingVerifications = null,
                 BlockedDataSources = null,
                 AgentActions = null,
+            };
+        }
+
+        [ReducerMethod(typeof(PatientDetailsActions.BlockAccessAction))]
+        public static PatientDetailsState ReduceBlockAccessAction(PatientDetailsState state)
+        {
+            return state with
+            {
+                BlockAccess = state.BlockAccess with
+                {
+                    IsLoading = true,
+                },
+            };
+        }
+
+        [ReducerMethod(typeof(PatientDetailsActions.BlockAccessSuccessAction))]
+        public static PatientDetailsState ReduceBlockAccessSuccessAction(PatientDetailsState state)
+        {
+            return state with
+            {
+                BlockAccess = state.BlockAccess with
+                {
+                    IsLoading = false,
+                    Error = null,
+                },
+            };
+        }
+
+        [ReducerMethod]
+        public static PatientDetailsState ReduceBlockAccessFailureAction(PatientDetailsState state, PatientDetailsActions.BlockAccessFailureAction action)
+        {
+            return state with
+            {
+                BlockAccess = state.BlockAccess with
+                {
+                    IsLoading = false,
+                    Error = action.Error,
+                },
             };
         }
     }
