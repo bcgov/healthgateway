@@ -36,7 +36,7 @@ namespace HealthGateway.Admin.Client.Store.PatientDetails
         public ImmutableList<MessagingVerificationModel>? MessagingVerifications { get; init; }
 
         /// <summary>
-        /// Gets the agent actions linked ot the patient support details.
+        /// Gets the agent actions linked to the patient support details.
         /// </summary>
         public IEnumerable<AgentAction>? AgentActions { get; init; }
 
