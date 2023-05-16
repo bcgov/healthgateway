@@ -40,13 +40,12 @@ export default class AddressComponent extends Vue {
 
     private get internationalDestinations(): SelectItem[] {
         // sort destinations alphabetically except place Canada and US at the top
-        const destinations = Object.keys(InternationalDestinations)
-            .filter(
-                (destination) =>
-                    destination !== Countries.CA[0] &&
-                    destination !== Countries.US[0]
-            )
-            .sort();
+        const destinations = Object.keys(InternationalDestinations).filter(
+            (destination) =>
+                destination !== Countries.CA[0] &&
+                destination !== Countries.US[0]
+        );
+        destinations.sort((a, b) => a.localeCompare(b));
         destinations.unshift(Countries.CA[0], Countries.US[0]);
 
         return destinations.map((destination) => ({
