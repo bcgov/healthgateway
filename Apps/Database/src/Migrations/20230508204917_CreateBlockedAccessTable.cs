@@ -194,7 +194,7 @@ namespace HealthGateway.Database.Migrations
             string agentAuditTempTableSql = @$"
                 SELECT ""AgentAuditId"", ""Hdid"", ""AgentUsername"", ""Reason"", TRIM(TRAILING 'D' FROM TRIM(TRAILING 'ependent' FROM ""OperationCode"")),
                        ""TransactionDateTime"", ""CreatedBy"", ""CreatedDateTime"", ""UpdatedBy"", ""UpdatedDateTime""
-                INTO TEMPORARY {agentAuditTempTable} FROM gateway.""AgentAudit"";
+                INTO TEMPORARY {agentAuditTempTable} FROM gateway.""AgentAudit"" WHERE ""OperationCode"" IN ('ProtectDependent', 'UnprotectDependent');
                 ";
             migrationBuilder.Sql(agentAuditTempTableSql);
 
