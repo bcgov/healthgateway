@@ -42,11 +42,20 @@ namespace AccountDataAccessTest.Strategy
         /// <summary>
         /// GetPatientAsync by hdid - happy path.
         /// </summary>
+        /// <param name="useCache">The value indicates whether cache should be used or not.</param>
         /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
-        [Fact]
-        public async Task ShouldGetPatientByHdid()
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public async Task ShouldGetPatientByHdid(bool useCache)
         {
             // Arrange
+            PatientModel cachedPatient = new()
+            {
+                Phn = Phn,
+                Hdid = Hdid,
+            };
+
             PatientModel expectedPatient = new()
             {
                 Phn = Phn,
@@ -68,49 +77,15 @@ namespace AccountDataAccessTest.Strategy
                 HasDeathIndicator = false,
             };
 
-            HdidPhsaStrategy hdidPhsaStrategy = GetHdidPhsaStrategy(patientIdentity);
+            HdidPhsaStrategy hdidPhsaStrategy = useCache ? GetHdidPhsaStrategy(patientIdentity, cachedPatient) : GetHdidPhsaStrategy(patientIdentity);
 
-            PatientRequest request = new(Hdid, false);
+            PatientRequest request = new(Hdid, useCache);
 
             // Act
             PatientModel? actual = await hdidPhsaStrategy.GetPatientAsync(request).ConfigureAwait(true);
 
             // Verify
             expectedPatient.ShouldDeepEqual(actual);
-        }
-
-        /// <summary>
-        /// GetPatientAsync by hdid - using cache.
-        /// </summary>
-        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
-        [Fact]
-        public async Task ShouldGetPatientByHdidUsingCache()
-        {
-            // Arrange
-            PatientModel cachedPatient = new()
-            {
-                Phn = Phn,
-                Hdid = Hdid,
-            };
-
-            PatientIdentity patientIdentity = new()
-            {
-                Phn = Phn,
-                HdId = Hdid,
-                Gender = Gender,
-                HasDeathIndicator = false,
-            };
-
-            HdidPhsaStrategy hdidPhsaStrategy = GetHdidPhsaStrategy(patientIdentity, cachedPatient);
-
-            PatientRequest request = new(Hdid, true);
-
-            // Act
-            PatientModel? result = await hdidPhsaStrategy.GetPatientAsync(request).ConfigureAwait(true);
-
-            // Verify
-            Assert.Equal(patientIdentity.HdId, result?.Hdid);
-            Assert.Equal(patientIdentity.Phn, result?.Phn);
         }
 
         private static HdidPhsaStrategy GetHdidPhsaStrategy(

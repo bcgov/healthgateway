@@ -38,9 +38,12 @@ namespace AccountDataAccessTest.Strategy
         /// <summary>
         /// GetPatientAsync by phn - happy path.
         /// </summary>
+        /// <param name="useCache">The value indicates whether cache should be used or not.</param>
         /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
-        [Fact]
-        public async Task ShouldGetPatientByPhn()
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public async Task ShouldGetPatientByPhn(bool useCache)
         {
             // Arrange
             PatientModel patient = new()
@@ -49,35 +52,11 @@ namespace AccountDataAccessTest.Strategy
                 Hdid = Hdid,
             };
 
-            PhnEmpiStrategy phnEmpiStrategy = GetPhnEmpiStrategy(patient);
+            PatientModel cachedPatient = patient;
 
-            PatientRequest request = new(Phn, false);
+            PhnEmpiStrategy phnEmpiStrategy = useCache ? GetPhnEmpiStrategy(patient, cachedPatient) : GetPhnEmpiStrategy(patient);
 
-            // Act
-            PatientModel? result = await phnEmpiStrategy.GetPatientAsync(request).ConfigureAwait(true);
-
-            // Verify
-            Assert.Equal(Hdid, result?.Hdid);
-            Assert.Equal(Phn, result?.Phn);
-        }
-
-        /// <summary>
-        /// GetPatientAsync by phn - using cache.
-        /// </summary>
-        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
-        [Fact]
-        public async Task ShouldGetPatientByPhnUsingCache()
-        {
-            // Arrange
-            PatientModel patient = new()
-            {
-                Phn = Phn,
-                Hdid = Hdid,
-            };
-
-            PhnEmpiStrategy phnEmpiStrategy = GetPhnEmpiStrategy(patient, patient);
-
-            PatientRequest request = new(Phn, true);
+            PatientRequest request = new(Phn, useCache);
 
             // Act
             PatientModel? result = await phnEmpiStrategy.GetPatientAsync(request).ConfigureAwait(true);

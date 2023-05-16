@@ -36,35 +36,12 @@ namespace AccountDataAccessTest.Strategy
         /// <summary>
         /// GetPatientAsync by hdid - happy path.
         /// </summary>
+        /// <param name="useCache">The value indicates whether cache should be used or not.</param>
         /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
-        [Fact]
-        public async Task ShouldGetPatientByHdid()
-        {
-            // Arrange
-            PatientModel patient = new()
-            {
-                Phn = Phn,
-                Hdid = Hdid,
-            };
-
-            HdidEmpiStrategy hdidEmpiStrategy = GetHdidEmpiStrategy(patient);
-
-            PatientRequest request = new(Hdid, false);
-
-            // Act
-            PatientModel? result = await hdidEmpiStrategy.GetPatientAsync(request).ConfigureAwait(true);
-
-            // Verify
-            Assert.Equal(Hdid, result?.Hdid);
-            Assert.Equal(Phn, result?.Phn);
-        }
-
-        /// <summary>
-        /// GetPatientAsync by hdid - using cache.
-        /// </summary>
-        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
-        [Fact]
-        public async Task ShouldGetPatientByHdidUsingCache()
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public async Task ShouldGetPatientByHdid(bool useCache)
         {
             // Arrange
             PatientModel patient = new()
@@ -75,9 +52,9 @@ namespace AccountDataAccessTest.Strategy
 
             PatientModel cachedPatient = patient;
 
-            HdidEmpiStrategy hdidEmpiStrategy = GetHdidEmpiStrategy(patient, cachedPatient);
+            HdidEmpiStrategy hdidEmpiStrategy = useCache ? GetHdidEmpiStrategy(patient, cachedPatient) : GetHdidEmpiStrategy(patient);
 
-            PatientRequest request = new(Hdid, true);
+            PatientRequest request = new(Hdid, useCache);
 
             // Act
             PatientModel? result = await hdidEmpiStrategy.GetPatientAsync(request).ConfigureAwait(true);
