@@ -92,7 +92,7 @@ namespace HealthGateway.Admin.Tests.Services
         public async Task ShouldGetPatientByHdid()
         {
             // Arrange
-            PatientDetailsQuery query = new() { Hdid = Hdid };
+            PatientDetailsQuery query = new() { Hdid = Hdid, Source = PatientDetailSource.All, UseCache = false };
             AccountDataAccess.Patient.Name commonName = GenerateName();
             AccountDataAccess.Patient.Name legalName = GenerateName("Jim", "Bo");
             Address physicalAddress = GenerateAddress(GenerateStreetLines());
@@ -127,7 +127,7 @@ namespace HealthGateway.Admin.Tests.Services
         public async Task ShouldGetPatientByHdidWithWarning()
         {
             // Arrange
-            PatientDetailsQuery query = new() { Hdid = Hdid };
+            PatientDetailsQuery query = new() { Hdid = Hdid, Source = PatientDetailSource.All, UseCache = false };
             PatientModel patient = GeneratePatientModel(Phn, Hdid, Birthdate, responseCode: PatientResponseCode);
             Mock<IPatientRepository> patientRepositoryMock = GetPatientRepositoryMock((query, patient));
 
@@ -153,7 +153,7 @@ namespace HealthGateway.Admin.Tests.Services
         public async Task ShouldGetPatientByHdidNotFound()
         {
             // Arrange
-            PatientDetailsQuery query = new() { Hdid = Hdid };
+            PatientDetailsQuery query = new() { Hdid = Hdid, Source = PatientDetailSource.All, UseCache = false };
             PatientModel? patient = null;
             Mock<IPatientRepository> patientRepositoryMock = GetPatientRepositoryMock((query, patient));
 
@@ -184,7 +184,7 @@ namespace HealthGateway.Admin.Tests.Services
         public async Task ShouldGetPatientByHdidDeceased()
         {
             // Arrange
-            PatientDetailsQuery query = new() { Hdid = Hdid };
+            PatientDetailsQuery query = new() { Hdid = Hdid, Source = PatientDetailSource.All, UseCache = false };
             AccountDataAccess.Patient.Name commonName = GenerateName();
             AccountDataAccess.Patient.Name legalName = GenerateName("Jim", "Bo");
             Address physicalAddress = GenerateAddress(GenerateStreetLines());
@@ -219,7 +219,7 @@ namespace HealthGateway.Admin.Tests.Services
         public async Task ShouldGetPatientByHdidNotUser()
         {
             // Arrange
-            PatientDetailsQuery query = new() { Hdid = Hdid };
+            PatientDetailsQuery query = new() { Hdid = Hdid, Source = PatientDetailSource.All, UseCache = false };
             AccountDataAccess.Patient.Name commonName = GenerateName();
             AccountDataAccess.Patient.Name legalName = GenerateName("Jim", "Bo");
             Address physicalAddress = GenerateAddress(GenerateStreetLines());
@@ -254,7 +254,7 @@ namespace HealthGateway.Admin.Tests.Services
         public async Task ShouldGetPatientByHdidNotFoundNotUser()
         {
             // Arrange
-            PatientDetailsQuery query = new() { Hdid = Hdid };
+            PatientDetailsQuery query = new() { Hdid = Hdid, Source = PatientDetailSource.All, UseCache = false };
             Mock<IPatientRepository> patientRepositoryMock = GetPatientRepositoryMock((query, null));
             Mock<IUserProfileDelegate> userProfileDelegateMock = GetUserProfileDelegateMock();
 
@@ -275,7 +275,7 @@ namespace HealthGateway.Admin.Tests.Services
         public async Task ShouldGetPatientByPhn()
         {
             // Arrange
-            PatientDetailsQuery query = new() { Phn = Phn };
+            PatientDetailsQuery query = new() { Phn = Phn, Source = PatientDetailSource.Empi, UseCache = false };
             AccountDataAccess.Patient.Name commonName = GenerateName();
             AccountDataAccess.Patient.Name legalName = GenerateName("Jim", "Bo");
             Address physicalAddress = GenerateAddress(GenerateStreetLines());
@@ -310,7 +310,7 @@ namespace HealthGateway.Admin.Tests.Services
         public async Task ShouldGetPatientByPhnNotFoundNotUser()
         {
             // Arrange
-            PatientDetailsQuery query = new() { Phn = Phn };
+            PatientDetailsQuery query = new() { Phn = Phn, Source = PatientDetailSource.Empi, UseCache = false };
             Mock<IPatientRepository> patientRepositoryMock = GetPatientRepositoryMock((query, null));
             Mock<IUserProfileDelegate> userProfileDelegateMock = GetUserProfileDelegateMock();
 
@@ -351,17 +351,17 @@ namespace HealthGateway.Admin.Tests.Services
             // Arrange
             const string dependentPhn = "dependentPhn";
             const string dependentHdid = "dependentHdid";
-            PatientDetailsQuery dependentQuery = new() { Phn = dependentPhn };
+            PatientDetailsQuery dependentQuery = new() { Phn = dependentPhn, Source = PatientDetailSource.Empi, UseCache = false };
             PatientModel dependentPatient = GeneratePatientModel(dependentPhn, dependentHdid, Birthdate);
 
-            PatientDetailsQuery firstDelegateQuery = new() { Hdid = Hdid };
+            PatientDetailsQuery firstDelegateQuery = new() { Hdid = Hdid, Source = PatientDetailSource.All, UseCache = false };
             AccountDataAccess.Patient.Name commonName = GenerateName();
             AccountDataAccess.Patient.Name legalName = GenerateName("Jim", "Bo");
             Address physicalAddress = GenerateAddress(GenerateStreetLines());
             Address postalAddress = GenerateAddress(new List<string> { "PO BOX 1234" });
             PatientModel firstDelegatePatient = GeneratePatientModel(Phn, Hdid, Birthdate, commonName, legalName, physicalAddress, postalAddress);
 
-            PatientDetailsQuery secondDelegateQuery = new() { Hdid = Hdid2 };
+            PatientDetailsQuery secondDelegateQuery = new() { Hdid = Hdid2, Source = PatientDetailSource.All, UseCache = false };
             PatientModel secondDelegatePatient = GeneratePatientModel(Phn2, Hdid2, Birthdate2);
 
             Mock<IPatientRepository> patientRepositoryMock = GetPatientRepositoryMock(
@@ -404,14 +404,14 @@ namespace HealthGateway.Admin.Tests.Services
             };
             Mock<IUserProfileDelegate> userProfileDelegateMock = GetUserProfileDelegateMock(profiles: profiles);
 
-            PatientDetailsQuery firstQuery = new() { Hdid = Hdid };
+            PatientDetailsQuery firstQuery = new() { Hdid = Hdid, Source = PatientDetailSource.All, UseCache = false };
             AccountDataAccess.Patient.Name commonName = GenerateName();
             AccountDataAccess.Patient.Name legalName = GenerateName("Jim", "Bo");
             Address physicalAddress = GenerateAddress(GenerateStreetLines());
             Address postalAddress = GenerateAddress(new List<string> { "PO BOX 1234" });
             PatientModel firstPatient = GeneratePatientModel(Phn, Hdid, Birthdate, commonName, legalName, physicalAddress, postalAddress);
 
-            PatientDetailsQuery secondQuery = new() { Hdid = Hdid2 };
+            PatientDetailsQuery secondQuery = new() { Hdid = Hdid2, Source = PatientDetailSource.All, UseCache = false };
             PatientModel secondPatient = GeneratePatientModel(Phn2, Hdid2, Birthdate2);
             Mock<IPatientRepository> patientRepositoryMock = GetPatientRepositoryMock((firstQuery, firstPatient), (secondQuery, secondPatient));
 
@@ -446,14 +446,14 @@ namespace HealthGateway.Admin.Tests.Services
             };
             Mock<IUserProfileDelegate> userProfileDelegateMock = GetUserProfileDelegateMock(profiles: profiles);
 
-            PatientDetailsQuery firstQuery = new() { Hdid = Hdid };
+            PatientDetailsQuery firstQuery = new() { Hdid = Hdid, Source = PatientDetailSource.All, UseCache = false };
             AccountDataAccess.Patient.Name commonName = GenerateName();
             AccountDataAccess.Patient.Name legalName = GenerateName("Jim", "Bo");
             Address physicalAddress = GenerateAddress(GenerateStreetLines());
             Address postalAddress = GenerateAddress(new List<string> { "PO BOX 1234" });
             PatientModel firstPatient = GeneratePatientModel(Phn, Hdid, Birthdate, commonName, legalName, physicalAddress, postalAddress);
 
-            PatientDetailsQuery secondQuery = new() { Hdid = Hdid2 };
+            PatientDetailsQuery secondQuery = new() { Hdid = Hdid2, Source = PatientDetailSource.All, UseCache = false };
             PatientModel secondPatient = GeneratePatientModel(Phn2, Hdid2, Birthdate2);
             Mock<IPatientRepository> patientRepositoryMock = GetPatientRepositoryMock((firstQuery, firstPatient), (secondQuery, secondPatient));
 
