@@ -70,42 +70,26 @@ namespace HealthGateway.Admin.Client.Store.PatientDetails
         [EffectMethod]
         public async Task HandleBlockAccessAction(PatientDetailsActions.BlockAccessAction action, IDispatcher dispatcher)
         {
-            this.Logger.LogInformation("Setting block access");
+            this.Logger.LogInformation("Blocking access");
             try
             {
-                string? patientHdid = this.PatientSupportState.Value.Result?[0].Hdid;
-                if (patientHdid == null)
-                {
-                    RequestError error = new() { Message = "No patient selected" };
-                    dispatcher.Dispatch(new PatientDetailsActions.BlockAccessFailureAction(error));
-                    return;
-                }
-
                 BlockAccessRequest request = new(action.DataSources, action.Reason);
-                await this.SupportApi.BlockAccessAsync(patientHdid, request).ConfigureAwait(true);
-                dispatcher.Dispatch(new PatientDetailsActions.BlockAccessSuccessAction());
+                await this.SupportApi.BlockAccessAsync(action.Hdid, request).ConfigureAwait(true);
+                dispatcher.Dispatch(new PatientDetailsActions.BlockAccessSuccessAction(action.Hdid));
             }
             catch (Exception e) when (e is ApiException or HttpRequestException)
             {
-                this.Logger.LogError("Error setting block access: {Exception}", e.ToString());
+                this.Logger.LogError("Error blocking access: {Exception}", e.ToString());
                 RequestError error = StoreUtility.FormatRequestError(e);
                 dispatcher.Dispatch(new PatientDetailsActions.BlockAccessFailureAction(error));
             }
         }
 
-        [EffectMethod(typeof(PatientDetailsActions.BlockAccessSuccessAction))]
-        public Task HandleBlockSuccessAction(IDispatcher dispatcher)
+        [EffectMethod]
+        public Task HandleBlockSuccessAction(PatientDetailsActions.BlockAccessSuccessAction action, IDispatcher dispatcher)
         {
-            string? patientHdid = this.PatientSupportState.Value.Result?[0].Hdid;
-            if (patientHdid == null)
-            {
-                RequestError error = new() { Message = "No patient selected" };
-                dispatcher.Dispatch(new PatientDetailsActions.BlockAccessFailureAction(error));
-                return Task.CompletedTask;
-            }
-
-            // Reload the patient's data for details page.
-            dispatcher.Dispatch(new PatientDetailsActions.LoadAction(patientHdid));
+            this.Logger.LogInformation("Reload the patient's data for details page");
+            dispatcher.Dispatch(new PatientDetailsActions.LoadAction(action.Hdid));
             return Task.CompletedTask;
         }
     }

@@ -129,6 +129,19 @@ namespace HealthGateway.Admin.Client.Store.PatientDetails
         /// </summary>
         public class BlockAccessSuccessAction
         {
+            /// <summary>
+            /// Initializes a new instance of the <see cref="BlockAccessSuccessAction"/> class.
+            /// </summary>
+            /// <param name="hdid">Patient's HDID.</param>
+            public BlockAccessSuccessAction(string hdid)
+            {
+                this.Hdid = hdid;
+            }
+
+            /// <summary>
+            /// Gets the patient's HDID which had access configured.
+            /// </summary>
+            public string Hdid { get; init; }
         }
 
         /// <summary>

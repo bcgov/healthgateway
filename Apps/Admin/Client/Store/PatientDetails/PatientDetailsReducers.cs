@@ -15,10 +15,8 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Admin.Client.Store.PatientDetails
 {
-    using System.Collections.Generic;
     using System.Collections.Immutable;
     using Fluxor;
-    using HealthGateway.Common.Data.ViewModels;
 
 #pragma warning disable CS1591, SA1600
     public static class PatientDetailsReducers
@@ -35,22 +33,14 @@ namespace HealthGateway.Admin.Client.Store.PatientDetails
         [ReducerMethod]
         public static PatientDetailsState ReduceLoadSuccessAction(PatientDetailsState state, PatientDetailsActions.LoadSuccessAction action)
         {
-            ImmutableList<MessagingVerificationModel> messageVerifications = state.MessagingVerifications ?? new List<MessagingVerificationModel>().ToImmutableList();
-
-            IEnumerable<MessagingVerificationModel>? verifications = action.Data?.MessagingVerifications;
-            if (verifications != null)
-            {
-                messageVerifications = messageVerifications.RemoveAll(x => x.UserProfileId == action.Hdid).AddRange(verifications);
-            }
-
             return state with
             {
                 IsLoading = false,
                 Result = action.Data,
                 Error = null,
-                MessagingVerifications = messageVerifications,
-                BlockedDataSources = action.Data?.BlockedDataSources,
-                AgentActions = action.Data?.AgentActions,
+                MessagingVerifications = action.Data.MessagingVerifications.ToImmutableList(),
+                BlockedDataSources = action.Data.BlockedDataSources.ToImmutableList(),
+                AgentActions = action.Data.AgentActions.ToImmutableList(),
             };
         }
 

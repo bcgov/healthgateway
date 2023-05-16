@@ -16,7 +16,6 @@
 
 namespace HealthGateway.Admin.Client.Store.PatientDetails
 {
-    using System.Collections.Generic;
     using System.Collections.Immutable;
     using Fluxor;
     using HealthGateway.Admin.Common.Models;
@@ -38,12 +37,12 @@ namespace HealthGateway.Admin.Client.Store.PatientDetails
         /// <summary>
         /// Gets the agent actions linked ot the patient support details.
         /// </summary>
-        public IEnumerable<AgentAction>? AgentActions { get; init; }
+        public ImmutableList<AgentAction>? AgentActions { get; init; }
 
         /// <summary>
         /// Gets the blocked data sources linked to the patient support details.
         /// </summary>
-        public IEnumerable<DataSource>? BlockedDataSources { get; init; }
+        public ImmutableList<DataSource>? BlockedDataSources { get; init; }
 
         /// <summary>
         /// Gets the request state for block access requests.
