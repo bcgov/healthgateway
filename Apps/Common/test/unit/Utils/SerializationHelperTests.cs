@@ -29,7 +29,7 @@ namespace HealthGateway.CommonTests.Utils
         /// <summary>
         /// Deserialize should return default when data is or empty.
         /// </summary>
-        /// <param name="type">Type of the data that's being generated</param>
+        /// <param name="type">Type of the data that's being generated.</param>
         [Theory]
         [InlineData(typeof(int))]
         [InlineData(typeof(bool))]
