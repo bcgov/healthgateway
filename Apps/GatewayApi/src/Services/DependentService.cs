@@ -242,12 +242,13 @@ namespace HealthGateway.GatewayApi.Services
         /// <inheritdoc/>
         public async Task<RequestResult<DependentModel>> RemoveAsync(DependentModel dependent, CancellationToken ct = default)
         {
-            DbResult<ResourceDelegate> dbDependent = this.RemoveDependent(dependent);
-
-            if (dbDependent.Status != DbStatusCode.Deleted)
+            var resourceDelegate = this.resourceDelegateDelegate.Get(dependent.DelegateId).Payload.FirstOrDefault(d => d.ResourceOwnerHdid == dependent.OwnerId);
+            if (resourceDelegate == null)
             {
-                return RequestResultFactory.ServiceError<DependentModel>(ErrorType.CommunicationInternal, ServiceType.Database, dbDependent.Message);
+                throw new ProblemDetailsException(ExceptionUtility.CreateNotFoundError($"Dependent {dependent.OwnerId} not found for delegate {dependent.DelegateId}"));
             }
+
+            this.RemoveDependent(resourceDelegate);
 
             this.UpdateNotificationSettings(dependent.OwnerId, dependent.DelegateId, true);
             await this.messageSender.SendAsync(new[] { new MessageEnvelope(new DependentRemovedEvent(dependent.DelegateId, dependent.OwnerId), dependent.DelegateId) }, ct);
@@ -301,24 +302,21 @@ namespace HealthGateway.GatewayApi.Services
                 ReasonObject = null,
             };
             DbResult<ResourceDelegate> dbDependent = this.resourceDelegateDelegate.Insert(resourceDelegate, false);
-
-            if (dbDependent.Status != DbStatusCode.Created)
+            if (dbDependent.Status == DbStatusCode.Error)
             {
-                throw new ProblemDetailsException(ExceptionUtility.CreateServerError($"{ErrorType.CommunicationInternal}:{ServiceType.Database}", dbDependent.Message));
+                throw new ProblemDetailsException(ExceptionUtility.CreateServerError($"{ServiceType.Database}:{ErrorType.CommunicationInternal}", dbDependent.Message));
             }
 
             return dbDependent;
         }
 
-        private DbResult<ResourceDelegate> RemoveDependent(DependentModel dependent)
+        private void RemoveDependent(ResourceDelegate dependent)
         {
-            DbResult<ResourceDelegate> dbDependent = this.resourceDelegateDelegate.Delete(this.autoMapper.Map<ResourceDelegate>(dependent), false);
-
-            if (dbDependent.Status != DbStatusCode.Deleted)
+            DbResult<ResourceDelegate> dbDependent = this.resourceDelegateDelegate.Delete(dependent, false);
+            if (dbDependent.Status == DbStatusCode.Error)
             {
-                throw new ProblemDetailsException(ExceptionUtility.CreateServerError($"{ErrorType.CommunicationInternal}:{ServiceType.Database}", dbDependent.Message));
+                throw new ProblemDetailsException(ExceptionUtility.CreateServerError($"{ServiceType.Database}:{ErrorType.CommunicationInternal}", dbDependent.Message));
             }
-            return dbDependent;
         }
 
         private void UpdateNotificationSettings(string dependentHdid, string delegateHdid, bool isDelete = false)

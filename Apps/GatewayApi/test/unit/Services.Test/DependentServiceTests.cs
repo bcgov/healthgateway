@@ -351,6 +351,11 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                     {
                         Status = DbStatusCode.Deleted,
                     });
+            mockDependentDelegate.Setup(s => s.Get(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new DbResult<IEnumerable<ResourceDelegate>>
+            {
+                Status = DbStatusCode.Deferred,
+                Payload = new[] { new ResourceDelegate { ProfileHdid = this.mockParentHdid, ResourceOwnerHdid = this.mockHdId } },
+            });
 
             Mock<IUserProfileDelegate> mockUserProfileDelegate = new();
             mockUserProfileDelegate.Setup(s => s.GetUserProfile(this.mockParentHdid))

@@ -14,6 +14,7 @@
 // limitations under the License.
 //-------------------------------------------------------------------------
 #pragma warning disable CS1591
+
 namespace HealthGateway.Database.Delegates
 {
     using System;
@@ -44,7 +45,9 @@ namespace HealthGateway.Database.Delegates
         /// <param name="pageSize">The amount of rows to fetch per call.</param>
         /// <returns>A list of resourceDelegates wrapped in a DBResult.</returns>
 #pragma warning disable CA1716 // Identifiers should not match keywords
-        DbResult<IEnumerable<ResourceDelegate>> Get(string delegateId, int page, int pageSize);
+
+        DbResult<IEnumerable<ResourceDelegate>> Get(string delegateId, int page = 0, int pageSize = 500);
+
 #pragma warning restore CA1716 // Identifiers should not match keywords
 
         /// <summary>

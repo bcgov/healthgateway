@@ -87,7 +87,7 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public DbResult<IEnumerable<ResourceDelegate>> Get(string delegateId, int page, int pageSize)
+        public DbResult<IEnumerable<ResourceDelegate>> Get(string delegateId, int page = 0, int pageSize = 500)
         {
             this.logger.LogTrace("Getting resource delegates from DB... {DelegateId}", delegateId);
             DbResult<IEnumerable<ResourceDelegate>> result = DbDelegateHelper.GetPagedDbResult(
