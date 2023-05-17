@@ -77,7 +77,7 @@ namespace HealthGateway.Admin.Server.Services
         }
 
         /// <inheritdoc/>
-        public async Task<PatientSupportDetails> GetMessageVerificationsAsync(string hdid, CancellationToken ct = default)
+        public async Task<PatientSupportDetails> GetPatientSupportDetailsAsync(string hdid, CancellationToken ct = default)
         {
             IList<MessagingVerification> messagingVerifications = await this.messagingVerificationDelegate.GetUserMessageVerificationsAsync(hdid).ConfigureAwait(true);
             AgentAuditQuery agentAuditQuery = new(hdid);

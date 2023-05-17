@@ -87,10 +87,10 @@ namespace HealthGateway.Admin.Server.Controllers
         /// is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.
         /// </response>
         [HttpGet]
-        [Route("Verifications")]
-        public async Task<PatientSupportDetails> GetMessageVerifications([FromQuery] string hdid, CancellationToken ct)
+        [Route("PatientSupportDetails")]
+        public async Task<PatientSupportDetails> GetPatientSupportDetails([FromQuery] string hdid, CancellationToken ct)
         {
-            return await this.supportService.GetMessageVerificationsAsync(hdid, ct).ConfigureAwait(true);
+            return await this.supportService.GetPatientSupportDetailsAsync(hdid, ct).ConfigureAwait(true);
         }
 
         /// <summary>

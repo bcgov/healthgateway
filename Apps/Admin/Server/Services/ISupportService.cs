@@ -33,7 +33,7 @@ namespace HealthGateway.Admin.Server.Services
         /// <param name="hdid">The HDID associated with the patient support details.</param>
         /// <param name="ct">A cancellation token.</param>
         /// <returns>A patient support details matching the query.</returns>
-        Task<PatientSupportDetails> GetMessageVerificationsAsync(string hdid, CancellationToken ct = default);
+        Task<PatientSupportDetails> GetPatientSupportDetailsAsync(string hdid, CancellationToken ct = default);
 
         /// <summary>
         /// Retrieves the collection of patients that match the query.

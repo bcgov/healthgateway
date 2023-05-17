@@ -1,7 +1,7 @@
 @page "/patient-details"
 @layout MainLayout
 @attribute [Authorize(Roles = $"{Roles.Admin},{Roles.Reviewer}")]
-@using HealthGateway.Admin.Client.Store.MessageVerification
+@using HealthGateway.Admin.Client.Store.PatientDetails
 @using HealthGateway.Admin.Client.Store.PatientSupport
 @using HealthGateway.Admin.Common.Constants
 @using HealthGateway.Admin.Client.Components.Support
@@ -16,9 +16,9 @@
 <HgBannerFeedback
     Severity="Severity.Error"
     IsEnabled="HasMessagingVerificationsError"
-    TResetAction="MessageVerificationActions.ResetStateAction"
+    TResetAction="PatientDetailsActions.ResetStateAction"
     DataTestId="messaging-verification-banner-feedback-error-message">
-    @MessageVerificationState.Value.Error?.Message
+    @PatientSupportDetailsState.Value.Error?.Message
 </HgBannerFeedback>
 
 <HgBannerFeedback
