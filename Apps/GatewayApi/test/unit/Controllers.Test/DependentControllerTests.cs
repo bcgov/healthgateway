@@ -66,7 +66,7 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
                 new Mock<ILogger<DependentController>>().Object,
                 dependentServiceMock.Object,
                 httpContextAccessorMock.Object);
-            RequestResult<IEnumerable<DependentModel>> actualResult = await dependentController.GetAll(this.hdid).ConfigureAwait(true);
+            RequestResult<IEnumerable<DependentModel>> actualResult = await dependentController.GetAll(this.hdid);
 
             expectedResult.ShouldDeepEqual(actualResult);
         }
@@ -107,7 +107,7 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
                 new Mock<ILogger<DependentController>>().Object,
                 dependentServiceMock.Object,
                 httpContextAccessorMock.Object);
-            RequestResult<DependentModel> actualResult = await dependentController.AddDependent(new AddDependentRequest(), CancellationToken.None).ConfigureAwait(true);
+            RequestResult<DependentModel> actualResult = await dependentController.AddDependent(new AddDependentRequest(), CancellationToken.None);
 
             expectedResult.ShouldDeepEqual(actualResult);
         }
