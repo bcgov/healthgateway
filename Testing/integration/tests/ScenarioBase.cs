@@ -102,7 +102,7 @@ public abstract class ScenarioContextBase<TStartup> : IAsyncLifetime, IClassFixt
     private readonly WebAppFixture fixture;
     private readonly IConfiguration testConfiguration;
 
-    protected IAlbaHost Host { get; private set; } = null!;
+    public IAlbaHost Host { get; private set; } = null!;
 
     protected ITestOutputHelper Output { get; }
 

@@ -19,7 +19,9 @@ namespace HealthGateway.IntegrationTests.Dependents;
 using System.Threading.Tasks;
 using Alba;
 using HealthGateway.Common.Data.ViewModels;
+using HealthGateway.Common.Models.Events;
 using HealthGateway.GatewayApi.Models;
+using Microsoft.EntityFrameworkCore;
 using Xunit.Abstractions;
 
 public class DependentTests : ScenarioContextBase<GatewayApi.Startup>
@@ -52,6 +54,12 @@ public class DependentTests : ScenarioContextBase<GatewayApi.Startup>
 
         var response = (await scenarioResponse.ReadAsJsonAsync<RequestResult<DependentModel>>()).ShouldNotBeNull();
         response.ResultStatus.ShouldNotBe(Common.Data.Constants.ResultType.Error);
+
+        await this.Assert(async ctx =>
+        {
+            var outboxItems = await ctx.Outbox.Where(i => i.Metadata.SessionId == delegateHdid && i.Metadata.Type == typeof(DependentAddedEvent).Name).ToListAsync();
+            outboxItems.Count.ShouldBe(1);
+        });
     }
 
     [Fact]
@@ -71,5 +79,11 @@ public class DependentTests : ScenarioContextBase<GatewayApi.Startup>
 
         var response = (await scenarioResponse.ReadAsJsonAsync<RequestResult<DependentModel>>()).ShouldNotBeNull();
         response.ResultStatus.ShouldNotBe(Common.Data.Constants.ResultType.Error);
+
+        await this.Assert(async ctx =>
+        {
+            var outboxItems = await ctx.Outbox.Where(i => i.Metadata.SessionId == delegateHdid && i.Metadata.Type == typeof(DependentRemovedEvent).Name).ToListAsync();
+            outboxItems.Count.ShouldBe(1);
+        });
     }
 }
