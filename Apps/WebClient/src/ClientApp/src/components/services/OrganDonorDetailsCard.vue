@@ -168,7 +168,7 @@ export default class OrganDonorDetailsCard extends Vue {
                     target="_blank"
                     data-testid="organ-donor-registration-link"
                 >
-                    Register or update your decision
+                    {{ registrationData?.organDonorRegistrationLinkText }}
                 </a>
             </div>
         </div>

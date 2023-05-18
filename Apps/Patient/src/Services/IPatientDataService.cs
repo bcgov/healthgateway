@@ -99,6 +99,11 @@ namespace HealthGateway.Patient.Services
         /// </summary>
         public required string? RegistrationFileId { get; init; }
 
+        /// <summary>
+        /// Gets the organ donor registration link text derived from the status.
+        /// </summary>
+        public required string OrganDonorRegistrationLinkText { get; init; }
+
         /// <inheritdoc/>
         public override string Type { get; } = nameof(OrganDonorRegistration);
     }
