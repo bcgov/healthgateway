@@ -75,7 +75,7 @@ internal class DbOutboxStore : IOutboxStore
     }
 
     /// <summary>
-    /// Dispatches any outbox messages not sent
+    /// Dispatches any outbox messages not sent.
     /// </summary>
     /// <param name="ct">A cancellation token</param>
     /// <returns>Awaitable task</returns>
