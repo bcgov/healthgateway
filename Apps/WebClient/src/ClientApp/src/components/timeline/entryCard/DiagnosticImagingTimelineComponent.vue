@@ -104,7 +104,7 @@ function downloadFile(): void {
                 </div>
                 <div data-testid="diagnostic-imaging-facility">
                     <strong>Facility: </strong>
-                    <span>{{ entry.facility }}</span>
+                    <span>{{ entry.organization }}</span>
                 </div>
             </div>
             <div class="mt-3">
