@@ -44,7 +44,7 @@ internal class DbOutboxStore : IOutboxStore
     /// <param name="outboxDelegate">The outbox db delegate.</param>
     /// <param name="backgroundJobClient">Hangfire background job client</param>
     /// <param name="messageSender">The destination message sender to forward messages to.</param>
-    /// <param name="logger">A logger</param>
+    /// <param name="logger">A logger.</param>
     public DbOutboxStore(IOutboxDelegate outboxDelegate, IBackgroundJobClient backgroundJobClient, IMessageSender messageSender, ILogger<DbOutboxStore> logger)
     {
         this.outboxDelegate = outboxDelegate;
