@@ -16,6 +16,7 @@
 namespace HealthGateway.Patient.Mappings
 {
     using AutoMapper;
+    using HealthGateway.Common.Data.Utils;
     using HealthGateway.PatientDataAccess;
     using OrganDonorRegistrationStatus = HealthGateway.Patient.Models.OrganDonorRegistrationStatus;
 
@@ -31,6 +32,9 @@ namespace HealthGateway.Patient.Mappings
         {
             this.CreateMap<OrganDonorRegistration, Services.OrganDonorRegistration>()
                 .ForMember(
+                    d => d.OrganDonorRegistrationLinkText,
+                    opts => opts.MapFrom(s => MapOrganDonorRegistrationLinkText(s.Status)))
+                .ForMember(
                     d => d.Status,
                     opts => opts.MapFrom(s => MapOrganDonorStatus(s.Status)));
         }
@@ -44,6 +48,18 @@ namespace HealthGateway.Patient.Mappings
                 PatientDataAccess.OrganDonorRegistrationStatus.Error => OrganDonorRegistrationStatus.Error,
                 PatientDataAccess.OrganDonorRegistrationStatus.Pending => OrganDonorRegistrationStatus.Pending,
                 _ => OrganDonorRegistrationStatus.Unknown,
+            };
+        }
+
+        private static string MapOrganDonorRegistrationLinkText(PatientDataAccess.OrganDonorRegistrationStatus status)
+        {
+            return status switch
+            {
+                PatientDataAccess.OrganDonorRegistrationStatus.Registered or
+                    PatientDataAccess.OrganDonorRegistrationStatus.Error or
+                    PatientDataAccess.OrganDonorRegistrationStatus.Pending => "If needed, you can update your decision",
+                PatientDataAccess.OrganDonorRegistrationStatus.NotRegistered => "Register as an organ donor and save lives",
+                _ => EnumUtility.ToEnumString(OrganDonorRegistrationStatus.Unknown),
             };
         }
     }

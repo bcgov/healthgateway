@@ -36,6 +36,7 @@ export class OrganDonorRegistration extends PatientData {
     public status!: string;
     public statusMessage!: string;
     public registrationFileId: string | undefined;
+    public organDonorRegistrationLinkText!: string;
 }
 
 export class DiagnosticImagingExam extends PatientData {
