@@ -54,7 +54,6 @@ namespace HealthGateway.GatewayApi.Services
         private const string SmartApostrophe = "’";
         private const string RegularApostrophe = "'";
         private readonly IMapper autoMapper;
-        private readonly IConfiguration configuration;
         private readonly ILogger logger;
         private readonly int maxDependentAge;
         private readonly bool changeFeedEnabled;
@@ -88,7 +87,6 @@ namespace HealthGateway.GatewayApi.Services
             IMessageSender messageSender,
             IMapper autoMapper)
         {
-            this.configuration = configuration;
             this.logger = logger;
             this.patientService = patientService;
             this.notificationSettingsService = notificationSettingsService;
@@ -177,7 +175,7 @@ namespace HealthGateway.GatewayApi.Services
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResult<IEnumerable<DependentModel>>> GetDependentsAsync(string hdId, int page = 0, int pageSize = 500)
+        public async Task<RequestResult<IEnumerable<DependentModel>>> GetDependentsAsync(string hdid, int page = 0, int pageSize = 25)
         {
             RequestResult<IEnumerable<DependentModel>> result = new()
             {
@@ -185,7 +183,7 @@ namespace HealthGateway.GatewayApi.Services
             };
 
             // Get Dependents from database
-            DbResult<IEnumerable<ResourceDelegate>> dbResourceDelegates = this.resourceDelegateDelegate.Get(hdId, page, pageSize);
+            DbResult<IEnumerable<ResourceDelegate>> dbResourceDelegates = this.resourceDelegateDelegate.Get(hdid, page, pageSize);
 
             DbResult<Dictionary<string, int>> totalDelegateCounts = await this.resourceDelegateDelegate.GetTotalDelegateCountsAsync(dbResourceDelegates.Payload.Select(d => d.ResourceOwnerHdid));
 

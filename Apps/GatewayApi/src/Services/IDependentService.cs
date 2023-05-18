@@ -30,11 +30,11 @@ namespace HealthGateway.GatewayApi.Services
         /// <summary>
         /// Gets all the dependents for the given hdId.
         /// </summary>
-        /// <param name="hdId">The users HDID.</param>
+        /// <param name="hdid">The users HDID.</param>
         /// <param name="page">The page of data to fetch indexed from 0.</param>
         /// <param name="pageSize">The amount of records per page.</param>
         /// <returns>A List of dependents wrapped in a RequestResult.</returns>
-        Task<RequestResult<IEnumerable<DependentModel>>> GetDependentsAsync(string hdId, int page = 0, int pageSize = 500);
+        Task<RequestResult<IEnumerable<DependentModel>>> GetDependentsAsync(string hdid, int page = 0, int pageSize = 25);
 
         /// <summary>
         /// Gets all the dependents for the given date range.
@@ -49,11 +49,11 @@ namespace HealthGateway.GatewayApi.Services
         /// <summary>
         /// Add a dependent to the given hdId of the delegate (parent or guardian).
         /// </summary>
-        /// <param name="delegateHdId">The HdId of the Delegate (parent or guardian).</param>
+        /// <param name="delegateHdid">The HdId of the Delegate (parent or guardian).</param>
         /// <param name="addDependentRequest">The request to create a User Delegate model.</param>
         /// <param name="ct">A cancellation token.</param>
         /// <returns>A dependent model wrapped in a RequestResult.</returns>
-        Task<RequestResult<DependentModel>> AddDependentAsync(string delegateHdId, AddDependentRequest addDependentRequest, CancellationToken ct = default);
+        Task<RequestResult<DependentModel>> AddDependentAsync(string delegateHdid, AddDependentRequest addDependentRequest, CancellationToken ct = default);
 
         /// <summary>
         /// Removes a dependent delegate relation.
