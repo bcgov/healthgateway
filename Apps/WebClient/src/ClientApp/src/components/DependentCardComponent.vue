@@ -7,6 +7,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { saveAs } from "file-saver";
 import { computed, ref, watch } from "vue";
+import { useStore } from "vue-composition-wrapper";
 
 import Covid19LaboratoryTestDescriptionComponent from "@/components/laboratory/Covid19LaboratoryTestDescriptionComponent.vue";
 import LoadingComponent from "@/components/LoadingComponent.vue";
@@ -35,7 +36,7 @@ import RequestResult from "@/models/requestResult";
 import { LoadStatus } from "@/models/storeOperations";
 import User from "@/models/user";
 import container from "@/plugins/container";
-import { SERVICE_IDENTIFIER, STORE_IDENTIFIER } from "@/plugins/inversify";
+import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import {
     IClinicalDocumentService,
     IDependentService,
@@ -43,31 +44,20 @@ import {
     ILaboratoryService,
     ILogger,
     IReportService,
-    IStoreProvider,
 } from "@/services/interfaces";
 import ConfigUtil from "@/utility/configUtil";
 import SnowPlow from "@/utility/snowPlow";
 
 library.add(faEllipsisV, faDownload, faInfoCircle);
 
-const storeProvider = container.get<IStoreProvider>(
-    STORE_IDENTIFIER.StoreProvider
-);
-const store = storeProvider.getStore();
+interface Props {
+    dependent: Dependent;
+}
+const props = defineProps<Props>();
 
-const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-const clinicalDocumentService = container.get<IClinicalDocumentService>(
-    SERVICE_IDENTIFIER.ClinicalDocumentService
-);
-const immunizationService = container.get<IImmunizationService>(
-    SERVICE_IDENTIFIER.ImmunizationService
-);
-const laboratoryService = container.get<ILaboratoryService>(
-    SERVICE_IDENTIFIER.LaboratoryService
-);
-const dependentService = container.get<IDependentService>(
-    SERVICE_IDENTIFIER.DependentService
-);
+const emit = defineEmits<{
+    (e: "needs-update"): void;
+}>();
 
 interface Covid19LaboratoryTestRow {
     id: string;
@@ -89,14 +79,20 @@ interface RecommendationRow {
     due_date: string;
 }
 
-const emit = defineEmits<{
-    (e: "needs-update"): void;
-}>();
-
-interface Props {
-    dependent: Dependent;
-}
-const props = defineProps<Props>();
+const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+const clinicalDocumentService = container.get<IClinicalDocumentService>(
+    SERVICE_IDENTIFIER.ClinicalDocumentService
+);
+const immunizationService = container.get<IImmunizationService>(
+    SERVICE_IDENTIFIER.ImmunizationService
+);
+const laboratoryService = container.get<ILaboratoryService>(
+    SERVICE_IDENTIFIER.LaboratoryService
+);
+const dependentService = container.get<IDependentService>(
+    SERVICE_IDENTIFIER.DependentService
+);
+const store = useStore();
 
 const reportFormatType = ref(ReportFormatType.PDF);
 const csvFormatType = ref(ReportFormatType.CSV);
@@ -124,11 +120,9 @@ const vaccineRecordResultModal = ref<MessageModalComponent>();
 const deleteModal = ref<DeleteModalComponent>();
 
 const user = computed<User>(() => store.getters["user/user"]);
-
 const webClientConfig = computed<WebClientConfiguration>(
     () => store.getters["config/webClient"]
 );
-
 const headerData = computed<ReportHeader>(() => {
     return {
         phn: props.dependent.dependentInformation.PHN,
@@ -145,11 +139,9 @@ const headerData = computed<ReportHeader>(() => {
         filterText: "",
     };
 });
-
 const isVaccineRecordDownloading = computed<boolean>(
     () => vaccineRecordState.value.status === LoadStatus.REQUESTED
 );
-
 const isDownloadImmunizationReportButtonDisabled = computed<boolean>(
     () =>
         isReportDownloading.value ||
@@ -157,7 +149,6 @@ const isDownloadImmunizationReportButtonDisabled = computed<boolean>(
         (immunizationItems.value.length == 0 &&
             recommendationItems.value.length == 0)
 );
-
 const isExpired = computed<boolean>(() => {
     const birthDate = new DateWrapper(
         props.dependent.dependentInformation.dateOfBirth
@@ -168,23 +159,18 @@ const isExpired = computed<boolean>(() => {
         webClientConfig.value.maxDependentAge
     );
 });
-
 const isCovid19TabShown = computed<boolean>(() =>
     ConfigUtil.isDependentDatasetEnabled(EntryType.Covid19TestResult)
 );
-
 const isImmunizationTabShown = computed<boolean>(() =>
     ConfigUtil.isDependentDatasetEnabled(EntryType.Immunization)
 );
-
 const isLaboratoryOrderTabShown = computed<boolean>(() =>
     ConfigUtil.isDependentDatasetEnabled(EntryType.LabResult)
 );
-
 const isClinicalDocumentTabShown = computed<boolean>(() =>
     ConfigUtil.isDependentDatasetEnabled(EntryType.ClinicalDocument)
 );
-
 const tabIndicesMap = computed<(number | undefined)[]>(() => {
     const tabIndices: (number | undefined)[] = [0];
     const optionalTabs = [
@@ -201,7 +187,6 @@ const tabIndicesMap = computed<(number | undefined)[]>(() => {
 
     return tabIndices;
 });
-
 const immunizationItems = computed<ImmunizationRow[]>(() =>
     immunizations.value.map<ImmunizationRow>((x) => ({
         date: DateWrapper.format(x.dateOfImmunization),
@@ -212,7 +197,6 @@ const immunizationItems = computed<ImmunizationRow[]>(() =>
         lotNumber: getAgentLotNumbers(x.immunization.immunizationAgents),
     }))
 );
-
 const recommendationItems = computed<RecommendationRow[]>(() =>
     recommendations.value.map<RecommendationRow>((x) => ({
         immunization: x.recommendedVaccinations,
@@ -222,7 +206,6 @@ const recommendationItems = computed<RecommendationRow[]>(() =>
                 : DateWrapper.format(x.agentDueDate),
     }))
 );
-
 const vaccineRecordState = computed<VaccinationRecord>(() =>
     store.getters["vaccinationStatus/authenticatedVaccineRecordState"](
         props.dependent.ownerId

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { onMounted, ref } from "vue";
+import { useStore } from "vue-composition-wrapper";
 
 import HtmlTextAreaComponent from "@/components/HtmlTextAreaComponent.vue";
 import LoadingComponent from "@/components/LoadingComponent.vue";
@@ -7,21 +8,8 @@ import BreadcrumbComponent from "@/components/navmenu/BreadcrumbComponent.vue";
 import BreadcrumbItem from "@/models/breadcrumbItem";
 import { ResultError } from "@/models/errors";
 import container from "@/plugins/container";
-import { SERVICE_IDENTIFIER, STORE_IDENTIFIER } from "@/plugins/inversify";
-import {
-    ILogger,
-    IStoreProvider,
-    IUserProfileService,
-} from "@/services/interfaces";
-
-const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-const storeProvider = container.get<IStoreProvider>(
-    STORE_IDENTIFIER.StoreProvider
-);
-const store = storeProvider.getStore();
-const userProfileService = container.get<IUserProfileService>(
-    SERVICE_IDENTIFIER.UserProfileService
-);
+import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import { ILogger, IUserProfileService } from "@/services/interfaces";
 
 const breadcrumbItems: BreadcrumbItem[] = [
     {
@@ -32,14 +20,16 @@ const breadcrumbItems: BreadcrumbItem[] = [
     },
 ];
 
+const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+const userProfileService = container.get<IUserProfileService>(
+    SERVICE_IDENTIFIER.UserProfileService
+);
+const store = useStore();
+
 const isLoading = ref(true);
 const hasErrors = ref(false);
 const errorMessage = ref("");
 const termsOfService = ref("");
-
-onMounted(() => {
-    loadTermsOfService();
-});
 
 function setTooManyRequestsWarning(params: { key: string }): void {
     store.dispatch("errorBanner/setTooManyRequestsWarning", params);
@@ -68,6 +58,10 @@ function loadTermsOfService(): void {
             isLoading.value = false;
         });
 }
+
+onMounted(() => {
+    loadTermsOfService();
+});
 </script>
 
 <template>

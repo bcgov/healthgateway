@@ -27,17 +27,8 @@ const props = withDefaults(defineProps<Props>(), {
 
 const step = ref(0);
 const intervalId = ref(0);
+
 const ellipsis = computed(() => ".".padEnd(step.value + 1, "."));
-
-onMounted(() => {
-    if (props.isCustom) {
-        resetTimeout();
-    }
-});
-
-onUnmounted(() => {
-    window.clearInterval(intervalId.value);
-});
 
 function resetTimeout(): void {
     intervalId.value = window.setInterval(() => {
@@ -62,6 +53,16 @@ function resetAnimation(elementId: string): boolean {
     el.style.animation = "";
     return true;
 }
+
+onMounted(() => {
+    if (props.isCustom) {
+        resetTimeout();
+    }
+});
+
+onUnmounted(() => {
+    window.clearInterval(intervalId.value);
+});
 </script>
 
 <template>
