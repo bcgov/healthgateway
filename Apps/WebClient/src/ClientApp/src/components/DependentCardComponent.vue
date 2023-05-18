@@ -35,6 +35,7 @@ import { ReportFormatType, TemplateType } from "@/models/reportRequest";
 import RequestResult from "@/models/requestResult";
 import { LoadStatus } from "@/models/storeOperations";
 import User from "@/models/user";
+import VaccineRecordState from "@/models/vaccineRecordState";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import {
@@ -206,7 +207,7 @@ const recommendationItems = computed<RecommendationRow[]>(() =>
                 : DateWrapper.format(x.agentDueDate),
     }))
 );
-const vaccineRecordState = computed<VaccinationRecord>(() =>
+const vaccineRecordState = computed<VaccineRecordState>(() =>
     store.getters["vaccinationStatus/authenticatedVaccineRecordState"](
         props.dependent.ownerId
     )
@@ -298,6 +299,11 @@ function downloadLaboratoryOrderReport(): void {
     isReportDownloading.value = true;
     trackClickLink("download_report", "Dependent Lab PDF");
 
+    const dateString = new DateWrapper(
+        selectedLaboratoryOrderRow.value.timelineDateTime,
+        { hasTime: true }
+    ).format("yyyy_MM_dd-HH_mm");
+
     laboratoryService
         .getReportDocument(
             selectedLaboratoryOrderRow.value.reportId,
@@ -306,10 +312,6 @@ function downloadLaboratoryOrderReport(): void {
         )
         .then((result) => {
             const report = result.resourcePayload;
-            const dateString = new DateWrapper(
-                selectedLaboratoryOrderRow.value.timelineDateTime,
-                { hasTime: true }
-            ).format("yyyy_MM_dd-HH_mm");
             fetch(`data:${report.mediaType};${report.encoding},${report.data}`)
                 .then((response) => response.blob())
                 .then((blob) =>
@@ -379,6 +381,10 @@ function downloadImmunizationReport(): void {
 }
 
 function downloadClinicalDocument(): void {
+    if (selectedClinicalDocumentRow.value === undefined) {
+        return;
+    }
+
     isReportDownloading.value = true;
     trackClickLink("download_report", "Dependent Clinical Doc");
 
