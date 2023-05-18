@@ -77,7 +77,7 @@ internal class DbOutboxStore : IOutboxStore
     /// <summary>
     /// Dispatches any outbox messages not sent.
     /// </summary>
-    /// <param name="ct">A cancellation token</param>
+    /// <param name="ct">A cancellation token.</param>
     /// <returns>Awaitable task.</returns>
     [Queue(AzureServiceBusSettings.OutboxQueueName)]
     [DisableConcurrentExecution(timeoutInSeconds: 10 * 60)]
