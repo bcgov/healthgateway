@@ -50,12 +50,14 @@ namespace HealthGateway.GatewayApi.Services
     {
         private const string WebClientConfigSection = "WebClient";
         private const string MaxDependentAgeKey = "MaxDependentAge";
+        private const string EnableDependentChangeFeedKey = "ChangeFeed:Dependent";
         private const string SmartApostrophe = "’";
         private const string RegularApostrophe = "'";
         private readonly IMapper autoMapper;
         private readonly IConfiguration configuration;
         private readonly ILogger logger;
         private readonly int maxDependentAge;
+        private readonly bool changeFeedEnabled;
         private readonly INotificationSettingsService notificationSettingsService;
         private readonly IPatientService patientService;
         private readonly IDelegationDelegate delegationDelegate;
@@ -95,11 +97,12 @@ namespace HealthGateway.GatewayApi.Services
             this.userProfileDelegate = userProfileDelegate;
             this.messageSender = messageSender;
             this.maxDependentAge = configuration.GetSection(WebClientConfigSection).GetValue(MaxDependentAgeKey, 12);
+            this.changeFeedEnabled = configuration.GetSection(WebClientConfigSection).GetValue(EnableDependentChangeFeedKey, true);
             this.autoMapper = autoMapper;
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResult<DependentModel>> AddDependentAsync(string delegateHdId, AddDependentRequest addDependentRequest, CancellationToken ct = default)
+        public async Task<RequestResult<DependentModel>> AddDependentAsync(string delegateHdid, AddDependentRequest addDependentRequest, CancellationToken ct = default)
         {
             ValidationResult? validationResults = new AddDependentRequestValidator(this.maxDependentAge).Validate(addDependentRequest);
 
@@ -134,7 +137,7 @@ namespace HealthGateway.GatewayApi.Services
 
                     // Verify delegate is allowed to access dependent
                     Dependent? dependent = await this.delegationDelegate.GetDependentAsync(dependentResult.ResourcePayload?.HdId, true);
-                    if (dependent is { Protected: true } && dependent.AllowedDelegations.All(d => d.DelegateHdId != delegateHdId))
+                    if (dependent is { Protected: true } && dependent.AllowedDelegations.All(d => d.DelegateHdId != delegateHdid))
                     {
                         return RequestResultFactory.ActionRequired<DependentModel>(ActionType.Protected, ErrorMessages.CannotPerformAction);
                     }
@@ -143,9 +146,29 @@ namespace HealthGateway.GatewayApi.Services
             }
 
             var dependentHdid = dependentResult.ResourcePayload.HdId;
-            var dbDependent = this.CreateDependent(dependentHdid, delegateHdId, dependentResult.ResourcePayload.Birthdate);
-            this.UpdateNotificationSettings(dependentHdid, delegateHdId);
-            await this.messageSender.SendAsync(new[] { new MessageEnvelope(new DependentAddedEvent(delegateHdId, dependentHdid), delegateHdId) }, ct);
+            ResourceDelegate resourceDelegate = new()
+            {
+                ResourceOwnerHdid = dependentHdid,
+                ProfileHdid = delegateHdid,
+                ExpiryDate = DateOnly.FromDateTime(dependentResult.ResourcePayload.Birthdate.AddYears(this.maxDependentAge)),
+                ReasonCode = ResourceDelegateReason.Guardian,
+                ReasonObjectType = null,
+                ReasonObject = null,
+            };
+
+            // commit to the database if change feed is disabled; if change feed enabled, commit will happen when message sender is called
+            // this is temporary and will be changed when we introduce a proper unit of work to manage transactionality.
+            DbResult<ResourceDelegate> dbDependent = this.resourceDelegateDelegate.Insert(resourceDelegate, !this.changeFeedEnabled);
+            if (dbDependent.Status == DbStatusCode.Error)
+            {
+                throw new ProblemDetailsException(ExceptionUtility.CreateServerError($"{ServiceType.Database}:{ErrorType.CommunicationInternal}", dbDependent.Message));
+            }
+
+            this.UpdateNotificationSettings(dependentHdid, delegateHdid);
+            if (this.changeFeedEnabled)
+            {
+                await this.messageSender.SendAsync(new[] { new MessageEnvelope(new DependentAddedEvent(delegateHdid, dependentHdid), delegateHdid) }, ct);
+            }
 
             DbResult<Dictionary<string, int>> totalDelegateCounts = await this.resourceDelegateDelegate.GetTotalDelegateCountsAsync(new List<string> { dependentHdid });
             int totalDelegateCount = totalDelegateCounts.Payload.GetValueOrDefault(dependentHdid);
@@ -248,10 +271,20 @@ namespace HealthGateway.GatewayApi.Services
                 throw new ProblemDetailsException(ExceptionUtility.CreateNotFoundError($"Dependent {dependent.OwnerId} not found for delegate {dependent.DelegateId}"));
             }
 
-            this.RemoveDependent(resourceDelegate);
+            // commit to the database if change feed is disabled; if change feed enabled, commit will happen when message sender is called
+            // this is temporary and will be changed when we introduce a proper unit of work to manage transactionality.
+            DbResult<ResourceDelegate> dbDependent = this.resourceDelegateDelegate.Delete(resourceDelegate, !this.changeFeedEnabled);
+            if (dbDependent.Status == DbStatusCode.Error)
+            {
+                throw new ProblemDetailsException(ExceptionUtility.CreateServerError($"{ServiceType.Database}:{ErrorType.CommunicationInternal}", dbDependent.Message));
+            }
 
             this.UpdateNotificationSettings(dependent.OwnerId, dependent.DelegateId, true);
-            await this.messageSender.SendAsync(new[] { new MessageEnvelope(new DependentRemovedEvent(dependent.DelegateId, dependent.OwnerId), dependent.DelegateId) }, ct);
+
+            if (this.changeFeedEnabled)
+            {
+                await this.messageSender.SendAsync(new[] { new MessageEnvelope(new DependentRemovedEvent(dependent.DelegateId, dependent.OwnerId), dependent.DelegateId) }, ct);
+            }
 
             return RequestResultFactory.Success(new DependentModel());
         }
@@ -287,36 +320,6 @@ namespace HealthGateway.GatewayApi.Services
         {
             string replacedValue = value.Replace(SmartApostrophe, RegularApostrophe, StringComparison.Ordinal);
             return replacedValue;
-        }
-
-        private DbResult<ResourceDelegate> CreateDependent(string dependentHdid, string delegateHdid, DateTime dateOfBirth)
-        {
-            // Insert Dependent to database
-            ResourceDelegate resourceDelegate = new()
-            {
-                ResourceOwnerHdid = dependentHdid,
-                ProfileHdid = delegateHdid,
-                ExpiryDate = DateOnly.FromDateTime(dateOfBirth.AddYears(this.maxDependentAge)),
-                ReasonCode = ResourceDelegateReason.Guardian,
-                ReasonObjectType = null,
-                ReasonObject = null,
-            };
-            DbResult<ResourceDelegate> dbDependent = this.resourceDelegateDelegate.Insert(resourceDelegate, false);
-            if (dbDependent.Status == DbStatusCode.Error)
-            {
-                throw new ProblemDetailsException(ExceptionUtility.CreateServerError($"{ServiceType.Database}:{ErrorType.CommunicationInternal}", dbDependent.Message));
-            }
-
-            return dbDependent;
-        }
-
-        private void RemoveDependent(ResourceDelegate dependent)
-        {
-            DbResult<ResourceDelegate> dbDependent = this.resourceDelegateDelegate.Delete(dependent, false);
-            if (dbDependent.Status == DbStatusCode.Error)
-            {
-                throw new ProblemDetailsException(ExceptionUtility.CreateServerError($"{ServiceType.Database}:{ErrorType.CommunicationInternal}", dbDependent.Message));
-            }
         }
 
         private void UpdateNotificationSettings(string dependentHdid, string delegateHdid, bool isDelete = false)
