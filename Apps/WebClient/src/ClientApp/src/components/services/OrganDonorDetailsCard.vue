@@ -171,6 +171,7 @@ export default class OrganDonorDetailsCard extends Vue {
                     {{ registrationData?.organDonorRegistrationLinkText }}
                 </a>
             </div>
+            <div>It may take 2 hours for updates to show here</div>
         </div>
         <MessageModalComponent
             ref="sensitiveDocumentModal"
