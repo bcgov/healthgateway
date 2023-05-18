@@ -124,6 +124,11 @@ const user = computed<User>(() => store.getters["user/user"]);
 const webClientConfig = computed<WebClientConfiguration>(
     () => store.getters["config/webClient"]
 );
+const vaccineRecordState = computed<VaccineRecordState>(() =>
+    store.getters["vaccinationStatus/authenticatedVaccineRecordState"](
+        props.dependent.ownerId
+    )
+);
 const headerData = computed<ReportHeader>(() => {
     return {
         phn: props.dependent.dependentInformation.PHN,
@@ -140,17 +145,17 @@ const headerData = computed<ReportHeader>(() => {
         filterText: "",
     };
 });
-const isVaccineRecordDownloading = computed<boolean>(
+const isVaccineRecordDownloading = computed(
     () => vaccineRecordState.value.status === LoadStatus.REQUESTED
 );
-const isDownloadImmunizationReportButtonDisabled = computed<boolean>(
+const isDownloadImmunizationReportButtonDisabled = computed(
     () =>
         isReportDownloading.value ||
         selectedTabIndex.value !== tabIndicesMap.value[2] ||
         (immunizationItems.value.length == 0 &&
             recommendationItems.value.length == 0)
 );
-const isExpired = computed<boolean>(() => {
+const isExpired = computed(() => {
     const birthDate = new DateWrapper(
         props.dependent.dependentInformation.dateOfBirth
     );
@@ -160,19 +165,19 @@ const isExpired = computed<boolean>(() => {
         webClientConfig.value.maxDependentAge
     );
 });
-const isCovid19TabShown = computed<boolean>(() =>
+const isCovid19TabShown = computed(() =>
     ConfigUtil.isDependentDatasetEnabled(EntryType.Covid19TestResult)
 );
-const isImmunizationTabShown = computed<boolean>(() =>
+const isImmunizationTabShown = computed(() =>
     ConfigUtil.isDependentDatasetEnabled(EntryType.Immunization)
 );
-const isLaboratoryOrderTabShown = computed<boolean>(() =>
+const isLaboratoryOrderTabShown = computed(() =>
     ConfigUtil.isDependentDatasetEnabled(EntryType.LabResult)
 );
-const isClinicalDocumentTabShown = computed<boolean>(() =>
+const isClinicalDocumentTabShown = computed(() =>
     ConfigUtil.isDependentDatasetEnabled(EntryType.ClinicalDocument)
 );
-const tabIndicesMap = computed<(number | undefined)[]>(() => {
+const tabIndicesMap = computed(() => {
     const tabIndices: (number | undefined)[] = [0];
     const optionalTabs = [
         isCovid19TabShown.value,
@@ -188,7 +193,7 @@ const tabIndicesMap = computed<(number | undefined)[]>(() => {
 
     return tabIndices;
 });
-const immunizationItems = computed<ImmunizationRow[]>(() =>
+const immunizationItems = computed(() =>
     immunizations.value.map<ImmunizationRow>((x) => ({
         date: DateWrapper.format(x.dateOfImmunization),
         immunization: x.immunization.name,
@@ -198,7 +203,7 @@ const immunizationItems = computed<ImmunizationRow[]>(() =>
         lotNumber: getAgentLotNumbers(x.immunization.immunizationAgents),
     }))
 );
-const recommendationItems = computed<RecommendationRow[]>(() =>
+const recommendationItems = computed(() =>
     recommendations.value.map<RecommendationRow>((x) => ({
         immunization: x.recommendedVaccinations,
         due_date:
@@ -206,11 +211,6 @@ const recommendationItems = computed<RecommendationRow[]>(() =>
                 ? ""
                 : DateWrapper.format(x.agentDueDate),
     }))
-);
-const vaccineRecordState = computed<VaccineRecordState>(() =>
-    store.getters["vaccinationStatus/authenticatedVaccineRecordState"](
-        props.dependent.ownerId
-    )
 );
 
 function addError(
@@ -227,6 +227,18 @@ function setTooManyRequestsError(key: string): void {
 
 function setTooManyRequestsWarning(key: string): void {
     store.dispatch("errorBanner/setTooManyRequestsWarning", { key });
+}
+
+function retrieveAuthenticatedVaccineRecord(hdid: string): void {
+    store.dispatch("vaccinationStatus/retrieveAuthenticatedVaccineRecord", {
+        hdid,
+    });
+}
+
+function stopAuthenticatedVaccineRecordDownload(hdid: string): void {
+    store.dispatch("vaccinationStatus/stopAuthenticatedVaccineRecordDownload", {
+        hdid,
+    });
 }
 
 function deleteDependent(): void {
@@ -447,9 +459,7 @@ function downloadVaccinePdf(): void {
         `Downloading vaccine PDF for hdid: ${props.dependent.ownerId}`
     );
     trackClickLink("Click Button", "Dependent Proof");
-    store.dispatch("vaccinationStatus/retrieveAuthenticatedVaccineRecord", {
-        hdid: props.dependent.ownerId,
-    });
+    retrieveAuthenticatedVaccineRecord(props.dependent.ownerId);
 }
 
 function formatDate(date: StringISODate): string {
@@ -893,10 +903,7 @@ watch(vaccineRecordState, () => {
             trackClickLink("Download Card", "Dependent Proof");
             res.blob().then((blob) => saveAs(blob, "VaccineProof.pdf"));
         });
-        store.dispatch(
-            "vaccinationStatus/stopAuthenticatedVaccineRecordDownload",
-            { hdid: props.dependent.ownerId }
-        );
+        stopAuthenticatedVaccineRecordDownload(props.dependent.ownerId);
     }
 });
 </script>
