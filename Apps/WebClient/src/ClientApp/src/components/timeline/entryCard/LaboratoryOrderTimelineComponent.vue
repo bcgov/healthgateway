@@ -1,6 +1,6 @@
 <script lang="ts">
 import { library } from "@fortawesome/fontawesome-svg-core";
-import { faDownload } from "@fortawesome/free-solid-svg-icons";
+import { faDownload, faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { saveAs } from "file-saver";
 import Vue from "vue";
 import { Component, Prop, Ref } from "vue-property-decorator";
@@ -19,7 +19,7 @@ import SnowPlow from "@/utility/snowPlow";
 
 import EntryCardTimelineComponent from "./EntrycardTimelineComponent.vue";
 
-library.add(faDownload);
+library.add(faDownload, faInfoCircle);
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const options: any = {
