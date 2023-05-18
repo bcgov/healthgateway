@@ -1,19 +1,15 @@
-<script lang="ts">
-import Vue from "vue";
-import { Component, Prop } from "vue-property-decorator";
+<script setup lang="ts">
+import { computed, useSlots } from "vue";
 
-@Component
-export default class PageTitleComponent extends Vue {
-    @Prop({ required: true }) title!: string;
-
-    private get hasSlot(): boolean {
-        return this.$slots.default !== undefined;
-    }
-
-    private get hasPrependSlot(): boolean {
-        return this.$slots.prepend !== undefined;
-    }
+interface Props {
+    title: string;
 }
+defineProps<Props>();
+
+const slots = useSlots();
+
+const hasSlot = computed(() => slots.default !== undefined);
+const hasPrependSlot = computed(() => slots.prepend !== undefined);
 </script>
 
 <template>

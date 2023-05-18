@@ -171,6 +171,16 @@ export class DateWrapper {
     }
 
     /**
+     * Returns the number of days in a month for a given year
+     * @param year The year to check
+     * @param month The month to check
+     * @returns the number of days in the month
+     */
+    public static daysInMonth(year: number, month: number): number {
+        return DateTime.local(year, month).daysInMonth;
+    }
+
+    /**
      * Formats the datetime to the ISO format (YYYY-MM-DDTHH:MM:SS:M-Z)
      * @param toUtc (optional) Whether to set the time zone to UTC
      * @returns the formatted string representation

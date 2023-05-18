@@ -1,7 +1,6 @@
-<script lang="ts">
-import Vue from "vue";
-import { Component, Emit, Prop, Watch } from "vue-property-decorator";
-import { Action, Getter } from "vuex-class";
+<script setup lang="ts">
+import { computed, onMounted, watch } from "vue";
+import { useStore } from "vue-composition-wrapper";
 
 import { DateWrapper } from "@/models/dateWrapper";
 import { LaboratoryOrder } from "@/models/laboratory";
@@ -15,6 +14,22 @@ import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ILogger, IReportService } from "@/services/interfaces";
 
+interface Props {
+    hdid: string;
+    filter: ReportFilter;
+    isDependent?: boolean;
+}
+const props = withDefaults(defineProps<Props>(), {
+    isDependent: false,
+});
+
+const emit = defineEmits<{
+    (e: "on-is-loading-changed", newValue: boolean): void;
+    (e: "on-is-empty-changed", newValue: boolean): void;
+}>();
+
+defineExpose({ generateReport });
+
 interface LabTestRow {
     date: string;
     test: string;
@@ -22,37 +37,56 @@ interface LabTestRow {
     status: string;
 }
 
-@Component
-export default class LaboratoryReportComponent extends Vue {
-    @Prop({ required: true })
-    hdid!: string;
+const headerClass = "laboratory-test-report-table-header";
 
-    @Prop() private filter!: ReportFilter;
+const fields: ReportField[] = [
+    {
+        key: "date",
+        thClass: headerClass,
+        tdAttr: { "data-testid": "labResultDateItem" },
+    },
+    {
+        key: "test",
+        thClass: headerClass,
+        tdAttr: { "data-testid": "labResultTestTypeItem" },
+    },
+    {
+        key: "result",
+        thClass: headerClass,
+        tdAttr: { "data-testid": "labResultItem" },
+    },
+    {
+        key: "status",
+        thClass: headerClass,
+        tdAttr: { "data-testid": "labStatusItem" },
+    },
+];
 
-    @Prop({ default: false }) isDependent!: boolean;
+const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+const reportService = container.get<IReportService>(
+    SERVICE_IDENTIFIER.ReportService
+);
+const store = useStore();
 
-    @Action("retrieveLaboratoryOrders", { namespace: "laboratory" })
-    retrieveLaboratoryOrders!: (params: { hdid: string }) => Promise<void>;
+const laboratoryOrders = computed<(hdid: string) => LaboratoryOrder[]>(
+    () => store.getters["laboratory/laboratoryOrders"]
+);
 
-    @Getter("laboratoryOrders", { namespace: "laboratory" })
-    laboratoryOrders!: (hdid: string) => LaboratoryOrder[];
+const laboratoryOrdersAreLoading = computed<(hdid: string) => boolean>(
+    () => store.getters["laboratory/laboratoryOrdersAreLoading"]
+);
 
-    @Getter("laboratoryOrdersAreLoading", { namespace: "laboratory" })
-    laboratoryOrdersAreLoading!: (hdid: string) => boolean;
+const isEmpty = computed(() => visibleRecords.value.length === 0);
 
-    private logger!: ILogger;
+const isLaboratoryLoading = computed(() =>
+    laboratoryOrdersAreLoading.value(props.hdid)
+);
 
-    private readonly headerClass = "laboratory-test-report-table-header";
-
-    private get isLaboratoryLoading(): boolean {
-        return this.laboratoryOrdersAreLoading(this.hdid);
-    }
-
-    private get visibleRecords(): LaboratoryOrder[] {
-        const records = this.laboratoryOrders(this.hdid).filter((record) =>
-            this.filter.allowsDate(record.timelineDateTime)
-        );
-        records.sort((a, b) => {
+const visibleRecords = computed(() =>
+    laboratoryOrders
+        .value(props.hdid)
+        .filter((record) => props.filter.allowsDate(record.timelineDateTime))
+        .sort((a, b) => {
             const firstDate = new DateWrapper(a.timelineDateTime);
             const secondDate = new DateWrapper(b.timelineDateTime);
 
@@ -65,91 +99,56 @@ export default class LaboratoryReportComponent extends Vue {
             }
 
             return 0;
-        });
+        })
+);
 
-        return records;
-    }
+const items = computed(() =>
+    visibleRecords.value.flatMap<LabTestRow>((x) => {
+        const timelineDateTime = DateWrapper.format(x.timelineDateTime);
+        return x.laboratoryTests.map<LabTestRow>((y) => ({
+            date: timelineDateTime,
+            test: y.batteryType || "",
+            result: y.result,
+            status: y.testStatus,
+        }));
+    })
+);
 
-    private get isEmpty(): boolean {
-        return this.visibleRecords.length === 0;
-    }
-
-    private get items(): LabTestRow[] {
-        return this.visibleRecords.flatMap<LabTestRow>((x) => {
-            const timelineDateTime = DateWrapper.format(x.timelineDateTime);
-            return x.laboratoryTests.map<LabTestRow>((y) => ({
-                date: timelineDateTime,
-                test: y.batteryType || "",
-                result: y.result,
-                status: y.testStatus,
-            }));
-        });
-    }
-
-    @Watch("isLaboratoryLoading")
-    @Emit()
-    private onIsLoadingChanged(): boolean {
-        return this.isLaboratoryLoading;
-    }
-
-    @Watch("isEmpty")
-    @Emit()
-    private onIsEmptyChanged(): boolean {
-        return this.isEmpty;
-    }
-
-    private created(): void {
-        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-        this.retrieveLaboratoryOrders({ hdid: this.hdid }).catch((err) =>
-            this.logger.error(`Error loading Laboratory data: ${err}`)
-        );
-    }
-
-    private mounted(): void {
-        this.onIsEmptyChanged();
-    }
-
-    public generateReport(
-        reportFormatType: ReportFormatType,
-        headerData: ReportHeader
-    ): Promise<RequestResult<Report>> {
-        const reportService = container.get<IReportService>(
-            SERVICE_IDENTIFIER.ReportService
-        );
-
-        return reportService.generateReport({
-            data: {
-                header: headerData,
-                records: this.items,
-            },
-            template: TemplateType.Laboratory,
-            type: reportFormatType,
-        });
-    }
-
-    private fields: ReportField[] = [
-        {
-            key: "date",
-            thClass: this.headerClass,
-            tdAttr: { "data-testid": "labResultDateItem" },
-        },
-        {
-            key: "test",
-            thClass: this.headerClass,
-            tdAttr: { "data-testid": "labResultTestTypeItem" },
-        },
-        {
-            key: "result",
-            thClass: this.headerClass,
-            tdAttr: { "data-testid": "labResultItem" },
-        },
-        {
-            key: "status",
-            thClass: this.headerClass,
-            tdAttr: { "data-testid": "labStatusItem" },
-        },
-    ];
+function retrieveLaboratoryOrders(hdid: string): Promise<void> {
+    return store.dispatch("laboratory/retrieveLaboratoryOrders", {
+        hdid,
+    });
 }
+
+function generateReport(
+    reportFormatType: ReportFormatType,
+    headerData: ReportHeader
+): Promise<RequestResult<Report>> {
+    return reportService.generateReport({
+        data: {
+            header: headerData,
+            records: items.value,
+        },
+        template: TemplateType.Laboratory,
+        type: reportFormatType,
+    });
+}
+
+watch(isLaboratoryLoading, () => {
+    emit("on-is-loading-changed", isLaboratoryLoading.value);
+});
+
+watch(isEmpty, () => {
+    emit("on-is-empty-changed", isEmpty.value);
+});
+
+onMounted(() => {
+    emit("on-is-empty-changed", isEmpty.value);
+});
+
+retrieveLaboratoryOrders(props.hdid).catch((err) =>
+    logger.error(`Error loading Laboratory data: ${err}`)
+);
 </script>
 
 <template>

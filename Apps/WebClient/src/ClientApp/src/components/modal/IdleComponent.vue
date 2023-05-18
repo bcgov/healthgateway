@@ -1,71 +1,66 @@
-﻿<script lang="ts">
+﻿<script setup lang="ts">
 import { BvModalEvent } from "bootstrap-vue";
-import Vue from "vue";
-import { Component } from "vue-property-decorator";
-import { Action, Getter } from "vuex-class";
+import { computed, ref } from "vue";
+import { useRouter, useStore } from "vue-composition-wrapper";
 
 import { ReliableTimer } from "@/utility/reliableTimer";
 
-@Component
-export default class IdleComponent extends Vue {
-    @Action("setVisibleState", { namespace: "idle" })
-    private setVisibleState!: (isVisible: boolean) => void;
+const router = useRouter();
+const store = useStore();
 
-    @Getter("isVisible", { namespace: "idle" })
-    private isVisible!: boolean;
+defineExpose({ show });
 
-    private intervalId?: ReturnType<typeof setInterval>;
-    private countdownTimer?: ReliableTimer;
-    private notifyStillHere?: () => void;
+const isVisible = computed<boolean>(() => store.getters["idle/isVisible"]);
 
-    private remainingTime = Number.MAX_SAFE_INTEGER;
+function setVisibleState(isVisible: boolean): void {
+    store.dispatch("idle/setVisibleState", isVisible);
+}
 
-    get remainingSeconds(): number {
-        return Math.ceil(this.remainingTime / 1000);
+const intervalId = ref<ReturnType<typeof setInterval>>();
+const countdownTimer = ref<ReliableTimer>();
+const notifyStillHere = ref<() => void>();
+const remainingTime = ref(Number.MAX_SAFE_INTEGER);
+
+const remainingSeconds = computed(() => Math.ceil(remainingTime.value / 1000));
+
+function show(countdownTime: number, notifyStillHereFunc: () => void): void {
+    if (isVisible.value) {
+        return;
     }
 
-    show(countdownTime: number, notifyStillHere: () => void): void {
-        if (this.isVisible) {
-            return;
+    notifyStillHere.value = notifyStillHereFunc;
+
+    intervalId.value = setInterval(() => update(), 1000);
+    countdownTimer.value = new ReliableTimer(() => logout(), countdownTime);
+    countdownTimer.value.start();
+    update();
+
+    setVisibleState(true);
+}
+
+function update(): void {
+    if (countdownTimer.value === undefined) {
+        return;
+    }
+    remainingTime.value = countdownTimer.value.remainingTime;
+}
+
+function handleHide(event: BvModalEvent): void {
+    if (event.trigger !== null) {
+        // hide was caused by user interaction
+        if (notifyStillHere.value !== undefined) {
+            notifyStillHere.value();
         }
-
-        this.notifyStillHere = notifyStillHere;
-
-        this.intervalId = setInterval(() => this.update(), 1000);
-        this.countdownTimer = new ReliableTimer(
-            () => this.logout(),
-            countdownTime
-        );
-        this.countdownTimer.start();
-        this.update();
-
-        this.setVisibleState(true);
+        setVisibleState(false);
     }
 
-    private update(): void {
-        if (this.countdownTimer === undefined) {
-            return;
-        }
-        this.remainingTime = this.countdownTimer.remainingTime;
-    }
+    clearInterval(intervalId.value);
+    countdownTimer.value?.cancel();
+}
 
-    private handleHide(event: BvModalEvent): void {
-        if (event.trigger !== null) {
-            // hide was caused by user interaction
-            if (this.notifyStillHere !== undefined) {
-                this.notifyStillHere();
-            }
-            this.setVisibleState(false);
-        }
-
-        clearInterval(this.intervalId);
-        this.countdownTimer?.cancel();
-    }
-
-    private logout(): void {
-        this.$router.push("/logout");
-        this.setVisibleState(false);
-    }
+function logout(): void {
+    router.push("/logout");
+    setVisibleState(false);
 }
 </script>
 

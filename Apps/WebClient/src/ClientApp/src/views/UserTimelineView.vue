@@ -1,4 +1,4 @@
-<script lang="ts">
+<script setup lang="ts">
 import { library } from "@fortawesome/fontawesome-svg-core";
 import {
     faCheckCircle,
@@ -15,9 +15,8 @@ import {
     faVial,
     faXRay,
 } from "@fortawesome/free-solid-svg-icons";
-import Vue from "vue";
-import { Component } from "vue-property-decorator";
-import { Getter } from "vuex-class";
+import { computed } from "vue";
+import { useStore } from "vue-composition-wrapper";
 
 import NoteEditComponent from "@/components/modal/NoteEditComponent.vue";
 import BreadcrumbComponent from "@/components/navmenu/BreadcrumbComponent.vue";
@@ -27,9 +26,6 @@ import { EntryType, entryTypeMap } from "@/constants/entryType";
 import BreadcrumbItem from "@/models/breadcrumbItem";
 import type { WebClientConfiguration } from "@/models/configData";
 import User from "@/models/user";
-import container from "@/plugins/container";
-import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import { ILogger } from "@/services/interfaces";
 import ConfigUtil from "@/utility/configUtil";
 
 library.add(
@@ -48,56 +44,40 @@ library.add(
     faXRay
 );
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const options: any = {
-    components: {
-        AddNoteButtonComponent,
-        BreadcrumbComponent,
-        NoteEditComponent,
-        TimelineComponent,
+const breadcrumbItems: BreadcrumbItem[] = [
+    {
+        text: "Timeline",
+        to: "/timeline",
+        active: true,
+        dataTestId: "breadcrumb-timeline",
     },
-};
+];
 
-@Component(options)
-export default class UserTimelineView extends Vue {
-    @Getter("webClient", { namespace: "config" })
-    config!: WebClientConfiguration;
+const store = useStore();
 
-    @Getter("notesAreLoading", { namespace: "note" })
-    notesAreLoading!: boolean;
+const config = computed<WebClientConfiguration>(
+    () => store.getters["config/webClient"]
+);
 
-    @Getter("user", { namespace: "user" })
-    user!: User;
+const notesAreLoading = computed<boolean>(
+    () => store.getters["note/notesAreLoading"]
+);
 
-    logger!: ILogger;
+const user = computed<User>(() => store.getters["user/user"]);
 
-    breadcrumbItems: BreadcrumbItem[] = [
-        {
-            text: "Timeline",
-            to: "/timeline",
-            active: true,
-            dataTestId: "breadcrumb-timeline",
-        },
-    ];
+const commentsAreEnabled = computed(
+    () => config.value.featureToggleConfiguration.timeline.comment
+);
 
-    get commentsAreEnabled(): boolean {
-        return this.config.featureToggleConfiguration.timeline.comment;
-    }
+const notesAreEnabled = computed(() =>
+    ConfigUtil.isDatasetEnabled(EntryType.Note)
+);
 
-    get entryTypes(): EntryType[] {
-        return [...entryTypeMap.values()]
-            .filter((d) => ConfigUtil.isDatasetEnabled(d.type))
-            .map((d) => d.type);
-    }
-
-    get notesAreEnabled(): boolean {
-        return ConfigUtil.isDatasetEnabled(EntryType.Note);
-    }
-
-    created(): void {
-        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-    }
-}
+const entryTypes = computed(() =>
+    [...entryTypeMap.values()]
+        .filter((d) => ConfigUtil.isDatasetEnabled(d.type))
+        .map((d) => d.type)
+);
 </script>
 
 <template>
