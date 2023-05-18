@@ -41,7 +41,7 @@ internal class DbOutboxStore : IOutboxStore
     /// <summary>
     /// Initializes a new instance of the <see cref="DbOutboxStore"/> class
     /// </summary>
-    /// <param name="outboxDelegate">the outbox db delegate</param>
+    /// <param name="outboxDelegate">The outbox db delegate.</param>
     /// <param name="backgroundJobClient">Hangfire background job client</param>
     /// <param name="messageSender">The destination message sender to forward messages to</param>
     /// <param name="logger">A logger</param>
