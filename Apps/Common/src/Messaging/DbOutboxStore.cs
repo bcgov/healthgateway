@@ -41,10 +41,10 @@ internal class DbOutboxStore : IOutboxStore
     /// <summary>
     /// Initializes a new instance of the <see cref="DbOutboxStore"/> class
     /// </summary>
-    /// <param name="outboxDelegate">the outbox db delegate</param>
+    /// <param name="outboxDelegate">The outbox db delegate.</param>
     /// <param name="backgroundJobClient">Hangfire background job client</param>
-    /// <param name="messageSender">The destination message sender to forward messages to</param>
-    /// <param name="logger">A logger</param>
+    /// <param name="messageSender">The destination message sender to forward messages to.</param>
+    /// <param name="logger">A logger.</param>
     public DbOutboxStore(IOutboxDelegate outboxDelegate, IBackgroundJobClient backgroundJobClient, IMessageSender messageSender, ILogger<DbOutboxStore> logger)
     {
         this.outboxDelegate = outboxDelegate;
@@ -75,10 +75,10 @@ internal class DbOutboxStore : IOutboxStore
     }
 
     /// <summary>
-    /// Dispatches any outbox messages not sent
+    /// Dispatches any outbox messages not sent.
     /// </summary>
-    /// <param name="ct">A cancellation token</param>
-    /// <returns>Awaitable task</returns>
+    /// <param name="ct">A cancellation token.</param>
+    /// <returns>Awaitable task.</returns>
     [Queue(AzureServiceBusSettings.OutboxQueueName)]
     [DisableConcurrentExecution(timeoutInSeconds: 10 * 60)]
     public async Task DispatchOutboxItems(CancellationToken ct = default)
