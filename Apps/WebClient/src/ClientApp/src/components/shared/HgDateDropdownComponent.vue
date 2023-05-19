@@ -1,177 +1,128 @@
-<script lang="ts">
-import Vue from "vue";
-import { Component, Emit, Model, Prop, Watch } from "vue-property-decorator";
+<script setup lang="ts">
+import { computed, ref } from "vue";
 
 import { DateWrapper } from "@/models/dateWrapper";
 
+interface Props {
+    value: string;
+    state?: boolean;
+    allowFuture?: boolean;
+    allowPast?: boolean;
+    minYear?: number;
+    disabled?: boolean;
+}
+const props = withDefaults(defineProps<Props>(), {
+    state: undefined,
+    allowFuture: false,
+    allowPast: true,
+    minYear: undefined,
+    disabled: false,
+});
+
+const emit = defineEmits<{
+    (e: "input", newValue: string): void;
+    (e: "blur"): void;
+}>();
+
 interface ISelectOption {
-    text: string;
+    text: string | null;
     value: unknown;
 }
 
-@Component
-export default class HgDateDropdownComponent extends Vue {
-    @Model("change", { type: String }) public model!: string;
-    @Prop() state?: boolean;
-    @Prop({ required: false, default: false }) allowFuture!: boolean;
-    @Prop({ required: false, default: true }) allowPast!: boolean;
-    @Prop({ required: false, default: null }) minYear?: number;
-    @Prop({ required: false, default: false }) disabled!: boolean;
+const currentYear = new DateWrapper().year();
+const currentMonth = new DateWrapper().month();
+const currentDay = new DateWrapper().day();
+const monthNames = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+];
 
-    private day: number | null = null;
-    private month: number | null = null;
-    private year: number | null = null;
-    private value: string | null = "";
-    private currentYear = new DateWrapper().year();
-    private currentMonth = new DateWrapper().month();
-    private currentDay = new DateWrapper().day();
+const day = ref<number | null>(null);
+const month = ref<number | null>(null);
+const year = ref<number | null>(null);
 
-    private monthValues = [
-        "January",
-        "February",
-        "March",
-        "April",
-        "May",
-        "June",
-        "July",
-        "August",
-        "September",
-        "October",
-        "November",
-        "December",
-    ];
-
-    private mounted(): void {
-        this.value = this.model;
-    }
-
-    private get getYears(): ISelectOption[] {
-        let minYear = this.minYear;
-        let maxYear = 0;
-
-        if (!minYear) {
-            minYear = this.allowPast ? 1900 : this.currentYear;
-        } else {
-            minYear = this.allowPast ? minYear : this.currentYear;
-        }
-
-        if (!maxYear) {
-            maxYear = this.currentYear + 20;
-        }
-
-        if (!this.allowFuture) {
-            maxYear = this.currentYear;
-        }
-
-        const yearOptions: ISelectOption[] = [{ value: null, text: "Year" }];
-        for (let i = maxYear; i >= minYear; i--) {
-            yearOptions.push({ value: i, text: i.toString() });
-        }
-
-        return yearOptions;
-    }
-
-    private get getMonths(): ISelectOption[] {
-        let start = 1;
-        let end = 12;
-        if (!this.allowPast && this.year === this.currentYear) {
-            start = this.currentMonth;
-        }
-        if (!this.allowFuture && this.year === this.currentYear) {
-            end = this.currentMonth;
-        }
-
-        const monthOptions: ISelectOption[] = [{ value: null, text: "Month" }];
-        for (let monthNo = start; monthNo <= end; monthNo++) {
-            monthOptions.push({
-                value: monthNo,
-                text: this.monthValues[monthNo - 1],
-            });
-        }
-
-        return monthOptions;
-    }
-
-    private get getDays(): ISelectOption[] {
-        let day;
-        let start = 1;
-        let end = 31;
-
-        if (
-            !this.allowPast &&
-            this.year === this.currentYear &&
-            this.month === this.currentMonth &&
-            start < this.currentDay
-        ) {
-            start = this.currentDay;
-        }
-
-        const numDaysInMonth = new Date(
-            this.year ?? this.currentYear,
-            this.month ?? this.currentMonth,
-            0
-        ).getDate();
-        if (end > numDaysInMonth) {
-            end = numDaysInMonth;
-        }
-
-        if (
-            !this.allowFuture &&
-            this.year === this.currentYear &&
-            this.month === this.currentMonth &&
-            end > this.currentDay
-        ) {
-            end = this.currentDay;
-        }
-
-        const dayOptions: ISelectOption[] = [{ value: null, text: "Day" }];
-
-        for (let j = start; j <= end; j++) {
-            day = j;
-
-            dayOptions.push({ value: day, text: day.toString() });
-        }
-
-        return dayOptions;
-    }
-
-    private onChange(): void {
-        if (this.year && this.month && this.day) {
-            this.value = DateWrapper.fromNumerical(
-                this.year,
-                this.month,
-                this.day
-            ).toISODate();
-        } else {
-            this.value = null;
-        }
-
-        this.updateModel();
-    }
-
-    @Emit("change")
-    private updateModel(): string | null {
-        return this.value;
-    }
-
-    @Watch("model")
-    private onModelChanged(): void {
-        this.value = this.model;
-    }
-
-    @Emit("blur")
-    private onBlur(): void {
-        return;
-    }
-
-    private getClass(): string {
-        if (this.state === true) {
+const classes = computed(() => {
+    switch (props.state) {
+        case true:
             return "valid";
-        } else if (this.state === false) {
+        case false:
             return "invalid";
-        } else {
+        default:
             return "";
-        }
+    }
+});
+const daysInMonth = computed(() =>
+    DateWrapper.daysInMonth(
+        year.value ?? currentYear,
+        month.value ?? currentMonth
+    )
+);
+const yearOptions = computed(() => {
+    const minYear = props.minYear ?? 1900;
+    const start = props.allowPast ? minYear : currentYear;
+    const end = props.allowFuture ? currentYear + 20 : currentYear;
+
+    const yearOptions: ISelectOption[] = [{ value: null, text: "Year" }];
+    for (let i = end; i >= start; i--) {
+        yearOptions.push({ value: i, text: i.toString() });
+    }
+
+    return yearOptions;
+});
+const monthOptions = computed(() => {
+    const isCurrent = year.value === currentYear;
+    const start = !props.allowPast && isCurrent ? currentMonth : 1;
+    const end = !props.allowFuture && isCurrent ? currentMonth : 12;
+    const monthOptions: ISelectOption[] = [{ value: null, text: "Month" }];
+
+    for (let i = start; i <= end; i++) {
+        monthOptions.push({
+            value: i,
+            text: monthNames[i - 1],
+        });
+    }
+
+    return monthOptions;
+});
+const dayOptions = computed(() => {
+    const isCurrent =
+        year.value === currentYear && month.value === currentMonth;
+    const start = !props.allowPast && isCurrent ? currentDay : 1;
+    const end =
+        !props.allowFuture && isCurrent ? currentDay : daysInMonth.value;
+    const dayOptions: ISelectOption[] = [{ value: null, text: "Day" }];
+
+    for (let i = start; i <= end; i++) {
+        dayOptions.push({ value: i, text: i.toString() });
+    }
+
+    return dayOptions;
+});
+
+function onChange(): void {
+    if (day.value !== null && day.value > daysInMonth.value) {
+        day.value = null;
+    }
+
+    if (year.value && month.value && day.value) {
+        const date = DateWrapper.fromNumerical(
+            year.value,
+            month.value,
+            day.value
+        );
+        emit("input", date.toISODate() || "");
+    } else {
+        emit("input", "");
     }
 }
 </script>
@@ -182,8 +133,8 @@ export default class HgDateDropdownComponent extends Vue {
             <b-form-select
                 v-model="year"
                 data-testid="formSelectYear"
-                :class="getClass(state)"
-                :options="getYears"
+                :class="classes"
+                :options="yearOptions"
                 aria-label="Year"
                 :disabled="disabled"
                 @change="onChange"
@@ -193,8 +144,8 @@ export default class HgDateDropdownComponent extends Vue {
             <b-form-select
                 v-model="month"
                 data-testid="formSelectMonth"
-                :class="getClass(state)"
-                :options="getMonths"
+                :class="classes"
+                :options="monthOptions"
                 aria-label="Month"
                 :disabled="disabled"
                 @change="onChange"
@@ -204,12 +155,12 @@ export default class HgDateDropdownComponent extends Vue {
             <b-form-select
                 v-model="day"
                 data-testid="formSelectDay"
-                :class="getClass(state)"
-                :options="getDays"
+                :class="classes"
+                :options="dayOptions"
                 aria-label="Day"
                 :disabled="disabled"
                 @change="onChange"
-                @blur="onBlur"
+                @blur="emit('blur')"
             />
         </b-col>
     </b-row>

@@ -1,112 +1,77 @@
-<script lang="ts">
+<script setup lang="ts">
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faComment as farComment } from "@fortawesome/free-regular-svg-icons";
 import { faPaperclip } from "@fortawesome/free-solid-svg-icons";
-import Vue from "vue";
-import { Component, Prop, Watch } from "vue-property-decorator";
-import { Getter } from "vuex-class";
+import { computed, onMounted, ref, watch } from "vue";
+import { useStore } from "vue-composition-wrapper";
 
 import EventBus, { EventMessageName } from "@/eventbus";
-import type { WebClientConfiguration } from "@/models/configData";
 import TimelineEntry from "@/models/timelineEntry";
-import User from "@/models/user";
-import container from "@/plugins/container";
-import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import { ILogger } from "@/services/interfaces";
 
 import CommentSectionComponent from "./CommentSectionComponent.vue";
 
 library.add(farComment, faPaperclip);
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const options: any = {
-    components: {
-        CommentSectionComponent,
-    },
-};
+interface Props {
+    cardId: string;
+    entry: TimelineEntry;
+    entryIcon: string;
+    title: string;
+    allowComment?: boolean;
+    canShowDetails?: boolean;
+    hasAttachment?: boolean;
+    iconClass?: string;
+    isMobileDetails?: boolean;
+    subtitle?: string;
+}
+const props = withDefaults(defineProps<Props>(), {
+    allowComment: false,
+    canShowDetails: true,
+    hasAttachment: false,
+    iconClass: "",
+    isMobileDetails: false,
+    subtitle: "",
+});
 
-@Component(options)
-export default class EntryCardTimelineComponent extends Vue {
-    @Prop() entry!: TimelineEntry;
-    @Prop() cardId!: string;
-    @Prop() title!: string;
-    @Prop() subtitle!: string;
-    @Prop() entryIcon: string | undefined;
-    @Prop() iconClass!: string;
-    @Prop({ default: false }) allowComment!: boolean;
-    @Prop({ default: true }) canShowDetails!: boolean;
-    @Prop({ default: false }) isMobileDetails!: boolean;
-    @Prop({ default: false }) hasAttachment!: boolean;
+const store = useStore();
 
-    @Getter("isMobile")
-    isMobileWidth!: boolean;
+const detailsVisible = ref(false);
 
-    @Getter("webClient", { namespace: "config" })
-    config!: WebClientConfiguration;
+const isMobileWidth = computed<boolean>(() => store.getters["isMobile"]);
+const isInteractive = computed(
+    () =>
+        (!isMobileWidth.value && props.canShowDetails) ||
+        (isMobileWidth.value && !props.isMobileDetails)
+);
+const displayTitle = computed(() =>
+    props.title === "" ? props.entry.type.toString() : props.title
+);
+const dateString = computed(() => props.entry.date.format());
+const commentCount = computed(() => props.entry.comments?.length ?? 0);
 
-    @Getter("user", { namespace: "user" })
-    user!: User;
-
-    private logger!: ILogger;
-    private eventBus = EventBus;
-    private detailsVisible = false;
-
-    private get icon(): string {
-        return this.entryIcon ?? "question";
-    }
-
-    private get isInteractive(): boolean {
-        return (
-            (!this.isMobileWidth && this.canShowDetails) ||
-            (this.isMobileWidth && !this.isMobileDetails)
-        );
-    }
-
-    private get displayTitle(): string {
-        if (this.title === "") {
-            return this.entry.type.toString();
-        } else {
-            return this.title;
+function handleCardClick(): void {
+    if (isMobileWidth.value) {
+        if (!props.isMobileDetails) {
+            EventBus.$emit(EventMessageName.ViewEntryDetails, props.entry);
         }
-    }
-
-    private get dateString(): string {
-        return this.entry.date.format();
-    }
-
-    private get commentCount(): number {
-        return this.entry.comments !== null ? this.entry.comments.length : 0;
-    }
-
-    @Watch("isMobileWidth")
-    private onMobileWidthChanged(): void {
-        if (this.isMobileWidth && !this.isMobileDetails) {
-            this.detailsVisible = false;
-        }
-    }
-
-    private mounted(): void {
-        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-        if (this.isMobileDetails) {
-            this.detailsVisible = true;
-        }
-    }
-
-    private handleCardClick(): void {
-        if (this.isMobileWidth) {
-            if (!this.isMobileDetails) {
-                this.eventBus.$emit(
-                    EventMessageName.ViewEntryDetails,
-                    this.entry
-                );
-            }
-        } else {
-            if (this.canShowDetails) {
-                this.detailsVisible = !this.detailsVisible;
-            }
+    } else {
+        if (props.canShowDetails) {
+            detailsVisible.value = !detailsVisible.value;
         }
     }
 }
+
+watch(isMobileWidth, () => {
+    if (isMobileWidth.value && !props.isMobileDetails) {
+        detailsVisible.value = false;
+    }
+});
+
+onMounted(() => {
+    if (props.isMobileDetails) {
+        detailsVisible.value = true;
+    }
+});
 </script>
 
 <template>
@@ -122,7 +87,7 @@ export default class EntryCardTimelineComponent extends Vue {
             >
                 <b-col class="leftPane">
                     <div class="icon" :class="iconClass">
-                        <hg-icon :icon="icon" size="large" fixed-width />
+                        <hg-icon :icon="entryIcon" size="large" fixed-width />
                     </div>
                 </b-col>
                 <b-col class="entryTitleWrapper">

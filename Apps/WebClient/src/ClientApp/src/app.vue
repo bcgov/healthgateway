@@ -1,4 +1,4 @@
-<script lang="ts">
+<script setup lang="ts">
 // Add font awesome styles manually
 import "@fortawesome/fontawesome-svg-core/styles.css";
 
@@ -32,10 +32,16 @@ import {
     TablePlugin,
     TooltipPlugin,
 } from "bootstrap-vue";
-import Vue from "vue";
-import { Component, Ref, Watch } from "vue-property-decorator";
+import Vue, {
+    computed,
+    nextTick,
+    onBeforeUnmount,
+    onMounted,
+    ref,
+    watch,
+} from "vue";
+import { useRoute, useRouter, useStore } from "vue-composition-wrapper";
 import VueTheMask from "vue-the-mask";
-import { Action, Getter } from "vuex-class";
 
 import CommunicationComponent from "@/components/CommunicationComponent.vue";
 import ErrorCardComponent from "@/components/ErrorCardComponent.vue";
@@ -55,279 +61,232 @@ import { ILogger } from "@/services/interfaces";
 import { IdleDetector } from "@/utility/idleDetector";
 import AppErrorView from "@/views/errors/AppErrorView.vue";
 
-Vue.use(LayoutPlugin);
-Vue.use(NavPlugin);
-Vue.use(NavbarPlugin);
-Vue.use(ModalPlugin);
-Vue.use(ButtonPlugin);
-Vue.use(CardPlugin);
-Vue.use(LinkPlugin);
-Vue.use(FormPlugin);
-Vue.use(FormInputPlugin);
-Vue.use(FormCheckboxPlugin);
-Vue.use(FormTextareaPlugin);
 Vue.use(AlertPlugin);
 Vue.use(AvatarPlugin);
-Vue.use(SpinnerPlugin);
-Vue.use(InputGroupPlugin);
-Vue.use(PaginationNavPlugin);
-Vue.use(TablePlugin);
-Vue.use(TooltipPlugin);
+Vue.use(ButtonPlugin);
+Vue.use(CardPlugin);
+Vue.use(CarouselPlugin);
+Vue.use(FormCheckboxPlugin);
+Vue.use(FormDatepickerPlugin);
 Vue.use(FormGroupPlugin);
+Vue.use(FormInputPlugin);
+Vue.use(FormPlugin);
 Vue.use(FormRadioPlugin);
 Vue.use(FormRatingPlugin);
 Vue.use(FormSelectPlugin);
-Vue.use(FormDatepickerPlugin);
+Vue.use(FormTextareaPlugin);
 Vue.use(IconsPlugin);
+Vue.use(InputGroupPlugin);
+Vue.use(LayoutPlugin);
+Vue.use(LinkPlugin);
+Vue.use(ModalPlugin);
+Vue.use(NavbarPlugin);
+Vue.use(NavPlugin);
+Vue.use(PaginationNavPlugin);
+Vue.use(SpinnerPlugin);
+Vue.use(TablePlugin);
+Vue.use(TooltipPlugin);
 Vue.use(VueTheMask);
-Vue.use(CarouselPlugin);
 
 // Prevent auto adding CSS to the header since that breaks Content security policies.
 config.autoAddCss = false;
 
+const landingPath = "/";
+const acceptTermsOfServicePath = "/accepttermsofservice";
+const covidTestPath = "/covidtest";
+const dependentsPath = "/dependents";
+const loginCallbackPath = "/logincallback";
+const pcrTestPath = "/pcrtest";
+const queueFullPath = "/busy";
+const queuePath = "/queue";
+const registrationPath = "/registration";
+const reportsPath = "/reports";
+const timelinePath = "/timeline";
+const vaccineCardPath = "/vaccinecard";
+
 const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+const route = useRoute();
+const router = useRouter();
+const store = useStore();
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const options: any = {
-    components: {
-        NavHeader: HeaderComponent,
-        NavFooter: FooterComponent,
-        NavSidebar: SidebarComponent,
-        ErrorCardComponent,
-        IdleComponent,
-        CommunicationComponent,
-        ResourceCentreComponent,
-        NotificationCentreComponent,
-        AppErrorView,
-    },
-};
+let idleDetector: IdleDetector | undefined;
 
-@Component(options)
-export default class App extends Vue {
-    @Ref("idleModal")
-    readonly idleModal!: IdleComponent;
+const host = ref(window.location.hostname.toLocaleUpperCase());
+const initialized = ref(false);
+const windowWidth = ref(0);
 
-    @Action("setIsMobile")
-    setIsMobile!: (isMobile: boolean) => void;
+const idleModal = ref<InstanceType<typeof IdleComponent>>();
 
-    @Getter("appError")
-    appError?: AppErrorType;
-
-    @Getter("isMobile")
-    isMobile!: boolean;
-
-    @Getter("isOffline", { namespace: "config" })
-    isOffline!: boolean;
-
-    @Getter("webClient", { namespace: "config" })
-    config!: WebClientConfiguration;
-
-    @Getter("oidcIsAuthenticated", { namespace: "auth" })
-    oidcIsAuthenticated!: boolean;
-
-    @Getter("isValidIdentityProvider", { namespace: "user" })
-    isValidIdentityProvider!: boolean;
-
-    @Getter("hasTermsOfServiceUpdated", { namespace: "user" })
-    hasTermsOfServiceUpdated!: boolean;
-
-    @Getter("userIsRegistered", { namespace: "user" })
-    userIsRegistered!: boolean;
-
-    @Getter("userIsActive", { namespace: "user" })
-    userIsActive!: boolean;
-
-    @Getter("patientRetrievalFailed", { namespace: "user" })
-    patientRetrievalFailed!: boolean;
-
-    private readonly host: string =
-        window.location.hostname.toLocaleUpperCase();
-    private readonly isProduction: boolean =
+const appError = computed<AppErrorType>(() => store.getters["appError"]);
+const isMobile = computed<boolean>(() => store.getters["isMobile"]);
+const isOffline = computed<boolean>(() => store.getters["config/isOffline"]);
+const webClientConfig = computed<WebClientConfiguration>(
+    () => store.getters["config/webClient"]
+);
+const oidcIsAuthenticated = computed<boolean>(
+    () => store.getters["auth/oidcIsAuthenticated"]
+);
+const isValidIdentityProvider = computed<boolean>(
+    () => store.getters["user/isValidIdentityProvider"]
+);
+const hasTermsOfServiceUpdated = computed<boolean>(
+    () => store.getters["user/hasTermsOfServiceUpdated"]
+);
+const userIsRegistered = computed<boolean>(
+    () => store.getters["user/userIsRegistered"]
+);
+const userIsActive = computed<boolean>(
+    () => store.getters["user/userIsActive"]
+);
+const patientRetrievalFailed = computed<boolean>(
+    () => store.getters["user/patientRetrievalFailed"]
+);
+const isProduction = computed(
+    () =>
         Process.NODE_ENV == EnvironmentType.production &&
-        (this.host.startsWith("HEALTHGATEWAY") ||
-            this.host.startsWith("WWW.HEALTHGATEWAY"));
+        (host.value.startsWith("HEALTHGATEWAY") ||
+            host.value.startsWith("WWW.HEALTHGATEWAY"))
+);
+const timeBeforeIdle = computed(
+    () => webClientConfig.value?.timeouts?.idle ?? 0
+);
+const maxIdleDialogCountdown = computed(() => 60000);
+const pageHasCustomLayout = computed(() =>
+    currentPathMatches(
+        vaccineCardPath,
+        covidTestPath,
+        landingPath,
+        queuePath,
+        queueFullPath
+    )
+);
+const isHeaderVisible = computed(
+    () =>
+        appError.value === undefined &&
+        !currentPathMatches(loginCallbackPath, vaccineCardPath, covidTestPath)
+);
+const isFooterVisible = computed(
+    () =>
+        appError.value === undefined &&
+        !currentPathMatches(
+            loginCallbackPath,
+            registrationPath,
+            vaccineCardPath,
+            covidTestPath
+        )
+);
+const isSidebarVisible = computed(
+    () =>
+        !currentPathMatches(
+            loginCallbackPath,
+            registrationPath,
+            acceptTermsOfServicePath
+        ) &&
+        !route.value.path.toLowerCase().startsWith(pcrTestPath) &&
+        !hasTermsOfServiceUpdated.value
+);
+const isNotificationCentreEnabled = computed(
+    () =>
+        webClientConfig.value.featureToggleConfiguration.notificationCentre
+            .enabled &&
+        !isOffline.value &&
+        oidcIsAuthenticated.value &&
+        isValidIdentityProvider.value &&
+        userIsRegistered.value &&
+        userIsActive.value &&
+        !patientRetrievalFailed.value
+);
+const isCommunicationVisible = computed(
+    () =>
+        !currentPathMatches(
+            loginCallbackPath,
+            vaccineCardPath,
+            covidTestPath
+        ) && !route.value.path.toLowerCase().startsWith(pcrTestPath)
+);
+const isResourceCentreVisible = computed(() =>
+    currentPathMatches(dependentsPath, reportsPath, timelinePath)
+);
 
-    private initialized = false;
-    private windowWidth = 0;
-    private vaccineCardPath = "/vaccinecard";
-    private covidTestPath = "/covidtest";
-    private loginCallbackPath = "/logincallback";
-    private registrationPath = "/registration";
-    private pcrTestPath = "/pcrtest";
-    private acceptTermsOfServicePath = "/accepttermsofservice";
-    private dependentsPath = "/dependents";
-    private reportsPath = "/reports";
-    private timelinePath = "/timeline";
-    private queuePath = "/queue";
-    private queueFullPath = "/busy";
-    private landingPath = "/";
-    private idleDetector?: IdleDetector;
+function setIsMobile(isMobile: boolean): void {
+    store.dispatch("setIsMobile", isMobile);
+}
 
-    constructor() {
-        super();
-        logger.debug(`Node ENV: ${Process.NODE_ENV}; host: ${this.host}`);
-        logger.debug(
-            `VUE Config Integrity Environment Variable: ${process.env.VUE_APP_CONFIG_INTEGRITY}`
-        );
-    }
+function initializeResizeListener(): void {
+    window.addEventListener("resize", onResize);
+    onResize();
+}
 
-    @Watch("oidcIsAuthenticated")
-    private onOidcIsAuthenticatedChanged(value: boolean): void {
-        // enable idle detector when authenticated and disable when not
-        if (value) {
-            this.idleDetector?.enable();
-        } else {
-            this.idleDetector?.disable();
+function onResize(): void {
+    windowWidth.value = window.innerWidth;
+
+    if (windowWidth.value < ScreenWidth.Mobile) {
+        if (!isMobile.value) {
+            setIsMobile(true);
         }
-    }
-
-    get timeBeforeIdle(): number {
-        return this.config?.timeouts?.idle ?? 0;
-    }
-
-    get maxIdleDialogCountdown(): number {
-        return 60000;
-    }
-
-    private created(): void {
-        this.windowWidth = window.innerWidth;
-        this.$nextTick(() => {
-            this.initializeResizeListener();
-            this.initializeIdleDetector();
-            this.initialized = true;
-        });
-    }
-
-    private initializeResizeListener() {
-        window.addEventListener("resize", this.onResize);
-        this.onResize();
-    }
-
-    private beforeDestroy(): void {
-        window.removeEventListener("resize", this.onResize);
-    }
-
-    private onResize(): void {
-        this.windowWidth = window.innerWidth;
-
-        if (this.windowWidth < ScreenWidth.Mobile) {
-            if (!this.isMobile) {
-                this.setIsMobile(true);
-            }
-        } else {
-            if (this.isMobile) {
-                this.setIsMobile(false);
-            }
+    } else {
+        if (isMobile.value) {
+            setIsMobile(false);
         }
-    }
-
-    private initializeIdleDetector() {
-        if (this.timeBeforeIdle > 0) {
-            this.idleDetector = new IdleDetector(
-                (timeIdle) => this.handleIsIdle(timeIdle),
-                this.timeBeforeIdle
-            );
-            if (this.oidcIsAuthenticated) {
-                this.idleDetector.enable();
-            }
-        }
-    }
-
-    private handleIsIdle(timeIdle: number): void {
-        if (!this.oidcIsAuthenticated) {
-            return;
-        }
-
-        const countdownTime = this.maxIdleDialogCountdown - timeIdle;
-        if (countdownTime <= 0) {
-            this.$router.push("/logout");
-        } else {
-            this.idleModal.show(countdownTime, () =>
-                this.idleDetector?.enable()
-            );
-        }
-    }
-
-    private currentPathMatches(...paths: string[]): boolean {
-        const currentPath = this.$route.path.toLowerCase();
-        return paths.some((path) => path === currentPath);
-    }
-
-    private get pageHasCustomLayout(): boolean {
-        return this.currentPathMatches(
-            this.vaccineCardPath,
-            this.covidTestPath,
-            this.landingPath,
-            this.queuePath,
-            this.queueFullPath
-        );
-    }
-
-    private get isHeaderVisible(): boolean {
-        return (
-            this.appError === undefined &&
-            !this.currentPathMatches(
-                this.loginCallbackPath,
-                this.vaccineCardPath,
-                this.covidTestPath
-            )
-        );
-    }
-
-    private get isFooterVisible(): boolean {
-        return (
-            this.appError === undefined &&
-            !this.currentPathMatches(
-                this.loginCallbackPath,
-                this.registrationPath,
-                this.vaccineCardPath,
-                this.covidTestPath
-            )
-        );
-    }
-
-    private get isSidebarVisible(): boolean {
-        return (
-            !this.currentPathMatches(
-                this.loginCallbackPath,
-                this.registrationPath,
-                this.acceptTermsOfServicePath
-            ) &&
-            !this.$route.path.toLowerCase().startsWith(this.pcrTestPath) &&
-            !this.hasTermsOfServiceUpdated
-        );
-    }
-
-    private get isNotificationCentreEnabled(): boolean {
-        return (
-            this.config.featureToggleConfiguration.notificationCentre.enabled &&
-            !this.isOffline &&
-            this.oidcIsAuthenticated &&
-            this.isValidIdentityProvider &&
-            this.userIsRegistered &&
-            this.userIsActive &&
-            !this.patientRetrievalFailed
-        );
-    }
-
-    private get isCommunicationVisible(): boolean {
-        return (
-            !this.currentPathMatches(
-                this.loginCallbackPath,
-                this.vaccineCardPath,
-                this.covidTestPath
-            ) && !this.$route.path.toLowerCase().startsWith(this.pcrTestPath)
-        );
-    }
-
-    private get isResourceCentreVisible(): boolean {
-        return this.currentPathMatches(
-            this.dependentsPath,
-            this.reportsPath,
-            this.timelinePath
-        );
     }
 }
+
+function initializeIdleDetector(): void {
+    if (timeBeforeIdle.value > 0) {
+        idleDetector = new IdleDetector(
+            (timeIdle) => handleIsIdle(timeIdle),
+            timeBeforeIdle.value
+        );
+        if (oidcIsAuthenticated.value) {
+            idleDetector.enable();
+        }
+    }
+}
+
+function handleIsIdle(timeIdle: number): void {
+    if (!oidcIsAuthenticated.value) {
+        return;
+    }
+
+    const countdownTime = maxIdleDialogCountdown.value - timeIdle;
+    if (countdownTime <= 0) {
+        router.push("/logout");
+    } else {
+        idleModal.value?.show(countdownTime, () => idleDetector?.enable());
+    }
+}
+
+function currentPathMatches(...paths: string[]): boolean {
+    const currentPath = route.value.path.toLowerCase();
+    return paths.some((path) => path === currentPath);
+}
+
+watch(oidcIsAuthenticated, (value: boolean) => {
+    // enable idle detector when authenticated and disable when not
+    if (value) {
+        idleDetector?.enable();
+    } else {
+        idleDetector?.disable();
+    }
+});
+
+onMounted(async () => {
+    windowWidth.value = window.innerWidth;
+
+    await nextTick();
+    initializeResizeListener();
+    initializeIdleDetector();
+    initialized.value = true;
+});
+
+onBeforeUnmount(() => {
+    window.removeEventListener("resize", onResize);
+});
+
+logger.debug(`Node ENV: ${Process.NODE_ENV}; host: ${host.value}`);
+logger.debug(
+    `VUE Config Integrity Environment Variable: ${process.env.VUE_APP_CONFIG_INTEGRITY}`
+);
 </script>
 
 <template>
@@ -343,11 +302,11 @@ export default class App extends Vue {
             </div>
         </div>
 
-        <NavHeader v-if="isHeaderVisible" class="d-print-none" />
+        <HeaderComponent v-if="isHeaderVisible" class="d-print-none" />
 
         <AppErrorView v-if="appError !== undefined" />
         <b-row v-else>
-            <NavSidebar
+            <SidebarComponent
                 v-if="isSidebarVisible"
                 class="d-print-none sticky-top vh-100"
             />
@@ -377,7 +336,7 @@ export default class App extends Vue {
         </b-row>
 
         <footer v-if="isFooterVisible" class="footer d-print-none">
-            <NavFooter />
+            <FooterComponent />
         </footer>
     </div>
 </template>

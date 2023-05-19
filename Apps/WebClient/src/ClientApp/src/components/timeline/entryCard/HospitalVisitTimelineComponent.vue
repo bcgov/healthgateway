@@ -1,4 +1,6 @@
 <script lang="ts">
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import Vue from "vue";
 import { Component, Prop, Ref } from "vue-property-decorator";
 import { Getter } from "vuex-class";
@@ -13,6 +15,8 @@ import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ILogger } from "@/services/interfaces";
 
 import EntryCardTimelineComponent from "./EntrycardTimelineComponent.vue";
+
+library.add(faInfoCircle);
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const options: any = {

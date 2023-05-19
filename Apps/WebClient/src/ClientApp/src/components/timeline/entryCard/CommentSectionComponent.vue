@@ -1,7 +1,7 @@
-<script lang="ts">
-import Vue from "vue";
-import { Component, Prop } from "vue-property-decorator";
-import { Action, Getter } from "vuex-class";
+<script setup lang="ts">
+import { BCollapse } from "bootstrap-vue";
+import { ComponentPublicInstance, computed, onMounted, ref } from "vue";
+import { useStore } from "vue-composition-wrapper";
 
 import AddCommentComponent from "@/components/timeline/entryCard/AddCommentComponent.vue";
 import CommentComponent from "@/components/timeline/entryCard/CommentComponent.vue";
@@ -15,110 +15,84 @@ import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ILogger } from "@/services/interfaces";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const options: any = {
-    components: {
-        Comment: CommentComponent,
-        AddComment: AddCommentComponent,
-    },
+interface Props {
+    parentEntry: TimelineEntry;
+    isMobileDetails?: boolean;
+    visible?: boolean;
+}
+const props = withDefaults(defineProps<Props>(), {
+    isMobileDetails: false,
+    visible: false,
+});
+
+const newComment: UserComment = {
+    id: "",
+    text: "",
+    parentEntryId: props.parentEntry.id,
+    entryTypeCode:
+        entryTypeMap.get(props.parentEntry.type)?.commentType ??
+        CommentEntryType.None,
+    userProfileId: "",
+    createdDateTime: new DateWrapper().toISODate(),
+    version: 0,
 };
 
-@Component(options)
-export default class CommentSectionComponent extends Vue {
-    @Prop()
-    parentEntry!: TimelineEntry;
+const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+const store = useStore();
 
-    @Prop({ default: false })
-    isMobileDetails!: boolean;
+const showComments = ref(false);
+const isLoadingComments = ref(false);
 
-    @Prop({ default: false })
-    visible!: boolean;
+const collapseComponent = ref<ComponentPublicInstance | null>();
 
-    @Action("updateComment", { namespace: "comment" })
-    updateComment!: (params: {
-        hdid: string;
-        comment: UserComment;
-    }) => Promise<UserComment>;
+const user = computed<User>(() => store.getters["user/user"]);
+const commentCount = computed(() => props.parentEntry.comments?.length ?? 0);
+const collapseElement = computed<Element | undefined>(
+    () => collapseComponent?.value?.$el
+);
 
-    @Getter("user", { namespace: "user" })
-    user!: User;
+function updateComment(
+    hdid: string,
+    comment: UserComment
+): Promise<UserComment> {
+    return store.dispatch("comment/updateComment", { hdid, comment });
+}
 
-    private logger!: ILogger;
-    private showComments = false;
-    private showInput = false;
-    private isLoadingComments = false;
-
-    private newComment: UserComment = {
-        id: "",
-        text: "",
-        parentEntryId: this.parentEntry.id,
-        entryTypeCode:
-            entryTypeMap.get(this.parentEntry.type)?.commentType ??
-            CommentEntryType.None,
-        userProfileId: "",
-        createdDateTime: new DateWrapper().toISODate(),
-        version: 0,
-    };
-
-    private created(): void {
-        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-    }
-
-    private mounted(): void {
-        // Some comments dont have entry type. This code updates them if they dont.
-        const commentsToUpdate: UserComment[] = [];
-        if (this.parentEntry.comments !== null) {
-            this.parentEntry.comments.forEach((x) => {
-                if (x.entryTypeCode === CommentEntryType.None) {
-                    x.entryTypeCode =
-                        entryTypeMap.get(this.parentEntry.type)?.commentType ??
-                        CommentEntryType.None;
-                    x.updatedBy = "System_Backfill";
-                    commentsToUpdate.push(x);
-                }
-            });
+function onSectionExpand(event: Event): void {
+    if (props.isMobileDetails && showComments.value) {
+        const transitionEvent = event as TransitionEvent;
+        if (
+            collapseElement.value !== transitionEvent.target ||
+            transitionEvent.propertyName !== "height"
+        ) {
+            return;
         }
-
-        commentsToUpdate.forEach((x) => {
-            this.logger.info("Updating comment " + x.id);
-            this.updateComment({ hdid: this.user.hdid, comment: x });
-        });
-
-        const commentsSection = (
-            this.$refs["entryComments" + this.parentEntry.id] as Vue
-        ).$el;
-        commentsSection?.addEventListener(
-            "transitionend",
-            this.onSectionExpand
-        );
-    }
-
-    private get hasComments(): boolean {
-        return this.parentEntry.comments !== null
-            ? this.parentEntry.comments.length > 0
-            : false;
-    }
-
-    private onAdd(): void {
-        this.showComments = true;
-    }
-
-    private onSectionExpand(event: Event): void {
-        if (this.isMobileDetails && this.showComments) {
-            const commentsSection = (
-                this.$refs["entryComments" + this.parentEntry.id] as Vue
-            ).$el;
-            const transitionEvent = event as TransitionEvent;
-            if (
-                commentsSection !== transitionEvent.target ||
-                transitionEvent.propertyName !== "height"
-            ) {
-                return;
-            }
-            commentsSection.scrollIntoView({ behavior: "smooth" });
-        }
+        collapseElement.value?.scrollIntoView({ behavior: "smooth" });
     }
 }
+
+onMounted(() => {
+    // Some comments don't have entry type. This code updates them if they don't.
+    const commentsToUpdate: UserComment[] = [];
+    if (props.parentEntry.comments !== null) {
+        props.parentEntry.comments.forEach((x) => {
+            if (x.entryTypeCode === CommentEntryType.None) {
+                x.entryTypeCode =
+                    entryTypeMap.get(props.parentEntry.type)?.commentType ??
+                    CommentEntryType.None;
+                x.updatedBy = "System_Backfill";
+                commentsToUpdate.push(x);
+            }
+        });
+    }
+
+    commentsToUpdate.forEach((x) => {
+        logger.info("Updating comment " + x.id);
+        updateComment(user.value.hdid, x);
+    });
+
+    collapseElement.value?.addEventListener("transitionend", onSectionExpand);
+});
 </script>
 
 <template>
@@ -126,7 +100,10 @@ export default class CommentSectionComponent extends Vue {
         <b-col>
             <b-row class="pt-2">
                 <b-col>
-                    <div v-if="hasComments" class="d-flex flex-row-reverse">
+                    <div
+                        v-if="commentCount > 0"
+                        class="d-flex flex-row-reverse"
+                    >
                         <b-btn
                             variant="link"
                             class="py-2"
@@ -135,10 +112,9 @@ export default class CommentSectionComponent extends Vue {
                         >
                             <span>
                                 {{
-                                    parentEntry.comments.length > 1
-                                        ? parentEntry.comments.length +
-                                          " Comments"
-                                        : "1 Comment"
+                                    commentCount == 1
+                                        ? "1 Comment"
+                                        : `${commentCount} Comments"`
                                 }}</span
                             >
                         </b-btn>
@@ -149,7 +125,7 @@ export default class CommentSectionComponent extends Vue {
                 <b-col>
                     <b-collapse
                         :id="'entryComments-' + parentEntry.id"
-                        :ref="'entryComments' + parentEntry.id"
+                        ref="collapseComponent"
                         v-model="showComments"
                     >
                         <div v-if="!isLoadingComments">
@@ -157,7 +133,7 @@ export default class CommentSectionComponent extends Vue {
                                 v-for="comment in parentEntry.comments"
                                 :key="comment.id"
                             >
-                                <Comment :comment="comment"></Comment>
+                                <CommentComponent :comment="comment" />
                             </div>
                         </div>
                         <div v-else>
@@ -169,12 +145,8 @@ export default class CommentSectionComponent extends Vue {
                     </b-collapse>
                 </b-col>
             </b-row>
-            <div
-                :class="{
-                    push: isMobileDetails,
-                }"
-            ></div>
-            <AddComment
+            <div :class="{ push: isMobileDetails }"></div>
+            <AddCommentComponent
                 class="pb-2"
                 :class="{
                     'fixed-bottom p-3 comment-input': isMobileDetails,
@@ -182,8 +154,8 @@ export default class CommentSectionComponent extends Vue {
                 :comment="newComment"
                 :is-mobile-details="isMobileDetails"
                 :visible="visible"
-                @on-comment-added="onAdd"
-            ></AddComment>
+                @on-comment-added="showComments = true"
+            />
         </b-col>
     </b-row>
 </template>

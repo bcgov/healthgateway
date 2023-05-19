@@ -1,213 +1,197 @@
-<script lang="ts">
+<script setup lang="ts">
 import { library } from "@fortawesome/fontawesome-svg-core";
 import {
     faBars,
     faChevronDown,
     faFilter,
 } from "@fortawesome/free-solid-svg-icons";
-import Vue from "vue";
-import Component from "vue-class-component";
-import { Prop, Watch } from "vue-property-decorator";
-import { Action, Getter } from "vuex-class";
+import { computed, onMounted, ref, watch } from "vue";
+import { useStore } from "vue-composition-wrapper";
 
 import DatePickerComponent from "@/components/DatePickerComponent.vue";
 import { EntryType, entryTypeMap } from "@/constants/entryType";
 import { PatientDataType } from "@/models/patientDataResponse";
 import TimelineFilter, { TimelineFilterBuilder } from "@/models/timelineFilter";
-import User from "@/models/user";
 
 library.add(faBars, faChevronDown, faFilter);
 
-// Entry filter model
 interface EntryTypeFilter {
     type: EntryType;
     display: string;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const options: any = {
-    components: {
-        DatePickerComponent,
-    },
-};
+interface Props {
+    hdid: string;
+    entryTypes?: EntryType[];
+}
+const props = withDefaults(defineProps<Props>(), {
+    entryTypes: () => [],
+});
 
-@Component(options)
-export default class FilterComponent extends Vue {
-    @Prop({ required: true })
-    hdid!: string;
+const store = useStore();
 
-    @Prop({ default: [] })
-    entryTypes!: EntryType[];
+const isMobileView = computed<boolean>(() => store.getters["isMobile"]);
+const isSidebarOpen = computed<boolean>(
+    () => store.getters["navbar/isSidebarOpen"]
+);
+const activeFilter = computed<TimelineFilter>(
+    () => store.getters["timeline/filter"]
+);
+const activeEntryTypes = computed<Set<EntryType>>(
+    () => store.getters["timeline/selectedEntryTypes"]
+);
 
-    @Action("setFilter", { namespace: "timeline" })
-    setFilter!: (filterBuilder: TimelineFilterBuilder) => void;
+const notesCount = computed<number>(() => store.getters["note/notesCount"]);
+const clinicalDocumentsCount = computed<(hdid: string) => number>(
+    () => store.getters["clinicalDocument/clinicalDocumentsCount"]
+);
+const covid19LaboratoryOrdersCount = computed<(hdid: string) => number>(
+    () => store.getters["laboratory/covid19LaboratoryOrdersCount"]
+);
+const healthVisitsCount = computed<(hdid: string) => number>(
+    () => store.getters["encounter/healthVisitsCount"]
+);
+const hospitalVisitsCount = computed<(hdid: string) => number>(
+    () => store.getters["encounter/hospitalVisitsCount"]
+);
+const immunizationsCount = computed<(hdid: string) => number>(
+    () => store.getters["immunization/immunizationsCount"]
+);
+const laboratoryOrdersCount = computed<(hdid: string) => number>(
+    () => store.getters["laboratory/laboratoryOrdersCount"]
+);
+const medicationsCount = computed<(hdid: string) => number>(
+    () => store.getters["medication/medicationsCount"]
+);
+const specialAuthorityRequestsCount = computed<(hdid: string) => number>(
+    () => store.getters["medication/specialAuthorityRequestsCount"]
+);
+const patientDataCount = computed<
+    (hdid: string, patientDataTypes: PatientDataType[]) => number
+>(() => store.getters["patientData/patientDataCount"]);
 
-    @Getter("isMobile")
-    isMobileView!: boolean;
+const isModalVisible = ref(false);
+const isMenuVisible = ref(false);
+const isFilterStartDateValidDate = ref(true);
+const isFilterEndDateValidDate = ref(true);
+const startDate = ref("");
+const endDate = ref("");
+const selectedEntryTypes = ref<EntryType[]>([]);
+const keywordInputText = ref("");
 
-    @Getter("isSidebarOpen", { namespace: "navbar" })
-    isSidebarOpen!: boolean;
+const enabledEntryTypes = computed(() =>
+    props.entryTypes
+        .map<EntryTypeFilter>((entryType) => ({
+            type: entryType,
+            display: entryTypeMap.get(entryType)?.name ?? "",
+        }))
+        .filter((entryTypeFilter) => entryTypeFilter.display !== "")
+);
 
-    @Getter("medicationsCount", { namespace: "medication" })
-    medicationsCount!: (hdid: string) => number;
+const hasFilterSelected = computed(() => activeFilter.value.hasActiveFilter());
 
-    @Getter("specialAuthorityRequestsCount", { namespace: "medication" })
-    specialAuthorityRequestsCount!: (hdid: string) => number;
+function setFilter(filterBuilder: TimelineFilterBuilder): void {
+    store.dispatch("timeline/setFilter", filterBuilder);
+}
 
-    @Getter("immunizationsCount", { namespace: "immunization" })
-    immunizationsCount!: (hdid: string) => number;
+function toggleMenu(): void {
+    isMenuVisible.value = !isMenuVisible.value;
+}
 
-    @Getter("covid19LaboratoryOrdersCount", { namespace: "laboratory" })
-    covid19LaboratoryOrdersCount!: (hdid: string) => number;
+function toggleMobileView(): void {
+    isModalVisible.value = !isModalVisible.value;
+}
 
-    @Getter("laboratoryOrdersCount", { namespace: "laboratory" })
-    laboratoryOrdersCount!: (hdid: string) => number;
+function apply(): void {
+    const builder = TimelineFilterBuilder.create()
+        .withKeyword(keywordInputText.value)
+        .withStartDate(startDate.value)
+        .withEndDate(endDate.value)
+        .withEntryTypes(selectedEntryTypes.value);
 
-    @Getter("healthVisitsCount", { namespace: "encounter" })
-    healthVisitsCount!: (hdid: string) => number;
+    setFilter(builder);
+    closeMenu();
+}
 
-    @Getter("hospitalVisitsCount", { namespace: "encounter" })
-    hospitalVisitsCount!: (hdid: string) => number;
+function cancel(): void {
+    syncWithFilter();
+    closeMenu();
+}
 
-    @Getter("notesCount", { namespace: "note" })
-    notesCount!: number;
+function closeMenu(): void {
+    isMenuVisible.value = false;
+    isModalVisible.value = false;
+}
 
-    @Getter("clinicalDocumentsCount", { namespace: "clinicalDocument" })
-    clinicalDocumentsCount!: (hdid: string) => number;
-
-    @Getter("filter", { namespace: "timeline" })
-    activeFilter!: TimelineFilter;
-
-    @Getter("selectedEntryTypes", { namespace: "timeline" })
-    activeEntryTypes!: Set<EntryType>;
-
-    @Getter("user", { namespace: "user" })
-    user!: User;
-
-    @Getter("patientDataCount", { namespace: "patientData" })
-    patientDataCount!: (
-        hdid: string,
-        patientDataTypes: PatientDataType[]
-    ) => number;
-
-    private isModalVisible = false;
-    private isMenuVisible = false;
-    private isFilterStartDateValidDate = true;
-    private isFilterEndDateValidDate = true;
-
-    private startDate = "";
-    private endDate = "";
-    private selectedEntryTypes: EntryType[] = [];
-    private keywordInputText = "";
-
-    private get enabledEntryTypes(): EntryTypeFilter[] {
-        return this.entryTypes
-            .map<EntryTypeFilter>((entryType) => ({
-                type: entryType,
-                display: entryTypeMap.get(entryType)?.name ?? "",
-            }))
-            .filter((entryTypeFilter) => entryTypeFilter.display !== "");
-    }
-
-    get hasFilterSelected(): boolean {
-        return this.activeFilter.hasActiveFilter();
-    }
-
-    mounted(): void {
-        this.syncWithFilter();
-    }
-
-    @Watch("isMobileView")
-    onIsMobileView(): void {
-        this.isModalVisible = false;
-    }
-
-    @Watch("isSidebarOpen")
-    onIsSidebarOpen(): void {
-        this.isModalVisible = false;
-    }
-
-    @Watch("activeFilter", { deep: true })
-    syncWithFilter(): void {
-        this.keywordInputText = this.activeFilter.keyword;
-        this.startDate = this.activeFilter.startDate;
-        this.endDate = this.activeFilter.endDate;
-        this.selectedEntryTypes = [...this.activeEntryTypes];
-    }
-
-    toggleMenu(): void {
-        this.isMenuVisible = !this.isMenuVisible;
-    }
-
-    toggleMobileView(): void {
-        this.isModalVisible = !this.isModalVisible;
-    }
-
-    apply(): void {
-        const builder = TimelineFilterBuilder.create()
-            .withKeyword(this.keywordInputText)
-            .withStartDate(this.startDate)
-            .withEndDate(this.endDate)
-            .withEntryTypes(this.selectedEntryTypes);
-
-        this.setFilter(builder);
-
-        this.closeMenu();
-    }
-
-    cancel(): void {
-        this.syncWithFilter();
-        this.closeMenu();
-    }
-
-    closeMenu(): void {
-        this.isMenuVisible = false;
-        this.isModalVisible = false;
-    }
-
-    getFilterCount(entryType: EntryType): number | undefined {
-        switch (entryType) {
-            case EntryType.ClinicalDocument:
-                return this.clinicalDocumentsCount(this.hdid);
-            case EntryType.Covid19TestResult:
-                return this.covid19LaboratoryOrdersCount(this.hdid);
-            case EntryType.HealthVisit:
-                return this.healthVisitsCount(this.hdid);
-            case EntryType.HospitalVisit:
-                return this.hospitalVisitsCount(this.hdid);
-            case EntryType.Immunization:
-                return this.immunizationsCount(this.hdid);
-            case EntryType.LabResult:
-                return this.laboratoryOrdersCount(this.hdid);
-            case EntryType.Medication:
-                return this.medicationsCount(this.hdid);
-            case EntryType.Note:
-                return this.notesCount;
-            case EntryType.SpecialAuthorityRequest:
-                return this.specialAuthorityRequestsCount(this.hdid);
-            case EntryType.DiagnosticImaging:
-                return this.patientDataCount(this.hdid, [
-                    PatientDataType.DiagnosticImaging,
-                ]);
-            default:
-                return undefined;
-        }
-    }
-
-    private formatFilterCount(entryType: EntryType): string {
-        const num = this.getFilterCount(entryType);
-
-        if (num === undefined) {
-            return "";
-        }
-
-        return Math.abs(num) > 999
-            ? parseFloat(
-                  ((Math.round(num / 100) * 100) / 1000).toFixed(1)
-              ).toString() + "K"
-            : num.toString();
+function getFilterCount(entryType: EntryType): number | undefined {
+    switch (entryType) {
+        case EntryType.Note:
+            return notesCount.value;
+        case EntryType.ClinicalDocument:
+            return clinicalDocumentsCount.value(props.hdid);
+        case EntryType.Covid19TestResult:
+            return covid19LaboratoryOrdersCount.value(props.hdid);
+        case EntryType.HealthVisit:
+            return healthVisitsCount.value(props.hdid);
+        case EntryType.HospitalVisit:
+            return hospitalVisitsCount.value(props.hdid);
+        case EntryType.Immunization:
+            return immunizationsCount.value(props.hdid);
+        case EntryType.LabResult:
+            return laboratoryOrdersCount.value(props.hdid);
+        case EntryType.Medication:
+            return medicationsCount.value(props.hdid);
+        case EntryType.SpecialAuthorityRequest:
+            return specialAuthorityRequestsCount.value(props.hdid);
+        case EntryType.DiagnosticImaging:
+            return patientDataCount.value(props.hdid, [
+                PatientDataType.DiagnosticImaging,
+            ]);
+        default:
+            return undefined;
     }
 }
+
+function getFormattedFilterCount(entryType: EntryType): string {
+    const num = getFilterCount(entryType);
+
+    if (num === undefined) {
+        return "";
+    }
+
+    return Math.abs(num) > 999
+        ? parseFloat(
+              ((Math.round(num / 100) * 100) / 1000).toFixed(1)
+          ).toString() + "K"
+        : num.toString();
+}
+
+function syncWithFilter(): void {
+    keywordInputText.value = activeFilter.value.keyword;
+    startDate.value = activeFilter.value.startDate;
+    endDate.value = activeFilter.value.endDate;
+    selectedEntryTypes.value = [...activeEntryTypes.value];
+}
+
+watch(isMobileView, () => {
+    isModalVisible.value = false;
+});
+
+watch(isSidebarOpen, () => {
+    isModalVisible.value = false;
+});
+
+watch(
+    activeFilter,
+    () => {
+        syncWithFilter();
+    },
+    { deep: true }
+);
+
+onMounted(() => {
+    syncWithFilter();
+});
 </script>
 
 <template>
@@ -285,30 +269,31 @@ export default class FilterComponent extends Vue {
                 <b-row class="mt-2 mb-1">
                     <b-col><strong>Type</strong></b-col>
                 </b-row>
-                <b-row
-                    v-for="(entryType, index) in enabledEntryTypes"
-                    :key="index"
-                >
-                    <b-col cols="8" align-self="start">
-                        <b-form-checkbox
-                            :id="entryType.type + '-filter'"
-                            v-model="selectedEntryTypes"
-                            :data-testid="`${entryType.type}-filter`"
-                            :name="entryType.type + '-filter'"
-                            :value="entryType.type"
-                        >
-                            {{ entryType.display }}
-                        </b-form-checkbox>
-                    </b-col>
-                    <b-col
-                        cols="4"
-                        align-self="end"
-                        class="text-right"
-                        :data-testid="`${entryType.type}Count`"
+                <b-form-checkbox-group v-model="selectedEntryTypes">
+                    <b-row
+                        v-for="(entryType, index) in enabledEntryTypes"
+                        :key="index"
                     >
-                        ({{ formatFilterCount(entryType.type) }})
-                    </b-col>
-                </b-row>
+                        <b-col cols="8" align-self="start">
+                            <b-form-checkbox
+                                :id="entryType.type + '-filter'"
+                                :data-testid="`${entryType.type}-filter`"
+                                :name="entryType.type + '-filter'"
+                                :value="entryType.type"
+                            >
+                                {{ entryType.display }}
+                            </b-form-checkbox>
+                        </b-col>
+                        <b-col
+                            cols="4"
+                            align-self="end"
+                            class="text-right"
+                            :data-testid="`${entryType.type}Count`"
+                        >
+                            ({{ getFormattedFilterCount(entryType.type) }})
+                        </b-col>
+                    </b-row>
+                </b-form-checkbox-group>
                 <b-row class="mt-2">
                     <b-col><strong>Dates</strong></b-col>
                 </b-row>
@@ -397,25 +382,26 @@ export default class FilterComponent extends Vue {
 
             <div class="filter-section mb-3">
                 <div class="mb-1"><strong>Type</strong></div>
-                <b-row
-                    v-for="(filter, index) in enabledEntryTypes"
-                    :key="index"
-                >
-                    <b-col cols="8" align-self="start">
-                        <b-form-checkbox
-                            :id="filter.type + '-filter'"
-                            v-model="selectedEntryTypes"
-                            :data-testid="`${filter.type}-filter`"
-                            :name="filter.type + '-filter'"
-                            :value="filter.type"
-                        >
-                            {{ filter.display }}
-                        </b-form-checkbox>
-                    </b-col>
-                    <b-col cols="4" align-self="end" class="text-right">
-                        ({{ formatFilterCount(filter.type) }})
-                    </b-col>
-                </b-row>
+                <b-form-checkbox-group v-model="selectedEntryTypes">
+                    <b-row
+                        v-for="(filter, index) in enabledEntryTypes"
+                        :key="index"
+                    >
+                        <b-col cols="8" align-self="start">
+                            <b-form-checkbox
+                                :id="filter.type + '-filter'"
+                                :data-testid="`${filter.type}-filter`"
+                                :name="filter.type + '-filter'"
+                                :value="filter.type"
+                            >
+                                {{ filter.display }}
+                            </b-form-checkbox>
+                        </b-col>
+                        <b-col cols="4" align-self="end" class="text-right">
+                            ({{ getFormattedFilterCount(filter.type) }})
+                        </b-col>
+                    </b-row>
+                </b-form-checkbox-group>
             </div>
 
             <div class="filter-section mb-3">

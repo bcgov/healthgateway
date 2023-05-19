@@ -1,43 +1,35 @@
-<script lang="ts">
-import Vue from "vue";
-import { Component, Prop } from "vue-property-decorator";
+<script setup lang="ts">
+import { computed } from "vue";
 
+import EntryCardTimelineComponent from "@/components/timeline/entryCard/EntrycardTimelineComponent.vue";
 import DateTimeFormat from "@/constants/dateTimeFormat";
 import { EntryType, entryTypeMap } from "@/constants/entryType";
 import { DateWrapper } from "@/models/dateWrapper";
 import MedicationRequestTimelineEntry from "@/models/medicationRequestTimelineEntry";
 
-import EntryCardTimelineComponent from "./EntrycardTimelineComponent.vue";
+interface Props {
+    entry: MedicationRequestTimelineEntry;
+    index: number;
+    datekey: string;
+    isMobileDetails?: boolean;
+    commentsAreEnabled?: boolean;
+}
+withDefaults(defineProps<Props>(), {
+    isMobileDetails: false,
+    commentsAreEnabled: false,
+});
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const options: any = {
-    components: {
-        EntryCard: EntryCardTimelineComponent,
-    },
-};
+const entryIcon = computed(
+    () => entryTypeMap.get(EntryType.SpecialAuthorityRequest)?.icon
+);
 
-@Component(options)
-export default class MedicationRequestTimelineComponent extends Vue {
-    @Prop() entry!: MedicationRequestTimelineEntry;
-    @Prop() index!: number;
-    @Prop() datekey!: string;
-    @Prop() isMobileDetails!: boolean;
-
-    @Prop({ default: false })
-    commentsAreEnabled!: boolean;
-
-    private get entryIcon(): string | undefined {
-        return entryTypeMap.get(EntryType.SpecialAuthorityRequest)?.icon;
-    }
-
-    private formatDate(dateValue: string): string {
-        return DateWrapper.format(dateValue, DateTimeFormat.formatDateString);
-    }
+function formatDate(date: DateWrapper): string {
+    return date.format(DateTimeFormat.formatDateString);
 }
 </script>
 
 <template>
-    <EntryCard
+    <EntryCardTimelineComponent
         :card-id="index + '-' + datekey"
         :entry-icon="entryIcon"
         :title="entry.drugName"
@@ -80,7 +72,7 @@ export default class MedicationRequestTimelineComponent extends Vue {
                 </div>
             </b-col>
         </b-row>
-    </EntryCard>
+    </EntryCardTimelineComponent>
 </template>
 
 <style lang="scss" scoped>

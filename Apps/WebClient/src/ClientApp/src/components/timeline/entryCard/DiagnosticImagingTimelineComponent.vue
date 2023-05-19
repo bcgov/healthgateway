@@ -1,8 +1,7 @@
-﻿<script lang="ts">
+﻿<script setup lang="ts">
 import saveAs from "file-saver";
-import Vue from "vue";
-import { Component, Prop, Ref } from "vue-property-decorator";
-import { Action, Getter } from "vuex-class";
+import { computed, ref } from "vue";
+import { useStore } from "vue-composition-wrapper";
 
 import MessageModalComponent from "@/components/modal/MessageModalComponent.vue";
 import EntryCardTimelineComponent from "@/components/timeline/entryCard/EntrycardTimelineComponent.vue";
@@ -14,93 +13,72 @@ import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ILogger } from "@/services/interfaces";
 import SnowPlow from "@/utility/snowPlow";
 
-const options = {
-    components: {
-        EntryCard: EntryCardTimelineComponent,
-        MessageModalComponent,
-    },
-};
-@Component(options)
-export default class DiagnosticImagingTimelineComponent extends Vue {
-    @Prop({ required: true })
-    hdid!: string;
+interface Props {
+    hdid: string;
+    entry: DiagnosticImagingTimelineEntry;
+    index: number;
+    datekey: string;
+    isMobileDetails?: boolean;
+    commentsAreEnabled?: boolean;
+}
+const props = withDefaults(defineProps<Props>(), {
+    isMobileDetails: false,
+    commentsAreEnabled: false,
+});
 
-    @Prop()
-    entry!: DiagnosticImagingTimelineEntry;
+const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+const store = useStore();
 
-    @Prop()
-    index!: number;
+const messageModal = ref<MessageModalComponent>();
 
-    @Prop()
-    datekey!: string;
+const isPatientDataFileLoading = computed<(fileId: string) => boolean>(
+    () => store.getters["patientData/isPatientDataFileLoading"]
+);
+const isLoadingFile = computed(
+    () =>
+        props.entry.fileId !== undefined &&
+        isPatientDataFileLoading.value(props.entry.fileId)
+);
+const entryIcon = computed(
+    () => entryTypeMap.get(EntryType.DiagnosticImaging)?.icon
+);
 
-    @Prop()
-    isMobileDetails!: boolean;
+function retrievePatientDataFile(
+    fileId: string,
+    hdid: string
+): Promise<PatientDataFile> {
+    return store.dispatch("patientData/retrievePatientDataFile", {
+        fileId,
+        hdid,
+    });
+}
 
-    @Prop({ default: false })
-    commentsAreEnabled!: boolean;
+function showConfirmationModal(): void {
+    messageModal.value?.showModal();
+}
 
-    @Action("retrievePatientDataFile", { namespace: "patientData" })
-    retrievePatientDataFile!: (params: {
-        fileId: string;
-        hdid: string;
-    }) => Promise<PatientDataFile>;
-
-    @Getter("isPatientDataFileLoading", { namespace: "patientData" })
-    isPatientDataFileLoading!: (fileId: string) => boolean;
-
-    @Ref("messageModal")
-    readonly messageModal!: MessageModalComponent;
-
-    private logger!: ILogger;
-
-    get isLoadingFile(): boolean {
-        return (
-            this.entry.fileId !== undefined &&
-            this.isPatientDataFileLoading(this.entry.fileId)
-        );
-    }
-
-    get entryIcon(): string | undefined {
-        return entryTypeMap.get(EntryType.DiagnosticImaging)?.icon;
-    }
-
-    created(): void {
-        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-    }
-
-    showConfirmationModal(): void {
-        this.messageModal.showModal();
-    }
-
-    downloadFile(): void {
-        if (this.entry.fileId) {
-            SnowPlow.trackEvent({
-                action: "download_report",
-                text: "Diagnostic Imaging PDF",
-            });
-            const dateString = this.entry.date.format("yyyy_MM_dd-HH_mm");
-            this.retrievePatientDataFile({
-                fileId: this.entry.fileId,
-                hdid: this.hdid,
-            })
-                .then(
-                    (patientFile: PatientDataFile) =>
-                        new Blob([new Uint8Array(patientFile.content)], {
-                            type: patientFile.contentType,
-                        })
-                )
-                .then((blob) =>
-                    saveAs(blob, `diagnostic_image_${dateString}.pdf`)
-                )
-                .catch((err) => this.logger.error(err));
-        }
+function downloadFile(): void {
+    if (props.entry.fileId) {
+        SnowPlow.trackEvent({
+            action: "download_report",
+            text: "Diagnostic Imaging PDF",
+        });
+        const dateString = props.entry.date.format("yyyy_MM_dd-HH_mm");
+        retrievePatientDataFile(props.entry.fileId, props.hdid)
+            .then(
+                (patientFile: PatientDataFile) =>
+                    new Blob([new Uint8Array(patientFile.content)], {
+                        type: patientFile.contentType,
+                    })
+            )
+            .then((blob) => saveAs(blob, `diagnostic_image_${dateString}.pdf`))
+            .catch((err) => logger.error(err));
     }
 }
 </script>
 
 <template>
-    <EntryCard
+    <EntryCardTimelineComponent
         :card-id="`${index}-${datekey}`"
         :entry-icon="entryIcon"
         :title="entry.modality"
@@ -126,7 +104,7 @@ export default class DiagnosticImagingTimelineComponent extends Vue {
                 </div>
                 <div data-testid="diagnostic-imaging-facility">
                     <strong>Facility: </strong>
-                    <span>{{ entry.facility }}</span>
+                    <span>{{ entry.organization }}</span>
                 </div>
             </div>
             <div class="mt-3">
@@ -160,5 +138,5 @@ export default class DiagnosticImagingTimelineComponent extends Vue {
                 @submit="downloadFile"
             />
         </div>
-    </EntryCard>
+    </EntryCardTimelineComponent>
 </template>
