@@ -1,0 +1,33 @@
+﻿@using HealthGateway.Admin.Common.Models
+@inherits Fluxor.Blazor.Web.Components.FluxorComponent
+
+<MudExpansionPanels Class="mt-4">
+    <MudProgressLinear Class="rounded-t overflow-hidden" hidden="@(!IsLoading)" Color="Color.Primary" Indeterminate="true" />
+    <MudExpansionPanel Class="my-0">
+        <TitleContent>
+            <MudText Typo="Typo.subtitle1">@Title (@(AgentActions.Count()))</MudText>
+        </TitleContent>
+        <ChildContent>
+            <MudList>
+                @foreach (AgentAction action in AgentActions)
+                {
+                    <MudListItem class="background-secondary">
+                        <MudText Typo="Typo.h6" class="mb-2">
+                            <b>@action.AgentUsername</b>
+                        </MudText>
+                        <MudText Typo="Typo.body2">@action.Reason</MudText>
+                        <MudText Typo="Typo.caption" class="font-weight-bold">
+                            <b>@action.TransactionDateTime</b>
+                        </MudText>
+                    </MudListItem>
+                }
+                @if (!AgentActions.Any())
+                {
+                    <MudListItem>
+                        <MudText Typo="Typo.body2">No agent action history.</MudText>
+                    </MudListItem>
+                }
+            </MudList>
+        </ChildContent>
+    </MudExpansionPanel>
+</MudExpansionPanels>

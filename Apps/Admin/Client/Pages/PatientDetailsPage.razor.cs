@@ -41,7 +41,7 @@ namespace HealthGateway.Admin.Client.Pages
         private IDispatcher Dispatcher { get; set; } = default!;
 
         [Inject]
-        private IState<PatientDetailsState> PatientSupportDetailsState { get; set; } = default!;
+        private IState<PatientDetailsState> PatientDetailsState { get; set; } = default!;
 
         [Inject]
         private IState<PatientSupportState> PatientSupportState { get; set; } = default!;
@@ -55,11 +55,15 @@ namespace HealthGateway.Admin.Client.Pages
         [Inject]
         private IConfiguration Configuration { get; set; } = default!;
 
-        private bool MessagingVerificationsLoading => this.PatientSupportDetailsState.Value.IsLoading;
+        private bool PatientSupportDetailsLoading => this.PatientDetailsState.Value.IsLoading;
 
-        private bool HasMessagingVerificationsError => this.PatientSupportDetailsState.Value.Error is { Message.Length: > 0 };
+        private bool HasPatientSupportDetailsError => this.PatientDetailsState.Value.Error is { Message.Length: > 0 };
 
-        private IEnumerable<MessagingVerificationModel> MessagingVerifications => this.PatientSupportDetailsState.Value.MessagingVerifications ?? Enumerable.Empty<MessagingVerificationModel>();
+        private IEnumerable<MessagingVerificationModel> MessagingVerifications => this.PatientDetailsState.Value.MessagingVerifications ?? Enumerable.Empty<MessagingVerificationModel>();
+
+        private IEnumerable<DataSource> BlockedDataSources => this.PatientDetailsState.Value.BlockedDataSources ?? Enumerable.Empty<DataSource>();
+
+        private IEnumerable<AgentAction> AgentAuditHistory => this.PatientDetailsState.Value.AgentActions ?? Enumerable.Empty<AgentAction>();
 
         private bool PatientsLoaded => this.PatientSupportState.Value.Loaded;
 
