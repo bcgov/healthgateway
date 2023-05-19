@@ -31,6 +31,7 @@ namespace HealthGateway.Admin.Tests.Services
     using HealthGateway.Common.Data.ErrorHandling;
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Data.ViewModels;
+    using HealthGateway.Common.Messaging;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Services;
     using HealthGateway.Database.Constants;
@@ -397,6 +398,7 @@ namespace HealthGateway.Admin.Tests.Services
                 new Mock<IResourceDelegateDelegate>().Object,
                 new Mock<IDelegationDelegate>().Object,
                 new Mock<IAuthenticationDelegate>().Object,
+                new Mock<IMessageSender>().Object,
                 this.autoMapper);
 
             await Assert.ThrowsAsync<ProblemDetailsException>(() => delegationService.GetDelegationInformationAsync(DependentPhn)).ConfigureAwait(true);
@@ -752,6 +754,7 @@ namespace HealthGateway.Admin.Tests.Services
                 resourceDelegateDelegate.Object,
                 delegationDelegate.Object,
                 new Mock<IAuthenticationDelegate>().Object,
+                new Mock<IMessageSender>().Object,
                 this.autoMapper);
         }
 
@@ -772,7 +775,9 @@ namespace HealthGateway.Admin.Tests.Services
 
             delegationDelegate.Setup(p => p.GetDependentAsync(resourceOwnerHdid, true)).ReturnsAsync(dependent);
 
-            return new(this.configuration, new Mock<IPatientService>().Object, resourceDelegateDelegate.Object, delegationDelegate.Object, authenticationDelegate.Object, this.autoMapper);
+            Mock<IMessageSender> messageSender = new();
+
+            return new(this.configuration, new Mock<IPatientService>().Object, resourceDelegateDelegate.Object, delegationDelegate.Object, authenticationDelegate.Object, messageSender.Object, this.autoMapper);
         }
 
         private DelegationService GetDelegationService(RequestResult<PatientModel> patient)
@@ -785,6 +790,7 @@ namespace HealthGateway.Admin.Tests.Services
                 new Mock<IResourceDelegateDelegate>().Object,
                 new Mock<IDelegationDelegate>().Object,
                 new Mock<IAuthenticationDelegate>().Object,
+                new Mock<IMessageSender>().Object,
                 this.autoMapper);
         }
     }
