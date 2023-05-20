@@ -1,7 +1,6 @@
-﻿<script lang="ts">
-import Vue from "vue";
-import { Component, Prop } from "vue-property-decorator";
-import { Action, Getter } from "vuex-class";
+﻿<script setup lang="ts">
+import { computed, ref } from "vue";
+import { useStore } from "vue-composition-wrapper";
 
 import { ResultError } from "@/models/errors";
 import MedicationStatementHistory from "@/models/medicationStatementHistory";
@@ -10,67 +9,62 @@ import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ILogger } from "@/services/interfaces";
 
-@Component
-export default class ProtectiveWordComponent extends Vue {
-    @Prop({ required: true })
-    hdid!: string;
+const store = useStore();
 
-    @Action("retrieveMedications", { namespace: "medication" })
-    retrieveMedications!: (params: {
-        hdid: string;
-        protectiveWord?: string;
-    }) => Promise<RequestResult<MedicationStatementHistory[]>>;
+interface Props {
+    hdid: string;
+}
+const props = defineProps<Props>();
 
-    @Getter("medicationsAreLoading", { namespace: "medication" })
-    medicationsAreLoading!: (hdid: string) => boolean;
+function retrieveMedications(params: {
+    hdid: string;
+    protectiveWord?: string;
+}): Promise<RequestResult<MedicationStatementHistory[]>> {
+    return store.dispatch("medication/retrieveMedications", params);
+}
 
-    @Getter("medicationsAreProtected", { namespace: "medication" })
-    medicationsAreProtected!: (hdid: string) => boolean;
+const medicationsAreLoading = computed<boolean>(() =>
+    store.getters["medication/medicationsAreLoading"](props.hdid)
+);
 
-    @Getter("protectiveWordAttempts", { namespace: "medication" })
-    protectiveWordAttempts!: (hdid: string) => number;
+const medicationsAreProtected = computed<boolean>(() =>
+    store.getters["medication/medicationsAreProtected"](props.hdid)
+);
 
-    private protectiveWord = "";
-    private isDismissed = false;
+const protectiveWordAttempts = computed<number>(() =>
+    store.getters["medication/protectiveWordAttempts"](props.hdid)
+);
 
-    private logger!: ILogger;
+const protectiveWord = ref("");
+const isDismissed = ref(false);
 
-    private get isVisible(): boolean {
-        return (
-            this.medicationsAreProtected(this.hdid) &&
-            !this.medicationsAreLoading(this.hdid) &&
-            !this.isDismissed
-        );
-    }
+const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
 
-    private set isVisible(visible: boolean) {
-        this.isDismissed = !visible;
-    }
+const isVisible = computed<boolean>(() => {
+    return (
+        medicationsAreProtected.value &&
+        !medicationsAreLoading.value &&
+        !isDismissed.value
+    );
+});
 
-    private get error(): boolean {
-        return this.protectiveWordAttempts(this.hdid) > 1;
-    }
+const error = computed<boolean>(() => {
+    return protectiveWordAttempts.value > 1;
+});
 
-    private created(): void {
-        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-    }
+function handleOk(bvModalEvt: Event): void {
+    // Prevent modal from closing
+    bvModalEvt.preventDefault();
+    fetchMedications();
+}
 
-    private handleOk(bvModalEvt: Event): void {
-        // Prevent modal from closing
-        bvModalEvt.preventDefault();
-        this.fetchMedications();
-    }
-
-    private fetchMedications(): void {
-        this.retrieveMedications({
-            hdid: this.hdid,
-            protectiveWord: this.protectiveWord,
-        }).catch((err: ResultError) =>
-            this.logger.error(
-                "Error retrieving medications: " + JSON.stringify(err)
-            )
-        );
-    }
+function fetchMedications(): void {
+    retrieveMedications({
+        hdid: props.hdid,
+        protectiveWord: protectiveWord.value,
+    }).catch((err: ResultError) =>
+        logger.error("Error retrieving medications: " + JSON.stringify(err))
+    );
 }
 </script>
 

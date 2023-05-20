@@ -1,9 +1,8 @@
-<script lang="ts">
+<script setup lang="ts">
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faArrowCircleUp, faLock } from "@fortawesome/free-solid-svg-icons";
-import Vue from "vue";
-import { Component, Emit, Prop } from "vue-property-decorator";
-import { Action, Getter } from "vuex-class";
+import { computed, ref } from "vue";
+import { useStore } from "vue-composition-wrapper";
 
 import { DateWrapper } from "@/models/dateWrapper";
 import { ResultError } from "@/models/errors";
@@ -13,89 +12,86 @@ import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ILogger } from "@/services/interfaces";
 
+const store = useStore();
+
 library.add(faArrowCircleUp, faLock);
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const options: any = {};
+interface Props {
+    comment: UserComment;
+    visible?: boolean;
+    isMobileDetails?: boolean;
+}
+const props = withDefaults(defineProps<Props>(), {
+    visible: false,
+    isMobileDetails: false,
+});
 
-@Component(options)
-export default class AddCommentComponent extends Vue {
-    @Prop()
-    comment!: UserComment;
+function createComment(params: {
+    hdid: string;
+    comment: UserComment;
+}): Promise<UserComment | undefined> {
+    return store.dispatch("comment/createComment", params);
+}
 
-    @Prop({ default: false })
-    visible!: boolean;
+function setTooManyRequestsError(params: { key: string }): void {
+    store.dispatch("errorBanner/setTooManyRequestsError", params);
+}
 
-    @Prop({ default: false })
-    isMobileDetails!: boolean;
+const user = computed<User>(() => store.getters["user/user"]);
 
-    @Action("createComment", { namespace: "comment" })
-    createComment!: (params: {
-        hdid: string;
-        comment: UserComment;
-    }) => Promise<UserComment | undefined>;
+const commentInput = ref("");
+const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+const isSaving = ref(false);
 
-    @Action("setTooManyRequestsError", { namespace: "errorBanner" })
-    setTooManyRequestsError!: (params: { key: string }) => void;
+const privacyInfoId = computed<string>(() => {
+    const id = `privacy-icon-${props.comment.parentEntryId}`;
+    return props.isMobileDetails ? id + "-mobile" : id;
+});
 
-    @Getter("user", { namespace: "user" })
-    user!: User;
+function onSubmit(): void {
+    addComment();
+}
 
-    private commentInput = "";
-    private logger!: ILogger;
-    private isSaving = false;
-
-    private get privacyInfoId(): string {
-        const id = `privacy-icon-${this.comment.parentEntryId}`;
-        return this.isMobileDetails ? id + "-mobile" : id;
-    }
-
-    private created(): void {
-        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-    }
-
-    private onSubmit(): void {
-        this.addComment();
-    }
-
-    private addComment(): void {
-        this.isSaving = true;
-        this.createComment({
-            hdid: this.user.hdid,
-            comment: {
-                id: "00000000-0000-0000-0000-000000000000",
-                text: this.commentInput,
-                parentEntryId: this.comment.parentEntryId,
-                userProfileId: this.user.hdid,
-                entryTypeCode: this.comment.entryTypeCode,
-                version: 0,
-                createdDateTime: new DateWrapper().toISO(),
-            },
+function addComment(): void {
+    isSaving.value = true;
+    createComment({
+        hdid: user.value.hdid,
+        comment: {
+            id: "00000000-0000-0000-0000-000000000000",
+            text: commentInput.value,
+            parentEntryId: props.comment.parentEntryId,
+            userProfileId: user.value.hdid,
+            entryTypeCode: props.comment.entryTypeCode,
+            version: 0,
+            createdDateTime: new DateWrapper().toISO(),
+        },
+    })
+        .then((newComment) => {
+            if (newComment !== undefined) {
+                commentInput.value = "";
+                onCommentAdded(newComment);
+            }
         })
-            .then((newComment) => {
-                if (newComment !== undefined) {
-                    this.commentInput = "";
-                    this.onCommentAdded(newComment);
-                }
-            })
-            .catch((err: ResultError) => {
-                this.logger.error(
-                    `Error adding comment on entry ${
-                        this.comment.parentEntryId
-                    }: ${JSON.stringify(err)}`
-                );
-                if (err.statusCode === 429) {
-                    this.setTooManyRequestsError({ key: "page" });
-                }
-                window.scrollTo({ top: 0, behavior: "smooth" });
-            })
-            .finally(() => (this.isSaving = false));
-    }
+        .catch((err: ResultError) => {
+            logger.error(
+                `Error adding comment on entry ${
+                    props.comment.parentEntryId
+                }: ${JSON.stringify(err)}`
+            );
+            if (err.statusCode === 429) {
+                setTooManyRequestsError({ key: "page" });
+            }
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        })
+        .finally(() => (isSaving.value = false));
+}
 
-    @Emit()
-    private onCommentAdded(comment: UserComment): UserComment {
-        return comment;
-    }
+const emit = defineEmits<{
+    (e: "on-comment-added", newValue: UserComment): UserComment;
+}>();
+
+function onCommentAdded(comment: UserComment): void {
+    emit("on-comment-added", comment);
 }
 </script>
 

@@ -1,49 +1,52 @@
-<script lang="ts">
-import Vue from "vue";
-import { Component, Watch } from "vue-property-decorator";
-import { Getter } from "vuex-class";
+<script setup lang="ts">
+import { computed, watch } from "vue";
+import { useStore } from "vue-composition-wrapper";
+import { useRoute, useRouter } from "vue-composition-wrapper";
 
 import type { WebClientConfiguration } from "@/models/configData";
 import type { Ticket } from "@/models/ticket";
 
-@Component
-export default class QueueView extends Vue {
-    @Getter("webClient", { namespace: "config" })
-    config!: WebClientConfiguration;
+const route = useRoute();
+const router = useRouter();
+function redirect(): void {
+    const path = route.value.query.redirect
+        ? route.value.query.redirect.toString()
+        : "/";
+    router.push({ path });
+}
 
-    @Getter("ticket", { namespace: "waitlist" })
-    ticket?: Ticket;
+const store = useStore();
 
-    @Getter("ticketIsProcessed", { namespace: "waitlist" })
-    ticketIsProcessed!: boolean;
+const webClient = computed<WebClientConfiguration>(() => {
+    return store.getters["config/webClient"];
+});
 
-    @Watch("ticketIsProcessed")
-    private onTicketIsProcessedChanged(value: boolean): void {
-        if (value) {
-            this.redirect();
-        }
+const ticket = computed<Ticket>(() => {
+    return store.getters["waitlist/ticket"];
+});
+
+const ticketIsProcessed = computed<boolean>(() => {
+    return store.getters["waitlist/ticketIsProcessed"];
+});
+
+const queuePosition = computed<number | undefined>(
+    () => ticket?.value.queuePosition
+);
+
+defineExpose({ queuePosition });
+
+watch(ticketIsProcessed, (value: boolean) => {
+    if (value) {
+        redirect();
     }
+});
 
-    public get queuePosition(): number | undefined {
-        return this.ticket?.queuePosition;
-    }
-
-    private created(): void {
-        if (
-            !this.config.featureToggleConfiguration.waitingQueue.enabled ||
-            !this.ticket ||
-            this.ticketIsProcessed
-        ) {
-            this.redirect();
-        }
-    }
-
-    private redirect(): void {
-        const path = this.$route.query.redirect
-            ? this.$route.query.redirect.toString()
-            : "/";
-        this.$router.push({ path });
-    }
+if (
+    !webClient.value.featureToggleConfiguration.waitingQueue.enabled ||
+    !ticket.value ||
+    ticketIsProcessed.value
+) {
+    redirect();
 }
 </script>
 

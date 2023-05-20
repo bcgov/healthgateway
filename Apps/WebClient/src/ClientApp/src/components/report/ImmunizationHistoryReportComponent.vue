@@ -1,7 +1,6 @@
-<script lang="ts">
-import Vue from "vue";
-import { Component, Emit, Prop, Watch } from "vue-property-decorator";
-import { Action, Getter } from "vuex-class";
+<script setup lang="ts">
+import { computed, onMounted, watch } from "vue";
+import { useStore } from "vue-composition-wrapper";
 
 import { DateWrapper } from "@/models/dateWrapper";
 import {
@@ -19,6 +18,22 @@ import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ILogger, IReportService } from "@/services/interfaces";
 
+interface Props {
+    hdid: string;
+    filter: ReportFilter;
+    isDependent?: boolean;
+}
+const props = withDefaults(defineProps<Props>(), {
+    isDependent: false,
+});
+
+const emit = defineEmits<{
+    (e: "on-is-loading-changed", newValue: boolean): void;
+    (e: "on-is-empty-changed", newValue: boolean): void;
+}>();
+
+defineExpose({ generateReport });
+
 interface ImmunizationRow {
     date: string;
     immunization: string;
@@ -31,55 +46,93 @@ interface RecomendationRow {
     due_date: string;
 }
 
-@Component
-export default class ImmunizationHistoryReportComponent extends Vue {
-    @Prop({ required: true })
-    hdid!: string;
+const headerClass = "immunization-report-table-header";
 
-    @Prop() private filter!: ReportFilter;
+const immunizationFields: ReportField[] = [
+    {
+        key: "date",
+        thStyle: { width: "15%" },
+        thClass: headerClass,
+        thAttr: { "data-testid": "immunizationDateTitle" },
+        tdAttr: { "data-testid": "immunizationDateItem" },
+    },
+    {
+        key: "immunization",
+        thStyle: { width: "25%" },
+        thClass: headerClass,
+        thAttr: { "data-testid": "immunizationNameTitle" },
+        tdAttr: { "data-testid": "immunizationNameItem" },
+    },
+    {
+        key: "agents",
+        thStyle: { width: "45%" },
+        thClass: headerClass,
+        thAttr: { "data-testid": "immunizationAgentTitle" },
+        tdAttr: { "data-testid": "immunizationAgentItem" },
+    },
+    {
+        key: "provider_clinic",
+        label: "Provider / Clinic",
+        thStyle: { width: "15%" },
+        thClass: headerClass,
+        thAttr: { "data-testid": "immunizationProviderClinicTitle" },
+        tdAttr: { "data-testid": "immunizationProviderClinicItem" },
+    },
+];
 
-    @Prop({ default: false }) isDependent!: boolean;
+const recomendationFields: ReportField[] = [
+    {
+        key: "immunization",
+        thStyle: { width: "50%" },
+        thClass: headerClass,
+        thAttr: { "data-testid": "recommendationTitle" },
+        tdAttr: { "data-testid": "recommendationItem" },
+    },
+    {
+        key: "due_date",
+        thStyle: { width: "50%" },
+        thClass: headerClass,
+        thAttr: { "data-testid": "recommendationDateTitle" },
+        tdAttr: { "data-testid": "recommendationDateItem" },
+    },
+];
 
-    @Getter("immunizationsAreDeferred", { namespace: "immunization" })
-    immunizationsAreDeferred!: (hdid: string) => boolean;
+const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+const store = useStore();
 
-    @Action("retrieveImmunizations", { namespace: "immunization" })
-    retrieveImmunizations!: (params: { hdid: string }) => Promise<void>;
+const patientImmunizations = computed<(hdid: string) => ImmunizationEvent[]>(
+    () => store.getters["immunization/immunizations"]
+);
 
-    @Getter("immunizationsAreLoading", { namespace: "immunization" })
-    immunizationsAreLoading!: (hdid: string) => boolean;
+const patientRecommendations = computed<(hdid: string) => Recommendation[]>(
+    () => store.getters["immunization/recomendations"]
+);
 
-    @Getter("immunizations", { namespace: "immunization" })
-    patientImmunizations!: (hdid: string) => ImmunizationEvent[];
+const immunizationsAreLoading = computed<(hdid: string) => boolean>(
+    () => store.getters["immunization/immunizationsAreLoading"]
+);
 
-    @Getter("recomendations", { namespace: "immunization" })
-    patientRecommendations!: (hdid: string) => Recommendation[];
+const immunizationsAreDeferred = computed<(hdid: string) => boolean>(
+    () => store.getters["immunization/immunizationsAreDeferred"]
+);
 
-    private logger!: ILogger;
+const isEmpty = computed(() => visibleImmunizations.value.length === 0);
 
-    private readonly headerClass = "immunization-report-table-header";
+const isRecommendationEmpty = computed(
+    () => visibleRecomendations.value.length === 0
+);
 
-    private get isLoading(): boolean {
-        return (
-            this.immunizationsAreDeferred(this.hdid) ||
-            this.immunizationsAreLoading(this.hdid)
-        );
-    }
+const isLoading = computed(
+    () =>
+        immunizationsAreDeferred.value(props.hdid) ||
+        immunizationsAreLoading.value(props.hdid)
+);
 
-    private get isEmpty(): boolean {
-        return this.visibleImmunizations.length === 0;
-    }
-
-    private get isRecommendationEmpty(): boolean {
-        return this.visibleRecomendations.length === 0;
-    }
-
-    private get visibleImmunizations(): ImmunizationEvent[] {
-        const records = this.patientImmunizations(this.hdid).filter((record) =>
-            this.filter.allowsDate(record.dateOfImmunization)
-        );
-
-        records.sort((a, b) => {
+const visibleImmunizations = computed(() =>
+    patientImmunizations
+        .value(props.hdid)
+        .filter((record) => props.filter.allowsDate(record.dateOfImmunization))
+        .sort((a, b) => {
             const firstDate = new DateWrapper(a.dateOfImmunization);
             const secondDate = new DateWrapper(b.dateOfImmunization);
 
@@ -92,26 +145,25 @@ export default class ImmunizationHistoryReportComponent extends Vue {
             }
 
             return 0;
-        });
+        })
+);
 
-        return records;
-    }
-
-    private get immunizationItems(): ImmunizationRow[] {
-        return this.visibleImmunizations.map<ImmunizationRow>((x) => ({
+const immunizationItems = computed(() =>
+    visibleImmunizations.value.map<ImmunizationRow>((x) => {
+        return {
             date: DateWrapper.format(x.dateOfImmunization),
             immunization: x.immunization.name,
             agents: x.immunization.immunizationAgents,
             provider_clinic: x.providerOrClinic,
-        }));
-    }
+        };
+    })
+);
 
-    private get visibleRecomendations(): Recommendation[] {
-        const records = this.patientRecommendations(this.hdid).filter(
-            (x) => x.recommendedVaccinations
-        );
-
-        records.sort((a, b) => {
+const visibleRecomendations = computed(() =>
+    patientRecommendations
+        .value(props.hdid)
+        .filter((x) => x.recommendedVaccinations)
+        .sort((a, b) => {
             const firstDateEmpty =
                 a.agentDueDate === null || a.agentDueDate === undefined;
             const secondDateEmpty =
@@ -141,122 +193,69 @@ export default class ImmunizationHistoryReportComponent extends Vue {
             }
 
             return 0;
-        });
+        })
+);
 
-        return records;
-    }
-
-    private get recomendationItems(): RecomendationRow[] {
-        this.logger.debug(
-            "Recommendations: " + JSON.stringify(this.visibleRecomendations)
-        );
-        return this.visibleRecomendations.map<RecomendationRow>((x) => ({
+const recomendationItems = computed(() =>
+    visibleRecomendations.value.map<RecomendationRow>((x) => {
+        return {
             immunization: x.recommendedVaccinations,
             due_date:
                 x.agentDueDate === undefined || x.agentDueDate === null
                     ? ""
                     : DateWrapper.format(x.agentDueDate),
-        }));
-    }
+        };
+    })
+);
 
-    @Watch("isLoading")
-    @Emit()
-    private onIsLoadingChanged(): boolean {
-        return this.isLoading;
-    }
-
-    @Watch("isEmpty")
-    @Watch("isRecommendationEmpty")
-    @Emit()
-    private onIsEmptyChanged(): boolean {
-        return this.isEmpty && this.isRecommendationEmpty;
-    }
-
-    private created(): void {
-        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-        this.logger.debug(`Retrieving immunizations for Hdid: ${this.hdid}`);
-        this.retrieveImmunizations({ hdid: this.hdid }).catch((err) =>
-            this.logger.error(`Error loading immunization data: ${err}`)
-        );
-    }
-
-    private mounted(): void {
-        this.$emit(
-            "on-is-empty-changed",
-            this.isEmpty && this.isRecommendationEmpty
-        );
-    }
-
-    public generateReport(
-        reportFormatType: ReportFormatType,
-        headerData: ReportHeader
-    ): Promise<RequestResult<Report>> {
-        const reportService = container.get<IReportService>(
-            SERVICE_IDENTIFIER.ReportService
-        );
-
-        return reportService.generateReport({
-            data: {
-                header: headerData,
-                records: this.immunizationItems,
-                recommendations: this.recomendationItems,
-            },
-            template: this.isDependent
-                ? TemplateType.DependentImmunization
-                : TemplateType.Immunization,
-            type: reportFormatType,
-        });
-    }
-
-    private immunizationFields: ReportField[] = [
-        {
-            key: "date",
-            thStyle: { width: "15%" },
-            thClass: this.headerClass,
-            thAttr: { "data-testid": "immunizationDateTitle" },
-            tdAttr: { "data-testid": "immunizationDateItem" },
-        },
-        {
-            key: "immunization",
-            thStyle: { width: "25%" },
-            thClass: this.headerClass,
-            thAttr: { "data-testid": "immunizationNameTitle" },
-            tdAttr: { "data-testid": "immunizationNameItem" },
-        },
-        {
-            key: "agents",
-            thStyle: { width: "45%" },
-            thClass: this.headerClass,
-            thAttr: { "data-testid": "immunizationAgentTitle" },
-            tdAttr: { "data-testid": "immunizationAgentItem" },
-        },
-        {
-            key: "provider_clinic",
-            label: "Provider / Clinic",
-            thStyle: { width: "15%" },
-            thClass: this.headerClass,
-            thAttr: { "data-testid": "immunizationProviderClinicTitle" },
-            tdAttr: { "data-testid": "immunizationProviderClinicItem" },
-        },
-    ];
-
-    private recomendationFields: ReportField[] = [
-        {
-            key: "immunization",
-            thStyle: { width: "50%" },
-            thClass: this.headerClass,
-            thAttr: { "data-testid": "recommendationTitle" },
-            tdAttr: { "data-testid": "recommendationItem" },
-        },
-        {
-            key: "due_date",
-            thStyle: { width: "50%" },
-            thClass: this.headerClass,
-            thAttr: { "data-testid": "recommendationDateTitle" },
-            tdAttr: { "data-testid": "recommendationDateItem" },
-        },
-    ];
+function retrieveImmunizations(hdid: string): Promise<void> {
+    return store.dispatch("immunization/retrieveImmunizations", { hdid });
 }
+
+function generateReport(
+    reportFormatType: ReportFormatType,
+    headerData: ReportHeader
+): Promise<RequestResult<Report>> {
+    const reportService = container.get<IReportService>(
+        SERVICE_IDENTIFIER.ReportService
+    );
+    return reportService.generateReport({
+        data: {
+            header: headerData,
+            records: immunizationItems.value,
+            recommendations: recomendationItems.value,
+        },
+        template: props.isDependent
+            ? TemplateType.DependentImmunization
+            : TemplateType.Immunization,
+        type: reportFormatType,
+    });
+}
+
+watch(isLoading, () => {
+    emit("on-is-loading-changed", isLoading.value);
+});
+
+function onIsEmptyChanged(): void {
+    emit("on-is-empty-changed", isEmpty.value && isRecommendationEmpty.value);
+}
+
+watch(isEmpty, () => {
+    onIsEmptyChanged();
+});
+
+watch(isRecommendationEmpty, () => {
+    onIsEmptyChanged();
+});
+
+onMounted(() => {
+    onIsEmptyChanged();
+});
+
+logger.debug(`Retrieving immunizations for Hdid: ${props.hdid}`);
+retrieveImmunizations(props.hdid).catch((err) =>
+    logger.error(`Error loading immunization data: ${err}`)
+);
 </script>
 
 <template>

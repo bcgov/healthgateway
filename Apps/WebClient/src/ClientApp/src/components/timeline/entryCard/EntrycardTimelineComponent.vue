@@ -15,7 +15,7 @@ library.add(farComment, faPaperclip);
 interface Props {
     cardId: string;
     entry: TimelineEntry;
-    entryIcon: string;
+    entryIcon: string | undefined;
     title: string;
     allowComment?: boolean;
     canShowDetails?: boolean;

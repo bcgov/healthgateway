@@ -1,46 +1,29 @@
-<script lang="ts">
-import Vue from "vue";
-import { Component, Prop } from "vue-property-decorator";
+<script setup lang="ts">
+import { computed } from "vue";
 
 import { EntryType, entryTypeMap } from "@/constants/entryType";
 import ImmunizationTimelineEntry from "@/models/immunizationTimelineEntry";
 
 import EntryCardTimelineComponent from "./EntrycardTimelineComponent.vue";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const options: any = {
-    components: {
-        EntryCard: EntryCardTimelineComponent,
-    },
-};
-
-@Component(options)
-export default class ImmunizationTimelineComponent extends Vue {
-    @Prop() entry!: ImmunizationTimelineEntry;
-    @Prop() index!: number;
-    @Prop() datekey!: string;
-    @Prop() isMobileDetails!: boolean;
-
-    @Prop({ default: false })
-    commentsAreEnabled!: boolean;
-
-    private get isCovidImmunization(): boolean {
-        return (
-            this.entry.immunization.valid &&
-            this.entry.immunization.targetedDisease
-                ?.toLowerCase()
-                .includes("covid")
-        );
-    }
-
-    private get entryIcon(): string | undefined {
-        return entryTypeMap.get(EntryType.Immunization)?.icon;
-    }
+interface Props {
+    entry: ImmunizationTimelineEntry;
+    index: number;
+    datekey: string;
+    isMobileDetails?: boolean;
+    commentsAreEnabled?: boolean;
 }
+withDefaults(defineProps<Props>(), {
+    commentsAreEnabled: false,
+});
+
+const entryIcon = computed(() => {
+    return entryTypeMap.get(EntryType.Immunization)?.icon;
+});
 </script>
 
 <template>
-    <EntryCard
+    <EntryCardTimelineComponent
         :card-id="index + '-' + datekey"
         :entry-icon="entryIcon"
         :title="entry.immunization.name"
@@ -51,8 +34,7 @@ export default class ImmunizationTimelineComponent extends Vue {
         <div slot="details-body">
             <div>
                 <div
-                    v-for="(agent, index) in entry.immunization
-                        .immunizationAgents"
+                    v-for="agent in entry.immunization.immunizationAgents"
                     :key="agent.code"
                     class="my-2"
                 >
@@ -87,7 +69,7 @@ export default class ImmunizationTimelineComponent extends Vue {
                 </div>
             </div>
         </div>
-    </EntryCard>
+    </EntryCardTimelineComponent>
 </template>
 
 <style lang="scss" scoped>
