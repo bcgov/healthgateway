@@ -44,5 +44,7 @@ namespace HealthGateway.Admin.Client.Components.AgentAudit
         [Parameter]
         [EditorRequired]
         public bool IsLoading { get; set; } = true;
+
+        private int[] PageSizes { get; } = { 5, 10, 15 };
     }
 }
