@@ -20,6 +20,7 @@ namespace HealthGateway.GatewayApi.Services
     using System.Globalization;
     using System.Linq;
     using System.Text;
+    using System.Threading;
     using System.Threading.Tasks;
     using AutoMapper;
     using FluentValidation.Results;
@@ -30,7 +31,9 @@ namespace HealthGateway.GatewayApi.Services
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Factories;
+    using HealthGateway.Common.Messaging;
     using HealthGateway.Common.Models;
+    using HealthGateway.Common.Models.Events;
     using HealthGateway.Common.Services;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
@@ -47,16 +50,19 @@ namespace HealthGateway.GatewayApi.Services
     {
         private const string WebClientConfigSection = "WebClient";
         private const string MaxDependentAgeKey = "MaxDependentAge";
+        private const string EnableDependentChangeFeedKey = "ChangeFeed:Dependent";
         private const string SmartApostrophe = "’";
         private const string RegularApostrophe = "'";
         private readonly IMapper autoMapper;
         private readonly ILogger logger;
         private readonly int maxDependentAge;
+        private readonly bool changeFeedEnabled;
         private readonly INotificationSettingsService notificationSettingsService;
         private readonly IPatientService patientService;
         private readonly IDelegationDelegate delegationDelegate;
         private readonly IResourceDelegateDelegate resourceDelegateDelegate;
         private readonly IUserProfileDelegate userProfileDelegate;
+        private readonly IMessageSender messageSender;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DependentService"/> class.
@@ -68,6 +74,7 @@ namespace HealthGateway.GatewayApi.Services
         /// <param name="delegationDelegate">The delegation delegate to interact with the DB.</param>
         /// <param name="resourceDelegateDelegate">The ResourceDelegate delegate to interact with the DB.</param>
         /// <param name="userProfileDelegate">The profile delegate to interact with the DB.</param>
+        /// <param name="messageSender">The message sender.</param>
         /// <param name="autoMapper">The inject automapper provider.</param>
         public DependentService(
             IConfiguration configuration,
@@ -77,6 +84,7 @@ namespace HealthGateway.GatewayApi.Services
             IDelegationDelegate delegationDelegate,
             IResourceDelegateDelegate resourceDelegateDelegate,
             IUserProfileDelegate userProfileDelegate,
+            IMessageSender messageSender,
             IMapper autoMapper)
         {
             this.logger = logger;
@@ -85,12 +93,14 @@ namespace HealthGateway.GatewayApi.Services
             this.delegationDelegate = delegationDelegate;
             this.resourceDelegateDelegate = resourceDelegateDelegate;
             this.userProfileDelegate = userProfileDelegate;
+            this.messageSender = messageSender;
             this.maxDependentAge = configuration.GetSection(WebClientConfigSection).GetValue(MaxDependentAgeKey, 12);
+            this.changeFeedEnabled = configuration.GetSection(WebClientConfigSection).GetValue(EnableDependentChangeFeedKey, true);
             this.autoMapper = autoMapper;
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResult<DependentModel>> AddDependentAsync(string delegateHdId, AddDependentRequest addDependentRequest)
+        public async Task<RequestResult<DependentModel>> AddDependentAsync(string delegateHdid, AddDependentRequest addDependentRequest, CancellationToken ct = default)
         {
             ValidationResult? validationResults = new AddDependentRequestValidator(this.maxDependentAge).Validate(addDependentRequest);
 
@@ -99,33 +109,33 @@ namespace HealthGateway.GatewayApi.Services
                 return RequestResultFactory.Error<DependentModel>(ErrorType.InvalidState, validationResults.Errors);
             }
 
-            RequestResult<PatientModel> patientResult = await this.patientService.GetPatient(addDependentRequest.Phn, PatientIdentifierType.Phn).ConfigureAwait(true);
-            switch (patientResult.ResultStatus)
+            RequestResult<PatientModel> dependentResult = await this.patientService.GetPatient(addDependentRequest.Phn, PatientIdentifierType.Phn);
+            switch (dependentResult.ResultStatus)
             {
                 case ResultType.Error:
                     return RequestResultFactory.ServiceError<DependentModel>(ErrorType.CommunicationExternal, ServiceType.Patient, "Communication Exception when trying to retrieve the Dependent");
 
-                case ResultType.ActionRequired when patientResult.ResultError?.ActionCodeValue == ActionType.NoHdId.Value:
+                case ResultType.ActionRequired when dependentResult.ResultError?.ActionCodeValue == ActionType.NoHdId.Value:
                     return RequestResultFactory.ActionRequired<DependentModel>(ActionType.NoHdId, ErrorMessages.InvalidServicesCard);
 
                 case ResultType.ActionRequired:
                     return RequestResultFactory.ActionRequired<DependentModel>(ActionType.DataMismatch, ErrorMessages.DataMismatch);
 
                 default:
-                    if (!IsMatch(addDependentRequest, patientResult.ResourcePayload))
+                    if (!IsMatch(addDependentRequest, dependentResult.ResourcePayload))
                     {
                         return RequestResultFactory.ActionRequired<DependentModel>(ActionType.DataMismatch, ErrorMessages.DataMismatch);
                     }
 
                     // Verify dependent has HDID
-                    if (string.IsNullOrEmpty(patientResult.ResourcePayload?.HdId))
+                    if (string.IsNullOrEmpty(dependentResult.ResourcePayload?.HdId))
                     {
                         return RequestResultFactory.ActionRequired<DependentModel>(ActionType.NoHdId, ErrorMessages.InvalidServicesCard);
                     }
 
                     // Verify delegate is allowed to access dependent
-                    Dependent? dependent = await this.delegationDelegate.GetDependentAsync(patientResult.ResourcePayload?.HdId, true).ConfigureAwait(true);
-                    if (dependent is { Protected: true } && dependent.AllowedDelegations.All(d => d.DelegateHdId != delegateHdId))
+                    Dependent? dependent = await this.delegationDelegate.GetDependentAsync(dependentResult.ResourcePayload?.HdId, true);
+                    if (dependent is { Protected: true } && dependent.AllowedDelegations.All(d => d.DelegateHdId != delegateHdid))
                     {
                         return RequestResultFactory.ActionRequired<DependentModel>(ActionType.Protected, ErrorMessages.CannotPerformAction);
                     }
@@ -133,35 +143,39 @@ namespace HealthGateway.GatewayApi.Services
                     break;
             }
 
-            // Insert Dependent to database
+            var dependentHdid = dependentResult.ResourcePayload.HdId;
             ResourceDelegate resourceDelegate = new()
             {
-                ResourceOwnerHdid = patientResult.ResourcePayload.HdId,
-                ProfileHdid = delegateHdId,
-                ExpiryDate = DateOnly.FromDateTime(addDependentRequest.DateOfBirth.AddYears(this.maxDependentAge)),
+                ResourceOwnerHdid = dependentHdid,
+                ProfileHdid = delegateHdid,
+                ExpiryDate = DateOnly.FromDateTime(dependentResult.ResourcePayload.Birthdate.AddYears(this.maxDependentAge)),
                 ReasonCode = ResourceDelegateReason.Guardian,
                 ReasonObjectType = null,
                 ReasonObject = null,
             };
-            DbResult<ResourceDelegate> dbDependent = this.resourceDelegateDelegate.Insert(resourceDelegate, true);
 
-            if (dbDependent.Status != DbStatusCode.Created)
+            // commit to the database if change feed is disabled; if change feed enabled, commit will happen when message sender is called
+            // this is temporary and will be changed when we introduce a proper unit of work to manage transactionality.
+            DbResult<ResourceDelegate> dbDependent = this.resourceDelegateDelegate.Insert(resourceDelegate, !this.changeFeedEnabled);
+            if (dbDependent.Status == DbStatusCode.Error)
             {
-                return RequestResultFactory.ServiceError<DependentModel>(ErrorType.CommunicationInternal, ServiceType.Database, dbDependent.Message);
+                throw new ProblemDetailsException(ExceptionUtility.CreateServerError($"{ServiceType.Database}:{ErrorType.CommunicationInternal}", dbDependent.Message));
             }
 
-            this.UpdateNotificationSettings(resourceDelegate.ResourceOwnerHdid, delegateHdId);
+            this.UpdateNotificationSettings(dependentHdid, delegateHdid);
+            if (this.changeFeedEnabled)
+            {
+                await this.messageSender.SendAsync(new[] { new MessageEnvelope(new DependentAddedEvent(delegateHdid, dependentHdid), delegateHdid) }, ct);
+            }
 
-            DbResult<Dictionary<string, int>> totalDelegateCounts = await this.resourceDelegateDelegate.GetTotalDelegateCountsAsync(
-                    new List<string> { resourceDelegate.ResourceOwnerHdid })
-                .ConfigureAwait(true);
-            int totalDelegateCount = totalDelegateCounts.Payload.GetValueOrDefault(resourceDelegate.ResourceOwnerHdid);
+            DbResult<Dictionary<string, int>> totalDelegateCounts = await this.resourceDelegateDelegate.GetTotalDelegateCountsAsync(new List<string> { dependentHdid });
+            int totalDelegateCount = totalDelegateCounts.Payload.GetValueOrDefault(dependentHdid);
 
-            return RequestResultFactory.Success(DependentMapUtils.CreateFromDbModels(dbDependent.Payload, patientResult.ResourcePayload, totalDelegateCount, this.autoMapper));
+            return RequestResultFactory.Success(DependentMapUtils.CreateFromDbModels(dbDependent.Payload, dependentResult.ResourcePayload, totalDelegateCount, this.autoMapper));
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResult<IEnumerable<DependentModel>>> GetDependentsAsync(string hdId, int page = 0, int pageSize = 500)
+        public async Task<RequestResult<IEnumerable<DependentModel>>> GetDependentsAsync(string hdid, int page = 0, int pageSize = 25)
         {
             RequestResult<IEnumerable<DependentModel>> result = new()
             {
@@ -169,11 +183,9 @@ namespace HealthGateway.GatewayApi.Services
             };
 
             // Get Dependents from database
-            DbResult<IEnumerable<ResourceDelegate>> dbResourceDelegates = this.resourceDelegateDelegate.Get(hdId, page, pageSize);
+            DbResult<IEnumerable<ResourceDelegate>> dbResourceDelegates = this.resourceDelegateDelegate.Get(hdid, page, pageSize);
 
-            DbResult<Dictionary<string, int>> totalDelegateCounts = await this.resourceDelegateDelegate.GetTotalDelegateCountsAsync(
-                    dbResourceDelegates.Payload.Select(d => d.ResourceOwnerHdid))
-                .ConfigureAwait(true);
+            DbResult<Dictionary<string, int>> totalDelegateCounts = await this.resourceDelegateDelegate.GetTotalDelegateCountsAsync(dbResourceDelegates.Payload.Select(d => d.ResourceOwnerHdid));
 
             // Get Dependents Details from Patient service
             List<DependentModel> dependentModels = new();
@@ -181,7 +193,7 @@ namespace HealthGateway.GatewayApi.Services
             foreach (ResourceDelegate resourceDelegate in dbResourceDelegates.Payload)
             {
                 this.logger.LogDebug("Getting dependent details for Dependent hdid: {DependentHdid}", resourceDelegate.ResourceOwnerHdid);
-                RequestResult<PatientModel> patientResult = await this.patientService.GetPatient(resourceDelegate.ResourceOwnerHdid).ConfigureAwait(true);
+                RequestResult<PatientModel> patientResult = await this.patientService.GetPatient(resourceDelegate.ResourceOwnerHdid);
 
                 if (patientResult.ResourcePayload != null)
                 {
@@ -249,28 +261,30 @@ namespace HealthGateway.GatewayApi.Services
         }
 
         /// <inheritdoc/>
-        public RequestResult<DependentModel> Remove(DependentModel dependent)
+        public async Task<RequestResult<DependentModel>> RemoveAsync(DependentModel dependent, CancellationToken ct = default)
         {
-            DbResult<ResourceDelegate> dbDependent = this.resourceDelegateDelegate.Delete(this.autoMapper.Map<ResourceDelegate>(dependent), true);
-
-            if (dbDependent.Status == DbStatusCode.Deleted)
+            var resourceDelegate = this.resourceDelegateDelegate.Get(dependent.DelegateId).Payload.FirstOrDefault(d => d.ResourceOwnerHdid == dependent.OwnerId);
+            if (resourceDelegate == null)
             {
-                this.UpdateNotificationSettings(dependent.OwnerId, dependent.DelegateId, true);
+                throw new ProblemDetailsException(ExceptionUtility.CreateNotFoundError($"Dependent {dependent.OwnerId} not found for delegate {dependent.DelegateId}"));
             }
 
-            RequestResult<DependentModel> result = new()
+            // commit to the database if change feed is disabled; if change feed enabled, commit will happen when message sender is called
+            // this is temporary and will be changed when we introduce a proper unit of work to manage transactionality.
+            DbResult<ResourceDelegate> dbDependent = this.resourceDelegateDelegate.Delete(resourceDelegate, !this.changeFeedEnabled);
+            if (dbDependent.Status == DbStatusCode.Error)
             {
-                ResourcePayload = new DependentModel(),
-                ResultStatus = dbDependent.Status == DbStatusCode.Deleted ? ResultType.Success : ResultType.Error,
-                ResultError = dbDependent.Status == DbStatusCode.Deleted
-                    ? null
-                    : new RequestResultError
-                    {
-                        ResultMessage = dbDependent.Message,
-                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database),
-                    },
-            };
-            return result;
+                throw new ProblemDetailsException(ExceptionUtility.CreateServerError($"{ServiceType.Database}:{ErrorType.CommunicationInternal}", dbDependent.Message));
+            }
+
+            this.UpdateNotificationSettings(dependent.OwnerId, dependent.DelegateId, true);
+
+            if (this.changeFeedEnabled)
+            {
+                await this.messageSender.SendAsync(new[] { new MessageEnvelope(new DependentRemovedEvent(dependent.DelegateId, dependent.OwnerId), dependent.DelegateId) }, ct);
+            }
+
+            return RequestResultFactory.Success(new DependentModel());
         }
 
         private static bool IsMatch(AddDependentRequest? dependent, PatientModel? patientModel)

@@ -17,6 +17,7 @@ namespace HealthGateway.GatewayApi.Controllers
 {
     using System.Collections.Generic;
     using System.Security.Claims;
+    using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.AccessManagement.Authorization.Policy;
     using HealthGateway.Common.Data.Constants;
@@ -73,7 +74,7 @@ namespace HealthGateway.GatewayApi.Controllers
         [Route("{hdid}/[controller]")]
         public async Task<RequestResult<IEnumerable<DependentModel>>> GetAll(string hdid)
         {
-            return await this.dependentService.GetDependentsAsync(hdid).ConfigureAwait(true);
+            return await this.dependentService.GetDependentsAsync(hdid);
         }
 
         /// <summary>
@@ -81,6 +82,7 @@ namespace HealthGateway.GatewayApi.Controllers
         /// </summary>
         /// <returns>The http status.</returns>
         /// <param name="addDependentRequest">The Register Dependent request model.</param>
+        /// <param name="ct">A cancellation token.</param>
         /// <response code="200">The Dependent record was saved.</response>
         /// <response code="400">The Dependent was already inserted.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
@@ -91,11 +93,11 @@ namespace HealthGateway.GatewayApi.Controllers
         [HttpPost]
         [Authorize(Policy = UserProfilePolicy.Write)]
         [Route("{hdid}/[controller]")]
-        public async Task<RequestResult<DependentModel>> AddDependent([FromBody] AddDependentRequest addDependentRequest)
+        public async Task<RequestResult<DependentModel>> AddDependent([FromBody] AddDependentRequest addDependentRequest, CancellationToken ct)
         {
             ClaimsPrincipal? user = this.httpContextAccessor.HttpContext?.User;
             string delegateHdId = user?.FindFirst("hdid")?.Value ?? string.Empty;
-            RequestResult<DependentModel> result = await this.dependentService.AddDependentAsync(delegateHdId, addDependentRequest).ConfigureAwait(true);
+            RequestResult<DependentModel> result = await this.dependentService.AddDependentAsync(delegateHdId, addDependentRequest, ct);
 
             if (result.ResultStatus == ResultType.Error)
             {
@@ -112,6 +114,7 @@ namespace HealthGateway.GatewayApi.Controllers
         /// <param name="hdid">The Delegate hdid.</param>
         /// <param name="dependentHdid">The Dependent hdid.</param>
         /// <param name="dependent">The dependent model object to be deleted.</param>
+        /// <param name="ct">A cancellation token.</param>
         /// <response code="200">The Dependent record was deleted.</response>
         /// <response code="400">The request is invalid.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
@@ -122,7 +125,7 @@ namespace HealthGateway.GatewayApi.Controllers
         [HttpDelete]
         [Authorize(Policy = UserProfilePolicy.Write)]
         [Route("{hdid}/[controller]/{dependentHdid}")]
-        public ActionResult<RequestResult<DependentModel>> Delete(string hdid, string dependentHdid, [FromBody] DependentModel dependent)
+        public async Task<ActionResult<RequestResult<DependentModel>>> Delete(string hdid, string dependentHdid, [FromBody] DependentModel dependent, CancellationToken ct)
         {
             if (dependent.OwnerId != dependentHdid || dependent.DelegateId != hdid)
             {
@@ -130,7 +133,7 @@ namespace HealthGateway.GatewayApi.Controllers
                 return new BadRequestResult();
             }
 
-            return this.dependentService.Remove(dependent);
+            return await this.dependentService.RemoveAsync(dependent, ct);
         }
     }
 }

@@ -53,7 +53,7 @@ namespace HealthGateway.Database.Delegates
                 query = query.Include(d => d.AllowedDelegations);
             }
 
-            return await query.SingleOrDefaultAsync().ConfigureAwait(true);
+            return await query.SingleOrDefaultAsync();
         }
 
         /// <inheritdoc/>
@@ -64,11 +64,11 @@ namespace HealthGateway.Database.Delegates
             IQueryable<DependentAudit> query = this.dbContext.DependentAudit
                 .Where(d => d.HdId == hdid);
 
-            return await query.ToListAsync().ConfigureAwait(true);
+            return await query.ToListAsync();
         }
 
         /// <inheritdoc/>
-        public async Task UpdateDelegationAsync(Dependent dependent, IEnumerable<ResourceDelegate> resourceDelegatesToRemove, DependentAudit dependentAudit)
+        public async Task UpdateDelegationAsync(Dependent dependent, IEnumerable<ResourceDelegate> resourceDelegatesToRemove, DependentAudit dependentAudit, bool commit = true)
         {
             if (dependent.Version == 0)
             {
@@ -86,7 +86,10 @@ namespace HealthGateway.Database.Delegates
 
             this.dbContext.DependentAudit.Add(dependentAudit);
 
-            await this.dbContext.SaveChangesAsync().ConfigureAwait(true);
+            if (commit)
+            {
+                await this.dbContext.SaveChangesAsync();
+            }
         }
     }
 }

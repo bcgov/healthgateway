@@ -220,7 +220,8 @@ namespace HealthGateway.Admin.Tests.Services
                 v => v.UpdateDelegationAsync(
                     It.Is<Dependent>(d => AssertProtectedDependant(expectedDependent, d)),
                     It.Is<IEnumerable<ResourceDelegate>>(rd => AssertProtectedDependentResourceDelegates(expectedDeletedResourceDelegates.ToList(), rd.ToList())),
-                    It.Is<DependentAudit>(da => AssertDependentAudit(expectedDependentAudit, da))));
+                    It.Is<DependentAudit>(da => AssertDependentAudit(expectedDependentAudit, da)),
+                    It.Is<bool>(c => true)));
         }
 
         /// <summary>
@@ -262,7 +263,8 @@ namespace HealthGateway.Admin.Tests.Services
                 v => v.UpdateDelegationAsync(
                     It.Is<Dependent>(d => AssertProtectedDependant(expectedDependent, d)),
                     It.Is<IEnumerable<ResourceDelegate>>(rd => AssertProtectedDependentResourceDelegates(expectedDeletedResourceDelegates.ToList(), rd.ToList())),
-                    It.Is<DependentAudit>(da => AssertDependentAudit(expectedDependentAudit, da))));
+                    It.Is<DependentAudit>(da => AssertDependentAudit(expectedDependentAudit, da)),
+                    It.Is<bool>(c => true)));
         }
 
         /// <summary>
@@ -324,7 +326,8 @@ namespace HealthGateway.Admin.Tests.Services
                 v => v.UpdateDelegationAsync(
                     It.Is<Dependent>(d => AssertProtectedDependant(expectedDependent, d)),
                     It.Is<IEnumerable<ResourceDelegate>>(rd => AssertProtectedDependentResourceDelegates(expectedDeletedResourceDelegates.ToList(), rd.ToList())),
-                    It.Is<DependentAudit>(da => AssertDependentAudit(expectedDependentAudit, da))));
+                    It.Is<DependentAudit>(da => AssertDependentAudit(expectedDependentAudit, da)),
+                    It.Is<bool>(c => true)));
         }
 
         /// <summary>
@@ -525,10 +528,8 @@ namespace HealthGateway.Admin.Tests.Services
                     FirstName = "John",
                     LastName = "Doe",
                     Birthdate = birthDate,
-                    PhysicalAddress = new Address
-                        { Country = "Canada", State = "BC", City = "Victoria" },
-                    PostalAddress = new Address
-                        { Country = "Canada", State = "BC", City = "Victoria" },
+                    PhysicalAddress = new Address { Country = "Canada", State = "BC", City = "Victoria" },
+                    PostalAddress = new Address { Country = "Canada", State = "BC", City = "Victoria" },
                 },
             };
             return dependentResult;
@@ -548,10 +549,8 @@ namespace HealthGateway.Admin.Tests.Services
                     FirstName = "Jane",
                     LastName = "Test",
                     Birthdate = DateTime.Now,
-                    PhysicalAddress = new Address
-                        { Country = "Canada", State = "BC", City = "Vancouver" },
-                    PostalAddress = new Address
-                        { Country = "Canada", State = "BC", City = "Vancouver" },
+                    PhysicalAddress = new Address { Country = "Canada", State = "BC", City = "Vancouver" },
+                    PostalAddress = new Address { Country = "Canada", State = "BC", City = "Vancouver" },
                 },
             };
             return delegateResult;

@@ -24,9 +24,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Hangfire;
 using HealthGateway.Common.Utils;
-using HealthGateway.Database.Context;
+using HealthGateway.Database.Delegates;
 using HealthGateway.Database.Models;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 /// <summary>
@@ -34,21 +33,21 @@ using Microsoft.Extensions.Logging;
 /// </summary>
 internal class DbOutboxStore : IOutboxStore
 {
-    private readonly GatewayDbContext dbContext;
+    private readonly IOutboxDelegate outboxDelegate;
     private readonly IBackgroundJobClient backgroundJobClient;
     private readonly IMessageSender messageSender;
     private readonly ILogger<DbOutboxStore> logger;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="DbOutboxStore"/> class.
+    /// Initializes a new instance of the <see cref="DbOutboxStore"/> class
     /// </summary>
-    /// <param name="dbContext">The EF database context.</param>
-    /// <param name="backgroundJobClient">Hangfire background job client.</param>
+    /// <param name="outboxDelegate">The outbox db delegate.</param>
+    /// <param name="backgroundJobClient">Hangfire background job client</param>
     /// <param name="messageSender">The destination message sender to forward messages to.</param>
     /// <param name="logger">A logger.</param>
-    public DbOutboxStore(GatewayDbContext dbContext, IBackgroundJobClient backgroundJobClient, IMessageSender messageSender, ILogger<DbOutboxStore> logger)
+    public DbOutboxStore(IOutboxDelegate outboxDelegate, IBackgroundJobClient backgroundJobClient, IMessageSender messageSender, ILogger<DbOutboxStore> logger)
     {
-        this.dbContext = dbContext;
+        this.outboxDelegate = outboxDelegate;
         this.backgroundJobClient = backgroundJobClient;
         this.messageSender = messageSender;
         this.logger = logger;
@@ -69,8 +68,8 @@ internal class DbOutboxStore : IOutboxStore
                 AssemblyQualifiedName = m.Content.GetType().AssemblyQualifiedName!,
             },
         });
-        await this.dbContext.AddRangeAsync(outboxItems, ct);
-        await this.dbContext.SaveChangesAsync(ct);
+        await this.outboxDelegate.Queue(outboxItems, ct);
+        await this.outboxDelegate.Commit(ct);
 
         this.backgroundJobClient.Enqueue<DbOutboxStore>(store => store.DispatchOutboxItems(CancellationToken.None));
     }
@@ -86,13 +85,9 @@ internal class DbOutboxStore : IOutboxStore
     {
         this.logger.LogDebug("Forwarding messages to destination");
 
-        using var tx = await this.dbContext.Database.BeginTransactionAsync(System.Data.IsolationLevel.Serializable, ct);
-
         try
         {
-            var pendingItems = await this.dbContext.Outbox.OrderBy(i => i.CreatedOn).ToListAsync(ct);
-            this.dbContext.RemoveRange(pendingItems);
-            await this.dbContext.SaveChangesAsync(ct);
+            var pendingItems = await this.outboxDelegate.Dequeue(ct);
 
             var messages = pendingItems.Select(i =>
             {
@@ -100,12 +95,11 @@ internal class DbOutboxStore : IOutboxStore
                 return new MessageEnvelope(message, i.Metadata.SessionId);
             });
             await this.messageSender.SendAsync(messages, ct);
-            await tx.CommitAsync(ct);
+            await this.outboxDelegate.Commit(ct);
         }
         catch (Exception e)
         {
             this.logger.LogError(e, "Failed to dispatch outbox items");
-            await tx.RollbackAsync(ct);
             throw;
         }
     }

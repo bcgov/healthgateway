@@ -16,7 +16,9 @@
 
 namespace HealthGateway.IntegrationTests;
 
+using System.Reflection;
 using Alba;
+using Alba.Security;
 using DotNet.Testcontainers.Containers;
 using HealthGateway.Database.Context;
 using Microsoft.EntityFrameworkCore;
@@ -30,15 +32,14 @@ using Xunit.Abstractions;
 public class WebAppFixture : IAsyncLifetime
 {
     private readonly ServiceCollection testRelatedServices = new();
-    private readonly PostgreSqlContainer postgreSqlContainer = new PostgreSqlBuilder().Build();
+    private readonly PostgreSqlContainer postgreSqlContainer = new PostgreSqlBuilder().WithImage("docker.io/postgres:11").Build();
     private readonly RedisContainer redisContainer = new RedisBuilder().WithImage("docker.io/redis:7.0").Build();
 
     public IServiceCollection Services => this.testRelatedServices;
 
-    public virtual async Task<IAlbaHost> CreateHost<TStartup>(ITestOutputHelper output, params KeyValuePair<string, string?>[] configurationSettings)
+    public virtual async Task<IAlbaHost> CreateHost<TStartup>(ITestOutputHelper output, KeyValuePair<string, string?>[]? configurationSettings = null, IEnumerable<IAlbaExtension>? extensions = null)
         where TStartup : class
     {
-#pragma warning disable S3220 // Method calls should not resolve ambiguously to overloads with "params"
         IAlbaHost host = await AlbaHost.For<TStartup>(
             builder =>
             {
@@ -56,7 +57,7 @@ public class WebAppFixture : IAsyncLifetime
                     });
 
                 // override the db connection string
-                var configOverrides = new Dictionary<string, string?>(configurationSettings)
+                var configOverrides = new Dictionary<string, string?>(configurationSettings ?? Enumerable.Empty<KeyValuePair<string, string?>>())
                 {
                     { "ConnectionStrings:GatewayConnection", this.postgreSqlContainer.GetConnectionString() },
                     { "RedisConnection", this.redisContainer.GetConnectionString() },
@@ -66,9 +67,7 @@ public class WebAppFixture : IAsyncLifetime
                 {
                     configBuilder.AddInMemoryCollection(configOverrides);
                 });
-            });
-#pragma warning restore S3220 // Method calls should not resolve ambiguously to overloads with "params"
-
+            }, extensions?.ToArray() ?? Array.Empty<IAlbaExtension>());
         return host;
     }
 
@@ -101,8 +100,9 @@ public abstract class ScenarioContextBase<TStartup> : IAsyncLifetime, IClassFixt
     where TStartup : class
 {
     private readonly WebAppFixture fixture;
+    private readonly IConfiguration testConfiguration;
 
-    protected IAlbaHost Host { get; private set; } = null!;
+    public IAlbaHost Host { get; private set; } = null!;
 
     protected ITestOutputHelper Output { get; }
 
@@ -110,14 +110,18 @@ public abstract class ScenarioContextBase<TStartup> : IAsyncLifetime, IClassFixt
     {
         this.Output = output;
         this.fixture = fixture;
+        this.testConfiguration = new ConfigurationBuilder().AddUserSecrets(Assembly.GetExecutingAssembly()).Build();
     }
 
     public virtual async Task InitializeAsync()
     {
-        this.Host = await this.fixture.CreateHost<TStartup>(this.Output);
+        var authentication = CreateClientCredentials("healthgateway");
+        this.Host = await this.fixture.CreateHost<TStartup>(this.Output, extensions: new IAlbaExtension[] { authentication });
 
-        using var initScope = this.Host.Services.CreateScope();
-        await MigrateDatabase(initScope.ServiceProvider.GetRequiredService<GatewayDbContext>());
+        using var migrationScope = this.Host.Services.CreateScope();
+        var dbCtx = migrationScope.ServiceProvider.GetRequiredService<GatewayDbContext>();
+        await MigrateDatabase(dbCtx);
+        await SeedData(dbCtx);
     }
 
     private static async Task MigrateDatabase(GatewayDbContext ctx)
@@ -125,8 +129,49 @@ public abstract class ScenarioContextBase<TStartup> : IAsyncLifetime, IClassFixt
         await ctx.Database.MigrateAsync();
     }
 
+    private static async Task SeedData(GatewayDbContext ctx)
+    {
+        var conn = ctx.Database.GetDbConnection();
+        if (conn.State != System.Data.ConnectionState.Open)
+        {
+            await conn.OpenAsync();
+        }
+
+        await using var command = conn.CreateCommand();
+        var seedScript = "CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\";\n" + await File.ReadAllTextAsync("../../../../../functional/tests/cypress/db/seed.sql");
+#pragma warning disable CA2100 // Review SQL queries for security vulnerabilities
+        command.CommandText = seedScript;
+#pragma warning restore CA2100 // Review SQL queries for security vulnerabilities
+        await command.ExecuteNonQueryAsync();
+    }
+
     public async Task DisposeAsync()
     {
         await this.Host.DisposeAsync();
     }
+
+    public TestUser GetTestUser(string userName)
+    {
+        var user = this.testConfiguration.GetSection("users").Get<TestUser[]>().FirstOrDefault(u => u.UserName == userName);
+        if (user == null) throw new InvalidOperationException($"User {userName} not found in the test configuration");
+        return user;
+    }
+
+    private IAlbaExtension CreateClientCredentials(string userName)
+    {
+        var clientId = this.testConfiguration.GetValue<string>("clientId");
+        var clientSecret = this.testConfiguration.GetValue<string>("clientSecret");
+        var user = GetTestUser(userName);
+        var userAuth = new OpenConnectUserPassword
+        {
+            ClientId = clientId,
+            ClientSecret = clientSecret,
+            UserName = user.UserName,
+            Password = user.Password,
+        };
+
+        return userAuth;
+    }
 }
+
+public record TestUser(string UserName, string Password);

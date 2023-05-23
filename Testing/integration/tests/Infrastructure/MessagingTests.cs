@@ -14,7 +14,7 @@
 //  limitations under the License.
 // -------------------------------------------------------------------------
 
-namespace HealthGateway.IntegrationTests;
+namespace HealthGateway.IntegrationTests.Infrastructure;
 
 using System.Collections.Concurrent;
 using System.Transactions;
@@ -24,17 +24,16 @@ using HealthGateway.Common.Messaging;
 using HealthGateway.Common.Utils;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Shouldly;
 using Xunit.Abstractions;
 
 #pragma warning disable CA1063 // Implement IDisposable Correctly
 
-public class HangfireMessageSenderTests : ScenarioContextBase<GatewayApi.Startup>, IDisposable
+public class MessagingTests : ScenarioContextBase<GatewayApi.Startup>, IDisposable
 {
     private readonly CancellationTokenSource cts;
     private IMessageReceiver receiver = null!;
 
-    public HangfireMessageSenderTests(ITestOutputHelper output, WebAppFixture fixture) : base(output, fixture)
+    public MessagingTests(ITestOutputHelper output, WebAppFixture fixture) : base(output, fixture)
     {
         this.cts = new CancellationTokenSource();
         fixture.Services.AddHangfireServer(
