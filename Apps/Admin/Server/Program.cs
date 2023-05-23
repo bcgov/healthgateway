@@ -81,7 +81,7 @@ namespace HealthGateway.Admin.Server
 
             Uri? baseUri = configuration.GetValue<Uri>("KeycloakAdmin:BaseUrl");
             services.AddRefitClient<IKeycloakAdminApi>()
-                            .ConfigureHttpClient(c => c.BaseAddress = baseUri);
+                .ConfigureHttpClient(c => c.BaseAddress = baseUri);
 
             services.AddAutoMapper(typeof(Program), typeof(BroadcastProfile), typeof(UserProfileProfile), typeof(MessagingVerificationProfile));
 
