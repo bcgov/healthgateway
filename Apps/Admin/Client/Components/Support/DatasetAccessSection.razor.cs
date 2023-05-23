@@ -32,7 +32,7 @@ namespace HealthGateway.Admin.Client.Components.Support
     /// </summary>
     public partial class DatasetAccessSection : FluxorComponent
     {
-        private readonly IEnumerable<DataSource> dataSources = Enum.GetValues(typeof(DataSource)).Cast<DataSource>().Where(x => x != DataSource.Unknown);
+        private readonly IEnumerable<DataSource> dataSources = Enum.GetValues<DataSource>().Where(x => x != DataSource.Unknown);
 
         /// <summary>
         /// Working copy of the data sources which are currently set as blocked for the patient.
@@ -148,8 +148,7 @@ namespace HealthGateway.Admin.Client.Components.Support
                 this.Snackbar.Add("Patient's dataset access has been updated.", Severity.Success);
             }
         }
-
-
+        
         private bool IsBlocked(DataSource dataSource)
         {
             return this.blockedDataSources.Contains(dataSource);
