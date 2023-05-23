@@ -96,7 +96,7 @@ namespace HealthGateway.GatewayApi.Services
             this.userProfileDelegate = userProfileDelegate;
             this.messageSender = messageSender;
             this.maxDependentAge = configuration.GetSection(WebClientConfigSection).GetValue(MaxDependentAgeKey, 12);
-            this.changeFeedEnabled = configuration.GetSection(ChangeFeedConfigSection).GetValue(DependentChangeFeedKey, true);
+            this.changeFeedEnabled = configuration.GetSection(ChangeFeedConfigSection).GetValue(DependentChangeFeedKey, false);
             this.autoMapper = autoMapper;
         }
 
