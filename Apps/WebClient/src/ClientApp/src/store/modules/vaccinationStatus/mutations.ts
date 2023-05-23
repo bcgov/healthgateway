@@ -2,10 +2,14 @@ import CovidVaccineRecord from "@/models/covidVaccineRecord";
 import { DateWrapper } from "@/models/dateWrapper";
 import { CustomBannerError, ResultError } from "@/models/errors";
 import { LoadStatus } from "@/models/storeOperations";
-import VaccinationRecord from "@/models/vaccinationRecord";
 import VaccinationStatus from "@/models/vaccinationStatus";
+import VaccineRecordState from "@/models/vaccineRecordState";
 
 import { VaccinationStatusMutations, VaccinationStatusState } from "./types";
+import {
+    getAuthenticatedVaccineRecordState,
+    setAuthenticatedVaccineRecordState,
+} from "./util";
 
 export const mutations: VaccinationStatusMutations = {
     setPublicRequested(state: VaccinationStatusState) {
@@ -101,132 +105,83 @@ export const mutations: VaccinationStatusMutations = {
         state: VaccinationStatusState,
         params: { hdid: string }
     ) {
-        const vaccinationRecords: Map<string, VaccinationRecord> =
-            getVaccinationRecords(state);
-
-        const vaccinationRecord: VaccinationRecord = {
-            hdid: params.hdid,
+        const { hdid } = params;
+        const currentState = getAuthenticatedVaccineRecordState(state, hdid);
+        const nextState: VaccineRecordState = {
+            ...currentState,
+            record: undefined,
             download: true,
             error: undefined,
             status: LoadStatus.REQUESTED,
             statusMessage: "",
             resultMessage: "",
         };
-
-        vaccinationRecords.set(params.hdid, vaccinationRecord);
-        state.authenticatedVaccineRecord.vaccinationRecords =
-            vaccinationRecords;
-        state.authenticatedVaccineRecord.activeHdid = params.hdid;
-        state.authenticatedVaccineRecord.statusChanges++;
+        setAuthenticatedVaccineRecordState(state, hdid, nextState);
     },
     setAuthenticatedVaccineRecord(
         state: VaccinationStatusState,
-        params: { hdid: string; vaccinationRecord: CovidVaccineRecord }
+        params: { hdid: string; record: CovidVaccineRecord }
     ) {
-        const vaccinationRecords: Map<string, VaccinationRecord> =
-            getVaccinationRecords(state);
-
-        const vaccinationRecord: VaccinationRecord | undefined =
-            vaccinationRecords.get(params.hdid);
-
-        if (vaccinationRecord !== undefined) {
-            vaccinationRecord.record = params.vaccinationRecord;
-            vaccinationRecord.status = LoadStatus.LOADED;
-            vaccinationRecord.statusMessage = "";
-            vaccinationRecord.error = undefined;
-
-            state.authenticatedVaccineRecord.vaccinationRecords =
-                vaccinationRecords;
-        }
-        state.authenticatedVaccineRecord.statusChanges++;
+        const { hdid, record } = params;
+        const currentState = getAuthenticatedVaccineRecordState(state, hdid);
+        const nextState: VaccineRecordState = {
+            ...currentState,
+            record,
+            error: undefined,
+            status: LoadStatus.LOADED,
+            statusMessage: "",
+        };
+        setAuthenticatedVaccineRecordState(state, hdid, nextState);
     },
     setAuthenticatedVaccineRecordError(
         state: VaccinationStatusState,
         params: { hdid: string; error: ResultError }
     ) {
-        const vaccinationRecords: Map<string, VaccinationRecord> =
-            getVaccinationRecords(state);
-
-        const vaccinationRecord: VaccinationRecord | undefined =
-            vaccinationRecords.get(params.hdid);
-
-        if (vaccinationRecord !== undefined) {
-            vaccinationRecord.error = params.error;
-            vaccinationRecord.status = LoadStatus.ERROR;
-
-            state.authenticatedVaccineRecord.vaccinationRecords =
-                vaccinationRecords;
-        }
-        state.authenticatedVaccineRecord.statusChanges++;
+        const { hdid, error } = params;
+        const currentState = getAuthenticatedVaccineRecordState(state, hdid);
+        const nextState: VaccineRecordState = {
+            ...currentState,
+            record: undefined,
+            error,
+            status: LoadStatus.ERROR,
+            statusMessage: "",
+        };
+        setAuthenticatedVaccineRecordState(state, hdid, nextState);
     },
     setAuthenticatedVaccineRecordStatusMessage(
         state: VaccinationStatusState,
         params: { hdid: string; statusMessage: string }
     ) {
-        const vaccinationRecords: Map<string, VaccinationRecord> =
-            getVaccinationRecords(state);
-
-        const vaccinationRecord: VaccinationRecord | undefined =
-            vaccinationRecords.get(params.hdid);
-
-        if (vaccinationRecord !== undefined) {
-            vaccinationRecord.statusMessage = params.statusMessage;
-
-            state.authenticatedVaccineRecord.vaccinationRecords =
-                vaccinationRecords;
-        }
-        state.authenticatedVaccineRecord.statusChanges++;
+        const { hdid, statusMessage } = params;
+        const currentState = getAuthenticatedVaccineRecordState(state, hdid);
+        const nextState: VaccineRecordState = {
+            ...currentState,
+            statusMessage,
+        };
+        setAuthenticatedVaccineRecordState(state, hdid, nextState);
     },
     setAuthenticatedVaccineRecordResultMessage(
         state: VaccinationStatusState,
         params: { hdid: string; resultMessage: string }
     ) {
-        const vaccinationRecords: Map<string, VaccinationRecord> =
-            getVaccinationRecords(state);
-
-        const vaccinationRecord: VaccinationRecord | undefined =
-            vaccinationRecords.get(params.hdid);
-
-        if (vaccinationRecord !== undefined) {
-            vaccinationRecord.resultMessage = params.resultMessage;
-
-            state.authenticatedVaccineRecord.vaccinationRecords =
-                vaccinationRecords;
-        }
-        state.authenticatedVaccineRecord.statusChanges++;
+        const { hdid, resultMessage } = params;
+        const currentState = getAuthenticatedVaccineRecordState(state, hdid);
+        const nextState: VaccineRecordState = {
+            ...currentState,
+            resultMessage,
+        };
+        setAuthenticatedVaccineRecordState(state, hdid, nextState);
     },
     setAuthenticatedVaccineRecordDownload(
         state: VaccinationStatusState,
         params: { hdid: string; download: boolean }
     ) {
-        const vaccinationRecords: Map<string, VaccinationRecord> =
-            getVaccinationRecords(state);
-
-        const vaccinationRecord: VaccinationRecord | undefined =
-            vaccinationRecords.get(params.hdid);
-
-        if (vaccinationRecord !== undefined) {
-            vaccinationRecord.download = params.download;
-
-            state.authenticatedVaccineRecord.vaccinationRecords =
-                vaccinationRecords;
-        }
-        state.authenticatedVaccineRecord.statusChanges++;
+        const { hdid, download } = params;
+        const currentState = getAuthenticatedVaccineRecordState(state, hdid);
+        const nextState: VaccineRecordState = {
+            ...currentState,
+            download,
+        };
+        setAuthenticatedVaccineRecordState(state, hdid, nextState);
     },
 };
-
-function getVaccinationRecords(
-    state: VaccinationStatusState
-): Map<string, VaccinationRecord> {
-    if (
-        state.authenticatedVaccineRecord.vaccinationRecords instanceof
-        Map<string, VaccinationRecord>
-    ) {
-        return state.authenticatedVaccineRecord.vaccinationRecords;
-    }
-
-    return Object.assign(
-        new Map<string, VaccinationRecord>(),
-        state.authenticatedVaccineRecord.vaccinationRecords
-    );
-}

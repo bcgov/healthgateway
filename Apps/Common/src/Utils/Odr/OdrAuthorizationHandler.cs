@@ -16,6 +16,7 @@
 namespace HealthGateway.Common.Utils.Odr
 {
     using System;
+    using System.Diagnostics.CodeAnalysis;
     using System.IO;
     using System.Net.Http;
     using System.Net.Http.Headers;
@@ -29,6 +30,7 @@ namespace HealthGateway.Common.Utils.Odr
     /// <summary>
     /// Message handler that attaches the client certificate and basic authorization header required by ODR endpoints.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public class OdrAuthorizationHandler : HttpClientHandler
     {
         private readonly string? base64AuthorizationString;

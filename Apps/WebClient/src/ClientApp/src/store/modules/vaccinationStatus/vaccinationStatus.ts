@@ -1,5 +1,4 @@
 import { LoadStatus } from "@/models/storeOperations";
-import VaccinationRecord from "@/models/vaccinationRecord";
 
 import { actions } from "./actions";
 import { getters } from "./getters";
@@ -25,11 +24,7 @@ const state: VaccinationStatusState = {
         status: LoadStatus.NONE,
         statusMessage: "",
     },
-    authenticatedVaccineRecord: {
-        activeHdid: "",
-        statusChanges: 0,
-        vaccinationRecords: new Map<string, VaccinationRecord>(),
-    },
+    authenticatedVaccineRecordStates: {},
 };
 
 const namespaced = true;

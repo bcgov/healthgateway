@@ -51,6 +51,22 @@ namespace HealthGateway.CommonTests.CacheProviders
         }
 
         /// <summary>
+        /// Validates adding items to the cache async.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+        [Fact]
+        public async Task AddItemToCacheAsync()
+        {
+            Mock<ILogger<RedisCacheProvider>> mockLogger = new();
+            ICacheProvider cacheProvider = new RedisCacheProvider(mockLogger.Object, this.connectionMultiplexer);
+
+            string key = "key";
+            await cacheProvider.AddItemAsync(key, "value", TimeSpan.FromMilliseconds(5000));
+
+            Assert.True(await this.connectionMultiplexer.GetDatabase().KeyExistsAsync(key));
+        }
+
+        /// <summary>
         /// Validates items in the cache expire.
         /// </summary>
         [Fact]
@@ -81,6 +97,104 @@ namespace HealthGateway.CommonTests.CacheProviders
             string? cacheItem = cacheProvider.GetItem<string>(key);
 
             Assert.True(value == cacheItem);
+        }
+
+        /// <summary>
+        /// Validates getting items from the cache Async.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+        [Fact]
+        public async Task GetItemFromCacheAsync()
+        {
+            string key = "key";
+            string value = "value";
+            await this.connectionMultiplexer!.GetDatabase().StringSetAsync(key, JsonSerializer.Serialize(value));
+            Mock<ILogger<RedisCacheProvider>> mockLogger = new();
+            ICacheProvider cacheProvider = new RedisCacheProvider(mockLogger.Object, this.connectionMultiplexer);
+            string? cacheItem = await cacheProvider.GetItemAsync<string>(key);
+            Assert.Equal(value, cacheItem);
+        }
+
+        /// <summary>
+        /// Validates getting items from the cache.
+        /// </summary>
+        [Fact]
+        public void RemoveItemFromCache()
+        {
+            string key = "key";
+            string value = "value";
+            this.connectionMultiplexer!.GetDatabase().StringSet(key, JsonSerializer.Serialize(value));
+
+            Mock<ILogger<RedisCacheProvider>> mockLogger = new();
+            ICacheProvider cacheProvider = new RedisCacheProvider(mockLogger.Object, this.connectionMultiplexer);
+            cacheProvider.RemoveItem(key);
+
+            Assert.False(this.connectionMultiplexer.GetDatabase().KeyExists(key));
+        }
+
+        /// <summary>
+        /// Validates getting items from the cache async.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+        [Fact]
+        public async Task RemoveItemFromCacheAsync()
+        {
+            string key = "key";
+            string value = "value";
+            await this.connectionMultiplexer!.GetDatabase().StringSetAsync(key, JsonSerializer.Serialize(value));
+
+            Mock<ILogger<RedisCacheProvider>> mockLogger = new();
+            ICacheProvider cacheProvider = new RedisCacheProvider(mockLogger.Object, this.connectionMultiplexer);
+            await cacheProvider.RemoveItemAsync(key);
+
+            Assert.False(await this.connectionMultiplexer.GetDatabase().KeyExistsAsync(key));
+        }
+
+        /// <summary>
+        /// Validates GetOrSet will both retrieve and set the value if it doesn't exist.
+        /// </summary>
+        [Fact]
+        public void ShouldGetOrSet()
+        {
+            string key = "key";
+            string value = "value";
+            Mock<ILogger<RedisCacheProvider>> mockLogger = new();
+            ICacheProvider cacheProvider = new RedisCacheProvider(mockLogger.Object, this.connectionMultiplexer);
+
+            Assert.False(this.connectionMultiplexer.GetDatabase().KeyExists(key));
+
+            string ValueGetter()
+            {
+                return value;
+            }
+
+            string? cachedItem = cacheProvider.GetOrSet(key, ValueGetter);
+            Assert.Equal(value, cachedItem);
+            Assert.True(this.connectionMultiplexer.GetDatabase().KeyExists(key));
+        }
+
+        /// <summary>
+        /// Validates GetOrSet will both retrieve and set the value if it doesn't exist async.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+        [Fact]
+        public async Task ShouldGetOrSetAsync()
+        {
+            string key = "key";
+            string value = "value";
+            Mock<ILogger<RedisCacheProvider>> mockLogger = new();
+            ICacheProvider cacheProvider = new RedisCacheProvider(mockLogger.Object, this.connectionMultiplexer);
+
+            Assert.False(await this.connectionMultiplexer.GetDatabase().KeyExistsAsync(key));
+
+            Task<string> ValueGetter()
+            {
+                return Task.FromResult(value);
+            }
+
+            string? cachedItem = await cacheProvider.GetOrSetAsync(key, ValueGetter);
+            Assert.Equal(value, cachedItem);
+            Assert.True(await this.connectionMultiplexer.GetDatabase().KeyExistsAsync(key));
         }
 
         /// <summary>

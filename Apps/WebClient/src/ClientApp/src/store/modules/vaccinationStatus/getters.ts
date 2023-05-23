@@ -1,10 +1,11 @@
 import CovidVaccineRecord from "@/models/covidVaccineRecord";
 import { CustomBannerError, ResultError } from "@/models/errors";
 import { LoadStatus } from "@/models/storeOperations";
-import VaccinationRecord from "@/models/vaccinationRecord";
 import VaccinationStatus from "@/models/vaccinationStatus";
+import VaccineRecordState from "@/models/vaccineRecordState";
 
 import { VaccinationStatusGetters, VaccinationStatusState } from "./types";
+import { getAuthenticatedVaccineRecordState } from "./util";
 
 export const getters: VaccinationStatusGetters = {
     publicVaccinationStatus(
@@ -51,29 +52,10 @@ export const getters: VaccinationStatusGetters = {
     authenticatedStatusMessage(state: VaccinationStatusState): string {
         return state.authenticated.statusMessage;
     },
-    authenticatedVaccineRecords(
+    authenticatedVaccineRecordState(
         state: VaccinationStatusState
-    ): Map<string, VaccinationRecord> {
-        if (
-            state.authenticatedVaccineRecord.vaccinationRecords instanceof
-            Map<string, VaccinationRecord>
-        ) {
-            return state.authenticatedVaccineRecord.vaccinationRecords;
-        }
-
-        return Object.assign(
-            new Map<string, VaccinationRecord>(),
-            state.authenticatedVaccineRecord.vaccinationRecords
-        );
-    },
-    authenticatedVaccineRecordStatusChanges(
-        state: VaccinationStatusState
-    ): number {
-        return state.authenticatedVaccineRecord.statusChanges;
-    },
-    authenticatedVaccineRecordActiveHdid(
-        state: VaccinationStatusState
-    ): string {
-        return state.authenticatedVaccineRecord.activeHdid;
+    ): (hdid: string) => VaccineRecordState {
+        return (hdid: string) =>
+            getAuthenticatedVaccineRecordState(state, hdid);
     },
 };

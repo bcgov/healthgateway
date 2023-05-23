@@ -2,7 +2,7 @@ import CovidVaccineRecord from "./covidVaccineRecord";
 import { ResultError } from "./errors";
 import { LoadStatus } from "./storeOperations";
 
-export default interface VaccinationRecord {
+export default interface VaccineRecordState {
     hdid: string;
     record?: CovidVaccineRecord;
     download: boolean;
