@@ -15,10 +15,13 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Admin.Client.Components.AgentAudit
 {
+    using System;
     using System.Collections.Generic;
     using Fluxor.Blazor.Web.Components;
     using HealthGateway.Admin.Common.Models;
+    using HealthGateway.Common.Data.Utils;
     using Microsoft.AspNetCore.Components;
+    using Microsoft.Extensions.Configuration;
 
     /// <summary>
     /// The Agent Audit History component.
@@ -45,6 +48,19 @@ namespace HealthGateway.Admin.Client.Components.AgentAudit
         [EditorRequired]
         public bool IsLoading { get; set; } = true;
 
+        [Inject]
+        public IConfiguration Configuration { get; set; } = default!;
+
         private int[] PageSizes { get; } = { 5, 10, 15 };
+
+        private DateTime ConvertDateTime(DateTime utcDateTime)
+        {
+            return TimeZoneInfo.ConvertTimeFromUtc(utcDateTime, this.GetTimeZone());
+        }
+
+        private TimeZoneInfo GetTimeZone()
+        {
+            return DateFormatter.GetLocalTimeZone(this.Configuration);
+        }
     }
 }
