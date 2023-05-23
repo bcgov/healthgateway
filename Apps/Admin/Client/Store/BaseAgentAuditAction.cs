@@ -16,7 +16,7 @@
 namespace HealthGateway.Admin.Client.Store
 {
     /// <summary>
-    /// The base class for a auditable action that requires a reason within the action.
+    /// The base class for an auditable action that requires a reason.
     /// </summary>
     public abstract class BaseAgentAuditAction
     {
