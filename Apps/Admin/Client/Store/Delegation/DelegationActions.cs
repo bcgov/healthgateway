@@ -172,12 +172,8 @@ namespace HealthGateway.Admin.Client.Store.Delegation
         /// <summary>
         /// The action representing the initiation of a protect dependent.
         /// </summary>
-        public class ProtectDependentAction
+        public class ProtectDependentAction : BaseAgentAuditAction
         {
-            /// <summary>
-            /// Gets the reason associated with the agent action.
-            /// </summary>
-            public required string Reason { get; init; }
         }
 
         /// <summary>
@@ -209,12 +205,8 @@ namespace HealthGateway.Admin.Client.Store.Delegation
         /// <summary>
         /// The action representing the initiation of an unprotect dependent.
         /// </summary>
-        public class UnprotectDependentAction
+        public class UnprotectDependentAction : BaseAgentAuditAction
         {
-            /// <summary>
-            /// Gets the reason associated with the agent action.
-            /// </summary>
-            public required string Reason { get; init; }
         }
 
         /// <summary>

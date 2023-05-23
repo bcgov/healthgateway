@@ -1,0 +1,38 @@
+﻿@inherits Fluxor.Blazor.Web.Components.FluxorComponent
+
+<MudExpansionPanels Class="mt-4">
+    <MudProgressLinear Class="rounded-t overflow-hidden" hidden="@(!IsLoading)" Color="Color.Primary" Indeterminate="true" />
+    <MudExpansionPanel Class="my-0">
+        <TitleContent>
+            <MudText Typo="Typo.subtitle1">@Title (@(AgentActions.Count()))</MudText>
+        </TitleContent>
+        <ChildContent>
+            <MudTable Class="mt-4"
+                      Items="@AgentActions"
+                      AllowUnsorted="false"
+                      Breakpoint="@Breakpoint.Md"
+                      HorizontalScrollbar="true"
+                      RowsPerPage="5"
+                      Striped="true"
+                      Dense="true"
+                      data-testid="agent-audit-history-table">
+                <RowTemplate>
+                    <MudTd data-testid="agent-action-history-item" DataLabel="Agent-History">
+                        <MudListItem Class="background-secondary">
+                            <MudText Typo="Typo.h6" class="mb-2">
+                                <b>@context.AgentUsername</b>
+                            </MudText>
+                            <MudText Typo="Typo.body2">@context.Reason</MudText>
+                            <MudText Typo="Typo.caption">
+                                <b>@ConvertDateTime(context.TransactionDateTime)</b>
+                            </MudText>
+                        </MudListItem>
+                    </MudTd>
+                </RowTemplate>
+                <PagerContent>
+                    <MudTablePager PageSizeOptions="@PageSizes" />
+                </PagerContent>
+            </MudTable>
+        </ChildContent>
+    </MudExpansionPanel>
+</MudExpansionPanels>

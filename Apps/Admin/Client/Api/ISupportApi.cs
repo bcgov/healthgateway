@@ -43,7 +43,6 @@ public interface ISupportApi
     [Get("/PatientSupportDetails?hdid={hdid}")]
     Task<PatientSupportDetails> GetPatientSupportDetailsAsync(string hdid);
 
-
     /// <summary>
     /// Creates, updates, or deletes block access configuration for the passed HDID.
     /// </summary>

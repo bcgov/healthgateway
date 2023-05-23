@@ -93,17 +93,15 @@ namespace HealthGateway.Admin.Client.Store.PatientDetails
         /// <summary>
         /// The action representing the configuring of a patient's level of access.
         /// </summary>
-        public class BlockAccessAction
+        public class BlockAccessAction : BaseAgentAuditAction
         {
             /// <summary>
             /// Initializes a new instance of the <see cref="BlockAccessAction"/> class.
             /// </summary>
             /// <param name="hdid">The patient's HDID to configure access for.</param>
-            /// <param name="reason">The agent's reason for the access change.</param>
             /// <param name="dataSources">The list of Dataset names that will be affected, empty will grant full access.</param>
-            public BlockAccessAction(string hdid, string reason, IEnumerable<DataSource> dataSources)
+            public BlockAccessAction(string hdid, IEnumerable<DataSource> dataSources)
             {
-                this.Reason = reason;
                 this.DataSources = dataSources;
                 this.Hdid = hdid;
             }
@@ -117,11 +115,6 @@ namespace HealthGateway.Admin.Client.Store.PatientDetails
             /// Gets the list of data sources to block.
             /// </summary>
             public IEnumerable<DataSource> DataSources { get; init; }
-
-            /// <summary>
-            /// Gets the reason to block data source(s).
-            /// </summary>
-            public string Reason { get; init; }
         }
 
         /// <summary>
