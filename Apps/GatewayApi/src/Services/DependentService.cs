@@ -110,7 +110,7 @@ namespace HealthGateway.GatewayApi.Services
                 return RequestResultFactory.Error<DependentModel>(ErrorType.InvalidState, validationResults.Errors);
             }
 
-            RequestResult<PatientModel> dependentResult = await this.patientService.GetPatient(addDependentRequest.Phn, PatientIdentifierType.Phn);
+            var dependentResult = await this.GetDependentAsPatient(addDependentRequest.Phn);
             switch (dependentResult.ResultStatus)
             {
                 case ResultType.Error:
@@ -319,6 +319,11 @@ namespace HealthGateway.GatewayApi.Services
         {
             string replacedValue = value.Replace(SmartApostrophe, RegularApostrophe, StringComparison.Ordinal);
             return replacedValue;
+        }
+
+        private async Task<RequestResult<PatientModel>> GetDependentAsPatient(string phn)
+        {
+            return await this.patientService.GetPatient(phn, PatientIdentifierType.Phn);
         }
 
         private void UpdateNotificationSettings(string dependentHdid, string delegateHdid, bool isDelete = false)
