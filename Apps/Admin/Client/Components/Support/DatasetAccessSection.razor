@@ -7,7 +7,12 @@
 <MudGrid Class="mt-2">
     <MudItem xs="12">
         <MudPaper>
-            <MudProgressLinear Class="rounded-t overflow-hidden" hidden="@(!IsLoading)" Color="Color.Primary" Indeterminate="true" />
+            <MudProgressLinear
+                Class="rounded-t overflow-hidden"
+                hidden="@(!IsLoading)"
+                Color="Color.Primary"
+                Indeterminate="true"
+                data-testid="block-access-loader"/>
             <MudCardContent Class="d-flex">
                 <MudText Class="mt-2" Typo="Typo.subtitle1">
                     Dataset/Service Block

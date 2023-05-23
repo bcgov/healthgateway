@@ -4,7 +4,7 @@
     <MudProgressLinear Class="rounded-t overflow-hidden" hidden="@(!IsLoading)" Color="Color.Primary" Indeterminate="true" />
     <MudExpansionPanel Class="my-0">
         <TitleContent>
-            <MudText Typo="Typo.subtitle1">@Title (@(AgentActions.Count()))</MudText>
+            <MudText Typo="Typo.subtitle1" data-testid="agent-audit-history-title">@Title (@(AgentActions.Count()))</MudText>
         </TitleContent>
         <ChildContent>
             <MudTable Class="mt-4"
