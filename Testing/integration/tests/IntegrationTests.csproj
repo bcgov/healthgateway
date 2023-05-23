@@ -42,6 +42,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\..\..\Apps\Admin\Server\Admin.Server.csproj" />
       <ProjectReference Include="..\..\..\Apps\GatewayApi\src\GatewayApi.csproj" />
     </ItemGroup>
 

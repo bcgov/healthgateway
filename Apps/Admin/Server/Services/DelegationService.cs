@@ -222,16 +222,16 @@ namespace HealthGateway.Admin.Server.Services
             if (this.changeFeedEnabled)
             {
                 await this.delegationDelegate.UpdateDelegationAsync(dependent, resourceDelegatesToDelete, dependentAudit, false);
-                var events = new MessageEnvelope[]
+                IEnumerable<MessageEnvelope> events = new MessageEnvelope[]
                 {
-                new MessageEnvelope(new DependentProtectionAddedEvent(dependentHdid), dependentHdid),
+                    new(new DependentProtectionAddedEvent(dependentHdid), dependentHdid),
                 }.Concat(resourceDelegatesToDelete.Select(rd => new MessageEnvelope(new DependentRemovedEvent(rd.ProfileHdid, dependentHdid), rd.ProfileHdid)));
 
                 await this.messageSender.SendAsync(events, ct);
             }
             else
             {
-                await this.delegationDelegate.UpdateDelegationAsync(dependent, resourceDelegatesToDelete, dependentAudit, true);
+                await this.delegationDelegate.UpdateDelegationAsync(dependent, resourceDelegatesToDelete, dependentAudit);
             }
 
             return this.autoMapper.Map<DependentAudit, DelegationChange>(dependentAudit);
@@ -267,16 +267,16 @@ namespace HealthGateway.Admin.Server.Services
             {
                 await this.delegationDelegate.UpdateDelegationAsync(dependent, Enumerable.Empty<ResourceDelegate>(), dependentAudit, false);
 
-                var events = new MessageEnvelope[]
+                MessageEnvelope[] events =
                 {
-                        new MessageEnvelope(new DependentProtectionRemovedEvent(dependentHdid), dependentHdid),
+                    new(new DependentProtectionRemovedEvent(dependentHdid), dependentHdid),
                 };
 
                 await this.messageSender.SendAsync(events, ct);
             }
             else
             {
-                await this.delegationDelegate.UpdateDelegationAsync(dependent, Enumerable.Empty<ResourceDelegate>(), dependentAudit, true);
+                await this.delegationDelegate.UpdateDelegationAsync(dependent, Enumerable.Empty<ResourceDelegate>(), dependentAudit);
             }
 
             return this.autoMapper.Map<DependentAudit, DelegationChange>(dependentAudit);

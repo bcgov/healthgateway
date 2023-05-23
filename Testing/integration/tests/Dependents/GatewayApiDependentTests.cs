@@ -24,7 +24,7 @@ using HealthGateway.GatewayApi.Models;
 using Microsoft.EntityFrameworkCore;
 using Xunit.Abstractions;
 
-public class DependentTests : ScenarioContextBase<GatewayApi.Startup>
+public class GatewayApiDependentTests : ScenarioContextBase<GatewayApi.Startup>
 {
     private readonly DateTime dependentDob = DateTime.Parse("2014-Mar-15");
     private readonly string dependentPhn = "9874307168";
@@ -32,12 +32,12 @@ public class DependentTests : ScenarioContextBase<GatewayApi.Startup>
     private readonly string dependentLastName = "Testfive";
     private readonly string delegateHdid = "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A";
 
-    public DependentTests(ITestOutputHelper output, WebAppFixture fixture) : base(output, fixture)
+    public GatewayApiDependentTests(ITestOutputHelper output, WebAppFixture fixture) : base(output, TestConfiguration.WebClientConfigSection, fixture)
     {
     }
 
     [Fact]
-    public async Task CanAddDependent()
+    public async Task AddDependent()
     {
         var scenarioResponse = await this.Host.Scenario(scenario =>
         {
@@ -63,7 +63,7 @@ public class DependentTests : ScenarioContextBase<GatewayApi.Startup>
     }
 
     [Fact]
-    public async Task CanRemoveDependent()
+    public async Task RemoveDependent()
     {
         var dependentHdidToRemove = "232434345442257";
         var scenarioResponse = await this.Host.Scenario(scenario =>

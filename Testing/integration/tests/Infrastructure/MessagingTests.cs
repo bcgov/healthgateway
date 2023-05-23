@@ -33,7 +33,7 @@ public class MessagingTests : ScenarioContextBase<GatewayApi.Startup>, IDisposab
     private readonly CancellationTokenSource cts;
     private IMessageReceiver receiver = null!;
 
-    public MessagingTests(ITestOutputHelper output, WebAppFixture fixture) : base(output, fixture)
+    public MessagingTests(ITestOutputHelper output, WebAppFixture fixture) : base(output, TestConfiguration.WebClientConfigSection, fixture)
     {
         this.cts = new CancellationTokenSource();
         fixture.Services.AddHangfireServer(
