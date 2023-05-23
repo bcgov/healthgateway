@@ -148,6 +148,7 @@ namespace HealthGateway.Admin.Client.Components.Support
                 this.Snackbar.Add("Patient's dataset access has been updated.", Severity.Success);
             }
         }
+        
         private bool IsBlocked(DataSource dataSource)
         {
             return this.blockedDataSources.Contains(dataSource);
