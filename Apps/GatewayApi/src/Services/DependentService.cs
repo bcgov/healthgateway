@@ -50,7 +50,8 @@ namespace HealthGateway.GatewayApi.Services
     {
         private const string WebClientConfigSection = "WebClient";
         private const string MaxDependentAgeKey = "MaxDependentAge";
-        private const string EnableDependentChangeFeedKey = "ChangeFeed:Dependent";
+        private const string ChangeFeedConfigSection = "ChangeFeed";
+        private const string DependentChangeFeedKey = "Dependents";
         private const string SmartApostrophe = "’";
         private const string RegularApostrophe = "'";
         private readonly IMapper autoMapper;
@@ -95,7 +96,7 @@ namespace HealthGateway.GatewayApi.Services
             this.userProfileDelegate = userProfileDelegate;
             this.messageSender = messageSender;
             this.maxDependentAge = configuration.GetSection(WebClientConfigSection).GetValue(MaxDependentAgeKey, 12);
-            this.changeFeedEnabled = configuration.GetSection(WebClientConfigSection).GetValue(EnableDependentChangeFeedKey, true);
+            this.changeFeedEnabled = configuration.GetSection(ChangeFeedConfigSection).GetValue(DependentChangeFeedKey, false);
             this.autoMapper = autoMapper;
         }
 

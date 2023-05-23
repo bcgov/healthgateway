@@ -100,22 +100,22 @@ public abstract class ScenarioContextBase<TStartup> : IAsyncLifetime, IClassFixt
     where TStartup : class
 {
     private readonly WebAppFixture fixture;
-    private readonly IConfiguration testConfiguration;
+    private readonly TestConfiguration testConfiguration;
 
     public IAlbaHost Host { get; private set; } = null!;
 
     protected ITestOutputHelper Output { get; }
 
-    protected ScenarioContextBase(ITestOutputHelper output, WebAppFixture fixture)
+    protected ScenarioContextBase(ITestOutputHelper output, string configSectionName, WebAppFixture fixture)
     {
         this.Output = output;
         this.fixture = fixture;
-        this.testConfiguration = new ConfigurationBuilder().AddUserSecrets(Assembly.GetExecutingAssembly()).Build();
+        this.testConfiguration = new ConfigurationBuilder().AddUserSecrets(Assembly.GetExecutingAssembly()).Build().GetSection(configSectionName).Get<TestConfiguration>()!;
     }
 
     public virtual async Task InitializeAsync()
     {
-        var authentication = CreateClientCredentials("healthgateway");
+        var authentication = CreateClientCredentials(this.testConfiguration.DefaultUserName);
         this.Host = await this.fixture.CreateHost<TStartup>(this.Output, extensions: new IAlbaExtension[] { authentication });
 
         using var migrationScope = this.Host.Services.CreateScope();
@@ -152,15 +152,15 @@ public abstract class ScenarioContextBase<TStartup> : IAsyncLifetime, IClassFixt
 
     public TestUser GetTestUser(string userName)
     {
-        var user = this.testConfiguration.GetSection("users").Get<TestUser[]>().FirstOrDefault(u => u.UserName == userName);
+        var user = this.testConfiguration.Users.FirstOrDefault(u => u.UserName == userName);
         if (user == null) throw new InvalidOperationException($"User {userName} not found in the test configuration");
         return user;
     }
 
     private IAlbaExtension CreateClientCredentials(string userName)
     {
-        var clientId = this.testConfiguration.GetValue<string>("clientId");
-        var clientSecret = this.testConfiguration.GetValue<string>("clientSecret");
+        var clientId = this.testConfiguration.ClientId;
+        var clientSecret = this.testConfiguration.ClientSecret;
         var user = GetTestUser(userName);
         var userAuth = new OpenConnectUserPassword
         {
@@ -175,3 +175,15 @@ public abstract class ScenarioContextBase<TStartup> : IAsyncLifetime, IClassFixt
 }
 
 public record TestUser(string UserName, string Password);
+
+public record TestConfiguration
+{
+    public const string AdminConfigSection = "Admin";
+    public const string WebClientConfigSection = "WebClient";
+
+    public string Authority { get; set; } = null!;
+    public string ClientId { get; set; } = null!;
+    public string ClientSecret { get; set; } = null!;
+    public string DefaultUserName { get; set; } = null!;
+    public IEnumerable<TestUser> Users { get; set; } = Array.Empty<TestUser>();
+}

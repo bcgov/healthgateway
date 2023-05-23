@@ -455,8 +455,8 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             };
 
             Mock<IResourceDelegateDelegate> mockDependentDelegate = new();
-            mockDependentDelegate.Setup(s => s.Get(this.mockParentHdid, 0, 500)).Returns(mockResourceDelegateResult);
-            mockDependentDelegate.Setup(s => s.Get(this.fromDate, this.toDate, 0, 5000)).Returns(mockResourceDelegateResult);
+            mockDependentDelegate.Setup(s => s.Get(this.mockParentHdid, It.IsAny<int>(), It.IsAny<int>())).Returns(mockResourceDelegateResult);
+            mockDependentDelegate.Setup(s => s.Get(this.fromDate, this.toDate, It.IsAny<int>(), It.IsAny<int>())).Returns(mockResourceDelegateResult);
             mockDependentDelegate.Setup(s => s.GetTotalDelegateCountsAsync(It.IsAny<IEnumerable<string>>())).ReturnsAsync(mockDelegateCountsResult);
 
             // (2) Setup PatientDelegate's mock
