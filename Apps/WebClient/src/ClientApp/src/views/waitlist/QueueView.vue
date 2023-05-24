@@ -5,6 +5,8 @@ import { useRoute, useRouter, useStore } from "vue-composition-wrapper";
 import type { WebClientConfiguration } from "@/models/configData";
 import type { Ticket } from "@/models/ticket";
 
+const route = useRoute();
+const router = useRouter();
 const store = useStore();
 
 const webClient = computed<WebClientConfiguration>(() => {
@@ -23,8 +25,6 @@ const queuePosition = computed<number | undefined>(
     () => ticket?.value.queuePosition
 );
 
-const route = useRoute();
-const router = useRouter();
 function redirect(): void {
     const path = route.value.query.redirect
         ? route.value.query.redirect.toString()

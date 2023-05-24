@@ -36,16 +36,10 @@ const protectiveWordAttempts = computed<number>(() =>
 );
 
 const protectiveWord = ref("");
-const isDismissed = ref(false);
-
 const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
 
 const isVisible = computed<boolean>(() => {
-    return (
-        medicationsAreProtected.value &&
-        !medicationsAreLoading.value &&
-        !isDismissed.value
-    );
+    return medicationsAreProtected.value && !medicationsAreLoading.value;
 });
 
 const error = computed<boolean>(() => {
@@ -56,10 +50,6 @@ function handleOk(bvModalEvt: Event): void {
     // Prevent modal from closing
     bvModalEvt.preventDefault();
     fetchMedications();
-}
-
-function handleHidden(): void {
-    isDismissed.value = true;
 }
 
 function fetchMedications(): void {
@@ -81,7 +71,6 @@ function fetchMedications(): void {
         header-bg-variant="primary"
         header-text-variant="light"
         centered
-        @hidden="handleHidden()"
     >
         <b-row>
             <b-col>
