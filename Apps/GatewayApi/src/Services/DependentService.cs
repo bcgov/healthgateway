@@ -111,7 +111,7 @@ namespace HealthGateway.GatewayApi.Services
             }
 
             var dependentResult = await this.GetDependentAsPatient(addDependentRequest.Phn);
-            var validationResult = await this.ValidateDepentent(addDependentRequest, delegateHdid, dependentResult);
+            var validationResult = await this.ValidateDependent(addDependentRequest, delegateHdid, dependentResult);
             if (validationResult != null)
             {
                 return validationResult;
@@ -294,7 +294,7 @@ namespace HealthGateway.GatewayApi.Services
             return replacedValue;
         }
 
-        private async Task<RequestResult<DependentModel>?> ValidateDepentent(AddDependentRequest addDependentRequest, string delegateHdid, RequestResult<PatientModel> dependentResult)
+        private async Task<RequestResult<DependentModel>?> ValidateDependent(AddDependentRequest addDependentRequest, string delegateHdid, RequestResult<PatientModel> dependentResult)
         {
             switch (dependentResult.ResultStatus)
             {
