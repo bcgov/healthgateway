@@ -15,7 +15,6 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Admin.Client.Components.AgentAudit;
 
-using System;
 using Fluxor;
 using Fluxor.Blazor.Web.Components;
 using HealthGateway.Admin.Client.Store;
@@ -69,8 +68,6 @@ public partial class AuditReasonDialog<TAction, TErrorAction, TSuccessAction> : 
     private string? ErrorMessage => this.Error?.Message;
 
     private bool HasError => this.Error is not null;
-
-    private Type AuditableActionType => this.AuditableAction.GetType();
 
     /// <summary>
     /// Called when the component is initialized.

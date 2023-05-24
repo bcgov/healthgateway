@@ -77,8 +77,6 @@ namespace HealthGateway.Admin.Client.Components.Support
 
         private bool IsDirty => !this.Data.OrderBy(x => x).SequenceEqual(this.blockedDataSources.OrderBy(x => x));
 
-        private bool IsSaving => this.PatientDetailsState.Value.BlockAccess.IsLoading;
-
         /// <summary>
         /// Overrides the base OnParametersSet method.
         /// This allows us to ensure that the incoming data is set to the blockedDataSources.
@@ -148,7 +146,7 @@ namespace HealthGateway.Admin.Client.Components.Support
                 this.Snackbar.Add("Patient's dataset access has been updated.", Severity.Success);
             }
         }
-        
+
         private bool IsBlocked(DataSource dataSource)
         {
             return this.blockedDataSources.Contains(dataSource);
