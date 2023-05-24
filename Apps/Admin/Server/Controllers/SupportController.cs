@@ -21,7 +21,6 @@ namespace HealthGateway.Admin.Server.Controllers
     using HealthGateway.Admin.Common.Models;
     using HealthGateway.Admin.Server.Services;
     using HealthGateway.Common.Data.Constants;
-    using HealthGateway.Common.Data.ViewModels;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
@@ -69,28 +68,46 @@ namespace HealthGateway.Admin.Server.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status502BadGateway, Type = typeof(ProblemDetails))]
-        public async Task<IEnumerable<PatientSupportDetails>> GetPatients([FromQuery] PatientQueryType queryType, [FromQuery] string queryString, CancellationToken ct)
+        public async Task<IEnumerable<PatientSupportResult>> GetPatients([FromQuery] PatientQueryType queryType, [FromQuery] string queryString, CancellationToken ct)
         {
             return await this.supportService.GetPatientsAsync(queryType, queryString, ct).ConfigureAwait(true);
         }
 
         /// <summary>
-        /// Retrieves a list of messaging verifications matching the query.
+        /// Retrieves patient support details, which includes messaging verifications, agent changes and blocked data sources
+        /// matching the query.
         /// </summary>
-        /// <param name="hdid">The HDID associated with the messaging verifications.</param>
+        /// <param name="hdid">The HDID associated with the patient support details.</param>
         /// <param name="ct">A cancellation token.</param>
-        /// <returns>A list of messaging verifications matching the query.</returns>
-        /// <response code="200">Returns the list of messaging verifications matching the query.</response>
+        /// <returns>A patient support details matching the query.</returns>
+        /// <response code="200">Returns the patient support details matching the query.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
         /// <response code="403">
         /// The client does not have access rights to the content; that is, it is unauthorized, so the server
         /// is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.
         /// </response>
         [HttpGet]
-        [Route("Verifications")]
-        public async Task<RequestResult<IEnumerable<MessagingVerificationModel>>> GetMessageVerifications([FromQuery] string hdid, CancellationToken ct)
+        [Route("PatientSupportDetails")]
+        public async Task<PatientSupportDetails> GetPatientSupportDetails([FromQuery] string hdid, CancellationToken ct)
         {
-            return await this.supportService.GetMessageVerificationsAsync(hdid, ct).ConfigureAwait(true);
+            return await this.supportService.GetPatientSupportDetailsAsync(hdid, ct).ConfigureAwait(true);
+        }
+
+        /// <summary>
+        /// Blocks access to data source(s) for a given hdid.
+        /// </summary>
+        /// <param name="hdid">The hdid belonging to the data sources to block.</param>
+        /// <param name="request">The request object containing data sources to block.</param>
+        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
+        /// <response code="200">The dependent is protected.</response>
+        /// <response code="401">The client must authenticate itself to get the requested resource.</response>
+        [HttpPut]
+        [Route("{hdid}/BlockAccess")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task BlockAccess(string hdid, BlockAccessRequest request)
+        {
+            await this.supportService.BlockAccessAsync(hdid, request.DataSources, request.Reason).ConfigureAwait(true);
         }
     }
 }

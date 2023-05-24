@@ -14,7 +14,7 @@ TRUNCATE gateway."Email" CASCADE;
 TRUNCATE gateway."AdminTag" CASCADE;
 TRUNCATE gateway."UserFeedback" CASCADE;
 TRUNCATE gateway."Dependent" CASCADE;
-TRUNCATE gateway."DependentAudit" CASCADE;
+TRUNCATE gateway."AgentAudit" CASCADE;
 
 
 /* Registered HealthGateway User - Keycloak User (healthgateway) */
@@ -1385,12 +1385,13 @@ VALUES (
 );
 
 /* Dependent PHN: 9872868128 (35224807075386271) */
-INSERT INTO gateway."DependentAudit"(
-	"DependentAuditId",
-	"HdId",
+INSERT INTO gateway."AgentAudit"(
+	"AgentAuditId",
+	"Hdid",
 	"AgentUsername",
-	"ProtectedReason",
+	"Reason",
 	"OperationCode",
+	"GroupCode",
 	"TransactionDateTime",
 	"CreatedBy",
 	"CreatedDateTime",
@@ -1401,7 +1402,8 @@ VALUES (
 	'35224807075386271', 
 	'admin_agent@idir', 
 	'Protecting dependent', 
-	'Protect', 
+	'ProtectDependent',
+	'Dependent',
 	current_timestamp,
 	'System',
 	current_timestamp,
@@ -1410,12 +1412,13 @@ VALUES (
 );
 
 /* Dependent PHN: 9872868128 (35224807075386271) */
-INSERT INTO gateway."DependentAudit"(
-	"DependentAuditId",
-	"HdId",
+INSERT INTO gateway."AgentAudit"(
+	"AgentAuditId",
+	"Hdid",
 	"AgentUsername",
-	"ProtectedReason",
+	"Reason",
 	"OperationCode",
+	"GroupCode",
 	"TransactionDateTime",
 	"CreatedBy",
 	"CreatedDateTime",
@@ -1426,7 +1429,8 @@ VALUES (
 	'35224807075386271', 
 	'support_agent@idir', 
 	'Unprotecting dependent', 
-	'Unprotect', 
+	'UnprotectDependent',
+	'Dependent',
 	current_timestamp - INTERVAL '1 day', 
 	'System',
 	current_timestamp - INTERVAL '1 day', 
@@ -1435,12 +1439,13 @@ VALUES (
 );
 
 /* Dependent PHN: 9872868128 (35224807075386271) */
-INSERT INTO gateway."DependentAudit"(
-	"DependentAuditId",
-	"HdId",
+INSERT INTO gateway."AgentAudit"(
+	"AgentAuditId",
+	"Hdid",
 	"AgentUsername",
-	"ProtectedReason",
+	"Reason",
 	"OperationCode",
+	"GroupCode",
 	"TransactionDateTime",
 	"CreatedBy",
 	"CreatedDateTime",
@@ -1451,7 +1456,8 @@ VALUES (
 	'35224807075386271', 
 	'reviewer_agent@idir', 
 	'Protecting dependent', 
-	'Protect', 
+	'ProtectDependent',
+	'Dependent',
 	current_timestamp - INTERVAL '2 day', 
 	'System',
 	current_timestamp - INTERVAL '2 day', 

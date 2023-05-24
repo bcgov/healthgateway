@@ -32,7 +32,7 @@ namespace HealthGateway.Admin.Client.Components.Delegation
         /// </summary>
         [Parameter]
         [EditorRequired]
-        public DelegationChange Data { get; set; } = default!;
+        public AgentAction Data { get; set; } = default!;
 
         [Inject]
         private IConfiguration Configuration { get; set; } = default!;

@@ -15,8 +15,10 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Admin.Common.Models
 {
-    using System;
-    using HealthGateway.Admin.Common.Constants;
+    using System.Collections.Generic;
+    using System.Linq;
+    using HealthGateway.Common.Data.Constants;
+    using HealthGateway.Common.Data.ViewModels;
 
     /// <summary>
     /// Represents details associated with a patient retrieved by a support query.
@@ -26,61 +28,16 @@ namespace HealthGateway.Admin.Common.Models
         /// <summary>
         /// Gets or sets the patient's status.
         /// </summary>
-        public PatientStatus Status { get; set; }
+        public IEnumerable<MessagingVerificationModel> MessagingVerifications { get; set; } = Enumerable.Empty<MessagingVerificationModel>();
 
         /// <summary>
         /// Gets or sets a warning message associated with the patient.
         /// </summary>
-        public string WarningMessage { get; set; } = string.Empty;
+        public IEnumerable<AgentAction> AgentActions { get; set; } = Enumerable.Empty<AgentAction>();
 
         /// <summary>
-        /// Gets or sets the patient's HDID.
+        /// Gets or sets the blocked access data sources.
         /// </summary>
-        public string Hdid { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Gets or sets the patient's PHN.
-        /// </summary>
-        public string PersonalHealthNumber { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Gets or sets the patient's common name.
-        /// </summary>
-        public Name? CommonName { get; set; }
-
-        /// <summary>
-        /// Gets or sets the patient's legal name.
-        /// </summary>
-        public Name? LegalName { get; set; }
-
-        /// <summary>
-        /// Gets the patient's preferred name.
-        /// </summary>
-        public Name? PreferredName => this.CommonName ?? this.LegalName;
-
-        /// <summary>
-        /// Gets or sets the patient's date of birth.
-        /// </summary>
-        public DateOnly? Birthdate { get; set; }
-
-        /// <summary>
-        /// Gets or sets the physical address for the patient.
-        /// </summary>
-        public string PhysicalAddress { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Gets or sets the postal address for the patient.
-        /// </summary>
-        public string PostalAddress { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Gets or sets the user's created datetime.
-        /// </summary>
-        public DateTime? ProfileCreatedDateTime { get; set; }
-
-        /// <summary>
-        /// Gets or sets the user's last login datetime.
-        /// </summary>
-        public DateTime? ProfileLastLoginDateTime { get; set; }
+        public IEnumerable<DataSource> BlockedDataSources { get; set; } = Enumerable.Empty<DataSource>();
     }
 }

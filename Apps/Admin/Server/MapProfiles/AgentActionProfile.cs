@@ -13,24 +13,25 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Common.Data.Constants
+namespace HealthGateway.Admin.Server.MapProfiles
 {
-    using System.Text.Json.Serialization;
+    using AutoMapper;
+    using HealthGateway.Admin.Common.Models;
+    using HealthGateway.Database.Models;
 
     /// <summary>
-    /// The set of dependent audit operations.
+    /// An AutoMapper profile class which defines mapping between agent audit and agent action models.
     /// </summary>
-    [JsonConverter(typeof(JsonStringEnumConverter))]
-    public enum DependentAuditOperation
+    public class AgentActionProfile : Profile
     {
         /// <summary>
-        /// Operation to protect a dependent.
+        /// Initializes a new instance of the <see cref="AgentActionProfile"/> class.
         /// </summary>
-        Protect,
-
-        /// <summary>
-        /// Operation to unprotect a dependent.
-        /// </summary>
-        Unprotect,
+        public AgentActionProfile()
+        {
+            this.CreateMap<AgentAudit, AgentAction>()
+                .ForMember(dest => dest.Hdid, opt => opt.MapFrom(src => src.Hdid))
+                .ForMember(dest => dest.Reason, opt => opt.MapFrom(src => src.Reason));
+        }
     }
 }

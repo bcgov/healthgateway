@@ -21,6 +21,7 @@ namespace HealthGateway.Admin.Client.Components.Delegation
     using System.Threading.Tasks;
     using Fluxor;
     using Fluxor.Blazor.Web.Components;
+    using HealthGateway.Admin.Client.Components.AgentAudit;
     using HealthGateway.Admin.Client.Store.Delegation;
     using HealthGateway.Admin.Common.Models;
     using HealthGateway.Common.Data.Utils;
@@ -74,10 +75,25 @@ namespace HealthGateway.Admin.Client.Components.Delegation
             const string title = "Confirm Update";
             DialogParameters parameters = new()
             {
-                [nameof(DelegationConfirmationDialog.Type)] = DelegationConfirmationDialog.ConfirmationType.Unprotect,
+                ["AuditableAction"] = new DelegationActions.UnprotectDependentAction(),
+                ["CancelAction"] = new DelegationActions.ClearUnprotectErrorAction(),
             };
-            DialogOptions options = new() { DisableBackdropClick = true, FullWidth = true, MaxWidth = MaxWidth.ExtraSmall };
-            IDialogReference dialog = await this.Dialog.ShowAsync<DelegationConfirmationDialog>(title, parameters, options).ConfigureAwait(true);
+            DialogOptions options = new()
+            {
+                DisableBackdropClick = true,
+                FullWidth = true,
+                MaxWidth = MaxWidth.ExtraSmall,
+            };
+
+            IDialogReference dialog = await this.Dialog
+                .ShowAsync<AuditReasonDialog<
+                    DelegationActions.UnprotectDependentAction,
+                    DelegationActions.UnprotectDependentFailAction,
+                    DelegationActions.UnprotectDependentSuccessAction>>(
+                    title,
+                    parameters,
+                    options)
+                .ConfigureAwait(true);
 
             await dialog.Result.ConfigureAwait(true);
         }

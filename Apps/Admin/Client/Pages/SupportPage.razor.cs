@@ -79,7 +79,7 @@ namespace HealthGateway.Admin.Client.Pages
 
         private bool HasPatientsWarning => this.PatientSupportState.Value.WarningMessages.Any();
 
-        private IImmutableList<PatientSupportDetails> Patients => this.PatientSupportState.Value.Result ?? ImmutableList<PatientSupportDetails>.Empty;
+        private IImmutableList<PatientSupportResult> Patients => this.PatientSupportState.Value.Result ?? ImmutableList<PatientSupportResult>.Empty;
 
         private IEnumerable<PatientRow> PatientRows => this.Patients.Select(v => new PatientRow(v));
 
@@ -158,7 +158,7 @@ namespace HealthGateway.Admin.Client.Pages
 
         private sealed record PatientRow
         {
-            public PatientRow(PatientSupportDetails model)
+            public PatientRow(PatientSupportResult model)
             {
                 this.Status = model.Status;
                 this.Name = StringManipulator.JoinWithoutBlanks(new[] { model.PreferredName?.GivenName, model.PreferredName?.Surname });
