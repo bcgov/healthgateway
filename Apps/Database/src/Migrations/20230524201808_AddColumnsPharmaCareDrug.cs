@@ -40,16 +40,14 @@ namespace HealthGateway.Database.Migrations
                 schema: "gateway",
                 table: "PharmaCareDrug",
                 type: "boolean",
-                nullable: false,
-                defaultValue: false);
+                nullable: true);
 
             migrationBuilder.AddColumn<bool>(
                 name: "RedirectedToHealthCareProvider",
                 schema: "gateway",
                 table: "PharmaCareDrug",
                 type: "boolean",
-                nullable: false,
-                defaultValue: false);
+                nullable: true);
         }
 
         /// <inheritdoc />

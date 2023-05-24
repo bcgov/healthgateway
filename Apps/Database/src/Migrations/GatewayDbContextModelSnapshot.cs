@@ -2533,7 +2533,7 @@ namespace HealthGateway.Database.Migrations
                         .HasMaxLength(2)
                         .HasColumnType("character varying(2)");
 
-                    b.Property<bool>("PrescriptionProvided")
+                    b.Property<bool?>("PrescriptionProvided")
                         .HasColumnType("boolean");
 
                     b.Property<int?>("QuantityLimit")
@@ -2558,7 +2558,7 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("character varying(4)")
                         .HasColumnName("RDPSubCategory");
 
-                    b.Property<bool>("RedirectedToHealthCareProvider")
+                    b.Property<bool?>("RedirectedToHealthCareProvider")
                         .HasColumnType("boolean");
 
                     b.Property<string>("TrialFlag")

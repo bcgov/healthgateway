@@ -251,12 +251,12 @@ namespace HealthGateway.Database.Models
         /// <summary>
         /// Gets or sets a value indicating whether the prescription was provided or not.
         /// </summary>
-        public bool PrescriptionProvided { get; set; }
+        public bool? PrescriptionProvided { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether redirected to health care provider was set or not.
         /// </summary>
-        public bool RedirectedToHealthCareProvider { get; set; }
+        public bool? RedirectedToHealthCareProvider { get; set; }
 
         /// <summary>
         /// Gets or sets the FileDownload entity.
