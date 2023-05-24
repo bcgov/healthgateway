@@ -111,7 +111,7 @@ namespace HealthGateway.GatewayApi.Services
             }
 
             var dependentResult = await this.GetDependentAsPatient(addDependentRequest.Phn);
-            var validationResult = await this.ValidateDepentent(addDependentRequest, delegateHdid, dependentResult);
+            var validationResult = await this.ValidateDependent(addDependentRequest, delegateHdid, dependentResult);
             if (validationResult != null)
             {
                 return validationResult;
