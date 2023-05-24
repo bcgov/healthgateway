@@ -34,8 +34,8 @@ namespace HealthGateway.Admin.Common.Models
         public IEnumerable<DelegateInfo> Delegates { get; set; } = Enumerable.Empty<DelegateInfo>();
 
         /// <summary>
-        /// Gets or sets the delegation changes.
+        /// Gets or sets the agent actions.
         /// </summary>
-        public IEnumerable<DelegationChange> DelegationChanges { get; set; } = Enumerable.Empty<DelegationChange>();
+        public IEnumerable<AgentAction> AgentActions { get; set; } = Enumerable.Empty<AgentAction>();
     }
 }

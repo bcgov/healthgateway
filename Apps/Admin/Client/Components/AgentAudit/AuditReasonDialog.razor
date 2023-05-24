@@ -1,29 +1,25 @@
-@using HealthGateway.Admin.Client.Store.Delegation
+@typeparam TAction
+@typeparam TErrorAction
+@typeparam TSuccessAction
 @inherits Fluxor.Blazor.Web.Components.FluxorComponent
 
 <MudDialog>
     <DialogContent>
         <HgBannerFeedback
             Severity="@Severity.Error"
-            IsEnabled="@HasProtectError"
-            TResetAction="@DelegationActions.ProtectDependentAction">
-            @ProtectErrorMessage
-        </HgBannerFeedback>
-        <HgBannerFeedback
-            Severity="@Severity.Error"
-            IsEnabled="@HasUnprotectError"
-            TResetAction="@DelegationActions.UnprotectDependentAction">
-            @UnprotectErrorMessage
+            IsEnabled="@HasError"
+            TResetAction="@TAction">
+            @ErrorMessage
         </HgBannerFeedback>
         <MudTextField
-            @ref="@ProtectReasonTextField"
+            @ref="@AuditReasonTextField"
             Label="Reason"
-            @bind-Value="@ProtectReasonString"
+            @bind-Value="@AuditReason"
             T="@string"
             MaxLength="500"
             Required="true"
             Lines="@(4)"
-            data-testid="protect-reason-input" />
+            data-testid="audit-reason-input" />
     </DialogContent>
     <DialogActions>
         <HgButton
@@ -33,17 +29,17 @@
             Color="@Color.Primary"
             Variant="@Variant.Text"
             OnClick="@HandleClickCancel"
-            data-testid="cancel-button">
+            data-testid="audit-cancel-button">
             Cancel
         </HgButton>
         <HgButton
             RightMargin="Breakpoint.Always"
             BottomMargin="Breakpoint.Always"
             Color="@Color.Primary"
-            Loading="@Loading"
+            Loading="@IsLoading"
             Disabled="@SaveButtonDisabled"
             OnClick="@HandleClickConfirm"
-            data-testid="confirm-button">
+            data-testid="audit-confirm-button">
             Confirm
         </HgButton>
     </DialogActions>

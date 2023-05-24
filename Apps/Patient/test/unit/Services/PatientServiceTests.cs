@@ -23,7 +23,6 @@ namespace HealthGateway.PatientTests.Services
     using HealthGateway.AccountDataAccess.Patient;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.ErrorHandling;
-    using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Patient.Models;
     using HealthGateway.Patient.Services;
     using HealthGateway.PatientTests.Utils;
@@ -177,7 +176,7 @@ namespace HealthGateway.PatientTests.Services
             PatientDetailsQuery patientDetailsQuery = new()
             {
                 Phn = invalidPhn,
-                Source = PatientDetailSource.AllCache,
+                Source = PatientDetailSource.All,
             };
             PatientModel patient = GetPatient();
             IPatientService patientService = GetPatientService(patient, patientDetailsQuery);
@@ -205,8 +204,10 @@ namespace HealthGateway.PatientTests.Services
             }
             else
             {
-                patientRepository.Setup(p => p.Query(new PatientDetailsQuery(null, Hdid, PatientDetailSource.AllCache), It.IsAny<CancellationToken>())).ReturnsAsync(patientQueryResult);
-                patientRepository.Setup(p => p.Query(new PatientDetailsQuery(Phn, null, PatientDetailSource.AllCache), It.IsAny<CancellationToken>())).ReturnsAsync(patientQueryResult);
+                patientRepository.Setup(p => p.Query(new PatientDetailsQuery(null, Hdid, PatientDetailSource.All, true), It.IsAny<CancellationToken>()))
+                    .ReturnsAsync(patientQueryResult);
+                patientRepository.Setup(p => p.Query(new PatientDetailsQuery(Phn, null, PatientDetailSource.All, true), It.IsAny<CancellationToken>()))
+                    .ReturnsAsync(patientQueryResult);
             }
 
             return new PatientService(

@@ -20,7 +20,7 @@ namespace HealthGateway.Admin.Client.Pages
     using System.Linq;
     using Fluxor;
     using Fluxor.Blazor.Web.Components;
-    using HealthGateway.Admin.Client.Store.MessageVerification;
+    using HealthGateway.Admin.Client.Store.PatientDetails;
     using HealthGateway.Admin.Client.Store.PatientSupport;
     using HealthGateway.Admin.Common.Constants;
     using HealthGateway.Admin.Common.Models;
@@ -41,7 +41,7 @@ namespace HealthGateway.Admin.Client.Pages
         private IDispatcher Dispatcher { get; set; } = default!;
 
         [Inject]
-        private IState<MessageVerificationState> MessageVerificationState { get; set; } = default!;
+        private IState<PatientDetailsState> PatientDetailsState { get; set; } = default!;
 
         [Inject]
         private IState<PatientSupportState> PatientSupportState { get; set; } = default!;
@@ -55,11 +55,15 @@ namespace HealthGateway.Admin.Client.Pages
         [Inject]
         private IConfiguration Configuration { get; set; } = default!;
 
-        private bool MessagingVerificationsLoading => this.MessageVerificationState.Value.IsLoading;
+        private bool PatientSupportDetailsLoading => this.PatientDetailsState.Value.IsLoading;
 
-        private bool HasMessagingVerificationsError => this.MessageVerificationState.Value.Error is { Message.Length: > 0 };
+        private bool HasPatientSupportDetailsError => this.PatientDetailsState.Value.Error is { Message.Length: > 0 };
 
-        private IEnumerable<MessagingVerificationModel> MessagingVerifications => this.MessageVerificationState.Value.Data ?? Enumerable.Empty<MessagingVerificationModel>();
+        private IEnumerable<MessagingVerificationModel> MessagingVerifications => this.PatientDetailsState.Value.MessagingVerifications ?? Enumerable.Empty<MessagingVerificationModel>();
+
+        private IEnumerable<DataSource> BlockedDataSources => this.PatientDetailsState.Value.BlockedDataSources ?? Enumerable.Empty<DataSource>();
+
+        private IEnumerable<AgentAction> AgentAuditHistory => this.PatientDetailsState.Value.AgentActions ?? Enumerable.Empty<AgentAction>();
 
         private bool PatientsLoaded => this.PatientSupportState.Value.Loaded;
 
@@ -67,7 +71,7 @@ namespace HealthGateway.Admin.Client.Pages
 
         private bool HasPatientsWarning => this.PatientSupportState.Value.WarningMessages.Any();
 
-        private PatientSupportDetails? Patient =>
+        private PatientSupportResult? Patient =>
             this.PatientSupportState.Value.Result?.SingleOrDefault(x => x.Hdid == this.Hdid);
 
         private string PatientName => StringManipulator.JoinWithoutBlanks(new[] { this.Patient?.PreferredName?.GivenName, this.Patient?.PreferredName?.Surname });
@@ -114,7 +118,7 @@ namespace HealthGateway.Admin.Client.Pages
             if (this.Patient == null)
             {
                 this.Dispatcher.Dispatch(new PatientSupportActions.ResetStateAction());
-                this.Dispatcher.Dispatch(new MessageVerificationActions.ResetStateAction());
+                this.Dispatcher.Dispatch(new PatientDetailsActions.ResetStateAction());
                 this.Dispatcher.Dispatch(new PatientSupportActions.LoadAction(PatientQueryType.Hdid, this.Hdid));
             }
             else
@@ -137,10 +141,10 @@ namespace HealthGateway.Admin.Client.Pages
 
         private void RetrieveMessagingVerifications()
         {
-            this.Dispatcher.Dispatch(new MessageVerificationActions.ResetStateAction());
+            this.Dispatcher.Dispatch(new PatientDetailsActions.ResetStateAction());
             if (this.Patient?.ProfileCreatedDateTime != null)
             {
-                this.Dispatcher.Dispatch(new MessageVerificationActions.LoadAction(this.Hdid));
+                this.Dispatcher.Dispatch(new PatientDetailsActions.LoadAction(this.Hdid));
             }
         }
 

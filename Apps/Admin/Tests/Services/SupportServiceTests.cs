@@ -23,6 +23,7 @@ namespace HealthGateway.Admin.Tests.Services
     using System.Threading.Tasks;
     using AutoMapper;
     using DeepEqual.Syntax;
+    using HealthGateway.AccountDataAccess.Audit;
     using HealthGateway.AccountDataAccess.Patient;
     using HealthGateway.Admin.Common.Constants;
     using HealthGateway.Admin.Common.Models;
@@ -32,13 +33,14 @@ namespace HealthGateway.Admin.Tests.Services
     using HealthGateway.Common.Data.ErrorHandling;
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Data.Utils;
-    using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using Microsoft.Extensions.Configuration;
     using Moq;
     using Xunit;
+    using Address = HealthGateway.AccountDataAccess.Patient.Address;
+    using Name = HealthGateway.Admin.Common.Models.Name;
 
     /// <summary>
     /// SupportService's Unit Tests.
@@ -76,11 +78,10 @@ namespace HealthGateway.Admin.Tests.Services
             ISupportService supportService = CreateSupportService(GetMessagingVerificationDelegateMock(messagingVerifications));
 
             // Act
-            RequestResult<IEnumerable<MessagingVerificationModel>> actualResult = await supportService.GetMessageVerificationsAsync(Hdid).ConfigureAwait(true);
+            PatientSupportDetails actualResult = await supportService.GetPatientSupportDetailsAsync(Hdid).ConfigureAwait(true);
 
             // Assert
-            Assert.Equal(ResultType.Success, actualResult.ResultStatus);
-            Assert.Equal(2, actualResult.ResourcePayload.Count());
+            Assert.Equal(2, actualResult.MessagingVerifications.Count());
         }
 
         /// <summary>
@@ -91,11 +92,11 @@ namespace HealthGateway.Admin.Tests.Services
         public async Task ShouldGetPatientByHdid()
         {
             // Arrange
-            PatientDetailsQuery query = new() { Hdid = Hdid };
+            PatientDetailsQuery query = new() { Hdid = Hdid, Source = PatientDetailSource.All, UseCache = false };
             AccountDataAccess.Patient.Name commonName = GenerateName();
             AccountDataAccess.Patient.Name legalName = GenerateName("Jim", "Bo");
-            AccountDataAccess.Patient.Address physicalAddress = GenerateAddress(GenerateStreetLines());
-            AccountDataAccess.Patient.Address postalAddress = GenerateAddress(new List<string> { "PO BOX 1234" });
+            Address physicalAddress = GenerateAddress(GenerateStreetLines());
+            Address postalAddress = GenerateAddress(new List<string> { "PO BOX 1234" });
             PatientModel patient = GeneratePatientModel(Phn, Hdid, Birthdate, commonName, legalName, physicalAddress, postalAddress);
             Mock<IPatientRepository> patientRepositoryMock = GetPatientRepositoryMock((query, patient));
 
@@ -104,13 +105,13 @@ namespace HealthGateway.Admin.Tests.Services
 
             ISupportService supportService = CreateSupportService(patientRepositoryMock: patientRepositoryMock, userProfileDelegateMock: userProfileDelegateMock);
 
-            IEnumerable<PatientSupportDetails> expectedResult = new List<PatientSupportDetails>
+            IEnumerable<PatientSupportResult> expectedResult = new List<PatientSupportResult>
             {
                 GetExpectedPatientSupportDetails(patient, profile),
             };
 
             // Act
-            IEnumerable<PatientSupportDetails> actualResult = await supportService.GetPatientsAsync(PatientQueryType.Hdid, Hdid).ConfigureAwait(true);
+            IEnumerable<PatientSupportResult> actualResult = await supportService.GetPatientsAsync(PatientQueryType.Hdid, Hdid).ConfigureAwait(true);
 
             // Assert
             Assert.Single(actualResult);
@@ -126,7 +127,7 @@ namespace HealthGateway.Admin.Tests.Services
         public async Task ShouldGetPatientByHdidWithWarning()
         {
             // Arrange
-            PatientDetailsQuery query = new() { Hdid = Hdid };
+            PatientDetailsQuery query = new() { Hdid = Hdid, Source = PatientDetailSource.All, UseCache = false };
             PatientModel patient = GeneratePatientModel(Phn, Hdid, Birthdate, responseCode: PatientResponseCode);
             Mock<IPatientRepository> patientRepositoryMock = GetPatientRepositoryMock((query, patient));
 
@@ -136,7 +137,7 @@ namespace HealthGateway.Admin.Tests.Services
             ISupportService supportService = CreateSupportService(patientRepositoryMock: patientRepositoryMock, userProfileDelegateMock: userProfileDelegateMock);
 
             // Act
-            IEnumerable<PatientSupportDetails> actualResult = await supportService.GetPatientsAsync(PatientQueryType.Hdid, Hdid).ConfigureAwait(true);
+            IEnumerable<PatientSupportResult> actualResult = await supportService.GetPatientsAsync(PatientQueryType.Hdid, Hdid).ConfigureAwait(true);
 
             // Assert
             Assert.Single(actualResult);
@@ -152,7 +153,7 @@ namespace HealthGateway.Admin.Tests.Services
         public async Task ShouldGetPatientByHdidNotFound()
         {
             // Arrange
-            PatientDetailsQuery query = new() { Hdid = Hdid };
+            PatientDetailsQuery query = new() { Hdid = Hdid, Source = PatientDetailSource.All, UseCache = false };
             PatientModel? patient = null;
             Mock<IPatientRepository> patientRepositoryMock = GetPatientRepositoryMock((query, patient));
 
@@ -161,13 +162,13 @@ namespace HealthGateway.Admin.Tests.Services
 
             ISupportService supportService = CreateSupportService(patientRepositoryMock: patientRepositoryMock, userProfileDelegateMock: userProfileDelegateMock);
 
-            IEnumerable<PatientSupportDetails> expectedResult = new List<PatientSupportDetails>
+            IEnumerable<PatientSupportResult> expectedResult = new List<PatientSupportResult>
             {
                 GetExpectedPatientSupportDetails(patient, profile),
             };
 
             // Act
-            IEnumerable<PatientSupportDetails> actualResult = await supportService.GetPatientsAsync(PatientQueryType.Hdid, Hdid).ConfigureAwait(true);
+            IEnumerable<PatientSupportResult> actualResult = await supportService.GetPatientsAsync(PatientQueryType.Hdid, Hdid).ConfigureAwait(true);
 
             // Assert
             Assert.Single(actualResult);
@@ -183,11 +184,11 @@ namespace HealthGateway.Admin.Tests.Services
         public async Task ShouldGetPatientByHdidDeceased()
         {
             // Arrange
-            PatientDetailsQuery query = new() { Hdid = Hdid };
+            PatientDetailsQuery query = new() { Hdid = Hdid, Source = PatientDetailSource.All, UseCache = false };
             AccountDataAccess.Patient.Name commonName = GenerateName();
             AccountDataAccess.Patient.Name legalName = GenerateName("Jim", "Bo");
-            AccountDataAccess.Patient.Address physicalAddress = GenerateAddress(GenerateStreetLines());
-            AccountDataAccess.Patient.Address postalAddress = GenerateAddress(new List<string> { "PO BOX 1234" });
+            Address physicalAddress = GenerateAddress(GenerateStreetLines());
+            Address postalAddress = GenerateAddress(new List<string> { "PO BOX 1234" });
             PatientModel patient = GeneratePatientModel(Phn, Hdid, Birthdate, commonName, legalName, physicalAddress, postalAddress, isDeceased: true);
             Mock<IPatientRepository> patientRepositoryMock = GetPatientRepositoryMock((query, patient));
 
@@ -196,13 +197,13 @@ namespace HealthGateway.Admin.Tests.Services
 
             ISupportService supportService = CreateSupportService(patientRepositoryMock: patientRepositoryMock, userProfileDelegateMock: userProfileDelegateMock);
 
-            IEnumerable<PatientSupportDetails> expectedResult = new List<PatientSupportDetails>
+            IEnumerable<PatientSupportResult> expectedResult = new List<PatientSupportResult>
             {
                 GetExpectedPatientSupportDetails(patient, profile),
             };
 
             // Act
-            IEnumerable<PatientSupportDetails> actualResult = await supportService.GetPatientsAsync(PatientQueryType.Hdid, Hdid).ConfigureAwait(true);
+            IEnumerable<PatientSupportResult> actualResult = await supportService.GetPatientsAsync(PatientQueryType.Hdid, Hdid).ConfigureAwait(true);
 
             // Assert
             Assert.Single(actualResult);
@@ -218,11 +219,11 @@ namespace HealthGateway.Admin.Tests.Services
         public async Task ShouldGetPatientByHdidNotUser()
         {
             // Arrange
-            PatientDetailsQuery query = new() { Hdid = Hdid };
+            PatientDetailsQuery query = new() { Hdid = Hdid, Source = PatientDetailSource.All, UseCache = false };
             AccountDataAccess.Patient.Name commonName = GenerateName();
             AccountDataAccess.Patient.Name legalName = GenerateName("Jim", "Bo");
-            AccountDataAccess.Patient.Address physicalAddress = GenerateAddress(GenerateStreetLines());
-            AccountDataAccess.Patient.Address postalAddress = GenerateAddress(new List<string> { "PO BOX 1234" });
+            Address physicalAddress = GenerateAddress(GenerateStreetLines());
+            Address postalAddress = GenerateAddress(new List<string> { "PO BOX 1234" });
             PatientModel patient = GeneratePatientModel(Phn, Hdid, Birthdate, commonName, legalName, physicalAddress, postalAddress);
             Mock<IPatientRepository> patientRepositoryMock = GetPatientRepositoryMock((query, patient));
 
@@ -231,13 +232,13 @@ namespace HealthGateway.Admin.Tests.Services
 
             ISupportService supportService = CreateSupportService(patientRepositoryMock: patientRepositoryMock, userProfileDelegateMock: userProfileDelegateMock);
 
-            IEnumerable<PatientSupportDetails> expectedResult = new List<PatientSupportDetails>
+            IEnumerable<PatientSupportResult> expectedResult = new List<PatientSupportResult>
             {
                 GetExpectedPatientSupportDetails(patient, profile),
             };
 
             // Act
-            IEnumerable<PatientSupportDetails> actualResult = await supportService.GetPatientsAsync(PatientQueryType.Hdid, Hdid).ConfigureAwait(true);
+            IEnumerable<PatientSupportResult> actualResult = await supportService.GetPatientsAsync(PatientQueryType.Hdid, Hdid).ConfigureAwait(true);
 
             // Assert
             Assert.Single(actualResult);
@@ -253,14 +254,14 @@ namespace HealthGateway.Admin.Tests.Services
         public async Task ShouldGetPatientByHdidNotFoundNotUser()
         {
             // Arrange
-            PatientDetailsQuery query = new() { Hdid = Hdid };
+            PatientDetailsQuery query = new() { Hdid = Hdid, Source = PatientDetailSource.All, UseCache = false };
             Mock<IPatientRepository> patientRepositoryMock = GetPatientRepositoryMock((query, null));
             Mock<IUserProfileDelegate> userProfileDelegateMock = GetUserProfileDelegateMock();
 
             ISupportService supportService = CreateSupportService(patientRepositoryMock: patientRepositoryMock, userProfileDelegateMock: userProfileDelegateMock);
 
             // Act
-            IEnumerable<PatientSupportDetails> actualResult = await supportService.GetPatientsAsync(PatientQueryType.Hdid, Hdid).ConfigureAwait(true);
+            IEnumerable<PatientSupportResult> actualResult = await supportService.GetPatientsAsync(PatientQueryType.Hdid, Hdid).ConfigureAwait(true);
 
             // Assert
             Assert.Empty(actualResult);
@@ -274,11 +275,11 @@ namespace HealthGateway.Admin.Tests.Services
         public async Task ShouldGetPatientByPhn()
         {
             // Arrange
-            PatientDetailsQuery query = new() { Phn = Phn };
+            PatientDetailsQuery query = new() { Phn = Phn, Source = PatientDetailSource.Empi, UseCache = false };
             AccountDataAccess.Patient.Name commonName = GenerateName();
             AccountDataAccess.Patient.Name legalName = GenerateName("Jim", "Bo");
-            AccountDataAccess.Patient.Address physicalAddress = GenerateAddress(GenerateStreetLines());
-            AccountDataAccess.Patient.Address postalAddress = GenerateAddress(new List<string> { "PO BOX 1234" });
+            Address physicalAddress = GenerateAddress(GenerateStreetLines());
+            Address postalAddress = GenerateAddress(new List<string> { "PO BOX 1234" });
             PatientModel patient = GeneratePatientModel(Phn, Hdid, Birthdate, commonName, legalName, physicalAddress, postalAddress);
             Mock<IPatientRepository> patientRepositoryMock = GetPatientRepositoryMock((query, patient));
 
@@ -287,13 +288,13 @@ namespace HealthGateway.Admin.Tests.Services
 
             ISupportService supportService = CreateSupportService(patientRepositoryMock: patientRepositoryMock, userProfileDelegateMock: userProfileDelegateMock);
 
-            IEnumerable<PatientSupportDetails> expectedResult = new List<PatientSupportDetails>
+            IEnumerable<PatientSupportResult> expectedResult = new List<PatientSupportResult>
             {
                 GetExpectedPatientSupportDetails(patient, profile),
             };
 
             // Act
-            IEnumerable<PatientSupportDetails> actualResult = await supportService.GetPatientsAsync(PatientQueryType.Phn, Phn).ConfigureAwait(true);
+            IEnumerable<PatientSupportResult> actualResult = await supportService.GetPatientsAsync(PatientQueryType.Phn, Phn).ConfigureAwait(true);
 
             // Assert
             Assert.Single(actualResult);
@@ -309,14 +310,14 @@ namespace HealthGateway.Admin.Tests.Services
         public async Task ShouldGetPatientByPhnNotFoundNotUser()
         {
             // Arrange
-            PatientDetailsQuery query = new() { Phn = Phn };
+            PatientDetailsQuery query = new() { Phn = Phn, Source = PatientDetailSource.Empi, UseCache = false };
             Mock<IPatientRepository> patientRepositoryMock = GetPatientRepositoryMock((query, null));
             Mock<IUserProfileDelegate> userProfileDelegateMock = GetUserProfileDelegateMock();
 
             ISupportService supportService = CreateSupportService(patientRepositoryMock: patientRepositoryMock, userProfileDelegateMock: userProfileDelegateMock);
 
             // Act
-            IEnumerable<PatientSupportDetails> actualResult = await supportService.GetPatientsAsync(PatientQueryType.Phn, Phn).ConfigureAwait(true);
+            IEnumerable<PatientSupportResult> actualResult = await supportService.GetPatientsAsync(PatientQueryType.Phn, Phn).ConfigureAwait(true);
 
             // Assert
             Assert.Empty(actualResult);
@@ -350,17 +351,17 @@ namespace HealthGateway.Admin.Tests.Services
             // Arrange
             const string dependentPhn = "dependentPhn";
             const string dependentHdid = "dependentHdid";
-            PatientDetailsQuery dependentQuery = new() { Phn = dependentPhn };
+            PatientDetailsQuery dependentQuery = new() { Phn = dependentPhn, Source = PatientDetailSource.Empi, UseCache = false };
             PatientModel dependentPatient = GeneratePatientModel(dependentPhn, dependentHdid, Birthdate);
 
-            PatientDetailsQuery firstDelegateQuery = new() { Hdid = Hdid };
+            PatientDetailsQuery firstDelegateQuery = new() { Hdid = Hdid, Source = PatientDetailSource.All, UseCache = false };
             AccountDataAccess.Patient.Name commonName = GenerateName();
             AccountDataAccess.Patient.Name legalName = GenerateName("Jim", "Bo");
-            AccountDataAccess.Patient.Address physicalAddress = GenerateAddress(GenerateStreetLines());
-            AccountDataAccess.Patient.Address postalAddress = GenerateAddress(new List<string> { "PO BOX 1234" });
+            Address physicalAddress = GenerateAddress(GenerateStreetLines());
+            Address postalAddress = GenerateAddress(new List<string> { "PO BOX 1234" });
             PatientModel firstDelegatePatient = GeneratePatientModel(Phn, Hdid, Birthdate, commonName, legalName, physicalAddress, postalAddress);
 
-            PatientDetailsQuery secondDelegateQuery = new() { Hdid = Hdid2 };
+            PatientDetailsQuery secondDelegateQuery = new() { Hdid = Hdid2, Source = PatientDetailSource.All, UseCache = false };
             PatientModel secondDelegatePatient = GeneratePatientModel(Phn2, Hdid2, Birthdate2);
 
             Mock<IPatientRepository> patientRepositoryMock = GetPatientRepositoryMock(
@@ -374,14 +375,14 @@ namespace HealthGateway.Admin.Tests.Services
 
             ISupportService supportService = CreateSupportService(patientRepositoryMock: patientRepositoryMock, resourceDelegateDelegateMock: resourceDelegateDelegateMock);
 
-            IEnumerable<PatientSupportDetails> expectedResult = new List<PatientSupportDetails>
+            IEnumerable<PatientSupportResult> expectedResult = new List<PatientSupportResult>
             {
                 GetExpectedPatientSupportDetails(firstDelegatePatient, resourceDelegates.ElementAt(0).UserProfile),
                 GetExpectedPatientSupportDetails(secondDelegatePatient, resourceDelegates.ElementAt(1).UserProfile),
             };
 
             // Act
-            IEnumerable<PatientSupportDetails> actualResult = await supportService.GetPatientsAsync(PatientQueryType.Dependent, dependentPhn).ConfigureAwait(true);
+            IEnumerable<PatientSupportResult> actualResult = await supportService.GetPatientsAsync(PatientQueryType.Dependent, dependentPhn).ConfigureAwait(true);
 
             // Assert
             Assert.Equal(resourceDelegates.Count, actualResult.Count());
@@ -403,27 +404,27 @@ namespace HealthGateway.Admin.Tests.Services
             };
             Mock<IUserProfileDelegate> userProfileDelegateMock = GetUserProfileDelegateMock(profiles: profiles);
 
-            PatientDetailsQuery firstQuery = new() { Hdid = Hdid };
+            PatientDetailsQuery firstQuery = new() { Hdid = Hdid, Source = PatientDetailSource.All, UseCache = false };
             AccountDataAccess.Patient.Name commonName = GenerateName();
             AccountDataAccess.Patient.Name legalName = GenerateName("Jim", "Bo");
-            AccountDataAccess.Patient.Address physicalAddress = GenerateAddress(GenerateStreetLines());
-            AccountDataAccess.Patient.Address postalAddress = GenerateAddress(new List<string> { "PO BOX 1234" });
+            Address physicalAddress = GenerateAddress(GenerateStreetLines());
+            Address postalAddress = GenerateAddress(new List<string> { "PO BOX 1234" });
             PatientModel firstPatient = GeneratePatientModel(Phn, Hdid, Birthdate, commonName, legalName, physicalAddress, postalAddress);
 
-            PatientDetailsQuery secondQuery = new() { Hdid = Hdid2 };
+            PatientDetailsQuery secondQuery = new() { Hdid = Hdid2, Source = PatientDetailSource.All, UseCache = false };
             PatientModel secondPatient = GeneratePatientModel(Phn2, Hdid2, Birthdate2);
             Mock<IPatientRepository> patientRepositoryMock = GetPatientRepositoryMock((firstQuery, firstPatient), (secondQuery, secondPatient));
 
             ISupportService supportService = CreateSupportService(patientRepositoryMock: patientRepositoryMock, userProfileDelegateMock: userProfileDelegateMock);
 
-            IEnumerable<PatientSupportDetails> expectedResult = new List<PatientSupportDetails>
+            IEnumerable<PatientSupportResult> expectedResult = new List<PatientSupportResult>
             {
                 GetExpectedPatientSupportDetails(firstPatient, profiles[0]),
                 GetExpectedPatientSupportDetails(secondPatient, profiles[1]),
             };
 
             // Act
-            IEnumerable<PatientSupportDetails> actualResult = await supportService.GetPatientsAsync(PatientQueryType.Email, "email").ConfigureAwait(true);
+            IEnumerable<PatientSupportResult> actualResult = await supportService.GetPatientsAsync(PatientQueryType.Email, "email").ConfigureAwait(true);
 
             // Assert
             Assert.Equal(profiles.Count, actualResult.Count());
@@ -445,34 +446,34 @@ namespace HealthGateway.Admin.Tests.Services
             };
             Mock<IUserProfileDelegate> userProfileDelegateMock = GetUserProfileDelegateMock(profiles: profiles);
 
-            PatientDetailsQuery firstQuery = new() { Hdid = Hdid };
+            PatientDetailsQuery firstQuery = new() { Hdid = Hdid, Source = PatientDetailSource.All, UseCache = false };
             AccountDataAccess.Patient.Name commonName = GenerateName();
             AccountDataAccess.Patient.Name legalName = GenerateName("Jim", "Bo");
-            AccountDataAccess.Patient.Address physicalAddress = GenerateAddress(GenerateStreetLines());
-            AccountDataAccess.Patient.Address postalAddress = GenerateAddress(new List<string> { "PO BOX 1234" });
+            Address physicalAddress = GenerateAddress(GenerateStreetLines());
+            Address postalAddress = GenerateAddress(new List<string> { "PO BOX 1234" });
             PatientModel firstPatient = GeneratePatientModel(Phn, Hdid, Birthdate, commonName, legalName, physicalAddress, postalAddress);
 
-            PatientDetailsQuery secondQuery = new() { Hdid = Hdid2 };
+            PatientDetailsQuery secondQuery = new() { Hdid = Hdid2, Source = PatientDetailSource.All, UseCache = false };
             PatientModel secondPatient = GeneratePatientModel(Phn2, Hdid2, Birthdate2);
             Mock<IPatientRepository> patientRepositoryMock = GetPatientRepositoryMock((firstQuery, firstPatient), (secondQuery, secondPatient));
 
             ISupportService supportService = CreateSupportService(patientRepositoryMock: patientRepositoryMock, userProfileDelegateMock: userProfileDelegateMock);
 
-            IEnumerable<PatientSupportDetails> expectedResult = new List<PatientSupportDetails>
+            IEnumerable<PatientSupportResult> expectedResult = new List<PatientSupportResult>
             {
                 GetExpectedPatientSupportDetails(firstPatient, profiles[0]),
                 GetExpectedPatientSupportDetails(secondPatient, profiles[1]),
             };
 
             // Act
-            IEnumerable<PatientSupportDetails> actualResult = await supportService.GetPatientsAsync(PatientQueryType.Sms, "sms").ConfigureAwait(true);
+            IEnumerable<PatientSupportResult> actualResult = await supportService.GetPatientsAsync(PatientQueryType.Sms, "sms").ConfigureAwait(true);
 
             // Assert
             Assert.Equal(profiles.Count, actualResult.Count());
             actualResult.ShouldDeepEqual(expectedResult);
         }
 
-        private static PatientSupportDetails GetExpectedPatientSupportDetails(PatientModel? patient, UserProfile? profile)
+        private static PatientSupportResult GetExpectedPatientSupportDetails(PatientModel? patient, UserProfile? profile)
         {
             PatientStatus status = PatientStatus.Default;
             if (patient == null)
@@ -504,8 +505,10 @@ namespace HealthGateway.Admin.Tests.Services
             };
         }
 
-        private static Common.Models.Name? Map(AccountDataAccess.Patient.Name? name)
-            => name == null ? null : new Common.Models.Name { GivenName = name.GivenName, Surname = name.Surname };
+        private static Name? Map(AccountDataAccess.Patient.Name? name)
+        {
+            return name == null ? null : new Name { GivenName = name.GivenName, Surname = name.Surname };
+        }
 
         private static IList<MessagingVerification> GenerateMessagingVerifications(string sms, string email)
         {
@@ -542,7 +545,7 @@ namespace HealthGateway.Admin.Tests.Services
             return new List<string> { "Line 1", "Line 2", "Physical" };
         }
 
-        private static AccountDataAccess.Patient.Address GenerateAddress(IEnumerable<string> streetLines, string city = "City", string state = "BC", string postalCode = "N0N0N0")
+        private static Address GenerateAddress(IEnumerable<string> streetLines, string city = "City", string state = "BC", string postalCode = "N0N0N0")
         {
             return new()
             {
@@ -560,8 +563,8 @@ namespace HealthGateway.Admin.Tests.Services
             DateTime birthdate,
             AccountDataAccess.Patient.Name? commonName = null,
             AccountDataAccess.Patient.Name? legalName = null,
-            AccountDataAccess.Patient.Address? physicalAddress = null,
-            AccountDataAccess.Patient.Address? postalAddress = null,
+            Address? physicalAddress = null,
+            Address? postalAddress = null,
             string? responseCode = null,
             bool isDeceased = false)
         {
@@ -630,7 +633,8 @@ namespace HealthGateway.Admin.Tests.Services
                 messagingVerificationDelegateMock.Object,
                 patientRepositoryMock.Object,
                 resourceDelegateDelegateMock.Object,
-                userProfileDelegateMock.Object);
+                userProfileDelegateMock.Object,
+                new Mock<IAuditRepository>().Object);
         }
 
         private static IConfigurationRoot GetIConfigurationRoot()

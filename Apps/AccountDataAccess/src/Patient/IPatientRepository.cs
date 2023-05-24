@@ -18,6 +18,8 @@ namespace HealthGateway.AccountDataAccess.Patient
     using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
+    using HealthGateway.Common.Data.Constants;
+    using HealthGateway.Database.Models;
 
     /// <summary>
     /// Represents the patient detail source to determine what to query.
@@ -30,29 +32,14 @@ namespace HealthGateway.AccountDataAccess.Patient
         Empi,
 
         /// <summary>
-        /// Specifies that the EMPI data source is to be queried against using cache if available.
-        /// </summary>
-        EmpiCache,
-
-        /// <summary>
         /// Specifies that the PHSA data source is to be queried against.
         /// </summary>
         Phsa,
 
         /// <summary>
-        /// Specifies that the PHSA data source is to be queried against using cache if available.
-        /// </summary>
-        PhsaCache,
-
-        /// <summary>
-        /// Specifies that all data sources are to be queried against.
+        /// Specifies that both EMPI and PHSA (if necessary) data sources are to be queried against.
         /// </summary>
         All,
-
-        /// <summary>
-        /// Specifies that all data sources are to be queried against using cache if available.
-        /// </summary>
-        AllCache,
     }
 
     /// <summary>
@@ -65,8 +52,32 @@ namespace HealthGateway.AccountDataAccess.Patient
         /// </summary>
         /// <param name="query">The query.</param>
         /// <param name="ct">The cancellation token.</param>
-        /// <returns>The patient model wrapped in an api result object.</returns>
-        Task<PatientQueryResult> Query(PatientQuery query, CancellationToken ct);
+        /// <returns>The patient model wrapped in a patient query result object.</returns>
+        Task<PatientQueryResult> Query(PatientQuery query, CancellationToken ct = default);
+
+        /// <summary>
+        /// Gets the blocked access record.
+        /// </summary>
+        /// <param name="hdid">The hdid to query on.</param>
+        /// <param name="ct">The cancellation token.</param>
+        /// <returns>The blocked access or null if not found.</returns>
+        Task<BlockedAccess?> GetBlockedAccessRecords(string hdid, CancellationToken ct = default);
+
+        /// <summary>
+        /// Gets the blocked access's data sources for the hdid.
+        /// </summary>
+        /// <param name="hdid">The hdid to query on.</param>
+        /// <param name="ct">The cancellation token.</param>
+        /// <returns>A list of blocked access data source values.</returns>
+        Task<IEnumerable<DataSource>> GetDataSources(string hdid, CancellationToken ct = default);
+
+        /// <summary>
+        /// Block access to data sources associated with the hdid.
+        /// </summary>
+        /// <param name="command">The command details used to block access.</param>
+        /// <param name="ct">The cancellation token.</param>
+        /// <returns>The agent audit entry created from the operation.</returns>
+        Task BlockAccess(BlockAccessCommand command, CancellationToken ct = default);
     }
 
     /// <summary>
@@ -85,6 +96,22 @@ namespace HealthGateway.AccountDataAccess.Patient
     /// </summary>
     /// <param name="Phn">The phn to search.</param>
     /// <param name="Hdid">The Hdid to search.</param>
-    /// <param name="Source">The patient detail source to query.</param>
-    public record PatientDetailsQuery(string? Phn = null, string? Hdid = null, PatientDetailSource Source = PatientDetailSource.All) : PatientQuery;
+    /// <param name="Source">The patient detail source to search.</param>
+    /// <param name="UseCache">The value that indicates whether cache should be used when querying for the result.</param>
+    public record PatientDetailsQuery(
+        string? Phn = null,
+        string? Hdid = null,
+        PatientDetailSource Source = PatientDetailSource.All,
+        bool UseCache = true) : PatientQuery;
+
+    /// <summary>
+    /// The blocked access command to add, update or delete.
+    /// </summary>
+    /// <param name="Hdid">The hdid associated with the blocked access record.</param>
+    /// <param name="DataSources">The data sources to block access.</param>
+    /// <param name="Reason">The reason to block access.</param>
+    public record BlockAccessCommand(
+        string Hdid,
+        IEnumerable<DataSource> DataSources,
+        string Reason);
 }
