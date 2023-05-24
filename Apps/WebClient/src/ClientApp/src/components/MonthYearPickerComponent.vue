@@ -1,14 +1,12 @@
-<script lang="ts">
+<script setup lang="ts">
 import { library } from "@fortawesome/fontawesome-svg-core";
 import {
     faChevronLeft,
     faChevronRight,
 } from "@fortawesome/free-solid-svg-icons";
-import Vue from "vue";
-import { directive as onClickaway } from "vue-clickaway";
-import { Component, Emit, Prop, Watch } from "vue-property-decorator";
+import { computed, ref, watch } from "vue";
 
-import { DateWrapper } from "@/models/dateWrapper";
+import { DateWrapper, IDateWrapper } from "@/models/dateWrapper";
 
 library.add(faChevronLeft, faChevronRight);
 
@@ -17,139 +15,144 @@ class MonthToDisplay {
     public hasData = false;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const options: any = {
-    directives: {
-        onClickaway,
-    },
-};
+interface Props {
+    currentMonth: DateWrapper;
+    availableMonths: DateWrapper[];
+}
+const props = defineProps<Props>();
 
-@Component(options)
-export default class MonthYearPickerComponent extends Vue {
-    @Prop() readonly currentMonth!: DateWrapper;
-    @Prop() availableMonths!: DateWrapper[];
+const isYearOpen = ref(false);
+const isMonthOpen = ref(false);
+const selectedYear = ref(new DateWrapper().year());
+const selectedMonth = ref(new DateWrapper().month());
+const selectedDate = ref<IDateWrapper>(new DateWrapper());
+const years = ref<number[]>([]);
 
-    public isYearOpen = false;
-    public isMonthOpen = false;
-    public selectedYear = new DateWrapper().year();
-    public selectedMonth = new DateWrapper().month();
-    private selectedDate = new DateWrapper();
-    private years: number[] = [];
+watch(props.currentMonth, () => {
+    onCurrentMonthChange(props.currentMonth);
+});
 
-    @Watch("currentMonth")
-    public onCurrentMonthChange(currentMonth: DateWrapper): void {
-        this.selectedDate = currentMonth;
-        this.close();
-    }
+function onCurrentMonthChange(currentMonth: DateWrapper): void {
+    selectedDate.value = currentMonth;
+    close();
+}
 
-    @Watch("availableMonths")
-    public onAvailableMonths(): void {
-        this.availableMonths.forEach((date) => {
-            const year = date.year();
-            if (!this.years.some((y) => y == year)) {
-                this.years.push(year);
-            }
-        });
-        const currentYear = this.selectedDate.year();
-        if (!this.years.some((y) => y == currentYear)) {
-            this.years.push(currentYear);
+watch(props.availableMonths, () => {
+    onAvailableMonths();
+});
+
+function onAvailableMonths(): void {
+    props.availableMonths.forEach((date) => {
+        const year = date.year();
+        if (!years.value.some((y) => y == year)) {
+            years.value.push(year);
         }
-        // Sort years by descending
-        this.years.sort((a, b) => b - a);
+    });
+    const currentYear = selectedDate.value.year();
+    if (!years.value.some((y) => y == currentYear)) {
+        years.value.push(currentYear);
     }
+    // Sort years by descending
+    years.value.sort((a, b) => b - a);
+}
 
-    private get monthsToDisplay(): MonthToDisplay[] {
-        const availableMonthsOfSelectedYear = this.availableMonths.filter(
-            (m) => m.year() === this.selectedYear
+const monthsToDisplay = computed<MonthToDisplay[]>(() => {
+    const availableMonthsOfSelectedYear = props.availableMonths.filter(
+        (m) => m.year() === selectedYear.value
+    );
+
+    const monthsToDisplay = [
+        { title: "Jan", hasData: false },
+        { title: "Feb", hasData: false },
+        { title: "Mar", hasData: false },
+        { title: "Apr", hasData: false },
+        { title: "May", hasData: false },
+        { title: "Jun", hasData: false },
+        { title: "Jul", hasData: false },
+        { title: "Aug", hasData: false },
+        { title: "Sep", hasData: false },
+        { title: "Oct", hasData: false },
+        { title: "Nov", hasData: false },
+        { title: "Dec", hasData: false },
+    ];
+    availableMonthsOfSelectedYear.forEach((date) => {
+        // Months are indexed 0-11
+        const monthIndex = date.month() - 1;
+        monthsToDisplay[monthIndex].hasData = true;
+    });
+    return monthsToDisplay;
+});
+
+const dateText = computed<string>(() => {
+    return selectedDate.value.format("MMMM yyyy");
+});
+
+function isCurrentYear(year: number): boolean {
+    return props.currentMonth.year() === year;
+}
+
+function isCurrentMonth(displayMonth: MonthToDisplay): boolean {
+    const monthIndex = props.currentMonth.month() - 1;
+    return (
+        monthIndex === monthsToDisplay.value.indexOf(displayMonth) &&
+        props.currentMonth.year() === selectedYear.value
+    );
+}
+
+function selectYear(year: number): void {
+    selectedYear.value = year;
+    open();
+}
+
+function previousYear(): void {
+    selectedYear.value =
+        years.value[years.value.indexOf(selectedYear.value) + 1];
+}
+
+function nextYear(): void {
+    selectedYear.value =
+        years.value[years.value.indexOf(selectedYear.value) - 1];
+}
+
+function selectMonth(monthIndex: number): void {
+    if (monthsToDisplay.value[monthIndex].hasData) {
+        selectedMonth.value = monthIndex + 1;
+        selectedDate.value = DateWrapper.fromNumerical(
+            selectedYear.value,
+            selectedMonth.value,
+            1
         );
-
-        const monthsToDisplay = [
-            { title: "Jan", hasData: false },
-            { title: "Feb", hasData: false },
-            { title: "Mar", hasData: false },
-            { title: "Apr", hasData: false },
-            { title: "May", hasData: false },
-            { title: "Jun", hasData: false },
-            { title: "Jul", hasData: false },
-            { title: "Aug", hasData: false },
-            { title: "Sep", hasData: false },
-            { title: "Oct", hasData: false },
-            { title: "Nov", hasData: false },
-            { title: "Dec", hasData: false },
-        ];
-        availableMonthsOfSelectedYear.forEach((date) => {
-            // Months are indexed 0-11
-            const monthIndex = date.month() - 1;
-            monthsToDisplay[monthIndex].hasData = true;
-        });
-        return monthsToDisplay;
-    }
-
-    private get isOpen(): boolean {
-        return this.isYearOpen || this.isMonthOpen;
-    }
-
-    private get dateText(): string {
-        return this.selectedDate.format("MMMM yyyy");
-    }
-
-    private isCurrentYear(year: number): boolean {
-        return this.currentMonth.year() === year;
-    }
-
-    private isCurrentMonth(displayMonth: MonthToDisplay): boolean {
-        const monthIndex = this.currentMonth.month() - 1;
-        return (
-            monthIndex === this.monthsToDisplay.indexOf(displayMonth) &&
-            this.currentMonth.year() === this.selectedYear
-        );
-    }
-
-    private selectYear(year: number): void {
-        this.selectedYear = year;
-        this.open();
-    }
-
-    private previousYear(): void {
-        this.selectedYear =
-            this.years[this.years.indexOf(this.selectedYear) + 1];
-    }
-
-    private nextYear(): void {
-        this.selectedYear =
-            this.years[this.years.indexOf(this.selectedYear) - 1];
-    }
-
-    private selectMonth(monthIndex: number): void {
-        if (this.monthsToDisplay[monthIndex].hasData) {
-            this.selectedMonth = monthIndex + 1;
-            this.selectedDate = DateWrapper.fromNumerical(
-                this.selectedYear,
-                this.selectedMonth,
-                1
-            );
-            this.dateChanged();
-            this.close();
-        }
-    }
-
-    @Emit()
-    public dateChanged(): DateWrapper {
-        return this.selectedDate;
-    }
-
-    private close(): void {
-        this.isYearOpen = false;
-        this.isMonthOpen = false;
-        this.selectedMonth = this.selectedDate.month();
-        this.selectedYear = this.selectedDate.year();
-    }
-
-    private open(): void {
-        this.isMonthOpen = !this.isMonthOpen;
-        this.isYearOpen = !this.isMonthOpen;
+        dateChanged();
+        close();
     }
 }
+
+const emit = defineEmits<{
+    (e: "date-changed", newValue: IDateWrapper): void;
+}>();
+
+function dateChanged(): void {
+    emit("date-changed", selectedDate.value);
+}
+
+function close(): void {
+    isYearOpen.value = false;
+    isMonthOpen.value = false;
+    selectedMonth.value = selectedDate.value.month();
+    selectedYear.value = selectedDate.value.year();
+}
+
+function open(): void {
+    isMonthOpen.value = !isMonthOpen.value;
+    isYearOpen.value = !isYearOpen.value;
+}
+
+defineExpose({
+    isYearOpen,
+    isMonthOpen,
+    selectedYear,
+    selectedMonth,
+});
 </script>
 
 <template>
