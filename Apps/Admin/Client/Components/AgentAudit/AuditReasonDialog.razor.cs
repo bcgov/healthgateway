@@ -34,10 +34,16 @@ public partial class AuditReasonDialog<TAction, TErrorAction, TSuccessAction> : 
     where TErrorAction : BaseFailAction
     where TAction : BaseAgentAuditAction
 {
+    /// <summary>
+    /// Gets or sets the action to be performed when confirmation complete.
+    /// </summary>
     [Parameter]
     [EditorRequired]
-    public TAction AuditableAction { get; set; }
+    public TAction AuditableAction { get; set; } = default!;
 
+    /// <summary>
+    /// Gets or sets the action to be performed when confirmation is cancelled.
+    /// </summary>
     [Parameter]
     public object? CancelAction { get; set; }
 
@@ -45,7 +51,7 @@ public partial class AuditReasonDialog<TAction, TErrorAction, TSuccessAction> : 
     private MudDialogInstance MudDialog { get; set; } = default!;
 
     [Inject]
-    private IActionSubscriber ActionSubscriber { get; set; }
+    private IActionSubscriber ActionSubscriber { get; set; } = default!;
 
     [Inject]
     private IDispatcher Dispatcher { get; set; } = default!;

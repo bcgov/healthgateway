@@ -48,6 +48,9 @@ namespace HealthGateway.Admin.Client.Components.AgentAudit
         [EditorRequired]
         public bool IsLoading { get; set; } = true;
 
+        /// <summary>
+        /// Gets or sets the application's configuration.
+        /// </summary>
         [Inject]
         public IConfiguration Configuration { get; set; } = default!;
 
