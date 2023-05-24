@@ -243,6 +243,22 @@ namespace HealthGateway.Database.Models
         public Guid FileDownloadId { get; set; }
 
         /// <summary>
+        /// Gets or sets the pharmacy assessment tile.
+        /// </summary>
+        [MaxLength(250)]
+        public string? PharmacyAssessmentTitle { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the prescription was provided or not.
+        /// </summary>
+        public bool PrescriptionProvided { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether redirected to health care provider was set or not.
+        /// </summary>
+        public bool RedirectedToHealthCareProvider { get; set; }
+
+        /// <summary>
         /// Gets or sets the FileDownload entity.
         /// Code first mechanism to define the foreign key.
         /// </summary>
