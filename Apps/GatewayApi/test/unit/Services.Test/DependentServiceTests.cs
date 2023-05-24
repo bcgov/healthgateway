@@ -364,7 +364,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             mockNotificationSettingsService.Setup(s => s.QueueNotificationSettings(It.IsAny<NotificationSettingsRequest>()));
 
             Mock<IMessageSender> mockMessageSender = new();
-            mockMessageSender.Setup(s => s.SendAsync(It.IsAny<IEnumerable<MessageEnvelope>>(), It.IsAny<CancellationToken>()));
+            mockMessageSender.Setup(s => s.SendAsync(It.IsAny<IEnumerable<MessageEnvelope>>(), It.IsAny<CancellationToken>())).Verifiable();
 
             IDependentService service = new DependentService(
                 GetIConfigurationRoot(null),
@@ -380,6 +380,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             RequestResult<DependentModel> actualResult = await service.RemoveAsync(delegateModel);
 
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
+            mockMessageSender.Verify();
         }
 
         private static IConfigurationRoot GetIConfigurationRoot(Dictionary<string, string?>? localConfig)
