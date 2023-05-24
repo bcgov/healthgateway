@@ -7,14 +7,19 @@
 <MudGrid Class="mt-2">
     <MudItem xs="12">
         <MudPaper>
-            <MudProgressLinear Class="rounded-t overflow-hidden" hidden="@(!IsLoading)" Color="Color.Primary" Indeterminate="true" />
+            <MudProgressLinear
+                Class="rounded-t overflow-hidden"
+                hidden="@(!IsLoading)"
+                Color="Color.Primary"
+                Indeterminate="true"
+                data-testid="block-access-loader"/>
             <MudCardContent Class="d-flex">
                 <MudText Class="mt-2" Typo="Typo.subtitle1">
                     Dataset/Service Block
                 </MudText>
             </MudCardContent>
             <MudCardContent Class="d-flex justify-start align-center">
-                <MudGrid>
+                <MudGrid data-testid="block-access-switches">
                     @foreach (DataSource dataSource in dataSources)
                     {
                         <MudItem xs="6" sm="4" md="3">
@@ -24,7 +29,8 @@
                                 UnCheckedColor="Color.Tertiary"
                                 Color="Color.Success"
                                 Checked="@IsBlocked(dataSource)"
-                                CheckedChanged="@(e => ToggleDataSource(dataSource))" />
+                                CheckedChanged="@(e => ToggleDataSource(dataSource))"
+                                data-testid="@("block-access-switch-" + dataSource)" />
                         </MudItem>
                     }
                 </MudGrid>
@@ -32,10 +38,19 @@
             @if (IsDirty)
             {
                 <MudCardContent Class="d-flex justify-end align-center">
-                    <MudButton Variant="Variant.Outlined" Color="Color.Default" Class="mr-2" OnClick="@(e => CancelChanges())">
+                    <MudButton
+                        Variant="Variant.Outlined"
+                        Color="Color.Default"
+                        Class="mr-2"
+                        OnClick="@(e => CancelChanges())"
+                        data-testid="block-access-cancel">
                         Cancel
                     </MudButton>
-                    <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="@(e => SaveChanges())">
+                    <MudButton
+                        Variant="Variant.Filled"
+                        Color="Color.Primary"
+                        OnClick="@(e => SaveChanges())"
+                        data-testid="block-access-save">
                         Save
                     </MudButton>
                 </MudCardContent>
