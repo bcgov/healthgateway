@@ -22,23 +22,23 @@ using System.Threading.Tasks;
 using HealthGateway.Database.Models;
 
 /// <summary>
-/// Db delegate for outbox entity.
+/// Db delegate for outbox queue
 /// </summary>
-public interface IOutboxDelegate
+public interface IOutboxQueueDelegate
 {
     /// <summary>
     /// Add items to outbox
     /// </summary>
-    /// <param name="items">Add items to the outbox queue</param>
+    /// <param name="items">The items to add to the outbox queue</param>
     /// <param name="ct">A cancellation token</param>
     /// <returns>Awaitable task</returns>
-    Task Queue(IEnumerable<OutboxItem> items, CancellationToken ct = default);
+    Task Enqueue(IEnumerable<OutboxItem> items, CancellationToken ct = default);
 
     /// <summary>
-    /// Get and remove items from the outbox queue
+    /// Get and remove pending items from the outbox queue
     /// </summary>
     /// <param name="ct">A cancellation token</param>
-    /// <returns>List of queued outbox items</returns>
+    /// <returns>An ordered list of queued outbox items by date ascending</returns>
     Task<IEnumerable<OutboxItem>> Dequeue(CancellationToken ct = default);
 
     /// <summary>

@@ -17,6 +17,7 @@
 namespace HealthGateway.Common.Messaging
 {
     using System;
+    using System.Diagnostics.CodeAnalysis;
     using Hangfire;
     using HealthGateway.Database.Delegates;
     using Microsoft.Extensions.Azure;
@@ -26,6 +27,7 @@ namespace HealthGateway.Common.Messaging
     /// <summary>
     /// DI Configuration helper for Service Bus.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public static class ConfigurationExtensions
     {
         /// <summary>
@@ -52,7 +54,7 @@ namespace HealthGateway.Common.Messaging
             if (settings.UseOutbox)
             {
                 services.AddTransient<IMessageSender, OutboxMessageSender>();
-                services.AddTransient<IOutboxDelegate, DbOutboxDelegate>();
+                services.AddTransient<IOutboxQueueDelegate, DbOutboxQueueDelegate>();
                 services.AddSingleton<IMessageReceiver>(sp => sp.GetRequiredService<AzureServiceBus>());
                 services.AddScoped(
                     sp =>
@@ -60,7 +62,7 @@ namespace HealthGateway.Common.Messaging
                         IMessageSender sender = sp.GetRequiredService<AzureServiceBus>();
                         IBackgroundJobClient hangFireJobClient = sp.GetRequiredService<IBackgroundJobClient>();
                         ILogger<DbOutboxStore> logger = sp.GetRequiredService<ILogger<DbOutboxStore>>();
-                        IOutboxDelegate outboxDelegate = sp.GetRequiredService<IOutboxDelegate>();
+                        IOutboxQueueDelegate outboxDelegate = sp.GetRequiredService<IOutboxQueueDelegate>();
                         return new DbOutboxStore(outboxDelegate, hangFireJobClient, sender, logger);
                     });
 

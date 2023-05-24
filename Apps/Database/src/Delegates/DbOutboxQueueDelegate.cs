@@ -29,15 +29,15 @@ using Microsoft.EntityFrameworkCore;
 /// Implements IOutboxDelegate
 /// </summary>
 [ExcludeFromCodeCoverage]
-public class DbOutboxDelegate : IOutboxDelegate
+public class DbOutboxQueueDelegate : IOutboxQueueDelegate
 {
     private readonly GatewayDbContext dbContext;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="DbOutboxDelegate"/> class.
+    /// Initializes a new instance of the <see cref="DbOutboxQueueDelegate"/> class
     /// </summary>
     /// <param name="dbContext">A Gateway DB Context instance</param>
-    public DbOutboxDelegate(GatewayDbContext dbContext)
+    public DbOutboxQueueDelegate(GatewayDbContext dbContext)
     {
         this.dbContext = dbContext;
     }
@@ -58,7 +58,7 @@ public class DbOutboxDelegate : IOutboxDelegate
     }
 
     /// <inheritdoc/>
-    public async Task Queue(IEnumerable<OutboxItem> items, CancellationToken ct = default)
+    public async Task Enqueue(IEnumerable<OutboxItem> items, CancellationToken ct = default)
     {
         await this.dbContext.AddRangeAsync(items, ct);
     }

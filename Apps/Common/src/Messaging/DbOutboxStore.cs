@@ -33,7 +33,7 @@ using Microsoft.Extensions.Logging;
 /// </summary>
 internal class DbOutboxStore : IOutboxStore
 {
-    private readonly IOutboxDelegate outboxDelegate;
+    private readonly IOutboxQueueDelegate outboxDelegate;
     private readonly IBackgroundJobClient backgroundJobClient;
     private readonly IMessageSender messageSender;
     private readonly ILogger<DbOutboxStore> logger;
@@ -45,7 +45,7 @@ internal class DbOutboxStore : IOutboxStore
     /// <param name="backgroundJobClient">Hangfire background job client</param>
     /// <param name="messageSender">The destination message sender to forward messages to.</param>
     /// <param name="logger">A logger.</param>
-    public DbOutboxStore(IOutboxDelegate outboxDelegate, IBackgroundJobClient backgroundJobClient, IMessageSender messageSender, ILogger<DbOutboxStore> logger)
+    public DbOutboxStore(IOutboxQueueDelegate outboxDelegate, IBackgroundJobClient backgroundJobClient, IMessageSender messageSender, ILogger<DbOutboxStore> logger)
     {
         this.outboxDelegate = outboxDelegate;
         this.backgroundJobClient = backgroundJobClient;
@@ -68,7 +68,7 @@ internal class DbOutboxStore : IOutboxStore
                 AssemblyQualifiedName = m.Content.GetType().AssemblyQualifiedName!,
             },
         });
-        await this.outboxDelegate.Queue(outboxItems, ct);
+        await this.outboxDelegate.Enqueue(outboxItems, ct);
         await this.outboxDelegate.Commit(ct);
 
         this.backgroundJobClient.Enqueue<DbOutboxStore>(store => store.DispatchOutboxItems(CancellationToken.None));
