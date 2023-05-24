@@ -1,39 +1,24 @@
-<script lang="ts">
-import Vue from "vue";
-import { Component } from "vue-property-decorator";
-import { Getter } from "vuex-class";
+<script setup lang="ts">
+import { computed, ref } from "vue";
+import { useStore } from "vue-composition-wrapper";
 
 import BreadcrumbComponent from "@/components/navmenu/BreadcrumbComponent.vue";
 import ReportsComponent from "@/components/report/ReportsComponent.vue";
 import BreadcrumbItem from "@/models/breadcrumbItem";
-import type { WebClientConfiguration } from "@/models/configData";
 import User from "@/models/user";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const options: any = {
-    components: {
-        BreadcrumbComponent,
-        ReportsComponent,
+const store = useStore();
+
+const user = computed<User>(() => store.getters["user/user"]);
+
+const breadcrumbItems = ref<BreadcrumbItem[]>([
+    {
+        text: "Export Records",
+        to: "/reports",
+        active: true,
+        dataTestId: "breadcrumb-export-records",
     },
-};
-
-@Component(options)
-export default class ReportsView extends Vue {
-    @Getter("webClient", { namespace: "config" })
-    config!: WebClientConfiguration;
-
-    @Getter("user", { namespace: "user" })
-    user!: User;
-
-    breadcrumbItems: BreadcrumbItem[] = [
-        {
-            text: "Export Records",
-            to: "/reports",
-            active: true,
-            dataTestId: "breadcrumb-export-records",
-        },
-    ];
-}
+]);
 </script>
 
 <template>
