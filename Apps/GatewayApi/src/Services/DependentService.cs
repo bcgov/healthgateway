@@ -294,7 +294,7 @@ namespace HealthGateway.GatewayApi.Services
             return replacedValue;
         }
 
-        private async Task<RequestResult<DependentModel>?> ValidateDepentent(AddDependentRequest addDependentRequest, string delegateHdid, RequestResult<PatientModel> dependentResult)
+        private async Task<RequestResult<DependentModel>?> ValidateDependent(AddDependentRequest addDependentRequest, string delegateHdid, RequestResult<PatientModel> dependentResult)
         {
             switch (dependentResult.ResultStatus)
             {
