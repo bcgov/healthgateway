@@ -98,8 +98,6 @@ namespace AccountDataAccessTest.Strategy
             Mock<IPatientIdentityApi> patientIdentityApi = new();
             patientIdentityApi.Setup(p => p.GetPatientIdentityAsync(Hdid))!.ReturnsAsync(patientIdentity);
 
-            Mock<ILogger<HdidPhsaStrategy>> logger = new();
-
             HdidPhsaStrategy hdidPhsaStrategy = new(
                 GetConfiguration(),
                 cacheProvider.Object,
