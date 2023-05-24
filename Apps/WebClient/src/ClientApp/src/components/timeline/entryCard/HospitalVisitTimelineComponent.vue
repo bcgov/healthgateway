@@ -19,6 +19,7 @@ interface Props {
     commentsAreEnabled?: boolean;
 }
 withDefaults(defineProps<Props>(), {
+    isMobileDetails: false,
     commentsAreEnabled: false,
 });
 
@@ -29,11 +30,6 @@ const entryIcon = computed(() => {
 function formatDate(date: DateWrapper): string {
     return date.format("yyyy-MMM-dd, t");
 }
-
-defineExpose({
-    entryIcon,
-    formatDate,
-});
 </script>
 
 <template>

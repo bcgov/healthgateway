@@ -26,16 +26,9 @@ const props = withDefaults(defineProps<Props>(), {
     isMobileDetails: false,
 });
 
-function createComment(params: {
-    hdid: string;
-    comment: UserComment;
-}): Promise<UserComment | undefined> {
-    return store.dispatch("comment/createComment", params);
-}
-
-function setTooManyRequestsError(params: { key: string }): void {
-    store.dispatch("errorBanner/setTooManyRequestsError", params);
-}
+const emit = defineEmits<{
+    (e: "on-comment-added", newValue: UserComment): UserComment;
+}>();
 
 const user = computed<User>(() => store.getters["user/user"]);
 
@@ -48,8 +41,15 @@ const privacyInfoId = computed<string>(() => {
     return props.isMobileDetails ? id + "-mobile" : id;
 });
 
-function onSubmit(): void {
-    addComment();
+function createComment(params: {
+    hdid: string;
+    comment: UserComment;
+}): Promise<UserComment | undefined> {
+    return store.dispatch("comment/createComment", params);
+}
+
+function setTooManyRequestsError(params: { key: string }): void {
+    store.dispatch("errorBanner/setTooManyRequestsError", params);
 }
 
 function addComment(): void {
@@ -69,7 +69,7 @@ function addComment(): void {
         .then((newComment) => {
             if (newComment !== undefined) {
                 commentInput.value = "";
-                onCommentAdded(newComment);
+                emit("on-comment-added", newComment);
             }
         })
         .catch((err: ResultError) => {
@@ -84,14 +84,6 @@ function addComment(): void {
             window.scrollTo({ top: 0, behavior: "smooth" });
         })
         .finally(() => (isSaving.value = false));
-}
-
-const emit = defineEmits<{
-    (e: "on-comment-added", newValue: UserComment): UserComment;
-}>();
-
-function onCommentAdded(comment: UserComment): void {
-    emit("on-comment-added", comment);
 }
 </script>
 
@@ -136,7 +128,7 @@ function onCommentAdded(comment: UserComment): void {
                         variant="icon-input"
                         data-testid="postCommentBtn"
                         :disabled="commentInput === '' || isSaving"
-                        @click="onSubmit"
+                        @click="addComment"
                     >
                         <hg-icon
                             icon="arrow-circle-up"

@@ -20,11 +20,25 @@ library.add(faEllipsisV);
 interface Props {
     hdid: string;
     entry: NoteTimelineEntry;
-    isMobileDetails: boolean;
+    isMobileDetails?: boolean;
     commentsAreEnabled?: boolean;
 }
 const props = withDefaults(defineProps<Props>(), {
+    isMobileDetails: false,
     commentsAreEnabled: false,
+});
+
+const isSaving = ref(false);
+
+const entryIcon = computed(() => {
+    return entryTypeMap.get(EntryType.Note)?.icon;
+});
+
+const canShowDetails = computed(() => {
+    return (
+        props.entry.text.length > 0 &&
+        props.entry.text !== props.entry.textSummary
+    );
 });
 
 function addError(params: {
@@ -38,20 +52,6 @@ function addError(params: {
 function deleteNote(params: { hdid: string; note: UserNote }): Promise<void> {
     return store.dispatch("note/deleteNote", params);
 }
-
-const isSaving = ref(false);
-const eventBus = EventBus;
-
-const entryIcon = computed<string | undefined>(() => {
-    return entryTypeMap.get(EntryType.Note)?.icon;
-});
-
-const canShowDetails = computed<boolean>(() => {
-    return (
-        props.entry.text.length > 0 &&
-        props.entry.text !== props.entry.textSummary
-    );
-});
 
 function handleDelete(): void {
     if (confirm("Are you sure you want to delete this note?")) {
@@ -76,7 +76,7 @@ function handleDelete(): void {
 }
 
 function handleEdit(): void {
-    eventBus.$emit(EventMessageName.EditNote, props.entry);
+    EventBus.$emit(EventMessageName.EditNote, props.entry);
 }
 </script>
 

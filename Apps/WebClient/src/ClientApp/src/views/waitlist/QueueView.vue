@@ -1,19 +1,9 @@
 <script setup lang="ts">
 import { computed, watch } from "vue";
-import { useStore } from "vue-composition-wrapper";
-import { useRoute, useRouter } from "vue-composition-wrapper";
+import { useRoute, useRouter, useStore } from "vue-composition-wrapper";
 
 import type { WebClientConfiguration } from "@/models/configData";
 import type { Ticket } from "@/models/ticket";
-
-const route = useRoute();
-const router = useRouter();
-function redirect(): void {
-    const path = route.value.query.redirect
-        ? route.value.query.redirect.toString()
-        : "/";
-    router.push({ path });
-}
 
 const store = useStore();
 
@@ -33,7 +23,14 @@ const queuePosition = computed<number | undefined>(
     () => ticket?.value.queuePosition
 );
 
-defineExpose({ queuePosition });
+const route = useRoute();
+const router = useRouter();
+function redirect(): void {
+    const path = route.value.query.redirect
+        ? route.value.query.redirect.toString()
+        : "/";
+    router.push({ path });
+}
 
 watch(ticketIsProcessed, (value: boolean) => {
     if (value) {

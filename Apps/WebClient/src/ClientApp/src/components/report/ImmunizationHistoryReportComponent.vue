@@ -232,13 +232,13 @@ function generateReport(
     });
 }
 
-watch(isLoading, () => {
-    emit("on-is-loading-changed", isLoading.value);
-});
-
 function onIsEmptyChanged(): void {
     emit("on-is-empty-changed", isEmpty.value && isRecommendationEmpty.value);
 }
+
+watch(isLoading, () => {
+    emit("on-is-loading-changed", isLoading.value);
+});
 
 watch(isEmpty, () => {
     onIsEmptyChanged();

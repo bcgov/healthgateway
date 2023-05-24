@@ -25,7 +25,7 @@ const isYearOpen = ref(false);
 const isMonthOpen = ref(false);
 const selectedYear = ref(new DateWrapper().year());
 const selectedMonth = ref(new DateWrapper().month());
-const selectedDate = ref(new DateWrapper());
+const selectedDate = ref<IDateWrapper>(new DateWrapper());
 const years = ref<number[]>([]);
 
 watch(props.currentMonth, () => {
@@ -152,9 +152,6 @@ defineExpose({
     isMonthOpen,
     selectedYear,
     selectedMonth,
-    onCurrentMonthChange,
-    onAvailableMonths,
-    dateChanged,
 });
 </script>
 

@@ -58,6 +58,11 @@ function handleOk(bvModalEvt: Event): void {
     fetchMedications();
 }
 
+function handleHidden(): void {
+    protectiveWord.value = "";
+    isDismissed.value = false;
+}
+
 function fetchMedications(): void {
     retrieveMedications({
         hdid: props.hdid,
@@ -71,12 +76,13 @@ function fetchMedications(): void {
 <template>
     <b-modal
         id="protective-word-modal"
-        v-model="isVisible"
+        :visible="isVisible"
         data-testid="protectiveWordModal"
         title="Restricted PharmaNet Records"
         header-bg-variant="primary"
         header-text-variant="light"
         centered
+        @hidden="handleHidden()"
     >
         <b-row>
             <b-col>

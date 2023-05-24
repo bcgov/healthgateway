@@ -15,8 +15,8 @@ library.add(farComment, faPaperclip);
 interface Props {
     cardId: string;
     entry: TimelineEntry;
-    entryIcon: string | undefined;
-    title: string;
+    title?: string;
+    entryIcon?: string;
     allowComment?: boolean;
     canShowDetails?: boolean;
     hasAttachment?: boolean;
@@ -25,6 +25,8 @@ interface Props {
     subtitle?: string;
 }
 const props = withDefaults(defineProps<Props>(), {
+    title: "",
+    entryIcon: "question",
     allowComment: false,
     canShowDetails: true,
     hasAttachment: false,
