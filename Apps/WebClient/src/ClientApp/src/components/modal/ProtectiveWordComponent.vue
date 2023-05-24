@@ -59,8 +59,7 @@ function handleOk(bvModalEvt: Event): void {
 }
 
 function handleHidden(): void {
-    protectiveWord.value = "";
-    isDismissed.value = false;
+    isDismissed.value = true;
 }
 
 function fetchMedications(): void {
