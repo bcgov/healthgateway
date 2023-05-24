@@ -13,7 +13,6 @@ function checkAgentAuditHistory() {
 
     cy.get("[data-testid=agent-audit-history-table]").should("be.visible");
 
-    let historyCount = 0;
     return cy.get("[data-testid=agent-audit-history-count]").invoke("text");
 }
 
