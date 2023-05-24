@@ -101,8 +101,6 @@ namespace AccountDataAccessTest.Strategy
             Mock<IClientRegistriesDelegate> clientRegistriesDelegate = new();
             clientRegistriesDelegate.Setup(p => p.GetDemographicsAsync(OidType.Phn, Phn, false)).ReturnsAsync(patient);
 
-            Mock<ILogger<PhnEmpiStrategy>> logger = new();
-
             PhnEmpiStrategy phnEmpiStrategy = new(
                 GetConfiguration(),
                 cacheProvider.Object,
