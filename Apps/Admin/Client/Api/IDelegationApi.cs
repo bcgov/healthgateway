@@ -46,9 +46,9 @@ namespace HealthGateway.Admin.Client.Api
         /// </summary>
         /// <param name="dependentHdid">The hdid of the dependent to protect.</param>
         /// <param name="request">The request object containing data used to protect a dependent.</param>
-        /// <returns>The delegation change entry created from the operation.</returns>
+        /// <returns>The agent action entry created from the operation.</returns>
         [Put("/{dependentHdid}/ProtectDependent")]
-        Task<DelegationChange> ProtectDependentAsync(string dependentHdid, ProtectDependentRequest request);
+        Task<AgentAction> ProtectDependentAsync(string dependentHdid, ProtectDependentRequest request);
 
         /// <summary>
         /// Unprotects the dependent and if necessary removes the allowed delegation(s) and keeps the resource delegates
@@ -56,8 +56,8 @@ namespace HealthGateway.Admin.Client.Api
         /// </summary>
         /// <param name="dependentHdid">The hdid of the dependent to unprotect.</param>
         /// <param name="request">The request object containing data used to unprotect a dependent.</param>
-        /// <returns>The delegation change entry created from the operation.</returns>
+        /// <returns>The agent action entry created from the operation.</returns>
         [Put("/{dependentHdid}/UnprotectDependent")]
-        Task<DelegationChange> UnprotectDependentAsync(string dependentHdid, UnprotectDependentRequest request);
+        Task<AgentAction> UnprotectDependentAsync(string dependentHdid, UnprotectDependentRequest request);
     }
 }

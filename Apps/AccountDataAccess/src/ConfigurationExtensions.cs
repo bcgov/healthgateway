@@ -17,9 +17,12 @@ namespace HealthGateway.AccountDataAccess
 {
     using System;
     using System.Diagnostics.CodeAnalysis;
+    using HealthGateway.AccountDataAccess.Audit;
     using HealthGateway.AccountDataAccess.Patient;
     using HealthGateway.AccountDataAccess.Patient.Api;
+    using HealthGateway.AccountDataAccess.Patient.Strategy;
     using HealthGateway.Common.Utils.Phsa;
+    using HealthGateway.Database.Delegates;
     using Microsoft.Extensions.DependencyInjection;
     using Refit;
 
@@ -39,7 +42,21 @@ namespace HealthGateway.AccountDataAccess
         {
             services.AddAutoMapper(typeof(PatientMappings));
             services.AddTransient<IClientRegistriesDelegate, ClientRegistriesDelegate>();
+            services.AddTransient<IBlockedAccessDelegate, DbBlockedAccessDelegate>();
+            services.AddTransient<IAgentAuditDelegate, DbAgentAuditDelegate>();
             services.AddTransient<IPatientRepository, PatientRepository>();
+            services.AddTransient<IAuditRepository, AuditRepository>();
+
+            // Strategy configuration
+            services.AddScoped<PatientQueryFactory>();
+            services.AddScoped<HdidAllStrategy>()
+                .AddScoped<PatientQueryStrategy, HdidAllStrategy>(s => s.GetService<HdidAllStrategy>()!);
+            services.AddScoped<HdidEmpiStrategy>()
+                .AddScoped<PatientQueryStrategy, HdidEmpiStrategy>(s => s.GetService<HdidEmpiStrategy>()!);
+            services.AddScoped<HdidPhsaStrategy>()
+                .AddScoped<PatientQueryStrategy, HdidPhsaStrategy>(s => s.GetService<HdidPhsaStrategy>()!);
+            services.AddScoped<PhnEmpiStrategy>()
+                .AddScoped<PatientQueryStrategy, PhnEmpiStrategy>(s => s.GetService<PhnEmpiStrategy>()!);
 
             services.AddRefitClient<IPatientIdentityApi>()
                 .ConfigureHttpClient(c => c.BaseAddress = configuration.PhsaApiBaseUrl)

@@ -61,8 +61,8 @@ namespace HealthGateway.Patient.Services
             using Activity? activity = Source.StartActivity();
 
             PatientDetailsQuery query = identifierType == PatientIdentifierType.Hdid
-                ? new PatientDetailsQuery(Hdid: identifier, Source: PatientDetailSource.AllCache)
-                : new PatientDetailsQuery(identifier, Source: PatientDetailSource.AllCache);
+                ? new PatientDetailsQuery(Hdid: identifier, Source: PatientDetailSource.All, UseCache: true)
+                : new PatientDetailsQuery(identifier, Source: PatientDetailSource.All, UseCache: true);
 
             this.logger.LogDebug("Starting GetPatient for identifier type: {IdentifierType} and patient data source: {Source}", identifierType, query.Source);
 

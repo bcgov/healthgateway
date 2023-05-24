@@ -33,9 +33,9 @@ namespace HealthGateway.Admin.Server.MapUtils
         /// <param name="patientModel">The patient model to convert.</param>
         /// <param name="mapper">The AutoMapper IMapper.</param>
         /// <returns>The created UI model.</returns>
-        public static PatientSupportDetails ToUiModel(UserProfile? userProfile, PatientModel? patientModel, IMapper mapper)
+        public static PatientSupportResult ToUiModel(UserProfile? userProfile, PatientModel? patientModel, IMapper mapper)
         {
-            return mapper.Map<PatientModel?, PatientSupportDetails>(
+            return mapper.Map<PatientModel?, PatientSupportResult>(
                 patientModel,
                 opts => opts.AfterMap(
                     (_, dest) =>
