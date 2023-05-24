@@ -111,40 +111,13 @@ namespace HealthGateway.GatewayApi.Services
             }
 
             var dependentResult = await this.GetDependentAsPatient(addDependentRequest.Phn);
-            switch (dependentResult.ResultStatus)
+            var validationResult = await this.ValidateDepentent(addDependentRequest, delegateHdid, dependentResult);
+            if (validationResult != null)
             {
-                case ResultType.Error:
-                    return RequestResultFactory.ServiceError<DependentModel>(ErrorType.CommunicationExternal, ServiceType.Patient, "Communication Exception when trying to retrieve the Dependent");
-
-                case ResultType.ActionRequired when dependentResult.ResultError?.ActionCodeValue == ActionType.NoHdId.Value:
-                    return RequestResultFactory.ActionRequired<DependentModel>(ActionType.NoHdId, ErrorMessages.InvalidServicesCard);
-
-                case ResultType.ActionRequired:
-                    return RequestResultFactory.ActionRequired<DependentModel>(ActionType.DataMismatch, ErrorMessages.DataMismatch);
-
-                default:
-                    if (!IsMatch(addDependentRequest, dependentResult.ResourcePayload))
-                    {
-                        return RequestResultFactory.ActionRequired<DependentModel>(ActionType.DataMismatch, ErrorMessages.DataMismatch);
-                    }
-
-                    // Verify dependent has HDID
-                    if (string.IsNullOrEmpty(dependentResult.ResourcePayload?.HdId))
-                    {
-                        return RequestResultFactory.ActionRequired<DependentModel>(ActionType.NoHdId, ErrorMessages.InvalidServicesCard);
-                    }
-
-                    // Verify delegate is allowed to access dependent
-                    Dependent? dependent = await this.delegationDelegate.GetDependentAsync(dependentResult.ResourcePayload?.HdId, true);
-                    if (dependent is { Protected: true } && dependent.AllowedDelegations.All(d => d.DelegateHdId != delegateHdid))
-                    {
-                        return RequestResultFactory.ActionRequired<DependentModel>(ActionType.Protected, ErrorMessages.CannotPerformAction);
-                    }
-
-                    break;
+                return validationResult;
             }
 
-            var dependentHdid = dependentResult.ResourcePayload.HdId;
+            var dependentHdid = dependentResult.ResourcePayload!.HdId;
             ResourceDelegate resourceDelegate = new()
             {
                 ResourceOwnerHdid = dependentHdid,
@@ -319,6 +292,42 @@ namespace HealthGateway.GatewayApi.Services
         {
             string replacedValue = value.Replace(SmartApostrophe, RegularApostrophe, StringComparison.Ordinal);
             return replacedValue;
+        }
+
+        private async Task<RequestResult<DependentModel>?> ValidateDepentent(AddDependentRequest addDependentRequest, string delegateHdid, RequestResult<PatientModel> dependentResult)
+        {
+            switch (dependentResult.ResultStatus)
+            {
+                case ResultType.Error:
+                    return RequestResultFactory.ServiceError<DependentModel>(ErrorType.CommunicationExternal, ServiceType.Patient, "Communication Exception when trying to retrieve the Dependent");
+
+                case ResultType.ActionRequired when dependentResult.ResultError?.ActionCodeValue == ActionType.NoHdId.Value:
+                    return RequestResultFactory.ActionRequired<DependentModel>(ActionType.NoHdId, ErrorMessages.InvalidServicesCard);
+
+                case ResultType.ActionRequired:
+                    return RequestResultFactory.ActionRequired<DependentModel>(ActionType.DataMismatch, ErrorMessages.DataMismatch);
+
+                default:
+                    if (!IsMatch(addDependentRequest, dependentResult.ResourcePayload))
+                    {
+                        return RequestResultFactory.ActionRequired<DependentModel>(ActionType.DataMismatch, ErrorMessages.DataMismatch);
+                    }
+
+                    // Verify dependent has HDID
+                    if (string.IsNullOrEmpty(dependentResult.ResourcePayload?.HdId))
+                    {
+                        return RequestResultFactory.ActionRequired<DependentModel>(ActionType.NoHdId, ErrorMessages.InvalidServicesCard);
+                    }
+
+                    // Verify delegate is allowed to access dependent
+                    Dependent? dependent = await this.delegationDelegate.GetDependentAsync(dependentResult.ResourcePayload?.HdId, true);
+                    if (dependent is { Protected: true } && dependent.AllowedDelegations.All(d => d.DelegateHdId != delegateHdid))
+                    {
+                        return RequestResultFactory.ActionRequired<DependentModel>(ActionType.Protected, ErrorMessages.CannotPerformAction);
+                    }
+
+                    return null;
+            }
         }
 
         private async Task<RequestResult<PatientModel>> GetDependentAsPatient(string phn)
