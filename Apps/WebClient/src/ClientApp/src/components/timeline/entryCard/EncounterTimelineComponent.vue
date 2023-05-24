@@ -1,45 +1,34 @@
-<script lang="ts">
+<script setup lang="ts">
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
-import Vue from "vue";
-import { Component, Prop } from "vue-property-decorator";
+import { computed } from "vue";
 
+import EntryCardTimelineComponent from "@/components/timeline/entryCard/EntrycardTimelineComponent.vue";
 import { EntryType, entryTypeMap } from "@/constants/entryType";
 import EncounterTimelineEntry from "@/models/encounterTimelineEntry";
 
-import EntryCardTimelineComponent from "./EntrycardTimelineComponent.vue";
-
 library.add(faInfoCircle);
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const options: any = {
-    components: {
-        EntryCard: EntryCardTimelineComponent,
-    },
-};
-
-@Component(options)
-export default class EncounterTimelineComponent extends Vue {
-    @Prop() entry!: EncounterTimelineEntry;
-    @Prop() index!: number;
-    @Prop() datekey!: string;
-    @Prop() isMobileDetails!: boolean;
-
-    @Prop({ default: false })
-    commentsAreEnabled!: boolean;
-
-    private get entryIcon(): string | undefined {
-        return entryTypeMap.get(EntryType.HealthVisit)?.icon;
-    }
-
-    private get showEncounterRolloffAlert(): boolean {
-        return this.entry.showRollOffWarning();
-    }
+interface Props {
+    entry: EncounterTimelineEntry;
+    index: number;
+    datekey: string;
+    isMobileDetails?: boolean;
+    commentsAreEnabled?: boolean;
 }
+const props = withDefaults(defineProps<Props>(), {
+    isMobileDetails: false,
+    commentsAreEnabled: false,
+});
+
+const entryIcon = computed(() => entryTypeMap.get(EntryType.HealthVisit)?.icon);
+const showEncounterRolloffAlert = computed(() =>
+    props.entry.showRollOffWarning()
+);
 </script>
 
 <template>
-    <EntryCard
+    <EntryCardTimelineComponent
         :card-id="index + '-' + datekey"
         :entry-icon="entryIcon"
         :title="entry.specialtyDescription"
@@ -104,7 +93,7 @@ export default class EncounterTimelineComponent extends Vue {
                 </div>
             </b-col>
         </b-row>
-    </EntryCard>
+    </EntryCardTimelineComponent>
 </template>
 
 <style lang="scss" scoped>

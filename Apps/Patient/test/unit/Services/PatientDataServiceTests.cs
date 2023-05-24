@@ -54,6 +54,7 @@ namespace HealthGateway.PatientTests.Services
                 Status = OrganDonorRegistrationStatus.Registered,
                 StatusMessage = "Message",
                 RegistrationFileId = Guid.NewGuid().ToString(),
+                OrganDonorRegistrationLinkText = "Link Text",
             };
 
             PatientData[] data =
@@ -73,6 +74,7 @@ namespace HealthGateway.PatientTests.Services
             actualOrganDonorRegistration.Status.ShouldBe(organDonorRegistration.Status);
             actualOrganDonorRegistration.StatusMessage.ShouldBe(organDonorRegistration.StatusMessage);
             actualOrganDonorRegistration.RegistrationFileId.ShouldBe(organDonorRegistration.RegistrationFileId);
+            actualOrganDonorRegistration.OrganDonorRegistrationLinkText.ShouldBe(organDonorRegistration.OrganDonorRegistrationLinkText);
         }
 
         [Fact]

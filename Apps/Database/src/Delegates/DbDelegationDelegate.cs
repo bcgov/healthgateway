@@ -57,18 +57,7 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public async Task<IEnumerable<DependentAudit>> GetDependentAuditsAsync(string hdid)
-        {
-            this.logger.LogTrace("Getting dependent audit - hdid : {Hdid}", hdid);
-
-            IQueryable<DependentAudit> query = this.dbContext.DependentAudit
-                .Where(d => d.HdId == hdid);
-
-            return await query.ToListAsync();
-        }
-
-        /// <inheritdoc/>
-        public async Task UpdateDelegationAsync(Dependent dependent, IEnumerable<ResourceDelegate> resourceDelegatesToRemove, DependentAudit dependentAudit, bool commit = true)
+        public async Task UpdateDelegationAsync(Dependent dependent, IEnumerable<ResourceDelegate> resourceDelegatesToRemove, AgentAudit agentAudit, bool commit = true)
         {
             if (dependent.Version == 0)
             {
@@ -84,7 +73,7 @@ namespace HealthGateway.Database.Delegates
                 this.dbContext.ResourceDelegate.Remove(resourceDelegate);
             }
 
-            this.dbContext.DependentAudit.Add(dependentAudit);
+            this.dbContext.AgentAudit.Add(agentAudit);
 
             if (commit)
             {

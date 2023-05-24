@@ -71,13 +71,13 @@ namespace HealthGateway.Admin.Client.Store.PatientSupport
         /// <summary>
         /// The action representing a successful load.
         /// </summary>
-        public class LoadSuccessAction : BaseSuccessAction<IList<PatientSupportDetails>>
+        public class LoadSuccessAction : BaseSuccessAction<IList<PatientSupportResult>>
         {
             /// <summary>
             /// Initializes a new instance of the <see cref="LoadSuccessAction"/> class.
             /// </summary>
             /// <param name="data">Result data.</param>
-            public LoadSuccessAction(IList<PatientSupportDetails> data)
+            public LoadSuccessAction(IList<PatientSupportResult> data)
                 : base(data)
             {
             }

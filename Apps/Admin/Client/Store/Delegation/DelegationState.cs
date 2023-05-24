@@ -54,9 +54,9 @@ namespace HealthGateway.Admin.Client.Store.Delegation
         public DependentInfo? Dependent { get; init; }
 
         /// <summary>
-        /// Gets the collection of delegation changes.
+        /// Gets the collection of agent actions.
         /// </summary>
-        public IImmutableList<DelegationChange> DelegationChanges { get; init; } = ImmutableList<DelegationChange>.Empty;
+        public IImmutableList<AgentAction> AgentActions { get; init; } = ImmutableList<AgentAction>.Empty;
 
         /// <summary>
         /// Gets the collection of delegate info.

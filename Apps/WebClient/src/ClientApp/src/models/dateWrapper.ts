@@ -29,10 +29,149 @@ export interface ParseOptions {
 }
 
 /**
+ * Interface for {@link DateWrapper} that can be used as a type in reactive Vue references.
+ */
+export interface IDateWrapper {
+    /**
+     * Formats the date using the given a set of tokens
+     * See https://moment.github.io/luxon/#/formatting for the rules
+     * @param formatString The tokens to format the string as.
+     * @returns a string representation of the datetime with the given format.
+     */
+    format(formatString?: string): string;
+
+    /**
+     * Formats the datetime to the ISO format (YYYY-MM-DDTHH:MM:SS:M-Z)
+     * @param toUtc (optional) Whether to set the time zone to UTC
+     * @returns the formatted string representation
+     */
+    toISO(toUtc?: boolean): StringISODate;
+
+    /**
+     * Formats the date to the ISO format without time (YYYY-MM-DD)
+     * @returns the formatted string representation
+     */
+    toISODate(): StringISODate;
+
+    /**
+     * Converts to a JS Date object
+     * @returns the Date object
+     */
+    toJSDate(): Date;
+
+    /**
+     * Gives the number of milliseconds since the Unix Epoch as a string.
+     * @returns string representation of the milliseconds since the epoch
+     */
+    fromEpoch(): string;
+
+    /**
+     * Gets the year.
+     * @returns Calendar year
+     */
+    year(): number;
+
+    /**
+     * Get the month (1-12).
+     * @returns calendar month.
+     */
+    month(): number;
+
+    /**
+     * Get the days.
+     * @returns Calendar day
+     */
+    day(): number;
+
+    /**
+     * Gets the milliseconds (not epoch)
+     * @returns milliseconds from the second
+     */
+    millisecond(): number;
+
+    /**
+     * Returns the weekday 0-6 (sunday is 0)
+     * @returns day of the week (0-6)
+     */
+    weekday(): number;
+
+    /**
+     * Difference between two Dates in milliseconds
+     * @param other Other date to compare to
+     * @param unit (optional) unit of comparision (year, hour, minute, second...)
+     * @returns the difference with the Duration object
+     */
+    diff(other: DateWrapper, unit?: DurationUnit): Duration;
+
+    /**
+     * Checks if two dates are the same. Can use a provided unit of time.
+     * @param other Date to compare against
+     * @param unit (optional) Unit of time to compare
+     * @returns True if they are the same date, false otherwise
+     */
+    isSame(other: DateWrapper, unit?: DurationUnit): boolean;
+
+    /**
+     * Checks if this date is before the parameter date
+     * @param other Date to compare against
+     * @returns True if this date is before passed date, false otherwise.
+     */
+    isBefore(other: DateWrapper): boolean;
+
+    /**
+     * Checks if this date is before or same the parameter date
+     * @param other Date to compare against
+     * @returns True if this date is before or same as passed date, false otherwise.
+     */
+    isBeforeOrSame(other: DateWrapper): boolean;
+
+    /**
+     * Checks if this date is after the parameter date
+     * @param other Date to compare against
+     * @returns True if this date is after the passed date, false otherwise
+     */
+    isAfter(other: DateWrapper): boolean;
+
+    /**
+     * Checks if this date is after or same the parameter date
+     * @param other Date to compare against
+     * @returns True if this date is after or same as the passed date, false otherwise
+     */
+    isAfterOrSame(other: DateWrapper): boolean;
+
+    /**
+     * Gives the start of the date for the given unit.
+     * @param unit the unit of time (day, month, year ...)
+     * @returns a date with the given start.
+     */
+    startOf(unit: DurationUnit): DateWrapper;
+
+    /**
+     * Substracts a duration from this date.
+     * @param duration The duration as a unit or object
+     * @returns the calculated date
+     */
+    subtract(duration: Duration | number | DurationObject): DateWrapper;
+
+    /**
+     * Adds a duration to this date.
+     * @param duration The duration as a unit or object
+     * @returns the calculated date
+     */
+    add(duration: Duration | number | DurationObject): DateWrapper;
+
+    /**
+     * Checks if the date is in DST.
+     * @returns True if the date is in DST, false otherwise.
+     */
+    isInDST(): boolean;
+}
+
+/**
  * Class that wraps a library definition of a date time. Immutable to prevent bad date manipulation.
  * Centralizes date operations and modifications while abstracting library specific implementations.
  */
-export class DateWrapper {
+export class DateWrapper implements IDateWrapper {
     static defaultFormat = "yyyy-MMM-dd";
     /**
      * Value for reference purposes only. Stores the raw value if initialized as a string, ISO datetime otherwise.
@@ -60,16 +199,9 @@ export class DateWrapper {
      * @param isUtc True if the date passed is in UTC, false by default.
      */
     constructor(
-        param?: StringISODate | StringISODateTime | DateWrapper | DateTime,
+        param?: StringISODate | StringISODateTime | IDateWrapper | DateTime,
         options?: ParseOptions
     ) {
-        if (!param) {
-            this._date_source = "new empty Object";
-            this._internal_date = DateTime.local();
-            this._raw_string_value = this.toISO();
-            return;
-        }
-
         if (param instanceof DateWrapper) {
             this._date_source = "DateWrapper";
             this._raw_string_value = param.toISO();
@@ -78,7 +210,7 @@ export class DateWrapper {
             this._date_source = "DateTime";
             this._raw_string_value = param.toISO();
             this._internal_date = param;
-        } else {
+        } else if (typeof param === "string") {
             this._date_source = "string";
             this._raw_string_value = param;
             if (param.includes("z")) {
@@ -103,6 +235,10 @@ export class DateWrapper {
                     });
                 }
             }
+        } else {
+            this._date_source = "new empty Object";
+            this._internal_date = DateTime.local();
+            this._raw_string_value = this.toISO();
         }
     }
 
@@ -143,18 +279,13 @@ export class DateWrapper {
     }
 
     /**
-     * Formats the date using the given a set of tokens
-     * See https://moment.github.io/luxon/#/formatting for the rules
-     * @param formatString The tokens to format the string as.
-     * @returns a string representation of the datetime with the given format.
+     * Returns the number of days in a month for a given year
+     * @param year The year to check
+     * @param month The month to check
+     * @returns the number of days in the month
      */
-    public format(formatString?: string): string {
-        return this.internalDate.toFormat(
-            formatString || DateWrapper.defaultFormat,
-            {
-                locale,
-            }
-        );
+    public static daysInMonth(year: number, month: number): number {
+        return DateTime.local(year, month).daysInMonth;
     }
 
     /**
@@ -170,11 +301,17 @@ export class DateWrapper {
         );
     }
 
-    /**
-     * Formats the datetime to the ISO format (YYYY-MM-DDTHH:MM:SS:M-Z)
-     * @param toUtc (optional) Whether to set the time zone to UTC
-     * @returns the formatted string representation
-     */
+    /** {@inheritDoc IDateWrapper.format} */
+    public format(formatString?: string): string {
+        return this.internalDate.toFormat(
+            formatString || DateWrapper.defaultFormat,
+            {
+                locale,
+            }
+        );
+    }
+
+    /** {@inheritDoc IDateWrapper.toISO} */
     public toISO(toUtc = false): StringISODate {
         let dateTime = this.internalDate;
         if (toUtc) {
@@ -183,66 +320,42 @@ export class DateWrapper {
         return dateTime.toISO();
     }
 
-    /**
-     * Formats the date to the ISO format without time (YYYY-MM-DD)
-     * @returns the formatted string representation
-     */
+    /** {@inheritDoc IDateWrapper.toISODate} */
     public toISODate(): StringISODate {
         return this.internalDate.toISODate();
     }
 
-    /**
-     * Converts to a JS Date object
-     * @returns the Date object
-     */
+    /** {@inheritDoc IDateWrapper.toJSDate} */
     public toJSDate(): Date {
         return this.internalDate.toJSDate();
     }
 
-    /**
-     * Gives the number of milliseconds since the Unix Epoch as a string.
-     * @returns string representation of the milliseconds since the epoch
-     */
+    /** {@inheritDoc IDateWrapper.fromEpoch} */
     public fromEpoch(): string {
         return this.internalDate.valueOf().toString();
     }
 
-    /**
-     * Gets the year.
-     * @returns Calendar year
-     */
+    /** {@inheritDoc IDateWrapper.year} */
     public year(): number {
         return this.internalDate.year;
     }
 
-    /**
-     * Get the month (1-12).
-     * @returns calendar month.
-     */
+    /** {@inheritDoc IDateWrapper.month} */
     public month(): number {
         return this.internalDate.month;
     }
 
-    /**
-     * Get the days.
-     * @returns Calendar day
-     */
+    /** {@inheritDoc IDateWrapper.day} */
     public day(): number {
         return this.internalDate.day;
     }
 
-    /**
-     * Gets the milliseconds (not epoch)
-     * @returns milliseconds from the second
-     */
+    /** {@inheritDoc IDateWrapper.millisecond} */
     public millisecond(): number {
         return this.internalDate.millisecond;
     }
 
-    /**
-     * Returns the weekday 0-6 (sunday is 0)
-     * @returns day of the week (0-6)
-     */
+    /** {@inheritDoc IDateWrapper.weekday} */
     public weekday(): number {
         const weekday = this.internalDate.weekday;
         // luxor weekdays are 1-7 where 7 is sunday
@@ -253,22 +366,12 @@ export class DateWrapper {
         }
     }
 
-    /**
-     * Difference between two Dates in milliseconds
-     * @param other Other date to compare to
-     * @param unit (optional) unit of comparision (year, hour, minute, second...)
-     * @returns the difference with the Duration object
-     */
+    /** {@inheritDoc IDateWrapper.diff} */
     public diff(other: DateWrapper, unit?: DurationUnit): Duration {
         return this.internalDate.diff(other.internalDate, unit);
     }
 
-    /**
-     * Checks if two dates are the same. Can use a provided unit of time.
-     * @param other Date to compare against
-     * @param unit (optional) Unit of time to compare
-     * @returns True if they are the same date, false otherwise
-     */
+    /** {@inheritDoc IDateWrapper.isSame} */
     public isSame(other: DateWrapper, unit?: DurationUnit): boolean {
         if (unit) {
             return this.internalDate.hasSame(other.internalDate, unit);
@@ -279,76 +382,45 @@ export class DateWrapper {
         }
     }
 
-    /**
-     * Checks if this date is before the parameter date
-     * @param other Date to compare against
-     * @returns True if this date is before passed date, false otherwise.
-     */
+    /** {@inheritDoc IDateWrapper.isBefore} */
     public isBefore(other: DateWrapper): boolean {
         return this.internalDate.toMillis() < other.internalDate.toMillis();
     }
 
-    /**
-     * Checks if this date is before or same the parameter date
-     * @param other Date to compare against
-     * @returns True if this date is before or same as passed date, false otherwise.
-     */
+    /** {@inheritDoc IDateWrapper.isBeforeOrSame} */
     public isBeforeOrSame(other: DateWrapper): boolean {
         return this.internalDate.toMillis() <= other.internalDate.toMillis();
     }
 
-    /**
-     * Checks if this date is after the parameter date
-     * @param other Date to compare against
-     * @returns True if this date is after the passed date, false otherwise
-     */
+    /** {@inheritDoc IDateWrapper.isAfter} */
     public isAfter(other: DateWrapper): boolean {
         return this.internalDate.toMillis() > other.internalDate.toMillis();
     }
 
-    /**
-     * Checks if this date is after or same the parameter date
-     * @param other Date to compare against
-     * @returns True if this date is after or same as the passed date, false otherwise
-     */
+    /** {@inheritDoc IDateWrapper.isAfterOrSame} */
     public isAfterOrSame(other: DateWrapper): boolean {
         return this.internalDate.toMillis() >= other.internalDate.toMillis();
     }
 
-    /**
-     * Gives the start of the date for the given unit.
-     * @param unit the unit of time (day, month, year ...)
-     * @returns a date with the given start.
-     */
+    /** {@inheritDoc IDateWrapper.startOf} */
     public startOf(unit: DurationUnit): DateWrapper {
         const temp_date = this.internalDate.startOf(unit);
         return new DateWrapper(temp_date);
     }
 
-    /**
-     * Substracts a duration from this date.
-     * @param duration The duration as a unit or object
-     * @returns the calculated date
-     */
-    public subtract(unit: Duration | number | DurationObject): DateWrapper {
-        const temp_date = this.internalDate.minus(unit);
+    /** {@inheritDoc IDateWrapper.subtract} */
+    public subtract(duration: Duration | number | DurationObject): DateWrapper {
+        const temp_date = this.internalDate.minus(duration);
         return new DateWrapper(temp_date);
     }
 
-    /**
-     * Adds a duration to this date.
-     * @param duration The duration as a unit or object
-     * @returns the calculated date
-     */
+    /** {@inheritDoc IDateWrapper.add} */
     public add(duration: Duration | number | DurationObject): DateWrapper {
         const temp_date = this.internalDate.plus(duration);
         return new DateWrapper(temp_date);
     }
 
-    /**
-     * Checks if the date is in DST.
-     * @returns True if the date is in DST, false otherwise.
-     */
+    /** {@inheritDoc IDateWrapper.isInDST} */
     public isInDST(): boolean {
         return this._internal_date.isInDST;
     }

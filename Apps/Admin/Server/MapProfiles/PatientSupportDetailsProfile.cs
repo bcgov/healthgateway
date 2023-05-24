@@ -20,6 +20,7 @@ namespace HealthGateway.Admin.Server.MapProfiles
     using AutoMapper;
     using HealthGateway.AccountDataAccess.Patient;
     using HealthGateway.Admin.Common.Models;
+    using Name = HealthGateway.AccountDataAccess.Patient.Name;
 
     /// <summary>
     /// An AutoMapper profile class which defines a mapping between a data access model and data transfer object.
@@ -31,7 +32,7 @@ namespace HealthGateway.Admin.Server.MapProfiles
         /// </summary>
         public PatientSupportDetailsProfile()
         {
-            this.CreateMap<PatientModel?, PatientSupportDetails>()
+            this.CreateMap<PatientModel?, PatientSupportResult>()
                 .ForMember(dest => dest.WarningMessage, opt => opt.MapFrom(src => src == null ? null : GetWarningFromResponseCode(src.ResponseCode)))
                 .ForMember(dest => dest.WarningMessage, opt => opt.NullSubstitute(string.Empty))
                 .ForMember(dest => dest.Hdid, opt => opt.NullSubstitute(string.Empty))
@@ -41,7 +42,7 @@ namespace HealthGateway.Admin.Server.MapProfiles
                 .ForMember(dest => dest.ProfileCreatedDateTime, opt => opt.Ignore())
                 .ForMember(dest => dest.ProfileLastLoginDateTime, opt => opt.Ignore());
 
-            this.CreateMap<AccountDataAccess.Patient.Name, Common.Models.Name>();
+            this.CreateMap<Name, Common.Models.Name>();
         }
 
         private static string? GetWarningFromResponseCode(string? responseCode)

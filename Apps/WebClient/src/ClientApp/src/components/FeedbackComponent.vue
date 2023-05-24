@@ -1,4 +1,4 @@
-<script lang="ts">
+<script setup lang="ts">
 import { IconDefinition, library } from "@fortawesome/fontawesome-svg-core";
 import {
     faCheckCircle as farCheckCircle,
@@ -9,9 +9,8 @@ import {
     faComments,
     faExclamationCircle,
 } from "@fortawesome/free-solid-svg-icons";
-import Vue from "vue";
-import { Component, Watch } from "vue-property-decorator";
-import { Action, Getter } from "vuex-class";
+import { computed, ref, watch } from "vue";
+import { useStore } from "vue-composition-wrapper";
 
 import { ResultError } from "@/models/errors";
 import User from "@/models/user";
@@ -21,119 +20,101 @@ import { IUserFeedbackService } from "@/services/interfaces";
 
 library.add(faAngleDown, faComments, faExclamationCircle);
 
-@Component
-export default class FeedbackComponent extends Vue {
-    @Action("setTooManyRequestsError", { namespace: "errorBanner" })
-    setTooManyRequestsError!: (params: { key: string }) => void;
+const userFeedbackService = container.get<IUserFeedbackService>(
+    SERVICE_IDENTIFIER.UserFeedbackService
+);
+const store = useStore();
 
-    @Action("toggleSidebar", { namespace: "navbar" })
-    toggleSidebar!: () => void;
+const comment = ref("");
+const visible = ref(false);
+const hasSubmitted = ref(false);
+const isSuccess = ref(false);
+const isLoading = ref(false);
 
-    @Getter("isSidebarOpen", { namespace: "navbar" })
-    isSidebarOpen!: boolean;
+const isSidebarOpen = computed<boolean>(
+    () => store.getters["navbar/isSidebarOpen"]
+);
+const isSidebarAnimating = computed<boolean>(
+    () => store.getters["navbar/isSidebarAnimating"]
+);
+const user = computed<User>(() => store.getters["user/user"]);
 
-    @Getter("isSidebarAnimating", { namespace: "navbar" })
-    isSidebarAnimating!: boolean;
-
-    @Getter("user", { namespace: "user" })
-    user!: User;
-
-    private comment = "";
-
-    private visible = false;
-    private hasSubmitted = false;
-    private isSuccess = false;
-    private isLoading = false;
-    private userFeedbackService!: IUserFeedbackService;
-
-    private get isSidebarFullyOpen(): boolean {
-        return this.isSidebarOpen && !this.isSidebarAnimating;
+const isSidebarFullyOpen = computed<boolean>(
+    () => isSidebarOpen.value && !isSidebarAnimating.value
+);
+const feedbackMaximized = computed<boolean>(
+    () => isSidebarFullyOpen.value && visible.value
+);
+const hasEmail = computed<boolean>(
+    () => user.value.verifiedEmail && user.value.hasEmail
+);
+const isValid = computed<boolean>(() => comment.value.length > 1);
+const resultTitle = computed<string>(() => {
+    if (hasSubmitted.value) {
+        return isSuccess.value ? "Awesome!" : "Oh no!";
     }
 
-    private get feedbackMaximized(): boolean {
-        return this.isSidebarFullyOpen && this.visible;
+    return "";
+});
+const resultIcon = computed<IconDefinition>(() =>
+    isSuccess.value ? farCheckCircle : farTimesCircle
+);
+const resultDescription = computed<string>(() => {
+    if (hasSubmitted.value) {
+        return isSuccess.value
+            ? "Your message has been sent successfully!"
+            : "Your message could not be sent out!";
     }
 
-    private get isValid(): boolean {
-        return this.comment.length > 1;
-    }
+    return "";
+});
 
-    private get resultTitle(): string {
-        if (this.hasSubmitted) {
-            return this.isSuccess ? "Awesome!" : "Oh no!";
-        }
+function setTooManyRequestsError(key: string): void {
+    store.dispatch("errorBanner/setTooManyRequestsError", { key });
+}
 
-        return "";
-    }
-
-    private get resultIcon(): IconDefinition {
-        return this.isSuccess ? farCheckCircle : farTimesCircle;
-    }
-
-    private get resultDescription(): string {
-        if (this.hasSubmitted) {
-            return this.isSuccess
-                ? "Your message has been sent successfully!"
-                : "Your Message could not be sent out!";
-        }
-
-        return "";
-    }
-
-    private get hasEmail(): boolean {
-        return this.user.verifiedEmail && this.user.hasEmail;
-    }
-
-    @Watch("isSidebarOpen")
-    private onIsSidebarOpen(newValue: boolean): void {
-        // Make sure it closes if the sidebar is closing and reset state
-        if (!newValue) {
-            this.resetFeedback();
-        }
-    }
-
-    private created(): void {
-        this.userFeedbackService = container.get(
-            SERVICE_IDENTIFIER.UserFeedbackService
-        );
-    }
-
-    private toggleExpanded(): void {
-        this.visible = !this.visible;
-        if (!this.isSidebarOpen) {
-            this.toggleSidebar();
-        }
-    }
-
-    private onSubmit(): void {
-        this.isLoading = true;
-
-        this.userFeedbackService
-            .submitFeedback(this.user.hdid, {
-                comment: this.comment,
-            })
-            .then((result) => {
-                this.isSuccess = result;
-            })
-            .catch((err: ResultError) => {
-                if (err.statusCode === 429) {
-                    this.setTooManyRequestsError({ key: "page" });
-                }
-                this.isSuccess = false;
-            })
-            .finally(() => {
-                this.hasSubmitted = true;
-                this.isLoading = false;
-            });
-    }
-
-    private resetFeedback(): void {
-        this.visible = false;
-        this.hasSubmitted = false;
-        this.isSuccess = false;
-        this.comment = "";
+function toggleExpanded(): void {
+    visible.value = !visible.value;
+    if (!isSidebarOpen.value) {
+        store.dispatch("navbar/toggleSidebar");
     }
 }
+
+function onSubmit(): void {
+    isLoading.value = true;
+
+    userFeedbackService
+        .submitFeedback(user.value.hdid, {
+            comment: comment.value,
+        })
+        .then((result) => {
+            isSuccess.value = result;
+        })
+        .catch((err: ResultError) => {
+            if (err.statusCode === 429) {
+                setTooManyRequestsError("page");
+            }
+            isSuccess.value = false;
+        })
+        .finally(() => {
+            hasSubmitted.value = true;
+            isLoading.value = false;
+        });
+}
+
+function resetFeedback(): void {
+    visible.value = false;
+    hasSubmitted.value = false;
+    isSuccess.value = false;
+    comment.value = "";
+}
+
+watch(isSidebarOpen, (newValue: boolean) => {
+    // Make sure it closes if the sidebar is closing and reset state
+    if (!newValue) {
+        resetFeedback();
+    }
+});
 </script>
 
 <template>

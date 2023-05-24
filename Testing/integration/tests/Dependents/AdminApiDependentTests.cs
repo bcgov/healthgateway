@@ -42,8 +42,8 @@ public class AdminApiDependentTests : ScenarioContextBase<Program>
                     .ToUrl($"/v1/api/delegation/{dependentHdid}/ProtectDependent");
             });
 
-        var response = (await scenarioResponse.ReadAsJsonAsync<DelegationChange>()).ShouldNotBeNull();
-        response.DependentHdId.ShouldBe(dependentHdid);
+        var response = (await scenarioResponse.ReadAsJsonAsync<AgentAction>()).ShouldNotBeNull();
+        response.Hdid.ShouldBe(dependentHdid);
 
         await this.Assert(async ctx =>
         {
@@ -64,8 +64,8 @@ public class AdminApiDependentTests : ScenarioContextBase<Program>
                 .ToUrl($"/v1/api/delegation/{dependentHdid}/UnprotectDependent");
         });
 
-        var response = (await scenarioResponse.ReadAsJsonAsync<DelegationChange>()).ShouldNotBeNull();
-        response.DependentHdId.ShouldBe(dependentHdid);
+        var response = (await scenarioResponse.ReadAsJsonAsync<AgentAction>()).ShouldNotBeNull();
+        response.Hdid.ShouldBe(dependentHdid);
 
         await this.Assert(async ctx =>
         {

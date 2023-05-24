@@ -21,6 +21,7 @@ namespace HealthGateway.Admin.Client.Pages
     using System.Threading.Tasks;
     using Fluxor;
     using Fluxor.Blazor.Web.Components;
+    using HealthGateway.Admin.Client.Components.AgentAudit;
     using HealthGateway.Admin.Client.Components.Delegation;
     using HealthGateway.Admin.Client.Models;
     using HealthGateway.Admin.Client.Store.Delegation;
@@ -75,7 +76,7 @@ namespace HealthGateway.Admin.Client.Pages
 
         private DependentInfo? Dependent => this.DelegationState.Value.Dependent;
 
-        private IEnumerable<DelegationChange> DelegationChanges => this.DelegationState.Value.DelegationChanges;
+        private IEnumerable<AgentAction> AgentActions => this.DelegationState.Value.AgentActions;
 
         private IEnumerable<ExtendedDelegateInfo> Delegates => this.DelegationState.Value.Delegates;
 
@@ -117,10 +118,25 @@ namespace HealthGateway.Admin.Client.Pages
             const string title = "Confirm Update";
             DialogParameters parameters = new()
             {
-                [nameof(DelegationConfirmationDialog.Type)] = DelegationConfirmationDialog.ConfirmationType.Protect,
+                ["AuditableAction"] = new DelegationActions.ProtectDependentAction(),
+                ["CancelAction"] = new DelegationActions.ClearProtectErrorAction(),
             };
-            DialogOptions options = new() { DisableBackdropClick = true, FullWidth = true, MaxWidth = MaxWidth.ExtraSmall };
-            IDialogReference dialog = await this.Dialog.ShowAsync<DelegationConfirmationDialog>(title, parameters, options).ConfigureAwait(true);
+            DialogOptions options = new()
+            {
+                DisableBackdropClick = true,
+                FullWidth = true,
+                MaxWidth = MaxWidth.ExtraSmall,
+            };
+
+            IDialogReference dialog = await this.Dialog
+                .ShowAsync<AuditReasonDialog<
+                    DelegationActions.ProtectDependentAction,
+                    DelegationActions.ProtectDependentFailAction,
+                    DelegationActions.ProtectDependentSuccessAction>>(
+                    title,
+                    parameters,
+                    options)
+                .ConfigureAwait(true);
 
             DialogResult result = await dialog.Result.ConfigureAwait(true);
             if (!result.Canceled)

@@ -14,11 +14,12 @@
 // limitations under the License.
 //-------------------------------------------------------------------------
 
-namespace HealthGateway.Admin.Client.Store.MessageVerification
+namespace HealthGateway.Admin.Client.Store.PatientDetails
 {
-    using System.Collections.Generic;
     using System.Collections.Immutable;
     using Fluxor;
+    using HealthGateway.Admin.Common.Models;
+    using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ViewModels;
 
     /// <summary>
@@ -26,11 +27,26 @@ namespace HealthGateway.Admin.Client.Store.MessageVerification
     /// State should be decorated with [FeatureState] for automatic discovery when services.AddFluxor is called.
     /// </summary>
     [FeatureState]
-    public record MessageVerificationState : BaseRequestState<RequestResult<IEnumerable<MessagingVerificationModel>>>
+    public record PatientDetailsState : BaseRequestState<PatientSupportDetails>
     {
         /// <summary>
-        /// Gets the collection of data.
+        /// Gets the message verifications linked to the patient support details.
         /// </summary>
-        public ImmutableList<MessagingVerificationModel>? Data { get; init; }
+        public ImmutableList<MessagingVerificationModel>? MessagingVerifications { get; init; }
+
+        /// <summary>
+        /// Gets the agent actions linked to the patient support details.
+        /// </summary>
+        public ImmutableList<AgentAction>? AgentActions { get; init; }
+
+        /// <summary>
+        /// Gets the blocked data sources linked to the patient support details.
+        /// </summary>
+        public ImmutableList<DataSource>? BlockedDataSources { get; init; }
+
+        /// <summary>
+        /// Gets the request state for block access requests.
+        /// </summary>
+        public BaseRequestState BlockAccess { get; init; } = new();
     }
 }

@@ -49,7 +49,7 @@ namespace HealthGateway.Admin.Client.Store.Delegation
                     Error = null,
                 },
                 Dependent = action.Dependent,
-                DelegationChanges = action.DelegationChanges.OrderByDescending(c => c.TransactionDateTime).ToImmutableList(),
+                AgentActions = action.AgentActions.OrderByDescending(c => c.TransactionDateTime).ToImmutableList(),
                 Delegates = action.Delegates.ToImmutableList(),
             };
         }
@@ -182,7 +182,7 @@ namespace HealthGateway.Admin.Client.Store.Delegation
                     Error = null,
                 },
                 Dependent = dependent,
-                DelegationChanges = state.DelegationChanges.Insert(0, action.DelegationChange),
+                AgentActions = state.AgentActions.Insert(0, action.AgentAction),
                 Delegates = state.Delegates
                     .Where(d => d.StagedDelegationStatus is not DelegationStatus.Disallowed)
                     .Select(
@@ -237,7 +237,7 @@ namespace HealthGateway.Admin.Client.Store.Delegation
                     Error = null,
                 },
                 Dependent = dependent,
-                DelegationChanges = state.DelegationChanges.Insert(0, action.DelegationChange),
+                AgentActions = state.AgentActions.Insert(0, action.AgentAction),
                 Delegates = state.Delegates
                     .Where(d => d.DelegationStatus is not DelegationStatus.Allowed)
                     .ToImmutableList(),
@@ -323,7 +323,7 @@ namespace HealthGateway.Admin.Client.Store.Delegation
                 Protect = new(),
                 Unprotect = new(),
                 Dependent = null,
-                DelegationChanges = ImmutableList<DelegationChange>.Empty,
+                AgentActions = ImmutableList<AgentAction>.Empty,
                 Delegates = ImmutableList<ExtendedDelegateInfo>.Empty,
                 InEditMode = false,
             };

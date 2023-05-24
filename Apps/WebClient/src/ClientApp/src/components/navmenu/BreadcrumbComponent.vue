@@ -1,15 +1,8 @@
 <script setup lang="ts">
 import { computed } from "vue";
+import { useStore } from "vue-composition-wrapper";
 
 import BreadcrumbItem from "@/models/breadcrumbItem";
-import container from "@/plugins/container";
-import { STORE_IDENTIFIER } from "@/plugins/inversify";
-import { IStoreProvider } from "@/services/interfaces";
-
-const storeProvider = container.get<IStoreProvider>(
-    STORE_IDENTIFIER.StoreProvider
-);
-const store = storeProvider.getStore();
 
 interface Props {
     items?: BreadcrumbItem[];
@@ -23,6 +16,8 @@ const homeBreadcrumbItem: BreadcrumbItem = {
     to: "/home",
     dataTestId: "breadcrumb-home",
 };
+
+const store = useStore();
 
 const isAuthenticated = computed(
     () => store.getters["auth/oidcIsAuthenticated"]

@@ -1,79 +1,64 @@
-<script lang="ts">
+<script setup lang="ts">
 import { library } from "@fortawesome/fontawesome-svg-core";
 import {
     faCheckCircle,
     faTimesCircle,
 } from "@fortawesome/free-solid-svg-icons";
-import Vue from "vue";
-import { Component, Prop } from "vue-property-decorator";
-import { Action, Getter } from "vuex-class";
+import { computed, onMounted, ref } from "vue";
+import { useStore } from "vue-composition-wrapper";
 
 import { ResultType } from "@/constants/resulttype";
 import RequestResult from "@/models/requestResult";
-import User from "@/models/user";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ILogger } from "@/services/interfaces";
 
 library.add(faCheckCircle, faTimesCircle);
 
-@Component
-export default class ValidateEmailView extends Vue {
-    @Prop()
-    inviteKey!: string;
-
-    @Action("validateEmail", { namespace: "user" })
-    validateEmail!: (params: {
-        inviteKey: string;
-    }) => Promise<RequestResult<boolean>>;
-
-    @Getter("user", { namespace: "user" })
-    user!: User;
-
-    private logger!: ILogger;
-    private isLoading = true;
-    private validatedValue?: boolean;
-    private resultStatus?: ResultType;
-
-    private get isVerified(): boolean {
-        return (
-            this.resultStatus === ResultType.Success &&
-            this.validatedValue === true
-        );
-    }
-
-    private get isAlreadyVerified(): boolean {
-        return (
-            this.resultStatus === ResultType.Error &&
-            this.validatedValue === true
-        );
-    }
-
-    private get validationFailed(): boolean {
-        return this.validatedValue === false;
-    }
-
-    private mounted(): void {
-        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-
-        this.verifyEmail();
-    }
-
-    private verifyEmail(): void {
-        this.isLoading = true;
-        this.validateEmail({ inviteKey: this.inviteKey })
-            .then((result) => {
-                this.validatedValue = result.resourcePayload;
-                this.resultStatus = result.resultStatus;
-            })
-            .catch(() => {
-                this.logger.error("Error while validating email.");
-            })
-            .finally(() => {
-                this.isLoading = false;
-            });
-    }
+interface Props {
+    inviteKey: string;
 }
+const props = defineProps<Props>();
+
+const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+const store = useStore();
+
+const isLoading = ref(true);
+const validationPayload = ref<boolean>();
+const resultStatus = ref<ResultType>();
+
+const isVerified = computed(
+    () =>
+        resultStatus.value === ResultType.Success &&
+        validationPayload.value === true
+);
+
+const isAlreadyVerified = computed(
+    () =>
+        resultStatus.value === ResultType.Error &&
+        validationPayload.value === true
+);
+
+const validationFailed = computed(() => validationPayload.value === false);
+
+function validateEmail(inviteKey: string): Promise<RequestResult<boolean>> {
+    return store.dispatch("user/validateEmail", { inviteKey });
+}
+
+function verifyEmail(): void {
+    isLoading.value = true;
+    validateEmail(props.inviteKey)
+        .then((result) => {
+            validationPayload.value = result.resourcePayload;
+            resultStatus.value = result.resultStatus;
+        })
+        .catch(() => logger.error("Error while validating email."))
+        .finally(() => (isLoading.value = false));
+}
+
+onMounted(() => {
+    verifyEmail();
+});
 </script>
 
 <template>

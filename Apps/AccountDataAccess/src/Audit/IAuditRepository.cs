@@ -13,25 +13,34 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Admin.Server.MapProfiles
+namespace HealthGateway.AccountDataAccess.Audit
 {
-    using AutoMapper;
-    using HealthGateway.Admin.Common.Models;
+    using System.Collections.Generic;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using HealthGateway.Common.Data.Constants;
     using HealthGateway.Database.Models;
 
     /// <summary>
-    /// An AutoMapper profile class which defines mapping between dependent audit and delegation change models.
+    /// Represents the audit source to determine what to query.
     /// </summary>
-    public class DelegationChangeProfile : Profile
+    public interface IAuditRepository
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="DelegationChangeProfile"/> class.
+        /// Gets the agent audits.
         /// </summary>
-        public DelegationChangeProfile()
-        {
-            this.CreateMap<DependentAudit, DelegationChange>()
-                .ForMember(dest => dest.DependentHdId, opt => opt.MapFrom(src => src.HdId))
-                .ForMember(dest => dest.Reason, opt => opt.MapFrom(src => src.ProtectedReason));
-        }
+        /// <param name="query">The query.</param>
+        /// <param name="ct">The cancellation token.</param>
+        /// <returns>The list of agent audits..</returns>
+        Task<IEnumerable<AgentAudit>> Handle(AgentAuditQuery query, CancellationToken ct = default);
     }
+
+    /// <summary>
+    /// The agent change query.
+    /// </summary>
+    /// <param name="Hdid">The hdid to search.</param>
+    /// <param name="Group">The group to search.</param>
+    public record AgentAuditQuery(
+        string Hdid,
+        AuditGroup? Group = null);
 }

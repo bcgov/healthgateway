@@ -15,7 +15,6 @@ import { Action, Getter } from "vuex-class";
 
 import LoadingComponent from "@/components/LoadingComponent.vue";
 import HgDateDropdownComponent from "@/components/shared/HgDateDropdownComponent.vue";
-import HgTimeDropdownComponent from "@/components/shared/HgTimeDropdownComponent.vue";
 import { ActionType } from "@/constants/actionType";
 import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import { PcrDataSource } from "@/constants/pcrTestDataSource";
@@ -44,7 +43,6 @@ const options: any = {
     components: {
         LoadingComponent,
         "hg-date-dropdown": HgDateDropdownComponent,
-        "hg-time-dropdown": HgTimeDropdownComponent,
     },
 };
 

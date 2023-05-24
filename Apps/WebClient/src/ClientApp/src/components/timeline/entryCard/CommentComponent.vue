@@ -1,9 +1,8 @@
-<script lang="ts">
+<script setup lang="ts">
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faEllipsisV } from "@fortawesome/free-solid-svg-icons";
-import Vue from "vue";
-import { Component, Prop } from "vue-property-decorator";
-import { Action, Getter } from "vuex-class";
+import { computed, ref } from "vue";
+import { useStore } from "vue-composition-wrapper";
 
 import { DateWrapper } from "@/models/dateWrapper";
 import User from "@/models/user";
@@ -14,86 +13,81 @@ import { ILogger } from "@/services/interfaces";
 
 library.add(faEllipsisV);
 
-@Component
-export default class CommentComponent extends Vue {
-    @Prop() comment!: UserComment;
+interface Props {
+    comment: UserComment;
+}
+const props = defineProps<Props>();
 
-    @Getter("user", { namespace: "user" }) user!: User;
+const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+const store = useStore();
 
-    @Action("updateComment", { namespace: "comment" })
-    updateComment!: (params: {
-        hdid: string;
-        comment: UserComment;
-    }) => Promise<UserComment>;
+const commentInput = ref("");
+const isEditMode = ref(false);
+const isLoading = ref(false);
 
-    @Action("deleteComment", { namespace: "comment" })
-    deleteComment!: (params: {
-        hdid: string;
-        comment: UserComment;
-    }) => Promise<void>;
+const user = computed<User>(() => store.getters["user/user"]);
 
-    private commentInput = "";
-    private logger!: ILogger;
-    private isEditMode = false;
-    private isLoading = false;
+function updateComment(
+    hdid: string,
+    comment: UserComment
+): Promise<UserComment> {
+    return store.dispatch("comment/updateComment", { hdid, comment });
+}
 
-    private created(): void {
-        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-    }
+function deleteComment(hdid: string, comment: UserComment): Promise<void> {
+    return store.dispatch("comment/deleteComment", { hdid, comment });
+}
 
-    private formatDate(date: string): string {
-        return new DateWrapper(date, { isUtc: true }).format("yyyy-MMM-dd, t");
-    }
+function formatDate(date: string): string {
+    return new DateWrapper(date, { isUtc: true }).format("yyyy-MMM-dd, t");
+}
 
-    private onSubmit(): void {
-        this.confirmUpdate();
-    }
+function onSubmit(): void {
+    confirmUpdate();
+}
 
-    private onCancel(): void {
-        this.isEditMode = false;
-    }
+function onCancel(): void {
+    isEditMode.value = false;
+}
 
-    private editComment(): void {
-        this.commentInput = this.comment.text;
-        this.isEditMode = true;
-    }
+function editComment(): void {
+    commentInput.value = props.comment.text;
+    isEditMode.value = true;
+}
 
-    private confirmUpdate(): void {
-        this.isLoading = true;
-        this.updateComment({
-            hdid: this.user.hdid,
-            comment: {
-                id: this.comment.id,
-                text: this.commentInput,
-                userProfileId: this.comment.userProfileId,
-                parentEntryId: this.comment.parentEntryId,
-                createdDateTime: this.comment.createdDateTime,
-                entryTypeCode: this.comment.entryTypeCode,
-                version: this.comment.version,
-            },
+function confirmUpdate(): void {
+    isLoading.value = true;
+    const comment: UserComment = {
+        id: props.comment.id,
+        text: commentInput.value,
+        userProfileId: props.comment.userProfileId,
+        parentEntryId: props.comment.parentEntryId,
+        createdDateTime: props.comment.createdDateTime,
+        entryTypeCode: props.comment.entryTypeCode,
+        version: props.comment.version,
+    };
+    updateComment(user.value.hdid, comment)
+        .then(() => {
+            logger.info("Comment Updated");
+            isEditMode.value = false;
         })
-            .then(() => {
-                this.logger.info("Comment Updated");
-                this.isEditMode = false;
-            })
+        .catch((err) => {
+            logger.error(JSON.stringify(err));
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        })
+        .finally(() => (isLoading.value = false));
+}
+
+function removeComment(): void {
+    if (confirm("Are you sure you want to delete this comment?")) {
+        isLoading.value = true;
+        deleteComment(user.value.hdid, props.comment)
+            .then(() => logger.info("Comment removed"))
             .catch((err) => {
-                this.logger.error(JSON.stringify(err));
+                logger.error(JSON.stringify(err));
                 window.scrollTo({ top: 0, behavior: "smooth" });
             })
-            .finally(() => (this.isLoading = false));
-    }
-
-    private removeComment(): void {
-        if (confirm("Are you sure you want to delete this comment?")) {
-            this.isLoading = true;
-            this.deleteComment({ hdid: this.user.hdid, comment: this.comment })
-                .then(() => this.logger.info("Comment removed"))
-                .catch((err) => {
-                    this.logger.error(JSON.stringify(err));
-                    window.scrollTo({ top: 0, behavior: "smooth" });
-                })
-                .finally(() => (this.isLoading = false));
-        }
+            .finally(() => (isLoading.value = false));
     }
 }
 </script>

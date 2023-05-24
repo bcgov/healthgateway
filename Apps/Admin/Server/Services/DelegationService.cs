@@ -23,6 +23,7 @@ namespace HealthGateway.Admin.Server.Services
     using System.Threading.Tasks;
     using AutoMapper;
     using FluentValidation.Results;
+    using HealthGateway.AccountDataAccess.Audit;
     using HealthGateway.Admin.Common.Constants;
     using HealthGateway.Admin.Common.Models;
     using HealthGateway.Admin.Server.Validations;
@@ -52,6 +53,7 @@ namespace HealthGateway.Admin.Server.Services
         private readonly IDelegationDelegate delegationDelegate;
         private readonly IAuthenticationDelegate authenticationDelegate;
         private readonly IMessageSender messageSender;
+        private readonly IAuditRepository auditRepository;
         private readonly IMapper autoMapper;
         private readonly int maxDependentAge;
         private readonly int minDelegateAge;
@@ -66,6 +68,7 @@ namespace HealthGateway.Admin.Server.Services
         /// <param name="delegationDelegate">The injected delegation delegate.</param>
         /// <param name="authenticationDelegate">The injected authentication delegate.</param>
         /// <param name="messageSender">The change feed message sender</param>
+        /// <param name="auditRepository">The injected agent audit repository.</param>
         /// <param name="autoMapper">The injected automapper provider.</param>
         public DelegationService(
             IConfiguration configuration,
@@ -74,12 +77,14 @@ namespace HealthGateway.Admin.Server.Services
             IDelegationDelegate delegationDelegate,
             IAuthenticationDelegate authenticationDelegate,
             IMessageSender messageSender,
+            IAuditRepository auditRepository,
             IMapper autoMapper)
         {
             this.patientService = patientService;
             this.resourceDelegateDelegate = resourceDelegateDelegate;
             this.delegationDelegate = delegationDelegate;
             this.authenticationDelegate = authenticationDelegate;
+            this.auditRepository = auditRepository;
             this.messageSender = messageSender;
             this.autoMapper = autoMapper;
             this.maxDependentAge = configuration.GetSection(DelegationConfigSection).GetValue(MaxDependentAgeKey, 12);
@@ -88,13 +93,13 @@ namespace HealthGateway.Admin.Server.Services
         }
 
         /// <inheritdoc/>
-        public async Task<DelegationInfo> GetDelegationInformationAsync(string phn)
+        public async Task<DelegationInfo> GetDelegationInformationAsync(string phn, CancellationToken ct = default)
         {
             // Get dependent patient information
             RequestResult<PatientModel> dependentPatientResult = await this.patientService.GetPatient(phn, PatientIdentifierType.Phn);
             this.ValidatePatientResult(dependentPatientResult);
 
-            ValidationResult? validationResults = await new DependentPatientValidator(this.maxDependentAge).ValidateAsync(dependentPatientResult.ResourcePayload);
+            ValidationResult? validationResults = await new DependentPatientValidator(this.maxDependentAge).ValidateAsync(dependentPatientResult.ResourcePayload, ct).ConfigureAwait(true);
             if (!validationResults.IsValid)
             {
                 throw new ProblemDetailsException(
@@ -141,9 +146,10 @@ namespace HealthGateway.Admin.Server.Services
 
                 delegationInfo.Delegates = delegates;
 
-                // Get dependent audits
-                IEnumerable<DependentAudit> dependentAudits = await this.delegationDelegate.GetDependentAuditsAsync(dependentPatientInfo.HdId);
-                delegationInfo.DelegationChanges = dependentAudits.Select(da => this.autoMapper.Map<DelegationChange>(da));
+                // Get agent audits
+                AgentAuditQuery agentAuditQuery = new(dependentPatientInfo.HdId, AuditGroup.Dependent);
+                IEnumerable<AgentAudit> agentAudits = await this.auditRepository.Handle(agentAuditQuery, ct).ConfigureAwait(true);
+                delegationInfo.AgentActions = agentAudits.Select(a => this.autoMapper.Map<AgentAction>(a));
             }
 
             return delegationInfo;
@@ -166,7 +172,7 @@ namespace HealthGateway.Admin.Server.Services
         }
 
         /// <inheritdoc/>
-        public async Task<DelegationChange> ProtectDependentAsync(string dependentHdid, IEnumerable<string> delegateHdids, string reason, CancellationToken ct = default)
+        public async Task<AgentAction> ProtectDependentAsync(string dependentHdid, IEnumerable<string> delegateHdids, string reason, CancellationToken ct = default)
         {
             string authenticatedUserId = this.authenticationDelegate.FetchAuthenticatedUserId() ?? UserId.DefaultUser;
             Dependent? dependent = await this.delegationDelegate.GetDependentAsync(dependentHdid, true);
@@ -175,11 +181,12 @@ namespace HealthGateway.Admin.Server.Services
             dependent.Protected = true;
             dependent.UpdatedBy = authenticatedUserId;
 
-            DependentAudit dependentAudit = new()
+            AgentAudit agentAudit = new()
             {
-                HdId = dependentHdid,
-                ProtectedReason = reason,
-                OperationCode = DependentAuditOperation.Protect,
+                Hdid = dependentHdid,
+                Reason = reason,
+                OperationCode = AuditOperation.ProtectDependent,
+                GroupCode = AuditGroup.Dependent,
                 AgentUsername = this.authenticationDelegate.FetchAuthenticatedPreferredUsername() ?? authenticatedUserId,
                 TransactionDateTime = DateTime.UtcNow,
                 CreatedBy = authenticatedUserId,
@@ -221,7 +228,7 @@ namespace HealthGateway.Admin.Server.Services
             // Update dependent, allow delegation and resource delegate in database
             if (this.changeFeedEnabled)
             {
-                await this.delegationDelegate.UpdateDelegationAsync(dependent, resourceDelegatesToDelete, dependentAudit, false);
+                await this.delegationDelegate.UpdateDelegationAsync(dependent, resourceDelegatesToDelete, agentAudit, false);
                 IEnumerable<MessageEnvelope> events = new MessageEnvelope[]
                 {
                     new(new DependentProtectionAddedEvent(dependentHdid), dependentHdid),
@@ -231,14 +238,14 @@ namespace HealthGateway.Admin.Server.Services
             }
             else
             {
-                await this.delegationDelegate.UpdateDelegationAsync(dependent, resourceDelegatesToDelete, dependentAudit);
+                await this.delegationDelegate.UpdateDelegationAsync(dependent, resourceDelegatesToDelete, agentAudit);
             }
 
-            return this.autoMapper.Map<DependentAudit, DelegationChange>(dependentAudit);
+            return this.autoMapper.Map<AgentAudit, AgentAction>(agentAudit);
         }
 
         /// <inheritdoc/>
-        public async Task<DelegationChange> UnprotectDependentAsync(string dependentHdid, string reason, CancellationToken ct = default)
+        public async Task<AgentAction> UnprotectDependentAsync(string dependentHdid, string reason, CancellationToken ct = default)
         {
             string authenticatedUserId = this.authenticationDelegate.FetchAuthenticatedUserId() ?? UserId.DefaultUser;
             Dependent? dependent = await this.delegationDelegate.GetDependentAsync(dependentHdid, true);
@@ -252,11 +259,12 @@ namespace HealthGateway.Admin.Server.Services
             dependent.UpdatedBy = authenticatedUserId;
             dependent.AllowedDelegations.Clear();
 
-            DependentAudit dependentAudit = new()
+            AgentAudit agentAudit = new()
             {
-                HdId = dependentHdid,
-                ProtectedReason = reason,
-                OperationCode = DependentAuditOperation.Unprotect,
+                Hdid = dependentHdid,
+                Reason = reason,
+                OperationCode = AuditOperation.UnprotectDependent,
+                GroupCode = AuditGroup.Dependent,
                 AgentUsername = this.authenticationDelegate.FetchAuthenticatedPreferredUsername() ?? authenticatedUserId,
                 TransactionDateTime = DateTime.UtcNow,
                 CreatedBy = authenticatedUserId,
@@ -265,7 +273,7 @@ namespace HealthGateway.Admin.Server.Services
 
             if (this.changeFeedEnabled)
             {
-                await this.delegationDelegate.UpdateDelegationAsync(dependent, Enumerable.Empty<ResourceDelegate>(), dependentAudit, false);
+                await this.delegationDelegate.UpdateDelegationAsync(dependent, Enumerable.Empty<ResourceDelegate>(), agentAudit, false);
 
                 MessageEnvelope[] events =
                 {
@@ -276,10 +284,10 @@ namespace HealthGateway.Admin.Server.Services
             }
             else
             {
-                await this.delegationDelegate.UpdateDelegationAsync(dependent, Enumerable.Empty<ResourceDelegate>(), dependentAudit);
+                await this.delegationDelegate.UpdateDelegationAsync(dependent, Enumerable.Empty<ResourceDelegate>(), agentAudit);
             }
 
-            return this.autoMapper.Map<DependentAudit, DelegationChange>(dependentAudit);
+            return this.autoMapper.Map<AgentAudit, AgentAction>(agentAudit);
         }
 
         private async Task<IEnumerable<ResourceDelegate>> SearchDelegates(string ownerHdid)

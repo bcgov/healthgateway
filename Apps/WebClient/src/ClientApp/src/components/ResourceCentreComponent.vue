@@ -1,13 +1,8 @@
-<script lang="ts">
+<script setup lang="ts">
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faQuestion } from "@fortawesome/free-solid-svg-icons";
-import Vue from "vue";
-import { Component } from "vue-property-decorator";
 
 library.add(faQuestion);
-
-@Component
-export default class ResourceCentreComponent extends Vue {}
 </script>
 
 <template>

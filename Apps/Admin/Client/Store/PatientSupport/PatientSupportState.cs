@@ -27,7 +27,7 @@ namespace HealthGateway.Admin.Client.Store.PatientSupport
     /// State should be decorated with [FeatureState] for automatic discovery when services.AddFluxor is called.
     /// </summary>
     [FeatureState]
-    public record PatientSupportState : BaseRequestState<IImmutableList<PatientSupportDetails>>
+    public record PatientSupportState : BaseRequestState<IImmutableList<PatientSupportResult>>
     {
         /// <summary>
         /// Gets the warning messages for display.
