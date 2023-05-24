@@ -1,4 +1,4 @@
-<script lang="ts">
+<script setup lang="ts">
 import { library } from "@fortawesome/fontawesome-svg-core";
 import {
     faBars,
@@ -8,9 +8,8 @@ import {
     faTimes,
     faUser,
 } from "@fortawesome/free-solid-svg-icons";
-import Vue from "vue";
-import { Component, Ref, Watch } from "vue-property-decorator";
-import { Action, Getter } from "vuex-class";
+import { computed, nextTick, onUnmounted, ref, watch } from "vue";
+import { useRoute, useRouter, useStore } from "vue-composition-wrapper";
 
 import AppTourComponent from "@/components/modal/AppTourComponent.vue";
 import RatingComponent from "@/components/modal/RatingComponent.vue";
@@ -24,285 +23,271 @@ import { ILogger } from "@/services/interfaces";
 
 library.add(faBars, faSignInAlt, faSignOutAlt, faTimes, faUser, faLightbulb);
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const options: any = {
-    components: {
-        RatingComponent,
-        AppTourComponent,
-    },
-};
+const store = useStore();
+const route = useRoute();
+const router = useRouter();
 
-@Component(options)
-export default class HeaderComponent extends Vue {
-    @Action("toggleSidebar", { namespace: "navbar" })
-    toggleSidebar!: () => void;
+const isMobileWidth = computed<boolean>(() => store.getters["isMobile"]);
 
-    @Action("setHeaderState", { namespace: "navbar" })
-    setHeaderState!: (isOpen: boolean) => void;
+const isOffline = computed<boolean>(() => store.getters["config/isOffline"]);
 
-    @Getter("isMobile")
-    isMobileWidth!: boolean;
+const config = computed<WebClientConfiguration>(
+    () => store.getters["config/webClient"]
+);
 
-    @Getter("isOffline", { namespace: "config" })
-    isOffline!: boolean;
+const oidcIsAuthenticated = computed<boolean>(
+    () => store.getters["auth/oidcIsAuthenticated"]
+);
 
-    @Getter("webClient", { namespace: "config" })
-    config!: WebClientConfiguration;
+const isValidIdentityProvider = computed<boolean>(
+    () => store.getters["user/isValidIdentityProvider"]
+);
 
-    @Getter("oidcIsAuthenticated", { namespace: "auth" })
-    oidcIsAuthenticated!: boolean;
+const isHeaderShown = computed<boolean>(
+    () => store.getters["navbar/isHeaderShown"]
+);
 
-    @Getter("isValidIdentityProvider", { namespace: "user" })
-    isValidIdentityProvider!: boolean;
+const isSidebarOpen = computed<boolean>(
+    () => store.getters["navbar/isSidebarOpen"]
+);
 
-    @Getter("isHeaderShown", { namespace: "navbar" })
-    isHeaderShown!: boolean;
+const notifications = computed<Notification[]>(
+    () => store.getters["notification/notifications"]
+);
 
-    @Getter("isSidebarOpen", { namespace: "navbar" })
-    isSidebarOpen!: boolean;
+const user = computed<User>(() => store.getters["user/user"]);
 
-    @Getter("notifications", { namespace: "notification" })
-    notifications!: Notification[];
+const userLastLoginDateTime = computed<StringISODateTime | undefined>(
+    () => store.getters["user/lastLoginDateTime"]
+);
 
-    @Getter("user", { namespace: "user" })
-    user!: User;
+const oidcUserInfo = computed<OidcUserInfo | undefined>(
+    () => store.getters["user/oidcUserInfo"]
+);
 
-    @Getter("lastLoginDateTime", { namespace: "user" })
-    userLastLoginDateTime!: StringISODateTime | undefined;
+const userIsRegistered = computed<boolean>(
+    () => store.getters["user/userIsRegistered"]
+);
 
-    @Getter("oidcUserInfo", { namespace: "user" })
-    oidcUserInfo!: OidcUserInfo | undefined;
+const userIsActive = computed<boolean>(
+    () => store.getters["user/userIsActive"]
+);
 
-    @Getter("userIsRegistered", { namespace: "user" })
-    userIsRegistered!: boolean;
+const patientRetrievalFailed = computed<boolean>(
+    () => store.getters["user/patientRetrievalFailed"]
+);
 
-    @Getter("userIsActive", { namespace: "user" })
-    userIsActive!: boolean;
+const ratingComponent = ref<RatingComponent>();
 
-    @Getter("patientRetrievalFailed", { namespace: "user" })
-    patientRetrievalFailed!: boolean;
+const appTourComponent = ref<AppTourComponent>();
 
-    @Ref("ratingComponent")
-    readonly ratingComponent!: RatingComponent;
+const logger: ILogger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
 
-    @Ref("appTourComponent")
-    readonly appTourComponent!: AppTourComponent;
+const sidebarId = "notification-centre-sidebar";
 
-    readonly sidebarId = "notification-centre-sidebar";
-    private logger!: ILogger;
+const lastScrollTop = ref(0);
 
-    private lastScrollTop = 0;
-    private static minimumScrollChange = 2;
-    private notificationButtonClicked = false;
-    private hasViewedTour = false;
+const notificationButtonClicked = ref(false);
 
-    private get userName(): string {
-        if (this.oidcUserInfo === undefined) {
-            return "";
-        }
-        return `${this.oidcUserInfo.given_name} ${this.oidcUserInfo.family_name}`;
+const hasViewedTour = ref(false);
+
+const minimumScrollChange = 2;
+
+const userName = computed<string>(() =>
+    oidcUserInfo.value === undefined
+        ? ""
+        : `${oidcUserInfo.value.given_name} ${oidcUserInfo.value.family_name}`
+);
+
+const userInitials = computed<string>(() => {
+    const first = oidcUserInfo.value?.given_name;
+    const last = oidcUserInfo.value?.family_name;
+    if (first && last) {
+        return first.charAt(0) + last.charAt(0);
+    } else if (first) {
+        return first.charAt(0);
+    } else if (last) {
+        return last.charAt(0);
+    } else {
+        return "?";
     }
+});
 
-    private get userInitials(): string {
-        const first = this.oidcUserInfo?.given_name;
-        const last = this.oidcUserInfo?.family_name;
-        if (first && last) {
-            return first.charAt(0) + last.charAt(0);
-        } else if (first) {
-            return first.charAt(0);
-        } else if (last) {
-            return last.charAt(0);
-        } else {
-            return "?";
-        }
+const isPcrTest = computed<boolean>(() =>
+    route.value.path.toLowerCase().startsWith("/pcrtest")
+);
+
+const isQueuePage = computed<boolean>(
+    () =>
+        route.value.path.toLowerCase() === "/queue" ||
+        route.value.path.toLowerCase() === "/busy"
+);
+
+const isSidebarButtonShown = computed<boolean>(
+    () =>
+        !isOffline.value &&
+        oidcIsAuthenticated.value &&
+        isValidIdentityProvider.value &&
+        userIsRegistered.value &&
+        userIsActive.value &&
+        !patientRetrievalFailed.value &&
+        !isQueuePage.value &&
+        !isPcrTest.value &&
+        isMobileWidth.value
+);
+
+const isNotificationCentreAvailable = computed<boolean>(
+    () =>
+        config.value.featureToggleConfiguration.notificationCentre.enabled &&
+        !isOffline.value &&
+        !isQueuePage.value &&
+        !isPcrTest.value &&
+        oidcIsAuthenticated.value &&
+        isValidIdentityProvider.value &&
+        userIsRegistered.value &&
+        userIsActive.value &&
+        !patientRetrievalFailed.value
+);
+
+const isAppTourAvailable = computed<boolean>(
+    () =>
+        !isOffline.value &&
+        !isQueuePage.value &&
+        !isPcrTest.value &&
+        oidcIsAuthenticated.value &&
+        isValidIdentityProvider.value &&
+        userIsRegistered.value &&
+        userIsActive.value &&
+        !patientRetrievalFailed.value
+);
+
+const isLoggedInMenuShown = computed<boolean>(
+    () => oidcIsAuthenticated.value && !isPcrTest.value && !isQueuePage.value
+);
+
+const isLogOutButtonShown = computed<boolean>(
+    () => oidcIsAuthenticated.value && isPcrTest.value
+);
+
+const isLogInButtonShown = computed<boolean>(
+    () =>
+        !oidcIsAuthenticated.value &&
+        !isOffline.value &&
+        !isPcrTest.value &&
+        !isQueuePage.value
+);
+
+const isProfileLinkAvailable = computed<boolean>(
+    () =>
+        isLoggedInMenuShown.value &&
+        isValidIdentityProvider.value &&
+        !patientRetrievalFailed.value
+);
+
+const newNotifications = computed<Notification[]>(() => {
+    logger.debug(`User last login: ${userLastLoginDateTime.value}`);
+    if (userLastLoginDateTime.value) {
+        const lastLoginDateTime = new DateWrapper(userLastLoginDateTime.value);
+        return notifications.value.filter((n) =>
+            new DateWrapper(n.scheduledDateTimeUtc, {
+                isUtc: true,
+                hasTime: true,
+            }).isAfter(lastLoginDateTime)
+        );
     }
+    return notifications.value;
+});
 
-    @Watch("isMobileWidth")
-    private onMobileWidth(): void {
-        if (!this.isMobileWidth) {
-            this.setHeaderState(false);
-        }
-    }
+const notificationBadgeContent = computed<string | boolean>(() => {
+    const count = newNotifications.value.length;
+    return count === 0 || notificationButtonClicked.value
+        ? false
+        : count.toString();
+});
 
-    @Watch("$route")
-    private onRouteChange(): void {
-        if (this.$route.query.registration === "success") {
-            this.$router.replace({ query: {} });
-            this.appTourComponent.showModal();
-        }
-    }
+const highlightTourChangeIndicator = computed<boolean>(
+    () => user.value.hasTourUpdated && !hasViewedTour.value
+);
 
-    private created(): void {
-        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-        this.$nextTick(() => {
-            window.addEventListener("scroll", this.onScroll);
-            if (!this.isMobileWidth) {
-                this.setHeaderState(false);
+function toggleSidebar(): void {
+    store.dispatch("navbar/toggleSidebar");
+}
+
+function setHeaderState(isOpen: boolean): void {
+    store.dispatch("navbar/setHeaderState", { isOpen });
+}
+
+function onScroll(): void {
+    const st = window.scrollY || document.documentElement.scrollTop;
+    if (
+        Math.abs(st - lastScrollTop.value) > minimumScrollChange &&
+        isMobileWidth.value
+    ) {
+        if (st > lastScrollTop.value) {
+            // down-scroll
+            if (isHeaderShown.value) {
+                setHeaderState(false);
             }
-        });
-    }
-
-    private destroyed(): void {
-        window.removeEventListener("scroll", this.onScroll);
-    }
-
-    private get isPcrTest(): boolean {
-        return this.$route.path.toLowerCase().startsWith("/pcrtest");
-    }
-
-    private get isQueuePage(): boolean {
-        return (
-            this.$route.path.toLowerCase() === "/queue" ||
-            this.$route.path.toLowerCase() === "/busy"
-        );
-    }
-
-    private get isSidebarButtonShown(): boolean {
-        return (
-            !this.isOffline &&
-            this.oidcIsAuthenticated &&
-            this.isValidIdentityProvider &&
-            this.userIsRegistered &&
-            this.userIsActive &&
-            !this.patientRetrievalFailed &&
-            !this.isQueuePage &&
-            !this.isPcrTest &&
-            this.isMobileWidth
-        );
-    }
-
-    private get isNotificationCentreAvailable(): boolean {
-        return (
-            this.config.featureToggleConfiguration.notificationCentre.enabled &&
-            !this.isOffline &&
-            !this.isQueuePage &&
-            !this.isPcrTest &&
-            this.oidcIsAuthenticated &&
-            this.isValidIdentityProvider &&
-            this.userIsRegistered &&
-            this.userIsActive &&
-            !this.patientRetrievalFailed
-        );
-    }
-
-    private get isAppTourAvailable(): boolean {
-        return (
-            !this.isOffline &&
-            !this.isQueuePage &&
-            !this.isPcrTest &&
-            this.oidcIsAuthenticated &&
-            this.isValidIdentityProvider &&
-            this.userIsRegistered &&
-            this.userIsActive &&
-            !this.patientRetrievalFailed
-        );
-    }
-
-    private get isLoggedInMenuShown(): boolean {
-        return this.oidcIsAuthenticated && !this.isPcrTest && !this.isQueuePage;
-    }
-
-    private get isLogOutButtonShown(): boolean {
-        return this.oidcIsAuthenticated && this.isPcrTest;
-    }
-
-    private get isLogInButtonShown(): boolean {
-        return (
-            !this.oidcIsAuthenticated &&
-            !this.isOffline &&
-            !this.isPcrTest &&
-            !this.isQueuePage
-        );
-    }
-
-    private get isProfileLinkAvailable(): boolean {
-        return (
-            this.isLoggedInMenuShown &&
-            this.isValidIdentityProvider &&
-            !this.patientRetrievalFailed
-        );
-    }
-
-    private get newNotifications(): Notification[] {
-        this.logger.debug(`User last login: ${this.userLastLoginDateTime}`);
-        if (this.userLastLoginDateTime) {
-            const lastLoginDateTime = new DateWrapper(
-                this.userLastLoginDateTime
-            );
-            return this.notifications.filter((n) =>
-                new DateWrapper(n.scheduledDateTimeUtc, {
-                    isUtc: true,
-                    hasTime: true,
-                }).isAfter(lastLoginDateTime)
-            );
-        }
-        return this.notifications;
-    }
-
-    private get notificationBadgeContent(): string | boolean {
-        const count = this.newNotifications.length;
-        return count === 0 || this.notificationButtonClicked
-            ? false
-            : count.toString();
-    }
-
-    private get highlightTourChangeIndicator(): boolean {
-        return this.user.hasTourUpdated && !this.hasViewedTour;
-    }
-
-    private onScroll(): void {
-        const st = window.scrollY || document.documentElement.scrollTop;
-        if (
-            Math.abs(st - this.lastScrollTop) >
-                HeaderComponent.minimumScrollChange &&
-            this.isMobileWidth
-        ) {
-            if (st > this.lastScrollTop) {
-                // downscroll
-                if (this.isHeaderShown) {
-                    this.setHeaderState(false);
-                }
-            } else {
-                // upscroll
-                if (!this.isHeaderShown) {
-                    this.setHeaderState(true);
-                }
+        } else {
+            // up-scroll
+            if (!isHeaderShown.value) {
+                setHeaderState(true);
             }
         }
-        // For Mobile or negative scrolling
-        this.lastScrollTop = st <= 0 ? 0 : st;
     }
+    // For Mobile or negative scrolling
+    lastScrollTop.value = st <= 0 ? 0 : st;
+}
 
-    private handleToggleClick(): void {
-        this.toggleSidebar();
-    }
+function handleToggleClick(): void {
+    toggleSidebar();
+}
 
-    private toggleMenu(): void {
-        this.toggleSidebar();
-    }
-
-    private handleLogoutClick(): void {
-        if (this.isValidIdentityProvider) {
-            this.showRating();
-        } else {
-            this.processLogout();
-        }
-    }
-
-    private handleShowTourClick(): void {
-        this.hasViewedTour = true;
-        this.appTourComponent.showModal();
-    }
-
-    private showRating(): void {
-        this.ratingComponent.showModal();
-    }
-
-    private processLogout(): void {
-        this.logger.debug(`redirecting to logout view ...`);
-        this.$router.push({ path: "/logout" });
+function handleLogoutClick(): void {
+    if (isValidIdentityProvider.value) {
+        showRating();
+    } else {
+        processLogout();
     }
 }
+
+function handleShowTourClick(): void {
+    hasViewedTour.value = true;
+    appTourComponent.value?.showModal();
+}
+
+function showRating(): void {
+    ratingComponent.value?.showModal();
+}
+
+function processLogout(): void {
+    logger.debug(`redirecting to logout view ...`);
+    router.push({ path: "/logout" });
+}
+
+nextTick(() => {
+    window.addEventListener("scroll", onScroll);
+    if (!isMobileWidth.value) {
+        setHeaderState(false);
+    }
+});
+
+watch(isMobileWidth, (isMobileWidth) => {
+    if (!isMobileWidth) {
+        setHeaderState(false);
+    }
+});
+
+watch(route, () => {
+    if (route.value.query.registration === "success") {
+        router.replace({ query: {} });
+        appTourComponent.value?.showModal();
+    }
+});
+
+onUnmounted(() => {
+    window.removeEventListener("scroll", onScroll);
+});
 </script>
 
 <template>
@@ -360,7 +345,7 @@ export default class HeaderComponent extends Vue {
                     icon="bell"
                     class="text-white my-3 mx-2 rounded-0"
                     data-testid="notification-centre-button"
-                    @click="notificationButtonClicked = true"
+                    @click="notificationButtonClicked.value = true"
                 />
                 <b-nav-item-dropdown
                     v-if="isLoggedInMenuShown"
