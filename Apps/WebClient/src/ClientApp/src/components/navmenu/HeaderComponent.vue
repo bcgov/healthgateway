@@ -345,7 +345,7 @@ onUnmounted(() => {
                     icon="bell"
                     class="text-white my-3 mx-2 rounded-0"
                     data-testid="notification-centre-button"
-                    @click="notificationButtonClicked.value = true"
+                    @click="notificationButtonClicked = true"
                 />
                 <b-nav-item-dropdown
                     v-if="isLoggedInMenuShown"
