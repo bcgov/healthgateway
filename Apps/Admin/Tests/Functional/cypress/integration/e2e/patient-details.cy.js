@@ -6,7 +6,7 @@ const switchName = "Immunization";
 const auditBlockReason = "Test block reason";
 const auditUnblockReason = "Test unblock reason";
 
-function checkAgentAuditHistory(expectedRows = null) {
+function checkAgentAuditHistory() {
     cy.get("[data-testid=agent-audit-history-title]")
         .should("be.visible")
         .click();
@@ -14,19 +14,7 @@ function checkAgentAuditHistory(expectedRows = null) {
     cy.get("[data-testid=agent-audit-history-table]").should("be.visible");
 
     let historyCount = 0;
-    return new Promise((resolve, reject) => {
-        cy.get("[data-testid=agent-audit-history-title]")
-            .invoke("text")
-            .then((text) => {
-                const regex = /\((\d+)\)/g;
-                const match = regex.exec(text);
-                historyCount = Number(match[1]);
-                if (expectedRows != null && expectedRows >= 0) {
-                    expect(historyCount).to.equal(expectedRows);
-                }
-                resolve(historyCount);
-            });
-    });
+    return cy.get("[data-testid=agent-audit-history-count]").invoke("text");
 }
 
 describe("Patient details message verification", () => {
@@ -103,7 +91,7 @@ describe("Patient details message verification", () => {
         );
     });
 
-    it("Verify block access can be blocked with audit reason.", async () => {
+    it("Verify block access can be blocked with audit reason.", () => {
         performSearch("HDID", hdid);
         cy.get("[data-testid=user-table]")
             .find("tbody tr.mud-table-row")
@@ -112,41 +100,45 @@ describe("Patient details message verification", () => {
 
         cy.get("[data-testid=block-access-loader]").should("not.be.visible");
 
-        const presaveCount = await checkAgentAuditHistory();
+        checkAgentAuditHistory().then((presaveCount) => {
+            cy.get(`[data-testid=block-access-switch-${switchName}]`)
+                .should("exist")
+                .click();
 
-        cy.get(`[data-testid=block-access-switch-${switchName}]`)
-            .should("exist")
-            .click();
+            cy.get(`[data-testid=block-access-switch-${switchName}]`).should(
+                "be.checked"
+            );
 
-        cy.get(`[data-testid=block-access-switch-${switchName}]`).should(
-            "be.checked"
-        );
+            cy.get("[data-testid=block-access-cancel]").should(
+                "exist",
+                "be.visible"
+            );
+            cy.get("[data-testid=block-access-save]")
+                .should("exist", "be.visible")
+                .click();
 
-        cy.get("[data-testid=block-access-cancel]").should(
-            "exist",
-            "be.visible"
-        );
-        cy.get("[data-testid=block-access-save]")
-            .should("exist", "be.visible")
-            .click();
+            cy.get("[data-testid=audit-reason-input")
+                .should("be.visible")
+                .type(auditBlockReason);
 
-        cy.get("[data-testid=audit-reason-input")
-            .should("be.visible")
-            .type(auditBlockReason);
+            cy.get("[data-testid=audit-confirm-button]")
+                .should("be.visible")
+                .click({ force: true });
 
-        cy.get("[data-testid=audit-confirm-button]")
-            .should("be.visible")
-            .click({ force: true });
+            cy.get(`[data-testid=block-access-switch-${switchName}]`).should(
+                "be.checked"
+            );
 
-        cy.get(`[data-testid=block-access-switch-${switchName}]`).should(
-            "be.checked"
-        );
-
-        // Check agent audit history
-        await checkAgentAuditHistory(presaveCount + 1);
+            // Check agent audit history
+            checkAgentAuditHistory().then((postsaveCount) => {
+                expect(Number(postsaveCount)).to.equal(
+                    Number(presaveCount) + 1
+                );
+            });
+        });
     });
 
-    it("Verify block access can be unblocked with audit reason.", async () => {
+    it("Verify block access can be unblocked with audit reason.", () => {
         performSearch("HDID", hdid);
         cy.get("[data-testid=user-table]")
             .find("tbody tr.mud-table-row")
@@ -163,33 +155,37 @@ describe("Patient details message verification", () => {
             .should("exist")
             .click();
 
-        const presaveCount = await checkAgentAuditHistory();
+        checkAgentAuditHistory().then((presaveCount) => {
+            cy.get(`[data-testid=block-access-switch-${switchName}]`).should(
+                "not.be.checked"
+            );
 
-        cy.get(`[data-testid=block-access-switch-${switchName}]`).should(
-            "not.be.checked"
-        );
+            cy.get("[data-testid=block-access-cancel]").should(
+                "exist",
+                "be.visible"
+            );
+            cy.get("[data-testid=block-access-save]")
+                .should("exist", "be.visible")
+                .click();
 
-        cy.get("[data-testid=block-access-cancel]").should(
-            "exist",
-            "be.visible"
-        );
-        cy.get("[data-testid=block-access-save]")
-            .should("exist", "be.visible")
-            .click();
+            cy.get("[data-testid=audit-reason-input")
+                .should("be.visible")
+                .type(auditUnblockReason);
 
-        cy.get("[data-testid=audit-reason-input")
-            .should("be.visible")
-            .type(auditUnblockReason);
+            cy.get("[data-testid=audit-confirm-button]")
+                .should("be.visible")
+                .click({ force: true });
 
-        cy.get("[data-testid=audit-confirm-button]")
-            .should("be.visible")
-            .click({ force: true });
+            cy.get(`[data-testid=block-access-switch-${switchName}]`).should(
+                "not.be.checked"
+            );
 
-        cy.get(`[data-testid=block-access-switch-${switchName}]`).should(
-            "not.be.checked"
-        );
-
-        // Check agent audit history
-        await checkAgentAuditHistory(presaveCount + 1);
+            // Check agent audit history
+            checkAgentAuditHistory().then((postsaveCount) => {
+                expect(Number(postsaveCount)).to.equal(
+                    Number(presaveCount) + 1
+                );
+            });
+        });
     });
 });
