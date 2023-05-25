@@ -22,4 +22,10 @@ export default interface MedicationSummary {
     strengthUnit?: string;
     // Is Provincial Drug
     isPin: boolean;
+    // Pharmacy Assessment Title
+    pharmacyAssessmentTitle: string;
+    // Prescription Provided
+    prescriptionProvided?: boolean;
+    // Redirected to Health Care Provider
+    redirectedToHealthCareProvider?: boolean;
 }

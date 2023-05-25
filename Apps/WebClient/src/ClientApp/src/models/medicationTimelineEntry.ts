@@ -10,9 +10,14 @@ import { UserComment } from "@/models/userComment";
 export default class MedicationTimelineEntry extends TimelineEntry {
     public pharmacy: PharmacyViewModel;
     public medication: MedicationViewModel;
+    public title: string;
+    public subtitle?: string;
     public directions: string;
     public practitionerSurname: string;
     public prescriptionIdentifier: string;
+    public isPharmacistAssessment: boolean;
+    public prescriptionProvided?: boolean;
+    public redirectedToHealthCareProvider?: boolean;
 
     private getComments: (entyId: string) => UserComment[] | null;
 
@@ -26,10 +31,24 @@ export default class MedicationTimelineEntry extends TimelineEntry {
             new DateWrapper(model.dispensedDate)
         );
 
-        this.medication = new MedicationViewModel(model.medicationSummary);
+        const summary = model.medicationSummary;
+
+        this.medication = new MedicationViewModel(summary);
         this.pharmacy = new PharmacyViewModel(
             model.dispensingPharmacy?.pharmacyId
         );
+
+        this.isPharmacistAssessment = Boolean(summary.pharmacyAssessmentTitle);
+        if (this.isPharmacistAssessment) {
+            this.title = "Pharmacist Assessment";
+            this.subtitle = summary.pharmacyAssessmentTitle;
+            this.prescriptionProvided = summary.prescriptionProvided;
+            this.redirectedToHealthCareProvider =
+                summary.redirectedToHealthCareProvider;
+        } else {
+            this.title = this.medication.brandName;
+            this.subtitle = this.medication.genericName;
+        }
 
         if (model.dispensingPharmacy) {
             this.pharmacy.populateFromModel(model.dispensingPharmacy);

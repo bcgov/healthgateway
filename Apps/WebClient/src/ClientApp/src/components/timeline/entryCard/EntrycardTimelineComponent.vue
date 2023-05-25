@@ -112,7 +112,10 @@ onMounted(() => {
                         </b-col>
                     </b-row>
                     <b-row>
-                        <b-col class="py-1 text-muted align-self-center">
+                        <b-col
+                            class="py-1 text-muted align-self-center"
+                            data-testid="entryCardDetailsSubtitle"
+                        >
                             <slot name="header-description">
                                 {{ subtitle }}
                             </slot>
