@@ -50,7 +50,7 @@ export default class MedicationTimelineComponent extends Vue {
                 <strong>Practitioner:</strong>
                 {{ entry.practitionerSurname }}
             </div>
-            <hr v-if="!entry.isPharmacistAssessment" />
+            <hr v-if="!entry.isPharmacistAssessment" class="invisible" />
             <div v-if="!entry.isPharmacistAssessment">
                 <div class="my-2" data-testid="medication-quantity">
                     <strong>Quantity:</strong>
@@ -74,7 +74,7 @@ export default class MedicationTimelineComponent extends Vue {
                 <strong>{{ entry.medication.isPin ? "PIN" : "DIN" }}:</strong>
                 {{ entry.medication.din }}
             </div>
-            <hr v-if="!entry.isPharmacistAssessment" />
+            <hr v-if="!entry.isPharmacistAssessment" class="invisible" />
             <div>
                 <div class="my-2" data-testid="medication-pharmacy-name">
                     <strong v-if="entry.isPharmacistAssessment">
