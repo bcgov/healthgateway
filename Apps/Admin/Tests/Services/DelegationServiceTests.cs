@@ -33,6 +33,7 @@ namespace HealthGateway.Admin.Tests.Services
     using HealthGateway.Common.Data.ErrorHandling;
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Data.ViewModels;
+    using HealthGateway.Common.Messaging;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Services;
     using HealthGateway.Database.Constants;
@@ -222,7 +223,8 @@ namespace HealthGateway.Admin.Tests.Services
                 v => v.UpdateDelegationAsync(
                     It.Is<Dependent>(d => AssertProtectedDependant(expectedDependent, d)),
                     It.Is<IEnumerable<ResourceDelegate>>(rd => AssertProtectedDependentResourceDelegates(expectedDeletedResourceDelegates.ToList(), rd.ToList())),
-                    It.Is<AgentAudit>(da => AssertAgentAudit(expectedAgentAudit, da))));
+                    It.Is<AgentAudit>(da => AssertAgentAudit(expectedAgentAudit, da)),
+                    It.Is<bool>(c => true)));
         }
 
         /// <summary>
@@ -264,7 +266,8 @@ namespace HealthGateway.Admin.Tests.Services
                 v => v.UpdateDelegationAsync(
                     It.Is<Dependent>(d => AssertProtectedDependant(expectedDependent, d)),
                     It.Is<IEnumerable<ResourceDelegate>>(rd => AssertProtectedDependentResourceDelegates(expectedDeletedResourceDelegates.ToList(), rd.ToList())),
-                    It.Is<AgentAudit>(da => AssertAgentAudit(expectedAgentAudit, da))));
+                    It.Is<AgentAudit>(da => AssertAgentAudit(expectedAgentAudit, da)),
+                    It.Is<bool>(c => true)));
         }
 
         /// <summary>
@@ -326,7 +329,8 @@ namespace HealthGateway.Admin.Tests.Services
                 v => v.UpdateDelegationAsync(
                     It.Is<Dependent>(d => AssertProtectedDependant(expectedDependent, d)),
                     It.Is<IEnumerable<ResourceDelegate>>(rd => AssertProtectedDependentResourceDelegates(expectedDeletedResourceDelegates.ToList(), rd.ToList())),
-                    It.Is<AgentAudit>(da => AssertAgentAudit(expectedAgentAudit, da))));
+                    It.Is<AgentAudit>(da => AssertAgentAudit(expectedAgentAudit, da)),
+                    It.Is<bool>(c => true)));
         }
 
         /// <summary>
@@ -396,6 +400,7 @@ namespace HealthGateway.Admin.Tests.Services
                 new Mock<IResourceDelegateDelegate>().Object,
                 new Mock<IDelegationDelegate>().Object,
                 new Mock<IAuthenticationDelegate>().Object,
+                new Mock<IMessageSender>().Object,
                 new Mock<IAuditRepository>().Object,
                 this.autoMapper);
 
@@ -528,10 +533,8 @@ namespace HealthGateway.Admin.Tests.Services
                     FirstName = "John",
                     LastName = "Doe",
                     Birthdate = birthDate,
-                    PhysicalAddress = new Address
-                        { Country = "Canada", State = "BC", City = "Victoria" },
-                    PostalAddress = new Address
-                        { Country = "Canada", State = "BC", City = "Victoria" },
+                    PhysicalAddress = new Address { Country = "Canada", State = "BC", City = "Victoria" },
+                    PostalAddress = new Address { Country = "Canada", State = "BC", City = "Victoria" },
                 },
             };
             return dependentResult;
@@ -551,10 +554,8 @@ namespace HealthGateway.Admin.Tests.Services
                     FirstName = "Jane",
                     LastName = "Test",
                     Birthdate = DateTime.Now,
-                    PhysicalAddress = new Address
-                        { Country = "Canada", State = "BC", City = "Vancouver" },
-                    PostalAddress = new Address
-                        { Country = "Canada", State = "BC", City = "Vancouver" },
+                    PhysicalAddress = new Address { Country = "Canada", State = "BC", City = "Vancouver" },
+                    PostalAddress = new Address { Country = "Canada", State = "BC", City = "Vancouver" },
                 },
             };
             return delegateResult;
@@ -760,6 +761,7 @@ namespace HealthGateway.Admin.Tests.Services
                 resourceDelegateDelegate.Object,
                 delegationDelegate.Object,
                 new Mock<IAuthenticationDelegate>().Object,
+                new Mock<IMessageSender>().Object,
                 agentAuditRepository.Object,
                 this.autoMapper);
         }
@@ -781,12 +783,15 @@ namespace HealthGateway.Admin.Tests.Services
 
             delegationDelegate.Setup(p => p.GetDependentAsync(resourceOwnerHdid, true)).ReturnsAsync(dependent);
 
+            Mock<IMessageSender> messageSender = new();
+
             return new(
                 this.configuration,
                 new Mock<IPatientService>().Object,
                 resourceDelegateDelegate.Object,
                 delegationDelegate.Object,
                 authenticationDelegate.Object,
+                messageSender.Object,
                 new Mock<IAuditRepository>().Object,
                 this.autoMapper);
         }
@@ -801,6 +806,7 @@ namespace HealthGateway.Admin.Tests.Services
                 new Mock<IResourceDelegateDelegate>().Object,
                 new Mock<IDelegationDelegate>().Object,
                 new Mock<IAuthenticationDelegate>().Object,
+                new Mock<IMessageSender>().Object,
                 new Mock<IAuditRepository>().Object,
                 this.autoMapper);
         }
