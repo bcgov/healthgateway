@@ -141,4 +141,13 @@ describe("Support", () => {
         verifyParameterIsRequired("Email");
         verifyParameterIsRequired("Dependent");
     });
+
+    it("Verify clear button", () => {
+        performSearch("HDID", hdid);
+        verifySupportTableResults(hdid, phn);
+        cy.get("[data-testid=clear-btn]").click();
+        cy.get("[data-testid=query-type-select]").should("have.value", "Hdid");
+        cy.get("[data-testid=query-input]").should("be.empty");
+        cy.get("[data-testid=user-table]").should("not.exist");
+    });
 });
