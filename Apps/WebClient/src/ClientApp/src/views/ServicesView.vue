@@ -1,7 +1,6 @@
-﻿<script lang="ts">
-import Vue from "vue";
-import { Component } from "vue-property-decorator";
-import { Action, Getter } from "vuex-class";
+﻿<script setup lang="ts">
+import { computed } from "vue";
+import { useStore } from "vue-composition-wrapper";
 
 import LoadingComponent from "@/components/LoadingComponent.vue";
 import BreadcrumbComponent from "@/components/navmenu/BreadcrumbComponent.vue";
@@ -9,76 +8,50 @@ import OrganDonorDetailsCard from "@/components/services/OrganDonorDetailsCard.v
 import { ServiceName } from "@/constants/serviceName";
 import BreadcrumbItem from "@/models/breadcrumbItem";
 import { PatientDataType } from "@/models/patientDataResponse";
-import User from "@/models/user";
-import container from "@/plugins/container";
-import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import { ILogger } from "@/services/interfaces";
 import ConfigUtil from "@/utility/configUtil";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const options: any = {
-    components: {
-        BreadcrumbComponent,
-        LoadingComponent,
-        OrganDonorDetailsCard,
+const breadcrumbItems: BreadcrumbItem[] = [
+    {
+        text: "Services",
+        to: "/services",
+        active: true,
+        dataTestId: "breadcrumb-services",
     },
-};
+];
 
-@Component(options)
-export default class ServicesView extends Vue {
-    @Getter("user", { namespace: "user" })
-    user!: User;
+const store = useStore();
 
-    @Getter("patientDataAreLoading", { namespace: "patientData" })
-    patientDataAreLoading!: (hdid: string) => boolean;
+const hdid = computed<string>(() => store.getters["user/user"].hdid);
 
-    @Action("retrievePatientData", { namespace: "patientData" })
-    retrievePatientData!: (params: {
-        hdid: string;
-        patientDataTypes: PatientDataType[];
-    }) => Promise<void>;
+const patientDataAreLoading = computed<boolean>(() =>
+    store.getters["patientData/patientDataAreLoading"](hdid.value)
+);
 
-    logger!: ILogger;
+const isOrganDonorServiceEnabled = computed(() =>
+    ConfigUtil.isServiceEnabled(ServiceName.OrganDonorRegistration)
+);
 
-    breadcrumbItems: BreadcrumbItem[] = [
-        {
-            text: "Services",
-            to: "/services",
-            active: true,
-            dataTestId: "breadcrumb-services",
-        },
-    ];
+function retrievePatientData(
+    hdid: string,
+    patientDataTypes: PatientDataType[]
+): Promise<void> {
+    return store.dispatch("patientData/retrievePatientData", {
+        hdid,
+        patientDataTypes,
+    });
+}
 
-    get isLoading(): boolean {
-        return this.patientDataAreLoading(this.user.hdid);
-    }
-
-    get hdid(): string {
-        return this.user.hdid;
-    }
-
-    get isOrganDonorServiceEnabled(): boolean {
-        return ConfigUtil.isServiceEnabled(ServiceName.OrganDonorRegistration);
-    }
-
-    async created(): Promise<void> {
-        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-        if (this.isOrganDonorServiceEnabled) {
-            await this.retrievePatientData({
-                hdid: this.user.hdid,
-                patientDataTypes: [
-                    PatientDataType.OrganDonorRegistrationStatus,
-                ],
-            });
-        }
-    }
+if (isOrganDonorServiceEnabled.value) {
+    retrievePatientData(hdid.value, [
+        PatientDataType.OrganDonorRegistrationStatus,
+    ]);
 }
 </script>
 
 <template>
     <div>
         <BreadcrumbComponent :items="breadcrumbItems" />
-        <LoadingComponent :is-loading="isLoading" />
+        <LoadingComponent :is-loading="patientDataAreLoading" />
         <page-title title="Services" />
         <p>
             You can check and update your Organ Donor Registry information here.
@@ -87,7 +60,7 @@ export default class ServicesView extends Vue {
         <div>
             <b-row cols="1" cols-lg="2" cols-xl="3">
                 <b-col
-                    v-if="!isLoading && isOrganDonorServiceEnabled"
+                    v-if="!patientDataAreLoading && isOrganDonorServiceEnabled"
                     class="p-3"
                 >
                     <OrganDonorDetailsCard :hdid="hdid" />
