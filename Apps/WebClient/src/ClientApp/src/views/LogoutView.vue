@@ -1,19 +1,16 @@
-﻿<script lang="ts">
-import Vue from "vue";
-import { Component } from "vue-property-decorator";
-import { Action } from "vuex-class";
+﻿<script setup lang="ts">
+import { onMounted } from "vue";
+import { useStore } from "vue-composition-wrapper";
 
-const namespace = "auth";
+const store = useStore();
 
-@Component
-export default class LogoutView extends Vue {
-    @Action("signOut", { namespace })
-    signOut!: () => void;
-
-    private mounted(): void {
-        this.signOut();
-    }
+function signOut(): void {
+    store.dispatch("auth/signOut");
 }
+
+onMounted(() => {
+    signOut();
+});
 </script>
 
 <template>

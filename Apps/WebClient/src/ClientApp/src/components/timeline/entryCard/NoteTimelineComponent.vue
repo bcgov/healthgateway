@@ -1,9 +1,8 @@
-<script lang="ts">
+<script setup lang="ts">
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faEllipsisV } from "@fortawesome/free-solid-svg-icons";
-import Vue from "vue";
-import { Component, Prop } from "vue-property-decorator";
-import { Action } from "vuex-class";
+import { computed, ref } from "vue";
+import { useStore } from "vue-composition-wrapper";
 
 import { EntryType, entryTypeMap } from "@/constants/entryType";
 import { ErrorSourceType, ErrorType } from "@/constants/errorType";
@@ -14,83 +13,75 @@ import UserNote from "@/models/userNote";
 
 import EntryCardTimelineComponent from "./EntrycardTimelineComponent.vue";
 
+const store = useStore();
+
 library.add(faEllipsisV);
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const options: any = {
-    components: {
-        EntryCard: EntryCardTimelineComponent,
-    },
-};
+interface Props {
+    hdid: string;
+    entry: NoteTimelineEntry;
+    isMobileDetails?: boolean;
+    commentsAreEnabled?: boolean;
+}
+const props = withDefaults(defineProps<Props>(), {
+    isMobileDetails: false,
+    commentsAreEnabled: false,
+});
 
-@Component(options)
-export default class NoteTimelineComponent extends Vue {
-    @Prop({ required: true })
-    hdid!: string;
+const isSaving = ref(false);
 
-    @Prop()
-    entry!: NoteTimelineEntry;
+const entryIcon = computed(() => {
+    return entryTypeMap.get(EntryType.Note)?.icon;
+});
 
-    @Prop()
-    isMobileDetails!: boolean;
+const canShowDetails = computed(() => {
+    return (
+        props.entry.text.length > 0 &&
+        props.entry.text !== props.entry.textSummary
+    );
+});
 
-    @Prop({ default: false })
-    commentsAreEnabled!: boolean;
+function addError(params: {
+    errorType: ErrorType;
+    source: ErrorSourceType;
+    traceId: string | undefined;
+}): void {
+    store.dispatch("errorBanner/addError", params);
+}
 
-    @Action("addError", { namespace: "errorBanner" })
-    addError!: (params: {
-        errorType: ErrorType;
-        source: ErrorSourceType;
-        traceId: string | undefined;
-    }) => void;
+function deleteNote(params: { hdid: string; note: UserNote }): Promise<void> {
+    return store.dispatch("note/deleteNote", params);
+}
 
-    @Action("deleteNote", { namespace: "note" })
-    deleteNote!: (params: { hdid: string; note: UserNote }) => Promise<void>;
-
-    private isSaving = false;
-    private eventBus = EventBus;
-
-    private get entryIcon(): string | undefined {
-        return entryTypeMap.get(EntryType.Note)?.icon;
-    }
-
-    private get canShowDetails(): boolean {
-        return (
-            this.entry.text.length > 0 &&
-            this.entry.text !== this.entry.textSummary
-        );
-    }
-
-    private handleDelete(): void {
-        if (confirm("Are you sure you want to delete this note?")) {
-            this.isSaving = true;
-            this.deleteNote({
-                hdid: this.hdid,
-                note: this.entry.toModel(),
+function handleDelete(): void {
+    if (confirm("Are you sure you want to delete this note?")) {
+        isSaving.value = true;
+        deleteNote({
+            hdid: props.hdid,
+            note: props.entry.toModel(),
+        })
+            .catch((err: ResultError) => {
+                if (err.statusCode !== 429) {
+                    addError({
+                        errorType: ErrorType.Delete,
+                        source: ErrorSourceType.Note,
+                        traceId: err.traceId,
+                    });
+                }
             })
-                .catch((err: ResultError) => {
-                    if (err.statusCode !== 429) {
-                        this.addError({
-                            errorType: ErrorType.Delete,
-                            source: ErrorSourceType.Note,
-                            traceId: err.traceId,
-                        });
-                    }
-                })
-                .finally(() => {
-                    this.isSaving = false;
-                });
-        }
+            .finally(() => {
+                isSaving.value = false;
+            });
     }
+}
 
-    private handleEdit(): void {
-        this.eventBus.$emit(EventMessageName.EditNote, this.entry);
-    }
+function handleEdit(): void {
+    EventBus.$emit(EventMessageName.EditNote, props.entry);
 }
 </script>
 
 <template>
-    <EntryCard
+    <EntryCardTimelineComponent
         :card-id="'note-' + entry.title"
         :entry-icon="entryIcon"
         :icon-class="'note-icon'"
@@ -137,7 +128,7 @@ export default class NoteTimelineComponent extends Vue {
         <span slot="details-body">
             {{ entry.text }}
         </span>
-    </EntryCard>
+    </EntryCardTimelineComponent>
 </template>
 
 <style lang="scss" scoped>
