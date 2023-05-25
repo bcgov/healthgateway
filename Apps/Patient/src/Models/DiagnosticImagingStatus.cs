@@ -33,6 +33,7 @@ namespace HealthGateway.Patient.Models
         /// <summary>
         /// Exam is scheduled.
         /// </summary>
+        [EnumMember(Value = "Pending")]
         Scheduled,
 
         /// <summary>
@@ -44,6 +45,7 @@ namespace HealthGateway.Patient.Models
         /// <summary>
         /// Exam is finalized.
         /// </summary>
+        [EnumMember(Value = "Pending")]
         Finalized,
 
         /// <summary>
