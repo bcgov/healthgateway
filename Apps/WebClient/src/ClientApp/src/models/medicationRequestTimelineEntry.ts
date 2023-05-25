@@ -7,7 +7,7 @@ import MedicationRequest from "./medicationRequest";
 
 // The medication timeline entry model
 export default class MedicationRequestTimelineEntry extends TimelineEntry {
-    public drugName?: string;
+    public drugName: string;
     public requestStatus?: string;
     public prescriberFirstName?: string;
     public prescriberLastName?: string;
@@ -27,7 +27,7 @@ export default class MedicationRequestTimelineEntry extends TimelineEntry {
             new DateWrapper(model.requestedDate)
         );
 
-        this.drugName = model.drugName;
+        this.drugName = model.drugName ?? "";
         this.requestStatus = model.requestStatus;
         this.prescriberFirstName = model.prescriberFirstName;
         this.prescriberLastName = model.prescriberLastName;

@@ -1,7 +1,6 @@
-<script lang="ts">
-import Vue from "vue";
-import { Component, Emit, Prop, Watch } from "vue-property-decorator";
-import { Action, Getter } from "vuex-class";
+<script setup lang="ts">
+import { computed, onMounted, watch } from "vue";
+import { useStore } from "vue-composition-wrapper";
 
 import { DateWrapper } from "@/models/dateWrapper";
 import { HospitalVisit } from "@/models/encounter";
@@ -15,6 +14,22 @@ import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ILogger, IReportService } from "@/services/interfaces";
 
+interface Props {
+    hdid: string;
+    filter: ReportFilter;
+    isDependent?: boolean;
+}
+const props = withDefaults(defineProps<Props>(), {
+    isDependent: false,
+});
+
+const emit = defineEmits<{
+    (e: "on-is-loading-changed", newValue: boolean): void;
+    (e: "on-is-empty-changed", newValue: boolean): void;
+}>();
+
+defineExpose({ generateReport });
+
 interface HospitalVisitRow {
     date: string;
     health_service: string;
@@ -23,37 +38,52 @@ interface HospitalVisitRow {
     provider: string;
 }
 
-@Component
-export default class HospitalVisitReportComponent extends Vue {
-    @Prop({ required: true })
-    hdid!: string;
+const headerClass = "hospital-visit-report-table-header";
 
-    @Prop() private filter!: ReportFilter;
+const fields: ReportField[] = [
+    {
+        key: "date",
+        thClass: headerClass,
+        tdAttr: { "data-testid": "hospital-visit-date" },
+    },
+    {
+        key: "health_service",
+        thClass: headerClass,
+    },
+    {
+        key: "visit_type",
+        thClass: headerClass,
+    },
+    {
+        key: "location",
+        thClass: headerClass,
+    },
+    {
+        key: "provider",
+        thClass: headerClass,
+    },
+];
 
-    @Prop({ default: false }) isDependent!: boolean;
+const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+const store = useStore();
 
-    @Action("retrieveHospitalVisits", { namespace: "encounter" })
-    retrieveHospitalVisits!: (params: { hdid: string }) => Promise<void>;
+const hospitalVisits = computed<(hdid: string) => HospitalVisit[]>(
+    () => store.getters["encounter/hospitalVisits"]
+);
 
-    @Getter("hospitalVisitsAreLoading", { namespace: "encounter" })
-    hospitalVisitsAreLoading!: (hdid: string) => boolean;
+const hospitalVisitsAreLoading = computed<(hdid: string) => boolean>(
+    () => store.getters["encounter/hospitalVisitsAreLoading"]
+);
 
-    @Getter("hospitalVisits", { namespace: "encounter" })
-    hospitalVisits!: (hdid: string) => HospitalVisit[];
+const isEmpty = computed(() => visibleRecords.value.length === 0);
 
-    private logger!: ILogger;
+const isLoading = computed(() => hospitalVisitsAreLoading.value(props.hdid));
 
-    private readonly headerClass = "hospital-visit-report-table-header";
-
-    private get isLoading(): boolean {
-        return this.hospitalVisitsAreLoading(this.hdid);
-    }
-
-    private get visibleRecords(): HospitalVisit[] {
-        const records = this.hospitalVisits(this.hdid).filter((record) =>
-            this.filter.allowsDate(record.admitDateTime)
-        );
-        records.sort((a, b) => {
+const visibleRecords = computed(() =>
+    hospitalVisits
+        .value(props.hdid)
+        .filter((record) => props.filter.allowsDate(record.admitDateTime))
+        .sort((a, b) => {
             const firstDate = new DateWrapper(a.admitDateTime);
             const secondDate = new DateWrapper(b.admitDateTime);
 
@@ -66,90 +96,57 @@ export default class HospitalVisitReportComponent extends Vue {
             }
 
             return 0;
-        });
+        })
+);
 
-        return records;
-    }
-
-    private get isEmpty(): boolean {
-        return this.visibleRecords.length === 0;
-    }
-
-    private get items(): HospitalVisitRow[] {
-        return this.visibleRecords.map<HospitalVisitRow>((x) => ({
+const items = computed(() =>
+    visibleRecords.value.map<HospitalVisitRow>((x) => {
+        return {
             date: DateWrapper.format(x.admitDateTime),
             health_service: x.healthService,
             visit_type: x.visitType,
             location: x.facility,
             provider: x.provider,
-        }));
-    }
+        };
+    })
+);
 
-    @Watch("isLoading")
-    @Emit()
-    private onIsLoadingChanged(): boolean {
-        return this.isLoading;
-    }
-
-    @Watch("isEmpty")
-    @Emit()
-    private onIsEmptyChanged(): boolean {
-        return this.isEmpty;
-    }
-
-    private created(): void {
-        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-        this.retrieveHospitalVisits({ hdid: this.hdid }).catch((err) =>
-            this.logger.error(`Error loading hospital visit data: ${err}`)
-        );
-    }
-
-    private mounted(): void {
-        this.onIsEmptyChanged();
-    }
-
-    public async generateReport(
-        reportFormatType: ReportFormatType,
-        headerData: ReportHeader
-    ): Promise<RequestResult<Report>> {
-        const reportService = container.get<IReportService>(
-            SERVICE_IDENTIFIER.ReportService
-        );
-
-        return reportService.generateReport({
-            data: {
-                header: headerData,
-                records: this.items,
-            },
-            template: TemplateType.HospitalVisit,
-            type: reportFormatType,
-        });
-    }
-
-    private fields: ReportField[] = [
-        {
-            key: "date",
-            thClass: this.headerClass,
-            tdAttr: { "data-testid": "hospital-visit-date" },
-        },
-        {
-            key: "health_service",
-            thClass: this.headerClass,
-        },
-        {
-            key: "visit_type",
-            thClass: this.headerClass,
-        },
-        {
-            key: "location",
-            thClass: this.headerClass,
-        },
-        {
-            key: "provider",
-            thClass: this.headerClass,
-        },
-    ];
+function retrieveHospitalVisits(hdid: string): Promise<void> {
+    return store.dispatch("encounter/retrieveHospitalVisits", { hdid });
 }
+
+function generateReport(
+    reportFormatType: ReportFormatType,
+    headerData: ReportHeader
+): Promise<RequestResult<Report>> {
+    const reportService = container.get<IReportService>(
+        SERVICE_IDENTIFIER.ReportService
+    );
+    return reportService.generateReport({
+        data: {
+            header: headerData,
+            records: items.value,
+        },
+        template: TemplateType.HospitalVisit,
+        type: reportFormatType,
+    });
+}
+
+watch(isLoading, () => {
+    emit("on-is-loading-changed", isLoading.value);
+});
+
+watch(isEmpty, () => {
+    emit("on-is-empty-changed", isEmpty.value);
+});
+
+onMounted(() => {
+    emit("on-is-empty-changed", isEmpty.value);
+});
+
+retrieveHospitalVisits(props.hdid).catch((err) =>
+    logger.error(`Error loading hospital visit data: ${err}`)
+);
 </script>
 
 <template>

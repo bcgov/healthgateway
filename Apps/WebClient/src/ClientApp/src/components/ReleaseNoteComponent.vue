@@ -1,17 +1,17 @@
-<script lang="ts">
-import Vue from "vue";
-import { Component, Prop } from "vue-property-decorator";
+<script setup lang="ts">
+import { computed, useSlots } from "vue";
 
-@Component
-export default class ReleaseNoteComponent extends Vue {
-    @Prop({ required: true }) date!: string;
-    @Prop({ required: true }) version!: string;
-    @Prop({ required: true }) title!: string;
-
-    private get hasSlot(): boolean {
-        return this.$slots.default !== undefined;
-    }
+interface Props {
+    date: string;
+    version: string;
+    title: string;
 }
+defineProps<Props>();
+
+const slots = useSlots();
+const hasSlot = computed<boolean>(() => {
+    return slots.default !== undefined;
+});
 </script>
 
 <template>
