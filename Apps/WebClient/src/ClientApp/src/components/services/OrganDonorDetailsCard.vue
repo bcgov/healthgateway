@@ -19,16 +19,16 @@ import SnowPlow from "@/utility/snowPlow";
 
 library.add(faDownload, faInfoCircle);
 
-const store = useStore();
-const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
 interface Props {
     hdid: string;
 }
 const props = defineProps<Props>();
 
-function isPatientDataFileLoading(fileId: string): boolean {
-    return store.getters["patientData/isPatientDataFileLoading"](fileId);
-}
+const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+const store = useStore();
+
+const sensitiveDocumentModal = ref<MessageModalComponent>();
+
 const patientData = computed<PatientData[]>(() => {
     return store.getters["patientData/patientData"](
         props.hdid,
@@ -36,8 +36,6 @@ const patientData = computed<PatientData[]>(() => {
         true
     );
 });
-
-const sensitiveDocumentModal = ref<MessageModalComponent>();
 
 const isLoadingFile = computed<boolean>(() => {
     return (
@@ -52,8 +50,8 @@ const registrationData = computed<OrganDonorRegistration | undefined>(() => {
         : undefined;
 });
 
-function showConfirmationModal(): void {
-    sensitiveDocumentModal.value?.showModal();
+function isPatientDataFileLoading(fileId: string): boolean {
+    return store.getters["patientData/isPatientDataFileLoading"](fileId);
 }
 
 function getDecisionFile(): void {
@@ -77,6 +75,10 @@ function getDecisionFile(): void {
             .then((blob) => saveAs(blob, `Organ_Donor_Registration.pdf`))
             .catch((err) => logger.error(err));
     }
+}
+
+function showConfirmationModal(): void {
+    sensitiveDocumentModal.value?.showModal();
 }
 </script>
 

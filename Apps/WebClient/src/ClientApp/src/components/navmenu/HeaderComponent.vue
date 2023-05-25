@@ -23,9 +23,20 @@ import { ILogger } from "@/services/interfaces";
 
 library.add(faBars, faSignInAlt, faSignOutAlt, faTimes, faUser, faLightbulb);
 
+const sidebarId = "notification-centre-sidebar";
+const minimumScrollChange = 2;
+
 const store = useStore();
 const route = useRoute();
 const router = useRouter();
+const logger: ILogger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+
+const lastScrollTop = ref(0);
+const notificationButtonClicked = ref(false);
+const hasViewedTour = ref(false);
+
+const ratingComponent = ref<RatingComponent>();
+const appTourComponent = ref<AppTourComponent>();
 
 const isMobileWidth = computed<boolean>(() => store.getters["isMobile"]);
 
@@ -76,22 +87,6 @@ const userIsActive = computed<boolean>(
 const patientRetrievalFailed = computed<boolean>(
     () => store.getters["user/patientRetrievalFailed"]
 );
-
-const ratingComponent = ref<RatingComponent>();
-
-const appTourComponent = ref<AppTourComponent>();
-
-const logger: ILogger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-
-const sidebarId = "notification-centre-sidebar";
-
-const lastScrollTop = ref(0);
-
-const notificationButtonClicked = ref(false);
-
-const hasViewedTour = ref(false);
-
-const minimumScrollChange = 2;
 
 const userName = computed<string>(() =>
     oidcUserInfo.value === undefined
@@ -265,13 +260,6 @@ function processLogout(): void {
     router.push({ path: "/logout" });
 }
 
-nextTick(() => {
-    window.addEventListener("scroll", onScroll);
-    if (!isMobileWidth.value) {
-        setHeaderState(false);
-    }
-});
-
 watch(isMobileWidth, (isMobileWidth) => {
     if (!isMobileWidth) {
         setHeaderState(false);
@@ -287,6 +275,13 @@ watch(route, () => {
 
 onUnmounted(() => {
     window.removeEventListener("scroll", onScroll);
+});
+
+nextTick(() => {
+    window.addEventListener("scroll", onScroll);
+    if (!isMobileWidth.value) {
+        setHeaderState(false);
+    }
 });
 </script>
 
