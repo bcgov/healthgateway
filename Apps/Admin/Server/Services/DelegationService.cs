@@ -223,7 +223,7 @@ namespace HealthGateway.Admin.Server.Services
             IEnumerable<ResourceDelegate> resourceDelegates = await this.SearchDelegates(dependent.HdId);
 
             // Compare resource delegates with passed in delegate hdids to determine which resource delegates to remove
-            IEnumerable<ResourceDelegate> resourceDelegatesToDelete = resourceDelegates.Where(r => delegateHdidList.All(a => a != r.ProfileHdid));
+            IEnumerable<ResourceDelegate> resourceDelegatesToDelete = resourceDelegates.Where(r => delegateHdidList.All(a => a != r.ProfileHdid)).ToList();
 
             // Update dependent, allow delegation and resource delegate in database
             if (this.changeFeedEnabled)

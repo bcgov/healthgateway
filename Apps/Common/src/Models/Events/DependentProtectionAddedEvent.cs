@@ -22,6 +22,4 @@ using HealthGateway.Common.Messaging;
 /// Represents and protect dependent event
 /// </summary>
 /// <param name="DependentHdid">The dependent hdid</param>
-public record DependentProtectionAddedEvent(string DependentHdid) : MessageBase
-{
-}
+public record DependentProtectionAddedEvent(string DependentHdid) : MessageBase;
