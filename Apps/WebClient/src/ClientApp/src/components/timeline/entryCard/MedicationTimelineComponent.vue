@@ -1,6 +1,5 @@
-<script lang="ts">
-import Vue from "vue";
-import { Component, Prop } from "vue-property-decorator";
+<script setup lang="ts">
+import { computed } from "vue";
 
 import { EntryType, entryTypeMap } from "@/constants/entryType";
 import MedicationTimelineEntry from "@/models/medicationTimelineEntry";
@@ -8,35 +7,28 @@ import PhoneUtil from "@/utility/phoneUtil";
 
 import EntryCardTimelineComponent from "./EntrycardTimelineComponent.vue";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const options: any = {
-    components: {
-        EntryCard: EntryCardTimelineComponent,
-    },
-};
+interface Props {
+    entry: MedicationTimelineEntry;
+    index: number;
+    datekey: string;
+    isMobileDetails: boolean;
+    commentsAreEnabled: boolean;
+}
+withDefaults(defineProps<Props>(), {
+    commentsAreEnabled: false,
+});
 
-@Component(options)
-export default class MedicationTimelineComponent extends Vue {
-    @Prop() entry!: MedicationTimelineEntry;
-    @Prop() index!: number;
-    @Prop() datekey!: string;
-    @Prop() isMobileDetails!: boolean;
+const entryIcon = computed<string | undefined>(
+    () => entryTypeMap.get(EntryType.Medication)?.icon
+);
 
-    @Prop({ default: false })
-    commentsAreEnabled!: boolean;
-
-    private get entryIcon(): string | undefined {
-        return entryTypeMap.get(EntryType.Medication)?.icon;
-    }
-
-    private formatPhone(phoneNumber: string): string {
-        return PhoneUtil.formatPhone(phoneNumber);
-    }
+function formatPhone(phoneNumber: string): string {
+    return PhoneUtil.formatPhone(phoneNumber);
 }
 </script>
 
 <template>
-    <EntryCard
+    <EntryCardTimelineComponent
         :card-id="index + '-' + datekey"
         :entry-icon="entryIcon"
         :title="entry.medication.brandName"
@@ -113,7 +105,7 @@ export default class MedicationTimelineComponent extends Vue {
                 </div>
             </b-col>
         </b-row>
-    </EntryCard>
+    </EntryCardTimelineComponent>
 </template>
 
 <style lang="scss" scoped>
