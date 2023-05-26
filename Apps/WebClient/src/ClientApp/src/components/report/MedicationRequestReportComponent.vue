@@ -1,7 +1,6 @@
-<script lang="ts">
-import Vue from "vue";
-import { Component, Emit, Prop, Watch } from "vue-property-decorator";
-import { Action, Getter } from "vuex-class";
+<script setup lang="ts">
+import { computed, onMounted, watch } from "vue";
+import { useStore } from "vue-composition-wrapper";
 
 import { DateWrapper } from "@/models/dateWrapper";
 import MedicationRequest from "@/models/medicationRequest";
@@ -15,6 +14,22 @@ import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ILogger, IReportService } from "@/services/interfaces";
 
+interface Props {
+    hdid: string;
+    filter: ReportFilter;
+    isDependent: boolean;
+}
+const props = withDefaults(defineProps<Props>(), {
+    isDependent: false,
+});
+
+const emit = defineEmits<{
+    (e: "on-is-loading-changed", newValue: boolean): void;
+    (e: "on-is-empty-changed", newValue: boolean): void;
+}>();
+
+defineExpose({ generateReport });
+
 interface MedicationRequestRow {
     date: string;
     requested_drug_name: string;
@@ -25,66 +40,93 @@ interface MedicationRequestRow {
     reference_number: string;
 }
 
-@Component
-export default class MedicationRequestReportComponent extends Vue {
-    @Prop({ required: true })
-    hdid!: string;
+const headerClass = "medication-request-report-table-header";
+const fields: ReportField[] = [
+    {
+        key: "date",
+        thClass: headerClass,
+        thStyle: { width: "10%" },
+        tdAttr: { "data-testid": "medicationRequestDateItem" },
+    },
+    {
+        key: "requested_drug_name",
+        thClass: headerClass,
+        thStyle: { width: "20%" },
+    },
+    {
+        key: "status",
+        thClass: headerClass,
+        thStyle: { width: "9%" },
+    },
+    {
+        key: "prescriber_name",
+        thClass: headerClass,
+        thStyle: { width: "15%" },
+    },
+    {
+        key: "effective_date",
+        thClass: headerClass,
+        thStyle: { width: "15%" },
+    },
+    {
+        key: "expiry_date",
+        thClass: headerClass,
+        thStyle: { width: "15%" },
+    },
+    {
+        key: "reference_number",
+        thClass: headerClass,
+        thStyle: { width: "16%" },
+    },
+];
 
-    @Prop() filter!: ReportFilter;
+const store = useStore();
+const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
 
-    @Prop({ default: false }) isDependent!: boolean;
+const specialAuthorityRequestsAreLoading = computed<boolean>(() =>
+    store.getters["medication/specialAuthorityRequestsAreLoading"](props.hdid)
+);
+const specialAuthorityRequests = computed<MedicationRequest[]>(() =>
+    store.getters["medication/specialAuthorityRequests"](props.hdid)
+);
 
-    @Action("retrieveSpecialAuthorityRequests", { namespace: "medication" })
-    retrieveSpecialAuthorityRequests!: (params: {
-        hdid: string;
-    }) => Promise<void>;
+const isEmpty = computed<boolean>(() => visibleRecords.value.length === 0);
 
-    @Getter("specialAuthorityRequestsAreLoading", { namespace: "medication" })
-    specialAuthorityRequestsAreLoading!: (hdid: string) => boolean;
+function retrieveSpecialAuthorityRequests(hdid: string): Promise<void> {
+    return store.dispatch("medication/retrieveSpecialAuthorityRequests", {
+        hdid,
+    });
+}
 
-    @Getter("specialAuthorityRequests", { namespace: "medication" })
-    specialAuthorityRequests!: (hdid: string) => MedicationRequest[];
+const visibleRecords = computed<MedicationRequest[]>(() => {
+    const records = specialAuthorityRequests.value.filter(
+        (record: MedicationRequest) =>
+            props.filter.allowsDate(record.requestedDate)
+    );
+    records.sort((a: MedicationRequest, b: MedicationRequest) => {
+        const firstDate = new DateWrapper(a.requestedDate);
+        const secondDate = new DateWrapper(b.requestedDate);
 
-    private logger!: ILogger;
+        if (firstDate.isBefore(secondDate)) {
+            return 1;
+        }
 
-    private readonly headerClass = "medication-request-report-table-header";
+        if (firstDate.isAfter(secondDate)) {
+            return -1;
+        }
 
-    private get isLoading(): boolean {
-        return this.specialAuthorityRequestsAreLoading(this.hdid);
-    }
+        return 0;
+    });
+    return records;
+});
 
-    private get isEmpty(): boolean {
-        return this.visibleRecords.length === 0;
-    }
-
-    private get visibleRecords(): MedicationRequest[] {
-        const records = this.specialAuthorityRequests(this.hdid).filter(
-            (record) => this.filter.allowsDate(record.requestedDate)
-        );
-        records.sort((a, b) => {
-            const firstDate = new DateWrapper(a.requestedDate);
-            const secondDate = new DateWrapper(b.requestedDate);
-
-            if (firstDate.isBefore(secondDate)) {
-                return 1;
-            }
-
-            if (firstDate.isAfter(secondDate)) {
-                return -1;
-            }
-
-            return 0;
-        });
-
-        return records;
-    }
-
-    private get items(): MedicationRequestRow[] {
-        return this.visibleRecords.map<MedicationRequestRow>((x) => ({
+const items = computed<MedicationRequestRow[]>(() => {
+    return visibleRecords.value.map<MedicationRequestRow>(
+        (x: MedicationRequest) => ({
             date: DateWrapper.format(x.requestedDate),
             requested_drug_name: x.drugName || "",
             status: x.requestStatus || "",
-            prescriber_name: this.prescriberName(x),
+            prescriber_name: prescriberName(x),
             effective_date:
                 x.effectiveDate === undefined
                     ? ""
@@ -94,113 +136,73 @@ export default class MedicationRequestReportComponent extends Vue {
                     ? ""
                     : DateWrapper.format(x.expiryDate),
             reference_number: x.referenceNumber,
-        }));
-    }
+        })
+    );
+});
 
-    @Watch("isLoading")
-    @Emit()
-    private onIsLoadingChanged(): boolean {
-        return this.isLoading;
-    }
-
-    @Watch("isEmpty")
-    @Emit()
-    private onIsEmptyChanged(): boolean {
-        return this.isEmpty;
-    }
-
-    private created(): void {
-        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-        this.retrieveSpecialAuthorityRequests({ hdid: this.hdid }).catch(
-            (err) =>
-                this.logger.error(
-                    `Error loading Special Authority requests data: ${err}`
-                )
-        );
-    }
-
-    private mounted(): void {
-        this.onIsEmptyChanged();
-    }
-
-    private prescriberName(medication: MedicationRequest): string {
-        return (
-            (medication.prescriberFirstName || " ") +
-            " " +
-            (medication.prescriberLastName || " ")
-        );
-    }
-
-    public async generateReport(
-        reportFormatType: ReportFormatType,
-        headerData: ReportHeader
-    ): Promise<RequestResult<Report>> {
-        const reportService = container.get<IReportService>(
-            SERVICE_IDENTIFIER.ReportService
-        );
-
-        return reportService.generateReport({
-            data: {
-                header: headerData,
-                records: this.items,
-            },
-            template: TemplateType.MedicationRequest,
-            type: reportFormatType,
-        });
-    }
-
-    private fields: ReportField[] = [
-        {
-            key: "date",
-            thClass: this.headerClass,
-            thStyle: { width: "10%" },
-            tdAttr: { "data-testid": "medicationRequestDateItem" },
-        },
-        {
-            key: "requested_drug_name",
-            thClass: this.headerClass,
-            thStyle: { width: "20%" },
-        },
-        {
-            key: "status",
-            thClass: this.headerClass,
-            thStyle: { width: "9%" },
-        },
-        {
-            key: "prescriber_name",
-            thClass: this.headerClass,
-            thStyle: { width: "15%" },
-        },
-        {
-            key: "effective_date",
-            thClass: this.headerClass,
-            thStyle: { width: "15%" },
-        },
-        {
-            key: "expiry_date",
-            thClass: this.headerClass,
-            thStyle: { width: "15%" },
-        },
-        {
-            key: "reference_number",
-            thClass: this.headerClass,
-            thStyle: { width: "16%" },
-        },
-    ];
+function prescriberName(medication: MedicationRequest): string {
+    return (
+        (medication.prescriberFirstName || " ") +
+        " " +
+        (medication.prescriberLastName || " ")
+    );
 }
+
+function generateReport(
+    reportFormatType: ReportFormatType,
+    headerData: ReportHeader
+): Promise<RequestResult<Report>> {
+    const reportService = container.get<IReportService>(
+        SERVICE_IDENTIFIER.ReportService
+    );
+
+    return reportService.generateReport({
+        data: {
+            header: headerData,
+            records: items.value,
+        },
+        template: TemplateType.MedicationRequest,
+        type: reportFormatType,
+    });
+}
+
+function onIsLoadingChanged(): void {
+    emit("on-is-loading-changed", specialAuthorityRequestsAreLoading.value);
+}
+
+function onIsEmptyChanged(): void {
+    emit("on-is-empty-changed", isEmpty.value);
+}
+
+watch(specialAuthorityRequestsAreLoading, () => {
+    onIsLoadingChanged();
+});
+
+watch(isEmpty, () => {
+    onIsEmptyChanged();
+});
+
+onMounted(() => {
+    onIsEmptyChanged();
+});
+
+// Created Hook
+retrieveSpecialAuthorityRequests(props.hdid).catch((err) =>
+    logger.error(`Error loading Special Authority requests data: ${err}`)
+);
 </script>
 
 <template>
     <div>
         <section>
-            <b-row v-if="isEmpty && !isLoading">
+            <b-row v-if="isEmpty && !specialAuthorityRequestsAreLoading">
                 <b-col>No records found.</b-col>
             </b-row>
             <b-table
                 v-else-if="!isDependent"
                 :striped="true"
                 :fixed="true"
-                :busy="isLoading"
+                :busy="specialAuthorityRequestsAreLoading"
                 :items="items"
                 :fields="fields"
                 data-testid="medication-request-report-table"
