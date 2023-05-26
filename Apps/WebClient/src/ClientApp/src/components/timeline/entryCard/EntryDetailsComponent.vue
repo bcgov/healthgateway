@@ -1,130 +1,95 @@
-<script lang="ts">
+<script setup lang="ts">
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
-import Vue from "vue";
-import { Component, Prop, Watch } from "vue-property-decorator";
-import { Action, Getter } from "vuex-class";
+import { computed, onMounted, ref, watch } from "vue";
+import { useStore } from "vue-composition-wrapper";
 
 import { entryTypeMap } from "@/constants/entryType";
 import EventBus, { EventMessageName } from "@/eventbus";
 import { Operation } from "@/models/storeOperations";
 import TimelineEntry from "@/models/timelineEntry";
-import User from "@/models/user";
-
-import ClinicalDocumentTimelineComponent from "./ClinicalDocumentTimelineComponent.vue";
-import Covid19LaboratoryOrderTimelineComponent from "./Covid19LaboratoryOrderTimelineComponent.vue";
-import EncounterTimelineComponent from "./EncounterTimelineComponent.vue";
-import HospitalVisitTimelineComponent from "./HospitalVisitTimelineComponent.vue";
-import ImmunizationTimelineComponent from "./ImmunizationTimelineComponent.vue";
-import LaboratoryOrderTimelineComponent from "./LaboratoryOrderTimelineComponent.vue";
-import MedicationRequestTimelineComponent from "./MedicationRequestTimelineComponent.vue";
-import MedicationTimelineComponent from "./MedicationTimelineComponent.vue";
-import NoteTimelineComponent from "./NoteTimelineComponent.vue";
 
 library.add(faArrowLeft);
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const options: any = {
-    components: {
-        ClinicalDocumentTimelineComponent,
-        Covid19LaboratoryOrderTimelineComponent,
-        EncounterTimelineComponent,
-        HospitalVisitTimelineComponent,
-        ImmunizationTimelineComponent,
-        LaboratoryOrderTimelineComponent,
-        MedicationRequestTimelineComponent,
-        MedicationTimelineComponent,
-        NoteTimelineComponent,
-    },
-};
-
-@Component(options)
-export default class EntryDetailsComponent extends Vue {
-    @Prop({ required: true })
-    hdid!: string;
-
-    @Prop({ default: false })
-    commentsAreEnabled!: boolean;
-
-    @Action("setHeaderState", { namespace: "navbar" })
-    setHeaderState!: (isOpen: boolean) => void;
-
-    @Getter("isMobile")
-    isMobile!: boolean;
-
-    @Getter("lastOperation", { namespace: "note" })
-    lastNoteOperation!: Operation | null;
-
-    @Getter("user", { namespace: "user" })
-    user!: User;
-
-    private entry: TimelineEntry | null = null;
-    private entryDate = "";
-
-    private eventBus = EventBus;
-
-    private isVisible = false;
-
-    private get modalTitle(): string {
-        return "";
-    }
-
-    @Watch("isMobile")
-    private onIsMobile(): void {
-        if (this.isVisible && !this.isMobile) {
-            this.handleClose();
-        }
-    }
-
-    @Watch("lastNoteOperation")
-    private onLastNoteOperation(): void {
-        if (
-            this.lastNoteOperation !== null &&
-            this.entry !== null &&
-            this.lastNoteOperation.id === this.entry.id
-        ) {
-            this.handleClose();
-        }
-    }
-
-    private created(): void {
-        window.onpopstate = (event: PopStateEvent) => {
-            this.hideModal();
-            event.preventDefault();
-        };
-    }
-
-    private mounted(): void {
-        this.entry = null;
-        this.eventBus.$on(EventMessageName.ViewEntryDetails, this.viewDetails);
-    }
-
-    public viewDetails(entry: TimelineEntry): void {
-        // Simulate a history push
-        history.pushState({}, "Entry Details", "?details");
-        this.entry = entry;
-        this.entryDate = entry.date.toISO();
-        this.isVisible = true;
-        this.setHeaderState(false);
-    }
-
-    private getComponentForEntry(): string {
-        return entryTypeMap.get(this.entry?.type)?.component ?? "";
-    }
-
-    public handleClose(): void {
-        history.back();
-    }
-
-    public hideModal(): void {
-        this.entry = null;
-        this.isVisible = false;
-    }
-
-    private clear(): void {
-        this.entry = null;
-    }
+interface Props {
+    hdid: string;
+    commentsAreEnabled: boolean;
 }
+withDefaults(defineProps<Props>(), {
+    commentsAreEnabled: false,
+});
+
+const eventBus = EventBus;
+const modalTitle = "";
+
+const store = useStore();
+
+const entry = ref<TimelineEntry | null>(null);
+const entryDate = ref("");
+const isVisible = ref(false);
+
+const isMobile = computed<boolean>(() => store.getters["isMobile"]);
+
+const lastNoteOperation = computed<Operation | null>(
+    () => store.getters["note/lastOperation"]
+);
+
+const componentForEntry = computed<string>(
+    () => entryTypeMap.get(entry.value?.type)?.component ?? ""
+);
+
+function setHeaderState(isOpen: boolean): void {
+    store.dispatch("navbar/setHeaderState", isOpen);
+}
+
+function viewDetails(incomingEntry: TimelineEntry): void {
+    // Simulate a history push
+    history.pushState({}, "Entry Details", "?details");
+    entry.value = incomingEntry;
+    entryDate.value = incomingEntry.date.toISO();
+    isVisible.value = true;
+    setHeaderState(false);
+}
+
+function handleClose(): void {
+    history.back();
+}
+
+function hideModal(): void {
+    entry.value = null;
+    isVisible.value = false;
+}
+
+function clear(): void {
+    entry.value = null;
+}
+
+watch(isMobile, () => {
+    if (isVisible.value && isMobile.value) {
+        handleClose();
+    }
+});
+
+watch(lastNoteOperation, () => {
+    if (
+        lastNoteOperation.value !== null &&
+        entry.value !== null &&
+        lastNoteOperation.value.id === entry.value.id
+    ) {
+        handleClose();
+    }
+});
+
+onMounted(() => {
+    entry.value = null;
+    eventBus.$on(EventMessageName.ViewEntryDetails, viewDetails);
+});
+
+// Created Hook
+window.onpopstate = (event: PopStateEvent) => {
+    hideModal();
+    event.preventDefault();
+};
 </script>
 
 <template>
@@ -161,7 +126,7 @@ export default class EntryDetailsComponent extends Vue {
             </b-row>
         </template>
         <component
-            :is="getComponentForEntry()"
+            :is="componentForEntry"
             v-if="entry != null"
             :datekey="entryDate"
             :entry="entry"
