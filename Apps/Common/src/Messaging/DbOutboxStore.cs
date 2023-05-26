@@ -31,7 +31,7 @@ using Microsoft.Extensions.Logging;
 /// <summary>
 /// Outbox store implementation that uses a dedicated Outbox table in the database.
 /// </summary>
-internal class DbOutboxStore : IOutboxStore
+public class DbOutboxStore : IOutboxStore
 {
     private readonly IOutboxQueueDelegate outboxDelegate;
     private readonly IBackgroundJobClient backgroundJobClient;
@@ -57,17 +57,18 @@ internal class DbOutboxStore : IOutboxStore
     public async Task StoreAsync(IEnumerable<MessageEnvelope> messages, CancellationToken ct = default)
     {
         this.logger.LogDebug("Storing messages in the DB");
-        var outboxItems = messages.Select(m => new OutboxItem
-        {
-            Content = Encoding.UTF8.GetString(m.Content.Serialize()),
-            Metadata = new OutboxItemMetadata
+        var outboxItems = messages.Select(
+            m => new OutboxItem
             {
-                CreatedOn = m.CreatedOn,
-                Type = m.MessageType,
-                SessionId = m.SessionId,
-                AssemblyQualifiedName = m.Content.GetType().AssemblyQualifiedName!,
-            },
-        });
+                Content = Encoding.UTF8.GetString(m.Content.Serialize()),
+                Metadata = new OutboxItemMetadata
+                {
+                    CreatedOn = m.CreatedOn,
+                    Type = m.MessageType,
+                    SessionId = m.SessionId,
+                    AssemblyQualifiedName = m.Content.GetType().AssemblyQualifiedName!,
+                },
+            });
         await this.outboxDelegate.Enqueue(outboxItems, ct);
         await this.outboxDelegate.Commit(ct);
 
@@ -89,11 +90,12 @@ internal class DbOutboxStore : IOutboxStore
         {
             var pendingItems = await this.outboxDelegate.Dequeue(ct);
 
-            var messages = pendingItems.Select(i =>
-            {
-                var message = (MessageBase)Encoding.UTF8.GetBytes(i.Content).Deserialize(Type.GetType(i.Metadata.AssemblyQualifiedName, true))!;
-                return new MessageEnvelope(message, i.Metadata.SessionId);
-            });
+            var messages = pendingItems.Select(
+                i =>
+                {
+                    var message = (MessageBase)Encoding.UTF8.GetBytes(i.Content).Deserialize(Type.GetType(i.Metadata.AssemblyQualifiedName, true))!;
+                    return new MessageEnvelope(message, i.Metadata.SessionId);
+                });
             await this.messageSender.SendAsync(messages, ct);
             await this.outboxDelegate.Commit(ct);
         }
