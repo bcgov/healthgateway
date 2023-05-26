@@ -1,4 +1,4 @@
-<script lang="ts">
+<script setup lang="ts">
 import { library } from "@fortawesome/fontawesome-svg-core";
 import {
     faArrowLeft,
@@ -16,23 +16,16 @@ import {
     faVial,
     faXRay,
 } from "@fortawesome/free-solid-svg-icons";
-import Vue from "vue";
-import { Component, Prop } from "vue-property-decorator";
-import { Action, Getter } from "vuex-class";
+import { computed } from "vue";
+import { useRouter, useStore } from "vue-composition-wrapper";
 
 import LoadingComponent from "@/components/LoadingComponent.vue";
-import NoteEditComponent from "@/components/modal/NoteEditComponent.vue";
 import BreadcrumbComponent from "@/components/navmenu/BreadcrumbComponent.vue";
-import AddNoteButtonComponent from "@/components/timeline/AddNoteButtonComponent.vue";
 import TimelineComponent from "@/components/timeline/TimelineComponent.vue";
 import { EntryType, entryTypeMap } from "@/constants/entryType";
 import BreadcrumbItem from "@/models/breadcrumbItem";
-import type { WebClientConfiguration } from "@/models/configData";
 import { Dependent } from "@/models/dependent";
 import User from "@/models/user";
-import container from "@/plugins/container";
-import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import { ILogger } from "@/services/interfaces";
 import ConfigUtil from "@/utility/configUtil";
 import DependentUtil from "@/utility/dependentUtil";
 
@@ -53,93 +46,71 @@ library.add(
     faXRay
 );
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const options: any = {
-    components: {
-        AddNoteButtonComponent,
-        BreadcrumbComponent,
-        LoadingComponent,
-        NoteEditComponent,
-        TimelineComponent,
-    },
-};
-
-@Component(options)
-export default class DependentTimelineView extends Vue {
-    @Prop({ required: true })
-    id!: string;
-
-    @Action("retrieveDependents", { namespace: "dependent" })
-    retrieveDependents!: (params: {
-        hdid: string;
-        bypassCache: boolean;
-    }) => Promise<void>;
-
-    @Getter("webClient", { namespace: "config" })
-    config!: WebClientConfiguration;
-
-    @Getter("dependents", { namespace: "dependent" })
-    dependents!: Dependent[];
-
-    @Getter("dependentsAreLoading", { namespace: "dependent" })
-    dependentsAreLoading!: boolean;
-
-    @Getter("user", { namespace: "user" })
-    user!: User;
-
-    logger!: ILogger;
-
-    get breadcrumbItems(): BreadcrumbItem[] {
-        return [
-            {
-                text: "Dependents",
-                to: "/dependents",
-                active: false,
-                dataTestId: "breadcrumb-dependents",
-            },
-            {
-                text: this.formattedName,
-                active: true,
-                dataTestId: "breadcrumb-dependent-name",
-            },
-        ];
-    }
-
-    get dependent(): Dependent | undefined {
-        return this.dependents.find((d) => d.ownerId === this.hdid);
-    }
-
-    get entryTypes(): EntryType[] {
-        return [...entryTypeMap.values()]
-            .filter((d) => ConfigUtil.isDependentDatasetEnabled(d.type))
-            .map((d) => d.type);
-    }
-
-    get formattedName(): string {
-        return DependentUtil.formatName(this.dependent?.dependentInformation);
-    }
-
-    get hdid(): string {
-        return this.id;
-    }
-
-    get title(): string {
-        return ["Timeline for", this.formattedName]
-            .filter((s) => Boolean(s))
-            .join(" ");
-    }
-
-    async created(): Promise<void> {
-        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-        await this.retrieveDependents({
-            hdid: this.user.hdid,
-            bypassCache: false,
-        });
-        if (this.dependent === undefined) {
-            await this.$router.push({ path: "/unauthorized" });
-        }
-    }
+interface Props {
+    id: string;
 }
+const props = defineProps<Props>();
+
+const store = useStore();
+const router = useRouter();
+
+const dependents = computed<Dependent[]>(
+    () => store.getters["dependent/dependents"]
+);
+
+const dependentsAreLoading = computed<boolean>(
+    () => store.getters["dependent/dependentsAreLoading"]
+);
+
+const user = computed<User>(() => store.getters["user/user"]);
+
+const dependent = computed<Dependent | undefined>(() => {
+    return dependents.value.find((d: Dependent) => d.ownerId === props.id);
+});
+const formattedName = computed<string>(() =>
+    DependentUtil.formatName(dependent.value?.dependentInformation)
+);
+
+const breadcrumbItems = computed<BreadcrumbItem[]>(() => {
+    return [
+        {
+            text: "Dependents",
+            to: "/dependents",
+            active: false,
+            dataTestId: "breadcrumb-dependents",
+        },
+        {
+            text: formattedName.value,
+            active: true,
+            dataTestId: "breadcrumb-dependent-name",
+        },
+    ];
+});
+
+const entryTypes = computed<EntryType[]>(() => {
+    return [...entryTypeMap.values()]
+        .filter((d) => ConfigUtil.isDependentDatasetEnabled(d.type))
+        .map((d) => d.type);
+});
+
+const title = computed<string>(() => {
+    return ["Timeline for", formattedName.value]
+        .filter((s) => Boolean(s))
+        .join(" ");
+});
+
+function retrieveDependents(hdid: string, bypassCache: boolean): Promise<void> {
+    return store.dispatch("dependent/retrieveDependents", {
+        hdid,
+        bypassCache,
+    });
+}
+
+retrieveDependents(user.value.hdid, false).then(() => {
+    if (dependent.value === undefined) {
+        router.push({ path: "/unauthorized" });
+    }
+});
 </script>
 
 <template>
@@ -160,7 +131,7 @@ export default class DependentTimelineView extends Vue {
                     </b-button>
                 </template>
             </page-title>
-            <TimelineComponent :hdid="hdid" :entry-types="entryTypes" />
+            <TimelineComponent :hdid="id" :entry-types="entryTypes" />
         </div>
     </div>
 </template>
