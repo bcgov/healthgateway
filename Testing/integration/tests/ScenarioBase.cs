@@ -63,11 +63,9 @@ public class WebAppFixture : IAsyncLifetime
                     { "RedisConnection", this.redisContainer.GetConnectionString() },
                 };
                 // set or override configuration settings
-                builder.ConfigureAppConfiguration((context, configBuilder) =>
-                {
-                    configBuilder.AddInMemoryCollection(configOverrides);
-                });
-            }, extensions?.ToArray() ?? Array.Empty<IAlbaExtension>());
+                builder.ConfigureAppConfiguration((context, configBuilder) => { configBuilder.AddInMemoryCollection(configOverrides); });
+            },
+            extensions?.ToArray() ?? Array.Empty<IAlbaExtension>());
         return host;
     }
 
@@ -77,6 +75,7 @@ public class WebAppFixture : IAsyncLifetime
         {
             await this.postgreSqlContainer.StartAsync();
         }
+
         if (this.redisContainer.State != TestcontainersStates.Running)
         {
             await this.redisContainer.StartAsync();
@@ -116,7 +115,7 @@ public abstract class ScenarioContextBase<TStartup> : IAsyncLifetime, IClassFixt
     public virtual async Task InitializeAsync()
     {
         var authentication = CreateClientCredentials(this.testConfiguration.DefaultUserName);
-        this.Host = await this.fixture.CreateHost<TStartup>(this.Output, extensions: new IAlbaExtension[] { authentication });
+        this.Host = await this.fixture.CreateHost<TStartup>(this.Output, extensions: new[] { authentication });
 
         using var migrationScope = this.Host.Services.CreateScope();
         var dbCtx = migrationScope.ServiceProvider.GetRequiredService<GatewayDbContext>();
