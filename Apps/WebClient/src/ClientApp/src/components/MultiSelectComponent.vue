@@ -1,61 +1,56 @@
-<script lang="ts">
-import Vue from "vue";
-import { Component, Emit, Model, Prop, Watch } from "vue-property-decorator";
+<script setup lang="ts">
+import { computed, onUnmounted, ref, watch } from "vue";
 
-export interface SelectOption {
-    value: string;
-    text: string;
-    disabled?: boolean;
+import { SelectOption } from "@/components/Interfaces/MultiSelectComponent";
+
+interface Props {
+    placeholder: string;
+    options: SelectOption[];
+    model: string[];
+}
+const props = withDefaults(defineProps<Props>(), {
+    placeholder: "Choose a tag...",
+    options: () => [] as SelectOption[],
+    model: () => [],
+});
+
+const emit = defineEmits<{
+    (e: "update-model", value: string[]): void;
+}>();
+
+const values = ref<string[]>([]);
+
+const availableOptions = computed<SelectOption[]>(() => {
+    if (props.options.length === 0) {
+        return [];
+    }
+
+    if (values.value.length === 0) {
+        return props.options;
+    }
+
+    return props.options.filter(
+        (opt) => values.value.indexOf(opt.value) === -1
+    );
+});
+
+function getValueText(value: unknown): string | SelectOption | undefined {
+    const option = props.options.find(
+        (opt) => opt.value === value || opt === value
+    );
+    return option?.text || option;
 }
 
-@Component
-export default class MultiSelectComponent extends Vue {
-    @Prop({ default: "Choose a tag..." }) placeholder!: string;
-    @Prop({ default: [] }) options!: SelectOption[];
-    @Model("change", { type: Array }) public model!: string[];
+watch(values, () => {
+    emit("update-model", values.value);
+});
 
-    private values: string[] = [];
-
-    private get availableOptions(): SelectOption[] {
-        if (this.options.length === 0) {
-            return [];
-        }
-
-        if (this.values.length === 0) {
-            return this.options;
-        }
-
-        return this.options.filter(
-            (opt) => this.values.indexOf(opt.value) === -1
-        );
-    }
-
-    @Watch("values")
-    private onValueChanged(): void {
-        this.updateModel();
-    }
-
-    @Watch("model")
-    private onModelChanged(): void {
-        this.values = this.model;
-    }
-
-    @Emit("change")
-    private updateModel(): string[] {
-        return this.values;
-    }
-
-    private getValueText(value: unknown): string | SelectOption | undefined {
-        const option = this.options.find(
-            (opt) => opt.value === value || opt === value
-        );
-        return option?.text || option;
-    }
-
-    private mounted(): void {
-        this.values = this.model;
-    }
-}
+watch(props.model, () => {
+    values.value = props.model;
+});
+onUnmounted(() => {
+    values.value = props.model;
+});
 </script>
 
 <template>
