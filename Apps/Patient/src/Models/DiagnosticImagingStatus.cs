@@ -31,20 +31,10 @@ namespace HealthGateway.Patient.Models
         Unknown,
 
         /// <summary>
-        /// Exam is scheduled.
-        /// </summary>
-        Scheduled,
-
-        /// <summary>
         /// Exam is in progress.
         /// </summary>
         [EnumMember(Value = "In Progress")]
         InProgress,
-
-        /// <summary>
-        /// Exam is finalized.
-        /// </summary>
-        Finalized,
 
         /// <summary>
         /// Exam result is pending.

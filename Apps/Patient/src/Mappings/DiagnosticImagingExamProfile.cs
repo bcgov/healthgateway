@@ -39,9 +39,9 @@ namespace HealthGateway.Patient.Mappings
         {
             return status switch
             {
-                PatientDataAccess.DiagnosticImagingStatus.Scheduled => DiagnosticImagingStatus.Scheduled,
+                PatientDataAccess.DiagnosticImagingStatus.Scheduled => DiagnosticImagingStatus.Pending,
                 PatientDataAccess.DiagnosticImagingStatus.InProgress => DiagnosticImagingStatus.InProgress,
-                PatientDataAccess.DiagnosticImagingStatus.Finalized => DiagnosticImagingStatus.Finalized,
+                PatientDataAccess.DiagnosticImagingStatus.Finalized => DiagnosticImagingStatus.Pending,
                 PatientDataAccess.DiagnosticImagingStatus.Pending => DiagnosticImagingStatus.Pending,
                 PatientDataAccess.DiagnosticImagingStatus.Completed => DiagnosticImagingStatus.Completed,
                 PatientDataAccess.DiagnosticImagingStatus.Amended => DiagnosticImagingStatus.Amended,
