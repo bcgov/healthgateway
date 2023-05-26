@@ -44,5 +44,10 @@ namespace HealthGateway.Database.Constants
         /// The Provincial Drug loading program.
         /// </summary>
         public const string Provincial = "PROV-DRUG";
+
+        /// <summary>
+        /// The Pharmacy Assessment file.
+        /// </summary>
+        public const string PharmacyAssessment = "PHAR-ASSMT";
     }
 }
