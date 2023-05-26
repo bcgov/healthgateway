@@ -1,7 +1,6 @@
-<script lang="ts">
-import Vue from "vue";
-import { Component, Emit, Prop, Watch } from "vue-property-decorator";
-import { Action, Getter } from "vuex-class";
+<script setup lang="ts">
+import { computed, onMounted, watch } from "vue";
+import { useStore } from "vue-composition-wrapper";
 
 import { DateWrapper } from "@/models/dateWrapper";
 import Report from "@/models/report";
@@ -15,141 +14,142 @@ import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ILogger, IReportService } from "@/services/interfaces";
 
+interface Props {
+    hdid: string;
+    filter: ReportFilter;
+    isDependent: boolean;
+}
+const props = withDefaults(defineProps<Props>(), {
+    isDependent: false,
+});
+
+const emit = defineEmits<{
+    (e: "on-is-loading-changed", newValue: boolean): void;
+    (e: "on-is-empty-changed", newValue: boolean): void;
+}>();
+
+defineExpose({ generateReport });
+
 interface UserNoteRow {
     date: string;
     title: string;
     note: string;
 }
 
-@Component
-export default class NotesReportComponent extends Vue {
-    @Prop({ required: true })
-    hdid!: string;
+const headerClass = "note-report-table-header";
+const fields: ReportField[] = [
+    {
+        key: "date",
+        thClass: headerClass,
+        tdAttr: { "data-testid": "user-note-date" },
+        thStyle: { width: "10%" },
+    },
+    {
+        key: "title",
+        thClass: headerClass,
+        tdAttr: { "data-testid": "user-note-title" },
+        thStyle: { width: "30%" },
+    },
+    {
+        key: "note",
+        thClass: headerClass,
+        thStyle: { width: "60%" },
+        tdClass: "text-left",
+    },
+];
 
-    @Prop() private filter!: ReportFilter;
+const store = useStore();
+const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
 
-    @Prop({ default: false }) isDependent!: boolean;
+const notesAreLoading = computed<boolean>(
+    () => store.getters["note/notesAreLoading"]
+);
 
-    @Action("retrieveNotes", { namespace: "note" })
-    retrieveNotes!: (params: { hdid: string }) => Promise<void>;
+const notes = computed<UserNote[]>(() => store.getters["note/notes"]);
 
-    @Getter("notesAreLoading", { namespace: "note" })
-    notesAreLoading!: boolean;
+const visibleRecords = computed<UserNote[]>(() => {
+    const records = notes.value.filter((record) =>
+        props.filter.allowsDate(record.journalDate)
+    );
+    records.sort((a, b) => {
+        const firstDate = new DateWrapper(a.journalDate);
+        const secondDate = new DateWrapper(b.journalDate);
 
-    @Getter("notes", { namespace: "note" })
-    notes!: UserNote[];
+        if (firstDate.isBefore(secondDate)) {
+            return 1;
+        }
 
-    private logger!: ILogger;
+        if (firstDate.isAfter(secondDate)) {
+            return -1;
+        }
 
-    private readonly headerClass = "note-report-table-header";
+        return 0;
+    });
+    return records;
+});
 
-    private get isLoading(): boolean {
-        return this.notesAreLoading;
-    }
+const isEmpty = computed<boolean>(() => visibleRecords.value.length === 0);
 
-    private get visibleRecords(): UserNote[] {
-        const records = this.notes.filter((record) =>
-            this.filter.allowsDate(record.journalDate)
-        );
-        records.sort((a, b) => {
-            const firstDate = new DateWrapper(a.journalDate);
-            const secondDate = new DateWrapper(b.journalDate);
+const items = computed<UserNoteRow[]>(() => {
+    return visibleRecords.value.map<UserNoteRow>((x) => ({
+        date: DateWrapper.format(x.journalDate),
+        title: x.title,
+        note: x.text,
+    }));
+});
 
-            if (firstDate.isBefore(secondDate)) {
-                return 1;
-            }
-
-            if (firstDate.isAfter(secondDate)) {
-                return -1;
-            }
-
-            return 0;
-        });
-
-        return records;
-    }
-
-    private get isEmpty(): boolean {
-        return this.visibleRecords.length === 0;
-    }
-
-    private get items(): UserNoteRow[] {
-        return this.visibleRecords.map<UserNoteRow>((x) => ({
-            date: DateWrapper.format(x.journalDate),
-            title: x.title,
-            note: x.text,
-        }));
-    }
-
-    @Watch("isLoading")
-    @Emit()
-    private onIsLoadingChanged(): boolean {
-        return this.isLoading;
-    }
-
-    @Watch("isEmpty")
-    @Emit()
-    private onIsEmptyChanged(): boolean {
-        return this.isEmpty;
-    }
-
-    private created(): void {
-        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-        this.retrieveNotes({ hdid: this.hdid }).catch((err) =>
-            this.logger.error(`Error loading user note data: ${err}`)
-        );
-    }
-
-    private mounted(): void {
-        this.onIsEmptyChanged();
-    }
-
-    public async generateReport(
-        reportFormatType: ReportFormatType,
-        headerData: ReportHeader
-    ): Promise<RequestResult<Report>> {
-        const reportService = container.get<IReportService>(
-            SERVICE_IDENTIFIER.ReportService
-        );
-
-        return reportService.generateReport({
-            data: {
-                header: headerData,
-                records: this.items,
-            },
-            template: TemplateType.Notes,
-            type: reportFormatType,
-        });
-    }
-
-    private fields: ReportField[] = [
-        {
-            key: "date",
-            thClass: this.headerClass,
-            tdAttr: { "data-testid": "user-note-date" },
-            thStyle: { width: "10%" },
-        },
-        {
-            key: "title",
-            thClass: this.headerClass,
-            tdAttr: { "data-testid": "user-note-title" },
-            thStyle: { width: "30%" },
-        },
-        {
-            key: "note",
-            thClass: this.headerClass,
-            thStyle: { width: "60%" },
-            tdClass: "text-left",
-        },
-    ];
+function retrieveNotes(hdid: string): Promise<void> {
+    return store.dispatch("note/retrieveNotes", { hdid });
 }
+
+function generateReport(
+    reportFormatType: ReportFormatType,
+    headerData: ReportHeader
+): Promise<RequestResult<Report>> {
+    const reportService = container.get<IReportService>(
+        SERVICE_IDENTIFIER.ReportService
+    );
+
+    return reportService.generateReport({
+        data: {
+            header: headerData,
+            records: items.value,
+        },
+        template: TemplateType.Notes,
+        type: reportFormatType,
+    });
+}
+function onIsLoadingChanged(): void {
+    emit("on-is-loading-changed", notesAreLoading.value);
+}
+
+function onIsEmptyChanged(): void {
+    emit("on-is-empty-changed", isEmpty.value);
+}
+
+watch(notesAreLoading, () => {
+    onIsLoadingChanged();
+});
+
+watch(isEmpty, () => {
+    onIsEmptyChanged();
+});
+
+onMounted(() => {
+    onIsEmptyChanged();
+});
+
+// Created hook
+retrieveNotes(props.hdid).catch((err) =>
+    logger.error(`Error loading user note data: ${err}`)
+);
 </script>
 
 <template>
     <div>
         <div>
             <section>
-                <b-row v-if="isEmpty && !isLoading">
+                <b-row v-if="isEmpty && !notesAreLoading">
                     <b-col>No records found.</b-col>
                 </b-row>
 
