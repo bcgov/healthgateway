@@ -10,7 +10,7 @@ export default interface CovidTreatmentAssessmentRequest {
     phoneNumber?: string;
     identifiesIndigenous: CovidTreatmentAssessmentOption;
     hasAFamilyDoctorOrNp: CovidTreatmentAssessmentOption;
-    confirmsOver12: boolean;
+    confirmsOver18: boolean;
     testedPositiveInPast7Days: CovidTreatmentAssessmentOption;
     hasSevereCovid19Symptoms: CovidTreatmentAssessmentOption;
     hasMildOrModerateCovid19Symptoms: CovidTreatmentAssessmentOption;
