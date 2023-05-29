@@ -1,12 +1,7 @@
-<script lang="ts">
+<script setup lang="ts">
 import { saveAs } from "file-saver";
-import Vue, { Component } from "vue";
-import {
-    Component as ComponentDecorator,
-    Prop,
-    Ref,
-} from "vue-property-decorator";
-import { Action, Getter } from "vuex-class";
+import { Component, computed, ref } from "vue";
+import { useStore } from "vue-composition-wrapper";
 
 import DatePickerComponent from "@/components/DatePickerComponent.vue";
 import { SelectOption } from "@/components/interfaces/MultiSelectComponent";
@@ -23,7 +18,6 @@ import MSPVisitsReportComponent from "@/components/report/MSPVisitsReportCompone
 import NotesReportComponent from "@/components/report/NotesReportComponent.vue";
 import { EntryType, entryTypeMap } from "@/constants/entryType";
 import { ErrorSourceType, ErrorType } from "@/constants/errorType";
-import type { WebClientConfiguration } from "@/models/configData";
 import { DateWrapper, StringISODate } from "@/models/dateWrapper";
 import { Dependent } from "@/models/dependent";
 import { ResultError } from "@/models/errors";
@@ -31,7 +25,7 @@ import MedicationStatementHistory from "@/models/medicationStatementHistory";
 import MedicationSummary from "@/models/medicationSummary";
 import Patient from "@/models/patient";
 import Report from "@/models/report";
-import { ReportFilterBuilder } from "@/models/reportFilter";
+import ReportFilter, { ReportFilterBuilder } from "@/models/reportFilter";
 import ReportHeader from "@/models/reportHeader";
 import { ReportFormatType } from "@/models/reportRequest";
 import RequestResult from "@/models/requestResult";
@@ -40,6 +34,14 @@ import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ILogger } from "@/services/interfaces";
 import ConfigUtil from "@/utility/configUtil";
 import EventTracker from "@/utility/eventTracker";
+
+interface Props {
+    hdid: string;
+    isDependent?: boolean;
+}
+const props = withDefaults(defineProps<Props>(), {
+    isDependent: false,
+});
 
 const reportComponentMap = new Map<EntryType, Component>([
     [EntryType.Medication, MedicationHistoryReportComponent],
@@ -52,340 +54,282 @@ const reportComponentMap = new Map<EntryType, Component>([
     [EntryType.HospitalVisit, HospitalVisitReportComponent],
 ]);
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const options: any = {
-    components: {
-        LoadingComponent,
-        MessageModalComponent,
-        MedicationHistoryReportComponent,
-        MSPVisitsReportComponent,
-        Covid19ReportComponent,
-        ImmunizationHistoryReportComponent,
-        MedicationRequestReportComponent,
-        DatePickerComponent,
-        MultiSelectComponent,
-        NotesReportComponent,
-        LaboratoryReportComponent,
-        HospitalVisitReportComponent,
-    },
-};
+const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+const store = useStore();
 
-@ComponentDecorator(options)
-export default class ReportsComponent extends Vue {
-    @Prop({ required: true })
-    hdid!: string;
+const isLoading = ref(false);
+const isGeneratingReport = ref(false);
+const reportFormatType = ref(ReportFormatType.PDF);
+const selectedEntryType = ref<EntryType | "">("");
+const reportTypeOptions = ref([{ value: "", text: "Select" }]);
+const selectedStartDate = ref<StringISODate | null>(null);
+const selectedEndDate = ref<StringISODate | null>(null);
+const selectedMedicationOptions = ref<string[]>([]);
+const hasRecords = ref(false);
+const reportFilter = ref<ReportFilter>(ReportFilterBuilder.create().build());
+const isReportFilterStartDateValidDate = ref(true);
+const isReportFilterEndDateValidDate = ref(true);
 
-    @Prop({ default: false }) private isDependent!: boolean;
+const messageModal = ref<MessageModalComponent>();
+const reportComponent = ref<{
+    generateReport: (
+        reportFormatType: ReportFormatType,
+        headerData: ReportHeader
+    ) => Promise<RequestResult<Report>>;
+}>();
 
-    @Getter("webClient", { namespace: "config" })
-    config!: WebClientConfiguration;
+const laboratoryOrdersAreQueued = computed<boolean>(() =>
+    store.getters["laboratory/laboratoryOrdersAreQueued"](props.hdid)
+);
+const medications = computed<MedicationStatementHistory[]>(() =>
+    store.getters["medication/medications"](props.hdid)
+);
+const patient = computed<Patient>(() => store.getters["user/patient"]);
+const dependents = computed<Dependent[]>(
+    () => store.getters["dependent/dependents"]
+);
 
-    @Getter("laboratoryOrdersAreQueued", { namespace: "laboratory" })
-    laboratoryOrdersAreQueued!: (hdid: string) => boolean;
-
-    @Getter("medications", { namespace: "medication" })
-    medications!: (hdid: string) => MedicationStatementHistory[];
-
-    @Getter("patient", { namespace: "user" })
-    patient!: Patient;
-
-    @Getter("dependents", { namespace: "dependent" })
-    private dependents!: Dependent[];
-
-    @Ref("messageModal")
-    readonly messageModal!: MessageModalComponent;
-
-    @Ref("report")
-    readonly report!: {
-        generateReport: (
-            reportFormatType: ReportFormatType,
-            headerData: ReportHeader
-        ) => Promise<RequestResult<Report>>;
-    };
-
-    @Action("addError", { namespace: "errorBanner" })
-    addError!: (params: {
-        errorType: ErrorType;
-        source: ErrorSourceType;
-        traceId: string | undefined;
-    }) => void;
-
-    @Action("setTooManyRequestsError", { namespace: "errorBanner" })
-    setTooManyRequestsError!: (params: { key: string }) => void;
-
-    ReportFormatType: unknown = ReportFormatType;
-    isLoading = false;
-    isGeneratingReport = false;
-    reportFormatType = ReportFormatType.PDF;
-    selectedEntryType: EntryType | "" = "";
-    reportTypeOptions = [{ value: "", text: "Select" }];
-
-    selectedStartDate: StringISODate | null = null;
-    selectedEndDate: StringISODate | null = null;
-    selectedMedicationOptions: string[] = [];
-
-    hasRecords = false;
-
-    reportFilter = ReportFilterBuilder.create().build();
-    isReportFilterStartDateValidDate = true;
-    isReportFilterEndDateValidDate = true;
-
-    logger!: ILogger;
-
-    get selectedReportComponent(): Component | string {
-        if (!this.selectedEntryType) {
-            return "";
-        }
-
-        return reportComponentMap.get(this.selectedEntryType) ?? "";
+const selectedReportComponent = computed(() => {
+    if (!selectedEntryType.value) {
+        return "";
     }
 
-    get showLaboratoryOrderQueuedMessage(): boolean {
-        return (
-            this.selectedEntryType === EntryType.LabResult &&
-            this.laboratoryOrdersAreQueued(this.hdid)
-        );
+    return reportComponentMap.get(selectedEntryType.value) ?? "";
+});
+const showLaboratoryOrderQueuedMessage = computed(
+    () =>
+        selectedEntryType.value === EntryType.LabResult &&
+        laboratoryOrdersAreQueued.value
+);
+const headerData = computed<ReportHeader>(() => {
+    const dependent = dependents.value.find(
+        (d) => d.dependentInformation.hdid === props.hdid
+    );
+    if (dependent) {
+        return {
+            phn: dependent.dependentInformation.PHN,
+            dateOfBirth: formatDate(
+                dependent.dependentInformation.dateOfBirth || ""
+            ),
+            name: dependent.dependentInformation
+                ? dependent.dependentInformation.firstname +
+                  " " +
+                  dependent.dependentInformation.lastname
+                : "",
+            isRedacted: reportFilter.value.hasMedicationsFilter(),
+            datePrinted: new DateWrapper(new DateWrapper().toISO()).format(),
+            filterText: reportFilter.value.filterText,
+        };
+    } else {
+        return {
+            phn: patient.value.personalHealthNumber,
+            dateOfBirth: formatDate(patient.value.birthdate || ""),
+            name: patient.value
+                ? patient.value.preferredName.givenName +
+                  " " +
+                  patient.value.preferredName.surname
+                : "",
+            isRedacted: reportFilter.value.hasMedicationsFilter(),
+            datePrinted: new DateWrapper(new DateWrapper().toISO()).format(),
+            filterText: reportFilter.value.filterText,
+        };
     }
-
-    get headerData(): ReportHeader {
-        const dependent = this.dependents.find(
-            (d) => d.dependentInformation.hdid === this.hdid
-        );
-        if (dependent) {
-            return {
-                phn: dependent.dependentInformation.PHN,
-                dateOfBirth: this.formatDate(
-                    dependent.dependentInformation.dateOfBirth || ""
-                ),
-                name: dependent.dependentInformation
-                    ? dependent.dependentInformation.firstname +
-                      " " +
-                      dependent.dependentInformation.lastname
-                    : "",
-                isRedacted: this.reportFilter.hasMedicationsFilter(),
-                datePrinted: new DateWrapper(
-                    new DateWrapper().toISO()
-                ).format(),
-                filterText: this.reportFilter.filterText,
-            };
-        } else {
-            return {
-                phn: this.patient.personalHealthNumber,
-                dateOfBirth: this.formatDate(this.patient.birthdate || ""),
-                name: this.patient
-                    ? this.patient.preferredName.givenName +
-                      " " +
-                      this.patient.preferredName.surname
-                    : "",
-                isRedacted: this.reportFilter.hasMedicationsFilter(),
-                datePrinted: new DateWrapper(
-                    new DateWrapper().toISO()
-                ).format(),
-                filterText: this.reportFilter.filterText,
-            };
-        }
-    }
-
-    get isMedicationReport(): boolean {
-        return this.selectedEntryType === EntryType.Medication;
-    }
-
-    get medicationOptions(): SelectOption[] {
-        const records = this.medications(this.hdid).reduce<MedicationSummary[]>(
-            (acumulator: MedicationSummary[], current) => {
+});
+const isMedicationReport = computed(
+    () => selectedEntryType.value === EntryType.Medication
+);
+const medicationOptions = computed(() =>
+    medications.value
+        .reduce<MedicationSummary[]>(
+            (accumulator: MedicationSummary[], current) => {
                 const med = current.medicationSummary;
                 if (
-                    acumulator.findIndex((x) => x.brandName === med.brandName) <
-                    0
+                    accumulator.findIndex(
+                        (x) => x.brandName === med.brandName
+                    ) < 0
                 ) {
-                    acumulator.push(med);
+                    accumulator.push(med);
                 }
-                return acumulator;
+                return accumulator;
             },
             []
-        );
-
-        records.sort((a, b) => a.brandName.localeCompare(b.brandName));
-
-        return records.map<SelectOption>((x) => ({
+        )
+        .sort((a, b) => a.brandName.localeCompare(b.brandName))
+        .map<SelectOption>((x) => ({
             text: x.brandName,
             value: x.brandName,
-        }));
+        }))
+);
+const isDownloadDisabled = computed(
+    () =>
+        isLoading.value ||
+        !selectedEntryType.value ||
+        !patient.value.hdid ||
+        !hasRecords.value
+);
+
+function addError(
+    errorType: ErrorType,
+    source: ErrorSourceType,
+    traceId: string | undefined
+): void {
+    store.dispatch("errorBanner/addError", { errorType, source, traceId });
+}
+
+function setTooManyRequestsError(key: string): void {
+    store.dispatch("errorBanner/setTooManyRequestsError", { key });
+}
+
+function formatDate(date: string): string {
+    return DateWrapper.format(date);
+}
+
+function clearFilterDates(): void {
+    selectedStartDate.value = null;
+    selectedEndDate.value = null;
+    updateFilter();
+}
+
+function clearFilterMedication(medicationName: string): void {
+    const index = selectedMedicationOptions.value.indexOf(medicationName);
+    if (index >= 0) {
+        selectedMedicationOptions.value.splice(index, 1);
+        updateFilter();
+    }
+}
+
+function cancelFilter(): void {
+    selectedStartDate.value = convertEmptyStringDateToNull(
+        reportFilter.value.startDate
+    );
+    selectedEndDate.value = convertEmptyStringDateToNull(
+        reportFilter.value.endDate
+    );
+    selectedMedicationOptions.value = reportFilter.value.medications;
+}
+
+function updateFilter(): void {
+    reportFilter.value = ReportFilterBuilder.create()
+        .withStartDate(convertEmptyStringDateToNull(selectedStartDate.value))
+        .withEndDate(convertEmptyStringDateToNull(selectedEndDate.value))
+        .withMedications(selectedMedicationOptions.value)
+        .build();
+}
+
+function convertEmptyStringDateToNull(
+    date: StringISODate | null
+): string | null {
+    return !date ? null : date;
+}
+
+function showConfirmationModal(type: ReportFormatType): void {
+    reportFormatType.value = type;
+    messageModal.value?.showModal();
+}
+
+function downloadReport(): void {
+    if (!selectedEntryType.value || !reportComponent.value) {
+        return;
     }
 
-    get isDownloadDisabled(): boolean {
-        return (
-            this.isLoading ||
-            !this.selectedEntryType ||
-            !this.patient.hdid ||
-            !this.hasRecords
-        );
-    }
+    isGeneratingReport.value = true;
 
-    formatDate(date: string): string {
-        return DateWrapper.format(date);
-    }
+    trackDownload();
 
-    created(): void {
-        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-
-        const isEnabled = this.isDependent
-            ? ConfigUtil.isDependentDatasetEnabled
-            : ConfigUtil.isDatasetEnabled;
-
-        for (const [entryType] of reportComponentMap) {
-            if (isEnabled(entryType)) {
-                this.reportTypeOptions.push({
-                    value: entryType,
-                    text: entryTypeMap.get(entryType)?.name ?? "",
-                });
-            }
-        }
-    }
-
-    clearFilter(): void {
-        this.selectedStartDate = null;
-        this.selectedEndDate = null;
-        this.selectedMedicationOptions = [];
-        this.updateFilter();
-    }
-
-    clearFilterDates(): void {
-        this.selectedStartDate = null;
-        this.selectedEndDate = null;
-        this.updateFilter();
-    }
-
-    clearFilterMedication(medicationName: string): void {
-        const index = this.selectedMedicationOptions.indexOf(medicationName);
-        if (index >= 0) {
-            this.selectedMedicationOptions.splice(index, 1);
-            this.updateFilter();
-        }
-    }
-
-    cancelFilter(): void {
-        this.selectedStartDate = this.convertEmptyStringDateToNull(
-            this.reportFilter.startDate
-        );
-        this.selectedEndDate = this.convertEmptyStringDateToNull(
-            this.reportFilter.endDate
-        );
-        this.selectedMedicationOptions = this.reportFilter.medications;
-    }
-
-    updateFilter(): void {
-        this.reportFilter = ReportFilterBuilder.create()
-            .withStartDate(
-                this.convertEmptyStringDateToNull(this.selectedStartDate)
-            )
-            .withEndDate(
-                this.convertEmptyStringDateToNull(this.selectedEndDate)
-            )
-            .withMedications(this.selectedMedicationOptions)
-            .build();
-    }
-
-    convertEmptyStringDateToNull(date: StringISODate | null): string | null {
-        return !date ? null : date;
-    }
-
-    showConfirmationModal(reportFormatType: ReportFormatType): void {
-        this.reportFormatType = reportFormatType;
-        this.messageModal.showModal();
-    }
-
-    downloadReport(): void {
-        if (!this.selectedEntryType) {
-            return;
-        }
-
-        this.isGeneratingReport = true;
-
-        this.trackDownload();
-
-        this.report
-            .generateReport(this.reportFormatType, this.headerData)
-            .then((result: RequestResult<Report>) => {
-                const mimeType = this.getMimeType(this.reportFormatType);
-                const downloadLink = `data:${mimeType};base64,${result.resourcePayload.data}`;
-                fetch(downloadLink).then((res) =>
-                    res
-                        .blob()
-                        .then((blob) =>
-                            saveAs(blob, result.resourcePayload.fileName)
-                        )
+    reportComponent.value
+        .generateReport(reportFormatType.value, headerData.value)
+        .then((result: RequestResult<Report>) => {
+            const mimeType = getMimeType(reportFormatType.value);
+            const downloadLink = `data:${mimeType};base64,${result.resourcePayload.data}`;
+            fetch(downloadLink).then((res) =>
+                res
+                    .blob()
+                    .then((blob) =>
+                        saveAs(blob, result.resourcePayload.fileName)
+                    )
+            );
+        })
+        .catch((err: ResultError) => {
+            logger.error(err.resultMessage);
+            if (err.statusCode === 429) {
+                setTooManyRequestsError("page");
+            } else {
+                addError(
+                    ErrorType.Download,
+                    ErrorSourceType.ExportRecords,
+                    err.traceId
                 );
-            })
-            .catch((err: ResultError) => {
-                this.logger.error(err.resultMessage);
-                if (err.statusCode === 429) {
-                    this.setTooManyRequestsError({ key: "page" });
-                } else {
-                    this.addError({
-                        errorType: ErrorType.Download,
-                        source: ErrorSourceType.ExportRecords,
-                        traceId: err.traceId,
-                    });
-                }
-            })
-            .finally(() => {
-                this.isGeneratingReport = false;
-            });
+            }
+        })
+        .finally(() => {
+            isGeneratingReport.value = false;
+        });
+}
+
+function getMimeType(reportFormatType: ReportFormatType): string {
+    switch (reportFormatType) {
+        case ReportFormatType.PDF:
+            return "application/pdf";
+        case ReportFormatType.CSV:
+            return "text/csv";
+        case ReportFormatType.XLSX:
+            return "application/vnd.openxmlformats";
+        default:
+            return "";
+    }
+}
+
+function trackDownload(): void {
+    let reportName = "";
+    switch (selectedEntryType.value) {
+        case EntryType.Medication:
+            reportName = "Medication";
+            break;
+        case EntryType.HealthVisit:
+            reportName = "Health Visits";
+            break;
+        case EntryType.Covid19TestResult:
+            reportName = "COVID‑19 Test";
+            break;
+        case EntryType.Immunization:
+            reportName = "Immunization";
+            break;
+        case EntryType.SpecialAuthorityRequest:
+            reportName = "Special Authority Requests";
+            break;
+        case EntryType.Note:
+            reportName = "Notes";
+            break;
+        case EntryType.LabResult:
+            reportName = "Laboratory Tests";
+            break;
+        case EntryType.HospitalVisit:
+            reportName = "Hospital Visits";
+            break;
+        default:
+            return;
     }
 
-    getMimeType(reportFormatType: ReportFormatType): string {
-        switch (reportFormatType) {
-            case ReportFormatType.PDF:
-                return "application/pdf";
-            case ReportFormatType.CSV:
-                return "text/csv";
-            case ReportFormatType.XLSX:
-                return "application/vnd.openxmlformats";
-            default:
-                return "";
-        }
+    const formatTypeName = ReportFormatType[reportFormatType.value];
+    const eventName = `${reportName} (${formatTypeName})`;
+
+    if (!props.isDependent) {
+        EventTracker.downloadReport(eventName);
+    } else {
+        EventTracker.downloadReport(`Dependent_${eventName}`);
     }
+}
 
-    trackDownload(): void {
-        let reportName = "";
-        switch (this.selectedEntryType) {
-            case EntryType.Medication:
-                reportName = "Medication";
-                break;
-            case EntryType.HealthVisit:
-                reportName = "Health Visits";
-                break;
-            case EntryType.Covid19TestResult:
-                reportName = "COVID‑19 Test";
-                break;
-            case EntryType.Immunization:
-                reportName = "Immunization";
-                break;
-            case EntryType.SpecialAuthorityRequest:
-                reportName = "Special Authority Requests";
-                break;
-            case EntryType.Note:
-                reportName = "Notes";
-                break;
-            case EntryType.LabResult:
-                reportName = "Laboratory Tests";
-                break;
-            case EntryType.HospitalVisit:
-                reportName = "Hospital Visits";
-                break;
-            default:
-                return;
-        }
+const reportIsEnabled = props.isDependent
+    ? ConfigUtil.isDependentDatasetEnabled
+    : ConfigUtil.isDatasetEnabled;
 
-        const formatTypeName = ReportFormatType[this.reportFormatType];
-        const eventName = `${reportName} (${formatTypeName})`;
-
-        if (!this.isDependent) {
-            EventTracker.downloadReport(eventName);
-        } else {
-            EventTracker.downloadReport(`Dependent_${eventName}`);
-        }
+for (const [entryType] of reportComponentMap) {
+    if (reportIsEnabled(entryType)) {
+        reportTypeOptions.value.push({
+            value: entryType,
+            text: entryTypeMap.get(entryType)?.name ?? "",
+        });
     }
 }
 </script>
@@ -583,7 +527,7 @@ export default class ReportsComponent extends Vue {
         >
             <component
                 :is="selectedReportComponent"
-                ref="report"
+                ref="reportComponent"
                 :hdid="hdid"
                 :filter="reportFilter"
                 :is-dependent="isDependent"

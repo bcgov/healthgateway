@@ -9,16 +9,6 @@ import EventBus, { EventMessageName } from "@/eventbus";
 import { Operation } from "@/models/storeOperations";
 import TimelineEntry from "@/models/timelineEntry";
 
-import ClinicalDocumentTimelineComponent from "./ClinicalDocumentTimelineComponent.vue";
-import Covid19LaboratoryOrderTimelineComponent from "./Covid19LaboratoryOrderTimelineComponent.vue";
-import EncounterTimelineComponent from "./EncounterTimelineComponent.vue";
-import HospitalVisitTimelineComponent from "./HospitalVisitTimelineComponent.vue";
-import ImmunizationTimelineComponent from "./ImmunizationTimelineComponent.vue";
-import LaboratoryOrderTimelineComponent from "./LaboratoryOrderTimelineComponent.vue";
-import MedicationRequestTimelineComponent from "./MedicationRequestTimelineComponent.vue";
-import MedicationTimelineComponent from "./MedicationTimelineComponent.vue";
-import NoteTimelineComponent from "./NoteTimelineComponent.vue";
-
 library.add(faArrowLeft);
 
 interface Props {
@@ -41,30 +31,9 @@ const lastNoteOperation = computed<Operation | null>(
     () => store.getters["note/lastOperation"]
 );
 
-const componentForEntry = computed<Component | string>(() => {
-    switch (entryTypeMap.get(entry.value?.type)?.component) {
-        case "ClinicalDocumentTimelineComponent":
-            return ClinicalDocumentTimelineComponent;
-        case "Covid19LaboratoryOrderTimelineComponent":
-            return Covid19LaboratoryOrderTimelineComponent;
-        case "EncounterTimelineComponent":
-            return EncounterTimelineComponent;
-        case "HospitalVisitTimelineComponent":
-            return HospitalVisitTimelineComponent;
-        case "ImmunizationTimelineComponent":
-            return ImmunizationTimelineComponent;
-        case "LaboratoryOrderTimelineComponent":
-            return LaboratoryOrderTimelineComponent;
-        case "MedicationRequestTimelineComponent":
-            return MedicationRequestTimelineComponent;
-        case "MedicationTimelineComponent":
-            return MedicationTimelineComponent;
-        case "NoteTimelineComponent":
-            return NoteTimelineComponent;
-        default:
-            return "";
-    }
-});
+const componentForEntry = computed<Component | "">(
+    () => entryTypeMap.get(entry.value?.type)?.component ?? ""
+);
 
 function setHeaderState(isOpen: boolean): void {
     store.dispatch("navbar/setHeaderState", isOpen);

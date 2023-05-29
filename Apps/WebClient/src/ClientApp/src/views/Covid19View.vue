@@ -1,4 +1,4 @@
-<script lang="ts">
+<script setup lang="ts">
 import { library } from "@fortawesome/fontawesome-svg-core";
 import {
     faCheckCircle,
@@ -7,9 +7,8 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { saveAs } from "file-saver";
 import html2canvas from "html2canvas";
-import Vue from "vue";
-import { Component, Ref, Watch } from "vue-property-decorator";
-import { Action, Getter } from "vuex-class";
+import { computed, ref, watch } from "vue";
+import { useStore } from "vue-composition-wrapper";
 
 import LoadingComponent from "@/components/LoadingComponent.vue";
 import MessageModalComponent from "@/components/modal/MessageModalComponent.vue";
@@ -18,12 +17,10 @@ import VaccineCardComponent from "@/components/VaccineCardComponent.vue";
 import { VaccinationState } from "@/constants/vaccinationState";
 import BreadcrumbItem from "@/models/breadcrumbItem";
 import type { WebClientConfiguration } from "@/models/configData";
-import CovidVaccineRecord from "@/models/covidVaccineRecord";
 import { DateWrapper } from "@/models/dateWrapper";
 import { ResultError } from "@/models/errors";
 import { ImmunizationEvent } from "@/models/immunizationModel";
 import { LoadStatus } from "@/models/storeOperations";
-import TimelineEntry from "@/models/timelineEntry";
 import User from "@/models/user";
 import VaccinationStatus from "@/models/vaccinationStatus";
 import VaccineRecordState from "@/models/vaccineRecordState";
@@ -34,321 +31,251 @@ import SnowPlow from "@/utility/snowPlow";
 
 library.add(faCheckCircle, faChevronLeft, faChevronRight);
 
-interface Dose {
-    product: string;
-    date: string;
-    agent: string;
-    lot: string;
-    provider: string;
+const breadcrumbItems: BreadcrumbItem[] = [
+    {
+        text: "COVID‑19",
+        to: "/covid19",
+        active: true,
+        dataTestId: "breadcrumb-covid-19",
+    },
+];
+
+const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+const store = useStore();
+
+const isDownloading = ref(false);
+const isImmunizationHistoryShown = ref(false);
+
+const vaccineCardMessageModal = ref<MessageModalComponent>();
+const downloadConfirmationModal = ref<MessageModalComponent>();
+
+const config = computed<WebClientConfiguration>(
+    () => store.getters["config/webClient"]
+);
+const user = computed<User>(() => store.getters["user/user"]);
+const isVaccinationStatusLoading = computed<boolean>(
+    () => store.getters["vaccinationStatus/authenticatedIsLoading"]
+);
+const vaccinationStatus = computed<VaccinationStatus | undefined>(
+    () => store.getters["vaccinationStatus/authenticatedVaccinationStatus"]
+);
+const vaccinationStatusError = computed<ResultError | undefined>(
+    () => store.getters["vaccinationStatus/authenticatedError"]
+);
+const vaccineRecordState = computed<VaccineRecordState>(() =>
+    store.getters["vaccinationStatus/authenticatedVaccineRecordState"](
+        user.value.hdid
+    )
+);
+const immunizationsAreLoading = computed<boolean>(() =>
+    store.getters["immunization/immunizationsAreLoading"](user.value.hdid)
+);
+const immunizationsAreDeferred = computed<boolean>(() =>
+    store.getters["immunization/immunizationsAreDeferred"](user.value.hdid)
+);
+const covidImmunizations = computed<ImmunizationEvent[]>(() =>
+    store.getters["immunization/covidImmunizations"](user.value.hdid)
+);
+const immunizationsError = computed<ResultError | undefined>(() =>
+    store.getters["immunization/immunizationsError"](user.value.hdid)
+);
+
+const doses = computed(() =>
+    covidImmunizations.value.map((element) => {
+        const agent = element.immunization.immunizationAgents[0];
+        return {
+            product: agent.productName,
+            date: DateWrapper.format(element.dateOfImmunization),
+            agent: agent.name,
+            lot: agent.lotNumber,
+            provider: element.providerOrClinic,
+        };
+    })
+);
+const vaccinationState = computed(() => vaccinationStatus.value?.state);
+const isPartiallyVaccinated = computed(
+    () => vaccinationState.value === VaccinationState.PartiallyVaccinated
+);
+const isVaccinationNotFound = computed(
+    () => vaccinationState.value === VaccinationState.NotFound
+);
+const isVaccineRecordDownloading = computed(
+    () => vaccineRecordState.value.status === LoadStatus.REQUESTED
+);
+const loadingStatusMessage = computed(() => {
+    let message = "";
+    if (isDownloading.value) {
+        message = "Downloading....";
+    } else if (isVaccineRecordDownloading.value) {
+        message = vaccineRecordState.value.statusMessage;
+    }
+
+    return message;
+});
+const downloadButtonShown = computed(
+    () =>
+        vaccinationStatus.value?.state ===
+            VaccinationState.PartiallyVaccinated ||
+        vaccinationStatus.value?.state === VaccinationState.FullyVaccinated
+);
+const saveExportPdfShown = computed(
+    () =>
+        config.value.featureToggleConfiguration.covid19.proofOfVaccination
+            .exportPdf
+);
+const isHistoryLoading = computed(
+    () => immunizationsAreLoading.value || immunizationsAreDeferred.value
+);
+const isLoading = computed(
+    () =>
+        isVaccinationStatusLoading.value ||
+        isHistoryLoading.value ||
+        isVaccineRecordDownloading.value ||
+        isDownloading.value
+);
+const patientName = computed(() => {
+    if (vaccinationStatus.value) {
+        return `${vaccinationStatus.value.firstname} ${vaccinationStatus.value.lastname}`;
+    }
+
+    return undefined;
+});
+const patientBirthdate = computed(() =>
+    formatDate(vaccinationStatus.value?.birthdate ?? undefined)
+);
+
+function retrieveImmunizations(hdid: string): Promise<void> {
+    return store.dispatch("immunization/retrieveImmunizations", { hdid });
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const options: any = {
-    components: {
-        BreadcrumbComponent,
-        loading: LoadingComponent,
-        "vaccine-card": VaccineCardComponent,
-        "message-modal": MessageModalComponent,
-    },
-};
+function retrieveVaccineStatus(hdid: string): Promise<void> {
+    return store.dispatch(
+        "vaccinationStatus/retrieveAuthenticatedVaccineStatus",
+        { hdid }
+    );
+}
 
-@Component(options)
-export default class Covid19View extends Vue {
-    @Action("retrieveImmunizations", { namespace: "immunization" })
-    retrieveImmunizations!: (params: { hdid: string }) => Promise<void>;
+function retrieveAuthenticatedVaccineRecord(hdid: string): Promise<void> {
+    return store.dispatch(
+        "vaccinationStatus/retrieveAuthenticatedVaccineRecord",
+        { hdid }
+    );
+}
 
-    @Action("retrieveAuthenticatedVaccineStatus", {
-        namespace: "vaccinationStatus",
-    })
-    retrieveVaccineStatus!: (params: { hdid: string }) => Promise<void>;
+function stopAuthenticatedVaccineRecordDownload(hdid: string): void {
+    store.dispatch("vaccinationStatus/stopAuthenticatedVaccineRecordDownload", {
+        hdid,
+    });
+}
 
-    @Action("retrieveAuthenticatedVaccineRecord", {
-        namespace: "vaccinationStatus",
-    })
-    retrieveAuthenticatedVaccineRecord!: (params: {
-        hdid: string;
-    }) => Promise<CovidVaccineRecord>;
+function formatDate(date: string | undefined): string {
+    return date === undefined ? "" : DateWrapper.format(date, "yyyy-MMM-dd");
+}
 
-    @Action("stopAuthenticatedVaccineRecordDownload", {
-        namespace: "vaccinationStatus",
-    })
-    stopAuthenticatedVaccineRecordDownload!: (params: { hdid: string }) => void;
+function showImmunizationHistory(show: boolean): void {
+    if (show) {
+        fetchHistoryData();
+    }
+    isImmunizationHistoryShown.value = show;
+}
 
-    @Getter("webClient", { namespace: "config" })
-    config!: WebClientConfiguration;
+function fetchVaccineCardData(): void {
+    retrieveVaccineStatus(user.value.hdid)
+        .then(() =>
+            SnowPlow.trackEvent({
+                action: "view_card",
+                text: "COVID Card",
+            })
+        )
+        .catch((err) => logger.error(`Error loading COVID-19 data: ${err}`));
+}
 
-    @Getter("user", { namespace: "user" })
-    user!: User;
+function fetchHistoryData(): void {
+    retrieveImmunizations(user.value.hdid).catch((err) =>
+        logger.error(`Error loading immunization data: ${err}`)
+    );
+}
 
-    @Getter("authenticatedIsLoading", { namespace: "vaccinationStatus" })
-    isVaccinationStatusLoading!: boolean;
+function retrieveVaccinePdf(): void {
+    retrieveAuthenticatedVaccineRecord(user.value.hdid).catch((err) =>
+        logger.error(`Error loading authenticated record data: ${err}`)
+    );
+}
 
-    @Getter("authenticatedVaccinationStatus", {
-        namespace: "vaccinationStatus",
-    })
-    vaccinationStatus!: VaccinationStatus | undefined;
-
-    @Getter("authenticatedError", { namespace: "vaccinationStatus" })
-    vaccinationStatusError!: ResultError | undefined;
-
-    @Getter("immunizationsAreLoading", { namespace: "immunization" })
-    immunizationsAreLoading!: (hdid: string) => boolean;
-
-    @Getter("immunizationsAreDeferred", { namespace: "immunization" })
-    immunizationsAreDeferred!: (hdid: string) => boolean;
-
-    @Getter("covidImmunizations", { namespace: "immunization" })
-    covidImmunizations!: (hdid: string) => ImmunizationEvent[];
-
-    @Getter("immunizationsError", { namespace: "immunization" })
-    immunizationsError!: (hdid: string) => ResultError | undefined;
-
-    @Getter("authenticatedVaccineRecordState", {
-        namespace: "vaccinationStatus",
-    })
-    getVaccineRecordState!: (hdid: string) => VaccineRecordState;
-
-    @Ref("vaccineCardMessageModal")
-    readonly vaccineCardMessageModal!: MessageModalComponent;
-
-    @Ref("messageModal")
-    readonly messageModal!: MessageModalComponent;
-
-    private logger!: ILogger;
-    private isDownloading = false;
-    private isImmunizationHistoryShown = false;
-
-    private breadcrumbItems: BreadcrumbItem[] = [
-        {
-            text: "COVID‑19",
-            to: "/covid19",
-            active: true,
-            dataTestId: "breadcrumb-covid-19",
-        },
-    ];
-
-    private get doses(): Dose[] {
-        return this.covidImmunizations(this.user.hdid).map((element) => {
-            const agent = element.immunization.immunizationAgents[0];
-            return {
-                product: agent.productName,
-                date: DateWrapper.format(element.dateOfImmunization),
-                agent: agent.name,
-                lot: agent.lotNumber,
-                provider: element.providerOrClinic,
-            };
+function download(): void {
+    const printingArea = document.querySelector<HTMLElement>(".vaccine-card");
+    if (printingArea !== null) {
+        isDownloading.value = true;
+        SnowPlow.trackEvent({
+            action: "download_card",
+            text: "COVID Card Image",
         });
-    }
-
-    private get vaccinationState(): VaccinationState | undefined {
-        return this.vaccinationStatus?.state;
-    }
-
-    private get isPartiallyVaccinated(): boolean {
-        return this.vaccinationState === VaccinationState.PartiallyVaccinated;
-    }
-
-    private get isVaccineRecordDownloading(): boolean {
-        return this.vaccineRecordState.status === LoadStatus.REQUESTED;
-    }
-
-    private get isVaccinationNotFound(): boolean {
-        return this.vaccinationState === VaccinationState.NotFound;
-    }
-
-    private get loadingStatusMessage(): string {
-        if (this.isDownloading) {
-            return "Downloading....";
-        }
-
-        if (this.isVaccineRecordDownloading) {
-            return this.vaccineRecordState.statusMessage;
-        }
-
-        return "";
-    }
-
-    private get downloadButtonShown(): boolean {
-        return (
-            this.vaccinationStatus?.state ===
-                VaccinationState.PartiallyVaccinated ||
-            this.vaccinationStatus?.state === VaccinationState.FullyVaccinated
-        );
-    }
-
-    private get saveExportPdfShown(): boolean {
-        return this.config.featureToggleConfiguration.covid19.proofOfVaccination
-            .exportPdf;
-    }
-
-    private get isVaccineCardLoading(): boolean {
-        return this.isVaccinationStatusLoading;
-    }
-
-    private get isHistoryLoading(): boolean {
-        return (
-            this.immunizationsAreLoading(this.user.hdid) ||
-            this.immunizationsAreDeferred(this.user.hdid)
-        );
-    }
-
-    private get isLoading(): boolean {
-        return (
-            this.isVaccinationStatusLoading ||
-            this.isHistoryLoading ||
-            this.isVaccineRecordDownloading ||
-            this.isDownloading
-        );
-    }
-
-    private get patientName(): string | undefined {
-        if (this.vaccinationStatus) {
-            return `${this.vaccinationStatus.firstname} ${this.vaccinationStatus.lastname}`;
-        }
-        return undefined;
-    }
-
-    private get patientBirthdate(): string {
-        return this.formatDate(this.vaccinationStatus?.birthdate ?? undefined);
-    }
-
-    private formatDate(date: string | undefined): string {
-        return date === undefined
-            ? ""
-            : DateWrapper.format(date, "yyyy-MMM-dd");
-    }
-
-    private showImmunizationHistory(show: boolean): void {
-        if (show) {
-            this.fetchHistoryData();
-        }
-        this.isImmunizationHistoryShown = show;
-    }
-
-    private sortEntries(timelineEntries: TimelineEntry[]): TimelineEntry[] {
-        return timelineEntries.sort((a, b) => {
-            if (a.date.isBefore(b.date)) {
-                return 1;
-            }
-            if (a.date.isAfter(b.date)) {
-                return -1;
-            }
-            return 0;
-        });
-    }
-
-    private fetchVaccineCardData(): void {
-        this.retrieveVaccineStatus({ hdid: this.user.hdid })
-            .then(() =>
-                SnowPlow.trackEvent({
-                    action: "view_card",
-                    text: "COVID Card",
-                })
-            )
-            .catch((err) =>
-                this.logger.error(`Error loading COVID-19 data: ${err}`)
-            );
-    }
-
-    private fetchHistoryData(): void {
-        this.retrieveImmunizations({ hdid: this.user.hdid }).catch((err) =>
-            this.logger.error(`Error loading immunization data: ${err}`)
-        );
-    }
-
-    private get vaccineRecordState(): VaccineRecordState {
-        return this.getVaccineRecordState(this.user.hdid);
-    }
-
-    @Watch("vaccineRecordState")
-    private watchVaccineRecordState(): void {
-        if (
-            this.vaccineRecordState.record !== undefined &&
-            this.vaccineRecordState.status === LoadStatus.LOADED &&
-            this.vaccineRecordState.download
-        ) {
-            this.logger.info(`Downloading PDF for hdid: ${this.user.hdid}`);
-            const mimeType = this.vaccineRecordState.record.document.mediaType;
-            const downloadLink = `data:${mimeType};base64,${this.vaccineRecordState.record.document.data}`;
-            fetch(downloadLink).then((res) => {
-                SnowPlow.trackEvent({
-                    action: "download_card",
-                    text: "COVID Card PDF",
-                });
-                res.blob().then((blob) =>
-                    saveAs(blob, "ProvincialVaccineProof.pdf")
+        html2canvas(printingArea, {
+            scale: 2,
+            ignoreElements: (element) =>
+                element.classList.contains("d-print-none"),
+        })
+            .then((canvas) => {
+                const dataUrl = canvas.toDataURL();
+                fetch(dataUrl).then((res) =>
+                    res
+                        .blob()
+                        .then((blob) =>
+                            saveAs(blob, "ProvincialVaccineProof.png")
+                        )
                 );
-            });
-            this.stopAuthenticatedVaccineRecordDownload({
-                hdid: this.user.hdid,
-            });
-        }
+            })
+            .finally(() => (isDownloading.value = false));
     }
+}
 
-    private retrieveVaccinePdf(): void {
-        this.retrieveAuthenticatedVaccineRecord({
-            hdid: this.user.hdid,
-        }).catch((err) =>
-            this.logger.error(`Error loading authenticated record data: ${err}`)
-        );
-    }
+function showVaccineCardMessageModal(): void {
+    vaccineCardMessageModal.value?.showModal();
+}
 
-    private download(): void {
-        const printingArea =
-            document.querySelector<HTMLElement>(".vaccine-card");
-        if (printingArea !== null) {
-            this.isDownloading = true;
+function showConfirmationModal(): void {
+    downloadConfirmationModal.value?.showModal();
+}
+
+watch(vaccineRecordState, () => {
+    if (
+        vaccineRecordState.value.record !== undefined &&
+        vaccineRecordState.value.status === LoadStatus.LOADED &&
+        vaccineRecordState.value.download
+    ) {
+        logger.info(`Downloading PDF for hdid: ${user.value.hdid}`);
+        const mimeType = vaccineRecordState.value.record.document.mediaType;
+        const downloadLink = `data:${mimeType};base64,${vaccineRecordState.value.record.document.data}`;
+        fetch(downloadLink).then((res) => {
             SnowPlow.trackEvent({
                 action: "download_card",
-                text: "COVID Card Image",
+                text: "COVID Card PDF",
             });
-            html2canvas(printingArea, {
-                scale: 2,
-                ignoreElements: (element) =>
-                    element.classList.contains("d-print-none"),
-            })
-                .then((canvas) => {
-                    const dataUrl = canvas.toDataURL();
-                    fetch(dataUrl).then((res) =>
-                        res
-                            .blob()
-                            .then((blob) =>
-                                saveAs(blob, "ProvincialVaccineProof.png")
-                            )
-                    );
-                })
-                .finally(() => {
-                    this.isDownloading = false;
-                });
-        }
+            res.blob().then((blob) =>
+                saveAs(blob, "ProvincialVaccineProof.pdf")
+            );
+        });
+        stopAuthenticatedVaccineRecordDownload(user.value.hdid);
     }
+});
 
-    private showVaccineCardMessageModal(): void {
-        this.vaccineCardMessageModal.showModal();
-    }
-
-    private showConfirmationModal(): void {
-        this.messageModal.showModal();
-    }
-
-    private created(): void {
-        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-        this.fetchVaccineCardData();
-    }
-}
+fetchVaccineCardData();
 </script>
 
 <template>
     <div class="background flex-grow-1 d-flex flex-column">
         <BreadcrumbComponent :items="breadcrumbItems" />
-        <loading :is-loading="isLoading" :text="loadingStatusMessage" />
+        <LoadingComponent
+            :is-loading="isLoading"
+            :text="loadingStatusMessage"
+        />
         <div
-            v-if="!isVaccineCardLoading && !vaccinationStatusError"
+            v-if="!isVaccinationStatusLoading && !vaccinationStatusError"
             v-show="!isImmunizationHistoryShown"
             class="vaccine-card align-self-center w-100 p-3"
         >
             <div class="bg-white rounded shadow">
-                <vaccine-card
+                <VaccineCardComponent
                     :status="vaccinationStatus"
                     :show-generic-save-instructions="!downloadButtonShown"
                     include-previous-button
@@ -405,7 +332,7 @@ export default class Covid19View extends Vue {
                     </div>
                 </div>
             </div>
-            <message-modal
+            <MessageModalComponent
                 ref="vaccineCardMessageModal"
                 title="Vaccine Card Download"
                 message="Next, you'll see an image of your card.
@@ -415,15 +342,15 @@ export default class Covid19View extends Vue {
                                 your browser."
                 @submit="download"
             />
-            <message-modal
-                ref="messageModal"
+            <MessageModalComponent
+                ref="downloadConfirmationModal"
                 title="Sensitive Document Download"
                 message="The file that you are downloading contains personal information. If you are on a public computer, please ensure that the file is deleted before you log off."
                 @submit="retrieveVaccinePdf"
             />
         </div>
         <div
-            v-if="!isHistoryLoading && !immunizationsError(user.hdid)"
+            v-if="!isHistoryLoading && !immunizationsError"
             v-show="isImmunizationHistoryShown"
             class="immunization-history flex-grow-1 align-self-center w-100 p-3"
         >
