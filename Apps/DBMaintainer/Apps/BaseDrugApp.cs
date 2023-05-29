@@ -116,7 +116,7 @@ namespace HealthGateway.DBMaintainer.Apps
         /// </summary>
         /// <param name="sourceFolder">The source folder.</param>
         /// <param name="downloadedFile">The file download to process.</param>
-        public abstract void ProcessDownload(string sourceFolder, FileDownload downloadedFile);
+        protected abstract void ProcessDownload(string sourceFolder, FileDownload downloadedFile);
 
         /// <summary>
         /// Adds the processed file to the DB to ensure we don't process again.
@@ -132,7 +132,7 @@ namespace HealthGateway.DBMaintainer.Apps
         /// Removes All Download Files that match the Program type but do not match the file hash.
         /// </summary>
         /// <param name="downloadedFile">Search for all download files not matching this one.</param>
-        protected void RemoveOldFiles(FileDownload downloadedFile)
+        protected virtual void RemoveOldFiles(FileDownload downloadedFile)
         {
             List<FileDownload> oldIds = this.DrugDbContext.FileDownload
                 .Where(p => p.ProgramCode == downloadedFile.ProgramCode && p.Hash != downloadedFile.Hash)
@@ -148,7 +148,7 @@ namespace HealthGateway.DBMaintainer.Apps
         /// <param name="source">The URI of a file to download.</param>
         /// <param name="targetFolder">The location to store the file.</param>
         /// <returns>A FileDownload object.</returns>
-        private FileDownload DownloadFile(Uri source, string targetFolder)
+        protected FileDownload DownloadFile(Uri source, string targetFolder)
         {
             this.Logger.LogInformation("Downloading file from {Source} to {TargetFolder}", source, targetFolder);
             return Task.Run(async () => await this.DownloadService.GetFileFromUrl(source, targetFolder, true).ConfigureAwait(true)).Result;
@@ -159,7 +159,7 @@ namespace HealthGateway.DBMaintainer.Apps
         /// </summary>
         /// <param name="downloadedFile">The FileDownload object to extract.</param>
         /// <returns>The path to the unzipped folder.</returns>
-        private string ExtractFiles(FileDownload downloadedFile)
+        protected string ExtractFiles(FileDownload downloadedFile)
         {
             if (downloadedFile.LocalFilePath != null && downloadedFile.Name != null)
             {
@@ -181,7 +181,7 @@ namespace HealthGateway.DBMaintainer.Apps
         /// Recursively deletes the files at folder.
         /// </summary>
         /// <param name="folder">The folder to delete.</param>
-        private void RemoveExtractedFiles(string folder)
+        protected void RemoveExtractedFiles(string folder)
         {
             this.Logger.LogInformation("Removing extracted files under {Folder}", folder);
             Directory.Delete(folder, true);
@@ -192,9 +192,9 @@ namespace HealthGateway.DBMaintainer.Apps
         /// </summary>
         /// <param name="downloadedFile">The file to verify.</param>
         /// <returns>True if the file has been previously processed.</returns>
-        private bool FileProcessed(FileDownload downloadedFile)
+        protected bool FileProcessed(FileDownload downloadedFile)
         {
-            return this.DrugDbContext.FileDownload.Where(p => p.Hash == downloadedFile.Hash).Any();
+            return this.DrugDbContext.FileDownload.Any(p => p.Hash == downloadedFile.Hash);
         }
     }
 }
