@@ -93,11 +93,7 @@ const entryTypes = computed<EntryType[]>(() => {
         .map((d) => d.type);
 });
 
-const title = computed<string>(() => {
-    return ["Timeline for", formattedName.value]
-        .filter((s) => Boolean(s))
-        .join(" ");
-});
+const title = computed<string>(() => `Timeline for ${formattedName.value}`);
 
 function retrieveDependents(hdid: string, bypassCache: boolean): Promise<void> {
     return store.dispatch("dependent/retrieveDependents", {

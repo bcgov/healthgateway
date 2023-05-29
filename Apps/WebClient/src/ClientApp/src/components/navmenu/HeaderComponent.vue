@@ -29,7 +29,7 @@ const minimumScrollChange = 2;
 const store = useStore();
 const route = useRoute();
 const router = useRouter();
-const logger: ILogger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
 
 const lastScrollTop = ref(0);
 const notificationButtonClicked = ref(false);
@@ -260,8 +260,8 @@ function processLogout(): void {
     router.push({ path: "/logout" });
 }
 
-watch(isMobileWidth, (isMobileWidth) => {
-    if (!isMobileWidth) {
+watch(isMobileWidth, (value) => {
+    if (!value) {
         setHeaderState(false);
     }
 });
