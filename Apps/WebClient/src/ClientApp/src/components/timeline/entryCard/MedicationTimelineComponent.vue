@@ -131,5 +131,5 @@ function formatPhone(phoneNumber: string | undefined): string {
                 </div>
             </div>
         </div>
-     </EntryCardTimelineComponent>
+    </EntryCardTimelineComponent>
 </template>
