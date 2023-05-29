@@ -80,7 +80,7 @@ namespace HealthGateway.Medication.Models
         /// <summary>
         /// Gets or sets the pharmacy assessment tile.
         /// </summary>
-        public string PharmacyAssessmentTitle { get; set; }
+        public string PharmacyAssessmentTitle { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets a value indicating whether the prescription was provided or not.
