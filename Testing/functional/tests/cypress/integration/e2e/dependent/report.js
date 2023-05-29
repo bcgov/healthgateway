@@ -14,6 +14,11 @@ const dependent2 = {
     hdid: "BNV554213556",
 };
 
+// ROMIL SWAN
+const specialAuthorityDependent = {
+    hdid: "IASGH65211V6WHXKGQDSEJAHYMYR",
+};
+
 describe("Reports", () => {
     beforeEach(() => {
         cy.setupDownloads();
@@ -260,7 +265,7 @@ describe("Reports", () => {
     });
 
     it("Validate Special Authority Report", () => {
-        const hdid = dependent1.hdid;
+        const hdid = specialAuthorityDependent.hdid;
 
         const cardSelector = getCardSelector(hdid);
         const tabButtonSelector = getTabButtonSelector(hdid, "report");

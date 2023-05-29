@@ -783,6 +783,28 @@ VALUES (
 	'System.DateTime, System.Private.CoreLib, Version=5.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e', 
 	'"2021-01-20T00:00:00"'
 );
+/* Dependent with special authority - phn: 9746208843 */
+INSERT INTO gateway."ResourceDelegate"(
+	"ResourceOwnerHdid", 
+	"ProfileHdid", 
+	"ReasonCode", 
+	"CreatedBy", 
+	"CreatedDateTime", 
+	"UpdatedBy", 
+	"UpdatedDateTime", 
+	"ReasonObjectType", 
+	"ReasonObject")
+VALUES (
+	'IASGH65211V6WHXKGQDSEJAHYMYR', 
+	'P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A', 
+	'Guardian', 
+	'System', 
+	current_timestamp, 
+	'System', 
+	current_timestamp, 
+	'System.DateTime, System.Private.CoreLib, Version=5.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e', 
+	'"2021-01-20T00:00:00"'
+);
 /* Dependent PHN:9872868095 (727302800477298080), Guardian PHN: 9735353315 (P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A) */
 INSERT INTO gateway."ResourceDelegate"(
 	"ResourceOwnerHdid", 
