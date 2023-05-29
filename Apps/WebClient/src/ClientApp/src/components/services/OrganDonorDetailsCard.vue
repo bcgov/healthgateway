@@ -32,8 +32,7 @@ const sensitiveDocumentModal = ref<MessageModalComponent>();
 const patientData = computed<PatientData[]>(() => {
     return store.getters["patientData/patientData"](
         props.hdid,
-        [PatientDataType.OrganDonorRegistrationStatus],
-        true
+        [PatientDataType.OrganDonorRegistrationStatus]
     );
 });
 
