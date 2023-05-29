@@ -25,6 +25,7 @@ import {
     BSidebar,
     BTab,
     BTabs,
+    BTooltip,
 } from "bootstrap-vue";
 import Vue from "vue";
 import VueContentPlaceholders from "vue-content-placeholders";
@@ -98,6 +99,7 @@ Vue.component("BPopover", BPopover);
 Vue.component("BSidebar", BSidebar);
 Vue.component("BTab", BTab);
 Vue.component("BTabs", BTabs);
+Vue.component("BTooltip", BTooltip);
 
 Vue.component("HgButton", HgButtonComponent);
 Vue.component("HgCard", HgCardComponent);

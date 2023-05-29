@@ -1,8 +1,12 @@
 <script lang="ts">
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
-import Vue from "vue";
-import { Component, Prop, Watch } from "vue-property-decorator";
+import Vue, { Component } from "vue";
+import {
+    Component as ComponentDecorator,
+    Prop,
+    Watch,
+} from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 
 import { entryTypeMap } from "@/constants/entryType";
@@ -38,7 +42,7 @@ const options: any = {
     },
 };
 
-@Component(options)
+@ComponentDecorator(options)
 export default class EntryDetailsComponent extends Vue {
     @Prop({ required: true })
     hdid!: string;
@@ -108,7 +112,7 @@ export default class EntryDetailsComponent extends Vue {
         this.setHeaderState(false);
     }
 
-    private getComponentForEntry(): string {
+    private getComponentForEntry(): Component | "" {
         return entryTypeMap.get(this.entry?.type)?.component ?? "";
     }
 
