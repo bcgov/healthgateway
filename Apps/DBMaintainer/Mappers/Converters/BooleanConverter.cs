@@ -27,7 +27,7 @@ namespace HealthGateway.DBMaintainer.Mappers.Converters
         /// <inheritdoc/>
         public override object? ConvertFromString(string? text, IReaderRow row, MemberMapData memberMapData)
         {
-            if (ConvertToBool(text, out bool result))
+            if (TryConvertToBool(text, out bool result))
             {
                 return result;
             }
@@ -35,7 +35,7 @@ namespace HealthGateway.DBMaintainer.Mappers.Converters
             return null;
         }
 
-        private static bool ConvertToBool(string text, out bool result)
+        private static bool TryConvertToBool(string text, out bool result)
         {
             result = false;
 
@@ -45,8 +45,8 @@ namespace HealthGateway.DBMaintainer.Mappers.Converters
 
                 result = boolValue switch
                 {
-                    "YES" or "TRUE" => true,
-                    "NO" or "FALSE" => false,
+                    "YES" => true,
+                    "NO" => false,
                     _ => false,
                 };
 
