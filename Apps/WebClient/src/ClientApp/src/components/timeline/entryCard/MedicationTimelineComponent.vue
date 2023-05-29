@@ -15,6 +15,7 @@ interface Props {
     commentsAreEnabled?: boolean;
 }
 withDefaults(defineProps<Props>(), {
+    isMobileDetails: false,
     commentsAreEnabled: false,
 });
 

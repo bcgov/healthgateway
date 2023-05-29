@@ -95,7 +95,7 @@ function clear(): void {
 }
 
 watch(isMobile, () => {
-    if (isVisible.value && isMobile.value) {
+    if (isVisible.value && !isMobile.value) {
         handleClose();
     }
 });
