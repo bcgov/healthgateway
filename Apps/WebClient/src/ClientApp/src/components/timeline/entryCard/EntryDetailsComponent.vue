@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
-import { computed, onMounted, ref, watch } from "vue";
+import { Component, computed, onMounted, ref, watch } from "vue";
 import { useStore } from "vue-composition-wrapper";
 
 import { entryTypeMap } from "@/constants/entryType";
@@ -9,11 +9,21 @@ import EventBus, { EventMessageName } from "@/eventbus";
 import { Operation } from "@/models/storeOperations";
 import TimelineEntry from "@/models/timelineEntry";
 
+import ClinicalDocumentTimelineComponent from "./ClinicalDocumentTimelineComponent.vue";
+import Covid19LaboratoryOrderTimelineComponent from "./Covid19LaboratoryOrderTimelineComponent.vue";
+import EncounterTimelineComponent from "./EncounterTimelineComponent.vue";
+import HospitalVisitTimelineComponent from "./HospitalVisitTimelineComponent.vue";
+import ImmunizationTimelineComponent from "./ImmunizationTimelineComponent.vue";
+import LaboratoryOrderTimelineComponent from "./LaboratoryOrderTimelineComponent.vue";
+import MedicationRequestTimelineComponent from "./MedicationRequestTimelineComponent.vue";
+import MedicationTimelineComponent from "./MedicationTimelineComponent.vue";
+import NoteTimelineComponent from "./NoteTimelineComponent.vue";
+
 library.add(faArrowLeft);
 
 interface Props {
     hdid: string;
-    commentsAreEnabled: boolean;
+    commentsAreEnabled?: boolean;
 }
 withDefaults(defineProps<Props>(), {
     commentsAreEnabled: false,
@@ -34,9 +44,30 @@ const lastNoteOperation = computed<Operation | null>(
     () => store.getters["note/lastOperation"]
 );
 
-const componentForEntry = computed<string>(
-    () => entryTypeMap.get(entry.value?.type)?.component ?? ""
-);
+const componentForEntry = computed<Component | string>(() => {
+    switch (entryTypeMap.get(entry.value?.type)?.component) {
+        case "ClinicalDocumentTimelineComponent":
+            return ClinicalDocumentTimelineComponent;
+        case "Covid19LaboratoryOrderTimelineComponent":
+            return Covid19LaboratoryOrderTimelineComponent;
+        case "EncounterTimelineComponent":
+            return EncounterTimelineComponent;
+        case "HospitalVisitTimelineComponent":
+            return HospitalVisitTimelineComponent;
+        case "ImmunizationTimelineComponent":
+            return ImmunizationTimelineComponent;
+        case "LaboratoryOrderTimelineComponent":
+            return LaboratoryOrderTimelineComponent;
+        case "MedicationRequestTimelineComponent":
+            return MedicationRequestTimelineComponent;
+        case "MedicationTimelineComponent":
+            return MedicationTimelineComponent;
+        case "NoteTimelineComponent":
+            return NoteTimelineComponent;
+        default:
+            return "";
+    }
+});
 
 function setHeaderState(isOpen: boolean): void {
     store.dispatch("navbar/setHeaderState", isOpen);
@@ -164,23 +195,23 @@ window.onpopstate = (event: PopStateEvent) => {
 
 .entry-details-modal-content {
     min-height: 100vh;
-    border: 0px;
-    border-radius: 0px;
+    border: 0;
+    border-radius: 0;
 
     .modal-body {
-        padding: 0em;
+        padding: 0;
     }
 }
 
 .entry-details-modal-dialog {
     min-height: 100vh;
     min-width: 100%;
-    margin: 0rem;
+    margin: 0;
 }
 
 .entry-details-modal-header {
     background-color: white;
-    padding-top: 0px;
-    padding-bottom: 0px;
+    padding-top: 0;
+    padding-bottom: 0;
 }
 </style>

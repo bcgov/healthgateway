@@ -22,8 +22,8 @@ interface Props {
     entry: ClinicalDocumentTimelineEntry;
     index: number;
     datekey: string;
-    isMobileDetails: boolean;
-    commentsAreEnabled: boolean;
+    isMobileDetails?: boolean;
+    commentsAreEnabled?: boolean;
 }
 const props = withDefaults(defineProps<Props>(), {
     commentsAreEnabled: false,

@@ -11,8 +11,8 @@ interface Props {
     entry: MedicationTimelineEntry;
     index: number;
     datekey: string;
-    isMobileDetails: boolean;
-    commentsAreEnabled: boolean;
+    isMobileDetails?: boolean;
+    commentsAreEnabled?: boolean;
 }
 withDefaults(defineProps<Props>(), {
     commentsAreEnabled: false,

@@ -156,7 +156,7 @@ retrieveNotes(props.hdid).catch((err) =>
                 <b-table
                     v-else-if="!isDependent"
                     :striped="true"
-                    :busy="isLoading"
+                    :busy="notesAreLoading"
                     :items="items"
                     :fields="fields"
                     data-testid="notes-report-table"

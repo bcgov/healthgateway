@@ -1,24 +1,32 @@
 <script setup lang="ts">
-import { computed, onUnmounted, ref, watch } from "vue";
+import { computed } from "vue";
 
 import { SelectOption } from "@/components/Interfaces/MultiSelectComponent";
 
 interface Props {
     placeholder: string;
     options: SelectOption[];
-    model: string[];
+    // Cannot seem to define this as required without getting a missing required prop error when using v-model.
+    modelValue?: string[];
 }
 const props = withDefaults(defineProps<Props>(), {
     placeholder: "Choose a tag...",
     options: () => [] as SelectOption[],
-    model: () => [],
+    modelValue: () => [],
 });
 
 const emit = defineEmits<{
-    (e: "update-model", value: string[]): void;
+    (e: "update:modelValue", value: string[]): void;
 }>();
 
-const values = ref<string[]>([]);
+const values = computed<string[]>({
+    get() {
+        return props.modelValue;
+    },
+    set(value: string[]) {
+        emit("update:modelValue", value);
+    },
+});
 
 const availableOptions = computed<SelectOption[]>(() => {
     if (props.options.length === 0) {
@@ -40,22 +48,11 @@ function getValueText(value: unknown): string | SelectOption | undefined {
     );
     return option?.text || option;
 }
-
-watch(values, () => {
-    emit("update-model", values.value);
-});
-
-watch(props.model, () => {
-    values.value = props.model;
-});
-onUnmounted(() => {
-    values.value = props.model;
-});
 </script>
 
 <template>
     <div>
-        <!-- Prop `add-on-change` is needed to enable adding tags vie the `change` event -->
+        <!-- Prop `add-on-change` is needed to enable adding tags via the `change` event -->
         <b-form-tags
             id="tags-component-select"
             v-model="values"
