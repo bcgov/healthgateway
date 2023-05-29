@@ -36,7 +36,7 @@ namespace HealthGateway.PatientTests.Services
     using OrganDonorRegistration = HealthGateway.Patient.Services.OrganDonorRegistration;
     using OrganDonorRegistrationStatus = HealthGateway.Patient.Models.OrganDonorRegistrationStatus;
     using PatientDataQuery = HealthGateway.Patient.Services.PatientDataQuery;
-    using PatientFileQuery = HealthGateway.Patient.Services.PatientFileQuery;
+    using PatientFileQuery = HealthGateway.PatientDataAccess.PatientFileQuery;
 
     // Disable documentation for tests.
 #pragma warning disable SA1600
@@ -89,7 +89,7 @@ namespace HealthGateway.PatientTests.Services
                 Modality = "Some Modality",
                 Organization = "Some Organization",
                 ProcedureDescription = "Some ProcedureDescription",
-                ExamStatus = DiagnosticImagingStatus.Scheduled,
+                ExamStatus = DiagnosticImagingStatus.Pending,
             };
 
             PatientData[] data =
@@ -178,7 +178,7 @@ namespace HealthGateway.PatientTests.Services
             actual.Modality.ShouldBe(expected.Modality);
             actual.Organization.ShouldBe(expected.Organization);
             actual.ProcedureDescription.ShouldBe(expected.ProcedureDescription);
-            actual.ExamStatus.ShouldBe(DiagnosticImagingStatus.Scheduled);
+            actual.ExamStatus.ShouldBe(DiagnosticImagingStatus.Pending);
         }
 
         [Fact]
@@ -187,7 +187,7 @@ namespace HealthGateway.PatientTests.Services
             PatientFile expected = new(Guid.NewGuid().ToString(), RandomNumberGenerator.GetBytes(1024), "text/plain");
 
             Mock<IPatientDataRepository> patientDataRepository = new();
-            patientDataRepository.AttachMockQuery<PatientDataAccess.PatientFileQuery>(
+            patientDataRepository.AttachMockQuery<PatientFileQuery>(
                 q => q.Pid == this.pid && q.FileId == expected.FileId,
                 expected);
 
@@ -195,7 +195,7 @@ namespace HealthGateway.PatientTests.Services
 
             PatientDataService sut = new(patientDataRepository.Object, personalAccountService.Object, this.mapper);
 
-            PatientFileResponse? result = await sut.Query(new PatientFileQuery(this.hdid, expected.FileId), CancellationToken.None).ConfigureAwait(true);
+            PatientFileResponse? result = await sut.Query(new Patient.Services.PatientFileQuery(this.hdid, expected.FileId), CancellationToken.None).ConfigureAwait(true);
 
             PatientFileResponse actual = result.ShouldBeOfType<PatientFileResponse>();
             actual.Content.ShouldBe(expected.Content);
@@ -208,13 +208,13 @@ namespace HealthGateway.PatientTests.Services
             string fileId = Guid.NewGuid().ToString();
 
             Mock<IPatientDataRepository> patientDataRepository = new();
-            patientDataRepository.AttachMockQuery<PatientDataAccess.PatientFileQuery>(q => q.Pid == this.pid && q.FileId == fileId);
+            patientDataRepository.AttachMockQuery<PatientFileQuery>(q => q.Pid == this.pid && q.FileId == fileId);
 
             Mock<IPersonalAccountsService> personalAccountService = this.GetMockPersonalAccountService();
 
             PatientDataService sut = new(patientDataRepository.Object, personalAccountService.Object, this.mapper);
 
-            PatientFileResponse? result = await sut.Query(new PatientFileQuery(this.hdid, fileId), CancellationToken.None).ConfigureAwait(true);
+            PatientFileResponse? result = await sut.Query(new Patient.Services.PatientFileQuery(this.hdid, fileId), CancellationToken.None).ConfigureAwait(true);
 
             result.ShouldBeNull();
         }

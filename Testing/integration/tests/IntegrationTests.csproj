@@ -15,6 +15,7 @@
         <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(MSBuildThisFileName).xml</DocumentationFile>
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
         <NoWarn>CA1848, S2094, SA1201, SA1402, CS1591, SA1600, SA1200, SA1649, S125, CA1707, CA2201, CA1305, S3881</NoWarn>
+        <UserSecretsId>697d4791-b230-429a-b766-4f1361c1f387</UserSecretsId>
     </PropertyGroup>
 
     <ItemGroup>
@@ -41,6 +42,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\..\..\Apps\Admin\Server\Admin.Server.csproj" />
       <ProjectReference Include="..\..\..\Apps\GatewayApi\src\GatewayApi.csproj" />
     </ItemGroup>
 

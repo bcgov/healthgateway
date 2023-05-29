@@ -99,6 +99,7 @@ namespace HealthGateway.DBMaintainer
                         services.AddTransient<IFileDownloadService, FileDownloadService>();
                         services.AddTransient<IDrugProductParser, FederalDrugProductParser>();
                         services.AddTransient<IPharmaCareDrugParser, PharmaCareDrugParser>();
+                        services.AddTransient<IPharmacyAssessmentParser, PharmacyAssessmentParser>();
 
                         // Add app
                         services.AddTransient<FedDrugDbApp>();

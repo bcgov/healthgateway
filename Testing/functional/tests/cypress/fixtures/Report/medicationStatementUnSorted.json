@@ -19,7 +19,10 @@
                 "manufacturer": "",
                 "strength": "",
                 "strengthUnit": "",
-                "isPin": true
+                "isPin": true,
+                "pharmacyAssessmentTitle": null,
+                "prescriptionProvided": null,
+                "redirectedToHealthCareProvider": null
             },
             "dispensingPharmacy": {
                 "pharmacyId": "BC00007912",
@@ -53,7 +56,10 @@
                 "manufacturer": "MINT PHARMACEUTICALS INC",
                 "strength": "7.5",
                 "strengthUnit": "MG",
-                "isPin": false
+                "isPin": false,
+                "pharmacyAssessmentTitle": null,
+                "prescriptionProvided": null,
+                "redirectedToHealthCareProvider": null
             },
             "dispensingPharmacy": {
                 "pharmacyId": "BC00006638",
@@ -87,7 +93,10 @@
                 "manufacturer": "MINT PHARMACEUTICALS INC",
                 "strength": "7.5",
                 "strengthUnit": "MG",
-                "isPin": false
+                "isPin": false,
+                "pharmacyAssessmentTitle": null,
+                "prescriptionProvided": null,
+                "redirectedToHealthCareProvider": null
             },
             "dispensingPharmacy": {
                 "pharmacyId": "BC00007912",

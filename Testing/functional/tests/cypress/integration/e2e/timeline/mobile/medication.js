@@ -21,19 +21,15 @@ describe("Medication", () => {
 
     it("Validate Card Details for Mobile", () => {
         cy.get("[data-testid=timelineCard]").first().click();
-        const entryDetails = cy.get("[data-testid=entryDetailsCard]");
         cy.get("[data-testid=backBtn]").should("be.visible");
-        entryDetails
-            .get("[data-testid=entryCardDetailsTitle]")
-            .should("be.visible");
-        entryDetails.get("[data-testid=entryCardDate]").should("be.visible");
+        cy.get("[data-testid=entryDetailsCard]").within(() => {
+            cy.get("[data-testid=entryCardDetailsTitle]").should("be.visible");
+            cy.get("[data-testid=entryCardDate]").should("be.visible");
 
-        entryDetails.get("[data-testid=medicationTitle]").should("be.visible");
-        entryDetails
-            .get("[data-testid=medicationPractitioner]")
-            .should("be.visible");
-        entryDetails
-            .get("[data-testid=medicationPractitioner]")
-            .should("be.visible");
+            cy.get("[data-testid=medicationTitle]").should("be.visible");
+            cy.get("[data-testid=medication-practitioner]").should(
+                "be.visible"
+            );
+        });
     });
 });
