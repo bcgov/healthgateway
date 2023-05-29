@@ -29,6 +29,7 @@ interface Props {
     commentsAreEnabled?: boolean;
 }
 const props = withDefaults(defineProps<Props>(), {
+    isMobileDetails: false,
     commentsAreEnabled: false,
 });
 
@@ -58,7 +59,7 @@ function setTooManyRequestsError(key: string): void {
 }
 
 function getStatusInfoId(labPdfId: string, index: number): string {
-    const isModalIndicator: string = props.isMobileDetails ? "1" : "0";
+    const isModalIndicator = props.isMobileDetails ? "1" : "0";
     return `laboratory-test-status-info-${labPdfId}-${index}-${isModalIndicator}`;
 }
 
