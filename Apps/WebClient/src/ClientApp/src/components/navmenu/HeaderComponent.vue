@@ -260,8 +260,8 @@ function processLogout(): void {
     router.push({ path: "/logout" });
 }
 
-watch(isMobileWidth, (isMobileWidth) => {
-    if (!isMobileWidth) {
+watch(isMobileWidth, (value) => {
+    if (!value) {
         setHeaderState(false);
     }
 });
