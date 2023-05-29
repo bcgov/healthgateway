@@ -64,11 +64,10 @@ const isVisible = ref(false);
 const tourCarousel = ref<BCarousel>();
 
 const slides = computed<TourSlide[]>(() => {
-    /* (MOBILE) Requires new assets for mobile, currently returning only the desktopSlides
-        1. Reimplement checks for store's isMobile getter
-        2. Introduce mobileSlides array
-        3. Uncomment return statement below, naturally remove the current return desktopSlides.
-     */
+    // (MOBILE) Requires new assets for mobile, currently returning only the desktopSlides
+    //    1. Reimplement checks for store's isMobile getter
+    //    2. Introduce mobileSlides array
+    //    3. Uncomment return statement below, naturally remove the current return desktopSlides.
     // return this.isMobile ? mobileSlides : desktopSlides;
     return desktopSlides;
 });

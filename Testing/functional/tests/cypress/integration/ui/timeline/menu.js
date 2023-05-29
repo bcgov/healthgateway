@@ -21,7 +21,7 @@ function login(isMobile) {
 }
 
 describe("Menu System", () => {
-    it("Validate Toggle Sidebar", () => {
+    it("Validate Toggle Sidebar", { scrollBehavior: "top" }, () => {
         login(false);
         cy.get("[data-testid=timelineLabel]")
             .should("be.visible")

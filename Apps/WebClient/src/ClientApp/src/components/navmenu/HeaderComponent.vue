@@ -267,9 +267,12 @@ watch(isMobileWidth, (value) => {
 });
 
 watch(
-    () => route.value.query.registration,
-    () => {
-        appTourComponent.value?.showModal();
+    () => route.value.query,
+    (value) => {
+        if (value.registration === "success") {
+            router.replace({ query: {} });
+            appTourComponent.value?.showModal();
+        }
     }
 );
 
