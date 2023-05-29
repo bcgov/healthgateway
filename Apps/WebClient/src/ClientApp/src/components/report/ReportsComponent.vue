@@ -1,7 +1,11 @@
 <script lang="ts">
 import { saveAs } from "file-saver";
-import Vue from "vue";
-import { Component, Prop, Ref } from "vue-property-decorator";
+import Vue, { Component } from "vue";
+import {
+    Component as ComponentDecorator,
+    Prop,
+    Ref,
+} from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 
 import DatePickerComponent from "@/components/DatePickerComponent.vue";
@@ -38,45 +42,36 @@ import { ILogger } from "@/services/interfaces";
 import ConfigUtil from "@/utility/configUtil";
 import EventTracker from "@/utility/eventTracker";
 
-const medicationReport = "medication-report";
-const mspVisitReport = "msp-visit-report";
-const covid19Report = "covid19-report";
-const immunizationReport = "immunization-report";
-const medicationRequestReport = "medication-request-report";
-const noteReport = "note-report";
-const laboratoryReport = "laboratory-report";
-const hospitalVisitReport = "hospital-visit-report";
-
-const reportNameMap = new Map<EntryType, string>([
-    [EntryType.Medication, medicationReport],
-    [EntryType.HealthVisit, mspVisitReport],
-    [EntryType.Covid19TestResult, covid19Report],
-    [EntryType.Immunization, immunizationReport],
-    [EntryType.SpecialAuthorityRequest, medicationRequestReport],
-    [EntryType.Note, noteReport],
-    [EntryType.LabResult, laboratoryReport],
-    [EntryType.HospitalVisit, hospitalVisitReport],
+const reportComponentMap = new Map<EntryType, Component>([
+    [EntryType.Medication, MedicationHistoryReportComponent],
+    [EntryType.HealthVisit, MSPVisitsReportComponent],
+    [EntryType.Covid19TestResult, Covid19ReportComponent],
+    [EntryType.Immunization, ImmunizationHistoryReportComponent],
+    [EntryType.SpecialAuthorityRequest, MedicationRequestReportComponent],
+    [EntryType.Note, NotesReportComponent],
+    [EntryType.LabResult, LaboratoryReportComponent],
+    [EntryType.HospitalVisit, HospitalVisitReportComponent],
 ]);
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const options: any = {
     components: {
         LoadingComponent,
-        "message-modal": MessageModalComponent,
-        medicationReport: MedicationHistoryReportComponent,
-        mspVisitReport: MSPVisitsReportComponent,
-        covid19Report: Covid19ReportComponent,
-        immunizationReport: ImmunizationHistoryReportComponent,
-        medicationRequestReport: MedicationRequestReportComponent,
-        "hg-date-picker": DatePickerComponent,
+        MessageModalComponent,
+        MedicationHistoryReportComponent,
+        MSPVisitsReportComponent,
+        Covid19ReportComponent,
+        ImmunizationHistoryReportComponent,
+        MedicationRequestReportComponent,
+        DatePickerComponent,
         MultiSelectComponent,
-        noteReport: NotesReportComponent,
-        laboratoryReport: LaboratoryReportComponent,
-        HospitalVisitReport: HospitalVisitReportComponent,
+        NotesReportComponent,
+        LaboratoryReportComponent,
+        HospitalVisitReportComponent,
     },
 };
 
-@Component(options)
+@ComponentDecorator(options)
 export default class ReportsComponent extends Vue {
     @Prop({ required: true })
     hdid!: string;
@@ -123,7 +118,7 @@ export default class ReportsComponent extends Vue {
     isLoading = false;
     isGeneratingReport = false;
     reportFormatType = ReportFormatType.PDF;
-    reportComponentName = "";
+    selectedEntryType: EntryType | "" = "";
     reportTypeOptions = [{ value: "", text: "Select" }];
 
     selectedStartDate: StringISODate | null = null;
@@ -138,9 +133,17 @@ export default class ReportsComponent extends Vue {
 
     logger!: ILogger;
 
+    get selectedReportComponent(): Component | string {
+        if (!this.selectedEntryType) {
+            return "";
+        }
+
+        return reportComponentMap.get(this.selectedEntryType) ?? "";
+    }
+
     get showLaboratoryOrderQueuedMessage(): boolean {
         return (
-            this.reportComponentName === laboratoryReport &&
+            this.selectedEntryType === EntryType.LabResult &&
             this.laboratoryOrdersAreQueued(this.hdid)
         );
     }
@@ -185,7 +188,7 @@ export default class ReportsComponent extends Vue {
     }
 
     get isMedicationReport(): boolean {
-        return this.reportComponentName === medicationReport;
+        return this.selectedEntryType === EntryType.Medication;
     }
 
     get medicationOptions(): SelectOption[] {
@@ -212,10 +215,9 @@ export default class ReportsComponent extends Vue {
     }
 
     get isDownloadDisabled(): boolean {
-        this.logger.debug(`Report Component Name: ${this.reportComponentName}`);
         return (
             this.isLoading ||
-            !this.reportComponentName ||
+            !this.selectedEntryType ||
             !this.patient.hdid ||
             !this.hasRecords
         );
@@ -232,10 +234,10 @@ export default class ReportsComponent extends Vue {
             ? ConfigUtil.isDependentDatasetEnabled
             : ConfigUtil.isDatasetEnabled;
 
-        for (const [entryType, componentName] of reportNameMap) {
+        for (const [entryType] of reportComponentMap) {
             if (isEnabled(entryType)) {
                 this.reportTypeOptions.push({
-                    value: componentName,
+                    value: entryType,
                     text: entryTypeMap.get(entryType)?.name ?? "",
                 });
             }
@@ -295,7 +297,7 @@ export default class ReportsComponent extends Vue {
     }
 
     downloadReport(): void {
-        if (this.reportComponentName === "") {
+        if (!this.selectedEntryType) {
             return;
         }
 
@@ -348,41 +350,42 @@ export default class ReportsComponent extends Vue {
 
     trackDownload(): void {
         let reportName = "";
-        switch (this.reportComponentName) {
-            case medicationReport:
+        switch (this.selectedEntryType) {
+            case EntryType.Medication:
                 reportName = "Medication";
                 break;
-            case mspVisitReport:
+            case EntryType.HealthVisit:
                 reportName = "Health Visits";
                 break;
-            case covid19Report:
+            case EntryType.Covid19TestResult:
                 reportName = "COVID‑19 Test";
                 break;
-            case immunizationReport:
+            case EntryType.Immunization:
                 reportName = "Immunization";
                 break;
-            case medicationRequestReport:
+            case EntryType.SpecialAuthorityRequest:
                 reportName = "Special Authority Requests";
                 break;
-            case noteReport:
+            case EntryType.Note:
                 reportName = "Notes";
                 break;
-            case laboratoryReport:
+            case EntryType.LabResult:
                 reportName = "Laboratory Tests";
                 break;
-            case hospitalVisitReport:
+            case EntryType.HospitalVisit:
                 reportName = "Hospital Visits";
                 break;
+            default:
+                return;
         }
-        if (reportName !== "") {
-            const formatTypeName = ReportFormatType[this.reportFormatType];
-            const eventName = `${reportName} (${formatTypeName})`;
 
-            if (!this.isDependent) {
-                EventTracker.downloadReport(eventName);
-            } else {
-                EventTracker.downloadReport(`Dependent_${eventName}`);
-            }
+        const formatTypeName = ReportFormatType[this.reportFormatType];
+        const eventName = `${reportName} (${formatTypeName})`;
+
+        if (!this.isDependent) {
+            EventTracker.downloadReport(eventName);
+        } else {
+            EventTracker.downloadReport(`Dependent_${eventName}`);
         }
     }
 }
@@ -409,7 +412,7 @@ export default class ReportsComponent extends Vue {
                 <b-col class="mb-2" sm="">
                     <b-form-select
                         id="reportType"
-                        v-model="reportComponentName"
+                        v-model="selectedEntryType"
                         data-testid="reportType"
                         :options="reportTypeOptions"
                     >
@@ -506,7 +509,7 @@ export default class ReportsComponent extends Vue {
                 <b-row>
                     <b-col class="col-12 col-lg-4 pt-3">
                         <label for="start-date">From</label>
-                        <hg-date-picker
+                        <DatePickerComponent
                             id="start-date"
                             v-model="selectedStartDate"
                             data-testid="startDateInput"
@@ -517,7 +520,7 @@ export default class ReportsComponent extends Vue {
                     </b-col>
                     <b-col class="col-12 col-lg-4 pt-3">
                         <label for="end-date">To</label>
-                        <hg-date-picker
+                        <DatePickerComponent
                             id="end-date"
                             v-model="selectedEndDate"
                             data-testid="endDateInput"
@@ -575,12 +578,12 @@ export default class ReportsComponent extends Vue {
             :full-screen="false"
         />
         <div
-            v-if="reportComponentName"
+            v-if="selectedEntryType"
             data-testid="reportSample"
             :class="{ preview: !isDependent }"
         >
             <component
-                :is="reportComponentName"
+                :is="selectedReportComponent"
                 ref="report"
                 :hdid="hdid"
                 :filter="reportFilter"
@@ -603,7 +606,7 @@ export default class ReportsComponent extends Vue {
             </h5>
         </div>
 
-        <message-modal
+        <MessageModalComponent
             ref="messageModal"
             data-testid="messageModal"
             title="Sensitive Document Download"
