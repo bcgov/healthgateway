@@ -29,8 +29,6 @@ withDefaults(defineProps<Props>(), {
     commentsAreEnabled: false,
 });
 
-const modalTitle = "";
-
 const store = useStore();
 
 const entry = ref<TimelineEntry | null>(null);
@@ -149,9 +147,6 @@ window.onpopstate = (event: PopStateEvent) => {
                     >
                         <hg-icon icon="arrow-left" size="medium" />
                     </b-button>
-                </b-col>
-                <b-col>
-                    <h5>{{ modalTitle }}</h5>
                 </b-col>
             </b-row>
         </template>
