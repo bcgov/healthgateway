@@ -26,6 +26,7 @@ interface Props {
     commentsAreEnabled?: boolean;
 }
 const props = withDefaults(defineProps<Props>(), {
+    isMobileDetails: false,
     commentsAreEnabled: false,
 });
 
@@ -37,9 +38,6 @@ const messageModal = ref<MessageModalComponent>();
 const files = computed<Dictionary<ClinicalDocumentFile>>(
     () => store.getters["clinicalDocument/files"]
 );
-function getFile(fileId: string, hdid: string): Promise<EncodedMedia> {
-    return store.dispatch("clinicalDocument/getFile", { fileId, hdid });
-}
 
 const isLoadingFile = computed<boolean>(() => {
     if (props.entry.fileId in files.value) {
@@ -52,6 +50,10 @@ const isLoadingFile = computed<boolean>(() => {
 const entryIcon = computed<string | undefined>(
     () => entryTypeMap.get(EntryType.ClinicalDocument)?.icon
 );
+
+function getFile(fileId: string, hdid: string): Promise<EncodedMedia> {
+    return store.dispatch("clinicalDocument/getFile", { fileId, hdid });
+}
 
 function showConfirmationModal(): void {
     messageModal.value?.showModal();

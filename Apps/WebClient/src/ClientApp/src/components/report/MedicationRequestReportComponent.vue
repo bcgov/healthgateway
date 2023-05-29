@@ -92,12 +92,6 @@ const specialAuthorityRequests = computed<MedicationRequest[]>(() =>
 
 const isEmpty = computed<boolean>(() => visibleRecords.value.length === 0);
 
-function retrieveSpecialAuthorityRequests(hdid: string): Promise<void> {
-    return store.dispatch("medication/retrieveSpecialAuthorityRequests", {
-        hdid,
-    });
-}
-
 const visibleRecords = computed<MedicationRequest[]>(() => {
     const records = specialAuthorityRequests.value.filter(
         (record: MedicationRequest) =>
@@ -140,6 +134,11 @@ const items = computed<MedicationRequestRow[]>(() => {
     );
 });
 
+function retrieveSpecialAuthorityRequests(hdid: string): Promise<void> {
+    return store.dispatch("medication/retrieveSpecialAuthorityRequests", {
+        hdid,
+    });
+}
 function prescriberName(medication: MedicationRequest): string {
     return (
         (medication.prescriberFirstName || " ") +

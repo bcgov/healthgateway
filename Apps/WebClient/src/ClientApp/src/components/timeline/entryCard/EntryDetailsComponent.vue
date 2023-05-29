@@ -29,7 +29,6 @@ withDefaults(defineProps<Props>(), {
     commentsAreEnabled: false,
 });
 
-const eventBus = EventBus;
 const modalTitle = "";
 
 const store = useStore();
@@ -113,7 +112,7 @@ watch(lastNoteOperation, () => {
 
 onMounted(() => {
     entry.value = null;
-    eventBus.$on(EventMessageName.ViewEntryDetails, viewDetails);
+    EventBus.$on(EventMessageName.ViewEntryDetails, viewDetails);
 });
 
 // Created Hook

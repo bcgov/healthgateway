@@ -1,7 +1,6 @@
 ﻿<script setup lang="ts">
 import { BCarousel } from "bootstrap-vue";
 import { computed, ref } from "vue";
-import { useStore } from "vue-composition-wrapper";
 
 defineExpose({ showModal });
 
@@ -15,49 +14,6 @@ interface TourSlide {
     // Optional alt text for the image.
     imageAlt?: string;
 }
-
-const mobileSlides: TourSlide[] = [
-    {
-        title: "App Tour",
-        description:
-            "Take this brief tour to learn how to use Health Gateway. You can always get here again by clicking the light bulb.",
-        imageUri: new URL(
-            "@/assets/images/tour/mobile/at-intro-mobile.png",
-            import.meta.url
-        ).href,
-        imageAlt: "App tour start mobile splash",
-    },
-    {
-        title: "Add a Quick Link",
-        description:
-            "Add a quick link to easily access a health record type from your home screen.",
-        imageUri: new URL(
-            "@/assets/images/tour/mobile/at-quick-link-mobile.gif",
-            import.meta.url
-        ).href,
-        imageAlt: "Quick link mobile demo",
-    },
-    {
-        title: "Filter your Timeline records",
-        description:
-            "Filter by health record type, date or keyword to find what you need.",
-        imageUri: new URL(
-            "@/assets/images/tour/mobile/at-filter-mobile.gif",
-            import.meta.url
-        ).href,
-        imageAlt: "Timeline filter mobile demo",
-    },
-    {
-        title: "Notifications centre",
-        description:
-            "You'll be notified of updates to the app and your health records.",
-        imageUri: new URL(
-            "@/assets/images/tour/mobile/at-notifications-mobile.gif",
-            import.meta.url
-        ).href,
-        imageAlt: "Notifications centre mobile demo",
-    },
-];
 
 const desktopSlides: TourSlide[] = [
     {
@@ -102,17 +58,19 @@ const desktopSlides: TourSlide[] = [
     },
 ];
 
-const store = useStore();
-
 const slideIndex = ref(0);
 const isVisible = ref(false);
 
 const tourCarousel = ref<BCarousel>();
 
-const isMobile = computed<boolean>(() => store.getters["isMobile"]);
-
 const slides = computed<TourSlide[]>(() => {
-    return isMobile.value ? mobileSlides : desktopSlides;
+    /* (MOBILE) Requires new assets for mobile, currently returning only the desktopSlides
+        1. Reimplement checks for store's isMobile getter
+        2. Introduce mobileSlides array
+        3. Uncomment return statement below, naturally remove the current return desktopSlides.
+     */
+    // return this.isMobile ? mobileSlides : desktopSlides;
+    return desktopSlides;
 });
 
 const currentSlide = computed<TourSlide | undefined>(() => {

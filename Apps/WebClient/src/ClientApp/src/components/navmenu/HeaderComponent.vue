@@ -266,12 +266,12 @@ watch(isMobileWidth, (isMobileWidth) => {
     }
 });
 
-watch(route, () => {
-    if (route.value.query.registration === "success") {
-        router.replace({ query: {} });
+watch(
+    () => route.value.query.registration,
+    () => {
         appTourComponent.value?.showModal();
     }
-});
+);
 
 onUnmounted(() => {
     window.removeEventListener("scroll", onScroll);
