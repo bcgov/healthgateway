@@ -63,7 +63,8 @@ namespace HealthGateway.Admin.Client.Pages
 
         private IEnumerable<DataSource> BlockedDataSources => this.PatientDetailsState.Value.BlockedDataSources ?? Enumerable.Empty<DataSource>();
 
-        private IEnumerable<AgentAction> AgentAuditHistory => this.PatientDetailsState.Value.AgentActions ?? Enumerable.Empty<AgentAction>();
+        private IEnumerable<AgentAction> AgentAuditHistory =>
+            this.PatientDetailsState.Value.AgentActions?.Sort((a, b) => b.TransactionDateTime.CompareTo(a.TransactionDateTime)) ?? Enumerable.Empty<AgentAction>();
 
         private bool PatientsLoaded => this.PatientSupportState.Value.Loaded;
 
