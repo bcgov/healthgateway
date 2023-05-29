@@ -15,6 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.DBMaintainer.Mappers
 {
+    using System.Diagnostics.CodeAnalysis;
     using CsvHelper.Configuration;
     using HealthGateway.Database.Models;
     using HealthGateway.DBMaintainer.Models;
@@ -29,6 +30,7 @@ namespace HealthGateway.DBMaintainer.Mappers
         /// Performs the mapping of read Pharmacy Assessment file to the db model.
         /// </summary>
         /// <param name="fileDownload">The fileDownload to map.</param>
+        [SuppressMessage("ReSharper", "UnusedParameter.Local", Justification = "Required by ClassMap")]
         public PharmacyAssessmentMapper(FileDownload fileDownload)
         {
             this.Map(m => m.Pin).Index(0);

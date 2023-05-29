@@ -43,14 +43,17 @@ namespace HealthGateway.DBMaintainer.Mappers.Converters
             {
                 string boolValue = text.ToUpperInvariant();
 
-                result = boolValue switch
+                switch (boolValue)
                 {
-                    "YES" => true,
-                    "NO" => false,
-                    _ => false,
-                };
-
-                return true;
+                    case "YES":
+                        result = true;
+                        return true;
+                    case "NO":
+                        result = false;
+                        return true;
+                    default:
+                        return false;
+                }
             }
 
             return false;
