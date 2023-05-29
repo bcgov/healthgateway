@@ -62,5 +62,14 @@ namespace HealthGateway.Common.Data.ErrorHandling
         /// <returns>ProblemDetail instance with not found type and 404 status code.</returns>
         public static ProblemDetails CreateNotFoundError(string details) =>
             CreateProblemDetails(details, HttpStatusCode.NotFound, "NotFound");
+
+        /// <summary>
+        /// Creates a problem details describing a not found error with 404 request status.
+        /// </summary>
+        /// <param name="type">The type of the server error</param>
+        /// <param name="details">The details of what was not found.</param>
+        /// <returns>ProblemDetail instance with not found type and 404 status code.</returns>
+        public static ProblemDetails CreateServerError(string type, string details) =>
+            CreateProblemDetails(details, HttpStatusCode.InternalServerError, type);
     }
 }

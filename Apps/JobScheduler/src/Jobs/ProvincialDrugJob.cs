@@ -39,8 +39,15 @@ namespace HealthGateway.JobScheduler.Jobs
         /// <param name="downloadService">The download utility.</param>
         /// <param name="configuration">The IConfiguration to use.</param>
         /// <param name="drugDbContext">The database context to interact with.</param>
-        public ProvincialDrugJob(ILogger<ProvincialDrugJob> logger, IPharmaCareDrugParser parser, IFileDownloadService downloadService, IConfiguration configuration, GatewayDbContext drugDbContext)
-            : base(logger, parser, downloadService, configuration, drugDbContext)
+        /// <param name="pharmacyAssessmentParser">The pharmacy assessment parser to use.</param>
+        public ProvincialDrugJob(
+            ILogger<ProvincialDrugJob> logger,
+            IPharmaCareDrugParser parser,
+            IFileDownloadService downloadService,
+            IConfiguration configuration,
+            GatewayDbContext drugDbContext,
+            IPharmacyAssessmentParser pharmacyAssessmentParser)
+            : base(logger, parser, downloadService, configuration, drugDbContext, pharmacyAssessmentParser)
         {
         }
 

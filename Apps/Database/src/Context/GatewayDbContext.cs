@@ -649,6 +649,15 @@ namespace HealthGateway.Database.Context
                         CreatedDateTime = this.DefaultSeedDate.ToUniversalTime(),
                         UpdatedBy = UserId.DefaultUser,
                         UpdatedDateTime = this.DefaultSeedDate.ToUniversalTime(),
+                    },
+                    new ProgramTypeCode
+                    {
+                        ProgramCode = ProgramType.PharmacyAssessment,
+                        Description = "Pharmacy Assessment",
+                        CreatedBy = UserId.DefaultUser,
+                        CreatedDateTime = this.DefaultSeedDate.ToUniversalTime(),
+                        UpdatedBy = UserId.DefaultUser,
+                        UpdatedDateTime = this.DefaultSeedDate.ToUniversalTime(),
                     });
         }
 

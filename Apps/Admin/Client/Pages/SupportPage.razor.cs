@@ -59,7 +59,7 @@ namespace HealthGateway.Admin.Client.Pages
 
             set
             {
-                this.ResetPatientSupportState();
+                this.Dispatcher.Dispatch(new PatientSupportActions.ResetStateAction());
                 this.QueryParameter = string.Empty;
                 this.QueryType = value;
             }
@@ -130,6 +130,12 @@ namespace HealthGateway.Admin.Client.Pages
                 PatientQueryType.Sms => "SMS",
                 _ => queryType.ToString(),
             };
+        }
+
+        private void Clear()
+        {
+            this.Dispatcher.Dispatch(new PatientSupportActions.ResetStateAction());
+            this.QueryParameter = string.Empty;
         }
 
         private void ResetPatientSupportState()

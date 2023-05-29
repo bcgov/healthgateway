@@ -46,7 +46,7 @@ namespace HealthGateway.DBMaintainer.Apps
         }
 
         /// <inheritdoc/>
-        public override void ProcessDownload(string sourceFolder, FileDownload downloadedFile)
+        protected override void ProcessDownload(string sourceFolder, FileDownload downloadedFile)
         {
             this.Logger.LogInformation("Parsing Drug File and adding to DB Context");
             IList<DrugProduct> drugProducts = this.Parser.ParseDrugFile(sourceFolder, downloadedFile);

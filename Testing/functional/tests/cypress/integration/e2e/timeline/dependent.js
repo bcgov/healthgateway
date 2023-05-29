@@ -1,5 +1,6 @@
 const { AuthMethod, Dataset } = require("../../../support/constants");
 
+const authorizedSpecialAuthorityDependentHdid = "IASGH65211V6WHXKGQDSEJAHYMYR";
 const authorizedDependentHdid = "162346565465464564565463257";
 const unauthorizedDependentHdid = "343222434345442257";
 const formattedDependentName = "JENNIFER T";
@@ -308,10 +309,17 @@ describe("Dependent Timeline Datasets", () => {
         disabledDependentDatasetShouldNotBePresent(Dataset.DiagnosticImaging);
     });
     it("Validate Special Authority requests on dependent timeline", () => {
-        enabledDatasetShouldBePresent(Dataset.SpecialAuthorityRequest);
-        disabledDatasetShouldNotBePresent(Dataset.SpecialAuthorityRequest);
+        enabledDatasetShouldBePresent(
+            Dataset.SpecialAuthorityRequest,
+            authorizedSpecialAuthorityDependentHdid
+        );
+        disabledDatasetShouldNotBePresent(
+            Dataset.SpecialAuthorityRequest,
+            authorizedSpecialAuthorityDependentHdid
+        );
         disabledDependentDatasetShouldNotBePresent(
-            Dataset.SpecialAuthorityRequest
+            Dataset.SpecialAuthorityRequest,
+            authorizedSpecialAuthorityDependentHdid
         );
     });
 });

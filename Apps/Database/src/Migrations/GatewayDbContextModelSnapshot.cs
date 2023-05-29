@@ -2525,9 +2525,16 @@ namespace HealthGateway.Database.Migrations
                         .HasMaxLength(80)
                         .HasColumnType("character varying(80)");
 
+                    b.Property<string>("PharmacyAssessmentTitle")
+                        .HasMaxLength(250)
+                        .HasColumnType("character varying(250)");
+
                     b.Property<string>("Plan")
                         .HasMaxLength(2)
                         .HasColumnType("character varying(2)");
+
+                    b.Property<bool?>("PrescriptionProvided")
+                        .HasColumnType("boolean");
 
                     b.Property<int?>("QuantityLimit")
                         .HasColumnType("integer");
@@ -2550,6 +2557,9 @@ namespace HealthGateway.Database.Migrations
                         .HasMaxLength(4)
                         .HasColumnType("character varying(4)")
                         .HasColumnName("RDPSubCategory");
+
+                    b.Property<bool?>("RedirectedToHealthCareProvider")
+                        .HasColumnType("boolean");
 
                     b.Property<string>("TrialFlag")
                         .HasMaxLength(1)
@@ -2803,6 +2813,16 @@ namespace HealthGateway.Database.Migrations
                             CreatedBy = "System",
                             CreatedDateTime = new DateTime(2019, 5, 1, 7, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Clinical Document Service",
+                            UpdatedBy = "System",
+                            UpdatedDateTime = new DateTime(2019, 5, 1, 7, 0, 0, 0, DateTimeKind.Utc),
+                            Version = 0u
+                        },
+                        new
+                        {
+                            ProgramCode = "PHAR-ASSMT",
+                            CreatedBy = "System",
+                            CreatedDateTime = new DateTime(2019, 5, 1, 7, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "Pharmacy Assessment",
                             UpdatedBy = "System",
                             UpdatedDateTime = new DateTime(2019, 5, 1, 7, 0, 0, 0, DateTimeKind.Utc),
                             Version = 0u
