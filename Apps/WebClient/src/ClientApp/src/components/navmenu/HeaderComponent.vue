@@ -209,7 +209,7 @@ function toggleSidebar(): void {
 }
 
 function setHeaderState(isOpen: boolean): void {
-    store.dispatch("navbar/setHeaderState", { isOpen });
+    store.dispatch("navbar/setHeaderState", isOpen);
 }
 
 function onScroll(): void {
