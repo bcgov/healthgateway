@@ -48,7 +48,8 @@ namespace HealthGateway.Database.Models
         /// <summary>
         /// Gets or sets the resource delegate's expiry date.
         /// </summary>
-        public DateOnly? ExpiryDate { get; set; }
+        [Required]
+        public DateOnly ExpiryDate { get; set; }
 
         /// <summary>
         /// Gets or sets the ReasonObject type.
