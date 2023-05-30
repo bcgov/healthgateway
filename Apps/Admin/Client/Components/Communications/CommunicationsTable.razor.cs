@@ -106,7 +106,7 @@ namespace HealthGateway.Admin.Client.Components.Communications
 
             public DateTime EffectiveDate { get; init; }
 
-            public DateTime? ExpiryDate { get; init; }
+            public DateTime ExpiryDate { get; init; }
 
             public MarkupString Text { get; init; }
 

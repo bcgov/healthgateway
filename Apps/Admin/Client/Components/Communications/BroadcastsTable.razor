@@ -31,7 +31,7 @@
             </MudTableSortLabel>
         </MudTh>
         <MudTh>
-            <MudTableSortLabel SortBy="new Func<BroadcastRow, object>(x => x.ExpiryDate)">
+            <MudTableSortLabel SortBy="new Func<BroadcastRow, object>(x => ConvertToShortFormatFromUtc(x.ExpiryDate))">
                 Expires On
             </MudTableSortLabel>
         </MudTh>
