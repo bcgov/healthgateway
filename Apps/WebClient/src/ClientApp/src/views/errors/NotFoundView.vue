@@ -1,18 +1,5 @@
-<script lang="ts">
-import Vue from "vue";
-import { Component } from "vue-property-decorator";
-
+<script setup lang="ts">
 import PageErrorComponent from "@/components/PageErrorComponent.vue";
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const options: any = {
-    components: {
-        PageErrorComponent,
-    },
-};
-
-@Component(options)
-export default class NotFoundView extends Vue {}
 </script>
 
 <template>

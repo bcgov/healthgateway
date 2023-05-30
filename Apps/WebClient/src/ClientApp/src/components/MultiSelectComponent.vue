@@ -1,66 +1,58 @@
-<script lang="ts">
-import Vue from "vue";
-import { Component, Emit, Model, Prop, Watch } from "vue-property-decorator";
+<script setup lang="ts">
+import { computed } from "vue";
 
-export interface SelectOption {
-    value: string;
-    text: string;
-    disabled?: boolean;
+import { SelectOption } from "@/components/Interfaces/MultiSelectComponent";
+
+interface Props {
+    placeholder: string;
+    options: SelectOption[];
+    // Cannot seem to define this as required without getting a missing required prop error when using v-model.
+    modelValue?: string[];
 }
+const props = withDefaults(defineProps<Props>(), {
+    placeholder: "Choose a tag...",
+    options: () => [] as SelectOption[],
+    modelValue: () => [],
+});
 
-@Component
-export default class MultiSelectComponent extends Vue {
-    @Prop({ default: "Choose a tag..." }) placeholder!: string;
-    @Prop({ default: [] }) options!: SelectOption[];
-    @Model("change", { type: Array }) public model!: string[];
+const emit = defineEmits<{
+    (e: "update:modelValue", value: string[]): void;
+}>();
 
-    private values: string[] = [];
+const values = computed<string[]>({
+    get() {
+        return props.modelValue;
+    },
+    set(value: string[]) {
+        emit("update:modelValue", value);
+    },
+});
 
-    private get availableOptions(): SelectOption[] {
-        if (this.options.length === 0) {
-            return [];
-        }
-
-        if (this.values.length === 0) {
-            return this.options;
-        }
-
-        return this.options.filter(
-            (opt) => this.values.indexOf(opt.value) === -1
-        );
+const availableOptions = computed<SelectOption[]>(() => {
+    if (props.options.length === 0) {
+        return [];
     }
 
-    @Watch("values")
-    private onValueChanged(): void {
-        this.updateModel();
+    if (values.value.length === 0) {
+        return props.options;
     }
 
-    @Watch("model")
-    private onModelChanged(): void {
-        this.values = this.model;
-    }
+    return props.options.filter(
+        (opt) => values.value.indexOf(opt.value) === -1
+    );
+});
 
-    @Emit("change")
-    private updateModel(): string[] {
-        return this.values;
-    }
-
-    private getValueText(value: unknown): string | SelectOption | undefined {
-        const option = this.options.find(
-            (opt) => opt.value === value || opt === value
-        );
-        return option?.text || option;
-    }
-
-    private mounted(): void {
-        this.values = this.model;
-    }
+function getValueText(value: unknown): string | SelectOption | undefined {
+    const option = props.options.find(
+        (opt) => opt.value === value || opt === value
+    );
+    return option?.text || option;
 }
 </script>
 
 <template>
     <div>
-        <!-- Prop `add-on-change` is needed to enable adding tags vie the `change` event -->
+        <!-- Prop `add-on-change` is needed to enable adding tags via the `change` event -->
         <b-form-tags
             id="tags-component-select"
             v-model="values"

@@ -1,10 +1,8 @@
-﻿<script lang="ts">
+﻿<script setup lang="ts">
 import { BCarousel } from "bootstrap-vue";
-import Vue from "vue";
-import { Component, Ref } from "vue-property-decorator";
-import { Getter } from "vuex-class";
+import { computed, ref } from "vue";
 
-import type { WebClientConfiguration } from "@/models/configData";
+defineExpose({ showModal });
 
 interface TourSlide {
     // Title to be displayed for the slide.
@@ -17,150 +15,97 @@ interface TourSlide {
     imageAlt?: string;
 }
 
-@Component
-export default class AppTourComponent extends Vue {
-    @Getter("webClient", { namespace: "config" })
-    webClient!: WebClientConfiguration;
+const desktopSlides: TourSlide[] = [
+    {
+        title: "App Tour",
+        description:
+            "Take this brief tour to learn how to use Health Gateway. You can always get here again by clicking the light bulb.",
+        imageUri: new URL(
+            "@/assets/images/tour/web/at-intro.png",
+            import.meta.url
+        ).href,
+        imageAlt: "App tour start splash",
+    },
+    {
+        title: "Add a Quick Link",
+        description:
+            "Add a quick link to easily access a health record type from your home screen.",
+        imageUri: new URL(
+            "@/assets/images/tour/web/at-quick-link.png",
+            import.meta.url
+        ).href,
+        imageAlt: "Quick link web demo",
+    },
+    {
+        title: "Filter your Timeline records",
+        description:
+            "Filter by health record type, date or keyword to find what you need.",
+        imageUri: new URL(
+            "@/assets/images/tour/web/at-filter.png",
+            import.meta.url
+        ).href,
+        imageAlt: "Timeline filter web demo",
+    },
+    {
+        title: "Notifications centre",
+        description:
+            "You'll be notified of updates to the app and your health records.",
+        imageUri: new URL(
+            "@/assets/images/tour/web/at-notifications-web.png",
+            import.meta.url
+        ).href,
+        imageAlt: "Notifications centre web demo",
+    },
+];
 
-    @Ref("tourCarousel")
-    readonly tourCarousel!: BCarousel;
+const slideIndex = ref(0);
+const isVisible = ref(false);
 
-    @Getter("isMobile")
-    isMobile!: boolean;
+const tourCarousel = ref<BCarousel>();
 
-    private mobileSlides: TourSlide[] = [
-        {
-            title: "App Tour",
-            description:
-                "Take this brief tour to learn how to use Health Gateway. You can always get here again by clicking the light bulb.",
-            imageUri: new URL(
-                "@/assets/images/tour/mobile/at-intro-mobile.png",
-                import.meta.url
-            ).href,
-            imageAlt: "App tour start mobile splash",
-        },
-        {
-            title: "Add a Quick Link",
-            description:
-                "Add a quick link to easily access a health record type from your home screen.",
-            imageUri: new URL(
-                "@/assets/images/tour/mobile/at-quick-link-mobile.gif",
-                import.meta.url
-            ).href,
-            imageAlt: "Quick link mobile demo",
-        },
-        {
-            title: "Filter your Timeline records",
-            description:
-                "Filter by health record type, date or keyword to find what you need.",
-            imageUri: new URL(
-                "@/assets/images/tour/mobile/at-filter-mobile.gif",
-                import.meta.url
-            ).href,
-            imageAlt: "Timeline filter mobile demo",
-        },
-        {
-            title: "Notifications centre",
-            description:
-                "You'll be notified of updates to the app and your health records.",
-            imageUri: new URL(
-                "@/assets/images/tour/mobile/at-notifications-mobile.gif",
-                import.meta.url
-            ).href,
-            imageAlt: "Notifications centre mobile demo",
-        },
-    ];
+const slides = computed<TourSlide[]>(() => {
+    // (MOBILE) Requires new assets for mobile, currently returning only the desktopSlides
+    //    1. Reimplement checks for store's isMobile getter
+    //    2. Introduce mobileSlides array
+    //    3. Uncomment return statement below, naturally remove the current return desktopSlides.
+    // return this.isMobile ? mobileSlides : desktopSlides;
+    return desktopSlides;
+});
 
-    private desktopSlides: TourSlide[] = [
-        {
-            title: "App Tour",
-            description:
-                "Take this brief tour to learn how to use Health Gateway. You can always get here again by clicking the light bulb.",
-            imageUri: new URL(
-                "@/assets/images/tour/web/at-intro.png",
-                import.meta.url
-            ).href,
-            imageAlt: "App tour start splash",
-        },
-        {
-            title: "Add a Quick Link",
-            description:
-                "Add a quick link to easily access a health record type from your home screen.",
-            imageUri: new URL(
-                "@/assets/images/tour/web/at-quick-link.png",
-                import.meta.url
-            ).href,
-            imageAlt: "Quick link web demo",
-        },
-        {
-            title: "Filter your Timeline records",
-            description:
-                "Filter by health record type, date or keyword to find what you need.",
-            imageUri: new URL(
-                "@/assets/images/tour/web/at-filter.png",
-                import.meta.url
-            ).href,
-            imageAlt: "Timeline filter web demo",
-        },
-        {
-            title: "Notifications centre",
-            description:
-                "You'll be notified of updates to the app and your health records.",
-            imageUri: new URL(
-                "@/assets/images/tour/web/at-notifications-web.png",
-                import.meta.url
-            ).href,
-            imageAlt: "Notifications centre web demo",
-        },
-    ];
+const currentSlide = computed<TourSlide | undefined>(() => {
+    return slides.value.length > 0 ? slides.value[slideIndex.value] : undefined;
+});
 
-    private slideIndex = 0;
+const isFinalSlide = computed<boolean>(() => {
+    return slideIndex.value === slides.value.length - 1;
+});
 
-    private isVisible = false;
+const isFirstSlide = computed<boolean>(() => {
+    return slideIndex.value === 0;
+});
 
-    public showModal(): void {
-        this.isVisible = true;
+function showModal(): void {
+    isVisible.value = true;
+}
+
+function hideModal(): void {
+    slideIndex.value = 0;
+    isVisible.value = false;
+}
+
+function next(bvModalEvt: Event): void {
+    // Prevent modal from closing
+    bvModalEvt.preventDefault();
+    if (slideIndex.value < slides.value.length - 1) {
+        tourCarousel.value?.next();
     }
+}
 
-    public hideModal(): void {
-        this.slideIndex = 0;
-        this.isVisible = false;
-    }
-
-    private next(bvModalEvt: Event): void {
-        // Prevent modal from closing
-        bvModalEvt.preventDefault();
-        if (this.slideIndex < this.slides.length - 1) {
-            this.tourCarousel.next();
-        }
-    }
-
-    private previous(bvModalEvt: Event): void {
-        // Prevent modal from closing
-        bvModalEvt.preventDefault();
-        if (this.slideIndex > 0) {
-            this.tourCarousel.prev();
-        }
-    }
-
-    private get slides(): TourSlide[] {
-        // Requires new assets for mobile, currently returning only the desktopSlides
-        // return this.isMobile ? this.mobileSlides : this.desktopSlides;
-        return this.desktopSlides;
-    }
-
-    private get currentSlide(): TourSlide | undefined {
-        return this.slides.length > 0
-            ? this.slides[this.slideIndex]
-            : undefined;
-    }
-
-    private get isFinalSlide(): boolean {
-        return this.slideIndex === this.slides.length - 1;
-    }
-
-    private get isFirstSlide(): boolean {
-        return this.slideIndex === 0;
+function previous(bvModalEvt: Event): void {
+    // Prevent modal from closing
+    bvModalEvt.preventDefault();
+    if (slideIndex.value > 0) {
+        tourCarousel.value?.prev();
     }
 }
 </script>

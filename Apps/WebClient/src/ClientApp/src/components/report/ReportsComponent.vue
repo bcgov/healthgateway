@@ -5,11 +5,10 @@ import { Component, Prop, Ref } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
 
 import DatePickerComponent from "@/components/DatePickerComponent.vue";
+import { SelectOption } from "@/components/interfaces/MultiSelectComponent";
 import LoadingComponent from "@/components/LoadingComponent.vue";
 import MessageModalComponent from "@/components/modal/MessageModalComponent.vue";
-import MultiSelectComponent, {
-    SelectOption,
-} from "@/components/MultiSelectComponent.vue";
+import MultiSelectComponent from "@/components/MultiSelectComponent.vue";
 import Covid19ReportComponent from "@/components/report/Covid19ReportComponent.vue";
 import HospitalVisitReportComponent from "@/components/report/HospitalVisitReportComponent.vue";
 import ImmunizationHistoryReportComponent from "@/components/report/ImmunizationHistoryReportComponent.vue";
