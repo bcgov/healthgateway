@@ -24,14 +24,13 @@ namespace HealthGateway.Admin.Client.Components.Communications
     using HealthGateway.Admin.Client.Models;
     using HealthGateway.Admin.Client.Store.Broadcasts;
     using HealthGateway.Admin.Client.Utils;
-    using HealthGateway.Common.Data.Utils;
     using Microsoft.AspNetCore.Components;
     using MudBlazor;
 
     /// <summary>
     /// Backing logic for the BroadcastsTable component.
     /// </summary>
-    public partial class BroadcastsTable : FluxorComponent
+    public partial class BroadcastsTable : BaseTableFluxorComponent
     {
         /// <summary>
         /// Gets or sets the data with which to populate the table.
@@ -94,8 +93,8 @@ namespace HealthGateway.Admin.Client.Components.Communications
             {
                 this.Id = model.Id;
                 this.Subject = model.CategoryName;
-                this.EffectiveDate = model.ScheduledDateUtc.ToLocalTime();
-                this.ExpiryDate = model.ExpirationDateUtc == null ? "-" : DateFormatter.ToShortDateAndTime(model.ExpirationDateUtc.Value.ToLocalTime());
+                this.EffectiveDate = model.ScheduledDateUtc;
+                this.ExpiryDate = model.ExpirationDateUtc;
                 this.ActionType = BroadcastUtility.FormatActionType(model.ActionType);
                 this.Text = model.DisplayText;
                 this.IsExpanded = model.IsExpanded;
@@ -107,7 +106,7 @@ namespace HealthGateway.Admin.Client.Components.Communications
 
             public DateTime EffectiveDate { get; }
 
-            public string ExpiryDate { get; }
+            public DateTime? ExpiryDate { get; }
 
             public string ActionType { get; }
 

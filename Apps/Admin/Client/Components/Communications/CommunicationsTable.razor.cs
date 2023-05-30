@@ -20,17 +20,15 @@ namespace HealthGateway.Admin.Client.Components.Communications
     using System.Linq;
     using System.Threading.Tasks;
     using Fluxor;
-    using Fluxor.Blazor.Web.Components;
     using HealthGateway.Admin.Client.Models;
     using HealthGateway.Admin.Client.Store.Communications;
-    using HealthGateway.Common.Data.Utils;
     using Microsoft.AspNetCore.Components;
     using MudBlazor;
 
     /// <summary>
     /// Backing logic for the CommunicationsTable component.
     /// </summary>
-    public partial class CommunicationsTable : FluxorComponent
+    public partial class CommunicationsTable : BaseTableFluxorComponent
     {
         /// <summary>
         /// Gets or sets the data with which to populate the table.
@@ -94,8 +92,8 @@ namespace HealthGateway.Admin.Client.Components.Communications
                 this.Id = model.Id;
                 this.Subject = model.Subject;
                 this.Status = model.CommunicationStatusCode.ToString();
-                this.EffectiveDate = model.EffectiveDateTime.ToLocalTime();
-                this.ExpiryDate = DateFormatter.ToShortDateAndTime(model.ExpiryDateTime.ToLocalTime());
+                this.EffectiveDate = model.EffectiveDateTime;
+                this.ExpiryDate = model.ExpiryDateTime;
                 this.Text = (MarkupString)model.Text;
                 this.IsExpanded = model.IsExpanded;
             }
@@ -108,7 +106,7 @@ namespace HealthGateway.Admin.Client.Components.Communications
 
             public DateTime EffectiveDate { get; init; }
 
-            public string ExpiryDate { get; init; }
+            public DateTime? ExpiryDate { get; init; }
 
             public MarkupString Text { get; init; }
 
