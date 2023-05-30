@@ -88,8 +88,8 @@ public class CovidAssessmentRequest
     /// <summary>
     /// Gets or sets the identifies the confirms over 12 option.
     /// </summary>
-    [JsonPropertyName("confirmsOver18")]
-    public CovidTherapyAssessmentOption ConfirmsOver18 { get; set; }
+    [JsonPropertyName("confirmsOver12")]
+    public CovidTherapyAssessmentOption ConfirmsOver12 { get; set; }
 
     /// <summary>
     /// Gets or sets the tested positive in past 7 days.

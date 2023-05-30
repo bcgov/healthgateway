@@ -71,7 +71,7 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
         phoneNumber: "",
         identifiesIndigenous: CovidTreatmentAssessmentOption.Unspecified,
         hasAFamilyDoctorOrNp: CovidTreatmentAssessmentOption.Unspecified,
-        confirmsOver18: false,
+        confirmsOver12: false,
         testedPositiveInPast7Days: CovidTreatmentAssessmentOption.Unspecified,
         hasSevereCovid19Symptoms: CovidTreatmentAssessmentOption.Unspecified,
         hasMildOrModerateCovid19Symptoms:
@@ -112,7 +112,7 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
             phoneNumber: "",
             identifiesIndigenous: CovidTreatmentAssessmentOption.Unspecified,
             hasAFamilyDoctorOrNp: CovidTreatmentAssessmentOption.Unspecified,
-            confirmsOver18: false,
+            confirmsOver12: false,
             testedPositiveInPast7Days:
                 CovidTreatmentAssessmentOption.Unspecified,
             hasSevereCovid19Symptoms:
@@ -325,7 +325,7 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
                             >
                                 <OptionDetails
                                     :value.sync="
-                                        covidTreatmentAssessmentRequest.confirmsOver18
+                                        covidTreatmentAssessmentRequest.confirmsOver12
                                     "
                                     :response-of-no-indicates-no-benefit="true"
                                 />
