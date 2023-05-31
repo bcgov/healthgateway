@@ -570,7 +570,7 @@ async function redirectWhenTicketIsInvalid(
             setTimeout(() => {
                 store.dispatch("waitlist/checkIn").catch(() => {
                     logger.warn(
-                        `Error calling checkIn action. Get new ticker.`
+                        `Error calling checkIn action. Get new ticket.`
                     );
                     store.dispatch("waitlist/getTicket");
                 });
