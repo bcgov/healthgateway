@@ -1,6 +1,80 @@
 {
     "resourcePayload": [
         {
+            "prescriptionIdentifier": "190959",
+            "prescriptionStatus": "\u0000",
+            "dispensedDate": "2023-05-10T00:00:00",
+            "practitionerSurname": "COBB",
+            "directions": "TEST",
+            "dateEntered": null,
+            "pharmacyId": "",
+            "medicationSummary": {
+                "din": "98890016",
+                "brandName": "Pa Contraception-No Rx Oth Hcp",
+                "genericName": "",
+                "quantity": 10,
+                "maxDailyDosage": 0,
+                "drugDiscontinuedDate": null,
+                "form": "",
+                "manufacturer": "",
+                "strength": "",
+                "strengthUnit": "",
+                "isPin": true,
+                "pharmacyAssessmentTitle": "Minor Ailment - Contraception",
+                "prescriptionProvided": false,
+                "redirectedToHealthCareProvider": true
+            },
+            "dispensingPharmacy": {
+                "pharmacyId": "BC00000L31",
+                "name": "PHARMACY L31",
+                "addressLine1": "2620 QUADRA ST",
+                "addressLine2": "",
+                "city": "VICTORIA",
+                "province": "BC",
+                "postalCode": "V8X1W2",
+                "countryCode": "CAN",
+                "phoneNumber": "250-4054175",
+                "faxNumber": "250-999500"
+            }
+        },
+        {
+            "prescriptionIdentifier": "1",
+            "prescriptionStatus": "\u0000",
+            "dispensedDate": "2023-02-13T00:00:00",
+            "practitionerSurname": "CORN",
+            "directions": "ODR gateway test 1",
+            "dateEntered": null,
+            "pharmacyId": "",
+            "medicationSummary": {
+                "din": "98890001",
+                "brandName": "Pa Acne-Rx",
+                "genericName": "",
+                "quantity": 0,
+                "maxDailyDosage": 0,
+                "drugDiscontinuedDate": null,
+                "form": "",
+                "manufacturer": "",
+                "strength": "",
+                "strengthUnit": "",
+                "isPin": true,
+                "pharmacyAssessmentTitle": "Minor Ailment - Acne",
+                "prescriptionProvided": true,
+                "redirectedToHealthCareProvider": false
+            },
+            "dispensingPharmacy": {
+                "pharmacyId": "BC00000A42",
+                "name": "PHARMACY A42",
+                "addressLine1": "TILLICUM MALL",
+                "addressLine2": "144/3170 TILLICUM RD",
+                "city": "VICTORIA",
+                "province": "BC",
+                "postalCode": "V9A6T2",
+                "countryCode": "CAN",
+                "phoneNumber": "250-1214250",
+                "faxNumber": ""
+            }
+        },
+        {
             "prescriptionIdentifier": "9529523",
             "prescriptionStatus": "\u0000",
             "dispensedDate": "2019-01-30T00:00:00",
@@ -19,7 +93,10 @@
                 "manufacturer": "",
                 "strength": "",
                 "strengthUnit": "",
-                "isPin": true
+                "isPin": true,
+                "pharmacyAssessmentTitle": null,
+                "prescriptionProvided": null,
+                "redirectedToHealthCareProvider": null
             },
             "dispensingPharmacy": {
                 "pharmacyId": "BC00007912",
@@ -53,7 +130,10 @@
                 "manufacturer": "MINT PHARMACEUTICALS INC",
                 "strength": "7.5",
                 "strengthUnit": "MG",
-                "isPin": false
+                "isPin": false,
+                "pharmacyAssessmentTitle": null,
+                "prescriptionProvided": null,
+                "redirectedToHealthCareProvider": null
             },
             "dispensingPharmacy": {
                 "pharmacyId": "BC00006638",
@@ -87,7 +167,10 @@
                 "manufacturer": "MINT PHARMACEUTICALS INC",
                 "strength": "7.5",
                 "strengthUnit": "MG",
-                "isPin": false
+                "isPin": false,
+                "pharmacyAssessmentTitle": null,
+                "prescriptionProvided": null,
+                "redirectedToHealthCareProvider": null
             },
             "dispensingPharmacy": {
                 "pharmacyId": "BC00007912",
@@ -121,7 +204,10 @@
                 "manufacturer": "",
                 "strength": "",
                 "strengthUnit": "",
-                "isPin": true
+                "isPin": true,
+                "pharmacyAssessmentTitle": null,
+                "prescriptionProvided": null,
+                "redirectedToHealthCareProvider": null
             },
             "dispensingPharmacy": {
                 "pharmacyId": "BC00007912",
@@ -155,7 +241,10 @@
                 "manufacturer": "MINT PHARMACEUTICALS INC",
                 "strength": "7.5",
                 "strengthUnit": "MG",
-                "isPin": false
+                "isPin": false,
+                "pharmacyAssessmentTitle": null,
+                "prescriptionProvided": null,
+                "redirectedToHealthCareProvider": null
             }
         }
     ],

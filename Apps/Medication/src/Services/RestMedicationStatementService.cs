@@ -181,6 +181,9 @@ namespace HealthGateway.Medication.Services
                             mdSummary.IsPin = true;
                             mdSummary.BrandName = provincialDrug.BrandName;
                             mdSummary.Form = provincialDrug.DosageForm ?? string.Empty;
+                            mdSummary.PharmacyAssessmentTitle = provincialDrug.PharmacyAssessmentTitle ?? string.Empty;
+                            mdSummary.PrescriptionProvided = provincialDrug.PrescriptionProvided;
+                            mdSummary.RedirectedToHealthCareProvider = provincialDrug.RedirectedToHealthCareProvider;
                         }
                     }
                 }

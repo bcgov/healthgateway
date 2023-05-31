@@ -103,6 +103,7 @@ namespace HealthGateway.JobScheduler
             services.AddTransient<IFileDownloadService, FileDownloadService>();
             services.AddTransient<IDrugProductParser, FederalDrugProductParser>();
             services.AddTransient<IPharmaCareDrugParser, PharmaCareDrugParser>();
+            services.AddTransient<IPharmacyAssessmentParser, PharmacyAssessmentParser>();
             services.AddTransient<IApplicationSettingsDelegate, DbApplicationSettingsDelegate>();
             services.AddTransient<IUserProfileDelegate, DbProfileDelegate>();
             services.AddTransient<ICommunicationDelegate, DbCommunicationDelegate>();

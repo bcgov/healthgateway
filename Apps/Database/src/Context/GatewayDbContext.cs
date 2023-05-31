@@ -83,8 +83,9 @@ namespace HealthGateway.Database.Context
         public DbSet<UserFeedbackTag> UserFeedbackTag { get; set; } = null!;
         public DbSet<AdminUserProfile> AdminUserProfile { get; set; } = null!;
         public DbSet<Dependent> Dependent { get; set; } = null!;
-        public DbSet<DependentAudit> DependentAudit { get; set; } = null!;
+        public DbSet<AgentAudit> AgentAudit { get; set; } = null!;
         public DbSet<AllowedDelegation> AllowedDelegation { get; set; } = null!;
+        public DbSet<BlockedAccess> BlockedAccess { get; set; } = null!;
         public DbSet<OutboxItem> Outbox { get; set; } = null!;
 
 #pragma warning restore CS1591, SA1600
@@ -395,25 +396,45 @@ namespace HealthGateway.Database.Context
                 .HasForeignKey(ad => ad.DependentHdId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            // Create Foreign key for DependentAudit to DependentAuditOperationCode
-            modelBuilder.Entity<DependentAudit>()
-                .HasOne<DependentAuditOperationCode>()
+            // Create Foreign key for AgentAudit to AuditOperationCode
+            modelBuilder.Entity<AgentAudit>()
+                .HasOne<AuditOperationCode>()
                 .WithMany()
                 .HasPrincipalKey(k => k.Code)
                 .HasForeignKey(k => k.OperationCode)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            ValueConverter<DependentAuditOperation, string> dependentAuditOperationCodeConverter = new(
+            ValueConverter<AuditOperation, string> auditOperationCodeConverter = new(
                 v => EnumUtility.ToEnumString(v, false),
-                v => EnumUtility.ToEnum<DependentAuditOperation>(v, false));
+                v => EnumUtility.ToEnum<AuditOperation>(v, false));
 
-            modelBuilder.Entity<DependentAudit>()
+            modelBuilder.Entity<AgentAudit>()
                 .Property(e => e.OperationCode)
-                .HasConversion(dependentAuditOperationCodeConverter);
+                .HasConversion(auditOperationCodeConverter);
 
-            modelBuilder.Entity<DependentAuditOperationCode>()
+            modelBuilder.Entity<AuditOperationCode>()
                 .Property(e => e.Code)
-                .HasConversion(dependentAuditOperationCodeConverter);
+                .HasConversion(auditOperationCodeConverter);
+
+            // Create Foreign key for AgentAudit to AuditGroupCode
+            modelBuilder.Entity<AgentAudit>()
+                .HasOne<AuditGroupCode>()
+                .WithMany()
+                .HasPrincipalKey(k => k.Code)
+                .HasForeignKey(k => k.GroupCode)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            ValueConverter<AuditGroup, string> auditGroupCodeConverter = new(
+                v => EnumUtility.ToEnumString(v, false),
+                v => EnumUtility.ToEnum<AuditGroup>(v, false));
+
+            modelBuilder.Entity<AgentAudit>()
+                .Property(e => e.GroupCode)
+                .HasConversion(auditGroupCodeConverter);
+
+            modelBuilder.Entity<AuditGroupCode>()
+                .Property(e => e.Code)
+                .HasConversion(auditGroupCodeConverter);
 
             modelBuilder.HasDbFunction(DateTruncMethod).HasName("date_trunc");
 
@@ -427,8 +448,9 @@ namespace HealthGateway.Database.Context
             this.SeedResourceDelegateReason(modelBuilder);
             this.SeedCommentEntryTypeCode(modelBuilder);
             this.SeedUserLoginClientTypeCode(modelBuilder);
-            this.SeedDependentAuditOperationCodes(modelBuilder);
+            this.SeedAuditOperationCodes(modelBuilder);
             this.SeedApplicationSettings(modelBuilder);
+            this.SeedAuditGroupCodes(modelBuilder);
         }
 
         /// <summary>
@@ -623,6 +645,15 @@ namespace HealthGateway.Database.Context
                     {
                         ProgramCode = ApplicationType.ClinicalDocument,
                         Description = "Clinical Document Service",
+                        CreatedBy = UserId.DefaultUser,
+                        CreatedDateTime = this.DefaultSeedDate.ToUniversalTime(),
+                        UpdatedBy = UserId.DefaultUser,
+                        UpdatedDateTime = this.DefaultSeedDate.ToUniversalTime(),
+                    },
+                    new ProgramTypeCode
+                    {
+                        ProgramCode = ProgramType.PharmacyAssessment,
+                        Description = "Pharmacy Assessment",
                         CreatedBy = UserId.DefaultUser,
                         CreatedDateTime = this.DefaultSeedDate.ToUniversalTime(),
                         UpdatedBy = UserId.DefaultUser,
@@ -1119,26 +1150,63 @@ namespace HealthGateway.Database.Context
         }
 
         /// <summary>
-        /// Seeds the Dependent Audit Operation Codes.
+        /// Seeds the Audit Operation Codes.
         /// </summary>
         /// <param name="modelBuilder">The passed in model builder.</param>
-        private void SeedDependentAuditOperationCodes(ModelBuilder modelBuilder)
+        private void SeedAuditOperationCodes(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<DependentAuditOperationCode>()
+            modelBuilder.Entity<AuditOperationCode>()
                 .HasData(
-                    new DependentAuditOperationCode
+                    new AuditOperationCode
                     {
-                        Code = DependentAuditOperation.Protect,
+                        Code = AuditOperation.ChangeDataSourceAccess,
+                        Description = "Change Data Source Access Operation Code",
+                        CreatedBy = UserId.DefaultUser,
+                        CreatedDateTime = this.DefaultSeedDate.ToUniversalTime(),
+                        UpdatedBy = UserId.DefaultUser,
+                        UpdatedDateTime = this.DefaultSeedDate.ToUniversalTime(),
+                    },
+                    new AuditOperationCode
+                    {
+                        Code = AuditOperation.ProtectDependent,
                         Description = "Protect Dependent Operation Code",
                         CreatedBy = UserId.DefaultUser,
                         CreatedDateTime = this.DefaultSeedDate.ToUniversalTime(),
                         UpdatedBy = UserId.DefaultUser,
                         UpdatedDateTime = this.DefaultSeedDate.ToUniversalTime(),
                     },
-                    new DependentAuditOperationCode
+                    new AuditOperationCode
                     {
-                        Code = DependentAuditOperation.Unprotect,
+                        Code = AuditOperation.UnprotectDependent,
                         Description = "Unprotect Dependent Operation Code",
+                        CreatedBy = UserId.DefaultUser,
+                        CreatedDateTime = this.DefaultSeedDate.ToUniversalTime(),
+                        UpdatedBy = UserId.DefaultUser,
+                        UpdatedDateTime = this.DefaultSeedDate.ToUniversalTime(),
+                    });
+        }
+
+        /// <summary>
+        /// Seeds the Audit Group Codes.
+        /// </summary>
+        /// <param name="modelBuilder">The passed in model builder.</param>
+        private void SeedAuditGroupCodes(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<AuditGroupCode>()
+                .HasData(
+                    new AuditGroupCode
+                    {
+                        Code = AuditGroup.Dependent,
+                        Description = "Audit Dependent Group Code",
+                        CreatedBy = UserId.DefaultUser,
+                        CreatedDateTime = this.DefaultSeedDate.ToUniversalTime(),
+                        UpdatedBy = UserId.DefaultUser,
+                        UpdatedDateTime = this.DefaultSeedDate.ToUniversalTime(),
+                    },
+                    new AuditGroupCode
+                    {
+                        Code = AuditGroup.BlockedAccess,
+                        Description = "Audit Blocked Access Group Code",
                         CreatedBy = UserId.DefaultUser,
                         CreatedDateTime = this.DefaultSeedDate.ToUniversalTime(),
                         UpdatedBy = UserId.DefaultUser,

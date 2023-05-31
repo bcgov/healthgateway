@@ -7,6 +7,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { saveAs } from "file-saver";
 import { computed, ref, watch } from "vue";
+import { useStore } from "vue-composition-wrapper";
 
 import Covid19LaboratoryTestDescriptionComponent from "@/components/laboratory/Covid19LaboratoryTestDescriptionComponent.vue";
 import LoadingComponent from "@/components/LoadingComponent.vue";
@@ -34,8 +35,9 @@ import { ReportFormatType, TemplateType } from "@/models/reportRequest";
 import RequestResult from "@/models/requestResult";
 import { LoadStatus } from "@/models/storeOperations";
 import User from "@/models/user";
+import VaccineRecordState from "@/models/vaccineRecordState";
 import container from "@/plugins/container";
-import { SERVICE_IDENTIFIER, STORE_IDENTIFIER } from "@/plugins/inversify";
+import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import {
     IClinicalDocumentService,
     IDependentService,
@@ -43,31 +45,20 @@ import {
     ILaboratoryService,
     ILogger,
     IReportService,
-    IStoreProvider,
 } from "@/services/interfaces";
 import ConfigUtil from "@/utility/configUtil";
 import SnowPlow from "@/utility/snowPlow";
 
 library.add(faEllipsisV, faDownload, faInfoCircle);
 
-const storeProvider = container.get<IStoreProvider>(
-    STORE_IDENTIFIER.StoreProvider
-);
-const store = storeProvider.getStore();
+interface Props {
+    dependent: Dependent;
+}
+const props = defineProps<Props>();
 
-const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-const clinicalDocumentService = container.get<IClinicalDocumentService>(
-    SERVICE_IDENTIFIER.ClinicalDocumentService
-);
-const immunizationService = container.get<IImmunizationService>(
-    SERVICE_IDENTIFIER.ImmunizationService
-);
-const laboratoryService = container.get<ILaboratoryService>(
-    SERVICE_IDENTIFIER.LaboratoryService
-);
-const dependentService = container.get<IDependentService>(
-    SERVICE_IDENTIFIER.DependentService
-);
+const emit = defineEmits<{
+    (e: "needs-update"): void;
+}>();
 
 interface Covid19LaboratoryTestRow {
     id: string;
@@ -89,14 +80,20 @@ interface RecommendationRow {
     due_date: string;
 }
 
-const emit = defineEmits<{
-    (e: "needs-update"): void;
-}>();
-
-interface Props {
-    dependent: Dependent;
-}
-const props = defineProps<Props>();
+const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+const clinicalDocumentService = container.get<IClinicalDocumentService>(
+    SERVICE_IDENTIFIER.ClinicalDocumentService
+);
+const immunizationService = container.get<IImmunizationService>(
+    SERVICE_IDENTIFIER.ImmunizationService
+);
+const laboratoryService = container.get<ILaboratoryService>(
+    SERVICE_IDENTIFIER.LaboratoryService
+);
+const dependentService = container.get<IDependentService>(
+    SERVICE_IDENTIFIER.DependentService
+);
+const store = useStore();
 
 const reportFormatType = ref(ReportFormatType.PDF);
 const csvFormatType = ref(ReportFormatType.CSV);
@@ -124,11 +121,14 @@ const vaccineRecordResultModal = ref<MessageModalComponent>();
 const deleteModal = ref<DeleteModalComponent>();
 
 const user = computed<User>(() => store.getters["user/user"]);
-
 const webClientConfig = computed<WebClientConfiguration>(
     () => store.getters["config/webClient"]
 );
-
+const vaccineRecordState = computed<VaccineRecordState>(() =>
+    store.getters["vaccinationStatus/authenticatedVaccineRecordState"](
+        props.dependent.ownerId
+    )
+);
 const headerData = computed<ReportHeader>(() => {
     return {
         phn: props.dependent.dependentInformation.PHN,
@@ -145,20 +145,17 @@ const headerData = computed<ReportHeader>(() => {
         filterText: "",
     };
 });
-
-const isVaccineRecordDownloading = computed<boolean>(
+const isVaccineRecordDownloading = computed(
     () => vaccineRecordState.value.status === LoadStatus.REQUESTED
 );
-
-const isDownloadImmunizationReportButtonDisabled = computed<boolean>(
+const isDownloadImmunizationReportButtonDisabled = computed(
     () =>
         isReportDownloading.value ||
         selectedTabIndex.value !== tabIndicesMap.value[2] ||
         (immunizationItems.value.length == 0 &&
             recommendationItems.value.length == 0)
 );
-
-const isExpired = computed<boolean>(() => {
+const isExpired = computed(() => {
     const birthDate = new DateWrapper(
         props.dependent.dependentInformation.dateOfBirth
     );
@@ -168,24 +165,19 @@ const isExpired = computed<boolean>(() => {
         webClientConfig.value.maxDependentAge
     );
 });
-
-const isCovid19TabShown = computed<boolean>(() =>
+const isCovid19TabShown = computed(() =>
     ConfigUtil.isDependentDatasetEnabled(EntryType.Covid19TestResult)
 );
-
-const isImmunizationTabShown = computed<boolean>(() =>
+const isImmunizationTabShown = computed(() =>
     ConfigUtil.isDependentDatasetEnabled(EntryType.Immunization)
 );
-
-const isLaboratoryOrderTabShown = computed<boolean>(() =>
+const isLaboratoryOrderTabShown = computed(() =>
     ConfigUtil.isDependentDatasetEnabled(EntryType.LabResult)
 );
-
-const isClinicalDocumentTabShown = computed<boolean>(() =>
+const isClinicalDocumentTabShown = computed(() =>
     ConfigUtil.isDependentDatasetEnabled(EntryType.ClinicalDocument)
 );
-
-const tabIndicesMap = computed<(number | undefined)[]>(() => {
+const tabIndicesMap = computed(() => {
     const tabIndices: (number | undefined)[] = [0];
     const optionalTabs = [
         isCovid19TabShown.value,
@@ -201,8 +193,7 @@ const tabIndicesMap = computed<(number | undefined)[]>(() => {
 
     return tabIndices;
 });
-
-const immunizationItems = computed<ImmunizationRow[]>(() =>
+const immunizationItems = computed(() =>
     immunizations.value.map<ImmunizationRow>((x) => ({
         date: DateWrapper.format(x.dateOfImmunization),
         immunization: x.immunization.name,
@@ -212,8 +203,7 @@ const immunizationItems = computed<ImmunizationRow[]>(() =>
         lotNumber: getAgentLotNumbers(x.immunization.immunizationAgents),
     }))
 );
-
-const recommendationItems = computed<RecommendationRow[]>(() =>
+const recommendationItems = computed(() =>
     recommendations.value.map<RecommendationRow>((x) => ({
         immunization: x.recommendedVaccinations,
         due_date:
@@ -221,12 +211,6 @@ const recommendationItems = computed<RecommendationRow[]>(() =>
                 ? ""
                 : DateWrapper.format(x.agentDueDate),
     }))
-);
-
-const vaccineRecordState = computed<VaccinationRecord>(() =>
-    store.getters["vaccinationStatus/authenticatedVaccineRecordState"](
-        props.dependent.ownerId
-    )
 );
 
 function addError(
@@ -243,6 +227,18 @@ function setTooManyRequestsError(key: string): void {
 
 function setTooManyRequestsWarning(key: string): void {
     store.dispatch("errorBanner/setTooManyRequestsWarning", { key });
+}
+
+function retrieveAuthenticatedVaccineRecord(hdid: string): void {
+    store.dispatch("vaccinationStatus/retrieveAuthenticatedVaccineRecord", {
+        hdid,
+    });
+}
+
+function stopAuthenticatedVaccineRecordDownload(hdid: string): void {
+    store.dispatch("vaccinationStatus/stopAuthenticatedVaccineRecordDownload", {
+        hdid,
+    });
 }
 
 function deleteDependent(): void {
@@ -315,6 +311,11 @@ function downloadLaboratoryOrderReport(): void {
     isReportDownloading.value = true;
     trackClickLink("download_report", "Dependent Lab PDF");
 
+    const dateString = new DateWrapper(
+        selectedLaboratoryOrderRow.value.timelineDateTime,
+        { hasTime: true }
+    ).format("yyyy_MM_dd-HH_mm");
+
     laboratoryService
         .getReportDocument(
             selectedLaboratoryOrderRow.value.reportId,
@@ -323,10 +324,6 @@ function downloadLaboratoryOrderReport(): void {
         )
         .then((result) => {
             const report = result.resourcePayload;
-            const dateString = new DateWrapper(
-                selectedLaboratoryOrderRow.value.timelineDateTime,
-                { hasTime: true }
-            ).format("yyyy_MM_dd-HH_mm");
             fetch(`data:${report.mediaType};${report.encoding},${report.data}`)
                 .then((response) => response.blob())
                 .then((blob) =>
@@ -396,6 +393,10 @@ function downloadImmunizationReport(): void {
 }
 
 function downloadClinicalDocument(): void {
+    if (selectedClinicalDocumentRow.value === undefined) {
+        return;
+    }
+
     isReportDownloading.value = true;
     trackClickLink("download_report", "Dependent Clinical Doc");
 
@@ -458,9 +459,7 @@ function downloadVaccinePdf(): void {
         `Downloading vaccine PDF for hdid: ${props.dependent.ownerId}`
     );
     trackClickLink("Click Button", "Dependent Proof");
-    store.dispatch("vaccinationStatus/retrieveAuthenticatedVaccineRecord", {
-        hdid: props.dependent.ownerId,
-    });
+    retrieveAuthenticatedVaccineRecord(props.dependent.ownerId);
 }
 
 function formatDate(date: StringISODate): string {
@@ -904,10 +903,7 @@ watch(vaccineRecordState, () => {
             trackClickLink("Download Card", "Dependent Proof");
             res.blob().then((blob) => saveAs(blob, "VaccineProof.pdf"));
         });
-        store.dispatch(
-            "vaccinationStatus/stopAuthenticatedVaccineRecordDownload",
-            { hdid: props.dependent.ownerId }
-        );
+        stopAuthenticatedVaccineRecordDownload(props.dependent.ownerId);
     }
 });
 </script>

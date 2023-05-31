@@ -7,14 +7,14 @@
 	<ItemGroup>
 		<PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
 		<PackageReference Include="Azure.Messaging.ServiceBus" Version="7.14.0" />
-		<PackageReference Include="Hangfire.AspNetCore" Version="1.8.0" />
+		<PackageReference Include="Hangfire.AspNetCore" Version="1.8.1" />
 		<PackageReference Include="Hangfire.PostgreSql" Version="1.19.12" />
 		<PackageReference Include="Hellang.Middleware.ProblemDetails" Version="6.5.1" />
 		<PackageReference Include="Macross.Json.Extensions" Version="3.0.0" />
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.5" />
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="7.0.5" />
 		<PackageReference Include="Microsoft.AspNetCore.HttpOverrides" Version="2.2.0" />
-		<PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning.ApiExplorer" Version="5.0.0" />
+		<PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning.ApiExplorer" Version="5.1.0" />
 		<PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.2.0" PrivateAssets="All" />
 		<PackageReference Include="Microsoft.AspNetCore.SpaServices" Version="3.1.32" />
 		<PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="7.0.5" />
@@ -37,10 +37,10 @@
 		<PackageReference Include="OpenTelemetry.Api" Version="1.4.0" />
 		<PackageReference Include="System.Diagnostics.DiagnosticSource" Version="7.0.2" />
 		<PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.30.1" />
-		<PackageReference Include="System.ServiceModel.Duplex" Version="4.10.2" />
-		<PackageReference Include="System.ServiceModel.Http" Version="4.10.2" />
-		<PackageReference Include="System.ServiceModel.NetTcp" Version="4.10.2" />
-		<PackageReference Include="System.ServiceModel.Security" Version="4.10.2" />
+		<PackageReference Include="System.ServiceModel.Duplex" Version="6.0.0" />
+		<PackageReference Include="System.ServiceModel.Http" Version="6.0.0" />
+		<PackageReference Include="System.ServiceModel.NetTcp" Version="6.0.0" />
+		<PackageReference Include="System.ServiceModel.Security" Version="6.0.0" />
 	</ItemGroup>
 
 	<ItemGroup>

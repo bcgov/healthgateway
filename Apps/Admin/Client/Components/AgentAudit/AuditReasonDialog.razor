@@ -1,0 +1,46 @@
+@typeparam TAction
+@typeparam TErrorAction
+@typeparam TSuccessAction
+@inherits Fluxor.Blazor.Web.Components.FluxorComponent
+
+<MudDialog>
+    <DialogContent>
+        <HgBannerFeedback
+            Severity="@Severity.Error"
+            IsEnabled="@HasError"
+            TResetAction="@TAction">
+            @ErrorMessage
+        </HgBannerFeedback>
+        <MudTextField
+            @ref="@AuditReasonTextField"
+            Label="Reason"
+            @bind-Value="@AuditReason"
+            T="@string"
+            MaxLength="500"
+            Required="true"
+            Lines="@(4)"
+            data-testid="audit-reason-input" />
+    </DialogContent>
+    <DialogActions>
+        <HgButton
+            RightMargin="Breakpoint.Always"
+            HorizontalMarginSize="@(HgButton.DefaultHorizontalMarginSize - 2)"
+            BottomMargin="Breakpoint.Always"
+            Color="@Color.Primary"
+            Variant="@Variant.Text"
+            OnClick="@HandleClickCancel"
+            data-testid="audit-cancel-button">
+            Cancel
+        </HgButton>
+        <HgButton
+            RightMargin="Breakpoint.Always"
+            BottomMargin="Breakpoint.Always"
+            Color="@Color.Primary"
+            Loading="@IsLoading"
+            Disabled="@SaveButtonDisabled"
+            OnClick="@HandleClickConfirm"
+            data-testid="audit-confirm-button">
+            Confirm
+        </HgButton>
+    </DialogActions>
+</MudDialog>

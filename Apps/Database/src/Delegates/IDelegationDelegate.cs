@@ -36,19 +36,14 @@ namespace HealthGateway.Database.Delegates
         Task<Dependent?> GetDependentAsync(string hdid, bool includeAllowedDelegation = false);
 
         /// <summary>
-        /// Fetches the dependent audits by hdid from the database.
-        /// </summary>
-        /// <param name="hdid">The dependent hdid to query on.</param>
-        /// <returns>A list of Dependent Audits.</returns>
-        Task<IEnumerable<DependentAudit>> GetDependentAuditsAsync(string hdid);
-
-        /// <summary>
-        /// Updates the dependent object including allowed delegation associations as well as resource delegates in the DB.
+        /// Adds or updates the dependent object including allowed delegation associations as well as resource delegates and agent
+        /// audit to the DB.
         /// </summary>
         /// <param name="dependent">The dependent to update.</param>
         /// <param name="resourceDelegatesToRemove">The resource delegates to remove.</param>
-        /// <param name="dependentAudit">The dependent audit to create.</param>
+        /// <param name="agentAudit">The agent audit to create.</param>
+        /// <param name="commit">Should commit, default to true.</param>
         /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
-        Task UpdateDelegationAsync(Dependent dependent, IEnumerable<ResourceDelegate> resourceDelegatesToRemove, DependentAudit dependentAudit);
+        Task UpdateDelegationAsync(Dependent dependent, IEnumerable<ResourceDelegate> resourceDelegatesToRemove, AgentAudit agentAudit, bool commit = true);
     }
 }

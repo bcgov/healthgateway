@@ -20,8 +20,24 @@ describe("Medication", () => {
 
     it("Validate Card Details", () => {
         cy.get("[data-testid=medicationTitle]").should("be.visible");
-        cy.get("[data-testid=medicationPractitioner]").should("not.be.visible");
-        cy.get("[data-testid=entryCardDetailsTitle]").first().click();
-        cy.get("[data-testid=medicationPractitioner]").should("be.visible");
+        cy.get("[data-testid=medication-practitioner]").should(
+            "not.be.visible"
+        );
+
+        cy.get("[data-testid=entryCardDetailsTitle]")
+            .not(":contains('Pharmacist Assessment')")
+            .first()
+            .click();
+        cy.get("[data-testid=medication-practitioner]").should("be.visible");
+        cy.get("[data-testid=medication-directions]").should("be.visible");
+        cy.get("[data-testid=pharmacist-outcome]").should("not.be.visible");
+
+        cy.contains(
+            "[data-testid=entryCardDetailsTitle]",
+            "Pharmacist Assessment"
+        )
+            .first()
+            .click();
+        cy.get("[data-testid=pharmacist-outcome]").should("be.visible");
     });
 });

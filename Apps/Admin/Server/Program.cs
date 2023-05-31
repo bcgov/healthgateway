@@ -13,6 +13,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
+
+#pragma warning disable S1118 // Utility classes should not have public constructors
+#pragma warning disable CA1052 // Static holder types should be Static or NotInheritable
+
 namespace HealthGateway.Admin.Server
 {
     using System;
@@ -44,7 +48,7 @@ namespace HealthGateway.Admin.Server
     /// The entry point for the project.
     /// </summary>
     [ExcludeFromCodeCoverage]
-    public static class Program
+    public class Program
     {
         /// <summary>
         /// The entry point for the class.
@@ -116,6 +120,7 @@ namespace HealthGateway.Admin.Server
             Patient.ConfigurePatientAccess(services, logger, configuration);
             PhsaV2.ConfigurePhsaV2Access(services, logger, configuration, PhsaConfigV2.AdminConfigurationSectionKey);
             ExceptionHandling.ConfigureProblemDetails(services, environment);
+            MessageBus.ConfigureMessageBus(services, configuration);
         }
 
         private static void AddServices(IServiceCollection services, IConfiguration configuration)

@@ -1,19 +1,14 @@
-<script lang="ts">
-import Vue from "vue";
-import { Component } from "vue-property-decorator";
-import { Getter } from "vuex-class";
+<script setup lang="ts">
+import { computed } from "vue";
+import { useStore } from "vue-composition-wrapper";
 
 import { AppErrorType } from "@/constants/errorType";
 
-@Component
-export default class AppErrorView extends Vue {
-    @Getter("appError")
-    appError?: AppErrorType;
+const store = useStore();
 
-    private get isTooManyRequests(): boolean {
-        return this.appError === AppErrorType.TooManyRequests;
-    }
-}
+const isTooManyRequests = computed<boolean>(() => {
+    return store.getters["appError"] === AppErrorType.TooManyRequests;
+});
 </script>
 
 <template>

@@ -1,34 +1,33 @@
-<script lang="ts">
-import Vue from "vue";
-import { Component, Prop } from "vue-property-decorator";
+<script setup lang="ts">
+import { computed, useSlots } from "vue";
 
-@Component
-export default class HgCardComponent extends Vue {
-    @Prop({ required: true })
-    title!: string;
-
-    @Prop({ required: false, default: false })
-    dense!: boolean;
-
-    @Prop({ required: false, default: false })
-    isInteractable!: boolean;
-
-    private get hasIconSlot(): boolean {
-        return this.$slots.icon !== undefined;
-    }
-
-    private get hasActionIconSlot(): boolean {
-        return this.$slots["action-icon"] !== undefined;
-    }
-
-    private get hasMenuSlot(): boolean {
-        return this.$slots.menu !== undefined;
-    }
-
-    private get hasDefaultSlot(): boolean {
-        return this.$slots.default !== undefined;
-    }
+interface Props {
+    title: string;
+    dense?: boolean;
+    isInteractable?: boolean;
 }
+withDefaults(defineProps<Props>(), {
+    dense: false,
+    isInteractable: false,
+});
+
+const slots = useSlots();
+
+const hasIconSlot = computed<boolean>(() => {
+    return slots.icon !== undefined;
+});
+
+const hasActionIconSlot = computed<boolean>(() => {
+    return slots["action-icon"] !== undefined;
+});
+
+const hasMenuSlot = computed<boolean>(() => {
+    return slots.menu !== undefined;
+});
+
+const hasDefaultSlot = computed<boolean>(() => {
+    return slots.default !== undefined;
+});
 </script>
 
 <template>

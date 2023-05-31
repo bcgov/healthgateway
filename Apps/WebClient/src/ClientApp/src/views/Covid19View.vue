@@ -351,8 +351,10 @@ export default class Covid19View extends Vue {
                 <vaccine-card
                     :status="vaccinationStatus"
                     :show-generic-save-instructions="!downloadButtonShown"
-                    @clickPreviousButton="showImmunizationHistory(true)"
-                    @clickNextButton="showImmunizationHistory(true)"
+                    include-previous-button
+                    include-next-button
+                    @click-previous-button="showImmunizationHistory(true)"
+                    @click-next-button="showImmunizationHistory(true)"
                 />
                 <div
                     v-if="downloadButtonShown"

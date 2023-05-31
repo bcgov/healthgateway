@@ -1,68 +1,39 @@
-<script lang="ts">
-import Vue from "vue";
-import { Component, Prop, Ref } from "vue-property-decorator";
-import { Getter } from "vuex-class";
+<script setup lang="ts">
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
+import { computed } from "vue";
 
-import MessageModalComponent from "@/components/modal/MessageModalComponent.vue";
 import { EntryType, entryTypeMap } from "@/constants/entryType";
 import { DateWrapper } from "@/models/dateWrapper";
 import HospitalVisitTimelineEntry from "@/models/hospitalVisitTimelineEntry";
-import User from "@/models/user";
-import container from "@/plugins/container";
-import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import { ILogger } from "@/services/interfaces";
 
 import EntryCardTimelineComponent from "./EntrycardTimelineComponent.vue";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const options: any = {
-    components: {
-        EntryCard: EntryCardTimelineComponent,
-        MessageModalComponent,
-    },
-};
+library.add(faInfoCircle);
 
-@Component(options)
-export default class HospitalVisitTimelineComponent extends Vue {
-    @Prop()
-    entry!: HospitalVisitTimelineEntry;
+interface Props {
+    entry: HospitalVisitTimelineEntry;
+    index: number;
+    datekey: string;
+    isMobileDetails?: boolean;
+    commentsAreEnabled?: boolean;
+}
+withDefaults(defineProps<Props>(), {
+    isMobileDetails: false,
+    commentsAreEnabled: false,
+});
 
-    @Prop()
-    index!: number;
+const entryIcon = computed(() => {
+    return entryTypeMap.get(EntryType.HospitalVisit)?.icon;
+});
 
-    @Prop()
-    datekey!: string;
-
-    @Prop()
-    isMobileDetails!: boolean;
-
-    @Prop({ default: false })
-    commentsAreEnabled!: boolean;
-
-    @Getter("user", { namespace: "user" })
-    user!: User;
-
-    @Ref("messageModal")
-    readonly messageModal!: MessageModalComponent;
-
-    private logger!: ILogger;
-
-    private created(): void {
-        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-    }
-
-    public get entryIcon(): string | undefined {
-        return entryTypeMap.get(EntryType.HospitalVisit)?.icon;
-    }
-
-    public formatDate(date: DateWrapper): string {
-        return date.format("yyyy-MMM-dd, t");
-    }
+function formatDate(date: DateWrapper): string {
+    return date.format("yyyy-MMM-dd, t");
 }
 </script>
 
 <template>
-    <EntryCard
+    <EntryCardTimelineComponent
         :card-id="index + '-' + datekey"
         :entry-icon="entryIcon"
         :title="entry.facility"
@@ -192,5 +163,5 @@ export default class HospitalVisitTimelineComponent extends Vue {
                 </div>
             </div>
         </div>
-    </EntryCard>
+    </EntryCardTimelineComponent>
 </template>

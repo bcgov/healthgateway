@@ -76,5 +76,20 @@ namespace HealthGateway.Medication.Models
         /// Gets or sets a value indicating whether it is a provincial drug.
         /// </summary>
         public bool IsPin { get; set; }
+
+        /// <summary>
+        /// Gets or sets the pharmacy assessment tile.
+        /// </summary>
+        public string PharmacyAssessmentTitle { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the prescription was provided or not.
+        /// </summary>
+        public bool? PrescriptionProvided { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether redirected to health care provider was set or not.
+        /// </summary>
+        public bool? RedirectedToHealthCareProvider { get; set; }
     }
 }

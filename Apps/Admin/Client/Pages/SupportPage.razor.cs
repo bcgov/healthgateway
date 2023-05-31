@@ -59,7 +59,7 @@ namespace HealthGateway.Admin.Client.Pages
 
             set
             {
-                this.ResetPatientSupportState();
+                this.Dispatcher.Dispatch(new PatientSupportActions.ResetStateAction());
                 this.QueryParameter = string.Empty;
                 this.QueryType = value;
             }
@@ -79,7 +79,7 @@ namespace HealthGateway.Admin.Client.Pages
 
         private bool HasPatientsWarning => this.PatientSupportState.Value.WarningMessages.Any();
 
-        private IImmutableList<PatientSupportDetails> Patients => this.PatientSupportState.Value.Result ?? ImmutableList<PatientSupportDetails>.Empty;
+        private IImmutableList<PatientSupportResult> Patients => this.PatientSupportState.Value.Result ?? ImmutableList<PatientSupportResult>.Empty;
 
         private IEnumerable<PatientRow> PatientRows => this.Patients.Select(v => new PatientRow(v));
 
@@ -132,6 +132,12 @@ namespace HealthGateway.Admin.Client.Pages
             };
         }
 
+        private void Clear()
+        {
+            this.Dispatcher.Dispatch(new PatientSupportActions.ResetStateAction());
+            this.QueryParameter = string.Empty;
+        }
+
         private void ResetPatientSupportState()
         {
             Uri uri = this.NavigationManager.ToAbsoluteUri(this.NavigationManager.Uri);
@@ -158,7 +164,7 @@ namespace HealthGateway.Admin.Client.Pages
 
         private sealed record PatientRow
         {
-            public PatientRow(PatientSupportDetails model)
+            public PatientRow(PatientSupportResult model)
             {
                 this.Status = model.Status;
                 this.Name = StringManipulator.JoinWithoutBlanks(new[] { model.PreferredName?.GivenName, model.PreferredName?.Surname });

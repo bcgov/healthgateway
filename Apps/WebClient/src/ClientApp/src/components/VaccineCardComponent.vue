@@ -1,4 +1,4 @@
-<script lang="ts">
+<script setup lang="ts">
 import { library } from "@fortawesome/fontawesome-svg-core";
 import {
     faCheckCircle,
@@ -6,8 +6,8 @@ import {
     faChevronRight,
     faHandPointer,
 } from "@fortawesome/free-solid-svg-icons";
-import Vue from "vue";
-import { Component, Emit, Prop } from "vue-property-decorator";
+import { BModal } from "bootstrap-vue";
+import { computed, ref } from "vue";
 
 import TooManyRequestsComponent from "@/components/TooManyRequestsComponent.vue";
 import { VaccinationState } from "@/constants/vaccinationState";
@@ -17,89 +17,75 @@ import VaccinationStatus from "@/models/vaccinationStatus";
 
 library.add(faCheckCircle, faChevronLeft, faChevronRight, faHandPointer);
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const options: any = {
-    components: {
-        TooManyRequestsComponent,
-    },
-};
+const emit = defineEmits<{
+    (e: "click-previous-button"): void;
+    (e: "click-next-button"): void;
+}>();
 
-@Component(options)
-export default class VaccineCardComponent extends Vue {
-    @Prop({ required: true }) status!: VaccinationStatus | undefined;
-    @Prop({ required: false, default: undefined }) previousAction!:
-        | (() => void)
-        | undefined;
-    @Prop({ required: false, default: undefined }) nextAction!:
-        | (() => void)
-        | undefined;
-    @Prop({ required: true }) showGenericSaveInstructions!: boolean;
-    @Prop({ required: false, default: false }) isLoading!: boolean;
-    @Prop({ required: false, default: undefined }) error!:
-        | BannerError
-        | undefined;
+interface Props {
+    showGenericSaveInstructions: boolean;
+    status?: VaccinationStatus;
+    error?: BannerError;
+    isLoading?: boolean;
+    includePreviousButton?: boolean;
+    includeNextButton?: boolean;
+}
+const props = withDefaults(defineProps<Props>(), {
+    status: undefined,
+    error: undefined,
+    isLoading: false,
+    includePreviousButton: false,
+    includeNextButton: false,
+});
 
-    @Emit("clickPreviousButton")
-    private onClickPreviousButton(): void {
-        return;
+const qrModal = ref<BModal>();
+
+const isFullyVaccinated = computed(
+    () => props.status?.state === VaccinationState.FullyVaccinated
+);
+
+const isPartiallyVaccinated = computed(
+    () => props.status?.state === VaccinationState.PartiallyVaccinated
+);
+
+const isVaccinationNotFound = computed(
+    () => props.status?.state === VaccinationState.NotFound
+);
+
+const name = computed(() =>
+    [props.status?.firstname ?? "", props.status?.lastname ?? ""]
+        .filter((name) => name?.length > 0)
+        .join(" ")
+);
+
+const qrCodeUrl = computed<string | null>(() => {
+    const qrCode = props.status?.qrCode;
+    if (qrCode?.mediaType && qrCode?.encoding && qrCode?.data) {
+        return `data:${qrCode.mediaType};${qrCode.encoding},${qrCode.data}`;
+    } else {
+        return null;
     }
+});
 
-    @Emit("clickNextButton")
-    private onClickNextButton(): void {
-        return;
+const issuedDate = computed<string | undefined>(() => {
+    if (props.status?.issueddate) {
+        return new DateWrapper(props.status.issueddate, {
+            hasTime: true,
+        }).format("MMMM-dd-yyyy, HH:mm");
     }
+    return undefined;
+});
 
-    private get vaccinationState(): VaccinationState | undefined {
-        return this.status?.state;
-    }
+function onClickPreviousButton(): void {
+    emit("click-previous-button");
+}
 
-    private get isFullyVaccinated(): boolean {
-        return this.vaccinationState === VaccinationState.FullyVaccinated;
-    }
+function onClickNextButton(): void {
+    emit("click-next-button");
+}
 
-    private get isPartiallyVaccinated(): boolean {
-        return this.vaccinationState === VaccinationState.PartiallyVaccinated;
-    }
-
-    private get isVaccinationNotFound(): boolean {
-        return this.vaccinationState === VaccinationState.NotFound;
-    }
-
-    private get name(): string {
-        return [this.status?.firstname ?? "", this.status?.lastname ?? ""]
-            .filter((name) => name?.length > 0)
-            .join(" ");
-    }
-
-    private get qrCodeUrl(): string | null {
-        const qrCode = this.status?.qrCode;
-        if (qrCode?.mediaType && qrCode?.encoding && qrCode?.data) {
-            return `data:${qrCode.mediaType};${qrCode.encoding},${qrCode.data}`;
-        } else {
-            return null;
-        }
-    }
-
-    private get issuedDate(): string | undefined {
-        if (this.status?.issueddate) {
-            return new DateWrapper(this.status?.issueddate, {
-                hasTime: true,
-            }).format("MMMM-dd-yyyy, HH:mm");
-        }
-        return undefined;
-    }
-
-    private get includePreviousButton(): boolean {
-        return this.$listeners.clickPreviousButton !== undefined;
-    }
-
-    private get includeNextButton(): boolean {
-        return this.$listeners.clickNextButton !== undefined;
-    }
-
-    private handleCloseQrModal(): void {
-        this.$bvModal.hide("big-qr");
-    }
+function handleCloseQrModal(): void {
+    qrModal.value?.hide();
 }
 </script>
 
@@ -132,7 +118,7 @@ export default class VaccineCardComponent extends Vue {
                     data-testid="vc-chevron-left-btn"
                     variant="carousel"
                     class="h-100"
-                    @click="onClickNextButton"
+                    @click="onClickPreviousButton"
                 >
                     <hg-icon icon="chevron-left" size="large" />
                 </hg-button>
@@ -206,6 +192,7 @@ export default class VaccineCardComponent extends Vue {
                             </p>
                             <b-modal
                                 id="big-qr"
+                                ref="qrModal"
                                 centered
                                 title="Present for scanning"
                                 title-class="flex-grow-1 text-center"

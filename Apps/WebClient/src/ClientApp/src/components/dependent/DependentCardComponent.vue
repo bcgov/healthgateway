@@ -1,4 +1,6 @@
 <script lang="ts">
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { faEllipsisV } from "@fortawesome/free-solid-svg-icons";
 import Vue from "vue";
 import { Component, Prop, Ref } from "vue-property-decorator";
 import { Action, Getter } from "vuex-class";
@@ -12,6 +14,8 @@ import { DateWrapper } from "@/models/dateWrapper";
 import type { Dependent } from "@/models/dependent";
 import User from "@/models/user";
 import DependentUtil from "@/utility/dependentUtil";
+
+library.add(faEllipsisV);
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const options: any = {

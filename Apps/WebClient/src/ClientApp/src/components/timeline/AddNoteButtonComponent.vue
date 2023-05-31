@@ -1,19 +1,8 @@
-<script lang="ts">
-import Vue from "vue";
-import { Component } from "vue-property-decorator";
-
+<script setup lang="ts">
 import EventBus, { EventMessageName } from "@/eventbus";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const options: any = {};
-
-@Component(options)
-export default class AddNoteButtonComponent extends Vue {
-    private eventBus = EventBus;
-
-    private createNote(): void {
-        this.eventBus.$emit(EventMessageName.CreateNote);
-    }
+function createNote(): void {
+    EventBus.$emit(EventMessageName.CreateNote);
 }
 </script>
 

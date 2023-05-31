@@ -1,23 +1,22 @@
-﻿<script lang="ts">
-import Vue from "vue";
-import { Component } from "vue-property-decorator";
-import { Getter } from "vuex-class";
+﻿<script setup lang="ts">
+import { computed } from "vue";
+import { useRoute, useRouter, useStore } from "vue-composition-wrapper";
 
 import type { WebClientConfiguration } from "@/models/configData";
 
-@Component
-export default class LogoutCompleteView extends Vue {
-    @Getter("webClient", { namespace: "config" })
-    config!: WebClientConfiguration;
+const route = useRoute();
+const router = useRouter();
+const store = useStore();
 
-    private created(): void {
-        setTimeout(() => {
-            if (this.$route.path == "/logoutComplete") {
-                this.$router.push({ path: "/" });
-            }
-        }, Number(this.config.timeouts.logoutRedirect));
+const config = computed<WebClientConfiguration>(
+    () => store.getters["config/webClient"]
+);
+
+setTimeout(() => {
+    if (route.value.path == "/logoutComplete") {
+        router.push({ path: "/" });
     }
-}
+}, Number(config.value.timeouts.logoutRedirect));
 </script>
 
 <template>

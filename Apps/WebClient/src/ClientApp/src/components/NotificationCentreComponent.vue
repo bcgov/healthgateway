@@ -1,9 +1,8 @@
-<script lang="ts">
+<script setup lang="ts">
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faAngleDoubleRight, faXmark } from "@fortawesome/free-solid-svg-icons";
-import Vue from "vue";
-import { Component } from "vue-property-decorator";
-import { Action, Getter } from "vuex-class";
+import { computed, ref } from "vue";
+import { useRouter, useStore } from "vue-composition-wrapper";
 
 import { EntryType } from "@/constants/entryType";
 import { DateWrapper, StringISODateTime } from "@/models/dateWrapper";
@@ -23,108 +22,103 @@ const specialAuthorityCategory = "SpecialAuthority";
 
 library.add(faAngleDoubleRight, faXmark);
 
-@Component
-export default class NotificationCentreComponent extends Vue {
-    @Action("dismissAllNotifications", { namespace: "notification" })
-    dismissAllNotifications!: () => void;
+const router = useRouter();
+const store = useStore();
 
-    @Action("dismissNotification", { namespace: "notification" })
-    dismissNotification!: (params: { notificationId: string }) => void;
+const sidebarId = ref("notification-centre-sidebar");
 
-    @Action("setFilter", { namespace: "timeline" })
-    setFilter!: (filterBuilder: TimelineFilterBuilder) => void;
-
-    @Getter("notifications", { namespace: "notification" })
-    notifications!: Notification[];
-
-    @Getter("user", { namespace: "user" })
-    user!: User;
-
-    readonly sidebarId = "notification-centre-sidebar";
-    readonly internalLink = NotificationActionType.InternalLink;
-
-    public get newNotifications(): Notification[] {
-        if (this.user.lastLoginDateTime) {
-            const lastLoginDateTime = new DateWrapper(
-                this.user.lastLoginDateTime
-            );
-            return this.notifications.filter((n) =>
-                new DateWrapper(n.scheduledDateTimeUtc).isAfter(
-                    lastLoginDateTime
-                )
-            );
-        }
-        return this.notifications;
+const notifications = computed<Notification[]>(
+    () => store.getters["notification/notifications"]
+);
+const user = computed<User>(() => store.getters["user/user"]);
+const newNotifications = computed<Notification[]>(() => {
+    if (!user.value.lastLoginDateTime) {
+        return notifications.value;
     }
 
-    handleClickNotificationAction(
-        categoryName: string,
-        actionUrl: string
-    ): void {
-        const entryType = this.getEntryType(categoryName);
-        if (entryType) {
-            const builder =
-                TimelineFilterBuilder.create().withEntryType(entryType);
-            this.setFilter(builder);
-            this.$router.push({ path: "/timeline" });
-        } else if (categoryName === bctOdrCategory) {
-            this.$router.push({ path: "/services" });
-        } else {
-            this.$router.push({ path: actionUrl });
-        }
-    }
+    const lastLoginDateTime = new DateWrapper(user.value.lastLoginDateTime);
+    return notifications.value.filter((n) =>
+        new DateWrapper(n.scheduledDateTimeUtc).isAfter(lastLoginDateTime)
+    );
+});
 
-    getEntryType(categoryName: string): EntryType | undefined {
-        switch (categoryName) {
-            case clinicalDocumentCategory:
-                return EntryType.ClinicalDocument;
-            case covid19LaboratoryCategory:
-                return EntryType.Covid19TestResult;
-            case healthVisitCategory:
-                return EntryType.HealthVisit;
-            case immunizationCategory:
-                return EntryType.Immunization;
-            case laboratoryCategory:
-                return EntryType.LabResult;
-            case medicationCategory:
-                return EntryType.Medication;
-            case noteCategory:
-                return EntryType.Note;
-            case specialAuthorityCategory:
-                return EntryType.SpecialAuthorityRequest;
-            default:
-                return undefined;
-        }
-    }
+function dismissAllNotifications(): void {
+    store.dispatch("notification/dismissAllNotifications");
+}
 
-    formatDate(date: StringISODateTime): string {
-        return new DateWrapper(date, {
-            hasTime: true,
-            isUtc: true,
-        }).format("MMMM d, yyyy");
-    }
+function dismissNotification(notificationId: string): void {
+    store.dispatch("notification/dismissNotification", { notificationId });
+}
 
-    formatActionText(actionType: NotificationActionType): string | undefined {
-        switch (actionType) {
-            case NotificationActionType.InternalLink:
-                return "View";
-            case NotificationActionType.ExternalLink:
-                return "More Info";
-            default:
-                return undefined;
-        }
-    }
+function setFilter(filterBuilder: TimelineFilterBuilder): void {
+    store.dispatch("timeline/setFilter", filterBuilder);
+}
 
-    showActionButton(notification: Notification): boolean {
-        return (
-            notification.actionType === NotificationActionType.InternalLink ||
-            notification.actionType === NotificationActionType.ExternalLink
-        );
+function handleClickNotificationAction(notification: Notification): void {
+    const entryType = getEntryType(notification.categoryName);
+    if (entryType) {
+        const builder = TimelineFilterBuilder.create().withEntryType(entryType);
+        setFilter(builder);
+        router.push({ path: "/timeline" });
+    } else if (notification.categoryName === bctOdrCategory) {
+        router.push({ path: "/services" });
+    } else {
+        router.push({ path: notification.actionUrl });
     }
+}
 
-    isNew(notification: Notification): boolean {
-        return this.newNotifications.some((n) => n.id === notification.id);
+function getEntryType(categoryName: string): EntryType | undefined {
+    switch (categoryName) {
+        case clinicalDocumentCategory:
+            return EntryType.ClinicalDocument;
+        case covid19LaboratoryCategory:
+            return EntryType.Covid19TestResult;
+        case healthVisitCategory:
+            return EntryType.HealthVisit;
+        case immunizationCategory:
+            return EntryType.Immunization;
+        case laboratoryCategory:
+            return EntryType.LabResult;
+        case medicationCategory:
+            return EntryType.Medication;
+        case noteCategory:
+            return EntryType.Note;
+        case specialAuthorityCategory:
+            return EntryType.SpecialAuthorityRequest;
+        default:
+            return undefined;
     }
+}
+
+function formatDate(date: StringISODateTime): string {
+    return new DateWrapper(date, {
+        hasTime: true,
+        isUtc: true,
+    }).format("MMMM d, yyyy");
+}
+
+function formatActionText(
+    actionType: NotificationActionType
+): string | undefined {
+    switch (actionType) {
+        case NotificationActionType.InternalLink:
+            return "View";
+        case NotificationActionType.ExternalLink:
+            return "More Info";
+        default:
+            return undefined;
+    }
+}
+
+function showActionButton(notification: Notification): boolean {
+    return (
+        notification.actionType === NotificationActionType.InternalLink ||
+        notification.actionType === NotificationActionType.ExternalLink
+    );
+}
+
+function isNew(notification: Notification): boolean {
+    return newNotifications.value.some((n) => n.id === notification.id);
 }
 </script>
 
@@ -190,11 +184,7 @@ export default class NotificationCentreComponent extends Vue {
                         :data-testid="`notification-${notification.id}-dismiss-button`"
                         variant="icon"
                         class="text-muted py-0 px-2 m-2"
-                        @click="
-                            dismissNotification({
-                                notificationId: notification.id,
-                            })
-                        "
+                        @click="dismissNotification(notification.id)"
                     >
                         <hg-icon icon="xmark" size="small" />
                     </hg-button>
@@ -211,12 +201,7 @@ export default class NotificationCentreComponent extends Vue {
                             :data-testid="`notification-${notification.id}-action-button`"
                             variant="link"
                             class="card-link"
-                            @click="
-                                handleClickNotificationAction(
-                                    notification.categoryName,
-                                    notification.actionUrl
-                                )
-                            "
+                            @click="handleClickNotificationAction(notification)"
                         >
                             {{ formatActionText(notification.actionType) }}
                         </hg-button>

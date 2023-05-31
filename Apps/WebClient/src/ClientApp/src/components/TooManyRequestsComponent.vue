@@ -1,65 +1,56 @@
-<script lang="ts">
-import Vue from "vue";
-import { Component, Prop } from "vue-property-decorator";
-import { Action, Getter } from "vuex-class";
+<script setup lang="ts">
+import { computed } from "vue";
+import { useStore } from "vue-composition-wrapper";
 
-@Component
-export default class TooManyRequestsComponent extends Vue {
-    @Prop({ default: "page" })
+const store = useStore();
+
+interface Props {
     location?: string;
-
-    @Action("clearTooManyRequestsWarning", { namespace: "errorBanner" })
-    clearTooManyRequestsWarning!: () => void;
-
-    @Action("clearTooManyRequestsError", { namespace: "errorBanner" })
-    clearTooManyRequestsError!: () => void;
-
-    @Getter("tooManyRequestsWarning", { namespace: "errorBanner" })
-    warning!: string | undefined;
-
-    @Getter("tooManyRequestsError", { namespace: "errorBanner" })
-    error!: string | undefined;
-
-    private get isShowingWarning(): boolean {
-        return this.warning === this.location;
-    }
-
-    private set isShowingWarning(value: boolean) {
-        if (value === false) {
-            this.clearTooManyRequestsWarning();
-        }
-    }
-
-    private get isShowingError(): boolean {
-        return this.error === this.location;
-    }
-
-    private set isShowingError(value: boolean) {
-        if (value === false) {
-            this.clearTooManyRequestsError();
-        }
-    }
 }
+const props = withDefaults(defineProps<Props>(), {
+    location: "page",
+});
+
+const warning = computed<string | undefined>(
+    () => store.getters["errorBanner/tooManyRequestsWarning"]
+);
+
+const error = computed<string | undefined>(
+    () => store.getters["errorBanner/tooManyRequestsError"]
+);
+
+function clearTooManyRequestsWarning(): void {
+    store.dispatch("errorBanner/clearTooManyRequestsWarning");
+}
+
+function clearTooManyRequestsError(): void {
+    store.dispatch("errorBanner/clearTooManyRequestsError");
+}
+
+const showWarning = computed(() => warning.value === props.location);
+const showError = computed(() => error.value === props.location);
 </script>
 
 <template>
     <div>
         <b-alert
-            v-model="isShowingWarning"
+            :show="showWarning"
             data-testid="too-many-requests-warning"
             variant="warning"
             dismissible
             class="no-print"
+            @dismissed="clearTooManyRequestsWarning"
         >
             We are unable to complete all actions because the site is too busy.
             Please try again later.
         </b-alert>
         <b-alert
-            v-model="isShowingError"
+            :show="showError"
             data-testid="too-many-requests-error"
             variant="danger"
             dismissible
             class="no-print"
+            @dismissed="clearTooManyRequestsError"
         >
             Unable to complete action as the site is too busy. Please try again
             later.

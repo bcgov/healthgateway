@@ -1,10 +1,11 @@
 @page "/patient-details"
 @layout MainLayout
 @attribute [Authorize(Roles = $"{Roles.Admin},{Roles.Reviewer}")]
-@using HealthGateway.Admin.Client.Store.MessageVerification
+@using HealthGateway.Admin.Client.Store.PatientDetails
 @using HealthGateway.Admin.Client.Store.PatientSupport
 @using HealthGateway.Admin.Common.Constants
 @using HealthGateway.Admin.Client.Components.Support
+@using HealthGateway.Admin.Client.Components.AgentAudit
 @inherits Fluxor.Blazor.Web.Components.FluxorComponent
 
 <PageTitle>Health Gateway Admin Patient Details</PageTitle>
@@ -15,10 +16,10 @@
 
 <HgBannerFeedback
     Severity="Severity.Error"
-    IsEnabled="HasMessagingVerificationsError"
-    TResetAction="MessageVerificationActions.ResetStateAction"
+    IsEnabled="HasPatientSupportDetailsError"
+    TResetAction="PatientDetailsActions.ResetStateAction"
     DataTestId="messaging-verification-banner-feedback-error-message">
-    @MessageVerificationState.Value.Error?.Message
+    @PatientDetailsState.Value.Error?.Message
 </HgBannerFeedback>
 
 <HgBannerFeedback
@@ -88,7 +89,9 @@
                 <HgField Label="Last Login" Value="@ProfileLastLoginDateTime.ToString()" data-testid="profile-last-login-datetime" />
             </MudItem>
         </MudGrid>
-        <MessageVerificationTable Data="@MessagingVerifications" IsLoading="@MessagingVerificationsLoading" />
+        <MessageVerificationTable Data="@MessagingVerifications" IsLoading="@PatientSupportDetailsLoading" />
+        <DatasetAccessSection Data="@BlockedDataSources" IsLoading="@PatientSupportDetailsLoading" Hdid="@Hdid" />
+        <AgentAuditHistory Title="Agent Reason History" AgentActions="@AgentAuditHistory" IsLoading="@PatientSupportDetailsLoading" />
     }
     else
     {

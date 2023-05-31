@@ -180,7 +180,7 @@ export default class SupportView extends Vue {
 
         if (queryType === QueryType.PHN) {
             const phnDigits = searchText.replace(/\D/g, "");
-            var isValid = PHNValidator.IsValid(phnDigits);
+            const isValid = PHNValidator.IsValid(phnDigits);
 
             if (!isValid) {
                 this.showValidationError("PHN is invalid");

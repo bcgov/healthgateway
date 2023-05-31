@@ -73,9 +73,9 @@ namespace HealthGateway.Admin.Client.Store.Delegation
             public required DependentInfo Dependent { get; init; }
 
             /// <summary>
-            /// Gets the collection of delegation changes.
+            /// Gets the collection of agent actions.
             /// </summary>
-            public required IEnumerable<DelegationChange> DelegationChanges { get; init; }
+            public required IEnumerable<AgentAction> AgentActions { get; init; }
 
             /// <summary>
             /// Gets the collection of delegate info.
@@ -172,12 +172,8 @@ namespace HealthGateway.Admin.Client.Store.Delegation
         /// <summary>
         /// The action representing the initiation of a protect dependent.
         /// </summary>
-        public class ProtectDependentAction
+        public class ProtectDependentAction : BaseAgentAuditAction
         {
-            /// <summary>
-            /// Gets the reason associated with the delegation change.
-            /// </summary>
-            public required string Reason { get; init; }
         }
 
         /// <summary>
@@ -201,20 +197,16 @@ namespace HealthGateway.Admin.Client.Store.Delegation
         public class ProtectDependentSuccessAction
         {
             /// <summary>
-            /// Gets the delegation change entry created from the operation.
+            /// Gets the agent action entry created from the operation.
             /// </summary>
-            public required DelegationChange DelegationChange { get; init; }
+            public required AgentAction AgentAction { get; init; }
         }
 
         /// <summary>
         /// The action representing the initiation of an unprotect dependent.
         /// </summary>
-        public class UnprotectDependentAction
+        public class UnprotectDependentAction : BaseAgentAuditAction
         {
-            /// <summary>
-            /// Gets the reason associated with the delegation change.
-            /// </summary>
-            public required string Reason { get; init; }
         }
 
         /// <summary>
@@ -238,9 +230,9 @@ namespace HealthGateway.Admin.Client.Store.Delegation
         public class UnprotectDependentSuccessAction
         {
             /// <summary>
-            /// Gets the delegation change entry created from the operation.
+            /// Gets the agent action entry created from the operation.
             /// </summary>
-            public required DelegationChange DelegationChange { get; init; }
+            public required AgentAction AgentAction { get; init; }
         }
 
         /// <summary>

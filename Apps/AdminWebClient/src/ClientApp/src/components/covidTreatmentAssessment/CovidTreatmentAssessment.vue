@@ -314,14 +314,14 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
                             />
                         </Card>
                         <Card
-                            title="1. Please confirm that you are over 12 years or older.*"
+                            title="1. Please confirm that you are over 18 years or older.*"
                             :additional-info="`This citizen is ${age} years old.`"
                             display-additional-info="true"
                         >
                             <ValidationProvider
                                 v-slot="{ errors }"
                                 rules="oneOf:Yes,No"
-                                name="Confirms Over 12"
+                                name="Confirms Over 18"
                             >
                                 <OptionDetails
                                     :value.sync="
@@ -498,10 +498,11 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
                                 :value.sync="
                                     covidTreatmentAssessmentRequest.identifiesIndigenous
                                 "
+                                :response-of-yes-indicates-benefit="true"
                             />
                         </Card>
                         <Card
-                            title="9. Have you had 3 doses of the vaccine?"
+                            title="9. Are you up to date on your COVID-19 vaccines?"
                             additional-info="Citizen has had 3 doses of vaccine for more than 14 days."
                             :display-additional-info="
                                 details.has3DoseMoreThan14Days
@@ -512,6 +513,7 @@ export default class CovidTreatmentAssessmentComponent extends Vue {
                                     covidTreatmentAssessmentRequest.reports3DosesC19Vaccine
                                 "
                                 :has-not-sure-option="true"
+                                :response-of-no-indicates-benefit="true"
                             />
                         </Card>
                         <Card

@@ -1,7 +1,6 @@
-<script lang="ts">
-import Vue from "vue";
-import { Component, Emit, Prop, Watch } from "vue-property-decorator";
-import { Action, Getter } from "vuex-class";
+<script setup lang="ts">
+import { computed, onMounted, watch } from "vue";
+import { useStore } from "vue-composition-wrapper";
 
 import { DateWrapper } from "@/models/dateWrapper";
 import { Covid19LaboratoryOrder } from "@/models/laboratory";
@@ -15,6 +14,22 @@ import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ILogger, IReportService } from "@/services/interfaces";
 
+interface Props {
+    hdid: string;
+    filter: ReportFilter;
+    isDependent?: boolean;
+}
+const props = withDefaults(defineProps<Props>(), {
+    isDependent: false,
+});
+
+const emit = defineEmits<{
+    (e: "on-is-loading-changed", newValue: boolean): void;
+    (e: "on-is-empty-changed", newValue: boolean): void;
+}>();
+
+defineExpose({ generateReport });
+
 interface Covid19LaboratoryOrderRow {
     date: string;
     test_type: string;
@@ -22,40 +37,58 @@ interface Covid19LaboratoryOrderRow {
     result: string;
 }
 
-@Component
-export default class Covid19ReportComponent extends Vue {
-    @Prop({ required: true })
-    hdid!: string;
+const headerClass = "covid19-laboratory-report-table-header";
 
-    @Prop() private filter!: ReportFilter;
+const fields: ReportField[] = [
+    {
+        key: "date",
+        thClass: headerClass,
+        tdAttr: { "data-testid": "covid19DateItem" },
+    },
+    {
+        key: "test_type",
+        thClass: headerClass,
+        tdAttr: { "data-testid": "covid19TestTypeItem" },
+    },
+    {
+        key: "test_location",
+        thClass: headerClass,
+        tdAttr: { "data-testid": "covid19LocationItem" },
+    },
+    {
+        key: "result",
+        thClass: headerClass,
+        tdAttr: { "data-testid": "covid19ResultItem" },
+    },
+];
 
-    @Prop({ default: false }) isDependent!: boolean;
+const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+const reportService = container.get<IReportService>(
+    SERVICE_IDENTIFIER.ReportService
+);
+const store = useStore();
 
-    @Action("retrieveCovid19LaboratoryOrders", { namespace: "laboratory" })
-    retrieveCovid19LaboratoryOrders!: (params: {
-        hdid: string;
-    }) => Promise<void>;
+const covid19LaboratoryOrders = computed<
+    (hdid: string) => Covid19LaboratoryOrder[]
+>(() => store.getters["laboratory/covid19LaboratoryOrders"]);
 
-    @Getter("covid19LaboratoryOrders", { namespace: "laboratory" })
-    covid19LaboratoryOrders!: (hdid: string) => Covid19LaboratoryOrder[];
+const covid19LaboratoryOrdersAreLoading = computed<(hdid: string) => boolean>(
+    () => store.getters["laboratory/covid19LaboratoryOrdersAreLoading"]
+);
 
-    @Getter("covid19LaboratoryOrdersAreLoading", { namespace: "laboratory" })
-    covid19LaboratoryOrdersAreLoading!: (hdid: string) => boolean;
+const isEmpty = computed(() => visibleRecords.value.length === 0);
 
-    private logger!: ILogger;
+const isCovid19LaboratoryLoading = computed(() =>
+    covid19LaboratoryOrdersAreLoading.value(props.hdid)
+);
 
-    private readonly headerClass = "covid19-laboratory-report-table-header";
-
-    private get isCovid19LaboratoryLoading(): boolean {
-        return this.covid19LaboratoryOrdersAreLoading(this.hdid);
-    }
-
-    private get visibleRecords(): Covid19LaboratoryOrder[] {
-        const records = this.covid19LaboratoryOrders(this.hdid).filter(
-            (record) =>
-                this.filter.allowsDate(record.labResults[0].collectedDateTime)
-        );
-        records.sort((a, b) => {
+const visibleRecords = computed(() =>
+    covid19LaboratoryOrders
+        .value(props.hdid)
+        .filter((r) =>
+            props.filter.allowsDate(r.labResults[0].collectedDateTime)
+        )
+        .sort((a, b) => {
             const firstDate = new DateWrapper(
                 a.labResults[0].collectedDateTime
             );
@@ -72,91 +105,56 @@ export default class Covid19ReportComponent extends Vue {
             }
 
             return 0;
-        });
+        })
+);
 
-        return records;
-    }
+const items = computed(() =>
+    visibleRecords.value.map<Covid19LaboratoryOrderRow>((x) => {
+        const labResult = x.labResults[0];
+        return {
+            date: DateWrapper.format(labResult.collectedDateTime),
+            test_type: labResult.testType,
+            test_location: x.location || "",
+            result: labResult.filteredLabResultOutcome,
+        };
+    })
+);
 
-    private get isEmpty(): boolean {
-        return this.visibleRecords.length === 0;
-    }
-
-    private get items(): Covid19LaboratoryOrderRow[] {
-        return this.visibleRecords.map<Covid19LaboratoryOrderRow>((x) => {
-            const labResult = x.labResults[0];
-            return {
-                date: DateWrapper.format(labResult.collectedDateTime),
-                test_type: labResult.testType,
-                test_location: x.location || "",
-                result: labResult.filteredLabResultOutcome,
-            };
-        });
-    }
-
-    @Watch("isCovid19LaboratoryLoading")
-    @Emit()
-    private onIsLoadingChanged(): boolean {
-        return this.isCovid19LaboratoryLoading;
-    }
-
-    @Watch("isEmpty")
-    @Emit()
-    private onIsEmptyChanged(): boolean {
-        return this.isEmpty;
-    }
-
-    private created(): void {
-        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-        this.retrieveCovid19LaboratoryOrders({ hdid: this.hdid }).catch((err) =>
-            this.logger.error(`Error loading Covid19 data: ${err}`)
-        );
-    }
-
-    private mounted(): void {
-        this.onIsEmptyChanged();
-    }
-
-    public generateReport(
-        reportFormatType: ReportFormatType,
-        headerData: ReportHeader
-    ): Promise<RequestResult<Report>> {
-        const reportService = container.get<IReportService>(
-            SERVICE_IDENTIFIER.ReportService
-        );
-
-        return reportService.generateReport({
-            data: {
-                header: headerData,
-                records: this.items,
-            },
-            template: TemplateType.COVID,
-            type: reportFormatType,
-        });
-    }
-
-    private fields: ReportField[] = [
-        {
-            key: "date",
-            thClass: this.headerClass,
-            tdAttr: { "data-testid": "covid19DateItem" },
-        },
-        {
-            key: "test_type",
-            thClass: this.headerClass,
-            tdAttr: { "data-testid": "covid19TestTypeItem" },
-        },
-        {
-            key: "test_location",
-            thClass: this.headerClass,
-            tdAttr: { "data-testid": "covid19LocationItem" },
-        },
-        {
-            key: "result",
-            thClass: this.headerClass,
-            tdAttr: { "data-testid": "covid19ResultItem" },
-        },
-    ];
+function retrieveCovid19LaboratoryOrders(hdid: string): Promise<void> {
+    return store.dispatch("laboratory/retrieveCovid19LaboratoryOrders", {
+        hdid,
+    });
 }
+
+function generateReport(
+    reportFormatType: ReportFormatType,
+    headerData: ReportHeader
+): Promise<RequestResult<Report>> {
+    return reportService.generateReport({
+        data: {
+            header: headerData,
+            records: items.value,
+        },
+        template: TemplateType.COVID,
+        type: reportFormatType,
+    });
+}
+
+watch(isCovid19LaboratoryLoading, () => {
+    emit("on-is-loading-changed", isCovid19LaboratoryLoading.value);
+});
+
+watch(isEmpty, () => {
+    emit("on-is-empty-changed", isEmpty.value);
+});
+
+onMounted(() => {
+    emit("on-is-empty-changed", isEmpty.value);
+});
+
+retrieveCovid19LaboratoryOrders(props.hdid).catch((err) =>
+    logger.error(`Error loading Covid19 data: ${err}`)
+);
 </script>
 
 <template>

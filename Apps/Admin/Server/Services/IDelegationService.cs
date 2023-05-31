@@ -16,6 +16,7 @@
 namespace HealthGateway.Admin.Server.Services
 {
     using System.Collections.Generic;
+    using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Admin.Common.Models;
 
@@ -28,8 +29,9 @@ namespace HealthGateway.Admin.Server.Services
         /// Retrieves delegation information for a person.
         /// </summary>
         /// <param name="phn">The phn to query on.</param>
+        /// <param name="ct">A cancellation token.</param>
         /// <returns>Information about the person and their delegates.</returns>
-        Task<DelegationInfo> GetDelegationInformationAsync(string phn);
+        Task<DelegationInfo> GetDelegationInformationAsync(string phn, CancellationToken ct = default);
 
         /// <summary>
         /// Retrieves information about a potential delegate.
@@ -45,8 +47,9 @@ namespace HealthGateway.Admin.Server.Services
         /// <param name="dependentHdid">The hdid of the dependent to protect.</param>
         /// <param name="delegateHdids">The list of delegate hdid(s) to allow delegation for the dependent.</param>
         /// <param name="reason">The reason to protect.</param>
-        /// <returns>The delegation change entry created from the operation.</returns>
-        Task<DelegationChange> ProtectDependentAsync(string dependentHdid, IEnumerable<string> delegateHdids, string reason);
+        /// <param name="ct">A cancellation token</param>
+        /// <returns>The agent action entry created from the operation.</returns>
+        Task<AgentAction> ProtectDependentAsync(string dependentHdid, IEnumerable<string> delegateHdids, string reason, CancellationToken ct = default);
 
         /// <summary>
         /// Unprotects the dependent and if necessary creates the allowed delegation(s) and keeps the resource delegates
@@ -54,7 +57,8 @@ namespace HealthGateway.Admin.Server.Services
         /// </summary>
         /// <param name="dependentHdid">The hdid of the dependent to unprotect.</param>
         /// <param name="reason">The reason to protect.</param>
-        /// <returns>The delegation change entry created from the operation.</returns>
-        Task<DelegationChange> UnprotectDependentAsync(string dependentHdid, string reason);
+        /// <param name="ct">A cancellation token</param>
+        /// <returns>The agent action entry created from the operation.</returns>
+        Task<AgentAction> UnprotectDependentAsync(string dependentHdid, string reason, CancellationToken ct = default);
     }
 }

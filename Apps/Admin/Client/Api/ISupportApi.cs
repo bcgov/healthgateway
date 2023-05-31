@@ -19,7 +19,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using HealthGateway.Admin.Common.Models;
 using HealthGateway.Common.Data.Constants;
-using HealthGateway.Common.Data.ViewModels;
 using Refit;
 
 /// <summary>
@@ -32,15 +31,24 @@ public interface ISupportApi
     /// </summary>
     /// <param name="queryType">The type of query to perform.</param>
     /// <param name="queryString">The value to query on.</param>
-    /// <returns>The collection of patient support details that match the query.</returns>
+    /// <returns>The collection of patient support results that match the query.</returns>
     [Get("/Users?queryType={queryType}&queryString={queryString}")]
-    Task<IList<PatientSupportDetails>> GetPatientsAsync(PatientQueryType queryType, string queryString);
+    Task<IList<PatientSupportResult>> GetPatientsAsync(PatientQueryType queryType, string queryString);
 
     /// <summary>
     /// Gets the list of messaging verification models from the server.
     /// </summary>
     /// <param name="hdid">The hdid associated with the messaging verification.</param>
     /// <returns>The list of MessagingVerificationModel objects.</returns>
-    [Get("/Verifications?hdid={hdid}")]
-    Task<RequestResult<IEnumerable<MessagingVerificationModel>>> GetMessagingVerificationsAsync(string hdid);
+    [Get("/PatientSupportDetails?hdid={hdid}")]
+    Task<PatientSupportDetails> GetPatientSupportDetailsAsync(string hdid);
+
+    /// <summary>
+    /// Creates, updates, or deletes block access configuration for the passed HDID.
+    /// </summary>
+    /// <param name="hdid">HDID of the patient to restrict access.</param>
+    /// <param name="request">The request containing all datasources to block for the patient.</param>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Put("/{hdid}/BlockAccess")]
+    Task BlockAccessAsync(string hdid, BlockAccessRequest request);
 }
