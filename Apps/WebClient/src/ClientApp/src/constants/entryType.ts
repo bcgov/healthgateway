@@ -1,3 +1,15 @@
+import { Component } from "vue";
+
+import ClinicalDocumentTimelineComponent from "@/components/timeline/entryCard/ClinicalDocumentTimelineComponent.vue";
+import Covid19LaboratoryOrderTimelineComponent from "@/components/timeline/entryCard/Covid19LaboratoryOrderTimelineComponent.vue";
+import DiagnosticImagingTimelineComponent from "@/components/timeline/entryCard/DiagnosticImagingTimelineComponent.vue";
+import EncounterTimelineComponent from "@/components/timeline/entryCard/EncounterTimelineComponent.vue";
+import HospitalVisitTimelineComponent from "@/components/timeline/entryCard/HospitalVisitTimelineComponent.vue";
+import ImmunizationTimelineComponent from "@/components/timeline/entryCard/ImmunizationTimelineComponent.vue";
+import LaboratoryOrderTimelineComponent from "@/components/timeline/entryCard/LaboratoryOrderTimelineComponent.vue";
+import MedicationRequestTimelineComponent from "@/components/timeline/entryCard/MedicationRequestTimelineComponent.vue";
+import MedicationTimelineComponent from "@/components/timeline/entryCard/MedicationTimelineComponent.vue";
+import NoteTimelineComponent from "@/components/timeline/entryCard/NoteTimelineComponent.vue";
 import { CommentEntryType } from "@/constants/commentEntryType";
 
 export enum EntryType {
@@ -18,7 +30,7 @@ export class EntryTypeDetails {
     name!: string;
     description!: string;
     icon!: string;
-    component!: string;
+    component!: Component;
     commentType!: CommentEntryType;
     eventName!: string;
     moduleName!: string;
@@ -39,7 +51,7 @@ entryTypeMap.set(EntryType.Immunization, {
     description:
         "View immunizations you received from public health and community pharmacies",
     icon: "syringe",
-    component: "ImmunizationTimelineComponent",
+    component: ImmunizationTimelineComponent,
     eventName: "immunizations",
     moduleName: "Immunization",
 });
@@ -50,7 +62,7 @@ entryTypeMap.set(EntryType.Medication, {
     name: "Medications",
     description: "See your medication history dating back to 1995",
     icon: "pills",
-    component: "MedicationTimelineComponent",
+    component: MedicationTimelineComponent,
     eventName: "medications",
     moduleName: "Medication",
 });
@@ -62,7 +74,7 @@ entryTypeMap.set(EntryType.LabResult, {
     description:
         "Find out your lab results within about 48 hours of taking a test",
     icon: "microscope",
-    component: "LaboratoryOrderTimelineComponent",
+    component: LaboratoryOrderTimelineComponent,
     eventName: "lab_results",
     moduleName: "AllLaboratory",
 });
@@ -74,7 +86,7 @@ entryTypeMap.set(EntryType.Covid19TestResult, {
     description:
         "View and download your COVID‑19 test results as soon as they are available",
     icon: "vial",
-    component: "Covid19LaboratoryOrderTimelineComponent",
+    component: Covid19LaboratoryOrderTimelineComponent,
     eventName: "covid_test",
     moduleName: "Laboratory",
 });
@@ -86,7 +98,7 @@ entryTypeMap.set(EntryType.HealthVisit, {
     description:
         "See the last seven years of your health visits billed to the BC Medical Services Plan",
     icon: "stethoscope",
-    component: "EncounterTimelineComponent",
+    component: EncounterTimelineComponent,
     eventName: "health_visits",
     moduleName: "Encounter",
 });
@@ -97,7 +109,7 @@ entryTypeMap.set(EntryType.Note, {
     name: "My Notes",
     description: "Create and edit your own notes on your health records",
     icon: "edit",
-    component: "NoteTimelineComponent",
+    component: NoteTimelineComponent,
     eventName: "my_notes",
     moduleName: "Note",
 });
@@ -109,7 +121,7 @@ entryTypeMap.set(EntryType.SpecialAuthorityRequest, {
     description:
         "Check the status of your Special Authority Requests since March 2021",
     icon: "file-medical",
-    component: "MedicationRequestTimelineComponent",
+    component: MedicationRequestTimelineComponent,
     eventName: "special_authority",
     moduleName: "MedicationRequest",
 });
@@ -121,7 +133,7 @@ entryTypeMap.set(EntryType.ClinicalDocument, {
     description:
         "View documents shared by your care providers. You can get consultation notes, hospital discharge summaries, outpatient clinic notes and more.",
     icon: "file-waveform",
-    component: "ClinicalDocumentTimelineComponent",
+    component: ClinicalDocumentTimelineComponent,
     eventName: "document",
     moduleName: "ClinicalDocument",
 });
@@ -133,7 +145,7 @@ entryTypeMap.set(EntryType.HospitalVisit, {
     description:
         "View a list of your hospital visits. You can get the admission and discharge dates, location and provider for each visit.",
     icon: "house-medical",
-    component: "HospitalVisitTimelineComponent",
+    component: HospitalVisitTimelineComponent,
     eventName: "hospital_visits",
     moduleName: "HospitalVisit",
 });
@@ -144,7 +156,7 @@ entryTypeMap.set(EntryType.DiagnosticImaging, {
     name: "Imaging Reports",
     description: "Get imaging reports for X-rays, MRIs, ultrasounds and more.",
     icon: "x-ray",
-    component: "DiagnosticImagingTimelineComponent",
+    component: DiagnosticImagingTimelineComponent,
     eventName: "diagnostic_imaging",
     moduleName: "DiagnosticImaging",
 });

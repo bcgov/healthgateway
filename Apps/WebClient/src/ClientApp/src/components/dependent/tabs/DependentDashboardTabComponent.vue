@@ -1,4 +1,4 @@
-<script lang="ts">
+<script setup lang="ts">
 import { library } from "@fortawesome/fontawesome-svg-core";
 import {
     faCheckCircle,
@@ -6,138 +6,107 @@ import {
     faDownload,
 } from "@fortawesome/free-solid-svg-icons";
 import saveAs from "file-saver";
-import Vue from "vue";
-import { Component, Prop, Ref, Watch } from "vue-property-decorator";
-import { Action, Getter } from "vuex-class";
+import { computed, ref, watch } from "vue";
+import { useRouter, useStore } from "vue-composition-wrapper";
 
 import LoadingComponent from "@/components/LoadingComponent.vue";
 import MessageModalComponent from "@/components/modal/MessageModalComponent.vue";
 import type { WebClientConfiguration } from "@/models/configData";
-import CovidVaccineRecord from "@/models/covidVaccineRecord";
 import type { Dependent } from "@/models/dependent";
 import { LoadStatus } from "@/models/storeOperations";
 import VaccineRecordState from "@/models/vaccineRecordState";
-import container from "@/plugins/container";
-import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import { ILogger } from "@/services/interfaces";
 import SnowPlow from "@/utility/snowPlow";
 
 library.add(faCheckCircle, faChevronRight, faDownload);
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const options: any = {
-    components: {
-        LoadingComponent,
-        MessageModalComponent,
-    },
-};
-
-@Component(options)
-export default class DependentDashboardTabComponent extends Vue {
-    @Prop({ required: true })
-    private dependent!: Dependent;
-
-    @Getter("webClient", { namespace: "config" })
-    config!: WebClientConfiguration;
-
-    @Getter("authenticatedVaccineRecordState", {
-        namespace: "vaccinationStatus",
-    })
-    getVaccineRecordState!: (hdid: string) => VaccineRecordState;
-
-    @Action("retrieveAuthenticatedVaccineRecord", {
-        namespace: "vaccinationStatus",
-    })
-    retrieveAuthenticatedVaccineRecord!: (params: {
-        hdid: string;
-    }) => Promise<CovidVaccineRecord>;
-
-    @Action("stopAuthenticatedVaccineRecordDownload", {
-        namespace: "vaccinationStatus",
-    })
-    stopAuthenticatedVaccineRecordDownload!: (params: { hdid: string }) => void;
-
-    @Ref("sensitivedocumentDownloadModal")
-    readonly sensitiveDocumentDownloadModal!: MessageModalComponent;
-
-    @Ref("vaccineRecordResultModal")
-    readonly vaccineRecordResultModal!: MessageModalComponent;
-
-    @Watch("vaccineRecordState")
-    private watchVaccineRecordState(): void {
-        if (this.vaccineRecordState.resultMessage.length > 0) {
-            this.vaccineRecordResultModal.showModal();
-        }
-
-        if (
-            this.vaccineRecordState.record !== undefined &&
-            this.vaccineRecordState.status === LoadStatus.LOADED &&
-            this.vaccineRecordState.download
-        ) {
-            const mimeType = this.vaccineRecordState.record.document.mediaType;
-            const downloadLink = `data:${mimeType};base64,${this.vaccineRecordState.record.document.data}`;
-            fetch(downloadLink).then((res) => {
-                res.blob().then((blob) => saveAs(blob, "VaccineProof.pdf"));
-            });
-            this.stopAuthenticatedVaccineRecordDownload({
-                hdid: this.dependent.ownerId,
-            });
-        }
-    }
-
-    private logger!: ILogger;
-
-    get isVaccineRecordDownloading(): boolean {
-        return this.vaccineRecordState.status === LoadStatus.REQUESTED;
-    }
-
-    get showFederalProofOfVaccination(): boolean {
-        return this.config.featureToggleConfiguration.homepage
-            .showFederalProofOfVaccination;
-    }
-
-    get vaccineRecordStatusMessage(): string {
-        return this.vaccineRecordState.statusMessage;
-    }
-
-    get vaccineRecordResultMessage(): string {
-        return this.vaccineRecordState.resultMessage;
-    }
-
-    private created(): void {
-        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-    }
-
-    private get vaccineRecordState(): VaccineRecordState {
-        return this.getVaccineRecordState(this.dependent.ownerId);
-    }
-
-    private handleClickHealthRecordsButton(): void {
-        SnowPlow.trackEvent({
-            action: "click",
-            text: "dependent_all_records",
-        });
-        this.$router.push({
-            path: `/dependents/${this.dependent.ownerId}/timeline`,
-        });
-    }
-
-    private handleFederalProofOfVaccinationDownload(): void {
-        this.logger.debug(`Handle federal proof of vaccination download`);
-        SnowPlow.trackEvent({
-            action: "click_button",
-            text: "Dependent_Proof",
-        });
-        this.retrieveAuthenticatedVaccineRecord({
-            hdid: this.dependent.ownerId,
-        });
-    }
-
-    private showSensitiveDocumentDownloadModal(): void {
-        this.sensitiveDocumentDownloadModal.showModal();
-    }
+interface Props {
+    dependent: Dependent;
 }
+const props = defineProps<Props>();
+
+const router = useRouter();
+const store = useStore();
+
+const sensitiveDocumentDownloadModal = ref<MessageModalComponent>();
+const vaccineRecordResultModal = ref<MessageModalComponent>();
+
+const config = computed<WebClientConfiguration>(
+    () => store.getters["config/webClient"]
+);
+const vaccineRecordState = computed<VaccineRecordState>(() =>
+    store.getters["vaccinationStatus/authenticatedVaccineRecordState"](
+        props.dependent.ownerId
+    )
+);
+const isVaccineRecordDownloading = computed(
+    () => vaccineRecordState.value.status === LoadStatus.REQUESTED
+);
+const showFederalProofOfVaccination = computed(
+    () =>
+        config.value.featureToggleConfiguration.homepage
+            .showFederalProofOfVaccination
+);
+const vaccineRecordStatusMessage = computed(
+    () => vaccineRecordState.value.statusMessage
+);
+const vaccineRecordResultMessage = computed(
+    () => vaccineRecordState.value.resultMessage
+);
+
+function retrieveAuthenticatedVaccineRecord(hdid: string): void {
+    store.dispatch("vaccinationStatus/retrieveAuthenticatedVaccineRecord", {
+        hdid,
+    });
+}
+
+function stopAuthenticatedVaccineRecordDownload(hdid: string): void {
+    store.dispatch("vaccinationStatus/stopAuthenticatedVaccineRecordDownload", {
+        hdid,
+    });
+}
+
+function handleClickHealthRecordsButton(): void {
+    SnowPlow.trackEvent({
+        action: "click",
+        text: "dependent_all_records",
+    });
+    router.push({
+        path: `/dependents/${props.dependent.ownerId}/timeline`,
+    });
+}
+
+function handleFederalProofOfVaccinationDownload(): void {
+    SnowPlow.trackEvent({
+        action: "click_button",
+        text: "Dependent_Proof",
+    });
+    retrieveAuthenticatedVaccineRecord(props.dependent.ownerId);
+}
+
+function showSensitiveDocumentDownloadModal(): void {
+    sensitiveDocumentDownloadModal.value?.showModal();
+}
+
+watch(vaccineRecordState, () => {
+    if (vaccineRecordState.value.resultMessage.length > 0) {
+        vaccineRecordResultModal.value?.showModal();
+    }
+
+    if (
+        vaccineRecordState.value.record !== undefined &&
+        vaccineRecordState.value.status === LoadStatus.LOADED &&
+        vaccineRecordState.value.download
+    ) {
+        const mimeType = vaccineRecordState.value.record.document.mediaType;
+        const downloadLink = `data:${mimeType};base64,${vaccineRecordState.value.record.document.data}`;
+        fetch(downloadLink).then((res) => {
+            res.blob().then((blob) => saveAs(blob, "VaccineProof.pdf"));
+        });
+        stopAuthenticatedVaccineRecordDownload(props.dependent.ownerId);
+    }
+});
 </script>
+
 <template>
     <div>
         <LoadingComponent
@@ -196,7 +165,7 @@ export default class DependentDashboardTabComponent extends Vue {
             </b-col>
         </b-row>
         <MessageModalComponent
-            ref="sensitivedocumentDownloadModal"
+            ref="sensitiveDocumentDownloadModal"
             title="Sensitive Document Download"
             message="The file that you are downloading contains personal information. If you are on a public computer, please ensure that the file is deleted before you log off."
             @submit="handleFederalProofOfVaccinationDownload"
