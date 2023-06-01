@@ -12,7 +12,7 @@
                 hidden="@(!IsLoading)"
                 Color="Color.Primary"
                 Indeterminate="true"
-                data-testid="block-access-loader"/>
+                data-testid="block-access-loader" />
             <MudCardContent Class="d-flex">
                 <MudText Class="mt-2" Typo="Typo.subtitle1">
                     Dataset/Service Block
@@ -30,12 +30,13 @@
                                 Color="Color.Success"
                                 Checked="@IsBlocked(dataSource)"
                                 CheckedChanged="@(e => ToggleDataSource(dataSource))"
+                                ReadOnly="@(!CanEdit)"
                                 data-testid="@("block-access-switch-" + dataSource)" />
                         </MudItem>
                     }
                 </MudGrid>
             </MudCardContent>
-            @if (IsDirty)
+            @if (IsDirty && CanEdit)
             {
                 <MudCardContent Class="d-flex justify-end align-center">
                     <MudButton
