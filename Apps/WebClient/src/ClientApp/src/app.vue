@@ -54,6 +54,7 @@ import ResourceCentreComponent from "@/components/ResourceCentreComponent.vue";
 import { AppErrorType } from "@/constants/errorType";
 import Process, { EnvironmentType } from "@/constants/process";
 import ScreenWidth from "@/constants/screenWidth";
+import Eventbus, { EventMessageName } from "@/eventbus";
 import type { WebClientConfiguration } from "@/models/configData";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
@@ -261,6 +262,10 @@ function currentPathMatches(...paths: string[]): boolean {
     return paths.some((path) => path === currentPath);
 }
 
+function releaseTicketBeforeUnloadListener(): void {
+    store.dispatch("waitlist/releaseTicket");
+}
+
 watch(oidcIsAuthenticated, (value: boolean) => {
     // enable idle detector when authenticated and disable when not
     if (value) {
@@ -283,10 +288,25 @@ onBeforeUnmount(() => {
     window.removeEventListener("resize", onResize);
 });
 
+// Created hook
 logger.debug(`Node ENV: ${Process.NODE_ENV}; host: ${host.value}`);
 logger.debug(
     `VUE Config Integrity Environment Variable: ${process.env.VUE_APP_CONFIG_INTEGRITY}`
 );
+Eventbus.$on(EventMessageName.RegisterBeforeUnloadWaitlistListener, () => {
+    logger.debug("Waitlist - ticket unload listener registered.");
+    window.addEventListener("beforeunload", releaseTicketBeforeUnloadListener);
+});
+
+Eventbus.$on(EventMessageName.UnregisterBeforeUnloadWaitlistListener, () => {
+    logger.debug("Waitlist - ticket unload listener unregistered.");
+    window.removeEventListener(
+        "beforeunload",
+        releaseTicketBeforeUnloadListener
+    );
+});
+// Initial binding of the ticket release listener
+Eventbus.$emit(EventMessageName.RegisterBeforeUnloadWaitlistListener);
 </script>
 
 <template>

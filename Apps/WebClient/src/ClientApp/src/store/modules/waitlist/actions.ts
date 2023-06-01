@@ -51,9 +51,11 @@ export const actions: WaitlistActions = {
             clearTimeout(checkInTimeoutId);
         }
         const ticket = params.ticket ?? context.state.ticket;
-        logger.debug(`Waitlist - Ticket: ${JSON.stringify(ticket)}`);
         return new Promise((resolve) => {
-            if (ticket !== undefined) {
+            if (ticket === undefined) {
+                logger.debug(`Waitlist - Ticket undefined`);
+                resolve();
+            } else {
                 const now = new Date().getTime();
                 const checkInAfter = ticket.checkInAfter * 1000;
                 const timeout = Math.max(0, checkInAfter - now);
