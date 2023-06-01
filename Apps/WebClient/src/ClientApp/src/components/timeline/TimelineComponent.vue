@@ -524,7 +524,7 @@ function setDateGroupRef(
 }
 
 function focusOnDate(date: IDateWrapper): void {
-    const dateEpoch = date.fromEpoch();
+    const dateEpoch = date.fromEpoch().toString();
     const container = dateRefs.value.get(dateEpoch);
     container?.querySelector("button")?.focus();
 }

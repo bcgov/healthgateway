@@ -60,10 +60,10 @@ export interface IDateWrapper {
     toJSDate(): Date;
 
     /**
-     * Gives the number of milliseconds since the Unix Epoch as a string.
-     * @returns string representation of the milliseconds since the epoch
+     * Gives the number of milliseconds since the Unix epoch.
+     * @returns the number milliseconds since the Unix epoch
      */
-    fromEpoch(): string;
+    fromEpoch(): number;
 
     /**
      * Gets the year.
@@ -101,7 +101,7 @@ export interface IDateWrapper {
      * @param unit (optional) unit of comparision (year, hour, minute, second...)
      * @returns the difference with the Duration object
      */
-    diff(other: DateWrapper, unit?: DurationUnit): Duration;
+    diff(other: IDateWrapper, unit?: DurationUnit): Duration;
 
     /**
      * Checks if two dates are the same. Can use a provided unit of time.
@@ -109,35 +109,35 @@ export interface IDateWrapper {
      * @param unit (optional) Unit of time to compare
      * @returns True if they are the same date, false otherwise
      */
-    isSame(other: DateWrapper, unit?: DurationUnit): boolean;
+    isSame(other: IDateWrapper, unit?: DurationUnit): boolean;
 
     /**
      * Checks if this date is before the parameter date
      * @param other Date to compare against
      * @returns True if this date is before passed date, false otherwise.
      */
-    isBefore(other: DateWrapper): boolean;
+    isBefore(other: IDateWrapper): boolean;
 
     /**
      * Checks if this date is before or same the parameter date
      * @param other Date to compare against
      * @returns True if this date is before or same as passed date, false otherwise.
      */
-    isBeforeOrSame(other: DateWrapper): boolean;
+    isBeforeOrSame(other: IDateWrapper): boolean;
 
     /**
      * Checks if this date is after the parameter date
      * @param other Date to compare against
      * @returns True if this date is after the passed date, false otherwise
      */
-    isAfter(other: DateWrapper): boolean;
+    isAfter(other: IDateWrapper): boolean;
 
     /**
      * Checks if this date is after or same the parameter date
      * @param other Date to compare against
      * @returns True if this date is after or same as the passed date, false otherwise
      */
-    isAfterOrSame(other: DateWrapper): boolean;
+    isAfterOrSame(other: IDateWrapper): boolean;
 
     /**
      * Gives the start of the date for the given unit.
@@ -331,8 +331,8 @@ export class DateWrapper implements IDateWrapper {
     }
 
     /** {@inheritDoc IDateWrapper.fromEpoch} */
-    public fromEpoch(): string {
-        return this.internalDate.valueOf().toString();
+    public fromEpoch(): number {
+        return this.internalDate.valueOf();
     }
 
     /** {@inheritDoc IDateWrapper.year} */
@@ -367,39 +367,38 @@ export class DateWrapper implements IDateWrapper {
     }
 
     /** {@inheritDoc IDateWrapper.diff} */
-    public diff(other: DateWrapper, unit?: DurationUnit): Duration {
-        return this.internalDate.diff(other.internalDate, unit);
+    public diff(other: IDateWrapper, unit?: DurationUnit): Duration {
+        return this.internalDate.diff(DateWrapper.getDateTime(other), unit);
     }
 
     /** {@inheritDoc IDateWrapper.isSame} */
-    public isSame(other: DateWrapper, unit?: DurationUnit): boolean {
+    public isSame(other: IDateWrapper, unit?: DurationUnit): boolean {
         if (unit) {
-            return this.internalDate.hasSame(other.internalDate, unit);
+            const otherDate = DateWrapper.getDateTime(other);
+            return this.internalDate.hasSame(otherDate, unit);
         } else {
-            return (
-                this.internalDate.toMillis() === other.internalDate.toMillis()
-            );
+            return this.fromEpoch() === other.fromEpoch();
         }
     }
 
     /** {@inheritDoc IDateWrapper.isBefore} */
-    public isBefore(other: DateWrapper): boolean {
-        return this.internalDate.toMillis() < other.internalDate.toMillis();
+    public isBefore(other: IDateWrapper): boolean {
+        return this.fromEpoch() < other.fromEpoch();
     }
 
     /** {@inheritDoc IDateWrapper.isBeforeOrSame} */
-    public isBeforeOrSame(other: DateWrapper): boolean {
-        return this.internalDate.toMillis() <= other.internalDate.toMillis();
+    public isBeforeOrSame(other: IDateWrapper): boolean {
+        return this.fromEpoch() <= other.fromEpoch();
     }
 
     /** {@inheritDoc IDateWrapper.isAfter} */
-    public isAfter(other: DateWrapper): boolean {
-        return this.internalDate.toMillis() > other.internalDate.toMillis();
+    public isAfter(other: IDateWrapper): boolean {
+        return this.fromEpoch() > other.fromEpoch();
     }
 
     /** {@inheritDoc IDateWrapper.isAfterOrSame} */
-    public isAfterOrSame(other: DateWrapper): boolean {
-        return this.internalDate.toMillis() >= other.internalDate.toMillis();
+    public isAfterOrSame(other: IDateWrapper): boolean {
+        return this.fromEpoch() >= other.fromEpoch();
     }
 
     /** {@inheritDoc IDateWrapper.startOf} */
@@ -423,5 +422,18 @@ export class DateWrapper implements IDateWrapper {
     /** {@inheritDoc IDateWrapper.isInDST} */
     public isInDST(): boolean {
         return this._internal_date.isInDST;
+    }
+
+    /**
+     * Retrieves an immutable luxon DateTime object set to the same time as the given date wrapper.
+     * @param wrapper the date wrapper
+     * @returns an immutable luxon DateTime object set to the same time as the given date wrapper
+     */
+    private static getDateTime(wrapper: IDateWrapper): DateTime {
+        if (wrapper instanceof DateWrapper) {
+            return wrapper.internalDate;
+        } else {
+            return DateTime.fromMillis(wrapper.fromEpoch());
+        }
     }
 }
