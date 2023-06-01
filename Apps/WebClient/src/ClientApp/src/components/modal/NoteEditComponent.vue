@@ -1,14 +1,12 @@
-<script lang="ts">
+<script setup lang="ts">
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faEdit } from "@fortawesome/free-solid-svg-icons";
-import Vue from "vue";
-import { Component } from "vue-property-decorator";
-import { required } from "vuelidate/lib/validators";
-import { Validation } from "vuelidate/vuelidate";
-import { Action, Getter } from "vuex-class";
+import { BaseValidation, useVuelidate } from "@vuelidate/core";
+import { required } from "@vuelidate/validators";
+import { computed, nextTick, ref, watch } from "vue";
+import { useStore } from "vue-composition-wrapper";
 
 import DatePickerComponent from "@/components/DatePickerComponent.vue";
-import LoadingComponent from "@/components/LoadingComponent.vue";
 import TooManyRequestsComponent from "@/components/TooManyRequestsComponent.vue";
 import EventBus, { EventMessageName } from "@/eventbus";
 import { DateWrapper } from "@/models/dateWrapper";
@@ -19,215 +17,198 @@ import UserNote from "@/models/userNote";
 
 library.add(faEdit);
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const options: any = {
-    components: {
-        LoadingComponent,
-        DatePickerComponent,
-        TooManyRequestsComponent,
+const defaultDateString = new DateWrapper().toISODate();
+const unsavedChangesText =
+    "You have unsaved changes. Are you sure you want to leave?";
+
+const store = useStore();
+
+const entry = ref<NoteTimelineEntry>();
+const text = ref("");
+const title = ref("");
+const dateString = ref(defaultDateString);
+const isSaving = ref(false);
+const errorMessage = ref("");
+const isVisible = ref(false);
+const isNewNote = ref(true);
+const isDateStringValidDate = ref(true);
+
+const user = computed<User>(() => store.getters["user/user"]);
+const isIdleWarningVisible = computed<boolean>(
+    () => store.getters["idle/isVisible"]
+);
+
+const modalTitle = computed(() =>
+    isNewNote.value ? "Add Note" : "Update Note"
+);
+const isBlankNote = computed(() => text.value === "" && title.value === "");
+
+const validations = computed(() => ({
+    title: {
+        required,
     },
-};
+    dateString: {
+        required,
+    },
+}));
 
-@Component(options)
-export default class NoteEditComponent extends Vue {
-    @Action("createNote", { namespace: "note" })
-    createNote!: (params: {
-        hdid: string;
-        note: UserNote;
-    }) => Promise<UserNote>;
+const v$ = useVuelidate(validations, { title, dateString });
 
-    @Action("updateNote", { namespace: "note" })
-    updateNote!: (params: {
-        hdid: string;
-        note: UserNote;
-    }) => Promise<UserNote>;
+function createNote(hdid: string, note: UserNote): Promise<UserNote> {
+    return store.dispatch("note/createNote", { hdid, note });
+}
 
-    @Action("setSelectedDate", { namespace: "timeline" })
-    setSelectedDate!: (date: DateWrapper) => void;
+function updateNote(hdid: string, note: UserNote): Promise<UserNote> {
+    return store.dispatch("note/updateNote", { hdid, note });
+}
 
-    @Action("setTooManyRequestsError", { namespace: "errorBanner" })
-    setTooManyRequestsError!: (params: { key: string }) => void;
+function setSelectedDate(date: DateWrapper): void {
+    store.dispatch("timeline/setSelectedDate", date);
+}
 
-    @Action("clearFilter", { namespace: "timeline" })
-    clearFilter!: () => void;
+function clearFilter(): void {
+    store.dispatch("timeline/clearFilter");
+}
 
-    @Getter("user", { namespace: "user" })
-    user!: User;
+function setTooManyRequestsError(key: string): void {
+    store.dispatch("errorBanner/setTooManyRequestsError", { key });
+}
 
-    @Getter("isVisible", { namespace: "idle" })
-    isIdleWarningVisible!: boolean;
-
-    private entry?: NoteTimelineEntry;
-    private text = "";
-    private title = "";
-    private dateString = new DateWrapper().toISODate();
-
-    private isSaving = false;
-    private errorMessage = "";
-    private eventBus = EventBus;
-
-    private isVisible = false;
-
-    private isNewNote = true;
-    private isDateStringValidDate = true;
-
-    private readonly unsavedChangesText =
-        "You have unsaved changes. Are you sure you want to leave?";
-
-    private get modalTitle(): string {
-        return this.isNewNote ? "Add Note" : "Update Note";
-    }
-
-    private get isBlankNote(): boolean {
-        return this.text === "" && this.title === "";
-    }
-
-    private mounted(): void {
-        this.clear();
-        this.eventBus.$on(EventMessageName.EditNote, this.editNote);
-        this.eventBus.$on(EventMessageName.CreateNote, this.newNote);
-
-        window.addEventListener("beforeunload", this.onBrowserClose);
-    }
-
-    private onBrowserClose(event: BeforeUnloadEvent): void {
-        if (this.isVisible && !this.isIdleWarningVisible && !this.isBlankNote) {
-            event.returnValue = this.unsavedChangesText;
-        }
-    }
-
-    private validations(): unknown {
-        return {
-            title: {
-                required,
-            },
-            dateString: {
-                required,
-            },
-        };
-    }
-
-    private isValid(param: Validation): boolean | undefined {
-        return param.$dirty ? !param.$invalid : undefined;
-    }
-
-    public editNote(entry: NoteTimelineEntry): void {
-        this.clear();
-        this.entry = entry;
-        this.text = entry.text;
-        this.title = entry.title;
-        this.dateString = entry.date.toISODate();
-        this.isNewNote = false;
-        this.isVisible = true;
-    }
-
-    public newNote(): void {
-        this.clear();
-        this.isNewNote = true;
-        this.isVisible = true;
-    }
-
-    public hideModal(): void {
-        this.$v.$reset();
-        this.isVisible = false;
-        this.clear();
-    }
-
-    private update(): void {
-        const entry = this.entry as NoteTimelineEntry;
-        this.isSaving = true;
-        this.updateNote({
-            hdid: this.user.hdid,
-            note: {
-                id: entry.id,
-                text: this.text,
-                title: this.title,
-                journalDate: new DateWrapper(this.dateString).toISODate(),
-                version: entry.version as number,
-                hdId: this.user.hdid,
-            },
-        })
-            .then(() => {
-                this.errorMessage = "";
-                this.handleSubmit();
-            })
-            .catch((error: ResultError) => {
-                if (error.statusCode === 429) {
-                    this.setTooManyRequestsError({ key: "noteEditModal" });
-                } else {
-                    this.errorMessage = error.resultMessage;
-                }
-            })
-            .finally(() => {
-                this.isSaving = false;
-            });
-    }
-
-    private create(): void {
-        this.isSaving = true;
-        this.createNote({
-            hdid: this.user.hdid,
-            note: {
-                text: this.text,
-                title: this.title,
-                journalDate: new DateWrapper(this.dateString).toISODate(),
-                hdId: this.user.hdid,
-                version: 0,
-            },
-        })
-            .then((result) => {
-                if (result) {
-                    this.errorMessage = "";
-                    this.onNoteAdded(result);
-                    this.handleSubmit();
-                }
-            })
-            .catch((err: ResultError) => {
-                if (err.statusCode === 429) {
-                    this.setTooManyRequestsError({ key: "noteEditModal" });
-                } else {
-                    this.errorMessage = err.resultMessage;
-                }
-            })
-            .finally(() => {
-                this.isSaving = false;
-            });
-    }
-
-    private onNoteAdded(note: UserNote): void {
-        this.clearFilter();
-        this.setSelectedDate(new DateWrapper(note.journalDate));
-    }
-
-    private handleOk(bvModalEvt: Event): void {
-        // Prevent modal from closing
-        bvModalEvt.preventDefault();
-        this.$v.$touch();
-        if (this.$v.$invalid || !this.isDateStringValidDate) {
-            return;
-        } else if (this.isNewNote) {
-            this.create();
-        } else {
-            this.update();
-        }
-    }
-
-    private handleSubmit(): void {
-        // Hide the modal manually
-        this.$nextTick(() => this.hideModal());
-    }
-
-    private clear(): void {
-        this.entry = undefined;
-        this.text = "";
-        this.title = "";
-        this.dateString = new DateWrapper().toISODate();
-
-        this.isSaving = false;
-        this.errorMessage = "";
-        this.isNewNote = true;
+function onBrowserClose(event: BeforeUnloadEvent): void {
+    if (isVisible.value && !isIdleWarningVisible.value && !isBlankNote.value) {
+        event.returnValue = unsavedChangesText;
     }
 }
+
+function isValid(param: BaseValidation): boolean | undefined {
+    return param.$dirty ? !param.$invalid : undefined;
+}
+
+function editNote(noteTimelineEntry: NoteTimelineEntry): void {
+    clear();
+    entry.value = noteTimelineEntry;
+    text.value = noteTimelineEntry.text;
+    title.value = noteTimelineEntry.title;
+    dateString.value = noteTimelineEntry.date.toISODate();
+    isNewNote.value = false;
+    isVisible.value = true;
+}
+
+function newNote(): void {
+    clear();
+    isNewNote.value = true;
+    isVisible.value = true;
+}
+
+function hideModal(): void {
+    v$.value.$reset();
+    isVisible.value = false;
+    clear();
+}
+
+function update(): void {
+    if (entry.value === undefined) {
+        return;
+    }
+
+    isSaving.value = true;
+    updateNote(user.value.hdid, {
+        id: entry.value.id,
+        text: text.value,
+        title: title.value,
+        journalDate: new DateWrapper(dateString.value).toISODate(),
+        version: entry.value.version as number,
+        hdId: user.value.hdid,
+    })
+        .then(() => {
+            errorMessage.value = "";
+            handleSubmit();
+        })
+        .catch((error: ResultError) => {
+            if (error.statusCode === 429) {
+                setTooManyRequestsError("noteEditModal");
+            } else {
+                errorMessage.value = error.resultMessage;
+            }
+        })
+        .finally(() => {
+            isSaving.value = false;
+        });
+}
+
+function create(): void {
+    isSaving.value = true;
+    createNote(user.value.hdid, {
+        text: text.value,
+        title: title.value,
+        journalDate: new DateWrapper(dateString.value).toISODate(),
+        hdId: user.value.hdid,
+        version: 0,
+    })
+        .then((result) => {
+            if (result) {
+                errorMessage.value = "";
+                onNoteAdded(result);
+                handleSubmit();
+            }
+        })
+        .catch((err: ResultError) => {
+            if (err.statusCode === 429) {
+                setTooManyRequestsError("noteEditModal");
+            } else {
+                errorMessage.value = err.resultMessage;
+            }
+        })
+        .finally(() => {
+            isSaving.value = false;
+        });
+}
+
+function onNoteAdded(note: UserNote): void {
+    clearFilter();
+    setSelectedDate(new DateWrapper(note.journalDate));
+}
+
+function handleOk(bvModalEvt: Event): void {
+    // Prevent modal from closing
+    bvModalEvt.preventDefault();
+    v$.value.$touch();
+    if (v$.value.$invalid || !isDateStringValidDate.value) {
+        return;
+    } else if (isNewNote.value) {
+        create();
+    } else {
+        update();
+    }
+}
+
+async function handleSubmit(): Promise<void> {
+    await nextTick();
+
+    hideModal();
+}
+
+function clear(): void {
+    entry.value = undefined;
+    text.value = "";
+    title.value = "";
+    dateString.value = defaultDateString;
+
+    isSaving.value = false;
+    errorMessage.value = "";
+    isNewNote.value = true;
+}
+
+function touchDate(): void {
+    v$.value.dateString.$touch();
+}
+
+watch(dateString, () => touchDate());
+
+EventBus.$on(EventMessageName.EditNote, editNote);
+EventBus.$on(EventMessageName.CreateNote, newNote);
+
+window.addEventListener("beforeunload", onBrowserClose);
 </script>
 
 <template>
@@ -274,24 +255,24 @@ export default class NoteEditComponent extends Vue {
                         type="text"
                         placeholder="Title"
                         maxlength="100"
-                        :state="isValid($v.title)"
-                        @blur.native="$v.title.$touch()"
+                        :state="isValid(v$.title)"
+                        @blur.native="v$.title.$touch()"
                     />
-                    <b-form-invalid-feedback :state="isValid($v.title)">
+                    <b-form-invalid-feedback :state="isValid(v$.title)">
                         Title is required
                     </b-form-invalid-feedback>
                 </b-col>
                 <b-col class="col-sm-5 col-12 pt-3 pt-sm-0">
                     <DatePickerComponent
                         id="date"
-                        v-model="dateString"
+                        :value="dateString"
                         data-testid="noteDateInput"
-                        :state="isValid($v.dateString)"
-                        @blur="$v.dateString.$touch()"
-                        @change="$v.dateString.$touch()"
+                        :state="isValid(v$.dateString)"
+                        @blur="touchDate()"
                         @is-date-valid="isDateStringValidDate = $event"
+                        @update:value="(value) => (dateString = value)"
                     />
-                    <b-form-invalid-feedback :state="isValid($v.dateString)">
+                    <b-form-invalid-feedback :state="isValid(v$.dateString)">
                         Date is required.
                     </b-form-invalid-feedback>
                 </b-col>
@@ -329,7 +310,7 @@ export default class NoteEditComponent extends Vue {
                         :disabled="
                             isSaving ||
                             !isDateStringValidDate ||
-                            !isValid($v.dateString)
+                            !isValid(v$.dateString)
                         "
                         @click="handleOk"
                         >Save</hg-button

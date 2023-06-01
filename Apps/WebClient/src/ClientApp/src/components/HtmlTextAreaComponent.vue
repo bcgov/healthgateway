@@ -1,8 +1,10 @@
 <script setup lang="ts">
 interface Props {
-    input: string;
+    input?: string;
 }
-defineProps<Props>();
+withDefaults(defineProps<Props>(), {
+    input: "",
+});
 </script>
 
 <template>

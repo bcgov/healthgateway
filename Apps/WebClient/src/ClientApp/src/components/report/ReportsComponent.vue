@@ -62,8 +62,8 @@ const isGeneratingReport = ref(false);
 const reportFormatType = ref(ReportFormatType.PDF);
 const selectedEntryType = ref<EntryType | "">("");
 const reportTypeOptions = ref([{ value: "", text: "Select" }]);
-const selectedStartDate = ref<StringISODate | null>(null);
-const selectedEndDate = ref<StringISODate | null>(null);
+const selectedStartDate = ref<StringISODate>("");
+const selectedEndDate = ref<StringISODate>("");
 const selectedMedicationOptions = ref<string[]>([]);
 const hasRecords = ref(false);
 const reportFilter = ref<ReportFilter>(ReportFilterBuilder.create().build());
@@ -185,8 +185,8 @@ function formatDate(date: string): string {
 }
 
 function clearFilterDates(): void {
-    selectedStartDate.value = null;
-    selectedEndDate.value = null;
+    selectedStartDate.value = "";
+    selectedEndDate.value = "";
     updateFilter();
 }
 
@@ -199,12 +199,8 @@ function clearFilterMedication(medicationName: string): void {
 }
 
 function cancelFilter(): void {
-    selectedStartDate.value = convertEmptyStringDateToNull(
-        reportFilter.value.startDate
-    );
-    selectedEndDate.value = convertEmptyStringDateToNull(
-        reportFilter.value.endDate
-    );
+    selectedStartDate.value = reportFilter.value.startDate || "";
+    selectedEndDate.value = reportFilter.value.endDate || "";
     selectedMedicationOptions.value = reportFilter.value.medications;
 }
 
@@ -454,10 +450,13 @@ for (const [entryType] of reportComponentMap) {
                         <label for="start-date">From</label>
                         <DatePickerComponent
                             id="start-date"
-                            v-model="selectedStartDate"
+                            :value="selectedStartDate"
                             data-testid="startDateInput"
                             @is-date-valid="
                                 isReportFilterStartDateValidDate = $event
+                            "
+                            @update:value="
+                                (value) => (selectedStartDate = value)
                             "
                         />
                     </b-col>
@@ -465,11 +464,12 @@ for (const [entryType] of reportComponentMap) {
                         <label for="end-date">To</label>
                         <DatePickerComponent
                             id="end-date"
-                            v-model="selectedEndDate"
+                            :value="selectedEndDate"
                             data-testid="endDateInput"
                             @is-date-valid="
                                 isReportFilterEndDateValidDate = $event
                             "
+                            @update:value="(value) => (selectedEndDate = value)"
                         />
                     </b-col>
                 </b-row>

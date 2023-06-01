@@ -1,10 +1,9 @@
-<script lang="ts">
+<script setup lang="ts">
+import { BaseValidation, useVuelidate } from "@vuelidate/core";
+import { minLength, required, sameAs } from "@vuelidate/validators";
 import { Duration } from "luxon";
-import Vue from "vue";
-import { Component, Emit } from "vue-property-decorator";
-import { minLength, required, sameAs } from "vuelidate/lib/validators";
-import { Validation } from "vuelidate/vuelidate";
-import { Action, Getter } from "vuex-class";
+import { computed, nextTick, ref, watch } from "vue";
+import { useStore } from "vue-composition-wrapper";
 
 import DatePickerComponent from "@/components/DatePickerComponent.vue";
 import LoadingComponent from "@/components/LoadingComponent.vue";
@@ -12,7 +11,7 @@ import TooManyRequestsComponent from "@/components/TooManyRequestsComponent.vue"
 import { ActionType } from "@/constants/actionType";
 import AddDependentRequest from "@/models/addDependentRequest";
 import type { WebClientConfiguration } from "@/models/configData";
-import { DateWrapper } from "@/models/dateWrapper";
+import { DateWrapper, IDateWrapper } from "@/models/dateWrapper";
 import { Dependent } from "@/models/dependent";
 import { ResultError } from "@/models/errors";
 import User from "@/models/user";
@@ -21,174 +20,157 @@ import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { IDependentService } from "@/services/interfaces";
 import PHNValidator from "@/utility/phnValidator";
 
-const validPersonalHealthNumber = (value: string) => {
-    const phn = value.replace(/\D/g, "");
-    return PHNValidator.IsValid(phn);
-};
+const emit = defineEmits<{
+    (e: "handle-submit"): void;
+}>();
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const options: any = {
-    components: {
-        LoadingComponent,
-        DatePickerComponent,
-        TooManyRequestsComponent,
+defineExpose({ showModal });
+
+const maxBirthdate = new DateWrapper();
+
+const dependentService = container.get<IDependentService>(
+    SERVICE_IDENTIFIER.DependentService
+);
+const store = useStore();
+
+const isVisible = ref(false);
+const isLoading = ref(false);
+const isDateOfBirthValid = ref(true);
+const errorMessage = ref("");
+const errorType = ref<ActionType | null>(null);
+const accepted = ref(false);
+const dependent = ref<AddDependentRequest>({
+    firstName: "",
+    lastName: "",
+    dateOfBirth: "",
+    PHN: "",
+});
+
+const user = computed<User>(() => store.getters["user/user"]);
+const webClientConfig = computed<WebClientConfiguration>(
+    () => store.getters["config/webClient"]
+);
+const dependents = computed<Dependent[]>(
+    () => store.getters["dependent/dependents"]
+);
+
+const isError = computed(
+    () => errorType.value !== null || errorMessage.value.length > 0
+);
+const isErrorDataMismatch = computed(
+    () => errorType.value === ActionType.DataMismatch
+);
+const isErrorNoHdid = computed(() => errorType.value === ActionType.NoHdId);
+const isErrorProtected = computed(
+    () => errorType.value === ActionType.Protected
+);
+const isDependentAlreadyAdded = computed(() =>
+    dependents.value.some(
+        (d) =>
+            d.dependentInformation.PHN ===
+            dependent.value.PHN.replace(/\s/g, "")
+    )
+);
+const minBirthdate = computed<IDateWrapper>(() =>
+    new DateWrapper().subtract(
+        Duration.fromObject({ years: webClientConfig.value.maxDependentAge })
+    )
+);
+const validations = computed(() => ({
+    dependent: {
+        firstName: {
+            required,
+        },
+        lastName: {
+            required,
+        },
+        dateOfBirth: {
+            required,
+            minLength: minLength(10),
+            minValue: (value: string) =>
+                new DateWrapper(value).isAfter(minBirthdate.value),
+            maxValue: (value: string) =>
+                new DateWrapper(value).isBefore(new DateWrapper()),
+        },
+        PHN: {
+            required,
+            minLength: minLength(12),
+            validPersonalHealthNumber: (value: string) =>
+                PHNValidator.IsValid(value),
+            isNew: () => !isDependentAlreadyAdded.value,
+        },
     },
-};
+    accepted: { isChecked: sameAs(() => true) },
+}));
 
-@Component(options)
-export default class NewDependentComponent extends Vue {
-    @Getter("user", { namespace: "user" }) user!: User;
+const v$ = useVuelidate(validations, { dependent, accepted });
 
-    @Getter("webClient", { namespace: "config" })
-    webClientConfig!: WebClientConfiguration;
+function setTooManyRequestsError(key: string): void {
+    store.dispatch("errorBanner/setTooManyRequestsError", { key });
+}
 
-    @Action("setTooManyRequestsError", { namespace: "errorBanner" })
-    setTooManyRequestsError!: (params: { key: string }) => void;
+function showModal(): void {
+    isVisible.value = true;
+}
 
-    @Getter("dependents", { namespace: "dependent" })
-    private dependents!: Dependent[];
+function hideModal(): void {
+    isVisible.value = false;
+}
 
-    private dependentService!: IDependentService;
-    private isVisible = false;
-    private isLoading = true;
-    private isDateOfBirthValidDate = true;
-    private errorMessage = "";
-    private errorType: ActionType | null = null;
-    private dependent: AddDependentRequest = {
+function isValid(param: BaseValidation): boolean | undefined {
+    return param.$dirty ? !param.$invalid : undefined;
+}
+
+function handleOk(): void {
+    v$.value.$touch();
+    if (!v$.value.$invalid && isDateOfBirthValid.value) {
+        v$.value.$reset();
+        addDependent();
+    }
+}
+
+function addDependent(): void {
+    dependentService
+        .addDependent(user.value.hdid, {
+            ...dependent.value,
+            PHN: dependent.value.PHN.replace(/\D/g, ""),
+        })
+        .then(async () => {
+            errorType.value = null;
+
+            await nextTick();
+
+            hideModal();
+            emit("handle-submit");
+        })
+        .catch((err: ResultError) => {
+            if (err.statusCode === 429) {
+                setTooManyRequestsError("addDependentModal");
+            } else {
+                errorMessage.value = err.resultMessage;
+                errorType.value = err.actionCode ?? null;
+            }
+        });
+}
+
+function clear(): void {
+    dependent.value = {
         firstName: "",
         lastName: "",
         dateOfBirth: "",
         PHN: "",
     };
-    private accepted = false;
-    private maxDate = new DateWrapper();
-
-    public showModal(): void {
-        this.isVisible = true;
-    }
-
-    public hideModal(): void {
-        this.isVisible = false;
-    }
-
-    @Emit()
-    private handleSubmit(): void {
-        // Hide the modal manually
-        this.$nextTick(() => this.hideModal());
-    }
-
-    private get isError(): boolean {
-        return this.errorType !== null || this.errorMessage.length > 0;
-    }
-
-    private get isErrorDataMismatch(): boolean {
-        return this.errorType === ActionType.DataMismatch;
-    }
-
-    private get isErrorNoHdid(): boolean {
-        return this.errorType === ActionType.NoHdId;
-    }
-
-    private get isErrorProtected(): boolean {
-        return this.errorType === ActionType.Protected;
-    }
-
-    private get isDependentAlreadyAdded(): boolean {
-        return this.dependents.some(
-            (d) =>
-                d.dependentInformation.PHN ===
-                this.dependent.PHN.replace(/\s/g, "")
-        );
-    }
-
-    private get minBirthdate(): DateWrapper {
-        return new DateWrapper().subtract(
-            Duration.fromObject({ years: this.webClientConfig.maxDependentAge })
-        );
-    }
-
-    private created(): void {
-        this.dependentService = container.get<IDependentService>(
-            SERVICE_IDENTIFIER.DependentService
-        );
-        this.isLoading = false;
-    }
-
-    private validations(): unknown {
-        return {
-            dependent: {
-                firstName: {
-                    required,
-                },
-                lastName: {
-                    required,
-                },
-                dateOfBirth: {
-                    required,
-                    minLength: minLength(10),
-                    minValue: (value: string) =>
-                        new DateWrapper(value).isAfter(this.minBirthdate),
-                    maxValue: (value: string) =>
-                        new DateWrapper(value).isBefore(new DateWrapper()),
-                },
-                PHN: {
-                    required,
-                    minLength: minLength(12),
-                    validPersonalHealthNumber,
-                    isNew: () => !this.isDependentAlreadyAdded,
-                },
-            },
-            accepted: { isChecked: sameAs(() => true) },
-        };
-    }
-
-    private isValid(param: Validation): boolean | undefined {
-        return param.$dirty ? !param.$invalid : undefined;
-    }
-
-    private handleOk(bvModalEvt: Event): void {
-        // Prevent modal from closing
-        bvModalEvt.preventDefault();
-        this.$v.$touch();
-        if (!this.$v.$invalid && this.isDateOfBirthValidDate) {
-            this.$v.$reset();
-            this.addDependent();
-        }
-    }
-
-    private addDependent(): void {
-        this.dependentService
-            .addDependent(this.user.hdid, {
-                ...this.dependent,
-                PHN: this.dependent.PHN.replace(/\D/g, ""),
-            })
-            .then(() => {
-                this.errorType = null;
-                this.handleSubmit();
-            })
-            .catch((err: ResultError) => {
-                if (err.statusCode === 429) {
-                    this.setTooManyRequestsError({ key: "addDependentModal" });
-                } else {
-                    this.errorMessage = err.resultMessage;
-                    this.errorType = err.actionCode ?? null;
-                }
-            });
-    }
-
-    private clear(): void {
-        this.dependent = {
-            firstName: "",
-            lastName: "",
-            dateOfBirth: "",
-            PHN: "",
-        };
-        this.accepted = false;
-        this.errorMessage = "";
-        this.errorType = null;
-        this.$v.$reset();
-    }
+    accepted.value = false;
+    errorMessage.value = "";
+    errorType.value = null;
+    v$.value.$reset();
 }
+
+function touchDateOfBirth(): void {
+    v$.value.dependent.dateOfBirth.$touch();
+}
+
+watch(() => dependent.value.dateOfBirth, touchDateOfBirth);
 </script>
 
 <template>
@@ -256,11 +238,11 @@ export default class NewDependentComponent extends Vue {
                         data-testid="firstNameInput"
                         class="dependentCardInput"
                         placeholder="John Alexander"
-                        :state="isValid($v.dependent.firstName)"
-                        @blur.native="$v.dependent.firstName.$touch()"
+                        :state="isValid(v$.dependent.firstName)"
+                        @blur.native="v$.dependent.firstName.$touch()"
                     />
                     <b-form-invalid-feedback
-                        :state="isValid($v.dependent.firstName)"
+                        :state="isValid(v$.dependent.firstName)"
                     >
                         Given names are required
                     </b-form-invalid-feedback>
@@ -273,11 +255,11 @@ export default class NewDependentComponent extends Vue {
                         data-testid="lastNameInput"
                         class="dependentCardInput"
                         placeholder="Doe"
-                        :state="isValid($v.dependent.lastName)"
-                        @blur.native="$v.dependent.lastName.$touch()"
+                        :state="isValid(v$.dependent.lastName)"
+                        @blur.native="v$.dependent.lastName.$touch()"
                     />
                     <b-form-invalid-feedback
-                        :state="isValid($v.dependent.lastName)"
+                        :state="isValid(v$.dependent.lastName)"
                     >
                         Last name is required
                     </b-form-invalid-feedback>
@@ -286,28 +268,30 @@ export default class NewDependentComponent extends Vue {
                     <label for="dateOfBirth">Date of Birth</label>
                     <DatePickerComponent
                         id="dateOfBirth"
-                        v-model="dependent.dateOfBirth"
+                        :value="dependent.dateOfBirth"
                         data-testid="dateOfBirthInput"
-                        :max-date="maxDate"
-                        :state="isValid($v.dependent.dateOfBirth)"
-                        @blur.native="$v.dependent.dateOfBirth.$touch()"
-                        @change.native="$v.dependent.dateOfBirth.$touch()"
-                        @is-date-valid="isDateOfBirthValidDate = $event"
+                        :max-date="maxBirthdate"
+                        :state="isValid(v$.dependent.dateOfBirth)"
+                        @blur="touchDateOfBirth()"
+                        @is-date-valid="isDateOfBirthValid = $event"
+                        @update:value="
+                            (value) => (dependent.dateOfBirth = value)
+                        "
                     />
                     <b-form-invalid-feedback
                         :state="
-                            !$v.dependent.dateOfBirth.$dirty ||
-                            ($v.dependent.dateOfBirth.required &&
-                                $v.dependent.dateOfBirth.minLength &&
-                                $v.dependent.dateOfBirth.maxValue)
+                            !v$.dependent.dateOfBirth.$dirty ||
+                            (v$.dependent.dateOfBirth.required &&
+                                v$.dependent.dateOfBirth.minLength &&
+                                v$.dependent.dateOfBirth.maxValue)
                         "
                     >
                         Invalid date
                     </b-form-invalid-feedback>
                     <b-form-invalid-feedback
                         :state="
-                            !$v.dependent.dateOfBirth.$dirty ||
-                            $v.dependent.dateOfBirth.minValue
+                            !v$.dependent.dateOfBirth.$dirty ||
+                            v$.dependent.dateOfBirth.minValue
                         "
                     >
                         Dependent must be under the age of
@@ -323,19 +307,19 @@ export default class NewDependentComponent extends Vue {
                         data-testid="phnInput"
                         class="dependentCardInput"
                         placeholder="1234 567 890"
-                        :state="isValid($v.dependent.PHN)"
-                        @blur.native="$v.dependent.PHN.$touch()"
+                        :state="isValid(v$.dependent.PHN)"
+                        @blur.native="v$.dependent.PHN.$touch()"
                     />
                     <b-form-invalid-feedback
                         v-if="!isDependentAlreadyAdded"
-                        :state="isValid($v.dependent.PHN)"
+                        :state="isValid(v$.dependent.PHN)"
                     >
                         Valid PHN is required
                     </b-form-invalid-feedback>
                     <b-form-invalid-feedback
                         v-if="isDependentAlreadyAdded"
                         data-testid="errorDependentAlreadyAdded"
-                        :state="isValid($v.dependent.PHN)"
+                        :state="isValid(v$.dependent.PHN)"
                     >
                         This dependent has already been added
                     </b-form-invalid-feedback>
@@ -345,7 +329,7 @@ export default class NewDependentComponent extends Vue {
                 id="termsCheckbox"
                 v-model="accepted"
                 data-testid="termsCheckbox"
-                :state="isValid($v.accepted)"
+                :state="isValid(v$.accepted)"
             >
                 <p>
                     By providing the child’s name, date of birth, and personal
@@ -379,7 +363,7 @@ export default class NewDependentComponent extends Vue {
                     <hg-button
                         data-testid="registerDependentBtn"
                         variant="primary"
-                        @click="handleOk"
+                        @click.prevent="handleOk"
                         >Register Dependent</hg-button
                     >
                 </div>

@@ -189,10 +189,6 @@ const routes = [
     {
         path: REGISTRATION_PATH,
         component: RegistrationView,
-        props: (route: Route) => ({
-            inviteKey: route.query.inviteKey,
-            inviteEmail: route.query.email,
-        }),
         meta: {
             validStates: [UserState.notRegistered],
             requiresProcessedWaitlistTicket: true,
