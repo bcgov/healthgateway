@@ -17,7 +17,6 @@ namespace HealthGateway.AccountDataAccess.Patient
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
@@ -26,7 +25,6 @@ namespace HealthGateway.AccountDataAccess.Patient
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
-    using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
 
     /// <summary>
@@ -46,12 +44,10 @@ namespace HealthGateway.AccountDataAccess.Patient
         /// Initializes a new instance of the <see cref="PatientRepository"/> class.
         /// </summary>
         /// <param name="logger">The service Logger.</param>
-        /// <param name="configuration">The Configuration to use.</param>
         /// <param name="blockedAccessDelegate">The injected blocked access delegate.</param>
         /// <param name="authenticationDelegate">The injected authentication delegate.</param>
         /// <param name="patientQueryFactory">The injected patient query factory.</param>
         public PatientRepository(
-            IConfiguration configuration,
             ILogger<PatientRepository> logger,
             IBlockedAccessDelegate blockedAccessDelegate,
             IAuthenticationDelegate authenticationDelegate,
@@ -62,8 +58,6 @@ namespace HealthGateway.AccountDataAccess.Patient
             this.authenticationDelegate = authenticationDelegate;
             this.patientQueryFactory = patientQueryFactory;
         }
-
-        private static ActivitySource Source { get; } = new(nameof(PatientRepository));
 
         /// <inheritdoc/>
         public async Task<PatientQueryResult> Query(PatientQuery query, CancellationToken ct = default)
@@ -93,7 +87,7 @@ namespace HealthGateway.AccountDataAccess.Patient
                 UpdatedBy = authenticatedUserId,
             };
 
-            BlockedAccess? blockedAccess = await this.blockedAccessDelegate.GetBlockedAccessAsync(command.Hdid).ConfigureAwait(true) ?? new()
+            BlockedAccess blockedAccess = await this.blockedAccessDelegate.GetBlockedAccessAsync(command.Hdid).ConfigureAwait(true) ?? new()
             {
                 Hdid = command.Hdid,
                 CreatedBy = authenticatedUserId,

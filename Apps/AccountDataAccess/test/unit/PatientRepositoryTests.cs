@@ -370,7 +370,6 @@ namespace AccountDataAccessTest
             blockedAccessDelegate.Setup(p => p.GetDataSourcesAsync(It.IsAny<string>())).ReturnsAsync(dataSources ?? Enumerable.Empty<DataSource>());
 
             PatientRepository patientRepository = new(
-                GetConfiguration(),
                 new Mock<ILogger<PatientRepository>>().Object,
                 blockedAccessDelegate.Object,
                 new Mock<IAuthenticationDelegate>().Object,
@@ -387,7 +386,6 @@ namespace AccountDataAccessTest
             PatientModel? cachedPatient = null)
         {
             PatientRepository patientRepository = new(
-                GetConfiguration(),
                 new Mock<ILogger<PatientRepository>>().Object,
                 new Mock<IBlockedAccessDelegate>().Object,
                 new Mock<IAuthenticationDelegate>().Object,
