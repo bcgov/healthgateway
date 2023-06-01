@@ -1,4 +1,3 @@
-import { RegistrationStatus } from "@/constants/registrationStatus";
 import { Dictionary } from "@/models/baseTypes";
 import { StringISODate } from "@/models/dateWrapper";
 
@@ -45,8 +44,6 @@ export interface WebClientConfiguration {
     logLevel: string;
     // Gets or sets the Webclient timeout values.
     timeouts: TimeOutsConfiguration;
-    // Gets or sets the Webclient timeout values.
-    registrationStatus: RegistrationStatus;
     // Gets or sets the ExternalURLs used by the Webclient.
     externalURLs: Dictionary<string>;
     // Gets or sets the Module state.

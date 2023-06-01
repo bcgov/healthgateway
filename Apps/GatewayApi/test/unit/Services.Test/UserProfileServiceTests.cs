@@ -28,7 +28,6 @@ namespace HealthGateway.GatewayApiTests.Services.Test
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
-    using HealthGateway.GatewayApi.Constants;
     using HealthGateway.GatewayApi.MapUtils;
     using HealthGateway.GatewayApi.Models;
     using HealthGateway.GatewayApi.Services;
@@ -228,13 +227,9 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         /// <summary>
         /// CreateUserProfile call.
         /// </summary>
-        /// <param name="dbStatus">Db status code.</param>
-        /// <param name="registration">Registration status code.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Theory]
-        [InlineData(DbStatusCode.Created, RegistrationStatus.Open)]
-        [InlineData(DbStatusCode.Error, RegistrationStatus.Closed)]
-        public async Task ShouldInsertUserProfile(DbStatusCode dbStatus, string registration)
+        [Fact]
+        public async Task ShouldInsertUserProfile()
         {
             // Arrange
             UserProfile userProfile = new()
@@ -252,12 +247,11 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             DbResult<UserProfile> userProfileDbResult = new()
             {
                 Payload = userProfile,
-                Status = dbStatus,
+                Status = DbStatusCode.Created,
             };
             Dictionary<string, string?> localConfig = new()
             {
                 { "WebClient:MinPatientAge", "0" },
-                { "WebClient:RegistrationStatus", registration },
             };
             UserProfileServiceMock mockService = new UserProfileServiceMock(GetIConfigurationRoot(localConfig))
                 .SetupUserProfileDelegateMockInsert(userProfile, userProfileDbResult)
@@ -274,17 +268,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 .ConfigureAwait(true);
 
             // Assert
-            if (dbStatus == DbStatusCode.Created && registration == RegistrationStatus.Open)
-            {
-                Assert.Equal(ResultType.Success, actualResult.ResultStatus);
-            }
-
-            if (dbStatus == DbStatusCode.Error && registration == RegistrationStatus.Closed)
-            {
-                Assert.Equal(ResultType.Error, actualResult.ResultStatus);
-                Assert.Equal(ErrorTranslator.InternalError(ErrorType.InvalidState), actualResult.ResultError?.ErrorCode);
-                Assert.Equal("Registration is closed", actualResult.ResultError!.ResultMessage);
-            }
+            Assert.Equal(ResultType.Success, actualResult.ResultStatus);
         }
 
         /// <summary>
