@@ -59,7 +59,7 @@ namespace HealthGateway.JobScheduler.Tasks
                     email => this.dbContext.MessagingVerification.Any(msgVerification => msgVerification.EmailId == email.Id && msgVerification.EmailAddress == null))
                 .ToList();
 
-            this.logger.LogInformation("THe number of emails to copy from Email.To to MessagingVerification.EmailAddress: {Emails}.", emails.Count);
+            this.logger.LogInformation("The number of emails to copy from Email.To to MessagingVerification.EmailAddress: {Emails}.", emails.Count);
 
             int processedCount = 0;
 
