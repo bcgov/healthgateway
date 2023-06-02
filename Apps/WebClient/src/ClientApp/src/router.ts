@@ -546,39 +546,15 @@ async function redirectWhenTicketIsInvalid(
     try {
         if (ticketIsValid(ticket)) {
             logger.debug(`Router - check existing Processed ticket`);
-            const timeoutId = store.getters["waitlist/checkInTimeoutId"];
-            clearTimeout(timeoutId);
-
-            const now = new Date().getTime();
-            const checkInAfter = ticket.checkInAfter * 1000;
-            const timeout = Math.max(0, checkInAfter - now);
-
-            setTimeout(() => {
-                store
-                    .dispatch("waitlist/checkIn")
-                    .catch(() => logger.error(`Error calling checkIn action.`));
-            }, timeout);
+            await store.dispatch("waitlist/scheduleCheckIn");
         } else if (ticket?.status === TicketStatus.Queued) {
             logger.debug(`Router - check existing Queued ticket`);
-            const timeoutId = store.getters["waitlist/checkInTimeoutId"];
-            clearTimeout(timeoutId);
-
-            const now = new Date().getTime();
-            const checkInAfter = ticket.checkInAfter * 1000;
-            const timeout = Math.max(0, checkInAfter - now);
-
-            setTimeout(() => {
-                store.dispatch("waitlist/checkIn").catch(() => {
-                    logger.warn(
-                        `Error calling checkIn action. Get new ticker.`
-                    );
-                    store.dispatch("waitlist/getTicket");
-                });
-            }, timeout);
+            await store.dispatch("waitlist/scheduleCheckIn", {
+                getTicketOnFail: true,
+            });
             next({ path: QUEUE_PATH, query: { redirect: to.path } });
             return;
         } else {
-            logger.debug(`Router - get new ticket`);
             ticket = await store.dispatch("waitlist/getTicket");
 
             if (!ticketIsValid(ticket)) {
