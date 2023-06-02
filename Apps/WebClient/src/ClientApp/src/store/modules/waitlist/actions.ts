@@ -43,13 +43,7 @@ export const actions: WaitlistActions = {
         } = { getTicketOnFail: false }
     ): Promise<void> {
         const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-        const checkInTimeoutId = context.state.checkInTimeoutId;
-        if (checkInTimeoutId) {
-            logger.debug(
-                `Waitlist - Clearing checkIn timeout (${checkInTimeoutId}).`
-            );
-            clearTimeout(checkInTimeoutId);
-        }
+        clearTimeout(context.state.checkInTimeoutId);
         const ticket = params.ticket ?? context.state.ticket;
         return new Promise((resolve) => {
             if (ticket === undefined) {
