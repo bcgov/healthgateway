@@ -91,7 +91,7 @@ namespace HealthGateway.JobScheduler.Tasks
             if (processedCount % this.commitSize == 0)
             {
                 this.dbContext.SaveChanges();
-                this.logger.LogInformation("Saving message verification changes after {Count} email(s) processed.", processedCount);
+                this.logger.LogInformation("Saved message verification changes after {Count} email(s) processed.", processedCount);
             }
         }
     }
