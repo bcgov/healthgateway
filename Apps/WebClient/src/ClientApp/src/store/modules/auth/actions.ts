@@ -1,4 +1,4 @@
-import Eventbus, { EventMessageName } from "@/eventbus";
+import EventBus, { EventMessageName } from "@/eventbus";
 import { OidcTokenDetails } from "@/models/user";
 import container from "@/plugins/container";
 import { DELEGATE_IDENTIFIER, SERVICE_IDENTIFIER } from "@/plugins/inversify";
@@ -45,8 +45,8 @@ export const actions: AuthActions = {
         );
 
         try {
-            Eventbus.$emit(
-                EventMessageName.UnregisterBeforeUnloadWaitlistListener
+            EventBus.$emit(
+                EventMessageName.UnregisterOnBeforeUnloadWaitlistListener
             );
             const tokenDetails = await authService.signIn(
                 params.redirectPath,
@@ -66,8 +66,8 @@ export const actions: AuthActions = {
 
             throw err;
         } finally {
-            Eventbus.$emit(
-                EventMessageName.RegisterBeforeUnloadWaitlistListener
+            EventBus.$emit(
+                EventMessageName.RegisterOnBeforeUnloadWaitlistListener
             );
         }
     },
