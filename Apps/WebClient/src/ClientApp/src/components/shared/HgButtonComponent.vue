@@ -1,85 +1,86 @@
-<script lang="ts">
-import Vue from "vue";
-import { Component, Prop } from "vue-property-decorator";
+<script setup lang="ts">
+import { computed } from "vue";
 
-@Component
-export default class HgButtonComponent extends Vue {
-    @Prop({ required: true }) variant!: string;
-    @Prop({ required: false, default: "" }) size!: string;
-
-    private get classes(): string[] {
-        const result = [];
-
-        switch (this.variant) {
-            case "primary":
-                result.push("hg-button", "hg-primary");
-                break;
-            case "secondary":
-                result.push("hg-button", "hg-secondary");
-                break;
-            case "success":
-                result.push("hg-button", "hg-success");
-                break;
-            case "link":
-                result.push("hg-button", "hg-link");
-                break;
-            case "link-danger":
-                result.push("hg-button", "hg-link hg-link-danger");
-                break;
-            case "icon":
-                result.push("hg-button", "hg-icon");
-                break;
-            case "icon-light":
-                result.push("hg-button", "hg-icon hg-icon-light");
-                break;
-            case "icon-input":
-                result.push("hg-button", "hg-icon hg-icon-input");
-                break;
-            case "icon-input-light":
-                result.push(
-                    "hg-button",
-                    "hg-icon hg-icon-input hg-icon-input-light"
-                );
-                break;
-            case "nav":
-                result.push("hg-button", "hg-nav", "btn-block");
-                break;
-            case "carousel":
-                result.push("hg-button", "hg-carousel");
-                break;
-            case "danger":
-                result.push("hg-button", "hg-danger");
-                break;
-            default:
-                return [];
-        }
-
-        if (this.size === "small") {
-            result.push("hg-small");
-        }
-
-        return result;
-    }
-
-    private get bootstrapVariant(): string {
-        switch (this.variant) {
-            case "primary":
-                return "primary";
-            case "secondary":
-                return "outline-primary";
-            case "success":
-                return "success";
-            case "link":
-                return "link";
-            case "nav":
-                return "nav";
-            case "danger":
-                return "danger";
-            default:
-                return "";
-        }
-    }
+interface Props {
+    variant: string;
+    size?: string;
 }
+const props = withDefaults(defineProps<Props>(), {
+    size: "",
+});
+
+const classes = computed<string[]>(() => {
+    const result = [];
+
+    switch (props.variant) {
+        case "primary":
+            result.push("hg-button", "hg-primary");
+            break;
+        case "secondary":
+            result.push("hg-button", "hg-secondary");
+            break;
+        case "success":
+            result.push("hg-button", "hg-success");
+            break;
+        case "link":
+            result.push("hg-button", "hg-link");
+            break;
+        case "link-danger":
+            result.push("hg-button", "hg-link hg-link-danger");
+            break;
+        case "icon":
+            result.push("hg-button", "hg-icon");
+            break;
+        case "icon-light":
+            result.push("hg-button", "hg-icon hg-icon-light");
+            break;
+        case "icon-input":
+            result.push("hg-button", "hg-icon hg-icon-input");
+            break;
+        case "icon-input-light":
+            result.push(
+                "hg-button",
+                "hg-icon hg-icon-input hg-icon-input-light"
+            );
+            break;
+        case "nav":
+            result.push("hg-button", "hg-nav", "btn-block");
+            break;
+        case "carousel":
+            result.push("hg-button", "hg-carousel");
+            break;
+        case "danger":
+            result.push("hg-button", "hg-danger");
+            break;
+        default:
+            return [];
+    }
+
+    if (props.size === "small") {
+        result.push("hg-small");
+    }
+
+    return result;
+});
+
+const bootstrapVariant = computed<string>(() => {
+    switch (props.variant) {
+        case "primary":
+            return "primary";
+        case "secondary":
+            return "outline-primary";
+        case "success":
+            return "success";
+        case "link":
+            return "link";
+        case "nav":
+            return "nav";
+        case "danger":
+            return "danger";
+        default:
+            return "";
+    }
+});
 </script>
 
 <template>

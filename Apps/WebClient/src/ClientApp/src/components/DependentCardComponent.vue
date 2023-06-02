@@ -118,7 +118,7 @@ const selectedClinicalDocumentRow = ref<ClinicalDocument>();
 
 const reportDownloadModal = ref<MessageModalComponent>();
 const vaccineRecordResultModal = ref<MessageModalComponent>();
-const deleteModal = ref<DeleteModalComponent>();
+const deleteModal = ref<InstanceType<typeof DeleteModalComponent>>();
 
 const user = computed<User>(() => store.getters["user/user"]);
 const webClientConfig = computed<WebClientConfiguration>(
@@ -1757,7 +1757,7 @@ watch(vaccineRecordState, () => {
             :text="vaccineRecordState.statusMessage"
             :full-screen="false"
         />
-        <delete-modal-component
+        <DeleteModalComponent
             ref="deleteModal"
             title="Remove Dependent"
             confirm="Remove Dependent"

@@ -1,19 +1,16 @@
-<script lang="ts">
-import Vue from "vue";
-import { Component, Prop } from "vue-property-decorator";
+<script setup lang="ts">
+interface Props {
+    description: string[];
+    link: string;
+}
+const props = defineProps<Props>();
 
-@Component
-export default class Covid19LaboratoryTestDescriptionComponent extends Vue {
-    @Prop({ required: true }) description!: string[];
-    @Prop({ required: true }) link!: string;
+function isLastEntry(index: number): boolean {
+    return index + 1 === props.description.length;
+}
 
-    private isLastEntry(index: number): boolean {
-        return index + 1 === this.description.length;
-    }
-
-    private shouldDisplayLink(index: number): boolean {
-        return this.isLastEntry(index) && Boolean(this.link);
-    }
+function shouldDisplayLink(index: number): boolean {
+    return isLastEntry(index) && Boolean(props.link);
 }
 </script>
 

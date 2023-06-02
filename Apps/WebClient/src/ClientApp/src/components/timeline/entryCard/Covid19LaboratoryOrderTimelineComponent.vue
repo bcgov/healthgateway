@@ -1,13 +1,13 @@
-<script lang="ts">
+<script setup lang="ts">
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faDownload } from "@fortawesome/free-solid-svg-icons";
 import { saveAs } from "file-saver";
-import Vue from "vue";
-import { Component, Prop, Ref } from "vue-property-decorator";
-import { Action } from "vuex-class";
+import { computed, ref } from "vue";
+import { useStore } from "vue-composition-wrapper";
 
 import Covid19LaboratoryTestDescriptionComponent from "@/components/laboratory/Covid19LaboratoryTestDescriptionComponent.vue";
 import MessageModalComponent from "@/components/modal/MessageModalComponent.vue";
+import EntryCardTimelineComponent from "@/components/timeline/entryCard/EntrycardTimelineComponent.vue";
 import { EntryType, entryTypeMap } from "@/constants/entryType";
 import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import Covid19LaboratoryOrderTimelineEntry from "@/models/covid19LaboratoryOrderTimelineEntry";
@@ -18,140 +18,106 @@ import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ILaboratoryService, ILogger } from "@/services/interfaces";
 import SnowPlow from "@/utility/snowPlow";
 
-import EntryCardTimelineComponent from "./EntrycardTimelineComponent.vue";
-
 library.add(faDownload);
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const options: any = {
-    components: {
-        MessageModalComponent,
-        EntryCard: EntryCardTimelineComponent,
-        Covid19LaboratoryTestDescriptionComponent,
-    },
-};
+interface Props {
+    hdid: string;
+    entry: Covid19LaboratoryOrderTimelineEntry;
+    index: number;
+    datekey: string;
+    isMobileDetails?: boolean;
+    commentsAreEnabled?: boolean;
+}
+const props = withDefaults(defineProps<Props>(), {
+    isMobileDetails: false,
+    commentsAreEnabled: false,
+});
 
-@Component(options)
-export default class Covid19LaboratoryOrderTimelineComponent extends Vue {
-    @Prop({ required: true })
-    hdid!: string;
+const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+const laboratoryService = container.get<ILaboratoryService>(
+    SERVICE_IDENTIFIER.LaboratoryService
+);
+const store = useStore();
 
-    @Prop()
-    entry!: Covid19LaboratoryOrderTimelineEntry;
+const isLoadingDocument = ref(false);
 
-    @Prop()
-    index!: number;
+const sensitiveDocumentModal = ref<MessageModalComponent>();
 
-    @Prop()
-    datekey!: string;
+const entryIcon = computed<string | undefined>(
+    () => entryTypeMap.get(EntryType.Covid19TestResult)?.icon
+);
 
-    @Prop()
-    isMobileDetails!: boolean;
+function addError(
+    errorType: ErrorType,
+    source: ErrorSourceType,
+    traceId: string | undefined
+): void {
+    store.dispatch("errorBanner/addError", { errorType, source, traceId });
+}
 
-    @Prop({ default: false })
-    commentsAreEnabled!: boolean;
+function setTooManyRequestsError(key: string): void {
+    store.dispatch("errorBanner/setTooManyRequestsError", { key });
+}
 
-    @Ref("messageModal")
-    readonly messageModal!: MessageModalComponent;
+function formatDate(date: DateWrapper): string {
+    return date.format("yyyy-MMM-dd, t");
+}
 
-    @Action("addError", { namespace: "errorBanner" })
-    addError!: (params: {
-        errorType: ErrorType;
-        source: ErrorSourceType;
-        traceId: string | undefined;
-    }) => void;
-
-    @Action("setTooManyRequestsError", { namespace: "errorBanner" })
-    setTooManyRequestsError!: (params: { key: string }) => void;
-
-    private laboratoryService!: ILaboratoryService;
-
-    private isLoadingDocument = false;
-    private logger!: ILogger;
-
-    private get entryIcon(): string | undefined {
-        return entryTypeMap.get(EntryType.Covid19TestResult)?.icon;
+function getOutcomeClasses(outcome: string): string[] {
+    switch (outcome?.toUpperCase()) {
+        case "NEGATIVE":
+            return ["text-success"];
+        case "POSITIVE":
+            return ["text-danger"];
+        default:
+            return [];
     }
+}
 
-    private get reportAvailable(): boolean {
-        return this.entry.reportAvailable;
-    }
+function getReport(): void {
+    SnowPlow.trackEvent({
+        action: "download_report",
+        text: "COVID Test PDF",
+    });
 
-    private created(): void {
-        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-        this.laboratoryService = container.get<ILaboratoryService>(
-            SERVICE_IDENTIFIER.LaboratoryService
-        );
-    }
-
-    private formatDate(date: DateWrapper): string {
-        return date.format("yyyy-MMM-dd, t");
-    }
-
-    private getOutcomeClasses(outcome: string): string[] {
-        switch (outcome?.toUpperCase()) {
-            case "NEGATIVE":
-                return ["text-success"];
-            case "POSITIVE":
-                return ["text-danger"];
-            default:
-                return [];
-        }
-    }
-
-    private showConfirmationModal(): void {
-        this.messageModal.showModal();
-    }
-
-    private getReport(): void {
-        SnowPlow.trackEvent({
-            action: "download_report",
-            text: "COVID Test PDF",
+    isLoadingDocument.value = true;
+    laboratoryService
+        .getReportDocument(props.entry.id, props.hdid, true)
+        .then((result) => {
+            const dateString =
+                props.entry.displayDate.format("yyyy_MM_dd-HH_mm");
+            const report = result.resourcePayload;
+            fetch(`data:${report.mediaType};${report.encoding},${report.data}`)
+                .then((response) => response.blob())
+                .then((blob) => saveAs(blob, `COVID_Result_${dateString}.pdf`));
+        })
+        .catch((err: ResultError) => {
+            logger.error(err.resultMessage);
+            if (err.statusCode === 429) {
+                setTooManyRequestsError("page");
+            } else {
+                addError(
+                    ErrorType.Download,
+                    ErrorSourceType.Covid19LaboratoryReport,
+                    err.traceId
+                );
+            }
+        })
+        .finally(() => {
+            isLoadingDocument.value = false;
         });
-
-        this.isLoadingDocument = true;
-        this.laboratoryService
-            .getReportDocument(this.entry.id, this.hdid, true)
-            .then((result) => {
-                const dateString =
-                    this.entry.displayDate.format("yyyy_MM_dd-HH_mm");
-                const report = result.resourcePayload;
-                fetch(
-                    `data:${report.mediaType};${report.encoding},${report.data}`
-                )
-                    .then((response) => response.blob())
-                    .then((blob) =>
-                        saveAs(blob, `COVID_Result_${dateString}.pdf`)
-                    );
-            })
-            .catch((err: ResultError) => {
-                this.logger.error(err.resultMessage);
-                if (err.statusCode === 429) {
-                    this.setTooManyRequestsError({ key: "page" });
-                } else {
-                    this.addError({
-                        errorType: ErrorType.Download,
-                        source: ErrorSourceType.Covid19LaboratoryReport,
-                        traceId: err.traceId,
-                    });
-                }
-            })
-            .finally(() => {
-                this.isLoadingDocument = false;
-            });
-    }
 }
 </script>
 
 <template>
-    <EntryCard
+    <EntryCardTimelineComponent
         :card-id="index + '-' + datekey"
         :entry-icon="entryIcon"
         :title="entry.summaryTitle"
         :entry="entry"
         :is-mobile-details="isMobileDetails"
         :allow-comment="commentsAreEnabled"
-        :has-attachment="reportAvailable"
+        :has-attachment="entry.reportAvailable"
     >
         <div v-if="entry.tests.length === 1" slot="header-description">
             <strong
@@ -166,7 +132,7 @@ export default class Covid19LaboratoryOrderTimelineComponent extends Vue {
         </div>
         <div slot="details-body">
             <div
-                v-if="reportAvailable && entry.resultReady"
+                v-if="entry.reportAvailable && entry.resultReady"
                 class="my-3"
                 data-testid="laboratoryReportAvailable"
             >
@@ -174,7 +140,7 @@ export default class Covid19LaboratoryOrderTimelineComponent extends Vue {
                     data-testid="covid-result-download-btn"
                     variant="secondary"
                     :disabled="isLoadingDocument"
-                    @click="showConfirmationModal()"
+                    @click="sensitiveDocumentModal?.showModal()"
                 >
                     <b-spinner v-if="isLoadingDocument" class="mr-1" small />
                     <hg-icon
@@ -195,7 +161,7 @@ export default class Covid19LaboratoryOrderTimelineComponent extends Vue {
                 </div>
             </div>
             <div
-                v-for="(test, index) in entry.tests"
+                v-for="test in entry.tests"
                 :key="test.id"
                 :data-testid="`laboratoryTestBlock-${index}`"
             >
@@ -247,13 +213,13 @@ export default class Covid19LaboratoryOrderTimelineComponent extends Vue {
                 </div>
             </div>
             <MessageModalComponent
-                ref="messageModal"
+                ref="sensitiveDocumentModal"
                 title="Sensitive Document Download"
                 message="The file that you are downloading contains personal information. If you are on a public computer, please ensure that the file is deleted before you log off."
                 @submit="getReport"
             />
         </div>
-    </EntryCard>
+    </EntryCardTimelineComponent>
 </template>
 
 <style lang="scss" scoped>

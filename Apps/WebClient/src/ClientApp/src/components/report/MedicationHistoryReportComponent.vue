@@ -1,7 +1,6 @@
-<script lang="ts">
-import Vue from "vue";
-import { Component, Emit, Prop, Watch } from "vue-property-decorator";
-import { Action, Getter } from "vuex-class";
+<script setup lang="ts">
+import { computed, onMounted, watch } from "vue";
+import { useStore } from "vue-composition-wrapper";
 
 import ProtectiveWordComponent from "@/components/modal/ProtectiveWordComponent.vue";
 import { DateWrapper } from "@/models/dateWrapper";
@@ -16,6 +15,22 @@ import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ILogger, IReportService } from "@/services/interfaces";
 
+interface Props {
+    hdid: string;
+    filter: ReportFilter;
+    isDependent?: boolean;
+}
+const props = withDefaults(defineProps<Props>(), {
+    isDependent: false,
+});
+
+const emit = defineEmits<{
+    (e: "on-is-loading-changed", newValue: boolean): void;
+    (e: "on-is-empty-changed", newValue: boolean): void;
+}>();
+
+defineExpose({ generateReport });
+
 interface MedicationRow {
     date: string;
     din_pin: string;
@@ -28,51 +43,74 @@ interface MedicationRow {
     manufacturer: string;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const options: any = {
-    components: {
-        ProtectiveWordComponent,
+const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+const reportService = container.get<IReportService>(
+    SERVICE_IDENTIFIER.ReportService
+);
+const store = useStore();
+
+const notFoundText = "Not Found";
+const headerClass = "medication-report-table-header";
+const fields: ReportField[] = [
+    {
+        key: "date",
+        thClass: headerClass,
+        tdAttr: { "data-testid": "medicationDateItem" },
     },
-};
+    {
+        key: "din_pin",
+        label: "DIN/PIN",
+        thClass: headerClass,
+    },
+    {
+        key: "brand",
+        thClass: headerClass,
+        tdAttr: { "data-testid": "medicationReportBrandNameItem" },
+    },
+    {
+        key: "generic",
+        thClass: headerClass,
+    },
+    {
+        key: "practitioner",
+        thClass: headerClass,
+    },
+    {
+        key: "quantity",
+        thClass: headerClass,
+    },
+    {
+        key: "strength",
+        thClass: headerClass,
+    },
+    {
+        key: "form",
+        thClass: headerClass,
+    },
+    {
+        key: "manufacturer",
+        thClass: headerClass,
+    },
+];
 
-@Component(options)
-export default class MedicationHistoryReportComponent extends Vue {
-    @Prop({ required: true })
-    hdid!: string;
+const medicationsAreLoading = computed<boolean>(() =>
+    store.getters["medication/medicationsAreLoading"](props.hdid)
+);
+const medications = computed<MedicationStatementHistory[]>(() =>
+    store.getters["medication/medications"](props.hdid)
+);
 
-    @Prop() private filter!: ReportFilter;
-
-    @Prop({ default: false }) isDependent!: boolean;
-
-    @Action("retrieveMedications", { namespace: "medication" })
-    private retrieveMedications!: (params: { hdid: string }) => Promise<void>;
-
-    @Getter("medicationsAreLoading", { namespace: "medication" })
-    medicationsAreLoading!: (hdid: string) => boolean;
-
-    @Getter("medications", { namespace: "medication" })
-    medications!: (hdid: string) => MedicationStatementHistory[];
-
-    private logger!: ILogger;
-    private notFoundText = "Not Found";
-
-    private readonly headerClass = "medication-report-table-header";
-
-    private get isLoading(): boolean {
-        return this.medicationsAreLoading(this.hdid);
-    }
-
-    private get isEmpty(): boolean {
-        return this.visibleRecords.length === 0;
-    }
-
-    private get visibleRecords(): MedicationStatementHistory[] {
-        const records = this.medications(this.hdid).filter(
+const isEmpty = computed(() => visibleRecords.value.length === 0);
+const visibleRecords = computed(() =>
+    medications.value
+        .filter(
             (record) =>
-                this.filter.allowsDate(record.dispensedDate) &&
-                this.filter.allowsMedication(record.medicationSummary.brandName)
-        );
-        records.sort((a, b) => {
+                props.filter.allowsDate(record.dispensedDate) &&
+                props.filter.allowsMedication(
+                    record.medicationSummary.brandName
+                )
+        )
+        .sort((a, b) => {
             const firstDate = new DateWrapper(a.dispensedDate);
             const secondDate = new DateWrapper(b.dispensedDate);
 
@@ -85,127 +123,73 @@ export default class MedicationHistoryReportComponent extends Vue {
             }
 
             return 0;
-        });
+        })
+);
+const items = computed(() =>
+    visibleRecords.value.map<MedicationRow>((x) => ({
+        date: DateWrapper.format(x.dispensedDate),
+        din_pin: x.medicationSummary.din,
+        brand: x.medicationSummary.brandName,
+        generic: x.medicationSummary.genericName || notFoundText,
+        practitioner: x.practitionerSurname || "",
+        quantity:
+            x.medicationSummary.quantity === undefined
+                ? ""
+                : x.medicationSummary.quantity.toString(),
+        strength:
+            (x.medicationSummary.strength || "") +
+                (x.medicationSummary.strengthUnit || "") || notFoundText,
+        form: x.medicationSummary.form || notFoundText,
+        manufacturer: x.medicationSummary.manufacturer || notFoundText,
+    }))
+);
 
-        return records;
-    }
-
-    private get items(): MedicationRow[] {
-        return this.visibleRecords.map<MedicationRow>((x) => ({
-            date: DateWrapper.format(x.dispensedDate),
-            din_pin: x.medicationSummary.din,
-            brand: x.medicationSummary.brandName,
-            generic: x.medicationSummary.genericName || this.notFoundText,
-            practitioner: x.practitionerSurname || "",
-            quantity:
-                x.medicationSummary.quantity === undefined
-                    ? ""
-                    : x.medicationSummary.quantity.toString(),
-            strength:
-                (x.medicationSummary.strength || "") +
-                    (x.medicationSummary.strengthUnit || "") ||
-                this.notFoundText,
-            form: x.medicationSummary.form || this.notFoundText,
-            manufacturer: x.medicationSummary.manufacturer || this.notFoundText,
-        }));
-    }
-
-    @Watch("isLoading")
-    @Emit()
-    private onIsLoadingChanged(): boolean {
-        return this.isLoading;
-    }
-
-    @Watch("isEmpty")
-    @Emit()
-    private onIsEmptyChanged(): boolean {
-        return this.isEmpty;
-    }
-
-    private created(): void {
-        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-        this.retrieveMedications({ hdid: this.hdid }).catch((err) =>
-            this.logger.error(`Error loading medication data: ${err}`)
-        );
-    }
-
-    private mounted(): void {
-        this.onIsEmptyChanged();
-    }
-
-    public generateReport(
-        reportFormatType: ReportFormatType,
-        headerData: ReportHeader
-    ): Promise<RequestResult<Report>> {
-        const reportService = container.get<IReportService>(
-            SERVICE_IDENTIFIER.ReportService
-        );
-
-        return reportService.generateReport({
-            data: {
-                header: headerData,
-                records: this.items,
-            },
-            template: TemplateType.Medication,
-            type: reportFormatType,
-        });
-    }
-
-    private fields: ReportField[] = [
-        {
-            key: "date",
-            thClass: this.headerClass,
-            tdAttr: { "data-testid": "medicationDateItem" },
-        },
-        {
-            key: "din_pin",
-            label: "DIN/PIN",
-            thClass: this.headerClass,
-        },
-        {
-            key: "brand",
-            thClass: this.headerClass,
-            tdAttr: { "data-testid": "medicationReportBrandNameItem" },
-        },
-        {
-            key: "generic",
-            thClass: this.headerClass,
-        },
-        {
-            key: "practitioner",
-            thClass: this.headerClass,
-        },
-        {
-            key: "quantity",
-            thClass: this.headerClass,
-        },
-        {
-            key: "strength",
-            thClass: this.headerClass,
-        },
-        {
-            key: "form",
-            thClass: this.headerClass,
-        },
-        {
-            key: "manufacturer",
-            thClass: this.headerClass,
-        },
-    ];
+function retrieveMedications(hdid: string): Promise<void> {
+    return store.dispatch("medication/retrieveMedications", { hdid });
 }
+
+function generateReport(
+    reportFormatType: ReportFormatType,
+    headerData: ReportHeader
+): Promise<RequestResult<Report>> {
+    return reportService.generateReport({
+        data: {
+            header: headerData,
+            records: items,
+        },
+        template: TemplateType.Medication,
+        type: reportFormatType,
+    });
+}
+
+watch(medicationsAreLoading, () => {
+    emit("on-is-loading-changed", medicationsAreLoading.value);
+});
+
+watch(isEmpty, () => {
+    emit("on-is-empty-changed", isEmpty.value);
+});
+
+onMounted(() => {
+    emit("on-is-empty-changed", isEmpty.value);
+});
+
+retrieveMedications(props.hdid).catch((err) =>
+    logger.error(`Error loading medication data: ${err}`)
+);
 </script>
 
 <template>
     <div>
         <section>
-            <b-row v-if="isEmpty && !isLoading">
+            <b-row v-if="isEmpty && !medicationsAreLoading">
                 <b-col>No records found.</b-col>
             </b-row>
             <b-table
                 v-else-if="!isDependent"
                 :striped="true"
                 :fixed="true"
-                :busy="isLoading"
+                :busy="medicationsAreLoading"
                 :items="items"
                 :fields="fields"
                 data-testid="medication-history-report-table"

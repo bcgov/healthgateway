@@ -1,4 +1,6 @@
 ﻿<script setup lang="ts">
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { faDownload } from "@fortawesome/free-solid-svg-icons";
 import saveAs from "file-saver";
 import { computed, ref } from "vue";
 import { useStore } from "vue-composition-wrapper";
@@ -12,6 +14,8 @@ import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ILogger } from "@/services/interfaces";
 import SnowPlow from "@/utility/snowPlow";
+
+library.add(faDownload);
 
 interface Props {
     hdid: string;

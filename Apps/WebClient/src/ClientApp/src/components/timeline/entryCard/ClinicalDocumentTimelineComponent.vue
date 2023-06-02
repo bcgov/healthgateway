@@ -1,9 +1,12 @@
 <script setup lang="ts">
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { faDownload } from "@fortawesome/free-solid-svg-icons";
 import saveAs from "file-saver";
 import { computed, ref } from "vue";
 import { useStore } from "vue-composition-wrapper";
 
 import MessageModalComponent from "@/components/modal/MessageModalComponent.vue";
+import EntryCardTimelineComponent from "@/components/timeline/entryCard/EntrycardTimelineComponent.vue";
 import { EntryType, entryTypeMap } from "@/constants/entryType";
 import type { Dictionary } from "@/models/baseTypes";
 import { ClinicalDocumentFile } from "@/models/clinicalDocument";
@@ -15,7 +18,7 @@ import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ILogger } from "@/services/interfaces";
 import SnowPlow from "@/utility/snowPlow";
 
-import EntryCardTimelineComponent from "./EntrycardTimelineComponent.vue";
+library.add(faDownload);
 
 interface Props {
     hdid: string;

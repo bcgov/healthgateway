@@ -5,10 +5,9 @@ import { faPaperclip } from "@fortawesome/free-solid-svg-icons";
 import { computed, onMounted, ref, watch } from "vue";
 import { useStore } from "vue-composition-wrapper";
 
+import CommentSectionComponent from "@/components/timeline/entryCard/CommentSectionComponent.vue";
 import EventBus, { EventMessageName } from "@/eventbus";
 import TimelineEntry from "@/models/timelineEntry";
-
-import CommentSectionComponent from "./CommentSectionComponent.vue";
 
 library.add(farComment, faPaperclip);
 

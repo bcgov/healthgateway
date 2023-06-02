@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
-import { computed, defineProps, withDefaults } from "vue";
+import { computed } from "vue";
 
 interface Props {
     size?: string;

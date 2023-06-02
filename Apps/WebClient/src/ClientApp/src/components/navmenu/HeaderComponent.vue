@@ -35,8 +35,8 @@ const lastScrollTop = ref(0);
 const notificationButtonClicked = ref(false);
 const hasViewedTour = ref(false);
 
-const ratingComponent = ref<RatingComponent>();
-const appTourComponent = ref<AppTourComponent>();
+const ratingComponent = ref<InstanceType<typeof RatingComponent>>();
+const appTourComponent = ref<InstanceType<typeof AppTourComponent>>();
 
 const isMobileWidth = computed<boolean>(() => store.getters["isMobile"]);
 
