@@ -27,6 +27,13 @@ export interface WaitlistGetters extends GetterTree<WaitlistState, RootState> {
 type StoreContext = ActionContext<WaitlistState, RootState>;
 export interface WaitlistActions extends ActionTree<WaitlistState, RootState> {
     getTicket(context: StoreContext): Promise<Ticket>;
+    scheduleCheckIn(
+        context: StoreContext,
+        params: {
+            getTicketOnFail: boolean;
+            ticket?: Ticket;
+        }
+    ): Promise<void>;
     checkIn(context: StoreContext): Promise<void>;
     releaseTicket(context: StoreContext): Promise<void>;
     handleTicket(

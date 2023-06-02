@@ -6,6 +6,7 @@ const store = useStore();
 
 function signOut(): void {
     store.dispatch("auth/signOut");
+    store.dispatch("waitlist/releaseTicket");
 }
 
 onMounted(() => {
