@@ -108,8 +108,7 @@ namespace HealthGateway.Database.Delegates
             this.logger.LogTrace("Getting email template {TemplateName} from DB... ", templateName);
             EmailTemplate retVal = this.dbContext
                 .EmailTemplate
-                .Where(p => p.Name == templateName)
-                .First();
+                .First(p => p.Name == templateName);
             this.logger.LogDebug("Finished getting email {TemplateName} template from DB", templateName);
 
             return retVal;
@@ -136,7 +135,7 @@ namespace HealthGateway.Database.Delegates
                 .Where(
                     email => email.EmailStatusCode == EmailStatus.Processed &&
                              email.CreatedDateTime <= GatewayDbContext.DateTrunc("days", DateTime.UtcNow.AddDays(daysAgo * -1)))
-                .Where(email => !this.dbContext.MessagingVerification.Any(msgVerification => msgVerification.EmailId == email.Id))
+                .Where(email => this.dbContext.MessagingVerification.Any(msgVerification => msgVerification.EmailId == email.Id && msgVerification.EmailAddress == email.To))
                 .OrderBy(email => email.CreatedDateTime)
                 .Take(maxRows)
                 .ExecuteDelete();

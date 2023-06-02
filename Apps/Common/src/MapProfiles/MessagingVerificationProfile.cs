@@ -30,7 +30,7 @@ namespace HealthGateway.Common.MapProfiles
         public MessagingVerificationProfile()
         {
             this.CreateMap<MessagingVerification, MessagingVerificationModel>()
-                .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email!.To))
+                .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.EmailAddress))
                 .ReverseMap();
         }
     }
