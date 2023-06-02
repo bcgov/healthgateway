@@ -49,14 +49,5 @@ namespace HealthGateway.Laboratory.Services
         /// <param name="isCovid19">Indicates whether the COVID-19 report should be returned..</param>
         /// <returns>A base64 encoded PDF.</returns>
         Task<RequestResult<LaboratoryReport>> GetLabReport(string id, string hdid, bool isCovid19);
-
-        /// <summary>
-        /// Gets a COVID-19 test response for the given patient info.
-        /// </summary>
-        /// <param name="phn">The patient's Personal Health Number.</param>
-        /// <param name="dateOfBirthString">The patient's date of birth in yyyy-MM-dd format.</param>
-        /// <param name="collectionDateString">The date the test was collected in yyyy-MM-dd format.</param>
-        /// <returns>Returns the COVID-19 test response.</returns>
-        Task<RequestResult<PublicCovidTestResponse>> GetPublicCovidTestsAsync(string phn, string dateOfBirthString, string collectionDateString);
     }
 }

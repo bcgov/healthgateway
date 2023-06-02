@@ -17,18 +17,11 @@ namespace HealthGateway.Laboratory.Services
 {
     using System;
     using System.Collections.Generic;
-    using System.Linq;
     using System.Threading.Tasks;
     using AutoMapper;
     using HealthGateway.Common.AccessManagement.Authentication;
-    using HealthGateway.Common.AccessManagement.Authentication.Models;
-    using HealthGateway.Common.Constants;
-    using HealthGateway.Common.Constants.PHSA;
-    using HealthGateway.Common.Converters;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ErrorHandling;
-    using HealthGateway.Common.Data.Utils;
-    using HealthGateway.Common.Data.Validations;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Factories;
@@ -48,7 +41,6 @@ namespace HealthGateway.Laboratory.Services
         /// </summary>
         public const string LabConfigSectionKey = "Laboratory";
 
-        private const string AuthConfigSectionName = "PublicAuthentication";
         private const string IsNullOrEmptyTokenErrorMessage = "The auth token is null or empty - unable to cache or proceed";
 
         private readonly IAuthenticationDelegate authenticationDelegate;
@@ -56,8 +48,6 @@ namespace HealthGateway.Laboratory.Services
         private readonly ILogger<LaboratoryService> logger;
         private readonly IMapper autoMapper;
         private readonly LaboratoryConfig labConfig;
-        private readonly ClientCredentialsTokenRequest tokenRequest;
-        private readonly Uri tokenUri;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LaboratoryService"/> class.
@@ -78,8 +68,6 @@ namespace HealthGateway.Laboratory.Services
             this.laboratoryDelegate = laboratoryDelegateFactory.CreateInstance();
             this.authenticationDelegate = authenticationDelegate;
             this.autoMapper = autoMapper;
-
-            (this.tokenUri, this.tokenRequest) = this.authenticationDelegate.GetClientCredentialsAuth(AuthConfigSectionName);
 
             this.labConfig = new();
             configuration.Bind(LabConfigSectionKey, this.labConfig);
@@ -180,76 +168,6 @@ namespace HealthGateway.Laboratory.Services
             }
 
             return await this.laboratoryDelegate.GetLabReport(id, hdid, accessToken, isCovid19).ConfigureAwait(true);
-        }
-
-        /// <inheritdoc/>
-        public async Task<RequestResult<PublicCovidTestResponse>> GetPublicCovidTestsAsync(string phn, string dateOfBirthString, string collectionDateString)
-        {
-            if (!DateFormatter.TryParse(dateOfBirthString, "yyyy-MM-dd", out DateTime dateOfBirth))
-            {
-                return RequestResultFactory.Error<PublicCovidTestResponse>(ErrorType.InvalidState, "Error parsing date of birth");
-            }
-
-            if (!DateFormatter.TryParse(collectionDateString, "yyyy-MM-dd", out DateTime collectionDate))
-            {
-                return RequestResultFactory.Error<PublicCovidTestResponse>(ErrorType.InvalidState, "Error parsing collection date");
-            }
-
-            if (!PhnValidator.IsValid(phn))
-            {
-                return RequestResultFactory.Error<PublicCovidTestResponse>(ErrorType.InvalidState, "Error parsing phn");
-            }
-
-            string? accessToken = this.authenticationDelegate.AuthenticateAsSystem(this.tokenUri, this.tokenRequest).AccessToken;
-            if (string.IsNullOrEmpty(accessToken))
-            {
-                this.logger.LogCritical(IsNullOrEmptyTokenErrorMessage);
-                return RequestResultFactory.Error<PublicCovidTestResponse>(UnauthorizedResultError());
-            }
-
-            RequestResult<PhsaResult<IEnumerable<CovidTestResult>>> result =
-                await this.laboratoryDelegate.GetPublicTestResults(accessToken, phn, DateOnly.FromDateTime(dateOfBirth), DateOnly.FromDateTime(collectionDate)).ConfigureAwait(true);
-
-            PhsaLoadState? loadState = result.ResourcePayload?.LoadState;
-            if (loadState != null && loadState.RefreshInProgress)
-            {
-                return RequestResultFactory.ActionRequired(
-                    new PublicCovidTestResponse
-                    {
-                        RetryIn = Math.Max(loadState.BackOffMilliseconds, this.labConfig.BackOffMilliseconds),
-                        Loaded = !loadState.RefreshInProgress,
-                    },
-                    ActionType.Refresh,
-                    "Refresh in progress");
-            }
-
-            LabIndicatorType labIndicatorType = EnumHelper.ParseEnum<LabIndicatorType>(result.ResourcePayload?.Result.FirstOrDefault()?.StatusIndicator);
-            IEnumerable<PublicCovidTestRecord>? records = this.autoMapper.Map<IEnumerable<PublicCovidTestRecord>>(result.ResourcePayload?.Result ?? Array.Empty<CovidTestResult>());
-            RequestResult<PublicCovidTestResponse> retVal = labIndicatorType switch
-            {
-                LabIndicatorType.Found => RequestResultFactory.Success(CreatePublicCovidTestRecordPayload(records, true), result.TotalResultCount, result.PageIndex, result.PageSize),
-                LabIndicatorType.DataMismatch or LabIndicatorType.NotFound => RequestResultFactory.ActionRequired(
-                    CreatePublicCovidTestRecordPayload(),
-                    ActionType.DataMismatch,
-                    ErrorMessages.DataMismatch),
-                LabIndicatorType.Threshold or LabIndicatorType.Blocked => RequestResultFactory.ActionRequired(
-                    CreatePublicCovidTestRecordPayload(),
-                    ActionType.Invalid,
-                    ErrorMessages.RecordsNotAvailable),
-                _ => RequestResultFactory.Error<PublicCovidTestResponse>(result.ResultError),
-            };
-
-            return retVal;
-        }
-
-        private static PublicCovidTestResponse CreatePublicCovidTestRecordPayload(IEnumerable<PublicCovidTestRecord>? records = null, bool loaded = false, int retryIn = 0)
-        {
-            return new()
-            {
-                Records = records ?? Array.Empty<PublicCovidTestRecord>(),
-                Loaded = loaded,
-                RetryIn = retryIn,
-            };
         }
 
         private static RequestResultError UnauthorizedResultError()

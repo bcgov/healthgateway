@@ -15,7 +15,6 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.LaboratoryTests.Mock
 {
-    using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;
     using HealthGateway.Common.Data.ViewModels;
@@ -47,16 +46,6 @@ namespace HealthGateway.LaboratoryTests.Mock
         public LaboratoryDelegateMock(RequestResult<LaboratoryReport> delegateResult, bool isCovid19 = true)
         {
             this.Setup(s => s.GetLabReport(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), isCovid19)).Returns(Task.FromResult(delegateResult));
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="LaboratoryDelegateMock"/> class.
-        /// </summary>
-        /// <param name="delegateResult">list of COVID-19 Test Results.</param>
-        /// <param name="token">token needed for authentication.</param>
-        public LaboratoryDelegateMock(RequestResult<PhsaResult<IEnumerable<CovidTestResult>>> delegateResult, string token)
-        {
-            this.Setup(s => s.GetPublicTestResults(token, It.IsAny<string>(), It.IsAny<DateOnly>(), It.IsAny<DateOnly>())).Returns(Task.FromResult(delegateResult));
         }
 
         /// <summary>

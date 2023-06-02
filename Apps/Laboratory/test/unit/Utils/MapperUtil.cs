@@ -38,7 +38,6 @@ namespace HealthGateway.LaboratoryTests.Utils
                     cfg.AddProfile(new Covid19TestProfile());
                     cfg.AddProfile(new LaboratoryOrderProfile());
                     cfg.AddProfile(new LaboratoryTestProfile());
-                    cfg.AddProfile(new PublicCovidTestRecordProfile());
                 });
 
             return config.CreateMapper();

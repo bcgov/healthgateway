@@ -102,7 +102,6 @@ export interface Covid19Settings {
 }
 
 export interface PublicCovid19Settings {
-    enableTestResults: boolean;
     showFederalProofOfVaccination: boolean;
 }
 

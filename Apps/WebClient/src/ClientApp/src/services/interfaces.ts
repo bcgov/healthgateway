@@ -20,7 +20,6 @@ import {
     Covid19LaboratoryOrderResult,
     LaboratoryOrderResult,
     LaboratoryReport,
-    PublicCovidTestResponseResult,
 } from "@/models/laboratory";
 import MedicationRequest from "@/models/medicationRequest";
 import MedicationStatementHistory from "@/models/medicationStatementHistory";
@@ -121,11 +120,6 @@ export interface IHospitalVisitService {
 
 export interface ILaboratoryService {
     initialize(config: ExternalConfiguration, http: IHttpDelegate): void;
-    getPublicCovid19Tests(
-        phn: string,
-        dateOfBirth: string,
-        collectionDate: string
-    ): Promise<RequestResult<PublicCovidTestResponseResult>>;
     getCovid19LaboratoryOrders(
         hdid: string
     ): Promise<RequestResult<Covid19LaboratoryOrderResult>>;

@@ -109,11 +109,5 @@ namespace HealthGateway.Laboratory.Delegates
         {
             throw new NotImplementedException();
         }
-
-        /// <inheritdoc/>
-        public Task<RequestResult<PhsaResult<IEnumerable<CovidTestResult>>>> GetPublicTestResults(string accessToken, string phn, DateOnly dateOfBirth, DateOnly collectionDate)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

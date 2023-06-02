@@ -87,21 +87,6 @@ namespace HealthGateway.LaboratoryTests.Mock
         /// <summary>
         /// Initializes a new instance of the <see cref="LaboratoryServiceMock"/> class.
         /// </summary>
-        /// <param name="delegateResult">list of COVID-19 Test Results.</param>
-        /// <param name="token">token needed for authentication.</param>
-        public LaboratoryServiceMock(RequestResult<PhsaResult<IEnumerable<CovidTestResult>>> delegateResult, string token)
-        {
-            this.laboratoryService = new LaboratoryService(
-                this.configuration,
-                new Mock<ILogger<LaboratoryService>>().Object,
-                new LaboratoryDelegateFactoryMock(new LaboratoryDelegateMock(delegateResult, token)).Object,
-                GetMockAuthDelegate(token),
-                this.autoMapper);
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="LaboratoryServiceMock"/> class.
-        /// </summary>
         /// <param name="delegateResult">return object of the delegate service.</param>
         /// <param name="token">token needed for authentication.</param>
         public LaboratoryServiceMock(RequestResult<PhsaResult<PhsaLaboratorySummary>> delegateResult, string token)
@@ -140,7 +125,7 @@ namespace HealthGateway.LaboratoryTests.Mock
 
         private static IAuthenticationDelegate GetMockAuthDelegate(string token)
         {
-            JwtModel jwt = new JwtModel()
+            JwtModel jwt = new()
             {
                 AccessToken = token,
             };
