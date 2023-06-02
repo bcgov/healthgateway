@@ -193,7 +193,7 @@ namespace HealthGateway.Database.Delegates
             IQueryable<UserProfile> dbQuery = this.dbContext.UserProfile;
             dbQuery = queryType switch
             {
-                UserQueryType.Email => dbQuery.Where(user => user.Verifications.Any(v => v.Email != null && EF.Functions.ILike(v.Email.To, $"%{queryString}%"))),
+                UserQueryType.Email => dbQuery.Where(user => user.Verifications.Any(v => EF.Functions.ILike(v.EmailAddress, $"%{queryString}%"))),
                 UserQueryType.Sms => dbQuery.Where(user => user.Verifications.Any(v => EF.Functions.ILike(v.SmsNumber, $"%{queryString}%"))),
                 _ => throw new ArgumentOutOfRangeException(nameof(queryType)),
             };
