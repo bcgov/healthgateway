@@ -18,8 +18,10 @@ namespace HealthGateway.Admin.Client.Pages
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading.Tasks;
     using Fluxor;
     using Fluxor.Blazor.Web.Components;
+    using HealthGateway.Admin.Client.Authorization;
     using HealthGateway.Admin.Client.Store.PatientDetails;
     using HealthGateway.Admin.Client.Store.PatientSupport;
     using HealthGateway.Admin.Common.Constants;
@@ -28,6 +30,7 @@ namespace HealthGateway.Admin.Client.Pages
     using HealthGateway.Common.Data.Utils;
     using HealthGateway.Common.Data.ViewModels;
     using Microsoft.AspNetCore.Components;
+    using Microsoft.AspNetCore.Components.Authorization;
     using Microsoft.AspNetCore.WebUtilities;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Primitives;
@@ -54,6 +57,9 @@ namespace HealthGateway.Admin.Client.Pages
 
         [Inject]
         private IConfiguration Configuration { get; set; } = default!;
+
+        [Inject]
+        private AuthenticationStateProvider AuthenticationStateProvider { get; set; } = default!;
 
         private bool PatientSupportDetailsLoading => this.PatientDetailsState.Value.IsLoading;
 
@@ -84,6 +90,17 @@ namespace HealthGateway.Admin.Client.Pages
         private DateTime? ProfileCreatedDateTime { get; set; }
 
         private DateTime? ProfileLastLoginDateTime { get; set; }
+
+        private bool CanEditDatasetAccess { get; set; }
+
+        /// <inheritdoc/>
+        protected override async Task OnInitializedAsync()
+        {
+            await base.OnInitializedAsync();
+
+            AuthenticationState state = await this.AuthenticationStateProvider.GetAuthenticationStateAsync();
+            this.CanEditDatasetAccess = state.User.IsInRole(Roles.Admin);
+        }
 
         /// <inheritdoc/>
         protected override void OnInitialized()

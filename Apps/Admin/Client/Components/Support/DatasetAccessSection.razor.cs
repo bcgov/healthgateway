@@ -54,6 +54,13 @@ namespace HealthGateway.Admin.Client.Components.Support
         public bool IsLoading { get; set; } = true;
 
         /// <summary>
+        /// Gets or sets a value indicating whether the component is editable.
+        /// </summary>
+        [Parameter]
+        [EditorRequired]
+        public bool CanEdit { get; set; } = false;
+
+        /// <summary>
         /// Gets or sets the patient's hdid.
         /// </summary>
         [Parameter]

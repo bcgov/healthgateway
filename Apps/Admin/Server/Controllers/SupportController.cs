@@ -105,6 +105,7 @@ namespace HealthGateway.Admin.Server.Controllers
         [Route("{hdid}/BlockAccess")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [Authorize(Roles = "AdminUser")]
         public async Task BlockAccess(string hdid, BlockAccessRequest request)
         {
             await this.supportService.BlockAccessAsync(hdid, request.DataSources, request.Reason).ConfigureAwait(true);
