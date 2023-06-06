@@ -15,7 +15,7 @@ export const actions: WaitlistActions = {
         );
 
         return new Promise((resolve, reject) => {
-            logger.debug("Retrieving waitlist ticket");
+            logger.debug("Waitlist - Retrieving ticket");
             context.commit("setTicketRequested");
             ticketService
                 .createTicket("healthgateway")
@@ -35,35 +35,61 @@ export const actions: WaitlistActions = {
                 });
         });
     },
+    scheduleCheckIn(
+        context,
+        params: {
+            getTicketOnFail: boolean;
+            ticket?: Ticket;
+        } = { getTicketOnFail: false }
+    ): Promise<void> {
+        const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+        clearTimeout(context.state.checkInTimeoutId);
+        const ticket = params.ticket ?? context.state.ticket;
+        return new Promise((resolve) => {
+            if (ticket === undefined) {
+                logger.debug(`Waitlist - Ticket undefined`);
+                resolve();
+            } else {
+                const now = new Date().getTime();
+                const checkInAfter = ticket.checkInAfter * 1000;
+                const timeout = Math.max(0, checkInAfter - now);
+                logger.debug(`Waitlist - scheduling checkIn in ${timeout}ms.`);
+                const newCheckInTimeoutId = setTimeout(() => {
+                    context.dispatch("checkIn").catch(() => {
+                        logger.error(
+                            `Waitlist - Error calling checkIn action.`
+                        );
+                        if (params.getTicketOnFail) {
+                            context.dispatch("getTicket").then(() => {
+                                logger.debug(
+                                    `Waitlist - Error calling getTicket action.`
+                                );
+                            });
+                        }
+                    });
+                }, timeout);
+                // Store new timeout id in state
+                context.commit("setCheckInTimeoutId", newCheckInTimeoutId);
+                resolve();
+            }
+        });
+    },
     handleTicket: function (
         context,
         params: { ticket: Ticket }
     ): Promise<void> {
-        const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
         const httpDelegate = container.get<IHttpDelegate>(
             DELEGATE_IDENTIFIER.HttpDelegate
         );
         const ticket = params.ticket;
-        const now = new Date().getTime();
-        const checkInAfter = ticket.checkInAfter * 1000;
-        const timeout = Math.max(0, checkInAfter - now);
         return new Promise((resolve) => {
-            logger.debug(
-                `Handle ticket: timeout (ms): ${timeout} - check in after (ms): ${checkInAfter} - now (ms): ${now}`
-            );
             if (
                 ticket.status === TicketStatus.Processed &&
                 ticket.token !== undefined
             ) {
                 httpDelegate.setTicketAuthorizationHeader(ticket.token);
             }
-            const checkInTimeoutId = setTimeout(() => {
-                context
-                    .dispatch("checkIn")
-                    .catch(() => logger.error(`Error calling checkIn action.`));
-            }, timeout);
-
-            context.commit("setCheckInTimeoutId", checkInTimeoutId);
+            context.dispatch("scheduleCheckIn", { ticket: ticket });
 
             resolve();
         });
@@ -75,12 +101,13 @@ export const actions: WaitlistActions = {
         );
 
         return new Promise((resolve, reject) => {
-            logger.debug("Checking in with waitlist");
+            logger.debug("Waitlist - Checking in started");
 
             const ticket = context.state.ticket;
             if (ticket === undefined) {
                 reject();
             } else {
+                logger.debug(`Waitlist - checkIn - Ticket id: ${ticket.id}`);
                 ticketService
                     .checkIn({
                         id: ticket.id,
@@ -105,7 +132,7 @@ export const actions: WaitlistActions = {
         );
 
         return new Promise((resolve) => {
-            logger.debug("Releasing waitlist ticket");
+            logger.debug("Waitlist - Releasing ticket");
 
             const ticket = context.state.ticket;
             if (ticket === undefined) {

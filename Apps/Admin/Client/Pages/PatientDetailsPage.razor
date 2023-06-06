@@ -90,7 +90,7 @@
             </MudItem>
         </MudGrid>
         <MessageVerificationTable Data="@MessagingVerifications" IsLoading="@PatientSupportDetailsLoading" />
-        <DatasetAccessSection Data="@BlockedDataSources" IsLoading="@PatientSupportDetailsLoading" Hdid="@Hdid" />
+        <DatasetAccessSection Data="@BlockedDataSources" IsLoading="@PatientSupportDetailsLoading" Hdid="@Hdid" CanEdit="@CanEditDatasetAccess" />
         <AgentAuditHistory Title="Agent Reason History" AgentActions="@AgentAuditHistory" IsLoading="@PatientSupportDetailsLoading" />
     }
     else

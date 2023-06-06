@@ -52,7 +52,7 @@ namespace HealthGateway.Admin.Client.Components.AgentAudit
         /// Gets or sets the application's configuration.
         /// </summary>
         [Inject]
-        public IConfiguration Configuration { get; set; } = default!;
+        private IConfiguration Configuration { get; set; } = default!;
 
         private int[] PageSizes { get; } = { 5, 10, 15 };
 

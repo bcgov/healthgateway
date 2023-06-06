@@ -18,6 +18,7 @@ namespace HealthGateway.AccountDataAccess.Patient
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
+    using System.Diagnostics.CodeAnalysis;
     using System.Globalization;
     using System.Linq;
     using System.Net;
@@ -236,6 +237,8 @@ namespace HealthGateway.AccountDataAccess.Patient
             }
         }
 
+        [SuppressMessage("Minor Code Smell", "S6602:\"Find\" method should be used instead of the \"FirstOrDefault\" extension", Justification = "Team decision")]
+        [SuppressMessage("Minor Code Smell", "S6605:Collection-specific \"Exists\" method should be used instead of the \"Any\" extension", Justification = "Team decision")]
         private PatientModel? ParseResponse(HCIM_IN_GetDemographicsResponse1 reply, bool disableIdValidation)
         {
             using (Source.StartActivity())
@@ -301,6 +304,8 @@ namespace HealthGateway.AccountDataAccess.Patient
             }
         }
 
+        [SuppressMessage("Minor Code Smell", "S6602:\"Find\" method should be used instead of the \"FirstOrDefault\" extension", Justification = "Team decision")]
+        [SuppressMessage("Minor Code Smell", "S6605:Collection-specific \"Exists\" method should be used instead of the \"Any\" extension", Justification = "Team decision")]
         private void PopulateNames(HCIM_IN_GetDemographicsResponseIdentifiedPerson retrievedPerson, PatientModel patientModel)
         {
             PN? documentedName = retrievedPerson.identifiedPerson.name.FirstOrDefault(x => x.use.Any(u => u == cs_EntityNameUse.C));
@@ -326,6 +331,7 @@ namespace HealthGateway.AccountDataAccess.Patient
             }
         }
 
+        [SuppressMessage("Minor Code Smell", "S6602:\"Find\" method should be used instead of the \"FirstOrDefault\" extension", Justification = "Team decision")]
         private void PopulateIdentifiers(HCIM_IN_GetDemographicsResponseIdentifiedPerson retrievedPerson, PatientModel patientModel)
         {
             II? identifiedPersonId = retrievedPerson.identifiedPerson?.id?.FirstOrDefault(x => x.root == OidType.Phn.ToString());
