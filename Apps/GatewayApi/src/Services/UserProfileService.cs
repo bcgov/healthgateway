@@ -150,9 +150,6 @@ namespace HealthGateway.GatewayApi.Services
             DbResult<UserProfile> userProfileDbResult = this.userProfileDelegate.GetUserProfile(hdid);
             this.logger.LogDebug("Finished getting user profile...{Hdid}", hdid);
 
-            // Get Blocked data sources associated with user
-            IEnumerable<DataSource> dataSources = await this.patientRepository.GetDataSources(hdid).ConfigureAwait(true);
-
             if (userProfileDbResult.Status == DbStatusCode.NotFound)
             {
                 return new RequestResult<UserProfileModel>
@@ -180,7 +177,7 @@ namespace HealthGateway.GatewayApi.Services
 
             DbResult<IEnumerable<UserProfileHistory>> userProfileHistoryDbResult =
                 this.userProfileDelegate.GetUserProfileHistories(hdid, this.userProfileHistoryRecordLimit);
-            UserProfileModel userProfile = this.BuildUserProfileModel(userProfileDbResult.Payload, dataSources, userProfileHistoryDbResult.Payload.ToArray());
+            UserProfileModel userProfile = this.BuildUserProfileModel(userProfileDbResult.Payload, userProfileHistoryDbResult.Payload.ToArray());
 
             // Populate most recent login date time
             userProfile.LastLoginDateTimes.Add(userProfileDbResult.Payload.LastLoginDateTime);
@@ -270,10 +267,7 @@ namespace HealthGateway.GatewayApi.Services
             string? requestedSmsNumber = createProfileRequest.Profile.SmsNumber;
             string? requestedEmail = createProfileRequest.Profile.Email;
 
-            // Get Blocked data sources associated with user
-            IEnumerable<DataSource> dataSources = await this.patientRepository.GetDataSources(hdid).ConfigureAwait(true);
-
-            UserProfileModel userProfileModel = this.BuildUserProfileModel(dbModel, dataSources);
+            UserProfileModel userProfileModel = this.BuildUserProfileModel(dbModel);
 
             NotificationSettingsRequest notificationRequest = new(dbModel, requestedEmail, requestedSmsNumber);
 
@@ -308,9 +302,6 @@ namespace HealthGateway.GatewayApi.Services
 
             DbResult<UserProfile> retrieveResult = this.userProfileDelegate.GetUserProfile(hdid);
 
-            // Get Blocked data sources associated with user
-            IEnumerable<DataSource> dataSources = this.patientRepository.GetDataSources(hdid).Result;
-
             if (retrieveResult.Status != DbStatusCode.Read)
             {
                 return RequestResultFactory.ServiceError<UserProfileModel>(ErrorType.CommunicationInternal, ServiceType.Database, retrieveResult.Message);
@@ -320,7 +311,7 @@ namespace HealthGateway.GatewayApi.Services
             if (profile.ClosedDateTime != null)
             {
                 this.logger.LogTrace("Finished. Profile already Closed");
-                return RequestResultFactory.Success(this.BuildUserProfileModel(profile, dataSources));
+                return RequestResultFactory.Success(this.BuildUserProfileModel(profile));
             }
 
             profile.ClosedDateTime = DateTime.UtcNow;
@@ -331,7 +322,7 @@ namespace HealthGateway.GatewayApi.Services
                 this.QueueEmail(profile.Email, EmailTemplateName.AccountClosedTemplate);
             }
 
-            return RequestResultFactory.Success(this.BuildUserProfileModel(updateResult.Payload, dataSources));
+            return RequestResultFactory.Success(this.BuildUserProfileModel(updateResult.Payload));
         }
 
         /// <inheritdoc/>
@@ -340,7 +331,6 @@ namespace HealthGateway.GatewayApi.Services
             this.logger.LogTrace("Recovering user profile... {Hdid}", hdid);
 
             DbResult<UserProfile> retrieveResult = this.userProfileDelegate.GetUserProfile(hdid);
-            IEnumerable<DataSource> dataSources = this.patientRepository.GetDataSources(hdid).Result;
 
             if (retrieveResult.Status != DbStatusCode.Read)
             {
@@ -351,7 +341,7 @@ namespace HealthGateway.GatewayApi.Services
             if (profile.ClosedDateTime == null)
             {
                 this.logger.LogTrace("Finished. Profile already is active, recover not needed.");
-                return RequestResultFactory.Success(this.BuildUserProfileModel(profile, dataSources));
+                return RequestResultFactory.Success(this.BuildUserProfileModel(profile));
             }
 
             // Remove values set for deletion
@@ -363,7 +353,7 @@ namespace HealthGateway.GatewayApi.Services
                 this.QueueEmail(profile.Email, EmailTemplateName.AccountRecoveredTemplate);
             }
 
-            return RequestResultFactory.Success(this.BuildUserProfileModel(updateResult.Payload, dataSources));
+            return RequestResultFactory.Success(this.BuildUserProfileModel(updateResult.Payload));
         }
 
         /// <inheritdoc/>
@@ -451,9 +441,6 @@ namespace HealthGateway.GatewayApi.Services
         {
             DbResult<UserProfile> profileResult = this.userProfileDelegate.GetUserProfile(hdid);
 
-            // Get Blocked data sources associated with user
-            IEnumerable<DataSource> dataSources = this.patientRepository.GetDataSources(hdid).Result;
-
             if (profileResult.Status != DbStatusCode.Read)
             {
                 return RequestResultFactory.ServiceError<UserProfileModel>(ErrorType.CommunicationInternal, ServiceType.Database, "Unable to retrieve user profile");
@@ -466,7 +453,7 @@ namespace HealthGateway.GatewayApi.Services
                 return RequestResultFactory.ServiceError<UserProfileModel>(ErrorType.CommunicationInternal, ServiceType.Database, "Unable to update the terms of service: DB Error");
             }
 
-            return RequestResultFactory.Success(this.BuildUserProfileModel(profileResult.Payload, dataSources));
+            return RequestResultFactory.Success(this.BuildUserProfileModel(profileResult.Payload));
         }
 
         /// <inheritdoc/>
@@ -514,7 +501,7 @@ namespace HealthGateway.GatewayApi.Services
             return null;
         }
 
-        private UserProfileModel BuildUserProfileModel(UserProfile userProfile, IEnumerable<DataSource> dataSources, UserProfileHistory[]? profileHistoryCollection = null)
+        private UserProfileModel BuildUserProfileModel(UserProfile userProfile, UserProfileHistory[]? profileHistoryCollection = null)
         {
             Guid? termsOfServiceId = this.GetActiveTermsOfService().ResourcePayload?.Id;
             DateTime? latestTourChangeDateTime = this.GetLatestTourChangeDateTime();
@@ -523,7 +510,7 @@ namespace HealthGateway.GatewayApi.Services
                                               profileHistoryCollection.Any() &&
                                               latestTourChangeDateTime != null &&
                                               profileHistoryCollection.Max(x => x.LastLoginDateTime) < latestTourChangeDateTime;
-            userProfileModel.BlockedDataSources = dataSources;
+            userProfileModel.BlockedDataSources = this.patientRepository.GetDataSources(userProfile.HdId).Result;
             return userProfileModel;
         }
 
