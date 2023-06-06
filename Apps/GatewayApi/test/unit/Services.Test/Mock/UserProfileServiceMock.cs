@@ -71,6 +71,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test.Mock
                 LegalAgreementCode = LegalAgreementType.TermsOfService,
                 LegalText = "Mock Terms of Service",
             });
+
         private Mock<IPatientRepository> patientRepositoryMock = new();
 
         /// <summary>
