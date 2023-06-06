@@ -133,9 +133,16 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 Status = DbStatusCode.Read,
             };
 
+            HashSet<DataSource> dataSources = new()
+            {
+                DataSource.Immunization,
+                DataSource.Medication,
+            };
+
             UserProfileModel expected = UserProfileMapUtils.CreateFromDbModel(userProfile, Guid.Empty, MapperUtil.InitializeAutoMapper());
             UserProfileServiceMock mockService = new(GetIConfigurationRoot(null));
             mockService.SetupGetOrSetCache<DateTime?>(lastTourChangeDateTime, $"{TourApplicationSettings.Application}:{TourApplicationSettings.Component}")
+                .SetupPatientRepository(this.hdid, dataSources)
                 .SetupUserProfileDelegateMockGetUpdateAndHistory(this.hdid, userProfile, userProfileDbResult, userProfileHistoryDbResult)
                 .SetupLegalAgreementDelegateMock(termsOfService)
                 .SetupPatientServiceMockCustomPatient(this.hdid, patientModel)
@@ -157,6 +164,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 Assert.Equal(userProfileHistoryMinus1.LastLoginDateTime, actualResult.ResourcePayload?.LastLoginDateTimes[1]);
                 Assert.Equal(userProfileHistoryMinus2.LastLoginDateTime, actualResult.ResourcePayload?.LastLoginDateTimes[2]);
                 Assert.Equal(expectedHasTourChanged, actualResult.ResourcePayload?.HasTourUpdated);
+                Assert.Equal(dataSources, actualResult.ResourcePayload?.BlockedDataSources);
             }
 
             if (dBStatus == DbStatusCode.Error)

@@ -17,14 +17,17 @@ namespace HealthGateway.AccountDataAccess.Patient
 {
     using System;
     using System.Collections.Generic;
+    using System.Globalization;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.AccountDataAccess.Patient.Strategy;
     using HealthGateway.Common.AccessManagement.Authentication;
+    using HealthGateway.Common.CacheProviders;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
+    using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
 
     /// <summary>
@@ -32,12 +35,17 @@ namespace HealthGateway.AccountDataAccess.Patient
     /// </summary>
     internal class PatientRepository : IPatientRepository
     {
+        private const string BlockedAccessKey = "BlockedAccess";
+        private const string CacheTtlKey = "CacheTtl";
+        private readonly int blockedAccessCacheTtl;
+
         /// <summary>
         /// The injected logger delegate.
         /// </summary>
         private readonly ILogger<PatientRepository> logger;
         private readonly IAuthenticationDelegate authenticationDelegate;
         private readonly IBlockedAccessDelegate blockedAccessDelegate;
+        private readonly ICacheProvider cacheProvider;
         private readonly PatientQueryFactory patientQueryFactory;
 
         /// <summary>
@@ -46,17 +54,23 @@ namespace HealthGateway.AccountDataAccess.Patient
         /// <param name="logger">The service Logger.</param>
         /// <param name="blockedAccessDelegate">The injected blocked access delegate.</param>
         /// <param name="authenticationDelegate">The injected authentication delegate.</param>
+        /// <param name="cacheProvider">The injected cache provider.</param>
+        /// <param name="configuration">The Configuration to use.</param>
         /// <param name="patientQueryFactory">The injected patient query factory.</param>
         public PatientRepository(
             ILogger<PatientRepository> logger,
             IBlockedAccessDelegate blockedAccessDelegate,
             IAuthenticationDelegate authenticationDelegate,
+            ICacheProvider cacheProvider,
+            IConfiguration configuration,
             PatientQueryFactory patientQueryFactory)
         {
             this.logger = logger;
             this.blockedAccessDelegate = blockedAccessDelegate;
             this.authenticationDelegate = authenticationDelegate;
+            this.cacheProvider = cacheProvider;
             this.patientQueryFactory = patientQueryFactory;
+            this.blockedAccessCacheTtl = configuration.GetValue($"{BlockedAccessKey}:{CacheTtlKey}", 30);
         }
 
         /// <inheritdoc/>
@@ -119,7 +133,18 @@ namespace HealthGateway.AccountDataAccess.Patient
         /// <inheritdoc/>
         public async Task<IEnumerable<DataSource>> GetDataSources(string hdid, CancellationToken ct = default)
         {
-            return await this.blockedAccessDelegate.GetDataSourcesAsync(hdid).ConfigureAwait(true);
+            string blockedAccessCacheKey = string.Format(CultureInfo.InvariantCulture, ICacheProvider.BlockedAccessCachePrefixKey, hdid);
+            string message = $"Getting item from cache for key: {blockedAccessCacheKey}";
+            this.logger.LogDebug("{Message}", message);
+
+            return await this.cacheProvider.GetOrSetAsync(
+                blockedAccessCacheKey,
+                () =>
+                {
+                    Task<IEnumerable<DataSource>> dataSources = this.blockedAccessDelegate.GetDataSourcesAsync(hdid);
+                    return dataSources;
+                },
+                TimeSpan.FromMinutes(this.blockedAccessCacheTtl)) ?? Array.Empty<DataSource>();
         }
 
         private static string GetStrategy(string? hdid, PatientDetailSource source)
