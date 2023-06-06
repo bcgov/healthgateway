@@ -197,7 +197,7 @@ describe("Patient details page as reviewer", () => {
     beforeEach(() => {
         cy.login(
             Cypress.env("keycloak_reviewer_username"),
-            Cypress.env("keycloak_reviewer_password"),
+            Cypress.env("keycloak_password"),
             "/support"
         );
     });
