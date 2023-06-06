@@ -24,6 +24,11 @@ namespace HealthGateway.Common.CacheProviders
     public interface ICacheProvider
     {
         /// <summary>
+        /// Key used to store cache for blocked access.
+        /// </summary>
+        public const string BlockedAccessCachePrefixKey = "BlockedAccess:Hdid:{0}";
+
+        /// <summary>
         /// Retrieves an item from the cache if available.
         /// </summary>
         /// <param name="key">The key to lookup.</param>

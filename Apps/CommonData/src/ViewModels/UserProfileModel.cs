@@ -18,7 +18,9 @@ namespace HealthGateway.Common.Data.ViewModels
     using System;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations.Schema;
+    using System.Linq;
     using System.Text.Json.Serialization;
+    using HealthGateway.Common.Data.Constants;
 
     /// <summary>
     /// Model that provides a user representation of an user profile database model.
@@ -113,5 +115,10 @@ namespace HealthGateway.Common.Data.ViewModels
         /// Gets the user preference.
         /// </summary>
         public IDictionary<string, UserPreferenceModel> Preferences { get; } = new Dictionary<string, UserPreferenceModel>();
+
+        /// <summary>
+        ///  Gets or sets the user's blocked data sources.
+        /// </summary>
+        public IEnumerable<DataSource> BlockedDataSources { get; set; } = Enumerable.Empty<DataSource>();
     }
 }

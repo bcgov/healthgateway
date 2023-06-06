@@ -29,6 +29,7 @@ namespace HealthGateway.Admin.Tests.Services
     using HealthGateway.Admin.Common.Models;
     using HealthGateway.Admin.Server.Services;
     using HealthGateway.Admin.Tests.Utils;
+    using HealthGateway.Common.CacheProviders;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ErrorHandling;
     using HealthGateway.Common.Data.Models;
@@ -37,6 +38,7 @@ namespace HealthGateway.Admin.Tests.Services
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.Logging;
     using Moq;
     using Xunit;
     using Address = HealthGateway.AccountDataAccess.Patient.Address;
@@ -634,7 +636,9 @@ namespace HealthGateway.Admin.Tests.Services
                 patientRepositoryMock.Object,
                 resourceDelegateDelegateMock.Object,
                 userProfileDelegateMock.Object,
-                new Mock<IAuditRepository>().Object);
+                new Mock<IAuditRepository>().Object,
+                new Mock<ICacheProvider>().Object,
+                new Mock<ILogger<SupportService>>().Object);
         }
 
         private static IConfigurationRoot GetIConfigurationRoot()
