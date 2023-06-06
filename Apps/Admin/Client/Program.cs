@@ -24,6 +24,7 @@ namespace HealthGateway.Admin.Client
     using Fluxor;
     using HealthGateway.Admin.Client.Api;
     using HealthGateway.Admin.Client.Authorization;
+    using HealthGateway.Admin.Client.Services;
     using Microsoft.AspNetCore.Components;
     using Microsoft.AspNetCore.Components.Web;
     using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
@@ -98,6 +99,8 @@ namespace HealthGateway.Admin.Client
                     .UseReduxDevTools(rdt => rdt.Name = "Health Gateway Admin"));
 
             builder.Services.AddBlazoredLocalStorage();
+
+            builder.Services.AddTransient<IDateConversionService, DateConversionService>();
 
             app[0] = builder.Build();
             await app[0].RunAsync().ConfigureAwait(true);

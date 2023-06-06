@@ -31,7 +31,7 @@
             </MudTableSortLabel>
         </MudTh>
         <MudTh>
-            <MudTableSortLabel SortBy="new Func<BroadcastRow, object>(x => ConvertToShortFormatFromUtc(x.ExpiryDate))">
+            <MudTableSortLabel SortBy="new Func<BroadcastRow, object>(x => ShortFormatFromUtc(x.ExpiryDate))">
                 Expires On
             </MudTableSortLabel>
         </MudTh>
@@ -46,8 +46,8 @@
     </HeaderContent>
     <RowTemplate>
         <MudTd data-testid="broadcast-table-subject" DataLabel="Subject">@context.Subject</MudTd>
-        <MudTd data-testid="broadcast-table-effective-date" DataLabel="Effective On">@ConvertToShortFormatFromUtc(context.EffectiveDate)</MudTd>
-        <MudTd data-testid="broadcast-table-expiry-date" DataLabel="Expires On">@ConvertToShortFormatFromUtc(context.ExpiryDate)</MudTd>
+        <MudTd data-testid="broadcast-table-effective-date" DataLabel="Effective On">@ShortFormatFromUtc(context.EffectiveDate)</MudTd>
+        <MudTd data-testid="broadcast-table-expiry-date" DataLabel="Expires On">@ShortFormatFromUtc(context.ExpiryDate)</MudTd>
         <MudTd data-testid="broadcast-table-action-type" DataLabel="Action Type">@context.ActionType</MudTd>
         <MudTd DataLabel="Actions" Style="text-align:right">
             <div>

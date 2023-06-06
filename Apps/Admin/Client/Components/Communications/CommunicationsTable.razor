@@ -46,8 +46,8 @@
     <RowTemplate>
         <MudTd data-testid="comm-table-subject" DataLabel="Subject">@context.Subject</MudTd>
         <MudTd data-testid="comm-table-status" DataLabel="Status">@context.Status</MudTd>
-        <MudTd data-testid="comm-table-effective-date" DataLabel="Effective On">@ConvertToShortFormatFromUtc(context.EffectiveDate)</MudTd>
-        <MudTd data-testid="comm-table-expiry-date" DataLabel="Expires On">@ConvertToShortFormatFromUtc(context.ExpiryDate)</MudTd>
+        <MudTd data-testid="comm-table-effective-date" DataLabel="Effective On">@ShortFormatFromUtc(context.EffectiveDate)</MudTd>
+        <MudTd data-testid="comm-table-expiry-date" DataLabel="Expires On">@ShortFormatFromUtc(context.ExpiryDate)</MudTd>
         <MudTd DataLabel="Actions" Style="text-align:right">
             <div>
                 <MudTooltip Text="@(context.IsExpanded ? "Collapse" : "Expand")">
