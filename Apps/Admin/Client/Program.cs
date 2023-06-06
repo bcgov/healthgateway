@@ -100,7 +100,7 @@ namespace HealthGateway.Admin.Client
 
             builder.Services.AddBlazoredLocalStorage();
 
-            builder.Services.AddTransient<IDateConversionService, DateConversionService>();
+            builder.Services.AddSingleton<IDateConversionService, DateConversionService>();
 
             app[0] = builder.Build();
             await app[0].RunAsync().ConfigureAwait(true);
