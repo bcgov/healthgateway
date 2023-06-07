@@ -76,7 +76,7 @@ const showCloseWarning = ref(false);
 const timeForDeletion = ref(-1);
 const intervalHandler = ref(0);
 
-const verifySMSModal = ref<VerifySMSComponent>();
+const verifySMSModal = ref<InstanceType<typeof VerifySMSComponent>>();
 
 const webClientConfig = computed<WebClientConfiguration>(
     () => store.getters["config/webClient"]

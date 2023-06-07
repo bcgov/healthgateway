@@ -41,7 +41,8 @@ const store = useStore();
 
 const isLoadingDocument = ref(false);
 
-const sensitiveDocumentModal = ref<MessageModalComponent>();
+const sensitiveDocumentModal =
+    ref<InstanceType<typeof MessageModalComponent>>();
 
 const entryIcon = computed<string | undefined>(
     () => entryTypeMap.get(EntryType.Covid19TestResult)?.icon

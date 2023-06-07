@@ -36,7 +36,7 @@ const props = withDefaults(defineProps<Props>(), {
 const store = useStore();
 const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
 
-const messageModal = ref<MessageModalComponent>();
+const messageModal = ref<InstanceType<typeof MessageModalComponent>>();
 
 const files = computed<Dictionary<ClinicalDocumentFile>>(
     () => store.getters["clinicalDocument/files"]

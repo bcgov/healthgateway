@@ -33,7 +33,7 @@ const props = withDefaults(defineProps<Props>(), {
 const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
 const store = useStore();
 
-const messageModal = ref<MessageModalComponent>();
+const messageModal = ref<InstanceType<typeof MessageModalComponent>>();
 
 const isPatientDataFileLoading = computed<(fileId: string) => boolean>(
     () => store.getters["patientData/isPatientDataFileLoading"]

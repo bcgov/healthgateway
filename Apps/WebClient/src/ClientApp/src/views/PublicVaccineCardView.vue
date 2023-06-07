@@ -65,8 +65,8 @@ const phn = ref("");
 const dateOfBirth = ref("");
 const dateOfVaccine = ref("");
 
-const downloadImageModal = ref<MessageModalComponent>();
-const downloadPdfModal = ref<MessageModalComponent>();
+const downloadImageModal = ref<InstanceType<typeof MessageModalComponent>>();
+const downloadPdfModal = ref<InstanceType<typeof MessageModalComponent>>();
 
 const vaccinationState = computed(() => status.value?.state);
 const isPartiallyVaccinated = computed(

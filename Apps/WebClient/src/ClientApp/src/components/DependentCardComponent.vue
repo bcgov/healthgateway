@@ -116,8 +116,9 @@ const selectedTestRow = ref<Covid19LaboratoryTestRow>();
 const selectedLaboratoryOrderRow = ref<LaboratoryOrder>();
 const selectedClinicalDocumentRow = ref<ClinicalDocument>();
 
-const reportDownloadModal = ref<MessageModalComponent>();
-const vaccineRecordResultModal = ref<MessageModalComponent>();
+const reportDownloadModal = ref<InstanceType<typeof MessageModalComponent>>();
+const vaccineRecordResultModal =
+    ref<InstanceType<typeof MessageModalComponent>>();
 const deleteModal = ref<InstanceType<typeof DeleteModalComponent>>();
 
 const user = computed<User>(() => store.getters["user/user"]);

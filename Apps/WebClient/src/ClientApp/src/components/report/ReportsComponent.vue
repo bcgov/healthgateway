@@ -70,7 +70,7 @@ const reportFilter = ref<ReportFilter>(ReportFilterBuilder.create().build());
 const isReportFilterStartDateValidDate = ref(true);
 const isReportFilterEndDateValidDate = ref(true);
 
-const messageModal = ref<MessageModalComponent>();
+const messageModal = ref<InstanceType<typeof MessageModalComponent>>();
 const reportComponent = ref<{
     generateReport: (
         reportFormatType: ReportFormatType,

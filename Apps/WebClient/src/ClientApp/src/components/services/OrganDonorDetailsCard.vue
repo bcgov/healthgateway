@@ -27,7 +27,8 @@ const props = defineProps<Props>();
 const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
 const store = useStore();
 
-const sensitiveDocumentModal = ref<MessageModalComponent>();
+const sensitiveDocumentModal =
+    ref<InstanceType<typeof MessageModalComponent>>();
 
 const patientData = computed<PatientData[]>(() => {
     return store.getters["patientData/patientData"](props.hdid, [

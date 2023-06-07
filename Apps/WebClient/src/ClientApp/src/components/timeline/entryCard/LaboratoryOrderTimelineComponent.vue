@@ -39,7 +39,7 @@ const laboratoryService = container.get<ILaboratoryService>(
 );
 
 const isLoadingDocument = ref(false);
-const messageModal = ref<MessageModalComponent>();
+const messageModal = ref<InstanceType<typeof MessageModalComponent>>();
 
 const entryIcon = computed<string | undefined>(
     () => entryTypeMap.get(EntryType.LabResult)?.icon
