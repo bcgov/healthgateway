@@ -1,12 +1,11 @@
 <script setup lang="ts">
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
-import { BaseValidation, useVuelidate } from "@vuelidate/core";
+import { useVuelidate } from "@vuelidate/core";
 import {
     email as emailValidator,
     helpers,
     not,
-    requiredIf,
     sameAs,
 } from "@vuelidate/validators";
 import { Duration, DurationUnit } from "luxon";
@@ -29,6 +28,7 @@ import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ILogger, IUserProfileService } from "@/services/interfaces";
 import PhoneUtil from "@/utility/phoneUtil";
+import ValidationUtil from "@/utility/validationUtil";
 
 library.add(faExclamationTriangle);
 
@@ -151,17 +151,11 @@ const formattedLoginDateTimes = computed(() =>
 );
 const validations = computed(() => ({
     smsNumber: {
-        required: requiredIf(
-            () => isSMSEditable.value && Boolean(smsNumber.value)
-        ),
-        newSMSNumber: not(sameAs("tempSMS")),
+        newSMSNumber: not(sameAs(tempSMS)),
         sms: helpers.withAsync(validPhoneNumberFormat),
     },
     email: {
-        required: requiredIf(
-            () => isEmailEditable.value && Boolean(email.value)
-        ),
-        newEmail: not(sameAs("tempEmail")),
+        newEmail: not(sameAs(tempEmail)),
         email: emailValidator,
     },
 }));
@@ -220,12 +214,6 @@ function calculateTimeForDeletion(): void {
     let endDate = new DateWrapper(user.value.closedDateTime);
     endDate = endDate.add({ hour: webClientConfig.value.hoursForDeletion });
     timeForDeletion.value = endDate.diff(new DateWrapper()).milliseconds;
-}
-
-function isValid(param: BaseValidation): boolean | undefined {
-    return param.$dirty === false
-        ? undefined
-        : !param.$invalid && !param.$pending;
 }
 
 function makeEmailEditable(): void {
@@ -431,11 +419,11 @@ userProfileService
             userProfile.value = profile;
             loginDateTimes.value = profile.lastLoginDateTimes;
 
-            email.value = profile.email;
+            email.value = profile.email || "";
             emailVerified.value = profile.isEmailVerified;
             emailVerificationSent.value = emailVerified.value;
 
-            smsNumber.value = profile.smsNumber;
+            smsNumber.value = profile.smsNumber || "";
             smsVerified.value = profile.isSMSNumberVerified;
         }
 
@@ -494,7 +482,13 @@ intervalHandler.value = window.setInterval(
                 <div>
                     <b-form-group
                         :state="
-                            isValid(v$.email) || !isEmailEditable ? null : false
+                            !isEmailEditable
+                                ? undefined
+                                : ValidationUtil.isValid(
+                                      v$.email,
+                                      undefined,
+                                      false
+                                  )
                         "
                     >
                         <label for="email" class="hg-label">
@@ -514,7 +508,7 @@ intervalHandler.value = window.setInterval(
                                 <b-col>
                                     <b-form-input
                                         id="email"
-                                        v-model="v$.email.$model"
+                                        v-model="email"
                                         data-testid="emailInput"
                                         type="email"
                                         :placeholder="
@@ -523,11 +517,15 @@ intervalHandler.value = window.setInterval(
                                                 : 'Empty'
                                         "
                                         :disabled="!isEmailEditable"
+                                        autofocus
                                         :state="
-                                            isValid(v$.email) ||
                                             !isEmailEditable
-                                                ? null
-                                                : false
+                                                ? undefined
+                                                : ValidationUtil.isValid(
+                                                      v$.email,
+                                                      undefined,
+                                                      false
+                                                  )
                                         "
                                     />
                                 </b-col>
@@ -555,12 +553,31 @@ intervalHandler.value = window.setInterval(
                             </b-row>
                         </div>
                         <b-form-invalid-feedback
-                            :state="isValid(v$.email.email)"
+                            :state="
+                                ValidationUtil.isValid(
+                                    v$.email,
+                                    v$.email.email,
+                                    false
+                                )
+                            "
                         >
                             Valid email is required
                         </b-form-invalid-feedback>
                         <b-form-invalid-feedback
-                            :state="isValid(v$.email.newEmail)"
+                            v-if="
+                                ValidationUtil.isValid(
+                                    v$.email,
+                                    v$.email.email,
+                                    false
+                                )
+                            "
+                            :state="
+                                ValidationUtil.isValid(
+                                    v$.email,
+                                    v$.email.newEmail,
+                                    false
+                                )
+                            "
                             data-testid="emailInvalidNewEqualsOld"
                         >
                             New email must be different from the previous one
@@ -617,13 +634,18 @@ intervalHandler.value = window.setInterval(
                             Cancel
                         </hg-button>
                         <hg-button
-                            id="editSMSSaveBtn"
+                            id="editEmailSaveBtn"
                             data-testid="editEmailSaveBtn"
                             variant="primary"
                             size="small"
                             class="mx-2"
                             :disabled="
-                                tempEmail === email || !isValid(v$.email)
+                                tempEmail === email ||
+                                !ValidationUtil.isValid(
+                                    v$.email,
+                                    undefined,
+                                    false
+                                )
                             "
                             @click="saveEmailEdit()"
                         >
@@ -634,9 +656,13 @@ intervalHandler.value = window.setInterval(
                 <div>
                     <b-form-group
                         :state="
-                            isValid(v$.smsNumber) || !isSMSEditable
-                                ? null
-                                : false
+                            !isSMSEditable
+                                ? undefined
+                                : ValidationUtil.isValid(
+                                      v$.smsNumber,
+                                      undefined,
+                                      false
+                                  )
                         "
                     >
                         <label for="smsNumber" class="hg-label">
@@ -656,7 +682,7 @@ intervalHandler.value = window.setInterval(
                                 <b-col>
                                     <b-form-input
                                         id="smsNumber"
-                                        v-model="v$.smsNumber.$model"
+                                        v-model="smsNumber"
                                         v-mask="'(###) ###-####'"
                                         type="tel"
                                         data-testid="smsNumberInput"
@@ -666,12 +692,17 @@ intervalHandler.value = window.setInterval(
                                                 : 'Empty'
                                         "
                                         :disabled="!isSMSEditable"
+                                        autofocus
                                         :state="
-                                            isValid(v$.smsNumber) ||
                                             !isSMSEditable
-                                                ? null
-                                                : false
+                                                ? undefined
+                                                : ValidationUtil.isValid(
+                                                      v$.smsNumber,
+                                                      undefined,
+                                                      false
+                                                  )
                                         "
+                                        debounce="50"
                                     />
                                 </b-col>
                                 <b-col
@@ -697,13 +728,32 @@ intervalHandler.value = window.setInterval(
                             </b-row>
                         </div>
                         <b-form-invalid-feedback
-                            :state="isValid(v$.smsNumber.sms)"
+                            :state="
+                                ValidationUtil.isValid(
+                                    v$.smsNumber,
+                                    v$.smsNumber.sms,
+                                    false
+                                )
+                            "
                         >
                             Valid SMS number is required
                         </b-form-invalid-feedback>
                         <b-form-invalid-feedback
+                            v-if="
+                                ValidationUtil.isValid(
+                                    v$.smsNumber,
+                                    v$.smsNumber.sms,
+                                    false
+                                )
+                            "
                             data-testid="smsInvalidNewEqualsOld"
-                            :state="isValid(v$.smsNumber.newSMSNumber)"
+                            :state="
+                                ValidationUtil.isValid(
+                                    v$.smsNumber,
+                                    v$.smsNumber.newSMSNumber,
+                                    false
+                                )
+                            "
                         >
                             New SMS number must be different from the previous
                             one
@@ -768,7 +818,12 @@ intervalHandler.value = window.setInterval(
                             size="small"
                             class="mx-2"
                             :disabled="
-                                tempSMS === smsNumber || !isValid(v$.smsNumber)
+                                tempSMS === smsNumber ||
+                                !ValidationUtil.isValid(
+                                    v$.smsNumber,
+                                    undefined,
+                                    false
+                                )
                             "
                             @click="saveSMSEdit()"
                         >

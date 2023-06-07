@@ -13,6 +13,7 @@ import { ResultError } from "@/models/errors";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ILogger, IUserProfileService } from "@/services/interfaces";
+import ValidationUtil from "@/utility/validationUtil";
 
 library.add(faExclamationTriangle);
 
@@ -28,12 +29,8 @@ const termsOfServiceId = ref("");
 const termsOfService = ref("");
 const accepted = ref(false);
 
-const isValid = computed(() => {
-    const param = v$.value.accepted;
-    return param.$dirty ? !param.$invalid : undefined;
-});
 const validations = computed(() => ({
-    accepted: { isChecked: sameAs(() => true) },
+    accepted: { isChecked: sameAs(true) },
 }));
 
 const v$ = useVuelidate(validations, { accepted });
@@ -146,16 +143,20 @@ loadTermsOfService();
                         data-testid="tos-text-area-component"
                     />
                     <div class="mb-3">
-                        <b-form-checkbox
-                            id="accept-tos-checkbox"
-                            v-model="accepted"
-                            data-testid="accept-tos-checkbox"
-                            class="accept"
-                            :state="isValid"
+                        <div>
+                            <b-form-checkbox
+                                id="accept-tos-checkbox"
+                                v-model="accepted"
+                                data-testid="accept-tos-checkbox"
+                                class="accept"
+                                :state="ValidationUtil.isValid(v$.accepted)"
+                            >
+                                I agree to the terms of service above
+                            </b-form-checkbox>
+                        </div>
+                        <b-form-invalid-feedback
+                            :state="ValidationUtil.isValid(v$.accepted)"
                         >
-                            I agree to the terms of service above
-                        </b-form-checkbox>
-                        <b-form-invalid-feedback :state="isValid">
                             You must accept the terms of service.
                         </b-form-invalid-feedback>
                     </div>

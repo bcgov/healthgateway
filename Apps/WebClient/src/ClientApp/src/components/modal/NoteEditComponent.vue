@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faEdit } from "@fortawesome/free-solid-svg-icons";
-import { BaseValidation, useVuelidate } from "@vuelidate/core";
+import { useVuelidate } from "@vuelidate/core";
 import { required } from "@vuelidate/validators";
 import { computed, nextTick, ref, watch } from "vue";
 import { useStore } from "vue-composition-wrapper";
@@ -14,6 +14,7 @@ import { ResultError } from "@/models/errors";
 import NoteTimelineEntry from "@/models/noteTimelineEntry";
 import User from "@/models/user";
 import UserNote from "@/models/userNote";
+import ValidationUtil from "@/utility/validationUtil";
 
 library.add(faEdit);
 
@@ -49,6 +50,7 @@ const validations = computed(() => ({
     },
     dateString: {
         required,
+        valid: () => isDateStringValidDate.value,
     },
 }));
 
@@ -78,10 +80,6 @@ function onBrowserClose(event: BeforeUnloadEvent): void {
     if (isVisible.value && !isIdleWarningVisible.value && !isBlankNote.value) {
         event.returnValue = unsavedChangesText;
     }
-}
-
-function isValid(param: BaseValidation): boolean | undefined {
-    return param.$dirty ? !param.$invalid : undefined;
 }
 
 function editNote(noteTimelineEntry: NoteTimelineEntry): void {
@@ -169,11 +167,9 @@ function onNoteAdded(note: UserNote): void {
     setSelectedDate(new DateWrapper(note.journalDate));
 }
 
-function handleOk(bvModalEvt: Event): void {
-    // Prevent modal from closing
-    bvModalEvt.preventDefault();
+function handleOk(): void {
     v$.value.$touch();
-    if (v$.value.$invalid || !isDateStringValidDate.value) {
+    if (v$.value.$invalid) {
         return;
     } else if (isNewNote.value) {
         create();
@@ -247,32 +243,46 @@ window.addEventListener("beforeunload", onBrowserClose);
         <form>
             <b-row>
                 <b-col class="col-sm-7 col-12 pr-3 pr-sm-0">
-                    <b-form-input
-                        id="title"
-                        ref="titleInput"
-                        v-model="title"
-                        data-testid="noteTitleInput"
-                        type="text"
-                        placeholder="Title"
-                        maxlength="100"
-                        :state="isValid(v$.title)"
-                        @blur.native="v$.title.$touch()"
-                    />
-                    <b-form-invalid-feedback :state="isValid(v$.title)">
+                    <div>
+                        <b-form-input
+                            id="title"
+                            ref="titleInput"
+                            v-model="title"
+                            data-testid="noteTitleInput"
+                            type="text"
+                            placeholder="Title"
+                            maxlength="100"
+                            autofocus
+                            :state="ValidationUtil.isValid(v$.title)"
+                            @blur="v$.title.$touch()"
+                        />
+                    </div>
+                    <b-form-invalid-feedback
+                        :state="ValidationUtil.isValid(v$.title)"
+                    >
                         Title is required
                     </b-form-invalid-feedback>
                 </b-col>
                 <b-col class="col-sm-5 col-12 pt-3 pt-sm-0">
-                    <DatePickerComponent
-                        id="date"
-                        :value="dateString"
-                        data-testid="noteDateInput"
-                        :state="isValid(v$.dateString)"
-                        @blur="touchDate()"
-                        @is-date-valid="isDateStringValidDate = $event"
-                        @update:value="(value) => (dateString = value)"
-                    />
-                    <b-form-invalid-feedback :state="isValid(v$.dateString)">
+                    <div>
+                        <DatePickerComponent
+                            id="date"
+                            :value="dateString"
+                            data-testid="noteDateInput"
+                            :state="ValidationUtil.isValid(v$.dateString)"
+                            @blur="touchDate()"
+                            @is-date-valid="isDateStringValidDate = $event"
+                            @update:value="(value) => (dateString = value)"
+                        />
+                    </div>
+                    <b-form-invalid-feedback
+                        :state="
+                            ValidationUtil.isValid(
+                                v$.dateString,
+                                v$.dateString.required
+                            )
+                        "
+                    >
                         Date is required.
                     </b-form-invalid-feedback>
                 </b-col>
@@ -287,7 +297,7 @@ window.addEventListener("beforeunload", onBrowserClose);
                         rows="3"
                         max-rows="6"
                         maxlength="1000"
-                    ></b-form-textarea>
+                    />
                 </b-col>
             </b-row>
         </form>
@@ -307,12 +317,8 @@ window.addEventListener("beforeunload", onBrowserClose);
                         data-testid="saveNoteBtn"
                         variant="primary"
                         type="submit"
-                        :disabled="
-                            isSaving ||
-                            !isDateStringValidDate ||
-                            !isValid(v$.dateString)
-                        "
-                        @click="handleOk"
+                        :disabled="isSaving"
+                        @click.prevent="handleOk"
                         >Save</hg-button
                     >
                 </div>

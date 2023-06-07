@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
-import { BaseValidation, useVuelidate } from "@vuelidate/core";
+import { useVuelidate } from "@vuelidate/core";
 import {
     email as emailValidator,
     helpers,
@@ -24,6 +24,7 @@ import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ILogger, IUserProfileService } from "@/services/interfaces";
 import PhoneUtil from "@/utility/phoneUtil";
+import ValidationUtil from "@/utility/validationUtil";
 
 library.add(faExclamationTriangle);
 
@@ -76,19 +77,19 @@ const termsOfServiceLoaded = computed(
 );
 const validations = computed(() => ({
     smsNumber: {
-        required: requiredIf(() => isSMSNumberChecked.value),
+        required: requiredIf(isSMSNumberChecked),
         sms: helpers.withAsync(validPhoneNumberFormat),
     },
     email: {
-        required: requiredIf(() => isEmailChecked.value),
+        required: requiredIf(isEmailChecked),
         email: emailValidator,
     },
     emailConfirmation: {
-        required: requiredIf(() => isEmailChecked.value),
-        sameAsEmail: sameAs("email"),
+        required: requiredIf(isEmailChecked),
+        sameAsEmail: sameAs(email),
         email: emailValidator,
     },
-    accepted: { isChecked: sameAs(() => true) },
+    accepted: { isChecked: sameAs(true) },
 }));
 
 const v$ = useVuelidate(validations, {
@@ -185,12 +186,6 @@ function loadTermsOfService(): void {
         });
 }
 
-function isValid(param: BaseValidation): boolean | undefined {
-    return param.$dirty === false
-        ? undefined
-        : !param.$invalid && !param.$pending;
-}
-
 async function onSubmit(): Promise<void> {
     v$.value.$touch();
     if (v$.value.$invalid || oidcUserInfo.value === undefined) {
@@ -274,31 +269,44 @@ loadTermsOfService();
                             Receive application and health record updates
                         </em>
                     </div>
-                    <b-form-input
-                        id="emailInput"
-                        v-model="v$.email.$model"
-                        :disabled="!isEmailChecked"
-                        :state="isValid(v$.email)"
-                        data-testid="emailInput"
-                        placeholder="Your email address"
-                        type="email"
-                    />
-                    <b-form-invalid-feedback :state="isValid(v$.email)">
+                    <div>
+                        <b-form-input
+                            id="emailInput"
+                            v-model="v$.email.$model"
+                            :disabled="!isEmailChecked"
+                            :state="ValidationUtil.isValid(v$.email)"
+                            data-testid="emailInput"
+                            placeholder="Your email address"
+                            type="email"
+                        />
+                    </div>
+                    <b-form-invalid-feedback
+                        :state="ValidationUtil.isValid(v$.email)"
+                    >
                         Valid email is required
                     </b-form-invalid-feedback>
                 </div>
                 <div class="mb-3">
-                    <b-form-input
-                        id="emailConfirmationInput"
-                        v-model="v$.emailConfirmation.$model"
-                        :disabled="!isEmailChecked"
-                        :state="isValid(v$.emailConfirmation)"
-                        data-testid="emailConfirmationInput"
-                        placeholder="Confirm your email address"
-                        type="email"
-                    />
+                    <div>
+                        <b-form-input
+                            id="emailConfirmationInput"
+                            v-model="v$.emailConfirmation.$model"
+                            :disabled="!isEmailChecked"
+                            :state="
+                                ValidationUtil.isValid(v$.emailConfirmation)
+                            "
+                            data-testid="emailConfirmationInput"
+                            placeholder="Confirm your email address"
+                            type="email"
+                        />
+                    </div>
                     <b-form-invalid-feedback
-                        :state="v$.emailConfirmation.sameAsEmail"
+                        :state="
+                            ValidationUtil.isValid(
+                                v$.emailConfirmation,
+                                v$.emailConfirmation.sameAsEmail
+                            )
+                        "
                     >
                         Emails must match
                     </b-form-invalid-feedback>
@@ -317,21 +325,22 @@ loadTermsOfService();
                             Receive health record updates only
                         </em>
                     </div>
-                    <b-form-input
-                        id="smsNumberInput"
-                        v-model="v$.smsNumber.$model"
-                        v-mask="'(###) ###-####'"
-                        :disabled="!isSMSNumberChecked"
-                        :state="isValid(v$.smsNumber)"
-                        class="d-flex"
-                        data-testid="smsNumberInput"
-                        placeholder="Your phone number"
-                        type="tel"
-                    >
-                    </b-form-input>
+                    <div>
+                        <b-form-input
+                            id="smsNumberInput"
+                            v-model="v$.smsNumber.$model"
+                            v-mask="'(###) ###-####'"
+                            :disabled="!isSMSNumberChecked"
+                            :state="ValidationUtil.isValid(v$.smsNumber)"
+                            class="d-flex"
+                            data-testid="smsNumberInput"
+                            placeholder="Your phone number"
+                            type="tel"
+                        />
+                    </div>
                     <b-form-invalid-feedback
                         v-if="!v$.smsNumber.$pending"
-                        :state="isValid(v$.smsNumber)"
+                        :state="ValidationUtil.isValid(v$.smsNumber)"
                     >
                         Valid sms number is required
                     </b-form-invalid-feedback>
@@ -358,16 +367,20 @@ loadTermsOfService();
                     class="termsOfService mb-3"
                 />
                 <div class="mb-3">
-                    <b-form-checkbox
-                        id="accept"
-                        v-model="accepted"
-                        :state="isValid(v$.accepted)"
-                        class="accept"
-                        data-testid="acceptCheckbox"
+                    <div>
+                        <b-form-checkbox
+                            id="accept"
+                            v-model="accepted"
+                            :state="ValidationUtil.isValid(v$.accepted)"
+                            class="accept"
+                            data-testid="acceptCheckbox"
+                        >
+                            I agree to the terms of service above
+                        </b-form-checkbox>
+                    </div>
+                    <b-form-invalid-feedback
+                        :state="ValidationUtil.isValid(v$.accepted)"
                     >
-                        I agree to the terms of service above
-                    </b-form-checkbox>
-                    <b-form-invalid-feedback :state="isValid(v$.accepted)">
                         You must accept the terms of service.
                     </b-form-invalid-feedback>
                 </div>

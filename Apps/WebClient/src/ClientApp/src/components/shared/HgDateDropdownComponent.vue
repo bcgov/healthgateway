@@ -134,6 +134,7 @@ function onChange(): void {
                 aria-label="Year"
                 :disabled="disabled"
                 @change="onChange"
+                @blur.native="emit('blur')"
             />
         </b-col>
         <b-col class="px-2">
@@ -145,6 +146,7 @@ function onChange(): void {
                 aria-label="Month"
                 :disabled="disabled"
                 @change="onChange"
+                @blur.native="emit('blur')"
             />
         </b-col>
         <b-col cols="auto">
@@ -156,7 +158,7 @@ function onChange(): void {
                 aria-label="Day"
                 :disabled="disabled"
                 @change="onChange"
-                @blur="emit('blur')"
+                @blur.native="emit('blur')"
             />
         </b-col>
     </b-row>

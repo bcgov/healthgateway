@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
-import { BaseValidation, useVuelidate } from "@vuelidate/core";
+import { useVuelidate } from "@vuelidate/core";
 import {
     maxLength,
     minLength,
@@ -28,7 +28,7 @@ import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ILogger, IPcrTestService } from "@/services/interfaces";
 import { phnMask, smsMask } from "@/utility/masks";
-import PHNValidator from "@/utility/phnValidator";
+import ValidationUtil from "@/utility/validationUtil";
 
 library.add(faInfoCircle);
 
@@ -104,45 +104,50 @@ const fullName = computed(() =>
 const validations = computed(() => ({
     pcrTest: {
         firstName: {
-            required: requiredIf(dataSource.value === PcrDataSource.Manual),
+            required: requiredIf(
+                () => dataSource.value === PcrDataSource.Manual
+            ),
         },
         lastName: {
-            required: requiredIf(dataSource.value === PcrDataSource.Manual),
+            required: requiredIf(
+                () => dataSource.value === PcrDataSource.Manual
+            ),
         },
         phn: {
             required: requiredIf(
-                dataSource.value === PcrDataSource.Manual && !noPhn.value
+                () => dataSource.value === PcrDataSource.Manual && !noPhn.value
             ),
             formatted: (value: string) =>
                 dataSource.value === PcrDataSource.Manual && !noPhn.value
-                    ? PHNValidator.IsValid(value)
+                    ? ValidationUtil.validatePhn(value)
                     : true,
         },
         dob: {
-            required: requiredIf(dataSource.value === PcrDataSource.Manual),
+            required: requiredIf(
+                () => dataSource.value === PcrDataSource.Manual
+            ),
             maxValue: (value: string) =>
                 dataSource.value === PcrDataSource.Manual
                     ? new DateWrapper(value).isBefore(new DateWrapper())
                     : true,
         },
         contactPhoneNumber: {
-            required: false,
             minLength: minLength(14),
             maxLength: maxLength(14),
         },
         streetAddress: {
             required: requiredIf(
-                dataSource.value === PcrDataSource.Manual && noPhn.value
+                () => dataSource.value === PcrDataSource.Manual && noPhn.value
             ),
         },
         city: {
             required: requiredIf(
-                dataSource.value === PcrDataSource.Manual && noPhn.value
+                () => dataSource.value === PcrDataSource.Manual && noPhn.value
             ),
         },
         postalOrZip: {
             required: requiredIf(
-                dataSource.value === PcrDataSource.Manual && noPhn.value
+                () => dataSource.value === PcrDataSource.Manual && noPhn.value
             ),
             minLength: minLength(7),
         },
@@ -151,7 +156,7 @@ const validations = computed(() => ({
             minValue: minValue(0),
         },
         testKitCode: {
-            required: requiredIf(noSerialNumber.value),
+            required: requiredIf(noSerialNumber),
             formatted: (value: string) =>
                 /^([a-zA-Z\d]{7})-([a-zA-Z\d]{5})$|^$/.test(value),
         },
@@ -216,10 +221,6 @@ function setDataSource(value: PcrDataSource): void {
     }
     resetForm();
     dataSource.value = value;
-}
-
-function isValid(param: BaseValidation): boolean | undefined {
-    return param.$dirty ? !param.$invalid : undefined;
 }
 
 function handleSubmit(): void {
@@ -471,21 +472,27 @@ if (oidcIsAuthenticated.value) {
                         <b-row v-if="noTestKitCode" class="mt-2">
                             <b-col>
                                 <label for="testKitCode">Test Kit Code</label>
-                                <b-form-input
-                                    id="testKitCode"
-                                    v-model="pcrTest.testKitCode"
-                                    data-testid="test-kit-code-input"
-                                    type="text"
-                                    placeholder="Test Kit Code"
-                                    :state="isValid(v$.pcrTest.testKitCode)"
-                                    @blur.native="
-                                        v$.pcrTest.testKitCode.$touch()
-                                    "
-                                />
+                                <div>
+                                    <b-form-input
+                                        id="testKitCode"
+                                        v-model="pcrTest.testKitCode"
+                                        data-testid="test-kit-code-input"
+                                        type="text"
+                                        placeholder="Test Kit Code"
+                                        :state="
+                                            ValidationUtil.isValid(
+                                                v$.pcrTest.testKitCode
+                                            )
+                                        "
+                                        @blur="v$.pcrTest.testKitCode.$touch()"
+                                    />
+                                </div>
                                 <b-form-invalid-feedback
-                                    v-if="
-                                        v$.pcrTest.testKitCode.$dirty &&
-                                        !v$.pcrTest.testKitCode.required
+                                    :state="
+                                        ValidationUtil.isValid(
+                                            v$.pcrTest.testKitCode,
+                                            v$.pcrTest.testKitCode.required
+                                        )
                                     "
                                     aria-label="PCR Test Kit Code is required"
                                     data-testid="feedback-testkitcode-is-required"
@@ -493,9 +500,17 @@ if (oidcIsAuthenticated.value) {
                                     PCR Test Kit Code is required.
                                 </b-form-invalid-feedback>
                                 <b-form-invalid-feedback
-                                    v-else-if="
-                                        v$.pcrTest.testKitCode.$dirty &&
-                                        !v$.pcrTest.testKitCode.formatted
+                                    v-if="
+                                        ValidationUtil.isValid(
+                                            v$.pcrTest.testKitCode,
+                                            v$.pcrTest.testKitCode.required
+                                        )
+                                    "
+                                    :state="
+                                        ValidationUtil.isValid(
+                                            v$.pcrTest.testKitCode,
+                                            v$.pcrTest.testKitCode.formatted
+                                        )
                                     "
                                     aria-label="PCR Test Kit Code is invalid"
                                     data-testid="feedback-testkitcode-is-invalid"
@@ -514,26 +529,32 @@ if (oidcIsAuthenticated.value) {
                                         <label for="pcrFirstName">
                                             First Name
                                         </label>
-                                        <b-form-input
-                                            id="pcrFirstName"
-                                            v-model="pcrTest.firstName"
-                                            data-testid="first-name-input"
-                                            type="text"
-                                            placeholder="First Name"
-                                            :state="
-                                                isValid(v$.pcrTest.firstName)
-                                            "
-                                            @blur.native="
-                                                v$.pcrTest.firstName.$touch()
-                                            "
-                                        />
+                                        <div>
+                                            <b-form-input
+                                                id="pcrFirstName"
+                                                v-model="pcrTest.firstName"
+                                                data-testid="first-name-input"
+                                                type="text"
+                                                placeholder="First Name"
+                                                :state="
+                                                    ValidationUtil.isValid(
+                                                        v$.pcrTest.firstName
+                                                    )
+                                                "
+                                                @blur="
+                                                    v$.pcrTest.firstName.$touch()
+                                                "
+                                            />
+                                        </div>
                                         <b-form-invalid-feedback
-                                            v-if="
-                                                v$.pcrTest.firstName.$dirty &&
-                                                !v$.pcrTest.firstName.required
+                                            :state="
+                                                ValidationUtil.isValid(
+                                                    v$.pcrTest.firstName,
+                                                    v$.pcrTest.firstName
+                                                        .required
+                                                )
                                             "
                                             aria-label="First name is required"
-                                            force-show
                                             data-testid="feedback-firstname-is-required"
                                         >
                                             First name is required.
@@ -545,26 +566,31 @@ if (oidcIsAuthenticated.value) {
                                         <label for="pcrLastName"
                                             >Last Name</label
                                         >
-                                        <b-form-input
-                                            id="pcrLastName"
-                                            v-model="pcrTest.lastName"
-                                            data-testid="last-name-input"
-                                            type="text"
-                                            placeholder="Last Name"
-                                            :state="
-                                                isValid(v$.pcrTest.lastName)
-                                            "
-                                            @blur.native="
-                                                v$.pcrTest.lastName.$touch()
-                                            "
-                                        />
+                                        <div>
+                                            <b-form-input
+                                                id="pcrLastName"
+                                                v-model="pcrTest.lastName"
+                                                data-testid="last-name-input"
+                                                type="text"
+                                                placeholder="Last Name"
+                                                :state="
+                                                    ValidationUtil.isValid(
+                                                        v$.pcrTest.lastName
+                                                    )
+                                                "
+                                                @blur.native="
+                                                    v$.pcrTest.lastName.$touch()
+                                                "
+                                            />
+                                        </div>
                                         <b-form-invalid-feedback
-                                            v-if="
-                                                v$.pcrTest.lastName.$dirty &&
-                                                !v$.pcrTest.lastName.required
+                                            :state="
+                                                ValidationUtil.isValid(
+                                                    v$.pcrTest.lastName,
+                                                    v$.pcrTest.lastName.required
+                                                )
                                             "
                                             aria-label="Last name is required"
-                                            force-show
                                             data-testid="feedback-lastname-is-required"
                                         >
                                             Last name is required.
@@ -585,22 +611,32 @@ if (oidcIsAuthenticated.value) {
                                             label="Personal Health Number"
                                             label-for="phn"
                                         >
-                                            <b-form-input
-                                                id="phn"
-                                                v-model="pcrTest.phn"
-                                                v-mask="phnMask"
-                                                data-testid="phn-input"
-                                                placeholder="PHN"
-                                                aria-label="Personal Health Number"
-                                                :state="isValid(v$.pcrTest.phn)"
-                                                :disabled="noPhn"
-                                                @blur.native="
-                                                    v$.pcrTest.phn.$touch()
-                                                "
-                                            />
+                                            <div>
+                                                <b-form-input
+                                                    id="phn"
+                                                    v-model="pcrTest.phn"
+                                                    v-mask="phnMask"
+                                                    data-testid="phn-input"
+                                                    placeholder="PHN"
+                                                    aria-label="Personal Health Number"
+                                                    :state="
+                                                        ValidationUtil.isValid(
+                                                            v$.pcrTest.phn
+                                                        )
+                                                    "
+                                                    :disabled="noPhn"
+                                                    @blur.native="
+                                                        v$.pcrTest.phn.$touch()
+                                                    "
+                                                />
+                                            </div>
                                             <b-form-invalid-feedback
                                                 aria-label="Valid PHN is required"
-                                                :state="isValid(v$.pcrTest.phn)"
+                                                :state="
+                                                    ValidationUtil.isValid(
+                                                        v$.pcrTest.phn
+                                                    )
+                                                "
                                                 data-testid="feedback-phn-is-required"
                                             >
                                                 Valid PHN is required.
@@ -661,30 +697,32 @@ if (oidcIsAuthenticated.value) {
                                         <label for="pcrStreetAddress">
                                             Street Address
                                         </label>
-                                        <b-form-input
-                                            id="pcrStreetAddress"
-                                            v-model="pcrTest.streetAddress"
-                                            data-testid="pcr-street-address-input"
-                                            type="text"
-                                            placeholder="Address"
+                                        <div>
+                                            <b-form-input
+                                                id="pcrStreetAddress"
+                                                v-model="pcrTest.streetAddress"
+                                                data-testid="pcr-street-address-input"
+                                                type="text"
+                                                placeholder="Address"
+                                                :state="
+                                                    ValidationUtil.isValid(
+                                                        v$.pcrTest.streetAddress
+                                                    )
+                                                "
+                                                @blur.native="
+                                                    v$.pcrTest.streetAddress.$touch()
+                                                "
+                                            />
+                                        </div>
+                                        <b-form-invalid-feedback
                                             :state="
-                                                isValid(
+                                                ValidationUtil.isValid(
+                                                    v$.pcrTest.streetAddress,
                                                     v$.pcrTest.streetAddress
+                                                        .required
                                                 )
                                             "
-                                            @blur.native="
-                                                v$.pcrTest.streetAddress.$touch()
-                                            "
-                                        />
-                                        <b-form-invalid-feedback
-                                            v-if="
-                                                v$.pcrTest.streetAddress
-                                                    .$dirty &&
-                                                !v$.pcrTest.streetAddress
-                                                    .required
-                                            "
                                             aria-label="Street address is required"
-                                            force-show
                                             data-testid="feedback-streetaddress-is-required"
                                         >
                                             Street address is required.
@@ -694,24 +732,31 @@ if (oidcIsAuthenticated.value) {
                                 <b-row class="mt-2">
                                     <b-col>
                                         <label for="pcrCity">City</label>
-                                        <b-form-input
-                                            id="pcrCity"
-                                            v-model="pcrTest.city"
-                                            data-testid="pcr-city-input"
-                                            type="text"
-                                            placeholder="City"
-                                            :state="isValid(v$.pcrTest.city)"
-                                            @blur.native="
-                                                v$.pcrTest.city.$touch()
-                                            "
-                                        />
+                                        <div>
+                                            <b-form-input
+                                                id="pcrCity"
+                                                v-model="pcrTest.city"
+                                                data-testid="pcr-city-input"
+                                                type="text"
+                                                placeholder="City"
+                                                :state="
+                                                    ValidationUtil.isValid(
+                                                        v$.pcrTest.city
+                                                    )
+                                                "
+                                                @blur.native="
+                                                    v$.pcrTest.city.$touch()
+                                                "
+                                            />
+                                        </div>
                                         <b-form-invalid-feedback
-                                            v-if="
-                                                v$.pcrTest.city.$dirty &&
-                                                !v$.pcrTest.city.required
+                                            :state="
+                                                ValidationUtil.isValid(
+                                                    v$.pcrTest.city,
+                                                    v$.pcrTest.city.required
+                                                )
                                             "
                                             aria-label="City is required"
-                                            force-show
                                             data-testid="feedback-city-is-required"
                                         >
                                             City is required.
@@ -721,39 +766,46 @@ if (oidcIsAuthenticated.value) {
                                 <b-row class="mt-2">
                                     <b-col>
                                         <label for="pcrZip">Postal Code</label>
-                                        <b-form-input
-                                            id="pcrZip"
-                                            v-model="pcrTest.postalOrZip"
-                                            v-mask="'A#A #A#'"
-                                            data-testid="pcr-zip-input"
-                                            type="text"
-                                            placeholder="Postal Code"
-                                            :state="
-                                                isValid(v$.pcrTest.postalOrZip)
-                                            "
-                                            @blur.native="
-                                                v$.pcrTest.postalOrZip.$touch()
-                                            "
-                                        />
+                                        <div>
+                                            <b-form-input
+                                                id="pcrZip"
+                                                v-model="pcrTest.postalOrZip"
+                                                v-mask="'A#A #A#'"
+                                                data-testid="pcr-zip-input"
+                                                type="text"
+                                                placeholder="Postal Code"
+                                                :state="
+                                                    ValidationUtil.isValid(
+                                                        v$.pcrTest.postalOrZip
+                                                    )
+                                                "
+                                                @blur.native="
+                                                    v$.pcrTest.postalOrZip.$touch()
+                                                "
+                                            />
+                                        </div>
                                         <b-form-invalid-feedback
-                                            v-if="
-                                                v$.pcrTest.postalOrZip.$dirty &&
-                                                !v$.pcrTest.postalOrZip.required
+                                            :state="
+                                                ValidationUtil.isValid(
+                                                    v$.pcrTest.postalOrZip,
+                                                    v$.pcrTest.postalOrZip
+                                                        .required
+                                                )
                                             "
                                             aria-label="Postal code is required"
-                                            force-show
                                             data-testid="feedback-postal-is-required"
                                         >
                                             Postal code is required.
                                         </b-form-invalid-feedback>
                                         <b-form-invalid-feedback
-                                            v-else-if="
-                                                v$.pcrTest.postalOrZip.$dirty &&
-                                                !v$.pcrTest.postalOrZip
-                                                    .minLength
+                                            :state="
+                                                ValidationUtil.isValid(
+                                                    v$.pcrTest.postalOrZip,
+                                                    v$.pcrTest.postalOrZip
+                                                        .minLength
+                                                )
                                             "
                                             aria-label="Postal code is required"
-                                            force-show
                                         >
                                             Postal code is required.
                                         </b-form-invalid-feedback>
@@ -767,35 +819,51 @@ if (oidcIsAuthenticated.value) {
                                 <b-form-group
                                     label="Date of Birth"
                                     label-for="dob"
-                                    :state="isValid(v$.pcrTest.dob)"
+                                    :state="
+                                        ValidationUtil.isValid(v$.pcrTest.dob)
+                                    "
                                 >
-                                    <HgDateDropdownComponent
-                                        id="dob"
-                                        v-model="pcrTest.dob"
-                                        data-testid="dob-input"
-                                        :state="isValid(v$.pcrTest.dob)"
-                                        :allow-future="false"
-                                        aria-label="Date of Birth"
-                                        @blur="v$.pcrTest.dob.$touch()"
-                                    />
+                                    <div>
+                                        <HgDateDropdownComponent
+                                            id="dob"
+                                            v-model="pcrTest.dob"
+                                            data-testid="dob-input"
+                                            :state="
+                                                ValidationUtil.isValid(
+                                                    v$.pcrTest.dob
+                                                )
+                                            "
+                                            :allow-future="false"
+                                            aria-label="Date of Birth"
+                                            @blur="v$.pcrTest.dob.$touch()"
+                                        />
+                                    </div>
                                     <b-form-invalid-feedback
-                                        v-if="
-                                            v$.pcrTest.dob.$dirty &&
-                                            !v$.pcrTest.dob.required
+                                        :state="
+                                            ValidationUtil.isValid(
+                                                v$.pcrTest.dob,
+                                                v$.pcrTest.dob.required
+                                            )
                                         "
                                         aria-label="Invalid Date of Birth"
                                         data-testid="feedback-dob-is-required"
-                                        force-show
                                     >
                                         A valid date of birth is required.
                                     </b-form-invalid-feedback>
                                     <b-form-invalid-feedback
-                                        v-else-if="
-                                            v$.pcrTest.dob.$dirty &&
-                                            !v$.pcrTest.dob.maxValue
+                                        v-if="
+                                            ValidationUtil.isValid(
+                                                v$.pcrTest.dob,
+                                                v$.pcrTest.dob.required
+                                            )
+                                        "
+                                        :state="
+                                            ValidationUtil.isValid(
+                                                v$.pcrTest.dob,
+                                                v$.pcrTest.dob.maxValue
+                                            )
                                         "
                                         aria-label="Invalid Date of Birth"
-                                        force-show
                                         data-testid="feedback-dob-is-invalid"
                                     >
                                         Date of birth must be in the past.
@@ -816,35 +884,35 @@ if (oidcIsAuthenticated.value) {
                                             notification once your COVID‑19 test
                                             result is available)
                                         </label>
-                                        <b-form-input
-                                            id="pcrMobileNumber"
-                                            v-model="pcrTest.contactPhoneNumber"
-                                            v-mask="smsMask"
-                                            data-testid="contact-phone-number-input"
-                                            type="tel"
-                                            placeholder="(###) ###-####"
+                                        <div>
+                                            <b-form-input
+                                                id="pcrMobileNumber"
+                                                v-model="
+                                                    pcrTest.contactPhoneNumber
+                                                "
+                                                v-mask="smsMask"
+                                                data-testid="contact-phone-number-input"
+                                                type="tel"
+                                                placeholder="(###) ###-####"
+                                                :state="
+                                                    ValidationUtil.isValid(
+                                                        v$.pcrTest
+                                                            .contactPhoneNumber
+                                                    )
+                                                "
+                                                @blur.native="
+                                                    v$.pcrTest.contactPhoneNumber.$touch()
+                                                "
+                                            />
+                                        </div>
+                                        <b-form-invalid-feedback
                                             :state="
-                                                isValid(
+                                                ValidationUtil.isValid(
                                                     v$.pcrTest
                                                         .contactPhoneNumber
                                                 )
                                             "
-                                            @blur.native="
-                                                v$.pcrTest.contactPhoneNumber.$touch()
-                                            "
-                                        />
-                                        <b-form-invalid-feedback
-                                            v-if="
-                                                v$.pcrTest.contactPhoneNumber
-                                                    .$dirty &&
-                                                (!v$.pcrTest.contactPhoneNumber
-                                                    .maxLength ||
-                                                    !v$.pcrTest
-                                                        .contactPhoneNumber
-                                                        .minLength)
-                                            "
                                             aria-label="Phone number must be valid."
-                                            force-show
                                             data-testid="feedback-phonenumber-valid"
                                         >
                                             Phone number must be valid.
@@ -859,29 +927,30 @@ if (oidcIsAuthenticated.value) {
                                 <label for="testTakenMinutesAgo">
                                     Time Since Test Taken
                                 </label>
-                                <b-form-select
-                                    id="testTakenMinutesAgo"
-                                    v-model="pcrTest.testTakenMinutesAgo"
-                                    data-testid="test-taken-minutes-ago"
-                                    :options="testTakenMinutesAgoOptions"
-                                    :state="
-                                        isValid(v$.pcrTest.testTakenMinutesAgo)
-                                    "
-                                    @blur.native="
-                                        v$.pcrTest.testTakenMinutesAgo.$touch()
-                                    "
-                                >
-                                </b-form-select>
+                                <div>
+                                    <b-form-select
+                                        id="testTakenMinutesAgo"
+                                        v-model="pcrTest.testTakenMinutesAgo"
+                                        data-testid="test-taken-minutes-ago"
+                                        :options="testTakenMinutesAgoOptions"
+                                        :state="
+                                            ValidationUtil.isValid(
+                                                v$.pcrTest.testTakenMinutesAgo
+                                            )
+                                        "
+                                        @blur.native="
+                                            v$.pcrTest.testTakenMinutesAgo.$touch()
+                                        "
+                                    >
+                                    </b-form-select>
+                                </div>
                                 <b-form-invalid-feedback
-                                    v-if="
-                                        v$.pcrTest.testTakenMinutesAgo.$dirty &&
-                                        (!v$.pcrTest.testTakenMinutesAgo
-                                            .required ||
-                                            !v$.pcrTest.testTakenMinutesAgo
-                                                .minValue)
+                                    :state="
+                                        ValidationUtil.isValid(
+                                            v$.pcrTest.testTakenMinutesAgo
+                                        )
                                     "
                                     aria-label="Time since test taken is required"
-                                    force-show
                                     data-testid="feedback-testtaken-is-required"
                                 >
                                     Time since test taken is required.

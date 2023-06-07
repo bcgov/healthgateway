@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
-import { BaseValidation, useVuelidate } from "@vuelidate/core";
+import { useVuelidate } from "@vuelidate/core";
 import { required } from "@vuelidate/validators";
 import { saveAs } from "file-saver";
 import html2canvas from "html2canvas";
@@ -23,8 +23,8 @@ import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ILogger } from "@/services/interfaces";
 import { phnMask } from "@/utility/masks";
-import PHNValidator from "@/utility/phnValidator";
 import SnowPlow from "@/utility/snowPlow";
+import ValidationUtil from "@/utility/validationUtil";
 
 library.add(faInfoCircle);
 
@@ -105,7 +105,7 @@ const isLoading = computed(
 const validations = computed(() => ({
     phn: {
         required,
-        formatted: (value: string) => PHNValidator.IsValid(value),
+        formatted: ValidationUtil.validatePhn,
     },
     dateOfBirth: {
         required,
@@ -143,10 +143,6 @@ function retrievePublicVaccineRecord(
         dateOfBirth,
         dateOfVaccine,
     });
-}
-
-function isValid(param: BaseValidation): boolean | undefined {
-    return param.$dirty ? !param.$invalid : undefined;
 }
 
 function handleSubmit(): void {
@@ -392,25 +388,28 @@ watch(vaccineRecord, (value) => {
                         label="Personal Health Number"
                         label-for="phn"
                     >
-                        <b-form-input
-                            id="phn"
-                            v-model="phn"
-                            v-mask="phnMask"
-                            data-testid="phnInput"
-                            autofocus
-                            aria-label="Personal Health Number"
-                            :state="isValid(v$.phn)"
-                            @blur="v$.phn.$touch()"
-                        />
+                        <div>
+                            <b-form-input
+                                id="phn"
+                                v-model="phn"
+                                v-mask="phnMask"
+                                data-testid="phnInput"
+                                autofocus
+                                aria-label="Personal Health Number"
+                                :state="ValidationUtil.isValid(v$.phn)"
+                                @blur="v$.phn.$touch()"
+                            />
+                        </div>
                         <b-form-invalid-feedback
-                            v-if="!v$.phn.required"
+                            :state="ValidationUtil.isValid(v$.phn.required)"
                             aria-label="Invalid Personal Health Number"
                             data-testid="feedbackPhnIsRequired"
                         >
                             Personal Health Number is required.
                         </b-form-invalid-feedback>
                         <b-form-invalid-feedback
-                            v-else-if="!v$.phn.formatted"
+                            v-if="ValidationUtil.isValid(v$.phn.required)"
+                            :state="ValidationUtil.isValid(v$.phn.formatted)"
                             aria-label="Invalid Personal Health Number"
                             data-testid="feedbackPhnMustBeValid"
                         >
@@ -420,35 +419,45 @@ watch(vaccineRecord, (value) => {
                     <b-form-group
                         label="Date of Birth"
                         label-for="dateOfBirth"
-                        :state="isValid(v$.dateOfBirth)"
+                        :state="ValidationUtil.isValid(v$.dateOfBirth)"
                     >
-                        <HgDateDropdownComponent
-                            id="dateOfBirth"
-                            v-model="dateOfBirth"
-                            :state="isValid(v$.dateOfBirth)"
-                            :allow-future="false"
-                            data-testid="dateOfBirthInput"
-                            aria-label="Date of Birth"
-                            @blur="v$.dateOfBirth.$touch()"
-                        />
+                        <div>
+                            <HgDateDropdownComponent
+                                id="dateOfBirth"
+                                v-model="dateOfBirth"
+                                :state="ValidationUtil.isValid(v$.dateOfBirth)"
+                                :allow-future="false"
+                                data-testid="dateOfBirthInput"
+                                aria-label="Date of Birth"
+                                @blur="v$.dateOfBirth.$touch()"
+                            />
+                        </div>
                         <b-form-invalid-feedback
-                            v-if="
-                                v$.dateOfBirth.$dirty &&
-                                !v$.dateOfBirth.required
+                            :state="
+                                ValidationUtil.isValid(
+                                    v$.dateOfBirth,
+                                    v$.dateOfBirth.required
+                                )
                             "
                             aria-label="Invalid Date of Birth"
                             data-testid="feedbackDobIsRequired"
-                            force-show
                         >
                             A valid date of birth is required.
                         </b-form-invalid-feedback>
                         <b-form-invalid-feedback
-                            v-else-if="
-                                v$.dateOfBirth.$dirty &&
-                                !v$.dateOfBirth.maxValue
+                            v-if="
+                                ValidationUtil.isValid(
+                                    v$.dateOfBirth,
+                                    v$.dateOfBirth.required
+                                )
+                            "
+                            :state="
+                                ValidationUtil.isValid(
+                                    v$.dateOfBirth,
+                                    v$.dateOfBirth.maxValue
+                                )
                             "
                             aria-label="Invalid Date of Birth"
-                            force-show
                         >
                             Date of birth must be in the past.
                         </b-form-invalid-feedback>
@@ -456,36 +465,48 @@ watch(vaccineRecord, (value) => {
                     <b-form-group
                         label="Date of Vaccine (Any Dose)"
                         label-for="dateOfVaccine"
-                        :state="isValid(v$.dateOfVaccine)"
+                        :state="ValidationUtil.isValid(v$.dateOfVaccine)"
                     >
-                        <HgDateDropdownComponent
-                            id="dateOfVaccine"
-                            v-model="dateOfVaccine"
-                            :state="isValid(v$.dateOfVaccine)"
-                            :allow-future="false"
-                            :min-year="2020"
-                            data-testid="dateOfVaccineInput"
-                            aria-label="Date of Vaccine (Any Dose)"
-                            @blur="v$.dateOfBirth.$touch()"
-                        />
+                        <div>
+                            <HgDateDropdownComponent
+                                id="dateOfVaccine"
+                                v-model="dateOfVaccine"
+                                :state="
+                                    ValidationUtil.isValid(v$.dateOfVaccine)
+                                "
+                                :allow-future="false"
+                                :min-year="2020"
+                                data-testid="dateOfVaccineInput"
+                                aria-label="Date of Vaccine (Any Dose)"
+                                @blur="v$.dateOfVaccine.$touch()"
+                            />
+                        </div>
                         <b-form-invalid-feedback
-                            v-if="
-                                v$.dateOfVaccine.$dirty &&
-                                !v$.dateOfVaccine.required
+                            :state="
+                                ValidationUtil.isValid(
+                                    v$.dateOfVaccine,
+                                    v$.dateOfVaccine.required
+                                )
                             "
                             aria-label="Invalid Date of Vaccine"
                             data-testid="feedbackDovIsRequired"
-                            force-show
                         >
                             A valid date of vaccine is required.
                         </b-form-invalid-feedback>
                         <b-form-invalid-feedback
-                            v-else-if="
-                                v$.dateOfVaccine.$dirty &&
-                                !v$.dateOfVaccine.maxValue
+                            v-if="
+                                ValidationUtil.isValid(
+                                    v$.dateOfVaccine,
+                                    v$.dateOfVaccine.required
+                                )
+                            "
+                            :state="
+                                ValidationUtil.isValid(
+                                    v$.dateOfVaccine,
+                                    v$.dateOfVaccine.maxValue
+                                )
                             "
                             aria-label="Invalid Date of Vaccine"
-                            force-show
                         >
                             Date of vaccine must be in the past.
                         </b-form-invalid-feedback>

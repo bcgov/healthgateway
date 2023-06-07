@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { BaseValidation, useVuelidate } from "@vuelidate/core";
+import { useVuelidate } from "@vuelidate/core";
 import { minLength, required, sameAs } from "@vuelidate/validators";
 import { Duration } from "luxon";
 import { computed, nextTick, ref, watch } from "vue";
@@ -18,7 +18,7 @@ import User from "@/models/user";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { IDependentService } from "@/services/interfaces";
-import PHNValidator from "@/utility/phnValidator";
+import ValidationUtil from "@/utility/validationUtil";
 
 const emit = defineEmits<{
     (e: "handle-submit"): void;
@@ -95,12 +95,11 @@ const validations = computed(() => ({
         PHN: {
             required,
             minLength: minLength(12),
-            validPersonalHealthNumber: (value: string) =>
-                PHNValidator.IsValid(value),
+            validPersonalHealthNumber: ValidationUtil.validatePhn,
             isNew: () => !isDependentAlreadyAdded.value,
         },
     },
-    accepted: { isChecked: sameAs(() => true) },
+    accepted: { isChecked: sameAs(true) },
 }));
 
 const v$ = useVuelidate(validations, { dependent, accepted });
@@ -115,10 +114,6 @@ function showModal(): void {
 
 function hideModal(): void {
     isVisible.value = false;
-}
-
-function isValid(param: BaseValidation): boolean | undefined {
-    return param.$dirty ? !param.$invalid : undefined;
 }
 
 function handleOk(): void {
@@ -238,11 +233,12 @@ watch(() => dependent.value.dateOfBirth, touchDateOfBirth);
                         data-testid="firstNameInput"
                         class="dependentCardInput"
                         placeholder="John Alexander"
-                        :state="isValid(v$.dependent.firstName)"
+                        autofocus
+                        :state="ValidationUtil.isValid(v$.dependent.firstName)"
                         @blur.native="v$.dependent.firstName.$touch()"
                     />
                     <b-form-invalid-feedback
-                        :state="isValid(v$.dependent.firstName)"
+                        :state="ValidationUtil.isValid(v$.dependent.firstName)"
                     >
                         Given names are required
                     </b-form-invalid-feedback>
@@ -255,43 +251,57 @@ watch(() => dependent.value.dateOfBirth, touchDateOfBirth);
                         data-testid="lastNameInput"
                         class="dependentCardInput"
                         placeholder="Doe"
-                        :state="isValid(v$.dependent.lastName)"
+                        :state="ValidationUtil.isValid(v$.dependent.lastName)"
                         @blur.native="v$.dependent.lastName.$touch()"
                     />
                     <b-form-invalid-feedback
-                        :state="isValid(v$.dependent.lastName)"
+                        :state="ValidationUtil.isValid(v$.dependent.lastName)"
                     >
                         Last name is required
                     </b-form-invalid-feedback>
                 </b-col>
                 <b-col class="col-12 col-sm-6 col-lg-4 mb-2">
                     <label for="dateOfBirth">Date of Birth</label>
-                    <DatePickerComponent
-                        id="dateOfBirth"
-                        :value="dependent.dateOfBirth"
-                        data-testid="dateOfBirthInput"
-                        :max-date="maxBirthdate"
-                        :state="isValid(v$.dependent.dateOfBirth)"
-                        @blur="touchDateOfBirth()"
-                        @is-date-valid="isDateOfBirthValid = $event"
-                        @update:value="
-                            (value) => (dependent.dateOfBirth = value)
-                        "
-                    />
+                    <div>
+                        <DatePickerComponent
+                            id="dateOfBirth"
+                            :value="dependent.dateOfBirth"
+                            data-testid="dateOfBirthInput"
+                            :max-date="maxBirthdate"
+                            :state="
+                                ValidationUtil.isValid(v$.dependent.dateOfBirth)
+                            "
+                            @blur="touchDateOfBirth()"
+                            @is-date-valid="isDateOfBirthValid = $event"
+                            @update:value="
+                                (value) => (dependent.dateOfBirth = value)
+                            "
+                        />
+                    </div>
                     <b-form-invalid-feedback
                         :state="
-                            !v$.dependent.dateOfBirth.$dirty ||
-                            (v$.dependent.dateOfBirth.required &&
-                                v$.dependent.dateOfBirth.minLength &&
-                                v$.dependent.dateOfBirth.maxValue)
+                            ValidationUtil.isValid(
+                                v$.dependent.dateOfBirth,
+                                v$.dependent.dateOfBirth.required
+                            ) &&
+                            ValidationUtil.isValid(
+                                v$.dependent.dateOfBirth,
+                                v$.dependent.dateOfBirth.minLength
+                            ) &&
+                            ValidationUtil.isValid(
+                                v$.dependent.dateOfBirth,
+                                v$.dependent.dateOfBirth.maxValue
+                            )
                         "
                     >
                         Invalid date
                     </b-form-invalid-feedback>
                     <b-form-invalid-feedback
                         :state="
-                            !v$.dependent.dateOfBirth.$dirty ||
-                            v$.dependent.dateOfBirth.minValue
+                            ValidationUtil.isValid(
+                                v$.dependent.dateOfBirth,
+                                v$.dependent.dateOfBirth.minValue
+                            )
                         "
                     >
                         Dependent must be under the age of
@@ -300,28 +310,39 @@ watch(() => dependent.value.dateOfBirth, touchDateOfBirth);
                 </b-col>
                 <b-col class="col-12 col-sm-6 col-lg-4 mb-2">
                     <label for="phn">PHN</label>
-                    <b-form-input
-                        id="phn"
-                        v-model="dependent.PHN"
-                        v-mask="'#### ### ###'"
-                        data-testid="phnInput"
-                        class="dependentCardInput"
-                        placeholder="1234 567 890"
-                        :state="isValid(v$.dependent.PHN)"
-                        @blur.native="v$.dependent.PHN.$touch()"
-                    />
+                    <div>
+                        <b-form-input
+                            id="phn"
+                            v-model="dependent.PHN"
+                            v-mask="'#### ### ###'"
+                            data-testid="phnInput"
+                            class="dependentCardInput"
+                            placeholder="1234 567 890"
+                            :state="ValidationUtil.isValid(v$.dependent.PHN)"
+                            @blur="v$.dependent.PHN.$touch()"
+                        />
+                    </div>
                     <b-form-invalid-feedback
-                        v-if="!isDependentAlreadyAdded"
-                        :state="isValid(v$.dependent.PHN)"
-                    >
-                        Valid PHN is required
-                    </b-form-invalid-feedback>
-                    <b-form-invalid-feedback
-                        v-if="isDependentAlreadyAdded"
                         data-testid="errorDependentAlreadyAdded"
-                        :state="isValid(v$.dependent.PHN)"
+                        :state="
+                            ValidationUtil.isValid(
+                                v$.dependent.PHN,
+                                v$.dependent.PHN.isNew
+                            )
+                        "
                     >
                         This dependent has already been added
+                    </b-form-invalid-feedback>
+                    <b-form-invalid-feedback
+                        v-if="
+                            !ValidationUtil.isValid(
+                                v$.dependent.PHN,
+                                v$.dependent.PHN.isNew
+                            )
+                        "
+                        :state="ValidationUtil.isValid(v$.dependent.PHN)"
+                    >
+                        Valid PHN is required
                     </b-form-invalid-feedback>
                 </b-col>
             </b-row>
@@ -329,7 +350,7 @@ watch(() => dependent.value.dateOfBirth, touchDateOfBirth);
                 id="termsCheckbox"
                 v-model="accepted"
                 data-testid="termsCheckbox"
-                :state="isValid(v$.accepted)"
+                :state="ValidationUtil.isValid(v$.accepted)"
             >
                 <p>
                     By providing the child’s name, date of birth, and personal
