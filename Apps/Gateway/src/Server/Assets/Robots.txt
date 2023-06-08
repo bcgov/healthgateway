@@ -1,0 +1,3 @@
+# Default robots.txt for Non-Prod
+User-agent: *
+Disallow: /

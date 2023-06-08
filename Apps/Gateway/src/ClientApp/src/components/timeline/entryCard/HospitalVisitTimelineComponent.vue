@@ -1,0 +1,166 @@
+<script setup lang="ts">
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
+import { computed } from "vue";
+
+import EntryCardTimelineComponent from "@/components/timeline/entryCard/EntrycardTimelineComponent.vue";
+import { EntryType, entryTypeMap } from "@/constants/entryType";
+import { DateWrapper } from "@/models/dateWrapper";
+import HospitalVisitTimelineEntry from "@/models/hospitalVisitTimelineEntry";
+
+library.add(faInfoCircle);
+
+interface Props {
+    entry: HospitalVisitTimelineEntry;
+    index: number;
+    datekey: string;
+    isMobileDetails?: boolean;
+    commentsAreEnabled?: boolean;
+}
+withDefaults(defineProps<Props>(), {
+    isMobileDetails: false,
+    commentsAreEnabled: false,
+});
+
+const entryIcon = computed(() => {
+    return entryTypeMap.get(EntryType.HospitalVisit)?.icon;
+});
+
+function formatDate(date: DateWrapper): string {
+    return date.format("yyyy-MMM-dd, t");
+}
+</script>
+
+<template>
+    <EntryCardTimelineComponent
+        :card-id="index + '-' + datekey"
+        :entry-icon="entryIcon"
+        :title="entry.facility"
+        :subtitle="entry.visitType"
+        :entry="entry"
+        :is-mobile-details="isMobileDetails"
+        :allow-comment="commentsAreEnabled"
+    >
+        <div slot="details-body">
+            <div class="my-2">
+                <div data-testid="hospital-visit-location">
+                    <strong>Location: </strong>
+                    <span>{{ entry.facility }}</span>
+                    <hg-button
+                        v-if="entry.facility"
+                        :id="`hospital-visit-location-${index}-${datekey}`"
+                        aria-label="Info"
+                        href="#"
+                        variant="link"
+                        data-testid="hospital-visit-location-info-button"
+                        class="shadow-none align-baseline p-0 ml-1"
+                    >
+                        <hg-icon icon="info-circle" size="small" />
+                    </hg-button>
+                    <b-popover
+                        v-if="entry.facility"
+                        :target="`hospital-visit-location-${index}-${datekey}`"
+                        triggers="hover focus"
+                        placement="topright"
+                        boundary="viewport"
+                        data-testid="hospital-visit-location-info-popover"
+                    >
+                        <span>
+                            Virtual visits show your provider's location.
+                        </span>
+                    </b-popover>
+                </div>
+                <div data-testid="hospital-visit-provider">
+                    <strong>Provider: </strong>
+                    <span
+                        v-if="
+                            entry.provider && entry.provider.trim().length > 0
+                        "
+                    >
+                        <span>{{ entry.provider }}</span>
+                        <hg-button
+                            v-if="entry.facility"
+                            :id="`hospital-visit-provider-${index}-${datekey}`"
+                            aria-label="Info"
+                            href="#"
+                            variant="link"
+                            data-testid="hospital-visit-provider-info-button"
+                            class="shadow-none align-baseline p-0 ml-1"
+                        >
+                            <hg-icon icon="info-circle" size="small" />
+                        </hg-button>
+                        <b-popover
+                            v-if="entry.facility"
+                            :target="`hospital-visit-provider-${index}-${datekey}`"
+                            triggers="hover focus"
+                            placement="topright"
+                            boundary="viewport"
+                            data-testid="hospital-visit-provider-info-popover"
+                        >
+                            <span>
+                                Inpatient visits only show the first attending
+                                physician.
+                            </span>
+                        </b-popover>
+                    </span>
+                    <span v-else>not available</span>
+                </div>
+                <div data-testid="hospital-visit-service">
+                    <strong>Service: </strong>
+                    <span
+                        v-if="
+                            entry.healthService &&
+                            entry.healthService.trim().length > 0
+                        "
+                    >
+                        {{ entry.healthService }}
+                    </span>
+                    <span v-else>not available</span>
+                </div>
+                <div data-testid="hospital-visit-date">
+                    <strong>Visit Date: </strong>
+                    <span
+                        data-testid="laboratory-collection-date-value"
+                        class="text-nowrap"
+                    >
+                        {{ formatDate(entry.admitDateTime) }}
+                    </span>
+                    <hg-button
+                        v-if="entry.outpatient"
+                        :id="`hospital-visit-date-${index}-${datekey}`"
+                        aria-label="Info"
+                        href="#"
+                        variant="link"
+                        data-testid="hospital-visit-date-info-button"
+                        class="shadow-none align-baseline p-0 ml-1"
+                    >
+                        <hg-icon icon="info-circle" size="small" />
+                    </hg-button>
+                    <b-popover
+                        v-if="entry.outpatient"
+                        :target="`hospital-visit-date-${index}-${datekey}`"
+                        triggers="hover focus"
+                        placement="topright"
+                        boundary="viewport"
+                        data-testid="hospital-visit-date-info-popover"
+                    >
+                        <span>
+                            Outpatient visits may only show the first in a
+                            series of dates.
+                        </span>
+                    </b-popover>
+                </div>
+                <div data-testid="hospital-visit-discharge-date">
+                    <strong>Discharge Date: </strong>
+                    <span
+                        v-if="entry.endDateTime !== undefined"
+                        class="text-nowrap"
+                    >
+                        {{ formatDate(entry.endDateTime) }}
+                    </span>
+                    <span v-else>not available</span>
+                </div>
+            </div>
+        </div>
+    </EntryCardTimelineComponent>
+</template>
