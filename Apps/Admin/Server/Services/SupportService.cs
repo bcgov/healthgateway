@@ -17,6 +17,7 @@ namespace HealthGateway.Admin.Server.Services
 {
     using System;
     using System.Collections.Generic;
+    using System.Globalization;
     using System.Linq;
     using System.Net;
     using System.Threading;
@@ -26,6 +27,7 @@ namespace HealthGateway.Admin.Server.Services
     using HealthGateway.AccountDataAccess.Patient;
     using HealthGateway.Admin.Common.Constants;
     using HealthGateway.Admin.Common.Models;
+    using HealthGateway.Common.CacheProviders;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ErrorHandling;
@@ -36,6 +38,7 @@ namespace HealthGateway.Admin.Server.Services
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.Logging;
 
     /// <inheritdoc/>
     public class SupportService : ISupportService
@@ -47,6 +50,8 @@ namespace HealthGateway.Admin.Server.Services
         private readonly IResourceDelegateDelegate resourceDelegateDelegate;
         private readonly IUserProfileDelegate userProfileDelegate;
         private readonly IAuditRepository auditRepository;
+        private readonly ICacheProvider cacheProvider;
+        private readonly ILogger<SupportService> logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SupportService"/> class.
@@ -58,6 +63,8 @@ namespace HealthGateway.Admin.Server.Services
         /// <param name="resourceDelegateDelegate">The resource delegate used to lookup delegates and owners.</param>
         /// <param name="userProfileDelegate">The user profile delegate to interact with the DB.</param>
         /// <param name="auditRepository">The injected audit repository.</param>
+        /// <param name="cacheProvider">The injected cache provider.</param>
+        /// <param name="logger">The injected logger provider.</param>
         public SupportService(
             IMapper autoMapper,
             IConfiguration configuration,
@@ -65,7 +72,9 @@ namespace HealthGateway.Admin.Server.Services
             IPatientRepository patientRepository,
             IResourceDelegateDelegate resourceDelegateDelegate,
             IUserProfileDelegate userProfileDelegate,
-            IAuditRepository auditRepository)
+            IAuditRepository auditRepository,
+            ICacheProvider cacheProvider,
+            ILogger<SupportService> logger)
         {
             this.autoMapper = autoMapper;
             this.configuration = configuration;
@@ -74,6 +83,8 @@ namespace HealthGateway.Admin.Server.Services
             this.resourceDelegateDelegate = resourceDelegateDelegate;
             this.userProfileDelegate = userProfileDelegate;
             this.auditRepository = auditRepository;
+            this.cacheProvider = cacheProvider;
+            this.logger = logger;
         }
 
         /// <inheritdoc/>
@@ -82,6 +93,13 @@ namespace HealthGateway.Admin.Server.Services
             IList<MessagingVerification> messagingVerifications = await this.messagingVerificationDelegate.GetUserMessageVerificationsAsync(hdid).ConfigureAwait(true);
             AgentAuditQuery agentAuditQuery = new(hdid);
             IEnumerable<AgentAudit> agentAudits = await this.auditRepository.Handle(agentAuditQuery, ct).ConfigureAwait(true);
+
+            // Invalidate blocked data source cache and then get newest value(s) from database.
+            string blockedAccessCacheKey = string.Format(CultureInfo.InvariantCulture, ICacheProvider.BlockedAccessCachePrefixKey, hdid);
+            string message = $"Removing item for key: {blockedAccessCacheKey} from cache";
+            this.logger.LogDebug("{Message}", message);
+            await this.cacheProvider.RemoveItemAsync(blockedAccessCacheKey).ConfigureAwait(true);
+
             IEnumerable<DataSource> dataSources = await this.patientRepository.GetDataSources(hdid, ct).ConfigureAwait(true);
             TimeZoneInfo localTimezone = DateFormatter.GetLocalTimeZone(this.configuration);
 

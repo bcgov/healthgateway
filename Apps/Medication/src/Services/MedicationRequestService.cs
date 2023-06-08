@@ -17,12 +17,13 @@ namespace HealthGateway.Medication.Services
 {
     using System.Collections.Generic;
     using System.Threading.Tasks;
+    using HealthGateway.AccountDataAccess.Patient;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ViewModels;
-    using HealthGateway.Common.Models;
     using HealthGateway.Common.Services;
     using HealthGateway.Medication.Delegates;
     using HealthGateway.Medication.Models;
+    using PatientModel = HealthGateway.Common.Models.PatientModel;
 
     /// <summary>
     /// The Medication data service.
@@ -31,23 +32,37 @@ namespace HealthGateway.Medication.Services
     {
         private readonly IMedicationRequestDelegate medicationRequestDelegate;
         private readonly IPatientService patientService;
+        private readonly IPatientRepository patientRepository;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MedicationRequestService"/> class.
         /// </summary>
         /// <param name="patientService">The injected patient registry provider.</param>
         /// <param name="medicationRequestDelegate">Injected medication statement delegate.</param>
+        /// <param name="patientRepository">Injected patient repository provider.</param>
         public MedicationRequestService(
             IPatientService patientService,
-            IMedicationRequestDelegate medicationRequestDelegate)
+            IMedicationRequestDelegate medicationRequestDelegate,
+            IPatientRepository patientRepository)
         {
             this.patientService = patientService;
             this.medicationRequestDelegate = medicationRequestDelegate;
+            this.patientRepository = patientRepository;
         }
 
         /// <inheritdoc/>
         public async Task<RequestResult<IList<MedicationRequest>>> GetMedicationRequests(string hdid)
         {
+            if (!await this.patientRepository.CanAccessDataSourceAsync(hdid, DataSource.SpecialAuthorityRequest).ConfigureAwait(true))
+            {
+                return new RequestResult<IList<MedicationRequest>>
+                {
+                    ResultStatus = ResultType.Success,
+                    ResourcePayload = new List<MedicationRequest>(),
+                    TotalResultCount = 0,
+                };
+            }
+
             // Retrieve the phn
             RequestResult<PatientModel> patientResult = await this.patientService.GetPatient(hdid).ConfigureAwait(true);
             if (patientResult.ResultStatus == ResultType.Success && patientResult.ResourcePayload != null)

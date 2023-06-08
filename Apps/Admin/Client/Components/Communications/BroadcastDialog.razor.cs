@@ -21,6 +21,7 @@ using System.Threading.Tasks;
 using Fluxor;
 using Fluxor.Blazor.Web.Components;
 using HealthGateway.Admin.Client.Components.Common;
+using HealthGateway.Admin.Client.Services;
 using HealthGateway.Admin.Client.Store.Broadcasts;
 using HealthGateway.Common.Data.Models;
 using Microsoft.AspNetCore.Components;
@@ -75,6 +76,9 @@ public partial class BroadcastDialog : FluxorComponent
     [Inject]
     private IState<BroadcastsState> BroadcastsState { get; set; } = default!;
 
+    [Inject]
+    private IDateConversionService DateConversionService { get; set; } = default!;
+
     private bool IsNewBroadcast => this.Broadcast.Id == Guid.Empty;
 
     private bool HasAddError => this.BroadcastsState.Value.Add.Error is { Message.Length: > 0 };
@@ -118,7 +122,7 @@ public partial class BroadcastDialog : FluxorComponent
     {
         if (this.IsNewBroadcast)
         {
-            DateTime now = DateTime.Now;
+            DateTime now = this.DateConversionService.ConvertFromUtc(DateTime.UtcNow);
             DateTime tomorrow = now.AddDays(1);
             this.EffectiveDate = now.Date;
             this.EffectiveTime = now.TimeOfDay;
@@ -128,10 +132,12 @@ public partial class BroadcastDialog : FluxorComponent
         }
         else
         {
-            this.EffectiveDate = this.Broadcast.ScheduledDateUtc.ToLocalTime().Date;
-            this.EffectiveTime = this.Broadcast.ScheduledDateUtc.ToLocalTime().TimeOfDay;
-            this.ExpiryDate = this.Broadcast.ExpirationDateUtc?.ToLocalTime().Date;
-            this.ExpiryTime = this.Broadcast.ExpirationDateUtc?.ToLocalTime().TimeOfDay;
+            DateTime scheduledDateTime = this.DateConversionService.ConvertFromUtc(this.Broadcast.ScheduledDateUtc);
+            DateTime? expirationDateTime = this.DateConversionService.ConvertFromUtc(this.Broadcast.ExpirationDateUtc);
+            this.EffectiveDate = scheduledDateTime.Date;
+            this.EffectiveTime = scheduledDateTime.TimeOfDay;
+            this.ExpiryDate = expirationDateTime?.Date;
+            this.ExpiryTime = expirationDateTime?.TimeOfDay;
             this.ActionUrlString = this.Broadcast.ActionUrl?.ToString() ?? string.Empty;
         }
     }

@@ -19,6 +19,7 @@ namespace HealthGateway.LaboratoryTests.Services
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
+    using HealthGateway.AccountDataAccess.Patient;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Models.PHSA;
@@ -42,11 +43,16 @@ namespace HealthGateway.LaboratoryTests.Services
         /// GetCovid19Orders test.
         /// </summary>
         /// <param name="expectedResultType"> result type from service.</param>
+        /// <param name="canAccessDataSource">
+        /// The value indicates whether the covid19 test result data source can be accessed or
+        /// not.
+        /// </param>
         /// <returns>awaitable task.</returns>
         [Theory]
-        [InlineData(ResultType.Success)]
-        [InlineData(ResultType.Error)]
-        public async Task ShouldGetCovid19Orders(ResultType expectedResultType)
+        [InlineData(ResultType.Success, true)]
+        [InlineData(ResultType.Success, false)]
+        [InlineData(ResultType.Error, true)]
+        public async Task ShouldGetCovid19Orders(ResultType expectedResultType, bool canAccessDataSource)
         {
             List<PhsaCovid19Order> covid19Orders = new()
             {
@@ -78,22 +84,30 @@ namespace HealthGateway.LaboratoryTests.Services
                 ResourcePayload = new() { Result = covid19Orders },
             };
 
-            ILaboratoryService service = new LaboratoryServiceMock(delegateResult, Token).LaboratoryServiceMockInstance();
+            ILaboratoryService service = new LaboratoryServiceMock(delegateResult, Token, canAccessDataSource).LaboratoryServiceMockInstance();
 
             RequestResult<Covid19OrderResult> actualResult = await service.GetCovid19Orders(Hdid).ConfigureAwait(false);
 
             if (expectedResultType == ResultType.Success)
             {
                 Assert.Equal(ResultType.Success, actualResult.ResultStatus);
-                Assert.True(actualResult.ResourcePayload?.Loaded);
-                int count = 0;
-                foreach (Covid19Order model in actualResult.ResourcePayload!.Covid19Orders)
-                {
-                    count++;
-                    Assert.True(model.MessageId.Equals(MockedMessageId + count, StringComparison.Ordinal));
-                }
 
-                Assert.Equal(2, count);
+                if (canAccessDataSource)
+                {
+                    Assert.True(actualResult.ResourcePayload?.Loaded);
+                    int count = 0;
+                    foreach (Covid19Order model in actualResult.ResourcePayload!.Covid19Orders)
+                    {
+                        count++;
+                        Assert.True(model.MessageId.Equals(MockedMessageId + count, StringComparison.Ordinal));
+                    }
+
+                    Assert.Equal(2, count);
+                }
+                else
+                {
+                    Assert.Empty(actualResult.ResourcePayload!.Covid19Orders);
+                }
             }
             else
             {
@@ -105,11 +119,16 @@ namespace HealthGateway.LaboratoryTests.Services
         /// GetLaboratoryOrders test.
         /// </summary>
         /// <param name="expectedResultType"> result type from service.</param>
+        /// <param name="canAccessDataSource">
+        /// The value indicates whether the lab result data source can be accessed or
+        /// not.
+        /// </param>
         /// <returns>awaitable task.</returns>
         [Theory]
-        [InlineData(ResultType.Success)]
-        [InlineData(ResultType.Error)]
-        public async Task ShouldGetLaboratoryOrders(ResultType expectedResultType)
+        [InlineData(ResultType.Success, true)]
+        [InlineData(ResultType.Success, false)]
+        [InlineData(ResultType.Error, true)]
+        public async Task ShouldGetLaboratoryOrders(ResultType expectedResultType, bool canAccessDataSource)
         {
             string expectedReportId1 = "341L56330T278085";
             string expectedReportId2 = "341L54565T276529";
@@ -174,7 +193,7 @@ namespace HealthGateway.LaboratoryTests.Services
                 TotalResultCount = 2,
             };
 
-            ILaboratoryService service = new LaboratoryServiceMock(delegateResult, Token).LaboratoryServiceMockInstance();
+            ILaboratoryService service = new LaboratoryServiceMock(delegateResult, Token, canAccessDataSource).LaboratoryServiceMockInstance();
 
             // Act
             RequestResult<LaboratoryOrderResult> actualResult = await service.GetLaboratoryOrders(Hdid).ConfigureAwait(false);
@@ -183,19 +202,27 @@ namespace HealthGateway.LaboratoryTests.Services
             if (expectedResultType == ResultType.Success)
             {
                 Assert.Equal(ResultType.Success, actualResult.ResultStatus);
-                Assert.Equal(expectedOrderCount, actualResult.TotalResultCount);
-                Assert.NotNull(actualResult.ResourcePayload);
 
-                List<LaboratoryOrder> orders = actualResult.ResourcePayload!.LaboratoryOrders.ToList();
-                Assert.Equal(expectedOrderCount, orders.Count);
+                if (canAccessDataSource)
+                {
+                    Assert.Equal(expectedOrderCount, actualResult.TotalResultCount);
+                    Assert.NotNull(actualResult.ResourcePayload);
 
-                LaboratoryOrder firstLaboratoryOrder = orders[0];
-                Assert.Equal(expectedReportId1, firstLaboratoryOrder.ReportId);
-                Assert.Equal(expectedLabTestCount, firstLaboratoryOrder.LaboratoryTests.Count());
+                    List<LaboratoryOrder> orders = actualResult.ResourcePayload!.LaboratoryOrders.ToList();
+                    Assert.Equal(expectedOrderCount, orders.Count);
 
-                LaboratoryOrder secondLaboratoryOrder = orders[1];
-                Assert.Equal(expectedReportId2, secondLaboratoryOrder.ReportId);
-                Assert.Equal(expectedLabTestCount, secondLaboratoryOrder.LaboratoryTests.Count());
+                    LaboratoryOrder firstLaboratoryOrder = orders[0];
+                    Assert.Equal(expectedReportId1, firstLaboratoryOrder.ReportId);
+                    Assert.Equal(expectedLabTestCount, firstLaboratoryOrder.LaboratoryTests.Count());
+
+                    LaboratoryOrder secondLaboratoryOrder = orders[1];
+                    Assert.Equal(expectedReportId2, secondLaboratoryOrder.ReportId);
+                    Assert.Equal(expectedLabTestCount, secondLaboratoryOrder.LaboratoryTests.Count());
+                }
+                else
+                {
+                    Assert.Empty(actualResult.ResourcePayload?.LaboratoryOrders);
+                }
             }
             else
             {

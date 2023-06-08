@@ -17,8 +17,10 @@ namespace HealthGateway.Laboratory.Services
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Threading.Tasks;
     using AutoMapper;
+    using HealthGateway.AccountDataAccess.Patient;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ErrorHandling;
@@ -48,6 +50,7 @@ namespace HealthGateway.Laboratory.Services
         private readonly ILogger<LaboratoryService> logger;
         private readonly IMapper autoMapper;
         private readonly LaboratoryConfig labConfig;
+        private readonly IPatientRepository patientRepository;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LaboratoryService"/> class.
@@ -56,17 +59,20 @@ namespace HealthGateway.Laboratory.Services
         /// <param name="logger">The injected logger.</param>
         /// <param name="laboratoryDelegateFactory">The laboratory delegate factory.</param>
         /// <param name="authenticationDelegate">The auth delegate to fetch tokens.</param>
+        /// <param name="patientRepository">The injected patient repository provider.</param>
         /// <param name="autoMapper">The injected automapper.</param>
         public LaboratoryService(
             IConfiguration configuration,
             ILogger<LaboratoryService> logger,
             ILaboratoryDelegateFactory laboratoryDelegateFactory,
             IAuthenticationDelegate authenticationDelegate,
+            IPatientRepository patientRepository,
             IMapper autoMapper)
         {
             this.logger = logger;
             this.laboratoryDelegate = laboratoryDelegateFactory.CreateInstance();
             this.authenticationDelegate = authenticationDelegate;
+            this.patientRepository = patientRepository;
             this.autoMapper = autoMapper;
 
             this.labConfig = new();
@@ -76,6 +82,16 @@ namespace HealthGateway.Laboratory.Services
         /// <inheritdoc/>
         public async Task<RequestResult<Covid19OrderResult>> GetCovid19Orders(string hdid, int pageIndex = 0)
         {
+            if (!await this.patientRepository.CanAccessDataSourceAsync(hdid, DataSource.Covid19TestResult).ConfigureAwait(true))
+            {
+                return new RequestResult<Covid19OrderResult>
+                {
+                    ResultStatus = ResultType.Success,
+                    ResourcePayload = new Covid19OrderResult(),
+                    TotalResultCount = 0,
+                };
+            }
+
             string? accessToken = this.authenticationDelegate.FetchAuthenticatedUserToken();
             if (accessToken == null)
             {
@@ -117,6 +133,20 @@ namespace HealthGateway.Laboratory.Services
         /// <inheritdoc/>
         public async Task<RequestResult<LaboratoryOrderResult>> GetLaboratoryOrders(string hdid)
         {
+            if (!await this.patientRepository.CanAccessDataSourceAsync(hdid, DataSource.LabResult).ConfigureAwait(true))
+            {
+                return new RequestResult<LaboratoryOrderResult>
+                {
+                    ResultStatus = ResultType.Success,
+                    ResourcePayload = new LaboratoryOrderResult
+                    {
+                        Loaded = true,
+                        Queued = false,
+                        LaboratoryOrders = Enumerable.Empty<LaboratoryOrder>(),
+                    },
+                };
+            }
+
             string? accessToken = this.authenticationDelegate.FetchAuthenticatedUserToken();
             if (string.IsNullOrEmpty(accessToken))
             {

@@ -13,6 +13,7 @@
     <None Remove="Constants\" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\AccountDataAccess\src\AccountDataAccess.csproj" />
     <ProjectReference Include="..\..\Common\src\Common.csproj" />
     <ProjectReference Include="..\..\CommonData\src\Common.Data.csproj">
       <GlobalPropertiesToRemove></GlobalPropertiesToRemove>

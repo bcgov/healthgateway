@@ -18,9 +18,11 @@ namespace HealthGateway.ClinicalDocument.Services
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
+    using System.Linq;
     using System.Net.Http;
     using System.Threading.Tasks;
     using AutoMapper;
+    using HealthGateway.AccountDataAccess.Patient;
     using HealthGateway.ClinicalDocument.Api;
     using HealthGateway.ClinicalDocument.Models;
     using HealthGateway.ClinicalDocument.Models.PHSA;
@@ -39,6 +41,7 @@ namespace HealthGateway.ClinicalDocument.Services
         private readonly IClinicalDocumentsApi clinicalDocumentsApi;
         private readonly ILogger<ClinicalDocumentService> logger;
         private readonly IPersonalAccountsService personalAccountsService;
+        private readonly IPatientRepository patientRepository;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ClinicalDocumentService"/> class.
@@ -46,16 +49,19 @@ namespace HealthGateway.ClinicalDocument.Services
         /// <param name="logger">Injected logger.</param>
         /// <param name="personalAccountsService">The injected personal accounts service.</param>
         /// <param name="clinicalDocumentsApi">The injected clinical documents api.</param>
+        /// <param name="patientRepository">The injected patient repository.</param>
         /// <param name="autoMapper">The injected automapper provider.</param>
         public ClinicalDocumentService(
             ILogger<ClinicalDocumentService> logger,
             IPersonalAccountsService personalAccountsService,
             IClinicalDocumentsApi clinicalDocumentsApi,
+            IPatientRepository patientRepository,
             IMapper autoMapper)
         {
             this.logger = logger;
             this.personalAccountsService = personalAccountsService;
             this.clinicalDocumentsApi = clinicalDocumentsApi;
+            this.patientRepository = patientRepository;
             this.autoMapper = autoMapper;
         }
 
@@ -64,6 +70,16 @@ namespace HealthGateway.ClinicalDocument.Services
         /// <inheritdoc/>
         public async Task<RequestResult<IEnumerable<ClinicalDocumentRecord>>> GetRecordsAsync(string hdid)
         {
+            if (!await this.patientRepository.CanAccessDataSourceAsync(hdid, DataSource.ClinicalDocument).ConfigureAwait(true))
+            {
+                return new()
+                {
+                    ResultStatus = ResultType.Success,
+                    ResourcePayload = Enumerable.Empty<ClinicalDocumentRecord>(),
+                    PageSize = 0,
+                };
+            }
+
             RequestResult<IEnumerable<ClinicalDocumentRecord>> requestResult = new()
             {
                 ResultStatus = ResultType.Error,
@@ -109,6 +125,15 @@ namespace HealthGateway.ClinicalDocument.Services
         /// <inheritdoc/>
         public async Task<RequestResult<EncodedMedia>> GetFileAsync(string hdid, string fileId)
         {
+            if (!await this.patientRepository.CanAccessDataSourceAsync(hdid, DataSource.ClinicalDocument).ConfigureAwait(true))
+            {
+                return new()
+                {
+                    ResultStatus = ResultType.Success,
+                    PageSize = 0,
+                };
+            }
+
             RequestResult<EncodedMedia> requestResult = new()
             {
                 ResultStatus = ResultType.Error,

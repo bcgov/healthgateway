@@ -16,6 +16,7 @@
     <PackageReference Include="Macross.Json.Extensions" Version="3.0.0" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\AccountDataAccess\src\AccountDataAccess.csproj" />
     <ProjectReference Include="..\..\Common\src\Common.csproj" />
     <ProjectReference Include="..\..\Database\src\Database.csproj" />
   </ItemGroup>

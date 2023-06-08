@@ -22,12 +22,13 @@ namespace HealthGateway.MedicationTests.Services
     using System.Net;
     using System.Security.Claims;
     using System.Security.Principal;
+    using System.Threading;
     using System.Threading.Tasks;
+    using HealthGateway.AccountDataAccess.Patient;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ErrorHandling;
     using HealthGateway.Common.Data.ViewModels;
-    using HealthGateway.Common.Models;
     using HealthGateway.Common.Models.ODR;
     using HealthGateway.Common.Services;
     using HealthGateway.Database.Delegates;
@@ -41,6 +42,7 @@ namespace HealthGateway.MedicationTests.Services
     using Microsoft.Extensions.Logging;
     using Moq;
     using Xunit;
+    using PatientModel = HealthGateway.Common.Models.PatientModel;
 
     /// <summary>
     /// MedicationStatementService's Unit Tests.
@@ -82,12 +84,16 @@ namespace HealthGateway.MedicationTests.Services
             };
             medStatementDelegateMock.Setup(p => p.GetMedicationStatementsAsync(It.IsAny<OdrHistoryQuery>(), null, It.IsAny<string>(), this.ipAddress)).ReturnsAsync(requestResult);
 
+            Mock<IPatientRepository> patientRepository = new();
+            patientRepository.Setup(p => p.CanAccessDataSourceAsync(It.IsAny<string>(), It.IsAny<DataSource>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
+
             IMedicationStatementService service = new RestMedicationStatementService(
                 new Mock<ILogger<RestMedicationStatementService>>().Object,
                 httpContextAccessorMock.Object,
                 patientDelegateMock.Object,
                 drugLookupDelegateMock.Object,
                 medStatementDelegateMock.Object,
+                patientRepository.Object,
                 MapperUtil.InitializeAutoMapper());
 
             // Run and Verify protective word too long
@@ -158,12 +164,16 @@ namespace HealthGateway.MedicationTests.Services
                         },
                     });
 
+            Mock<IPatientRepository> patientRepository = new();
+            patientRepository.Setup(p => p.CanAccessDataSourceAsync(It.IsAny<string>(), It.IsAny<DataSource>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
+
             IMedicationStatementService service = new RestMedicationStatementService(
                 new Mock<ILogger<RestMedicationStatementService>>().Object,
                 httpContextAccessorMock.Object,
                 patientServiceMock.Object,
                 drugLookupDelegateMock.Object,
                 medStatementDelegateMock.Object,
+                patientRepository.Object,
                 MapperUtil.InitializeAutoMapper());
 
             RequestResult<IList<MedicationStatementHistory>> actual = await service.GetMedicationStatementsHistory(this.hdid, null).ConfigureAwait(true);
@@ -215,6 +225,7 @@ namespace HealthGateway.MedicationTests.Services
                 patientDelegateMock.Object,
                 drugLookupDelegateMock.Object,
                 medStatementDelegateMock.Object,
+                new Mock<IPatientRepository>().Object,
                 MapperUtil.InitializeAutoMapper());
 
             // Run and Verify
@@ -225,9 +236,15 @@ namespace HealthGateway.MedicationTests.Services
         /// <summary>
         /// GetMedicationStatementsHistory - Happy Path.
         /// </summary>
-        [Fact]
+        /// <param name="canAccessDataSource">
+        /// The value indicates whether the medication data source can be accessed or
+        /// not.
+        /// </param>
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
         [SuppressMessage("Maintainability", "CA1506:Avoid excessive class coupling", Justification = "Team decision")]
-        public void ShouldGetMedications()
+        public void ShouldGetMedications(bool canAccessDataSource)
         {
             Mock<IHttpContextAccessor> httpContextAccessorMock = this.GetHttpContextAccessorMock();
 
@@ -295,19 +312,30 @@ namespace HealthGateway.MedicationTests.Services
             };
             medStatementDelegateMock.Setup(p => p.GetMedicationStatementsAsync(It.IsAny<OdrHistoryQuery>(), null, It.IsAny<string>(), this.ipAddress)).ReturnsAsync(requestResult);
 
+            Mock<IPatientRepository> patientRepository = new();
+            patientRepository.Setup(p => p.CanAccessDataSourceAsync(It.IsAny<string>(), It.IsAny<DataSource>(), It.IsAny<CancellationToken>())).ReturnsAsync(canAccessDataSource);
+
             IMedicationStatementService service = new RestMedicationStatementService(
                 new Mock<ILogger<RestMedicationStatementService>>().Object,
                 httpContextAccessorMock.Object,
                 patientDelegateMock.Object,
                 drugLookupDelegateMock.Object,
                 medStatementDelegateMock.Object,
+                patientRepository.Object,
                 MapperUtil.InitializeAutoMapper());
 
             // Act
             RequestResult<IList<MedicationStatementHistory>> actual = Task.Run(async () => await service.GetMedicationStatementsHistory(this.hdid, null).ConfigureAwait(true)).Result;
 
             // Verify
-            Assert.True(actual.ResultStatus == ResultType.Success && actual.ResourcePayload?.Count == 1);
+            if (canAccessDataSource)
+            {
+                Assert.True(actual.ResultStatus == ResultType.Success && actual.ResourcePayload?.Count == 1);
+            }
+            else
+            {
+                Assert.True(actual.ResultStatus == ResultType.Success && actual.ResourcePayload?.Count == 0);
+            }
         }
 
         /// <summary>
@@ -368,12 +396,16 @@ namespace HealthGateway.MedicationTests.Services
             };
             medStatementDelegateMock.Setup(p => p.GetMedicationStatementsAsync(It.IsAny<OdrHistoryQuery>(), null, It.IsAny<string>(), this.ipAddress)).ReturnsAsync(requestResult);
 
+            Mock<IPatientRepository> patientRepository = new();
+            patientRepository.Setup(p => p.CanAccessDataSourceAsync(It.IsAny<string>(), It.IsAny<DataSource>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
+
             IMedicationStatementService service = new RestMedicationStatementService(
                 new Mock<ILogger<RestMedicationStatementService>>().Object,
                 httpContextAccessorMock.Object,
                 patientDelegateMock.Object,
                 drugLookupDelegateMock.Object,
                 medStatementDelegateMock.Object,
+                patientRepository.Object,
                 MapperUtil.InitializeAutoMapper());
 
             // Act
@@ -442,12 +474,16 @@ namespace HealthGateway.MedicationTests.Services
             };
             medStatementDelegateMock.Setup(p => p.GetMedicationStatementsAsync(It.IsAny<OdrHistoryQuery>(), null, It.IsAny<string>(), this.ipAddress)).ReturnsAsync(requestResult);
 
+            Mock<IPatientRepository> patientRepository = new();
+            patientRepository.Setup(p => p.CanAccessDataSourceAsync(It.IsAny<string>(), It.IsAny<DataSource>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
+
             IMedicationStatementService service = new RestMedicationStatementService(
                 new Mock<ILogger<RestMedicationStatementService>>().Object,
                 httpContextAccessorMock.Object,
                 patientDelegateMock.Object,
                 drugLookupDelegateMock.Object,
                 medStatementDelegateMock.Object,
+                patientRepository.Object,
                 MapperUtil.InitializeAutoMapper());
 
             // Act
@@ -504,6 +540,7 @@ namespace HealthGateway.MedicationTests.Services
                 patientDelegateMock.Object,
                 drugLookupDelegateMock.Object,
                 medStatementDelegateMock.Object,
+                new Mock<IPatientRepository>().Object,
                 MapperUtil.InitializeAutoMapper());
 
             // Act
@@ -545,12 +582,16 @@ namespace HealthGateway.MedicationTests.Services
             requestResult.ResourcePayload = new MedicationHistoryResponse();
             medStatementDelegateMock.Setup(p => p.GetMedicationStatementsAsync(It.IsAny<OdrHistoryQuery>(), null, It.IsAny<string>(), this.ipAddress)).ReturnsAsync(requestResult);
 
+            Mock<IPatientRepository> patientRepository = new();
+            patientRepository.Setup(p => p.CanAccessDataSourceAsync(It.IsAny<string>(), It.IsAny<DataSource>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
+
             IMedicationStatementService service = new RestMedicationStatementService(
                 new Mock<ILogger<RestMedicationStatementService>>().Object,
                 httpContextAccessorMock.Object,
                 patientDelegateMock.Object,
                 drugLookupDelegateMock.Object,
                 medStatementDelegateMock.Object,
+                patientRepository.Object,
                 MapperUtil.InitializeAutoMapper());
 
             // Act
