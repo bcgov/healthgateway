@@ -20,9 +20,11 @@ namespace HealthGateway.ImmunizationTests.Services.Test
     using System.Diagnostics.CodeAnalysis;
     using System.Globalization;
     using System.Linq;
+    using System.Threading;
     using System.Threading.Tasks;
     using AutoMapper;
     using DeepEqual.Syntax;
+    using HealthGateway.AccountDataAccess.Patient;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Models.Immunization;
@@ -53,8 +55,11 @@ namespace HealthGateway.ImmunizationTests.Services.Test
         /// <summary>
         /// GetImmunizations - Happy Path.
         /// </summary>
-        [Fact]
-        public void ShouldGetImmunizations()
+        /// <param name="canAccessDataSource">The value indicates whether the immunization data source can be accessed or not.</param>
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public void ShouldGetImmunizations(bool canAccessDataSource)
         {
             Mock<IImmunizationDelegate> mockDelegate = new();
             RequestResult<PhsaResult<ImmunizationResponse>> delegateResult = new()
@@ -94,11 +99,23 @@ namespace HealthGateway.ImmunizationTests.Services.Test
             };
 
             mockDelegate.Setup(s => s.GetImmunizationsAsync(It.IsAny<string>())).ReturnsAsync(delegateResult);
-            IImmunizationService service = new ImmunizationService(mockDelegate.Object, this.autoMapper);
+
+            Mock<IPatientRepository> patientRepository = new();
+            patientRepository.Setup(p => p.CanAccessDataSourceAsync(It.IsAny<string>(), It.IsAny<DataSource>(), It.IsAny<CancellationToken>())).ReturnsAsync(canAccessDataSource);
+
+            IImmunizationService service = new ImmunizationService(mockDelegate.Object, patientRepository.Object, this.autoMapper);
 
             Task<RequestResult<ImmunizationResult>> actualResult = service.GetImmunizations(It.IsAny<string>());
 
-            expectedResult.ShouldDeepEqual(actualResult.Result);
+            if (canAccessDataSource)
+            {
+                expectedResult.ShouldDeepEqual(actualResult.Result);
+            }
+            else
+            {
+                Assert.Equal(0, actualResult.Result.ResourcePayload?.Immunizations.Count);
+                Assert.Equal(0, actualResult.Result.ResourcePayload?.Recommendations.Count);
+            }
         }
 
         /// <summary>
@@ -138,7 +155,11 @@ namespace HealthGateway.ImmunizationTests.Services.Test
             };
 
             mockDelegate.Setup(s => s.GetImmunizationAsync(It.IsAny<string>())).Returns(Task.FromResult(delegateResult));
-            IImmunizationService service = new ImmunizationService(mockDelegate.Object, this.autoMapper);
+
+            Mock<IPatientRepository> patientRepository = new();
+            patientRepository.Setup(p => p.CanAccessDataSourceAsync(It.IsAny<string>(), It.IsAny<DataSource>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
+
+            IImmunizationService service = new ImmunizationService(mockDelegate.Object, patientRepository.Object, this.autoMapper);
 
             Task<RequestResult<ImmunizationEvent>> actualResult = service.GetImmunization("immz_id");
 
@@ -168,7 +189,11 @@ namespace HealthGateway.ImmunizationTests.Services.Test
             };
 
             mockDelegate.Setup(s => s.GetImmunizationsAsync(It.IsAny<string>())).Returns(Task.FromResult(delegateResult));
-            IImmunizationService service = new ImmunizationService(mockDelegate.Object, this.autoMapper);
+
+            Mock<IPatientRepository> patientRepository = new();
+            patientRepository.Setup(p => p.CanAccessDataSourceAsync(It.IsAny<string>(), It.IsAny<DataSource>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
+
+            IImmunizationService service = new ImmunizationService(mockDelegate.Object, patientRepository.Object, this.autoMapper);
 
             Task<RequestResult<ImmunizationResult>> actualResult = service.GetImmunizations(It.IsAny<string>());
 
@@ -214,7 +239,11 @@ namespace HealthGateway.ImmunizationTests.Services.Test
             };
 
             mockDelegate.Setup(s => s.GetImmunizationsAsync(It.IsAny<string>())).Returns(Task.FromResult(delegateResult));
-            IImmunizationService service = new ImmunizationService(mockDelegate.Object, this.autoMapper);
+
+            Mock<IPatientRepository> patientRepository = new();
+            patientRepository.Setup(p => p.CanAccessDataSourceAsync(It.IsAny<string>(), It.IsAny<DataSource>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
+
+            IImmunizationService service = new ImmunizationService(mockDelegate.Object, patientRepository.Object, this.autoMapper);
 
             Task<RequestResult<ImmunizationResult>> actualResult = service.GetImmunizations(It.IsAny<string>());
 

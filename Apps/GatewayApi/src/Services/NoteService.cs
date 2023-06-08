@@ -18,6 +18,8 @@ namespace HealthGateway.GatewayApi.Services
     using System.Collections.Generic;
     using System.Linq;
     using AutoMapper;
+    using HealthGateway.AccountDataAccess.Patient;
+    using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Delegates;
@@ -39,6 +41,7 @@ namespace HealthGateway.GatewayApi.Services
         private readonly ILogger logger;
         private readonly INoteDelegate noteDelegate;
         private readonly IUserProfileDelegate profileDelegate;
+        private readonly IPatientRepository patientRepository;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NoteService"/> class.
@@ -47,13 +50,21 @@ namespace HealthGateway.GatewayApi.Services
         /// <param name="noteDelegate">Injected Note delegate.</param>
         /// <param name="profileDelegate">Injected Profile delegate.</param>
         /// <param name="cryptoDelegate">Injected Crypto delegate.</param>
+        /// <param name="patientRepository">Injected patient repository provider.</param>
         /// <param name="autoMapper">The inject automapper provider.</param>
-        public NoteService(ILogger<NoteService> logger, INoteDelegate noteDelegate, IUserProfileDelegate profileDelegate, ICryptoDelegate cryptoDelegate, IMapper autoMapper)
+        public NoteService(
+            ILogger<NoteService> logger,
+            INoteDelegate noteDelegate,
+            IUserProfileDelegate profileDelegate,
+            ICryptoDelegate cryptoDelegate,
+            IPatientRepository patientRepository,
+            IMapper autoMapper)
         {
             this.logger = logger;
             this.noteDelegate = noteDelegate;
             this.profileDelegate = profileDelegate;
             this.cryptoDelegate = cryptoDelegate;
+            this.patientRepository = patientRepository;
             this.autoMapper = autoMapper;
         }
 
@@ -83,6 +94,16 @@ namespace HealthGateway.GatewayApi.Services
         /// <inheritdoc/>
         public RequestResult<IEnumerable<UserNote>> GetNotes(string hdId, int page = 0, int pageSize = 500)
         {
+            if (!this.patientRepository.CanAccessDataSourceAsync(hdId, DataSource.Note).Result)
+            {
+                return new RequestResult<IEnumerable<UserNote>>
+                {
+                    ResultStatus = ResultType.Success,
+                    ResourcePayload = Enumerable.Empty<UserNote>(),
+                    TotalResultCount = 0,
+                };
+            }
+
             int offset = page * pageSize;
             DbResult<IList<Note>> dbNotes = this.noteDelegate.GetNotes(hdId, offset, pageSize);
 

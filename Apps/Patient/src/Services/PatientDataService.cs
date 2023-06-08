@@ -17,30 +17,42 @@ namespace HealthGateway.Patient.Services
 {
 #pragma warning disable SA1600 // Disable documentation for internal class.
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using AutoMapper;
+    using HealthGateway.AccountDataAccess.Patient;
+    using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Services;
+    using HealthGateway.Patient.Constants;
     using HealthGateway.PatientDataAccess;
 
     internal class PatientDataService : IPatientDataService
     {
         private readonly IPatientDataRepository patientDataRepository;
+        private readonly IPatientRepository patientRepository;
         private readonly IPersonalAccountsService personalAccountsService;
         private readonly IMapper mapper;
 
-        public PatientDataService(IPatientDataRepository patientDataRepository, IPersonalAccountsService personalAccountsService, IMapper mapper)
+        public PatientDataService(IPatientDataRepository patientDataRepository, IPatientRepository patientRepository, IPersonalAccountsService personalAccountsService, IMapper mapper)
         {
             this.patientDataRepository = patientDataRepository;
+            this.patientRepository = patientRepository;
             this.personalAccountsService = personalAccountsService;
             this.mapper = mapper;
         }
 
         public async Task<PatientDataResponse> Query(PatientDataQuery query, CancellationToken ct)
         {
+            IList<PatientDataType> unblockedPatientDataTypes = await this.GetUnblockedPatientDataTypesAsync(query.Hdid, query.PatientDataTypes).ConfigureAwait(true);
+            if (!unblockedPatientDataTypes.Any())
+            {
+                return new PatientDataResponse(Enumerable.Empty<PatientData>());
+            }
+
             Guid pid = await this.ResolvePidFromHdid(query.Hdid).ConfigureAwait(true);
-            HealthQuery healthQuery = new(pid, query.PatientDataTypes.Select(t => this.mapper.Map<HealthCategory>(t)));
+            HealthQuery healthQuery = new(pid, unblockedPatientDataTypes.Select(t => this.mapper.Map<HealthCategory>(t)));
             PatientDataQueryResult result = await this.patientDataRepository.Query(healthQuery, ct)
                 .ConfigureAwait(true);
             return new PatientDataResponse(result.Items.Select(i => this.mapper.Map<PatientData>(i)));
@@ -49,11 +61,27 @@ namespace HealthGateway.Patient.Services
         public async Task<PatientFileResponse?> Query(PatientFileQuery query, CancellationToken ct)
         {
             Guid pid = await this.ResolvePidFromHdid(query.Hdid).ConfigureAwait(true);
-            PatientFile? file = (await this.patientDataRepository.Query(new PatientDataAccess.PatientFileQuery(pid, query.FileId), ct).ConfigureAwait(true)).Items.OfType<PatientFile>().FirstOrDefault();
+            PatientFile? file = (await this.patientDataRepository.Query(new PatientDataAccess.PatientFileQuery(pid, query.FileId), ct).ConfigureAwait(true)).Items.OfType<PatientFile>()
+                .FirstOrDefault();
 
             return file != null
                 ? new PatientFileResponse(file.Content, file.ContentType)
                 : null;
+        }
+
+        private async Task<IList<PatientDataType>> GetUnblockedPatientDataTypesAsync(string hdid, IEnumerable<PatientDataType> patientDataTypes)
+        {
+            List<PatientDataType> unblockedPatientDataTypes = new();
+            foreach (PatientDataType patientDataType in patientDataTypes)
+            {
+                DataSource dataSource = this.mapper.Map<DataSource>(patientDataType);
+                if (await this.patientRepository.CanAccessDataSourceAsync(hdid, dataSource).ConfigureAwait(true))
+                {
+                    unblockedPatientDataTypes.Add(patientDataType);
+                }
+            }
+
+            return unblockedPatientDataTypes;
         }
 
         private async Task<Guid> ResolvePidFromHdid(string patientHdid)
