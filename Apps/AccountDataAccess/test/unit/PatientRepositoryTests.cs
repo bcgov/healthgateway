@@ -259,7 +259,7 @@ namespace AccountDataAccessTest
             };
 
             BlockAccessCommand command = new(Hdid, dataSources, reason);
-            PatientRepository patientRepository = GetPatientRepository(blockedAccessDelegate: blockedAccessDelegate);
+            PatientRepository patientRepository = GetPatientRepository(blockedAccess, blockedAccessDelegate);
 
             // Act
             await patientRepository.BlockAccess(command);
@@ -294,13 +294,10 @@ namespace AccountDataAccessTest
             BlockedAccess blockedAccess = new()
             {
                 Hdid = hdid,
-                DataSources = new HashSet<DataSource>
-                {
-                    DataSource.Immunization, DataSource.Medication,
-                },
+                DataSources = dataSources,
             };
 
-            PatientRepository patientRepository = GetPatientRepository(blockedAccess, dataSources);
+            PatientRepository patientRepository = GetPatientRepository(blockedAccess);
 
             // Act
             bool actual = await patientRepository.CanAccessDataSourceAsync(hdid, dataSource).ConfigureAwait(true);
@@ -359,7 +356,7 @@ namespace AccountDataAccessTest
                 DataSources = dataSources,
             };
 
-            PatientRepository patientRepository = GetPatientRepository(blockedAccess, dataSources);
+            PatientRepository patientRepository = GetPatientRepository(blockedAccess);
 
             // Act
             IEnumerable<DataSource> actual = await patientRepository.GetDataSources(hdid).ConfigureAwait(true);
@@ -409,22 +406,21 @@ namespace AccountDataAccessTest
         }
 
         private static PatientRepository GetPatientRepository(
-            BlockedAccess? blockedAccess = null,
-            IEnumerable<DataSource>? dataSources = null,
+            BlockedAccess blockedAccess,
             Mock<IBlockedAccessDelegate>? blockedAccessDelegate = null)
         {
             blockedAccessDelegate ??= blockedAccessDelegate ?? new();
             blockedAccessDelegate.Setup(p => p.GetBlockedAccessAsync(It.IsAny<string>())).ReturnsAsync(blockedAccess);
-            blockedAccessDelegate.Setup(p => p.GetDataSourcesAsync(It.IsAny<string>())).ReturnsAsync(dataSources ?? Enumerable.Empty<DataSource>());
+            blockedAccessDelegate.Setup(p => p.GetDataSourcesAsync(It.IsAny<string>())).ReturnsAsync(blockedAccess.DataSources ?? Enumerable.Empty<DataSource>());
 
-            string blockedAccessCacheKey = string.Format(CultureInfo.InvariantCulture, ICacheProvider.BlockedAccessCachePrefixKey, blockedAccess?.Hdid);
+            string blockedAccessCacheKey = string.Format(CultureInfo.InvariantCulture, ICacheProvider.BlockedAccessCachePrefixKey, blockedAccess.Hdid);
             Mock<ICacheProvider> cacheProvider = new();
             cacheProvider.Setup(
                     p => p.GetOrSetAsync(
                         blockedAccessCacheKey,
                         It.IsAny<Func<Task<IEnumerable<DataSource>>>>(),
                         It.IsAny<TimeSpan>()))
-                .ReturnsAsync(dataSources);
+                .ReturnsAsync(blockedAccess.DataSources);
 
             PatientRepository patientRepository = new(
                 new Mock<ILogger<PatientRepository>>().Object,
