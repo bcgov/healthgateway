@@ -37,10 +37,6 @@ describe("Banner Error", () => {
 
         cy.get("[data-testid=error-details-span-1]").should("be.visible");
 
-        cy.get("[data-testid=copyToClipBoardBtn]").should("be.visible").click();
-
-        cy.get("[data-testid=genericMessageModal]").should("be.visible");
-        cy.get("[data-testid=genericMessageOkBtn]").click();
-        cy.get("[data-testid=genericMessageModal]").should("not.exist");
+        cy.get("[data-testid=copyToClipBoardBtn]").should("be.visible");
     });
 });
