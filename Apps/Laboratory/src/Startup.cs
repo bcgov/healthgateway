@@ -16,9 +16,11 @@
 namespace HealthGateway.Laboratory
 {
     using System.Diagnostics.CodeAnalysis;
+    using HealthGateway.AccountDataAccess;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.AspNetConfiguration;
     using HealthGateway.Common.AspNetConfiguration.Modules;
+    using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Laboratory.Api;
     using HealthGateway.Laboratory.Factories;
     using HealthGateway.Laboratory.Models;
@@ -79,6 +81,12 @@ namespace HealthGateway.Laboratory
                 .ConfigureHttpClient(c => c.BaseAddress = labConfig.BaseUrl);
             services.AddRefitClient<ILaboratoryApi>()
                 .ConfigureHttpClient(c => c.BaseAddress = labConfig.BaseUrl);
+
+            PhsaConfigV2 phsaConfigV2 = new();
+            this.startupConfig.Configuration.Bind(PhsaConfigV2.ConfigurationSectionKey, phsaConfigV2);
+
+            // Access patient repository
+            services.AddPatientRepositoryConfiguration(new AccountDataAccessConfiguration(phsaConfigV2.BaseUrl));
 
             services.AddAutoMapper(typeof(Startup));
         }
