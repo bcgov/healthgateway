@@ -85,6 +85,15 @@ namespace HealthGateway.AccountDataAccess.Patient
         }
 
         /// <inheritdoc/>
+        public async Task<bool> CanAccessDataSourceAsync(string hdid, DataSource dataSource, CancellationToken ct = default)
+        {
+            IEnumerable<DataSource> blockedDataSources = await this.GetDataSources(hdid, ct);
+            this.logger.LogDebug("Blocked data sources for hdid: {Hdid} - {DataSources}", hdid, blockedDataSources);
+
+            return !blockedDataSources.Contains(dataSource);
+        }
+
+        /// <inheritdoc/>
         public async Task BlockAccess(BlockAccessCommand command, CancellationToken ct = default)
         {
             string authenticatedUserId = this.authenticationDelegate.FetchAuthenticatedUserId() ?? UserId.DefaultUser;

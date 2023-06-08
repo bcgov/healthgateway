@@ -16,6 +16,7 @@
 namespace HealthGateway.Immunization
 {
     using System.Diagnostics.CodeAnalysis;
+    using HealthGateway.AccountDataAccess;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.AspNetConfiguration;
     using HealthGateway.Common.Models.PHSA;
@@ -79,6 +80,12 @@ namespace HealthGateway.Immunization
                 .ConfigureHttpClient(c => c.BaseAddress = phsaConfig.BaseUrl);
             services.AddRefitClient<IImmunizationPublicApi>()
                 .ConfigureHttpClient(c => c.BaseAddress = phsaConfig.BaseUrl);
+
+            PhsaConfigV2 phsaConfigV2 = new();
+            this.startupConfig.Configuration.Bind(PhsaConfigV2.ConfigurationSectionKey, phsaConfigV2);
+
+            // Access patient repository
+            services.AddPatientRepositoryConfiguration(new AccountDataAccessConfiguration(phsaConfigV2.BaseUrl));
 
             services.AddAutoMapper(typeof(Startup));
         }

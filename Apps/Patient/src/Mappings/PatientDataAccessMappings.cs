@@ -17,11 +17,12 @@ namespace HealthGateway.Patient.Mappings
 {
     using System;
     using AutoMapper;
+    using HealthGateway.Common.Data.Constants;
     using HealthGateway.Patient.Constants;
     using HealthGateway.Patient.Services;
     using HealthGateway.PatientDataAccess;
-    using DiagnosticImagingExam = HealthGateway.Patient.Services.DiagnosticImagingExam;
-    using OrganDonorRegistration = HealthGateway.Patient.Services.OrganDonorRegistration;
+    using DiagnosticImagingExam = HealthGateway.PatientDataAccess.DiagnosticImagingExam;
+    using OrganDonorRegistration = HealthGateway.PatientDataAccess.OrganDonorRegistration;
 
     /// <summary>
     /// Patient data access mappings.
@@ -46,6 +47,17 @@ namespace HealthGateway.Patient.Mappings
                     });
             this.CreateMap<HealthData, PatientData>()
                 .ConvertUsing<PatientDataConverter>();
+            this.CreateMap<PatientDataType, DataSource>()
+                .ConvertUsing(
+                    (source, destination, context) =>
+                    {
+                        return source switch
+                        {
+                            PatientDataType.OrganDonorRegistrationStatus => DataSource.OrganDonorRegistration,
+                            PatientDataType.DiagnosticImaging => DataSource.DiagnosticImaging,
+                            _ => throw new NotImplementedException($"Mapping for {source} is not implemented"),
+                        };
+                    });
         }
 
 #pragma warning disable SA1600
@@ -56,8 +68,8 @@ namespace HealthGateway.Patient.Mappings
             {
                 return source switch
                 {
-                    PatientDataAccess.OrganDonorRegistration hd => context.Mapper.Map<OrganDonorRegistration>(hd),
-                    PatientDataAccess.DiagnosticImagingExam hd => context.Mapper.Map<DiagnosticImagingExam>(hd),
+                    OrganDonorRegistration hd => context.Mapper.Map<Services.OrganDonorRegistration>(hd),
+                    DiagnosticImagingExam hd => context.Mapper.Map<Services.DiagnosticImagingExam>(hd),
                     _ => throw new NotImplementedException($"{source.GetType().Name} is not mapped to {nameof(PatientData)}"),
                 };
             }

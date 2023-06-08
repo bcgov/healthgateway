@@ -22,6 +22,8 @@ namespace HealthGateway.PatientTests.Services
     using System.Threading;
     using System.Threading.Tasks;
     using AutoMapper;
+    using HealthGateway.AccountDataAccess.Patient;
+    using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Common.Services;
     using HealthGateway.Patient.Constants;
@@ -116,8 +118,10 @@ namespace HealthGateway.PatientTests.Services
             actualDiagnosticImagingExam.ExamStatus.ShouldBe(diagnosticImagingExam.ExamStatus);
         }
 
-        [Fact]
-        public async Task CanGetOrganDonorRegistrationData()
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public async Task CanGetOrganDonorRegistrationData(bool canAccessDataSource)
         {
             PatientDataAccess.OrganDonorRegistration expected = new()
             {
@@ -133,19 +137,31 @@ namespace HealthGateway.PatientTests.Services
 
             Mock<IPersonalAccountsService> personalAccountService = this.GetMockPersonalAccountService();
 
-            PatientDataService sut = new(patientDataRepository.Object, personalAccountService.Object, this.mapper);
+            Mock<IPatientRepository> patientRepository = new();
+            patientRepository.Setup(p => p.CanAccessDataSourceAsync(It.IsAny<string>(), It.IsAny<DataSource>(), It.IsAny<CancellationToken>())).ReturnsAsync(canAccessDataSource);
+
+            PatientDataService sut = new(patientDataRepository.Object, patientRepository.Object, personalAccountService.Object, this.mapper);
 
             PatientDataResponse result = await sut.Query(new PatientDataQuery(this.hdid, new[] { PatientDataType.OrganDonorRegistrationStatus }), CancellationToken.None)
                 .ConfigureAwait(true);
 
-            OrganDonorRegistration actual = result.Items.ShouldHaveSingleItem().ShouldBeOfType<OrganDonorRegistration>();
-            actual.Status.ShouldBe(OrganDonorRegistrationStatus.Registered);
-            actual.StatusMessage.ShouldBe(expected.StatusMessage);
-            actual.RegistrationFileId.ShouldBe(expected.RegistrationFileId);
+            if (canAccessDataSource)
+            {
+                OrganDonorRegistration actual = result.Items.ShouldHaveSingleItem().ShouldBeOfType<OrganDonorRegistration>();
+                actual.Status.ShouldBe(OrganDonorRegistrationStatus.Registered);
+                actual.StatusMessage.ShouldBe(expected.StatusMessage);
+                actual.RegistrationFileId.ShouldBe(expected.RegistrationFileId);
+            }
+            else
+            {
+                result.Items.ShouldBeEmpty();
+            }
         }
 
-        [Fact]
-        public async Task CanGetDiagnosticImagingData()
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public async Task CanGetDiagnosticImagingData(bool canAccessDataSource)
         {
             PatientDataAccess.DiagnosticImagingExam expected = new()
             {
@@ -165,20 +181,30 @@ namespace HealthGateway.PatientTests.Services
                 expected);
             Mock<IPersonalAccountsService> personalAccountService = this.GetMockPersonalAccountService();
 
-            PatientDataService sut = new(patientDataRepository.Object, personalAccountService.Object, this.mapper);
+            Mock<IPatientRepository> patientRepository = new();
+            patientRepository.Setup(p => p.CanAccessDataSourceAsync(It.IsAny<string>(), It.IsAny<DataSource>(), It.IsAny<CancellationToken>())).ReturnsAsync(canAccessDataSource);
+
+            PatientDataService sut = new(patientDataRepository.Object, patientRepository.Object, personalAccountService.Object, this.mapper);
 
             PatientDataResponse result = await sut.Query(new PatientDataQuery(this.hdid, new[] { PatientDataType.DiagnosticImaging }), CancellationToken.None)
                 .ConfigureAwait(true);
 
-            DiagnosticImagingExam actual = result.Items.ShouldHaveSingleItem().ShouldBeOfType<DiagnosticImagingExam>();
-            actual.BodyPart.ShouldBe(expected.BodyPart);
-            actual.ExamDate.ShouldBe(expected.ExamDate);
-            actual.FileId.ShouldBe(expected.FileId);
-            actual.HealthAuthority.ShouldBe(expected.HealthAuthority);
-            actual.Modality.ShouldBe(expected.Modality);
-            actual.Organization.ShouldBe(expected.Organization);
-            actual.ProcedureDescription.ShouldBe(expected.ProcedureDescription);
-            actual.ExamStatus.ShouldBe(DiagnosticImagingStatus.Pending);
+            if (canAccessDataSource)
+            {
+                DiagnosticImagingExam actual = result.Items.ShouldHaveSingleItem().ShouldBeOfType<DiagnosticImagingExam>();
+                actual.BodyPart.ShouldBe(expected.BodyPart);
+                actual.ExamDate.ShouldBe(expected.ExamDate);
+                actual.FileId.ShouldBe(expected.FileId);
+                actual.HealthAuthority.ShouldBe(expected.HealthAuthority);
+                actual.Modality.ShouldBe(expected.Modality);
+                actual.Organization.ShouldBe(expected.Organization);
+                actual.ProcedureDescription.ShouldBe(expected.ProcedureDescription);
+                actual.ExamStatus.ShouldBe(DiagnosticImagingStatus.Pending);
+            }
+            else
+            {
+                result.Items.ShouldBeEmpty();
+            }
         }
 
         [Fact]
@@ -193,7 +219,10 @@ namespace HealthGateway.PatientTests.Services
 
             Mock<IPersonalAccountsService> personalAccountService = this.GetMockPersonalAccountService();
 
-            PatientDataService sut = new(patientDataRepository.Object, personalAccountService.Object, this.mapper);
+            Mock<IPatientRepository> patientRepository = new();
+            patientRepository.Setup(p => p.CanAccessDataSourceAsync(It.IsAny<string>(), It.IsAny<DataSource>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
+
+            PatientDataService sut = new(patientDataRepository.Object, patientRepository.Object, personalAccountService.Object, this.mapper);
 
             PatientFileResponse? result = await sut.Query(new Patient.Services.PatientFileQuery(this.hdid, expected.FileId), CancellationToken.None).ConfigureAwait(true);
 
@@ -212,7 +241,10 @@ namespace HealthGateway.PatientTests.Services
 
             Mock<IPersonalAccountsService> personalAccountService = this.GetMockPersonalAccountService();
 
-            PatientDataService sut = new(patientDataRepository.Object, personalAccountService.Object, this.mapper);
+            Mock<IPatientRepository> patientRepository = new();
+            patientRepository.Setup(p => p.CanAccessDataSourceAsync(It.IsAny<string>(), It.IsAny<DataSource>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
+
+            PatientDataService sut = new(patientDataRepository.Object, patientRepository.Object, personalAccountService.Object, this.mapper);
 
             PatientFileResponse? result = await sut.Query(new Patient.Services.PatientFileQuery(this.hdid, fileId), CancellationToken.None).ConfigureAwait(true);
 

@@ -17,10 +17,12 @@
 namespace HealthGateway.Medication
 {
     using System.Diagnostics.CodeAnalysis;
+    using HealthGateway.AccountDataAccess;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.AspNetConfiguration;
     using HealthGateway.Common.AspNetConfiguration.Modules;
     using HealthGateway.Common.Delegates;
+    using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Medication.Api;
     using HealthGateway.Medication.Delegates;
@@ -101,6 +103,12 @@ namespace HealthGateway.Medication
             this.startupConfig.Configuration.Bind(Config.SalesforceConfigSectionKey, sfConfig);
             services.AddRefitClient<ISpecialAuthorityApi>()
                 .ConfigureHttpClient(c => c.BaseAddress = sfConfig.Endpoint);
+
+            PhsaConfigV2 phsaConfigV2 = new();
+            this.startupConfig.Configuration.Bind(PhsaConfigV2.ConfigurationSectionKey, phsaConfigV2);
+
+            // Access patient repository
+            services.AddPatientRepositoryConfiguration(new AccountDataAccessConfiguration(phsaConfigV2.BaseUrl));
 
             OdrConfiguration.AddOdrRefitClient<IOdrApi>(services, this.startupConfig.Configuration);
         }

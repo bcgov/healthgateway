@@ -18,9 +18,12 @@ namespace HealthGateway.LaboratoryTests.Mock
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading;
     using AutoMapper;
+    using HealthGateway.AccountDataAccess.Patient;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.AccessManagement.Authentication.Models;
+    using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Laboratory.Factories;
@@ -51,6 +54,7 @@ namespace HealthGateway.LaboratoryTests.Mock
                 new Mock<ILogger<LaboratoryService>>().Object,
                 new Mock<ILaboratoryDelegateFactory>().Object,
                 new Mock<IAuthenticationDelegate>().Object,
+                new Mock<IPatientRepository>().Object,
                 this.autoMapper);
         }
 
@@ -59,13 +63,18 @@ namespace HealthGateway.LaboratoryTests.Mock
         /// </summary>
         /// <param name="delegateResult">return object of the delegate service.</param>
         /// <param name="token">token needed for authentication.</param>
-        public LaboratoryServiceMock(RequestResult<PhsaResult<List<PhsaCovid19Order>>> delegateResult, string token)
+        /// <param name="canAccessDataSource">The value indicates whether the data source can be accessed or not.</param>
+        public LaboratoryServiceMock(RequestResult<PhsaResult<List<PhsaCovid19Order>>> delegateResult, string token, bool canAccessDataSource = true)
         {
+            Mock<IPatientRepository> patientRepository = new();
+            patientRepository.Setup(p => p.CanAccessDataSourceAsync(It.IsAny<string>(), It.IsAny<DataSource>(), It.IsAny<CancellationToken>())).ReturnsAsync(canAccessDataSource);
+
             this.laboratoryService = new LaboratoryService(
                 this.configuration,
                 new Mock<ILogger<LaboratoryService>>().Object,
                 new LaboratoryDelegateFactoryMock(new LaboratoryDelegateMock(delegateResult)).Object,
                 GetMockAuthDelegate(token),
+                patientRepository.Object,
                 this.autoMapper);
         }
 
@@ -81,6 +90,7 @@ namespace HealthGateway.LaboratoryTests.Mock
                 new Mock<ILogger<LaboratoryService>>().Object,
                 new LaboratoryDelegateFactoryMock(new LaboratoryDelegateMock(delegateResult)).Object,
                 GetMockAuthDelegate(token),
+                new Mock<IPatientRepository>().Object,
                 this.autoMapper);
         }
 
@@ -96,6 +106,7 @@ namespace HealthGateway.LaboratoryTests.Mock
                 new Mock<ILogger<LaboratoryService>>().Object,
                 new LaboratoryDelegateFactoryMock(new LaboratoryDelegateMock(delegateResult, token)).Object,
                 GetMockAuthDelegate(token),
+                new Mock<IPatientRepository>().Object,
                 this.autoMapper);
         }
 
@@ -104,13 +115,18 @@ namespace HealthGateway.LaboratoryTests.Mock
         /// </summary>
         /// <param name="delegateResult">return object of the delegate service.</param>
         /// <param name="token">token needed for authentication.</param>
-        public LaboratoryServiceMock(RequestResult<PhsaResult<PhsaLaboratorySummary>> delegateResult, string token)
+        /// <param name="canAccessDataSource">The value indicates whether the data source can be accessed or not.</param>
+        public LaboratoryServiceMock(RequestResult<PhsaResult<PhsaLaboratorySummary>> delegateResult, string token, bool canAccessDataSource = true)
         {
+            Mock<IPatientRepository> patientRepository = new();
+            patientRepository.Setup(p => p.CanAccessDataSourceAsync(It.IsAny<string>(), It.IsAny<DataSource>(), It.IsAny<CancellationToken>())).ReturnsAsync(canAccessDataSource);
+
             this.laboratoryService = new LaboratoryService(
                 this.configuration,
                 new Mock<ILogger<LaboratoryService>>().Object,
                 new LaboratoryDelegateFactoryMock(new LaboratoryDelegateMock(delegateResult)).Object,
                 GetMockAuthDelegate(token),
+                patientRepository.Object,
                 this.autoMapper);
         }
 
@@ -140,7 +156,7 @@ namespace HealthGateway.LaboratoryTests.Mock
 
         private static IAuthenticationDelegate GetMockAuthDelegate(string token)
         {
-            JwtModel jwt = new JwtModel()
+            JwtModel jwt = new()
             {
                 AccessToken = token,
             };
