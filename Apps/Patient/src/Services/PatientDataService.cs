@@ -45,15 +45,14 @@ namespace HealthGateway.Patient.Services
 
         public async Task<PatientDataResponse> Query(PatientDataQuery query, CancellationToken ct)
         {
-            List<PatientDataType> patientDataTypes = query.PatientDataTypes.ToList();
-
-            if (!await this.CanAccessDataSourceAsync(query.Hdid, patientDataTypes).ConfigureAwait(true))
+            IList<PatientDataType> unblockedPatientDataTypes = await this.GetUnblockedPatientDataTypesAsync(query.Hdid, query.PatientDataTypes).ConfigureAwait(true);
+            if (!unblockedPatientDataTypes.Any())
             {
                 return new PatientDataResponse(Enumerable.Empty<PatientData>());
             }
 
             Guid pid = await this.ResolvePidFromHdid(query.Hdid).ConfigureAwait(true);
-            HealthQuery healthQuery = new(pid, patientDataTypes.Select(t => this.mapper.Map<HealthCategory>(t)));
+            HealthQuery healthQuery = new(pid, unblockedPatientDataTypes.Select(t => this.mapper.Map<HealthCategory>(t)));
             PatientDataQueryResult result = await this.patientDataRepository.Query(healthQuery, ct)
                 .ConfigureAwait(true);
             return new PatientDataResponse(result.Items.Select(i => this.mapper.Map<PatientData>(i)));
@@ -70,19 +69,19 @@ namespace HealthGateway.Patient.Services
                 : null;
         }
 
-        private async Task<bool> CanAccessDataSourceAsync(string hdid, IList<PatientDataType> patientDataTypes)
+        private async Task<IList<PatientDataType>> GetUnblockedPatientDataTypesAsync(string hdid, IEnumerable<PatientDataType> patientDataTypes)
         {
-            for (int i = patientDataTypes.Count - 1; i >= 0; i--)
+            List<PatientDataType> unblockedPatientDataTypes = new();
+            foreach (PatientDataType patientDataType in patientDataTypes)
             {
-                DataSource dataSource = this.mapper.Map<DataSource>(patientDataTypes[i]);
-                if (!await this.patientRepository.CanAccessDataSourceAsync(hdid, dataSource).ConfigureAwait(true))
+                DataSource dataSource = this.mapper.Map<DataSource>(patientDataType);
+                if (await this.patientRepository.CanAccessDataSourceAsync(hdid, dataSource).ConfigureAwait(true))
                 {
-                    // Remove patient data type from query if access has been blocked.
-                    patientDataTypes.RemoveAt(i);
+                    unblockedPatientDataTypes.Add(patientDataType);
                 }
             }
 
-            return patientDataTypes.Count != 0;
+            return unblockedPatientDataTypes;
         }
 
         private async Task<Guid> ResolvePidFromHdid(string patientHdid)
