@@ -1,30 +1,20 @@
-<script lang="ts">
-import Vue from "vue";
-import { Component } from "vue-property-decorator";
-import { Getter } from "vuex-class";
+<script setup lang="ts">
+import { computed } from "vue";
+import { useStore } from "vue-composition-wrapper";
 
 import type { WebClientConfiguration } from "@/models/configData";
 import DependentManagementView from "@/views/DependentManagementView.vue";
 import DependentsView from "@/views/DependentsView.vue";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const options: any = {
-    components: {
-        DependentManagementView,
-        DependentsView,
-    },
-};
+const store = useStore();
 
-@Component(options)
-export default class DependentViewSelectorComponent extends Vue {
-    @Getter("webClient", { namespace: "config" })
-    private config!: WebClientConfiguration;
+const config = computed<WebClientConfiguration>(
+    () => store.getters["config/webClient"]
+);
 
-    private get timelineEnabled(): boolean {
-        return this.config.featureToggleConfiguration.dependents
-            .timelineEnabled;
-    }
-}
+const timelineEnabled = computed<boolean>(
+    () => config.value.featureToggleConfiguration.dependents.timelineEnabled
+);
 </script>
 <template>
     <DependentManagementView v-if="timelineEnabled" />

@@ -1,7 +1,6 @@
-<script lang="ts">
-import Vue from "vue";
-import { Component, Emit } from "vue-property-decorator";
-import { Getter } from "vuex-class";
+<script setup lang="ts">
+import { computed, ref } from "vue";
+import { useStore } from "vue-composition-wrapper";
 
 import type { WebClientConfiguration } from "@/models/configData";
 import container from "@/plugins/container";
@@ -9,70 +8,69 @@ import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ILogger, IUserRatingService } from "@/services/interfaces";
 import SnowPlow from "@/utility/snowPlow";
 
-@Component
-export default class RatingComponent extends Vue {
-    @Getter("webClient", { namespace: "config" })
-    config!: WebClientConfiguration;
+const emit = defineEmits<{
+    (e: "on-close"): void;
+}>();
 
-    private question =
-        "Did the Health Gateway improve your access to health information today? Please provide a rating.";
-    private ratingValue = 0;
-    private isVisible = false;
-    private logger!: ILogger;
+defineExpose({
+    showModal,
+    hideModal,
+});
 
-    private created(): void {
-        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-    }
+const question =
+    "Did the Health Gateway improve your access to health information today? Please provide a rating.";
 
-    public showModal(): void {
-        this.isVisible = true;
-        setTimeout(() => {
-            if (this.isVisible) {
-                this.handleRating(0, true);
+const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+const ratingService = container.get<IUserRatingService>(
+    SERVICE_IDENTIFIER.UserRatingService
+);
+const store = useStore();
+
+const ratingValue = ref(0);
+const isVisible = ref(false);
+
+const config = computed<WebClientConfiguration>(
+    () => store.getters["config/webClient"]
+);
+
+function showModal(): void {
+    isVisible.value = true;
+    setTimeout(() => {
+        if (isVisible.value) {
+            handleRating(0, true);
+        }
+    }, Number(config.value.timeouts.logoutRedirect));
+}
+
+function hideModal(): void {
+    isVisible.value = false;
+}
+
+function handleRating(value: number, skip = false): void {
+    logger.debug(
+        `submitting rating: ratingValue = ${value}, skip = ${skip} ...`
+    );
+    ratingService
+        .submitRating({ ratingValue: value, skip })
+        .then(() => {
+            if (skip) {
+                SnowPlow.trackEvent({
+                    action: "submit_app_rating",
+                    text: "skip",
+                });
+            } else {
+                SnowPlow.trackEvent({
+                    action: "submit_app_rating",
+                    text: value.toString(),
+                });
             }
-        }, Number(this.config.timeouts.logoutRedirect));
-    }
-
-    public hideModal(): void {
-        this.isVisible = false;
-    }
-
-    private handleRating(value: number, skip = false): void {
-        const ratingService = container.get<IUserRatingService>(
-            SERVICE_IDENTIFIER.UserRatingService
-        );
-        this.logger.debug(
-            `submitting rating: ratingValue = ${value}, skip = ${skip} ...`
-        );
-        ratingService
-            .submitRating({ ratingValue: value, skip })
-            .then(() => {
-                if (skip) {
-                    SnowPlow.trackEvent({
-                        action: "submit_app_rating",
-                        text: "skip",
-                    });
-                } else {
-                    SnowPlow.trackEvent({
-                        action: "submit_app_rating",
-                        text: value.toString(),
-                    });
-                }
-                this.logger.debug(`submitRating with success.`);
-            })
-            .catch((err) =>
-                this.logger.error(`submitRating with error: ${err}`)
-            )
-            .finally(() => {
-                this.hideModal();
-                this.onClose();
-            });
-    }
-
-    @Emit()
-    private onClose(): void {
-        return;
-    }
+            logger.debug(`submitRating with success.`);
+        })
+        .catch((err) => logger.error(`submitRating with error: ${err}`))
+        .finally(() => {
+            hideModal();
+            emit("on-close");
+        });
 }
 </script>
 

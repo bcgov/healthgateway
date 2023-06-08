@@ -40,7 +40,6 @@ namespace HealthGateway.GatewayApi.Services
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
-    using HealthGateway.GatewayApi.Constants;
     using HealthGateway.GatewayApi.MapUtils;
     using HealthGateway.GatewayApi.Models;
     using HealthGateway.GatewayApi.Validations;
@@ -54,7 +53,6 @@ namespace HealthGateway.GatewayApi.Services
     {
         private const string WebClientConfigSection = "WebClient";
         private const string UserProfileHistoryRecordLimitKey = "UserProfileHistoryRecordLimit";
-        private const string RegistrationStatusKey = "RegistrationStatus";
         private const string MinPatientAgeKey = "MinPatientAge";
         private readonly IAuthenticationDelegate authenticationDelegate;
         private readonly IApplicationSettingsDelegate applicationSettingsDelegate;
@@ -69,7 +67,6 @@ namespace HealthGateway.GatewayApi.Services
         private readonly int minPatientAge;
         private readonly INotificationSettingsService notificationSettingsService;
         private readonly IPatientService patientService;
-        private readonly string registrationStatus;
         private readonly IUserEmailService userEmailService;
         private readonly IUserPreferenceDelegate userPreferenceDelegate;
         private readonly IUserProfileDelegate userProfileDelegate;
@@ -132,8 +129,6 @@ namespace HealthGateway.GatewayApi.Services
             this.httpContextAccessor = httpContextAccessor;
             this.userProfileHistoryRecordLimit = configuration.GetSection(WebClientConfigSection)
                 .GetValue(UserProfileHistoryRecordLimitKey, 4);
-            this.registrationStatus = configuration.GetSection(WebClientConfigSection)
-                .GetValue<string>(RegistrationStatusKey) ?? RegistrationStatus.Open;
             this.minPatientAge = configuration.GetSection(WebClientConfigSection).GetValue(MinPatientAgeKey, 12);
             this.autoMapper = autoMapper;
             this.authenticationDelegate = authenticationDelegate;
@@ -222,12 +217,6 @@ namespace HealthGateway.GatewayApi.Services
         public async Task<RequestResult<UserProfileModel>> CreateUserProfile(CreateUserRequest createProfileRequest, DateTime jwtAuthTime, string? jwtEmailAddress)
         {
             this.logger.LogTrace("Creating user profile... {Hdid}", createProfileRequest.Profile.HdId);
-
-            if (this.registrationStatus == RegistrationStatus.Closed)
-            {
-                this.logger.LogWarning("Registration is closed... {Hdid}", createProfileRequest.Profile.HdId);
-                return RequestResultFactory.Error<UserProfileModel>(ErrorType.InvalidState, "Registration is closed");
-            }
 
             RequestResult<UserProfileModel>? validationResult = await this.ValidateUserProfile(createProfileRequest).ConfigureAwait(true);
             if (validationResult != null)

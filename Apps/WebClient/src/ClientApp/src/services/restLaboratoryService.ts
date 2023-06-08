@@ -3,14 +3,12 @@ import { injectable } from "inversify";
 import { EntryType } from "@/constants/entryType";
 import { ResultType } from "@/constants/resulttype";
 import { ServiceCode } from "@/constants/serviceCodes";
-import { Dictionary } from "@/models/baseTypes";
 import { ExternalConfiguration } from "@/models/configData";
 import { HttpError } from "@/models/errors";
 import {
     Covid19LaboratoryOrderResult,
     LaboratoryOrderResult,
     LaboratoryReport,
-    PublicCovidTestResponseResult,
 } from "@/models/laboratory";
 import RequestResult from "@/models/requestResult";
 import container from "@/plugins/container";
@@ -43,42 +41,6 @@ export class RestLaboratoryService implements ILaboratoryService {
         this.isCovid19Enabled = ConfigUtil.isDatasetEnabled(
             EntryType.Covid19TestResult
         );
-    }
-
-    getPublicCovid19Tests(
-        phn: string,
-        dateOfBirth: string,
-        collectionDate: string
-    ): Promise<RequestResult<PublicCovidTestResponseResult>> {
-        return new Promise((resolve, reject) => {
-            if (!this.isCovid19Enabled) {
-                reject(
-                    ErrorTranslator.moduleDisabledError(ServiceCode.Laboratory)
-                );
-                return;
-            }
-            const headers: Dictionary<string> = {};
-            headers["phn"] = phn;
-            headers["dateOfBirth"] = dateOfBirth;
-            headers["collectionDate"] = collectionDate;
-            this.http
-                .getWithCors<RequestResult<PublicCovidTestResponseResult>>(
-                    `${this.baseUri}${this.PUBLIC_LABORATORY_BASE_URI}/CovidTests`,
-                    headers
-                )
-                .then((requestResult) => resolve(requestResult))
-                .catch((err: HttpError) => {
-                    this.logger.error(
-                        `Error in RestLaboratoryService.getPublicCovid19Tests()`
-                    );
-                    reject(
-                        ErrorTranslator.internalNetworkError(
-                            err,
-                            ServiceCode.Laboratory
-                        )
-                    );
-                });
-        });
     }
 
     public getCovid19LaboratoryOrders(

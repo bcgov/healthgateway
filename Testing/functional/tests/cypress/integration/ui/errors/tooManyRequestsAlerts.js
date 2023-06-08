@@ -1,7 +1,6 @@
 const { AuthMethod } = require("../../../support/constants");
 
 const vaccineCardUrl = "/vaccinecard";
-const covidTestUrl = "/covidtest";
 const dependentHdid = "645645767756756767";
 const HDID = "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A";
 
@@ -97,40 +96,6 @@ describe("Authenticated Vaccine Card Downloads", () => {
             .should("be.visible")
             .click();
         cy.get("[data-testid=genericMessageSubmitBtn]").click();
-
-        cy.get("[data-testid=too-many-requests-warning]").should("be.visible");
-    });
-});
-
-describe("Public COVID-19 Test Results", () => {
-    it("Unsuccessful Response: Too Many Requests", () => {
-        cy.intercept("GET", "**/PublicLaboratory/CovidTests", {
-            statusCode: 429,
-        });
-        cy.configureSettings({
-            covid19: {
-                publicCovid19: {
-                    enableTestResults: true,
-                },
-            },
-            datasets: [
-                {
-                    name: "covid19TestResult",
-                    enabled: true,
-                },
-            ],
-        });
-        cy.logout();
-        cy.visit(covidTestUrl);
-
-        enterVaccineCardPHN(fullyVaccinatedPhn);
-        cy.get(dobYearSelector).select(fullyVaccinatedDobYear);
-        cy.get(dobMonthSelector).select(fullyVaccinatedDobMonth);
-        cy.get(dobDaySelector).select(fullyVaccinatedDobDay);
-        cy.get(collectionDateYearSelector).select(fullyVaccinatedDovYear);
-        cy.get(collectionDateMonthSelector).select(fullyVaccinatedDovMonth);
-        cy.get(collectionDateDaySelector).select(fullyVaccinatedDovDay);
-        clickVaccineCardEnterButton();
 
         cy.get("[data-testid=too-many-requests-warning]").should("be.visible");
     });

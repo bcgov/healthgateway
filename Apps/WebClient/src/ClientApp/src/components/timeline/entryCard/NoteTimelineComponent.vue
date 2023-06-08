@@ -4,14 +4,13 @@ import { faEllipsisV } from "@fortawesome/free-solid-svg-icons";
 import { computed, ref } from "vue";
 import { useStore } from "vue-composition-wrapper";
 
+import EntryCardTimelineComponent from "@/components/timeline/entryCard/EntrycardTimelineComponent.vue";
 import { EntryType, entryTypeMap } from "@/constants/entryType";
 import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import EventBus, { EventMessageName } from "@/eventbus";
 import { ResultError } from "@/models/errors";
 import NoteTimelineEntry from "@/models/noteTimelineEntry";
 import UserNote from "@/models/userNote";
-
-import EntryCardTimelineComponent from "./EntrycardTimelineComponent.vue";
 
 const store = useStore();
 

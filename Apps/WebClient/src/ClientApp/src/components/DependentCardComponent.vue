@@ -116,9 +116,10 @@ const selectedTestRow = ref<Covid19LaboratoryTestRow>();
 const selectedLaboratoryOrderRow = ref<LaboratoryOrder>();
 const selectedClinicalDocumentRow = ref<ClinicalDocument>();
 
-const reportDownloadModal = ref<MessageModalComponent>();
-const vaccineRecordResultModal = ref<MessageModalComponent>();
-const deleteModal = ref<DeleteModalComponent>();
+const reportDownloadModal = ref<InstanceType<typeof MessageModalComponent>>();
+const vaccineRecordResultModal =
+    ref<InstanceType<typeof MessageModalComponent>>();
+const deleteModal = ref<InstanceType<typeof DeleteModalComponent>>();
 
 const user = computed<User>(() => store.getters["user/user"]);
 const webClientConfig = computed<WebClientConfiguration>(
@@ -1757,7 +1758,7 @@ watch(vaccineRecordState, () => {
             :text="vaccineRecordState.statusMessage"
             :full-screen="false"
         />
-        <delete-modal-component
+        <DeleteModalComponent
             ref="deleteModal"
             title="Remove Dependent"
             confirm="Remove Dependent"

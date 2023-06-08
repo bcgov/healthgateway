@@ -164,7 +164,7 @@ describe("Public PcrTest Registration Form", () => {
         cy.get(contactPhoneNumberInput).type(" ");
         cy.get(testTakenMinutesAgo).select(getPcrTestTakenTime(5));
         cy.get(feedbackPhoneNumberValidSelector).should("be.visible");
-        cy.get(feedbackTestKitCodeValidSelector).should("not.exist");
+        cy.get(feedbackTestKitCodeValidSelector).should("not.be.visible");
     });
 });
 

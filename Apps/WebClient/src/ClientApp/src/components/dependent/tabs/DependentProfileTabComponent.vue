@@ -1,30 +1,29 @@
-<script lang="ts">
-import Vue from "vue";
-import { Component, Prop } from "vue-property-decorator";
+<script setup lang="ts">
+import { computed } from "vue";
 
 import { DateWrapper, StringISODate } from "@/models/dateWrapper";
 import type { Dependent } from "@/models/dependent";
 
-@Component
-export default class DependentProfileTabComponent extends Vue {
-    @Prop({ required: true })
-    private dependent!: Dependent;
+interface Props {
+    dependent: Dependent;
+}
+const props = defineProps<Props>();
 
-    private get otherDelegateCount(): number {
-        return this.dependent.totalDelegateCount - 1;
-    }
+const otherDelegateCount = computed(() => {
+    return props.dependent.totalDelegateCount - 1;
+});
 
-    private formatDate(date: StringISODate): string {
-        return new DateWrapper(date).format();
-    }
+function formatDate(date: StringISODate): string {
+    return DateWrapper.format(date);
 }
 </script>
+
 <template>
     <b-row cols="1" cols-lg="2" cols-xl="3" class="mb-n3">
         <b-col class="mb-3">
             <div>PHN</div>
             <b-form-input
-                v-model="dependent.dependentInformation.PHN"
+                :value="dependent.dependentInformation.PHN"
                 data-testid="dependent-phn"
                 readonly
             />
@@ -40,7 +39,7 @@ export default class DependentProfileTabComponent extends Vue {
         <b-col class="mb-3">
             <div>How Many Others Have Access</div>
             <b-form-input
-                v-model="otherDelegateCount"
+                :value="otherDelegateCount"
                 data-testid="dependent-other-delegate-count"
                 readonly
             />

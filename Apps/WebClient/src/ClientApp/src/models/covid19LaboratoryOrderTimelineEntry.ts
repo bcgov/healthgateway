@@ -13,7 +13,7 @@ export default class Covid19LaboratoryOrderTimelineEntry extends TimelineEntry {
     public orderingProviders: string | null;
     public reportingLab: string | null;
     public location: string | null;
-    public labResultOutcome: string | null;
+    public labResultOutcome: string;
     public displayDate: DateWrapper;
     public reportAvailable: boolean;
     public resultReady: boolean;

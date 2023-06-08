@@ -1,15 +1,12 @@
-<script lang="ts">
+<script setup lang="ts">
 import { saveAs } from "file-saver";
-import Vue from "vue";
-import { Component, Prop, Ref } from "vue-property-decorator";
-import { Action, Getter } from "vuex-class";
+import { Component, computed, ref } from "vue";
+import { useStore } from "vue-composition-wrapper";
 
 import DatePickerComponent from "@/components/DatePickerComponent.vue";
 import LoadingComponent from "@/components/LoadingComponent.vue";
 import MessageModalComponent from "@/components/modal/MessageModalComponent.vue";
-import MultiSelectComponent, {
-    SelectOption,
-} from "@/components/MultiSelectComponent.vue";
+import MultiSelectComponent from "@/components/MultiSelectComponent.vue";
 import Covid19ReportComponent from "@/components/report/Covid19ReportComponent.vue";
 import HospitalVisitReportComponent from "@/components/report/HospitalVisitReportComponent.vue";
 import ImmunizationHistoryReportComponent from "@/components/report/ImmunizationHistoryReportComponent.vue";
@@ -20,7 +17,6 @@ import MSPVisitsReportComponent from "@/components/report/MSPVisitsReportCompone
 import NotesReportComponent from "@/components/report/NotesReportComponent.vue";
 import { EntryType, entryTypeMap } from "@/constants/entryType";
 import { ErrorSourceType, ErrorType } from "@/constants/errorType";
-import type { WebClientConfiguration } from "@/models/configData";
 import { DateWrapper, StringISODate } from "@/models/dateWrapper";
 import { Dependent } from "@/models/dependent";
 import { ResultError } from "@/models/errors";
@@ -28,362 +24,308 @@ import MedicationStatementHistory from "@/models/medicationStatementHistory";
 import MedicationSummary from "@/models/medicationSummary";
 import Patient from "@/models/patient";
 import Report from "@/models/report";
-import { ReportFilterBuilder } from "@/models/reportFilter";
+import ReportFilter, { ReportFilterBuilder } from "@/models/reportFilter";
 import ReportHeader from "@/models/reportHeader";
 import { ReportFormatType } from "@/models/reportRequest";
 import RequestResult from "@/models/requestResult";
+import SelectOption from "@/models/selectOption";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ILogger } from "@/services/interfaces";
 import ConfigUtil from "@/utility/configUtil";
 import EventTracker from "@/utility/eventTracker";
 
-const medicationReport = "medication-report";
-const mspVisitReport = "msp-visit-report";
-const covid19Report = "covid19-report";
-const immunizationReport = "immunization-report";
-const medicationRequestReport = "medication-request-report";
-const noteReport = "note-report";
-const laboratoryReport = "laboratory-report";
-const hospitalVisitReport = "hospital-visit-report";
+interface Props {
+    hdid: string;
+    isDependent?: boolean;
+}
+const props = withDefaults(defineProps<Props>(), {
+    isDependent: false,
+});
 
-const reportNameMap = new Map<EntryType, string>([
-    [EntryType.Medication, medicationReport],
-    [EntryType.HealthVisit, mspVisitReport],
-    [EntryType.Covid19TestResult, covid19Report],
-    [EntryType.Immunization, immunizationReport],
-    [EntryType.SpecialAuthorityRequest, medicationRequestReport],
-    [EntryType.Note, noteReport],
-    [EntryType.LabResult, laboratoryReport],
-    [EntryType.HospitalVisit, hospitalVisitReport],
+const reportComponentMap = new Map<EntryType, Component>([
+    [EntryType.Medication, MedicationHistoryReportComponent],
+    [EntryType.HealthVisit, MSPVisitsReportComponent],
+    [EntryType.Covid19TestResult, Covid19ReportComponent],
+    [EntryType.Immunization, ImmunizationHistoryReportComponent],
+    [EntryType.SpecialAuthorityRequest, MedicationRequestReportComponent],
+    [EntryType.Note, NotesReportComponent],
+    [EntryType.LabResult, LaboratoryReportComponent],
+    [EntryType.HospitalVisit, HospitalVisitReportComponent],
 ]);
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const options: any = {
-    components: {
-        LoadingComponent,
-        "message-modal": MessageModalComponent,
-        medicationReport: MedicationHistoryReportComponent,
-        mspVisitReport: MSPVisitsReportComponent,
-        covid19Report: Covid19ReportComponent,
-        immunizationReport: ImmunizationHistoryReportComponent,
-        medicationRequestReport: MedicationRequestReportComponent,
-        "hg-date-picker": DatePickerComponent,
-        MultiSelectComponent,
-        noteReport: NotesReportComponent,
-        laboratoryReport: LaboratoryReportComponent,
-        HospitalVisitReport: HospitalVisitReportComponent,
-    },
-};
+const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+const store = useStore();
 
-@Component(options)
-export default class ReportsComponent extends Vue {
-    @Prop({ required: true })
-    hdid!: string;
+const isLoading = ref(false);
+const isGeneratingReport = ref(false);
+const reportFormatType = ref(ReportFormatType.PDF);
+const selectedEntryType = ref<EntryType | "">("");
+const reportTypeOptions = ref([{ value: "", text: "Select" }]);
+const selectedStartDate = ref<StringISODate>("");
+const selectedEndDate = ref<StringISODate>("");
+const selectedMedicationOptions = ref<string[]>([]);
+const hasRecords = ref(false);
+const reportFilter = ref<ReportFilter>(ReportFilterBuilder.create().build());
+const isReportFilterStartDateValidDate = ref(true);
+const isReportFilterEndDateValidDate = ref(true);
 
-    @Prop({ default: false }) private isDependent!: boolean;
+const messageModal = ref<InstanceType<typeof MessageModalComponent>>();
+const reportComponent = ref<{
+    generateReport: (
+        reportFormatType: ReportFormatType,
+        headerData: ReportHeader
+    ) => Promise<RequestResult<Report>>;
+}>();
 
-    @Getter("webClient", { namespace: "config" })
-    config!: WebClientConfiguration;
+const laboratoryOrdersAreQueued = computed<boolean>(() =>
+    store.getters["laboratory/laboratoryOrdersAreQueued"](props.hdid)
+);
+const medications = computed<MedicationStatementHistory[]>(() =>
+    store.getters["medication/medications"](props.hdid)
+);
+const patient = computed<Patient>(() => store.getters["user/patient"]);
+const dependents = computed<Dependent[]>(
+    () => store.getters["dependent/dependents"]
+);
 
-    @Getter("laboratoryOrdersAreQueued", { namespace: "laboratory" })
-    laboratoryOrdersAreQueued!: (hdid: string) => boolean;
-
-    @Getter("medications", { namespace: "medication" })
-    medications!: (hdid: string) => MedicationStatementHistory[];
-
-    @Getter("patient", { namespace: "user" })
-    patient!: Patient;
-
-    @Getter("dependents", { namespace: "dependent" })
-    private dependents!: Dependent[];
-
-    @Ref("messageModal")
-    readonly messageModal!: MessageModalComponent;
-
-    @Ref("report")
-    readonly report!: {
-        generateReport: (
-            reportFormatType: ReportFormatType,
-            headerData: ReportHeader
-        ) => Promise<RequestResult<Report>>;
-    };
-
-    @Action("addError", { namespace: "errorBanner" })
-    addError!: (params: {
-        errorType: ErrorType;
-        source: ErrorSourceType;
-        traceId: string | undefined;
-    }) => void;
-
-    @Action("setTooManyRequestsError", { namespace: "errorBanner" })
-    setTooManyRequestsError!: (params: { key: string }) => void;
-
-    ReportFormatType: unknown = ReportFormatType;
-    isLoading = false;
-    isGeneratingReport = false;
-    reportFormatType = ReportFormatType.PDF;
-    reportComponentName = "";
-    reportTypeOptions = [{ value: "", text: "Select" }];
-
-    selectedStartDate: StringISODate | null = null;
-    selectedEndDate: StringISODate | null = null;
-    selectedMedicationOptions: string[] = [];
-
-    hasRecords = false;
-
-    reportFilter = ReportFilterBuilder.create().build();
-    isReportFilterStartDateValidDate = true;
-    isReportFilterEndDateValidDate = true;
-
-    logger!: ILogger;
-
-    get showLaboratoryOrderQueuedMessage(): boolean {
-        return (
-            this.reportComponentName === laboratoryReport &&
-            this.laboratoryOrdersAreQueued(this.hdid)
-        );
+const selectedReportComponent = computed(() => {
+    if (!selectedEntryType.value) {
+        return "";
     }
 
-    get headerData(): ReportHeader {
-        const dependent = this.dependents.find(
-            (d) => d.dependentInformation.hdid === this.hdid
-        );
-        if (dependent) {
-            return {
-                phn: dependent.dependentInformation.PHN,
-                dateOfBirth: this.formatDate(
-                    dependent.dependentInformation.dateOfBirth || ""
-                ),
-                name: dependent.dependentInformation
-                    ? dependent.dependentInformation.firstname +
-                      " " +
-                      dependent.dependentInformation.lastname
-                    : "",
-                isRedacted: this.reportFilter.hasMedicationsFilter(),
-                datePrinted: new DateWrapper(
-                    new DateWrapper().toISO()
-                ).format(),
-                filterText: this.reportFilter.filterText,
-            };
-        } else {
-            return {
-                phn: this.patient.personalHealthNumber,
-                dateOfBirth: this.formatDate(this.patient.birthdate || ""),
-                name: this.patient
-                    ? this.patient.preferredName.givenName +
-                      " " +
-                      this.patient.preferredName.surname
-                    : "",
-                isRedacted: this.reportFilter.hasMedicationsFilter(),
-                datePrinted: new DateWrapper(
-                    new DateWrapper().toISO()
-                ).format(),
-                filterText: this.reportFilter.filterText,
-            };
-        }
+    return reportComponentMap.get(selectedEntryType.value) ?? "";
+});
+const showLaboratoryOrderQueuedMessage = computed(
+    () =>
+        selectedEntryType.value === EntryType.LabResult &&
+        laboratoryOrdersAreQueued.value
+);
+const headerData = computed<ReportHeader>(() => {
+    const dependent = dependents.value.find(
+        (d) => d.dependentInformation.hdid === props.hdid
+    );
+    if (dependent) {
+        return {
+            phn: dependent.dependentInformation.PHN,
+            dateOfBirth: formatDate(
+                dependent.dependentInformation.dateOfBirth || ""
+            ),
+            name: dependent.dependentInformation
+                ? dependent.dependentInformation.firstname +
+                  " " +
+                  dependent.dependentInformation.lastname
+                : "",
+            isRedacted: reportFilter.value.hasMedicationsFilter(),
+            datePrinted: new DateWrapper(new DateWrapper().toISO()).format(),
+            filterText: reportFilter.value.filterText,
+        };
+    } else {
+        return {
+            phn: patient.value.personalHealthNumber,
+            dateOfBirth: formatDate(patient.value.birthdate || ""),
+            name: patient.value
+                ? patient.value.preferredName.givenName +
+                  " " +
+                  patient.value.preferredName.surname
+                : "",
+            isRedacted: reportFilter.value.hasMedicationsFilter(),
+            datePrinted: new DateWrapper(new DateWrapper().toISO()).format(),
+            filterText: reportFilter.value.filterText,
+        };
     }
-
-    get isMedicationReport(): boolean {
-        return this.reportComponentName === medicationReport;
-    }
-
-    get medicationOptions(): SelectOption[] {
-        const records = this.medications(this.hdid).reduce<MedicationSummary[]>(
-            (acumulator: MedicationSummary[], current) => {
+});
+const isMedicationReport = computed(
+    () => selectedEntryType.value === EntryType.Medication
+);
+const medicationOptions = computed(() =>
+    medications.value
+        .reduce<MedicationSummary[]>(
+            (accumulator: MedicationSummary[], current) => {
                 const med = current.medicationSummary;
                 if (
-                    acumulator.findIndex((x) => x.brandName === med.brandName) <
-                    0
+                    accumulator.findIndex(
+                        (x) => x.brandName === med.brandName
+                    ) < 0
                 ) {
-                    acumulator.push(med);
+                    accumulator.push(med);
                 }
-                return acumulator;
+                return accumulator;
             },
             []
-        );
-
-        records.sort((a, b) => a.brandName.localeCompare(b.brandName));
-
-        return records.map<SelectOption>((x) => ({
+        )
+        .sort((a, b) => a.brandName.localeCompare(b.brandName))
+        .map<SelectOption>((x) => ({
             text: x.brandName,
             value: x.brandName,
-        }));
+        }))
+);
+const isDownloadDisabled = computed(
+    () =>
+        isLoading.value ||
+        !selectedEntryType.value ||
+        !patient.value.hdid ||
+        !hasRecords.value
+);
+
+function addError(
+    errorType: ErrorType,
+    source: ErrorSourceType,
+    traceId: string | undefined
+): void {
+    store.dispatch("errorBanner/addError", { errorType, source, traceId });
+}
+
+function setTooManyRequestsError(key: string): void {
+    store.dispatch("errorBanner/setTooManyRequestsError", { key });
+}
+
+function formatDate(date: string): string {
+    return DateWrapper.format(date);
+}
+
+function clearFilterDates(): void {
+    selectedStartDate.value = "";
+    selectedEndDate.value = "";
+    updateFilter();
+}
+
+function clearFilterMedication(medicationName: string): void {
+    const index = selectedMedicationOptions.value.indexOf(medicationName);
+    if (index >= 0) {
+        selectedMedicationOptions.value.splice(index, 1);
+        updateFilter();
+    }
+}
+
+function cancelFilter(): void {
+    selectedStartDate.value = reportFilter.value.startDate || "";
+    selectedEndDate.value = reportFilter.value.endDate || "";
+    selectedMedicationOptions.value = reportFilter.value.medications;
+}
+
+function updateFilter(): void {
+    reportFilter.value = ReportFilterBuilder.create()
+        .withStartDate(convertEmptyStringDateToNull(selectedStartDate.value))
+        .withEndDate(convertEmptyStringDateToNull(selectedEndDate.value))
+        .withMedications(selectedMedicationOptions.value)
+        .build();
+}
+
+function convertEmptyStringDateToNull(
+    date: StringISODate | null
+): string | null {
+    return !date ? null : date;
+}
+
+function showConfirmationModal(type: ReportFormatType): void {
+    reportFormatType.value = type;
+    messageModal.value?.showModal();
+}
+
+function downloadReport(): void {
+    if (!selectedEntryType.value || !reportComponent.value) {
+        return;
     }
 
-    get isDownloadDisabled(): boolean {
-        this.logger.debug(`Report Component Name: ${this.reportComponentName}`);
-        return (
-            this.isLoading ||
-            !this.reportComponentName ||
-            !this.patient.hdid ||
-            !this.hasRecords
-        );
-    }
+    isGeneratingReport.value = true;
 
-    formatDate(date: string): string {
-        return DateWrapper.format(date);
-    }
+    trackDownload();
 
-    created(): void {
-        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-
-        const isEnabled = this.isDependent
-            ? ConfigUtil.isDependentDatasetEnabled
-            : ConfigUtil.isDatasetEnabled;
-
-        for (const [entryType, componentName] of reportNameMap) {
-            if (isEnabled(entryType)) {
-                this.reportTypeOptions.push({
-                    value: componentName,
-                    text: entryTypeMap.get(entryType)?.name ?? "",
-                });
-            }
-        }
-    }
-
-    clearFilter(): void {
-        this.selectedStartDate = null;
-        this.selectedEndDate = null;
-        this.selectedMedicationOptions = [];
-        this.updateFilter();
-    }
-
-    clearFilterDates(): void {
-        this.selectedStartDate = null;
-        this.selectedEndDate = null;
-        this.updateFilter();
-    }
-
-    clearFilterMedication(medicationName: string): void {
-        const index = this.selectedMedicationOptions.indexOf(medicationName);
-        if (index >= 0) {
-            this.selectedMedicationOptions.splice(index, 1);
-            this.updateFilter();
-        }
-    }
-
-    cancelFilter(): void {
-        this.selectedStartDate = this.convertEmptyStringDateToNull(
-            this.reportFilter.startDate
-        );
-        this.selectedEndDate = this.convertEmptyStringDateToNull(
-            this.reportFilter.endDate
-        );
-        this.selectedMedicationOptions = this.reportFilter.medications;
-    }
-
-    updateFilter(): void {
-        this.reportFilter = ReportFilterBuilder.create()
-            .withStartDate(
-                this.convertEmptyStringDateToNull(this.selectedStartDate)
-            )
-            .withEndDate(
-                this.convertEmptyStringDateToNull(this.selectedEndDate)
-            )
-            .withMedications(this.selectedMedicationOptions)
-            .build();
-    }
-
-    convertEmptyStringDateToNull(date: StringISODate | null): string | null {
-        return !date ? null : date;
-    }
-
-    showConfirmationModal(reportFormatType: ReportFormatType): void {
-        this.reportFormatType = reportFormatType;
-        this.messageModal.showModal();
-    }
-
-    downloadReport(): void {
-        if (this.reportComponentName === "") {
-            return;
-        }
-
-        this.isGeneratingReport = true;
-
-        this.trackDownload();
-
-        this.report
-            .generateReport(this.reportFormatType, this.headerData)
-            .then((result: RequestResult<Report>) => {
-                const mimeType = this.getMimeType(this.reportFormatType);
-                const downloadLink = `data:${mimeType};base64,${result.resourcePayload.data}`;
-                fetch(downloadLink).then((res) =>
-                    res
-                        .blob()
-                        .then((blob) =>
-                            saveAs(blob, result.resourcePayload.fileName)
-                        )
-                );
-            })
-            .catch((err: ResultError) => {
-                this.logger.error(err.resultMessage);
-                if (err.statusCode === 429) {
-                    this.setTooManyRequestsError({ key: "page" });
-                } else {
-                    this.addError({
-                        errorType: ErrorType.Download,
-                        source: ErrorSourceType.ExportRecords,
-                        traceId: err.traceId,
-                    });
-                }
-            })
-            .finally(() => {
-                this.isGeneratingReport = false;
-            });
-    }
-
-    getMimeType(reportFormatType: ReportFormatType): string {
-        switch (reportFormatType) {
-            case ReportFormatType.PDF:
-                return "application/pdf";
-            case ReportFormatType.CSV:
-                return "text/csv";
-            case ReportFormatType.XLSX:
-                return "application/vnd.openxmlformats";
-            default:
-                return "";
-        }
-    }
-
-    trackDownload(): void {
-        let reportName = "";
-        switch (this.reportComponentName) {
-            case medicationReport:
-                reportName = "Medication";
-                break;
-            case mspVisitReport:
-                reportName = "Health Visits";
-                break;
-            case covid19Report:
-                reportName = "COVID‑19 Test";
-                break;
-            case immunizationReport:
-                reportName = "Immunization";
-                break;
-            case medicationRequestReport:
-                reportName = "Special Authority Requests";
-                break;
-            case noteReport:
-                reportName = "Notes";
-                break;
-            case laboratoryReport:
-                reportName = "Laboratory Tests";
-                break;
-            case hospitalVisitReport:
-                reportName = "Hospital Visits";
-                break;
-        }
-        if (reportName !== "") {
-            const formatTypeName = ReportFormatType[this.reportFormatType];
-            const eventName = `${reportName} (${formatTypeName})`;
-
-            if (!this.isDependent) {
-                EventTracker.downloadReport(eventName);
+    reportComponent.value
+        .generateReport(reportFormatType.value, headerData.value)
+        .then((result: RequestResult<Report>) => {
+            const mimeType = getMimeType(reportFormatType.value);
+            const downloadLink = `data:${mimeType};base64,${result.resourcePayload.data}`;
+            fetch(downloadLink).then((res) =>
+                res
+                    .blob()
+                    .then((blob) =>
+                        saveAs(blob, result.resourcePayload.fileName)
+                    )
+            );
+        })
+        .catch((err: ResultError) => {
+            logger.error(err.resultMessage);
+            if (err.statusCode === 429) {
+                setTooManyRequestsError("page");
             } else {
-                EventTracker.downloadReport(`Dependent_${eventName}`);
+                addError(
+                    ErrorType.Download,
+                    ErrorSourceType.ExportRecords,
+                    err.traceId
+                );
             }
-        }
+        })
+        .finally(() => {
+            isGeneratingReport.value = false;
+        });
+}
+
+function getMimeType(reportFormatType: ReportFormatType): string {
+    switch (reportFormatType) {
+        case ReportFormatType.PDF:
+            return "application/pdf";
+        case ReportFormatType.CSV:
+            return "text/csv";
+        case ReportFormatType.XLSX:
+            return "application/vnd.openxmlformats";
+        default:
+            return "";
+    }
+}
+
+function trackDownload(): void {
+    let reportName = "";
+    switch (selectedEntryType.value) {
+        case EntryType.Medication:
+            reportName = "Medication";
+            break;
+        case EntryType.HealthVisit:
+            reportName = "Health Visits";
+            break;
+        case EntryType.Covid19TestResult:
+            reportName = "COVID‑19 Test";
+            break;
+        case EntryType.Immunization:
+            reportName = "Immunization";
+            break;
+        case EntryType.SpecialAuthorityRequest:
+            reportName = "Special Authority Requests";
+            break;
+        case EntryType.Note:
+            reportName = "Notes";
+            break;
+        case EntryType.LabResult:
+            reportName = "Laboratory Tests";
+            break;
+        case EntryType.HospitalVisit:
+            reportName = "Hospital Visits";
+            break;
+        default:
+            return;
+    }
+
+    const formatTypeName = ReportFormatType[reportFormatType.value];
+    const eventName = `${reportName} (${formatTypeName})`;
+
+    if (!props.isDependent) {
+        EventTracker.downloadReport(eventName);
+    } else {
+        EventTracker.downloadReport(`Dependent_${eventName}`);
+    }
+}
+
+const reportIsEnabled = props.isDependent
+    ? ConfigUtil.isDependentDatasetEnabled
+    : ConfigUtil.isDatasetEnabled;
+
+for (const [entryType] of reportComponentMap) {
+    if (reportIsEnabled(entryType)) {
+        reportTypeOptions.value.push({
+            value: entryType,
+            text: entryTypeMap.get(entryType)?.name ?? "",
+        });
     }
 }
 </script>
@@ -409,7 +351,7 @@ export default class ReportsComponent extends Vue {
                 <b-col class="mb-2" sm="">
                     <b-form-select
                         id="reportType"
-                        v-model="reportComponentName"
+                        v-model="selectedEntryType"
                         data-testid="reportType"
                         :options="reportTypeOptions"
                     >
@@ -506,24 +448,28 @@ export default class ReportsComponent extends Vue {
                 <b-row>
                     <b-col class="col-12 col-lg-4 pt-3">
                         <label for="start-date">From</label>
-                        <hg-date-picker
+                        <DatePickerComponent
                             id="start-date"
-                            v-model="selectedStartDate"
+                            :value="selectedStartDate"
                             data-testid="startDateInput"
                             @is-date-valid="
                                 isReportFilterStartDateValidDate = $event
+                            "
+                            @update:value="
+                                (value) => (selectedStartDate = value)
                             "
                         />
                     </b-col>
                     <b-col class="col-12 col-lg-4 pt-3">
                         <label for="end-date">To</label>
-                        <hg-date-picker
+                        <DatePickerComponent
                             id="end-date"
-                            v-model="selectedEndDate"
+                            :value="selectedEndDate"
                             data-testid="endDateInput"
                             @is-date-valid="
                                 isReportFilterEndDateValidDate = $event
                             "
+                            @update:value="(value) => (selectedEndDate = value)"
                         />
                     </b-col>
                 </b-row>
@@ -533,10 +479,13 @@ export default class ReportsComponent extends Vue {
                     </div>
                     <div>Medications:</div>
                     <MultiSelectComponent
-                        v-model="selectedMedicationOptions"
+                        :values="selectedMedicationOptions"
                         placeholder="Choose a medication"
                         :options="medicationOptions"
                         data-testid="medicationExclusionFilter"
+                        @update:values="
+                            (values) => (selectedMedicationOptions = values)
+                        "
                     />
                 </div>
                 <b-row align-h="end" class="pt-4">
@@ -575,13 +524,13 @@ export default class ReportsComponent extends Vue {
             :full-screen="false"
         />
         <div
-            v-if="reportComponentName"
+            v-if="selectedEntryType"
             data-testid="reportSample"
             :class="{ preview: !isDependent }"
         >
             <component
-                :is="reportComponentName"
-                ref="report"
+                :is="selectedReportComponent"
+                ref="reportComponent"
                 :hdid="hdid"
                 :filter="reportFilter"
                 :is-dependent="isDependent"
@@ -603,7 +552,7 @@ export default class ReportsComponent extends Vue {
             </h5>
         </div>
 
-        <message-modal
+        <MessageModalComponent
             ref="messageModal"
             data-testid="messageModal"
             title="Sensitive Document Download"

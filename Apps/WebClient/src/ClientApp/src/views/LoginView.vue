@@ -1,87 +1,73 @@
-<script lang="ts">
+<script setup lang="ts">
 import { library } from "@fortawesome/fontawesome-svg-core";
 import {
     faAddressCard,
     faUser,
     faUserSecret,
 } from "@fortawesome/free-solid-svg-icons";
-import Vue from "vue";
-import { Component, Prop } from "vue-property-decorator";
-import { Action, Getter } from "vuex-class";
+import { computed, ref } from "vue";
+import { useRoute, useRouter, useStore } from "vue-composition-wrapper";
 
 import LoadingComponent from "@/components/LoadingComponent.vue";
-import type { WebClientConfiguration } from "@/models/configData";
 import { IdentityProviderConfiguration } from "@/models/configData";
 
 library.add(faAddressCard, faUser, faUserSecret); // icons listed in config
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const options: any = {
-    components: {
-        LoadingComponent,
-    },
-};
+interface Props {
+    isRetry?: boolean;
+}
+withDefaults(defineProps<Props>(), {
+    isRetry: false,
+});
 
-@Component(options)
-export default class LoginView extends Vue {
-    @Prop() isRetry?: boolean;
+const route = useRoute();
+const router = useRouter();
+const store = useStore();
 
-    @Action("signIn", { namespace: "auth" })
-    signIn!: (params: {
-        redirectPath: string;
-        idpHint?: string;
-    }) => Promise<void>;
+const isLoading = ref(true);
 
-    @Getter("oidcIsAuthenticated", { namespace: "auth" })
-    oidcIsAuthenticated!: boolean;
+const oidcIsAuthenticated = computed<boolean>(() => {
+    return store.getters["auth/oidcIsAuthenticated"];
+});
+const userIsRegistered = computed<boolean>(() => {
+    return store.getters["user/userIsRegistered"];
+});
+const identityProviders = computed<IdentityProviderConfiguration[]>(() => {
+    return store.getters["config/identityProviders"];
+});
 
-    @Getter("userIsRegistered", { namespace: "user" })
-    userIsRegistered!: boolean;
+const defaultPath = computed(() =>
+    route.value.query.redirect ? route.value.query.redirect.toString() : "/home"
+);
+const hasMultipleProviders = computed(() => {
+    return identityProviders.value.length > 1;
+});
 
-    @Getter("identityProviders", { namespace: "config" })
-    identityProviders!: IdentityProviderConfiguration[];
+function signIn(redirectPath: string, idpHint?: string): Promise<void> {
+    return store.dispatch("auth/signIn", { redirectPath, idpHint });
+}
 
-    @Getter("webClient", { namespace: "config" })
-    config!: WebClientConfiguration;
-
-    private isLoading = true;
-    private redirectPath = "";
-
-    private mounted(): void {
-        if (this.$route.query.redirect && this.$route.query.redirect !== "") {
-            this.redirectPath = this.$route.query.redirect.toString();
-        } else {
-            this.redirectPath = "/home";
-        }
-
-        if (this.oidcIsAuthenticated && this.userIsRegistered) {
-            this.$router.push({ path: this.redirectPath });
-        } else if (this.oidcIsAuthenticated) {
-            this.redirectPath = "/registration";
-            this.$router.push({ path: this.redirectPath });
-        } else if (
-            !this.oidcIsAuthenticated &&
-            this.identityProviders.length == 1
-        ) {
-            this.signInAndRedirect(this.identityProviders[0].hint);
-        } else {
-            this.isLoading = false;
-        }
+function redirect(): void {
+    if (userIsRegistered.value) {
+        router.push({ path: defaultPath.value });
+    } else {
+        router.push({ path: "/registration" });
     }
+}
 
-    private get hasMultipleProviders(): boolean {
-        return this.identityProviders.length > 1;
-    }
+function signInAndRedirect(idpHint: string): void {
+    signIn(defaultPath.value, idpHint).then(() => {
+        // if this code is reached, the user was already signed in
+        redirect();
+    });
+}
 
-    private signInAndRedirect(hint: string): void {
-        this.signIn({
-            redirectPath: this.redirectPath,
-            idpHint: hint,
-        }).then(() => {
-            // if this code is reached, the user was already signed in
-            this.$router.push({ path: this.redirectPath });
-        });
-    }
+if (oidcIsAuthenticated.value) {
+    redirect();
+} else if (identityProviders.value.length === 1) {
+    signInAndRedirect(identityProviders.value[0].hint);
+} else {
+    isLoading.value = false;
 }
 </script>
 

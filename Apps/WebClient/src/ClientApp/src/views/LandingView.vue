@@ -1,4 +1,4 @@
-<script lang="ts">
+<script setup lang="ts">
 import { library } from "@fortawesome/fontawesome-svg-core";
 import {
     faCheckCircle,
@@ -21,12 +21,11 @@ import {
     faVial,
     faXRay,
 } from "@fortawesome/free-solid-svg-icons";
-import Vue from "vue";
-import { Component } from "vue-property-decorator";
-import { Getter } from "vuex-class";
+import { BTooltip } from "bootstrap-vue";
+import { computed, ref } from "vue";
+import { useStore } from "vue-composition-wrapper";
 
 import { EntryType, entryTypeMap } from "@/constants/entryType";
-import { RegistrationStatus } from "@/constants/registrationStatus";
 import type { WebClientConfiguration } from "@/models/configData";
 import ConfigUtil from "@/utility/configUtil";
 
@@ -60,186 +59,87 @@ interface Tile {
     active: boolean;
 }
 
-@Component
-export default class LandingView extends Vue {
-    @Getter("webClient", { namespace: "config" })
-    config!: WebClientConfiguration;
+enum PreviewDevice {
+    laptop = "laptop",
+    tablet = "tablet",
+    smartphone = "smartphone",
+}
 
-    @Getter("isOffline", { namespace: "config" })
-    isOffline!: boolean;
+const entryTypes: EntryType[] = [
+    EntryType.Medication,
+    EntryType.LabResult,
+    EntryType.Covid19TestResult,
+    EntryType.HealthVisit,
+    EntryType.Immunization,
+    EntryType.SpecialAuthorityRequest,
+    EntryType.ClinicalDocument,
+    EntryType.HospitalVisit,
+    EntryType.DiagnosticImaging,
+];
 
-    @Getter("oidcIsAuthenticated", { namespace: "auth" })
-    oidcIsAuthenticated!: boolean;
+const store = useStore();
 
-    @Getter("isValidIdentityProvider", { namespace: "user" })
-    isValidIdentityProvider!: boolean;
+const selectedPreviewDevice = ref(PreviewDevice.laptop);
 
-    @Getter("userIsRegistered", { namespace: "user" })
-    userIsRegistered!: boolean;
+const showLaptopTooltip = ref(false);
+const showTabletTooltip = ref(false);
+const showSmartphoneTooltip = ref(false);
 
-    @Getter("userIsActive", { namespace: "user" })
-    userIsActive!: boolean;
+const config = computed<WebClientConfiguration>(
+    () => store.getters["config/webClient"]
+);
+const isOffline = computed<boolean>(() => store.getters["config/isOffline"]);
+const oidcIsAuthenticated = computed<boolean>(
+    () => store.getters["auth/oidcIsAuthenticated"]
+);
 
-    @Getter("patientRetrievalFailed", { namespace: "user" })
-    patientRetrievalFailed!: boolean;
-
-    entryTypes: EntryType[] = [
-        EntryType.Medication,
-        EntryType.LabResult,
-        EntryType.Covid19TestResult,
-        EntryType.HealthVisit,
-        EntryType.Immunization,
-        EntryType.SpecialAuthorityRequest,
-        EntryType.ClinicalDocument,
-        EntryType.HospitalVisit,
-        EntryType.DiagnosticImaging,
-    ];
-
-    selectedPreviewDevice = "laptop";
-
-    get isVaccinationBannerEnabled(): boolean {
-        return false;
-    }
-
-    get isPublicLaboratoryResultEnabled(): boolean {
-        return this.config.featureToggleConfiguration.covid19.publicCovid19
-            .enableTestResults;
-    }
-
-    get isSidebarAvailable(): boolean {
-        return (
-            !this.isOffline &&
-            this.oidcIsAuthenticated &&
-            this.isValidIdentityProvider &&
-            this.userIsRegistered &&
-            this.userIsActive &&
-            !this.patientRetrievalFailed
-        );
-    }
-
-    get offlineMessage(): string {
-        return this.config.offlineMode?.message ?? "";
-    }
-
-    get proofOfVaccinationTile(): Tile {
+const offlineMessage = computed(() => config.value.offlineMode?.message ?? "");
+const proofOfVaccinationTile = computed<Tile>(() => ({
+    type: "ProofOfVaccination",
+    icon: "check-circle",
+    name: "Proof of Vaccination",
+    description: "View and download your proof of vaccination",
+    active: config.value.featureToggleConfiguration.covid19.publicCovid19
+        .showFederalProofOfVaccination,
+}));
+const tiles = computed(() => {
+    // Get core tiles from entry type constants
+    const tiles = entryTypes.map<Tile>((type) => {
+        const details = entryTypeMap.get(type);
         return {
-            type: "ProofOfVaccination",
-            icon: "check-circle",
-            name: "Proof of Vaccination",
-            description: "View and download your proof of vaccination",
-            active: this.config.featureToggleConfiguration.covid19.publicCovid19
-                .showFederalProofOfVaccination,
+            type,
+            icon: details?.icon ?? "",
+            name: details?.name ?? "",
+            description: details?.description ?? "",
+            active: ConfigUtil.isDatasetEnabled(type),
         };
-    }
+    });
 
-    get tiles(): Tile[] {
-        // Get core tiles from entry type constants
-        const tiles = this.entryTypes.map((type) => {
-            const details = entryTypeMap.get(type);
-            const tile: Tile = {
-                type,
-                icon: details?.icon ?? "",
-                name: details?.name ?? "",
-                description: details?.description ?? "",
-                active: ConfigUtil.isDatasetEnabled(type),
-            };
-            return tile;
-        });
+    // Add Proof of Vaccination tile
+    tiles.splice(2, 0, proofOfVaccinationTile.value);
 
-        // Add Proof of Vaccination tile
-        tiles.splice(2, 0, this.proofOfVaccinationTile);
+    return tiles;
+});
+const activeTiles = computed(() => tiles.value.filter((tile) => tile.active));
 
-        return tiles;
-    }
-
-    get activeTiles(): Tile[] {
-        return this.tiles.filter((tile) => tile.active);
-    }
-
-    get isOpenRegistration(): boolean {
-        return this.config.registrationStatus === RegistrationStatus.Open;
-    }
-
-    getTile(entryType: EntryType): Tile | undefined {
-        const entry = entryTypeMap.get(entryType);
-        if (entry) {
-            return {
-                type: entryType.toString(),
-                icon: entry.icon,
-                name: entry.name,
-                description: entry.description,
-                active: false,
-            };
-        }
-        return undefined;
-    }
-
-    selectPreviewDevice(deviceName: string): void {
-        this.selectedPreviewDevice = deviceName;
-        this.$root.$emit(
-            "bv::hide::tooltip",
-            `preview-device-button-${deviceName}`
-        );
+function selectPreviewDevice(previewDevice: PreviewDevice): void {
+    selectedPreviewDevice.value = previewDevice;
+    switch (previewDevice) {
+        case PreviewDevice.laptop:
+            showLaptopTooltip.value = false;
+            break;
+        case PreviewDevice.tablet:
+            showTabletTooltip.value = false;
+            break;
+        case PreviewDevice.smartphone:
+            showSmartphoneTooltip.value = false;
+            break;
     }
 }
 </script>
 
 <template>
     <div class="landing">
-        <b-row
-            v-if="isVaccinationBannerEnabled"
-            no-gutters
-            class="vaccine-card-banner small-banner d-flex justify-content-center"
-            :class="{ 'd-lg-none': !isSidebarAvailable }"
-        >
-            <b-col cols="auto">
-                <img
-                    src="@/assets/images/landing/vaccine-card-banner-icon-sm.svg"
-                    alt="Vaccine Card Logo"
-                />
-            </b-col>
-            <b-col cols="auto" class="text-center p-2 mb-4">
-                <h2 class="h4 mt-3">Proof of Vaccination</h2>
-                <div class="mb-3">
-                    <hg-button
-                        variant="primary"
-                        to="/vaccinecard"
-                        data-testid="btnVaccineCard"
-                        class="w-75 text-center"
-                    >
-                        Get Proof
-                    </hg-button>
-                </div>
-            </b-col>
-        </b-row>
-        <b-row
-            v-if="isVaccinationBannerEnabled"
-            class="vaccine-card-banner large-banner d-none justify-content-end"
-            :class="{ 'd-lg-flex': !isSidebarAvailable }"
-        >
-            <b-col cols="auto">
-                <img
-                    src="@/assets/images/landing/vaccine-card-banner-icon-lg.svg"
-                    alt="Vaccine Card Logo"
-                />
-            </b-col>
-            <b-col cols="auto" class="text-center">
-                <h2 class="h1 mt-4">Proof of Vaccination</h2>
-                <div>
-                    Confidential access to your BC and Canada proof of
-                    vaccination
-                </div>
-                <div>
-                    <hg-button
-                        variant="primary"
-                        to="/vaccinecard"
-                        class="w-50 my-4 text-center"
-                    >
-                        Get Proof
-                    </hg-button>
-                </div>
-            </b-col>
-        </b-row>
         <b-container v-if="isOffline">
             <b-row class="align-items-center pt-2 pb-5 align-middle">
                 <b-col class="cols-12 text-center">
@@ -281,7 +181,7 @@ export default class LandingView extends Vue {
                                 <span>Log in with BC Services Card</span>
                             </hg-button>
                         </router-link>
-                        <div v-if="isOpenRegistration" class="mt-3">
+                        <div class="mt-3">
                             <span class="mr-2">Need an account?</span>
                             <router-link
                                 id="btnStart"
@@ -342,27 +242,31 @@ export default class LandingView extends Vue {
                 <div class="mt-4 mt-lg-5 text-center">
                     <button
                         id="preview-device-button-laptop"
-                        v-b-tooltip.nofade.d0="{
-                            customClass: 'd-none d-xl-block',
-                        }"
-                        title="Show Laptop Preview"
-                        :disabled="selectedPreviewDevice === 'laptop'"
+                        :disabled="
+                            selectedPreviewDevice === PreviewDevice.laptop
+                        "
                         data-testid="preview-device-button-laptop"
                         class="preview-device-button bg-transparent border-0 shadow-none mx-3 p-2"
-                        @click="selectPreviewDevice('laptop')"
+                        @click="selectPreviewDevice(PreviewDevice.laptop)"
                     >
                         <hg-icon icon="desktop" size="extra-large" square />
                     </button>
+                    <b-tooltip
+                        target="preview-device-button-laptop"
+                        :show.sync="showLaptopTooltip"
+                        title="Show Laptop Preview"
+                        no-fade
+                        delay="0"
+                        custom-class="d-none d-xl-block"
+                    />
                     <button
                         id="preview-device-button-tablet"
-                        v-b-tooltip.nofade.d0="{
-                            customClass: 'd-none d-xl-block',
-                        }"
-                        title="Show Tablet Preview"
-                        :disabled="selectedPreviewDevice === 'tablet'"
+                        :disabled="
+                            selectedPreviewDevice === PreviewDevice.tablet
+                        "
                         data-testid="preview-device-button-tablet"
                         class="preview-device-button bg-transparent border-0 shadow-none mx-3 p-2"
-                        @click="selectPreviewDevice('tablet')"
+                        @click="selectPreviewDevice(PreviewDevice.tablet)"
                     >
                         <hg-icon
                             icon="tablet-screen-button"
@@ -370,16 +274,22 @@ export default class LandingView extends Vue {
                             square
                         />
                     </button>
+                    <b-tooltip
+                        target="preview-device-button-tablet"
+                        :show.sync="showTabletTooltip"
+                        title="Show Tablet Preview"
+                        no-fade
+                        delay="0"
+                        custom-class="d-none d-xl-block"
+                    />
                     <button
                         id="preview-device-button-smartphone"
-                        v-b-tooltip.nofade.d0="{
-                            customClass: 'd-none d-xl-block',
-                        }"
-                        title="Show Smartphone Preview"
-                        :disabled="selectedPreviewDevice === 'smartphone'"
+                        :disabled="
+                            selectedPreviewDevice === PreviewDevice.smartphone
+                        "
                         data-testid="preview-device-button-smartphone"
                         class="preview-device-button bg-transparent border-0 shadow-none mx-3 p-2"
-                        @click="selectPreviewDevice('smartphone')"
+                        @click="selectPreviewDevice(PreviewDevice.smartphone)"
                     >
                         <hg-icon
                             icon="mobile-screen-button"
@@ -387,6 +297,14 @@ export default class LandingView extends Vue {
                             square
                         />
                     </button>
+                    <b-tooltip
+                        target="preview-device-button-smartphone"
+                        :show.sync="showSmartphoneTooltip"
+                        title="Show Smartphone Preview"
+                        no-fade
+                        delay="0"
+                        custom-class="d-none d-xl-block"
+                    />
                 </div>
                 <div class="text-center">
                     <img

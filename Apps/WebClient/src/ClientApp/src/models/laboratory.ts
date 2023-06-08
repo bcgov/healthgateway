@@ -79,24 +79,3 @@ export interface LaboratoryReport {
     encoding: string;
     data: string;
 }
-
-export interface PublicCovidTestRecord {
-    patientDisplayName: string;
-    lab: string;
-    reportId: string;
-    collectionDateTime: StringISODateTime;
-    resultDateTime: StringISODateTime;
-    testName: string;
-    testType: string;
-    testStatus: string;
-    testOutcome: string;
-    resultTitle: string;
-    resultDescription: string[];
-    resultLink: string;
-}
-
-export interface PublicCovidTestResponseResult {
-    loaded: boolean;
-    retryin: number;
-    records: PublicCovidTestRecord[];
-}

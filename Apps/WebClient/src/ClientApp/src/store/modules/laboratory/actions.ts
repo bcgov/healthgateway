@@ -2,14 +2,12 @@ import { ActionType } from "@/constants/actionType";
 import { EntryType } from "@/constants/entryType";
 import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import { ResultType } from "@/constants/resulttype";
-import { StringISODate } from "@/models/dateWrapper";
-import { CustomBannerError, ResultError } from "@/models/errors";
+import { ResultError } from "@/models/errors";
 import {
     Covid19LaboratoryOrder,
     Covid19LaboratoryOrderResult,
     LaboratoryOrder,
     LaboratoryOrderResult,
-    PublicCovidTestResponseResult,
 } from "@/models/laboratory";
 import RequestResult from "@/models/requestResult";
 import { LoadStatus } from "@/models/storeOperations";
@@ -262,121 +260,5 @@ export const actions: LaboratoryActions = {
                 { root: true }
             );
         }
-    },
-    retrievePublicCovidTests(
-        context,
-        params: {
-            phn: string;
-            dateOfBirth: StringISODate;
-            collectionDate: StringISODate;
-        }
-    ): Promise<PublicCovidTestResponseResult> {
-        const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-        const laboratoryService = container.get<ILaboratoryService>(
-            SERVICE_IDENTIFIER.LaboratoryService
-        );
-
-        return new Promise((resolve, reject) => {
-            logger.debug(`Retrieving Public Covid Tests in store.`);
-            context.commit("setPublicCovidTestResponseResultRequested");
-            laboratoryService
-                .getPublicCovid19Tests(
-                    params.phn,
-                    params.dateOfBirth,
-                    params.collectionDate
-                )
-                .then((result) => {
-                    const payload = result.resourcePayload;
-                    if (result.resultStatus === ResultType.Success) {
-                        context.commit(
-                            "setPublicCovidTestResponseResult",
-                            payload
-                        );
-                        resolve(payload);
-                    } else if (
-                        result.resultError?.actionCode === ActionType.Refresh &&
-                        !payload.loaded &&
-                        payload.retryin > 0
-                    ) {
-                        logger.info("Public Covid Tests not loaded in store.");
-                        context.commit(
-                            "setPublicCovidTestResponseResultStatusMessage",
-                            "We're busy but will continue to try to find the Public Covid Tests...."
-                        );
-                        setTimeout(() => {
-                            logger.info(
-                                "Re-querying for finding Public Covid Tests in store."
-                            );
-                            context.dispatch("retrievePublicCovidTests", {
-                                phn: params.phn,
-                                dateOfBirth: params.dateOfBirth,
-                                collectionDate: params.collectionDate,
-                            });
-                        }, payload.retryin);
-                        resolve(payload);
-                    } else {
-                        context.dispatch("handlePublicCovidTestsError", {
-                            error: result.resultError,
-                            errorType: ErrorType.Retrieve,
-                        });
-                        reject(result.resultError);
-                    }
-                })
-                .catch((error: ResultError) => {
-                    context.dispatch("handlePublicCovidTestsError", {
-                        error,
-                        errorType: ErrorType.Retrieve,
-                    });
-                    reject(error);
-                });
-        });
-    },
-    handlePublicCovidTestsError(
-        context,
-        params: {
-            error: ResultError;
-            errorType: ErrorType;
-        }
-    ) {
-        const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-
-        logger.error(`ERROR: ${JSON.stringify(params.error)}`);
-
-        if (params.error.statusCode === 429) {
-            context.dispatch(
-                "errorBanner/setTooManyRequestsWarning",
-                { key: "publicCovidTest" },
-                { root: true }
-            );
-
-            context.commit("setPublicCovidTestResponseResultError", undefined);
-        } else {
-            const customBannerError: CustomBannerError = {
-                title: "Our Apologies",
-                description:
-                    "We've found an issue and the Health Gateway team is working hard to fix it.",
-            };
-
-            if (params.error.actionCode === ActionType.DataMismatch) {
-                customBannerError.title = "Data Mismatch";
-                customBannerError.description =
-                    "The information you entered does not match our records. Please try again.";
-                customBannerError.detail =
-                    "Please note that it can take up to 48 hours from the time of test before a result is available. If it has been at least 48 hours since you tested, please contact the COVID‑19 Results Line (1‐833‐707‐2792) to investigate the issue.";
-            }
-
-            context.commit(
-                "setPublicCovidTestResponseResultError",
-                customBannerError
-            );
-        }
-    },
-    resetPublicCovidTestResponseResult(context) {
-        const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-
-        logger.debug(
-            `Resetting Laboratory store module for Public COVID-19 Test response result.`
-        );
-        context.commit("resetPublicCovidTestResponseResult");
     },
 };

@@ -36,11 +36,6 @@ namespace HealthGateway.WebClient.Server.Models
         public TimeOutsConfiguration Timeouts { get; set; } = new();
 
         /// <summary>
-        /// Gets or sets the Webclient registration status.
-        /// </summary>
-        public string RegistrationStatus { get; set; } = string.Empty;
-
-        /// <summary>
         /// Gets or sets the ExternalURLs used by the Webclient.
         /// </summary>
         [SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "Team decision")]

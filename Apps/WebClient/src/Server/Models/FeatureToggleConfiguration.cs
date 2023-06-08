@@ -89,10 +89,8 @@ namespace HealthGateway.WebClient.Server.Models
     /// <summary>
     /// Settings for public covid19 feature.
     /// </summary>
-    /// <param name="EnableTestResults">Toggles test results.</param>
     /// <param name="ShowFederalProofOfVaccination">Toggles federal proof of vaccination.</param>
     public record PublicCovid19Settings(
-        bool EnableTestResults,
         bool ShowFederalProofOfVaccination);
 
     /// <summary>

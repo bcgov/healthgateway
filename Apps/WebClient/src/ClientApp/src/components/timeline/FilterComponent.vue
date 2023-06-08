@@ -301,9 +301,10 @@ onMounted(() => {
                     <b-col>
                         <DatePickerComponent
                             id="start-date"
-                            v-model="startDate"
+                            :value="startDate"
                             data-testid="filterStartDateInput"
                             @is-date-valid="isFilterStartDateValidDate = $event"
+                            @update:value="(value) => (startDate = value)"
                         />
                     </b-col>
                 </b-row>
@@ -311,9 +312,10 @@ onMounted(() => {
                     <b-col>
                         <DatePickerComponent
                             id="end-date"
-                            v-model="endDate"
+                            :value="endDate"
                             data-testid="filterEndDateInput"
                             @is-date-valid="isFilterEndDateValidDate = $event"
+                            @update:value="(value) => (endDate = value)"
                         />
                     </b-col>
                 </b-row>
@@ -410,9 +412,10 @@ onMounted(() => {
                     <b-col>
                         <DatePickerComponent
                             id="start-date"
-                            v-model="startDate"
+                            :value="startDate"
                             data-testid="filterStartDateInput"
                             @is-date-valid="isFilterStartDateValidDate = $event"
+                            @update:value="(value) => (startDate = value)"
                         />
                     </b-col>
                 </b-row>
@@ -420,9 +423,10 @@ onMounted(() => {
                     <b-col>
                         <DatePickerComponent
                             id="end-date"
-                            v-model="endDate"
+                            :value="endDate"
                             data-testid="filterEndDateInput"
                             @is-date-valid="isFilterEndDateValidDate = $event"
+                            @update:value="(value) => (endDate = value)"
                         />
                     </b-col>
                 </b-row>

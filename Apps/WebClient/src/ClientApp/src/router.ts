@@ -21,10 +21,6 @@ const ProfileView = () =>
     import(/* webpackChunkName: "profile" */ "@/views/ProfileView.vue");
 const LandingView = () =>
     import(/* webpackChunkName: "landing" */ "@/views/LandingView.vue");
-const PublicCovidTestView = () =>
-    import(
-        /* webpackChunkName: "covidTest" */ "@/views/PublicCovidTestView.vue"
-    );
 const PublicVaccineCardView = () =>
     import(
         /* webpackChunkName: "vaccinationStatus" */ "@/views/PublicVaccineCardView.vue"
@@ -193,10 +189,6 @@ const routes = [
     {
         path: REGISTRATION_PATH,
         component: RegistrationView,
-        props: (route: Route) => ({
-            inviteKey: route.query.inviteKey,
-            inviteEmail: route.query.email,
-        }),
         meta: {
             validStates: [UserState.notRegistered],
             requiresProcessedWaitlistTicket: true,
@@ -295,22 +287,6 @@ const routes = [
             validStates: [UserState.registered],
             requiredFeaturesEnabled: (config: FeatureToggleConfiguration) =>
                 config.services.enabled,
-            requiresProcessedWaitlistTicket: true,
-        },
-    },
-    {
-        path: "/covidtest",
-        component: PublicCovidTestView,
-        meta: {
-            validStates: [
-                UserState.unauthenticated,
-                UserState.invalidIdentityProvider,
-                UserState.noPatient,
-                UserState.registered,
-                UserState.pendingDeletion,
-            ],
-            requiredFeaturesEnabled: (config: FeatureToggleConfiguration) =>
-                config.covid19.publicCovid19.enableTestResults,
             requiresProcessedWaitlistTicket: true,
         },
     },

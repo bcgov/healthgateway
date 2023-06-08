@@ -1,69 +1,61 @@
-<script lang="ts">
-import Vue from "vue";
-import { Component, Emit, Model, Prop, Watch } from "vue-property-decorator";
+<script setup lang="ts">
+import { computed } from "vue";
 
-export interface SelectOption {
-    value: string;
-    text: string;
-    disabled?: boolean;
+import SelectOption from "@/models/selectOption";
+
+interface Props {
+    values: string[];
+    placeholder?: string;
+    options?: SelectOption[];
 }
+const props = withDefaults(defineProps<Props>(), {
+    placeholder: "Choose a tag...",
+    options: () => [] as SelectOption[],
+});
 
-@Component
-export default class MultiSelectComponent extends Vue {
-    @Prop({ default: "Choose a tag..." }) placeholder!: string;
-    @Prop({ default: [] }) options!: SelectOption[];
-    @Model("change", { type: Array }) public model!: string[];
+const emit = defineEmits<{
+    (e: "update:values", values: string[]): void;
+}>();
 
-    private values: string[] = [];
+const wrappedValues = computed<string[]>({
+    get() {
+        return props.values;
+    },
+    set(values: string[]) {
+        emit("update:values", values);
+    },
+});
 
-    private get availableOptions(): SelectOption[] {
-        if (this.options.length === 0) {
-            return [];
-        }
-
-        if (this.values.length === 0) {
-            return this.options;
-        }
-
-        return this.options.filter(
-            (opt) => this.values.indexOf(opt.value) === -1
-        );
+const availableOptions = computed<SelectOption[]>(() => {
+    if (props.options.length === 0) {
+        return [];
     }
 
-    @Watch("values")
-    private onValueChanged(): void {
-        this.updateModel();
+    if (wrappedValues.value.length === 0) {
+        return props.options;
     }
 
-    @Watch("model")
-    private onModelChanged(): void {
-        this.values = this.model;
-    }
+    return props.options.filter(
+        (opt) =>
+            opt.value !== null &&
+            wrappedValues.value.indexOf(opt.value.toString()) === -1
+    );
+});
 
-    @Emit("change")
-    private updateModel(): string[] {
-        return this.values;
-    }
-
-    private getValueText(value: unknown): string | SelectOption | undefined {
-        const option = this.options.find(
-            (opt) => opt.value === value || opt === value
-        );
-        return option?.text || option;
-    }
-
-    private mounted(): void {
-        this.values = this.model;
-    }
+function getValueText(value: unknown): string | SelectOption | undefined {
+    const option = props.options.find(
+        (opt) => opt.value === value || opt === value
+    );
+    return option?.text || option;
 }
 </script>
 
 <template>
     <div>
-        <!-- Prop `add-on-change` is needed to enable adding tags vie the `change` event -->
+        <!-- Prop `add-on-change` is needed to enable adding tags via the `change` event -->
         <b-form-tags
             id="tags-component-select"
-            v-model="values"
+            v-model="wrappedValues"
             size="lg"
             class="mb-2"
             add-on-change

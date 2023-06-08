@@ -1,163 +1,130 @@
-<script lang="ts">
+<script setup lang="ts">
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
-import Vue from "vue";
-import { Component, Ref } from "vue-property-decorator";
-import { sameAs } from "vuelidate/lib/validators";
-import { Validation } from "vuelidate/vuelidate";
-import { Action, Getter } from "vuex-class";
+import { useVuelidate } from "@vuelidate/core";
+import { sameAs } from "@vuelidate/validators";
+import { computed, ref } from "vue";
+import { useRouter, useStore } from "vue-composition-wrapper";
 
 import HtmlTextAreaComponent from "@/components/HtmlTextAreaComponent.vue";
 import LoadingComponent from "@/components/LoadingComponent.vue";
 import { ErrorSourceType, ErrorType } from "@/constants/errorType";
-import type { WebClientConfiguration } from "@/models/configData";
 import { ResultError } from "@/models/errors";
-import User from "@/models/user";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ILogger, IUserProfileService } from "@/services/interfaces";
+import ValidationUtil from "@/utility/validationUtil";
 
 library.add(faExclamationTriangle);
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const options: any = {
-    components: {
-        LoadingComponent,
-        HtmlTextAreaComponent,
-    },
-};
+const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+const userProfileService = container.get<IUserProfileService>(
+    SERVICE_IDENTIFIER.UserProfileService
+);
+const router = useRouter();
+const store = useStore();
 
-@Component(options)
-export default class AcceptTermsOfServiceView extends Vue {
-    @Action("updateAcceptedTerms", { namespace: "user" })
-    updateAcceptedTerms!: (params: {
-        termsOfServiceId: string;
-    }) => Promise<void>;
+const isLoading = ref(true);
+const termsOfServiceId = ref("");
+const termsOfService = ref("");
+const accepted = ref(false);
 
-    @Action("addError", { namespace: "errorBanner" })
-    addError!: (params: {
-        errorType: ErrorType;
-        source: ErrorSourceType;
-        traceId: string | undefined;
-    }) => void;
+const validations = computed(() => ({
+    accepted: { isChecked: sameAs(true) },
+}));
 
-    @Action("setTooManyRequestsError", { namespace: "errorBanner" })
-    setTooManyRequestsError!: (params: { key: string }) => void;
+const v$ = useVuelidate(validations, { accepted });
 
-    @Action("setTooManyRequestsWarning", { namespace: "errorBanner" })
-    setTooManyRequestsWarning!: (params: { key: string }) => void;
-
-    @Getter("user", { namespace: "user" })
-    user!: User;
-
-    @Getter("webClient", { namespace: "config" })
-    webClientConfig!: WebClientConfiguration;
-
-    @Ref("termsOfServiceForm")
-    form!: HTMLFormElement;
-
-    private accepted = false;
-    private email = "";
-
-    private userProfileService!: IUserProfileService;
-    private loadingTermsOfService = true;
-
-    private logger!: ILogger;
-
-    private termsOfServiceId = "";
-    private termsOfService = "";
-
-    private get isLoading(): boolean {
-        return this.loadingTermsOfService;
-    }
-
-    private mounted(): void {
-        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-
-        this.userProfileService = container.get(
-            SERVICE_IDENTIFIER.UserProfileService
-        );
-
-        this.loadTermsOfService();
-    }
-
-    private validations(): unknown {
-        return {
-            accepted: { isChecked: sameAs(() => true) },
-        };
-    }
-
-    private loadTermsOfService(): void {
-        this.loadingTermsOfService = true;
-        this.userProfileService
-            .getTermsOfService()
-            .then((result) => {
-                this.logger.debug(
-                    `getTermsOfService result: ${JSON.stringify(result)}`
-                );
-                this.termsOfServiceId = result.id;
-                this.termsOfService = result.content;
-            })
-            .catch((err: ResultError) => {
-                this.logger.error(err.resultMessage);
-                if (err.statusCode === 429) {
-                    this.setTooManyRequestsWarning({ key: "page" });
-                } else {
-                    this.addError({
-                        errorType: ErrorType.Retrieve,
-                        source: ErrorSourceType.TermsOfService,
-                        traceId: undefined,
-                    });
-                }
-            })
-            .finally(() => {
-                this.loadingTermsOfService = false;
-            });
-    }
-
-    private isValid(param: Validation): boolean | undefined {
-        return param.$dirty ? !param.$invalid : undefined;
-    }
-
-    private onSubmit(event: Event): void {
-        this.$v.$touch();
-        if (this.$v.$invalid) {
-            event.preventDefault();
-            return;
-        }
-
-        this.loadingTermsOfService = true;
-
-        this.updateAcceptedTerms({ termsOfServiceId: this.termsOfServiceId })
-            .then(() => this.redirect())
-            .catch((err: ResultError) => {
-                this.logger.error(
-                    `Error updating accepted terms of service: ${JSON.stringify(
-                        err
-                    )}`
-                );
-                if (err.statusCode === 429) {
-                    this.setTooManyRequestsError({ key: "page" });
-                } else {
-                    this.addError({
-                        errorType: ErrorType.Update,
-                        source: ErrorSourceType.Profile,
-                        traceId: err.traceId,
-                    });
-                }
-            })
-            .finally(() => {
-                this.loadingTermsOfService = false;
-            });
-
-        event.preventDefault();
-    }
-
-    private redirect(): void {
-        this.logger.debug("Redirecting to /home");
-        this.$router.push({ path: "/home" });
-    }
+function updateAcceptedTerms(termsOfServiceId: string): Promise<void> {
+    return store.dispatch("user/updateAcceptedTerms", { termsOfServiceId });
 }
+
+function addError(
+    errorType: ErrorType,
+    source: ErrorSourceType,
+    traceId: string | undefined
+): Promise<void> {
+    return store.dispatch("errorBanner/addError", {
+        errorType,
+        source,
+        traceId,
+    });
+}
+
+function setTooManyRequestsError(key: string): void {
+    store.dispatch("errorBanner/setTooManyRequestsError", { key });
+}
+
+function setTooManyRequestsWarning(key: string): void {
+    store.dispatch("errorBanner/setTooManyRequestsWarning", { key });
+}
+
+function loadTermsOfService(): void {
+    isLoading.value = true;
+    userProfileService
+        .getTermsOfService()
+        .then((result) => {
+            logger.debug(`getTermsOfService result: ${JSON.stringify(result)}`);
+            termsOfServiceId.value = result.id;
+            termsOfService.value = result.content;
+        })
+        .catch((err: ResultError) => {
+            logger.error(err.resultMessage);
+            if (err.statusCode === 429) {
+                setTooManyRequestsWarning("page");
+            } else {
+                addError(
+                    ErrorType.Retrieve,
+                    ErrorSourceType.TermsOfService,
+                    undefined
+                );
+            }
+        })
+        .finally(() => {
+            isLoading.value = false;
+        });
+}
+
+function onSubmit(event: Event): void {
+    v$.value.$touch();
+    if (v$.value.$invalid) {
+        event.preventDefault();
+        return;
+    }
+
+    isLoading.value = true;
+
+    updateAcceptedTerms(termsOfServiceId.value)
+        .then(() => redirect())
+        .catch((err: ResultError) => {
+            logger.error(
+                `Error updating accepted terms of service: ${JSON.stringify(
+                    err
+                )}`
+            );
+            if (err.statusCode === 429) {
+                setTooManyRequestsError("page");
+            } else {
+                addError(
+                    ErrorType.Update,
+                    ErrorSourceType.Profile,
+                    err.traceId
+                );
+            }
+        })
+        .finally(() => {
+            isLoading.value = false;
+        });
+
+    event.preventDefault();
+}
+
+function redirect(): void {
+    logger.debug("Redirecting to /home");
+    router.push({ path: "/home" });
+}
+
+loadTermsOfService();
 </script>
 
 <template>
@@ -176,16 +143,20 @@ export default class AcceptTermsOfServiceView extends Vue {
                         data-testid="tos-text-area-component"
                     />
                     <div class="mb-3">
-                        <b-form-checkbox
-                            id="accept-tos-checkbox"
-                            v-model="accepted"
-                            data-testid="accept-tos-checkbox"
-                            class="accept"
-                            :state="isValid($v.accepted)"
+                        <div>
+                            <b-form-checkbox
+                                id="accept-tos-checkbox"
+                                v-model="accepted"
+                                data-testid="accept-tos-checkbox"
+                                class="accept"
+                                :state="ValidationUtil.isValid(v$.accepted)"
+                            >
+                                I agree to the terms of service above
+                            </b-form-checkbox>
+                        </div>
+                        <b-form-invalid-feedback
+                            :state="ValidationUtil.isValid(v$.accepted)"
                         >
-                            I agree to the terms of service above
-                        </b-form-checkbox>
-                        <b-form-invalid-feedback :state="isValid($v.accepted)">
                             You must accept the terms of service.
                         </b-form-invalid-feedback>
                     </div>

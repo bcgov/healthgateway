@@ -1,8 +1,7 @@
-﻿<script lang="ts">
+﻿<script setup lang="ts">
 import VueCountdown from "@chenfengyuan/vue-countdown";
-import Vue from "vue";
-import { Component, Emit, Prop, Watch } from "vue-property-decorator";
-import { Action, Getter } from "vuex-class";
+import { computed, ref, watch } from "vue";
+import { useStore } from "vue-composition-wrapper";
 
 import LoadingComponent from "@/components/LoadingComponent.vue";
 import TooManyRequestsComponent from "@/components/TooManyRequestsComponent.vue";
@@ -15,212 +14,159 @@ import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ILogger, IUserProfileService } from "@/services/interfaces";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const options: any = {
-    components: {
-        LoadingComponent,
-        VueCountdown,
-        TooManyRequestsComponent,
-    },
-};
+interface Props {
+    smsNumber: string;
+}
+const props = defineProps<Props>();
 
-@Component(options)
-export default class VerifySMSComponent extends Vue {
-    @Prop()
-    smsNumber!: string;
+const emit = defineEmits<{
+    (e: "submit"): void;
+    (e: "cancel"): void;
+}>();
 
-    @Action("addError", { namespace: "errorBanner" })
-    addError!: (params: {
-        errorType: ErrorType;
-        source: ErrorSourceType;
-        traceId: string | undefined;
-    }) => void;
+defineExpose({ showModal, hideModal });
 
-    @Action("setTooManyRequestsError", { namespace: "errorBanner" })
-    setTooManyRequestsError!: (params: { key: string }) => void;
+const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+const userProfileService = container.get<IUserProfileService>(
+    SERVICE_IDENTIFIER.UserProfileService
+);
+const store = useStore();
 
-    @Action("setTooManyRequestsWarning", { namespace: "errorBanner" })
-    setTooManyRequestsWarning!: (params: { key: string }) => void;
+const tooManyRetries = ref(false);
+const allowRetry = ref(false);
+const smsVerificationSent = ref(false);
+const smsVerificationCode = ref("");
+const isVisible = ref(false);
+const isLoading = ref(false);
+const validationError = ref(false);
+const error = ref(false);
 
-    @Action("updateSMSResendDateTime", { namespace: "user" })
-    updateSMSResendDateTime!: ({
-        hdid,
-        dateTime,
-    }: {
-        hdid: string;
-        dateTime: DateWrapper;
-    }) => void;
+const config = computed<WebClientConfiguration>(
+    () => store.getters["config/webClient"]
+);
+const smsResendDateTime = computed<DateWrapper>(
+    () => store.getters["user/smsResendDateTime"]
+);
+const user = computed<User>(() => store.getters["user/user"]);
 
-    @Getter("webClient", { namespace: "config" })
-    config!: WebClientConfiguration;
+function addError(
+    errorType: ErrorType,
+    source: ErrorSourceType,
+    traceId: string | undefined
+): void {
+    store.dispatch("errorBanner/addError", { errorType, source, traceId });
+}
 
-    @Getter("smsResendDateTime", { namespace: "user" })
-    smsResendDateTime?: DateWrapper;
+function setTooManyRequestsError(key: string): void {
+    store.dispatch("errorBanner/setTooManyRequestsError", { key });
+}
 
-    @Getter("user", { namespace: "user" })
-    user!: User;
+function setTooManyRequestsWarning(key: string): void {
+    store.dispatch("errorBanner/setTooManyRequestsWarning", { key });
+}
 
-    private logger!: ILogger;
-    private userProfileService!: IUserProfileService;
+function updateSMSResendDateTime(hdid: string, dateTime: DateWrapper): void {
+    store.dispatch("user/updateSMSResendDateTime", { hdid, dateTime });
+}
 
-    private tooManyRetries = false;
-    private allowRetry = false;
-    private smsVerificationSent = false;
-    private smsVerificationCode = "";
-    private isVisible = false;
-    private isLoading = false;
-    private isValid = false;
-    private validationError = false;
-    private error = false;
+function showModal(): void {
+    isVisible.value = true;
+}
 
-    @Watch("smsResendDateTime")
-    private onSMSResendDateTimeChanged(): void {
-        this.setResendTimeout();
+function hideModal(): void {
+    isVisible.value = false;
+}
+
+function setResendTimeout(): void {
+    if (smsResendDateTime.value === undefined) {
+        allowRetry.value = true;
+        return;
     }
 
-    private created(): void {
-        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-        this.userProfileService = container.get<IUserProfileService>(
-            SERVICE_IDENTIFIER.UserProfileService
-        );
-    }
+    const smsTimeWhenEnabled = smsResendDateTime.value.add({
+        minutes: config.value.timeouts.resendSMS,
+    });
 
-    private mounted(): void {
-        this.setResendTimeout();
-    }
-
-    public showModal(): void {
-        this.isVisible = true;
-    }
-
-    public hideModal(): void {
-        this.isVisible = false;
-    }
-
-    private setResendTimeout(): void {
-        if (this.smsResendDateTime === undefined) {
-            this.allowRetry = true;
-            return;
-        }
-
-        const smsTimeWhenEnabled = this.smsResendDateTime.add({
-            minutes: this.config.timeouts.resendSMS,
-        });
-
-        const now = new DateWrapper();
-        this.allowRetry = smsTimeWhenEnabled.isBefore(now);
-        if (!this.allowRetry) {
-            const millisecondsToExpire =
-                smsTimeWhenEnabled.diff(now).milliseconds;
-            setTimeout(() => (this.allowRetry = true), millisecondsToExpire);
-        }
-    }
-
-    @Emit()
-    private submit(): void {
-        this.isVisible = false;
-    }
-
-    @Emit()
-    private cancel(): void {
-        this.hideModal();
-    }
-
-    private handleOk(bvModalEvt: Event): void {
-        // Prevent modal from closing
-        bvModalEvt.preventDefault();
-
-        // Trigger submit handler
-        this.handleSubmit();
-    }
-
-    private handleSubmit(): void {
-        this.submit();
-
-        // Hide the modal manually
-        this.$nextTick(() => this.hideModal());
-    }
-
-    private verifySMS(): void {
-        this.smsVerificationCode = this.smsVerificationCode.replace(/\D/g, "");
-        this.isLoading = true;
-        this.userProfileService
-            .validateSMS(this.user.hdid, this.smsVerificationCode)
-            .then((result) => {
-                this.validationError = !result;
-                if (!this.validationError) {
-                    this.handleSubmit();
-                }
-            })
-            .catch((err: ResultError) => {
-                this.logger.error(err.resultMessage);
-                if (err.statusCode === 429) {
-                    this.setTooManyRequestsError({ key: "verifySmsModal" });
-                } else {
-                    this.error = true;
-                }
-            })
-            .finally(() => {
-                this.smsVerificationCode = "";
-                this.isLoading = false;
-            });
-    }
-
-    private sendUserSMSUpdate(): void {
-        this.smsVerificationSent = true;
-        this.updateSMSResendDateTime({
-            hdid: this.user.hdid,
-            dateTime: new DateWrapper(),
-        });
-        this.userProfileService
-            .updateSMSNumber(this.user.hdid, this.smsNumber)
-            .then(() =>
-                setTimeout(() => (this.smsVerificationSent = false), 5000)
-            )
-            .catch((error) => {
-                if (isTooManyRequestsError(error)) {
-                    this.setTooManyRequestsWarning({ key: "page" });
-                } else {
-                    this.addError({
-                        errorType: ErrorType.Update,
-                        source: ErrorSourceType.Profile,
-                        traceId: undefined,
-                    });
-                }
-            });
-    }
-
-    private getTimeout(): number {
-        let resendTime: DateWrapper;
-        if (!this.smsResendDateTime) {
-            const now = new DateWrapper();
-            this.updateSMSResendDateTime({
-                hdid: this.user.hdid,
-                dateTime: now,
-            });
-            resendTime = now;
-        } else {
-            resendTime = this.smsResendDateTime;
-        }
-        resendTime = resendTime.add(this.config.timeouts.resendSMS * 60 * 1000);
-        return resendTime.diff(new DateWrapper()).milliseconds;
-    }
-
-    private onVerificationChange(): void {
-        if (this.smsVerificationCode.length >= 6) {
-            this.verifySMS();
-        }
-    }
-
-    private formatPhoneNumber(phoneNumber: string): string | null {
-        const cleaned = ("" + phoneNumber).replace(/\D/g, "");
-        const match = cleaned.match(/^(\d{3})(\d{3})(\d{4})$/);
-        if (match) {
-            return "(" + match[1] + ") " + match[2] + "-" + match[3];
-        }
-        return null;
+    const now = new DateWrapper();
+    allowRetry.value = smsTimeWhenEnabled.isBefore(now);
+    if (!allowRetry.value) {
+        const millisecondsToExpire = smsTimeWhenEnabled.diff(now).milliseconds;
+        setTimeout(() => (allowRetry.value = true), millisecondsToExpire);
     }
 }
+
+function verifySMS(): void {
+    smsVerificationCode.value = smsVerificationCode.value.replace(/\D/g, "");
+    isLoading.value = true;
+    userProfileService
+        .validateSMS(user.value.hdid, smsVerificationCode.value)
+        .then((result) => {
+            validationError.value = !result;
+            if (!validationError.value) {
+                hideModal();
+                emit("submit");
+            }
+        })
+        .catch((err: ResultError) => {
+            logger.error(err.resultMessage);
+            if (err.statusCode === 429) {
+                setTooManyRequestsError("verifySmsModal");
+            } else {
+                error.value = true;
+            }
+        })
+        .finally(() => {
+            smsVerificationCode.value = "";
+            isLoading.value = false;
+        });
+}
+
+function sendUserSMSUpdate(): void {
+    smsVerificationSent.value = true;
+    updateSMSResendDateTime(user.value.hdid, new DateWrapper());
+    userProfileService
+        .updateSMSNumber(user.value.hdid, props.smsNumber)
+        .then(() => setTimeout(() => (smsVerificationSent.value = false), 5000))
+        .catch((error) => {
+            if (isTooManyRequestsError(error)) {
+                setTooManyRequestsWarning("page");
+            } else {
+                addError(ErrorType.Update, ErrorSourceType.Profile, undefined);
+            }
+        });
+}
+
+function getTimeout(): number {
+    let resendTime: DateWrapper;
+    if (!smsResendDateTime.value) {
+        const now = new DateWrapper();
+        updateSMSResendDateTime(user.value.hdid, now);
+        resendTime = now;
+    } else {
+        resendTime = smsResendDateTime.value;
+    }
+    resendTime = resendTime.add(config.value.timeouts.resendSMS * 60 * 1000);
+    return resendTime.diff(new DateWrapper()).milliseconds;
+}
+
+function onVerificationChange(): void {
+    if (smsVerificationCode.value.length >= 6) {
+        verifySMS();
+    }
+}
+
+function formatPhoneNumber(phoneNumber: string): string | null {
+    const cleaned = ("" + phoneNumber).replace(/\D/g, "");
+    const match = cleaned.match(/^(\d{3})(\d{3})(\d{4})$/);
+    if (match) {
+        return "(" + match[1] + ") " + match[2] + "-" + match[3];
+    }
+    return null;
+}
+
+watch(smsResendDateTime, () => setResendTimeout());
+
+setResendTimeout();
 </script>
 
 <template>
@@ -310,15 +256,14 @@ export default class VerifySMSComponent extends Vue {
                     </hg-button>
                 </b-col>
                 <b-col v-if="!allowRetry">
-                    <VueCountdown :time="getTimeout()">
-                        <template slot-scope="props"
-                            >Your code has been sent. You can resend after
-                            <span data-testid="countdownText"
-                                >{{
-                                    props.minutes > 0 ? props.minutes + "m" : ""
-                                }}
-                                {{ props.seconds }}s</span
-                            ></template
+                    <VueCountdown
+                        v-slot="{ minutes, seconds }"
+                        :time="getTimeout()"
+                    >
+                        Your code has been sent. You can resend after
+                        <span data-testid="countdownText"
+                            >{{ minutes > 0 ? minutes + "m" : "" }}
+                            {{ seconds }}s</span
                         >
                     </VueCountdown>
                 </b-col>

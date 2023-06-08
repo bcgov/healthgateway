@@ -1,56 +1,45 @@
-<script lang="ts">
-import Vue from "vue";
-import { Component, Emit, Prop } from "vue-property-decorator";
+<script setup lang="ts">
+import { ref } from "vue";
 
-@Component
-export default class DeleteModalComponent extends Vue {
-    @Prop() error!: boolean;
-    @Prop({ default: false }) isLoading!: boolean;
+interface Props {
+    title?: string;
+    message?: string;
+    confirm?: string;
+}
+withDefaults(defineProps<Props>(), {
+    title: "Info",
+    message: "Message",
+    confirm: "Yes, I'm Sure",
+});
 
-    @Prop({ default: "Info" }) private title!: string;
-    @Prop({ default: "Message" }) private message!: string;
-    @Prop({ default: "Yes, I'm Sure" }) private confirm!: string;
-    private isVisible = false;
+const emit = defineEmits<{
+    (e: "submit"): void;
+    (e: "cancel"): void;
+}>();
 
-    public showModal(): void {
-        this.isVisible = true;
-    }
+defineExpose({
+    showModal,
+    hideModal,
+});
 
-    public hideModal(): void {
-        this.isVisible = false;
-    }
+const isVisible = ref(false);
 
-    @Emit()
-    private submit(): void {
-        this.isVisible = false;
-    }
+function showModal(): void {
+    isVisible.value = true;
+}
 
-    @Emit()
-    private cancel(): void {
-        this.hideModal();
-    }
+function hideModal(): void {
+    isVisible.value = false;
+}
 
-    private handleSubmit(bvModalEvt: Event): void {
-        // Prevent modal from closing
-        bvModalEvt.preventDefault();
+function handleSubmit(): void {
+    hideModal();
+    emit("submit");
+}
 
-        // Trigger submit handler
-        this.submit();
-
-        // Hide the modal manually
-        this.$nextTick(() => this.hideModal());
-    }
-
-    private handleCancel(bvModalEvt: Event): void {
-        // Prevent modal from closing
-        bvModalEvt.preventDefault();
-
-        // Trigger cancel handler
-        this.cancel();
-
-        // Hide the modal manually
-        this.$nextTick(() => this.hideModal());
-    }
+function handleCancel(): void {
+    hideModal();
+    emit("cancel");
 }
 </script>
 
@@ -85,14 +74,14 @@ export default class DeleteModalComponent extends Vue {
                                 data-testid="cancelDeleteBtn"
                                 class="mr-2"
                                 variant="secondary"
-                                @click="handleCancel($event)"
+                                @click.prevent="handleCancel"
                             >
                                 Cancel
                             </hg-button>
                             <hg-button
                                 data-testid="confirmDeleteBtn"
                                 variant="primary"
-                                @click="handleSubmit($event)"
+                                @click.prevent="handleSubmit"
                             >
                                 {{ confirm }}
                             </hg-button>

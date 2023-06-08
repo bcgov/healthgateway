@@ -2,6 +2,7 @@
 import { computed, ref } from "vue";
 
 import { DateWrapper } from "@/models/dateWrapper";
+import SelectOption from "@/models/selectOption";
 
 interface Props {
     value: string;
@@ -23,11 +24,6 @@ const emit = defineEmits<{
     (e: "input", newValue: string): void;
     (e: "blur"): void;
 }>();
-
-interface ISelectOption {
-    text: string | null;
-    value: unknown;
-}
 
 const currentYear = new DateWrapper().year();
 const currentMonth = new DateWrapper().month();
@@ -72,7 +68,7 @@ const yearOptions = computed(() => {
     const start = props.allowPast ? minYear : currentYear;
     const end = props.allowFuture ? currentYear + 20 : currentYear;
 
-    const yearOptions: ISelectOption[] = [{ value: null, text: "Year" }];
+    const yearOptions: SelectOption[] = [{ value: null, text: "Year" }];
     for (let i = end; i >= start; i--) {
         yearOptions.push({ value: i, text: i.toString() });
     }
@@ -83,7 +79,7 @@ const monthOptions = computed(() => {
     const isCurrent = year.value === currentYear;
     const start = !props.allowPast && isCurrent ? currentMonth : 1;
     const end = !props.allowFuture && isCurrent ? currentMonth : 12;
-    const monthOptions: ISelectOption[] = [{ value: null, text: "Month" }];
+    const monthOptions: SelectOption[] = [{ value: null, text: "Month" }];
 
     for (let i = start; i <= end; i++) {
         monthOptions.push({
@@ -100,7 +96,7 @@ const dayOptions = computed(() => {
     const start = !props.allowPast && isCurrent ? currentDay : 1;
     const end =
         !props.allowFuture && isCurrent ? currentDay : daysInMonth.value;
-    const dayOptions: ISelectOption[] = [{ value: null, text: "Day" }];
+    const dayOptions: SelectOption[] = [{ value: null, text: "Day" }];
 
     for (let i = start; i <= end; i++) {
         dayOptions.push({ value: i, text: i.toString() });
@@ -138,6 +134,7 @@ function onChange(): void {
                 aria-label="Year"
                 :disabled="disabled"
                 @change="onChange"
+                @blur.native="emit('blur')"
             />
         </b-col>
         <b-col class="px-2">
@@ -149,6 +146,7 @@ function onChange(): void {
                 aria-label="Month"
                 :disabled="disabled"
                 @change="onChange"
+                @blur.native="emit('blur')"
             />
         </b-col>
         <b-col cols="auto">
@@ -160,7 +158,7 @@ function onChange(): void {
                 aria-label="Day"
                 :disabled="disabled"
                 @change="onChange"
-                @blur="emit('blur')"
+                @blur.native="emit('blur')"
             />
         </b-col>
     </b-row>

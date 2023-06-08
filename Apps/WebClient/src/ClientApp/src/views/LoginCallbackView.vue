@@ -1,76 +1,72 @@
-<script lang="ts">
-import Vue from "vue";
-import { Component } from "vue-property-decorator";
-import { Action, Getter } from "vuex-class";
+<script setup lang="ts">
+import { computed } from "vue";
+import { useRoute, useRouter, useStore } from "vue-composition-wrapper";
 
 import User from "@/models/user";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ILogger } from "@/services/interfaces";
 
-@Component
-export default class LoginCallbackView extends Vue {
-    @Action("signIn", { namespace: "auth" })
-    signIn!: (params: {
-        redirectPath: string;
-        idpHint?: string;
-    }) => Promise<void>;
+const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+const route = useRoute();
+const router = useRouter();
+const store = useStore();
 
-    @Action("clearStorage", { namespace: "auth" })
-    clearStorage!: () => void;
+const user = computed<User>(() => store.getters["user/user"]);
+const isValidIdentityProvider = computed<boolean>(
+    () => store.getters["user/isValidIdentityProvider"]
+);
 
-    @Action("retrieveEssentialData", { namespace: "user" })
-    retrieveEssentialData!: () => Promise<void>;
+const defaultPath = computed(() =>
+    route.value.query.redirect ? route.value.query.redirect.toString() : "/home"
+);
 
-    @Action("retrieveProfile", { namespace: "user" })
-    retrieveProfile!: () => Promise<void>;
-
-    @Action("retrieve", { namespace: "notification" })
-    retrieveNotifications!: () => Promise<Notification[]>;
-
-    @Getter("user", { namespace: "user" })
-    user!: User;
-
-    @Getter("isValidIdentityProvider", { namespace: "user" })
-    isValidIdentityProvider!: boolean;
-
-    private logger!: ILogger;
-    private redirectPath = "/home";
-
-    private async created(): Promise<void> {
-        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-
-        if (this.$route.query.redirect && this.$route.query.redirect !== "") {
-            this.redirectPath = this.$route.query.redirect.toString();
-        }
-
-        try {
-            await this.signIn({ redirectPath: this.redirectPath });
-            this.logger.debug(`signIn for user: ${JSON.stringify(this.user)}`);
-
-            // If the identity provider is valid, the essential user data can be retrieved.
-            // If the identity provider is invalid, the router will redirect to the appropriate error page.
-            if (this.isValidIdentityProvider) {
-                await this.retrieveEssentialData();
-                this.retrieveNotifications().catch((error) =>
-                    this.logger.warn(error.message)
-                );
-            }
-
-            this.$router
-                .push({ path: this.redirectPath })
-                .catch((error) => this.logger.warn(error.message));
-        } catch (error) {
-            // login failed - redirect back to the login page
-            this.logger.error(`LoginCallback Error: ${JSON.stringify(error)}`);
-            this.clearStorage();
-            this.$router.push({
-                path: "/login",
-                query: { isRetry: "true" },
-            });
-        }
-    }
+function signIn(redirectPath: string, idpHint?: string): Promise<void> {
+    return store.dispatch("auth/signIn", { redirectPath, idpHint });
 }
+
+function clearStorage(): void {
+    store.dispatch("auth/clearStorage");
+}
+
+function retrieveEssentialData(): Promise<void> {
+    return store.dispatch("user/retrieveEssentialData");
+}
+
+function retrieveNotifications(): Promise<Notification[]> {
+    return store.dispatch("notification/retrieve");
+}
+
+function redirect() {
+    router
+        .push({ path: defaultPath.value })
+        .catch((error) => logger.warn(error.message));
+}
+
+signIn(defaultPath.value)
+    .then(() => {
+        logger.debug(`signIn for user: ${JSON.stringify(user.value)}`);
+
+        // If the identity provider is invalid, the router will redirect to the appropriate error page.
+        if (!isValidIdentityProvider.value) {
+            redirect();
+            return;
+        }
+
+        return retrieveEssentialData().then(() => {
+            retrieveNotifications();
+            redirect();
+        });
+    })
+    .catch((error) => {
+        logger.error(`LoginCallback Error: ${JSON.stringify(error)}`);
+
+        clearStorage();
+        router.push({
+            path: "/login",
+            query: { isRetry: "true" },
+        });
+    });
 </script>
 
 <template>

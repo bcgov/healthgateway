@@ -1,9 +1,4 @@
-import { CustomBannerError } from "@/models/errors";
-import {
-    Covid19LaboratoryOrder,
-    LaboratoryOrder,
-    PublicCovidTestResponseResult,
-} from "@/models/laboratory";
+import { Covid19LaboratoryOrder, LaboratoryOrder } from "@/models/laboratory";
 import { LoadStatus } from "@/models/storeOperations";
 
 import { LaboratoryGetters, LaboratoryState } from "./types";
@@ -46,21 +41,5 @@ export const getters: LaboratoryGetters = {
         state: LaboratoryState
     ): (hdid: string) => boolean {
         return (hdid: string) => getLabResultState(state, hdid).queued;
-    },
-    publicCovidTestResponseResult(
-        state: LaboratoryState
-    ): PublicCovidTestResponseResult | undefined {
-        return state.publicCovid19.publicCovidTestResponseResult;
-    },
-    isPublicCovidTestResponseResultLoading(state: LaboratoryState): boolean {
-        return state.publicCovid19.status === LoadStatus.REQUESTED;
-    },
-    publicCovidTestResponseResultError(
-        state: LaboratoryState
-    ): CustomBannerError | undefined {
-        return state.publicCovid19.error;
-    },
-    publicCovidTestResponseResultStatusMessage(state: LaboratoryState): string {
-        return state.publicCovid19.statusMessage;
     },
 };

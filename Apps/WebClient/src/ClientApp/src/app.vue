@@ -94,7 +94,6 @@ config.autoAddCss = false;
 
 const landingPath = "/";
 const acceptTermsOfServicePath = "/accepttermsofservice";
-const covidTestPath = "/covidtest";
 const dependentsPath = "/dependents";
 const loginCallbackPath = "/logincallback";
 const pcrTestPath = "/pcrtest";
@@ -153,18 +152,12 @@ const timeBeforeIdle = computed(
 );
 const maxIdleDialogCountdown = computed(() => 60000);
 const pageHasCustomLayout = computed(() =>
-    currentPathMatches(
-        vaccineCardPath,
-        covidTestPath,
-        landingPath,
-        queuePath,
-        queueFullPath
-    )
+    currentPathMatches(vaccineCardPath, landingPath, queuePath, queueFullPath)
 );
 const isHeaderVisible = computed(
     () =>
         appError.value === undefined &&
-        !currentPathMatches(loginCallbackPath, vaccineCardPath, covidTestPath)
+        !currentPathMatches(loginCallbackPath, vaccineCardPath)
 );
 const isFooterVisible = computed(
     () =>
@@ -172,8 +165,7 @@ const isFooterVisible = computed(
         !currentPathMatches(
             loginCallbackPath,
             registrationPath,
-            vaccineCardPath,
-            covidTestPath
+            vaccineCardPath
         )
 );
 const isSidebarVisible = computed(
@@ -199,11 +191,8 @@ const isNotificationCentreEnabled = computed(
 );
 const isCommunicationVisible = computed(
     () =>
-        !currentPathMatches(
-            loginCallbackPath,
-            vaccineCardPath,
-            covidTestPath
-        ) && !route.value.path.toLowerCase().startsWith(pcrTestPath)
+        !currentPathMatches(loginCallbackPath, vaccineCardPath) &&
+        !route.value.path.toLowerCase().startsWith(pcrTestPath)
 );
 const isResourceCentreVisible = computed(() =>
     currentPathMatches(dependentsPath, reportsPath, timelinePath)

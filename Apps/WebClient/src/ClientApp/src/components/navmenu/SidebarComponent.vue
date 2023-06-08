@@ -1,4 +1,4 @@
-<script lang="ts">
+<script setup lang="ts">
 import { library } from "@fortawesome/fontawesome-svg-core";
 import {
     faAngleDoubleLeft,
@@ -9,16 +9,11 @@ import {
     faHome,
     faUserFriends,
 } from "@fortawesome/free-solid-svg-icons";
-import Vue from "vue";
-import { Component, Watch } from "vue-property-decorator";
-import { Action, Getter } from "vuex-class";
+import { computed, nextTick, onMounted, watch } from "vue";
+import { useRoute, useStore } from "vue-composition-wrapper";
 
 import FeedbackComponent from "@/components/FeedbackComponent.vue";
 import type { WebClientConfiguration } from "@/models/configData";
-import User from "@/models/user";
-import container from "@/plugins/container";
-import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import { ILogger } from "@/services/interfaces";
 
 library.add(
     faAngleDoubleLeft,
@@ -30,170 +25,106 @@ library.add(
     faUserFriends
 );
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const options: any = {
-    components: {
-        FeedbackComponent,
-    },
-};
+const route = useRoute();
+const store = useStore();
 
-@Component(options)
-export default class SidebarComponent extends Vue {
-    @Getter("isMobile")
-    isMobileWidth!: boolean;
+const isMobileWidth = computed<boolean>(() => store.getters["isMobile"]);
+const isOffline = computed<boolean>(() => store.getters["config/isOffline"]);
+const config = computed<WebClientConfiguration>(
+    () => store.getters["config/webClient"]
+);
+const isOpen = computed<boolean>(() => store.getters["navbar/isSidebarOpen"]);
+const isAnimating = computed<boolean>(
+    () => store.getters["navbar/isSidebarAnimating"]
+);
+const oidcIsAuthenticated = computed<boolean>(
+    () => store.getters["auth/oidcIsAuthenticated"]
+);
+const isValidIdentityProvider = computed<boolean>(
+    () => store.getters["user/isValidIdentityProvider"]
+);
+const userIsRegistered = computed<boolean>(
+    () => store.getters["user/userIsRegistered"]
+);
+const userIsActive = computed<boolean>(
+    () => store.getters["user/userIsActive"]
+);
+const patientRetrievalFailed = computed<boolean>(
+    () => store.getters["user/patientRetrievalFailed"]
+);
 
-    @Getter("isOffline", { namespace: "config" })
-    isOffline!: boolean;
+const isQueuePage = computed(
+    () =>
+        route.value.path.toLowerCase() === "/queue" ||
+        route.value.path.toLowerCase() === "/busy"
+);
+const isSidebarAvailable = computed(
+    () =>
+        !isOffline.value &&
+        oidcIsAuthenticated.value &&
+        isValidIdentityProvider.value &&
+        userIsRegistered.value &&
+        userIsActive.value &&
+        !patientRetrievalFailed.value &&
+        !isQueuePage.value
+);
+const isFullyOpen = computed(() => isOpen.value && !isAnimating.value);
+const isOverlayVisible = computed(() => isOpen.value && isMobileWidth.value);
+const isHome = computed(() => route.value.path == "/home");
+const isTimeline = computed(() => route.value.path == "/timeline");
+const isCovid19 = computed(() => route.value.path == "/covid19");
+const isServices = computed(() => route.value.path == "/services");
+const isReports = computed(() => route.value.path == "/reports");
+const isDependentEnabled = computed(
+    () => config.value.featureToggleConfiguration.dependents.enabled
+);
+const isServicesEnabled = computed(
+    () => config.value.featureToggleConfiguration.services.enabled
+);
+const isDependents = computed(() => route.value.path == "/dependents");
 
-    @Getter("webClient", { namespace: "config" })
-    config!: WebClientConfiguration;
+function toggleSidebar(): void {
+    store.dispatch("navbar/toggleSidebar");
+}
 
-    @Action("toggleSidebar", { namespace: "navbar" })
-    toggleSidebar!: () => void;
+function setSidebarStoppedAnimating(): void {
+    store.dispatch("navbar/setSidebarStoppedAnimating");
+}
 
-    @Action("setSidebarStoppedAnimating", { namespace: "navbar" })
-    setSidebarStoppedAnimating!: () => void;
-
-    @Getter("isSidebarOpen", { namespace: "navbar" })
-    isOpen!: boolean;
-
-    @Getter("isSidebarAnimating", { namespace: "navbar" })
-    isAnimating!: boolean;
-
-    @Getter("user", { namespace: "user" })
-    user!: User;
-
-    @Getter("oidcIsAuthenticated", { namespace: "auth" })
-    oidcIsAuthenticated!: boolean;
-
-    @Getter("isValidIdentityProvider", { namespace: "user" })
-    isValidIdentityProvider!: boolean;
-
-    @Getter("userIsRegistered", { namespace: "user" })
-    userIsRegistered!: boolean;
-
-    @Getter("userIsActive", { namespace: "user" })
-    userIsActive!: boolean;
-
-    @Getter("patientRetrievalFailed", { namespace: "user" })
-    patientRetrievalFailed!: boolean;
-
-    private logger!: ILogger;
-
-    @Watch("$route")
-    private onRouteChanged(): void {
-        this.clearOverlay();
-    }
-
-    @Watch("isOpen")
-    @Watch("isMobileWidth")
-    private onIsSidebarOpenChange(isOpen: boolean): void {
-        if (this.isMobileWidth && isOpen) {
-            document.body.classList.add("overflow-hidden");
-        } else {
-            document.body.classList.remove("overflow-hidden");
-        }
-    }
-
-    private created(): void {
-        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-    }
-
-    private async mounted(): Promise<void> {
-        await this.$nextTick();
-
-        // set up listener to monitor sidebar collapsing and expanding
-        const sidebar = document.querySelector("#sidebar");
-        sidebar?.addEventListener("transitionend", (event: Event) => {
-            const transitionEvent = event as TransitionEvent;
-            if (
-                sidebar !== transitionEvent.target ||
-                transitionEvent.propertyName !== "max-width"
-            ) {
-                return;
-            }
-
-            this.setSidebarStoppedAnimating();
-        });
-    }
-
-    private toggleOpen(): void {
-        this.toggleSidebar();
-    }
-
-    private clearOverlay(): void {
-        if (this.isOverlayVisible) {
-            this.toggleSidebar();
-        }
-    }
-
-    private get isQueuePage(): boolean {
-        return (
-            this.$route.path.toLowerCase() === "/queue" ||
-            this.$route.path.toLowerCase() === "/busy"
-        );
-    }
-
-    private get isSidebarAvailable(): boolean {
-        return (
-            !this.isOffline &&
-            this.oidcIsAuthenticated &&
-            this.isValidIdentityProvider &&
-            this.userIsRegistered &&
-            this.userIsActive &&
-            !this.patientRetrievalFailed &&
-            !this.isQueuePage
-        );
-    }
-
-    private get isFullyOpen(): boolean {
-        return this.isOpen && !this.isAnimating;
-    }
-
-    private get isOverlayVisible(): boolean {
-        return this.isOpen && this.isMobileWidth;
-    }
-
-    private get isHome(): boolean {
-        return this.$route.path == "/home";
-    }
-
-    private get isTimeline(): boolean {
-        return this.$route.path == "/timeline";
-    }
-
-    private get isCovid19(): boolean {
-        return this.$route.path == "/covid19";
-    }
-
-    private get isServices(): boolean {
-        return this.$route.path == "/services";
-    }
-
-    private get isTermsOfService(): boolean {
-        return this.$route.path == "/profile/termsOfService";
-    }
-
-    private get isUnderProfile(): boolean {
-        return this.$route.path.startsWith("/profile");
-    }
-
-    private get isReports(): boolean {
-        return this.$route.path == "/reports";
-    }
-
-    private get isDependentEnabled(): boolean {
-        return this.config.featureToggleConfiguration.dependents.enabled;
-    }
-
-    private get isServicesEnabled(): boolean {
-        return this.config.featureToggleConfiguration.services.enabled;
-    }
-
-    private get isDependents(): boolean {
-        return this.$route.path == "/dependents";
+function handleSidebarChanged(): void {
+    if (isMobileWidth.value && isOpen.value) {
+        document.body.classList.add("overflow-hidden");
+    } else {
+        document.body.classList.remove("overflow-hidden");
     }
 }
+
+function clearOverlay(): void {
+    if (isOverlayVisible.value) {
+        toggleSidebar();
+    }
+}
+
+watch(route, () => clearOverlay());
+watch([isOpen, isMobileWidth], () => handleSidebarChanged());
+
+onMounted(async () => {
+    await nextTick();
+
+    // set up listener to monitor sidebar collapsing and expanding
+    const sidebar = document.querySelector("#sidebar");
+    sidebar?.addEventListener("transitionend", (event: Event) => {
+        const transitionEvent = event as TransitionEvent;
+        if (
+            sidebar !== transitionEvent.target ||
+            transitionEvent.propertyName !== "max-width"
+        ) {
+            return;
+        }
+
+        setSidebarStoppedAnimating();
+    });
+});
 </script>
 
 <template>
@@ -381,7 +312,7 @@ export default class SidebarComponent extends Vue {
                     <!-- Collapse Button -->
                     <span v-show="!isMobileWidth">
                         <hr />
-                        <hg-button variant="nav" @click="toggleOpen">
+                        <hg-button variant="nav" @click="toggleSidebar">
                             <b-row
                                 class="align-items-center"
                                 :class="{ 'mx-2': isOpen }"
@@ -412,7 +343,7 @@ export default class SidebarComponent extends Vue {
         </nav>
 
         <!-- Dark Overlay element -->
-        <div v-show="isOverlayVisible" class="overlay" @click="toggleOpen" />
+        <div v-show="isOverlayVisible" class="overlay" @click="toggleSidebar" />
     </div>
 </template>
 

@@ -1,50 +1,45 @@
-<script lang="ts">
+<script setup lang="ts">
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
-import Vue from "vue";
-import { Component, Prop } from "vue-property-decorator";
+import { computed } from "vue";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const options: any = {
-    components: {
-        FontAwesomeIcon,
-    },
-};
-
-@Component(options)
-export default class HgIconComponent extends Vue {
-    @Prop({ required: false, default: "medium" }) size!: string;
-    @Prop({ required: false, default: false }) square!: boolean;
-
-    private get classes(): string[] {
-        const result = ["hg-icon"];
-
-        switch (this.size) {
-            case "small":
-                result.push("hg-small");
-                break;
-            case "medium":
-                result.push("hg-medium");
-                break;
-            case "large":
-                result.push("hg-large");
-                break;
-            case "extra-large":
-                result.push("hg-extra-large");
-                break;
-            case "extra-extra-large":
-                result.push("hg-extra-extra-large");
-                break;
-            default:
-                return [];
-        }
-
-        if (this.square === true) {
-            result.push("hg-square");
-        }
-
-        return result;
-    }
+interface Props {
+    size?: string;
+    square?: boolean;
 }
+const props = withDefaults(defineProps<Props>(), {
+    size: "medium",
+    square: false,
+});
+
+const classes = computed<string[]>(() => {
+    const result = ["hg-icon"];
+
+    switch (props.size) {
+        case "small":
+            result.push("hg-small");
+            break;
+        case "medium":
+            result.push("hg-medium");
+            break;
+        case "large":
+            result.push("hg-large");
+            break;
+        case "extra-large":
+            result.push("hg-extra-large");
+            break;
+        case "extra-extra-large":
+            result.push("hg-extra-extra-large");
+            break;
+        default:
+            return [];
+    }
+
+    if (props.square) {
+        result.push("hg-square");
+    }
+
+    return result;
+});
 </script>
 
 <template>
