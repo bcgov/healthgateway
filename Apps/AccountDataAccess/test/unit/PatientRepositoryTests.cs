@@ -272,6 +272,44 @@ namespace AccountDataAccessTest
         }
 
         /// <summary>
+        /// Can access data source.
+        /// </summary>
+        /// <param name="dataSource">The data source to check for access.</param>
+        /// <param name="canAccessDataSource">The value indicates whether the data source can be accessed or not.</param>
+        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
+        [Theory]
+        [InlineData(DataSource.Note, true)]
+        [InlineData(DataSource.Medication, false)]
+        public async Task CanAccessDataSource(DataSource dataSource, bool canAccessDataSource)
+        {
+            // Arrange
+            string hdid = Hdid;
+
+            HashSet<DataSource> dataSources = new()
+            {
+                DataSource.Immunization,
+                DataSource.Medication,
+            };
+
+            BlockedAccess blockedAccess = new()
+            {
+                Hdid = hdid,
+                DataSources = new HashSet<DataSource>
+                {
+                    DataSource.Immunization, DataSource.Medication,
+                },
+            };
+
+            PatientRepository patientRepository = GetPatientRepository(blockedAccess, dataSources);
+
+            // Act
+            bool actual = await patientRepository.CanAccessDataSourceAsync(hdid, dataSource).ConfigureAwait(true);
+
+            // Verify
+            Assert.Equal(canAccessDataSource, actual);
+        }
+
+        /// <summary>
         /// Get blocked access by hdid.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
