@@ -76,8 +76,10 @@ const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
 const router = useRouter();
 const store = useStore();
 
-const sensitivedocumentDownloadModal = ref<MessageModalComponent>();
-const vaccineRecordResultModal = ref<MessageModalComponent>();
+const sensitivedocumentDownloadModal =
+    ref<InstanceType<typeof MessageModalComponent>>();
+const vaccineRecordResultModal =
+    ref<InstanceType<typeof MessageModalComponent>>();
 const addQuickLinkModal = ref<AddQuickLinkComponent>();
 
 const config = computed<WebClientConfiguration>(

@@ -23,6 +23,7 @@ namespace HealthGateway.GatewayApi.Services
     using System.Threading.Tasks;
     using AutoMapper;
     using FluentValidation.Results;
+    using HealthGateway.AccountDataAccess.Patient;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.CacheProviders;
     using HealthGateway.Common.Constants;
@@ -39,20 +40,19 @@ namespace HealthGateway.GatewayApi.Services
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
-    using HealthGateway.GatewayApi.Constants;
     using HealthGateway.GatewayApi.MapUtils;
     using HealthGateway.GatewayApi.Models;
     using HealthGateway.GatewayApi.Validations;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
+    using PatientModel = HealthGateway.Common.Models.PatientModel;
 
     /// <inheritdoc/>
     public class UserProfileService : IUserProfileService
     {
         private const string WebClientConfigSection = "WebClient";
         private const string UserProfileHistoryRecordLimitKey = "UserProfileHistoryRecordLimit";
-        private const string RegistrationStatusKey = "RegistrationStatus";
         private const string MinPatientAgeKey = "MinPatientAge";
         private readonly IAuthenticationDelegate authenticationDelegate;
         private readonly IApplicationSettingsDelegate applicationSettingsDelegate;
@@ -67,12 +67,12 @@ namespace HealthGateway.GatewayApi.Services
         private readonly int minPatientAge;
         private readonly INotificationSettingsService notificationSettingsService;
         private readonly IPatientService patientService;
-        private readonly string registrationStatus;
         private readonly IUserEmailService userEmailService;
         private readonly IUserPreferenceDelegate userPreferenceDelegate;
         private readonly IUserProfileDelegate userProfileDelegate;
         private readonly int userProfileHistoryRecordLimit;
         private readonly IUserSmsService userSmsService;
+        private readonly IPatientRepository patientRepository;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UserProfileService"/> class.
@@ -94,6 +94,7 @@ namespace HealthGateway.GatewayApi.Services
         /// <param name="authenticationDelegate">The injected authentication delegate.</param>
         /// <param name="applicationSettingsDelegate">The injected Application Settings delegate.</param>
         /// <param name="cacheProvider">The injected cache provider.</param>
+        /// <param name="patientRepository">The injected patient repository.</param>
         public UserProfileService(
             ILogger<UserProfileService> logger,
             IPatientService patientService,
@@ -111,7 +112,8 @@ namespace HealthGateway.GatewayApi.Services
             IMapper autoMapper,
             IAuthenticationDelegate authenticationDelegate,
             IApplicationSettingsDelegate applicationSettingsDelegate,
-            ICacheProvider cacheProvider)
+            ICacheProvider cacheProvider,
+            IPatientRepository patientRepository)
         {
             this.logger = logger;
             this.patientService = patientService;
@@ -127,13 +129,12 @@ namespace HealthGateway.GatewayApi.Services
             this.httpContextAccessor = httpContextAccessor;
             this.userProfileHistoryRecordLimit = configuration.GetSection(WebClientConfigSection)
                 .GetValue(UserProfileHistoryRecordLimitKey, 4);
-            this.registrationStatus = configuration.GetSection(WebClientConfigSection)
-                .GetValue<string>(RegistrationStatusKey) ?? RegistrationStatus.Open;
             this.minPatientAge = configuration.GetSection(WebClientConfigSection).GetValue(MinPatientAgeKey, 12);
             this.autoMapper = autoMapper;
             this.authenticationDelegate = authenticationDelegate;
             this.applicationSettingsDelegate = applicationSettingsDelegate;
             this.cacheProvider = cacheProvider;
+            this.patientRepository = patientRepository;
         }
 
         /// <inheritdoc/>
@@ -216,12 +217,6 @@ namespace HealthGateway.GatewayApi.Services
         public async Task<RequestResult<UserProfileModel>> CreateUserProfile(CreateUserRequest createProfileRequest, DateTime jwtAuthTime, string? jwtEmailAddress)
         {
             this.logger.LogTrace("Creating user profile... {Hdid}", createProfileRequest.Profile.HdId);
-
-            if (this.registrationStatus == RegistrationStatus.Closed)
-            {
-                this.logger.LogWarning("Registration is closed... {Hdid}", createProfileRequest.Profile.HdId);
-                return RequestResultFactory.Error<UserProfileModel>(ErrorType.InvalidState, "Registration is closed");
-            }
 
             RequestResult<UserProfileModel>? validationResult = await this.ValidateUserProfile(createProfileRequest).ConfigureAwait(true);
             if (validationResult != null)
@@ -316,8 +311,7 @@ namespace HealthGateway.GatewayApi.Services
                 this.QueueEmail(profile.Email, EmailTemplateName.AccountClosedTemplate);
             }
 
-            UserProfileModel payload = this.BuildUserProfileModel(updateResult.Payload);
-            return RequestResultFactory.Success(payload);
+            return RequestResultFactory.Success(this.BuildUserProfileModel(updateResult.Payload));
         }
 
         /// <inheritdoc/>
@@ -505,6 +499,7 @@ namespace HealthGateway.GatewayApi.Services
                                               profileHistoryCollection.Any() &&
                                               latestTourChangeDateTime != null &&
                                               profileHistoryCollection.Max(x => x.LastLoginDateTime) < latestTourChangeDateTime;
+            userProfileModel.BlockedDataSources = this.patientRepository.GetDataSources(userProfile.HdId).Result;
             return userProfileModel;
         }
 

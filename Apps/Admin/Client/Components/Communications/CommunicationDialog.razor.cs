@@ -21,6 +21,7 @@ using System.Threading.Tasks;
 using Fluxor;
 using Fluxor.Blazor.Web.Components;
 using HealthGateway.Admin.Client.Components.Common;
+using HealthGateway.Admin.Client.Services;
 using HealthGateway.Admin.Client.Store.Communications;
 using HealthGateway.Admin.Common.Models;
 using HealthGateway.Common.Data.Constants;
@@ -53,6 +54,9 @@ public partial class CommunicationDialog : FluxorComponent
 
     [Inject]
     private IState<CommunicationsState> CommunicationsState { get; set; } = default!;
+
+    [Inject]
+    private IDateConversionService DateConversionService { get; set; } = default!;
 
     private bool IsNewCommunication => this.Communication.Id == Guid.Empty;
 
@@ -97,7 +101,7 @@ public partial class CommunicationDialog : FluxorComponent
     {
         if (this.IsNewCommunication)
         {
-            DateTime now = DateTime.Now;
+            DateTime now = this.DateConversionService.ConvertFromUtc(DateTime.UtcNow);
             DateTime tomorrow = now.AddDays(1);
             this.EffectiveDate = now.Date;
             this.EffectiveTime = now.TimeOfDay;
@@ -106,10 +110,12 @@ public partial class CommunicationDialog : FluxorComponent
         }
         else
         {
-            this.EffectiveDate = this.Communication.EffectiveDateTime.ToLocalTime().Date;
-            this.EffectiveTime = this.Communication.EffectiveDateTime.ToLocalTime().TimeOfDay;
-            this.ExpiryDate = this.Communication.ExpiryDateTime.ToLocalTime().Date;
-            this.ExpiryTime = this.Communication.ExpiryDateTime.ToLocalTime().TimeOfDay;
+            DateTime effectiveDateTime = this.DateConversionService.ConvertFromUtc(this.Communication.EffectiveDateTime);
+            DateTime expiryDateTime = this.DateConversionService.ConvertFromUtc(this.Communication.ExpiryDateTime);
+            this.EffectiveDate = effectiveDateTime.Date;
+            this.EffectiveTime = effectiveDateTime.TimeOfDay;
+            this.ExpiryDate = expiryDateTime.Date;
+            this.ExpiryTime = expiryDateTime.TimeOfDay;
             this.HtmlContent = this.Communication.Text;
         }
     }

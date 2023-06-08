@@ -28,7 +28,6 @@ namespace HealthGateway.GatewayApiTests.Services.Test
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
-    using HealthGateway.GatewayApi.Constants;
     using HealthGateway.GatewayApi.MapUtils;
     using HealthGateway.GatewayApi.Models;
     using HealthGateway.GatewayApi.Services;
@@ -133,9 +132,16 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 Status = DbStatusCode.Read,
             };
 
+            HashSet<DataSource> dataSources = new()
+            {
+                DataSource.Immunization,
+                DataSource.Medication,
+            };
+
             UserProfileModel expected = UserProfileMapUtils.CreateFromDbModel(userProfile, Guid.Empty, MapperUtil.InitializeAutoMapper());
             UserProfileServiceMock mockService = new(GetIConfigurationRoot(null));
             mockService.SetupGetOrSetCache<DateTime?>(lastTourChangeDateTime, $"{TourApplicationSettings.Application}:{TourApplicationSettings.Component}")
+                .SetupPatientRepository(this.hdid, dataSources)
                 .SetupUserProfileDelegateMockGetUpdateAndHistory(this.hdid, userProfile, userProfileDbResult, userProfileHistoryDbResult)
                 .SetupLegalAgreementDelegateMock(termsOfService)
                 .SetupPatientServiceMockCustomPatient(this.hdid, patientModel)
@@ -157,6 +163,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 Assert.Equal(userProfileHistoryMinus1.LastLoginDateTime, actualResult.ResourcePayload?.LastLoginDateTimes[1]);
                 Assert.Equal(userProfileHistoryMinus2.LastLoginDateTime, actualResult.ResourcePayload?.LastLoginDateTimes[2]);
                 Assert.Equal(expectedHasTourChanged, actualResult.ResourcePayload?.HasTourUpdated);
+                Assert.Equal(dataSources, actualResult.ResourcePayload?.BlockedDataSources);
             }
 
             if (dBStatus == DbStatusCode.Error)
@@ -191,6 +198,12 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 Email = "unit.test@hgw.ca",
             };
 
+            HashSet<DataSource> dataSources = new()
+            {
+                DataSource.Immunization,
+                DataSource.Medication,
+            };
+
             DbResult<UserProfile> readProfileDbResult = new()
             {
                 Payload = userProfile,
@@ -214,7 +227,9 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             };
             UserProfileServiceMock mockService = new UserProfileServiceMock(GetIConfigurationRoot(null))
                 .SetupLegalAgreementDelegateMock(legalAgreement)
-                .SetupUserProfileDelegateMockGetAndUpdate(this.hdid, userProfile, readProfileDbResult, userProfileDbResultUpdate: updatedProfileDbResult);
+                .SetupUserProfileDelegateMockGetAndUpdate(this.hdid, userProfile, readProfileDbResult, userProfileDbResultUpdate: updatedProfileDbResult)
+                .SetupPatientRepository(this.hdid, dataSources);
+
             IUserProfileService service = mockService.UserProfileServiceMockInstance();
             RequestResult<UserProfileModel> actualResult = service.UpdateAcceptedTerms(this.hdid, Guid.Empty);
 
@@ -222,19 +237,16 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             if (actualResult.ResultStatus == ResultType.Success)
             {
                 Assert.True(actualResult.ResourcePayload?.TermsOfServiceId == Guid.Empty);
+                Assert.Equal(dataSources, actualResult.ResourcePayload?.BlockedDataSources);
             }
         }
 
         /// <summary>
         /// CreateUserProfile call.
         /// </summary>
-        /// <param name="dbStatus">Db status code.</param>
-        /// <param name="registration">Registration status code.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Theory]
-        [InlineData(DbStatusCode.Created, RegistrationStatus.Open)]
-        [InlineData(DbStatusCode.Error, RegistrationStatus.Closed)]
-        public async Task ShouldInsertUserProfile(DbStatusCode dbStatus, string registration)
+        [Fact]
+        public async Task ShouldInsertUserProfile()
         {
             // Arrange
             UserProfile userProfile = new()
@@ -242,6 +254,12 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 HdId = this.hdid,
                 TermsOfServiceId = this.termsOfServiceGuid,
                 Email = "unit.test@hgw.ca",
+            };
+
+            HashSet<DataSource> dataSources = new()
+            {
+                DataSource.Immunization,
+                DataSource.Medication,
             };
 
             PatientModel patientModel = new()
@@ -252,17 +270,17 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             DbResult<UserProfile> userProfileDbResult = new()
             {
                 Payload = userProfile,
-                Status = dbStatus,
+                Status = DbStatusCode.Created,
             };
             Dictionary<string, string?> localConfig = new()
             {
                 { "WebClient:MinPatientAge", "0" },
-                { "WebClient:RegistrationStatus", registration },
             };
             UserProfileServiceMock mockService = new UserProfileServiceMock(GetIConfigurationRoot(localConfig))
                 .SetupUserProfileDelegateMockInsert(userProfile, userProfileDbResult)
                 .SetupCryptoDelegateMockGenerateKey("abc")
-                .SetupPatientServiceMockCustomPatient(this.hdid, patientModel);
+                .SetupPatientServiceMockCustomPatient(this.hdid, patientModel)
+                .SetupPatientRepository(this.hdid, dataSources);
 
             IUserProfileService service = mockService.UserProfileServiceMockInstance();
 
@@ -274,17 +292,8 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 .ConfigureAwait(true);
 
             // Assert
-            if (dbStatus == DbStatusCode.Created && registration == RegistrationStatus.Open)
-            {
-                Assert.Equal(ResultType.Success, actualResult.ResultStatus);
-            }
-
-            if (dbStatus == DbStatusCode.Error && registration == RegistrationStatus.Closed)
-            {
-                Assert.Equal(ResultType.Error, actualResult.ResultStatus);
-                Assert.Equal(ErrorTranslator.InternalError(ErrorType.InvalidState), actualResult.ResultError?.ErrorCode);
-                Assert.Equal("Registration is closed", actualResult.ResultError!.ResultMessage);
-            }
+            Assert.Equal(ResultType.Success, actualResult.ResultStatus);
+            Assert.Equal(dataSources, actualResult.ResourcePayload?.BlockedDataSources);
         }
 
         /// <summary>
@@ -545,6 +554,12 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 TermsOfServiceId = this.termsOfServiceGuid,
             };
 
+            HashSet<DataSource> dataSources = new()
+            {
+                DataSource.Immunization,
+                DataSource.Medication,
+            };
+
             DbResult<UserProfile> userProfileDbResult = new()
             {
                 Payload = userProfile,
@@ -558,7 +573,8 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             UserProfileServiceMock mockService = new UserProfileServiceMock(GetIConfigurationRoot(null))
                 .SetupHttpAccessorMockCustomHeaders(headerDictionary)
                 .SetupUserProfileDelegateMockGetAndUpdate(this.hdid, userProfile, userProfileDbResult)
-                .SetupEmailQueueServiceMock(false);
+                .SetupEmailQueueServiceMock(false)
+                .SetupPatientRepository(this.hdid, dataSources);
 
             IUserProfileService service = mockService.UserProfileServiceMockInstance();
 
@@ -568,6 +584,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             // Assert
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             Assert.NotNull(actualResult.ResourcePayload?.ClosedDateTime);
+            Assert.Equal(dataSources, actualResult.ResourcePayload?.BlockedDataSources);
         }
 
         /// <summary>
@@ -664,6 +681,12 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 Email = "unit.test@hgw.ca",
             };
 
+            HashSet<DataSource> dataSources = new()
+            {
+                DataSource.Immunization,
+                DataSource.Medication,
+            };
+
             DbResult<UserProfile> userProfileDbResult = new()
             {
                 Payload = userProfile,
@@ -678,7 +701,8 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             UserProfileServiceMock mockService = new UserProfileServiceMock(GetIConfigurationRoot(null))
                 .SetupHttpAccessorMockCustomHeaders(headerDictionary)
                 .SetupUserProfileDelegateMockGetAndUpdate(this.hdid, userProfile, userProfileDbResult)
-                .SetupEmailQueueServiceMock(false);
+                .SetupEmailQueueServiceMock(false)
+                .SetupPatientRepository(this.hdid, dataSources);
 
             IUserProfileService service = mockService.UserProfileServiceMockInstance();
 
@@ -688,6 +712,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             // Assert
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             Assert.Null(actualResult.ResourcePayload?.ClosedDateTime);
+            Assert.Equal(dataSources, actualResult.ResourcePayload?.BlockedDataSources);
         }
 
         /// <summary>

@@ -1,30 +1,28 @@
 <script setup lang="ts">
 import { computed } from "vue";
 
-import { SelectOption } from "@/components/Interfaces/MultiSelectComponent";
+import SelectOption from "@/models/selectOption";
 
 interface Props {
-    placeholder: string;
-    options: SelectOption[];
-    // Cannot seem to define this as required without getting a missing required prop error when using v-model.
-    modelValue?: string[];
+    values: string[];
+    placeholder?: string;
+    options?: SelectOption[];
 }
 const props = withDefaults(defineProps<Props>(), {
     placeholder: "Choose a tag...",
     options: () => [] as SelectOption[],
-    modelValue: () => [],
 });
 
 const emit = defineEmits<{
-    (e: "update:modelValue", value: string[]): void;
+    (e: "update:values", values: string[]): void;
 }>();
 
-const values = computed<string[]>({
+const wrappedValues = computed<string[]>({
     get() {
-        return props.modelValue;
+        return props.values;
     },
-    set(value: string[]) {
-        emit("update:modelValue", value);
+    set(values: string[]) {
+        emit("update:values", values);
     },
 });
 
@@ -33,12 +31,14 @@ const availableOptions = computed<SelectOption[]>(() => {
         return [];
     }
 
-    if (values.value.length === 0) {
+    if (wrappedValues.value.length === 0) {
         return props.options;
     }
 
     return props.options.filter(
-        (opt) => values.value.indexOf(opt.value) === -1
+        (opt) =>
+            opt.value !== null &&
+            wrappedValues.value.indexOf(opt.value.toString()) === -1
     );
 });
 
@@ -55,7 +55,7 @@ function getValueText(value: unknown): string | SelectOption | undefined {
         <!-- Prop `add-on-change` is needed to enable adding tags via the `change` event -->
         <b-form-tags
             id="tags-component-select"
-            v-model="values"
+            v-model="wrappedValues"
             size="lg"
             class="mb-2"
             add-on-change

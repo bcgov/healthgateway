@@ -6,6 +6,7 @@ import { computed, ref } from "vue";
 import { useStore } from "vue-composition-wrapper";
 
 import MessageModalComponent from "@/components/modal/MessageModalComponent.vue";
+import EntryCardTimelineComponent from "@/components/timeline/entryCard/EntrycardTimelineComponent.vue";
 import { EntryType, entryTypeMap } from "@/constants/entryType";
 import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import { DateWrapper } from "@/models/dateWrapper";
@@ -15,8 +16,6 @@ import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ILaboratoryService, ILogger } from "@/services/interfaces";
 import SnowPlow from "@/utility/snowPlow";
-
-import EntryCardTimelineComponent from "./EntrycardTimelineComponent.vue";
 
 library.add(faDownload, faInfoCircle);
 
@@ -40,7 +39,7 @@ const laboratoryService = container.get<ILaboratoryService>(
 );
 
 const isLoadingDocument = ref(false);
-const messageModal = ref<MessageModalComponent>();
+const messageModal = ref<InstanceType<typeof MessageModalComponent>>();
 
 const entryIcon = computed<string | undefined>(
     () => entryTypeMap.get(EntryType.LabResult)?.icon

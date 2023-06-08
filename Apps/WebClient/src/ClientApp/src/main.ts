@@ -30,7 +30,6 @@ import {
 import Vue from "vue";
 import VueContentPlaceholders from "vue-content-placeholders";
 import VueRouter from "vue-router";
-import Vuelidate from "vuelidate";
 import { Store } from "vuex";
 
 import HgButtonComponent from "@/components/shared/HgButtonComponent.vue";
@@ -110,7 +109,6 @@ Vue.component("PageTitle", PageTitleComponent);
 Vue.component("StatusLabel", StatusLabelComponent);
 
 Vue.use(VueRouter);
-Vue.use(Vuelidate);
 Vue.use(VueContentPlaceholders);
 
 const httpDelegate = container.get<IHttpDelegate>(

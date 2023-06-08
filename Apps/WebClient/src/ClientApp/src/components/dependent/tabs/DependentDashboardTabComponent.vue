@@ -27,8 +27,10 @@ const props = defineProps<Props>();
 const router = useRouter();
 const store = useStore();
 
-const sensitiveDocumentDownloadModal = ref<MessageModalComponent>();
-const vaccineRecordResultModal = ref<MessageModalComponent>();
+const sensitiveDocumentDownloadModal =
+    ref<InstanceType<typeof MessageModalComponent>>();
+const vaccineRecordResultModal =
+    ref<InstanceType<typeof MessageModalComponent>>();
 
 const config = computed<WebClientConfiguration>(
     () => store.getters["config/webClient"]

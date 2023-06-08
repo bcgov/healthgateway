@@ -4,7 +4,6 @@ import { Component, computed, ref } from "vue";
 import { useStore } from "vue-composition-wrapper";
 
 import DatePickerComponent from "@/components/DatePickerComponent.vue";
-import { SelectOption } from "@/components/interfaces/MultiSelectComponent";
 import LoadingComponent from "@/components/LoadingComponent.vue";
 import MessageModalComponent from "@/components/modal/MessageModalComponent.vue";
 import MultiSelectComponent from "@/components/MultiSelectComponent.vue";
@@ -29,6 +28,7 @@ import ReportFilter, { ReportFilterBuilder } from "@/models/reportFilter";
 import ReportHeader from "@/models/reportHeader";
 import { ReportFormatType } from "@/models/reportRequest";
 import RequestResult from "@/models/requestResult";
+import SelectOption from "@/models/selectOption";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ILogger } from "@/services/interfaces";
@@ -62,15 +62,15 @@ const isGeneratingReport = ref(false);
 const reportFormatType = ref(ReportFormatType.PDF);
 const selectedEntryType = ref<EntryType | "">("");
 const reportTypeOptions = ref([{ value: "", text: "Select" }]);
-const selectedStartDate = ref<StringISODate | null>(null);
-const selectedEndDate = ref<StringISODate | null>(null);
+const selectedStartDate = ref<StringISODate>("");
+const selectedEndDate = ref<StringISODate>("");
 const selectedMedicationOptions = ref<string[]>([]);
 const hasRecords = ref(false);
 const reportFilter = ref<ReportFilter>(ReportFilterBuilder.create().build());
 const isReportFilterStartDateValidDate = ref(true);
 const isReportFilterEndDateValidDate = ref(true);
 
-const messageModal = ref<MessageModalComponent>();
+const messageModal = ref<InstanceType<typeof MessageModalComponent>>();
 const reportComponent = ref<{
     generateReport: (
         reportFormatType: ReportFormatType,
@@ -185,8 +185,8 @@ function formatDate(date: string): string {
 }
 
 function clearFilterDates(): void {
-    selectedStartDate.value = null;
-    selectedEndDate.value = null;
+    selectedStartDate.value = "";
+    selectedEndDate.value = "";
     updateFilter();
 }
 
@@ -199,12 +199,8 @@ function clearFilterMedication(medicationName: string): void {
 }
 
 function cancelFilter(): void {
-    selectedStartDate.value = convertEmptyStringDateToNull(
-        reportFilter.value.startDate
-    );
-    selectedEndDate.value = convertEmptyStringDateToNull(
-        reportFilter.value.endDate
-    );
+    selectedStartDate.value = reportFilter.value.startDate || "";
+    selectedEndDate.value = reportFilter.value.endDate || "";
     selectedMedicationOptions.value = reportFilter.value.medications;
 }
 
@@ -454,10 +450,13 @@ for (const [entryType] of reportComponentMap) {
                         <label for="start-date">From</label>
                         <DatePickerComponent
                             id="start-date"
-                            v-model="selectedStartDate"
+                            :value="selectedStartDate"
                             data-testid="startDateInput"
                             @is-date-valid="
                                 isReportFilterStartDateValidDate = $event
+                            "
+                            @update:value="
+                                (value) => (selectedStartDate = value)
                             "
                         />
                     </b-col>
@@ -465,11 +464,12 @@ for (const [entryType] of reportComponentMap) {
                         <label for="end-date">To</label>
                         <DatePickerComponent
                             id="end-date"
-                            v-model="selectedEndDate"
+                            :value="selectedEndDate"
                             data-testid="endDateInput"
                             @is-date-valid="
                                 isReportFilterEndDateValidDate = $event
                             "
+                            @update:value="(value) => (selectedEndDate = value)"
                         />
                     </b-col>
                 </b-row>
@@ -479,10 +479,13 @@ for (const [entryType] of reportComponentMap) {
                     </div>
                     <div>Medications:</div>
                     <MultiSelectComponent
-                        v-model="selectedMedicationOptions"
+                        :values="selectedMedicationOptions"
                         placeholder="Choose a medication"
                         :options="medicationOptions"
                         data-testid="medicationExclusionFilter"
+                        @update:values="
+                            (values) => (selectedMedicationOptions = values)
+                        "
                     />
                 </div>
                 <b-row align-h="end" class="pt-4">

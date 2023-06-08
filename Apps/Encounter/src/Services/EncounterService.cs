@@ -22,11 +22,11 @@ namespace HealthGateway.Encounter.Services
     using System.Net;
     using System.Threading.Tasks;
     using AutoMapper;
+    using HealthGateway.AccountDataAccess.Patient;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ErrorHandling;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.ErrorHandling;
-    using HealthGateway.Common.Models;
     using HealthGateway.Common.Models.ODR;
     using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Common.Services;
@@ -37,6 +37,7 @@ namespace HealthGateway.Encounter.Services
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
+    using PatientModel = HealthGateway.Common.Models.PatientModel;
 
     /// <inheritdoc/>
     public class EncounterService : IEncounterService
@@ -48,6 +49,7 @@ namespace HealthGateway.Encounter.Services
         private readonly IMspVisitDelegate mspVisitDelegate;
         private readonly IPatientService patientService;
         private readonly PhsaConfig phsaConfig;
+        private readonly IPatientRepository patientRepository;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="EncounterService"/> class.
@@ -57,6 +59,7 @@ namespace HealthGateway.Encounter.Services
         /// <param name="patientService">The injected patient registry provider.</param>
         /// <param name="mspVisitDelegate">The MSPVisit delegate.</param>
         /// <param name="hospitalVisitDelegate">The injected hospital visit provider.</param>
+        /// <param name="patientRepository">The injected patient repository provider.</param>
         /// <param name="configuration">The injected configuration provider.</param>
         /// <param name="autoMapper">The injected automapper provider.</param>
         public EncounterService(
@@ -65,6 +68,7 @@ namespace HealthGateway.Encounter.Services
             IPatientService patientService,
             IMspVisitDelegate mspVisitDelegate,
             IHospitalVisitDelegate hospitalVisitDelegate,
+            IPatientRepository patientRepository,
             IConfiguration configuration,
             IMapper autoMapper)
         {
@@ -73,6 +77,7 @@ namespace HealthGateway.Encounter.Services
             this.patientService = patientService;
             this.mspVisitDelegate = mspVisitDelegate;
             this.hospitalVisitDelegate = hospitalVisitDelegate;
+            this.patientRepository = patientRepository;
             this.autoMapper = autoMapper;
             this.phsaConfig = new PhsaConfig();
             configuration.Bind(PhsaConfig.ConfigurationSectionKey, this.phsaConfig);
@@ -89,6 +94,14 @@ namespace HealthGateway.Encounter.Services
                 this.logger.LogTrace("User hdid: {Hdid}", hdid);
 
                 RequestResult<IEnumerable<EncounterModel>> result = new();
+
+                if (!await this.patientRepository.CanAccessDataSourceAsync(hdid, DataSource.HealthVisit).ConfigureAwait(true))
+                {
+                    result.ResultStatus = ResultType.Success;
+                    result.ResourcePayload = Enumerable.Empty<EncounterModel>();
+                    result.TotalResultCount = 0;
+                    return result;
+                }
 
                 // Retrieve the phn
                 RequestResult<PatientModel> patientResult = await this.patientService.GetPatient(hdid).ConfigureAwait(true);
@@ -145,6 +158,15 @@ namespace HealthGateway.Encounter.Services
                     ResourcePayload = new(),
                     TotalResultCount = 0,
                 };
+
+                if (!await this.patientRepository.CanAccessDataSourceAsync(hdid, DataSource.HospitalVisit).ConfigureAwait(true))
+                {
+                    result.ResultStatus = ResultType.Success;
+                    result.ResourcePayload.HospitalVisits = Enumerable.Empty<HospitalVisitModel>();
+                    result.ResourcePayload.Loaded = true;
+                    result.ResourcePayload.Queued = false;
+                    return result;
+                }
 
                 RequestResult<PhsaResult<IEnumerable<HospitalVisit>>> hospitalVisitResult = await this.hospitalVisitDelegate.GetHospitalVisitsAsync(hdid).ConfigureAwait(true);
 

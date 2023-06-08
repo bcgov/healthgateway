@@ -26,7 +26,6 @@ import { computed, ref } from "vue";
 import { useStore } from "vue-composition-wrapper";
 
 import { EntryType, entryTypeMap } from "@/constants/entryType";
-import { RegistrationStatus } from "@/constants/registrationStatus";
 import type { WebClientConfiguration } from "@/models/configData";
 import ConfigUtil from "@/utility/configUtil";
 
@@ -122,9 +121,6 @@ const tiles = computed(() => {
     return tiles;
 });
 const activeTiles = computed(() => tiles.value.filter((tile) => tile.active));
-const isOpenRegistration = computed(
-    () => config.value.registrationStatus === RegistrationStatus.Open
-);
 
 function selectPreviewDevice(previewDevice: PreviewDevice): void {
     selectedPreviewDevice.value = previewDevice;
@@ -185,7 +181,7 @@ function selectPreviewDevice(previewDevice: PreviewDevice): void {
                                 <span>Log in with BC Services Card</span>
                             </hg-button>
                         </router-link>
-                        <div v-if="isOpenRegistration" class="mt-3">
+                        <div class="mt-3">
                             <span class="mr-2">Need an account?</span>
                             <router-link
                                 id="btnStart"

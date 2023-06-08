@@ -3,11 +3,10 @@ import { library } from "@fortawesome/fontawesome-svg-core";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { computed } from "vue";
 
+import EntryCardTimelineComponent from "@/components/timeline/entryCard/EntrycardTimelineComponent.vue";
 import { EntryType, entryTypeMap } from "@/constants/entryType";
 import { DateWrapper } from "@/models/dateWrapper";
 import HospitalVisitTimelineEntry from "@/models/hospitalVisitTimelineEntry";
-
-import EntryCardTimelineComponent from "./EntrycardTimelineComponent.vue";
 
 library.add(faInfoCircle);
 

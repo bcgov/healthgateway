@@ -1,97 +1,58 @@
-<script lang="ts">
+<script setup lang="ts">
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faUserPlus } from "@fortawesome/free-solid-svg-icons";
-import Vue from "vue";
-import { Component, Ref } from "vue-property-decorator";
-import { Action, Getter } from "vuex-class";
+import { computed, ref } from "vue";
+import { useStore } from "vue-composition-wrapper";
 
 import DependentCardComponent from "@/components/DependentCardComponent.vue";
 import LoadingComponent from "@/components/LoadingComponent.vue";
 import NewDependentComponent from "@/components/modal/NewDependentComponent.vue";
 import BreadcrumbComponent from "@/components/navmenu/BreadcrumbComponent.vue";
-import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import BreadcrumbItem from "@/models/breadcrumbItem";
 import type { WebClientConfiguration } from "@/models/configData";
 import type { Dependent } from "@/models/dependent";
 import User from "@/models/user";
-import container from "@/plugins/container";
-import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import { ILogger } from "@/services/interfaces";
 
 library.add(faUserPlus);
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const options: any = {
-    components: {
-        BreadcrumbComponent,
-        LoadingComponent,
-        DependentCardComponent,
-        NewDependentComponent,
+const breadcrumbItems: BreadcrumbItem[] = [
+    {
+        text: "Dependents",
+        to: "/dependents",
+        active: true,
+        dataTestId: "breadcrumb-dependents",
     },
-};
+];
 
-@Component(options)
-export default class DependentsView extends Vue {
-    @Action("retrieveDependents", { namespace: "dependent" })
-    retrieveDependents!: (params: {
-        hdid: string;
-        bypassCache: boolean;
-    }) => Promise<void>;
+const store = useStore();
 
-    @Action("addError", { namespace: "errorBanner" })
-    addError!: (params: {
-        errorType: ErrorType;
-        source: ErrorSourceType;
-        traceId: string | undefined;
-    }) => void;
+const newDependentModal = ref<InstanceType<typeof NewDependentComponent>>();
 
-    @Action("setTooManyRequestsWarning", { namespace: "errorBanner" })
-    setTooManyRequestsWarning!: (params: { key: string }) => void;
+const webClientConfig = computed<WebClientConfiguration>(
+    () => store.getters["config/webClient"]
+);
+const dependents = computed<Dependent[]>(
+    () => store.getters["dependent/dependents"]
+);
+const dependentsAreLoading = computed<boolean>(
+    () => store.getters["dependent/dependentsAreLoading"]
+);
+const user = computed<User>(() => store.getters["user/user"]);
 
-    @Getter("webClient", { namespace: "config" })
-    webClientConfig!: WebClientConfiguration;
-
-    @Getter("dependents", { namespace: "dependent" })
-    dependents!: Dependent[];
-
-    @Getter("dependentsAreLoading", { namespace: "dependent" })
-    dependentsAreLoading!: boolean;
-
-    @Getter("user", { namespace: "user" })
-    user!: User;
-
-    @Ref("newDependentModal")
-    readonly newDependentModal!: NewDependentComponent;
-
-    private logger!: ILogger;
-
-    private breadcrumbItems: BreadcrumbItem[] = [
-        {
-            text: "Dependents",
-            to: "/dependents",
-            active: true,
-            dataTestId: "breadcrumb-dependents",
-        },
-    ];
-
-    private created(): void {
-        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-        this.retrieveDependents({ hdid: this.user.hdid, bypassCache: false });
-    }
-
-    private showModal(): void {
-        this.newDependentModal.showModal();
-    }
-
-    private hideModal(): void {
-        this.newDependentModal.hideModal();
-    }
-
-    private refreshDependents(): void {
-        this.retrieveDependents({ hdid: this.user.hdid, bypassCache: true });
-    }
+function retrieveDependents(hdid: string, bypassCache: boolean): Promise<void> {
+    return store.dispatch("dependent/retrieveDependents", {
+        hdid,
+        bypassCache,
+    });
 }
+
+function refreshDependents(): void {
+    retrieveDependents(user.value.hdid, true);
+}
+
+retrieveDependents(user.value.hdid, false);
 </script>
+
 <template>
     <div>
         <BreadcrumbComponent :items="breadcrumbItems" />
@@ -102,7 +63,7 @@ export default class DependentsView extends Vue {
                 data-testid="addNewDependentBtn"
                 class="float-right"
                 variant="secondary"
-                @click="showModal()"
+                @click="newDependentModal?.showModal()"
             >
                 <hg-icon icon="user-plus" size="medium" class="mr-2" />
                 <span>Add</span>
@@ -123,7 +84,6 @@ export default class DependentsView extends Vue {
         />
         <NewDependentComponent
             ref="newDependentModal"
-            @show="showModal"
             @handle-submit="refreshDependents"
         />
     </div>

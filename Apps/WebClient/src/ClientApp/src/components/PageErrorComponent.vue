@@ -1,15 +1,9 @@
-<script lang="ts">
-import Vue from "vue";
-import { Component, Prop } from "vue-property-decorator";
-
-@Component
-export default class PageErrorComponent extends Vue {
-    @Prop({ required: true })
-    title!: string;
-
-    @Prop({ required: false })
+<script setup lang="ts">
+interface Props {
+    title: string;
     subtitle?: string;
 }
+defineProps<Props>();
 </script>
 
 <template>

@@ -23,7 +23,6 @@ namespace HealthGateway.LaboratoryTests.Delegates
     using System.Threading.Tasks;
     using AutoMapper;
     using DeepEqual.Syntax;
-    using HealthGateway.Common.Constants.PHSA;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Models.PHSA;
@@ -33,7 +32,6 @@ namespace HealthGateway.LaboratoryTests.Delegates
     using HealthGateway.Laboratory.Models;
     using HealthGateway.Laboratory.Models.PHSA;
     using HealthGateway.LaboratoryTests.Utils;
-    using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using Moq;
@@ -47,12 +45,9 @@ namespace HealthGateway.LaboratoryTests.Delegates
     {
         private const string AccessToken = "access_token";
         private const string Hdid = "DEV4FPEGCXG2NB5K2USBL52S66SC3GOUHWRP3GTXR2BTY5999999";
-        private const string Phn = "9735353315";
         private const string ReportId = "1234567890";
         private readonly IConfiguration configuration;
         private readonly IMapper autoMapper = MapperUtil.InitializeAutoMapper();
-        private readonly DateOnly dateOfBirth = new(1990, 01, 05);
-        private readonly DateOnly collectionDate = new(2021, 01, 05);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LaboratoryDelegateTests"/> class.
@@ -91,8 +86,7 @@ namespace HealthGateway.LaboratoryTests.Delegates
             ILaboratoryDelegate labDelegate = new RestLaboratoryDelegate(
                 mockLogger.Object,
                 mockLaboratoryApi.Object,
-                this.configuration,
-                new Mock<IHttpContextAccessor>().Object);
+                this.configuration);
 
             // Act
             RequestResult<PhsaResult<List<PhsaCovid19Order>>> actualResult = await labDelegate.GetCovid19Orders(Hdid, AccessToken).ConfigureAwait(true);
@@ -120,8 +114,7 @@ namespace HealthGateway.LaboratoryTests.Delegates
             ILaboratoryDelegate labDelegate = new RestLaboratoryDelegate(
                 mockLogger.Object,
                 mockLaboratoryApi.Object,
-                this.configuration,
-                new Mock<IHttpContextAccessor>().Object);
+                this.configuration);
 
             // Act
             RequestResult<PhsaResult<List<PhsaCovid19Order>>> actualResult = await labDelegate.GetCovid19Orders(Hdid, AccessToken).ConfigureAwait(true);
@@ -150,8 +143,7 @@ namespace HealthGateway.LaboratoryTests.Delegates
             ILaboratoryDelegate labDelegate = new RestLaboratoryDelegate(
                 mockLogger.Object,
                 mockLaboratoryApi.Object,
-                this.configuration,
-                new Mock<IHttpContextAccessor>().Object);
+                this.configuration);
 
             // Act
             RequestResult<PhsaResult<List<PhsaCovid19Order>>> actualResult = await labDelegate.GetCovid19Orders(Hdid, AccessToken).ConfigureAwait(true);
@@ -179,8 +171,7 @@ namespace HealthGateway.LaboratoryTests.Delegates
             ILaboratoryDelegate labDelegate = new RestLaboratoryDelegate(
                 mockLogger.Object,
                 mockLaboratoryApi.Object,
-                this.configuration,
-                new Mock<IHttpContextAccessor>().Object);
+                this.configuration);
 
             // Act
             RequestResult<PhsaResult<List<PhsaCovid19Order>>> actualResult = await labDelegate.GetCovid19Orders(Hdid, AccessToken).ConfigureAwait(true);
@@ -212,8 +203,7 @@ namespace HealthGateway.LaboratoryTests.Delegates
             ILaboratoryDelegate labDelegate = new RestLaboratoryDelegate(
                 mockLogger.Object,
                 mockLaboratoryApi.Object,
-                this.configuration,
-                new Mock<IHttpContextAccessor>().Object);
+                this.configuration);
 
             // Act
             RequestResult<LaboratoryReport> actualResult = await labDelegate.GetLabReport(ReportId, Hdid, AccessToken, true).ConfigureAwait(true);
@@ -240,8 +230,7 @@ namespace HealthGateway.LaboratoryTests.Delegates
             ILaboratoryDelegate labDelegate = new RestLaboratoryDelegate(
                 mockLogger.Object,
                 mockLaboratoryApi.Object,
-                this.configuration,
-                new Mock<IHttpContextAccessor>().Object);
+                this.configuration);
 
             // Act
             RequestResult<LaboratoryReport> actualResult = await labDelegate.GetLabReport(ReportId, Hdid, AccessToken, true).ConfigureAwait(true);
@@ -269,8 +258,7 @@ namespace HealthGateway.LaboratoryTests.Delegates
             ILaboratoryDelegate labDelegate = new RestLaboratoryDelegate(
                 mockLogger.Object,
                 mockLaboratoryApi.Object,
-                this.configuration,
-                new Mock<IHttpContextAccessor>().Object);
+                this.configuration);
 
             // Act
             RequestResult<LaboratoryReport> actualResult = await labDelegate.GetLabReport(ReportId, Hdid, AccessToken, true).ConfigureAwait(true);
@@ -298,8 +286,7 @@ namespace HealthGateway.LaboratoryTests.Delegates
             ILaboratoryDelegate labDelegate = new RestLaboratoryDelegate(
                 mockLogger.Object,
                 mockLaboratoryApi.Object,
-                this.configuration,
-                new Mock<IHttpContextAccessor>().Object);
+                this.configuration);
 
             // Act
             RequestResult<LaboratoryReport> actualResult = await labDelegate.GetLabReport(ReportId, Hdid, AccessToken, true).ConfigureAwait(true);
@@ -332,8 +319,7 @@ namespace HealthGateway.LaboratoryTests.Delegates
             ILaboratoryDelegate labDelegate = new RestLaboratoryDelegate(
                 mockLogger.Object,
                 mockLaboratoryApi.Object,
-                this.configuration,
-                new Mock<IHttpContextAccessor>().Object);
+                this.configuration);
 
             // Act
             RequestResult<LaboratoryReport> actualResult = await labDelegate.GetLabReport(ReportId, Hdid, AccessToken, false).ConfigureAwait(true);
@@ -361,8 +347,7 @@ namespace HealthGateway.LaboratoryTests.Delegates
             ILaboratoryDelegate labDelegate = new RestLaboratoryDelegate(
                 mockLogger.Object,
                 mockLaboratoryApi.Object,
-                this.configuration,
-                new Mock<IHttpContextAccessor>().Object);
+                this.configuration);
 
             // Act
             RequestResult<LaboratoryReport> actualResult = await labDelegate.GetLabReport(ReportId, Hdid, AccessToken, false).ConfigureAwait(true);
@@ -390,8 +375,7 @@ namespace HealthGateway.LaboratoryTests.Delegates
             ILaboratoryDelegate labDelegate = new RestLaboratoryDelegate(
                 mockLogger.Object,
                 mockLaboratoryApi.Object,
-                this.configuration,
-                new Mock<IHttpContextAccessor>().Object);
+                this.configuration);
 
             // Act
             RequestResult<LaboratoryReport> actualResult = await labDelegate.GetLabReport(ReportId, Hdid, AccessToken, false).ConfigureAwait(true);
@@ -419,134 +403,10 @@ namespace HealthGateway.LaboratoryTests.Delegates
             ILaboratoryDelegate labDelegate = new RestLaboratoryDelegate(
                 mockLogger.Object,
                 mockLaboratoryApi.Object,
-                this.configuration,
-                new Mock<IHttpContextAccessor>().Object);
+                this.configuration);
 
             // Act
             RequestResult<LaboratoryReport> actualResult = await labDelegate.GetLabReport(ReportId, Hdid, AccessToken, false).ConfigureAwait(true);
-
-            // Verify
-            Assert.Equal(ResultType.Error, actualResult.ResultStatus);
-            Assert.Equal(expectedMessage, actualResult.ResultError!.ResultMessage);
-        }
-
-        /// <summary>
-        /// GetPublicTestResults.
-        /// </summary>
-        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
-        public async Task ShouldGetPublicTestResults()
-        {
-            // Arrange
-            PhsaResult<IEnumerable<CovidTestResult>> response = new()
-            {
-                LoadState = new()
-                {
-                    RefreshInProgress = false,
-                    BackOffMilliseconds = 0,
-                },
-                Result = new List<CovidTestResult>
-                {
-                    new()
-                    {
-                        PatientDisplayName = "SCOTT R",
-                        TestType = "Saline Gargle",
-                        TestName = "COVID-19 Virus PCR (FH)",
-                        ReportId = "21-35428162",
-                        Lab = "Fha",
-                        TestStatus = "Final",
-                        TestOutcome = "Negative",
-                        ResultTitle = "Negative",
-                        ResultDescription = new List<string>
-                        {
-                            "Your test result for COVID-19 is Negative. If you develop new or worsening symptoms that are related to COVID-19, please get re-tested or call 811 for further information.",
-                            "If you have been identified by Public Health as a close contact, please follow their guidance.",
-                            "For more details refer to ",
-                        },
-                        ResultLink = "http://www.bccdc.ca/results",
-                        CollectionDateTime = DateTime.UtcNow,
-                        ResultDateTime = DateTime.UtcNow,
-                        StatusIndicator = nameof(LabIndicatorType.Found),
-                    },
-                },
-            };
-
-            Mock<ILaboratoryApi> mockLaboratoryApi = new();
-            mockLaboratoryApi.Setup(s => s.GetPublicCovidLabSummaryAsync(It.IsAny<Dictionary<string, string?>>(), It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(response);
-
-            Mock<ILogger<RestLaboratoryDelegate>> mockLogger = new();
-
-            ILaboratoryDelegate labDelegate = new RestLaboratoryDelegate(
-                mockLogger.Object,
-                mockLaboratoryApi.Object,
-                this.configuration,
-                new Mock<IHttpContextAccessor>().Object);
-
-            // Act
-            RequestResult<PhsaResult<IEnumerable<CovidTestResult>>> actualResult =
-                await labDelegate.GetPublicTestResults(AccessToken, Phn, this.dateOfBirth, this.collectionDate).ConfigureAwait(true);
-
-            // Verify
-            Assert.Equal(ResultType.Success, actualResult.ResultStatus);
-            Assert.NotNull(actualResult.ResourcePayload);
-        }
-
-        /// <summary>
-        /// GetPublicTestResults handles ProblemDetailsException.
-        /// </summary>
-        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
-        public async Task GetPublicTestResultsHandlesProblemDetailsException()
-        {
-            string expectedMessage = $"Status: {HttpStatusCode.Unauthorized}. Error while retrieving Covid19 Test Results";
-
-            // Arrange
-            ApiException mockException = MockRefitExceptionHelper.CreateApiException(HttpStatusCode.Unauthorized, HttpMethod.Post);
-            Mock<ILaboratoryApi> mockLaboratoryApi = new();
-            mockLaboratoryApi.Setup(s => s.GetPublicCovidLabSummaryAsync(It.IsAny<Dictionary<string, string?>>(), It.IsAny<string>(), It.IsAny<string>())).ThrowsAsync(mockException);
-
-            Mock<ILogger<RestLaboratoryDelegate>> mockLogger = new();
-
-            ILaboratoryDelegate labDelegate = new RestLaboratoryDelegate(
-                mockLogger.Object,
-                mockLaboratoryApi.Object,
-                this.configuration,
-                new Mock<IHttpContextAccessor>().Object);
-
-            // Act
-            RequestResult<PhsaResult<IEnumerable<CovidTestResult>>> actualResult =
-                await labDelegate.GetPublicTestResults(AccessToken, Phn, this.dateOfBirth, this.collectionDate).ConfigureAwait(true);
-
-            // Verify
-            Assert.Equal(ResultType.Error, actualResult.ResultStatus);
-            Assert.Equal(expectedMessage, actualResult.ResultError!.ResultMessage);
-        }
-
-        /// <summary>
-        /// GetPublicTestResults handles HttpRequestException.
-        /// </summary>
-        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
-        public async Task GetPublicTestResultsHandlesHttpRequestException()
-        {
-            string expectedMessage = $"Status: {HttpStatusCode.InternalServerError}. Error while retrieving Covid19 Test Results";
-
-            // Arrange
-            HttpRequestException mockException = MockRefitExceptionHelper.CreateHttpRequestException("Internal Server Error", HttpStatusCode.InternalServerError);
-            Mock<ILaboratoryApi> mockLaboratoryApi = new();
-            mockLaboratoryApi.Setup(s => s.GetPublicCovidLabSummaryAsync(It.IsAny<Dictionary<string, string?>>(), It.IsAny<string>(), It.IsAny<string>())).ThrowsAsync(mockException);
-
-            Mock<ILogger<RestLaboratoryDelegate>> mockLogger = new();
-
-            ILaboratoryDelegate labDelegate = new RestLaboratoryDelegate(
-                mockLogger.Object,
-                mockLaboratoryApi.Object,
-                this.configuration,
-                new Mock<IHttpContextAccessor>().Object);
-
-            // Act
-            RequestResult<PhsaResult<IEnumerable<CovidTestResult>>> actualResult =
-                await labDelegate.GetPublicTestResults(AccessToken, Phn, this.dateOfBirth, this.collectionDate).ConfigureAwait(true);
 
             // Verify
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
@@ -578,8 +438,7 @@ namespace HealthGateway.LaboratoryTests.Delegates
             ILaboratoryDelegate labDelegate = new RestLaboratoryDelegate(
                 mockLogger.Object,
                 mockLaboratoryApi.Object,
-                this.configuration,
-                new Mock<IHttpContextAccessor>().Object);
+                this.configuration);
 
             // Act
             RequestResult<PhsaResult<PhsaLaboratorySummary>> actualResult = await labDelegate.GetLaboratorySummary(Hdid, AccessToken).ConfigureAwait(true);
@@ -605,8 +464,7 @@ namespace HealthGateway.LaboratoryTests.Delegates
             ILaboratoryDelegate labDelegate = new RestLaboratoryDelegate(
                 mockLogger.Object,
                 mockLaboratoryApi.Object,
-                this.configuration,
-                new Mock<IHttpContextAccessor>().Object);
+                this.configuration);
 
             // Act
             RequestResult<PhsaResult<PhsaLaboratorySummary>> actualResult = await labDelegate.GetLaboratorySummary(Hdid, AccessToken).ConfigureAwait(true);
@@ -635,8 +493,7 @@ namespace HealthGateway.LaboratoryTests.Delegates
             ILaboratoryDelegate labDelegate = new RestLaboratoryDelegate(
                 mockLogger.Object,
                 mockLaboratoryApi.Object,
-                this.configuration,
-                new Mock<IHttpContextAccessor>().Object);
+                this.configuration);
 
             // Act
             RequestResult<PhsaResult<PhsaLaboratorySummary>> actualResult = await labDelegate.GetLaboratorySummary(Hdid, AccessToken).ConfigureAwait(true);
@@ -664,8 +521,7 @@ namespace HealthGateway.LaboratoryTests.Delegates
             ILaboratoryDelegate labDelegate = new RestLaboratoryDelegate(
                 mockLogger.Object,
                 mockLaboratoryApi.Object,
-                this.configuration,
-                new Mock<IHttpContextAccessor>().Object);
+                this.configuration);
 
             // Act
             RequestResult<PhsaResult<PhsaLaboratorySummary>> actualResult = await labDelegate.GetLaboratorySummary(Hdid, AccessToken).ConfigureAwait(true);

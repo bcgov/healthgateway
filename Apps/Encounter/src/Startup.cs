@@ -16,6 +16,7 @@
 namespace HealthGateway.Encounter
 {
     using System.Diagnostics.CodeAnalysis;
+    using HealthGateway.AccountDataAccess;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.AspNetConfiguration;
     using HealthGateway.Common.AspNetConfiguration.Modules;
@@ -69,6 +70,12 @@ namespace HealthGateway.Encounter
             PhsaConfig phsaConfig = new();
             this.startupConfig.Configuration.Bind(PhsaConfig.ConfigurationSectionKey, phsaConfig);
 
+            PhsaConfigV2 phsaConfigV2 = new();
+            this.startupConfig.Configuration.Bind(PhsaConfigV2.ConfigurationSectionKey, phsaConfigV2);
+
+            // Access patient repository
+            services.AddPatientRepositoryConfiguration(new AccountDataAccessConfiguration(phsaConfigV2.BaseUrl));
+
             // Add auto mapper
             services.AddAutoMapper(typeof(Startup));
 
@@ -83,7 +90,6 @@ namespace HealthGateway.Encounter
             // Add API Clients
             services.AddRefitClient<IHospitalVisitApi>()
                 .ConfigureHttpClient(c => c.BaseAddress = phsaConfig.BaseUrl);
-
             OdrConfiguration.AddOdrRefitClient<IMspVisitApi>(services, this.startupConfig.Configuration);
         }
 

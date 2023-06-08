@@ -38,7 +38,6 @@ interface LabTestRow {
 }
 
 const headerClass = "laboratory-test-report-table-header";
-
 const fields: ReportField[] = [
     {
         key: "date",
@@ -68,23 +67,17 @@ const reportService = container.get<IReportService>(
 );
 const store = useStore();
 
-const laboratoryOrders = computed<(hdid: string) => LaboratoryOrder[]>(
-    () => store.getters["laboratory/laboratoryOrders"]
+const laboratoryOrders = computed<LaboratoryOrder[]>(() =>
+    store.getters["laboratory/laboratoryOrders"](props.hdid)
 );
-
-const laboratoryOrdersAreLoading = computed<(hdid: string) => boolean>(
-    () => store.getters["laboratory/laboratoryOrdersAreLoading"]
+const laboratoryOrdersAreLoading = computed<boolean>(() =>
+    store.getters["laboratory/laboratoryOrdersAreLoading"](props.hdid)
 );
 
 const isEmpty = computed(() => visibleRecords.value.length === 0);
 
-const isLaboratoryLoading = computed(() =>
-    laboratoryOrdersAreLoading.value(props.hdid)
-);
-
 const visibleRecords = computed(() =>
-    laboratoryOrders
-        .value(props.hdid)
+    laboratoryOrders.value
         .filter((record) => props.filter.allowsDate(record.timelineDateTime))
         .sort((a, b) => {
             const firstDate = new DateWrapper(a.timelineDateTime);
@@ -134,8 +127,8 @@ function generateReport(
     });
 }
 
-watch(isLaboratoryLoading, () => {
-    emit("on-is-loading-changed", isLaboratoryLoading.value);
+watch(laboratoryOrdersAreLoading, () => {
+    emit("on-is-loading-changed", laboratoryOrdersAreLoading.value);
 });
 
 watch(isEmpty, () => {
@@ -154,14 +147,14 @@ retrieveLaboratoryOrders(props.hdid).catch((err) =>
 <template>
     <div>
         <section>
-            <b-row v-if="isEmpty && !isLaboratoryLoading">
+            <b-row v-if="isEmpty && !laboratoryOrdersAreLoading">
                 <b-col>No records found.</b-col>
             </b-row>
             <b-table
                 v-else-if="!isDependent"
                 :striped="true"
                 :fixed="true"
-                :busy="isLaboratoryLoading"
+                :busy="laboratoryOrdersAreLoading"
                 :items="items"
                 :fields="fields"
                 data-testid="laboratory-report-table"

@@ -18,12 +18,12 @@ namespace HealthGateway.GatewayApiTests.Services.Test.Mock
     using System;
     using System.Collections.Generic;
     using AutoMapper;
+    using HealthGateway.AccountDataAccess.Patient;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.CacheProviders;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Delegates;
-    using HealthGateway.Common.Models;
     using HealthGateway.Common.Services;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
@@ -34,6 +34,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test.Mock
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using Moq;
+    using PatientModel = HealthGateway.Common.Models.PatientModel;
 
     /// <summary>
     /// UserProfileServiceTestMock class mock the UserProfileService.
@@ -71,6 +72,8 @@ namespace HealthGateway.GatewayApiTests.Services.Test.Mock
                 LegalText = "Mock Terms of Service",
             });
 
+        private Mock<IPatientRepository> patientRepositoryMock = new();
+
         /// <summary>
         /// Initializes a new instance of the <see cref="UserProfileServiceMock"/> class.
         /// </summary>
@@ -104,7 +107,8 @@ namespace HealthGateway.GatewayApiTests.Services.Test.Mock
                 this.autoMapper,
                 this.authenticationDelegateMock.Object,
                 this.applicationSettingsDelegateMock.Object,
-                this.cacheProviderMock.Object);
+                this.cacheProviderMock.Object,
+                this.patientRepositoryMock.Object);
         }
 
         /// <summary>
@@ -123,6 +127,18 @@ namespace HealthGateway.GatewayApiTests.Services.Test.Mock
                         It.IsAny<Func<T>>(),
                         It.IsAny<TimeSpan?>()))
                 .Returns(returnValue);
+            return this;
+        }
+
+        /// <summary>
+        /// Setup the <see cref="PatientRepositoryMock"/> that will be used for by the UserProfileService.
+        /// </summary>
+        /// <param name="hdid">User profile hdid to query and returned.</param>
+        /// <param name="dataSources">The mocked list of <see cref="DataSource"/> to be returned.</param>
+        /// <returns>UserProfileServiceMock.</returns>
+        public UserProfileServiceMock SetupPatientRepository(string hdid, IEnumerable<DataSource> dataSources)
+        {
+            this.patientRepositoryMock = new PatientRepositoryMock(hdid, dataSources);
             return this;
         }
 

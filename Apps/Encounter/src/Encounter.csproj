@@ -11,6 +11,7 @@
     <PackageReference Include="Refit.HttpClientFactory" Version="6.3.2" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\AccountDataAccess\src\AccountDataAccess.csproj" />
     <ProjectReference Include="..\..\Common\src\Common.csproj" />
   </ItemGroup>
   <ItemGroup>

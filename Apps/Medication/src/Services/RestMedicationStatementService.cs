@@ -23,11 +23,11 @@ namespace HealthGateway.Medication.Services
     using System.Threading.Tasks;
     using AutoMapper;
     using FluentValidation.Results;
+    using HealthGateway.AccountDataAccess.Patient;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ErrorHandling;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Factories;
-    using HealthGateway.Common.Models;
     using HealthGateway.Common.Models.ODR;
     using HealthGateway.Common.Services;
     using HealthGateway.Database.Delegates;
@@ -38,6 +38,7 @@ namespace HealthGateway.Medication.Services
     using HealthGateway.Medication.Validations;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Logging;
+    using PatientModel = HealthGateway.Common.Models.PatientModel;
 
     /// <summary>
     /// The Medication data service.
@@ -50,6 +51,7 @@ namespace HealthGateway.Medication.Services
         private readonly ILogger logger;
         private readonly IMedStatementDelegate medicationStatementDelegate;
         private readonly IPatientService patientService;
+        private readonly IPatientRepository patientRepository;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RestMedicationStatementService"/> class.
@@ -59,6 +61,7 @@ namespace HealthGateway.Medication.Services
         /// <param name="patientService">The injected patient registry provider.</param>
         /// <param name="drugLookupDelegate">Injected drug lookup delegate.</param>
         /// <param name="medicationStatementDelegate">Injected medication statement delegate.</param>
+        /// <param name="patientRepository">Injected patient repository provider.</param>
         /// <param name="autoMapper">The injected automapper provider.</param>
         public RestMedicationStatementService(
             ILogger<RestMedicationStatementService> logger,
@@ -66,6 +69,7 @@ namespace HealthGateway.Medication.Services
             IPatientService patientService,
             IDrugLookupDelegate drugLookupDelegate,
             IMedStatementDelegate medicationStatementDelegate,
+            IPatientRepository patientRepository,
             IMapper autoMapper)
         {
             this.logger = logger;
@@ -73,6 +77,7 @@ namespace HealthGateway.Medication.Services
             this.patientService = patientService;
             this.drugLookupDelegate = drugLookupDelegate;
             this.medicationStatementDelegate = medicationStatementDelegate;
+            this.patientRepository = patientRepository;
             this.autoMapper = autoMapper;
         }
 
@@ -83,6 +88,16 @@ namespace HealthGateway.Medication.Services
         {
             using (Source.StartActivity())
             {
+                if (!await this.patientRepository.CanAccessDataSourceAsync(hdid, DataSource.Medication).ConfigureAwait(true))
+                {
+                    return new RequestResult<IList<MedicationStatementHistory>>
+                    {
+                        ResultStatus = ResultType.Success,
+                        ResourcePayload = new List<MedicationStatementHistory>(),
+                        TotalResultCount = 0,
+                    };
+                }
+
                 protectiveWord = protectiveWord?.ToUpper(CultureInfo.InvariantCulture);
 
                 if (protectiveWord != null)

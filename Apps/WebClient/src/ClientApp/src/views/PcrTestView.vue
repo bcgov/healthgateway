@@ -1,17 +1,16 @@
-<script lang="ts">
+<script setup lang="ts">
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
-import Vue from "vue";
-import { Component, Prop, Watch } from "vue-property-decorator";
+import { useVuelidate } from "@vuelidate/core";
 import {
     maxLength,
     minLength,
     minValue,
     required,
     requiredIf,
-} from "vuelidate/lib/validators";
-import { Validation } from "vuelidate/vuelidate";
-import { Action, Getter } from "vuex-class";
+} from "@vuelidate/validators";
+import { computed, ref, watch } from "vue";
+import { useStore } from "vue-composition-wrapper";
 
 import LoadingComponent from "@/components/LoadingComponent.vue";
 import HgDateDropdownComponent from "@/components/shared/HgDateDropdownComponent.vue";
@@ -28,439 +27,334 @@ import User, { OidcUserInfo } from "@/models/user";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ILogger, IPcrTestService } from "@/services/interfaces";
-import { Mask, phnMask, smsMask } from "@/utility/masks";
-import PHNValidator from "@/utility/phnValidator";
+import { phnMask, smsMask } from "@/utility/masks";
+import ValidationUtil from "@/utility/validationUtil";
 
 library.add(faInfoCircle);
+
+interface Props {
+    serialNumber?: string;
+}
+const props = defineProps<Props>();
 
 interface ISelectOption {
     text: string;
     value: unknown;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const options: any = {
-    components: {
-        LoadingComponent,
-        "hg-date-dropdown": HgDateDropdownComponent,
-    },
+const testTakenMinutesAgoOptions: ISelectOption[] = [
+    { value: -1, text: "Time" },
+    { value: 5, text: "Just now" },
+    { value: 30, text: "Within 30 minutes" },
+    { value: 120, text: "Within 2 hours" },
+    { value: 240, text: "Within 4 hours" },
+    { value: 360, text: "Within 6 hours" },
+    { value: 480, text: "Within 8 hours" },
+    { value: 720, text: "Within 12 hours" },
+    { value: 1080, text: "Within 18 hours" },
+    { value: 1440, text: "Within 24 hours" },
+];
+
+const emptyPcrTestData: PcrTestData = {
+    firstName: "",
+    lastName: "",
+    phn: "",
+    dob: "",
+    contactPhoneNumber: "",
+    streetAddress: "",
+    city: "",
+    postalOrZip: "",
+    testTakenMinutesAgo: -1,
+    hdid: "",
+    testKitCid: props.serialNumber || "",
+    testKitCode: "",
 };
 
-@Component(options)
-export default class PcrTestView extends Vue {
-    // ### Props ###
-    @Prop() serialNumber!: string;
+const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+const pcrTestService = container.get<IPcrTestService>(
+    SERVICE_IDENTIFIER.PcrTestService
+);
+const store = useStore();
 
-    // ### Store ###
-    @Action("addError", { namespace: "errorBanner" })
-    addError!: (params: {
-        errorType: ErrorType;
-        source: ErrorSourceType;
-        traceId: string | undefined;
-    }) => void;
+const noSerialNumber = ref(false);
+const noTestKitCode = ref(false);
+const noPhn = ref(false);
+const registrationComplete = ref(false);
+const isLoading = ref(false);
+const errorMessage = ref("");
+const pcrTest = ref<PcrTestData>({ ...emptyPcrTestData });
+const dataSource = ref(PcrDataSource.None);
 
-    @Action("addCustomError", { namespace: "errorBanner" })
-    addCustomError!: (params: {
-        title: string;
-        source: ErrorSourceType;
-        traceId: string | undefined;
-    }) => void;
+const user = computed<User>(() => store.getters["user/user"]);
+const oidcUserInfo = computed<OidcUserInfo | undefined>(
+    () => store.getters["user/oidcUserInfo"]
+);
+const oidcIsAuthenticated = computed<User>(
+    () => store.getters["auth/oidcIsAuthenticated"]
+);
+const identityProviders = computed<IdentityProviderConfiguration[]>(
+    () => store.getters["config/identityProviders"]
+);
 
-    @Action("setTooManyRequestsError", { namespace: "errorBanner" })
-    setTooManyRequestsError!: (params: { key: string }) => void;
+const fullName = computed(() =>
+    oidcUserInfo.value
+        ? `${oidcUserInfo.value.given_name} ${oidcUserInfo.value.family_name}`
+        : ""
+);
+const validations = computed(() => ({
+    pcrTest: {
+        firstName: {
+            required: requiredIf(
+                () => dataSource.value === PcrDataSource.Manual
+            ),
+        },
+        lastName: {
+            required: requiredIf(
+                () => dataSource.value === PcrDataSource.Manual
+            ),
+        },
+        phn: {
+            required: requiredIf(
+                () => dataSource.value === PcrDataSource.Manual && !noPhn.value
+            ),
+            formatted: (value: string) =>
+                dataSource.value === PcrDataSource.Manual && !noPhn.value
+                    ? ValidationUtil.validatePhn(value)
+                    : true,
+        },
+        dob: {
+            required: requiredIf(
+                () => dataSource.value === PcrDataSource.Manual
+            ),
+            maxValue: (value: string) =>
+                dataSource.value === PcrDataSource.Manual
+                    ? new DateWrapper(value).isBefore(new DateWrapper())
+                    : true,
+        },
+        contactPhoneNumber: {
+            minLength: minLength(14),
+            maxLength: maxLength(14),
+        },
+        streetAddress: {
+            required: requiredIf(
+                () => dataSource.value === PcrDataSource.Manual && noPhn.value
+            ),
+        },
+        city: {
+            required: requiredIf(
+                () => dataSource.value === PcrDataSource.Manual && noPhn.value
+            ),
+        },
+        postalOrZip: {
+            required: requiredIf(
+                () => dataSource.value === PcrDataSource.Manual && noPhn.value
+            ),
+            minLength: minLength(7),
+        },
+        testTakenMinutesAgo: {
+            required,
+            minValue: minValue(0),
+        },
+        testKitCode: {
+            required: requiredIf(noSerialNumber),
+            formatted: (value: string) =>
+                /^([a-zA-Z\d]{7})-([a-zA-Z\d]{5})$|^$/.test(value),
+        },
+    },
+}));
 
-    @Action("clearErrors", { namespace: "errorBanner" })
-    clearErrors!: () => void;
+const v$ = useVuelidate(validations, { pcrTest });
 
-    @Action("signIn", { namespace: "auth" })
-    signIn!: (params: {
-        redirectPath: string;
-        idpHint?: string;
-    }) => Promise<void>;
+function addError(
+    errorType: ErrorType,
+    source: ErrorSourceType,
+    traceId: string | undefined
+): void {
+    store.dispatch("errorBanner/addError", { errorType, source, traceId });
+}
 
-    @Getter("user", { namespace: "user" })
-    user!: User;
+function addCustomError(
+    title: string,
+    source: ErrorSourceType,
+    traceId: string | undefined
+): void {
+    store.dispatch("errorBanner/addCustomError", { title, source, traceId });
+}
 
-    @Getter("oidcUserInfo", { namespace: "user" })
-    oidcUserInfo!: OidcUserInfo | undefined;
+function setTooManyRequestsError(key: string): void {
+    store.dispatch("errorBanner/setTooManyRequestsError", { key });
+}
 
-    @Getter("oidcIsAuthenticated", { namespace: "auth" })
-    oidcIsAuthenticated!: boolean;
+function clearErrors(): void {
+    store.dispatch("errorBanner/clearErrors");
+}
 
-    @Getter("identityProviders", { namespace: "config" })
-    identityProviders!: IdentityProviderConfiguration[];
+function signIn(
+    redirectPath: string,
+    idpHint: string | undefined
+): Promise<void> {
+    return store.dispatch("auth/signIn", { redirectPath, idpHint });
+}
 
-    // ### Service ###
-    private pcrTestService!: IPcrTestService;
-
-    // ### Data ###
-    private redirectPath = "/pcrtest/" + this.serialNumber;
-
-    private noSerialNumber = false;
-
-    private noTestKitCode = false;
-
-    private noPhn = false;
-
-    private registrationComplete = false;
-
-    private logger!: ILogger;
-
-    private loading = false;
-
-    private errorMessage = "";
-
-    private testTakenMinutesAgoOptions: ISelectOption[] = [
-        { value: -1, text: "Time" },
-        { value: 5, text: "Just now" },
-        { value: 30, text: "Within 30 minutes" },
-        { value: 120, text: "Within 2 hours" },
-        { value: 240, text: "Within 4 hours" },
-        { value: 360, text: "Within 6 hours" },
-        { value: 480, text: "Within 8 hours" },
-        { value: 720, text: "Within 12 hours" },
-        { value: 1080, text: "Within 18 hours" },
-        { value: 1440, text: "Within 24 hours" },
-    ];
-
-    private pcrTest: PcrTestData = {
-        firstName: "",
-        lastName: "",
-        phn: "",
-        dob: "",
-        contactPhoneNumber: "",
-        streetAddress: "",
-        city: "",
-        postalOrZip: "",
-        testTakenMinutesAgo: -1,
-        hdid: "",
-        testKitCid: this.serialNumber,
-        testKitCode: "",
-    };
-
-    // Variables for PcrDataSource enum referenced in render
-    private DSNONE = PcrDataSource.None;
-    private DSKEYCLOAK = PcrDataSource.Keycloak;
-    private DSMANUAL = PcrDataSource.Manual;
-
-    // Set this to none initially to show options
-    private dataSource = this.DSNONE;
-
-    // ### Lifecycle ###
-    private created(): void {
-        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-        this.pcrTestService = container.get<IPcrTestService>(
-            SERVICE_IDENTIFIER.PcrTestService
-        );
+function setHasNoPhn(value: boolean): void {
+    noPhn.value = value;
+    const phnField = v$.value.pcrTest.phn;
+    if (phnField) {
+        pcrTest.value.phn = "";
+        phnField.$touch();
     }
+}
 
-    private mounted(): void {
-        if (!this.serialNumber || this.serialNumber === "") {
-            this.noSerialNumber = true;
-            this.noTestKitCode = true;
-        }
-
-        this.oidcIsAuthenticatedChanged();
-    }
-
-    @Watch("oidcIsAuthenticated")
-    private oidcIsAuthenticatedChanged(): void {
-        if (this.oidcIsAuthenticated) {
-            this.dataSource = this.DSKEYCLOAK;
-        }
-    }
-
-    // ### Getters ###
-    private get pcrDataSource(): PcrDataSource {
-        return this.dataSource;
-    }
-
-    private get isLoading(): boolean {
-        return this.loading;
-    }
-
-    private get phnMask(): Mask {
-        return phnMask;
-    }
-
-    private get smsMask(): Mask {
-        return smsMask;
-    }
-
-    private get fullName(): string {
-        if (this.oidcUserInfo === undefined) {
-            return "";
-        }
-        return `${this.oidcUserInfo.given_name} ${this.oidcUserInfo.family_name}`;
-    }
-
-    // Redirect back to serial number path if user had it before logging in
-    private get oidcRedirectPath(): string {
-        return this.noSerialNumber ? "/pcrtest" : this.redirectPath;
-    }
-
-    // ### Setters ###
-    private setHasNoPhn(value: boolean): void {
-        this.noPhn = value;
-        const phnField = this.$v.pcrTest.phn;
-        if (phnField) {
-            this.pcrTest.phn = "";
-            phnField.$touch();
-        }
-    }
-
-    // Sets the data source to either NONE (landing), KEYCLOAK (login), or MANUAL (registration)
-    private setDataSource(dataSource: PcrDataSource): void {
-        if (
-            dataSource === PcrDataSource.Keycloak &&
-            !this.oidcIsAuthenticated
-        ) {
-            this.loading = true;
-            this.signIn({
-                redirectPath: this.oidcRedirectPath,
-                idpHint: this.identityProviders[0].hint,
+// Sets the data source to either NONE (landing), KEYCLOAK (login), or MANUAL (registration)
+function setDataSource(value: PcrDataSource): void {
+    if (value === PcrDataSource.Keycloak && !oidcIsAuthenticated.value) {
+        isLoading.value = true;
+        const redirectPath = props.serialNumber
+            ? `/pcrtest/${props.serialNumber}`
+            : "/pcrtest";
+        signIn(redirectPath, identityProviders.value[0].hint)
+            .catch((err) => {
+                logger.error(`oidcLogin Error: ${err}`);
+                addError(ErrorType.Retrieve, ErrorSourceType.User, undefined);
             })
-                .catch((err) => {
-                    this.logger.error(`oidcLogin Error: ${err}`);
-                    this.addError({
-                        errorType: ErrorType.Retrieve,
-                        source: ErrorSourceType.User,
-                        traceId: undefined,
-                    });
+            .finally(() => (isLoading.value = false));
+    }
+    resetForm();
+    dataSource.value = value;
+}
+
+function handleSubmit(): void {
+    v$.value.$touch();
+    errorMessage.value = "";
+    if (v$.value.$invalid) {
+        return;
+    }
+    clearErrors();
+    const shortCodeFirst =
+        pcrTest.value.testKitCode.length > 0
+            ? pcrTest.value.testKitCode.split("-")[0]
+            : "";
+
+    const shortCodeSecond =
+        pcrTest.value.testKitCode.length > 0
+            ? pcrTest.value.testKitCode.split("-")[1]
+            : "";
+
+    switch (dataSource.value) {
+        // ### Submitted through OIDC
+        case PcrDataSource.Keycloak:
+            const testKitRequest: RegisterTestKitRequest = {
+                hdid: oidcUserInfo.value?.hdid,
+                testTakenMinutesAgo: pcrTest.value.testTakenMinutesAgo,
+                testKitCid: pcrTest.value.testKitCid,
+                shortCodeFirst,
+                shortCodeSecond,
+            };
+            logger.debug(JSON.stringify(testKitRequest));
+
+            isLoading.value = true;
+            pcrTestService
+                .registerTestKit(user.value.hdid, testKitRequest)
+                .then((response) => {
+                    logger.debug(
+                        `registerTestKit Response: ${JSON.stringify(response)}`
+                    );
+                    displaySuccess();
                 })
-                .finally(() => (this.loading = false));
-        }
-        this.resetForm();
-        this.dataSource = dataSource;
+                .catch((err: ResultError) =>
+                    handleError(err, "registerTestKit")
+                );
+            break;
+        // ### Submitted through manual input
+        case PcrDataSource.Manual:
+            const phnDigits = pcrTest.value.phn;
+            const phoneDigits = pcrTest.value.contactPhoneNumber;
+            const testKitPublicRequest: RegisterTestKitPublicRequest = {
+                firstName: pcrTest.value.firstName,
+                lastName: pcrTest.value.lastName,
+                phn: phnDigits ? phnDigits.replace(/\D/g, "") : "",
+                dob: pcrTest.value.dob,
+                contactPhoneNumber: phoneDigits
+                    ? phoneDigits.replace(/\D/g, "")
+                    : "",
+                streetAddress: pcrTest.value.streetAddress,
+                city: pcrTest.value.city,
+                postalOrZip: pcrTest.value.postalOrZip ?? "",
+                testTakenMinutesAgo: pcrTest.value.testTakenMinutesAgo,
+                testKitCid: pcrTest.value.testKitCid,
+                shortCodeFirst,
+                shortCodeSecond,
+            };
+            logger.debug(JSON.stringify(testKitPublicRequest));
+            isLoading.value = true;
+            pcrTestService
+                .registerTestKitPublic(testKitPublicRequest)
+                .then((response) => {
+                    logger.debug(
+                        `registerTestKitPublic Response: ${JSON.stringify(
+                            response
+                        )}`
+                    );
+                    displaySuccess();
+                })
+                .catch((err: ResultError) =>
+                    handleError(err, "registerTestKitPublic")
+                );
+            break;
+        default:
+            break;
     }
+}
 
-    private isManualInput(): boolean {
-        return this.dataSource === this.DSMANUAL;
-    }
+function displaySuccess(): void {
+    resetForm();
+    isLoading.value = false;
+    registrationComplete.value = true;
+    window.scrollTo({ top: 0, behavior: "smooth" });
+}
 
-    private isManualInputAndNoPhnProvided(): boolean {
-        return this.isManualInput() && this.noPhn;
-    }
-
-    private isManualInputAndPhnProvided(): boolean {
-        return this.isManualInput() && !this.noPhn;
-    }
-
-    private isNoSerialNumber(): boolean {
-        return this.noSerialNumber;
-    }
-
-    // ### Validation ###
-    private phnValidator(value: string): boolean {
-        this.logger.debug(
-            `Data Source: ${this.dataSource}, PHN: ${this.noPhn}`
+function handleError(err: ResultError, domain: string): void {
+    logger.error(`${domain} Error: ${err}`);
+    if (err.statusCode === 429) {
+        setTooManyRequestsError("page");
+    } else if (err.actionCode == ActionType.Processed) {
+        errorMessage.value = err.resultMessage;
+    } else {
+        addCustomError(
+            "Unable to register test kit",
+            ErrorSourceType.TestKit,
+            err.traceId
         );
-        if (this.dataSource === this.DSMANUAL && !this.noPhn) {
-            const phn = value.replace(/\D/g, "");
-            return PHNValidator.IsValid(phn);
-        } else {
-            return true;
-        }
     }
+    isLoading.value = false;
+    window.scrollTo({ top: 0, behavior: "smooth" });
+}
 
-    private testKitCodeValidator(value: string): boolean {
-        const pattern = /^([a-zA-Z\d]{7})-([a-zA-Z\d]{5})$|^$/;
-        return pattern.test(value);
+function handleCancel(): void {
+    resetForm();
+    dataSource.value = PcrDataSource.None;
+    window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function resetForm(): void {
+    pcrTest.value = { ...emptyPcrTestData };
+    noPhn.value = false;
+    v$.value.$reset();
+}
+
+watch(oidcIsAuthenticated, (value) => {
+    if (value) {
+        dataSource.value = PcrDataSource.Keycloak;
     }
+});
 
-    private validations(): unknown {
-        return {
-            pcrTest: {
-                firstName: {
-                    required: requiredIf(this.isManualInput),
-                },
-                lastName: {
-                    required: requiredIf(this.isManualInput),
-                },
-                phn: {
-                    required: requiredIf(this.isManualInputAndPhnProvided),
-                    formatted: this.phnValidator,
-                },
-                dob: {
-                    required: requiredIf(this.isManualInput),
-                    maxValue: (value: string) => {
-                        // only check this if manual mode selected
-                        if (this.dataSource === this.DSMANUAL) {
-                            return new DateWrapper(value).isBefore(
-                                new DateWrapper()
-                            );
-                            // otherwise, return true
-                        } else {
-                            return true;
-                        }
-                    },
-                },
-                contactPhoneNumber: {
-                    required: false,
-                    minLength: minLength(14),
-                    maxLength: maxLength(14),
-                },
-                streetAddress: {
-                    required: requiredIf(this.isManualInputAndNoPhnProvided),
-                },
-                city: {
-                    required: requiredIf(this.isManualInputAndNoPhnProvided),
-                },
-                postalOrZip: {
-                    required: requiredIf(this.isManualInputAndNoPhnProvided),
-                    minLength: minLength(7),
-                },
-                testTakenMinutesAgo: {
-                    required,
-                    minValue: minValue(0),
-                },
-                testKitCode: {
-                    required: requiredIf(this.isNoSerialNumber),
-                    formatted: this.testKitCodeValidator,
-                },
-            },
-        };
-    }
+if (!props.serialNumber) {
+    noSerialNumber.value = true;
+    noTestKitCode.value = true;
+}
 
-    private isValid(param: Validation): boolean | undefined {
-        return param.$dirty ? !param.$invalid : undefined;
-    }
-
-    // ### Form Actions ###
-    private handleSubmit(): void {
-        this.$v.$touch();
-        this.errorMessage = "";
-        if (this.$v.$invalid) {
-            return;
-        }
-        this.clearErrors();
-        const shortCodeFirst =
-            this.pcrTest.testKitCode.length > 0
-                ? this.pcrTest.testKitCode.split("-")[0]
-                : "";
-
-        const shortCodeSecond =
-            this.pcrTest.testKitCode.length > 0
-                ? this.pcrTest.testKitCode.split("-")[1]
-                : "";
-
-        switch (this.dataSource) {
-            // ### Submitted through OIDC
-            case this.DSKEYCLOAK:
-                const testKitRequest: RegisterTestKitRequest = {
-                    hdid: this.oidcUserInfo?.hdid,
-                    testTakenMinutesAgo: this.pcrTest.testTakenMinutesAgo,
-                    testKitCid: this.pcrTest.testKitCid,
-                    shortCodeFirst,
-                    shortCodeSecond,
-                };
-                this.logger.debug(JSON.stringify(testKitRequest));
-                this.loading = true;
-                // Get user's hdid
-                const hdid = this.user.hdid;
-                this.pcrTestService
-                    .registerTestKit(hdid, testKitRequest)
-                    .then((response) => {
-                        this.logger.debug(
-                            `registerTestKit Response: ${JSON.stringify(
-                                response
-                            )}`
-                        );
-                        this.displaySuccess();
-                    })
-                    .catch((err: ResultError) =>
-                        this.handleError(err, "registerTestKit")
-                    );
-                break;
-            // ### Submitted through manual input
-            case this.DSMANUAL:
-                const phnDigits = this.pcrTest.phn;
-                const phoneDigits = this.pcrTest.contactPhoneNumber;
-                const testKitPublicRequest: RegisterTestKitPublicRequest = {
-                    firstName: this.pcrTest.firstName,
-                    lastName: this.pcrTest.lastName,
-                    phn: phnDigits ? phnDigits.replace(/\D/g, "") : "",
-                    dob: this.pcrTest.dob,
-                    contactPhoneNumber: phoneDigits
-                        ? phoneDigits.replace(/\D/g, "")
-                        : "",
-                    streetAddress: this.pcrTest.streetAddress,
-                    city: this.pcrTest.city,
-                    postalOrZip: this.pcrTest.postalOrZip ?? "",
-                    testTakenMinutesAgo: this.pcrTest.testTakenMinutesAgo,
-                    testKitCid: this.pcrTest.testKitCid,
-                    shortCodeFirst,
-                    shortCodeSecond,
-                };
-                this.logger.debug(JSON.stringify(testKitPublicRequest));
-                this.loading = true;
-                this.pcrTestService
-                    .registerTestKitPublic(testKitPublicRequest)
-                    .then((response) => {
-                        this.logger.debug(
-                            `registerTestKitPublic Response: ${JSON.stringify(
-                                response
-                            )}`
-                        );
-                        this.displaySuccess();
-                    })
-                    .catch((err: ResultError) =>
-                        this.handleError(err, "registerTestKitPublic")
-                    );
-                break;
-            default:
-                break;
-        }
-    }
-
-    private displaySuccess(): void {
-        this.resetForm();
-        this.loading = false;
-        this.registrationComplete = true;
-        window.scrollTo({ top: 0, behavior: "smooth" });
-    }
-
-    private handleError(err: ResultError, domain: string): void {
-        this.logger.error(`${domain} Error: ${err}`);
-        if (err.statusCode === 429) {
-            this.setTooManyRequestsError({ key: "page" });
-        } else if (err.actionCode == ActionType.Processed) {
-            this.errorMessage = err.resultMessage;
-        } else {
-            this.addCustomError({
-                title: "Unable to register test kit",
-                source: ErrorSourceType.TestKit,
-                traceId: err.traceId,
-            });
-        }
-        this.loading = false;
-        window.scrollTo({ top: 0, behavior: "smooth" });
-    }
-
-    private handleCancel(): void {
-        this.resetForm();
-        this.dataSource = PcrDataSource.None;
-        window.scrollTo({ top: 0, behavior: "smooth" });
-    }
-
-    private resetForm(): void {
-        this.pcrTest = {
-            firstName: "",
-            lastName: "",
-            phn: "",
-            dob: "",
-            contactPhoneNumber: "",
-            streetAddress: "",
-            city: "",
-            postalOrZip: "",
-            testTakenMinutesAgo: -1,
-            hdid: "",
-            testKitCid: this.noSerialNumber ? "" : this.serialNumber,
-            testKitCode: "",
-        };
-        this.noPhn = false;
-        this.$v.$reset();
-    }
+if (oidcIsAuthenticated.value) {
+    dataSource.value = PcrDataSource.Keycloak;
 }
 </script>
 
@@ -472,7 +366,9 @@ export default class PcrTestView extends Vue {
         </b-container>
         <b-container
             v-if="
-                !registrationComplete && pcrDataSource === DSNONE && !isLoading
+                !registrationComplete &&
+                dataSource === PcrDataSource.None &&
+                !isLoading
             "
         >
             <b-row class="pt-3">
@@ -496,7 +392,7 @@ export default class PcrTestView extends Vue {
                                 data-testid="btn-login"
                                 variant="primary"
                                 class="login-button"
-                                @click="setDataSource(DSKEYCLOAK)"
+                                @click="setDataSource(PcrDataSource.Keycloak)"
                             >
                                 <span>Log in with BC Services Card</span>
                             </hg-button>
@@ -520,7 +416,7 @@ export default class PcrTestView extends Vue {
                                 data-testid="btn-manual"
                                 variant="secondary"
                                 class="manual-enter-button"
-                                @click="setDataSource(DSMANUAL)"
+                                @click="setDataSource(PcrDataSource.Manual)"
                             >
                                 Manually Enter Your Information
                             </hg-button>
@@ -533,7 +429,7 @@ export default class PcrTestView extends Vue {
         <!-- FORM -->
 
         <b-container
-            v-if="!registrationComplete && pcrDataSource !== DSNONE"
+            v-if="!registrationComplete && dataSource !== PcrDataSource.None"
             v-show="!isLoading"
         >
             <b-row id="title" class="mt-3">
@@ -562,7 +458,10 @@ export default class PcrTestView extends Vue {
                 <b-col>
                     <form @submit.prevent="handleSubmit">
                         <!-- NAME -->
-                        <b-row v-if="pcrDataSource === DSKEYCLOAK" class="pt-2">
+                        <b-row
+                            v-if="dataSource === PcrDataSource.Keycloak"
+                            class="pt-2"
+                        >
                             <b-col>
                                 <label for="pcrTestFullName">Name:</label>
                                 <strong id="prcTestFullName">
@@ -573,21 +472,27 @@ export default class PcrTestView extends Vue {
                         <b-row v-if="noTestKitCode" class="mt-2">
                             <b-col>
                                 <label for="testKitCode">Test Kit Code</label>
-                                <b-form-input
-                                    id="testKitCode"
-                                    v-model="pcrTest.testKitCode"
-                                    data-testid="test-kit-code-input"
-                                    type="text"
-                                    placeholder="Test Kit Code"
-                                    :state="isValid($v.pcrTest.testKitCode)"
-                                    @blur.native="
-                                        $v.pcrTest.testKitCode.$touch()
-                                    "
-                                />
+                                <div>
+                                    <b-form-input
+                                        id="testKitCode"
+                                        v-model="pcrTest.testKitCode"
+                                        data-testid="test-kit-code-input"
+                                        type="text"
+                                        placeholder="Test Kit Code"
+                                        :state="
+                                            ValidationUtil.isValid(
+                                                v$.pcrTest.testKitCode
+                                            )
+                                        "
+                                        @blur="v$.pcrTest.testKitCode.$touch()"
+                                    />
+                                </div>
                                 <b-form-invalid-feedback
-                                    v-if="
-                                        $v.pcrTest.testKitCode.$dirty &&
-                                        !$v.pcrTest.testKitCode.required
+                                    :state="
+                                        ValidationUtil.isValid(
+                                            v$.pcrTest.testKitCode,
+                                            v$.pcrTest.testKitCode.required
+                                        )
                                     "
                                     aria-label="PCR Test Kit Code is required"
                                     data-testid="feedback-testkitcode-is-required"
@@ -595,9 +500,17 @@ export default class PcrTestView extends Vue {
                                     PCR Test Kit Code is required.
                                 </b-form-invalid-feedback>
                                 <b-form-invalid-feedback
-                                    v-else-if="
-                                        $v.pcrTest.testKitCode.$dirty &&
-                                        !$v.pcrTest.testKitCode.formatted
+                                    v-if="
+                                        ValidationUtil.isValid(
+                                            v$.pcrTest.testKitCode,
+                                            v$.pcrTest.testKitCode.required
+                                        )
+                                    "
+                                    :state="
+                                        ValidationUtil.isValid(
+                                            v$.pcrTest.testKitCode,
+                                            v$.pcrTest.testKitCode.formatted
+                                        )
                                     "
                                     aria-label="PCR Test Kit Code is invalid"
                                     data-testid="feedback-testkitcode-is-invalid"
@@ -607,7 +520,7 @@ export default class PcrTestView extends Vue {
                             </b-col>
                         </b-row>
                         <b-row
-                            v-if="pcrDataSource === DSMANUAL"
+                            v-if="dataSource === PcrDataSource.Manual"
                             data-testid="pcr-name"
                         >
                             <b-col>
@@ -616,26 +529,32 @@ export default class PcrTestView extends Vue {
                                         <label for="pcrFirstName">
                                             First Name
                                         </label>
-                                        <b-form-input
-                                            id="pcrFirstName"
-                                            v-model="pcrTest.firstName"
-                                            data-testid="first-name-input"
-                                            type="text"
-                                            placeholder="First Name"
-                                            :state="
-                                                isValid($v.pcrTest.firstName)
-                                            "
-                                            @blur.native="
-                                                $v.pcrTest.firstName.$touch()
-                                            "
-                                        />
+                                        <div>
+                                            <b-form-input
+                                                id="pcrFirstName"
+                                                v-model="pcrTest.firstName"
+                                                data-testid="first-name-input"
+                                                type="text"
+                                                placeholder="First Name"
+                                                :state="
+                                                    ValidationUtil.isValid(
+                                                        v$.pcrTest.firstName
+                                                    )
+                                                "
+                                                @blur="
+                                                    v$.pcrTest.firstName.$touch()
+                                                "
+                                            />
+                                        </div>
                                         <b-form-invalid-feedback
-                                            v-if="
-                                                $v.pcrTest.firstName.$dirty &&
-                                                !$v.pcrTest.firstName.required
+                                            :state="
+                                                ValidationUtil.isValid(
+                                                    v$.pcrTest.firstName,
+                                                    v$.pcrTest.firstName
+                                                        .required
+                                                )
                                             "
                                             aria-label="First name is required"
-                                            force-show
                                             data-testid="feedback-firstname-is-required"
                                         >
                                             First name is required.
@@ -647,26 +566,31 @@ export default class PcrTestView extends Vue {
                                         <label for="pcrLastName"
                                             >Last Name</label
                                         >
-                                        <b-form-input
-                                            id="pcrLastName"
-                                            v-model="pcrTest.lastName"
-                                            data-testid="last-name-input"
-                                            type="text"
-                                            placeholder="Last Name"
-                                            :state="
-                                                isValid($v.pcrTest.lastName)
-                                            "
-                                            @blur.native="
-                                                $v.pcrTest.lastName.$touch()
-                                            "
-                                        />
+                                        <div>
+                                            <b-form-input
+                                                id="pcrLastName"
+                                                v-model="pcrTest.lastName"
+                                                data-testid="last-name-input"
+                                                type="text"
+                                                placeholder="Last Name"
+                                                :state="
+                                                    ValidationUtil.isValid(
+                                                        v$.pcrTest.lastName
+                                                    )
+                                                "
+                                                @blur.native="
+                                                    v$.pcrTest.lastName.$touch()
+                                                "
+                                            />
+                                        </div>
                                         <b-form-invalid-feedback
-                                            v-if="
-                                                $v.pcrTest.lastName.$dirty &&
-                                                !$v.pcrTest.lastName.required
+                                            :state="
+                                                ValidationUtil.isValid(
+                                                    v$.pcrTest.lastName,
+                                                    v$.pcrTest.lastName.required
+                                                )
                                             "
                                             aria-label="Last name is required"
-                                            force-show
                                             data-testid="feedback-lastname-is-required"
                                         >
                                             Last name is required.
@@ -677,32 +601,42 @@ export default class PcrTestView extends Vue {
                         </b-row>
                         <!-- PHN -->
                         <b-row
-                            v-if="dataSource == DSMANUAL"
+                            v-if="dataSource === PcrDataSource.Manual"
                             data-testid="pcr-phn"
                         >
-                            <b-col v-if="pcrDataSource === DSMANUAL">
+                            <b-col v-if="dataSource === PcrDataSource.Manual">
                                 <b-row class="mt-2">
                                     <b-col>
                                         <b-form-group
                                             label="Personal Health Number"
                                             label-for="phn"
                                         >
-                                            <b-form-input
-                                                id="phn"
-                                                v-model="pcrTest.phn"
-                                                v-mask="phnMask"
-                                                data-testid="phn-input"
-                                                placeholder="PHN"
-                                                aria-label="Personal Health Number"
-                                                :state="isValid($v.pcrTest.phn)"
-                                                :disabled="noPhn"
-                                                @blur.native="
-                                                    $v.pcrTest.phn.$touch()
-                                                "
-                                            />
+                                            <div>
+                                                <b-form-input
+                                                    id="phn"
+                                                    v-model="pcrTest.phn"
+                                                    v-mask="phnMask"
+                                                    data-testid="phn-input"
+                                                    placeholder="PHN"
+                                                    aria-label="Personal Health Number"
+                                                    :state="
+                                                        ValidationUtil.isValid(
+                                                            v$.pcrTest.phn
+                                                        )
+                                                    "
+                                                    :disabled="noPhn"
+                                                    @blur.native="
+                                                        v$.pcrTest.phn.$touch()
+                                                    "
+                                                />
+                                            </div>
                                             <b-form-invalid-feedback
                                                 aria-label="Valid PHN is required"
-                                                :state="isValid($v.pcrTest.phn)"
+                                                :state="
+                                                    ValidationUtil.isValid(
+                                                        v$.pcrTest.phn
+                                                    )
+                                                "
                                                 data-testid="feedback-phn-is-required"
                                             >
                                                 Valid PHN is required.
@@ -717,7 +651,7 @@ export default class PcrTestView extends Vue {
                             <b-col>
                                 <!-- Checkbox for PHN or no PHN -->
                                 <b-form-checkbox
-                                    v-if="dataSource == DSMANUAL"
+                                    v-if="dataSource === PcrDataSource.Manual"
                                     id="phnCheckbox"
                                     v-model="noPhn"
                                     data-testid="phn-checkbox"
@@ -754,7 +688,7 @@ export default class PcrTestView extends Vue {
                             </b-col>
                         </b-row>
                         <b-row
-                            v-if="pcrDataSource === DSMANUAL && noPhn"
+                            v-if="dataSource === PcrDataSource.Manual && noPhn"
                             data-testid="pcr-home-address"
                         >
                             <b-col>
@@ -763,30 +697,32 @@ export default class PcrTestView extends Vue {
                                         <label for="pcrStreetAddress">
                                             Street Address
                                         </label>
-                                        <b-form-input
-                                            id="pcrStreetAddress"
-                                            v-model="pcrTest.streetAddress"
-                                            data-testid="pcr-street-address-input"
-                                            type="text"
-                                            placeholder="Address"
+                                        <div>
+                                            <b-form-input
+                                                id="pcrStreetAddress"
+                                                v-model="pcrTest.streetAddress"
+                                                data-testid="pcr-street-address-input"
+                                                type="text"
+                                                placeholder="Address"
+                                                :state="
+                                                    ValidationUtil.isValid(
+                                                        v$.pcrTest.streetAddress
+                                                    )
+                                                "
+                                                @blur.native="
+                                                    v$.pcrTest.streetAddress.$touch()
+                                                "
+                                            />
+                                        </div>
+                                        <b-form-invalid-feedback
                                             :state="
-                                                isValid(
-                                                    $v.pcrTest.streetAddress
+                                                ValidationUtil.isValid(
+                                                    v$.pcrTest.streetAddress,
+                                                    v$.pcrTest.streetAddress
+                                                        .required
                                                 )
                                             "
-                                            @blur.native="
-                                                $v.pcrTest.streetAddress.$touch()
-                                            "
-                                        />
-                                        <b-form-invalid-feedback
-                                            v-if="
-                                                $v.pcrTest.streetAddress
-                                                    .$dirty &&
-                                                !$v.pcrTest.streetAddress
-                                                    .required
-                                            "
                                             aria-label="Street address is required"
-                                            force-show
                                             data-testid="feedback-streetaddress-is-required"
                                         >
                                             Street address is required.
@@ -796,24 +732,31 @@ export default class PcrTestView extends Vue {
                                 <b-row class="mt-2">
                                     <b-col>
                                         <label for="pcrCity">City</label>
-                                        <b-form-input
-                                            id="pcrCity"
-                                            v-model="pcrTest.city"
-                                            data-testid="pcr-city-input"
-                                            type="text"
-                                            placeholder="City"
-                                            :state="isValid($v.pcrTest.city)"
-                                            @blur.native="
-                                                $v.pcrTest.city.$touch()
-                                            "
-                                        />
+                                        <div>
+                                            <b-form-input
+                                                id="pcrCity"
+                                                v-model="pcrTest.city"
+                                                data-testid="pcr-city-input"
+                                                type="text"
+                                                placeholder="City"
+                                                :state="
+                                                    ValidationUtil.isValid(
+                                                        v$.pcrTest.city
+                                                    )
+                                                "
+                                                @blur.native="
+                                                    v$.pcrTest.city.$touch()
+                                                "
+                                            />
+                                        </div>
                                         <b-form-invalid-feedback
-                                            v-if="
-                                                $v.pcrTest.city.$dirty &&
-                                                !$v.pcrTest.city.required
+                                            :state="
+                                                ValidationUtil.isValid(
+                                                    v$.pcrTest.city,
+                                                    v$.pcrTest.city.required
+                                                )
                                             "
                                             aria-label="City is required"
-                                            force-show
                                             data-testid="feedback-city-is-required"
                                         >
                                             City is required.
@@ -823,39 +766,46 @@ export default class PcrTestView extends Vue {
                                 <b-row class="mt-2">
                                     <b-col>
                                         <label for="pcrZip">Postal Code</label>
-                                        <b-form-input
-                                            id="pcrZip"
-                                            v-model="pcrTest.postalOrZip"
-                                            v-mask="'A#A #A#'"
-                                            data-testid="pcr-zip-input"
-                                            type="text"
-                                            placeholder="Postal Code"
-                                            :state="
-                                                isValid($v.pcrTest.postalOrZip)
-                                            "
-                                            @blur.native="
-                                                $v.pcrTest.postalOrZip.$touch()
-                                            "
-                                        />
+                                        <div>
+                                            <b-form-input
+                                                id="pcrZip"
+                                                v-model="pcrTest.postalOrZip"
+                                                v-mask="'A#A #A#'"
+                                                data-testid="pcr-zip-input"
+                                                type="text"
+                                                placeholder="Postal Code"
+                                                :state="
+                                                    ValidationUtil.isValid(
+                                                        v$.pcrTest.postalOrZip
+                                                    )
+                                                "
+                                                @blur.native="
+                                                    v$.pcrTest.postalOrZip.$touch()
+                                                "
+                                            />
+                                        </div>
                                         <b-form-invalid-feedback
-                                            v-if="
-                                                $v.pcrTest.postalOrZip.$dirty &&
-                                                !$v.pcrTest.postalOrZip.required
+                                            :state="
+                                                ValidationUtil.isValid(
+                                                    v$.pcrTest.postalOrZip,
+                                                    v$.pcrTest.postalOrZip
+                                                        .required
+                                                )
                                             "
                                             aria-label="Postal code is required"
-                                            force-show
                                             data-testid="feedback-postal-is-required"
                                         >
                                             Postal code is required.
                                         </b-form-invalid-feedback>
                                         <b-form-invalid-feedback
-                                            v-else-if="
-                                                $v.pcrTest.postalOrZip.$dirty &&
-                                                !$v.pcrTest.postalOrZip
-                                                    .minLength
+                                            :state="
+                                                ValidationUtil.isValid(
+                                                    v$.pcrTest.postalOrZip,
+                                                    v$.pcrTest.postalOrZip
+                                                        .minLength
+                                                )
                                             "
                                             aria-label="Postal code is required"
-                                            force-show
                                         >
                                             Postal code is required.
                                         </b-form-invalid-feedback>
@@ -865,39 +815,55 @@ export default class PcrTestView extends Vue {
                         </b-row>
                         <!-- DOB -->
                         <b-row data-testid="pcr-dob" class="mt-2">
-                            <b-col v-if="pcrDataSource === DSMANUAL">
+                            <b-col v-if="dataSource === PcrDataSource.Manual">
                                 <b-form-group
                                     label="Date of Birth"
                                     label-for="dob"
-                                    :state="isValid($v.pcrTest.dob)"
+                                    :state="
+                                        ValidationUtil.isValid(v$.pcrTest.dob)
+                                    "
                                 >
-                                    <hg-date-dropdown
-                                        id="dob"
-                                        v-model="pcrTest.dob"
-                                        data-testid="dob-input"
-                                        :state="isValid($v.pcrTest.dob)"
-                                        :allow-future="false"
-                                        aria-label="Date of Birth"
-                                        @blur="$v.pcrTest.dob.$touch()"
-                                    />
+                                    <div>
+                                        <HgDateDropdownComponent
+                                            id="dob"
+                                            v-model="pcrTest.dob"
+                                            data-testid="dob-input"
+                                            :state="
+                                                ValidationUtil.isValid(
+                                                    v$.pcrTest.dob
+                                                )
+                                            "
+                                            :allow-future="false"
+                                            aria-label="Date of Birth"
+                                            @blur="v$.pcrTest.dob.$touch()"
+                                        />
+                                    </div>
                                     <b-form-invalid-feedback
-                                        v-if="
-                                            $v.pcrTest.dob.$dirty &&
-                                            !$v.pcrTest.dob.required
+                                        :state="
+                                            ValidationUtil.isValid(
+                                                v$.pcrTest.dob,
+                                                v$.pcrTest.dob.required
+                                            )
                                         "
                                         aria-label="Invalid Date of Birth"
                                         data-testid="feedback-dob-is-required"
-                                        force-show
                                     >
                                         A valid date of birth is required.
                                     </b-form-invalid-feedback>
                                     <b-form-invalid-feedback
-                                        v-else-if="
-                                            $v.pcrTest.dob.$dirty &&
-                                            !$v.pcrTest.dob.maxValue
+                                        v-if="
+                                            ValidationUtil.isValid(
+                                                v$.pcrTest.dob,
+                                                v$.pcrTest.dob.required
+                                            )
+                                        "
+                                        :state="
+                                            ValidationUtil.isValid(
+                                                v$.pcrTest.dob,
+                                                v$.pcrTest.dob.maxValue
+                                            )
                                         "
                                         aria-label="Invalid Date of Birth"
-                                        force-show
                                         data-testid="feedback-dob-is-invalid"
                                     >
                                         Date of birth must be in the past.
@@ -907,7 +873,7 @@ export default class PcrTestView extends Vue {
                         </b-row>
                         <!-- MOBILE NUMBER -->
                         <b-row
-                            v-if="pcrDataSource === DSMANUAL"
+                            v-if="dataSource === PcrDataSource.Manual"
                             data-testid="pcr-mobile-number"
                         >
                             <b-col>
@@ -918,35 +884,35 @@ export default class PcrTestView extends Vue {
                                             notification once your COVID‑19 test
                                             result is available)
                                         </label>
-                                        <b-form-input
-                                            id="pcrMobileNumber"
-                                            v-model="pcrTest.contactPhoneNumber"
-                                            v-mask="smsMask"
-                                            data-testid="contact-phone-number-input"
-                                            type="tel"
-                                            placeholder="(###) ###-####"
+                                        <div>
+                                            <b-form-input
+                                                id="pcrMobileNumber"
+                                                v-model="
+                                                    pcrTest.contactPhoneNumber
+                                                "
+                                                v-mask="smsMask"
+                                                data-testid="contact-phone-number-input"
+                                                type="tel"
+                                                placeholder="(###) ###-####"
+                                                :state="
+                                                    ValidationUtil.isValid(
+                                                        v$.pcrTest
+                                                            .contactPhoneNumber
+                                                    )
+                                                "
+                                                @blur.native="
+                                                    v$.pcrTest.contactPhoneNumber.$touch()
+                                                "
+                                            />
+                                        </div>
+                                        <b-form-invalid-feedback
                                             :state="
-                                                isValid(
-                                                    $v.pcrTest
+                                                ValidationUtil.isValid(
+                                                    v$.pcrTest
                                                         .contactPhoneNumber
                                                 )
                                             "
-                                            @blur.native="
-                                                $v.pcrTest.contactPhoneNumber.$touch()
-                                            "
-                                        />
-                                        <b-form-invalid-feedback
-                                            v-if="
-                                                $v.pcrTest.contactPhoneNumber
-                                                    .$dirty &&
-                                                (!$v.pcrTest.contactPhoneNumber
-                                                    .maxLength ||
-                                                    !$v.pcrTest
-                                                        .contactPhoneNumber
-                                                        .minLength)
-                                            "
                                             aria-label="Phone number must be valid."
-                                            force-show
                                             data-testid="feedback-phonenumber-valid"
                                         >
                                             Phone number must be valid.
@@ -961,29 +927,30 @@ export default class PcrTestView extends Vue {
                                 <label for="testTakenMinutesAgo">
                                     Time Since Test Taken
                                 </label>
-                                <b-form-select
-                                    id="testTakenMinutesAgo"
-                                    v-model="pcrTest.testTakenMinutesAgo"
-                                    data-testid="test-taken-minutes-ago"
-                                    :options="testTakenMinutesAgoOptions"
-                                    :state="
-                                        isValid($v.pcrTest.testTakenMinutesAgo)
-                                    "
-                                    @blur.native="
-                                        $v.pcrTest.testTakenMinutesAgo.$touch()
-                                    "
-                                >
-                                </b-form-select>
+                                <div>
+                                    <b-form-select
+                                        id="testTakenMinutesAgo"
+                                        v-model="pcrTest.testTakenMinutesAgo"
+                                        data-testid="test-taken-minutes-ago"
+                                        :options="testTakenMinutesAgoOptions"
+                                        :state="
+                                            ValidationUtil.isValid(
+                                                v$.pcrTest.testTakenMinutesAgo
+                                            )
+                                        "
+                                        @blur.native="
+                                            v$.pcrTest.testTakenMinutesAgo.$touch()
+                                        "
+                                    >
+                                    </b-form-select>
+                                </div>
                                 <b-form-invalid-feedback
-                                    v-if="
-                                        $v.pcrTest.testTakenMinutesAgo.$dirty &&
-                                        (!$v.pcrTest.testTakenMinutesAgo
-                                            .required ||
-                                            !$v.pcrTest.testTakenMinutesAgo
-                                                .minValue)
+                                    :state="
+                                        ValidationUtil.isValid(
+                                            v$.pcrTest.testTakenMinutesAgo
+                                        )
                                     "
                                     aria-label="Time since test taken is required"
-                                    force-show
                                     data-testid="feedback-testtaken-is-required"
                                 >
                                     Time since test taken is required.

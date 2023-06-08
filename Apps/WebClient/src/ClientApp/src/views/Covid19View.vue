@@ -46,8 +46,10 @@ const store = useStore();
 const isDownloading = ref(false);
 const isImmunizationHistoryShown = ref(false);
 
-const vaccineCardMessageModal = ref<MessageModalComponent>();
-const downloadConfirmationModal = ref<MessageModalComponent>();
+const vaccineCardMessageModal =
+    ref<InstanceType<typeof MessageModalComponent>>();
+const downloadConfirmationModal =
+    ref<InstanceType<typeof MessageModalComponent>>();
 
 const config = computed<WebClientConfiguration>(
     () => store.getters["config/webClient"]
