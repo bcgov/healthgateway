@@ -90,12 +90,7 @@ namespace HealthGateway.AccountDataAccess.Patient
             IEnumerable<DataSource> blockedDataSources = await this.GetDataSources(hdid, ct);
             this.logger.LogDebug("Blocked data sources for hdid: {Hdid} - {DataSources}", hdid, blockedDataSources);
 
-            if (blockedDataSources.Any(ds => ds == dataSource))
-            {
-                return false;
-            }
-
-            return true;
+            return !blockedDataSources.Contains(dataSource);
         }
 
         /// <inheritdoc/>
