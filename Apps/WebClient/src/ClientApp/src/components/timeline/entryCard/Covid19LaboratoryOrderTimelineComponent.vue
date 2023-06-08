@@ -162,9 +162,9 @@ function getReport(): void {
                 </div>
             </div>
             <div
-                v-for="test in entry.tests"
+                v-for="(test, i) in entry.tests"
                 :key="test.id"
-                :data-testid="`laboratoryTestBlock-${index}`"
+                :data-testid="`laboratoryTestBlock-${i}`"
             >
                 <hr v-if="entry.tests.length > 1" />
                 <div data-testid="laboratoryTestType" class="my-2">
@@ -182,10 +182,7 @@ function getReport(): void {
                     <strong>Test Type:</strong>
                     {{ test.testType }}
                 </div>
-                <div
-                    :data-testid="`laboratoryTestStatus-${index}`"
-                    class="my-2"
-                >
+                <div :data-testid="`laboratoryTestStatus-${i}`" class="my-2">
                     <strong>Test Status:</strong>
                     {{ test.testStatus }}
                 </div>
@@ -204,7 +201,7 @@ function getReport(): void {
                 <div
                     v-if="test.resultDescription.length > 0"
                     class="my-2"
-                    :data-testid="`laboratoryResultDescription-${index}`"
+                    :data-testid="`laboratoryResultDescription-${i}`"
                 >
                     <strong>Result Description:</strong>
                     <Covid19LaboratoryTestDescriptionComponent
