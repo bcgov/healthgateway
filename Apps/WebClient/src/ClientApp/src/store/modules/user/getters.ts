@@ -1,3 +1,4 @@
+import { DataSource } from "@/constants/dataSource";
 import UserPreferenceType from "@/constants/userPreferenceType";
 import { DateWrapper, StringISODateTime } from "@/models/dateWrapper";
 import Patient from "@/models/patient";
@@ -12,6 +13,10 @@ export const getters: UserGetters = {
     user(state: UserState): User {
         const { user } = state;
         return user;
+    },
+    blockedDataSources(state: UserState): DataSource[] {
+        const { user } = state;
+        return user.blockedDataSources;
     },
     lastLoginDateTime(state: UserState): StringISODateTime | undefined {
         const { user } = state;

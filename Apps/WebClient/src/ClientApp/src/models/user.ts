@@ -1,3 +1,4 @@
+import { DataSource } from "@/constants/dataSource";
 import { Dictionary } from "@/models/baseTypes";
 import { StringISODateTime } from "@/models/dateWrapper";
 import type { UserPreference } from "@/models/userPreference";
@@ -15,6 +16,7 @@ export default class User {
     public closedDateTime?: StringISODateTime;
     public preferences: Dictionary<UserPreference> = {};
     public hasTourUpdated = false;
+    public blockedDataSources: DataSource[] = [];
 }
 
 export interface OidcUserInfo {
