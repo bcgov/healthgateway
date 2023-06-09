@@ -130,9 +130,9 @@ namespace HealthGateway.WebClient.Server
                         endpoints.MapToVueCliProxy(
                             "{*path}",
                             new SpaOptions { SourcePath = "ClientApp" },
-                            "serve",
+                            "dev",
                             8585,
-                            regex: "Compiled ",
+                            regex: "ready in ",
                             forceKill: true);
                     }
                 });
