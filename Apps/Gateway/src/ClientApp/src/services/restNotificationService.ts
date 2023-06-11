@@ -1,21 +1,17 @@
-import { injectable } from "inversify";
-
 import { ServiceCode } from "@/constants/serviceCodes";
 import { ExternalConfiguration } from "@/models/configData";
 import { HttpError } from "@/models/errors";
 import Notification from "@/models/notification";
-import container from "@/plugins/container";
-import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import {
     IHttpDelegate,
     ILogger,
     INotificationService,
 } from "@/services/interfaces";
 import ErrorTranslator from "@/utility/errorTranslator";
+import { WinstonLogger } from "@/services/winstonLogger";
 
-@injectable()
 export class RestNotificationService implements INotificationService {
-    private logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+    private logger: ILogger = new WinstonLogger(true); // TODO: inject logger
     private readonly NOTIFICATION_BASE_URI: string = "Notification";
     private http!: IHttpDelegate;
     private isEnabled = false;

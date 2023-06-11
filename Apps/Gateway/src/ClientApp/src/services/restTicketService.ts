@@ -1,18 +1,14 @@
-import { injectable } from "inversify";
-
 import { ServiceCode } from "@/constants/serviceCodes";
 import { CheckInRequest } from "@/models/checkInRequest";
 import { ExternalConfiguration } from "@/models/configData";
 import { HttpError } from "@/models/errors";
 import { Ticket } from "@/models/ticket";
-import container from "@/plugins/container";
-import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { IHttpDelegate, ILogger, ITicketService } from "@/services/interfaces";
 import ErrorTranslator from "@/utility/errorTranslator";
+import { WinstonLogger } from "@/services/winstonLogger";
 
-@injectable()
 export class RestTicketService implements ITicketService {
-    private logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+    private logger: ILogger = new WinstonLogger(true); // TODO: inject logger
     private readonly TICKET_BASE_URI: string = "Ticket";
     private http!: IHttpDelegate;
     private isEnabled = false;

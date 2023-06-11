@@ -1,5 +1,3 @@
-import { injectable } from "inversify";
-
 import { ServiceCode } from "@/constants/serviceCodes";
 import { Dictionary } from "@/models/baseTypes";
 import { ExternalConfiguration } from "@/models/configData";
@@ -8,18 +6,16 @@ import { StringISODate } from "@/models/dateWrapper";
 import { HttpError } from "@/models/errors";
 import RequestResult from "@/models/requestResult";
 import VaccinationStatus from "@/models/vaccinationStatus";
-import container from "@/plugins/container";
-import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import {
     IHttpDelegate,
     ILogger,
     IVaccinationStatusService,
 } from "@/services/interfaces";
 import ErrorTranslator from "@/utility/errorTranslator";
+import { WinstonLogger } from "@/services/winstonLogger";
 
-@injectable()
 export class RestVaccinationStatusService implements IVaccinationStatusService {
-    private logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+    private logger: ILogger = new WinstonLogger(true); // TODO: inject logger
     private readonly PUBLIC_VACCINATION_STATUS_BASE_URI: string =
         "PublicVaccineStatus";
     private readonly AUTHENTICATED_VACCINATION_STATUS_BASE_URI: string =

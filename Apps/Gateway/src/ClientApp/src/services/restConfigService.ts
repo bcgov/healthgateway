@@ -1,16 +1,12 @@
-import { injectable } from "inversify";
-
 import { ServiceCode } from "@/constants/serviceCodes";
 import { ExternalConfiguration } from "@/models/configData";
 import { HttpError } from "@/models/errors";
-import container from "@/plugins/container";
-import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { IConfigService, IHttpDelegate, ILogger } from "@/services/interfaces";
 import ErrorTranslator from "@/utility/errorTranslator";
+import { WinstonLogger } from "@/services/winstonLogger";
 
-@injectable()
 export class RestConfigService implements IConfigService {
-    private logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+    private logger: ILogger = new WinstonLogger(true); // TODO: inject logger
     private readonly CONFIG_BASE_URI: string = "/configuration";
     private http!: IHttpDelegate;
 

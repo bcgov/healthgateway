@@ -1,5 +1,3 @@
-import { injectable } from "inversify";
-
 import { ResultType } from "@/constants/resulttype";
 import { ServiceCode } from "@/constants/serviceCodes";
 import { Dictionary } from "@/models/baseTypes";
@@ -7,8 +5,6 @@ import { ExternalConfiguration } from "@/models/configData";
 import { HttpError } from "@/models/errors";
 import RequestResult from "@/models/requestResult";
 import type { UserComment } from "@/models/userComment";
-import container from "@/plugins/container";
-import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import {
     IHttpDelegate,
     ILogger,
@@ -16,10 +12,10 @@ import {
 } from "@/services/interfaces";
 import ErrorTranslator from "@/utility/errorTranslator";
 import RequestResultUtil from "@/utility/requestResultUtil";
+import { WinstonLogger } from "@/services/winstonLogger";
 
-@injectable()
 export class RestUserCommentService implements IUserCommentService {
-    private logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+    private logger: ILogger = new WinstonLogger(true); // TODO: inject logger
     private readonly USER_COMMENT_BASE_URI: string = "UserProfile";
     private http!: IHttpDelegate;
     private isEnabled = false;

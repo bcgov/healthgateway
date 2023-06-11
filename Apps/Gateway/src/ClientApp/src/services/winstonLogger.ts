@@ -1,22 +1,31 @@
-import { injectable } from "inversify";
-import { createLogger, format, Logger, transports } from "winston";
+import { format, Logger, loggers, transports } from "winston";
 
 import { ILogger } from "@/services/interfaces";
 
-@injectable()
 export class WinstonLogger implements ILogger {
     private logger: Logger | undefined;
+    public constructor(initializeDefault?: boolean) {
+        // Allows for the logger to be initialized with the default settings
+        if (initializeDefault) {
+            this.initialize();
+        }
+    }
 
-    public initialize(logLevel?: string): void {
-        this.logger = createLogger({
-            level: logLevel !== undefined ? logLevel.toLowerCase() : "info",
-            format: format.json(),
-            transports: [
-                new transports.Console({
-                    format: format.simple(),
-                }),
-            ],
-        });
+    public initialize(logLevel?: string, loggerName?: string): void {
+        const name = loggerName ?? "default";
+
+        this.logger = loggers.get(name);
+        if (!this.logger) {
+            this.logger = loggers.add(name, {
+                level: logLevel !== undefined ? logLevel.toLowerCase() : "info",
+                format: format.json(),
+                transports: [
+                    new transports.Console({
+                        format: format.simple(),
+                    }),
+                ],
+            });
+        }
     }
 
     public log(level: string, message: string): void {

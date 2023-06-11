@@ -1,5 +1,3 @@
-import { injectable } from "inversify";
-
 import { EntryType } from "@/constants/entryType";
 import { ResultType } from "@/constants/resulttype";
 import { ServiceCode } from "@/constants/serviceCodes";
@@ -11,8 +9,6 @@ import {
     LaboratoryReport,
 } from "@/models/laboratory";
 import RequestResult from "@/models/requestResult";
-import container from "@/plugins/container";
-import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import {
     IHttpDelegate,
     ILaboratoryService,
@@ -20,10 +16,10 @@ import {
 } from "@/services/interfaces";
 import ConfigUtil from "@/utility/configUtil";
 import ErrorTranslator from "@/utility/errorTranslator";
+import { WinstonLogger } from "@/services/winstonLogger";
 
-@injectable()
 export class RestLaboratoryService implements ILaboratoryService {
-    private logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+    private logger: ILogger = new WinstonLogger(true); // TODO: inject logger
     private readonly LABORATORY_BASE_URI: string = "Laboratory";
     private readonly PUBLIC_LABORATORY_BASE_URI: string = "PublicLaboratory";
     private baseUri = "";

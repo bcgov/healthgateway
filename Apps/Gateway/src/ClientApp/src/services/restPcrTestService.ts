@@ -1,20 +1,16 @@
-import { injectable } from "inversify";
-
 import { ServiceCode } from "@/constants/serviceCodes";
 import { ExternalConfiguration } from "@/models/configData";
 import { HttpError } from "@/models/errors";
 import RegisterTestKitPublicRequest from "@/models/registerTestKitPublicRequest";
 import RegisterTestKitRequest from "@/models/registerTestKitRequest";
 import RequestResult from "@/models/requestResult";
-import container from "@/plugins/container";
-import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { IHttpDelegate, ILogger, IPcrTestService } from "@/services/interfaces";
 import ErrorTranslator from "@/utility/errorTranslator";
 import RequestResultUtil from "@/utility/requestResultUtil";
+import { WinstonLogger } from "@/services/winstonLogger";
 
-@injectable()
 export class RestPcrTestService implements IPcrTestService {
-    private logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+    private logger: ILogger = new WinstonLogger(true); // TODO: inject logger
 
     private readonly LABORATORY_BASE_URI: string = "Laboratory";
     private readonly PUBLIC_LABORATORY_BASE_URI: string = "PublicLaboratory";

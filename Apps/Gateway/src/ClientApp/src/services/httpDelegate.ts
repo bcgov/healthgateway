@@ -1,15 +1,11 @@
 import Axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from "axios";
-import { injectable } from "inversify";
-
 import { Dictionary } from "@/models/baseTypes";
 import { HttpError } from "@/models/errors";
-import container from "@/plugins/container";
-import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { IHttpDelegate, ILogger } from "@/services/interfaces";
+import { WinstonLogger } from "@/services/winstonLogger";
 
-@injectable()
 export default class HttpDelegate implements IHttpDelegate {
-    private logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+    private logger: ILogger = new WinstonLogger(true); // TODO: Inject logger
 
     public unsetAuthorizationHeader(): void {
         this.logger.debug(`ACCESS TOKEN UNSET`);

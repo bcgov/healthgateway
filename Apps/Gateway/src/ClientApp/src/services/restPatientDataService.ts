@@ -1,6 +1,4 @@
-﻿import { injectable } from "inversify";
-
-import { EntryType } from "@/constants/entryType";
+﻿import { EntryType } from "@/constants/entryType";
 import { ServiceCode } from "@/constants/serviceCodes";
 import { ServiceName } from "@/constants/serviceName";
 import { ExternalConfiguration } from "@/models/configData";
@@ -9,8 +7,6 @@ import PatientDataResponse, {
     PatientDataFile,
     PatientDataType,
 } from "@/models/patientDataResponse";
-import container from "@/plugins/container";
-import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import {
     IHttpDelegate,
     ILogger,
@@ -18,6 +14,7 @@ import {
 } from "@/services/interfaces";
 import ConfigUtil from "@/utility/configUtil";
 import ErrorTranslator from "@/utility/errorTranslator";
+import { WinstonLogger } from "@/services/winstonLogger";
 
 const serviceTypeMap: Map<PatientDataType, ServiceName> = new Map<
     PatientDataType,
@@ -34,9 +31,8 @@ const datasetTypeMap: Map<PatientDataType, EntryType> = new Map<
     EntryType
 >([[PatientDataType.DiagnosticImaging, EntryType.DiagnosticImaging]]);
 
-@injectable()
 export class RestPatientDataService implements IPatientDataService {
-    private logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+    private logger: ILogger = new WinstonLogger(true); // TODO: inject logger
     private readonly BASE_URI = "PatientData";
     private serviceBaseUri = "";
     private http!: IHttpDelegate;

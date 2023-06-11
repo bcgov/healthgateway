@@ -1,21 +1,17 @@
-﻿import { injectable } from "inversify";
-
-import { ServiceCode } from "@/constants/serviceCodes";
+﻿import { ServiceCode } from "@/constants/serviceCodes";
 import { ExternalConfiguration } from "@/models/configData";
 import { HttpError } from "@/models/errors";
 import UserFeedback from "@/models/userFeedback";
-import container from "@/plugins/container";
-import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import {
     IHttpDelegate,
     ILogger,
     IUserFeedbackService,
 } from "@/services/interfaces";
 import ErrorTranslator from "@/utility/errorTranslator";
+import { WinstonLogger } from "@/services/winstonLogger";
 
-@injectable()
 export class RestUserFeedbackService implements IUserFeedbackService {
-    private logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+    private logger: ILogger = new WinstonLogger(true); // TODO: inject logger
     private readonly USER_FEEDBACK_BASE_URI: string = "UserFeedback";
     private http!: IHttpDelegate;
     private baseUri = "";

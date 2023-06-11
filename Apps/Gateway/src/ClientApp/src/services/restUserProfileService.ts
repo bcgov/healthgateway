@@ -1,5 +1,3 @@
-import { injectable } from "inversify";
-
 import { ResultType } from "@/constants/resulttype";
 import { ServiceCode } from "@/constants/serviceCodes";
 import { Dictionary } from "@/models/baseTypes";
@@ -9,8 +7,6 @@ import RequestResult from "@/models/requestResult";
 import { TermsOfService } from "@/models/termsOfService";
 import type { UserPreference } from "@/models/userPreference";
 import UserProfile, { CreateUserRequest } from "@/models/userProfile";
-import container from "@/plugins/container";
-import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import {
     IHttpDelegate,
     ILogger,
@@ -18,10 +14,10 @@ import {
 } from "@/services/interfaces";
 import ErrorTranslator from "@/utility/errorTranslator";
 import RequestResultUtil from "@/utility/requestResultUtil";
+import { WinstonLogger } from "@/services/winstonLogger";
 
-@injectable()
 export class RestUserProfileService implements IUserProfileService {
-    private logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+    private logger: ILogger = new WinstonLogger(true); // TODO: inject logger
     private readonly APPLICATION_JSON: string =
         "application/json; charset=utf-8";
     private readonly CONTENT_TYPE: string = "Content-Type";

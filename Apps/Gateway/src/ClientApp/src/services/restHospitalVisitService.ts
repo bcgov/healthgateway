@@ -1,5 +1,3 @@
-import { injectable } from "inversify";
-
 import { EntryType } from "@/constants/entryType";
 import { ResultType } from "@/constants/resulttype";
 import { ServiceCode } from "@/constants/serviceCodes";
@@ -7,8 +5,6 @@ import { ExternalConfiguration } from "@/models/configData";
 import { HttpError } from "@/models/errors";
 import HospitalVisitResult from "@/models/hospitalVisitResult";
 import RequestResult from "@/models/requestResult";
-import container from "@/plugins/container";
-import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import {
     IHospitalVisitService,
     IHttpDelegate,
@@ -16,10 +12,10 @@ import {
 } from "@/services/interfaces";
 import ConfigUtil from "@/utility/configUtil";
 import ErrorTranslator from "@/utility/errorTranslator";
+import { WinstonLogger } from "@/services/winstonLogger";
 
-@injectable()
 export class RestHospitalVisitService implements IHospitalVisitService {
-    private logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+    private logger: ILogger = new WinstonLogger(true); // TODO: inject logger
     private readonly HOSPITAL_VISIT_BASE_URI: string = "Encounter";
     private baseUri = "";
     private http!: IHttpDelegate;

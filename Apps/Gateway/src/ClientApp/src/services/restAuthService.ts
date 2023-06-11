@@ -1,18 +1,15 @@
-import { injectable } from "inversify";
 import Keycloak, { KeycloakConfig } from "keycloak-js";
 
 import { OpenIdConnectConfiguration } from "@/models/configData";
 import { OidcTokenDetails, OidcUserInfo } from "@/models/user";
-import container from "@/plugins/container";
-import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { IAuthenticationService, ILogger } from "@/services/interfaces";
+import { WinstonLogger } from "@/services/winstonLogger";
 
 /** The number of seconds between initiation of a token refresh and expiry of the old token. */
 const REFRESH_CUSHION = 30;
 
-@injectable()
 export class RestAuthenticationService implements IAuthenticationService {
-    private logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+    private logger: ILogger = new WinstonLogger(true); // TODO: inject logger
 
     private keycloak!: Keycloak;
     private scope!: string;

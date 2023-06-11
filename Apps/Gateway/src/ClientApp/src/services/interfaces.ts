@@ -1,5 +1,3 @@
-import { Store } from "vuex";
-
 import AddDependentRequest from "@/models/addDependentRequest";
 import { Dictionary } from "@/models/baseTypes";
 import { CheckInRequest } from "@/models/checkInRequest";
@@ -43,7 +41,6 @@ import type { UserPreference } from "@/models/userPreference";
 import UserProfile, { CreateUserRequest } from "@/models/userProfile";
 import UserRating from "@/models/userRating";
 import VaccinationStatus from "@/models/vaccinationStatus";
-import { RootState } from "@/store/types";
 
 export interface IHttpDelegateService {
     initialize(config: ExternalConfiguration, http: IHttpDelegate): void;
@@ -278,17 +275,13 @@ export interface IReportService {
 }
 
 export interface ILogger {
-    initialize(logLevel?: string): void;
+    initialize(logLevel?: string, loggerName?: string): void;
     log(level: string, message: string): void;
     warn(message: string): void;
     error(message: string): void;
     info(message: string): void;
     verbose(message: string): void;
     debug(message: string): void;
-}
-
-export interface IStoreProvider {
-    getStore(): Store<RootState>;
 }
 
 export interface ITicketService {

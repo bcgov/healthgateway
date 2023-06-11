@@ -1,13 +1,9 @@
-import { injectable } from "inversify";
-
 import { ServiceCode } from "@/constants/serviceCodes";
 import AddDependentRequest from "@/models/addDependentRequest";
 import { ExternalConfiguration } from "@/models/configData";
 import type { Dependent } from "@/models/dependent";
 import { HttpError } from "@/models/errors";
 import RequestResult from "@/models/requestResult";
-import container from "@/plugins/container";
-import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import {
     IDependentService,
     IHttpDelegate,
@@ -15,10 +11,10 @@ import {
 } from "@/services/interfaces";
 import ErrorTranslator from "@/utility/errorTranslator";
 import RequestResultUtil from "@/utility/requestResultUtil";
+import { WinstonLogger } from "@/services/winstonLogger";
 
-@injectable()
 export class RestDependentService implements IDependentService {
-    private logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+    private logger: ILogger = new WinstonLogger(true); // TODO: inject logger
     private readonly DEPENDENT_BASE_URI: string = "UserProfile";
     private http!: IHttpDelegate;
     private isEnabled = false;
