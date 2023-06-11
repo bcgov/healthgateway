@@ -1,6 +1,6 @@
 export class FragmentedStorage implements Storage {
     private internalStorage: Storage;
-    private maxSize: number;
+    private readonly maxSize: number;
     private readonly fragmentIndicator = "split~";
     private readonly fragmentSeparator = "&~&";
     private readonly keySeparator = ".";
