@@ -82,3 +82,42 @@ describe("Services - Organ Donor Registration Card", () => {
         cy.get("[data-testid=genericMessageModal]").should("be.visible");
     });
 });
+
+describe("Services - Organ Donor Registration Card - ODR Dataset Blocked", () => {
+    beforeEach(() => {
+        cy.intercept("GET", `**/UserProfile/*`, {
+            fixture:
+                "UserProfileService/userProfileOrganDonorRegistrationDatasetBlocked.json",
+        });
+        cy.login(
+            Cypress.env("keycloak.username"),
+            Cypress.env("keycloak.password"),
+            AuthMethod.KeyCloak,
+            "/services"
+        );
+    });
+
+    it("Should not show Organ Donor Registration Card", () => {
+        cy.configureSettings({
+            services: {
+                enabled: true,
+                services: [
+                    {
+                        name: "organDonorRegistration",
+                        enabled: true,
+                    },
+                ],
+            },
+        });
+
+        cy.get("[data-testid=organ-donor-registration-card]").should(
+            "not.exist"
+        );
+
+        cy.get("[data-testid=singleErrorHeader")
+            .should("be.visible")
+            .contains(
+                "Organ Donor Registration is not available at this time. Please try again later."
+            );
+    });
+});

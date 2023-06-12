@@ -16,7 +16,7 @@
         "closedDateTime": null,
         "preferences": {},
         "hasTourUpdated": true,
-        "blockedDataSources": []
+        "blockedDataSources": ["OrganDonorRegistration"]
     },
     "totalResultCount": null,
     "pageIndex": null,

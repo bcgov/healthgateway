@@ -16,7 +16,18 @@
         "closedDateTime": null,
         "preferences": {},
         "hasTourUpdated": true,
-        "blockedDataSources": []
+        "blockedDataSources": [
+            "ClinicalDocument",
+            "Immunization",
+            "SpecialAuthorityRequest",
+            "Covid19TestResult",
+            "LabResult",
+            "HealthVisit",
+            "HospitalVisit",
+            "Medication",
+            "Note",
+            "DiagnosticImaging"
+        ]
     },
     "totalResultCount": null,
     "pageIndex": null,
