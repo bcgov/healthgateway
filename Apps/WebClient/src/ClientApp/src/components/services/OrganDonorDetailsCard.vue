@@ -55,9 +55,11 @@ const blockedDataSources = computed<DataSource[]>(
     () => store.getters["user/blockedDataSources"]
 );
 
-const showOrganDonorRegistration = computed<boolean>(() => {
-    return canAccessOrganDonorRegistration(false);
-});
+const showOrganDonorRegistration = computed(() =>
+    !blockedDataSources.value.includes(
+        DataSource.OrganDonorRegistration
+    )
+);
 
 function addCustomError(
     title: string,
