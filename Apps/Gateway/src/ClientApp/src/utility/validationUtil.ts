@@ -1,3 +1,5 @@
+import { BaseValidation } from "@vuelidate/core";
+
 const PHNsigDigits = [2, 4, 8, 5, 10, 9, 7, 3];
 
 export default abstract class ValidationUtil {
@@ -29,5 +31,24 @@ export default abstract class ValidationUtil {
         }
 
         return ok;
+    }
+
+    /**
+     * Returns the validation state for a validator.
+     * @param rootValidator The overall validator for a parameter.
+     * @param validator A specific validator for the parameter (defaults to the rootValidator).
+     * @param ignoreUntouched Determines whether untouched parameters should return an undefined validation state (defaults to true).
+     * @returns undefined if the parameter is untouched (and ignoreUntouched is true), otherwise true when the validator's state is not invalid or pending.
+     */
+    public static isValid(
+        rootValidator: BaseValidation,
+        validator: BaseValidation | undefined = undefined,
+        ignoreUntouched = true
+    ): boolean | undefined {
+        validator ??= rootValidator;
+        const untouched = !rootValidator.$dirty;
+        return untouched && ignoreUntouched
+            ? undefined
+            : !validator.$invalid && !validator.$pending;
     }
 }
