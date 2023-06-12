@@ -1,3 +1,4 @@
+import { DataSource } from "@/constants/dataSource";
 import { Dictionary } from "@/models/baseTypes";
 import { StringISODateTime } from "@/models/dateWrapper";
 import type { UserPreference } from "@/models/userPreference";
@@ -41,6 +42,9 @@ export default interface UserProfile {
 
     // Has the app tour been updated
     hasTourUpdated?: boolean;
+
+    // User's blocked access to data source(s)
+    blockedDataSources?: DataSource[];
 }
 
 export interface CreateUserRequest {

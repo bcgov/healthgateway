@@ -15,7 +15,9 @@ import { useStore } from "vue-composition-wrapper";
 import ProtectiveWordComponent from "@/components/modal/ProtectiveWordComponent.vue";
 import EntryDetailsComponent from "@/components/timeline/entryCard/EntryDetailsComponent.vue";
 import FilterComponent from "@/components/timeline/FilterComponent.vue";
+import { DataSource } from "@/constants/dataSource";
 import { EntryType, entryTypeMap } from "@/constants/entryType";
+import { ErrorSourceType } from "@/constants/errorType";
 import { ClinicalDocument } from "@/models/clinicalDocument";
 import ClinicalDocumentTimelineEntry from "@/models/clinicalDocumentTimelineEntry";
 import Covid19LaboratoryOrderTimelineEntry from "@/models/covid19LaboratoryOrderTimelineEntry";
@@ -45,6 +47,7 @@ import UserNote from "@/models/userNote";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ILogger } from "@/services/interfaces";
+import dataSourceUtil from "@/utility/dataSourceUtil";
 
 interface Props {
     hdid: string;
@@ -156,6 +159,9 @@ const linearDate = computed<IDateWrapper>(
 );
 const selectedDate = computed<IDateWrapper | null>(
     () => store.getters["timeline/selectedDate"]
+);
+const blockedDataSources = computed<DataSource[]>(
+    () => store.getters["user/blockedDataSources"]
 );
 
 const filterLabels = computed(() => {
@@ -341,6 +347,14 @@ const showTimelineEntries = computed(
     () => unfilteredTimelineEntries.value.length > 0 || isFullyLoaded.value
 );
 
+function addCustomError(
+    title: string,
+    source: ErrorSourceType,
+    traceId: string | undefined
+): void {
+    store.dispatch("errorBanner/addCustomError", { title, source, traceId });
+}
+
 function retrieveClinicalDocuments(hdid: string): Promise<void> {
     return store.dispatch("clinicalDocument/retrieveClinicalDocuments", {
         hdid,
@@ -503,17 +517,60 @@ function fetchDataset(entryType: EntryType): Promise<void> {
 }
 
 function fetchTimelineData(): Promise<void | void[]> {
-    const promises = props.entryTypes.map((entryType) =>
-        fetchDataset(entryType)
-    );
+    const blockedEntryTypes: EntryType[] = [];
+
+    const promises: Promise<void>[] = [];
+    props.entryTypes.forEach((entryType) => {
+        {
+            if (canAccessDataset(entryType)) {
+                promises.push(fetchDataset(entryType));
+            } else {
+                blockedEntryTypes.push(entryType);
+            }
+        }
+    });
 
     if (props.commentsAreEnabled) {
         promises.push(retrieveComments(props.hdid));
     }
 
+    showDatasetWarning(blockedEntryTypes);
+
     return Promise.all(promises).catch((err) =>
         logger.error(`Error loading timeline data: ${err}`)
     );
+}
+
+function canAccessDataset(entryType: EntryType): boolean {
+    const dataSource = dataSourceUtil.getDataSource(entryType);
+    const canAccess = !blockedDataSources.value.includes(dataSource);
+    logger.debug(`Can access data source for ${dataSource}: ${canAccess}`);
+    return canAccess;
+}
+
+function showDatasetWarning(entryTypes: EntryType[]): void {
+    const entryTypesLength = entryTypes.length;
+    logger.debug(
+        `Cannot access dataset entry types length: ${entryTypesLength}`
+    );
+
+    if (entryTypesLength === 0) {
+        return;
+    }
+
+    let warningMessage = "";
+    if (entryTypesLength > 1) {
+        warningMessage =
+            "Multiple records are unavailable at this time. Please try again later.";
+    } else {
+        const entryType: EntryType = entryTypes[0];
+        logger.debug(`Setting up warning message for: ${entryType}`);
+        const name = entryTypeMap.get(entryType)?.name;
+        warningMessage = name
+            ? `${name} are unavailable at this time. Please try again later.`
+            : `Some records may be unavailable at this time, please try again later.`;
+    }
+    addCustomError(warningMessage, ErrorSourceType.User, undefined);
 }
 
 function setDateGroupRef(
