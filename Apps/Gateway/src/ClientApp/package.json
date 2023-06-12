@@ -12,6 +12,7 @@
         "@mdi/font": "7.0.96",
         "axios": "^1.4.0",
         "keycloak-js": "^21.1.1",
+        "luxon": "^3.3.0",
         "pinia": "^2.0.23",
         "roboto-fontface": "*",
         "throttle-debounce": "^5.0.0",
@@ -23,6 +24,7 @@
     },
     "devDependencies": {
         "@babel/types": "^7.21.4",
+        "@types/luxon": "^3.3.0",
         "@types/node": "^18.15.0",
         "@types/throttle-debounce": "^5.0.0",
         "@types/webfontloader": "^1.6.35",

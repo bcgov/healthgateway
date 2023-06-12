@@ -1,4 +1,10 @@
-import { DateTime, Duration, DurationObject, DurationUnit } from "luxon";
+import {
+    DateTime,
+    DateTimeUnit,
+    Duration,
+    DurationLikeObject,
+    DurationUnit,
+} from "luxon";
 
 const timezone = "America/Vancouver";
 const locale = "en-US"; // times display as 4:07 PM in en-US locale and 4:07 p.m. in en-CA locale
@@ -151,14 +157,14 @@ export interface IDateWrapper {
      * @param duration The duration as a unit or object
      * @returns the calculated date
      */
-    subtract(duration: Duration | number | DurationObject): DateWrapper;
+    subtract(duration: Duration | number | DurationLikeObject): DateWrapper;
 
     /**
      * Adds a duration to this date.
      * @param duration The duration as a unit or object
      * @returns the calculated date
      */
-    add(duration: Duration | number | DurationObject): DateWrapper;
+    add(duration: Duration | number | DurationLikeObject): DateWrapper;
 
     /**
      * Checks if the date is in DST.
@@ -196,7 +202,7 @@ export class DateWrapper implements IDateWrapper {
     /**
      * Creates an immutable DateWrapper object.
      * @param param type of object to base this object. If none passed creates sets the current date time to NOW.
-     * @param isUtc True if the date passed is in UTC, false by default.
+     * @param options { isUtc: boolean, hasTime: boolean } manages time and timezone formatting.
      */
     constructor(
         param?: StringISODate | StringISODateTime | IDateWrapper | DateTime,
@@ -208,7 +214,7 @@ export class DateWrapper implements IDateWrapper {
             this._internal_date = param.internalDate;
         } else if (param instanceof DateTime) {
             this._date_source = "DateTime";
-            this._raw_string_value = param.toISO();
+            this._raw_string_value = param.toISO() ?? "";
             this._internal_date = param;
         } else if (typeof param === "string") {
             this._date_source = "string";
@@ -284,7 +290,7 @@ export class DateWrapper implements IDateWrapper {
      * @param month The month to check
      * @returns the number of days in the month
      */
-    public static daysInMonth(year: number, month: number): number {
+    public static daysInMonth(year: number, month: number): number | undefined {
         return DateTime.local(year, month).daysInMonth;
     }
 
@@ -317,12 +323,12 @@ export class DateWrapper implements IDateWrapper {
         if (toUtc) {
             dateTime = dateTime.toUTC();
         }
-        return dateTime.toISO();
+        return dateTime.toISO() ?? "";
     }
 
     /** {@inheritDoc IDateWrapper.toISODate} */
     public toISODate(): StringISODate {
-        return this.internalDate.toISODate();
+        return this.internalDate.toISODate() ?? "";
     }
 
     /** {@inheritDoc IDateWrapper.toJSDate} */
@@ -375,7 +381,7 @@ export class DateWrapper implements IDateWrapper {
     public isSame(other: IDateWrapper, unit?: DurationUnit): boolean {
         if (unit) {
             const otherDate = DateWrapper.getDateTime(other);
-            return this.internalDate.hasSame(otherDate, unit);
+            return this.internalDate.hasSame(otherDate, unit as DateTimeUnit);
         } else {
             return this.fromEpoch() === other.fromEpoch();
         }
@@ -403,18 +409,20 @@ export class DateWrapper implements IDateWrapper {
 
     /** {@inheritDoc IDateWrapper.startOf} */
     public startOf(unit: DurationUnit): DateWrapper {
-        const temp_date = this.internalDate.startOf(unit);
+        const temp_date = this.internalDate.startOf(unit as DateTimeUnit);
         return new DateWrapper(temp_date);
     }
 
     /** {@inheritDoc IDateWrapper.subtract} */
-    public subtract(duration: Duration | number | DurationObject): DateWrapper {
+    public subtract(
+        duration: Duration | number | DurationLikeObject
+    ): DateWrapper {
         const temp_date = this.internalDate.minus(duration);
         return new DateWrapper(temp_date);
     }
 
     /** {@inheritDoc IDateWrapper.add} */
-    public add(duration: Duration | number | DurationObject): DateWrapper {
+    public add(duration: Duration | number | DurationLikeObject): DateWrapper {
         const temp_date = this.internalDate.plus(duration);
         return new DateWrapper(temp_date);
     }
