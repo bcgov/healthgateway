@@ -69,24 +69,6 @@ function addCustomError(
     store.dispatch("errorBanner/addCustomError", { title, source, traceId });
 }
 
-function canAccessOrganDonorRegistration(showDatasetWarning = true): boolean {
-    const canAccess = !blockedDataSources.value.includes(
-        DataSource.OrganDonorRegistration
-    );
-    logger.debug(
-        `Can access data source for ${DataSource.OrganDonorRegistration}: ${canAccess}`
-    );
-
-    if (showDatasetWarning && !canAccess) {
-        addCustomError(
-            "Organ Donor Registration is not available at this time. Please try again later.",
-            ErrorSourceType.User,
-            undefined
-        );
-    }
-    return canAccess;
-}
-
 function isPatientDataFileLoading(fileId: string): boolean {
     return store.getters["patientData/isPatientDataFileLoading"](fileId);
 }
