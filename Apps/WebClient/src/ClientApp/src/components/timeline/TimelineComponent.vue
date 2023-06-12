@@ -347,6 +347,14 @@ const showTimelineEntries = computed(
     () => unfilteredTimelineEntries.value.length > 0 || isFullyLoaded.value
 );
 
+function addCustomError(
+    title: string,
+    source: ErrorSourceType,
+    traceId: string | undefined
+): void {
+    store.dispatch("errorBanner/addCustomError", { title, source, traceId });
+}
+
 function retrieveClinicalDocuments(hdid: string): Promise<void> {
     return store.dispatch("clinicalDocument/retrieveClinicalDocuments", {
         hdid,
@@ -509,7 +517,7 @@ function fetchDataset(entryType: EntryType): Promise<void> {
 }
 
 function fetchTimelineData(): Promise<void | void[]> {
-    const cannotAccessEntryTypes: EntryType[] = [];
+    const blockedEntryTypes: EntryType[] = [];
 
     const promises: Promise<void>[] = [];
     props.entryTypes.forEach((entryType) => {
@@ -517,7 +525,7 @@ function fetchTimelineData(): Promise<void | void[]> {
             if (canAccessDataset(entryType)) {
                 promises.push(fetchDataset(entryType));
             } else {
-                cannotAccessEntryTypes.push(entryType);
+                blockedEntryTypes.push(entryType);
             }
         }
     });
@@ -526,7 +534,7 @@ function fetchTimelineData(): Promise<void | void[]> {
         promises.push(retrieveComments(props.hdid));
     }
 
-    showDatasetWarning(cannotAccessEntryTypes);
+    showDatasetWarning(blockedEntryTypes);
 
     return Promise.all(promises).catch((err) =>
         logger.error(`Error loading timeline data: ${err}`)
@@ -546,31 +554,23 @@ function showDatasetWarning(entryTypes: EntryType[]): void {
         `Cannot access dataset entry types length: ${entryTypesLength}`
     );
 
-    if (entryTypesLength > 0) {
-        let warningMessage = "";
-
-        if (entryTypes.length > 1) {
-            warningMessage =
-                "Multiple records are unavailable at this time. Please try again later.";
-        } else {
-            const entryType: EntryType = entryTypes[0];
-            logger.debug(`Setting up warning message for: ${entryType}`);
-            const name = entryTypeMap.get(entryType)?.name;
-            warningMessage = name
-                ? `${name} are unavailable at this time. Please try again later.`
-                : `Some records may be unavailable at this time, please try again later.`;
-        }
-
-        addCustomError(warningMessage, ErrorSourceType.User, undefined);
+    if (entryTypesLength === 0) {
+        return;
     }
-}
 
-function addCustomError(
-    title: string,
-    source: ErrorSourceType,
-    traceId: string | undefined
-): void {
-    store.dispatch("errorBanner/addCustomError", { title, source, traceId });
+    let warningMessage = "";
+    if (entryTypesLength > 1) {
+        warningMessage =
+            "Multiple records are unavailable at this time. Please try again later.";
+    } else {
+        const entryType: EntryType = entryTypes[0];
+        logger.debug(`Setting up warning message for: ${entryType}`);
+        const name = entryTypeMap.get(entryType)?.name;
+        warningMessage = name
+            ? `${name} are unavailable at this time. Please try again later.`
+            : `Some records may be unavailable at this time, please try again later.`;
+    }
+    addCustomError(warningMessage, ErrorSourceType.User, undefined);
 }
 
 function setDateGroupRef(

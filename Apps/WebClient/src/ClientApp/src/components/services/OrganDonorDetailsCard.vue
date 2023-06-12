@@ -55,10 +55,8 @@ const blockedDataSources = computed<DataSource[]>(
     () => store.getters["user/blockedDataSources"]
 );
 
-const showOrganDonorRegistration = computed(() =>
-    !blockedDataSources.value.includes(
-        DataSource.OrganDonorRegistration
-    )
+const showOrganDonorRegistration = computed(
+    () => !blockedDataSources.value.includes(DataSource.OrganDonorRegistration)
 );
 
 function addCustomError(
@@ -100,7 +98,7 @@ function showConfirmationModal(): void {
     sensitiveDocumentModal.value?.showModal();
 }
 
-if (!showOrganDonorRegistration) {
+if (!showOrganDonorRegistration.value) {
     addCustomError(
         "Organ Donor Registration is not available at this time. Please try again later.",
         ErrorSourceType.User,
