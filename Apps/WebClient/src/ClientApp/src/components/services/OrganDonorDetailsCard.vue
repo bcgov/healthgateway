@@ -56,7 +56,7 @@ const blockedDataSources = computed<DataSource[]>(
 );
 
 const showOrganDonorRegistration = computed<boolean>(() => {
-    return canAccessOrganDonorRegistration();
+    return canAccessOrganDonorRegistration(false);
 });
 
 function addCustomError(
@@ -67,7 +67,7 @@ function addCustomError(
     store.dispatch("errorBanner/addCustomError", { title, source, traceId });
 }
 
-function canAccessOrganDonorRegistration(showDatasetWarning = false): boolean {
+function canAccessOrganDonorRegistration(showDatasetWarning = true): boolean {
     const canAccess = !blockedDataSources.value.includes(
         DataSource.OrganDonorRegistration
     );
@@ -116,7 +116,7 @@ function showConfirmationModal(): void {
     sensitiveDocumentModal.value?.showModal();
 }
 
-canAccessOrganDonorRegistration(true);
+canAccessOrganDonorRegistration();
 </script>
 
 <template>

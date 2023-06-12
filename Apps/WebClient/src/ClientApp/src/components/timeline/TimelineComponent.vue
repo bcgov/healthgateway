@@ -555,50 +555,10 @@ function showDatasetWarning(entryTypes: EntryType[]): void {
         } else {
             const entryType: EntryType = entryTypes[0];
             logger.debug(`Setting up warning message for: ${entryType}`);
-            switch (entryType) {
-                case EntryType.ClinicalDocument:
-                    warningMessage =
-                        "Clinical documents are unavailable at this time. Please try again later.";
-                    break;
-                case EntryType.Covid19TestResult:
-                    warningMessage =
-                        "COVID‑19 tests are unavailable at this time. Please try again later.";
-                    break;
-                case EntryType.HealthVisit:
-                    warningMessage =
-                        "Health visits are unavailable at this time. Please try again later.";
-                    break;
-                case EntryType.HospitalVisit:
-                    warningMessage =
-                        "Hospital visits are unavailable at this time. Please try again later.";
-                    break;
-                case EntryType.Immunization:
-                    warningMessage =
-                        "Immunizations are unavailable at this time. Please try again later.";
-                    break;
-                case EntryType.LabResult:
-                    warningMessage =
-                        "Laboratory results are unavailable at this time. Please try again later.";
-                    break;
-                case EntryType.Medication:
-                    warningMessage =
-                        "Medications are unavailable at this time. Please try again later.";
-                    break;
-                case EntryType.Note:
-                    warningMessage =
-                        "Notes are unavailable at this time. Please try again later.";
-                    break;
-                case EntryType.SpecialAuthorityRequest:
-                    warningMessage =
-                        "Special Authority requests are unavailable at this time. Please try again later.";
-                    break;
-                case EntryType.DiagnosticImaging:
-                    warningMessage =
-                        "Diagnostic imaging reports are unavailable at this time. Please try again later.";
-                    break;
-                default:
-                    throw new Error(`Unknown entry type "${entryType}"`);
-            }
+            const name = entryTypeMap.get(entryType)?.name;
+            warningMessage = name
+                ? `${name} are unavailable at this time. Please try again later.`
+                : `Some records may be unavailable at this time, please try again later.`;
         }
 
         addCustomError(warningMessage, ErrorSourceType.User, undefined);
