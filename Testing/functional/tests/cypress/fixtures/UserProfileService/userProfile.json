@@ -15,7 +15,8 @@
         ],
         "closedDateTime": null,
         "preferences": {},
-        "hasTourUpdated": true
+        "hasTourUpdated": true,
+        "blockedDataSources": []
     },
     "totalResultCount": null,
     "pageIndex": null,
