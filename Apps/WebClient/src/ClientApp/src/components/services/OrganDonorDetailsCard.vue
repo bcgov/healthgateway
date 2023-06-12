@@ -118,7 +118,13 @@ function showConfirmationModal(): void {
     sensitiveDocumentModal.value?.showModal();
 }
 
-canAccessOrganDonorRegistration();
+if (!showOrganDonorRegistration) {
+    addCustomError(
+        "Organ Donor Registration is not available at this time. Please try again later.",
+        ErrorSourceType.User,
+        undefined
+    );
+}
 </script>
 
 <template>
