@@ -13,22 +13,22 @@ import {
 } from "@/services/interfaces";
 import ConfigUtil from "@/utility/configUtil";
 import ErrorTranslator from "@/utility/errorTranslator";
-import { WinstonLogger } from "@/services/winstonLogger";
 
 export class RestMedicationService implements IMedicationService {
-    private logger: ILogger = new WinstonLogger(true); // TODO: inject logger
-    private readonly MEDICATION_STATEMENT_BASE_URI: string =
-        "MedicationStatement";
-    private baseUri = "";
-    private http!: IHttpDelegate;
-    private isEnabled = false;
+    private readonly BASE_URI: string = "MedicationStatement";
+    private logger;
+    private http;
+    private baseUri;
+    private isEnabled;
 
-    public initialize(
-        config: ExternalConfiguration,
-        http: IHttpDelegate
-    ): void {
-        this.baseUri = config.serviceEndpoints["Medication"];
+    constructor(
+        logger: ILogger,
+        http: IHttpDelegate,
+        config: ExternalConfiguration
+    ) {
+        this.logger = logger;
         this.http = http;
+        this.baseUri = config.serviceEndpoints["Medication"];
         this.isEnabled = ConfigUtil.isDatasetEnabled(EntryType.Medication);
     }
 
@@ -53,7 +53,7 @@ export class RestMedicationService implements IMedicationService {
             }
             this.http
                 .get<RequestResult<MedicationStatementHistory[]>>(
-                    `${this.baseUri}${this.MEDICATION_STATEMENT_BASE_URI}/${hdid}`,
+                    `${this.baseUri}${this.BASE_URI}/${hdid}`,
                     headers
                 )
                 .then((requestResult) => resolve(requestResult))

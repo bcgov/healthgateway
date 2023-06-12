@@ -5,23 +5,24 @@ import { HttpError } from "@/models/errors";
 import { Ticket } from "@/models/ticket";
 import { IHttpDelegate, ILogger, ITicketService } from "@/services/interfaces";
 import ErrorTranslator from "@/utility/errorTranslator";
-import { WinstonLogger } from "@/services/winstonLogger";
 
 export class RestTicketService implements ITicketService {
-    private logger: ILogger = new WinstonLogger(true); // TODO: inject logger
     private readonly TICKET_BASE_URI: string = "Ticket";
-    private http!: IHttpDelegate;
-    private isEnabled = false;
-    private baseUri = "";
+    private logger;
+    private http;
+    private baseUri;
+    private isEnabled;
 
-    public initialize(
-        config: ExternalConfiguration,
-        http: IHttpDelegate
-    ): void {
+    constructor(
+        logger: ILogger,
+        http: IHttpDelegate,
+        config: ExternalConfiguration
+    ) {
+        this.logger = logger;
         this.http = http;
+        this.baseUri = config.serviceEndpoints["Ticket"];
         this.isEnabled =
             config.webClient.featureToggleConfiguration.waitingQueue.enabled;
-        this.baseUri = config.serviceEndpoints["Ticket"];
     }
 
     public createTicket(room: string): Promise<Ticket | undefined> {

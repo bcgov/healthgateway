@@ -9,18 +9,19 @@ import {
     ILogger,
 } from "@/services/interfaces";
 import ErrorTranslator from "@/utility/errorTranslator";
-import { WinstonLogger } from "@/services/winstonLogger";
 
 export class RestCommunicationService implements ICommunicationService {
-    private logger: ILogger = new WinstonLogger(true); // TODO: inject logger
     private readonly BASE_URI: string = "Communication";
-    private http!: IHttpDelegate;
-    private baseUri = "";
+    private logger;
+    private http;
+    private baseUri;
 
-    public initialize(
-        config: ExternalConfiguration,
-        http: IHttpDelegate
-    ): void {
+    constructor(
+        logger: ILogger,
+        http: IHttpDelegate,
+        config: ExternalConfiguration
+    ) {
+        this.logger = logger;
         this.http = http;
         this.baseUri = config.serviceEndpoints["GatewayApi"];
     }

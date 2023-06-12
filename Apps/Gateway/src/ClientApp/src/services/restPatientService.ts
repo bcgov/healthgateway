@@ -4,20 +4,21 @@ import { HttpError } from "@/models/errors";
 import Patient from "@/models/patient";
 import { IHttpDelegate, ILogger, IPatientService } from "@/services/interfaces";
 import ErrorTranslator from "@/utility/errorTranslator";
-import { WinstonLogger } from "@/services/winstonLogger";
 
 export class RestPatientService implements IPatientService {
-    private logger: ILogger = new WinstonLogger(true); // TODO: inject logger
     private readonly PATIENT_BASE_URI: string = "Patient";
-    private baseUri = "";
-    private http!: IHttpDelegate;
+    private logger;
+    private http;
+    private baseUri;
 
-    public initialize(
-        config: ExternalConfiguration,
-        http: IHttpDelegate
-    ): void {
-        this.baseUri = config.serviceEndpoints["Patient"];
+    constructor(
+        logger: ILogger,
+        http: IHttpDelegate,
+        config: ExternalConfiguration
+    ) {
+        this.logger = logger;
         this.http = http;
+        this.baseUri = config.serviceEndpoints["Patient"];
     }
 
     public getPatient(hdid: string): Promise<Patient> {

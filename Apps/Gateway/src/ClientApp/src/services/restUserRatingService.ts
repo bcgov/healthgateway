@@ -8,18 +8,19 @@ import {
     IUserRatingService,
 } from "@/services/interfaces";
 import ErrorTranslator from "@/utility/errorTranslator";
-import { WinstonLogger } from "@/services/winstonLogger";
 
 export class RestUserRatingService implements IUserRatingService {
-    private logger: ILogger = new WinstonLogger(true); // TODO: inject logger
     private readonly USER_RATING_BASE_URI: string = "UserFeedback/Rating";
-    private http!: IHttpDelegate;
-    private baseUri = "";
+    private logger;
+    private http;
+    private baseUri;
 
-    public initialize(
-        config: ExternalConfiguration,
-        http: IHttpDelegate
-    ): void {
+    constructor(
+        logger: ILogger,
+        http: IHttpDelegate,
+        config: ExternalConfiguration
+    ) {
+        this.logger = logger;
         this.http = http;
         this.baseUri = config.serviceEndpoints["GatewayApi"];
     }

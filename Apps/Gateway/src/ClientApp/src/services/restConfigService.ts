@@ -3,15 +3,15 @@ import { ExternalConfiguration } from "@/models/configData";
 import { HttpError } from "@/models/errors";
 import { IConfigService, IHttpDelegate, ILogger } from "@/services/interfaces";
 import ErrorTranslator from "@/utility/errorTranslator";
-import { WinstonLogger } from "@/services/winstonLogger";
 
 export class RestConfigService implements IConfigService {
-    private logger: ILogger = new WinstonLogger(true); // TODO: inject logger
     private readonly CONFIG_BASE_URI: string = "/configuration";
-    private http!: IHttpDelegate;
+    private logger;
+    private http;
 
-    public initialize(http: IHttpDelegate): void {
-        this.http = http;
+    constructor(logger: ILogger, httpDelegate: IHttpDelegate) {
+        this.logger = logger;
+        this.http = httpDelegate;
     }
 
     public getConfiguration(): Promise<ExternalConfiguration> {

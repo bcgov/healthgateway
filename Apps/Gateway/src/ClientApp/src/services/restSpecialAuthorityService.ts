@@ -12,21 +12,22 @@ import {
 } from "@/services/interfaces";
 import ConfigUtil from "@/utility/configUtil";
 import ErrorTranslator from "@/utility/errorTranslator";
-import { WinstonLogger } from "@/services/winstonLogger";
 
 export class RestSpecialAuthorityService implements ISpecialAuthorityService {
-    private logger: ILogger = new WinstonLogger(true); // TODO: inject logger
     private readonly SPECIAL_AUTHORITY_BASE_URI: string = "MedicationRequest";
-    private baseUri = "";
-    private http!: IHttpDelegate;
-    private isEnabled = false;
+    private logger;
+    private http;
+    private baseUri;
+    private isEnabled;
 
-    public initialize(
-        config: ExternalConfiguration,
-        http: IHttpDelegate
-    ): void {
-        this.baseUri = config.serviceEndpoints["SpecialAuthority"];
+    constructor(
+        logger: ILogger,
+        http: IHttpDelegate,
+        config: ExternalConfiguration
+    ) {
+        this.logger = logger;
         this.http = http;
+        this.baseUri = config.serviceEndpoints["SpecialAuthority"];
         this.isEnabled = ConfigUtil.isDatasetEnabled(
             EntryType.SpecialAuthorityRequest
         );

@@ -16,23 +16,23 @@ import {
 } from "@/services/interfaces";
 import ConfigUtil from "@/utility/configUtil";
 import ErrorTranslator from "@/utility/errorTranslator";
-import { WinstonLogger } from "@/services/winstonLogger";
 
 export class RestLaboratoryService implements ILaboratoryService {
-    private logger: ILogger = new WinstonLogger(true); // TODO: inject logger
     private readonly LABORATORY_BASE_URI: string = "Laboratory";
-    private readonly PUBLIC_LABORATORY_BASE_URI: string = "PublicLaboratory";
-    private baseUri = "";
-    private http!: IHttpDelegate;
-    private isEnabled = false;
-    private isCovid19Enabled = false;
+    private logger;
+    private http;
+    private baseUri;
+    private isEnabled;
+    private isCovid19Enabled;
 
-    public initialize(
-        config: ExternalConfiguration,
-        http: IHttpDelegate
-    ): void {
-        this.baseUri = config.serviceEndpoints["Laboratory"];
+    constructor(
+        logger: ILogger,
+        http: IHttpDelegate,
+        config: ExternalConfiguration
+    ) {
+        this.logger = logger;
         this.http = http;
+        this.baseUri = config.serviceEndpoints["Laboratory"];
         this.isEnabled = ConfigUtil.isDatasetEnabled(EntryType.LabResult);
         this.isCovid19Enabled = ConfigUtil.isDatasetEnabled(
             EntryType.Covid19TestResult

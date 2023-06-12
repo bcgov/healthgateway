@@ -3,21 +3,14 @@ import { format, Logger, loggers, transports } from "winston";
 import { ILogger } from "@/services/interfaces";
 
 export class WinstonLogger implements ILogger {
+    private readonly loggerName = "default";
     private logger: Logger | undefined;
-    public constructor(initializeDefault?: boolean) {
-        // Allows for the logger to be initialized with the default settings
-        if (initializeDefault) {
-            this.initialize();
-        }
-    }
 
-    public initialize(logLevel?: string, loggerName?: string): void {
-        const name = loggerName ?? "default";
-
-        this.logger = loggers.get(name);
-        if (!this.logger) {
-            this.logger = loggers.add(name, {
-                level: logLevel !== undefined ? logLevel.toLowerCase() : "info",
+    public constructor(logLevel?: string) {
+        this.logger =
+            loggers.get(this.loggerName) ??
+            loggers.add(this.loggerName, {
+                level: logLevel?.toLowerCase() || "info",
                 format: format.json(),
                 transports: [
                     new transports.Console({
@@ -25,7 +18,6 @@ export class WinstonLogger implements ILogger {
                     }),
                 ],
             });
-        }
     }
 
     public log(level: string, message: string): void {

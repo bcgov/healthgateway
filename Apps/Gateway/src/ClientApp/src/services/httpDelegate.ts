@@ -2,10 +2,13 @@ import Axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from "axios";
 import { Dictionary } from "@/models/baseTypes";
 import { HttpError } from "@/models/errors";
 import { IHttpDelegate, ILogger } from "@/services/interfaces";
-import { WinstonLogger } from "@/services/winstonLogger";
 
-export default class HttpDelegate implements IHttpDelegate {
-    private logger: ILogger = new WinstonLogger(true); // TODO: Inject logger
+export class HttpDelegate implements IHttpDelegate {
+    private logger;
+
+    constructor(logger: ILogger) {
+        this.logger = logger;
+    }
 
     public unsetAuthorizationHeader(): void {
         this.logger.debug(`ACCESS TOKEN UNSET`);

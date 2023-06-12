@@ -12,23 +12,24 @@ import {
 } from "@/services/interfaces";
 import ErrorTranslator from "@/utility/errorTranslator";
 import RequestResultUtil from "@/utility/requestResultUtil";
-import { WinstonLogger } from "@/services/winstonLogger";
 
 export class RestUserCommentService implements IUserCommentService {
-    private logger: ILogger = new WinstonLogger(true); // TODO: inject logger
     private readonly USER_COMMENT_BASE_URI: string = "UserProfile";
-    private http!: IHttpDelegate;
-    private isEnabled = false;
-    private baseUri = "";
+    private logger;
+    private http;
+    private baseUri;
+    private isEnabled;
 
-    public initialize(
-        config: ExternalConfiguration,
-        http: IHttpDelegate
-    ): void {
+    constructor(
+        logger: ILogger,
+        http: IHttpDelegate,
+        config: ExternalConfiguration
+    ) {
+        this.logger = logger;
         this.http = http;
+        this.baseUri = config.serviceEndpoints["GatewayApi"];
         this.isEnabled =
             config.webClient.featureToggleConfiguration.timeline.comment;
-        this.baseUri = config.serviceEndpoints["GatewayApi"];
     }
 
     public getCommentsForEntry(

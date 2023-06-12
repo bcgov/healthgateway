@@ -11,21 +11,22 @@ import {
 } from "@/services/interfaces";
 import ErrorTranslator from "@/utility/errorTranslator";
 import RequestResultUtil from "@/utility/requestResultUtil";
-import { WinstonLogger } from "@/services/winstonLogger";
 
 export class RestDependentService implements IDependentService {
-    private logger: ILogger = new WinstonLogger(true); // TODO: inject logger
     private readonly DEPENDENT_BASE_URI: string = "UserProfile";
-    private http!: IHttpDelegate;
-    private isEnabled = false;
-    private baseUri = "";
+    private logger;
+    private http;
+    private baseUri;
+    private isEnabled;
 
-    public initialize(
-        config: ExternalConfiguration,
-        http: IHttpDelegate
-    ): void {
-        this.baseUri = config.serviceEndpoints["GatewayApi"];
+    constructor(
+        logger: ILogger,
+        http: IHttpDelegate,
+        config: ExternalConfiguration
+    ) {
+        this.logger = logger;
         this.http = http;
+        this.baseUri = config.serviceEndpoints["GatewayApi"];
         this.isEnabled =
             config.webClient.featureToggleConfiguration.dependents.enabled;
     }
