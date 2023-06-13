@@ -12,24 +12,25 @@ import {
     IVaccinationStatusService,
 } from "@/services/interfaces";
 import ErrorTranslator from "@/utility/errorTranslator";
-import { WinstonLogger } from "@/services/winstonLogger";
 
 export class RestVaccinationStatusService implements IVaccinationStatusService {
-    private logger: ILogger = new WinstonLogger(true); // TODO: inject logger
     private readonly PUBLIC_VACCINATION_STATUS_BASE_URI: string =
         "PublicVaccineStatus";
     private readonly AUTHENTICATED_VACCINATION_STATUS_BASE_URI: string =
         "AuthenticatedVaccineStatus";
-    private baseUri = "";
-    private http!: IHttpDelegate;
-    private isEnabled = false;
+    private logger;
+    private http;
+    private baseUri;
+    private isEnabled;
 
-    public initialize(
-        config: ExternalConfiguration,
-        http: IHttpDelegate
-    ): void {
-        this.baseUri = config.serviceEndpoints["Immunization"];
+    constructor(
+        logger: ILogger,
+        http: IHttpDelegate,
+        config: ExternalConfiguration
+    ) {
+        this.logger = logger;
         this.http = http;
+        this.baseUri = config.serviceEndpoints["Immunization"];
         this.isEnabled = true;
     }
 

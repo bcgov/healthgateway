@@ -14,7 +14,6 @@ import {
 } from "@/services/interfaces";
 import ConfigUtil from "@/utility/configUtil";
 import ErrorTranslator from "@/utility/errorTranslator";
-import { WinstonLogger } from "@/services/winstonLogger";
 
 const serviceTypeMap: Map<PatientDataType, ServiceName> = new Map<
     PatientDataType,
@@ -32,10 +31,20 @@ const datasetTypeMap: Map<PatientDataType, EntryType> = new Map<
 >([[PatientDataType.DiagnosticImaging, EntryType.DiagnosticImaging]]);
 
 export class RestPatientDataService implements IPatientDataService {
-    private logger: ILogger = new WinstonLogger(true); // TODO: inject logger
     private readonly BASE_URI = "PatientData";
-    private serviceBaseUri = "";
-    private http!: IHttpDelegate;
+    private logger;
+    private http;
+    private baseUri;
+
+    constructor(
+        logger: ILogger,
+        http: IHttpDelegate,
+        config: ExternalConfiguration
+    ) {
+        this.logger = logger;
+        this.http = http;
+        this.baseUri = config.serviceEndpoints["PatientData"];
+    }
 
     private canProcessRequest(
         patientDataTypes: PatientDataType[],
@@ -55,14 +64,6 @@ export class RestPatientDataService implements IPatientDataService {
         });
     }
 
-    public initialize(
-        config: ExternalConfiguration,
-        http: IHttpDelegate
-    ): void {
-        this.serviceBaseUri = config.serviceEndpoints["PatientData"];
-        this.http = http;
-    }
-
     public getPatientData(
         hdid: string,
         patientDataTypes: PatientDataType[]
@@ -74,7 +75,7 @@ export class RestPatientDataService implements IPatientDataService {
             this.canProcessRequest(patientDataTypes, reject);
             this.http
                 .getWithCors<PatientDataResponse>(
-                    `${this.serviceBaseUri}${this.BASE_URI}/${hdid}?${patientDataTypeQueryArray}&api-version=2.0`
+                    `${this.baseUri}${this.BASE_URI}/${hdid}?${patientDataTypeQueryArray}&api-version=2.0`
                 )
                 .then(resolve)
                 .catch((err: HttpError) => {
@@ -95,7 +96,7 @@ export class RestPatientDataService implements IPatientDataService {
         return new Promise((resolve, reject) => {
             this.http
                 .getWithCors<PatientDataFile>(
-                    `${this.serviceBaseUri}${this.BASE_URI}/${hdid}/file/${fileId}?api-version=2.0`
+                    `${this.baseUri}${this.BASE_URI}/${hdid}/file/${fileId}?api-version=2.0`
                 )
                 .then(resolve)
                 .catch((err: HttpError) => {

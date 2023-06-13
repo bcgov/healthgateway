@@ -14,21 +14,22 @@ import {
 import ConfigUtil from "@/utility/configUtil";
 import ErrorTranslator from "@/utility/errorTranslator";
 import RequestResultUtil from "@/utility/requestResultUtil";
-import { WinstonLogger } from "@/services/winstonLogger";
 
 export class RestUserNoteService implements IUserNoteService {
-    private logger: ILogger = new WinstonLogger(true); // TODO: inject logger
     private readonly USER_NOTE_BASE_URI: string = "Note";
-    private http!: IHttpDelegate;
-    private isEnabled = false;
-    private baseUri = "";
+    private logger;
+    private http;
+    private baseUri;
+    private isEnabled;
 
-    public initialize(
-        config: ExternalConfiguration,
-        http: IHttpDelegate
-    ): void {
-        this.baseUri = config.serviceEndpoints["GatewayApi"];
+    constructor(
+        logger: ILogger,
+        http: IHttpDelegate,
+        config: ExternalConfiguration
+    ) {
+        this.logger = logger;
         this.http = http;
+        this.baseUri = config.serviceEndpoints["GatewayApi"];
         this.isEnabled = ConfigUtil.isDatasetEnabled(EntryType.Note);
     }
 

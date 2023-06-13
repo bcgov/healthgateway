@@ -8,19 +8,20 @@ import {
     INotificationService,
 } from "@/services/interfaces";
 import ErrorTranslator from "@/utility/errorTranslator";
-import { WinstonLogger } from "@/services/winstonLogger";
 
 export class RestNotificationService implements INotificationService {
-    private logger: ILogger = new WinstonLogger(true); // TODO: inject logger
     private readonly NOTIFICATION_BASE_URI: string = "Notification";
-    private http!: IHttpDelegate;
-    private isEnabled = false;
-    private baseUri = "";
+    private logger;
+    private http;
+    private baseUri;
+    private isEnabled;
 
-    public initialize(
-        config: ExternalConfiguration,
-        http: IHttpDelegate
-    ): void {
+    constructor(
+        logger: ILogger,
+        http: IHttpDelegate,
+        config: ExternalConfiguration
+    ) {
+        this.logger = logger;
         this.http = http;
         this.isEnabled =
             config.webClient.featureToggleConfiguration.notificationCentre.enabled;

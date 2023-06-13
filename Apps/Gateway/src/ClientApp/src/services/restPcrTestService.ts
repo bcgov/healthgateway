@@ -7,24 +7,23 @@ import RequestResult from "@/models/requestResult";
 import { IHttpDelegate, ILogger, IPcrTestService } from "@/services/interfaces";
 import ErrorTranslator from "@/utility/errorTranslator";
 import RequestResultUtil from "@/utility/requestResultUtil";
-import { WinstonLogger } from "@/services/winstonLogger";
 
 export class RestPcrTestService implements IPcrTestService {
-    private logger: ILogger = new WinstonLogger(true); // TODO: inject logger
-
     private readonly LABORATORY_BASE_URI: string = "Laboratory";
     private readonly PUBLIC_LABORATORY_BASE_URI: string = "PublicLaboratory";
+    private logger;
+    private http;
+    private baseUri;
+    private isEnabled;
 
-    private http!: IHttpDelegate;
-    private isEnabled = false;
-    private baseUri = "";
-
-    public initialize(
-        config: ExternalConfiguration,
-        http: IHttpDelegate
-    ): void {
-        this.baseUri = config.serviceEndpoints["Laboratory"];
+    constructor(
+        logger: ILogger,
+        http: IHttpDelegate,
+        config: ExternalConfiguration
+    ) {
+        this.logger = logger;
         this.http = http;
+        this.baseUri = config.serviceEndpoints["Laboratory"];
         this.isEnabled =
             config.webClient.featureToggleConfiguration.covid19.pcrTestEnabled;
     }

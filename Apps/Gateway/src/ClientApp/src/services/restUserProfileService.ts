@@ -14,21 +14,22 @@ import {
 } from "@/services/interfaces";
 import ErrorTranslator from "@/utility/errorTranslator";
 import RequestResultUtil from "@/utility/requestResultUtil";
-import { WinstonLogger } from "@/services/winstonLogger";
 
 export class RestUserProfileService implements IUserProfileService {
-    private logger: ILogger = new WinstonLogger(true); // TODO: inject logger
     private readonly APPLICATION_JSON: string =
         "application/json; charset=utf-8";
     private readonly CONTENT_TYPE: string = "Content-Type";
     private readonly USER_PROFILE_BASE_URI: string = "UserProfile";
-    private http!: IHttpDelegate;
-    private baseUri = "";
+    private logger;
+    private http;
+    private baseUri;
 
-    public initialize(
-        config: ExternalConfiguration,
-        http: IHttpDelegate
-    ): void {
+    constructor(
+        logger: ILogger,
+        http: IHttpDelegate,
+        config: ExternalConfiguration
+    ) {
+        this.logger = logger;
         this.http = http;
         this.baseUri = config.serviceEndpoints["GatewayApi"];
     }

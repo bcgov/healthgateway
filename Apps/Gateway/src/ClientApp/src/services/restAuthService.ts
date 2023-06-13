@@ -1,55 +1,67 @@
 import Keycloak, { KeycloakConfig } from "keycloak-js";
 
-import { OpenIdConnectConfiguration } from "@/models/configData";
 import { OidcTokenDetails, OidcUserInfo } from "@/models/user";
 import { IAuthenticationService, ILogger } from "@/services/interfaces";
-import { WinstonLogger } from "@/services/winstonLogger";
+import { OpenIdConnectConfiguration } from "@/models/configData";
 
 /** The number of seconds between initiation of a token refresh and expiry of the old token. */
 const REFRESH_CUSHION = 30;
 
 export class RestAuthenticationService implements IAuthenticationService {
-    private logger: ILogger = new WinstonLogger(true); // TODO: inject logger
-
-    private keycloak!: Keycloak;
+    private logger;
+    private keycloak;
     private scope!: string;
     private logonCallback!: string;
     private logoutCallback!: string;
 
-    public async initialize(config: OpenIdConnectConfiguration): Promise<void> {
-        this.scope = config.scope;
-        this.logonCallback = config.callbacks["Logon"];
-        this.logoutCallback = config.callbacks["Logout"];
+    // RestAuthenticationService.GetService() should be called instead of using the constructor directly.
+    constructor(
+        logger: ILogger,
+        keycloak: Keycloak,
+        oidcConfig: OpenIdConnectConfiguration
+    ) {
+        this.logger = logger;
+        this.keycloak = keycloak;
 
-        const [url, realm] = config.authority.split("/realms/");
+        this.scope = oidcConfig.scope;
+        this.logonCallback = oidcConfig.callbacks["Logon"];
+        this.logoutCallback = oidcConfig.callbacks["Logout"];
+    }
+
+    public static async GetService(
+        logger: ILogger,
+        oidcConfig: OpenIdConnectConfiguration
+    ): Promise<IAuthenticationService> {
+        const [url, realm] = oidcConfig.authority.split("/realms/");
         const keycloakConfig: KeycloakConfig = {
             url,
             realm,
-            clientId: config.clientId,
+            clientId: oidcConfig.clientId,
         };
-        this.keycloak = new Keycloak(keycloakConfig);
+        const keycloak = new Keycloak(keycloakConfig);
 
-        this.keycloak.onReady = () => this.logger.verbose("Keycloak: onReady");
-        this.keycloak.onAuthSuccess = () =>
-            this.logger.verbose("Keycloak: onAuthSuccess");
-        this.keycloak.onAuthError = (error) => {
-            this.logger.verbose(`Keycloak: onAuthError - ${error.error}`);
-            this.logger.error(error.error_description);
+        keycloak.onReady = () => logger.verbose("Keycloak: onReady");
+        keycloak.onAuthSuccess = () =>
+            logger.verbose("Keycloak: onAuthSuccess");
+        keycloak.onAuthError = (error) => {
+            logger.verbose(`Keycloak: onAuthError - ${error.error}`);
+            logger.error(error.error_description);
         };
-        this.keycloak.onAuthRefreshSuccess = () =>
-            this.logger.verbose("Keycloak: onAuthRefreshSuccess");
-        this.keycloak.onAuthRefreshError = () =>
-            this.logger.verbose("Keycloak: onAuthRefreshError");
-        this.keycloak.onAuthLogout = () =>
-            this.logger.verbose("Keycloak: onAuthLogout");
-        this.keycloak.onTokenExpired = () =>
-            this.logger.verbose("Keycloak: onTokenExpired");
-        this.keycloak.onActionUpdate = (status) =>
-            this.logger.verbose(`Keycloak: onActionUpdate - ${status}`);
+        keycloak.onAuthRefreshSuccess = () =>
+            logger.verbose("Keycloak: onAuthRefreshSuccess");
+        keycloak.onAuthRefreshError = () =>
+            logger.verbose("Keycloak: onAuthRefreshError");
+        keycloak.onAuthLogout = () => logger.verbose("Keycloak: onAuthLogout");
+        keycloak.onTokenExpired = () =>
+            logger.verbose("Keycloak: onTokenExpired");
+        keycloak.onActionUpdate = (status) =>
+            logger.verbose(`Keycloak: onActionUpdate - ${status}`);
 
-        await this.keycloak.init({
+        await keycloak.init({
             onLoad: "check-sso",
         });
+
+        return new RestAuthenticationService(logger, keycloak, oidcConfig);
     }
 
     public async signIn(

@@ -8,6 +8,9 @@ import { computed, ref } from "vue";
 import { defineStore } from "pinia";
 import { DateWrapper } from "@/models/dateWrapper";
 import { LoadStatus } from "@/models/storeOperations";
+import { HttpDelegate } from "@/services/httpDelegate";
+import { RestConfigService } from "@/services/restConfigService";
+import { LoglevelLogger } from "@/services/loglevelLogger";
 
 export const useConfigStore = defineStore("config", () => {
     const config = ref<ExternalConfiguration>({} as ExternalConfiguration);
@@ -72,6 +75,22 @@ export const useConfigStore = defineStore("config", () => {
         status.value = LoadStatus.ERROR;
     }
 
+    async function retrieve(): Promise<void> {
+        // IoC container hasn't yet been initialized at this point
+        const logger = new LoglevelLogger();
+        const httpDelegate = new HttpDelegate(logger);
+        const configService = new RestConfigService(logger, httpDelegate);
+
+        setConfigurationRequested();
+        try {
+            const config = await configService.getConfiguration();
+            setConfigurationLoaded(config);
+        } catch (error: any) {
+            setConfigurationError(error?.toString());
+            throw error;
+        }
+    }
+
     return {
         config,
         error,
@@ -81,8 +100,6 @@ export const useConfigStore = defineStore("config", () => {
         identityProviders,
         openIdConnect,
         isOffline,
-        setConfigurationRequested,
-        setConfigurationLoaded,
-        setConfigurationError,
+        retrieve,
     };
 });
