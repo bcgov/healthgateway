@@ -10,15 +10,29 @@ export class LoglevelLogger implements ILogger {
             level === "info" ||
             level === "debug"
         ) {
-            log.setLevel(level);
+            log.setLevel(level, false);
         } else {
             log.setLevel("info", false);
         }
     }
 
-    error = log.error.bind(log);
-    warn = log.warn.bind(log);
-    info = log.info.bind(log);
-    verbose = log.debug.bind(log);
-    debug = log.debug.bind(log);
+    public error(message: string): void {
+        log.error(message);
+    }
+
+    public warn(message: string): void {
+        log.warn(message);
+    }
+
+    public info(message: string): void {
+        log.info(message);
+    }
+
+    public verbose(message: string): void {
+        log.debug(message);
+    }
+
+    public debug(message: string): void {
+        log.debug(message);
+    }
 }
