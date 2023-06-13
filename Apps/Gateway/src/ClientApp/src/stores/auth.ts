@@ -25,7 +25,7 @@ export const useAuthStore = defineStore("auth", () => {
     const error = ref<unknown>();
     let refreshTimeout: NodeJS.Timeout | undefined;
 
-    const oidcIsAuthenticated = computed<boolean>(
+    const oidcIsAuthenticated = computed(
         () =>
             tokenDetails.value !== undefined &&
             tokenDetails.value.idToken.length > 0
