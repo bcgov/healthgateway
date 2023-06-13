@@ -418,26 +418,28 @@ export const useUserStore = defineStore("user", () => {
                             resolve();
                         })
                         .catch((resultError: ResultError) => {
-                            logger.debug(
-                                `User Profile retrieval failed, status (${resultError.statusCode})`
-                            );
-                            handleError(
-                                resultError,
-                                ErrorType.Retrieve,
-                                ErrorSourceType.Profile
-                            );
+                            if (error.statusCode === 429) {
+                                logger.debug(
+                                    "User profile retrieval failed because of too many requests"
+                                );
+                                appStore.setAppError(AppErrorType.TooManyRequests);
+                            } else {
+                                logger.debug("User profile retrieval failed");
+                                appStore.setAppError(AppErrorType.General);
+                            }
                             resolve();
                         });
                 })
                 .catch((resultError: ResultError) => {
-                    logger.debug(
-                        `Patient retrieval failed, status (${resultError.statusCode})`
-                    );
-                    handleError(
-                        resultError,
-                        ErrorType.Retrieve,
-                        ErrorSourceType.Patient
-                    );
+                    if (error.statusCode === 429) {
+                        logger.debug(
+                            "Patient retrieval failed because of too many requests"
+                        );
+                        appStore.setAppError(AppErrorType.TooManyRequests);
+                    } else {
+                        logger.debug("Patient retrieval failed");
+                        patientRetrievalFailed.value = true;
+                    }
                     resolve();
                 });
         });
