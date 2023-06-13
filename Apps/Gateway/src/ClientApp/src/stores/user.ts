@@ -17,7 +17,11 @@ import PreferenceUtil from "@/utility/preferenceUtil";
 import { ResultError } from "@/models/errors";
 import { useAppStore } from "@/stores/app";
 import { useErrorStore } from "@/stores/error";
-import { ErrorSourceType, ErrorType } from "@/constants/errorType";
+import {
+    AppErrorType,
+    ErrorSourceType,
+    ErrorType,
+} from "@/constants/errorType";
 import { UserPreference } from "@/models/userPreference";
 import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
 import { container } from "@/ioc/container";
@@ -71,9 +75,9 @@ export const useUserStore = defineStore("user", () => {
     const userIsActive = computed(() => {
         return user.value === undefined ? false : !user.value.closedDateTime;
     });
-    
+
     const hasTermsOfServiceUpdated = computed(() =>
-        user === undefined ? false : user.hasTermsOfServiceUpdated
+        user.value === undefined ? false : user.value.hasTermsOfServiceUpdated
     );
 
     const quickLinks = computed(() => {
@@ -138,7 +142,7 @@ export const useUserStore = defineStore("user", () => {
 
         setLoadedStatus(patient.value.hdid !== undefined);
     }
-    
+
     function setEmailVerified() {
         user.value.verifiedEmail = true;
     }
@@ -413,11 +417,13 @@ export const useUserStore = defineStore("user", () => {
                             resolve();
                         })
                         .catch((resultError: ResultError) => {
-                            if (error.statusCode === 429) {
+                            if (resultError.statusCode === 429) {
                                 logger.debug(
                                     "User profile retrieval failed because of too many requests"
                                 );
-                                appStore.setAppError(AppErrorType.TooManyRequests);
+                                appStore.setAppError(
+                                    AppErrorType.TooManyRequests
+                                );
                             } else {
                                 logger.debug("User profile retrieval failed");
                                 appStore.setAppError(AppErrorType.General);
@@ -426,7 +432,7 @@ export const useUserStore = defineStore("user", () => {
                         });
                 })
                 .catch((resultError: ResultError) => {
-                    if (error.statusCode === 429) {
+                    if (resultError.statusCode === 429) {
                         logger.debug(
                             "Patient retrieval failed because of too many requests"
                         );
