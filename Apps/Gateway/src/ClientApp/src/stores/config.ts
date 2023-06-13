@@ -13,7 +13,7 @@ import { RestConfigService } from "@/services/restConfigService";
 import { LoglevelLogger } from "@/services/loglevelLogger";
 
 export const useConfigStore = defineStore("config", () => {
-    const config = ref<ExternalConfiguration>({} as ExternalConfiguration);
+    const config = ref<ExternalConfiguration>(new ExternalConfiguration());
     const error = ref<boolean>(false);
     const statusMessage = ref<string>("");
     const status = ref<LoadStatus>(LoadStatus.NONE);
