@@ -23,7 +23,7 @@
         "@vue/cli-service": "^5.0.8",
         "@vue/eslint-config-prettier": "^7.1.0",
         "@vue/eslint-config-typescript": "^11.0.3",
-        "bootstrap": "~4.6.2",
+        "bootstrap": "~5.3.0",
         "compression-webpack-plugin": "^9.2.0",
         "eslint": "^8.42.0",
         "eslint-config-prettier": "^8.8.0",
