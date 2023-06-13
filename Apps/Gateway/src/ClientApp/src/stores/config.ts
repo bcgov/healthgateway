@@ -21,12 +21,15 @@ export const useConfigStore = defineStore("config", () => {
     const webConfig = computed<WebClientConfiguration>(
         () => config.value.webClient
     );
+
     const identityProviders = computed<IdentityProviderConfiguration[]>(
         () => config.value.identityProviders || []
     );
+
     const openIdConnect = computed<OpenIdConnectConfiguration>(
         () => config.value.openIdConnect
     );
+
     const isOffline = computed<boolean>(() => {
         if (!webConfig.value) {
             return true;
