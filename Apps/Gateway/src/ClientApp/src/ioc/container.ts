@@ -1,24 +1,26 @@
 import { Identifier } from "@/ioc/identifier";
 
-class Container {
+interface IContainer {
+    set<T>(key: Identifier, factory: (c: Container) => T): void;
+    get<T>(key: Identifier): T;
+}
+
+class Container implements IContainer {
     private mappings = new Map<Identifier, (c: Container) => any>();
     private cachedMappings = new Map<Identifier, any>();
 
-    public set<T>(
-        key: Identifier,
-        factory: (c: Container) => T,
-        singleton = true
-    ): void {
+    public set<T>(key: Identifier, factory: (c: Container) => T): void {
         this.mappings.set(key, factory);
-        if (singleton) {
-            this.cachedMappings.set(key, factory(this));
-        }
     }
 
     public get<T>(key: Identifier): T {
-        const cachedResult = this.cachedMappings.get(key);
-        return cachedResult ?? this.mappings.get(key)?.(this);
+        let result = this.cachedMappings.get(key);
+        if (!result) {
+            result = this.mappings.get(key)?.(this);
+            this.cachedMappings.set(key, result);
+        }
+        return result;
     }
 }
 
-export const container = new Container();
+export const container: IContainer = new Container();
