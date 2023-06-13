@@ -21,8 +21,8 @@ export const useAuthStore = defineStore("auth", () => {
 
     const userStore = useUserStore();
 
-    const tokenDetails = ref<OidcTokenDetails | undefined>(undefined);
-    const error = ref<unknown>(undefined);
+    const tokenDetails = ref<OidcTokenDetails>();
+    const error = ref<unknown>();
     let refreshTimeout: NodeJS.Timeout | undefined;
 
     const oidcIsAuthenticated = computed<boolean>(
@@ -31,7 +31,7 @@ export const useAuthStore = defineStore("auth", () => {
             tokenDetails.value.idToken.length > 0
     );
 
-    const oidcError = computed<unknown>(() => error.value);
+    const oidcError = computed(() => error.value);
 
     function setAuthenticated(incomingTokenDetails: OidcTokenDetails) {
         logger.verbose("setAuthenticated");

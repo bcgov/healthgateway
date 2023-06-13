@@ -9,8 +9,8 @@ export const useErrorStore = defineStore("error", () => {
         isShowing: boolean;
         errors: BannerError[];
     }>({ isShowing: false, errors: [] });
-    const tooManyRequestsWarning = ref<string | undefined>(undefined);
-    const tooManyRequestsError = ref<string | undefined>(undefined);
+    const tooManyRequestsWarning = ref<string>();
+    const tooManyRequestsError = ref<string>();
 
     function show() {
         genericErrorBanner.value.isShowing = true;

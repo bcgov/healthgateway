@@ -15,6 +15,7 @@ import {
 } from "@/services/interfaces";
 import PreferenceUtil from "@/utility/preferenceUtil";
 import { ResultError } from "@/models/errors";
+import { useAppStore } from "@/stores/app";
 import { useErrorStore } from "@/stores/error";
 import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import { UserPreference } from "@/models/userPreference";
@@ -29,18 +30,19 @@ export const useUserStore = defineStore("user", () => {
         SERVICE_IDENTIFIER.UserProfileService
     );
 
+    const appStore = useAppStore();
     const errorStore = useErrorStore();
 
-    const user = ref<User>(new User());
-    const oidcUserInfo = ref<OidcUserInfo | undefined>(undefined);
-    const smsResendDateTime = ref<DateWrapper | undefined>(undefined);
-    const error = ref<unknown>(undefined);
-    const statusMessage = ref<string>("");
-    const status = ref<LoadStatus>(LoadStatus.NONE);
-    const patient = ref<Patient>(new Patient());
-    const patientRetrievalFailed = ref<boolean>(false);
+    const user = ref(new User());
+    const oidcUserInfo = ref<OidcUserInfo>();
+    const smsResendDateTime = ref<DateWrapper>();
+    const error = ref<unknown>();
+    const statusMessage = ref("");
+    const status = ref(LoadStatus.NONE);
+    const patient = ref(new Patient());
+    const patientRetrievalFailed = ref(false);
 
-    const lastLoginDateTime = computed<StringISODateTime | undefined>(() => {
+    const lastLoginDateTime = computed(() => {
         const loginDateTimes = user.value.lastLoginDateTimes;
         const loginDateTimesLength = user.value.lastLoginDateTimes.length;
 
@@ -53,24 +55,28 @@ export const useUserStore = defineStore("user", () => {
         return undefined;
     });
 
-    const isValidIdentityProvider = computed<boolean>(() => {
+    const isValidIdentityProvider = computed(() => {
         return oidcUserInfo.value === undefined
             ? false
             : oidcUserInfo.value.idp === "BCSC" ||
                   oidcUserInfo.value.idp === undefined;
     });
 
-    const userIsRegistered = computed<boolean>(() => {
+    const userIsRegistered = computed(() => {
         return user.value === undefined
             ? false
             : user.value.acceptedTermsOfService;
     });
 
-    const userIsActive = computed<boolean>(() => {
+    const userIsActive = computed(() => {
         return user.value === undefined ? false : !user.value.closedDateTime;
     });
+    
+    const hasTermsOfServiceUpdated = computed(() =>
+        user === undefined ? false : user.hasTermsOfServiceUpdated
+    );
 
-    const quickLinks = computed<QuickLink[] | undefined>(() => {
+    const quickLinks = computed(() => {
         const preference =
             user.value.preferences[UserPreferenceType.QuickLinks];
         if (preference === undefined) {
@@ -79,7 +85,7 @@ export const useUserStore = defineStore("user", () => {
         return QuickLinkUtil.toQuickLinks(preference.value);
     });
 
-    const isLoading = computed<boolean>(() => {
+    const isLoading = computed(() => {
         return status.value === LoadStatus.REQUESTED;
     });
 
@@ -114,6 +120,7 @@ export const useUserStore = defineStore("user", () => {
         user.value.hasTermsOfServiceUpdated = userProfile
             ? userProfile.hasTermsOfServiceUpdated ?? false
             : false;
+        user.value.lastLoginDateTime = userProfile?.lastLoginDateTime;
         user.value.lastLoginDateTimes = userProfile
             ? userProfile.lastLoginDateTimes
             : [];
@@ -121,18 +128,22 @@ export const useUserStore = defineStore("user", () => {
             ? userProfile.closedDateTime
             : undefined;
         user.value.preferences = userProfile ? userProfile.preferences : {};
-        user.value.hasEmail = !!userProfile?.email;
-        user.value.verifiedEmail = userProfile.isEmailVerified;
-        user.value.hasSMS = !!userProfile?.smsNumber;
-        user.value.verifiedSMS = userProfile.isSMSNumberVerified;
-        user.value.hasTourUpdated = userProfile.hasTourUpdated ?? false;
+        user.value.hasEmail = Boolean(userProfile?.email);
+        user.value.verifiedEmail = userProfile?.isEmailVerified === true;
+        user.value.hasSMS = Boolean(userProfile?.smsNumber);
+        user.value.verifiedSMS = userProfile?.isSMSNumberVerified === true;
+        user.value.hasTourUpdated = userProfile?.hasTourUpdated === true;
 
         logger.verbose(`User: ${JSON.stringify(user.value)}`);
 
         setLoadedStatus(patient.value.hdid !== undefined);
     }
+    
+    function setEmailVerified() {
+        user.value.verifiedEmail = true;
+    }
 
-    function setSmsResendDateTime(date: DateWrapper) {
+    function updateSMSResendDateTime(date: DateWrapper) {
         smsResendDateTime.value = date;
         setLoadedStatus();
     }
@@ -164,7 +175,7 @@ export const useUserStore = defineStore("user", () => {
     }
 
     function setPatient(incomingPatient: Patient) {
-        logger.debug(`setPatient: ${JSON.stringify(patient)}`);
+        logger.debug(`setPatient: ${JSON.stringify(incomingPatient)}`);
         patient.value = incomingPatient;
         setLoadedStatus(user.value.hdid !== undefined);
     }
@@ -201,7 +212,11 @@ export const useUserStore = defineStore("user", () => {
                     resolve();
                 })
                 .catch((resultError: ResultError) => {
-                    setUserError(resultError.resultMessage);
+                    handleError(
+                        resultError,
+                        ErrorType.Create,
+                        ErrorSourceType.Profile
+                    );
                     reject(resultError);
                 })
         );
@@ -219,11 +234,7 @@ export const useUserStore = defineStore("user", () => {
                     resolve();
                 })
                 .catch((resultError: ResultError) => {
-                    handleError(
-                        resultError,
-                        ErrorType.Retrieve,
-                        ErrorSourceType.Profile
-                    );
+                    setUserError(resultError.resultMessage);
                     reject(resultError);
                 })
         );
@@ -241,11 +252,7 @@ export const useUserStore = defineStore("user", () => {
                     resolve();
                 })
                 .catch((resultError: ResultError) => {
-                    handleError(
-                        resultError,
-                        ErrorType.Update,
-                        ErrorSourceType.Profile
-                    );
+                    setUserError(resultError.resultMessage);
                     reject(resultError);
                 })
         );
@@ -449,9 +456,11 @@ export const useUserStore = defineStore("user", () => {
         isValidIdentityProvider,
         userIsRegistered,
         userIsActive,
+        hasTermsOfServiceUpdated,
         quickLinks,
         isLoading,
-        setSmsResendDateTime,
+        setEmailVerified,
+        updateSMSResendDateTime,
         setOidcUserInfo,
         clearUserData,
         createProfile,

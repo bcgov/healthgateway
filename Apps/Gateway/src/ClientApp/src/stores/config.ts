@@ -18,7 +18,7 @@ export const useConfigStore = defineStore("config", () => {
     const statusMessage = ref<string>("");
     const status = ref<LoadStatus>(LoadStatus.NONE);
 
-    const webConfig = computed<WebClientConfiguration>(
+    const webConfig = computed(
         () => config.value.webClient
     );
 
@@ -26,11 +26,11 @@ export const useConfigStore = defineStore("config", () => {
         () => config.value.identityProviders || []
     );
 
-    const openIdConnect = computed<OpenIdConnectConfiguration>(
+    const openIdConnect = computed(
         () => config.value.openIdConnect
     );
 
-    const isOffline = computed<boolean>(() => {
+    const isOffline = computed(() => {
         if (!webConfig.value) {
             return true;
         }
