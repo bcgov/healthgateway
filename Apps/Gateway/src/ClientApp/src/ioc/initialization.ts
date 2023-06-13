@@ -28,6 +28,7 @@ import {
     IUserRatingService,
     IVaccinationStatusService,
 } from "@/services/interfaces";
+import { LoglevelLogger } from "@/services/loglevelLogger";
 import { RestAuthenticationService } from "@/services/restAuthService";
 import { RestClinicalDocumentService } from "@/services/restClinicalDocumentService";
 import { RestCommunicationService } from "@/services/restCommunicationService";
@@ -51,7 +52,6 @@ import { RestUserNoteService } from "@/services/restUserNoteService";
 import { RestUserProfileService } from "@/services/restUserProfileService";
 import { RestUserRatingService } from "@/services/restUserRatingService";
 import { RestVaccinationStatusService } from "@/services/restVaccinationStatusService";
-import { WinstonLogger } from "@/services/winstonLogger";
 import { useConfigStore } from "@/stores/config";
 
 export async function initializeServices(): Promise<void> {
@@ -59,7 +59,7 @@ export async function initializeServices(): Promise<void> {
 
     container.set<ILogger>(
         SERVICE_IDENTIFIER.Logger,
-        () => new WinstonLogger(configStore.webConfig?.logLevel)
+        () => new LoglevelLogger(configStore.webConfig?.logLevel?.toLowerCase())
     );
 
     container.set<IHttpDelegate>(
