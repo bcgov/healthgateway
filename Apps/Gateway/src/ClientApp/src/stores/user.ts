@@ -21,6 +21,14 @@ import { UserPreference } from "@/models/userPreference";
 import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
 import { container } from "@/ioc/container";
 export const useUserStore = defineStore("user", () => {
+    const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+    const patientService = container.get<IPatientService>(
+        SERVICE_IDENTIFIER.PatientService
+    );
+    const userProfileService = container.get<IUserProfileService>(
+        SERVICE_IDENTIFIER.UserProfileService
+    );
+
     const errorStore = useErrorStore();
 
     const user = ref<User>(new User());
@@ -75,8 +83,13 @@ export const useUserStore = defineStore("user", () => {
         return status.value === LoadStatus.REQUESTED;
     });
 
+    function setOidcUserInfo(userInfo: OidcUserInfo) {
+        user.value.hdid = userInfo.hdid;
+        oidcUserInfo.value = userInfo;
+        setLoadedStatus();
+    }
+
     function setProfileUserData(userProfile: UserProfile) {
-        const logger: ILogger = container.get(SERVICE_IDENTIFIER.Logger);
         if (userProfile) {
             PreferenceUtil.setDefaultValue(
                 userProfile.preferences,
@@ -139,7 +152,6 @@ export const useUserStore = defineStore("user", () => {
     }
 
     function bindUserPreference(userPreference: UserPreference) {
-        const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
         logger.debug(
             `setUserPreference: preference.name: ${JSON.stringify(
                 userPreference.preference
@@ -152,7 +164,6 @@ export const useUserStore = defineStore("user", () => {
     }
 
     function setPatient(incomingPatient: Patient) {
-        const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
         logger.debug(`setPatient: ${JSON.stringify(patient)}`);
         patient.value = incomingPatient;
         setLoadedStatus(user.value.hdid !== undefined);
@@ -163,7 +174,6 @@ export const useUserStore = defineStore("user", () => {
         errorType: ErrorType,
         errorSource: ErrorSourceType
     ) {
-        const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
         logger.error(`Error: ${JSON.stringify(resultError)}`);
         setUserError(resultError.resultMessage);
 
@@ -180,11 +190,6 @@ export const useUserStore = defineStore("user", () => {
     }
 
     function createProfile(request: CreateUserRequest): Promise<void> {
-        const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-        const userProfileService = container.get<IUserProfileService>(
-            SERVICE_IDENTIFIER.UserProfileService
-        );
-
         return new Promise((resolve, reject) =>
             userProfileService
                 .createProfile(request)
@@ -203,11 +208,6 @@ export const useUserStore = defineStore("user", () => {
     }
 
     function retrieveProfile(): Promise<void> {
-        const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-        const userProfileService = container.get<IUserProfileService>(
-            SERVICE_IDENTIFIER.UserProfileService
-        );
-
         return new Promise((resolve, reject) =>
             userProfileService
                 .getProfile(user.value.hdid)
@@ -230,11 +230,6 @@ export const useUserStore = defineStore("user", () => {
     }
 
     function updateAcceptedTerms(termsOfServiceId: string): Promise<void> {
-        const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-        const userProfileService = container.get<IUserProfileService>(
-            SERVICE_IDENTIFIER.UserProfileService
-        );
-
         return new Promise((resolve, reject) =>
             userProfileService
                 .updateAcceptedTerms(user.value.hdid, termsOfServiceId)
@@ -273,11 +268,6 @@ export const useUserStore = defineStore("user", () => {
     }
 
     function setUserPreference(preference: UserPreference): Promise<void> {
-        const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-        const userProfileService = container.get<IUserProfileService>(
-            SERVICE_IDENTIFIER.UserProfileService
-        );
-
         return new Promise((resolve, reject) => {
             let setPreferencePromise: Promise<UserPreference>;
             if (preference.hdId == undefined) {
@@ -311,6 +301,17 @@ export const useUserStore = defineStore("user", () => {
         });
     }
 
+    function clearUserData() {
+        user.value = new User();
+        oidcUserInfo.value = undefined;
+        patient.value = new Patient();
+        patientRetrievalFailed.value = false;
+        smsResendDateTime.value = undefined;
+        error.value = false;
+        statusMessage.value = "";
+        status.value = LoadStatus.NONE;
+    }
+
     function updateQuickLinks(
         hdid: string,
         quickLinks: QuickLink[]
@@ -334,10 +335,6 @@ export const useUserStore = defineStore("user", () => {
     }
 
     function validateEmail(inviteKey: string) {
-        const userProfileService = container.get<IUserProfileService>(
-            SERVICE_IDENTIFIER.UserProfileService
-        );
-
         return new Promise((resolve, reject) => {
             userProfileService
                 .validateEmail(user.value.hdid, inviteKey)
@@ -359,10 +356,6 @@ export const useUserStore = defineStore("user", () => {
     }
 
     function closeUserAccount(): Promise<void> {
-        const userProfileService = container.get<IUserProfileService>(
-            SERVICE_IDENTIFIER.UserProfileService
-        );
-
         return new Promise((resolve, reject) => {
             userProfileService
                 .closeAccount(user.value.hdid)
@@ -378,11 +371,6 @@ export const useUserStore = defineStore("user", () => {
     }
 
     function recoverUserAccount(): Promise<void> {
-        const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-        const userProfileService = container.get<IUserProfileService>(
-            SERVICE_IDENTIFIER.UserProfileService
-        );
-
         return new Promise((resolve, reject) => {
             userProfileService
                 .recoverAccount(user.value.hdid)
@@ -401,14 +389,6 @@ export const useUserStore = defineStore("user", () => {
     }
 
     function retrieveEssentialData(): Promise<void> {
-        const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-        const patientService = container.get<IPatientService>(
-            SERVICE_IDENTIFIER.PatientService
-        );
-        const userProfileService = container.get<IUserProfileService>(
-            SERVICE_IDENTIFIER.UserProfileService
-        );
-
         return new Promise((resolve) => {
             status.value = LoadStatus.REQUESTED;
             patientService
@@ -472,6 +452,8 @@ export const useUserStore = defineStore("user", () => {
         quickLinks,
         isLoading,
         setSmsResendDateTime,
+        setOidcUserInfo,
+        clearUserData,
         createProfile,
         retrieveProfile,
         updateUserEmail,
