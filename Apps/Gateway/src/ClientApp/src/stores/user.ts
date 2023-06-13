@@ -162,18 +162,6 @@ export const useUserStore = defineStore("user", () => {
             : LoadStatus.PARTIALLY_LOADED;
     }
 
-    function bindUserPreference(userPreference: UserPreference) {
-        logger.debug(
-            `setUserPreference: preference.name: ${JSON.stringify(
-                userPreference.preference
-            )}, preference.value: ${JSON.stringify(userPreference.value)}`
-        );
-        user.value.preferences = Object.assign({}, user.value.preferences, {
-            [userPreference.preference]: userPreference,
-        });
-        setLoadedStatus();
-    }
-
     function setPatient(incomingPatient: Patient) {
         logger.debug(`setPatient: ${JSON.stringify(incomingPatient)}`);
         patient.value = incomingPatient;
@@ -297,7 +285,14 @@ export const useUserStore = defineStore("user", () => {
                         `setUserPreference: ${JSON.stringify(result)}`
                     );
                     if (result) {
-                        bindUserPreference(result);
+                        user.value.preferences = Object.assign(
+                            {},
+                            user.value.preferences,
+                            {
+                                [result.preference]: result,
+                            }
+                        );
+                        setLoadedStatus();
                     }
                     resolve();
                 })
