@@ -18,9 +18,9 @@ function getTodayPlusDaysDate(days) {
     const day = String(parsedDate.getDate()).padStart(2, "0");
 
     // Format the date to "yyyy-mm-dd" format
-    const today = `${year}-${month}-${day}`;
-    cy.log(`Today plus ${days} => ${today}`);
-    return today;
+    const dateString = `${year}-${month}-${day}`;
+    cy.log(`Today plus ${days} => ${dateString}`);
+    return dateString;
 }
 
 describe("Communications", () => {
