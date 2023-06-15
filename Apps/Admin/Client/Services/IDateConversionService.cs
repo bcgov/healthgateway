@@ -44,5 +44,12 @@ namespace HealthGateway.Admin.Client.Services
         /// <param name="fallbackString">In the event utcDateTime is null, provide a fallback string to return.</param>
         /// <returns>The short formatted date and time string.</returns>
         public string ConvertToShortFormatFromUtc(DateTime? utcDateTime, string fallbackString = "-");
+
+        /// <summary>
+        /// Converts datetime value to the system configured timezone.
+        /// </summary>
+        /// <param name="dateTime">A DateTime instance.</param>
+        /// <returns>A DateTime instance in the configured timezone.</returns>
+        public DateTime ConvertTime(DateTime dateTime);
     }
 }

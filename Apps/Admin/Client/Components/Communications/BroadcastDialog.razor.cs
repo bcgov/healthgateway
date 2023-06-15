@@ -122,7 +122,7 @@ public partial class BroadcastDialog : FluxorComponent
     {
         if (this.IsNewBroadcast)
         {
-            DateTime now = this.DateConversionService.ConvertFromUtc(DateTime.UtcNow);
+            DateTime now = this.DateConversionService.ConvertTime(DateTime.Now);
             DateTime tomorrow = now.AddDays(1);
             this.EffectiveDate = now.Date;
             this.EffectiveTime = now.TimeOfDay;
@@ -157,6 +157,8 @@ public partial class BroadcastDialog : FluxorComponent
         {
             this.Broadcast.ActionUrl = null;
         }
+
+        Console.WriteLine($"Scheduled Date UTC: {this.Broadcast.ScheduledDateUtc}");
     }
 
     private void HandleClickCancel()

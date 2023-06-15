@@ -64,5 +64,13 @@ namespace HealthGateway.Admin.Client.Services
         {
             return utcDateTime == null ? fallbackString : DateFormatter.ToShortDateAndTime(this.ConvertFromUtc(utcDateTime.Value));
         }
+
+        /// <inheritdoc/>
+        public DateTime ConvertTime(DateTime dateTime)
+        {
+            return TimeZoneInfo.ConvertTime(
+                dateTime,
+                DateFormatter.GetLocalTimeZone(this.Configuration));
+        }
     }
 }
