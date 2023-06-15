@@ -1,7 +1,7 @@
 ﻿import { defineStore } from "pinia";
 import { computed, ref } from "vue";
 import User, { OidcUserInfo } from "@/models/user";
-import { DateWrapper, StringISODateTime } from "@/models/dateWrapper";
+import { DateWrapper } from "@/models/dateWrapper";
 import { LoadStatus } from "@/models/storeOperations";
 import Patient from "@/models/patient";
 import { QuickLink } from "@/models/quickLink";
@@ -25,6 +25,7 @@ import {
 import { UserPreference } from "@/models/userPreference";
 import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
 import { container } from "@/ioc/container";
+import { email } from "@vuelidate/validators";
 export const useUserStore = defineStore("user", () => {
     const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
     const patientService = container.get<IPatientService>(
@@ -193,118 +194,100 @@ export const useUserStore = defineStore("user", () => {
     }
 
     function createProfile(request: CreateUserRequest): Promise<void> {
-        return new Promise((resolve, reject) =>
-            userProfileService
-                .createProfile(request)
-                .then((userProfile) => {
-                    logger.verbose(
-                        `User Profile: ${JSON.stringify(userProfile)}`
-                    );
-                    setProfileUserData(userProfile);
-                    resolve();
-                })
-                .catch((resultError: ResultError) => {
-                    handleError(
-                        resultError,
-                        ErrorType.Create,
-                        ErrorSourceType.Profile
-                    );
-                    reject(resultError);
-                })
-        );
+        return userProfileService
+            .createProfile(request)
+            .then((userProfile) => {
+                logger.verbose(`User Profile: ${JSON.stringify(userProfile)}`);
+                setProfileUserData(userProfile);
+            })
+            .catch((resultError: ResultError) => {
+                handleError(
+                    resultError,
+                    ErrorType.Create,
+                    ErrorSourceType.Profile
+                );
+                throw resultError;
+            });
     }
 
     function retrieveProfile(): Promise<void> {
-        return new Promise((resolve, reject) =>
-            userProfileService
-                .getProfile(user.value.hdid)
-                .then((userProfile) => {
-                    logger.verbose(
-                        `User Profile: ${JSON.stringify(userProfile)}`
-                    );
-                    setProfileUserData(userProfile);
-                    resolve();
-                })
-                .catch((resultError: ResultError) => {
-                    setUserError(resultError.resultMessage);
-                    reject(resultError);
-                })
-        );
+        return userProfileService
+            .getProfile(user.value.hdid)
+            .then((userProfile) => {
+                logger.verbose(`User Profile: ${JSON.stringify(userProfile)}`);
+                setProfileUserData(userProfile);
+            })
+            .catch((resultError: ResultError) => {
+                setUserError(resultError.resultMessage);
+                throw resultError;
+            });
     }
 
     function updateAcceptedTerms(termsOfServiceId: string): Promise<void> {
-        return new Promise((resolve, reject) =>
-            userProfileService
-                .updateAcceptedTerms(user.value.hdid, termsOfServiceId)
-                .then((userProfile) => {
-                    logger.verbose(
-                        `User Profile: ${JSON.stringify(userProfile)}`
-                    );
-                    setProfileUserData(userProfile);
-                    resolve();
-                })
-                .catch((resultError: ResultError) => {
-                    setUserError(resultError.resultMessage);
-                    reject(resultError);
-                })
-        );
+        return userProfileService
+            .updateAcceptedTerms(user.value.hdid, termsOfServiceId)
+            .then((userProfile) => {
+                logger.verbose(`User Profile: ${JSON.stringify(userProfile)}`);
+                setProfileUserData(userProfile);
+            })
+            .catch((resultError: ResultError) => {
+                setUserError(resultError.resultMessage);
+                throw resultError;
+            });
     }
 
-    function updateUserEmail(emailAddresss: string): Promise<void> {
+    function updateUserEmail(emailAddress: string): Promise<void> {
         const userProfileService = container.get<IUserProfileService>(
             SERVICE_IDENTIFIER.UserProfileService
         );
 
-        return new Promise((resolve, reject) =>
-            userProfileService
-                .updateEmail(user.value.hdid, emailAddresss)
-                .then(() => resolve())
-                .catch((resultError: ResultError) => {
-                    setUserError(resultError.resultMessage);
-                    reject(resultError);
-                })
-        );
+        return userProfileService
+            .updateEmail(user.value.hdid, emailAddress)
+            .then((emailUpdated) => {
+                if (!emailUpdated) {
+                    logger.warn(`updateEmail response false`);
+                }
+            })
+            .catch((resultError: ResultError) => {
+                setUserError(resultError.resultMessage);
+                throw resultError;
+            });
     }
 
     function setUserPreference(preference: UserPreference): Promise<void> {
-        return new Promise((resolve, reject) => {
-            let setPreferencePromise: Promise<UserPreference>;
-            if (preference.hdId == undefined) {
-                logger.debug(`setUserPreference: creating new preference`);
-                setPreferencePromise = userProfileService.createUserPreference(
-                    user.value.hdid,
-                    { ...preference, hdId: user.value.hdid }
-                );
-            } else {
-                logger.debug(`setUserPreference: updating existing preference`);
-                setPreferencePromise = userProfileService.updateUserPreference(
-                    user.value.hdid,
-                    preference
-                );
-            }
+        let setPreferencePromise: Promise<UserPreference>;
+        if (preference.hdId == undefined) {
+            logger.debug(`setUserPreference: creating new preference`);
+            setPreferencePromise = userProfileService.createUserPreference(
+                user.value.hdid,
+                { ...preference, hdId: user.value.hdid }
+            );
+        } else {
+            logger.debug(`setUserPreference: updating existing preference`);
+            setPreferencePromise = userProfileService.updateUserPreference(
+                user.value.hdid,
+                preference
+            );
+        }
 
-            return setPreferencePromise
-                .then((result) => {
-                    logger.debug(
-                        `setUserPreference: ${JSON.stringify(result)}`
+        return setPreferencePromise
+            .then((result) => {
+                logger.debug(`setUserPreference: ${JSON.stringify(result)}`);
+                if (result) {
+                    user.value.preferences = Object.assign(
+                        {},
+                        user.value.preferences,
+                        {
+                            [result.preference]: result,
+                        }
                     );
-                    if (result) {
-                        user.value.preferences = Object.assign(
-                            {},
-                            user.value.preferences,
-                            {
-                                [result.preference]: result,
-                            }
-                        );
-                        setLoadedStatus();
-                    }
-                    resolve();
-                })
-                .catch((resultError: ResultError) => {
-                    setUserError(resultError.resultMessage);
-                    reject(resultError);
-                });
-        });
+                    setLoadedStatus();
+                }
+            })
+            .catch((resultError: ResultError) => {
+                setUserError(resultError.resultMessage);
+                throw resultError;
+            });
     }
 
     function clearUserData() {
@@ -341,140 +324,118 @@ export const useUserStore = defineStore("user", () => {
     }
 
     function validateEmail(inviteKey: string) {
-        return new Promise((resolve, reject) => {
-            userProfileService
-                .validateEmail(user.value.hdid, inviteKey)
-                .then((result) => {
-                    if (result.resourcePayload === true) {
-                        user.value.verifiedEmail = true;
-                    }
-                    resolve(result);
-                })
-                .catch((resultError: ResultError) => {
-                    handleError(
-                        resultError,
-                        ErrorType.Update,
-                        ErrorSourceType.User
-                    );
-                    reject(resultError);
-                });
-        });
+        return userProfileService
+            .validateEmail(user.value.hdid, inviteKey)
+            .then((result) => {
+                if (result.resourcePayload === true) {
+                    user.value.verifiedEmail = true;
+                }
+                return result;
+            })
+            .catch((resultError: ResultError) => {
+                handleError(
+                    resultError,
+                    ErrorType.Update,
+                    ErrorSourceType.User
+                );
+                throw resultError;
+            });
     }
 
     function closeUserAccount(): Promise<void> {
-        return new Promise((resolve, reject) => {
-            userProfileService
-                .closeAccount(user.value.hdid)
-                .then((userProfile) => {
-                    setProfileUserData(userProfile);
-                    resolve();
-                })
-                .catch((resultError: ResultError) => {
-                    setUserError(resultError.resultMessage);
-                    reject(resultError);
-                });
-        });
+        return userProfileService
+            .closeAccount(user.value.hdid)
+            .then((userProfile) => {
+                setProfileUserData(userProfile);
+            })
+            .catch((resultError: ResultError) => {
+                setUserError(resultError.resultMessage);
+                throw resultError;
+            });
     }
 
     function recoverUserAccount(): Promise<void> {
-        return new Promise((resolve, reject) => {
-            userProfileService
-                .recoverAccount(user.value.hdid)
-                .then((userProfile) => {
-                    logger.debug(
-                        `recoverUserAccount: ${JSON.stringify(userProfile)}`
-                    );
-                    setProfileUserData(userProfile);
-                    resolve();
-                })
-                .catch((resultError: ResultError) => {
-                    setUserError(resultError.resultMessage);
-                    reject(resultError);
-                });
-        });
+        return userProfileService
+            .recoverAccount(user.value.hdid)
+            .then((userProfile) => {
+                logger.debug(
+                    `recoverUserAccount: ${JSON.stringify(userProfile)}`
+                );
+                setProfileUserData(userProfile);
+            })
+            .catch((resultError: ResultError) => {
+                setUserError(resultError.resultMessage);
+                throw resultError;
+            });
     }
 
     function retrieveEssentialData(): Promise<void> {
-        return new Promise((resolve) => {
-            status.value = LoadStatus.REQUESTED;
-            patientService
-                .getPatient(user.value.hdid)
-                .then((result: Patient) => {
-                    if (!result) {
-                        logger.debug("Patient retrieval failed");
-                        patientRetrievalFailed.value = true;
-                        resolve();
-                        return;
-                    }
-                    setPatient(result);
-                    userProfileService
-                        .getProfile(user.value.hdid)
-                        .then((userProfile) => {
-                            logger.debug(
-                                `User Profile: ${JSON.stringify(userProfile)}`
-                            );
-                            setProfileUserData(userProfile);
-                            resolve();
-                        })
-                        .catch((resultError: ResultError) => {
-                            if (resultError.statusCode === 429) {
-                                logger.debug(
-                                    "User profile retrieval failed because of too many requests"
-                                );
-                                appStore.setAppError(
-                                    AppErrorType.TooManyRequests
-                                );
-                            } else {
-                                logger.debug("User profile retrieval failed");
-                                appStore.setAppError(AppErrorType.General);
-                            }
-                            resolve();
-                        });
-                })
-                .catch((resultError: ResultError) => {
-                    if (resultError.statusCode === 429) {
+        status.value = LoadStatus.REQUESTED;
+        return patientService
+            .getPatient(user.value.hdid)
+            .then((result: Patient) => {
+                if (!result) {
+                    logger.debug("Patient retrieval failed");
+                    patientRetrievalFailed.value = true;
+                    return;
+                }
+                setPatient(result);
+                return userProfileService
+                    .getProfile(user.value.hdid)
+                    .then((userProfile) => {
                         logger.debug(
-                            "Patient retrieval failed because of too many requests"
+                            `User Profile: ${JSON.stringify(userProfile)}`
                         );
-                        appStore.setAppError(AppErrorType.TooManyRequests);
-                    } else {
-                        logger.debug("Patient retrieval failed");
-                        patientRetrievalFailed.value = true;
-                    }
-                    resolve();
-                });
-        });
+                        setProfileUserData(userProfile);
+                    })
+                    .catch((resultError: ResultError) => {
+                        if (resultError.statusCode === 429) {
+                            logger.debug(
+                                "User profile retrieval failed because of too many requests"
+                            );
+                            appStore.setAppError(AppErrorType.TooManyRequests);
+                        } else {
+                            logger.debug("User profile retrieval failed");
+                            appStore.setAppError(AppErrorType.General);
+                        }
+                    });
+            })
+            .catch((resultError: ResultError) => {
+                if (resultError.statusCode === 429) {
+                    logger.debug(
+                        "Patient retrieval failed because of too many requests"
+                    );
+                    appStore.setAppError(AppErrorType.TooManyRequests);
+                } else {
+                    logger.debug("Patient retrieval failed");
+                    patientRetrievalFailed.value = true;
+                }
+            });
     }
 
     return {
         user,
-        oidcUserInfo,
-        smsResendDateTime,
-        error,
-        statusMessage,
-        status,
-        patient,
-        patientRetrievalFailed,
         lastLoginDateTime,
+        oidcUserInfo,
         isValidIdentityProvider,
         userIsRegistered,
         userIsActive,
         hasTermsOfServiceUpdated,
+        smsResendDateTime,
         quickLinks,
+        patient,
+        patientRetrievalFailed,
         isLoading,
-        setEmailVerified,
-        updateSMSResendDateTime,
-        setOidcUserInfo,
-        clearUserData,
         createProfile,
         retrieveProfile,
         updateUserEmail,
-        updateAcceptedTerms,
+        updateSMSResendDateTime,
         setUserPreference,
         updateQuickLinks,
         validateEmail,
         closeUserAccount,
         recoverUserAccount,
         retrieveEssentialData,
+        updateAcceptedTerms,
     };
 });

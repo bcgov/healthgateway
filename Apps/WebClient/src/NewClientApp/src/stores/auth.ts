@@ -151,9 +151,6 @@ export const useAuthStore = defineStore("auth", () => {
     return {
         oidcIsAuthenticated,
         oidcError,
-        setAuthenticated,
-        setUnauthenticated,
-        setError,
         checkStatus,
         signIn,
         signOut,
