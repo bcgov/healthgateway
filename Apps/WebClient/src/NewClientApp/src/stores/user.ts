@@ -437,5 +437,7 @@ export const useUserStore = defineStore("user", () => {
         recoverUserAccount,
         retrieveEssentialData,
         updateAcceptedTerms,
+        clearUserData,
+        setOidcUserInfo,
     };
 });
