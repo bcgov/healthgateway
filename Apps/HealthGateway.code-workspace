@@ -1,11 +1,11 @@
 {
     "folders": [
         {
-            "name": "GatewayClientApp",
-            "path": "Gateway/src/ClientApp"
+            "name": "NewClientApp",
+            "path": "WebClient/src/NewClientApp"
         },
         {
-            "name": "WebClientClientApp",
+            "name": "OldClientApp",
             "path": "WebClient/src/ClientApp"
         },
         {
@@ -37,7 +37,7 @@
                     "isDefault": true
                 },
                 "options": {
-                    "cwd": "${workspaceFolder:Apps}/Gateway/src/ClientApp"
+                    "cwd": "${workspaceFolder:Apps}/WebClient/src/NewClientApp"
                 },
                 "presentation": {
                     "clear": true
@@ -134,25 +134,6 @@
             "editor.formatOnSave": false
         },
         "omnisharp.defaultLaunchSolution": "HealthGateway.sln",
-        "jest.disabledWorkspaceFolders": [
-            "Admin_ClientApp",
-            "AdminWebClient",
-            "Common",
-            "Database",
-            "DBMaintainer",
-            "Documentation",
-            "Immunization",
-            "JobScheduler",
-            "Laboratory",
-            "Medication",
-            "ODRProxy",
-            "Patient",
-            "WebClient",
-            "Encounter",
-            "Mock",
-            "tests",
-            "sampler",
-            "Design"
-        ]
+        "typescript.preferences.importModuleSpecifier": "non-relative"
     }
 }

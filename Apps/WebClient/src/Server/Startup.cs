@@ -55,6 +55,10 @@ namespace HealthGateway.WebClient.Server
             this.configuration = configuration;
         }
 
+        private bool IsNewClient => this.configuration.GetSection("WebClient").GetValue<bool>("NewClient");
+
+        private string ClientPath => this.IsNewClient ? "NewClientApp" : "ClientApp";
+
         /// <summary>
         /// This method gets called by the runtime. Use this method to add services to the container.
         /// </summary>
@@ -73,7 +77,7 @@ namespace HealthGateway.WebClient.Server
             services.AddControllersWithViews();
 
             // In production, the Vue files will be served from this directory
-            services.AddSpaStaticFiles(options => options.RootPath = "ClientApp/dist");
+            services.AddSpaStaticFiles(options => options.RootPath = $"{this.ClientPath}/dist");
 
             services.AddControllers()
                 .AddJsonOptions(
@@ -129,10 +133,10 @@ namespace HealthGateway.WebClient.Server
                     {
                         endpoints.MapToVueCliProxy(
                             "{*path}",
-                            new SpaOptions { SourcePath = "ClientApp" },
-                            "serve",
+                            new SpaOptions { SourcePath = this.ClientPath },
+                            this.IsNewClient ? "dev" : "serve",
                             8585,
-                            regex: "Compiled ",
+                            regex: this.IsNewClient ? "ready in " : "Compiled ",
                             forceKill: true);
                     }
                 });
@@ -148,7 +152,7 @@ namespace HealthGateway.WebClient.Server
             app.UseSpa(
                 spa =>
                 {
-                    spa.Options.SourcePath = "ClientApp";
+                    spa.Options.SourcePath = this.ClientPath;
                     if (env.IsDevelopment() && !Debugger.IsAttached)
                     {
                         // change this to whatever webpack dev server says it's running on
