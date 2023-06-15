@@ -157,8 +157,6 @@ public partial class BroadcastDialog : FluxorComponent
         {
             this.Broadcast.ActionUrl = null;
         }
-
-        Console.WriteLine($"Scheduled Date UTC: {this.Broadcast.ScheduledDateUtc}");
     }
 
     private void HandleClickCancel()
