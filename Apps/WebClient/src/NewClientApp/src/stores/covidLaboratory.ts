@@ -39,10 +39,7 @@ export const useLaboratoryStore = defineStore("laboratory", () => {
     const labResultMap = ref(new Map<string, Covid19TestResultState>());
 
     function getCovid19TestResultState(hdid: string): Covid19TestResultState {
-        return datasetMapUtil.getDatasetState(
-            labResultMap.value,
-            hdid
-        ) as Covid19TestResultState;
+        return datasetMapUtil.getDatasetState(labResultMap.value, hdid);
     }
 
     function covid19LaboratoryOrders(hdid: string): Covid19LaboratoryOrder[] {
@@ -98,7 +95,7 @@ export const useLaboratoryStore = defineStore("laboratory", () => {
                 },
                 resultStatus: ResultType.Success,
                 totalResultCount: covid19LaboratoryOrders(hdid).length,
-            } as RequestResult<Covid19LaboratoryOrderResult>);
+            });
         }
         logger.debug("Retrieving COVID-19 laboratory orders");
         datasetMapUtil.setStateRequested(labResultMap.value, hdid);

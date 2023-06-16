@@ -37,10 +37,7 @@ export const useLaboratoryStore = defineStore("laboratory", () => {
     const labResultMap = ref(new Map<string, LabResultState>());
 
     function getLabResultState(hdid: string): LabResultState {
-        return datasetMapUtil.getDatasetState(
-            labResultMap.value,
-            hdid
-        ) as LabResultState;
+        return datasetMapUtil.getDatasetState(labResultMap.value, hdid);
     }
 
     function laboratoryOrders(hdid: string): LaboratoryOrder[] {
@@ -121,7 +118,7 @@ export const useLaboratoryStore = defineStore("laboratory", () => {
                 },
                 resultStatus: ResultType.Success,
                 totalResultCount: laboratoryOrders(hdid).length,
-            } as RequestResult<LaboratoryOrderResult>);
+            });
         }
         logger.debug("Retrieving laboratory orders");
         datasetMapUtil.setStateRequested(labResultMap.value, hdid);
