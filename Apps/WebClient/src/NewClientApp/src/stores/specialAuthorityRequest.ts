@@ -35,7 +35,7 @@ export const useSpecialAuthorityRequestStore = defineStore(
 
         const errorStore = useErrorStore();
 
-        const medicationRequestStateMap = ref(
+        const specialAuthorityRequestMap = ref(
             new Map<string, SpecialAuthorityRequestState>()
         );
 
@@ -43,7 +43,7 @@ export const useSpecialAuthorityRequestStore = defineStore(
             hdid: string
         ): SpecialAuthorityRequestState {
             return datasetMapUtil.getDatasetState(
-                medicationRequestStateMap.value,
+                specialAuthorityRequestMap.value,
                 hdid
             );
         }
@@ -69,13 +69,13 @@ export const useSpecialAuthorityRequestStore = defineStore(
         ) {
             if (requestResults.resultStatus === ResultType.Success) {
                 datasetMapUtil.setStateData(
-                    medicationRequestStateMap.value,
+                    specialAuthorityRequestMap.value,
                     hdid,
                     requestResults.resourcePayload
                 );
             } else {
                 datasetMapUtil.setStateError(
-                    medicationRequestStateMap.value,
+                    specialAuthorityRequestMap.value,
                     hdid,
                     requestResults.resultError
                 );
@@ -90,7 +90,7 @@ export const useSpecialAuthorityRequestStore = defineStore(
             logger.error(`ERROR: ${JSON.stringify(error)}`);
 
             datasetMapUtil.setStateError(
-                medicationRequestStateMap.value,
+                specialAuthorityRequestMap.value,
                 hdid,
                 error
             );
@@ -125,7 +125,7 @@ export const useSpecialAuthorityRequestStore = defineStore(
             }
 
             datasetMapUtil.setStateRequested(
-                medicationRequestStateMap.value,
+                specialAuthorityRequestMap.value,
                 hdid
             );
             return specialAuthorityService
