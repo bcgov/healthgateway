@@ -20,22 +20,7 @@ interface HgButtonVariantDetails {
     color: string;
 }
 
-const variants = new Map<HgButtonVariant, HgButtonVariantDetails>([
-    [
-        "primary",
-        { className: "hg-primary", vuetifyVariant: "flat", color: "primary" },
-    ],
-    [
-        "secondary",
-        {
-            className: "hg-secondary",
-            vuetifyVariant: "outlined",
-            color: "primary",
-        },
-    ],
-    ["link", { className: "hg-link", vuetifyVariant: "text", color: "link" }],
-]);
-
+const variants = new Map<HgButtonVariant, HgButtonVariantDetails>();
 variants.set("primary", {
     className: "hg-primary",
     vuetifyVariant: "flat",
