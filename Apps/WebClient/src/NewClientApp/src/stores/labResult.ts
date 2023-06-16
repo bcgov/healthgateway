@@ -22,7 +22,7 @@ export const defaultLabResultState: LabResultState = {
     queued: false,
 };
 
-export const useLaboratoryStore = defineStore("laboratory", () => {
+export const useLabResultStore = defineStore("labResult", () => {
     const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
     const laboratoryService = container.get<ILaboratoryService>(
         SERVICE_IDENTIFIER.LaboratoryService
