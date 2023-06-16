@@ -36,10 +36,7 @@ export const useHealthVisitsStore = defineStore("healthVisits", () => {
     const healthVisitsMap = ref(new Map<string, HealthVisitState>());
 
     function getHealthVisitState(hdid: string): HealthVisitState {
-        return datasetMapUtil.getDatasetState(
-            healthVisitsMap.value,
-            hdid
-        ) as HealthVisitState;
+        return datasetMapUtil.getDatasetState(healthVisitsMap.value, hdid);
     }
 
     function healthVisits(hdid: string): Encounter[] {
@@ -86,46 +83,46 @@ export const useHealthVisitsStore = defineStore("healthVisits", () => {
                 resultStatus: ResultType.Success,
                 totalResultCount: visits.length,
             });
-        } else {
-            logger.debug(`Retrieving Health Visits`);
-            datasetMapUtil.setStateRequested(healthVisitsMap.value, hdid);
-            return healthVisitsService
-                .getPatientEncounters(hdid)
-                .then((result) => {
-                    const payload = result.resourcePayload;
-                    if (result.resultStatus === ResultType.Success) {
-                        EventTracker.loadData(
-                            EntryType.HealthVisit,
-                            payload.length
-                        );
-                        logger.info(`Health Visits loaded.`);
-                        datasetMapUtil.setStateData(
-                            healthVisitsMap.value,
-                            hdid,
-                            payload
-                        );
-                    } else {
-                        if (result.resultError) {
-                            throw result.resultError;
-                        }
-                        logger.warn(
-                            `Health Visits retrieval failed! ${JSON.stringify(
-                                result
-                            )}`
-                        );
-                    }
-                    return result;
-                })
-                .catch((resultError: ResultError) => {
-                    handleError(
-                        hdid,
-                        resultError,
-                        ErrorType.Retrieve,
-                        ErrorSourceType.Encounter
-                    );
-                    throw resultError;
-                });
         }
+
+        logger.debug(`Retrieving Health Visits`);
+        datasetMapUtil.setStateRequested(healthVisitsMap.value, hdid);
+        return healthVisitsService
+            .getPatientEncounters(hdid)
+            .then((result) => {
+                const payload = result.resourcePayload;
+                if (result.resultStatus === ResultType.Success) {
+                    EventTracker.loadData(
+                        EntryType.HealthVisit,
+                        payload.length
+                    );
+                    logger.info(`Health Visits loaded.`);
+                    datasetMapUtil.setStateData(
+                        healthVisitsMap.value,
+                        hdid,
+                        payload
+                    );
+                } else {
+                    if (result.resultError) {
+                        throw result.resultError;
+                    }
+                    logger.warn(
+                        `Health Visits retrieval failed! ${JSON.stringify(
+                            result
+                        )}`
+                    );
+                }
+                return result;
+            })
+            .catch((resultError: ResultError) => {
+                handleError(
+                    hdid,
+                    resultError,
+                    ErrorType.Retrieve,
+                    ErrorSourceType.Encounter
+                );
+                throw resultError;
+            });
     }
 
     return {

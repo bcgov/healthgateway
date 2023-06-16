@@ -75,20 +75,20 @@ export const useDependentStore = defineStore("dependent", () => {
         if (status.value === LoadStatus.LOADED && !bypassCache) {
             logger.debug("Dependents found stored, not querying!");
             return Promise.resolve();
-        } else {
-            logger.debug("Retrieving dependents");
-            setDependentsLoading();
-            return dependentService
-                .getAll(hdid)
-                .then((result) => {
-                    result.sort(dependentSort);
-                    setDependents(result);
-                })
-                .catch((error: ResultError) => {
-                    handleError(error, ErrorType.Retrieve);
-                    throw error;
-                });
         }
+
+        logger.debug("Retrieving dependents");
+        setDependentsLoading();
+        return dependentService
+            .getAll(hdid)
+            .then((result) => {
+                result.sort(dependentSort);
+                setDependents(result);
+            })
+            .catch((error: ResultError) => {
+                handleError(error, ErrorType.Retrieve);
+                throw error;
+            });
     }
 
     function removeDependent(

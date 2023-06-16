@@ -25,7 +25,7 @@ import {
 import { UserPreference } from "@/models/userPreference";
 import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
 import { container } from "@/ioc/container";
-import { email } from "@vuelidate/validators";
+
 export const useUserStore = defineStore("user", () => {
     const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
     const patientService = container.get<IPatientService>(

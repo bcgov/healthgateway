@@ -46,10 +46,7 @@ export const useClinicalDocumentStore = defineStore("clinicalDocument", () => {
     function getClinicalDocumentState(
         hdid: string
     ): ClinicalDocumentDatasetState {
-        return datasetMapUtil.getDatasetState(
-            clinicalDocumentMap.value,
-            hdid
-        ) as ClinicalDocumentDatasetState;
+        return datasetMapUtil.getDatasetState(clinicalDocumentMap.value, hdid);
     }
 
     function clinicalDocuments(hdid: string): ClinicalDocument[] {
@@ -68,7 +65,7 @@ export const useClinicalDocumentStore = defineStore("clinicalDocument", () => {
         files.value.set(fileId, {
             fileId,
             status: LoadStatus.REQUESTED,
-        } as ClinicalDocumentFile);
+        });
     }
 
     function setFile(fileId: string, file: EncodedMedia) {
@@ -77,7 +74,7 @@ export const useClinicalDocumentStore = defineStore("clinicalDocument", () => {
             file,
             error: undefined,
             status: LoadStatus.LOADED,
-        } as ClinicalDocumentFile);
+        });
     }
 
     function setFileError(fileId: string, error: ResultError) {
@@ -86,7 +83,7 @@ export const useClinicalDocumentStore = defineStore("clinicalDocument", () => {
             error,
             file: undefined,
             status: LoadStatus.ERROR,
-        } as ClinicalDocumentFile);
+        });
     }
 
     function retrieveClinicalDocuments(
@@ -102,39 +99,39 @@ export const useClinicalDocumentStore = defineStore("clinicalDocument", () => {
                 resultStatus: ResultType.Success,
                 totalResultCount: records.length,
             });
-        } else {
-            logger.debug("Retrieving clinical documents");
-            datasetMapUtil.setStateRequested(clinicalDocumentMap.value, hdid);
-            return clinicalDocumentService
-                .getRecords(hdid)
-                .then((result) => {
-                    if (result.resultStatus === ResultType.Success) {
-                        EventTracker.loadData(
-                            EntryType.ClinicalDocument,
-                            result.resourcePayload.length
-                        );
-                        datasetMapUtil.setStateData(
-                            clinicalDocumentMap.value,
-                            hdid,
-                            result.resourcePayload
-                        );
-                    } else {
-                        if (result.resultError) {
-                            throw result.resultError;
-                        }
-                        logger.warn(
-                            `Clinical documents retrieval failed! ${JSON.stringify(
-                                result
-                            )}`
-                        );
-                    }
-                    return result;
-                })
-                .catch((error: ResultError) => {
-                    handleError(error, ErrorType.Retrieve, hdid);
-                    throw error;
-                });
         }
+
+        logger.debug("Retrieving clinical documents");
+        datasetMapUtil.setStateRequested(clinicalDocumentMap.value, hdid);
+        return clinicalDocumentService
+            .getRecords(hdid)
+            .then((result) => {
+                if (result.resultStatus === ResultType.Success) {
+                    EventTracker.loadData(
+                        EntryType.ClinicalDocument,
+                        result.resourcePayload.length
+                    );
+                    datasetMapUtil.setStateData(
+                        clinicalDocumentMap.value,
+                        hdid,
+                        result.resourcePayload
+                    );
+                } else {
+                    if (result.resultError) {
+                        throw result.resultError;
+                    }
+                    logger.warn(
+                        `Clinical documents retrieval failed! ${JSON.stringify(
+                            result
+                        )}`
+                    );
+                }
+                return result;
+            })
+            .catch((error: ResultError) => {
+                handleError(error, ErrorType.Retrieve, hdid);
+                throw error;
+            });
     }
 
     function getFile(fileId: string, hdid: string) {
@@ -142,31 +139,31 @@ export const useClinicalDocumentStore = defineStore("clinicalDocument", () => {
         if (file) {
             logger.debug(`File found stored, not querying!`);
             return Promise.resolve(file);
-        } else {
-            setFileRequested(fileId);
-            return clinicalDocumentService
-                .getFile(fileId, hdid)
-                .then((result) => {
-                    const payload = result.resourcePayload;
-                    if (result.resultStatus === ResultType.Success) {
-                        setFile(fileId, payload);
-                    } else {
-                        if (result.resultError) {
-                            throw result.resultError;
-                        }
-                        logger.warn(
-                            `Clinical document file retrieval failed! ${JSON.stringify(
-                                result
-                            )}`
-                        );
-                    }
-                    return result;
-                })
-                .catch((error: ResultError) => {
-                    handleError(error, ErrorType.Download, hdid, fileId);
-                    throw error;
-                });
         }
+
+        setFileRequested(fileId);
+        return clinicalDocumentService
+            .getFile(fileId, hdid)
+            .then((result) => {
+                const payload = result.resourcePayload;
+                if (result.resultStatus === ResultType.Success) {
+                    setFile(fileId, payload);
+                } else {
+                    if (result.resultError) {
+                        throw result.resultError;
+                    }
+                    logger.warn(
+                        `Clinical document file retrieval failed! ${JSON.stringify(
+                            result
+                        )}`
+                    );
+                }
+                return result;
+            })
+            .catch((error: ResultError) => {
+                handleError(error, ErrorType.Download, hdid, fileId);
+                throw error;
+            });
     }
 
     function handleError(

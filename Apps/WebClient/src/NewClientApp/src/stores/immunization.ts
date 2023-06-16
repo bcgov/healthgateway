@@ -54,10 +54,7 @@ export const useImmunizationStore = defineStore("immunization", () => {
     function getImmunizationDatasetState(
         hdid: string
     ): ImmunizationDatasetState {
-        return datasetMapUtil.getDatasetState(
-            immunizationMap.value,
-            hdid
-        ) as ImmunizationDatasetState;
+        return datasetMapUtil.getDatasetState(immunizationMap.value, hdid);
     }
 
     function immunizations(hdid: string): ImmunizationEvent[] {

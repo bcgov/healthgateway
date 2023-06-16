@@ -19,7 +19,7 @@ export class DatasetMapUtils<T, S extends DatasetState<T>> {
      * @param key
      */
     public getDatasetState(stateMap: Map<string, S>, key: string): S {
-        return stateMap.get(key) ?? this.defaultState;
+        return stateMap.get(key) ?? { ...this.defaultState };
     }
 
     /**
@@ -32,7 +32,7 @@ export class DatasetMapUtils<T, S extends DatasetState<T>> {
         stateMap.set(key, {
             ...state,
             status: LoadStatus.REQUESTED,
-        } as S);
+        });
     }
 
     /**
@@ -52,7 +52,7 @@ export class DatasetMapUtils<T, S extends DatasetState<T>> {
             error: error,
             statusMessage: error.resultMessage,
             status: LoadStatus.ERROR,
-        } as S);
+        });
     }
 
     public setStateData(
@@ -69,6 +69,6 @@ export class DatasetMapUtils<T, S extends DatasetState<T>> {
             statusMessage: "success",
             status: LoadStatus.LOADED,
             ...extendedProperties,
-        } as S);
+        });
     }
 }

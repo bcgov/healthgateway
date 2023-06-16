@@ -40,10 +40,7 @@ export const useHospitalVisitsStore = defineStore("hospitalVisits", () => {
     const hospitalVisitsMap = ref(new Map<string, HospitalVisitState>());
 
     function getHospitalVisitsState(hdid: string): HospitalVisitState {
-        return datasetMapUtil.getDatasetState(
-            hospitalVisitsMap.value,
-            hdid
-        ) as HospitalVisitState;
+        return datasetMapUtil.getDatasetState(hospitalVisitsMap.value, hdid);
     }
 
     function hospitalVisits(hdid: string): HospitalVisit[] {
@@ -74,7 +71,7 @@ export const useHospitalVisitsStore = defineStore("hospitalVisits", () => {
             statusMessage: "",
             status: LoadStatus.REQUESTED,
             queued: hospitalVisitResult.queued,
-        } as HospitalVisitState);
+        });
     }
 
     function setHospitalVisits(
@@ -133,54 +130,54 @@ export const useHospitalVisitsStore = defineStore("hospitalVisits", () => {
                 resultStatus: ResultType.Success,
                 totalResultCount: visits.length,
             });
-        } else {
-            logger.debug(`Retrieving Hospital Visits`);
-            datasetMapUtil.setStateRequested(hospitalVisitsMap.value, hdid);
-            return hospitalVisitService
-                .getHospitalVisits(hdid)
-                .then((result) => {
-                    const payload = result.resourcePayload;
-                    if (
-                        result.resultStatus === ResultType.Success &&
-                        payload.loaded
-                    ) {
-                        EventTracker.loadData(
-                            EntryType.HospitalVisit,
-                            result.totalResultCount
-                        );
-                        logger.info(`Hospital Visits loaded.`);
-                        setHospitalVisits(hdid, payload);
-                    } else if (
-                        result.resultError?.actionCode === ActionType.Refresh &&
-                        !payload.loaded &&
-                        payload.retryin > 0
-                    ) {
-                        logger.info(
-                            `Refresh in progress.... partially load hospital visits`
-                        );
-                        setHospitalVisitRefreshInProgress(hdid, payload);
-                        setTimeout(() => {
-                            logger.info("Re-querying for hospital visits");
-                            retrieveHospitalVisits(hdid);
-                        }, payload.retryin);
-                    } else {
-                        if (result.resultError) {
-                            throw result.resultError;
-                        }
-                        logger.warn(`Hospital Visits retrieval failed.`);
-                    }
-                    return result;
-                })
-                .catch((resultError: ResultError) => {
-                    handleError(
-                        hdid,
-                        resultError,
-                        ErrorType.Retrieve,
-                        ErrorSourceType.HospitalVisit
-                    );
-                    throw resultError;
-                });
         }
+
+        logger.debug(`Retrieving Hospital Visits`);
+        datasetMapUtil.setStateRequested(hospitalVisitsMap.value, hdid);
+        return hospitalVisitService
+            .getHospitalVisits(hdid)
+            .then((result) => {
+                const payload = result.resourcePayload;
+                if (
+                    result.resultStatus === ResultType.Success &&
+                    payload.loaded
+                ) {
+                    EventTracker.loadData(
+                        EntryType.HospitalVisit,
+                        result.totalResultCount
+                    );
+                    logger.info(`Hospital Visits loaded.`);
+                    setHospitalVisits(hdid, payload);
+                } else if (
+                    result.resultError?.actionCode === ActionType.Refresh &&
+                    !payload.loaded &&
+                    payload.retryin > 0
+                ) {
+                    logger.info(
+                        `Refresh in progress.... partially load hospital visits`
+                    );
+                    setHospitalVisitRefreshInProgress(hdid, payload);
+                    setTimeout(() => {
+                        logger.info("Re-querying for hospital visits");
+                        retrieveHospitalVisits(hdid);
+                    }, payload.retryin);
+                } else {
+                    if (result.resultError) {
+                        throw result.resultError;
+                    }
+                    logger.warn(`Hospital Visits retrieval failed.`);
+                }
+                return result;
+            })
+            .catch((resultError: ResultError) => {
+                handleError(
+                    hdid,
+                    resultError,
+                    ErrorType.Retrieve,
+                    ErrorSourceType.HospitalVisit
+                );
+                throw resultError;
+            });
     }
 
     return {
