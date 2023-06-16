@@ -40,17 +40,22 @@ export class DatasetMapUtils<T, S extends DatasetState<T>> {
      * @param stateMap
      * @param key
      * @param error
+     * @param overrideStatusMessage
      */
     public setStateError(
         stateMap: Map<string, S>,
         key: string,
-        error: ResultError
+        error?: ResultError,
+        overrideStatusMessage?: string
     ): void {
         const state = this.getDatasetState(stateMap, key);
         stateMap.set(key, {
             ...state,
             error: error,
-            statusMessage: error.resultMessage,
+            statusMessage:
+                overrideStatusMessage ??
+                error?.resultMessage ??
+                "Error occurred",
             status: LoadStatus.ERROR,
         });
     }
