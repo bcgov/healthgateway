@@ -23,7 +23,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Alba" Version="7.4.0" />
+        <PackageReference Include="Alba" Version="7.4.1" />
         <PackageReference Include="MartinCostello.Logging.XUnit" Version="0.3.0" />
         <PackageReference Include="Shouldly" Version="4.2.1" />
         <PackageReference Include="Microsoft.Extensions.Configuration" Version="7.0.0" />
