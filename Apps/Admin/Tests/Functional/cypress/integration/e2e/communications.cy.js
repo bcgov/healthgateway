@@ -1,11 +1,12 @@
 function getTodayPlusDaysDate(days) {
     let newDay = new Date(Date.now());
+    cy.log(`New day: ${newDay}`);
     newDay.setDate(newDay.getDate() + days);
+    cy.log(`New day plus ${days}: ${newDay}`);
 
     // Convert the date and time to a localized string
     const localizedDateString = newDay.toLocaleString("en-US", {
         timeZone: "America/Vancouver",
-        hour12: false,
     });
 
     // Parse the localized string to a Date object
