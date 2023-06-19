@@ -14,12 +14,7 @@ export const useNavbarStore = defineStore("navbar", () => {
     const isSidebarAnimating = ref<boolean>(false);
     const isHeaderShown = ref<boolean>(true);
 
-    const isSidebarOpen = computed(() => {
-        if (isSidebarOpenField.value === null) {
-            return !appStore.isMobile;
-        }
-        return isSidebarOpenField.value;
-    });
+    const isSidebarOpen = computed(() => isSidebarOpenField.value ?? !appStore.isMobile);
 
     function toggleSidebar() {
         logger.verbose(`useNavbarStore:setSidebarState`);
