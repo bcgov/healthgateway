@@ -37,8 +37,8 @@ describe("Immunization History Report", () => {
 
     it("Validate Immunization Loading", () => {
         cy.get("[data-testid=reportType]").select("Immunizations");
-        cy.get("[data-testid=timelineLoading]").should("be.visible");
-        cy.get("[data-testid=timelineLoading]").should("not.be.visible");
+        cy.get("[data-testid=loadingSpinner]").should("be.visible");
+        cy.get("[data-testid=loadingSpinner]").should("not.be.visible");
     });
 
     it("Validate Immunization History Report", () => {
