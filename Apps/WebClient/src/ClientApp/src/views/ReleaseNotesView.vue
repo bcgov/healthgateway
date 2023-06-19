@@ -17,6 +17,19 @@ const breadcrumbItems: BreadcrumbItem[] = [
     <div>
         <BreadcrumbComponent :items="breadcrumbItems" />
         <page-title title="Health Gateway Release Notes" />
+        <release-note
+            date="May 10, 2023"
+            version="v2023.5.10"
+            title="Organ Donor Registry"
+        >
+            <ul>
+                <li>
+                    We added Organ Donor Registry information, so you can check
+                    if you are registered as an organ donor with BC Transplant.
+                    If you are registered, you can review the details of your
+                </li>
+            </ul>
+        </release-note>
         <release-note date="May 2, 2023" version="v2023.5.02" title="App Tour">
             <ul>
                 <li>
