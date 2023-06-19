@@ -27,6 +27,7 @@ const breadcrumbItems: BreadcrumbItem[] = [
                     We added Organ Donor Registry information, so you can check
                     if you are registered as an organ donor with BC Transplant.
                     If you are registered, you can review the details of your
+                    decision.
                 </li>
             </ul>
         </release-note>
