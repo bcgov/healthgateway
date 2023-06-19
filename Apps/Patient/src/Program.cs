@@ -74,6 +74,7 @@ namespace HealthGateway.Patient
             ExceptionHandling.ConfigureProblemDetails(services, environment);
 
             WebApplication app = builder.Build();
+            app.UseDefaultHttpRequestLogging();
             ExceptionHandling.UseProblemDetails(app);
             HttpWeb.UseForwardHeaders(app, logger, configuration);
             SwaggerDoc.UseSwagger(app, logger);
