@@ -22,7 +22,7 @@
         "throttle-debounce": "^5.0.0",
         "vue": "^3.2.0",
         "vue-router": "^4.0.0",
-        "vuetify": "^3.0.0",
+        "vuetify": "^3.3.3",
         "webfontloader": "^1.0.0"
     },
     "devDependencies": {
