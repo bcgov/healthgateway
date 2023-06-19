@@ -1,6 +1,6 @@
 ﻿import { defineStore } from "pinia";
 import { LoadStatus } from "@/models/storeOperations";
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import { Ticket } from "@/models/ticket";
 import { TicketStatus } from "@/constants/ticketStatus";
 import { container } from "@/ioc/container";
@@ -24,21 +24,15 @@ export const useWaitlistStore = defineStore(
         const ticketField = ref<Ticket>();
         const checkInTimeoutId = ref<number>();
 
-        function isLoading(): boolean {
-            return status.value === LoadStatus.REQUESTED;
-        }
+        const isLoading = computed(() => status.value === LoadStatus.REQUESTED);
 
-        function tooBusy(): boolean {
-            return tooBusyField.value;
-        }
+        const tooBusy = computed(() => tooBusyField.value);
 
-        function ticket(): Ticket | undefined {
-            return ticketField.value;
-        }
+        const ticket = computed(() => ticketField.value);
 
-        function ticketIsProcessed(): boolean {
-            return ticketField.value?.status === TicketStatus.Processed;
-        }
+        const ticketIsProcessed = computed(
+            () => ticketField.value?.status === TicketStatus.Processed
+        );
 
         function setTicketRequested() {
             ticketField.value = undefined;
@@ -107,6 +101,16 @@ export const useWaitlistStore = defineStore(
             }
         }
 
+        function handleTicket(incomingTicket: Ticket): void {
+            if (
+                incomingTicket.status === TicketStatus.Processed &&
+                incomingTicket.token !== undefined
+            ) {
+                httpDelegate.setTicketAuthorizationHeader(incomingTicket.token);
+            }
+            scheduleCheckIn(incomingTicket);
+        }
+
         function getTicket(): Promise<Ticket> {
             const localTraceId = "error-ticket-undefined";
             logger.debug("Waitlist - Retrieving ticket");
@@ -119,7 +123,6 @@ export const useWaitlistStore = defineStore(
                         handleTicket(result);
                         return result;
                     } else {
-                        setError();
                         throw {
                             resultMessage: "Ticket is undefined",
                             traceId: localTraceId,
@@ -134,16 +137,6 @@ export const useWaitlistStore = defineStore(
                     }
                     throw error;
                 });
-        }
-
-        function handleTicket(incomingTicket: Ticket): void {
-            if (
-                incomingTicket.status === TicketStatus.Processed &&
-                incomingTicket.token !== undefined
-            ) {
-                httpDelegate.setTicketAuthorizationHeader(incomingTicket.token);
-            }
-            scheduleCheckIn(incomingTicket);
         }
 
         function checkIn(): Promise<void> {
