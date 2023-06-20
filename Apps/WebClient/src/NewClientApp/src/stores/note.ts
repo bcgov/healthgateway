@@ -162,14 +162,11 @@ export const useNoteStore = defineStore("healthVisits", () => {
             });
     }
 
-    function deleteNote(params: {
-        hdid: string;
-        note: UserNote;
-    }): Promise<void> {
+    function deleteNote(hdid: string, note: UserNote): Promise<void> {
         return noteService
-            .deleteNote(params.hdid, params.note)
+            .deleteNote(hdid, note)
             .then(() => {
-                commitDeleteNote(params.note);
+                commitDeleteNote(note);
             })
             .catch((error: ResultError) => {
                 handleError(error, ErrorType.Delete);
