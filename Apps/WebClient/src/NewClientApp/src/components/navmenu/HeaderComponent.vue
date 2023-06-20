@@ -308,6 +308,7 @@ nextTick(() => {
         <v-spacer></v-spacer>
         <v-btn
             v-if="isAppTourAvailable"
+            icon
             @click="handleShowTourClick"
             data-testid="app-tour-button"
         >
@@ -317,7 +318,7 @@ nextTick(() => {
         </v-btn>
         <v-btn
             v-if="isNotificationCentreAvailable"
-            icon="fas fa-bell"
+            icon
             @click="notificationButtonClicked = true"
             data-testid="notification-centre-button"
         >
@@ -329,19 +330,15 @@ nextTick(() => {
                 <v-icon icon="fas fa-bell"></v-icon>
             </v-badge>
         </v-btn>
-        <v-btn
-            v-if="isLoggedInMenuShown"
-            id="menuBtnLogout"
-            data-testid="headerDropdownBtn"
-        >
-            <template #prepend>
-                <v-avatar data-testid="profileButtonInitials">
+        <template v-if="isLoggedInMenuShown">
+            <v-btn id="menuBtnLogout" icon data-testid="headerDropdownBtn">
+                <v-avatar data-testid="profileButtonInitials" color="info">
                     <span data-testid="profileButtonInitials">{{
                         userInitials
                     }}</span>
                 </v-avatar>
-            </template>
-            <v-menu activator="parent">
+            </v-btn>
+            <v-menu activator="#menuBtnLogout">
                 <v-list>
                     <v-list-item data-testid="profileUserName">{{
                         userName
@@ -361,7 +358,7 @@ nextTick(() => {
                     >
                 </v-list></v-menu
             >
-        </v-btn>
+        </template>
         <v-btn
             v-else-if="isLogInButtonShown"
             prepend-icon="fas fa-sign-in-alt"
