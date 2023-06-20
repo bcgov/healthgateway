@@ -21,9 +21,9 @@ export const useNoteStore = defineStore("healthVisits", () => {
     // Refs
     const notes = ref<UserNote[]>([]);
     const status = ref(LoadStatus.NONE);
-    const statusMessage = ref<string>("");
+    const statusMessage = ref("");
     const error = ref<ResultError>();
-    const lastOperation = ref<Operation | null>(null);
+    const lastOperation = ref<Operation>();
 
     // Computed
     const notesCount = computed(() => notes.value.length);
