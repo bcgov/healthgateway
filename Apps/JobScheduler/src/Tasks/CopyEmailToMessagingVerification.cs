@@ -61,7 +61,7 @@ namespace HealthGateway.JobScheduler.Tasks
                     email => this.dbContext.MessagingVerification.Any(msgVerification => msgVerification.EmailId == email.Id && msgVerification.EmailAddress == null))
                 .OrderBy(e => e.Id);
 
-            List<Email> emails = query.Skip(offset).Take(this.batchSize).ToList();
+            List<Email> emails = query.Take(this.batchSize).ToList();
             this.logger.LogInformation("The number of emails to copy from Email.To to MessagingVerification.EmailAddress: {Emails}", emails.Count);
             int processed = 0;
 
@@ -79,7 +79,7 @@ namespace HealthGateway.JobScheduler.Tasks
                 this.logger.LogInformation("Saved message verification changes after {Processed} email(s) processed", processed);
 
                 offset += this.batchSize;
-                emails = query.Skip(offset).Take(this.batchSize).ToList();
+                emails = query.Take(this.batchSize).ToList();
             }
 
             this.logger.LogInformation("Performing Task {Name} finished", this.GetType().Name);
