@@ -1,7 +1,6 @@
-<script lang="ts">
-import Vue from "vue";
-import { Component, Emit, Prop, Watch } from "vue-property-decorator";
-import { Action, Getter } from "vuex-class";
+<script setup lang="ts">
+import { computed, onMounted, watch } from "vue";
+import { useStore } from "vue-composition-wrapper";
 
 import { DateWrapper } from "@/models/dateWrapper";
 import { Encounter } from "@/models/encounter";
@@ -15,6 +14,22 @@ import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ILogger, IReportService } from "@/services/interfaces";
 
+interface Props {
+    hdid: string;
+    filter: ReportFilter;
+    isDependent?: boolean;
+}
+const props = withDefaults(defineProps<Props>(), {
+    isDependent: false,
+});
+
+const emit = defineEmits<{
+    (e: "on-is-loading-changed", newValue: boolean): void;
+    (e: "on-is-empty-changed", newValue: boolean): void;
+}>();
+
+defineExpose({ generateReport });
+
 interface EncounterRow {
     date: string;
     specialty_description: string;
@@ -22,37 +37,46 @@ interface EncounterRow {
     clinic_practitioner: string;
 }
 
-@Component
-export default class MSPVisitsReportComponent extends Vue {
-    @Prop({ required: true })
-    hdid!: string;
+const headerClass = "encounter-report-table-header";
+const fields: ReportField[] = [
+    {
+        key: "date",
+        thClass: headerClass,
+        tdAttr: { "data-testid": "mspVisitDateItem" },
+    },
+    {
+        key: "specialty_description",
+        thClass: headerClass,
+    },
+    {
+        key: "practitioner",
+        thClass: headerClass,
+    },
+    {
+        key: "clinic_practitioner",
+        label: "Clinic/Practitioner",
+        thClass: headerClass,
+    },
+];
 
-    @Prop() private filter!: ReportFilter;
+const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+const reportService = container.get<IReportService>(
+    SERVICE_IDENTIFIER.ReportService
+);
+const store = useStore();
 
-    @Prop({ default: false }) isDependent!: boolean;
+const healthVisitsAreLoading = computed<boolean>(() =>
+    store.getters["encounter/healthVisitsAreLoading"](props.hdid)
+);
+const healthVisits = computed<Encounter[]>(() =>
+    store.getters["encounter/healthVisits"](props.hdid)
+);
 
-    @Action("retrieveHealthVisits", { namespace: "encounter" })
-    retrieveHealthVisits!: (params: { hdid: string }) => Promise<void>;
-
-    @Getter("healthVisitsAreLoading", { namespace: "encounter" })
-    healthVisitsAreLoading!: (hdid: string) => boolean;
-
-    @Getter("healthVisits", { namespace: "encounter" })
-    healthVisits!: (hdid: string) => Encounter[];
-
-    private logger!: ILogger;
-
-    private readonly headerClass = "encounter-report-table-header";
-
-    private get isLoading(): boolean {
-        return this.healthVisitsAreLoading(this.hdid);
-    }
-
-    private get visibleRecords(): Encounter[] {
-        const records = this.healthVisits(this.hdid).filter((record) =>
-            this.filter.allowsDate(record.encounterDate)
-        );
-        records.sort((a, b) => {
+const isEmpty = computed<boolean>(() => visibleRecords.value.length === 0);
+const visibleRecords = computed<Encounter[]>(() =>
+    healthVisits.value
+        .filter((record) => props.filter.allowsDate(record.encounterDate))
+        .sort((a, b) => {
             const firstDate = new DateWrapper(a.encounterDate);
             const secondDate = new DateWrapper(b.encounterDate);
 
@@ -65,93 +89,57 @@ export default class MSPVisitsReportComponent extends Vue {
             }
 
             return 0;
-        });
+        })
+);
+const items = computed(() =>
+    visibleRecords.value.map<EncounterRow>((x) => ({
+        date: DateWrapper.format(x.encounterDate),
+        specialty_description: x.specialtyDescription,
+        practitioner: x.practitionerName,
+        clinic_practitioner: x.clinic.name,
+    }))
+);
 
-        return records;
-    }
-
-    private get isEmpty(): boolean {
-        return this.visibleRecords.length === 0;
-    }
-
-    private get items(): EncounterRow[] {
-        return this.visibleRecords.map<EncounterRow>((x) => ({
-            date: DateWrapper.format(x.encounterDate),
-            specialty_description: x.specialtyDescription,
-            practitioner: x.practitionerName,
-            clinic_practitioner: x.clinic.name,
-        }));
-    }
-
-    @Watch("isLoading")
-    @Emit()
-    private onIsLoadingChanged(): boolean {
-        return this.isLoading;
-    }
-
-    @Watch("isEmpty")
-    @Emit()
-    private onIsEmptyChanged(): boolean {
-        return this.isEmpty;
-    }
-
-    private created(): void {
-        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-        this.retrieveHealthVisits({ hdid: this.hdid }).catch((err) =>
-            this.logger.error(`Error loading encounter data: ${err}`)
-        );
-    }
-
-    private mounted(): void {
-        this.onIsEmptyChanged();
-    }
-
-    public async generateReport(
-        reportFormatType: ReportFormatType,
-        headerData: ReportHeader
-    ): Promise<RequestResult<Report>> {
-        const reportService = container.get<IReportService>(
-            SERVICE_IDENTIFIER.ReportService
-        );
-
-        return reportService.generateReport({
-            data: {
-                header: headerData,
-                records: this.items,
-            },
-            template: TemplateType.Encounter,
-            type: reportFormatType,
-        });
-    }
-
-    private fields: ReportField[] = [
-        {
-            key: "date",
-            thClass: this.headerClass,
-            tdAttr: { "data-testid": "mspVisitDateItem" },
-        },
-        {
-            key: "specialty_description",
-            thClass: this.headerClass,
-        },
-        {
-            key: "practitioner",
-            thClass: this.headerClass,
-        },
-        {
-            key: "clinic_practitioner",
-            label: "Clinic/Practitioner",
-            thClass: this.headerClass,
-        },
-    ];
+function retrieveHealthVisits(hdid: string): Promise<void> {
+    return store.dispatch("encounter/retrieveHealthVisits", { hdid });
 }
+
+function generateReport(
+    reportFormatType: ReportFormatType,
+    headerData: ReportHeader
+): Promise<RequestResult<Report>> {
+    return reportService.generateReport({
+        data: {
+            header: headerData,
+            records: items.value,
+        },
+        template: TemplateType.Encounter,
+        type: reportFormatType,
+    });
+}
+
+watch(healthVisitsAreLoading, () => {
+    emit("on-is-loading-changed", healthVisitsAreLoading.value);
+});
+
+watch(isEmpty, () => {
+    emit("on-is-empty-changed", isEmpty.value);
+});
+
+onMounted(() => {
+    emit("on-is-empty-changed", isEmpty.value);
+});
+
+retrieveHealthVisits(props.hdid).catch((err) =>
+    logger.error(`Error loading encounter data: ${err}`)
+);
 </script>
 
 <template>
     <div>
         <div>
             <section>
-                <b-row v-if="isEmpty && !isLoading">
+                <b-row v-if="isEmpty && !healthVisitsAreLoading">
                     <b-col>No records found.</b-col>
                 </b-row>
 
@@ -159,7 +147,7 @@ export default class MSPVisitsReportComponent extends Vue {
                     v-else-if="!isDependent"
                     :striped="true"
                     :fixed="true"
-                    :busy="isLoading"
+                    :busy="healthVisitsAreLoading"
                     :items="items"
                     :fields="fields"
                     data-testid="msp-visits-report-table"

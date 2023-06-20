@@ -89,7 +89,7 @@ namespace HealthGateway.CommonTests.Utils
         [Fact]
         public void ShouldSerializeWhetherConcreteOrGeneric()
         {
-            string? anyObj = "SomeValue";
+            string anyObj = "SomeValue";
 
             // serialize and deserialize using concrete
             byte[] serialized = anyObj.Serialize();

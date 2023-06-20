@@ -9,26 +9,17 @@ import {
 import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import { Dictionary } from "@/models/baseTypes";
 import { Covid19TestResultState, LabResultState } from "@/models/datasetState";
-import { StringISODate } from "@/models/dateWrapper";
-import { CustomBannerError, ResultError } from "@/models/errors";
+import { ResultError } from "@/models/errors";
 import {
     Covid19LaboratoryOrder,
     Covid19LaboratoryOrderResult,
     LaboratoryOrder,
     LaboratoryOrderResult,
-    PublicCovidTestResponseResult,
 } from "@/models/laboratory";
 import RequestResult from "@/models/requestResult";
-import { LoadStatus } from "@/models/storeOperations";
 import { RootState } from "@/store/types";
 
 export interface LaboratoryState {
-    publicCovid19: {
-        publicCovidTestResponseResult?: PublicCovidTestResponseResult;
-        statusMessage: string;
-        error?: CustomBannerError;
-        status?: LoadStatus;
-    };
     covid19TestResults: Dictionary<Covid19TestResultState>;
     labResults: Dictionary<LabResultState>;
 }
@@ -54,14 +45,6 @@ export interface LaboratoryGetters
     laboratoryOrdersAreQueued(
         state: LaboratoryState
     ): (hdid: string) => boolean;
-    publicCovidTestResponseResult(
-        state: LaboratoryState
-    ): PublicCovidTestResponseResult | undefined;
-    isPublicCovidTestResponseResultLoading(state: LaboratoryState): boolean;
-    publicCovidTestResponseResultError(
-        state: LaboratoryState
-    ): CustomBannerError | undefined;
-    publicCovidTestResponseResultStatusMessage(state: LaboratoryState): string;
 }
 
 type StoreContext = ActionContext<LaboratoryState, RootState>;
@@ -84,19 +67,6 @@ export interface LaboratoryActions
             errorSourceType: ErrorSourceType;
         }
     ): void;
-    retrievePublicCovidTests(
-        context: StoreContext,
-        params: {
-            phn: string;
-            dateOfBirth: StringISODate;
-            collectionDate: StringISODate;
-        }
-    ): Promise<PublicCovidTestResponseResult>;
-    handlePublicCovidTestsError(
-        context: StoreContext,
-        params: { error: ResultError; errorType: ErrorType }
-    ): void;
-    resetPublicCovidTestResponseResult(context: StoreContext): void;
 }
 
 export interface LaboratoryMutations extends MutationTree<LaboratoryState> {
@@ -140,20 +110,6 @@ export interface LaboratoryMutations extends MutationTree<LaboratoryState> {
             error: Error;
         }
     ): void;
-    setPublicCovidTestResponseResultRequested(state: LaboratoryState): void;
-    setPublicCovidTestResponseResult(
-        state: LaboratoryState,
-        publicCovidTestResponseResult: PublicCovidTestResponseResult
-    ): void;
-    setPublicCovidTestResponseResultError(
-        state: LaboratoryState,
-        error: CustomBannerError
-    ): void;
-    setPublicCovidTestResponseResultStatusMessage(
-        state: LaboratoryState,
-        statusMessage: string
-    ): void;
-    resetPublicCovidTestResponseResult(state: LaboratoryState): void;
 }
 
 export interface LaboratoryModule extends Module<LaboratoryState, RootState> {

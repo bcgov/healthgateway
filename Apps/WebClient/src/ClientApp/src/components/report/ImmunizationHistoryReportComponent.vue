@@ -47,7 +47,6 @@ interface RecomendationRow {
 }
 
 const headerClass = "immunization-report-table-header";
-
 const immunizationFields: ReportField[] = [
     {
         key: "date",
@@ -79,7 +78,6 @@ const immunizationFields: ReportField[] = [
         tdAttr: { "data-testid": "immunizationProviderClinicItem" },
     },
 ];
-
 const recomendationFields: ReportField[] = [
     {
         key: "immunization",
@@ -100,37 +98,32 @@ const recomendationFields: ReportField[] = [
 const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
 const store = useStore();
 
-const patientImmunizations = computed<(hdid: string) => ImmunizationEvent[]>(
-    () => store.getters["immunization/immunizations"]
+const patientImmunizations = computed<ImmunizationEvent[]>(() =>
+    store.getters["immunization/immunizations"](props.hdid)
 );
 
-const patientRecommendations = computed<(hdid: string) => Recommendation[]>(
-    () => store.getters["immunization/recomendations"]
+const patientRecommendations = computed<Recommendation[]>(() =>
+    store.getters["immunization/recomendations"](props.hdid)
 );
 
-const immunizationsAreLoading = computed<(hdid: string) => boolean>(
-    () => store.getters["immunization/immunizationsAreLoading"]
+const immunizationsAreLoading = computed<boolean>(() =>
+    store.getters["immunization/immunizationsAreLoading"](props.hdid)
 );
 
-const immunizationsAreDeferred = computed<(hdid: string) => boolean>(
-    () => store.getters["immunization/immunizationsAreDeferred"]
+const immunizationsAreDeferred = computed<boolean>(() =>
+    store.getters["immunization/immunizationsAreDeferred"](props.hdid)
 );
 
 const isEmpty = computed(() => visibleImmunizations.value.length === 0);
-
 const isRecommendationEmpty = computed(
     () => visibleRecomendations.value.length === 0
 );
-
 const isLoading = computed(
-    () =>
-        immunizationsAreDeferred.value(props.hdid) ||
-        immunizationsAreLoading.value(props.hdid)
+    () => immunizationsAreDeferred.value || immunizationsAreLoading.value
 );
 
 const visibleImmunizations = computed(() =>
-    patientImmunizations
-        .value(props.hdid)
+    patientImmunizations.value
         .filter((record) => props.filter.allowsDate(record.dateOfImmunization))
         .sort((a, b) => {
             const firstDate = new DateWrapper(a.dateOfImmunization);
@@ -149,19 +142,16 @@ const visibleImmunizations = computed(() =>
 );
 
 const immunizationItems = computed(() =>
-    visibleImmunizations.value.map<ImmunizationRow>((x) => {
-        return {
-            date: DateWrapper.format(x.dateOfImmunization),
-            immunization: x.immunization.name,
-            agents: x.immunization.immunizationAgents,
-            provider_clinic: x.providerOrClinic,
-        };
-    })
+    visibleImmunizations.value.map<ImmunizationRow>((x) => ({
+        date: DateWrapper.format(x.dateOfImmunization),
+        immunization: x.immunization.name,
+        agents: x.immunization.immunizationAgents,
+        provider_clinic: x.providerOrClinic,
+    }))
 );
 
 const visibleRecomendations = computed(() =>
-    patientRecommendations
-        .value(props.hdid)
+    patientRecommendations.value
         .filter((x) => x.recommendedVaccinations)
         .sort((a, b) => {
             const firstDateEmpty =
@@ -195,17 +185,14 @@ const visibleRecomendations = computed(() =>
             return 0;
         })
 );
-
 const recomendationItems = computed(() =>
-    visibleRecomendations.value.map<RecomendationRow>((x) => {
-        return {
-            immunization: x.recommendedVaccinations,
-            due_date:
-                x.agentDueDate === undefined || x.agentDueDate === null
-                    ? ""
-                    : DateWrapper.format(x.agentDueDate),
-        };
-    })
+    visibleRecomendations.value.map<RecomendationRow>((x) => ({
+        immunization: x.recommendedVaccinations,
+        due_date:
+            x.agentDueDate === undefined || x.agentDueDate === null
+                ? ""
+                : DateWrapper.format(x.agentDueDate),
+    }))
 );
 
 function retrieveImmunizations(hdid: string): Promise<void> {
@@ -240,11 +227,7 @@ watch(isLoading, () => {
     emit("on-is-loading-changed", isLoading.value);
 });
 
-watch(isEmpty, () => {
-    onIsEmptyChanged();
-});
-
-watch(isRecommendationEmpty, () => {
+watch([isEmpty, isRecommendationEmpty], () => {
     onIsEmptyChanged();
 });
 

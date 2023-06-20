@@ -56,6 +56,15 @@ namespace HealthGateway.AccountDataAccess.Patient
         Task<PatientQueryResult> Query(PatientQuery query, CancellationToken ct = default);
 
         /// <summary>
+        /// Returns true if data source can be accessed and false if it cannot.
+        /// </summary>
+        /// <param name="hdid">The hdid to query on.</param>
+        /// <param name="dataSource">The data source to check.</param>
+        /// <param name="ct">The cancellation token.</param>
+        /// <returns>The blocked access or null if not found.</returns>
+        Task<bool> CanAccessDataSourceAsync(string hdid, DataSource dataSource, CancellationToken ct = default);
+
+        /// <summary>
         /// Gets the blocked access record.
         /// </summary>
         /// <param name="hdid">The hdid to query on.</param>

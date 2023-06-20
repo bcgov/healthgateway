@@ -1,14 +1,14 @@
 export default interface PcrTestData {
-    firstName?: string;
-    lastName?: string;
-    phn?: string;
-    dob?: string;
-    contactPhoneNumber?: string;
-    streetAddress?: string;
-    city?: string;
-    postalOrZip?: string;
+    firstName: string;
+    lastName: string;
+    phn: string;
+    dob: string;
+    contactPhoneNumber: string;
+    streetAddress: string;
+    city: string;
+    postalOrZip: string;
     testTakenMinutesAgo: number;
-    hdid?: string;
+    hdid: string;
     testKitCid: string;
     testKitCode: string;
 }

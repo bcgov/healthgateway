@@ -24,7 +24,6 @@ namespace HealthGateway.JobScheduler
     using HealthGateway.Common.Api;
     using HealthGateway.Common.AspNetConfiguration;
     using HealthGateway.Common.AspNetConfiguration.Modules;
-    using HealthGateway.Common.Delegates;
     using HealthGateway.Common.Delegates.PHSA;
     using HealthGateway.Common.Jobs;
     using HealthGateway.Common.Messaging;
@@ -118,10 +117,6 @@ namespace HealthGateway.JobScheduler
             services.AddTransient<ICommunicationService, CommunicationService>();
             services.AddTransient<IWriteAuditEventDelegate, DbWriteAuditEventDelegate>();
 
-            Patient.ConfigurePatientAccess(services, this.logger, this.configuration);
-            services.AddTransient<IClientRegistriesDelegate, ClientRegistriesDelegate>();
-            services.AddTransient<IPatientService, PatientService>();
-
             // Add API Clients
             NotificationSettingsConfig notificationSettingsConfig = new();
             this.startupConfig.Configuration.Bind(NotificationSettingsConfig.NotificationSettingsConfigSectionKey, notificationSettingsConfig);
@@ -140,7 +135,6 @@ namespace HealthGateway.JobScheduler
             services.AddTransient<IEmailJob, EmailJob>();
             services.AddTransient<INotificationSettingsJob, NotificationSettingsJob>();
             services.AddTransient<IAdminFeedbackJob, AdminFeedbackJob>();
-            services.AddTransient<DependentExpiryDateJob>();
 
             // Enable Hangfire
             services.AddHangfire(x => x.UsePostgreSqlStorage(this.configuration.GetConnectionString("GatewayConnection")));
@@ -203,7 +197,6 @@ namespace HealthGateway.JobScheduler
             SchedulerHelper.ScheduleJob<CloseAccountJob>(this.configuration, "CloseAccounts", j => j.Process());
             SchedulerHelper.ScheduleJob<OneTimeJob>(this.configuration, "OneTime", j => j.Process());
             SchedulerHelper.ScheduleJob<DeleteEmailJob>(this.configuration, "DeleteEmailJob", j => j.DeleteOldEmails());
-            SchedulerHelper.ScheduleJob<DependentExpiryDateJob>(this.configuration, "DependentExpiryDate", j => j.Process());
         }
     }
 }

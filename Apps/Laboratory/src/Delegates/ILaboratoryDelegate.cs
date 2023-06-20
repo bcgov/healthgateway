@@ -15,7 +15,6 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Laboratory.Delegates
 {
-    using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;
     using HealthGateway.Common.Data.ViewModels;
@@ -55,15 +54,5 @@ namespace HealthGateway.Laboratory.Delegates
         /// <param name="bearerToken">The security token representing the authenticated user.</param>
         /// <returns>Returns a summary of Provincial Lab Information System Lab Orders.</returns>
         Task<RequestResult<PhsaResult<PhsaLaboratorySummary>>> GetLaboratorySummary(string hdid, string bearerToken);
-
-        /// <summary>
-        /// Returns the public COVID-19 test results for the given patient.
-        /// </summary>
-        /// <param name="accessToken">The connection access token.</param>
-        /// <param name="phn">The patient's Personal Health Number.</param>
-        /// <param name="dateOfBirth">The patient's date of birth.</param>
-        /// <param name="collectionDate">The date the test was collected.</param>
-        /// <returns>The COVID-19 test results result for the given patient.</returns>
-        Task<RequestResult<PhsaResult<IEnumerable<CovidTestResult>>>> GetPublicTestResults(string accessToken, string phn, DateOnly dateOfBirth, DateOnly collectionDate);
     }
 }

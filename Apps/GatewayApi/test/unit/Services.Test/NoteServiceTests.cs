@@ -18,8 +18,10 @@ namespace HealthGateway.GatewayApiTests.Services.Test
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading;
     using AutoMapper;
     using DeepEqual.Syntax;
+    using HealthGateway.AccountDataAccess.Patient;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Data.ViewModels;
@@ -55,6 +57,18 @@ namespace HealthGateway.GatewayApiTests.Services.Test
 
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             actualResult.ResourcePayload.ShouldDeepEqual(userNoteList);
+        }
+
+        /// <summary>
+        /// GetNotes - Blocked Access.
+        /// </summary>
+        [Fact]
+        public void ShouldGetNotesGivenBlockedAccess()
+        {
+            (RequestResult<IEnumerable<UserNote>> actualResult, _) = this.ExecuteGetNotes("abc", DbStatusCode.Error, false);
+
+            Assert.Equal(ResultType.Success, actualResult.ResultStatus);
+            Assert.Empty(actualResult.ResourcePayload);
         }
 
         /// <summary>
@@ -184,6 +198,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 new Mock<INoteDelegate>().Object,
                 profileDelegateMock.Object,
                 new Mock<ICryptoDelegate>().Object,
+                new Mock<IPatientRepository>().Object,
                 this.autoMapper);
 
             RequestResult<UserNote> actualResult = service.CreateNote(userNote);
@@ -220,6 +235,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 new Mock<INoteDelegate>().Object,
                 profileDelegateMock.Object,
                 new Mock<ICryptoDelegate>().Object,
+                new Mock<IPatientRepository>().Object,
                 this.autoMapper);
 
             RequestResult<UserNote> actualResult = service.UpdateNote(userNote);
@@ -256,6 +272,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 new Mock<INoteDelegate>().Object,
                 profileDelegateMock.Object,
                 new Mock<ICryptoDelegate>().Object,
+                new Mock<IPatientRepository>().Object,
                 this.autoMapper);
 
             RequestResult<UserNote> actualResult = service.DeleteNote(userNote);
@@ -263,7 +280,10 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
         }
 
-        private (RequestResult<IEnumerable<UserNote>> ActualResult, List<UserNote> ExpectedPayload) ExecuteGetNotes(string? encryptionKey = null, DbStatusCode notesDbResultStatus = DbStatusCode.Read)
+        private (RequestResult<IEnumerable<UserNote>> ActualResult, List<UserNote> ExpectedPayload) ExecuteGetNotes(
+            string? encryptionKey = null,
+            DbStatusCode notesDbResultStatus = DbStatusCode.Read,
+            bool canAccessDataSource = true)
         {
             DbResult<UserProfile> profileDbResult = new()
             {
@@ -320,11 +340,15 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             Mock<INoteDelegate> noteDelegateMock = new();
             noteDelegateMock.Setup(s => s.GetNotes(this.hdid, 0, 500)).Returns(notesDbResult);
 
+            Mock<IPatientRepository> patientRepository = new();
+            patientRepository.Setup(p => p.CanAccessDataSourceAsync(It.IsAny<string>(), It.IsAny<DataSource>(), It.IsAny<CancellationToken>())).ReturnsAsync(canAccessDataSource);
+
             INoteService service = new NoteService(
                 new Mock<ILogger<NoteService>>().Object,
                 noteDelegateMock.Object,
                 profileDelegateMock.Object,
                 cryptoDelegateMock.Object,
+                patientRepository.Object,
                 this.autoMapper);
 
             RequestResult<IEnumerable<UserNote>> actualResult = service.GetNotes(this.hdid);
@@ -372,6 +396,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 noteDelegateMock.Object,
                 profileDelegateMock.Object,
                 cryptoDelegateMock.Object,
+                new Mock<IPatientRepository>().Object,
                 this.autoMapper);
 
             RequestResult<UserNote> actualResult = service.CreateNote(userNote);
@@ -418,6 +443,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 noteDelegateMock.Object,
                 profileDelegateMock.Object,
                 cryptoDelegateMock.Object,
+                new Mock<IPatientRepository>().Object,
                 this.autoMapper);
 
             RequestResult<UserNote> actualResult = service.UpdateNote(userNote);
@@ -464,6 +490,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 noteDelegateMock.Object,
                 profileDelegateMock.Object,
                 cryptoDelegateMock.Object,
+                new Mock<IPatientRepository>().Object,
                 this.autoMapper);
 
             RequestResult<UserNote> actualResult = service.DeleteNote(userNote);

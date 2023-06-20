@@ -1,12 +1,12 @@
-<script lang="ts">
+<script setup lang="ts">
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faDownload, faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { saveAs } from "file-saver";
-import Vue from "vue";
-import { Component, Prop, Ref } from "vue-property-decorator";
-import { Action } from "vuex-class";
+import { computed, ref } from "vue";
+import { useStore } from "vue-composition-wrapper";
 
 import MessageModalComponent from "@/components/modal/MessageModalComponent.vue";
+import EntryCardTimelineComponent from "@/components/timeline/entryCard/EntrycardTimelineComponent.vue";
 import { EntryType, entryTypeMap } from "@/constants/entryType";
 import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import { DateWrapper } from "@/models/dateWrapper";
@@ -17,122 +17,98 @@ import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ILaboratoryService, ILogger } from "@/services/interfaces";
 import SnowPlow from "@/utility/snowPlow";
 
-import EntryCardTimelineComponent from "./EntrycardTimelineComponent.vue";
-
 library.add(faDownload, faInfoCircle);
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const options: any = {
-    components: {
-        MessageModalComponent,
-        EntryCard: EntryCardTimelineComponent,
-    },
-};
+interface Props {
+    hdid: string;
+    entry: LaboratoryOrderTimelineEntry;
+    index: number;
+    datekey: string;
+    isMobileDetails?: boolean;
+    commentsAreEnabled?: boolean;
+}
+const props = withDefaults(defineProps<Props>(), {
+    isMobileDetails: false,
+    commentsAreEnabled: false,
+});
 
-@Component(options)
-export default class LaboratoryOrderTimelineComponent extends Vue {
-    @Prop({ required: true })
-    hdid!: string;
+const store = useStore();
+const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+const laboratoryService = container.get<ILaboratoryService>(
+    SERVICE_IDENTIFIER.LaboratoryService
+);
 
-    @Prop()
-    entry!: LaboratoryOrderTimelineEntry;
+const isLoadingDocument = ref(false);
+const messageModal = ref<InstanceType<typeof MessageModalComponent>>();
 
-    @Prop()
-    index!: number;
+const entryIcon = computed<string | undefined>(
+    () => entryTypeMap.get(EntryType.LabResult)?.icon
+);
 
-    @Prop()
-    datekey!: string;
+function addError(
+    errorType: ErrorType,
+    source: ErrorSourceType,
+    traceId: string | undefined
+): void {
+    store.dispatch("errorBanner/addError", { errorType, source, traceId });
+}
 
-    @Prop()
-    isMobileDetails!: boolean;
+function setTooManyRequestsError(key: string): void {
+    store.dispatch("errorBanner/setTooManyRequestsError", { key });
+}
 
-    @Prop({ default: false })
-    commentsAreEnabled!: boolean;
+function getStatusInfoId(labPdfId: string, index: number): string {
+    const isModalIndicator = props.isMobileDetails ? "1" : "0";
+    return `laboratory-test-status-info-${labPdfId}-${index}-${isModalIndicator}`;
+}
 
-    @Ref("messageModal")
-    readonly messageModal!: MessageModalComponent;
+function showConfirmationModal(): void {
+    messageModal.value?.showModal();
+}
 
-    @Action("addError", { namespace: "errorBanner" })
-    addError!: (params: {
-        errorType: ErrorType;
-        source: ErrorSourceType;
-        traceId: string | undefined;
-    }) => void;
+function formatDate(date: DateWrapper): string {
+    return date.format("yyyy-MMM-dd, t");
+}
 
-    @Action("setTooManyRequestsError", { namespace: "errorBanner" })
-    setTooManyRequestsError!: (params: { key: string }) => void;
+function getReport(): void {
+    SnowPlow.trackEvent({
+        action: "download_report",
+        text: "Laboratory Report PDF",
+    });
 
-    private laboratoryService!: ILaboratoryService;
-
-    private isLoadingDocument = false;
-    private logger!: ILogger;
-
-    private created(): void {
-        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-        this.laboratoryService = container.get<ILaboratoryService>(
-            SERVICE_IDENTIFIER.LaboratoryService
-        );
-    }
-
-    private get entryIcon(): string | undefined {
-        return entryTypeMap.get(EntryType.LabResult)?.icon;
-    }
-
-    private formatDate(date: DateWrapper): string {
-        return date.format("yyyy-MMM-dd, t");
-    }
-
-    private getStatusInfoId(labPdfId: string, index: number): string {
-        const isModalIndicator: string = this.isMobileDetails ? "1" : "0";
-        return `laboratory-test-status-info-${labPdfId}-${index}-${isModalIndicator}`;
-    }
-
-    private showConfirmationModal(): void {
-        this.messageModal.showModal();
-    }
-
-    private getReport(): void {
-        SnowPlow.trackEvent({
-            action: "download_report",
-            text: "Laboratory Report PDF",
+    isLoadingDocument.value = true;
+    laboratoryService
+        .getReportDocument(props.entry.id, props.hdid, false)
+        .then((result) => {
+            const dateString =
+                props.entry.timelineDateTime.format("yyyy_MM_dd-HH_mm");
+            const report = result.resourcePayload;
+            fetch(`data:${report.mediaType};${report.encoding},${report.data}`)
+                .then((response) => response.blob())
+                .then((blob) =>
+                    saveAs(blob, `Laboratory_Report_${dateString}.pdf`)
+                );
+        })
+        .catch((err: ResultError) => {
+            logger.error(err.resultMessage);
+            if (err.statusCode === 429) {
+                setTooManyRequestsError("page");
+            } else {
+                addError(
+                    ErrorType.Download,
+                    ErrorSourceType.LaboratoryReport,
+                    err.traceId
+                );
+            }
+        })
+        .finally(() => {
+            isLoadingDocument.value = false;
         });
-
-        this.isLoadingDocument = true;
-        this.laboratoryService
-            .getReportDocument(this.entry.id, this.hdid, false)
-            .then((result) => {
-                const dateString =
-                    this.entry.timelineDateTime.format("yyyy_MM_dd-HH_mm");
-                const report = result.resourcePayload;
-                fetch(
-                    `data:${report.mediaType};${report.encoding},${report.data}`
-                )
-                    .then((response) => response.blob())
-                    .then((blob) =>
-                        saveAs(blob, `Laboratory_Report_${dateString}.pdf`)
-                    );
-            })
-            .catch((err: ResultError) => {
-                this.logger.error(err.resultMessage);
-                if (err.statusCode === 429) {
-                    this.setTooManyRequestsError({ key: "page" });
-                } else {
-                    this.addError({
-                        errorType: ErrorType.Download,
-                        source: ErrorSourceType.LaboratoryReport,
-                        traceId: err.traceId,
-                    });
-                }
-            })
-            .finally(() => {
-                this.isLoadingDocument = false;
-            });
-    }
 }
 </script>
 
 <template>
-    <EntryCard
+    <EntryCardTimelineComponent
         :card-id="index + '-' + datekey"
         :entry-icon="entryIcon"
         :title="entry.commonName"
@@ -325,11 +301,13 @@ export default class LaboratoryOrderTimelineComponent extends Vue {
                         )}-popover`"
                     >
                         <p
-                            v-for="(paragraph, index) in data.item.statusInfo"
-                            :key="index"
+                            v-for="(paragraph, statusIndex) in data.item
+                                .statusInfo"
+                            :key="statusIndex"
                             :class="{
                                 'mb-0':
-                                    index + 1 === data.item.statusInfo.length,
+                                    statusIndex + 1 ===
+                                    data.item.statusInfo.length,
                             }"
                         >
                             {{ paragraph }}
@@ -344,7 +322,7 @@ export default class LaboratoryOrderTimelineComponent extends Vue {
                 @submit="getReport"
             />
         </div>
-    </EntryCard>
+    </EntryCardTimelineComponent>
 </template>
 
 <style lang="scss" scoped>

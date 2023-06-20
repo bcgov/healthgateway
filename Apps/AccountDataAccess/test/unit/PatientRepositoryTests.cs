@@ -15,6 +15,7 @@
 // -------------------------------------------------------------------------
 namespace AccountDataAccessTest
 {
+    using System.Globalization;
     using System.Net;
     using System.ServiceModel;
     using AccountDataAccessTest.Utils;
@@ -258,7 +259,7 @@ namespace AccountDataAccessTest
             };
 
             BlockAccessCommand command = new(Hdid, dataSources, reason);
-            PatientRepository patientRepository = GetPatientRepository(blockedAccessDelegate: blockedAccessDelegate);
+            PatientRepository patientRepository = GetPatientRepository(blockedAccess, blockedAccessDelegate);
 
             // Act
             await patientRepository.BlockAccess(command);
@@ -268,6 +269,41 @@ namespace AccountDataAccessTest
                 v => v.UpdateBlockedAccessAsync(
                     It.Is<BlockedAccess>(ba => AssertBlockedAccess(blockedAccess, ba)),
                     It.Is<AgentAudit>(aa => AssertAgentAudit(audit, aa))));
+        }
+
+        /// <summary>
+        /// Can access data source.
+        /// </summary>
+        /// <param name="dataSource">The data source to check for access.</param>
+        /// <param name="canAccessDataSource">The value indicates whether the data source can be accessed or not.</param>
+        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
+        [Theory]
+        [InlineData(DataSource.Note, true)]
+        [InlineData(DataSource.Medication, false)]
+        public async Task CanAccessDataSource(DataSource dataSource, bool canAccessDataSource)
+        {
+            // Arrange
+            string hdid = Hdid;
+
+            HashSet<DataSource> dataSources = new()
+            {
+                DataSource.Immunization,
+                DataSource.Medication,
+            };
+
+            BlockedAccess blockedAccess = new()
+            {
+                Hdid = hdid,
+                DataSources = dataSources,
+            };
+
+            PatientRepository patientRepository = GetPatientRepository(blockedAccess);
+
+            // Act
+            bool actual = await patientRepository.CanAccessDataSourceAsync(hdid, dataSource).ConfigureAwait(true);
+
+            // Verify
+            Assert.Equal(canAccessDataSource, actual);
         }
 
         /// <summary>
@@ -317,19 +353,16 @@ namespace AccountDataAccessTest
             BlockedAccess blockedAccess = new()
             {
                 Hdid = hdid,
-                DataSources = new HashSet<DataSource>
-                {
-                    DataSource.Immunization, DataSource.Medication,
-                },
+                DataSources = dataSources,
             };
 
-            PatientRepository patientRepository = GetPatientRepository(blockedAccess, dataSources);
+            PatientRepository patientRepository = GetPatientRepository(blockedAccess);
 
             // Act
-            BlockedAccess? actual = await patientRepository.GetBlockedAccessRecords(hdid).ConfigureAwait(true);
+            IEnumerable<DataSource> actual = await patientRepository.GetDataSources(hdid).ConfigureAwait(true);
 
             // Verify
-            blockedAccess.ShouldDeepEqual(actual);
+            dataSources.ShouldDeepEqual(actual);
         }
 
         private static IConfigurationRoot GetConfiguration()
@@ -360,20 +393,41 @@ namespace AccountDataAccessTest
             return true;
         }
 
+        private static IConfigurationRoot GetIConfigurationRoot()
+        {
+            Dictionary<string, string?> myConfiguration = new()
+            {
+                { "BlockedAccess:CacheTtl", "5" },
+            };
+
+            return new ConfigurationBuilder()
+                .AddInMemoryCollection(myConfiguration.ToList())
+                .Build();
+        }
+
         private static PatientRepository GetPatientRepository(
-            BlockedAccess? blockedAccess = null,
-            IEnumerable<DataSource>? dataSources = null,
+            BlockedAccess blockedAccess,
             Mock<IBlockedAccessDelegate>? blockedAccessDelegate = null)
         {
             blockedAccessDelegate ??= blockedAccessDelegate ?? new();
             blockedAccessDelegate.Setup(p => p.GetBlockedAccessAsync(It.IsAny<string>())).ReturnsAsync(blockedAccess);
-            blockedAccessDelegate.Setup(p => p.GetDataSourcesAsync(It.IsAny<string>())).ReturnsAsync(dataSources ?? Enumerable.Empty<DataSource>());
+            blockedAccessDelegate.Setup(p => p.GetDataSourcesAsync(It.IsAny<string>())).ReturnsAsync(blockedAccess.DataSources ?? Enumerable.Empty<DataSource>());
+
+            string blockedAccessCacheKey = string.Format(CultureInfo.InvariantCulture, ICacheProvider.BlockedAccessCachePrefixKey, blockedAccess.Hdid);
+            Mock<ICacheProvider> cacheProvider = new();
+            cacheProvider.Setup(
+                    p => p.GetOrSetAsync(
+                        blockedAccessCacheKey,
+                        It.IsAny<Func<Task<IEnumerable<DataSource>>>>(),
+                        It.IsAny<TimeSpan>()))
+                .ReturnsAsync(blockedAccess.DataSources);
 
             PatientRepository patientRepository = new(
-                GetConfiguration(),
                 new Mock<ILogger<PatientRepository>>().Object,
                 blockedAccessDelegate.Object,
                 new Mock<IAuthenticationDelegate>().Object,
+                cacheProvider.Object,
+                GetIConfigurationRoot(),
                 GetPatientQueryFactory(
                     new PatientModel(),
                     new PatientDetailsQuery(Hdid: Hdid, Source: PatientDetailSource.All, UseCache: false)));
@@ -387,10 +441,11 @@ namespace AccountDataAccessTest
             PatientModel? cachedPatient = null)
         {
             PatientRepository patientRepository = new(
-                GetConfiguration(),
                 new Mock<ILogger<PatientRepository>>().Object,
                 new Mock<IBlockedAccessDelegate>().Object,
                 new Mock<IAuthenticationDelegate>().Object,
+                new Mock<ICacheProvider>().Object,
+                GetIConfigurationRoot(),
                 GetPatientQueryFactory(patient, patientDetailsQuery, patientIdentity, cachedPatient));
             return patientRepository;
         }

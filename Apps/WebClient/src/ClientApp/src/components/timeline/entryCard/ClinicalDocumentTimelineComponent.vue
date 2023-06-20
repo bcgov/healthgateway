@@ -1,10 +1,12 @@
-<script lang="ts">
+<script setup lang="ts">
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { faDownload } from "@fortawesome/free-solid-svg-icons";
 import saveAs from "file-saver";
-import Vue from "vue";
-import { Component, Prop, Ref } from "vue-property-decorator";
-import { Action, Getter } from "vuex-class";
+import { computed, ref } from "vue";
+import { useStore } from "vue-composition-wrapper";
 
 import MessageModalComponent from "@/components/modal/MessageModalComponent.vue";
+import EntryCardTimelineComponent from "@/components/timeline/entryCard/EntrycardTimelineComponent.vue";
 import { EntryType, entryTypeMap } from "@/constants/entryType";
 import type { Dictionary } from "@/models/baseTypes";
 import { ClinicalDocumentFile } from "@/models/clinicalDocument";
@@ -16,96 +18,71 @@ import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ILogger } from "@/services/interfaces";
 import SnowPlow from "@/utility/snowPlow";
 
-import EntryCardTimelineComponent from "./EntrycardTimelineComponent.vue";
+library.add(faDownload);
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const options: any = {
-    components: {
-        EntryCard: EntryCardTimelineComponent,
-        MessageModalComponent,
-    },
-};
+interface Props {
+    hdid: string;
+    entry: ClinicalDocumentTimelineEntry;
+    index: number;
+    datekey: string;
+    isMobileDetails?: boolean;
+    commentsAreEnabled?: boolean;
+}
+const props = withDefaults(defineProps<Props>(), {
+    isMobileDetails: false,
+    commentsAreEnabled: false,
+});
 
-@Component(options)
-export default class ClinicalDocumentTimelineComponent extends Vue {
-    @Prop({ required: true })
-    hdid!: string;
+const store = useStore();
+const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
 
-    @Prop()
-    entry!: ClinicalDocumentTimelineEntry;
+const messageModal = ref<InstanceType<typeof MessageModalComponent>>();
 
-    @Prop()
-    index!: number;
+const files = computed<Dictionary<ClinicalDocumentFile>>(
+    () => store.getters["clinicalDocument/files"]
+);
 
-    @Prop()
-    datekey!: string;
-
-    @Prop()
-    isMobileDetails!: boolean;
-
-    @Prop({ default: false })
-    commentsAreEnabled!: boolean;
-
-    @Action("getFile", { namespace: "clinicalDocument" })
-    getFile!: (params: {
-        fileId: string;
-        hdid: string;
-    }) => Promise<EncodedMedia>;
-
-    @Getter("files", { namespace: "clinicalDocument" })
-    files!: Dictionary<ClinicalDocumentFile>;
-
-    @Ref("messageModal")
-    readonly messageModal!: MessageModalComponent;
-
-    private logger!: ILogger;
-
-    private get isLoadingFile(): boolean {
-        if (this.entry.fileId in this.files) {
-            return (
-                this.files[this.entry.fileId]?.status === LoadStatus.REQUESTED
-            );
-        }
-
-        return false;
+const isLoadingFile = computed<boolean>(() => {
+    if (props.entry.fileId in files.value) {
+        return files.value[props.entry.fileId]?.status === LoadStatus.REQUESTED;
     }
 
-    private created(): void {
-        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-    }
+    return false;
+});
 
-    private get entryIcon(): string | undefined {
-        return entryTypeMap.get(EntryType.ClinicalDocument)?.icon;
-    }
+const entryIcon = computed<string | undefined>(
+    () => entryTypeMap.get(EntryType.ClinicalDocument)?.icon
+);
 
-    private showConfirmationModal(): void {
-        this.messageModal.showModal();
-    }
+function getFile(fileId: string, hdid: string): Promise<EncodedMedia> {
+    return store.dispatch("clinicalDocument/getFile", { fileId, hdid });
+}
 
-    private downloadFile(): void {
-        SnowPlow.trackEvent({
-            action: "download_report",
-            text: "Clinical Document PDF",
-        });
+function showConfirmationModal(): void {
+    messageModal.value?.showModal();
+}
 
-        this.getFile({ fileId: this.entry.fileId, hdid: this.hdid })
-            .then((result: EncodedMedia) => {
-                const dateString = this.entry.date.format("yyyy_MM_dd-HH_mm");
-                fetch(
-                    `data:${result.mediaType};${result.encoding},${result.data}`
-                )
-                    .then((response) => response.blob())
-                    .then((blob) =>
-                        saveAs(blob, `Clinical_Document_${dateString}.pdf`)
-                    );
-            })
-            .catch((err) => this.logger.error(err));
-    }
+function downloadFile(): void {
+    SnowPlow.trackEvent({
+        action: "download_report",
+        text: "Clinical Document PDF",
+    });
+
+    getFile(props.entry.fileId, props.hdid)
+        .then((result: EncodedMedia) => {
+            const dateString = props.entry.date.format("yyyy_MM_dd-HH_mm");
+            fetch(`data:${result.mediaType};${result.encoding},${result.data}`)
+                .then((response) => response.blob())
+                .then((blob) =>
+                    saveAs(blob, `Clinical_Document_${dateString}.pdf`)
+                );
+        })
+        .catch((err) => logger.error(err));
 }
 </script>
 
 <template>
-    <EntryCard
+    <EntryCardTimelineComponent
         :card-id="index + '-' + datekey"
         :entry-icon="entryIcon"
         :title="entry.name"
@@ -152,5 +129,5 @@ export default class ClinicalDocumentTimelineComponent extends Vue {
                 @submit="downloadFile"
             />
         </div>
-    </EntryCard>
+    </EntryCardTimelineComponent>
 </template>

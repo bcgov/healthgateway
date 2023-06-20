@@ -11,7 +11,8 @@
         "lastLoginDateTime": null,
         "lastLoginDateTimes": [],
         "closedDateTime": null,
-        "preferences": {}
+        "preferences": {},
+        "blockedDataSources": []
     },
     "totalResultCount": null,
     "pageIndex": null,

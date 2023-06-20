@@ -21,10 +21,6 @@ const ProfileView = () =>
     import(/* webpackChunkName: "profile" */ "@/views/ProfileView.vue");
 const LandingView = () =>
     import(/* webpackChunkName: "landing" */ "@/views/LandingView.vue");
-const PublicCovidTestView = () =>
-    import(
-        /* webpackChunkName: "covidTest" */ "@/views/PublicCovidTestView.vue"
-    );
 const PublicVaccineCardView = () =>
     import(
         /* webpackChunkName: "vaccinationStatus" */ "@/views/PublicVaccineCardView.vue"
@@ -193,10 +189,6 @@ const routes = [
     {
         path: REGISTRATION_PATH,
         component: RegistrationView,
-        props: (route: Route) => ({
-            inviteKey: route.query.inviteKey,
-            inviteEmail: route.query.email,
-        }),
         meta: {
             validStates: [UserState.notRegistered],
             requiresProcessedWaitlistTicket: true,
@@ -295,22 +287,6 @@ const routes = [
             validStates: [UserState.registered],
             requiredFeaturesEnabled: (config: FeatureToggleConfiguration) =>
                 config.services.enabled,
-            requiresProcessedWaitlistTicket: true,
-        },
-    },
-    {
-        path: "/covidtest",
-        component: PublicCovidTestView,
-        meta: {
-            validStates: [
-                UserState.unauthenticated,
-                UserState.invalidIdentityProvider,
-                UserState.noPatient,
-                UserState.registered,
-                UserState.pendingDeletion,
-            ],
-            requiredFeaturesEnabled: (config: FeatureToggleConfiguration) =>
-                config.covid19.publicCovid19.enableTestResults,
             requiresProcessedWaitlistTicket: true,
         },
     },
@@ -546,39 +522,15 @@ async function redirectWhenTicketIsInvalid(
     try {
         if (ticketIsValid(ticket)) {
             logger.debug(`Router - check existing Processed ticket`);
-            const timeoutId = store.getters["waitlist/checkInTimeoutId"];
-            clearTimeout(timeoutId);
-
-            const now = new Date().getTime();
-            const checkInAfter = ticket.checkInAfter * 1000;
-            const timeout = Math.max(0, checkInAfter - now);
-
-            setTimeout(() => {
-                store
-                    .dispatch("waitlist/checkIn")
-                    .catch(() => logger.error(`Error calling checkIn action.`));
-            }, timeout);
+            await store.dispatch("waitlist/scheduleCheckIn");
         } else if (ticket?.status === TicketStatus.Queued) {
             logger.debug(`Router - check existing Queued ticket`);
-            const timeoutId = store.getters["waitlist/checkInTimeoutId"];
-            clearTimeout(timeoutId);
-
-            const now = new Date().getTime();
-            const checkInAfter = ticket.checkInAfter * 1000;
-            const timeout = Math.max(0, checkInAfter - now);
-
-            setTimeout(() => {
-                store.dispatch("waitlist/checkIn").catch(() => {
-                    logger.warn(
-                        `Error calling checkIn action. Get new ticker.`
-                    );
-                    store.dispatch("waitlist/getTicket");
-                });
-            }, timeout);
+            await store.dispatch("waitlist/scheduleCheckIn", {
+                getTicketOnFail: true,
+            });
             next({ path: QUEUE_PATH, query: { redirect: to.path } });
             return;
         } else {
-            logger.debug(`Router - get new ticket`);
             ticket = await store.dispatch("waitlist/getTicket");
 
             if (!ticketIsValid(ticket)) {

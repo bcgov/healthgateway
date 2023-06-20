@@ -6,6 +6,7 @@
     <UserSecretsId>84e2fe9a-a1f5-4de7-bef6-4518a33fa8b9</UserSecretsId>
   </PropertyGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\AccountDataAccess\src\AccountDataAccess.csproj" />
     <ProjectReference Include="..\..\Common\src\Common.csproj" />
   </ItemGroup>
   <ItemGroup>

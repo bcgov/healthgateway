@@ -1,31 +1,30 @@
-<script lang="ts">
-import Vue from "vue";
-import { Component } from "vue-property-decorator";
-import { Getter } from "vuex-class";
+<script setup lang="ts">
+import { computed } from "vue";
+import { useStore } from "vue-composition-wrapper";
 
-@Component
-export default class FooterComponent extends Vue {
-    @Getter("isOffline", { namespace: "config" })
-    isOffline!: boolean;
+const store = useStore();
 
-    @Getter("oidcIsAuthenticated", { namespace: "auth" })
-    oidcIsAuthenticated!: boolean;
+const isOffline = computed<boolean>(() => store.getters["config/isOffline"]);
 
-    @Getter("isValidIdentityProvider", { namespace: "user" })
-    isValidIdentityProvider!: boolean;
+const oidcIsAuthenticated = computed<boolean>(
+    () => store.getters["auth/oidcIsAuthenticated"]
+);
 
-    @Getter("userIsRegistered", { namespace: "user" })
-    userIsRegistered!: boolean;
+const isValidIdentityProvider = computed<boolean>(
+    () => store.getters["user/isValidIdentityProvider"]
+);
 
-    private get isFooterShown(): boolean {
-        return (
-            !this.isOffline &&
-            (!this.oidcIsAuthenticated ||
-                !this.isValidIdentityProvider ||
-                this.userIsRegistered)
-        );
-    }
-}
+const userIsRegistered = computed<boolean>(
+    () => store.getters["user/userIsRegistered"]
+);
+
+const isFooterShown = computed<boolean>(
+    () =>
+        !isOffline.value &&
+        (!oidcIsAuthenticated.value ||
+            !isValidIdentityProvider.value ||
+            userIsRegistered.value)
+);
 </script>
 
 <template>

@@ -1,28 +1,15 @@
-<script lang="ts">
-import Vue from "vue";
-import { Component, Prop } from "vue-property-decorator";
-
-@Component
-export default class HgDropdownComponent extends Vue {
-    @Prop({ required: true }) variant!: string;
-
-    private get classes(): string[] {
-        const result = [];
-        result.push("hg-dropdown", "hg-primary");
-        return result;
-    }
-
-    private get bootstrapVariant(): string {
-        return "primary";
-    }
+<script setup lang="ts">
+interface Props {
+    variant: string;
 }
+defineProps<Props>();
 </script>
 
 <template>
     <b-dropdown
         v-bind="$attrs"
-        :variant="bootstrapVariant"
-        :class="classes"
+        :variant="variant"
+        class="hg-dropdown hg-primary"
         v-on="$listeners"
     >
         <slot></slot>

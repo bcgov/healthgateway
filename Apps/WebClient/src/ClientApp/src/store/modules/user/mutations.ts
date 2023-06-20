@@ -76,6 +76,11 @@ export const mutations: UserMutation = {
             "preferences",
             userProfile ? userProfile.preferences : {}
         );
+        Vue.set(
+            state.user,
+            "blockedDataSources",
+            userProfile ? userProfile.blockedDataSources : []
+        );
         Vue.set(state.user, "hasEmail", !!userProfile.email);
         Vue.set(state.user, "verifiedEmail", userProfile.isEmailVerified);
         Vue.set(state.user, "hasSMS", !!userProfile.smsNumber);

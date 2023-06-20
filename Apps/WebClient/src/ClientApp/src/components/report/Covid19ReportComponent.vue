@@ -38,7 +38,6 @@ interface Covid19LaboratoryOrderRow {
 }
 
 const headerClass = "covid19-laboratory-report-table-header";
-
 const fields: ReportField[] = [
     {
         key: "date",
@@ -68,23 +67,16 @@ const reportService = container.get<IReportService>(
 );
 const store = useStore();
 
-const covid19LaboratoryOrders = computed<
-    (hdid: string) => Covid19LaboratoryOrder[]
->(() => store.getters["laboratory/covid19LaboratoryOrders"]);
-
-const covid19LaboratoryOrdersAreLoading = computed<(hdid: string) => boolean>(
-    () => store.getters["laboratory/covid19LaboratoryOrdersAreLoading"]
+const covid19LaboratoryOrders = computed<Covid19LaboratoryOrder[]>(() =>
+    store.getters["laboratory/covid19LaboratoryOrders"](props.hdid)
+);
+const covid19LaboratoryOrdersAreLoading = computed<boolean>(() =>
+    store.getters["laboratory/covid19LaboratoryOrdersAreLoading"](props.hdid)
 );
 
 const isEmpty = computed(() => visibleRecords.value.length === 0);
-
-const isCovid19LaboratoryLoading = computed(() =>
-    covid19LaboratoryOrdersAreLoading.value(props.hdid)
-);
-
 const visibleRecords = computed(() =>
-    covid19LaboratoryOrders
-        .value(props.hdid)
+    covid19LaboratoryOrders.value
         .filter((r) =>
             props.filter.allowsDate(r.labResults[0].collectedDateTime)
         )
@@ -107,7 +99,6 @@ const visibleRecords = computed(() =>
             return 0;
         })
 );
-
 const items = computed(() =>
     visibleRecords.value.map<Covid19LaboratoryOrderRow>((x) => {
         const labResult = x.labResults[0];
@@ -140,8 +131,8 @@ function generateReport(
     });
 }
 
-watch(isCovid19LaboratoryLoading, () => {
-    emit("on-is-loading-changed", isCovid19LaboratoryLoading.value);
+watch(covid19LaboratoryOrdersAreLoading, () => {
+    emit("on-is-loading-changed", covid19LaboratoryOrdersAreLoading.value);
 });
 
 watch(isEmpty, () => {
@@ -160,14 +151,14 @@ retrieveCovid19LaboratoryOrders(props.hdid).catch((err) =>
 <template>
     <div>
         <section>
-            <b-row v-if="isEmpty && !isCovid19LaboratoryLoading">
+            <b-row v-if="isEmpty && !covid19LaboratoryOrdersAreLoading">
                 <b-col>No records found.</b-col>
             </b-row>
             <b-table
                 v-else-if="!isDependent"
                 :striped="true"
                 :fixed="true"
-                :busy="isCovid19LaboratoryLoading"
+                :busy="covid19LaboratoryOrdersAreLoading"
                 :items="items"
                 :fields="fields"
                 data-testid="covid19-report-table"

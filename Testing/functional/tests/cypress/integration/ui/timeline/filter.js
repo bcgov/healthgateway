@@ -1,4 +1,5 @@
 const { AuthMethod } = require("../../../support/constants");
+const HDID = "K6HL4VX67CZ2PGSZ2ZOIR4C3PGMFFBW5CIOXM74D6EQ7RYYL7P4A";
 
 describe("Filters", () => {
     beforeEach(() => {
@@ -128,5 +129,171 @@ describe("Filters", () => {
         cy.get(
             "[data-testid=timeline-clinical-document-disclaimer-alert]"
         ).should("not.be.visible");
+    });
+});
+
+describe("Describe Filters when all datasets blocked", () => {
+    beforeEach(() => {
+        cy.configureSettings({
+            datasets: [
+                {
+                    name: "clinicalDocument",
+                    enabled: true,
+                },
+                {
+                    name: "covid19TestResult",
+                    enabled: true,
+                },
+                {
+                    name: "healthVisit",
+                    enabled: true,
+                },
+                {
+                    name: "hospitalVisit",
+                    enabled: true,
+                },
+                {
+                    name: "immunization",
+                    enabled: true,
+                },
+                {
+                    name: "labResult",
+                    enabled: true,
+                },
+                {
+                    name: "medication",
+                    enabled: true,
+                },
+                {
+                    name: "note",
+                    enabled: true,
+                },
+                {
+                    name: "specialAuthorityRequest",
+                    enabled: true,
+                },
+                {
+                    name: "diagnosticImaging",
+                    enabled: true,
+                },
+            ],
+        });
+        cy.intercept("GET", `**/UserProfile/*`, {
+            fixture:
+                "UserProfileService/userProfileMultipleDatasetsBlocked.json",
+        });
+        cy.login(
+            Cypress.env("keycloak.username"),
+            Cypress.env("keycloak.password"),
+            AuthMethod.KeyCloak
+        );
+        cy.checkTimelineHasLoaded();
+    });
+
+    it("Validate Filter Counts and Error Message", () => {
+        const expectedCount = 0;
+        cy.get("[data-testid=filterDropdown]").click();
+
+        cy.get("[data-testid=ImmunizationCount]")
+            .should("be.visible")
+            .contains(expectedCount);
+        cy.get("[data-testid=ClinicalDocumentCount]")
+            .should("be.visible")
+            .contains(expectedCount);
+        cy.get("[data-testid=MedicationCount]")
+            .should("be.visible")
+            .contains(expectedCount);
+        cy.get("[data-testid=LabResultCount]")
+            .should("be.visible")
+            .contains(expectedCount);
+        cy.get("[data-testid=Covid19TestResultCount]")
+            .should("be.visible")
+            .contains(expectedCount);
+        cy.get("[data-testid=HealthVisitCount]")
+            .should("be.visible")
+            .contains(expectedCount);
+        cy.get("[data-testid=NoteCount]")
+            .should("be.visible")
+            .contains(expectedCount);
+        cy.get("[data-testid=SpecialAuthorityRequestCount]")
+            .should("be.visible")
+            .contains(expectedCount);
+
+        cy.get("[data-testid=HospitalVisitCount]")
+            .should("be.visible")
+            .contains(expectedCount);
+        cy.get("[data-testid=DiagnosticImagingCount]")
+            .should("be.visible")
+            .contains(expectedCount);
+        cy.get("[data-testid=singleErrorHeader")
+            .should("be.visible")
+            .contains(
+                "Multiple records are unavailable at this time. Please try again later."
+            );
+
+        cy.get("[data-testid=btnFilterCancel]").click();
+    });
+});
+
+describe("Describe Filters when clinical doc dataset is blocked but immmunization dataset is not", () => {
+    beforeEach(() => {
+        cy.configureSettings({
+            datasets: [
+                {
+                    name: "clinicalDocument",
+                    enabled: true,
+                },
+                {
+                    name: "immunization",
+                    enabled: true,
+                },
+            ],
+        });
+        cy.intercept("GET", `**/UserProfile/*`, {
+            fixture:
+                "UserProfileService/userProfileClinicalDocDatasetBlocked.json",
+        });
+        cy.intercept("GET", "**/Immunization?*", {
+            fixture: "ImmunizationService/immunization.json",
+        });
+        cy.login(
+            Cypress.env("keycloak.username"),
+            Cypress.env("keycloak.password"),
+            AuthMethod.KeyCloak
+        );
+        cy.checkTimelineHasLoaded();
+    });
+
+    it("Validate Filter Counts and Error Message", () => {
+        const expectedCount = 0;
+        const expectedImmunizationCount = 9;
+        const expectedClinicalDocCount = 0;
+        cy.get("[data-testid=filterDropdown]").click();
+
+        cy.get("[data-testid=ImmunizationCount]")
+            .should("be.visible")
+            .contains(expectedImmunizationCount);
+        cy.get("[data-testid=ClinicalDocumentCount]")
+            .should("be.visible")
+            .contains(expectedClinicalDocCount);
+
+        cy.get("[data-testid=MedicationCount]").should("not.exist");
+        cy.get("[data-testid=LabResultCount]").should("not.exist");
+        cy.get("[data-testid=Covid19TestResultCount]").should("not.exist");
+        cy.get("[data-testid=HealthVisitCount]").should("not.exist");
+        cy.get("[data-testid=NoteCount]").should("not.exist");
+        cy.get("[data-testid=SpecialAuthorityRequestCount]").should(
+            "not.exist"
+        );
+        cy.get("[data-testid=HospitalVisitCount]").should("not.exist");
+        cy.get("[data-testid=DiagnosticImagingCount]").should("not.exist");
+
+        cy.get("[data-testid=singleErrorHeader")
+            .should("be.visible")
+            .contains(
+                "Clinical Documents are unavailable at this time. Please try again later."
+            );
+
+        cy.get("[data-testid=btnFilterCancel]").click();
     });
 });

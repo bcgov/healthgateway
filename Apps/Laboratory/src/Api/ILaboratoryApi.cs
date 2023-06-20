@@ -66,18 +66,5 @@ namespace HealthGateway.Laboratory.Api
         /// <returns>The plis laboratory summary identified by the query parameters.</returns>
         [Get("/api/v1/Lab/Plis/LabSummary?subjectHdid={subjectHdid}")]
         Task<PhsaResult<PhsaLaboratorySummary>> GetPlisLaboratorySummaryAsync(string subjectHdid, [Authorize] string token);
-
-        /// <summary>
-        /// Returns the public COVID-19 test results for the given patient.
-        /// </summary>
-        /// <param name="query">Query parameters used to query the public covid test results.</param>
-        /// <param name="token">The bearer token to authorize the call.</param>
-        /// <param name="clientIp">The ip of the client to send.</param>
-        /// <returns>The public covid test results identified by the query parameters.</returns>
-        [Post("/api/v1/Public/LabOrders/Covid19LabSummary")]
-        Task<PhsaResult<IEnumerable<CovidTestResult>>> GetPublicCovidLabSummaryAsync(
-            [Body] Dictionary<string, string?> query,
-            [Authorize] string token,
-            [Header("X-Forwarded-For")] string clientIp);
     }
 }

@@ -16,6 +16,7 @@
 namespace HealthGateway.ClinicalDocument
 {
     using System.Diagnostics.CodeAnalysis;
+    using HealthGateway.AccountDataAccess;
     using HealthGateway.ClinicalDocument.Api;
     using HealthGateway.ClinicalDocument.Services;
     using HealthGateway.Common.Api;
@@ -72,15 +73,18 @@ namespace HealthGateway.ClinicalDocument
             services.AddAutoMapper(typeof(Startup));
 
             // Add Refit clients
-            PhsaConfigV2 phsaConfig = new();
-            this.startupConfig.Configuration.Bind(PhsaConfigV2.ConfigurationSectionKey, phsaConfig);
+            PhsaConfigV2 phsaConfigV2 = new();
+            this.startupConfig.Configuration.Bind(PhsaConfigV2.ConfigurationSectionKey, phsaConfigV2);
 
             services.AddRefitClient<IClinicalDocumentsApi>()
-                .ConfigureHttpClient(c => c.BaseAddress = phsaConfig.BaseUrl)
+                .ConfigureHttpClient(c => c.BaseAddress = phsaConfigV2.BaseUrl)
                 .AddHttpMessageHandler<AuthHeaderHandler>();
             services.AddRefitClient<IPersonalAccountsApi>()
-                .ConfigureHttpClient(c => c.BaseAddress = phsaConfig.BaseUrl)
+                .ConfigureHttpClient(c => c.BaseAddress = phsaConfigV2.BaseUrl)
                 .AddHttpMessageHandler<AuthHeaderHandler>();
+
+            // Access patient repository
+            services.AddPatientRepositoryConfiguration(new AccountDataAccessConfiguration(phsaConfigV2.BaseUrl));
         }
 
         /// <summary>

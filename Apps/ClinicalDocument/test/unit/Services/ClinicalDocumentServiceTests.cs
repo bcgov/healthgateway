@@ -19,8 +19,10 @@ namespace HealthGateway.ClinicalDocumentTests.Services
     using System.Collections.Generic;
     using System.Linq;
     using System.Net.Http;
+    using System.Threading;
     using System.Threading.Tasks;
     using AutoMapper;
+    using HealthGateway.AccountDataAccess.Patient;
     using HealthGateway.ClinicalDocument.Api;
     using HealthGateway.ClinicalDocument.MapProfiles;
     using HealthGateway.ClinicalDocument.Models;
@@ -45,14 +47,17 @@ namespace HealthGateway.ClinicalDocumentTests.Services
         /// <summary>
         ///  Get clinical document records - happy path.
         /// </summary>
-        [Fact]
-        public void ShouldGetClinicalDocumentRecords()
+        /// <param name="canAccessDataSource">The value indicates whether the clinical document data source can be accessed or not.</param>
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public void ShouldGetClinicalDocumentRecords(bool canAccessDataSource)
         {
             // Arrange
             Guid id = Guid.NewGuid();
             PhsaHealthDataResponse expectedPhsaHealthDataResponse = GetPhsaHealthDataResponse(id);
 
-            IClinicalDocumentService clinicalDocumentService = GetClinicalDocumentService(expectedPhsaHealthDataResponse, false);
+            IClinicalDocumentService clinicalDocumentService = GetClinicalDocumentService(expectedPhsaHealthDataResponse, false, canAccessDataSource);
 
             // Act
             RequestResult<IEnumerable<ClinicalDocumentRecord>> actualResult =
@@ -60,8 +65,16 @@ namespace HealthGateway.ClinicalDocumentTests.Services
 
             // Assert
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
-            Assert.NotNull(actualResult.ResourcePayload);
-            Assert.Equal(id.ToString(), actualResult.ResourcePayload?.First().Id);
+
+            if (canAccessDataSource)
+            {
+                Assert.NotNull(actualResult.ResourcePayload);
+                Assert.Equal(id.ToString(), actualResult.ResourcePayload?.First().Id);
+            }
+            else
+            {
+                Assert.Empty(actualResult.ResourcePayload);
+            }
         }
 
         /// <summary>
@@ -147,7 +160,7 @@ namespace HealthGateway.ClinicalDocumentTests.Services
             };
         }
 
-        private static IClinicalDocumentService GetClinicalDocumentService(PhsaHealthDataResponse content, bool throwException)
+        private static IClinicalDocumentService GetClinicalDocumentService(PhsaHealthDataResponse content, bool throwException, bool canAccessDataSource = true)
         {
             Mock<IClinicalDocumentsApi> clinicalDocumentApiMock = new();
             if (!throwException)
@@ -177,10 +190,14 @@ namespace HealthGateway.ClinicalDocumentTests.Services
             Mock<IPersonalAccountsService> personalAccountServiceMock = new();
             personalAccountServiceMock.Setup(p => p.GetPatientAccountResultAsync(It.IsAny<string>())).ReturnsAsync(requestResult);
 
+            Mock<IPatientRepository> patientRepositoryMock = new();
+            patientRepositoryMock.Setup(p => p.CanAccessDataSourceAsync(It.IsAny<string>(), It.IsAny<DataSource>(), It.IsAny<CancellationToken>())).ReturnsAsync(canAccessDataSource);
+
             return new ClinicalDocumentService(
                 new Mock<ILogger<ClinicalDocumentService>>().Object,
                 personalAccountServiceMock.Object,
                 clinicalDocumentApiMock.Object,
+                patientRepositoryMock.Object,
                 InitializeAutoMapper());
         }
 

@@ -13,21 +13,27 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.WebClient.Server.Constants
+namespace HealthGateway.GatewayApiTests.Services.Test.Mock
 {
+    using System.Collections.Generic;
+    using System.Threading;
+    using HealthGateway.AccountDataAccess.Patient;
+    using HealthGateway.Common.Data.Constants;
+    using Moq;
+
     /// <summary>
-    /// Registration status modes.
+    /// PatientRepositoryMock.
     /// </summary>
-    public static class RegistrationStatus
+    public class PatientRepositoryMock : Mock<IPatientRepository>
     {
         /// <summary>
-        /// Registration is open.
+        /// Initializes a new instance of the <see cref="PatientRepositoryMock"/> class.
         /// </summary>
-        public const string Open = "open";
-
-        /// <summary>
-        /// Registration is closed.
-        /// </summary>
-        public const string Closed = "closed";
+        /// <param name="hdid">hdid.</param>
+        /// <param name="dataSources">A list of data sources.</param>
+        public PatientRepositoryMock(string hdid, IEnumerable<DataSource> dataSources)
+        {
+            this.Setup(s => s.GetDataSources(hdid, It.IsAny<CancellationToken>())).ReturnsAsync(dataSources);
+        }
     }
 }

@@ -1,10 +1,9 @@
 <script setup lang="ts">
 import { computed } from "vue";
 
+import EntryCardTimelineComponent from "@/components/timeline/entryCard/EntrycardTimelineComponent.vue";
 import { EntryType, entryTypeMap } from "@/constants/entryType";
 import ImmunizationTimelineEntry from "@/models/immunizationTimelineEntry";
-
-import EntryCardTimelineComponent from "./EntrycardTimelineComponent.vue";
 
 interface Props {
     entry: ImmunizationTimelineEntry;

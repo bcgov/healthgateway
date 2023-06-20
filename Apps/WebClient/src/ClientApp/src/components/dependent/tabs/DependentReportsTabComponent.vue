@@ -1,23 +1,13 @@
-<script lang="ts">
-import Vue from "vue";
-import { Component, Prop } from "vue-property-decorator";
-
+<script setup lang="ts">
 import ReportsComponent from "@/components/report/ReportsComponent.vue";
 import type { Dependent } from "@/models/dependent";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const options: any = {
-    components: {
-        ReportsComponent,
-    },
-};
-
-@Component(options)
-export default class DependentProfileTabComponent extends Vue {
-    @Prop({ required: true })
-    private dependent!: Dependent;
+interface Props {
+    dependent: Dependent;
 }
+defineProps<Props>();
 </script>
+
 <template>
     <div>
         <ReportsComponent

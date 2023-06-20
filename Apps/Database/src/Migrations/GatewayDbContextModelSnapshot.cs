@@ -2891,7 +2891,7 @@ namespace HealthGateway.Database.Migrations
                     b.Property<DateTime>("CreatedDateTime")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<DateOnly?>("ExpiryDate")
+                    b.Property<DateOnly>("ExpiryDate")
                         .HasColumnType("date");
 
                     b.Property<JsonDocument>("ReasonObject")

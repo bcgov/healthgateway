@@ -19,7 +19,6 @@ namespace HealthGateway.Laboratory.Delegates
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.Globalization;
-    using System.Linq;
     using System.Net;
     using System.Net.Http;
     using System.Threading.Tasks;
@@ -30,7 +29,6 @@ namespace HealthGateway.Laboratory.Delegates
     using HealthGateway.Laboratory.Api;
     using HealthGateway.Laboratory.Models;
     using HealthGateway.Laboratory.Models.PHSA;
-    using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using Refit;
@@ -44,7 +42,6 @@ namespace HealthGateway.Laboratory.Delegates
         private readonly ILaboratoryApi laboratoryApi;
         private readonly LaboratoryConfig labConfig;
         private readonly ILogger logger;
-        private readonly IHttpContextAccessor httpContextAccessor;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RestLaboratoryDelegate"/> class.
@@ -52,18 +49,15 @@ namespace HealthGateway.Laboratory.Delegates
         /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="laboratoryApi">The client to use for laboratory api calls.</param>
         /// <param name="configuration">The injected configuration provider.</param>
-        /// <param name="httpContextAccessor">The injected http context accessor.</param>
         public RestLaboratoryDelegate(
             ILogger<RestLaboratoryDelegate> logger,
             ILaboratoryApi laboratoryApi,
-            IConfiguration configuration,
-            IHttpContextAccessor httpContextAccessor)
+            IConfiguration configuration)
         {
             this.logger = logger;
             this.laboratoryApi = laboratoryApi;
             this.labConfig = new LaboratoryConfig();
             configuration.Bind(LabConfigSectionKey, this.labConfig);
-            this.httpContextAccessor = httpContextAccessor;
         }
 
         private static ActivitySource Source { get; } = new(nameof(RestLaboratoryDelegate));
@@ -203,51 +197,6 @@ namespace HealthGateway.Laboratory.Delegates
             }
 
             this.logger.LogDebug("Finished getting laboratory summary");
-            return retVal;
-        }
-
-        /// <inheritdoc/>
-        public async Task<RequestResult<PhsaResult<IEnumerable<CovidTestResult>>>> GetPublicTestResults(string accessToken, string phn, DateOnly dateOfBirth, DateOnly collectionDate)
-        {
-            using Activity? activity = Source.StartActivity();
-
-            this.logger.LogDebug("Getting public COVID-19 Test Results");
-
-            RequestResult<PhsaResult<IEnumerable<CovidTestResult>>> retVal = new()
-            {
-                ResultStatus = ResultType.Error,
-                PageIndex = 0,
-            };
-
-            Dictionary<string, string?> query = new()
-            {
-                ["phn"] = phn,
-                ["dateOfBirth"] = dateOfBirth.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture),
-                ["collectionDate"] = collectionDate.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture),
-            };
-
-            try
-            {
-                string ipAddress = this.httpContextAccessor.HttpContext?.Connection.RemoteIpAddress?.MapToIPv4().ToString() ?? "0.0.0.0";
-                PhsaResult<IEnumerable<CovidTestResult>> response =
-                    await this.laboratoryApi.GetPublicCovidLabSummaryAsync(query, accessToken, ipAddress).ConfigureAwait(true);
-                retVal.ResultStatus = ResultType.Success;
-                retVal.ResourcePayload = response;
-                retVal.TotalResultCount = retVal.ResourcePayload.Result!.Count();
-            }
-            catch (Exception e) when (e is ApiException or HttpRequestException)
-            {
-                this.logger.LogError("Error while retrieving Covid19 Test Results... {Error}", e);
-                HttpStatusCode? statusCode = (e as ApiException)?.StatusCode ?? ((HttpRequestException)e).StatusCode;
-
-                retVal.ResultError = new()
-                {
-                    ResultMessage = $"Status: {statusCode}. Error while retrieving Covid19 Test Results",
-                    ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Phsa),
-                };
-            }
-
-            this.logger.LogDebug("Finished getting public COVID-19 Test results");
             return retVal;
         }
     }

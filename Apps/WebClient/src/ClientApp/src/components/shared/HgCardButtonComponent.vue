@@ -1,35 +1,17 @@
-<script lang="ts">
-import Vue from "vue";
-import { Component, Prop } from "vue-property-decorator";
+<script setup lang="ts">
+import { computed, useAttrs } from "vue";
 
-@Component
-export default class HgCardButtonComponent extends Vue {
-    @Prop({ required: true })
-    title!: string;
-
-    @Prop({ required: false, default: false })
-    dense!: boolean;
-
-    private get hasClickListener(): boolean {
-        return this.$listeners && Boolean(this.$listeners.click);
-    }
-
-    private get hasIconSlot(): boolean {
-        return this.$slots.icon !== undefined;
-    }
-
-    private get hasActionIconSlot(): boolean {
-        return this.$slots.actionIcon !== undefined;
-    }
-
-    private get hasMenuSlot(): boolean {
-        return this.$slots.menu !== undefined;
-    }
-
-    private get hasDefaultSlot(): boolean {
-        return this.$slots.default !== undefined;
-    }
+interface Props {
+    title: string;
+    dense?: boolean;
 }
+withDefaults(defineProps<Props>(), {
+    dense: false,
+});
+
+const attrs = useAttrs();
+
+const hasClickListener = computed<boolean>(() => Boolean(attrs.onClick));
 </script>
 
 <template>

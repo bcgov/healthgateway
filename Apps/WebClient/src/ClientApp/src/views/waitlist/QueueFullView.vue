@@ -1,18 +1,15 @@
-<script lang="ts">
-import Vue from "vue";
-import { Component } from "vue-property-decorator";
-import { Getter } from "vuex-class";
+<script setup lang="ts">
+import { computed } from "vue";
+import { useRouter } from "vue-composition-wrapper";
+import { useStore } from "vue-composition-wrapper";
 
-@Component
-export default class QueueFullView extends Vue {
-    @Getter("tooBusy", { namespace: "waitlist" })
-    tooBusy!: boolean;
+const router = useRouter();
+const store = useStore();
 
-    private created(): void {
-        if (!this.tooBusy) {
-            this.$router.push({ path: "/" });
-        }
-    }
+const tooBusy = computed<boolean>(() => store.getters["waitlist/tooBusy"]);
+
+if (!tooBusy.value) {
+    router.push({ path: "/" });
 }
 </script>
 

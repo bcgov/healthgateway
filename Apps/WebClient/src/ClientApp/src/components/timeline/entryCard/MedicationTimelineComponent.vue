@@ -1,42 +1,34 @@
-<script lang="ts">
-import Vue from "vue";
-import { Component, Prop } from "vue-property-decorator";
+<script setup lang="ts">
+import { computed } from "vue";
 
+import EntryCardTimelineComponent from "@/components/timeline/entryCard/EntrycardTimelineComponent.vue";
 import { EntryType, entryTypeMap } from "@/constants/entryType";
 import MedicationTimelineEntry from "@/models/medicationTimelineEntry";
 import PhoneUtil from "@/utility/phoneUtil";
 
-import EntryCardTimelineComponent from "./EntrycardTimelineComponent.vue";
+interface Props {
+    entry: MedicationTimelineEntry;
+    index: number;
+    datekey: string;
+    isMobileDetails?: boolean;
+    commentsAreEnabled?: boolean;
+}
+withDefaults(defineProps<Props>(), {
+    isMobileDetails: false,
+    commentsAreEnabled: false,
+});
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const options: any = {
-    components: {
-        EntryCard: EntryCardTimelineComponent,
-    },
-};
+const entryIcon = computed<string | undefined>(
+    () => entryTypeMap.get(EntryType.Medication)?.icon
+);
 
-@Component(options)
-export default class MedicationTimelineComponent extends Vue {
-    @Prop() entry!: MedicationTimelineEntry;
-    @Prop() index!: number;
-    @Prop() datekey!: string;
-    @Prop() isMobileDetails!: boolean;
-
-    @Prop({ default: false })
-    commentsAreEnabled!: boolean;
-
-    private get entryIcon(): string | undefined {
-        return entryTypeMap.get(EntryType.Medication)?.icon;
-    }
-
-    private formatPhone(phoneNumber: string | undefined): string {
-        return PhoneUtil.formatPhone(phoneNumber);
-    }
+function formatPhone(phoneNumber: string | undefined): string {
+    return PhoneUtil.formatPhone(phoneNumber);
 }
 </script>
 
 <template>
-    <EntryCard
+    <EntryCardTimelineComponent
         :card-id="index + '-' + datekey"
         :entry-icon="entryIcon"
         :title="entry.title"
@@ -139,5 +131,5 @@ export default class MedicationTimelineComponent extends Vue {
                 </div>
             </div>
         </div>
-    </EntryCard>
+    </EntryCardTimelineComponent>
 </template>

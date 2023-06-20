@@ -12,7 +12,7 @@ import { computed, ref } from "vue";
 import TooManyRequestsComponent from "@/components/TooManyRequestsComponent.vue";
 import { VaccinationState } from "@/constants/vaccinationState";
 import { DateWrapper } from "@/models/dateWrapper";
-import { BannerError } from "@/models/errors";
+import { CustomBannerError } from "@/models/errors";
 import VaccinationStatus from "@/models/vaccinationStatus";
 
 library.add(faCheckCircle, faChevronLeft, faChevronRight, faHandPointer);
@@ -25,7 +25,7 @@ const emit = defineEmits<{
 interface Props {
     showGenericSaveInstructions: boolean;
     status?: VaccinationStatus;
-    error?: BannerError;
+    error?: CustomBannerError;
     isLoading?: boolean;
     includePreviousButton?: boolean;
     includeNextButton?: boolean;

@@ -15,6 +15,7 @@ TRUNCATE gateway."AdminTag" CASCADE;
 TRUNCATE gateway."UserFeedback" CASCADE;
 TRUNCATE gateway."Dependent" CASCADE;
 TRUNCATE gateway."AgentAudit" CASCADE;
+TRUNCATE gateway."BlockedAccess" CASCADE;
 
 
 /* Registered HealthGateway User - Keycloak User (healthgateway) */
@@ -891,7 +892,7 @@ INSERT INTO gateway."Email"(
 VALUES (
     'a86b1a95-42c1-49e4-9d48-6080cf2a223d', 
     'System',
-    now(),
+    current_timestamp - INTERVAL '31 day',
     'System',
     now(),
     'HG_Donotreply@gov.bc.ca', 
@@ -989,7 +990,7 @@ INSERT INTO gateway."Email"(
 VALUES (
     '8986a8b9-02e1-4756-a660-3e1ed4fa81ce', 
     'System',
-    now(),
+    current_timestamp - INTERVAL '31 day',
     'System',
     now(),
     'HG_Donotreply@gov.bc.ca', 
@@ -1188,7 +1189,8 @@ INSERT INTO gateway."MessagingVerification"(
 	"SMSValidationCode", 
 	"VerificationType", 
 	"Deleted", 
-	"VerificationAttempts")
+	"VerificationAttempts",
+    "EmailAddress")
 VALUES (
 	uuid_generate_v4(),
 	'System',
@@ -1204,7 +1206,8 @@ VALUES (
 	'123456',
 	'Email',
 	false,
-	0
+	0,
+	'fakeemail@healthgateway.gov.bc.ca'
 );
 
 /* Keycloak User (hthgtwy20) */
@@ -1223,7 +1226,8 @@ INSERT INTO gateway."MessagingVerification"(
 	"SMSValidationCode", 
 	"VerificationType", 
 	"Deleted", 
-	"VerificationAttempts")
+	"VerificationAttempts",
+    "EmailAddress")
 VALUES (
 	uuid_generate_v4(),
 	'System',
@@ -1239,7 +1243,8 @@ VALUES (
 	'123456',
 	'Email',
 	false,
-	0
+	0,
+	'nobody@healthgateway.gov.bc.ca'
 );
 
 /* User hthgtwy20 */

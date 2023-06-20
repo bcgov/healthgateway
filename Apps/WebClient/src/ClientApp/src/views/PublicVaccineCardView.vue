@@ -1,13 +1,12 @@
-<script lang="ts">
+<script setup lang="ts">
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
+import { useVuelidate } from "@vuelidate/core";
+import { required } from "@vuelidate/validators";
 import { saveAs } from "file-saver";
 import html2canvas from "html2canvas";
-import Vue from "vue";
-import { Component, Ref, Watch } from "vue-property-decorator";
-import { required } from "vuelidate/lib/validators";
-import { Validation } from "vuelidate/vuelidate";
-import { Action, Getter } from "vuex-class";
+import { computed, ref, watch } from "vue";
+import { useStore } from "vue-composition-wrapper";
 
 import LoadingComponent from "@/components/LoadingComponent.vue";
 import MessageModalComponent from "@/components/modal/MessageModalComponent.vue";
@@ -18,298 +17,228 @@ import { VaccinationState } from "@/constants/vaccinationState";
 import type { WebClientConfiguration } from "@/models/configData";
 import CovidVaccineRecord from "@/models/covidVaccineRecord";
 import { DateWrapper, StringISODate } from "@/models/dateWrapper";
-import { BannerError } from "@/models/errors";
+import { CustomBannerError } from "@/models/errors";
 import VaccinationStatus from "@/models/vaccinationStatus";
 import container from "@/plugins/container";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
-import { ILogger, IVaccinationStatusService } from "@/services/interfaces";
-import { Mask, phnMask } from "@/utility/masks";
-import PHNValidator from "@/utility/phnValidator";
+import { ILogger } from "@/services/interfaces";
+import { phnMask } from "@/utility/masks";
 import SnowPlow from "@/utility/snowPlow";
+import ValidationUtil from "@/utility/validationUtil";
 
 library.add(faInfoCircle);
 
-const validPersonalHealthNumber = (value: string) => {
-    const phn = value.replace(/ /g, "");
-    return PHNValidator.IsValid(phn);
-};
+const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+const store = useStore();
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const options: any = {
-    components: {
-        "vaccine-card": VaccineCardComponent,
-        loading: LoadingComponent,
-        "message-modal": MessageModalComponent,
-        "hg-date-dropdown": HgDateDropdownComponent,
-        TooManyRequestsComponent,
+const config = computed<WebClientConfiguration>(
+    () => store.getters["config/webClient"]
+);
+const status = computed<VaccinationStatus | undefined>(
+    () => store.getters["vaccinationStatus/publicVaccinationStatus"]
+);
+const isVaccinationStatusLoading = computed<boolean>(
+    () => store.getters["vaccinationStatus/publicIsLoading"]
+);
+const vaccinationStatusError = computed<CustomBannerError | undefined>(
+    () => store.getters["vaccinationStatus/publicError"]
+);
+const vaccineRecordError = computed<CustomBannerError | undefined>(
+    () => store.getters["vaccinationStatus/publicVaccineRecordError"]
+);
+const statusMessage = computed<string>(
+    () => store.getters["vaccinationStatus/publicStatusMessage"]
+);
+const vaccineRecord = computed<CovidVaccineRecord | undefined>(
+    () => store.getters["vaccinationStatus/publicVaccineRecord"]
+);
+const vaccineRecordStatusMessage = computed<string>(
+    () => store.getters["vaccinationStatus/publicVaccineRecordStatusMessage"]
+);
+const vaccineRecordIsLoading = computed<boolean>(
+    () => store.getters["vaccinationStatus/publicVaccineRecordIsLoading"]
+);
+
+const displayResult = ref(false);
+const isDownloading = ref(false);
+const phn = ref("");
+const dateOfBirth = ref("");
+const dateOfVaccine = ref("");
+
+const downloadImageModal = ref<InstanceType<typeof MessageModalComponent>>();
+const downloadPdfModal = ref<InstanceType<typeof MessageModalComponent>>();
+
+const vaccinationState = computed(() => status.value?.state);
+const isPartiallyVaccinated = computed(
+    () => vaccinationState.value === VaccinationState.PartiallyVaccinated
+);
+const isVaccinationNotFound = computed(
+    () => vaccinationState.value === VaccinationState.NotFound
+);
+const isFullyVaccinated = computed(
+    () => vaccinationState.value === VaccinationState.FullyVaccinated
+);
+const bannerError = computed(
+    () => vaccinationStatusError.value ?? vaccineRecordError.value
+);
+const loadingStatusMessage = computed(() =>
+    isDownloading.value
+        ? "Downloading..."
+        : vaccineRecordIsLoading.value
+        ? vaccineRecordStatusMessage.value
+        : statusMessage.value
+);
+const downloadButtonShown = computed(
+    () => isPartiallyVaccinated.value || isFullyVaccinated.value
+);
+const saveExportPdfShown = computed(
+    () =>
+        config.value.featureToggleConfiguration.covid19.publicCovid19
+            .showFederalProofOfVaccination
+);
+const isLoading = computed(
+    () =>
+        isVaccinationStatusLoading.value ||
+        vaccineRecordIsLoading.value ||
+        isDownloading.value
+);
+const validations = computed(() => ({
+    phn: {
+        required,
+        formatted: ValidationUtil.validatePhn,
     },
-};
+    dateOfBirth: {
+        required,
+        maxValue: (value: string) =>
+            new DateWrapper(value).isBefore(new DateWrapper()),
+    },
+    dateOfVaccine: {
+        required,
+        maxValue: (value: string) =>
+            new DateWrapper(value).isBefore(new DateWrapper()),
+    },
+}));
 
-@Component(options)
-export default class PublicVaccineCardView extends Vue {
-    private vaccinationStatusService!: IVaccinationStatusService;
+const v$ = useVuelidate(validations, { phn, dateOfBirth, dateOfVaccine });
 
-    @Action("retrievePublicVaccineStatus", { namespace: "vaccinationStatus" })
-    retrieveVaccineStatus!: (params: {
-        phn: string;
-        dateOfBirth: StringISODate;
-        dateOfVaccine: StringISODate;
-    }) => Promise<void>;
+function retrieveVaccineStatus(
+    phn: string,
+    dateOfBirth: StringISODate,
+    dateOfVaccine: StringISODate
+): Promise<void> {
+    return store.dispatch("vaccinationStatus/retrievePublicVaccineStatus", {
+        phn,
+        dateOfBirth,
+        dateOfVaccine,
+    });
+}
 
-    @Action("retrievePublicVaccineRecord", { namespace: "vaccinationStatus" })
-    retrievePublicVaccineRecord!: (params: {
-        phn: string;
-        dateOfBirth: StringISODate;
-        dateOfVaccine: StringISODate;
-    }) => Promise<void>;
+function retrievePublicVaccineRecord(
+    phn: string,
+    dateOfBirth: StringISODate,
+    dateOfVaccine: StringISODate
+): Promise<void> {
+    return store.dispatch("vaccinationStatus/retrievePublicVaccineRecord", {
+        phn,
+        dateOfBirth,
+        dateOfVaccine,
+    });
+}
 
-    @Getter("webClient", { namespace: "config" })
-    config!: WebClientConfiguration;
-
-    @Getter("publicVaccinationStatus", { namespace: "vaccinationStatus" })
-    status!: VaccinationStatus | undefined;
-
-    @Getter("publicIsLoading", { namespace: "vaccinationStatus" })
-    isVaccinationStatusLoading!: boolean;
-
-    @Getter("publicError", { namespace: "vaccinationStatus" })
-    vaccinationStatusError!: BannerError | undefined;
-
-    @Getter("publicVaccineRecordError", { namespace: "vaccinationStatus" })
-    vaccineRecordError!: BannerError | undefined;
-
-    @Getter("publicStatusMessage", { namespace: "vaccinationStatus" })
-    statusMessage!: string;
-
-    @Getter("publicVaccineRecord", { namespace: "vaccinationStatus" })
-    vaccineRecord!: CovidVaccineRecord | undefined;
-
-    @Getter("publicVaccineRecordStatusMessage", {
-        namespace: "vaccinationStatus",
-    })
-    vaccineRecordStatusMessage!: string;
-
-    @Getter("publicVaccineRecordIsLoading", {
-        namespace: "vaccinationStatus",
-    })
-    vaccineRecordIsLoading!: boolean;
-
-    @Ref("messageModal")
-    readonly messageModal!: MessageModalComponent;
-
-    @Ref("sensitivedocumentDownloadModal")
-    readonly sensitivedocumentDownloadModal!: MessageModalComponent;
-
-    private get vaccinationState(): VaccinationState | undefined {
-        return this.status?.state;
-    }
-
-    private get isPartiallyVaccinated(): boolean {
-        return this.vaccinationState === VaccinationState.PartiallyVaccinated;
-    }
-
-    private get isVaccinationNotFound(): boolean {
-        return this.vaccinationState === VaccinationState.NotFound;
-    }
-
-    private get isFullyVaccinated(): boolean {
-        return this.vaccinationState === VaccinationState.FullyVaccinated;
-    }
-
-    private get bannerError(): BannerError | undefined {
-        if (
-            this.vaccinationStatusError !== undefined &&
-            this.vaccineRecordError === undefined
-        ) {
-            return this.vaccinationStatusError;
-        }
-
-        if (
-            this.vaccinationStatusError === undefined &&
-            this.vaccineRecordError !== undefined
-        ) {
-            return this.vaccineRecordError;
-        }
-
-        return undefined;
-    }
-
-    private logger!: ILogger;
-    private displayResult = false;
-    private isDownloading = false;
-
-    private phn = "";
-    private dateOfBirth = "";
-    private dateOfVaccine = "";
-
-    private get loadingStatusMessage(): string {
-        if (this.isDownloading) {
-            return "Downloading....";
-        }
-
-        if (this.vaccineRecordIsLoading) {
-            return this.vaccineRecordStatusMessage;
-        }
-
-        return this.statusMessage;
-    }
-
-    private get downloadButtonShown(): boolean {
-        return (
-            this.status?.state === VaccinationState.PartiallyVaccinated ||
-            this.status?.state === VaccinationState.FullyVaccinated
-        );
-    }
-
-    private validations(): unknown {
-        return {
-            phn: {
-                required,
-                formatted: validPersonalHealthNumber,
-            },
-            dateOfBirth: {
-                required,
-                maxValue: (value: string) =>
-                    new DateWrapper(value).isBefore(new DateWrapper()),
-            },
-            dateOfVaccine: {
-                required,
-                maxValue: (value: string) =>
-                    new DateWrapper(value).isBefore(new DateWrapper()),
-            },
-        };
-    }
-
-    @Watch("status")
-    private onStatusChange(): void {
-        if (this.status?.loaded) {
-            this.displayResult = true;
-        }
-    }
-
-    private isValid(param: Validation): boolean | undefined {
-        return param.$dirty ? !param.$invalid : undefined;
-    }
-
-    private handleSubmit(): void {
-        this.$v.$touch();
-        if (!this.$v.$invalid) {
-            SnowPlow.trackEvent({
-                action: "view_qr",
-                text: "vaxcard",
-            });
-            this.retrieveVaccineStatus({
-                phn: this.phn.replace(/ /g, ""),
-                dateOfBirth: this.dateOfBirth,
-                dateOfVaccine: this.dateOfVaccine,
-            })
-                .then(() => this.logger.debug("Vaccine card retrieved"))
-                .catch((err) =>
-                    this.logger.error(`Error retrieving vaccine card: ${err}`)
-                );
-        }
-    }
-
-    private showSensitiveDocumentDownloadModal(): void {
-        this.sensitivedocumentDownloadModal.showModal();
-    }
-
-    private get saveExportPdfShown(): boolean {
-        return this.config.featureToggleConfiguration.covid19.publicCovid19
-            .showFederalProofOfVaccination;
-    }
-
-    private download(): void {
-        const printingArea =
-            document.querySelector<HTMLElement>(".vaccine-card");
-
-        if (printingArea !== null) {
-            this.isDownloading = true;
-
-            SnowPlow.trackEvent({
-                action: "save_qr",
-                text: "vaxcard",
-            });
-
-            html2canvas(printingArea, {
-                scale: 2,
-                ignoreElements: (element) =>
-                    element.classList.contains("d-print-none"),
-            })
-                .then((canvas) => {
-                    const dataUrl = canvas.toDataURL();
-                    fetch(dataUrl).then((res) =>
-                        res
-                            .blob()
-                            .then((blob) =>
-                                saveAs(blob, "ProvincialVaccineProof.png")
-                            )
-                    );
-                })
-                .finally(() => {
-                    this.isDownloading = false;
-                });
-        }
-    }
-
-    private created(): void {
-        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-        this.vaccinationStatusService =
-            container.get<IVaccinationStatusService>(
-                SERVICE_IDENTIFIER.VaccinationStatusService
+function handleSubmit(): void {
+    v$.value.$touch();
+    if (!v$.value.$invalid) {
+        SnowPlow.trackEvent({
+            action: "view_qr",
+            text: "vaxcard",
+        });
+        retrieveVaccineStatus(
+            phn.value.replace(/\s/g, ""),
+            dateOfBirth.value,
+            dateOfVaccine.value
+        )
+            .then(() => logger.debug("Vaccine card retrieved"))
+            .catch((err) =>
+                logger.error(`Error retrieving vaccine card: ${err}`)
             );
     }
+}
 
-    private get phnMask(): Mask {
-        return phnMask;
-    }
+function downloadImage(): void {
+    const printingArea = document.querySelector<HTMLElement>(".vaccine-card");
 
-    private showConfirmationModal(): void {
-        this.messageModal.showModal();
-    }
+    if (printingArea !== null) {
+        isDownloading.value = true;
 
-    private showVaccineCardMessageModal(): void {
-        this.sensitivedocumentDownloadModal.showModal();
-    }
+        SnowPlow.trackEvent({
+            action: "save_qr",
+            text: "vaxcard",
+        });
 
-    @Watch("vaccineRecord")
-    private saveVaccinePdf(): void {
-        if (this.vaccineRecord !== undefined) {
-            const mimeType = this.vaccineRecord.document.mediaType;
-            const downloadLink = `data:${mimeType};base64,${this.vaccineRecord.document.data}`;
-            fetch(downloadLink).then((res) => {
-                SnowPlow.trackEvent({
-                    action: "download_card",
-                    text: "Public COVID Card PDF",
-                });
-                res.blob().then((blob) => saveAs(blob, "VaccineProof.pdf"));
+        html2canvas(printingArea, {
+            scale: 2,
+            ignoreElements: (element) =>
+                element.classList.contains("d-print-none"),
+        })
+            .then((canvas) => {
+                const dataUrl = canvas.toDataURL();
+                fetch(dataUrl).then((res) =>
+                    res
+                        .blob()
+                        .then((blob) =>
+                            saveAs(blob, "ProvincialVaccineProof.png")
+                        )
+                );
+            })
+            .finally(() => {
+                isDownloading.value = false;
             });
-        }
-    }
-
-    private downloadVaccinePdf(): void {
-        this.retrievePublicVaccineRecord({
-            phn: this.phn.replace(/ /g, ""),
-            dateOfBirth: this.dateOfBirth,
-            dateOfVaccine: this.dateOfVaccine,
-        }).catch((err) =>
-            this.logger.error(`Error loading public record data: ${err}`)
-        );
-    }
-
-    public get isLoading(): boolean {
-        return (
-            this.isVaccinationStatusLoading ||
-            this.vaccineRecordIsLoading ||
-            this.isDownloading
-        );
     }
 }
+
+function downloadPdf(): void {
+    retrievePublicVaccineRecord(
+        phn.value.replace(/\s/g, ""),
+        dateOfBirth.value,
+        dateOfVaccine.value
+    ).catch((err) => logger.error(`Error loading public record data: ${err}`));
+}
+
+function showDownloadImageModal(): void {
+    downloadImageModal.value?.showModal();
+}
+
+function showDownloadPdfModal(): void {
+    downloadPdfModal.value?.showModal();
+}
+
+watch(status, (value) => {
+    if (value?.loaded) {
+        displayResult.value = true;
+    }
+});
+
+watch(vaccineRecord, (value) => {
+    if (value) {
+        const mimeType = value.document.mediaType;
+        const downloadLink = `data:${mimeType};base64,${value.document.data}`;
+        fetch(downloadLink).then((res) => {
+            SnowPlow.trackEvent({
+                action: "download_card",
+                text: "Public COVID Card PDF",
+            });
+            res.blob().then((blob) => saveAs(blob, "VaccineProof.pdf"));
+        });
+    }
+});
 </script>
 
 <template>
     <div class="background flex-grow-1 d-flex flex-column">
-        <loading :is-loading="isLoading" :text="loadingStatusMessage" />
+        <LoadingComponent
+            :is-loading="isLoading"
+            :text="loadingStatusMessage"
+        />
         <div class="header d-print-none">
             <router-link id="homeLink" to="/" aria-label="Return to home page">
                 <img
@@ -325,7 +254,7 @@ export default class PublicVaccineCardView extends Vue {
             class="vaccine-card align-self-center w-100 p-3"
         >
             <div class="bg-white rounded shadow">
-                <vaccine-card
+                <VaccineCardComponent
                     :status="status"
                     :error="bannerError"
                     :show-generic-save-instructions="!downloadButtonShown"
@@ -339,7 +268,7 @@ export default class PublicVaccineCardView extends Vue {
                         data-testid="save-a-copy-btn"
                         variant="primary"
                         class="ml-3"
-                        @click="showSensitiveDocumentDownloadModal()"
+                        @click="showDownloadImageModal()"
                     >
                         Save a Copy
                     </hg-button>
@@ -351,13 +280,13 @@ export default class PublicVaccineCardView extends Vue {
                     >
                         <b-dropdown-item
                             data-testid="save-as-image-dropdown-item"
-                            @click="showVaccineCardMessageModal()"
+                            @click="showDownloadImageModal()"
                             >Image (BC proof)</b-dropdown-item
                         >
                         <b-dropdown-item
                             v-if="saveExportPdfShown"
                             data-testid="save-as-pdf-dropdown-item"
-                            @click="showConfirmationModal()"
+                            @click="showDownloadPdfModal()"
                             >PDF (Federal proof)</b-dropdown-item
                         >
                     </hg-dropdown>
@@ -400,21 +329,21 @@ export default class PublicVaccineCardView extends Vue {
                     </div>
                 </div>
             </div>
-            <message-modal
-                ref="sensitivedocumentDownloadModal"
+            <MessageModalComponent
+                ref="downloadImageModal"
                 title="Vaccine Card Download"
                 message="Next, you'll see an image of your card.
                                 Depending on your browser, you may need to
                                 manually save the image to your files or photos.
                                 If you want to print, we recommend you use the print function in
                                 your browser."
-                @submit="download"
+                @submit="downloadImage"
             />
-            <message-modal
-                ref="messageModal"
+            <MessageModalComponent
+                ref="downloadPdfModal"
                 title="Sensitive Document Download"
                 message="The file that you are downloading contains personal information. If you are on a public computer, please ensure that the file is deleted before you log off."
-                @submit="downloadVaccinePdf"
+                @submit="downloadPdf"
             />
         </div>
         <div
@@ -459,25 +388,28 @@ export default class PublicVaccineCardView extends Vue {
                         label="Personal Health Number"
                         label-for="phn"
                     >
-                        <b-form-input
-                            id="phn"
-                            v-model="phn"
-                            v-mask="phnMask"
-                            data-testid="phnInput"
-                            autofocus
-                            aria-label="Personal Health Number"
-                            :state="isValid($v.phn)"
-                            @blur="$v.phn.$touch()"
-                        />
+                        <div>
+                            <b-form-input
+                                id="phn"
+                                v-model="phn"
+                                v-mask="phnMask"
+                                data-testid="phnInput"
+                                autofocus
+                                aria-label="Personal Health Number"
+                                :state="ValidationUtil.isValid(v$.phn)"
+                                @blur="v$.phn.$touch()"
+                            />
+                        </div>
                         <b-form-invalid-feedback
-                            v-if="!$v.phn.required"
+                            :state="ValidationUtil.isValid(v$.phn.required)"
                             aria-label="Invalid Personal Health Number"
                             data-testid="feedbackPhnIsRequired"
                         >
                             Personal Health Number is required.
                         </b-form-invalid-feedback>
                         <b-form-invalid-feedback
-                            v-else-if="!$v.phn.formatted"
+                            v-if="ValidationUtil.isValid(v$.phn.required)"
+                            :state="ValidationUtil.isValid(v$.phn.formatted)"
                             aria-label="Invalid Personal Health Number"
                             data-testid="feedbackPhnMustBeValid"
                         >
@@ -487,35 +419,45 @@ export default class PublicVaccineCardView extends Vue {
                     <b-form-group
                         label="Date of Birth"
                         label-for="dateOfBirth"
-                        :state="isValid($v.dateOfBirth)"
+                        :state="ValidationUtil.isValid(v$.dateOfBirth)"
                     >
-                        <hg-date-dropdown
-                            id="dateOfBirth"
-                            v-model="dateOfBirth"
-                            :state="isValid($v.dateOfBirth)"
-                            :allow-future="false"
-                            data-testid="dateOfBirthInput"
-                            aria-label="Date of Birth"
-                            @blur="$v.dateOfBirth.$touch()"
-                        />
+                        <div>
+                            <HgDateDropdownComponent
+                                id="dateOfBirth"
+                                v-model="dateOfBirth"
+                                :state="ValidationUtil.isValid(v$.dateOfBirth)"
+                                :allow-future="false"
+                                data-testid="dateOfBirthInput"
+                                aria-label="Date of Birth"
+                                @blur="v$.dateOfBirth.$touch()"
+                            />
+                        </div>
                         <b-form-invalid-feedback
-                            v-if="
-                                $v.dateOfBirth.$dirty &&
-                                !$v.dateOfBirth.required
+                            :state="
+                                ValidationUtil.isValid(
+                                    v$.dateOfBirth,
+                                    v$.dateOfBirth.required
+                                )
                             "
                             aria-label="Invalid Date of Birth"
                             data-testid="feedbackDobIsRequired"
-                            force-show
                         >
                             A valid date of birth is required.
                         </b-form-invalid-feedback>
                         <b-form-invalid-feedback
-                            v-else-if="
-                                $v.dateOfBirth.$dirty &&
-                                !$v.dateOfBirth.maxValue
+                            v-if="
+                                ValidationUtil.isValid(
+                                    v$.dateOfBirth,
+                                    v$.dateOfBirth.required
+                                )
+                            "
+                            :state="
+                                ValidationUtil.isValid(
+                                    v$.dateOfBirth,
+                                    v$.dateOfBirth.maxValue
+                                )
                             "
                             aria-label="Invalid Date of Birth"
-                            force-show
                         >
                             Date of birth must be in the past.
                         </b-form-invalid-feedback>
@@ -523,36 +465,48 @@ export default class PublicVaccineCardView extends Vue {
                     <b-form-group
                         label="Date of Vaccine (Any Dose)"
                         label-for="dateOfVaccine"
-                        :state="isValid($v.dateOfVaccine)"
+                        :state="ValidationUtil.isValid(v$.dateOfVaccine)"
                     >
-                        <hg-date-dropdown
-                            id="dateOfVaccine"
-                            v-model="dateOfVaccine"
-                            :state="isValid($v.dateOfVaccine)"
-                            :allow-future="false"
-                            :min-year="2020"
-                            data-testid="dateOfVaccineInput"
-                            aria-label="Date of Vaccine (Any Dose)"
-                            @blur="$v.dateOfBirth.$touch()"
-                        />
+                        <div>
+                            <HgDateDropdownComponent
+                                id="dateOfVaccine"
+                                v-model="dateOfVaccine"
+                                :state="
+                                    ValidationUtil.isValid(v$.dateOfVaccine)
+                                "
+                                :allow-future="false"
+                                :min-year="2020"
+                                data-testid="dateOfVaccineInput"
+                                aria-label="Date of Vaccine (Any Dose)"
+                                @blur="v$.dateOfVaccine.$touch()"
+                            />
+                        </div>
                         <b-form-invalid-feedback
-                            v-if="
-                                $v.dateOfVaccine.$dirty &&
-                                !$v.dateOfVaccine.required
+                            :state="
+                                ValidationUtil.isValid(
+                                    v$.dateOfVaccine,
+                                    v$.dateOfVaccine.required
+                                )
                             "
                             aria-label="Invalid Date of Vaccine"
                             data-testid="feedbackDovIsRequired"
-                            force-show
                         >
                             A valid date of vaccine is required.
                         </b-form-invalid-feedback>
                         <b-form-invalid-feedback
-                            v-else-if="
-                                $v.dateOfVaccine.$dirty &&
-                                !$v.dateOfVaccine.maxValue
+                            v-if="
+                                ValidationUtil.isValid(
+                                    v$.dateOfVaccine,
+                                    v$.dateOfVaccine.required
+                                )
+                            "
+                            :state="
+                                ValidationUtil.isValid(
+                                    v$.dateOfVaccine,
+                                    v$.dateOfVaccine.maxValue
+                                )
                             "
                             aria-label="Invalid Date of Vaccine"
-                            force-show
                         >
                             Date of vaccine must be in the past.
                         </b-form-invalid-feedback>

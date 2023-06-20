@@ -1,9 +1,7 @@
 import { Covid19TestResultState, LabResultState } from "@/models/datasetState";
-import { CustomBannerError } from "@/models/errors";
 import {
     Covid19LaboratoryOrder,
     LaboratoryOrderResult,
-    PublicCovidTestResponseResult,
 } from "@/models/laboratory";
 import { LoadStatus } from "@/models/storeOperations";
 
@@ -119,42 +117,5 @@ export const mutations: LaboratoryMutations = {
             status: LoadStatus.ERROR,
         };
         setLabResultState(state, hdid, nextState);
-    },
-    setPublicCovidTestResponseResultRequested(state: LaboratoryState) {
-        state.publicCovid19.publicCovidTestResponseResult = undefined;
-        state.publicCovid19.status = LoadStatus.REQUESTED;
-        state.publicCovid19.statusMessage = "";
-        state.publicCovid19.error = undefined;
-    },
-    setPublicCovidTestResponseResult(
-        state: LaboratoryState,
-        publicCovidTestResponseResult: PublicCovidTestResponseResult
-    ) {
-        state.publicCovid19.publicCovidTestResponseResult =
-            publicCovidTestResponseResult;
-        state.publicCovid19.status = LoadStatus.LOADED;
-        state.publicCovid19.statusMessage = "";
-        state.publicCovid19.error = undefined;
-    },
-    setPublicCovidTestResponseResultError(
-        state: LaboratoryState,
-        error: CustomBannerError
-    ) {
-        state.publicCovid19.error = error;
-        state.publicCovid19.status = LoadStatus.ERROR;
-    },
-    setPublicCovidTestResponseResultStatusMessage(
-        state: LaboratoryState,
-        statusMessage: string
-    ) {
-        state.publicCovid19.statusMessage = statusMessage;
-    },
-    resetPublicCovidTestResponseResult(state: LaboratoryState) {
-        state.publicCovid19 = {
-            publicCovidTestResponseResult: undefined,
-            status: undefined,
-            statusMessage: "",
-            error: undefined,
-        };
     },
 };

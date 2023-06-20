@@ -1,12 +1,13 @@
-﻿<script lang="ts">
+﻿<script setup lang="ts">
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faDownload, faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import saveAs from "file-saver";
-import Vue from "vue";
-import { Component, Prop, Ref } from "vue-property-decorator";
-import { Action, Getter } from "vuex-class";
+import { computed, ref } from "vue";
+import { useStore } from "vue-composition-wrapper";
 
 import MessageModalComponent from "@/components/modal/MessageModalComponent.vue";
+import { DataSource } from "@/constants/dataSource";
+import { ErrorSourceType } from "@/constants/errorType";
 import {
     OrganDonorRegistration,
     PatientData,
@@ -20,85 +21,95 @@ import SnowPlow from "@/utility/snowPlow";
 
 library.add(faDownload, faInfoCircle);
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const options: any = {
-    components: { MessageModalComponent },
-};
+interface Props {
+    hdid: string;
+}
+const props = defineProps<Props>();
 
-@Component(options)
-export default class OrganDonorDetailsCard extends Vue {
-    @Prop({ required: true })
-    hdid!: string;
+const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+const store = useStore();
 
-    @Getter("isPatientDataFileLoading", { namespace: "patientData" })
-    isPatientDataFileLoading!: (fileId: string) => boolean;
+const sensitiveDocumentModal =
+    ref<InstanceType<typeof MessageModalComponent>>();
 
-    @Getter("patientData", { namespace: "patientData" })
-    patientData!: (
-        hdid: string,
-        patientDataTypes: PatientDataType[]
-    ) => PatientData[];
+const patientData = computed<PatientData[]>(() => {
+    return store.getters["patientData/patientData"](props.hdid, [
+        PatientDataType.OrganDonorRegistrationStatus,
+    ]);
+});
 
-    @Action("retrievePatientDataFile", { namespace: "patientData" })
-    retrievePatientDataFile!: (params: {
-        fileId: string;
-        hdid: string;
-    }) => Promise<PatientDataFile>;
+const isLoadingFile = computed<boolean>(() => {
+    return (
+        registrationData.value?.registrationFileId !== undefined &&
+        isPatientDataFileLoading(registrationData.value.registrationFileId)
+    );
+});
 
-    @Ref("sensitiveDocumentModal")
-    readonly sensitiveDocumentModal!: MessageModalComponent;
+const registrationData = computed<OrganDonorRegistration | undefined>(() => {
+    return patientData.value
+        ? (patientData.value[0] as OrganDonorRegistration)
+        : undefined;
+});
 
-    logger!: ILogger;
+const blockedDataSources = computed<DataSource[]>(
+    () => store.getters["user/blockedDataSources"]
+);
 
-    get isLoadingFile(): boolean {
-        return (
-            this.registrationData?.registrationFileId !== undefined &&
-            this.isPatientDataFileLoading(
-                this.registrationData.registrationFileId
-            )
-        );
-    }
+const showOrganDonorRegistration = computed(
+    () => !blockedDataSources.value.includes(DataSource.OrganDonorRegistration)
+);
 
-    get registrationData(): OrganDonorRegistration | undefined {
-        const data = this.patientData(this.hdid, [
-            PatientDataType.OrganDonorRegistrationStatus,
-        ]);
-        return data ? (data[0] as OrganDonorRegistration) : undefined;
-    }
+function addCustomError(
+    title: string,
+    source: ErrorSourceType,
+    traceId: string | undefined
+): void {
+    store.dispatch("errorBanner/addCustomError", { title, source, traceId });
+}
 
-    async created(): Promise<void> {
-        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-    }
+function isPatientDataFileLoading(fileId: string): boolean {
+    return store.getters["patientData/isPatientDataFileLoading"](fileId);
+}
 
-    private showConfirmationModal(): void {
-        this.sensitiveDocumentModal.showModal();
-    }
-
-    private getDecisionFile(): void {
-        if (this.registrationData && this.registrationData.registrationFileId) {
-            SnowPlow.trackEvent({
-                action: "download_report",
-                text: "Organ Donor",
-            });
-            this.retrievePatientDataFile({
-                fileId: this.registrationData.registrationFileId,
-                hdid: this.hdid,
+function getDecisionFile(): void {
+    const registrationDataValue = registrationData.value;
+    if (registrationDataValue && registrationDataValue.registrationFileId) {
+        SnowPlow.trackEvent({
+            action: "download_report",
+            text: "Organ Donor",
+        });
+        store
+            .dispatch("patientData/retrievePatientDataFile", {
+                fileId: registrationDataValue.registrationFileId,
+                hdid: props.hdid,
             })
-                .then(
-                    (patientFile: PatientDataFile) =>
-                        new Blob([new Uint8Array(patientFile.content)], {
-                            type: patientFile.contentType,
-                        })
-                )
-                .then((blob) => saveAs(blob, `Organ_Donor_Registration.pdf`))
-                .catch((err) => this.logger.error(err));
-        }
+            .then(
+                (patientFile: PatientDataFile) =>
+                    new Blob([new Uint8Array(patientFile.content)], {
+                        type: patientFile.contentType,
+                    })
+            )
+            .then((blob) => saveAs(blob, `Organ_Donor_Registration.pdf`))
+            .catch((err) => logger.error(err));
     }
+}
+
+function showConfirmationModal(): void {
+    sensitiveDocumentModal.value?.showModal();
+}
+
+if (!showOrganDonorRegistration.value) {
+    addCustomError(
+        "Organ Donor Registration is not available at this time. Please try again later.",
+        ErrorSourceType.User,
+        undefined
+    );
 }
 </script>
 
 <template>
     <hg-card
+        v-if="showOrganDonorRegistration"
         title="Organ Donor Registration"
         data-testid="organ-donor-registration-card"
     >

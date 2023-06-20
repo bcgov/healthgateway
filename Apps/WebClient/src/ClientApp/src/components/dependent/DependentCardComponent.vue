@@ -1,9 +1,8 @@
-<script lang="ts">
+<script setup lang="ts">
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faEllipsisV } from "@fortawesome/free-solid-svg-icons";
-import Vue from "vue";
-import { Component, Prop, Ref } from "vue-property-decorator";
-import { Action, Getter } from "vuex-class";
+import { computed, ref } from "vue";
+import { useStore } from "vue-composition-wrapper";
 
 import DependentDashboardTabComponent from "@/components/dependent/tabs/DependentDashboardTabComponent.vue";
 import DependentProfileTabComponent from "@/components/dependent/tabs/DependentProfileTabComponent.vue";
@@ -17,56 +16,41 @@ import DependentUtil from "@/utility/dependentUtil";
 
 library.add(faEllipsisV);
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const options: any = {
-    components: {
-        DeleteModalComponent,
-        DependentDashboardTabComponent,
-        DependentReportsTabComponent,
-        DependentProfileTabComponent,
-    },
-};
+interface Props {
+    dependent: Dependent;
+}
+const props = defineProps<Props>();
 
-@Component(options)
-export default class DependentCardComponent extends Vue {
-    @Prop({ required: true })
-    private dependent!: Dependent;
+const store = useStore();
 
-    @Action("removeDependent", { namespace: "dependent" })
-    private removeDependent!: (params: {
-        hdid: string;
-        dependent: Dependent;
-    }) => Promise<void>;
+const removeConfirmationModal =
+    ref<InstanceType<typeof DeleteModalComponent>>();
 
-    @Getter("webClient", { namespace: "config" })
-    private config!: WebClientConfiguration;
+const config = computed<WebClientConfiguration>(
+    () => store.getters["config/webClient"]
+);
+const user = computed<User>(() => store.getters["user/user"]);
 
-    @Getter("user", { namespace: "user" })
-    private user!: User;
+const formattedName = computed(() => {
+    return DependentUtil.formatName(props.dependent.dependentInformation);
+});
+const isExpired = computed(() => {
+    const birthDate = new DateWrapper(
+        props.dependent.dependentInformation.dateOfBirth
+    );
+    const now = new DateWrapper();
+    return now.diff(birthDate, "year").years > config.value.maxDependentAge;
+});
 
-    @Ref("removeConfirmationModal")
-    private readonly removeConfirmationModal!: DeleteModalComponent;
+function removeDependent(hdid: string, dependent: Dependent): Promise<void> {
+    return store.dispatch("dependent/removeDependent", { hdid, dependent });
+}
 
-    private get formattedName(): string {
-        return DependentUtil.formatName(this.dependent.dependentInformation);
-    }
-
-    private get isExpired(): boolean {
-        const birthDate = new DateWrapper(
-            this.dependent.dependentInformation.dateOfBirth
-        );
-        const now = new DateWrapper();
-        return now.diff(birthDate, "year").years > this.config.maxDependentAge;
-    }
-
-    private remove(): void {
-        this.removeDependent({
-            hdid: this.user.hdid,
-            dependent: this.dependent,
-        });
-    }
+function remove(): void {
+    removeDependent(user.value.hdid, props.dependent);
 }
 </script>
+
 <template>
     <div>
         <b-card no-body :data-testid="`dependent-card-${dependent.ownerId}`">
@@ -91,7 +75,9 @@ export default class DependentCardComponent extends Vue {
                                 <b-dropdown-item
                                     data-testid="deleteDependentMenuBtn"
                                     class="menuItem"
-                                    @click="removeConfirmationModal.showModal()"
+                                    @click="
+                                        removeConfirmationModal?.showModal()
+                                    "
                                 >
                                     Delete
                                 </b-dropdown-item>

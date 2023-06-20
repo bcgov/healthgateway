@@ -1,4 +1,4 @@
-<script lang="ts">
+<script setup lang="ts">
 import { library } from "@fortawesome/fontawesome-svg-core";
 import {
     faCheckCircle,
@@ -18,9 +18,8 @@ import {
     faXRay,
 } from "@fortawesome/free-solid-svg-icons";
 import { saveAs } from "file-saver";
-import Vue from "vue";
-import { Component, Ref, Watch } from "vue-property-decorator";
-import { Action, Getter } from "vuex-class";
+import { computed, ref, watch } from "vue";
+import { useRouter, useStore } from "vue-composition-wrapper";
 
 import LoadingComponent from "@/components/LoadingComponent.vue";
 import AddQuickLinkComponent from "@/components/modal/AddQuickLinkComponent.vue";
@@ -73,378 +72,296 @@ interface QuickLinkCard {
     icon: string;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const options: any = {
-    components: {
-        AddQuickLinkComponent,
-        LoadingComponent,
-        MessageModalComponent,
-    },
-};
+const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+const router = useRouter();
+const store = useStore();
 
-@Component(options)
-export default class HomeView extends Vue {
-    @Action("addError", { namespace: "errorBanner" })
-    addError!: (params: {
-        errorType: ErrorType;
-        source: ErrorSourceType;
-        traceId: string | undefined;
-    }) => void;
+const sensitivedocumentDownloadModal =
+    ref<InstanceType<typeof MessageModalComponent>>();
+const vaccineRecordResultModal =
+    ref<InstanceType<typeof MessageModalComponent>>();
+const addQuickLinkModal = ref<AddQuickLinkComponent>();
 
-    @Action("setTooManyRequestsError", { namespace: "errorBanner" })
-    setTooManyRequestsError!: (params: { key: string }) => void;
+const config = computed<WebClientConfiguration>(
+    () => store.getters["config/webClient"]
+);
+const user = computed<User>(() => store.getters["user/user"]);
+const quickLinks = computed<QuickLink[] | undefined>(
+    () => store.getters["user/quickLinks"]
+);
+const vaccineRecordState = computed<VaccineRecordState>(() =>
+    store.getters["vaccinationStatus/authenticatedVaccineRecordState"](
+        user.value.hdid
+    )
+);
 
-    @Action("retrieveAuthenticatedVaccineRecord", {
-        namespace: "vaccinationStatus",
-    })
-    retrieveAuthenticatedVaccineRecord!: (params: {
-        hdid: string;
-    }) => Promise<CovidVaccineRecord>;
-
-    @Action("stopAuthenticatedVaccineRecordDownload", {
-        namespace: "vaccinationStatus",
-    })
-    stopAuthenticatedVaccineRecordDownload!: (params: { hdid: string }) => void;
-
-    @Action("setFilter", { namespace: "timeline" })
-    setFilter!: (filterBuilder: TimelineFilterBuilder) => void;
-
-    @Action("updateQuickLinks", { namespace: "user" })
-    updateQuickLinks!: (params: {
-        hdid: string;
-        quickLinks: QuickLink[];
-    }) => Promise<void>;
-
-    @Action("setUserPreference", { namespace: "user" })
-    setUserPreference!: (params: {
-        preference: UserPreference;
-    }) => Promise<void>;
-
-    @Getter("webClient", { namespace: "config" })
-    config!: WebClientConfiguration;
-
-    @Getter("user", { namespace: "user" })
-    user!: User;
-
-    @Getter("quickLinks", { namespace: "user" })
-    quickLinks!: QuickLink[] | undefined;
-
-    @Getter("authenticatedVaccineRecordState", {
-        namespace: "vaccinationStatus",
-    })
-    getVaccineRecordState!: (hdid: string) => VaccineRecordState;
-
-    @Ref("sensitivedocumentDownloadModal")
-    readonly sensitivedocumentDownloadModal!: MessageModalComponent;
-
-    @Ref("vaccineRecordResultModal")
-    readonly vaccineRecordResultModal!: MessageModalComponent;
-
-    @Ref("addQuickLinkModal")
-    readonly addQuickLinkModal!: AddQuickLinkComponent;
-
-    private logger!: ILogger;
-
-    private get vaccineRecordState(): VaccineRecordState {
-        return this.getVaccineRecordState(this.user.hdid);
-    }
-
-    private get isVaccineRecordDownloading(): boolean {
-        return this.vaccineRecordState.status === LoadStatus.REQUESTED;
-    }
-
-    private get vaccineRecordStatusMessage(): string {
-        return this.vaccineRecordState.statusMessage;
-    }
-
-    private get vaccineRecordResultMessage(): string {
-        return this.vaccineRecordState.resultMessage;
-    }
-
-    private get unverifiedEmail(): boolean {
-        return !this.user.verifiedEmail && this.user.hasEmail;
-    }
-
-    private get unverifiedSMS(): boolean {
-        return !this.user.verifiedSMS && this.user.hasSMS;
-    }
-
-    private get isPacificTime(): boolean {
-        const isDaylightSavings = new DateWrapper().isInDST();
-
-        let timeZoneHourOffset = 8;
-        if (isDaylightSavings) {
-            timeZoneHourOffset = 7;
-        }
-
-        return new Date().getTimezoneOffset() / 60 === timeZoneHourOffset;
-    }
-
-    private get showFederalCardButton(): boolean {
-        return this.config.featureToggleConfiguration.homepage
-            .showFederalProofOfVaccination;
-    }
-
-    private get preferenceVaccineCardHidden(): boolean {
-        const preference =
-            this.user.preferences[UserPreferenceType.HideVaccineCardQuickLink];
-        return preference?.value === "true";
-    }
-
-    private get preferenceOrganDonorHidden(): boolean {
-        const preference =
-            this.user.preferences[UserPreferenceType.HideOrganDonorQuickLink];
-        return preference?.value === "true";
-    }
-
-    private get preferenceImmunizationRecordHidden(): boolean {
-        const preferenceName =
-            UserPreferenceType.HideImmunizationRecordQuickLink;
-        const preference = this.user.preferences[preferenceName];
-        return preference?.value === "true";
-    }
-
-    private get showVaccineCardButton(): boolean {
-        return !this.preferenceVaccineCardHidden;
-    }
-
-    private get showOrganDonorButton(): boolean {
-        const showPreference = !this.preferenceOrganDonorHidden;
-        const servicesEnabled = ConfigUtil.isServiceEnabled(
-            ServiceName.OrganDonorRegistration
-        );
-        return servicesEnabled && showPreference;
-    }
-
-    private get showImmunizationRecordButton(): boolean {
-        return !this.preferenceImmunizationRecordHidden;
-    }
-
-    private get enabledQuickLinks(): QuickLink[] {
-        return (
-            this.quickLinks?.filter((quickLink) =>
-                quickLink.filter.modules.every((module) => {
-                    const entryType = getEntryTypeByModule(module)?.type;
-                    return (
-                        entryType !== undefined &&
-                        ConfigUtil.isDatasetEnabled(entryType)
-                    );
-                })
-            ) ?? []
-        );
-    }
-
-    private get quickLinkCards(): QuickLinkCard[] {
-        return this.enabledQuickLinks.map((quickLink, index) => {
-            const card: QuickLinkCard = {
-                index,
-                title: quickLink.name,
-                description: "View your filtered health records.",
-                icon: "search",
-            };
-
-            const modules = quickLink.filter.modules;
-            if (quickLink.filter.modules.length === 1) {
-                const details = getEntryTypeByModule(modules[0]);
-                if (details) {
-                    card.description = details.description;
-                    card.icon = details.icon;
-                }
-            }
-
-            return card;
-        });
-    }
-
-    private get isAddQuickLinkButtonDisabled(): boolean {
-        return (
-            [...entryTypeMap.values()].filter(
-                (details) =>
-                    ConfigUtil.isDatasetEnabled(details.type) &&
-                    this.enabledQuickLinks.find(
-                        (existingLink) =>
-                            existingLink.filter.modules.length === 1 &&
-                            existingLink.filter.modules[0] ===
-                                details.moduleName
-                    ) === undefined
-            ).length === 0 &&
-            !this.preferenceImmunizationRecordHidden &&
-            !this.preferenceVaccineCardHidden &&
-            !this.preferenceOrganDonorHidden
-        );
-    }
-
-    private created(): void {
-        this.logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-    }
-
-    private trackClickLink(linkType: string | undefined): void {
-        if (linkType) {
-            SnowPlow.trackEvent({
-                action: "click",
-                text: `home_${linkType}`,
-            });
-        }
-    }
-
-    private retrieveVaccinePdf(): void {
-        this.trackClickLink("federal_proof");
-        this.retrieveAuthenticatedVaccineRecord({
-            hdid: this.user.hdid,
-        });
-    }
-
-    private removeQuickLink(targetQuickLink: QuickLink): Promise<void> {
-        const updatedLinks =
-            this.quickLinks?.filter(
-                (quickLink) => quickLink !== targetQuickLink
-            ) ?? [];
-
-        return this.updateQuickLinks({
-            hdid: this.user.hdid,
-            quickLinks: updatedLinks,
-        }).catch((error) => {
-            this.logger.error(error);
-            if (error.statusCode === 429) {
-                this.setTooManyRequestsError({ key: "page" });
-            } else {
-                this.addError({
-                    errorType: ErrorType.Update,
-                    source: ErrorSourceType.Profile,
-                    traceId: undefined,
-                });
-            }
-        });
-    }
-
-    private handleClickHealthRecords(): void {
-        this.trackClickLink("all_records");
-        this.$router.push({ path: "/timeline" });
-    }
-
-    private handleClickVaccineCard(): void {
-        this.trackClickLink("bc_vaccine_card");
-        this.$router.push({ path: "/covid19" });
-    }
-
-    private handleClickOrganDonorCard(): void {
-        this.trackClickLink("organ_donor_registration");
-        this.$router.push({ path: "/services" });
-    }
-
-    private handleClickImmunizationRecord(): void {
-        this.trackClickLink("immunization_record");
-        window.open(
-            "https://www.immunizationrecord.gov.bc.ca/",
-            "_blank",
-            "noopener"
-        );
-    }
-
-    private handleClickRemoveQuickLink(index: number): void {
-        this.logger.debug("Removing quick link");
-        const quickLink = this.enabledQuickLinks[index];
-        this.removeQuickLink(quickLink);
-    }
-
-    private handleClickRemoveVaccineCardQuickLink(): void {
-        this.logger.debug("Removing vaccine card quick link");
-        this.setPreferenceValue(
-            UserPreferenceType.HideVaccineCardQuickLink,
-            "true"
-        );
-    }
-
-    private handleClickRemoveOrganDonorQuickLink(): void {
-        this.logger.debug("Removing organ donor card quick link");
-        this.setPreferenceValue(
-            UserPreferenceType.HideOrganDonorQuickLink,
-            "true"
-        );
-    }
-
-    private handleClickRemoveImmunizationRecordQuickLink(): void {
-        this.logger.debug("Removing immunization record quick link");
-        this.setPreferenceValue(
-            UserPreferenceType.HideImmunizationRecordQuickLink,
-            "true"
-        );
-    }
-
-    private setPreferenceValue(preferenceType: string, value: string) {
-        const preference = {
-            ...this.user.preferences[preferenceType],
-            value,
+const isVaccineRecordDownloading = computed(
+    () => vaccineRecordState.value.status === LoadStatus.REQUESTED
+);
+const vaccineRecordStatusMessage = computed(
+    () => vaccineRecordState.value.statusMessage
+);
+const vaccineRecordResultMessage = computed(
+    () => vaccineRecordState.value.resultMessage
+);
+const unverifiedEmail = computed(
+    () => !user.value.verifiedEmail && user.value.hasEmail
+);
+const unverifiedSMS = computed(
+    () => !user.value.verifiedSMS && user.value.hasSMS
+);
+const isPacificTime = computed(() => {
+    const isDaylightSavings = new DateWrapper().isInDST();
+    const pacificTimeZoneHourOffset = isDaylightSavings ? 7 : 8;
+    return new Date().getTimezoneOffset() / 60 === pacificTimeZoneHourOffset;
+});
+const showFederalCardButton = computed(
+    () =>
+        config.value.featureToggleConfiguration.homepage
+            .showFederalProofOfVaccination
+);
+const preferenceVaccineCardHidden = computed(
+    () =>
+        user.value.preferences[UserPreferenceType.HideVaccineCardQuickLink]
+            ?.value === "true"
+);
+const preferenceOrganDonorHidden = computed(
+    () =>
+        user.value.preferences[UserPreferenceType.HideOrganDonorQuickLink]
+            ?.value === "true"
+);
+const preferenceImmunizationRecordHidden = computed(
+    () =>
+        user.value.preferences[
+            UserPreferenceType.HideImmunizationRecordQuickLink
+        ]?.value === "true"
+);
+const showVaccineCardButton = computed(
+    () => !preferenceVaccineCardHidden.value
+);
+const showOrganDonorButton = computed(
+    () =>
+        ConfigUtil.isServiceEnabled(ServiceName.OrganDonorRegistration) &&
+        !preferenceOrganDonorHidden.value
+);
+const enabledQuickLinks = computed(
+    () =>
+        quickLinks.value?.filter((quickLink) =>
+            quickLink.filter.modules.every((module) => {
+                const entryType = getEntryTypeByModule(module)?.type;
+                return (
+                    entryType !== undefined &&
+                    ConfigUtil.isDatasetEnabled(entryType)
+                );
+            })
+        ) ?? []
+);
+const quickLinkCards = computed(() =>
+    enabledQuickLinks.value.map((quickLink, index) => {
+        const card: QuickLinkCard = {
+            index,
+            title: quickLink.name,
+            description: "View your filtered health records.",
+            icon: "search",
         };
 
-        this.setUserPreference({ preference }).catch((error) => {
-            this.logger.error(error);
-            if (error.statusCode === 429) {
-                this.setTooManyRequestsError({ key: "page" });
-            } else {
-                this.addError({
-                    errorType: ErrorType.Update,
-                    source: ErrorSourceType.Profile,
-                    traceId: undefined,
-                });
+        const modules = quickLink.filter.modules;
+        if (quickLink.filter.modules.length === 1) {
+            const details = getEntryTypeByModule(modules[0]);
+            if (details) {
+                card.description = details.description;
+                card.icon = details.icon;
             }
+        }
+
+        return card;
+    })
+);
+
+const isAddQuickLinkButtonDisabled = computed(
+    () =>
+        [...entryTypeMap.values()].filter(
+            (details) =>
+                ConfigUtil.isDatasetEnabled(details.type) &&
+                enabledQuickLinks.value.find(
+                    (existingLink) =>
+                        existingLink.filter.modules.length === 1 &&
+                        existingLink.filter.modules[0] === details.moduleName
+                ) === undefined
+        ).length === 0 &&
+        !preferenceImmunizationRecordHidden.value &&
+        !preferenceVaccineCardHidden.value &&
+        !preferenceOrganDonorHidden.value
+);
+
+function addError(
+    errorType: ErrorType,
+    source: ErrorSourceType,
+    traceId: string | undefined
+): void {
+    store.dispatch("errorBanner/addError", { errorType, source, traceId });
+}
+
+function setTooManyRequestsError(key: string): void {
+    store.dispatch("errorBanner/setTooManyRequestsError", { key });
+}
+
+function retrieveAuthenticatedVaccineRecord(
+    hdid: string
+): Promise<CovidVaccineRecord> {
+    return store.dispatch(
+        "vaccinationStatus/retrieveAuthenticatedVaccineRecord",
+        { hdid }
+    );
+}
+
+function stopAuthenticatedVaccineRecordDownload(hdid: string): void {
+    store.dispatch("vaccinationStatus/stopAuthenticatedVaccineRecordDownload", {
+        hdid,
+    });
+}
+
+function setFilter(filterBuilder: TimelineFilterBuilder): void {
+    store.dispatch("timeline/setFilter", filterBuilder);
+}
+
+function updateQuickLinks(
+    hdid: string,
+    quickLinks: QuickLink[]
+): Promise<void> {
+    return store.dispatch("user/updateQuickLinks", { hdid, quickLinks });
+}
+
+function setUserPreference(preference: UserPreference): Promise<void> {
+    return store.dispatch("user/setUserPreference", { preference });
+}
+
+function trackClickLink(linkType: string | undefined): void {
+    if (linkType) {
+        SnowPlow.trackEvent({
+            action: "click",
+            text: `home_${linkType}`,
         });
     }
-
-    private handleClickQuickLink(index: number): void {
-        const quickLink = this.enabledQuickLinks[index];
-
-        const detailsCollection = quickLink.filter.modules
-            .map((module) => getEntryTypeByModule(module))
-            .filter((d): d is EntryTypeDetails => d !== undefined);
-
-        if (detailsCollection.length === 1) {
-            const linkType = detailsCollection[0].eventName;
-            this.trackClickLink(linkType);
-        }
-
-        const entryTypes = detailsCollection.map((d) => d.type);
-        const builder =
-            TimelineFilterBuilder.create().withEntryTypes(entryTypes);
-
-        this.setFilter(builder);
-        this.$router.push({ path: "/timeline" });
-    }
-
-    @Watch("vaccineRecordState")
-    private watchVaccineRecordState(): void {
-        if (this.vaccineRecordState.resultMessage.length > 0) {
-            this.vaccineRecordResultModal.showModal();
-        }
-
-        if (
-            this.vaccineRecordState.record !== undefined &&
-            this.vaccineRecordState.status === LoadStatus.LOADED &&
-            this.vaccineRecordState.download
-        ) {
-            const mimeType = this.vaccineRecordState.record.document.mediaType;
-            const downloadLink = `data:${mimeType};base64,${this.vaccineRecordState.record.document.data}`;
-            fetch(downloadLink).then((res) => {
-                SnowPlow.trackEvent({
-                    action: "click_button",
-                    text: "FederalPVC",
-                });
-                res.blob().then((blob) => saveAs(blob, "VaccineProof.pdf"));
-            });
-            this.stopAuthenticatedVaccineRecordDownload({
-                hdid: this.user.hdid,
-            });
-        }
-    }
-
-    private showSensitiveDocumentDownloadModal(): void {
-        this.sensitivedocumentDownloadModal.showModal();
-    }
-
-    private showAddQuickLinkModal(): void {
-        this.addQuickLinkModal.showModal();
-    }
 }
+
+function retrieveVaccinePdf(): void {
+    trackClickLink("federal_proof");
+    retrieveAuthenticatedVaccineRecord(user.value.hdid);
+}
+
+function removeQuickLink(targetQuickLink: QuickLink): Promise<void> {
+    const updatedLinks =
+        quickLinks.value?.filter(
+            (quickLink) => quickLink !== targetQuickLink
+        ) ?? [];
+
+    return updateQuickLinks(user.value.hdid, updatedLinks).catch((error) => {
+        logger.error(error);
+        if (error.statusCode === 429) {
+            setTooManyRequestsError("page");
+        } else {
+            addError(ErrorType.Update, ErrorSourceType.Profile, undefined);
+        }
+    });
+}
+
+function handleClickHealthRecords(): void {
+    trackClickLink("all_records");
+    router.push({ path: "/timeline" });
+}
+
+function handleClickVaccineCard(): void {
+    trackClickLink("bc_vaccine_card");
+    router.push({ path: "/covid19" });
+}
+
+function handleClickOrganDonorCard(): void {
+    trackClickLink("organ_donor_registration");
+    router.push({ path: "/services" });
+}
+
+function handleClickRemoveQuickLink(index: number): void {
+    logger.debug("Removing quick link");
+    const quickLink = enabledQuickLinks.value[index];
+    removeQuickLink(quickLink);
+}
+
+function handleClickRemoveVaccineCardQuickLink(): void {
+    logger.debug("Removing vaccine card quick link");
+    setPreferenceValue(UserPreferenceType.HideVaccineCardQuickLink, "true");
+}
+
+function handleClickRemoveOrganDonorQuickLink(): void {
+    logger.debug("Removing organ donor card quick link");
+    setPreferenceValue(UserPreferenceType.HideOrganDonorQuickLink, "true");
+}
+
+function setPreferenceValue(preferenceType: string, value: string) {
+    const preference = {
+        ...user.value.preferences[preferenceType],
+        value,
+    };
+
+    setUserPreference(preference).catch((error) => {
+        logger.error(error);
+        if (error.statusCode === 429) {
+            setTooManyRequestsError("page");
+        } else {
+            addError(ErrorType.Update, ErrorSourceType.Profile, undefined);
+        }
+    });
+}
+
+function handleClickQuickLink(index: number): void {
+    const quickLink = enabledQuickLinks.value[index];
+
+    const detailsCollection = quickLink.filter.modules
+        .map((module) => getEntryTypeByModule(module))
+        .filter((d): d is EntryTypeDetails => d !== undefined);
+
+    if (detailsCollection.length === 1) {
+        const linkType = detailsCollection[0].eventName;
+        trackClickLink(linkType);
+    }
+
+    const entryTypes = detailsCollection.map((d) => d.type);
+    const builder = TimelineFilterBuilder.create().withEntryTypes(entryTypes);
+
+    setFilter(builder);
+    router.push({ path: "/timeline" });
+}
+
+function showSensitiveDocumentDownloadModal(): void {
+    sensitivedocumentDownloadModal.value?.showModal();
+}
+
+function showAddQuickLinkModal(): void {
+    addQuickLinkModal.value?.showModal();
+}
+
+watch(vaccineRecordState, () => {
+    if (vaccineRecordState.value.resultMessage.length > 0) {
+        vaccineRecordResultModal.value?.showModal();
+    }
+
+    if (
+        vaccineRecordState.value.record !== undefined &&
+        vaccineRecordState.value.status === LoadStatus.LOADED &&
+        vaccineRecordState.value.download
+    ) {
+        const mimeType = vaccineRecordState.value.record.document.mediaType;
+        const downloadLink = `data:${mimeType};base64,${vaccineRecordState.value.record.document.data}`;
+        fetch(downloadLink).then((res) => {
+            SnowPlow.trackEvent({
+                action: "click_button",
+                text: "FederalPVC",
+            });
+            res.blob().then((blob) => saveAs(blob, "VaccineProof.pdf"));
+        });
+        stopAuthenticatedVaccineRecordDownload(user.value.hdid);
+    }
+});
 </script>
 
 <template>

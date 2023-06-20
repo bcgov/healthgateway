@@ -16,7 +16,7 @@ function checkAgentAuditHistory() {
     return cy.get("[data-testid=agent-audit-history-count]").invoke("text");
 }
 
-describe("Patient details message verification", () => {
+describe("Patient details page as admin", () => {
     beforeEach(() => {
         cy.login(
             Cypress.env("keycloak_username"),
@@ -59,6 +59,10 @@ describe("Patient details message verification", () => {
             .click();
 
         cy.get("[data-testid=block-access-switches]").should("be.visible");
+        cy.get(`[data-testid*="block-access-switch"]`).should(
+            "not.have.attr",
+            "readonly"
+        );
         cy.get("[data-testid=block-access-cancel]").should("not.exist");
         cy.get("[data-testid=block-access-save]").should("not.exist");
     });
@@ -186,5 +190,37 @@ describe("Patient details message verification", () => {
                 );
             });
         });
+    });
+});
+
+describe("Patient details page as reviewer", () => {
+    beforeEach(() => {
+        cy.login(
+            Cypress.env("keycloak_reviewer_username"),
+            Cypress.env("keycloak_password"),
+            "/support"
+        );
+    });
+
+    // verify that the reviewer cannot use the block access controls
+    it("Verify block access readonly", () => {
+        performSearch("HDID", hdid);
+        cy.get("[data-testid=user-table]")
+            .find("tbody tr.mud-table-row")
+            .first()
+            .click();
+
+        cy.get(`[data-testid*="block-access-switch-"]`).each(($el) => {
+            // follow the mud tag structure to find the mud-readonly class
+            cy.wrap($el).parent().parent().should("have.class", "mud-readonly");
+        });
+
+        // Clicke any switch and check if the dirty state has exposed the save and cancel buttons
+        cy.get(`[data-testid=block-access-switch-${switchName}]`)
+            .should("exist")
+            .click();
+
+        cy.get("[data-testid=block-access-cancel]").should("not.exist");
+        cy.get("[data-testid=block-access-save]").should("not.exist");
     });
 });

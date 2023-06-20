@@ -18,6 +18,7 @@ namespace HealthGateway.Immunization.Services
     using System.Collections.Generic;
     using System.Threading.Tasks;
     using AutoMapper;
+    using HealthGateway.AccountDataAccess.Patient;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Models.Immunization;
@@ -32,16 +33,19 @@ namespace HealthGateway.Immunization.Services
     public class ImmunizationService : IImmunizationService
     {
         private readonly IImmunizationDelegate immunizationDelegate;
+        private readonly IPatientRepository patientRepository;
         private readonly IMapper autoMapper;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ImmunizationService"/> class.
         /// </summary>
         /// <param name="immunizationDelegate">The factory to create immunization delegates.</param>
+        /// <param name="patientRepository">The injected patient repository provider.</param>
         /// <param name="autoMapper">The inject automapper provider.</param>
-        public ImmunizationService(IImmunizationDelegate immunizationDelegate, IMapper autoMapper)
+        public ImmunizationService(IImmunizationDelegate immunizationDelegate, IPatientRepository patientRepository, IMapper autoMapper)
         {
             this.immunizationDelegate = immunizationDelegate;
+            this.patientRepository = patientRepository;
             this.autoMapper = autoMapper;
         }
 
@@ -71,6 +75,16 @@ namespace HealthGateway.Immunization.Services
         /// <inheritdoc/>
         public async Task<RequestResult<ImmunizationResult>> GetImmunizations(string hdid)
         {
+            if (!await this.patientRepository.CanAccessDataSourceAsync(hdid, DataSource.Immunization).ConfigureAwait(true))
+            {
+                return new RequestResult<ImmunizationResult>
+                {
+                    ResultStatus = ResultType.Success,
+                    ResourcePayload = new ImmunizationResult(),
+                    TotalResultCount = 0,
+                };
+            }
+
             RequestResult<PhsaResult<ImmunizationResponse>> delegateResult = await this.immunizationDelegate.GetImmunizationsAsync(hdid).ConfigureAwait(true);
             if (delegateResult.ResultStatus == ResultType.Success)
             {

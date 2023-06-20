@@ -39,7 +39,6 @@ interface HospitalVisitRow {
 }
 
 const headerClass = "hospital-visit-report-table-header";
-
 const fields: ReportField[] = [
     {
         key: "date",
@@ -65,23 +64,21 @@ const fields: ReportField[] = [
 ];
 
 const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+const reportService = container.get<IReportService>(
+    SERVICE_IDENTIFIER.ReportService
+);
 const store = useStore();
 
-const hospitalVisits = computed<(hdid: string) => HospitalVisit[]>(
-    () => store.getters["encounter/hospitalVisits"]
+const hospitalVisits = computed<HospitalVisit[]>(() =>
+    store.getters["encounter/hospitalVisits"](props.hdid)
 );
-
-const hospitalVisitsAreLoading = computed<(hdid: string) => boolean>(
-    () => store.getters["encounter/hospitalVisitsAreLoading"]
+const hospitalVisitsAreLoading = computed<boolean>(() =>
+    store.getters["encounter/hospitalVisitsAreLoading"](props.hdid)
 );
 
 const isEmpty = computed(() => visibleRecords.value.length === 0);
-
-const isLoading = computed(() => hospitalVisitsAreLoading.value(props.hdid));
-
 const visibleRecords = computed(() =>
-    hospitalVisits
-        .value(props.hdid)
+    hospitalVisits.value
         .filter((record) => props.filter.allowsDate(record.admitDateTime))
         .sort((a, b) => {
             const firstDate = new DateWrapper(a.admitDateTime);
@@ -98,7 +95,6 @@ const visibleRecords = computed(() =>
             return 0;
         })
 );
-
 const items = computed(() =>
     visibleRecords.value.map<HospitalVisitRow>((x) => {
         return {
@@ -119,9 +115,6 @@ function generateReport(
     reportFormatType: ReportFormatType,
     headerData: ReportHeader
 ): Promise<RequestResult<Report>> {
-    const reportService = container.get<IReportService>(
-        SERVICE_IDENTIFIER.ReportService
-    );
     return reportService.generateReport({
         data: {
             header: headerData,
@@ -132,8 +125,8 @@ function generateReport(
     });
 }
 
-watch(isLoading, () => {
-    emit("on-is-loading-changed", isLoading.value);
+watch(hospitalVisitsAreLoading, () => {
+    emit("on-is-loading-changed", hospitalVisitsAreLoading.value);
 });
 
 watch(isEmpty, () => {
@@ -153,7 +146,7 @@ retrieveHospitalVisits(props.hdid).catch((err) =>
     <div>
         <div>
             <section>
-                <b-row v-if="isEmpty && !isLoading">
+                <b-row v-if="isEmpty && !hospitalVisitsAreLoading">
                     <b-col>No records found.</b-col>
                 </b-row>
 
@@ -161,7 +154,7 @@ retrieveHospitalVisits(props.hdid).catch((err) =>
                     v-else-if="!isDependent"
                     :striped="true"
                     :fixed="true"
-                    :busy="isLoading"
+                    :busy="hospitalVisitsAreLoading"
                     :items="items"
                     :fields="fields"
                     data-testid="hospital-visit-report-table"

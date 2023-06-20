@@ -1,117 +1,71 @@
-<script lang="ts">
+<script setup lang="ts">
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faCalendar } from "@fortawesome/free-solid-svg-icons";
+import { useVuelidate } from "@vuelidate/core";
 import { BFormDatepicker } from "bootstrap-vue";
-import Vue from "vue";
-import {
-    Component,
-    Emit,
-    Model,
-    Prop,
-    Ref,
-    Watch,
-} from "vue-property-decorator";
-import { Validation } from "vuelidate/vuelidate";
+import { computed } from "vue";
 
 import { DateWrapper } from "@/models/dateWrapper";
 
 library.add(faCalendar);
 
-@Component
-export default class DatePickerComponent extends Vue {
-    @Model("change", { type: String })
-    public model!: string;
-
-    @Prop({ default: undefined })
+interface Props {
+    value?: string;
     state?: boolean;
+    maxDate?: DateWrapper;
+}
+const props = withDefaults(defineProps<Props>(), {
+    value: "",
+    state: undefined,
+    maxDate: () => new DateWrapper("2100-01-01"),
+});
 
-    @Prop({ default: () => new DateWrapper("2100-01-01") })
-    maxDate!: DateWrapper;
+const emit = defineEmits<{
+    (e: "update:value", value: string): void;
+    (e: "is-date-valid", value: boolean): void;
+    (e: "blur"): void;
+}>();
 
-    @Ref("datePicker")
-    datePicker!: BFormDatepicker;
-
-    private value = "";
-    private inputValue = "";
-
-    private mounted(): void {
-        this.value = this.model;
-    }
-
-    private onFocus(): void {
-        // This makes the calendar popup when the input receives focus
-        // Currently disabled since it seems glitchy
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        // (this.datePicker.$refs.control as any).show();
-    }
-
-    @Watch("inputValue")
-    private onInputValueChanged(): void {
-        this.$v.inputValue.$touch();
-        if (this.isValid(this.$v.inputValue)) {
-            this.value = this.inputValue
-                ? DateWrapper.fromStringFormat(this.inputValue).toISODate()
-                : "";
-        } else {
-            this.value = "";
+const inputValue = computed<string>({
+    get() {
+        return fromIsoDate(props.value);
+    },
+    set(value: string) {
+        let isoDate = "";
+        if (value && isValid.value !== false) {
+            isoDate = DateWrapper.fromStringFormat(value).toISODate();
         }
-        this.setDateValid();
-    }
 
-    @Watch("value")
-    private onValueChanged(): void {
-        this.inputValue = this.value
-            ? new DateWrapper(this.value).format().toUpperCase()
-            : "";
-        this.updateModel();
-    }
+        emit("update:value", isoDate);
+        emit("is-date-valid", isValid.value ?? true);
+    },
+});
+const isValid = computed(() => {
+    const param = v$.value.inputValue;
+    return param.$dirty === false
+        ? undefined
+        : !param.$invalid && !param.$pending;
+});
+const internalState = computed(() =>
+    isValid.value === false ? false : props.state
+);
+const validations = computed(() => ({
+    inputValue: {
+        minValue: (value: string) =>
+            !value ||
+            DateWrapper.fromStringFormat(value).isAfter(
+                new DateWrapper("1900-01-01")
+            ),
+        maxValue: (value: string) =>
+            !value ||
+            DateWrapper.fromStringFormat(value).isBefore(props.maxDate),
+    },
+}));
 
-    @Watch("model")
-    private onModelChanged(): void {
-        this.value = this.model;
-    }
+const v$ = useVuelidate(validations, { inputValue });
 
-    @Emit("is-date-valid")
-    private setDateValid(): boolean {
-        return this.isValid(this.$v.inputValue) ?? true;
-    }
-
-    @Emit("change")
-    private updateModel(): string {
-        return this.value;
-    }
-
-    @Emit("blur")
-    private onBlur(): void {
-        return;
-    }
-
-    private get getState(): boolean | undefined {
-        const isValid = this.isValid(this.$v.inputValue);
-        if (isValid || isValid == undefined) {
-            return this.state;
-        }
-        return isValid;
-    }
-
-    private validations(): unknown {
-        return {
-            inputValue: {
-                minValue: (value: string) =>
-                    !value ||
-                    DateWrapper.fromStringFormat(value).isAfter(
-                        new DateWrapper("1900-01-01")
-                    ),
-                maxValue: (value: string) =>
-                    !value ||
-                    DateWrapper.fromStringFormat(value).isBefore(this.maxDate),
-            },
-        };
-    }
-
-    private isValid(param: Validation): boolean | undefined {
-        return param.$dirty ? !param.$invalid : undefined;
-    }
+function fromIsoDate(isoDate: string): string {
+    return isoDate ? new DateWrapper(isoDate).format().toUpperCase() : "";
 }
 </script>
 
@@ -123,20 +77,19 @@ export default class DatePickerComponent extends Vue {
             type="text"
             placeholder="YYYY-MMM-DD"
             autocomplete="off"
-            :state="getState"
-            @focus.native="onFocus"
-            @blur.native="onBlur"
+            :state="internalState"
+            @blur.native="() => emit('blur')"
             @click.native.capture.stop
-        ></b-form-input>
+        />
         <b-input-group-append>
             <b-form-datepicker
-                ref="datePicker"
-                v-model="value"
+                :value="value"
                 :max="maxDate.toJSDate()"
                 menu-class="datepicker-style"
                 button-only
                 right
                 locale="en-CA"
+                @input="(date) => (inputValue = fromIsoDate(date))"
             >
                 <template #button-content>
                     <hg-icon icon="calendar" size="small" />
