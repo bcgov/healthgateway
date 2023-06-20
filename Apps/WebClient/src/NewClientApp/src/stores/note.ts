@@ -27,6 +27,7 @@ export const useNoteStore = defineStore("healthVisits", () => {
 
     // Computed
     const notesCount = computed(() => notes.value.length);
+
     const noteAreLoading = computed(
         () => status.value === LoadStatus.REQUESTED
     );
