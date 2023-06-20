@@ -81,8 +81,6 @@ export const useNoteStore = defineStore("healthVisits", () => {
         resultError: ResultError,
         errorType: ErrorType
     ): void {
-        const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-
         logger.error(`ERROR: ${JSON.stringify(resultError)}`);
         setNotesError(resultError);
 
