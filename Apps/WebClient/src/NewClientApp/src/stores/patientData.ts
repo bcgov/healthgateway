@@ -163,7 +163,7 @@ export const usePatientDataStore = defineStore("patientData", () => {
         if (!patientDataState.data) {
             return false;
         }
-        // Search for the first missing type. If none are missing, then its assumed all are stored. empty sets too.
+        // Return false if any of the data types has a key registered.
         return !patientDataTypes.some(
             (patientDataType) => !patientDataState.data.has(patientDataType)
         );
@@ -228,7 +228,7 @@ export const usePatientDataStore = defineStore("patientData", () => {
             })
             .catch((error: ResultError) => {
                 handleError(error, ErrorType.Retrieve, patientDataTypes, hdid);
-                return [];
+                throw error;
             });
     }
 
