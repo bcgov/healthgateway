@@ -105,7 +105,6 @@ export const useNoteStore = defineStore("healthVisits", () => {
 
     // Actions
     function retrieveNotes(params: { hdid: string }): Promise<void> {
-        const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
 
         const userNotes: UserNote[] = notes.value;
         if (status.value === LoadStatus.LOADED) {
