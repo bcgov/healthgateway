@@ -27,10 +27,10 @@ namespace HealthGateway.JobScheduler.Tasks
     /// </summary>
     public class CopyEmailToMessagingVerification : IOneTimeTask
     {
-        private const string CommitSizeKey = "CommitSize";
+        private const string BatchSizeKey = "BatchSize";
         private const string JobKey = "OneTime";
 
-        private readonly int commitSize;
+        private readonly int batchSize;
         private readonly GatewayDbContext dbContext;
         private readonly ILogger<CopyEmailToMessagingVerification> logger;
 
@@ -47,7 +47,7 @@ namespace HealthGateway.JobScheduler.Tasks
         {
             this.dbContext = dbContext;
             this.logger = logger;
-            this.commitSize = configuration.GetValue($"{JobKey}:{CommitSizeKey}", 5000);
+            this.batchSize = configuration.GetValue($"{JobKey}:{BatchSizeKey}", 5000);
         }
 
         /// <inheritdoc/>
@@ -55,44 +55,34 @@ namespace HealthGateway.JobScheduler.Tasks
         {
             this.logger.LogInformation("Performing Task {Name} started.", this.GetType().Name);
 
-            List<Email> emails = this.dbContext.Email.Where(
+            int offset = 0;
+
+            IQueryable<Email> query = this.dbContext.Email.Where(
                     email => this.dbContext.MessagingVerification.Any(msgVerification => msgVerification.EmailId == email.Id && msgVerification.EmailAddress == null))
-                .ToList();
+                .OrderBy(e => e.Id);
 
-            this.logger.LogInformation("The number of emails to copy from Email.To to MessagingVerification.EmailAddress: {Emails}.", emails.Count);
+            List<Email> emails = query.Skip(offset).Take(this.batchSize).ToList();
+            this.logger.LogInformation("The number of emails to copy from Email.To to MessagingVerification.EmailAddress: {Emails}", emails.Count);
+            int processed = 0;
 
-            int processedCount = 0;
-
-            emails.ForEach(
-                email =>
-                {
-                    List<MessagingVerification> verifications = this.dbContext.MessagingVerification.Where(mv => mv.EmailId == email.Id).ToList();
-                    verifications.ForEach(v => v.EmailAddress = email.To);
-                    processedCount++;
-                    this.IncrementalSave(processedCount);
-                });
-
-            this.FinalSave(processedCount);
-
-            this.logger.LogInformation("Performing Task {Name} finished.", this.GetType().Name);
-        }
-
-        private void FinalSave(int processedCount)
-        {
-            if (processedCount % this.commitSize != 0)
+            while (emails.Count > 0)
             {
-                this.dbContext.SaveChanges();
-                this.logger.LogInformation("Saved message verification changes after {Count} email(s) processed.", processedCount);
-            }
-        }
+                emails.ForEach(
+                    email =>
+                    {
+                        List<MessagingVerification> verifications = this.dbContext.MessagingVerification.Where(mv => mv.EmailId == email.Id).ToList();
+                        verifications.ForEach(v => v.EmailAddress = email.To);
+                        processed++;
+                    });
 
-        private void IncrementalSave(int processedCount)
-        {
-            if (processedCount % this.commitSize == 0)
-            {
                 this.dbContext.SaveChanges();
-                this.logger.LogInformation("Saved message verification changes after {Count} email(s) processed.", processedCount);
+                this.logger.LogInformation("Saved message verification changes after {Processed} email(s) processed", processed);
+
+                offset += this.batchSize;
+                emails = query.Skip(offset).Take(this.batchSize).ToList();
             }
+
+            this.logger.LogInformation("Performing Task {Name} finished", this.GetType().Name);
         }
     }
 }
