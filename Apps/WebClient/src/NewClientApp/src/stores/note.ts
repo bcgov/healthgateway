@@ -77,7 +77,6 @@ export const useNoteStore = defineStore("healthVisits", () => {
 
     // Helpers
     function handleError(
-        hdid: string,
         resultError: ResultError,
         errorType: ErrorType
     ): void {
