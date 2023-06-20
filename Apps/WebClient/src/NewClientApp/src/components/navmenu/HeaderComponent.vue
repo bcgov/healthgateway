@@ -291,9 +291,8 @@ nextTick(() => {
 <template>
     <v-app-bar
         :scroll-behavior="!isHeaderShown ? 'hide' : undefined"
-        class="bg-primary hg-bottom-brand-border"
-        border="bottom"
-        border-color="secondary"
+        class="border-b-md border-accent border-opacity-100"
+        color="primary"
     >
         <template #prepend v-if="isSidebarButtonShown">
             <v-app-bar-nav-icon @click="handleToggleClick"></v-app-bar-nav-icon>
@@ -379,9 +378,3 @@ nextTick(() => {
     <!--    <RatingComponent ref="ratingComponent" @on-close="processLogout()" />-->
     <!--    <AppTourComponent ref="appTourComponent" />-->
 </template>
-
-<style lang="scss" scoped>
-.hg-bottom-brand-border {
-    border-bottom: 4px solid #fcba19;
-}
-</style>
