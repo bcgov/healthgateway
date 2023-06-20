@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, useSlots } from "vue";
 
 interface Props {
     variant?: HgButtonVariant;
@@ -33,14 +33,23 @@ variants.set("link", {
     color: "link",
 });
 
+const slots = useSlots();
+
 const vuetifyVariant = computed(
     () => variants.get(props.variant)?.vuetifyVariant
 );
 const color = computed(() => variants.get(props.variant)?.color);
+const hasSlot = computed(() => slots.default !== undefined);
 </script>
 
 <template>
-    <v-btn :variant="vuetifyVariant" :color="color" :ripple="false">
+    <v-btn
+        v-if="hasSlot"
+        :variant="vuetifyVariant"
+        :color="color"
+        :ripple="false"
+    >
         <slot />
     </v-btn>
+    <v-btn v-else :variant="vuetifyVariant" :color="color" :ripple="false" />
 </template>
