@@ -1,4 +1,3 @@
-import UserNote from "@/models/userNote";
 import { ClinicalDocument } from "./clinicalDocument";
 import { Encounter, HospitalVisit } from "./encounter";
 import { ResultError } from "./errors";
@@ -6,7 +5,7 @@ import { ImmunizationEvent, Recommendation } from "./immunizationModel";
 import { Covid19LaboratoryOrder, LaboratoryOrder } from "./laboratory";
 import MedicationRequest from "./medicationRequest";
 import MedicationStatementHistory from "./medicationStatementHistory";
-import { LoadStatus, Operation } from "./storeOperations";
+import { LoadStatus } from "./storeOperations";
 
 export interface DatasetState<T> {
     data: T;
@@ -31,8 +30,5 @@ export interface LabResultState extends DatasetState<LaboratoryOrder[]> {
 export interface MedicationState
     extends DatasetState<MedicationStatementHistory[]> {
     protectiveWordAttempts: number;
-}
-export interface NoteState extends DatasetState<UserNote[]> {
-    lastOperation: Operation | null;
 }
 export type SpecialAuthorityRequestState = DatasetState<MedicationRequest[]>;

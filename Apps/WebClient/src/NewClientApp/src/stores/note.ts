@@ -37,13 +37,13 @@ export const useNoteStore = defineStore("healthVisits", () => {
         status.value = LoadStatus.REQUESTED;
     }
 
-    function setRetrievedNotes(userNotes: UserNote[]) {
+    function setNotesLoaded(userNotes: UserNote[]) {
         notes.value = userNotes;
         error.value = undefined;
         status.value = LoadStatus.LOADED;
     }
 
-    function setCreatedNote(note: UserNote) {
+    function commitCreateNote(note: UserNote) {
         lastOperation.value = new Operation(
             note.id as string,
             OperationType.ADD
@@ -51,14 +51,14 @@ export const useNoteStore = defineStore("healthVisits", () => {
         notes.value.push(note);
     }
 
-    function setUpdatedNote(note: UserNote) {
+    function commitUpdateNote(note: UserNote) {
         lastOperation.value = new Operation(
             note.id as string,
             OperationType.UPDATE
         );
     }
 
-    function setDeletedNote(note: UserNote) {
+    function commitDeleteNote(note: UserNote) {
         const noteIndex = notes.value.findIndex((x) => x.id === note.id);
         if (noteIndex > -1) {
             lastOperation.value = new Operation(
@@ -76,10 +76,7 @@ export const useNoteStore = defineStore("healthVisits", () => {
     }
 
     // Helpers
-    function handleError(
-        resultError: ResultError,
-        errorType: ErrorType
-    ): void {
+    function handleError(resultError: ResultError, errorType: ErrorType): void {
         logger.error(`ERROR: ${JSON.stringify(resultError)}`);
         setNotesError(resultError);
 
@@ -101,9 +98,7 @@ export const useNoteStore = defineStore("healthVisits", () => {
     }
 
     // Actions
-    function retrieveNotes(params: { hdid: string }): Promise<void> {
-
-        const userNotes: UserNote[] = notes.value;
+    function retrieveNotes(hdid: string): Promise<void> {
         if (status.value === LoadStatus.LOADED) {
             logger.debug(`Notes found stored, not querying!`);
             return Promise.resolve();
@@ -111,58 +106,58 @@ export const useNoteStore = defineStore("healthVisits", () => {
             logger.debug(`Retrieving User notes`);
             setNotesRequested();
             return noteService
-                .getNotes(params.hdid)
+                .getNotes(hdid)
                 .then((result) => {
                     if (result.resultStatus === ResultType.Success) {
-                        setRetrievedNotes(result.resourcePayload);
+                        setNotesLoaded(result.resourcePayload);
                     } else {
                         logger.error(
                             `Notes retrieval failed! ${JSON.stringify(result)}`
                         );
                         if (result.resultError) {
+                            logger.error(
+                                `Notes retrieval failed - result error: ${result.resultError}`
+                            );
                             throw result.resultError;
                         }
                     }
                 })
                 .catch((error: ResultError) => {
-                    handleError(params.hdid, error, ErrorType.Retrieve);
+                    handleError(error, ErrorType.Retrieve);
                     throw error;
                 });
         }
     }
 
-    function createNote(params: {
-        hdid: string;
-        note: UserNote;
-    }): Promise<UserNote | undefined> {
+    function createNote(
+        hdid: string,
+        note: UserNote
+    ): Promise<UserNote | undefined> {
         return noteService
-            .createNote(params.hdid, params.note)
+            .createNote(hdid, note)
             .then((result) => {
                 if (result !== undefined) {
-                    setCreatedNote(result);
+                    commitCreateNote(result);
                 } else {
                     logger.debug(`Note creation returned undefined!`);
                 }
                 return result;
             })
             .catch((error: ResultError) => {
-                handleError(params.hdid, error, ErrorType.Create);
+                handleError(error, ErrorType.Create);
                 throw error;
             });
     }
 
-    function updateNote(params: {
-        hdid: string;
-        note: UserNote;
-    }): Promise<UserNote> {
+    function updateNote(hdid: string, note: UserNote): Promise<UserNote> {
         return noteService
-            .updateNote(params.hdid, params.note)
+            .updateNote(hdid, note)
             .then((result) => {
-                setUpdatedNote(result);
+                commitUpdateNote(result);
                 return result;
             })
             .catch((error: ResultError) => {
-                handleError(params.hdid, error, ErrorType.Update);
+                handleError(error, ErrorType.Update);
                 throw error;
             });
     }
@@ -174,10 +169,10 @@ export const useNoteStore = defineStore("healthVisits", () => {
         return noteService
             .deleteNote(params.hdid, params.note)
             .then(() => {
-                setDeletedNote(params.note);
+                commitDeleteNote(params.note);
             })
             .catch((error: ResultError) => {
-                handleError(params.hdid, error, ErrorType.Delete);
+                handleError(error, ErrorType.Delete);
                 throw error;
             });
     }
