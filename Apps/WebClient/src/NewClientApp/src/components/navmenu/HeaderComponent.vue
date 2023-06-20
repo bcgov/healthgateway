@@ -290,7 +290,7 @@ nextTick(() => {
 
 <template>
     <v-app-bar
-        :scroll-behavior="!isHeaderShown ? 'hide' : null"
+        :scroll-behavior="!isHeaderShown ? 'hide' : undefined"
         class="bg-primary hg-bottom-brand-border"
         border="bottom"
         border-color="secondary"
