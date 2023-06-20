@@ -12,6 +12,8 @@ import { computed, nextTick, onUnmounted, ref, watch } from "vue";
 
 import AppTourComponent from "@/components/modal/AppTourComponent.vue";
 import RatingComponent from "@/components/modal/RatingComponent.vue";
+import HgButtonComponent from "@/components/shared/HgButtonComponent.vue";
+import HgIconButtonComponent from "@/components/shared/HgIconButtonComponent.vue";
 import type { WebClientConfiguration } from "@/models/configData";
 import { DateWrapper, StringISODateTime } from "@/models/dateWrapper";
 import Notification from "@/models/notification";
@@ -295,7 +297,10 @@ nextTick(() => {
         color="primary"
     >
         <template #prepend v-if="isSidebarButtonShown">
-            <v-app-bar-nav-icon @click="handleToggleClick"></v-app-bar-nav-icon>
+            <HgIconButtonComponent
+                :icon="isSidebarOpen ? 'fas fa-times' : 'fas fa-bars'"
+                @click="handleToggleClick"
+            />
         </template>
         <v-img
             alt="Go to health Gateway home page"
@@ -304,20 +309,18 @@ nextTick(() => {
             max-width="143px"
             class="pa-1"
         />
-        <v-spacer></v-spacer>
-        <v-btn
+        <v-spacer />
+        <HgIconButtonComponent
             v-if="isAppTourAvailable"
-            icon
             @click="handleShowTourClick"
             data-testid="app-tour-button"
         >
             <v-badge color="red" :value="highlightTourChangeIndicator">
-                <v-icon icon="fas fa-lightbulb"></v-icon>
+                <v-icon icon="fas fa-lightbulb" />
             </v-badge>
-        </v-btn>
-        <v-btn
+        </HgIconButtonComponent>
+        <HgIconButtonComponent
             v-if="isNotificationCentreAvailable"
-            icon
             @click="notificationButtonClicked = true"
             data-testid="notification-centre-button"
         >
@@ -326,23 +329,26 @@ nextTick(() => {
                 :value="hasNewNotifications"
                 :content="notificationBadgeContent"
             >
-                <v-icon icon="fas fa-bell"></v-icon>
+                <v-icon icon="fas fa-bell" />
             </v-badge>
-        </v-btn>
+        </HgIconButtonComponent>
         <template v-if="isLoggedInMenuShown">
-            <v-btn id="menuBtnLogout" icon data-testid="headerDropdownBtn">
+            <HgIconButtonComponent
+                id="menuBtnLogout"
+                data-testid="headerDropdownBtn"
+                :ripple="false"
+            >
                 <v-avatar data-testid="profileButtonInitials" color="info">
-                    <span data-testid="profileButtonInitials">{{
-                        userInitials
-                    }}</span>
+                    {{ userInitials }}
                 </v-avatar>
-            </v-btn>
+            </HgIconButtonComponent>
             <v-menu activator="#menuBtnLogout">
                 <v-list>
-                    <v-list-item data-testid="profileUserName">{{
-                        userName
-                    }}</v-list-item>
-                    <v-divider></v-divider>
+                    <v-list-item
+                        data-testid="profileUserName"
+                        :title="userName"
+                    />
+                    <v-divider />
                     <v-list-item
                         v-if="isProfileLinkAvailable"
                         to="/profile"
@@ -352,28 +358,33 @@ nextTick(() => {
                     >
                     <v-list-item
                         @click="handleLogoutClick"
+                        prepend-icon="fas fa-sign-out-alt"
                         data-testid="logoutBtn"
                         >Log Out</v-list-item
                     >
-                </v-list></v-menu
-            >
+                </v-list>
+            </v-menu>
         </template>
-        <v-btn
+        <HgButtonComponent
             v-else-if="isLogInButtonShown"
+            variant="secondary"
+            inverse
             prepend-icon="fas fa-sign-in-alt"
             data-testid="loginBtn"
             to="/login"
         >
             Log In
-        </v-btn>
-        <v-btn
+        </HgButtonComponent>
+        <HgButtonComponent
             v-else-if="isLogOutButtonShown"
+            variant="secondary"
+            inverse
             prepend-icon="fas fa-sign-out-alt"
             data-testid="header-log-out-button"
             to="/logout"
         >
             Log out
-        </v-btn>
+        </HgButtonComponent>
     </v-app-bar>
     <!--    <RatingComponent ref="ratingComponent" @on-close="processLogout()" />-->
     <!--    <AppTourComponent ref="appTourComponent" />-->
