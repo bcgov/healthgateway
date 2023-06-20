@@ -10,7 +10,7 @@ import { useErrorStore } from "@/stores/error";
 import { defineStore } from "pinia";
 import { computed, ref } from "vue";
 
-export const useNoteStore = defineStore("healthVisits", () => {
+export const useNoteStore = defineStore("note", () => {
     const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
     const noteService = container.get<IUserNoteService>(
         SERVICE_IDENTIFIER.NoteService
