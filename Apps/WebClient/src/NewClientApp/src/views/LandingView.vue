@@ -145,20 +145,20 @@ function selectPreviewDevice(previewDevice: PreviewDevice): void {
     <v-container class="landing-container" v-if="isOffline">
         <v-row align="center" justify="center" class="pt-2 pb-5">
             <v-col class="cols-12 text-center">
-                <hr class="py-4" />
+                <hr class="my-4" />
                 <v-row class="py-2">
-                    <v-col class="text-h3">
+                    <v-col class="text-h4">
                         The site is offline for maintenance
                     </v-col>
                 </v-row>
                 <v-row class="py-3">
-                    <v-col data-testid="offlineMessage" class="text-subtitle-1">
+                    <v-col data-testid="offlineMessage" class="text-body-1">
                         {{ offlineMessage }}
                     </v-col>
                 </v-row>
                 <v-row class="pt-5">
                     <v-col>
-                        <hr class="pt-5" />
+                        <hr class="mt-5" />
                     </v-col>
                 </v-row>
             </v-col>
