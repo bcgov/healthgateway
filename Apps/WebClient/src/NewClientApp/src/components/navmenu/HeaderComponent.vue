@@ -303,7 +303,7 @@ nextTick(() => {
             />
         </template>
         <v-img
-            alt="Go to health Gateway home page"
+            alt="Go to Health Gateway home page"
             to="/"
             src="@/assets/images/gov/hg-logo-rev.svg"
             max-width="143px"
@@ -336,7 +336,6 @@ nextTick(() => {
             <HgIconButtonComponent
                 id="menuBtnLogout"
                 data-testid="headerDropdownBtn"
-                :ripple="false"
             >
                 <v-avatar data-testid="profileButtonInitials" color="info">
                     {{ userInitials }}
@@ -383,7 +382,7 @@ nextTick(() => {
             data-testid="header-log-out-button"
             to="/logout"
         >
-            Log out
+            Log Out
         </HgButtonComponent>
     </v-app-bar>
     <!--    <RatingComponent ref="ratingComponent" @on-close="processLogout()" />-->
