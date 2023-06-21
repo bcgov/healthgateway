@@ -29,6 +29,7 @@ import { useConfigStore } from "@/stores/config";
 import { useAuthStore } from "@/stores/auth";
 import HgButtonComponent from "@/components/shared/HgButtonComponent.vue";
 import HgIconButtonComponent from "@/components/shared/HgIconButtonComponent.vue";
+import { useDisplay } from "vuetify";
 
 library.add(
     faCheckCircle,
@@ -82,6 +83,7 @@ const configStore = useConfigStore();
 const authStore = useAuthStore();
 
 const selectedPreviewDevice = ref(PreviewDevice.laptop);
+const { smAndDown } = useDisplay();
 
 const showLaptopTooltip = ref(false);
 const showTabletTooltip = ref(false);
@@ -145,12 +147,12 @@ function selectPreviewDevice(previewDevice: PreviewDevice): void {
             <v-col class="cols-12 text-center">
                 <hr class="py-4" />
                 <v-row class="py-2">
-                    <v-col class="title">
+                    <v-col class="text-h3">
                         The site is offline for maintenance
                     </v-col>
                 </v-row>
                 <v-row class="py-3">
-                    <v-col data-testid="offlineMessage" class="sub-title">
+                    <v-col data-testid="offlineMessage" class="text-subtitle-1">
                         {{ offlineMessage }}
                     </v-col>
                 </v-row>
@@ -318,7 +320,7 @@ function selectPreviewDevice(previewDevice: PreviewDevice): void {
                 </v-col>
             </v-row>
             <v-row>
-                <v-col class="device-preview">
+                <v-col class="device-preview" :class="smAndDown ? 'sm' : ''">
                     <v-img
                         v-show="selectedPreviewDevice === 'laptop'"
                         src="@/assets/images/landing/preview-laptop.png"
@@ -437,7 +439,11 @@ function selectPreviewDevice(previewDevice: PreviewDevice): void {
 .landing-container {
     max-width: 1140px;
 }
+
 .device-preview {
-    height: 412px;
+    max-height: 412px;
+    &.sm {
+        max-height: 212px;
+    }
 }
 </style>
