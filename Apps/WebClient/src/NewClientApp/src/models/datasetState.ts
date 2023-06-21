@@ -5,6 +5,11 @@ import { ImmunizationEvent, Recommendation } from "./immunizationModel";
 import { Covid19LaboratoryOrder, LaboratoryOrder } from "./laboratory";
 import MedicationRequest from "./medicationRequest";
 import MedicationStatementHistory from "./medicationStatementHistory";
+import {
+    PatientData,
+    PatientDataFile,
+    PatientDataType,
+} from "./patientDataResponse";
 import { LoadStatus } from "./storeOperations";
 
 export interface DatasetState<T> {
@@ -14,9 +19,13 @@ export interface DatasetState<T> {
     error?: ResultError;
 }
 
+export type PatientDataMap = Map<PatientDataType, PatientData[]>;
+
 export type ClinicalDocumentDatasetState = DatasetState<ClinicalDocument[]>;
 export type Covid19TestResultState = DatasetState<Covid19LaboratoryOrder[]>;
 export type HealthVisitState = DatasetState<Encounter[]>;
+export type PatientDataState = DatasetState<PatientDataMap>;
+export type PatientDataFileState = DatasetState<PatientDataFile | undefined>;
 export interface HospitalVisitState extends DatasetState<HospitalVisit[]> {
     queued: boolean;
 }
