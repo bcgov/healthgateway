@@ -14,6 +14,11 @@ library.add(far, fas);
 
 // https://vuetifyjs.com/en/introduction/why-vuetify/#feature-guides
 export default createVuetify({
+    defaults: {
+        VIcon: {
+            style: "width: auto",
+        },
+    },
     icons: {
         defaultSet: "fa",
         aliases,
