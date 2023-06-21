@@ -58,7 +58,6 @@ const classes = computed(() => ({
         :variant="variantDetails.vuetifyVariant"
         :color="variantDetails.color"
         :class="classes"
-        :ripple="false"
     >
         <slot />
     </v-btn>
@@ -67,6 +66,5 @@ const classes = computed(() => ({
         :variant="variantDetails.vuetifyVariant"
         :color="variantDetails.color"
         :class="classes"
-        :ripple="false"
     />
 </template>
