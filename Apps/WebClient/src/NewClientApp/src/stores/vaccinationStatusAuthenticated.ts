@@ -306,12 +306,6 @@ export const useVaccinationStatusAuthenticatedStore = defineStore(
         function retrieveAuthenticatedVaccineRecord(
             hdid: string
         ): Promise<void> {
-            const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-            const vaccinationStatusService =
-                container.get<IVaccinationStatusService>(
-                    SERVICE_IDENTIFIER.VaccinationStatusService
-                );
-
             logger.debug(`Retrieving authenticated vaccination record`);
             setAuthenticatedVaccineRecordRequested(hdid);
 
