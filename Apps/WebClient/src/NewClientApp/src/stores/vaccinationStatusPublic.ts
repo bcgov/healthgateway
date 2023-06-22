@@ -23,137 +23,126 @@ export const useVaccinationStatusPublicStore = defineStore(
 
         const errorStore = useErrorStore();
 
-        interface PublicVaccinationStatus {
-            vaccinationStatus?: VaccinationStatus;
+        interface Vaccination {
+            data?: VaccinationStatus;
             error?: CustomBannerError;
             status: LoadStatus;
             statusMessage: string;
         }
 
-        interface PublicVaccinationRecord {
-            vaccinationRecord?: CovidVaccineRecord;
+        interface VaccinationRecord {
+            data?: CovidVaccineRecord;
             error?: CustomBannerError;
             status: LoadStatus;
             statusMessage: string;
         }
 
         // Refs
-        const publicVaccination = ref<PublicVaccinationStatus>({
-            vaccinationStatus: undefined,
+        const vaccination = ref<Vaccination>({
+            data: undefined,
             error: undefined,
             status: LoadStatus.NONE,
             statusMessage: "",
         });
 
-        const publicVaccinationRecord = ref<PublicVaccinationRecord>({
-            vaccinationRecord: undefined,
+        const vaccinationRecord = ref<VaccinationRecord>({
+            data: undefined,
             error: undefined,
             status: LoadStatus.NONE,
             statusMessage: "",
         });
 
         // Computed
-        // Public Vaccination Status
-        const publicVaccinationStatus = computed(
-            () => publicVaccination.value.vaccinationStatus
+        // Vaccination Status
+        const vaccinationStatus = computed(() => vaccination.value.data);
+
+        const vaccinationStatusIsLoading = computed(
+            () => vaccination.value.status === LoadStatus.REQUESTED
         );
 
-        const publicIsLoading = computed(
-            () => publicVaccination.value.status === LoadStatus.REQUESTED
+        const vaccinationStatusError = computed(() => vaccination.value.error);
+
+        const vaccinationStatusStatusMessage = computed(
+            () => vaccination.value.statusMessage
         );
 
-        const publicError = computed(() => publicVaccination.value.error);
+        // Vaccine Record
+        const vaccineRecord = computed(() => vaccinationRecord.value.data);
 
-        const publicStatusMessage = computed(
-            () => publicVaccination.value.statusMessage
+        const vaccineRecordIsLoading = computed(
+            () => vaccinationRecord.value.status === LoadStatus.REQUESTED
         );
 
-        // Public Vaccination Record
-        const publicVaccineRecord = computed(
-            () => publicVaccinationRecord.value.vaccinationRecord
+        const vaccineRecordError = computed(
+            () => vaccinationRecord.value.error
         );
 
-        const publicVaccineRecordIsLoading = computed(
-            () => publicVaccinationRecord.value.status === LoadStatus.REQUESTED
-        );
-
-        const publicVaccineRecordError = computed(
-            () => publicVaccinationRecord.value.error
-        );
-
-        const publicVaccineRecordStatusMessage = computed(
-            () => publicVaccinationRecord.value.statusMessage
+        const vaccineRecordStatusMessage = computed(
+            () => vaccinationRecord.value.statusMessage
         );
 
         // Mutations
-        // Public Vaccination Status
-        function setPublicVaccinationRequested() {
-            publicVaccination.value.error = undefined;
-            publicVaccination.value.status = LoadStatus.REQUESTED;
-            publicVaccination.value.statusMessage = "";
+        // Vaccination Status
+        function setVaccinationStatusRequested() {
+            vaccination.value.error = undefined;
+            vaccination.value.status = LoadStatus.REQUESTED;
+            vaccination.value.statusMessage = "";
         }
 
-        function setPublicVaccinationStatus(
-            vaccinationStatus: VaccinationStatus
-        ) {
-            publicVaccination.value.vaccinationStatus = {
+        function setVaccinationStatus(vaccinationStatus: VaccinationStatus) {
+            vaccination.value.data = {
                 ...vaccinationStatus,
                 issueddate: new DateWrapper().toISO(),
             };
-            publicVaccination.value.status = LoadStatus.LOADED;
-            publicVaccination.value.statusMessage = "";
+            vaccination.value.status = LoadStatus.LOADED;
+            vaccination.value.statusMessage = "";
         }
 
-        function setPublicVaccinationStatusError(
+        function setVaccinationStatusError(
             error: CustomBannerError | undefined
         ) {
-            publicVaccination.value.vaccinationStatus = undefined;
-            publicVaccination.value.error = error;
-            publicVaccination.value.status = LoadStatus.ERROR;
-            publicVaccination.value.statusMessage = "";
+            vaccination.value.data = undefined;
+            vaccination.value.error = error;
+            vaccination.value.status = LoadStatus.ERROR;
+            vaccination.value.statusMessage = "";
         }
 
-        function setPublicVaccinationStatusMessage(statusMessage: string) {
-            publicVaccination.value.statusMessage = statusMessage;
+        function setVaccinationStatusStatusMessage(statusMessage: string) {
+            vaccination.value.statusMessage = statusMessage;
         }
 
-        // Public Vaccination Record
-        function setPublicVaccinationRecordRequested() {
-            publicVaccinationRecord.value.status = LoadStatus.REQUESTED;
-            publicVaccinationRecord.value.statusMessage = "";
-            publicVaccinationRecord.value.error = undefined;
+        // Vaccination Record
+        function setVaccinationRecordRequested() {
+            vaccinationRecord.value.status = LoadStatus.REQUESTED;
+            vaccinationRecord.value.statusMessage = "";
+            vaccinationRecord.value.error = undefined;
         }
 
-        function setPublicVaccinationRecord(
-            covidVaccineRecord: CovidVaccineRecord
-        ) {
-            publicVaccinationRecord.value.vaccinationRecord =
-                covidVaccineRecord;
-            publicVaccinationRecord.value.status = LoadStatus.LOADED;
-            publicVaccinationRecord.value.statusMessage = "";
-            publicVaccinationRecord.value.error = undefined;
+        function setVaccinationRecord(covidVaccineRecord: CovidVaccineRecord) {
+            vaccinationRecord.value.data = covidVaccineRecord;
+            vaccinationRecord.value.status = LoadStatus.LOADED;
+            vaccinationRecord.value.statusMessage = "";
+            vaccinationRecord.value.error = undefined;
         }
 
-        function setPublicVaccinationRecordError(
+        function setVaccinationRecordError(
             error: CustomBannerError | undefined
         ) {
-            publicVaccinationRecord.value.error = error;
-            publicVaccinationRecord.value.status = LoadStatus.ERROR;
+            vaccinationRecord.value.error = error;
+            vaccinationRecord.value.status = LoadStatus.ERROR;
         }
 
-        function setPublicVaccinationRecordStatusMessage(
-            statusMessage: string
-        ) {
-            publicVaccinationRecord.value.statusMessage = statusMessage;
+        function setVaccinationRecordStatusMessage(statusMessage: string) {
+            vaccinationRecord.value.statusMessage = statusMessage;
         }
 
         // Helpers
-        function handlePublicError(error: ResultError) {
+        function handleError(error: ResultError) {
             logger.error(`ERROR: ${JSON.stringify(error)}`);
 
             if (error.statusCode === 429) {
                 errorStore.setTooManyRequestsWarning("publicVaccineCard");
-                setPublicVaccinationStatusError(undefined);
+                setVaccinationStatusError(undefined);
             } else {
                 const customBannerError: CustomBannerError = {
                     title: "Our Apologies",
@@ -165,7 +154,7 @@ export const useVaccinationStatusPublicStore = defineStore(
                     customBannerError.title = "Data Mismatch";
                     customBannerError.description = error.resultMessage;
                 }
-                setPublicVaccinationStatusError(customBannerError);
+                setVaccinationStatusError(customBannerError);
             }
         }
 
@@ -174,45 +163,45 @@ export const useVaccinationStatusPublicStore = defineStore(
 
             if (error.statusCode === 429) {
                 errorStore.setTooManyRequestsWarning("vaccineCardComponent");
-                setPublicVaccinationRecordError(undefined);
+                setVaccinationRecordError(undefined);
             } else {
                 const customBannerError: CustomBannerError = {
                     title: "Our Apologies",
                     description:
                         "We've found an issue and the Health Gateway team is working hard to fix it.",
                 };
-                setPublicVaccinationRecordError(customBannerError);
+                setVaccinationRecordError(customBannerError);
             }
         }
 
         // Actions
-        function retrievePublicVaccineStatus(
+        function retrieveVaccinationStatus(
             phn: string,
             dateOfBirth: StringISODate,
             dateOfVaccine: StringISODate
         ): Promise<void> {
             logger.debug(`Retrieving public vaccination status`);
-            setPublicVaccinationRequested();
+            setVaccinationStatusRequested();
             return vaccinationStatusService
                 .getPublicVaccineStatus(phn, dateOfBirth, dateOfVaccine)
                 .then((result) => {
                     const payload = result.resourcePayload;
                     if (result.resultStatus === ResultType.Success) {
-                        setPublicVaccinationStatus(payload);
+                        setVaccinationStatus(payload);
                     } else if (
                         result.resultError?.actionCode === ActionType.Refresh &&
                         !payload.loaded &&
                         payload.retryin > 0
                     ) {
                         logger.info("Public vaccination status not loaded");
-                        setPublicVaccinationStatusMessage(
+                        setVaccinationStatusStatusMessage(
                             "Please wait a moment while we retrieve your proof of vaccination."
                         );
                         setTimeout(() => {
                             logger.info(
                                 "Re-querying for public vaccination status"
                             );
-                            retrievePublicVaccineStatus(
+                            retrieveVaccinationStatus(
                                 phn,
                                 dateOfBirth,
                                 dateOfVaccine
@@ -223,38 +212,38 @@ export const useVaccinationStatusPublicStore = defineStore(
                     }
                 })
                 .catch((error: ResultError) => {
-                    handlePublicError(error);
+                    handleError(error);
                     throw error;
                 });
         }
 
-        function retrievePublicVaccineRecord(
+        function retrieveVaccinationRecord(
             phn: string,
             dateOfBirth: StringISODate,
             dateOfVaccine: StringISODate
         ): Promise<void> {
             logger.debug(`Retrieving public vaccination record`);
-            setPublicVaccinationRecordRequested();
+            setVaccinationRecordRequested();
             return vaccinationStatusService
                 .getPublicVaccineStatusPdf(phn, dateOfBirth, dateOfVaccine)
                 .then((result) => {
                     const payload = result.resourcePayload;
                     if (result.resultStatus === ResultType.Success) {
-                        setPublicVaccinationRecord(payload);
+                        setVaccinationRecord(payload);
                     } else if (
                         result.resultError?.actionCode === ActionType.Refresh &&
                         !payload.loaded &&
                         payload.retryin > 0
                     ) {
                         logger.info("Public vaccination proof not loaded");
-                        setPublicVaccinationRecordStatusMessage(
+                        setVaccinationRecordStatusMessage(
                             "Please wait a moment while we download your proof of vaccination."
                         );
                         setTimeout(() => {
                             logger.info(
                                 "Re-querying for public proof of vaccination"
                             );
-                            retrievePublicVaccineRecord(
+                            retrieveVaccinationRecord(
                                 phn,
                                 dateOfBirth,
                                 dateOfVaccine
@@ -270,16 +259,16 @@ export const useVaccinationStatusPublicStore = defineStore(
         }
 
         return {
-            publicVaccinationStatus,
-            publicIsLoading,
-            publicError,
-            publicStatusMessage,
-            publicVaccineRecord,
-            publicVaccineRecordIsLoading,
-            publicVaccineRecordError,
-            publicVaccineRecordStatusMessage,
-            retrievePublicVaccineStatus,
-            retrievePublicVaccineRecord,
+            vaccinationStatus,
+            vaccinationStatusIsLoading,
+            vaccinationStatusError,
+            vaccinationStatusStatusMessage,
+            vaccineRecord,
+            vaccineRecordIsLoading,
+            vaccineRecordError,
+            vaccineRecordStatusMessage,
+            retrieveVaccinationStatus,
+            retrieveVaccinationRecord,
         };
     }
 );

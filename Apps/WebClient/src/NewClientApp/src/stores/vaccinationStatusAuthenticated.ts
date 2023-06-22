@@ -33,77 +33,74 @@ export const useVaccinationStatusAuthenticatedStore = defineStore(
             resultMessage: "",
         };
 
-        interface AuthenticatedVaccinationStatus {
-            vaccinationStatus?: VaccinationStatus;
+        interface Vaccination {
+            data?: VaccinationStatus;
             error?: ResultError;
             status: LoadStatus;
             statusMessage: string;
         }
 
         // Refs
-        const authenticatedVaccination = ref<AuthenticatedVaccinationStatus>({
-            vaccinationStatus: undefined,
+        const vaccination = ref<Vaccination>({
+            data: undefined,
             error: undefined,
             status: LoadStatus.NONE,
             statusMessage: "",
         });
 
-        const authenticatedVaccinationRecordStates = ref(
-            new Map<string, VaccineRecordState>()
-        );
+        const vaccineRecordStates = ref(new Map<string, VaccineRecordState>());
 
         // Computed
-        const authenticatedVaccinationStatus = computed(
-            () => authenticatedVaccination.value.vaccinationStatus
+        // Vaccination Status
+        const vaccinationStatus = computed(() => vaccination.value.data);
+
+        const vaccinationStatusIsLoading = computed(
+            () => vaccination.value.status === LoadStatus.REQUESTED
         );
 
-        const authenticatedIsLoading = computed(
-            () => authenticatedVaccination.value.status === LoadStatus.REQUESTED
+        const vaccinationStatusError = computed(() => vaccination.value.error);
+
+        const vaccinationStatusStatusMessage = computed(
+            () => vaccination.value.statusMessage
         );
 
-        const authenticatedError = computed(
-            () => authenticatedVaccination.value.error
-        );
-
-        const authenticatedStatusMessage = computed(
-            () => authenticatedVaccination.value.statusMessage
-        );
-
-        // Mutations
-        // Authenticated Vaccination Status
-        function setAuthenticatedRequested() {
-            authenticatedVaccination.value.error = undefined;
-            authenticatedVaccination.value.status = LoadStatus.REQUESTED;
-            authenticatedVaccination.value.statusMessage = "";
+        // Getters
+        // Vaccine Records
+        function vaccineRecordState(hdid: string): VaccineRecordState {
+            return getVaccineRecordState(hdid);
         }
 
-        function setAuthenticatedVaccinationStatus(
-            vaccinationStatus: VaccinationStatus
-        ) {
-            authenticatedVaccination.value.vaccinationStatus = {
+        // Mutations
+        // Vaccination Status
+        function setVaccinationStatusRequested() {
+            vaccination.value.error = undefined;
+            vaccination.value.status = LoadStatus.REQUESTED;
+            vaccination.value.statusMessage = "";
+        }
+
+        function setVaccinationStatus(vaccinationStatus: VaccinationStatus) {
+            vaccination.value.data = {
                 ...vaccinationStatus,
                 issueddate: new DateWrapper().toISO(),
             };
-            authenticatedVaccination.value.status = LoadStatus.LOADED;
-            authenticatedVaccination.value.statusMessage = "";
+            vaccination.value.status = LoadStatus.LOADED;
+            vaccination.value.statusMessage = "";
         }
 
-        function setAuthenticatedVaccinationStatusError(error: ResultError) {
-            authenticatedVaccination.value.vaccinationStatus = undefined;
-            authenticatedVaccination.value.error = error;
-            authenticatedVaccination.value.status = LoadStatus.ERROR;
-            authenticatedVaccination.value.statusMessage = "";
+        function setVaccinationStatusError(error: ResultError) {
+            vaccination.value.data = undefined;
+            vaccination.value.error = error;
+            vaccination.value.status = LoadStatus.ERROR;
+            vaccination.value.statusMessage = "";
         }
 
-        function setAuthenticatedVaccinationStatusMessage(
-            statusMessage: string
-        ) {
-            authenticatedVaccination.value.statusMessage = statusMessage;
+        function setVaccinationStatusStatusMessage(statusMessage: string) {
+            vaccination.value.statusMessage = statusMessage;
         }
 
-        // Authenticated Vaccination Record
-        function setAuthenticatedVaccineRecordRequested(hdid: string) {
-            const currentState = getAuthenticatedVaccineRecordState(hdid);
+        // Vaccination Record
+        function setVaccineRecordRequested(hdid: string) {
+            const currentState = getVaccineRecordState(hdid);
             const nextState: VaccineRecordState = {
                 ...currentState,
                 record: undefined,
@@ -116,11 +113,8 @@ export const useVaccinationStatusAuthenticatedStore = defineStore(
             setAuthenticatedVaccineRecordState(hdid, nextState);
         }
 
-        function setAuthenticatedVaccinationRecord(
-            hdid: string,
-            record: CovidVaccineRecord
-        ) {
-            const currentState = getAuthenticatedVaccineRecordState(hdid);
+        function setVaccineRecord(hdid: string, record: CovidVaccineRecord) {
+            const currentState = getVaccineRecordState(hdid);
             const nextState: VaccineRecordState = {
                 ...currentState,
                 record,
@@ -131,11 +125,8 @@ export const useVaccinationStatusAuthenticatedStore = defineStore(
             setAuthenticatedVaccineRecordState(hdid, nextState);
         }
 
-        function setAuthenticatedVaccinationRecordError(
-            hdid: string,
-            error: ResultError
-        ) {
-            const currentState = getAuthenticatedVaccineRecordState(hdid);
+        function setVaccineRecordError(hdid: string, error: ResultError) {
+            const currentState = getVaccineRecordState(hdid);
             const nextState: VaccineRecordState = {
                 ...currentState,
                 record: undefined,
@@ -146,11 +137,11 @@ export const useVaccinationStatusAuthenticatedStore = defineStore(
             setAuthenticatedVaccineRecordState(hdid, nextState);
         }
 
-        function setAuthenticatedVaccineRecordStatusMessage(
+        function setVaccineRecordStatusMessage(
             hdid: string,
             statusMessage: string
         ) {
-            const currentState = getAuthenticatedVaccineRecordState(hdid);
+            const currentState = getVaccineRecordState(hdid);
             const nextState: VaccineRecordState = {
                 ...currentState,
                 statusMessage,
@@ -158,11 +149,11 @@ export const useVaccinationStatusAuthenticatedStore = defineStore(
             setAuthenticatedVaccineRecordState(hdid, nextState);
         }
 
-        function setAuthenticatedVaccineRecordResultMessage(
+        function setVaccineRecordResultMessage(
             hdid: string,
             resultMessage: string
         ) {
-            const currentState = getAuthenticatedVaccineRecordState(hdid);
+            const currentState = getVaccineRecordState(hdid);
             const nextState: VaccineRecordState = {
                 ...currentState,
                 resultMessage,
@@ -170,11 +161,8 @@ export const useVaccinationStatusAuthenticatedStore = defineStore(
             setAuthenticatedVaccineRecordState(hdid, nextState);
         }
 
-        function setAuthenticatedVaccineRecordDownload(
-            hdid: string,
-            download: boolean
-        ) {
-            const currentState = getAuthenticatedVaccineRecordState(hdid);
+        function setVaccineRecordDownload(hdid: string, download: boolean) {
+            const currentState = getVaccineRecordState(hdid);
             const nextState: VaccineRecordState = {
                 ...currentState,
                 download,
@@ -183,11 +171,9 @@ export const useVaccinationStatusAuthenticatedStore = defineStore(
         }
 
         // Mutation Helpers
-        function getAuthenticatedVaccineRecordState(
-            hdid: string
-        ): VaccineRecordState {
+        function getVaccineRecordState(hdid: string): VaccineRecordState {
             return (
-                authenticatedVaccinationRecordStates.value.get(hdid) ?? {
+                vaccineRecordStates.value.get(hdid) ?? {
                     ...defaultVaccineRecordState,
                     hdid,
                 }
@@ -198,10 +184,7 @@ export const useVaccinationStatusAuthenticatedStore = defineStore(
             hdid: string,
             vaccineRecordState: VaccineRecordState
         ) {
-            authenticatedVaccinationRecordStates.value.set(
-                hdid,
-                vaccineRecordState
-            );
+            vaccineRecordStates.value.set(hdid, vaccineRecordState);
         }
 
         // Action Helpers
@@ -210,7 +193,7 @@ export const useVaccinationStatusAuthenticatedStore = defineStore(
             errorType: ErrorType
         ) {
             logger.error(`ERROR: ${JSON.stringify(error)}`);
-            setAuthenticatedVaccinationStatusError(error);
+            setVaccinationStatusError(error);
 
             if (error.statusCode === 429) {
                 errorStore.setTooManyRequestsWarning("page");
@@ -229,16 +212,13 @@ export const useVaccinationStatusAuthenticatedStore = defineStore(
             errorType: ErrorType
         ) {
             logger.error(`ERROR: ${JSON.stringify(error)}`);
-            setAuthenticatedVaccinationRecordError(hdid, error);
+            setVaccineRecordError(hdid, error);
 
             if (error.statusCode === 429) {
                 errorStore.setTooManyRequestsWarning("vaccineCardComponent");
             } else {
                 if (error.actionCode === ActionType.Invalid) {
-                    setAuthenticatedVaccineRecordResultMessage(
-                        hdid,
-                        "No records found"
-                    );
+                    setVaccineRecordResultMessage(hdid, "No records found");
                 } else {
                     errorStore.addError(
                         errorType,
@@ -250,23 +230,21 @@ export const useVaccinationStatusAuthenticatedStore = defineStore(
         }
 
         // Actions
-        function retrieveAuthenticatedVaccineStatus(
-            hdid: string
-        ): Promise<void> {
-            if (authenticatedVaccination.value.status === LoadStatus.LOADED) {
+        function retrieveVaccinationStatus(hdid: string): Promise<void> {
+            if (vaccination.value.status === LoadStatus.LOADED) {
                 logger.debug(
                     `Authenticated vaccination status found stored, not querying!`
                 );
                 return Promise.resolve();
             } else {
                 logger.debug(`Retrieving authenticated vaccination status`);
-                setAuthenticatedRequested();
+                setVaccinationStatusRequested();
                 return vaccinationStatusService
                     .getAuthenticatedVaccineStatus(hdid)
                     .then((result) => {
                         const payload = result.resourcePayload;
                         if (result.resultStatus === ResultType.Success) {
-                            setAuthenticatedVaccinationStatus(payload);
+                            setVaccinationStatus(payload);
                         } else if (
                             result.resultError?.actionCode ===
                                 ActionType.Refresh &&
@@ -276,14 +254,14 @@ export const useVaccinationStatusAuthenticatedStore = defineStore(
                             logger.info(
                                 "Authenticated vaccination status not loaded"
                             );
-                            setAuthenticatedVaccinationStatusMessage(
+                            setVaccinationStatusStatusMessage(
                                 "Please wait a moment while we retrieve your proof of vaccination."
                             );
                             setTimeout(() => {
                                 logger.info(
                                     "Re-querying for authenticated proof of vaccination"
                                 );
-                                retrieveAuthenticatedVaccineStatus(hdid);
+                                retrieveVaccinationStatus(hdid);
                             }, payload.retryin);
                         } else {
                             if (result.resultError) {
@@ -303,11 +281,9 @@ export const useVaccinationStatusAuthenticatedStore = defineStore(
             }
         }
 
-        function retrieveAuthenticatedVaccineRecord(
-            hdid: string
-        ): Promise<void> {
+        function retrieveVaccineRecord(hdid: string): Promise<void> {
             logger.debug(`Retrieving authenticated vaccination record`);
-            setAuthenticatedVaccineRecordRequested(hdid);
+            setVaccineRecordRequested(hdid);
 
             return vaccinationStatusService
                 .getAuthenticatedVaccineRecord(hdid)
@@ -315,7 +291,7 @@ export const useVaccinationStatusAuthenticatedStore = defineStore(
                     const payload = result.resourcePayload;
                     if (result.resultStatus === ResultType.Success) {
                         logger.info("Authenticated vaccination record loaded");
-                        setAuthenticatedVaccinationRecord(hdid, payload);
+                        setVaccineRecord(hdid, payload);
                     } else if (
                         result.resultError?.actionCode === ActionType.Refresh &&
                         !payload.loaded &&
@@ -324,7 +300,7 @@ export const useVaccinationStatusAuthenticatedStore = defineStore(
                         logger.info(
                             "Authenticated vaccination record not loaded but will try again"
                         );
-                        setAuthenticatedVaccineRecordStatusMessage(
+                        setVaccineRecordStatusMessage(
                             hdid,
                             "Please wait a moment while we download your proof of vaccination."
                         );
@@ -332,7 +308,7 @@ export const useVaccinationStatusAuthenticatedStore = defineStore(
                             logger.info(
                                 "Re-querying for downloading the authenticated vaccination record"
                             );
-                            retrieveAuthenticatedVaccineRecord(hdid);
+                            retrieveVaccineRecord(hdid);
                         }, payload.retryin);
                     } else {
                         if (result.resultError) {
@@ -357,25 +333,19 @@ export const useVaccinationStatusAuthenticatedStore = defineStore(
                 });
         }
 
-        function authenticatedVaccineRecordState(
-            hdid: string
-        ): VaccineRecordState {
-            return getAuthenticatedVaccineRecordState(hdid);
-        }
-
-        function stopAuthenticatedVaccineRecordDownload(hdid: string) {
-            setAuthenticatedVaccineRecordDownload(hdid, false);
+        function stopVaccineRecordDownload(hdid: string) {
+            setVaccineRecordDownload(hdid, false);
         }
 
         return {
-            authenticatedVaccinationStatus,
-            authenticatedIsLoading,
-            authenticatedError,
-            authenticatedStatusMessage,
-            retrieveAuthenticatedVaccineStatus,
-            retrieveAuthenticatedVaccineRecord,
-            authenticatedVaccineRecordState,
-            stopAuthenticatedVaccineRecordDownload,
+            vaccinationStatus,
+            vaccinationStatusIsLoading,
+            vaccinationStatusError,
+            vaccinationStatusStatusMessage,
+            vaccineRecordState,
+            retrieveVaccinationStatus,
+            retrieveVaccineRecord,
+            stopVaccineRecordDownload,
         };
     }
 );
