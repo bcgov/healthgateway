@@ -281,7 +281,7 @@ function testRemoveQuickLinkError(statusCode = serverErrorStatusCode) {
     );
 
     getQuickLinkCard("Medications").within(() => {
-        cy.get("[data-testid=quick-link-menu-button]")
+        cy.get("[data-testid=card-menu-button]")
             .should("be.visible")
             .parent("a")
             .should("be.visible", "be.enabled")
@@ -314,7 +314,7 @@ function testHideVaccineCardQuickLinkError(statusCode = serverErrorStatusCode) {
     );
 
     cy.get("[data-testid=bc-vaccine-card-card]").within(() => {
-        cy.get("[data-testid=quick-link-menu-button]")
+        cy.get("[data-testid=card-menu-button]")
             .should("be.visible")
             .parent("a")
             .should("be.visible", "be.enabled")
