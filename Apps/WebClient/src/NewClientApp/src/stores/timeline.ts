@@ -36,19 +36,7 @@ export const useNoteStore = defineStore("timeline", () => {
         return new DateWrapper(timeLineLinearDate.value);
     });
 
-    const selectedEntryTypes = computed(() => {
-        if (
-            timeLineFilter.value instanceof TimelineFilter &&
-            timeLineFilter.value.entryTypes instanceof Set<EntryType>
-        ) {
-            return timeLineFilter.value.entryTypes;
-        }
-
-        return Object.assign(
-            new Set<EntryType>(),
-            timeLineFilter.value.entryTypes
-        );
-    });
+    const selectedEntryTypes = computed(() => timeLineFilter.value.entryTypes);
 
     // Actions
     function setFilter(filterBuilder: TimelineFilterBuilder) {
