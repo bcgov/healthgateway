@@ -111,15 +111,12 @@ export const useNoteStore = defineStore("note", () => {
                     if (result.resultStatus === ResultType.Success) {
                         setNotesLoaded(result.resourcePayload);
                     } else {
-                        logger.error(
-                            `Notes retrieval failed! ${JSON.stringify(result)}`
-                        );
                         if (result.resultError) {
-                            logger.error(
-                                `Notes retrieval failed - result error: ${result.resultError}`
-                            );
                             throw result.resultError;
                         }
+                        logger.warn(
+                            `Notes retrieval failed! ${JSON.stringify(result)}`
+                        );
                     }
                 })
                 .catch((error: ResultError) => {
