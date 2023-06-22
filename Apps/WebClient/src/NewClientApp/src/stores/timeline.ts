@@ -40,7 +40,7 @@ export const useNoteStore = defineStore("timeline", () => {
 
     // Actions
     function setFilter(filterBuilder: TimelineFilterBuilder) {
-        logger.verbose(`Setting filter to time line store.`);
+        logger.verbose(`Setting filter in timeline store.`);
         timeLineFilter.value = filterBuilder.build();
     }
 
