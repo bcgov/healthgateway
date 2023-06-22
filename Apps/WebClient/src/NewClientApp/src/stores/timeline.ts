@@ -18,16 +18,7 @@ export const useNoteStore = defineStore("timeline", () => {
     const timeLineSelectedDate = ref<StringISODate>();
 
     // Computed
-    const filter = computed(() => {
-        if (timeLineFilter.value instanceof TimelineFilter) {
-            return timeLineFilter.value;
-        } else {
-            return Object.assign(
-                TimelineFilterBuilder.buildEmpty(),
-                timeLineFilter.value
-            );
-        }
-    });
+    const filter = computed(() => timeLineFilter.value);
 
     const hasActiveFilter = computed(() => {
         if (timeLineFilter.value instanceof TimelineFilter) {
