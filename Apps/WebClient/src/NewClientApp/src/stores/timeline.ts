@@ -55,7 +55,7 @@ export const useNoteStore = defineStore("timeline", () => {
     }
 
     function setSelectedDate(selectedDate?: DateWrapper) {
-        logger.verbose(`Setting selected date to time line store.`);
+        logger.verbose(`Setting selected date in timeline store.`);
         timeLineSelectedDate.value = selectedDate?.toISO();
     }
 
