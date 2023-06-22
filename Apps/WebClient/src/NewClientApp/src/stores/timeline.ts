@@ -20,20 +20,9 @@ export const useNoteStore = defineStore("timeline", () => {
     // Computed
     const filter = computed(() => timeLineFilter.value);
 
-    const hasActiveFilter = computed(() => {
-        if (timeLineFilter.value instanceof TimelineFilter) {
-            return (
-                timeLineFilter.value.hasActiveFilter() || keyword.value !== ""
-            );
-        }
-
-        const timelineFilter: TimelineFilter = Object.assign(
-            TimelineFilterBuilder.buildEmpty(),
-            timeLineFilter.value
-        );
-
-        return timelineFilter.hasActiveFilter() || keyword.value !== "";
-    });
+    const hasActiveFilter = computed(
+        () => timeLineFilter.value.hasActiveFilter() || keyword.value !== ""
+    );
 
     const linearDate = computed(() => {
         return new DateWrapper(timeLineLinearDate.value);
