@@ -77,7 +77,7 @@ export const useNoteStore = defineStore("timeline", () => {
     }
 
     function clearFilter() {
-        logger.verbose(`Clearing filter to time line store.`);
+        logger.verbose(`Clearing filter in timeline store.`);
         timeLineFilter.value = TimelineFilterBuilder.buildEmpty();
     }
 
