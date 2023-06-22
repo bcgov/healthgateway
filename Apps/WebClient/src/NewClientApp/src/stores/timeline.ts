@@ -82,7 +82,7 @@ export const useNoteStore = defineStore("timeline", () => {
     }
 
     function setLinearDate(linearDate: DateWrapper) {
-        logger.verbose(`Setting linear date to time line store.`);
+        logger.verbose(`Setting linear date in timeline store.`);
         timeLineLinearDate.value = linearDate.toISO();
     }
 
