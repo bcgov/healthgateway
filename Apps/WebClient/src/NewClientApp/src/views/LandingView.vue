@@ -83,7 +83,7 @@ const configStore = useConfigStore();
 const authStore = useAuthStore();
 
 const selectedPreviewDevice = ref(PreviewDevice.laptop);
-const { smAndDown } = useDisplay();
+const { mdAndUp } = useDisplay();
 
 const showLaptopTooltip = ref(false);
 const showTabletTooltip = ref(false);
@@ -142,58 +142,42 @@ function selectPreviewDevice(previewDevice: PreviewDevice): void {
 </script>
 
 <template>
-    <v-container class="landing-container" v-if="isOffline">
-        <v-row align="center" justify="center" class="pt-2 pb-5">
-            <v-col class="cols-12 text-center">
-                <hr class="my-4" />
-                <v-row class="py-2">
-                    <v-col class="text-h4">
-                        The site is offline for maintenance
-                    </v-col>
-                </v-row>
-                <v-row class="py-3">
-                    <v-col data-testid="offlineMessage" class="text-body-1">
-                        {{ offlineMessage }}
-                    </v-col>
-                </v-row>
-                <v-row class="pt-5">
-                    <v-col>
-                        <hr class="mt-5" />
-                    </v-col>
-                </v-row>
-            </v-col>
-        </v-row>
+    <v-container v-if="isOffline" class="landing-container pt-10 text-center">
+        <h1 class="text-primary text-h4 font-weight-bold mb-6">
+            The site is offline for maintenance
+        </h1>
+        <p data-testid="offlineMessage" class="text-body-1">
+            {{ offlineMessage }}
+        </p>
     </v-container>
-    <v-container class="landing-container" v-else>
-        <v-row justify="start" align="start" class="pt-10">
+    <v-container v-else class="landing-container pt-10">
+        <v-row justify="start" align="start">
             <v-col lg="5">
-                <h1 class="mb-4 text-primary text-h4 font-weight-bold">
+                <h1 class="mb-6 text-primary text-h4 font-weight-bold">
                     Access your health information online
                 </h1>
-                <p class="mb-4">
+                <p class="mb-6 text-body-1">
                     Health Gateway provides secure and convenient access to your
                     health records in British Columbia
                 </p>
-                <div v-if="!oidcIsAuthenticated" class="mb-3">
-                    <router-link to="/login">
+                <div v-if="!oidcIsAuthenticated" class="mb-4">
+                    <HgButtonComponent
+                        id="btnLogin"
+                        class="btn-auth-landing"
+                        text="Log in with BC Services Card"
+                        variant="primary"
+                        to="/login"
+                        data-testid="btnLogin"
+                    />
+                    <div class="mt-4 d-flex align-center">
+                        <span class="text-body-1 mr-2">Need an account?</span>
                         <HgButtonComponent
-                            id="btnLogin"
-                            data-testid="btnLogin"
-                            variant="primary"
-                            class="btn-auth-landing"
-                        >
-                            <span>Log in with BC Services Card</span>
-                        </HgButtonComponent>
-                    </router-link>
-                    <div class="mt-3">
-                        <span class="mr-2">Need an account?</span>
-                        <router-link
                             id="btnStart"
+                            text="Register"
+                            variant="link"
+                            to="/registration"
                             data-testid="btnStart"
-                            to="registration"
-                        >
-                            Register
-                        </router-link>
+                        />
                     </div>
                 </div>
             </v-col>
@@ -210,15 +194,17 @@ function selectPreviewDevice(previewDevice: PreviewDevice): void {
                 />
             </v-col>
         </v-row>
-        <div class="mt-4 mt-md-5">
-            <h2 class="mb-4 text-primary text-h4 font-weight-bold">
+        <div class="mt-6 mt-md-12">
+            <h2
+                class="text-primary text-h4 font-weight-bold mb-2 mb-md-4 mb-lg-6"
+            >
                 What you can access
             </h2>
             <v-row align="center" justify="center">
                 <v-col
                     v-for="tile in activeTiles"
                     :key="tile.name"
-                    class="text-center px-4 px-md-5 pb-4 pb-md-5"
+                    class="text-center px-6 px-md-12 pb-6 pb-md-12"
                     :data-testid="`active-tile-${tile.type}`"
                     cols="12"
                     md="6"
@@ -228,184 +214,185 @@ function selectPreviewDevice(previewDevice: PreviewDevice): void {
                         :icon="tile.icon"
                         color="primary"
                         size="x-large"
-                        class="ma-3"
+                        class="ma-4"
                     />
-                    <h3 class="text-primary mb-2">{{ tile.name }}</h3>
-                    <p class="mb-0">{{ tile.description }}</p>
+                    <h3 class="text-primary text-h5 font-weight-bold mb-2">
+                        {{ tile.name }}
+                    </h3>
+                    <p class="text-body-1 mb-0">{{ tile.description }}</p>
                 </v-col>
             </v-row>
         </div>
-        <div class="mt-4 mt-md-5">
-            <v-row>
+        <div class="mt-6 mt-md-12">
+            <v-row no-gutters>
                 <v-col cols="12" lg="6">
                     <h2 class="mb-4 text-primary text-h4 font-weight-bold">
                         What you can do
                     </h2>
                 </v-col>
                 <v-col cols="12" lg="6">
-                    <p class="mb-0">
+                    <p class="text-body-1 mb-0">
                         View your B.C. health records in one place, including
                         lab test results, medications, health visits,
                         immunizations and more.
                     </p>
                 </v-col>
             </v-row>
-            <v-row>
-                <v-col class="mt-4 mt-lg-5 text-center">
-                    <v-tooltip
-                        text="Show Laptop Preview"
-                        location="top"
-                        no-click-animation
-                        close-on-content-click
-                    >
-                        <template #activator="{ props }">
-                            <HgIconButtonComponent
-                                icon="fas fa-desktop"
-                                v-bind="props"
-                                :disabled="
-                                    selectedPreviewDevice ===
-                                    PreviewDevice.laptop
-                                "
-                                @click="
-                                    selectPreviewDevice(PreviewDevice.laptop)
-                                "
-                                class="mx-3"
-                            ></HgIconButtonComponent>
-                        </template>
-                    </v-tooltip>
-                    <v-tooltip
-                        text="Show Tablet Preview"
-                        location="top"
-                        no-click-animation
-                        close-on-content-click
-                    >
-                        <template #activator="{ props }">
-                            <HgIconButtonComponent
-                                icon="fas fa-tablet-screen-button"
-                                v-bind="props"
-                                :disabled="
-                                    selectedPreviewDevice ===
-                                    PreviewDevice.tablet
-                                "
-                                @click="
-                                    selectPreviewDevice(PreviewDevice.tablet)
-                                "
-                                class="mx-3"
-                            ></HgIconButtonComponent>
-                        </template>
-                    </v-tooltip>
-                    <v-tooltip
-                        text="Show Smartphone Preview"
-                        location="top"
-                        no-click-animation
-                        close-on-content-click
-                    >
-                        <template #activator="{ props }">
-                            <HgIconButtonComponent
-                                icon="fas fa-mobile-screen-button"
-                                v-bind="props"
-                                :disabled="
-                                    selectedPreviewDevice ===
-                                    PreviewDevice.smartphone
-                                "
-                                @click="
-                                    selectPreviewDevice(
-                                        PreviewDevice.smartphone
-                                    )
-                                "
-                                class="mx-3"
-                            ></HgIconButtonComponent>
-                        </template>
-                    </v-tooltip>
-                </v-col>
-            </v-row>
-            <v-row>
-                <v-col class="device-preview" :class="smAndDown ? 'sm' : ''">
-                    <v-img
-                        v-show="selectedPreviewDevice === 'laptop'"
-                        src="@/assets/images/landing/preview-laptop.png"
-                        data-testid="preview-image-laptop"
-                        alt="Preview of Health Gateway on a Laptop"
-                    />
-                    <v-img
-                        v-show="selectedPreviewDevice === 'tablet'"
-                        src="@/assets/images/landing/preview-tablet.png"
-                        data-testid="preview-image-tablet"
-                        alt="Preview of Health Gateway on a Tablet"
-                    />
-                    <v-img
-                        v-show="selectedPreviewDevice === 'smartphone'"
-                        src="@/assets/images/landing/preview-smartphone.png"
-                        data-testid="preview-image-smartphone"
-                        alt="Preview of Health Gateway on a Smartphone"
-                    />
-                </v-col>
-            </v-row>
-            <v-row>
-                <v-col cols="12" lg="4" class="p-3">
-                    <v-card class="h-100 text-center pa-3" variant="outlined">
-                        <v-card-title class="text-primary" variant="outlined">
+            <div class="mt-6 mt-lg-12 text-center">
+                <v-tooltip
+                    v-model="showLaptopTooltip"
+                    text="Show Laptop Preview"
+                    location="top"
+                >
+                    <template #activator="{ props }">
+                        <HgIconButtonComponent
+                            icon="fas fa-desktop"
+                            v-bind="props"
+                            :disabled="
+                                selectedPreviewDevice === PreviewDevice.laptop
+                            "
+                            @click="selectPreviewDevice(PreviewDevice.laptop)"
+                            class="mx-4"
+                        />
+                    </template>
+                </v-tooltip>
+                <v-tooltip
+                    v-model="showTabletTooltip"
+                    text="Show Tablet Preview"
+                    location="top"
+                >
+                    <template #activator="{ props }">
+                        <HgIconButtonComponent
+                            icon="fas fa-tablet-screen-button"
+                            v-bind="props"
+                            :disabled="
+                                selectedPreviewDevice === PreviewDevice.tablet
+                            "
+                            @click="selectPreviewDevice(PreviewDevice.tablet)"
+                            class="mx-4"
+                        />
+                    </template>
+                </v-tooltip>
+                <v-tooltip
+                    v-model="showSmartphoneTooltip"
+                    text="Show Smartphone Preview"
+                    location="top"
+                >
+                    <template #activator="{ props }">
+                        <HgIconButtonComponent
+                            icon="fas fa-mobile-screen-button"
+                            v-bind="props"
+                            :disabled="
+                                selectedPreviewDevice ===
+                                PreviewDevice.smartphone
+                            "
+                            @click="
+                                selectPreviewDevice(PreviewDevice.smartphone)
+                            "
+                            class="mx-4"
+                        />
+                    </template>
+                </v-tooltip>
+            </div>
+            <div
+                class="device-preview d-flex"
+                :class="{ 'device-preview-md': mdAndUp }"
+            >
+                <v-img
+                    v-show="selectedPreviewDevice === 'laptop'"
+                    src="@/assets/images/landing/preview-laptop.png"
+                    data-testid="preview-image-laptop"
+                    alt="Preview of Health Gateway on a Laptop"
+                />
+                <v-img
+                    v-show="selectedPreviewDevice === 'tablet'"
+                    src="@/assets/images/landing/preview-tablet.png"
+                    data-testid="preview-image-tablet"
+                    alt="Preview of Health Gateway on a Tablet"
+                />
+                <v-img
+                    v-show="selectedPreviewDevice === 'smartphone'"
+                    src="@/assets/images/landing/preview-smartphone.png"
+                    data-testid="preview-image-smartphone"
+                    alt="Preview of Health Gateway on a Smartphone"
+                />
+            </div>
+            <v-row class="mt-4">
+                <v-col cols="12" lg="4" class="pa-4 d-flex">
+                    <v-card class="text-center flex-grow-1" variant="outlined">
+                        <template #title>
                             <v-icon
+                                class="mt-2 text-primary"
                                 icon="fas fa-clock-rotate-left"
                                 size="large"
                             />
-                            <h4 class="mt-2">Stay up to date</h4>
-                        </v-card-title>
-                        <v-card-text class="text-body-1">
-                            View your health information in a list or calendar
-                            view, so you can easily see what’s new.
-                        </v-card-text>
+                            <h4 class="mt-2 text-primary">Stay up to date</h4>
+                        </template>
+                        <template #text>
+                            <p class="text-body-1">
+                                View your health information in a list or
+                                calendar view, so you can easily see what’s new.
+                            </p>
+                        </template>
                     </v-card>
                 </v-col>
-                <v-col cols="12" lg="4" class="p-3">
-                    <v-card class="h-100 text-center pa-3" variant="outlined">
-                        <v-card-title class="text-primary">
+                <v-col cols="12" lg="4" class="pa-4 d-flex">
+                    <v-card class="text-center flex-grow-1" variant="outlined">
+                        <template #title>
                             <v-icon
+                                class="mt-2 text-primary"
                                 icon="fas fa-cloud-arrow-down"
                                 size="large"
                             />
-                            <h4 class="mt-2">Manage your information</h4>
-                        </v-card-title>
-                        <v-card-text class="text-body-1">
-                            Download your health records, organize, and print
-                            them. Make your own notes on records to track health
-                            events.
-                        </v-card-text>
+                            <h4 class="mt-2 text-primary">
+                                Manage your information
+                            </h4>
+                        </template>
+                        <template #text>
+                            <p class="text-body-1">
+                                Download your health records, organize, and
+                                print them. Make your own notes on records to
+                                track health events.
+                            </p>
+                        </template>
                     </v-card>
                 </v-col>
-                <v-col cols="12" lg="4" class="p-3">
-                    <v-card class="h-100 text-center pa-3" variant="outlined">
-                        <v-card-title class="text-primary">
+                <v-col cols="12" lg="4" class="pa-4 d-flex">
+                    <v-card class="text-center flex-grow-1" variant="outlined">
+                        <template #title>
                             <v-icon
+                                class="mt-2 text-primary"
                                 icon="fas fa-magnifying-glass"
                                 size="large"
                             />
-                            <h4 class="mt-2">Find what you need</h4>
-                        </v-card-title>
-                        <v-card-text class="text-body-1">
-                            Add a quick link to the records you use the most.
-                            Filter or search to find what you need.
-                        </v-card-text>
+                            <h4 class="mt-2 text-primary">
+                                Find what you need
+                            </h4>
+                        </template>
+                        <template #text>
+                            <p class="text-body-1">
+                                Add a quick link to the records you use the
+                                most. Filter or search to find what you need.
+                            </p>
+                        </template>
                     </v-card>
                 </v-col>
             </v-row>
         </div>
-        <v-row align="center" justify="center">
-            <v-col cols="12" lg="6">
-                <div class="text-center">
-                    <img
-                        class="img-fluid"
-                        src="@/assets/images/landing/mobile-app.png"
-                        alt="Health Gateway Splash Page App"
-                        data-testid="spash-page-app"
-                    />
-                </div>
+        <v-row align="center">
+            <v-col cols="12" lg="6" class="text-center">
+                <img
+                    class="img-fluid"
+                    src="@/assets/images/landing/mobile-app.png"
+                    alt="Health Gateway Splash Page App"
+                    data-testid="spash-page-app"
+                />
             </v-col>
-            <v-col cols="12" lg="6" class="text-center mb-4 mb-md-5">
-                <h2 class="mb-4 text-primary text-h4 font-weight-bold">
+            <v-col cols="12" lg="6" class="text-center mb-6 mb-md-12">
+                <h2 class="text-primary text-h4 font-weight-bold mb-6">
                     Try the mobile app.
                 </h2>
-                <p class="mb-4">
+                <p class="text-body-1 mb-6">
                     You can download it for free to your phone, tablet or iPad.
                 </p>
                 <a
@@ -414,7 +401,7 @@ function selectPreviewDevice(previewDevice: PreviewDevice): void {
                     target="_blank"
                 >
                     <img
-                        class="img-fluid mr-3"
+                        class="img-fluid mr-4"
                         src="@/assets/images/landing/google-play-badge.png"
                         alt="Go to Google Play"
                     />
@@ -441,9 +428,10 @@ function selectPreviewDevice(previewDevice: PreviewDevice): void {
 }
 
 .device-preview {
-    max-height: 412px;
-    &.sm {
-        max-height: 212px;
+    max-height: 212px;
+
+    &.device-preview-md {
+        max-height: 412px;
     }
 }
 </style>
