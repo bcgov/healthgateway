@@ -485,7 +485,7 @@ watch(vaccineRecordState, () => {
                                     <hg-icon
                                         icon="ellipsis-v"
                                         size="medium"
-                                        data-testid="quick-link-menu-button"
+                                        data-testid="card-menu-button"
                                     />
                                 </template>
                                 <b-dropdown-item
@@ -533,7 +533,7 @@ watch(vaccineRecordState, () => {
                                     <hg-icon
                                         icon="ellipsis-v"
                                         size="medium"
-                                        data-testid="quick-link-menu-button"
+                                        data-testid="card-menu-button"
                                     />
                                 </template>
                                 <b-dropdown-item
@@ -581,7 +581,7 @@ watch(vaccineRecordState, () => {
                                     <hg-icon
                                         icon="ellipsis-v"
                                         size="medium"
-                                        data-testid="quick-link-menu-button"
+                                        data-testid="card-menu-button"
                                     />
                                 </template>
                                 <b-dropdown-item

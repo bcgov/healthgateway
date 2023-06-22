@@ -21,7 +21,7 @@ const addQuickLinkSubmitButtonSelector = "[data-testid=add-quick-link-btn]";
 const addQuickLinkModalTextSelector = "[data-testid=quick-link-modal-text]";
 const quickLinkCardSelector = "[data-testid=quick-link-card]";
 const cardButtonTitleSelector = "[data-testid=card-button-title]";
-const quickLinkMenuButtonSelector = "[data-testid=quick-link-menu-button]";
+const quickLinkMenuButtonSelector = "[data-testid=card-menu-button]";
 const quickLinkRemoveButtonSelector = "[data-testid=remove-quick-link-button]";
 
 function getQuickLinkCheckbox(module) {
