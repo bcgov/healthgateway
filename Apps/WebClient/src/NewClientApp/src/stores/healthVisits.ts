@@ -15,7 +15,7 @@ import { ResultError } from "@/models/errors";
 import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import { useErrorStore } from "@/stores/error";
 
-const defaultHealthVisitState = {
+const defaultHealthVisitState: HealthVisitState = {
     data: [],
     status: LoadStatus.NONE,
     statusMessage: "",
