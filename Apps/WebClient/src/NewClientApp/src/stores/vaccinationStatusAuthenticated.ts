@@ -14,7 +14,7 @@ import { useErrorStore } from "@/stores/error";
 import { defineStore } from "pinia";
 import { computed, ref } from "vue";
 
-export const useVaccinationStatusStore = defineStore(
+export const useVaccinationStatusAuthenticatedStore = defineStore(
     "vaccinationStatusAuthenticated",
     () => {
         const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
