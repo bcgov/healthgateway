@@ -1,10 +1,33 @@
 <script setup lang="ts">
+import { computed, useSlots } from "vue";
+
 interface Props {
-    icon: string;
+    icon: string | boolean;
 }
-defineProps<Props>();
+withDefaults(defineProps<Props>(), {
+    icon: true,
+});
+
+const slots = useSlots();
+
+const hasSlot = computed(() => slots.default !== undefined);
 </script>
 
 <template>
-    <v-btn :icon="icon" variant="flat" class="bg-transparent" :ripple="false" />
+    <v-btn
+        v-if="hasSlot"
+        :icon="icon"
+        variant="flat"
+        class="bg-transparent"
+        :ripple="false"
+    >
+        <slot />
+    </v-btn>
+    <v-btn
+        v-else
+        :icon="icon"
+        variant="flat"
+        class="bg-transparent"
+        :ripple="false"
+    />
 </template>
