@@ -19,7 +19,7 @@ const hasAppendSlot = computed(() => slots.append !== undefined);
                 <slot name="prepend" />
             </v-col>
             <v-col>
-                <h1 id="subject" class="text-primary">
+                <h1 id="subject" class="text-primary text-h4 font-weight-bold">
                     {{ title }}
                 </h1>
             </v-col>
