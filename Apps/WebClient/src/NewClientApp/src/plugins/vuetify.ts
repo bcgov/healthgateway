@@ -4,8 +4,7 @@ import { far } from "@fortawesome/free-regular-svg-icons";
 import { fas } from "@fortawesome/free-solid-svg-icons";
 
 // Styles
-import "@mdi/font/css/materialdesignicons.css";
-import "vuetify/styles";
+import "@/assets/styles/main.scss";
 
 // Composables
 import { createVuetify } from "vuetify";
