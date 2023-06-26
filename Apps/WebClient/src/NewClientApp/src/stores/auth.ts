@@ -65,8 +65,8 @@ export const useAuthStore = defineStore("auth", () => {
     }
 
     async function signIn(
-        idpHint: string,
-        redirectPath: string
+        redirectPath: string,
+        idpHint?: string
     ): Promise<void> {
         try {
             // EventBus.$emit(
@@ -152,6 +152,7 @@ export const useAuthStore = defineStore("auth", () => {
         oidcIsAuthenticated,
         oidcError,
         checkStatus,
+        clearStorage,
         signIn,
         signOut,
     };

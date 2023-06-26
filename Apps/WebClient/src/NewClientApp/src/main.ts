@@ -5,16 +5,23 @@ import App from "@/App.vue";
 import { createApp } from "vue";
 
 // Plugins
-import { registerPlugins } from "@/plugins";
+import { registerInitialPlugins, registerRouterPlugin } from "@/plugins";
 import { AppErrorType } from "@/constants/errorType";
 import { isTooManyRequestsError } from "@/models/errors";
 import { useConfigStore } from "@/stores/config";
 import { useAppStore } from "@/stores/app";
 import { initializeServices } from "@/ioc/initialization";
+import { container } from "./ioc/container";
+import { ILogger } from "@/services/interfaces";
+import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
+import { useAuthStore } from "@/stores/auth";
+import { useUserStore } from "@/stores/user";
+import { useNotificationStore } from "@/stores/notification";
+import AppErrorView from "@/views/errors/AppErrorView.vue";
 
 const app = createApp(App);
 
-registerPlugins(app);
+registerInitialPlugins(app);
 
 const configStore = useConfigStore();
 
@@ -24,25 +31,33 @@ configStore
     .then(initializeServices)
     .then(async () => {
         if (window.location.pathname !== "/loginCallback") {
-            // const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-            // const signedIn = await store.dispatch("auth/checkStatus");
-            // if (signedIn) {
-            //     logger.verbose("User is signed in");
-            // } else {
-            //     logger.verbose("User is not signed in");
-            // }
-            // const isValidIdentityProvider: boolean =
-            //     store.getters["user/isValidIdentityProvider"];
-            // const user: User = store.getters["user/user"];
-            // if (user.hdid && isValidIdentityProvider) {
-            //     await store.dispatch("user/retrieveEssentialData");
-            //     store
-            //         .dispatch("notification/retrieve")
-            //         .catch((error) => logger.warn(error.message));
-            // }
+            const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+            // Services are not available until after the services are initialized
+            const authStore = useAuthStore();
+            const userStore = useUserStore();
+            const notificationStore = useNotificationStore();
+
+            const signedIn = await authStore.checkStatus();
+            if (signedIn) {
+                logger.verbose("User is signed in");
+            } else {
+                logger.verbose("User is not signed in");
+            }
+            const isValidIdentityProvider: boolean =
+                userStore.isValidIdentityProvider;
+            if (userStore.user.hdid && isValidIdentityProvider) {
+                await userStore.retrieveEssentialData();
+                notificationStore
+                    .retrieve()
+                    .catch((error) => logger.warn(error.message));
+            }
         }
+        registerRouterPlugin(app);
+        app.mount("#app-root");
     })
     .catch((error) => {
+        // logger may not be initialized yet
+        console.error(`An error occurred while initializing the app`, error);
         let errorType = AppErrorType.General;
         if (isTooManyRequestsError(error)) {
             errorType = AppErrorType.TooManyRequests;
@@ -50,5 +65,8 @@ configStore
 
         const appStore = useAppStore();
         appStore.setAppError(errorType);
-    })
-    .finally(() => app.mount("#app-root"));
+
+        const errorApp = createApp(AppErrorView);
+        registerInitialPlugins(errorApp);
+        errorApp.mount("#app-root");
+    });
