@@ -44,6 +44,11 @@ export const mutations: UserMutation = {
                 UserPreferenceType.HideImmunizationRecordQuickLink,
                 "false"
             );
+            PreferenceUtil.setDefaultValue(
+                userProfile.preferences,
+                UserPreferenceType.HideHealthConnectRegistryQuickLink,
+                "false"
+            );
         }
 
         Vue.set(
