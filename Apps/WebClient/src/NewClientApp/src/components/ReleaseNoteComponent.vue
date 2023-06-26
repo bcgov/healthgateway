@@ -15,16 +15,13 @@ const hasSlot = computed<boolean>(() => {
 </script>
 
 <template>
-    <div>
-        <v-row>
-            <v-col class="text-body-1 font-weight-bold">
-                {{ date }} – {{ version }} – {{ title }}
-            </v-col>
-        </v-row>
-        <v-row v-if="hasSlot" class="mt-1 mb-2">
-            <v-col class="px-3 py-0">
-                <slot />
-            </v-col>
-        </v-row>
+    <div class="mb-6">
+        <div class="text-h6 font-weight-bold">
+            {{ date }} – {{ version }} – {{ title }}
+        </div>
+
+        <div v-if="hasSlot" class="text-body-1 mt-2">
+            <slot />
+        </div>
     </div>
 </template>
