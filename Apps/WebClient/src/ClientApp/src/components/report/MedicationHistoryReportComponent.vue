@@ -155,7 +155,7 @@ function generateReport(
     return reportService.generateReport({
         data: {
             header: headerData,
-            records: items,
+            records: items.value,
         },
         template: TemplateType.Medication,
         type: reportFormatType,

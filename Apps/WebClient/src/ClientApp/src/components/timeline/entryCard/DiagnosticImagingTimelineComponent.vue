@@ -98,6 +98,10 @@ function downloadFile(): void {
                     <strong>Body Part: </strong>
                     <span>{{ entry.bodyPart }}</span>
                 </div>
+                <div data-testid="diagnostic-imaging-procedure-description">
+                    <strong>Description: </strong>
+                    <span>{{ entry.procedureDescription }}</span>
+                </div>
                 <div data-testid="diagnostic-imaging-health-authority">
                     <strong>Health Authority: </strong>
                     <span>{{ entry.healthAuthority }}</span>
