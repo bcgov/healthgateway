@@ -4,12 +4,21 @@ import { createRouter, createWebHistory } from "vue-router";
 const App = import("@/App.vue");
 const LandingView = () =>
     import(/* webpackChunkName: "landing" */ "@/views/LandingView.vue");
+const ReleaseNotesView = () =>
+    import(
+        /* webpackChunkName: "releaseNotes" */ "@/views/ReleaseNotesView.vue"
+    );
 
 const routes = [
     {
         path: "/",
         name: "Landing",
         component: LandingView,
+    },
+    {
+        path: "/release-notes",
+        name: "ReleaseNotes",
+        component: ReleaseNotesView,
     },
 ];
 
