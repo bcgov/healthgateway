@@ -11,9 +11,13 @@ const props = withDefaults(defineProps<Props>(), {
 
 const errorStore = useErrorStore();
 
-const warning = computed(() => errorStore.tooManyRequestsWarning);
+const showWarning = computed(
+    () => errorStore.tooManyRequestsWarning == props.location
+);
 
-const error = computed(() => errorStore.tooManyRequestsError);
+const showError = computed(
+    () => errorStore.tooManyRequestsError == props.location
+);
 
 function clearTooManyRequestsWarning(): void {
     errorStore.clearTooManyRequestsWarning();
@@ -22,9 +26,6 @@ function clearTooManyRequestsWarning(): void {
 function clearTooManyRequestsError(): void {
     errorStore.clearTooManyRequestsError();
 }
-
-const showWarning = computed(() => warning.value === props.location);
-const showError = computed(() => error.value === props.location);
 </script>
 
 <template>
