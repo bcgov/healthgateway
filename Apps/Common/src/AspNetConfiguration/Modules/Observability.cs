@@ -17,6 +17,7 @@
 namespace HealthGateway.Common.AspNetConfiguration.Modules
 {
     using System;
+    using System.Diagnostics.CodeAnalysis;
     using System.Globalization;
     using System.Linq;
     using System.Net;
@@ -40,6 +41,7 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
     /// <summary>
     /// Methods to configure observability dependencies and settings
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public static class Observability
     {
         /// <summary>
@@ -96,6 +98,7 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
         /// <param name="services">A DI container.</param>
         /// <param name="otlpConfig">OpenTelemetry configuration values.</param>
         /// <returns>The DI container.</returns>
+#pragma warning disable CA1506 - Avoid excessive class coupling
         public static IServiceCollection AddOpenTelemetryDefaults(this IServiceCollection services, OpenTelemetryConfig otlpConfig)
         {
             if (string.IsNullOrEmpty(otlpConfig.ServiceName))
@@ -154,6 +157,7 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
             services.AddSingleton(TracerProvider.Default.GetTracer(otlpConfig.ServiceName));
             return services;
         }
+#pragma warning restore CA1506
 
         private static LoggerConfiguration ConfigureDefaultLogging(this LoggerConfiguration loggerConfiguration, IConfiguration configuration, string serviceName)
         {
