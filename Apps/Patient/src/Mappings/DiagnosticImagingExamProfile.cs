@@ -41,7 +41,7 @@ namespace HealthGateway.Patient.Mappings
             {
                 PatientDataAccess.DiagnosticImagingStatus.Scheduled => DiagnosticImagingStatus.Pending,
                 PatientDataAccess.DiagnosticImagingStatus.InProgress => DiagnosticImagingStatus.Pending,
-                PatientDataAccess.DiagnosticImagingStatus.Finalized => DiagnosticImagingStatus.Final,
+                PatientDataAccess.DiagnosticImagingStatus.Finalized => DiagnosticImagingStatus.Finalized,
                 PatientDataAccess.DiagnosticImagingStatus.Pending => DiagnosticImagingStatus.Pending,
                 PatientDataAccess.DiagnosticImagingStatus.Completed => DiagnosticImagingStatus.Pending,
                 PatientDataAccess.DiagnosticImagingStatus.Amended => DiagnosticImagingStatus.Amended,
