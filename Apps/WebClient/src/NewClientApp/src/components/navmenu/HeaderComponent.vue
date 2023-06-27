@@ -10,8 +10,8 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { computed, nextTick, onUnmounted, ref, watch } from "vue";
 
-import AppTourComponent from "@/components/modal/AppTourComponent.vue";
-import RatingComponent from "@/components/modal/RatingComponent.vue";
+// import AppTourComponent from "@/components/modal/AppTourComponent.vue";
+// import RatingComponent from "@/components/modal/RatingComponent.vue";
 import HgButtonComponent from "@/components/shared/HgButtonComponent.vue";
 import HgIconButtonComponent from "@/components/shared/HgIconButtonComponent.vue";
 import type { WebClientConfiguration } from "@/models/configData";
@@ -32,7 +32,7 @@ import { useAppStore } from "@/stores/app";
 library.add(faBars, faSignInAlt, faSignOutAlt, faTimes, faUser, faLightbulb);
 
 const sidebarId = "notification-centre-sidebar";
-const minimumScrollChange = 2;
+const headerScrollThreshold = 100;
 
 const appStore = useAppStore();
 const configStore = useConfigStore();
@@ -45,12 +45,12 @@ const route = useRoute();
 const router = useRouter();
 const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
 
-const lastScrollTop = ref(0);
 const notificationButtonClicked = ref(false);
 const hasViewedTour = ref(false);
+const isScrollNearBottom = ref(false);
 
-const ratingComponent = ref<InstanceType<typeof RatingComponent>>();
-const appTourComponent = ref<InstanceType<typeof AppTourComponent>>();
+// const ratingComponent = ref<InstanceType<typeof RatingComponent>>();
+// const appTourComponent = ref<InstanceType<typeof AppTourComponent>>();
 
 const isMobileWidth = computed<boolean>(() => appStore.isMobile);
 
@@ -66,7 +66,9 @@ const isValidIdentityProvider = computed<boolean>(
     () => userStore.isValidIdentityProvider
 );
 
-const isHeaderShown = computed<boolean>(() => navbarStore.isHeaderShown);
+const isHeaderShown = computed<boolean>(
+    () => navbarStore.isHeaderShown || isScrollNearBottom.value
+);
 
 const isSidebarOpen = computed<boolean>(() => navbarStore.isSidebarOpen);
 
@@ -193,11 +195,9 @@ const newNotifications = computed<Notification[]>(() => {
     return notificationStore.notifications;
 });
 
-const hasNewNotifications = computed<boolean>(
-    () => newNotifications.value.length > 0
-);
+const hasNewNotifications = computed(() => newNotifications.value.length > 0);
 
-const notificationBadgeContent = computed<string>(() => {
+const notificationBadgeContent = computed(() => {
     const count = newNotifications.value.length;
     return hasNewNotifications.value ? count.toString() : "";
 });
@@ -205,6 +205,14 @@ const notificationBadgeContent = computed<string>(() => {
 const highlightTourChangeIndicator = computed<boolean>(
     () => user.value.hasTourUpdated && !hasViewedTour.value
 );
+
+function testIfScrollIsNearBottom() {
+    const scrollPosition = window.scrollY;
+    const scrollHeight = document.body.scrollHeight;
+    const clientHeight = document.documentElement.clientHeight;
+    isScrollNearBottom.value =
+        scrollPosition + clientHeight >= scrollHeight - headerScrollThreshold;
+}
 
 function toggleSidebar(): void {
     navbarStore.toggleSidebar();
@@ -214,35 +222,10 @@ function setHeaderState(isOpen: boolean): void {
     navbarStore.setHeaderState(isOpen);
 }
 
-function onScroll(): void {
-    const st = window.scrollY || document.documentElement.scrollTop;
-    if (
-        Math.abs(st - lastScrollTop.value) > minimumScrollChange &&
-        isMobileWidth.value
-    ) {
-        if (st > lastScrollTop.value) {
-            // down-scroll
-            if (isHeaderShown.value) {
-                setHeaderState(false);
-            }
-        } else {
-            // up-scroll
-            if (!isHeaderShown.value) {
-                setHeaderState(true);
-            }
-        }
-    }
-    // For Mobile or negative scrolling
-    lastScrollTop.value = st <= 0 ? 0 : st;
-}
-
-function handleToggleClick(): void {
-    toggleSidebar();
-}
-
 function handleLogoutClick(): void {
     if (isValidIdentityProvider.value) {
-        showRating();
+        // showRating(); // TODO: Reintroduce with rating component
+        processLogout();
     } else {
         processLogout();
     }
@@ -250,11 +233,11 @@ function handleLogoutClick(): void {
 
 function handleShowTourClick(): void {
     hasViewedTour.value = true;
-    appTourComponent.value?.showModal();
+    // appTourComponent.value?.showModal();
 }
 
 function showRating(): void {
-    ratingComponent.value?.showModal();
+    // ratingComponent.value?.showModal();
 }
 
 function processLogout(): void {
@@ -273,17 +256,17 @@ watch(
     (value) => {
         if (value.registration === "success") {
             router.replace({ query: {} });
-            appTourComponent.value?.showModal();
+            // appTourComponent.value?.showModal();
         }
     }
 );
 
 onUnmounted(() => {
-    window.removeEventListener("scroll", onScroll);
+    window.removeEventListener("scroll", testIfScrollIsNearBottom);
 });
 
 nextTick(() => {
-    window.addEventListener("scroll", onScroll);
+    window.addEventListener("scroll", testIfScrollIsNearBottom);
     if (!isMobileWidth.value) {
         setHeaderState(false);
     }
@@ -295,27 +278,29 @@ nextTick(() => {
         :scroll-behavior="!isHeaderShown ? 'hide' : undefined"
         class="border-b-md border-accent border-opacity-100"
         color="primary"
+        :scroll-threshold="headerScrollThreshold"
     >
         <template #prepend v-if="isSidebarButtonShown">
             <HgIconButtonComponent
                 :icon="isSidebarOpen ? 'fas fa-times' : 'fas fa-bars'"
-                @click="handleToggleClick"
+                @click="toggleSidebar"
             />
         </template>
-        <v-img
-            alt="Go to Health Gateway home page"
-            to="/"
-            src="@/assets/images/gov/hg-logo-rev.svg"
-            max-width="143px"
-            class="pa-1"
-        />
+        <router-link to="/">
+            <v-img
+                alt="Go to Health Gateway home page"
+                src="@/assets/images/gov/hg-logo-rev.svg"
+                max-width="143px"
+                class="pa-1"
+            />
+        </router-link>
         <v-spacer />
         <HgIconButtonComponent
             v-if="isAppTourAvailable"
             @click="handleShowTourClick"
             data-testid="app-tour-button"
         >
-            <v-badge color="red" :value="highlightTourChangeIndicator">
+            <v-badge color="red" :model-value="highlightTourChangeIndicator">
                 <v-icon icon="fas fa-lightbulb" />
             </v-badge>
         </HgIconButtonComponent>
@@ -326,7 +311,7 @@ nextTick(() => {
         >
             <v-badge
                 color="red"
-                :value="hasNewNotifications"
+                :model-value="hasNewNotifications"
                 :content="notificationBadgeContent"
             >
                 <v-icon icon="fas fa-bell" />

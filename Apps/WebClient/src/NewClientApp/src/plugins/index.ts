@@ -7,8 +7,14 @@ import router from "@/router";
 
 // Types
 import type { App } from "vue";
+import { vMaska } from "maska";
 
-export function registerPlugins(app: App) {
-    app.use(vuetify).use(router).use(pinia);
+export function registerInitialPlugins(app: App) {
+    app.use(vuetify).use(pinia);
     app.component("font-awesome-icon", FontAwesomeIcon);
+    app.directive("maska", vMaska);
+}
+
+export function registerRouterPlugin(app: App) {
+    app.use(router);
 }
