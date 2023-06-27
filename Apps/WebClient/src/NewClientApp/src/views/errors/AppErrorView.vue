@@ -6,27 +6,29 @@ import { useAppStore } from "@/stores/app";
 
 const appStore = useAppStore();
 
-const isTooManyRequests = computed<boolean>(() => {
-    return appStore.appError === AppErrorType.TooManyRequests;
-});
+const isTooManyRequests = computed(
+    () => appStore.appError === AppErrorType.TooManyRequests
+);
 </script>
 
 <template>
-    <v-layout>
+    <v-app>
         <v-app-bar
             class="border-b-md border-accent border-opacity-100"
             color="primary"
         >
-            <v-img
-                alt="Go to Health Gateway home page"
-                src="@/assets/images/gov/hg-logo-rev.svg"
-                max-width="143px"
-                class="pa-1"
-            />
+            <a href="/">
+                <v-img
+                    alt="Go to Health Gateway home page"
+                    src="@/assets/images/gov/hg-logo-rev.svg"
+                    max-width="143px"
+                    class="pa-1"
+                />
+            </a>
             <v-toolbar-title>Application Error!</v-toolbar-title>
         </v-app-bar>
         <v-main>
-            <v-container>
+            <v-container class="fill-height">
                 <v-row justify="center">
                     <v-col sm="10" md="6">
                         <v-alert
@@ -45,5 +47,5 @@ const isTooManyRequests = computed<boolean>(() => {
                 </v-row>
             </v-container>
         </v-main>
-    </v-layout>
+    </v-app>
 </template>

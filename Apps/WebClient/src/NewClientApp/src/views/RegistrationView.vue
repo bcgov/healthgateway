@@ -275,7 +275,7 @@ loadTermsOfService();
                     data-testid="emailCheckbox"
                     @change="onEmailOptout($event)"
                     label="Email Notifications"
-                ></v-checkbox>
+                />
                 <em class="text-body-2">
                     Receive application and health record updates
                 </em>
@@ -298,7 +298,7 @@ loadTermsOfService();
                     :error-messages="emailConfirmationErrorMessages"
                 />
             </div>
-            <v-divider thickness="3" class="mt-6"></v-divider>
+            <v-divider thickness="3" class="mt-6" />
             <!-- SMS section -->
             <div>
                 <v-checkbox
@@ -306,7 +306,7 @@ loadTermsOfService();
                     v-model="isSMSNumberChecked"
                     @change="onSMSOptout($event)"
                     label="Text Notifications"
-                ></v-checkbox>
+                />
                 <em class="text-body-2">
                     Receive health record updates only
                 </em>
@@ -350,7 +350,7 @@ loadTermsOfService();
                 data-testid="acceptCheckbox"
                 label="I agree to the terms of service above"
                 :error-messages="acceptedErrorMessages"
-            ></v-checkbox>
+            />
             <div class="mb-3 text-right">
                 <HgButtonComponent
                     :disabled="!accepted"
@@ -358,8 +358,8 @@ loadTermsOfService();
                     data-testid="registerButton"
                     type="submit"
                     variant="primary"
-                    >Register
-                </HgButtonComponent>
+                    text="Register"
+                />
             </div>
         </v-form>
         <div v-else-if="isValidAge === false">

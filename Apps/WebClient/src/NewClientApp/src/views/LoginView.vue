@@ -79,7 +79,7 @@ if (oidcIsAuthenticated.value) {
                     type="error"
                     title="Error"
                     text="An unexpected error occured while processing the request, please try again."
-                ></v-alert>
+                />
             </v-col>
         </v-row>
         <v-row>
@@ -98,7 +98,7 @@ if (oidcIsAuthenticated.value) {
                     </v-card-title>
                     <v-card-text
                         v-if="hasMultipleProviders || isRetry"
-                        class="px-10 py-5"
+                        class="px-10 py-8"
                     >
                         <div
                             v-for="provider in identityProviders"

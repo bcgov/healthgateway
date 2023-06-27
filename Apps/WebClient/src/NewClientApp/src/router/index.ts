@@ -181,6 +181,4 @@ const router = createRouter({
 router.beforeEach(beforeEachGuard);
 
 router.afterEach(afterEachHook);
-
-console.log("router created");
 export default router;
