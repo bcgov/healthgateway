@@ -122,7 +122,7 @@ public partial class BroadcastDialog : FluxorComponent
     {
         if (this.IsNewBroadcast)
         {
-            DateTime now = this.DateConversionService.ConvertTime(DateTime.Now);
+            DateTime now = this.DateConversionService.ConvertFromUtc(DateTime.UtcNow);
             DateTime tomorrow = now.AddDays(1);
             this.EffectiveDate = now.Date;
             this.EffectiveTime = now.TimeOfDay;
