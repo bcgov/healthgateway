@@ -489,7 +489,6 @@ watch(vaccineRecordState, () => {
             </b-col>
             <b-col v-if="showHealthConnectButton" class="p-3">
                 <hg-card-button
-                    title=""
                     data-testid="health-connect-registry-card"
                     @click="handleClickHealthConnectCard()"
                 >
