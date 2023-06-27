@@ -14,8 +14,8 @@ setTimeout(() => {
 </script>
 
 <template>
-    <v-container class="pt-12 text-center h-100">
-        <h1 class="text-h4 text-primary font-weight-bold mb-6">
+    <v-container class="text-center">
+        <h1 class="mt-12 text-h4 text-primary font-weight-bold mb-6">
             You signed out of your account
         </h1>
         <p class="text-body-1">

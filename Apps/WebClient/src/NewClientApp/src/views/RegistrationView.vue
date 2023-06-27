@@ -8,7 +8,7 @@ import {
     requiredIf,
     sameAs,
 } from "@vuelidate/validators";
-import { computed, reactive, Ref, ref } from "vue";
+import { computed, Ref, ref } from "vue";
 import { vMaska } from "maska";
 
 import HtmlTextAreaComponent from "@/components/shared/HtmlTextAreaComponent.vue";
@@ -19,7 +19,6 @@ import { ResultError } from "@/models/errors";
 import { TermsOfService } from "@/models/termsOfService";
 import { ILogger, IUserProfileService } from "@/services/interfaces";
 import PhoneUtil from "@/utility/phoneUtil";
-import ValidationUtil from "@/utility/validationUtil";
 import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
 import { container } from "@/ioc/container";
 import { useRouter } from "vue-router";
@@ -341,7 +340,8 @@ loadTermsOfService();
             </h4>
             <HtmlTextAreaComponent
                 :input="termsOfService?.content"
-                class="mb-3"
+                class="mb-3 overflow-y-auto border"
+                height="330px"
             />
             <v-checkbox
                 id="accept"
@@ -384,5 +384,3 @@ loadTermsOfService();
         <div v-else><h1>Unknown error</h1></div>
     </v-container>
 </template>
-
-<style lang="scss" scoped></style>

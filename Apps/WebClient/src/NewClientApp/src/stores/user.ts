@@ -195,7 +195,7 @@ export const useUserStore = defineStore("user", () => {
 
     function createProfile(profile: UserProfile): Promise<void> {
         return userProfileService
-            .createProfile({ profile } as CreateUserRequest)
+            .createProfile({ profile })
             .then((userProfile) => {
                 logger.verbose(`User Profile: ${JSON.stringify(userProfile)}`);
                 setProfileUserData(userProfile);

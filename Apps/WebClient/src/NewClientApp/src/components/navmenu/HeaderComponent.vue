@@ -299,7 +299,6 @@ nextTick(() => {
             v-if="isAppTourAvailable"
             @click="handleShowTourClick"
             data-testid="app-tour-button"
-            icon
         >
             <v-badge color="red" :model-value="highlightTourChangeIndicator">
                 <v-icon icon="fas fa-lightbulb" />
@@ -309,7 +308,6 @@ nextTick(() => {
             v-if="isNotificationCentreAvailable"
             @click="notificationButtonClicked = true"
             data-testid="notification-centre-button"
-            icon
         >
             <v-badge
                 color="red"
@@ -323,7 +321,6 @@ nextTick(() => {
             <HgIconButtonComponent
                 id="menuBtnLogout"
                 data-testid="headerDropdownBtn"
-                icon
             >
                 <v-avatar data-testid="profileButtonInitials" color="info">
                     {{ userInitials }}
