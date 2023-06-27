@@ -50,5 +50,10 @@ namespace HealthGateway.Patient.Models
         /// Exam is amended.
         /// </summary>
         Amended,
+
+        /// <summary>
+        /// Exam is final.
+        /// </summary>
+        Final,
     }
 }
