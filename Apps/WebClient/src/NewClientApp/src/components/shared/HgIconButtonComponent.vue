@@ -2,7 +2,7 @@
 import { computed, useSlots } from "vue";
 
 interface Props {
-    icon: string | boolean;
+    icon?: string | boolean;
 }
 withDefaults(defineProps<Props>(), {
     icon: true,
