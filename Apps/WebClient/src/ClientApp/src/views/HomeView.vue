@@ -204,7 +204,8 @@ const isAddQuickLinkButtonDisabled = computed(
         ).length === 0 &&
         !preferenceImmunizationRecordHidden.value &&
         !preferenceVaccineCardHidden.value &&
-        !preferenceOrganDonorHidden.value
+        !preferenceOrganDonorHidden.value &&
+        !preferenceHealthConnectHidden.value
 );
 
 function addError(
