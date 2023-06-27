@@ -38,6 +38,10 @@ const PatientRetrievalErrorView = () =>
     import(
         /* webpackChunkName: "patientRetrievalError" */ "@/views/errors/PatientRetrievalErrorView.vue"
     );
+const ReleaseNotesView = () =>
+    import(
+        /* webpackChunkName: "releaseNotes" */ "@/views/ReleaseNotesView.vue"
+    );
 
 export enum RouterPath {
     ACCEPT_TERMS_OF_SERVICE_PATH = "/acceptTermsOfService",
@@ -56,6 +60,7 @@ export enum RouterPath {
     NOT_FOUND_PATH = "/not-found",
     QUEUE_PATH = "/queue",
     QUEUE_FULL_PATH = "/busy",
+    RELEASE_NOTES_PATH = "/release-notes
 }
 
 export enum UserState {
@@ -153,6 +158,11 @@ const routes = [
         path: RouterPath.NOT_FOUND_PATH,
         component: NotFoundView,
         meta: { stateless: true },
+    },
+    {
+        path: RouterPath.RELEASE_NOTES_PATH,
+        name: "ReleaseNotes",
+        component: ReleaseNotesView,
     },
     {
         path: "/*",
