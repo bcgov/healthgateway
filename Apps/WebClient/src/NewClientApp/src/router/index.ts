@@ -60,7 +60,7 @@ export enum RouterPath {
     NOT_FOUND_PATH = "/not-found",
     QUEUE_PATH = "/queue",
     QUEUE_FULL_PATH = "/busy",
-    RELEASE_NOTES_PATH = "/release-notes
+    RELEASE_NOTES_PATH = "/release-notes",
 }
 
 export enum UserState {
