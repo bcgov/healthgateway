@@ -18,15 +18,20 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
 {
     using System;
     using System.Globalization;
+    using System.Linq;
     using System.Net;
+    using System.Reflection;
+    using HealthGateway.Common.Models;
     using Microsoft.AspNetCore.Builder;
-    using Microsoft.AspNetCore.DataProtection.XmlEncryption;
-    using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
-    using Microsoft.Extensions.Logging;
-    using Npgsql.Replication.PgOutput.Messages;
+    using Npgsql;
+    using OpenTelemetry.Exporter;
+    using OpenTelemetry.Metrics;
+    using OpenTelemetry.Resources;
+    using OpenTelemetry.Trace;
     using Serilog;
     using Serilog.Enrichers.Span;
     using Serilog.Events;
@@ -42,14 +47,29 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
         /// </summary>
         public const string LogOutputTemplate = "[{Timestamp:HH:mm:ss} {Level:u3} {SourceContext}] {Message:lj}{NewLine}{Exception}";
 
-        public static IHostBuilder UseDefaultLogging(this IHostBuilder builder, string serviceName)
+        /// <summary>
+        /// Configures logging with default settings.
+        /// </summary>
+        /// <param name="builder">A host builder.</param>
+        /// <param name="serviceName">The service name.</param>
+        /// <returns>The host builder.</returns>
+        public static IHostBuilder UseDefaultLogging(this IHostBuilder builder, string? serviceName = null)
         {
-            builder.UseSerilog((ctx, services, config) => config.ConfigureDefaultLogging(ctx.Configuration, services, serviceName));
+            if (string.IsNullOrEmpty(serviceName))
+            {
+                serviceName = Assembly.GetEntryAssembly()!.GetName().Name!;
+            }
+
+            builder.UseSerilog((ctx, config) => config.ConfigureDefaultLogging(ctx.Configuration, serviceName));
 
             return builder;
         }
 
-
+        /// <summary>
+        /// Configures http request logging.
+        /// </summary>
+        /// <param name="app">An app builder.</param>
+        /// <returns>The app builder.</returns>
         public static IApplicationBuilder UseDefaultHttpRequestLogging(this IApplicationBuilder app)
         {
             app.UseSerilogRequestLogging(
@@ -70,11 +90,74 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
             return app;
         }
 
-        private static LoggerConfiguration ConfigureDefaultLogging(this LoggerConfiguration loggerConfiguration, IConfiguration configuration, IServiceProvider services, string serviceName)
+        /// <summary>
+        /// Adds OpenTelemetry components to DI.
+        /// </summary>
+        /// <param name="services">A DI container.</param>
+        /// <param name="otlpConfig">OpenTelemetry configuration values.</param>
+        /// <returns>The DI container.</returns>
+        public static IServiceCollection AddOpenTelemetryDefaults(this IServiceCollection services, OpenTelemetryConfig otlpConfig)
+        {
+            if (string.IsNullOrEmpty(otlpConfig.ServiceName))
+            {
+                otlpConfig.ServiceName = Assembly.GetEntryAssembly()!.GetName().Name;
+            }
+
+            if (string.IsNullOrEmpty(otlpConfig.ServiceVersion))
+            {
+                otlpConfig.ServiceVersion = Environment.GetEnvironmentVariable("VERSION");
+            }
+
+            services.AddOpenTelemetry()
+                .WithTracing(
+                    builder =>
+                    {
+                        builder
+                            .AddOtlpExporter(
+                                config =>
+                                {
+                                    config.Protocol = OtlpExportProtocol.HttpProtobuf;
+                                    config.Endpoint = otlpConfig.Endpoint;
+                                })
+                            .AddSource(otlpConfig.ServiceName)
+                            .SetSampler(new AlwaysOnSampler())
+                            .SetResourceBuilder(
+                                ResourceBuilder
+                                    .CreateDefault()
+                                    .AddService(serviceName: otlpConfig.ServiceName, serviceVersion: otlpConfig.ServiceVersion))
+                            .AddHttpClientInstrumentation()
+                            .AddAspNetCoreInstrumentation(
+                                options => options.Filter = httpContext =>
+                                    !otlpConfig.IgnorePathPrefixes.Any(s => httpContext.Request.Path.ToString().StartsWith(s, StringComparison.OrdinalIgnoreCase)))
+                            .AddRedisInstrumentation()
+                            .AddEntityFrameworkCoreInstrumentation()
+                            .AddNpgsql()
+                            ;
+                    })
+                .WithMetrics(
+                    builder =>
+                    {
+                        builder
+                            .AddOtlpExporter(
+                                config =>
+                                {
+                                    config.Protocol = otlpConfig.ExportProtocol;
+                                    config.Endpoint = otlpConfig.Endpoint;
+                                })
+                            .AddHttpClientInstrumentation()
+                            .AddAspNetCoreInstrumentation()
+                            .AddRuntimeInstrumentation()
+                            ;
+                    })
+                ;
+
+            services.AddSingleton(TracerProvider.Default.GetTracer(otlpConfig.ServiceName));
+            return services;
+        }
+
+        private static LoggerConfiguration ConfigureDefaultLogging(this LoggerConfiguration loggerConfiguration, IConfiguration configuration, string serviceName)
         {
             loggerConfiguration
-                .ReadFrom.Configuration(configuration)
-                .ReadFrom.Services(services)
                 .Enrich.WithMachineName()
                 .Enrich.FromLogContext()
                 .Enrich.WithExceptionDetails()
@@ -85,48 +168,24 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
                 .Enrich.WithCorrelationIdHeader()
                 .Enrich.WithClientAgent()
                 .Enrich.WithClientIp()
-                .Enrich.WithSpan()
+                .Enrich.WithSpan(new SpanOptions() { IncludeBaggage = true, IncludeTags = true, IncludeOperationName = true, IncludeTraceFlags = true })
                 .WriteTo.Console(outputTemplate: LogOutputTemplate, formatProvider: CultureInfo.InvariantCulture)
+                .ReadFrom.Configuration(configuration)
                 ;
 
             return loggerConfiguration;
         }
 
-        private static LogEventLevel ExcludeHealthChecks(HttpContext ctx, double _, Exception? ex)
+        private static LogEventLevel ExcludeHealthChecks(HttpContext ctx, double milliseconds, Exception? ex)
         {
             if (ex != null || ctx.Response.StatusCode >= (int)HttpStatusCode.InternalServerError)
             {
                 return LogEventLevel.Error;
             }
 
-            return ctx.Request.Path.StartsWithSegments("/hc", StringComparison.InvariantCultureIgnoreCase)
+            return ctx.Request.Path.StartsWithSegments("/health", StringComparison.InvariantCultureIgnoreCase)
                 ? LogEventLevel.Verbose
                 : LogEventLevel.Information;
         }
-
-        // public static IServiceCollection AddOpenTelemetry(this IServiceCollection services, string appName)
-        // {
-        //services.AddOpenTelemetryTracing(builder =>
-        //{
-        //    builder
-        //        .AddConsoleExporter()
-        //        .AddSource(appName)
-        //        .SetResourceBuilder(ResourceBuilder
-        //            .CreateDefault()
-        //            .AddService(serviceName: appName, serviceVersion: Environment.GetEnvironmentVariable("VERSION")))
-        //        .AddHttpClientInstrumentation()
-        //        .AddAspNetCoreInstrumentation()
-        //        .AddGrpcCoreInstrumentation()
-        //        .AddGrpcClientInstrumentation()
-        //        .AddRedisInstrumentation()
-        //        .AddConsoleExporter();
-        //});
-
-        //services.AddSingleton(TracerProvider.Default.GetTracer(appName));
-        //
-        // var listener = new SerilogTraceListener.SerilogTraceListener();
-        // Trace.Listeners.Add(listener);
-        //
-        // return services;
     }
 }

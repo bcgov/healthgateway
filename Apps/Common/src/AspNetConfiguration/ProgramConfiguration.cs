@@ -46,7 +46,7 @@ namespace HealthGateway.Common.AspNetConfiguration
             where T : class
         {
             return Host.CreateDefaultBuilder(args)
-                .UseDefaultLogging(typeof(T).Assembly.FullName!)
+                .UseDefaultLogging()
                 .ConfigureAppConfiguration(
                     (_, config) =>
                     {
@@ -64,7 +64,7 @@ namespace HealthGateway.Common.AspNetConfiguration
         public static WebApplicationBuilder CreateWebAppBuilder(string[] args)
         {
             WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
-            builder.Host.UseDefaultLogging(Assembly.GetEntryAssembly()!.FullName!);
+            builder.Host.UseDefaultLogging();
 
             // Additional configuration sources
             builder.Configuration.AddJsonFile("appsettings.local.json", true, true);
