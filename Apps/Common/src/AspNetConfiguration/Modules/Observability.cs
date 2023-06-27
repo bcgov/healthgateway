@@ -98,7 +98,7 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
         /// <param name="services">A DI container.</param>
         /// <param name="otlpConfig">OpenTelemetry configuration values.</param>
         /// <returns>The DI container.</returns>
-#pragma warning disable CA1506 - Avoid excessive class coupling
+#pragma warning disable CA1506 //Avoid excessive class coupling
         public static IServiceCollection AddOpenTelemetryDefaults(this IServiceCollection services, OpenTelemetryConfig otlpConfig)
         {
             if (string.IsNullOrEmpty(otlpConfig.ServiceName))
