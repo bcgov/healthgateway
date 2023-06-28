@@ -24,7 +24,7 @@ const isHeaderVisible = computed(
 
 <template>
     <v-app>
-        <HeaderComponent v-if="isHeaderVisible" class="d-print-none" />
+        <HeaderComponent v-if="isHeaderVisible" />
         <v-main>
             <router-view />
         </v-main>

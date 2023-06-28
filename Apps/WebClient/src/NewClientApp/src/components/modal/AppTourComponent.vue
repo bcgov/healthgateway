@@ -123,7 +123,7 @@ function previous(): void {
                 </v-badge>
             </HgIconButtonComponent>
         </template>
-        <v-row align="center" justify="center" no-gutters>
+        <v-row justify="center" no-gutters>
             <v-card max-width="675px">
                 <v-card-text class="pa-0 mh-50">
                     <v-carousel

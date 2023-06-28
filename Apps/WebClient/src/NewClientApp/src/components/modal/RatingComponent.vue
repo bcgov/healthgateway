@@ -75,52 +75,49 @@ function handleRating(value: number, skip = false): void {
 </script>
 
 <template>
-    <div>
-        <v-dialog
-            id="rating-modal"
-            ref="rating-modal"
-            v-model="isVisible"
-            data-modal="rating"
-            data-testid="ratingModal"
-            persistent
-            no-click-animation
-        >
-            <v-card>
-                <template #title>
-                    <h1 class="text-h6 font-weight-bold text-center">Rating</h1>
-                </template>
-                <v-row class="text-center">
-                    <v-col data-testid="ratingModalQuestionText">
+    <v-dialog
+        id="rating-modal"
+        ref="rating-modal"
+        v-model="isVisible"
+        data-modal="rating"
+        data-testid="ratingModal"
+        persistent
+        no-click-animation
+    >
+        <v-row no-gutters justify="center">
+            <v-card max-width="600px">
+                <v-card-title class="bg-primary text-white">
+                    <h1 class="text-h5 font-weight-bold">Rating</h1>
+                </v-card-title>
+                <v-card-text class="pa-3">
+                    <p
+                        class="text-body-1 text-center"
+                        data-testid="ratingModalQuestionText"
+                    >
                         {{ question }}
-                    </v-col>
-                </v-row>
-                <v-row class="text-center px-2 pt-3">
-                    <v-col>
+                    </p>
+                    <div class="d-flex justify-center">
                         <v-rating
                             v-model="ratingValue"
                             data-testid="formRating"
                             color="orange"
                             class="mb-2"
-                            no-border
+                            hover
                             size="large"
-                            @change="handleRating(ratingValue)"
-                        ></v-rating>
-                    </v-col>
-                </v-row>
-                <template #actions>
-                    <v-row>
-                        <v-col>
-                            <HgButtonComponent
-                                id="skipButton"
-                                data-testid="ratingModalSkipBtn"
-                                variant="secondary"
-                                @click="handleRating(0, true)"
-                                text="Skip"
-                            />
-                        </v-col>
-                    </v-row>
-                </template>
+                            @update:modelValue="handleRating"
+                        />
+                    </div>
+                </v-card-text>
+                <v-card-actions class="justify-end border-t-sm">
+                    <HgButtonComponent
+                        id="skipButton"
+                        data-testid="ratingModalSkipBtn"
+                        variant="secondary"
+                        @click="handleRating(0, true)"
+                        text="Skip"
+                    />
+                </v-card-actions>
             </v-card>
-        </v-dialog>
-    </div>
+        </v-row>
+    </v-dialog>
 </template>
