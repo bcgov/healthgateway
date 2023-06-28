@@ -7,7 +7,7 @@ import { ILogger } from "@/services/interfaces";
 import { defineStore } from "pinia";
 import { computed, ref } from "vue";
 
-export const useNoteStore = defineStore("timeline", () => {
+export const useTimelineStore = defineStore("timeline", () => {
     const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
 
     // Refs

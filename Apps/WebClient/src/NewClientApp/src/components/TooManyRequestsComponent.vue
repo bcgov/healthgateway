@@ -31,22 +31,22 @@ function clearTooManyRequestsError(): void {
 <template>
     <div>
         <v-alert
-            :show="showWarning"
+            :model-value="showWarning"
             data-testid="too-many-requests-warning"
             color="warning"
             dismissible
-            class="no-print"
+            class="no-print my-1"
             @dismissed="clearTooManyRequestsWarning"
         >
             We are unable to complete all actions because the site is too busy.
             Please try again later.
         </v-alert>
         <v-alert
-            :show="showError"
+            :model-value="showError"
             data-testid="too-many-requests-error"
             color="error"
             dismissible
-            class="no-print"
+            class="no-print my-1"
             @dismissed="clearTooManyRequestsError"
         >
             Unable to complete action as the site is too busy. Please try again
