@@ -296,10 +296,8 @@ function handleClickOrganDonorCard(): void {
 }
 
 function handleClickHealthConnectCard(): void {
-    trackClickLink("home_primarycare");
-    window.location.replace(
-        "https://www.healthlinkbc.ca/health-connect-registry"
-    );
+    trackClickLink("primarycare");
+    window.open("https://www.healthlinkbc.ca/health-connect-registry");
 }
 
 function handleClickRemoveQuickLink(index: number): void {
@@ -527,7 +525,7 @@ watch(vaccineRecordState, () => {
                             </b-nav-item-dropdown>
                         </b-nav>
                     </template>
-                    <div>
+                    <div class="mt-n2">
                         Register on the Health Connect Registry to get a family
                         doctor or nurse practitioner in your community.
                     </div>
@@ -702,6 +700,14 @@ watch(vaccineRecordState, () => {
 
 .canada-government-logo {
     height: 1.5em;
+}
+
+.organ-donor-registry-logo {
+    height: 1.5em;
+}
+
+.health-connect-registry-logo {
+    height: 2.5em;
 }
 
 .checkmark {
