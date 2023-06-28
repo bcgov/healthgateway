@@ -19,7 +19,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { computed, watch } from "vue";
 
-import LoadingComponent from "@/components/Shared/LoadingComponent.vue";
+import LoadingComponent from "@/components/shared/LoadingComponent.vue";
 // import MessageModalComponent from "@/components/modal/MessageModalComponent.vue";
 import {
     EntryTypeDetails,
@@ -314,13 +314,13 @@ function handleClickQuickLink(index: number): void {
     router.push({ path: "/timeline" });
 }
 
-// function showSensitiveDocumentDownloadModal(): void {
-//     sensitivedocumentDownloadModal.value?.showModal();
-// }
+function showSensitiveDocumentDownloadModal(): void {
+    // sensitivedocumentDownloadModal.value?.showModal(); // TODO: Reinstate
+}
 
 watch(vaccineRecordState, () => {
     if (vaccineRecordState.value.resultMessage.length > 0) {
-        // vaccineRecordResultModal.value?.showModal();
+        // vaccineRecordResultModal.value?.showModal(); // TODO: Reinstate
     }
 
     if (
