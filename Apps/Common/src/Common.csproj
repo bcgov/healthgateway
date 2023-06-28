@@ -7,7 +7,7 @@
     <ItemGroup>
         <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
         <PackageReference Include="Azure.Messaging.ServiceBus" Version="7.15.0" />
-        <PackageReference Include="Hangfire.AspNetCore" Version="1.8.2" />
+        <PackageReference Include="Hangfire.AspNetCore" Version="1.8.3" />
         <PackageReference Include="Hangfire.PostgreSql" Version="1.19.12" />
         <PackageReference Include="Hellang.Middleware.ProblemDetails" Version="6.5.1" />
         <PackageReference Include="Macross.Json.Extensions" Version="3.0.0" />
@@ -53,7 +53,7 @@
         <PackageReference Include="System.ServiceModel.NetTcp" Version="6.0.0" />
         <PackageReference Include="System.ServiceModel.Security" Version="6.0.0" />
     </ItemGroup>
-  
+
     <ItemGroup>
         <ProjectReference Include="..\..\Database\src\Database.csproj" />
         <ProjectReference Include="..\..\CommonData\src\Common.Data.csproj" />
