@@ -28,6 +28,7 @@ import { useAuthStore } from "@/stores/auth";
 import { useNotificationStore } from "@/stores/notification";
 import { useNavbarStore } from "@/stores/navbar";
 import { useAppStore } from "@/stores/app";
+import AppTourComponent from "@/components/modal/AppTourComponent.vue";
 
 library.add(faBars, faSignInAlt, faSignOutAlt, faTimes, faUser, faLightbulb);
 
@@ -295,15 +296,10 @@ nextTick(() => {
             />
         </router-link>
         <v-spacer />
-        <HgIconButtonComponent
+        <AppTourComponent
             v-if="isAppTourAvailable"
-            @click="handleShowTourClick"
-            data-testid="app-tour-button"
-        >
-            <v-badge color="red" :model-value="highlightTourChangeIndicator">
-                <v-icon icon="fas fa-lightbulb" />
-            </v-badge>
-        </HgIconButtonComponent>
+            :highlight-tour-change-indicator="highlightTourChangeIndicator"
+        />
         <HgIconButtonComponent
             v-if="isNotificationCentreAvailable"
             @click="notificationButtonClicked = true"
