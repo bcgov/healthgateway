@@ -44,12 +44,12 @@ function hideModal(): void {
     isVisible.value = false;
 }
 
-function handleRating(value: number, skip = false): void {
+function handleRating(value: number | string, skip = false): void {
     logger.debug(
         `submitting rating: ratingValue = ${value}, skip = ${skip} ...`
     );
     ratingService
-        .submitRating({ ratingValue: value, skip })
+        .submitRating({ ratingValue: Number(value), skip })
         .then(() => {
             if (skip) {
                 SnowPlow.trackEvent({
