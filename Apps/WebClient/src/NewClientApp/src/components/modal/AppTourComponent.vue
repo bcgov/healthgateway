@@ -172,7 +172,7 @@ function previous(): void {
                                     variant="primary"
                                     data-testid="app-tour-start"
                                     @click="next()"
-                                    text="Start App Tour"
+                                    text="Start Tour"
                                 />
                             </v-col>
                         </v-row>
