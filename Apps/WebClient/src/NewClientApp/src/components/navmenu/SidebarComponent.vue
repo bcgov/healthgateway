@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, nextTick, onMounted } from "vue";
+import { computed, ref } from "vue";
 
 import { useNavbarStore } from "@/stores/navbar";
 import { useUserStore } from "@/stores/user";
@@ -8,13 +8,29 @@ import { useConfigStore } from "@/stores/config";
 import { useRoute } from "vue-router";
 import HgIconButtonComponent from "@/components/shared/HgIconButtonComponent.vue";
 import { OidcUserInfo } from "@/models/user";
+import { useAppStore } from "@/stores/app";
 
 const route = useRoute();
 
+const appStore = useAppStore();
 const authStore = useAuthStore();
 const configStore = useConfigStore();
 const navbarStore = useNavbarStore();
 const userStore = useUserStore();
+
+const collapsedOnDesktop = ref(false);
+
+const isMobile = computed(() => appStore.isMobile);
+const isSidebarOpen = computed(() => navbarStore.isSidebarOpen);
+const isDependentEnabled = computed(
+    () => configStore.webConfig.featureToggleConfiguration.dependents.enabled
+);
+const isServicesEnabled = computed(
+    () => configStore.webConfig.featureToggleConfiguration.services.enabled
+);
+const oidcUserInfo = computed<OidcUserInfo | undefined>(
+    () => userStore.oidcUserInfo
+);
 
 const isQueuePage = computed(
     () =>
@@ -31,18 +47,6 @@ const isSidebarAvailable = computed(
         userStore.userIsActive &&
         !userStore.patientRetrievalFailed &&
         !isQueuePage.value
-);
-
-const isDependentEnabled = computed(
-    () => configStore.webConfig.featureToggleConfiguration.dependents.enabled
-);
-
-const isServicesEnabled = computed(
-    () => configStore.webConfig.featureToggleConfiguration.services.enabled
-);
-
-const oidcUserInfo = computed<OidcUserInfo | undefined>(
-    () => userStore.oidcUserInfo
 );
 
 const userInitials = computed<string>(() => {
@@ -65,115 +69,115 @@ const userName = computed<string>(() =>
         : `${oidcUserInfo.value.given_name} ${oidcUserInfo.value.family_name}`
 );
 
-onMounted(async () => {
-    await nextTick();
+const visibleOnMobile = computed({
+    get() {
+        return isSidebarOpen.value;
+    },
+    set(value: boolean) {
+        if (isSidebarOpen.value !== value) {
+            navbarStore.toggleSidebar();
+        }
+    },
 });
+
+function dismiss() {
+    if (isMobile.value) {
+        visibleOnMobile.value = false;
+    } else {
+        collapsedOnDesktop.value = true;
+    }
+}
 </script>
 
 <template>
-    <div v-if="isSidebarAvailable" class="wrapper">
-        <v-navigation-drawer
-            :rail="!navbarStore.isSidebarOpen"
-            color="primary"
-            permanent
-        >
+    <v-navigation-drawer
+        v-if="isSidebarAvailable"
+        :model-value="isMobile ? visibleOnMobile : true"
+        :permanent="!isMobile"
+        :temporary="isMobile"
+        :rail="isMobile ? false : collapsedOnDesktop"
+        color="primary"
+        @click.stop="collapsedOnDesktop = false"
+        @update:model-value="visibleOnMobile = false"
+    >
+        <v-list-item :title="userName" nav>
+            <template #prepend>
+                <v-avatar
+                    data-testid="sidenavbar-profile-initials"
+                    color="info"
+                >
+                    {{ userInitials }}
+                </v-avatar>
+            </template>
+            <template #append>
+                <HgIconButtonComponent
+                    icon="fas fa-chevron-left"
+                    @click.stop="dismiss"
+                />
+            </template>
+        </v-list-item>
+        <v-divider></v-divider>
+        <v-list density="compact" nav>
             <v-list-item
-                :title="userName"
-                nav
-                @click="navbarStore.toggleSidebar"
+                title="Home"
+                to="/home"
+                data-testid="menu-btn-home-link"
             >
                 <template #prepend>
                     <div class="nav-list-item-icon mr-8 d-flex justify-center">
-                        <HgIconButtonComponent
-                            id="sidenavbar-profile"
-                            data-testid="sidenavbar-profile-btn"
-                        >
-                            <v-avatar
-                                data-testid="sidenavbar-profile-initials"
-                                color="info"
-                            >
-                                {{ userInitials }}
-                            </v-avatar>
-                        </HgIconButtonComponent>
+                        <v-icon icon="fas fa-house" />
                     </div>
                 </template>
-                <template #append>
-                    <v-icon icon="fas fa-angle-double-left" />
+            </v-list-item>
+            <v-list-item
+                title="Timeline"
+                to="/timeline"
+                data-testid="menu-btn-time-line-link"
+            >
+                <template #prepend>
+                    <div class="nav-list-item-icon mr-8 d-flex justify-center">
+                        <v-icon icon="fas fa-box-archive" />
+                    </div>
                 </template>
             </v-list-item>
-            <v-divider></v-divider>
-            <v-list density="compact" nav>
-                <v-list-item
-                    title="Home"
-                    to="/home"
-                    data-testid="menu-btn-home-link"
-                >
-                    <template #prepend>
-                        <div
-                            class="nav-list-item-icon mr-8 d-flex justify-center"
-                        >
-                            <v-icon icon="fas fa-house" />
-                        </div>
-                    </template>
-                </v-list-item>
-                <v-list-item
-                    title="Timeline"
-                    to="/timeline"
-                    data-testid="menu-btn-time-line-link"
-                >
-                    <template #prepend>
-                        <div
-                            class="nav-list-item-icon mr-8 d-flex justify-center"
-                        >
-                            <v-icon icon="fas fa-box-archive" />
-                        </div>
-                    </template>
-                </v-list-item>
-                <v-list-item
-                    title="COVID-19"
-                    to="/covid19"
-                    data-testid="menu-btn-covid19-link"
-                >
-                    <template #prepend>
-                        <div
-                            class="nav-list-item-icon mr-8 d-flex justify-center"
-                        >
-                            <v-icon icon="fas fa-circle-check" />
-                        </div>
-                    </template>
-                </v-list-item>
-                <v-list-item
-                    v-show="isDependentEnabled && userStore.userIsActive"
-                    title="Dependents"
-                    to="/dependents"
-                    data-testid="menu-btn-dependents-link"
-                >
-                    <template #prepend>
-                        <div
-                            class="nav-list-item-icon mr-8 d-flex justify-center"
-                        >
-                            <v-icon icon="fas fa-user-group" />
-                        </div>
-                    </template>
-                </v-list-item>
-                <v-list-item
-                    v-show="isServicesEnabled && userStore.userIsActive"
-                    prepend-icon="fas fa-hand-holding-medical"
-                    title="Services"
-                    to="/services"
-                    data-testid="menu-btn-dependents-link"
-                >
-                    <template #prepend>
-                        <div
-                            class="nav-list-item-icon mr-8 d-flex justify-center"
-                        >
-                            <v-icon icon="fas fa-hand-holding-medical" />
-                        </div>
-                    </template>
-                </v-list-item>
-            </v-list>
-        </v-navigation-drawer>
-    </div>
+            <v-list-item
+                title="COVID-19"
+                to="/covid19"
+                data-testid="menu-btn-covid19-link"
+            >
+                <template #prepend>
+                    <div class="nav-list-item-icon mr-8 d-flex justify-center">
+                        <v-icon icon="fas fa-circle-check" />
+                    </div>
+                </template>
+            </v-list-item>
+            <v-list-item
+                v-show="isDependentEnabled && userStore.userIsActive"
+                title="Dependents"
+                to="/dependents"
+                data-testid="menu-btn-dependents-link"
+            >
+                <template #prepend>
+                    <div class="nav-list-item-icon mr-8 d-flex justify-center">
+                        <v-icon icon="fas fa-user-group" />
+                    </div>
+                </template>
+            </v-list-item>
+            <v-list-item
+                v-show="isServicesEnabled && userStore.userIsActive"
+                prepend-icon="fas fa-hand-holding-medical"
+                title="Services"
+                to="/services"
+                data-testid="menu-btn-dependents-link"
+            >
+                <template #prepend>
+                    <div class="nav-list-item-icon mr-8 d-flex justify-center">
+                        <v-icon icon="fas fa-hand-holding-medical" />
+                    </div>
+                </template>
+            </v-list-item>
+        </v-list>
+    </v-navigation-drawer>
 </template>
 
 <style scoped>
