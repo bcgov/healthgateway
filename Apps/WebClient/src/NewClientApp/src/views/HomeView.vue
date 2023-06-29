@@ -304,12 +304,12 @@ function handleClickQuickLink(index: number): void {
 }
 
 function showSensitiveDocumentDownloadModal(): void {
-    sensitiveDocumentDownloadModal.value?.showModal(); // TODO: Reinstate
+    sensitiveDocumentDownloadModal.value?.showModal();
 }
 
 watch(vaccineRecordState, () => {
     if (vaccineRecordState.value.resultMessage.length > 0) {
-        vaccineRecordResultModal.value?.showModal(); // TODO: Reinstate
+        vaccineRecordResultModal.value?.showModal();
     }
 
     if (
