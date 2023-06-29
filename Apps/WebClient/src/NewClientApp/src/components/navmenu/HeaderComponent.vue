@@ -10,6 +10,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { computed, nextTick, onUnmounted, ref, watch } from "vue";
 
+import AppTourComponent from "@/components/modal/AppTourComponent.vue";
 import RatingComponent from "@/components/modal/RatingComponent.vue";
 import HgButtonComponent from "@/components/shared/HgButtonComponent.vue";
 import HgIconButtonComponent from "@/components/shared/HgIconButtonComponent.vue";
@@ -27,7 +28,6 @@ import { useAuthStore } from "@/stores/auth";
 import { useNotificationStore } from "@/stores/notification";
 import { useNavbarStore } from "@/stores/navbar";
 import { useAppStore } from "@/stores/app";
-import AppTourComponent from "@/components/modal/AppTourComponent.vue";
 
 library.add(faBars, faSignInAlt, faSignOutAlt, faTimes, faUser, faLightbulb);
 

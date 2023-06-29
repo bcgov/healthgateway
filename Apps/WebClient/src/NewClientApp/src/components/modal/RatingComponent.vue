@@ -77,7 +77,6 @@ function handleRating(value: number | string, skip = false): void {
 <template>
     <v-dialog
         id="rating-modal"
-        ref="rating-modal"
         v-model="isVisible"
         data-modal="rating"
         data-testid="ratingModal"

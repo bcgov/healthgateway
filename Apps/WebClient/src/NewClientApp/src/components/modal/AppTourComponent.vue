@@ -98,6 +98,7 @@ function hideModal(): void {
 function next(): void {
     slideIndex.value++;
 }
+
 function previous(): void {
     slideIndex.value--;
 }
@@ -142,23 +143,18 @@ function previous(): void {
                             transition="scroll-x-reverse-transition"
                         />
                     </v-carousel>
+                    <div v-if="currentSlide" class="pa-4">
+                        <h3 class="text-h6 font-weight-bold">
+                            {{ currentSlide.title }}
+                        </h3>
+                        <p v-if="currentSlide.description" class="text-body-1">
+                            {{ currentSlide.description }}
+                        </p>
+                    </div>
                 </v-card-text>
                 <template #actions>
                     <v-container>
-                        <v-row v-if="currentSlide">
-                            <v-col>
-                                <h3 class="text-h6 font-weight-bold">
-                                    {{ currentSlide.title }}
-                                </h3>
-                                <p
-                                    v-if="currentSlide.description"
-                                    class="text-body-1"
-                                >
-                                    {{ currentSlide.description }}
-                                </p>
-                            </v-col>
-                        </v-row>
-                        <v-row v-if="isFirstSlide" class="mt-4">
+                        <v-row v-if="isFirstSlide">
                             <v-col cols="3">
                                 <HgButtonComponent
                                     variant="link"
@@ -176,10 +172,7 @@ function previous(): void {
                                 />
                             </v-col>
                         </v-row>
-                        <v-row
-                            v-else-if="!isFirstSlide && !isFinalSlide"
-                            class="mt-3"
-                        >
+                        <v-row v-else-if="!isFirstSlide && !isFinalSlide">
                             <v-col>
                                 <HgButtonComponent
                                     variant="link"
@@ -204,16 +197,14 @@ function previous(): void {
                                 />
                             </v-col>
                         </v-row>
-                        <v-row v-else class="mt-6">
-                            <v-col class="d-flex justify-center">
-                                <HgButtonComponent
-                                    variant="primary"
-                                    data-testid="app-tour-done"
-                                    @click="hideModal"
-                                    text="Done"
-                                />
-                            </v-col>
-                        </v-row>
+                        <div class="d-flex justify-center" v-else>
+                            <HgButtonComponent
+                                variant="primary"
+                                data-testid="app-tour-done"
+                                @click="hideModal"
+                                text="Done"
+                            />
+                        </div>
                     </v-container>
                 </template>
             </v-card>
