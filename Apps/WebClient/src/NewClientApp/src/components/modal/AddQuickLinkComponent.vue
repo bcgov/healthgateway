@@ -258,6 +258,7 @@ function hideModal(): void {
                         v-model="selectedQuickLinks"
                         density="compact"
                         hide-details
+                        color="primary"
                     />
                     <v-checkbox
                         v-if="showOrganDonorRegistration"
@@ -269,6 +270,7 @@ function hideModal(): void {
                         v-model="selectedQuickLinks"
                         density="compact"
                         hide-details
+                        color="primary"
                     />
                     <v-checkbox
                         v-if="showVaccineCard"
@@ -280,6 +282,7 @@ function hideModal(): void {
                         v-model="selectedQuickLinks"
                         density="compact"
                         hide-details
+                        color="primary"
                     />
                     <v-checkbox
                         v-if="showImmunizationRecord"
@@ -291,6 +294,7 @@ function hideModal(): void {
                         v-model="selectedQuickLinks"
                         density="compact"
                         hide-details
+                        color="primary"
                     />
                 </v-card-text>
                 <v-card-actions class="justify-end border-t-sm">
