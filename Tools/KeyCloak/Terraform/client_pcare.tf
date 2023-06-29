@@ -24,6 +24,7 @@ resource "keycloak_openid_client_default_scopes" "pcare_client_default_scopes" {
   default_scopes = [
     "profile",
     "web-origins",
+    "email"
     # keycloak_openid_client_scope.audience_scope.name,
     # keycloak_openid_client_scope.immunization_read_scope.name,
     # keycloak_openid_client_scope.laboratory_read_scope.name,
@@ -37,7 +38,6 @@ resource "keycloak_openid_client_optional_scopes" "pcare_client_optional_scopes"
 
   optional_scopes = [
     "address",
-    "email",
     "phone",
     "microprofile-jwt",
     # keycloak_openid_client_scope.encounter_read_scope.name,
