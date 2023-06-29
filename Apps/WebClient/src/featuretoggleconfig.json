@@ -78,6 +78,10 @@
             {
                 "name": "organDonorRegistration",
                 "enabled": true
+            },
+            {
+                "name": "healthConnectRegistry",
+                "enabled": true
             }
         ]
     }

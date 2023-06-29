@@ -136,6 +136,12 @@ const preferenceImmunizationRecordHidden = computed(
             UserPreferenceType.HideImmunizationRecordQuickLink
         ]?.value === "true"
 );
+const preferenceHealthConnectHidden = computed(
+    () =>
+        user.value.preferences[
+            UserPreferenceType.HideHealthConnectRegistryQuickLink
+        ]?.value === "true"
+);
 const showVaccineCardButton = computed(
     () => !preferenceVaccineCardHidden.value
 );
@@ -144,6 +150,13 @@ const showOrganDonorButton = computed(
         ConfigUtil.isServiceEnabled(ServiceName.OrganDonorRegistration) &&
         !preferenceOrganDonorHidden.value
 );
+
+const showHealthConnectButton = computed(
+    () =>
+        ConfigUtil.isServiceEnabled(ServiceName.HealthConnectRegistry) &&
+        !preferenceHealthConnectHidden.value
+);
+
 const enabledQuickLinks = computed(
     () =>
         quickLinks.value?.filter((quickLink) =>
@@ -191,7 +204,8 @@ const isAddQuickLinkButtonDisabled = computed(
         ).length === 0 &&
         !preferenceImmunizationRecordHidden.value &&
         !preferenceVaccineCardHidden.value &&
-        !preferenceOrganDonorHidden.value
+        !preferenceOrganDonorHidden.value &&
+        !preferenceHealthConnectHidden.value
 );
 
 function addError(
@@ -281,6 +295,11 @@ function handleClickOrganDonorCard(): void {
     router.push({ path: "/services" });
 }
 
+function handleClickHealthConnectCard(): void {
+    trackClickLink("primarycare");
+    window.open("https://www.healthlinkbc.ca/health-connect-registry");
+}
+
 function handleClickRemoveQuickLink(index: number): void {
     logger.debug("Removing quick link");
     const quickLink = enabledQuickLinks.value[index];
@@ -295,6 +314,14 @@ function handleClickRemoveVaccineCardQuickLink(): void {
 function handleClickRemoveOrganDonorQuickLink(): void {
     logger.debug("Removing organ donor card quick link");
     setPreferenceValue(UserPreferenceType.HideOrganDonorQuickLink, "true");
+}
+
+function handleClickRemoveHealthConnectCard(): void {
+    logger.debug("Removing health connect card");
+    setPreferenceValue(
+        UserPreferenceType.HideHealthConnectRegistryQuickLink,
+        "true"
+    );
 }
 
 function setPreferenceValue(preferenceType: string, value: string) {
@@ -456,6 +483,51 @@ watch(vaccineRecordState, () => {
                     <div>
                         Download and print your Federal Proof of Vaccination for
                         domestic and international travel.
+                    </div>
+                </hg-card-button>
+            </b-col>
+            <b-col v-if="showHealthConnectButton" class="p-3">
+                <hg-card-button
+                    data-testid="health-connect-registry-card"
+                    @click="handleClickHealthConnectCard()"
+                >
+                    <template #icon>
+                        <img
+                            class="health-connect-registry-logo align-self-center"
+                            src="@/assets/images/services/health-link-logo.svg"
+                            alt="Health Connect Registry Logo"
+                        />
+                    </template>
+                    <template #menu>
+                        <b-nav align="right">
+                            <b-nav-item-dropdown
+                                right
+                                text=""
+                                :no-caret="true"
+                                menu-class="quick-link-menu"
+                                toggle-class="quick-link-menu-button"
+                            >
+                                <template slot="button-content">
+                                    <hg-icon
+                                        icon="ellipsis-v"
+                                        size="medium"
+                                        data-testid="quick-link-menu-button"
+                                    />
+                                </template>
+                                <b-dropdown-item
+                                    data-testid="remove-quick-link-button"
+                                    @click.stop="
+                                        handleClickRemoveHealthConnectCard()
+                                    "
+                                >
+                                    Remove
+                                </b-dropdown-item>
+                            </b-nav-item-dropdown>
+                        </b-nav>
+                    </template>
+                    <div class="mt-n2">
+                        Register on the Health Connect Registry to get a family
+                        doctor or nurse practitioner in your community.
                     </div>
                 </hg-card-button>
             </b-col>
@@ -628,6 +700,14 @@ watch(vaccineRecordState, () => {
 
 .canada-government-logo {
     height: 1.5em;
+}
+
+.organ-donor-registry-logo {
+    height: 1.5em;
+}
+
+.health-connect-registry-logo {
+    height: 2.5em;
 }
 
 .checkmark {
