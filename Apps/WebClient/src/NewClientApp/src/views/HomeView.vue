@@ -1,14 +1,14 @@
 ﻿<script setup lang="ts">
 import { saveAs } from "file-saver";
-import { computed, watch } from "vue";
+import { computed, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 import { useDisplay } from "vuetify";
 
 import AddQuickLinkComponent from "@/components/modal/AddQuickLinkComponent.vue";
 import HgCardComponent from "@/components/shared/HgCardComponent.vue";
 import LoadingComponent from "@/components/shared/LoadingComponent.vue";
+import MessageModalComponent from "@/components/shared/MessageModalComponent.vue";
 import PageTitleComponent from "@/components/shared/PageTitleComponent.vue";
-// import MessageModalComponent from "@/components/modal/MessageModalComponent.vue";
 import {
     EntryTypeDetails,
     entryTypeMap,
@@ -49,10 +49,10 @@ const authenticatedVaccinationStatusStore =
 const errorStore = useErrorStore();
 const timelineStore = useTimelineStore();
 
-// const sensitivedocumentDownloadModal =
-//     ref<InstanceType<typeof MessageModalComponent>>();
-// const vaccineRecordResultModal =
-//     ref<InstanceType<typeof MessageModalComponent>>();
+const sensitiveDocumentDownloadModal =
+    ref<InstanceType<typeof MessageModalComponent>>();
+const vaccineRecordResultModal =
+    ref<InstanceType<typeof MessageModalComponent>>();
 
 const user = computed(() => userStore.user);
 const quickLinks = computed(() => userStore.quickLinks);
@@ -172,8 +172,8 @@ const isAddQuickLinkButtonDisabled = computed(
 );
 
 const quickLinkCols = computed(() => {
-    const { md, lg, xl } = display;
-    return xl.value ? 3 : lg.value ? 4 : md.value ? 6 : 12;
+    const { md, lg, xlAndUp } = display;
+    return xlAndUp.value ? 3 : lg.value ? 4 : md.value ? 6 : 12;
 });
 
 function retrieveAuthenticatedVaccineRecord(hdid: string): Promise<void> {
@@ -304,12 +304,12 @@ function handleClickQuickLink(index: number): void {
 }
 
 function showSensitiveDocumentDownloadModal(): void {
-    // sensitivedocumentDownloadModal.value?.showModal(); // TODO: Reinstate
+    sensitiveDocumentDownloadModal.value?.showModal(); // TODO: Reinstate
 }
 
 watch(vaccineRecordState, () => {
     if (vaccineRecordState.value.resultMessage.length > 0) {
-        // vaccineRecordResultModal.value?.showModal(); // TODO: Reinstate
+        vaccineRecordResultModal.value?.showModal(); // TODO: Reinstate
     }
 
     if (
@@ -546,18 +546,18 @@ watch(vaccineRecordState, () => {
                 </HgCardComponent>
             </v-col>
         </v-row>
-        <!--        <MessageModalComponent-->
-        <!--            ref="sensitivedocumentDownloadModal"-->
-        <!--            title="Sensitive Document Download"-->
-        <!--            message="The file that you are downloading contains personal information. If you are on a public computer, please ensure that the file is deleted before you log off."-->
-        <!--            @submit="retrieveVaccinePdf"-->
-        <!--        />-->
-        <!--        <MessageModalComponent-->
-        <!--            ref="vaccineRecordResultModal"-->
-        <!--            ok-only-->
-        <!--            title="Alert"-->
-        <!--            :message="vaccineRecordResultMessage"-->
-        <!--        />-->
+        <MessageModalComponent
+            ref="sensitiveDocumentDownloadModal"
+            title="Sensitive Document Download"
+            message="The file that you are downloading contains personal information. If you are on a public computer, please ensure that the file is deleted before you log off."
+            @submit="retrieveVaccinePdf"
+        />
+        <MessageModalComponent
+            ref="vaccineRecordResultModal"
+            ok-only
+            title="Alert"
+            :message="vaccineRecordResultMessage"
+        />
     </v-container>
 </template>
 
