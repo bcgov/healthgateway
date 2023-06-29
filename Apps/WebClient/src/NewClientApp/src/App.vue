@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import HeaderComponent from "@/components/navmenu/HeaderComponent.vue";
+import SidebarComponent from "@/components/navmenu/SidebarComponent.vue";
 import { useRoute } from "vue-router";
 import { computed } from "vue";
 import { useAppStore } from "@/stores/app";
@@ -25,6 +26,7 @@ const isHeaderVisible = computed(
 <template>
     <v-app>
         <HeaderComponent v-if="isHeaderVisible" class="d-print-none" />
+        <SidebarComponent class="d-print-none" />
         <v-main>
             <router-view />
         </v-main>
