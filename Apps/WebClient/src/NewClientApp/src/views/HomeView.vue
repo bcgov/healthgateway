@@ -470,7 +470,7 @@ watch(vaccineRecordState, () => {
                     elevation="6"
                 >
                     <template #icon>
-                        <v-icon icon="fas fa-check-circle" color="success" />
+                        <v-icon icon="check-circle" color="success" />
                     </template>
                     <template #menu-items>
                         <v-list-item
@@ -537,9 +537,5 @@ watch(vaccineRecordState, () => {
 <style lang="scss" scoped>
 .quick-link-icon {
     height: 1.5em;
-    &-square {
-        height: 1.5em;
-        width: 1.5em;
-    }
 }
 </style>
