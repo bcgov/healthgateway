@@ -7,6 +7,7 @@ import { useAuthStore } from "@/stores/auth";
 import { useConfigStore } from "@/stores/config";
 import { useRoute } from "vue-router";
 import HgIconButtonComponent from "@/components/shared/HgIconButtonComponent.vue";
+import { OidcUserInfo } from "@/models/user";
 
 const route = useRoute();
 
@@ -40,6 +41,30 @@ const isServicesEnabled = computed(
     () => configStore.webConfig.featureToggleConfiguration.services.enabled
 );
 
+const oidcUserInfo = computed<OidcUserInfo | undefined>(
+    () => userStore.oidcUserInfo
+);
+
+const userInitials = computed<string>(() => {
+    const first = oidcUserInfo.value?.given_name;
+    const last = oidcUserInfo.value?.family_name;
+    if (first && last) {
+        return first.charAt(0) + last.charAt(0);
+    } else if (first) {
+        return first.charAt(0);
+    } else if (last) {
+        return last.charAt(0);
+    } else {
+        return "?";
+    }
+});
+
+const userName = computed<string>(() =>
+    oidcUserInfo.value === undefined
+        ? ""
+        : `${oidcUserInfo.value.given_name} ${oidcUserInfo.value.family_name}`
+);
+
 onMounted(async () => {
     await nextTick();
 });
@@ -52,6 +77,31 @@ onMounted(async () => {
             color="primary"
             permanent
         >
+            <v-list-item
+                :title="userName"
+                nav
+                @click="navbarStore.toggleSidebar"
+            >
+                <template #prepend>
+                    <div class="nav-list-item-icon mr-8 d-flex justify-center">
+                        <HgIconButtonComponent
+                            id="sidenavbar-profile"
+                            data-testid="sidenavbar-profile-btn"
+                        >
+                            <v-avatar
+                                data-testid="sidenavbar-profile-initials"
+                                color="info"
+                            >
+                                {{ userInitials }}
+                            </v-avatar>
+                        </HgIconButtonComponent>
+                    </div>
+                </template>
+                <template #append>
+                    <v-icon icon="fas fa-angle-double-left" />
+                </template>
+            </v-list-item>
+            <v-divider></v-divider>
             <v-list density="compact" nav>
                 <v-list-item
                     title="Home"
@@ -122,16 +172,6 @@ onMounted(async () => {
                     </template>
                 </v-list-item>
             </v-list>
-            <template #append>
-                <HgIconButtonComponent
-                    :icon="
-                        navbarStore.isSidebarOpen
-                            ? 'fas fa-angle-double-left'
-                            : 'fas fa-angle-double-right'
-                    "
-                    @click="navbarStore.toggleSidebar"
-                />
-            </template>
         </v-navigation-drawer>
     </div>
 </template>
