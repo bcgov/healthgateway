@@ -354,7 +354,7 @@ watch(vaccineRecordState, () => {
             show
             dismissible
             type="info"
-            class="no-print my-3"
+            class="d-print-none my-3"
             title="Verify Contact Information"
         >
             <span class="text-body-1">
@@ -379,7 +379,7 @@ watch(vaccineRecordState, () => {
             title="Looks like you're in a different timezone."
             text="Heads up: your health records are recorded and displayed in
                 Pacific Time."
-            class="no-print my-3"
+            class="d-print-none my-3"
         />
         <PageTitleComponent title="Home">
             <template #append>
@@ -394,12 +394,11 @@ watch(vaccineRecordState, () => {
                     title="Health Records"
                     data-testid="health-records-card"
                     @click="handleClickHealthRecords()"
-                    class="h-100"
-                    elevation="6"
+                    class="flex-grow-1"
                 >
                     <template #icon>
                         <img
-                            class="quick-link-icon align-self-center"
+                            class="quick-link-icon"
                             src="@/assets/images/gov/health-gateway-logo.svg"
                             alt="Health Gateway Logo"
                         />
@@ -411,17 +410,16 @@ watch(vaccineRecordState, () => {
                     </p>
                 </HgCardComponent>
             </v-col>
-            <v-col :cols="quickLinkCols" v-if="showFederalCardButton">
+            <v-col v-if="showFederalCardButton" :cols="quickLinkCols">
                 <HgCardComponent
                     title="Proof of Vaccination"
                     data-testid="proof-vaccination-card-btn"
                     @click="showSensitiveDocumentDownloadModal()"
-                    class="h-100"
-                    elevation="6"
+                    class="flex-grow-1"
                 >
                     <template #icon>
                         <img
-                            class="quick-link-icon align-self-center"
+                            class="quick-link-icon"
                             src="@/assets/images/gov/canada-gov-logo.svg"
                             alt="Canada Government Logo"
                         />
@@ -432,17 +430,16 @@ watch(vaccineRecordState, () => {
                     </p>
                 </HgCardComponent>
             </v-col>
-            <v-col :cols="quickLinkCols" v-if="showOrganDonorButton">
+            <v-col v-if="showOrganDonorButton" :cols="quickLinkCols">
                 <HgCardComponent
                     title="Organ Donor Registration"
                     data-testid="organ-donor-registration-card"
                     @click="handleClickOrganDonorCard()"
-                    class="h-100"
-                    elevation="6"
+                    class="flex-grow-1"
                 >
                     <template #icon>
                         <img
-                            class="quick-link-icon align-self-center"
+                            class="quick-link-icon"
                             src="@/assets/images/services/odr-logo.svg"
                             alt="Organ Donor Registry Logo"
                         />
@@ -461,13 +458,12 @@ watch(vaccineRecordState, () => {
                     </p>
                 </HgCardComponent>
             </v-col>
-            <v-col :cols="quickLinkCols" v-if="showVaccineCardButton">
+            <v-col v-if="showVaccineCardButton" :cols="quickLinkCols">
                 <HgCardComponent
                     title="BC Vaccine Card"
                     data-testid="bc-vaccine-card-card"
                     @click="handleClickVaccineCard()"
-                    class="h-100"
-                    elevation="6"
+                    class="flex-grow-1"
                 >
                     <template #icon>
                         <v-icon icon="check-circle" color="success" />
@@ -489,21 +485,20 @@ watch(vaccineRecordState, () => {
                 </HgCardComponent>
             </v-col>
             <v-col
-                :cols="quickLinkCols"
                 v-for="card in quickLinkCards"
+                :cols="quickLinkCols"
                 :key="card.title"
             >
                 <HgCardComponent
                     :title="card.title"
                     data-testid="quick-link-card"
                     @click="handleClickQuickLink(card.index)"
-                    class="h-100"
-                    elevation="6"
+                    class="flex-grow-1"
                 >
                     <template #icon>
                         <v-icon
                             :icon="card.icon"
-                            class="quick-link-icon align-self-center"
+                            class="quick-link-icon"
                             color="primary"
                             size="small"
                         />

@@ -205,7 +205,6 @@ function hideModal(): void {
                 id="add-quick-link-button"
                 data-testid="add-quick-link-button"
                 :disabled="disabled"
-                class="float-right"
                 variant="secondary"
                 v-bind="props"
                 prepend-icon="plus"
