@@ -27,10 +27,12 @@ const display = useDisplay();
 const userStore = useUserStore();
 const patientDataStore = usePatientDataStore();
 
-const hdid = computed<string>(() => userStore.user.hdid);
+const hdid = computed(() => userStore.user.hdid);
 
-const patientDataAreLoading = computed<boolean>(() =>
-    patientDataStore.patientDataAreLoading(hdid.value)
+const patientDataAreLoading = computed(
+    () =>
+        isOrganDonorServiceEnabled.value &&
+        patientDataStore.patientDataAreLoading(hdid.value)
 );
 
 const serviceGridCols = computed(() => getGridCols(display));
