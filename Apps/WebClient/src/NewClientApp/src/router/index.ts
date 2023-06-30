@@ -48,6 +48,8 @@ const ReleaseNotesView = () =>
     import(
         /* webpackChunkName: "releaseNotes" */ "@/views/ReleaseNotesView.vue"
     );
+const ReportsView = () =>
+    import(/* webpackChunkName: "reports" */ "@/views/ReportsView.vue");
 const ServicesView = () =>
     import(/* webpackChunkName: "services" */ "@/views/ServicesView.vue");
 const UserTimelineView = () =>
@@ -73,6 +75,7 @@ export enum RouterPath {
     QUEUE_PATH = "/queue",
     QUEUE_FULL_PATH = "/busy",
     RELEASE_NOTES_PATH = "/release-notes",
+    REPORTS_PATH = "/reports",
     SERVICES_PATH = "/services",
 }
 
@@ -192,6 +195,14 @@ const routes = [
         path: RouterPath.RELEASE_NOTES_PATH,
         name: "ReleaseNotes",
         component: ReleaseNotesView,
+    },
+    {
+        path: RouterPath.REPORTS_PATH,
+        component: ReportsView,
+        meta: {
+            validStates: [UserState.registered],
+            requiresProcessedWaitlistTicket: true,
+        },
     },
     {
         path: RouterPath.SERVICES_PATH,
