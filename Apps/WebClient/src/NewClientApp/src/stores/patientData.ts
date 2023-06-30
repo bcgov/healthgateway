@@ -219,6 +219,7 @@ export const usePatientDataStore = defineStore("patientData", () => {
             logger.debug("Patient data found stored, not querying!");
             return Promise.resolve(patientData(hdid, patientDataTypes));
         }
+        patientDataMapUtil.setStateRequested(patientDataMap.value, hdid);
         return patientDataService
             .getPatientData(hdid, patientDataTypes)
             .then((data) => {

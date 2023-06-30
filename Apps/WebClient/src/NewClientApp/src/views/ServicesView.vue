@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed } from "vue";
 
 import LoadingComponent from "@/components/shared/LoadingComponent.vue";
 import BreadcrumbComponent from "@/components/navmenu/BreadcrumbComponent.vue";
@@ -27,9 +27,11 @@ const display = useDisplay();
 const userStore = useUserStore();
 const patientDataStore = usePatientDataStore();
 
-const isLoading = ref(true);
-
 const hdid = computed<string>(() => userStore.user.hdid);
+
+const patientDataAreLoading = computed<boolean>(() =>
+    patientDataStore.patientDataAreLoading(hdid.value)
+);
 
 const serviceGridCols = computed(() => getGridCols(display));
 
@@ -45,18 +47,13 @@ function retrievePatientData(): Promise<PatientData[]> {
 
 if (isOrganDonorServiceEnabled.value) {
     retrievePatientData();
-    patientDataStore.$subscribe(() => {
-        isLoading.value = patientDataStore.patientDataAreLoading(hdid.value);
-    });
-} else {
-    isLoading.value = false;
 }
 </script>
 
 <template>
     <v-container>
         <BreadcrumbComponent :items="breadcrumbItems" />
-        <LoadingComponent :is-loading="isLoading" />
+        <LoadingComponent :is-loading="patientDataAreLoading" />
         <PageTitleComponent title="Services" />
         <p>
             You can check and update your Organ Donor Registry information here.

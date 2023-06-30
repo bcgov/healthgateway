@@ -34,17 +34,20 @@ const patientData = computed<PatientData[]>(() => {
     ]);
 });
 
-const isLoadingFile = ref(false);
+const isLoadingFile = computed<boolean>(() => {
+    return (
+        registrationData.value?.registrationFileId !== undefined &&
+        patientDataStore.isPatientDataFileLoading(
+            registrationData.value?.registrationFileId
+        )
+    );
+});
 
 const registrationData = computed<OrganDonorRegistration | undefined>(() => {
     return patientData.value
         ? (patientData.value[0] as OrganDonorRegistration)
         : undefined;
 });
-
-function isPatientDataFileLoading(fileId: string): boolean {
-    return patientDataStore.isPatientDataFileLoading(fileId);
-}
 
 function getDecisionFile(): void {
     const registrationDataValue = registrationData.value;
@@ -72,12 +75,6 @@ function getDecisionFile(): void {
 function showConfirmationModal(): void {
     sensitiveDocumentModal.value?.showModal();
 }
-
-patientDataStore.$subscribe(() => {
-    isLoadingFile.value =
-        registrationData.value?.registrationFileId !== undefined &&
-        isPatientDataFileLoading(registrationData.value.registrationFileId);
-});
 </script>
 
 <template>
