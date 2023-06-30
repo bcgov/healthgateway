@@ -1,30 +1,31 @@
 ﻿import { defineStore } from "pinia";
 import { computed, ref } from "vue";
-import User, { OidcUserInfo } from "@/models/user";
-import { DateWrapper } from "@/models/dateWrapper";
-import { LoadStatus } from "@/models/storeOperations";
-import Patient from "@/models/patient";
-import { QuickLink } from "@/models/quickLink";
-import UserPreferenceType from "@/constants/userPreferenceType";
-import { QuickLinkUtil } from "@/utility/quickLinkUtil";
-import UserProfile, { CreateUserRequest } from "@/models/userProfile";
-import {
-    ILogger,
-    IPatientService,
-    IUserProfileService,
-} from "@/services/interfaces";
-import PreferenceUtil from "@/utility/preferenceUtil";
-import { ResultError } from "@/models/errors";
-import { useAppStore } from "@/stores/app";
-import { useErrorStore } from "@/stores/error";
+
 import {
     AppErrorType,
     ErrorSourceType,
     ErrorType,
 } from "@/constants/errorType";
-import { UserPreference } from "@/models/userPreference";
-import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
+import UserPreferenceType from "@/constants/userPreferenceType";
 import { container } from "@/ioc/container";
+import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
+import { DateWrapper } from "@/models/dateWrapper";
+import { ResultError } from "@/models/errors";
+import Patient from "@/models/patient";
+import { QuickLink } from "@/models/quickLink";
+import { LoadStatus } from "@/models/storeOperations";
+import User, { OidcUserInfo } from "@/models/user";
+import { UserPreference } from "@/models/userPreference";
+import UserProfile from "@/models/userProfile";
+import {
+    ILogger,
+    IPatientService,
+    IUserProfileService,
+} from "@/services/interfaces";
+import { useAppStore } from "@/stores/app";
+import { useErrorStore } from "@/stores/error";
+import PreferenceUtil from "@/utility/preferenceUtil";
+import { QuickLinkUtil } from "@/utility/quickLinkUtil";
 
 export const useUserStore = defineStore("user", () => {
     const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);

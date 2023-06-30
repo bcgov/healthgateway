@@ -1,23 +1,23 @@
 <script setup lang="ts">
 import { computed, nextTick, ref } from "vue";
 
+import HgButtonComponent from "@/components/shared/HgButtonComponent.vue";
+import HgIconButtonComponent from "@/components/shared/HgIconButtonComponent.vue";
 import TooManyRequestsComponent from "@/components/TooManyRequestsComponent.vue";
 import { entryTypeMap, getEntryTypeByModule } from "@/constants/entryType";
 import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import { ServiceName } from "@/constants/serviceName";
 import UserPreferenceType from "@/constants/userPreferenceType";
+import { container } from "@/ioc/container";
+import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
 import { BannerError, isTooManyRequestsError } from "@/models/errors";
 import { QuickLink } from "@/models/quickLink";
 import { ILogger } from "@/services/interfaces";
+import { useErrorStore } from "@/stores/error";
+import { useUserStore } from "@/stores/user";
 import ConfigUtil from "@/utility/configUtil";
 import ErrorTranslator from "@/utility/errorTranslator";
 import PromiseUtility from "@/utility/promiseUtility";
-import { container } from "@/ioc/container";
-import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
-import { useErrorStore } from "@/stores/error";
-import { useUserStore } from "@/stores/user";
-import HgButtonComponent from "@/components/shared/HgButtonComponent.vue";
-import HgIconButtonComponent from "@/components/shared/HgIconButtonComponent.vue";
 
 interface props {
     disabled?: boolean;
@@ -211,7 +211,7 @@ function hideModal(): void {
         persistent
         no-click-animation
     >
-        <template v-slot:activator="{ props }">
+        <template #activator="{ props }">
             <HgButtonComponent
                 id="add-quick-link-button"
                 data-testid="add-quick-link-button"
@@ -259,13 +259,13 @@ function hideModal(): void {
                     </v-alert>
                     <v-checkbox
                         v-for="quickLink in enabledQuickLinkFilter"
-                        :key="quickLink.module"
                         :id="quickLink.module + '-filter'"
+                        :key="quickLink.module"
+                        v-model="selectedQuickLinks"
                         :data-testid="`${quickLink.module}-filter`"
                         :name="quickLink.module + '-filter'"
                         :value="quickLink.module"
                         :label="quickLink.name"
-                        v-model="selectedQuickLinks"
                         density="compact"
                         hide-details
                         color="primary"
@@ -273,11 +273,11 @@ function hideModal(): void {
                     <v-checkbox
                         v-if="showOrganDonorRegistration"
                         id="organ-donor-registration-filter"
+                        v-model="selectedQuickLinks"
                         data-testid="organ-donor-registration-filter"
                         name="organ-donor-registration-filter"
                         value="organ-donor-registration"
                         label="Organ Donor Registration"
-                        v-model="selectedQuickLinks"
                         density="compact"
                         hide-details
                         color="primary"
@@ -285,11 +285,11 @@ function hideModal(): void {
                     <v-checkbox
                         v-if="showHealthConnectRegistry"
                         id="health-connect-registry-filter"
+                        v-model="selectedQuickLinks"
                         data-testid="health-connect-registry-filter"
                         name="health-connect-registry-filter"
                         value="health-connect-registry"
                         label="Health Connect Registry"
-                        v-model="selectedQuickLinks"
                         density="compact"
                         hide-details
                         color="primary"
@@ -297,11 +297,11 @@ function hideModal(): void {
                     <v-checkbox
                         v-if="showVaccineCard"
                         id="bc-vaccine-card-filter"
+                        v-model="selectedQuickLinks"
                         data-testid="bc-vaccine-card-filter"
                         name="bc-vaccine-card-filter"
                         value="bc-vaccine-card"
                         label="BC Vaccine Card"
-                        v-model="selectedQuickLinks"
                         density="compact"
                         hide-details
                         color="primary"
@@ -309,11 +309,11 @@ function hideModal(): void {
                     <v-checkbox
                         v-if="showImmunizationRecord"
                         id="immunization-record-filter"
+                        v-model="selectedQuickLinks"
                         data-testid="immunization-record-filter"
                         name="immunization-record-filter"
                         value="immunization-record"
                         label="Add Vaccines"
-                        v-model="selectedQuickLinks"
                         density="compact"
                         hide-details
                         color="primary"
@@ -323,16 +323,16 @@ function hideModal(): void {
                     <HgButtonComponent
                         data-testid="cancel-add-quick-link-btn"
                         variant="secondary"
-                        @click.prevent="handleCancel"
                         text="Cancel"
+                        @click.prevent="handleCancel"
                     />
                     <HgButtonComponent
                         data-testid="add-quick-link-btn"
                         variant="primary"
                         :disabled="!isAddButtonEnabled"
-                        @click.prevent="handleSubmit"
                         :loading="isLoading"
                         text="Add to Home"
+                        @click.prevent="handleSubmit"
                     />
                 </v-card-actions>
             </v-card>

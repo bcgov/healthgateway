@@ -1,7 +1,13 @@
 ﻿<script setup lang="ts">
+import { saveAs } from "file-saver";
 import { computed, watch } from "vue";
+import { useRouter } from "vue-router";
+import { useDisplay } from "vuetify";
 
+import AddQuickLinkComponent from "@/components/modal/AddQuickLinkComponent.vue";
+import HgCardComponent from "@/components/shared/HgCardComponent.vue";
 import LoadingComponent from "@/components/shared/LoadingComponent.vue";
+import PageTitleComponent from "@/components/shared/PageTitleComponent.vue";
 // import MessageModalComponent from "@/components/modal/MessageModalComponent.vue";
 import {
     EntryTypeDetails,
@@ -11,26 +17,20 @@ import {
 import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import { ServiceName } from "@/constants/serviceName";
 import UserPreferenceType from "@/constants/userPreferenceType";
+import { container } from "@/ioc/container";
+import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
 import { DateWrapper } from "@/models/dateWrapper";
 import { QuickLink } from "@/models/quickLink";
 import { LoadStatus } from "@/models/storeOperations";
 import { TimelineFilterBuilder } from "@/models/timelineFilter";
 import { ILogger } from "@/services/interfaces";
-import ConfigUtil from "@/utility/configUtil";
-import SnowPlow from "@/utility/snowPlow";
-import { container } from "@/ioc/container";
-import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
 import { useConfigStore } from "@/stores/config";
-import { useVaccinationStatusAuthenticatedStore } from "@/stores/vaccinationStatusAuthenticated";
-import { useUserStore } from "@/stores/user";
-import { useRouter } from "vue-router";
 import { useErrorStore } from "@/stores/error";
 import { useTimelineStore } from "@/stores/timeline";
-import { saveAs } from "file-saver";
-import PageTitleComponent from "@/components/shared/PageTitleComponent.vue";
-import HgCardComponent from "@/components/shared/HgCardComponent.vue";
-import { useDisplay } from "vuetify";
-import AddQuickLinkComponent from "@/components/modal/AddQuickLinkComponent.vue";
+import { useUserStore } from "@/stores/user";
+import { useVaccinationStatusAuthenticatedStore } from "@/stores/vaccinationStatusAuthenticated";
+import ConfigUtil from "@/utility/configUtil";
+import SnowPlow from "@/utility/snowPlow";
 
 interface QuickLinkCard {
     index: number;
@@ -382,8 +382,8 @@ watch(vaccineRecordState, () => {
                 <HgCardComponent
                     title="Health Records"
                     data-testid="health-records-card"
-                    @click="handleClickHealthRecords()"
                     class="flex-grow-1"
+                    @click="handleClickHealthRecords()"
                 >
                     <template #icon>
                         <img
@@ -407,8 +407,8 @@ watch(vaccineRecordState, () => {
                 <HgCardComponent
                     title="Proof of Vaccination"
                     data-testid="proof-vaccination-card-btn"
-                    @click="showSensitiveDocumentDownloadModal()"
                     class="flex-grow-1"
+                    @click="showSensitiveDocumentDownloadModal()"
                 >
                     <template #icon>
                         <img
@@ -430,8 +430,8 @@ watch(vaccineRecordState, () => {
             >
                 <HgCardComponent
                     data-testid="health-connect-registry-card"
-                    @click="handleClickHealthConnectCard()"
                     class="flex-grow-1"
+                    @click="handleClickHealthConnectCard()"
                 >
                     <template #icon>
                         <img
@@ -443,8 +443,8 @@ watch(vaccineRecordState, () => {
                     <template #menu-items>
                         <v-list-item
                             data-testid="remove-quick-link-button"
-                            @click.stop="handleClickRemoveHealthConnectCard()"
                             title="Remove"
+                            @click.stop="handleClickRemoveHealthConnectCard()"
                         />
                     </template>
                     <p class="text-body-1">
@@ -461,8 +461,8 @@ watch(vaccineRecordState, () => {
                 <HgCardComponent
                     title="Organ Donor Registration"
                     data-testid="organ-donor-registration-card"
-                    @click="handleClickOrganDonorCard()"
                     class="flex-grow-1"
+                    @click="handleClickOrganDonorCard()"
                 >
                     <template #icon>
                         <img
@@ -474,8 +474,8 @@ watch(vaccineRecordState, () => {
                     <template #menu-items>
                         <v-list-item
                             data-testid="remove-quick-link-button"
-                            @click.stop="handleClickRemoveOrganDonorQuickLink()"
                             title="Remove"
+                            @click.stop="handleClickRemoveOrganDonorQuickLink()"
                         />
                     </template>
                     <p class="text-body-1">
@@ -493,8 +493,8 @@ watch(vaccineRecordState, () => {
                 <HgCardComponent
                     title="BC Vaccine Card"
                     data-testid="bc-vaccine-card-card"
-                    @click="handleClickVaccineCard()"
                     class="flex-grow-1"
+                    @click="handleClickVaccineCard()"
                 >
                     <template #icon>
                         <v-icon icon="check-circle" color="success" />
@@ -502,10 +502,10 @@ watch(vaccineRecordState, () => {
                     <template #menu-items>
                         <v-list-item
                             data-testid="remove-quick-link-button"
+                            title="Remove"
                             @click.stop="
                                 handleClickRemoveVaccineCardQuickLink()
                             "
-                            title="Remove"
                         />
                     </template>
                     <p class="text-body-1">
@@ -517,15 +517,15 @@ watch(vaccineRecordState, () => {
             </v-col>
             <v-col
                 v-for="card in quickLinkCards"
-                :cols="quickLinkCols"
                 :key="card.title"
+                :cols="quickLinkCols"
                 class="d-flex"
             >
                 <HgCardComponent
                     :title="card.title"
                     data-testid="quick-link-card"
-                    @click="handleClickQuickLink(card.index)"
                     class="flex-grow-1"
+                    @click="handleClickQuickLink(card.index)"
                 >
                     <template #icon>
                         <v-icon
@@ -538,8 +538,8 @@ watch(vaccineRecordState, () => {
                     <template #menu-items>
                         <v-list-item
                             data-testid="remove-quick-link-button"
-                            @click.stop="handleClickRemoveQuickLink(card.index)"
                             title="Remove"
+                            @click.stop="handleClickRemoveQuickLink(card.index)"
                         />
                     </template>
                     <p class="text-body-1">{{ card.description }}</p>

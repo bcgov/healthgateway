@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, useSlots } from "vue";
+
 import HgIconButtonComponent from "@/components/shared/HgIconButtonComponent.vue";
 
 interface Props {
@@ -59,7 +60,7 @@ const hasDefaultSlot = computed<boolean>(() => {
                 </v-col>
             </v-row>
         </template>
-        <template #text v-if="hasDefaultSlot">
+        <template v-if="hasDefaultSlot" #text>
             <slot name="default" />
         </template>
     </v-card>
