@@ -11,20 +11,16 @@ export const useNavbarStore = defineStore("navbar", () => {
     const appStore = useAppStore();
 
     const isSidebarOpenField = ref<boolean>();
-    const isSidebarAnimating = ref<boolean>(false);
+
     const isHeaderShown = ref<boolean>(true);
 
-    const isSidebarOpen = computed(() => isSidebarOpenField.value ?? !appStore.isMobile);
+    const isSidebarOpen = computed(
+        () => isSidebarOpenField.value ?? !appStore.isMobile
+    );
 
     function toggleSidebar() {
-        logger.verbose(`useNavbarStore:setSidebarState`);
+        logger.verbose(`useNavbarStore:toggleSidebar`);
         isSidebarOpenField.value = !isSidebarOpenField.value;
-        isSidebarAnimating.value = true;
-    }
-
-    function setSidebarStoppedAnimating() {
-        logger.verbose(`useNavbarStore:setSidebarStoppedAnimating`);
-        isSidebarAnimating.value = false;
     }
 
     function setHeaderState(isOpen: boolean) {
@@ -34,10 +30,8 @@ export const useNavbarStore = defineStore("navbar", () => {
 
     return {
         isSidebarOpen,
-        isSidebarAnimating,
         isHeaderShown,
         toggleSidebar,
-        setSidebarStoppedAnimating,
         setHeaderState,
     };
 });
