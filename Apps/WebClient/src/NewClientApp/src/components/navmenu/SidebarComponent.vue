@@ -154,6 +154,19 @@ function dismiss() {
                     </div>
                 </template>
             </v-list-item>
+            <v-list-item
+                v-show="userStore.userIsActive"
+                prepend-icon="fas fa-cloud-arrow-down"
+                title="Export Records"
+                to="/reports"
+                data-testid="menu-btn-reports-link"
+            >
+                <template #prepend>
+                    <div class="nav-list-item-icon mr-8 d-flex justify-center">
+                        <v-icon icon="fas fa-cloud-arrow-down" />
+                    </div>
+                </template>
+            </v-list-item>
         </v-list>
     </v-navigation-drawer>
 </template>
