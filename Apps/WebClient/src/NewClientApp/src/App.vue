@@ -51,6 +51,10 @@ function setIsMobile(isMobile: boolean): void {
     appStore.setIsMobile(isMobile);
 }
 
+onBeforeUnmount(() => {
+    window.removeEventListener("resize", onResize);
+});
+
 onMounted(async () => {
     windowWidth.value = window.innerWidth;
 
@@ -58,16 +62,12 @@ onMounted(async () => {
     initializeResizeListener();
     initialized.value = true;
 });
-
-onBeforeUnmount(() => {
-    window.removeEventListener("resize", onResize);
-});
 </script>
 
 <template>
     <v-app>
         <HeaderComponent v-if="isHeaderVisible" class="d-print-none" />
-        <SidebarComponent class="d-print-none" />
+        <SidebarComponent />
         <v-main>
             <router-view />
         </v-main>

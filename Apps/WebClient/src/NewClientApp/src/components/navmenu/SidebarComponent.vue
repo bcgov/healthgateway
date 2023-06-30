@@ -7,7 +7,6 @@ import { useAuthStore } from "@/stores/auth";
 import { useConfigStore } from "@/stores/config";
 import { useRoute } from "vue-router";
 import HgIconButtonComponent from "@/components/shared/HgIconButtonComponent.vue";
-import { OidcUserInfo } from "@/models/user";
 import { useAppStore } from "@/stores/app";
 
 const route = useRoute();
@@ -28,9 +27,6 @@ const isDependentEnabled = computed(
 const isServicesEnabled = computed(
     () => configStore.webConfig.featureToggleConfiguration.services.enabled
 );
-const oidcUserInfo = computed<OidcUserInfo | undefined>(
-    () => userStore.oidcUserInfo
-);
 
 const isQueuePage = computed(
     () =>
@@ -47,26 +43,6 @@ const isSidebarAvailable = computed(
         userStore.userIsActive &&
         !userStore.patientRetrievalFailed &&
         !isQueuePage.value
-);
-
-const userInitials = computed<string>(() => {
-    const first = oidcUserInfo.value?.given_name;
-    const last = oidcUserInfo.value?.family_name;
-    if (first && last) {
-        return first.charAt(0) + last.charAt(0);
-    } else if (first) {
-        return first.charAt(0);
-    } else if (last) {
-        return last.charAt(0);
-    } else {
-        return "?";
-    }
-});
-
-const userName = computed<string>(() =>
-    oidcUserInfo.value === undefined
-        ? ""
-        : `${oidcUserInfo.value.given_name} ${oidcUserInfo.value.family_name}`
 );
 
 const visibleOnMobile = computed({
@@ -97,21 +73,23 @@ function dismiss() {
         :temporary="isMobile"
         :rail="isMobile ? false : collapsedOnDesktop"
         color="primary"
+        class="d-print-none"
         @click.stop="collapsedOnDesktop = false"
         @update:model-value="visibleOnMobile = false"
     >
-        <v-list-item :title="userName" nav>
+        <v-list-item :title="userStore.userName" nav>
             <template #prepend>
                 <v-avatar
                     data-testid="sidenavbar-profile-initials"
                     color="info"
                 >
-                    {{ userInitials }}
+                    {{ userStore.userInitials }}
                 </v-avatar>
             </template>
             <template #append>
                 <HgIconButtonComponent
                     icon="fas fa-chevron-left"
+                    data-testid="sidenavbar-dismiss-btn"
                     @click.stop="dismiss"
                 />
             </template>
