@@ -5,6 +5,7 @@ import {
 } from "vue-router";
 import { beforeEachGuard } from "@/router/beforeEachGuard";
 import { afterEachHook } from "@/router/afterEachHook";
+import { FeatureToggleConfiguration } from "@/models/configData";
 
 const Covid19View = () =>
     import(/* webpackChunkName: "covid19" */ "@/views/Covid19View.vue");
@@ -170,6 +171,17 @@ const routes = [
         component: RegistrationView,
         meta: {
             validStates: [UserState.notRegistered],
+            requiresProcessedWaitlistTicket: true,
+        },
+    },
+    {
+        path: RouterPath.SERVICES_PATH,
+        name: "Services",
+        component: ServicesView,
+        meta: {
+            validStates: [UserState.registered],
+            requiredFeaturesEnabled: (config: FeatureToggleConfiguration) =>
+                config.services.enabled,
             requiresProcessedWaitlistTicket: true,
         },
     },

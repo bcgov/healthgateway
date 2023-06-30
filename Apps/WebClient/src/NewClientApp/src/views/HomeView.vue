@@ -30,6 +30,7 @@ import { useTimelineStore } from "@/stores/timeline";
 import { useUserStore } from "@/stores/user";
 import { useVaccinationStatusAuthenticatedStore } from "@/stores/vaccinationStatusAuthenticated";
 import ConfigUtil from "@/utility/configUtil";
+import { getGridCols } from "@/utility/gridUtilty";
 import SnowPlow from "@/utility/snowPlow";
 
 interface QuickLinkCard {
@@ -172,8 +173,7 @@ const isAddQuickLinkButtonDisabled = computed(
 );
 
 const quickLinkCols = computed(() => {
-    const { md, lg, xlAndUp } = display;
-    return xlAndUp.value ? 3 : lg.value ? 4 : md.value ? 6 : 12;
+    return getGridCols(display);
 });
 
 function retrieveAuthenticatedVaccineRecord(hdid: string): Promise<void> {

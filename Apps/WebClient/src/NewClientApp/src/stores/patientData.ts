@@ -261,6 +261,8 @@ export const usePatientDataStore = defineStore("patientData", () => {
     }
 
     return {
+        patientDataMap,
+        patientDataFilesMap,
         patientData,
         patientDataCount,
         patientDataAreLoading,
