@@ -3,9 +3,10 @@ import {
     createWebHistory,
     RouteLocationNormalized,
 } from "vue-router";
-import { beforeEachGuard } from "@/router/beforeEachGuard";
-import { afterEachHook } from "@/router/afterEachHook";
+
 import { FeatureToggleConfiguration } from "@/models/configData";
+import { afterEachHook } from "@/router/afterEachHook";
+import { beforeEachGuard } from "@/router/beforeEachGuard";
 
 const Covid19View = () =>
     import(/* webpackChunkName: "covid19" */ "@/views/Covid19View.vue");
@@ -211,14 +212,6 @@ const routes = [
     {
         path: RouterPath.REPORTS_PATH,
         component: ReportsView,
-        meta: {
-            validStates: [UserState.registered],
-            requiresProcessedWaitlistTicket: true,
-        },
-    },
-    {
-        path: RouterPath.SERVICES_PATH,
-        component: ServicesView,
         meta: {
             validStates: [UserState.registered],
             requiresProcessedWaitlistTicket: true,
