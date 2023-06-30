@@ -35,8 +35,6 @@ const patientDataAreLoading = computed(
         patientDataStore.patientDataAreLoading(hdid.value)
 );
 
-const serviceGridCols = computed(() => getGridCols(display));
-
 const isOrganDonorServiceEnabled = computed(() =>
     ConfigUtil.isServiceEnabled(ServiceName.OrganDonorRegistration)
 );
@@ -64,7 +62,7 @@ if (isOrganDonorServiceEnabled.value) {
         <v-row>
             <v-col
                 v-if="!patientDataAreLoading && isOrganDonorServiceEnabled"
-                :cols="serviceGridCols"
+                :cols="getGridCols"
                 class="pa-3"
             >
                 <OrganDonorDetailsCard :hdid="hdid" />

@@ -34,14 +34,13 @@ const patientData = computed<PatientData[]>(() => {
     ]);
 });
 
-const isLoadingFile = computed<boolean>(() => {
-    return (
+const isLoadingFile = computed<boolean>(
+    () =>
         registrationData.value?.registrationFileId !== undefined &&
         patientDataStore.isPatientDataFileLoading(
             registrationData.value?.registrationFileId
         )
-    );
-});
+);
 
 const registrationData = computed<OrganDonorRegistration | undefined>(() => {
     return patientData.value
@@ -58,8 +57,8 @@ function getDecisionFile(): void {
         });
         patientDataStore
             .retrievePatientDataFile(
-                registrationDataValue.registrationFileId,
-                props.hdid
+                props.hdid,
+                registrationDataValue.registrationFileId
             )
             .then(
                 (patientFile: PatientDataFile) =>
@@ -86,6 +85,7 @@ function showConfirmationModal(): void {
             <img
                 src="@/assets/images/services/odr-logo.svg"
                 alt="Organ Donor Registry Logo"
+                :height="30"
             />
         </template>
         <div class="flex-grow-1 d-flex flex-column text-body-1 card-content">
@@ -124,7 +124,7 @@ function showConfirmationModal(): void {
                     <v-progress-circular
                         indeterminate
                         v-if="isLoadingFile"
-                        small
+                        size="20"
                     />
                     <v-icon
                         v-else
@@ -132,9 +132,8 @@ function showConfirmationModal(): void {
                         size="medium"
                         square
                         aria-hidden="true"
-                        class="mr-1"
                     />
-                    <span>Download</span>
+                    <span class="text-body-1 ml-3">Download</span>
                 </HgButtonComponent>
                 <strong
                     v-else

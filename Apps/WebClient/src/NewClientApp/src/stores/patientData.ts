@@ -90,10 +90,10 @@ export const usePatientDataStore = defineStore("patientData", () => {
         return patientDataMapUtil.getDatasetState(patientDataMap.value, hdid);
     }
 
-    function getPatientDataFileState(hdid: string): PatientDataFileState {
+    function getPatientDataFileState(fileId: string): PatientDataFileState {
         return patientDataFileMapUtil.getDatasetState(
             patientDataFilesMap.value,
-            hdid
+            fileId
         );
     }
 
@@ -245,6 +245,10 @@ export const usePatientDataStore = defineStore("patientData", () => {
             logger.debug("Patient data file found stored, not querying!");
             return Promise.resolve(patientDataFile(fileId)!);
         }
+        patientDataFileMapUtil.setStateRequested(
+            patientDataFilesMap.value,
+            fileId
+        );
         return patientDataService
             .getFile(hdid, fileId)
             .then((data) => {
