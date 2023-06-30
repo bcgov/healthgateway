@@ -35,7 +35,7 @@ function clearTooManyRequestsError(): void {
             data-testid="too-many-requests-warning"
             color="warning"
             dismissible
-            class="no-print my-1"
+            class="d-print-none mb-4"
             @dismissed="clearTooManyRequestsWarning"
         >
             We are unable to complete all actions because the site is too busy.
@@ -46,7 +46,7 @@ function clearTooManyRequestsError(): void {
             data-testid="too-many-requests-error"
             color="error"
             dismissible
-            class="no-print my-1"
+            class="d-print-none mb-4"
             @dismissed="clearTooManyRequestsError"
         >
             Unable to complete action as the site is too busy. Please try again

@@ -214,7 +214,7 @@ function hideModal(): void {
         </template>
         <v-row justify="center" data-testid="quick-link-modal-text">
             <v-card min-width="20%">
-                <v-card-title class="bg-primary text-white">
+                <v-card-title class="bg-primary text-white px-0">
                     <v-toolbar
                         title="Add a quick link"
                         density="compact"
