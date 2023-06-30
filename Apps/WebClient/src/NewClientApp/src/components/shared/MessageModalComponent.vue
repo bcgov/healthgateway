@@ -54,8 +54,7 @@ function handleCancel(): void {
                 <template v-slot:loader="{ isActive }">
                     <v-progress-linear
                         :active="isActive"
-                        color="primary"
-                        heigh="4"
+                        color="accent"
                         indeterminate
                     />
                 </template>
@@ -76,16 +75,17 @@ function handleCancel(): void {
                 <v-card-actions class="justify-end border-t-sm pa-4">
                     <HgButtonComponent
                         data-testid="genericMessageOkBtn"
-                        class="mr-2"
                         :variant="okOnly ? 'primary' : 'secondary'"
-                        @click.prevent="handleCancel"
                         :text="okOnly ? 'OK' : 'Cancel'"
+                        @click.prevent="handleCancel"
                     />
                     <HgButtonComponent
+                        v-if="!okOnly"
                         data-testid="genericMessageSubmitBtn"
+                        class="ml-2"
                         variant="primary"
-                        @click.prevent="handleSubmit"
                         text="Continue"
+                        @click.prevent="handleSubmit"
                     />
                 </v-card-actions>
             </v-card>
