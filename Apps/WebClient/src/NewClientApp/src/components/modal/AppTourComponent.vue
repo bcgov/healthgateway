@@ -124,7 +124,7 @@ function previous(): void {
                 </v-badge>
             </HgIconButtonComponent>
         </template>
-        <v-row justify="center" no-gutters>
+        <div class="d-flex justify-center">
             <v-card max-width="675px">
                 <v-card-text class="pa-0 mh-50">
                     <v-carousel
@@ -208,6 +208,6 @@ function previous(): void {
                     </v-container>
                 </template>
             </v-card>
-        </v-row>
+        </div>
     </v-dialog>
 </template>

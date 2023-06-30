@@ -198,6 +198,7 @@ function hideModal(): void {
         v-model="isVisible"
         data-testid="add-quick-link-modal"
         persistent
+        no-click-animation
     >
         <template v-slot:activator="{ props }">
             <HgButtonComponent
@@ -207,13 +208,12 @@ function hideModal(): void {
                 class="float-right"
                 variant="secondary"
                 v-bind="props"
-            >
-                <v-icon icon="plus" size="medium" class="mr-2" />
-                <span class="text-body-1">Add Quick Link</span>
-            </HgButtonComponent>
+                prepend-icon="plus"
+                text="Add Quick Link"
+            />
         </template>
-        <v-row justify="center" data-testid="quick-link-modal-text">
-            <v-card min-width="20%">
+        <div class="d-flex justify-center" data-testid="quick-link-modal-text">
+            <v-card>
                 <v-card-title class="bg-primary text-white px-0">
                     <v-toolbar
                         title="Add a quick link"
@@ -314,6 +314,6 @@ function hideModal(): void {
                     />
                 </v-card-actions>
             </v-card>
-        </v-row>
+        </div>
     </v-dialog>
 </template>
