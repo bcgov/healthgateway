@@ -94,6 +94,26 @@ export const useUserStore = defineStore("user", () => {
         return status.value === LoadStatus.REQUESTED;
     });
 
+    const userInitials = computed(() => {
+        const first = oidcUserInfo.value?.given_name;
+        const last = oidcUserInfo.value?.family_name;
+        if (first && last) {
+            return first.charAt(0) + last.charAt(0);
+        } else if (first) {
+            return first.charAt(0);
+        } else if (last) {
+            return last.charAt(0);
+        } else {
+            return "?";
+        }
+    });
+
+    const userName = computed(() =>
+        oidcUserInfo.value === undefined
+            ? ""
+            : `${oidcUserInfo.value.given_name} ${oidcUserInfo.value.family_name}`
+    );
+
     function setOidcUserInfo(userInfo: OidcUserInfo) {
         user.value.hdid = userInfo.hdid;
         oidcUserInfo.value = userInfo;
@@ -426,6 +446,8 @@ export const useUserStore = defineStore("user", () => {
         patient,
         patientRetrievalFailed,
         isLoading,
+        userInitials,
+        userName,
         createProfile,
         retrieveProfile,
         updateUserEmail,

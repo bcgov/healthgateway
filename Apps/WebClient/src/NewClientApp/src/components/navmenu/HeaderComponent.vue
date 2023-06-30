@@ -8,7 +8,7 @@ import HgIconButtonComponent from "@/components/shared/HgIconButtonComponent.vue
 import type { WebClientConfiguration } from "@/models/configData";
 import { DateWrapper, StringISODateTime } from "@/models/dateWrapper";
 import Notification from "@/models/notification";
-import User, { OidcUserInfo } from "@/models/user";
+import User from "@/models/user";
 import { ILogger } from "@/services/interfaces";
 import { container } from "@/ioc/container";
 import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
@@ -66,10 +66,6 @@ const userLastLoginDateTime = computed<StringISODateTime | undefined>(
     () => userStore.lastLoginDateTime
 );
 
-const oidcUserInfo = computed<OidcUserInfo | undefined>(
-    () => userStore.oidcUserInfo
-);
-
 const userIsRegistered = computed<boolean>(() => userStore.userIsRegistered);
 
 const userIsActive = computed<boolean>(() => userStore.userIsActive);
@@ -77,26 +73,6 @@ const userIsActive = computed<boolean>(() => userStore.userIsActive);
 const patientRetrievalFailed = computed<boolean>(
     () => userStore.patientRetrievalFailed
 );
-
-const userName = computed<string>(() =>
-    oidcUserInfo.value === undefined
-        ? ""
-        : `${oidcUserInfo.value.given_name} ${oidcUserInfo.value.family_name}`
-);
-
-const userInitials = computed<string>(() => {
-    const first = oidcUserInfo.value?.given_name;
-    const last = oidcUserInfo.value?.family_name;
-    if (first && last) {
-        return first.charAt(0) + last.charAt(0);
-    } else if (first) {
-        return first.charAt(0);
-    } else if (last) {
-        return last.charAt(0);
-    } else {
-        return "?";
-    }
-});
 
 const isPcrTest = computed<boolean>(() =>
     route.path.toLowerCase().startsWith("/pcrtest")
@@ -300,14 +276,14 @@ nextTick(() => {
                 data-testid="headerDropdownBtn"
             >
                 <v-avatar data-testid="profileButtonInitials" color="info">
-                    {{ userInitials }}
+                    {{ userStore.userInitials }}
                 </v-avatar>
             </HgIconButtonComponent>
             <v-menu activator="#menuBtnLogout">
                 <v-list>
                     <v-list-item
                         data-testid="profileUserName"
-                        :title="userName"
+                        :title="userStore.userName"
                     />
                     <v-divider />
                     <v-list-item

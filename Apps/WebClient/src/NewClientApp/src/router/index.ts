@@ -6,6 +6,12 @@ import {
 import { beforeEachGuard } from "@/router/beforeEachGuard";
 import { afterEachHook } from "@/router/afterEachHook";
 
+const Covid19View = () =>
+    import(/* webpackChunkName: "covid19" */ "@/views/Covid19View.vue");
+const DependentViewSelectorComponent = () =>
+    import(
+        /* webpackChunkName: "dependents" */ "@/components/dependent/DependentViewSelectorComponent.vue"
+    );
 const LandingView = () =>
     import(/* webpackChunkName: "landing" */ "@/views/LandingView.vue");
 const LoginView = () =>
@@ -42,9 +48,17 @@ const ReleaseNotesView = () =>
     import(
         /* webpackChunkName: "releaseNotes" */ "@/views/ReleaseNotesView.vue"
     );
+const ReportsView = () =>
+    import(/* webpackChunkName: "reports" */ "@/views/ReportsView.vue");
+const ServicesView = () =>
+    import(/* webpackChunkName: "services" */ "@/views/ServicesView.vue");
+const UserTimelineView = () =>
+    import(/* webpackChunkName: "timeline" */ "@/views/UserTimelineView.vue");
 
 export enum RouterPath {
     ACCEPT_TERMS_OF_SERVICE_PATH = "/acceptTermsOfService",
+    COVID19_PATH = "/covid19",
+    DEPENDENTS_PATH = "/dependents",
     HOME_PATH = "/home",
     IDIR_LOGGED_IN_PATH = "/idirLoggedIn",
     LOGIN_PATH = "/login",
@@ -61,6 +75,8 @@ export enum RouterPath {
     QUEUE_PATH = "/queue",
     QUEUE_FULL_PATH = "/busy",
     RELEASE_NOTES_PATH = "/release-notes",
+    REPORTS_PATH = "/reports",
+    SERVICES_PATH = "/services",
 }
 
 export enum UserState {
@@ -88,6 +104,22 @@ const routes = [
                 UserState.offline,
             ],
             requiresProcessedWaitlistTicket: false,
+        },
+    },
+    {
+        path: RouterPath.COVID19_PATH,
+        component: Covid19View,
+        meta: {
+            validStates: [UserState.registered],
+            requiresProcessedWaitlistTicket: true,
+        },
+    },
+    {
+        path: RouterPath.DEPENDENTS_PATH,
+        component: DependentViewSelectorComponent,
+        meta: {
+            validStates: [UserState.registered],
+            requiresProcessedWaitlistTicket: true,
         },
     },
     {
@@ -163,6 +195,30 @@ const routes = [
         path: RouterPath.RELEASE_NOTES_PATH,
         name: "ReleaseNotes",
         component: ReleaseNotesView,
+    },
+    {
+        path: RouterPath.REPORTS_PATH,
+        component: ReportsView,
+        meta: {
+            validStates: [UserState.registered],
+            requiresProcessedWaitlistTicket: true,
+        },
+    },
+    {
+        path: RouterPath.SERVICES_PATH,
+        component: ServicesView,
+        meta: {
+            validStates: [UserState.registered],
+            requiresProcessedWaitlistTicket: true,
+        },
+    },
+    {
+        path: RouterPath.TIMELINE_PATH,
+        component: UserTimelineView,
+        meta: {
+            validStates: [UserState.registered],
+            requiresProcessedWaitlistTicket: true,
+        },
     },
     {
         path: "/*",
