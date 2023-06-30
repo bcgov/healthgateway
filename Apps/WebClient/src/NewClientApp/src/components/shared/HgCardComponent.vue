@@ -3,9 +3,11 @@ import { computed, useSlots } from "vue";
 import HgIconButtonComponent from "@/components/shared/HgIconButtonComponent.vue";
 
 interface Props {
-    title: string;
+    title?: string;
 }
-defineProps<Props>();
+withDefaults(defineProps<Props>(), {
+    title: "",
+});
 
 const slots = useSlots();
 

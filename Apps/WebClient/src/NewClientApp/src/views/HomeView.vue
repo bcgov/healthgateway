@@ -1,22 +1,4 @@
 ﻿<script setup lang="ts">
-import { library } from "@fortawesome/fontawesome-svg-core";
-import {
-    faCheckCircle,
-    faEdit,
-    faEllipsisV,
-    faFileMedical,
-    faFileWaveform,
-    faHouseMedical,
-    faMicroscope,
-    faPills,
-    faPlus,
-    faSearch,
-    faStethoscope,
-    faSyringe,
-    faUpload,
-    faVial,
-    faXRay,
-} from "@fortawesome/free-solid-svg-icons";
 import { computed, watch } from "vue";
 
 import LoadingComponent from "@/components/shared/LoadingComponent.vue";
@@ -49,24 +31,6 @@ import PageTitleComponent from "@/components/shared/PageTitleComponent.vue";
 import HgCardComponent from "@/components/shared/HgCardComponent.vue";
 import { useDisplay } from "vuetify";
 import AddQuickLinkComponent from "@/components/modal/AddQuickLinkComponent.vue";
-
-library.add(
-    faCheckCircle,
-    faEdit,
-    faEllipsisV,
-    faFileMedical,
-    faFileWaveform,
-    faHouseMedical,
-    faMicroscope,
-    faPills,
-    faPlus,
-    faSearch,
-    faStethoscope,
-    faSyringe,
-    faUpload,
-    faVial,
-    faXRay
-);
 
 interface QuickLinkCard {
     index: number;
@@ -137,6 +101,12 @@ const preferenceImmunizationRecordHidden = computed(
             UserPreferenceType.HideImmunizationRecordQuickLink
         ]?.value === "true"
 );
+const preferenceHealthConnectHidden = computed(
+    () =>
+        user.value.preferences[
+            UserPreferenceType.HideHealthConnectRegistryQuickLink
+        ]?.value === "true"
+);
 const showVaccineCardButton = computed(
     () => !preferenceVaccineCardHidden.value
 );
@@ -144,6 +114,11 @@ const showOrganDonorButton = computed(
     () =>
         ConfigUtil.isServiceEnabled(ServiceName.OrganDonorRegistration) &&
         !preferenceOrganDonorHidden.value
+);
+const showHealthConnectButton = computed(
+    () =>
+        ConfigUtil.isServiceEnabled(ServiceName.HealthConnectRegistry) &&
+        !preferenceHealthConnectHidden.value
 );
 const enabledQuickLinks = computed(
     () =>
@@ -192,7 +167,8 @@ const isAddQuickLinkButtonDisabled = computed(
         ).length === 0 &&
         !preferenceImmunizationRecordHidden.value &&
         !preferenceVaccineCardHidden.value &&
-        !preferenceOrganDonorHidden.value
+        !preferenceOrganDonorHidden.value &&
+        !preferenceHealthConnectHidden.value
 );
 
 const quickLinkCols = computed(() => {
@@ -259,6 +235,11 @@ function handleClickOrganDonorCard(): void {
     router.push({ path: "/services" });
 }
 
+function handleClickHealthConnectCard(): void {
+    trackClickLink("primarycare");
+    window.open("https://www.healthlinkbc.ca/health-connect-registry");
+}
+
 function handleClickRemoveQuickLink(index: number): void {
     logger.debug("Removing quick link");
     const quickLink = enabledQuickLinks.value[index];
@@ -273,6 +254,14 @@ function handleClickRemoveVaccineCardQuickLink(): void {
 function handleClickRemoveOrganDonorQuickLink(): void {
     logger.debug("Removing organ donor card quick link");
     setPreferenceValue(UserPreferenceType.HideOrganDonorQuickLink, "true");
+}
+
+function handleClickRemoveHealthConnectCard(): void {
+    logger.debug("Removing health connect card");
+    setPreferenceValue(
+        UserPreferenceType.HideHealthConnectRegistryQuickLink,
+        "true"
+    );
 }
 
 function setPreferenceValue(preferenceType: string, value: string) {
@@ -389,7 +378,7 @@ watch(vaccineRecordState, () => {
             </template>
         </PageTitleComponent>
         <v-row>
-            <v-col :cols="quickLinkCols">
+            <v-col :cols="quickLinkCols" class="d-flex">
                 <HgCardComponent
                     title="Health Records"
                     data-testid="health-records-card"
@@ -410,7 +399,11 @@ watch(vaccineRecordState, () => {
                     </p>
                 </HgCardComponent>
             </v-col>
-            <v-col v-if="showFederalCardButton" :cols="quickLinkCols">
+            <v-col
+                v-if="showFederalCardButton"
+                :cols="quickLinkCols"
+                class="d-flex"
+            >
                 <HgCardComponent
                     title="Proof of Vaccination"
                     data-testid="proof-vaccination-card-btn"
@@ -430,7 +423,41 @@ watch(vaccineRecordState, () => {
                     </p>
                 </HgCardComponent>
             </v-col>
-            <v-col v-if="showOrganDonorButton" :cols="quickLinkCols">
+            <v-col
+                v-if="showHealthConnectButton"
+                :cols="quickLinkCols"
+                class="d-flex"
+            >
+                <HgCardComponent
+                    data-testid="health-connect-registry-card"
+                    @click="handleClickHealthConnectCard()"
+                    class="flex-grow-1"
+                >
+                    <template #icon>
+                        <img
+                            class="quick-link-icon-large"
+                            src="@/assets/images/services/health-link-logo.svg"
+                            alt="Health Connect Registry Logo"
+                        />
+                    </template>
+                    <template #menu-items>
+                        <v-list-item
+                            data-testid="remove-quick-link-button"
+                            @click.stop="handleClickRemoveHealthConnectCard()"
+                            title="Remove"
+                        />
+                    </template>
+                    <p class="text-body-1">
+                        Register on the Health Connect Registry to get a family
+                        doctor or nurse practitioner in your community.
+                    </p>
+                </HgCardComponent>
+            </v-col>
+            <v-col
+                v-if="showOrganDonorButton"
+                :cols="quickLinkCols"
+                class="d-flex"
+            >
                 <HgCardComponent
                     title="Organ Donor Registration"
                     data-testid="organ-donor-registration-card"
@@ -458,7 +485,11 @@ watch(vaccineRecordState, () => {
                     </p>
                 </HgCardComponent>
             </v-col>
-            <v-col v-if="showVaccineCardButton" :cols="quickLinkCols">
+            <v-col
+                v-if="showVaccineCardButton"
+                :cols="quickLinkCols"
+                class="d-flex"
+            >
                 <HgCardComponent
                     title="BC Vaccine Card"
                     data-testid="bc-vaccine-card-card"
@@ -488,6 +519,7 @@ watch(vaccineRecordState, () => {
                 v-for="card in quickLinkCards"
                 :cols="quickLinkCols"
                 :key="card.title"
+                class="d-flex"
             >
                 <HgCardComponent
                     :title="card.title"
@@ -532,5 +564,8 @@ watch(vaccineRecordState, () => {
 <style lang="scss" scoped>
 .quick-link-icon {
     height: 1.5em;
+    &-large {
+        height: 2.5em;
+    }
 }
 </style>

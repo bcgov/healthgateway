@@ -81,6 +81,13 @@ const showOrganDonorRegistration = computed(
         user.value.preferences[UserPreferenceType.HideOrganDonorQuickLink]
             ?.value === "true"
 );
+const showHealthConnectRegistry = computed<boolean>(
+    () =>
+        ConfigUtil.isServiceEnabled(ServiceName.HealthConnectRegistry) &&
+        user.value.preferences[
+            UserPreferenceType.HideHealthConnectRegistryQuickLink
+        ]?.value === "true"
+);
 const showImmunizationRecord = computed(
     () =>
         user.value.preferences[
@@ -153,6 +160,10 @@ async function handleSubmit(): Promise<void> {
             updateSelectedUserPreference(
                 "organ-donor-registration",
                 UserPreferenceType.HideOrganDonorQuickLink
+            ),
+            updateSelectedUserPreference(
+                "health-connect-registry",
+                UserPreferenceType.HideHealthConnectRegistryQuickLink
             ),
             updateSelectedUserPreference(
                 "bc-vaccine-card",
@@ -266,6 +277,18 @@ function hideModal(): void {
                         name="organ-donor-registration-filter"
                         value="organ-donor-registration"
                         label="Organ Donor Registration"
+                        v-model="selectedQuickLinks"
+                        density="compact"
+                        hide-details
+                        color="primary"
+                    />
+                    <v-checkbox
+                        v-if="showHealthConnectRegistry"
+                        id="health-connect-registry-filter"
+                        data-testid="health-connect-registry-filter"
+                        name="health-connect-registry-filter"
+                        value="health-connect-registry"
+                        label="Health Connect Registry"
                         v-model="selectedQuickLinks"
                         density="compact"
                         hide-details

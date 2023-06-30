@@ -137,6 +137,11 @@ export const useUserStore = defineStore("user", () => {
                 UserPreferenceType.HideImmunizationRecordQuickLink,
                 "false"
             );
+            PreferenceUtil.setDefaultValue(
+                userProfile.preferences,
+                UserPreferenceType.HideHealthConnectRegistryQuickLink,
+                "false"
+            );
         }
 
         user.value.acceptedTermsOfService = userProfile
