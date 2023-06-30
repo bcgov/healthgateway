@@ -6,6 +6,8 @@ import { computed, ref } from "vue";
 import { useStore } from "vue-composition-wrapper";
 
 import MessageModalComponent from "@/components/modal/MessageModalComponent.vue";
+import { DataSource } from "@/constants/dataSource";
+import { ErrorSourceType } from "@/constants/errorType";
 import {
     OrganDonorRegistration,
     PatientData,
@@ -49,6 +51,22 @@ const registrationData = computed<OrganDonorRegistration | undefined>(() => {
         : undefined;
 });
 
+const blockedDataSources = computed<DataSource[]>(
+    () => store.getters["user/blockedDataSources"]
+);
+
+const showOrganDonorRegistration = computed(
+    () => !blockedDataSources.value.includes(DataSource.OrganDonorRegistration)
+);
+
+function addCustomError(
+    title: string,
+    source: ErrorSourceType,
+    traceId: string | undefined
+): void {
+    store.dispatch("errorBanner/addCustomError", { title, source, traceId });
+}
+
 function isPatientDataFileLoading(fileId: string): boolean {
     return store.getters["patientData/isPatientDataFileLoading"](fileId);
 }
@@ -79,10 +97,19 @@ function getDecisionFile(): void {
 function showConfirmationModal(): void {
     sensitiveDocumentModal.value?.showModal();
 }
+
+if (!showOrganDonorRegistration.value) {
+    addCustomError(
+        "Organ Donor Registration is not available at this time. Please try again later.",
+        ErrorSourceType.User,
+        undefined
+    );
+}
 </script>
 
 <template>
     <hg-card
+        v-if="showOrganDonorRegistration"
         title="Organ Donor Registration"
         data-testid="organ-donor-registration-card"
     >

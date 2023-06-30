@@ -15,16 +15,11 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Common.AspNetConfiguration.Modules
 {
-    using System;
     using System.Diagnostics.CodeAnalysis;
-    using System.Linq;
     using HealthGateway.Common.Models;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
-    using Npgsql;
-    using OpenTelemetry.Resources;
-    using OpenTelemetry.Trace;
 
     /// <summary>
     /// Privies Utility methods for common modules.
@@ -40,30 +35,16 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
         /// <param name="configuration">The configuration to use.</param>
         public static void ConfigureTracing(IServiceCollection services, ILogger logger, IConfiguration configuration)
         {
-            logger.LogDebug("Setting up OpenTelemetry");
-            OpenTelemetryConfig config = new();
-            configuration.GetSection("OpenTelemetry").Bind(config);
-            if (config.Enabled)
+            OpenTelemetryConfig otlpConfig = new();
+            configuration.GetSection("OpenTelemetry").Bind(otlpConfig);
+            if (otlpConfig.Enabled)
             {
-                services.AddOpenTelemetry().WithTracing(
-                    builder =>
-                    {
-                        builder.SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(config.ServiceName))
-                            .AddAspNetCoreInstrumentation(
-                                options => options.Filter = httpContext => !config.IgnorePathPrefixes.Any(s => httpContext.Request.Path.ToString().StartsWith(s, StringComparison.OrdinalIgnoreCase)))
-                            .AddHttpClientInstrumentation()
-                            .AddNpgsql()
-                            .AddSource(config.Sources);
-                        if (config.ZipkinEnabled)
-                        {
-                            builder.AddZipkinExporter(options => options.Endpoint = config.ZipkinUri);
-                        }
-
-                        if (config.ConsoleEnabled)
-                        {
-                            builder.AddConsoleExporter();
-                        }
-                    });
+                logger.LogInformation("Configuring OpenTelemetry");
+                services.AddOpenTelemetryDefaults(otlpConfig);
+            }
+            else
+            {
+                logger.LogWarning("OpenTelemetry is disabled");
             }
         }
 

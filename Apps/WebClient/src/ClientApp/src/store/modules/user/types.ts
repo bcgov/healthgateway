@@ -6,6 +6,7 @@ import {
     MutationTree,
 } from "vuex";
 
+import { DataSource } from "@/constants/dataSource";
 import { ErrorType } from "@/constants/errorType";
 import { DateWrapper, StringISODateTime } from "@/models/dateWrapper";
 import { ResultError } from "@/models/errors";
@@ -31,6 +32,7 @@ export interface UserState {
 
 export interface UserGetters extends GetterTree<UserState, RootState> {
     user(state: UserState): User;
+    blockedDataSources(state: UserState): DataSource[];
     lastLoginDateTime(state: UserState): StringISODateTime | undefined;
     oidcUserInfo(state: UserState): OidcUserInfo | undefined;
     isValidIdentityProvider(state: UserState): boolean;

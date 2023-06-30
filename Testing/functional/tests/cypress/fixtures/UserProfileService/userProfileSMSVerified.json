@@ -35,7 +35,8 @@
                 "updatedDateTime": "2021-10-14T16:15:40.794376Z",
                 "updatedBy": "System"
             }
-        }
+        },
+        "blockedDataSources": []
     },
     "totalResultCount": null,
     "pageIndex": null,

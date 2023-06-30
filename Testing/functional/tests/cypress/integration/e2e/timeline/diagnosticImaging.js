@@ -24,6 +24,9 @@ describe("Diagnostic Imaging", () => {
         cy.get("[data-testid=diagnostic-imaging-body-part").should(
             "be.visible"
         );
+        cy.get("[data-testid=diagnostic-imaging-procedure-description").should(
+            "be.visible"
+        );
         cy.get("[data-testid=diagnostic-imaging-health-authority").should(
             "be.visible"
         );

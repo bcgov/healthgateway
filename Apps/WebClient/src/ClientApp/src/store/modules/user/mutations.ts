@@ -44,6 +44,11 @@ export const mutations: UserMutation = {
                 UserPreferenceType.HideImmunizationRecordQuickLink,
                 "false"
             );
+            PreferenceUtil.setDefaultValue(
+                userProfile.preferences,
+                UserPreferenceType.HideHealthConnectRegistryQuickLink,
+                "false"
+            );
         }
 
         Vue.set(
@@ -75,6 +80,11 @@ export const mutations: UserMutation = {
             state.user,
             "preferences",
             userProfile ? userProfile.preferences : {}
+        );
+        Vue.set(
+            state.user,
+            "blockedDataSources",
+            userProfile ? userProfile.blockedDataSources : []
         );
         Vue.set(state.user, "hasEmail", !!userProfile.email);
         Vue.set(state.user, "verifiedEmail", userProfile.isEmailVerified);

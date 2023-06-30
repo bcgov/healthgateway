@@ -1,9 +1,4 @@
-function getTodayPlusDaysDate(days) {
-    let ms = new Date(Date.now());
-    ms.setDate(ms.getDate() + days);
-    // yyyy-mm-dd
-    return ms.toISOString().substring(0, 10);
-}
+import { getTodayPlusDaysDate } from "../../utilities/sharedUtilities";
 
 describe("Communications", () => {
     beforeEach(() => {
