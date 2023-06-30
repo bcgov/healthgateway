@@ -82,7 +82,7 @@ function handleRating(value: number | string, skip = false): void {
         persistent
         no-click-animation
     >
-        <v-row no-gutters justify="center">
+        <div class="d-flex justify-center">
             <v-card max-width="600px">
                 <v-card-title class="bg-primary text-white">
                     <h1 class="text-h5 font-weight-bold">Rating</h1>
@@ -116,6 +116,6 @@ function handleRating(value: number | string, skip = false): void {
                     />
                 </v-card-actions>
             </v-card>
-        </v-row>
+        </div>
     </v-dialog>
 </template>
