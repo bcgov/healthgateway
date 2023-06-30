@@ -29,6 +29,8 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
     using Microsoft.Net.Http.Headers;
+    using Serilog;
+    using ILogger = Microsoft.Extensions.Logging.ILogger;
 
     /// <summary>
     /// Provides ASP.Net Services related to Http.
@@ -79,6 +81,7 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
         /// </param>
         public static void UseHttp(IApplicationBuilder app, ILogger logger, IConfiguration configuration, IWebHostEnvironment environment, bool blazor, bool useExceptionPage)
         {
+            app.UseDefaultHttpRequestLogging();
             app.UseResponseCompression();
 
             if (useExceptionPage && environment.IsDevelopment())

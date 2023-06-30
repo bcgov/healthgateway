@@ -17,6 +17,7 @@ namespace HealthGateway.Common.Models
 {
     using System;
     using System.Diagnostics.CodeAnalysis;
+    using OpenTelemetry.Exporter;
 
     /// <summary>
     /// Provides configuration data for the Notifications Settings PHSA API.
@@ -26,38 +27,32 @@ namespace HealthGateway.Common.Models
         /// <summary>
         /// Gets or sets a value indicating whether Open Telemetry is enabled.
         /// </summary>
-        public bool Enabled { get; set; }
+        public bool Enabled { get; set; } = true;
 
         /// <summary>
         /// Gets or sets the name to use for the service.
         /// </summary>
-        public string ServiceName { get; set; } = string.Empty;
+        public string? ServiceName { get; set; }
 
         /// <summary>
-        /// Gets or sets the set of sources to listen for activities on.
+        /// Gets or sets the version to use for the service.
         /// </summary>
-        [SuppressMessage("Performance", "CA1819:Properties should not return arrays", Justification = "Configuration Binding")]
-        public string[] Sources { get; set; } = Array.Empty<string>();
-
-        /// <summary>
-        /// Gets or sets a value indicating whether tracing should be dumped to the console.
-        /// </summary>
-        public bool ConsoleEnabled { get; set; }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether tracing to zipkin should be enabled.
-        /// </summary>
-        public bool ZipkinEnabled { get; set; }
-
-        /// <summary>
-        /// Gets or sets the URI to send Zipkin tracing results.
-        /// </summary>
-        public Uri? ZipkinUri { get; set; }
+        public string? ServiceVersion { get; set; }
 
         /// <summary>
         /// Gets or sets the path prefixes that tracing will ignore.
         /// </summary>
         [SuppressMessage("Performance", "CA1819:Properties should not return arrays", Justification = "Configuration Binding")]
         public string[] IgnorePathPrefixes { get; set; } = Array.Empty<string>();
+
+        /// <summary>
+        /// Gets or sets OpenTelemetry collector endpoint.
+        /// </summary>
+        public Uri? Endpoint { get; set; }
+
+        /// <summary>
+        /// Gets or sets OpenTelemetry export protocol.
+        /// </summary>
+        public OtlpExportProtocol ExportProtocol { get; set; } = OtlpExportProtocol.HttpProtobuf;
     }
 }

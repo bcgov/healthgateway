@@ -1,12 +1,9 @@
+import { getTodayPlusDaysDate } from "../../utilities/sharedUtilities";
+
 const timeout = 45000;
 
-function formatDate(date) {
-    // yyyy-mm-dd
-    return date.toISOString().substring(0, 10);
-}
-
 function getFileName(name) {
-    const today = formatDate(new Date());
+    const today = getTodayPlusDaysDate(0);
     const fileName = `${name}_export_${today}.csv`;
     cy.log(`File name: ${fileName}`);
     return fileName;
@@ -83,10 +80,8 @@ describe("System Analytics", () => {
             .should("be.visible")
             .click();
 
-        let lastMonth = new Date();
-        lastMonth.setDate(lastMonth.getDate() - 30);
-        const fromDate = formatDate(lastMonth);
-        const toDate = formatDate(new Date());
+        const fromDate = getTodayPlusDaysDate(-30);
+        const toDate = getTodayPlusDaysDate(0);
         const fileName = `YearOfBirthCounts_export_${fromDate}_to_${toDate}.csv`;
         cy.verifyDownload(fileName);
 

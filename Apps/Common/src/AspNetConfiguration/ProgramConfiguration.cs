@@ -16,11 +16,17 @@
 namespace HealthGateway.Common.AspNetConfiguration
 {
     using System.Diagnostics.CodeAnalysis;
+    using System.Globalization;
+    using System.Reflection;
+    using HealthGateway.Common.AspNetConfiguration.Modules;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Hosting;
-    using Microsoft.Extensions.Logging;
+    using Serilog;
+    using Serilog.Events;
+    using Serilog.Extensions.Logging;
+    using ILogger = Microsoft.Extensions.Logging.ILogger;
 
     /// <summary>
     /// The program configuration class.
@@ -40,18 +46,7 @@ namespace HealthGateway.Common.AspNetConfiguration
             where T : class
         {
             return Host.CreateDefaultBuilder(args)
-                .ConfigureLogging(
-                    logging =>
-                    {
-                        logging.ClearProviders();
-                        logging.AddSimpleConsole(
-                            options =>
-                            {
-                                options.TimestampFormat = "[yyyy/MM/dd HH:mm:ss]";
-                                options.IncludeScopes = true;
-                            });
-                        logging.AddOpenTelemetry();
-                    })
+                .UseDefaultLogging()
                 .ConfigureAppConfiguration(
                     (_, config) =>
                     {
@@ -69,47 +64,31 @@ namespace HealthGateway.Common.AspNetConfiguration
         public static WebApplicationBuilder CreateWebAppBuilder(string[] args)
         {
             WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
-
-            // Configure logging
-            builder.Logging.ClearProviders();
-            builder.Logging.AddSimpleConsole(
-                options =>
-                {
-                    options.TimestampFormat = "[yyyy/MM/dd HH:mm:ss]";
-                    options.IncludeScopes = true;
-                });
-
-            // OpenTelemetry
-            builder.Logging.AddOpenTelemetry();
+            builder.Host.UseDefaultLogging();
 
             // Additional configuration sources
             builder.Configuration.AddJsonFile("appsettings.local.json", true, true);
             builder.Configuration.AddEnvironmentVariables(prefix: EnvironmentPrefix);
-
             return builder;
         }
 
         /// <summary>
-        /// Create an intiial logger to use during Program startup.
+        /// Create an initial logger to use during Program startup.
         /// </summary>
         /// <param name="configuration">The configuration to use.</param>
         /// <returns>An instance of a logger.</returns>
         public static ILogger GetInitialLogger(IConfiguration configuration)
         {
-            using ILoggerFactory loggerFactory = LoggerFactory.Create(
-                builder =>
-                {
-                    builder.AddSimpleConsole(
-                        options =>
-                        {
-                            options.TimestampFormat = "[yyyy/MM/dd HH:mm:ss]";
-                            options.IncludeScopes = true;
-                        });
+            Log.Logger = new LoggerConfiguration()
+                .MinimumLevel.Debug()
+                .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
+                .ReadFrom.Configuration(configuration)
+                .Enrich.FromLogContext()
+                .WriteTo.Console(outputTemplate: Observability.LogOutputTemplate, formatProvider: CultureInfo.InvariantCulture)
+                .CreateBootstrapLogger();
 
-                    builder.AddConfiguration(configuration);
-                });
-
-            return loggerFactory.CreateLogger("Startup");
+            using var factory = new SerilogLoggerFactory(Log.Logger);
+            return factory.CreateLogger("Startup");
         }
     }
 }

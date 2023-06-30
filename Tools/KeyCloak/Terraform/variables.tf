@@ -187,6 +187,16 @@ variable "client_hg_keycloak" {
   description = "HealthGateway Keycloak Administration Client"
 }
 
+variable "client_hg_seq" {
+  type = object({
+    id              = optional(string, "hg-seq")
+    valid_redirects = list(string)
+    web_origins     = list(string)
+    token_lifespan  = number
+  })
+  description = "Health Gateway Seq Administration Access"
+}
+
 variable "client_hg_tickets" {
   type = object({
     id             = optional(string, "hg-tickets")
