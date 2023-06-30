@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { ref } from "vue";
 
-import type { WebClientConfiguration } from "@/models/configData";
 import { ILogger, IUserRatingService } from "@/services/interfaces";
 import SnowPlow from "@/utility/snowPlow";
 import HgButtonComponent from "@/components/shared/HgButtonComponent.vue";

@@ -1,13 +1,4 @@
 <script setup lang="ts">
-import { library } from "@fortawesome/fontawesome-svg-core";
-import {
-    faBars,
-    faLightbulb,
-    faSignInAlt,
-    faSignOutAlt,
-    faTimes,
-    faUser,
-} from "@fortawesome/free-solid-svg-icons";
 import { computed, nextTick, onUnmounted, ref, watch } from "vue";
 
 import AppTourComponent from "@/components/modal/AppTourComponent.vue";
@@ -28,8 +19,6 @@ import { useAuthStore } from "@/stores/auth";
 import { useNotificationStore } from "@/stores/notification";
 import { useNavbarStore } from "@/stores/navbar";
 import { useAppStore } from "@/stores/app";
-
-library.add(faBars, faSignInAlt, faSignOutAlt, faTimes, faUser, faLightbulb);
 
 const sidebarId = "notification-centre-sidebar";
 const headerScrollThreshold = 100;
