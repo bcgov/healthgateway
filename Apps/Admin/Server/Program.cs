@@ -86,7 +86,6 @@ namespace HealthGateway.Admin.Server
             services.AddAutoMapper(typeof(Program), typeof(BroadcastProfile), typeof(UserProfileProfile), typeof(MessagingVerificationProfile));
 
             WebApplication app = builder.Build();
-            app.UseDefaultHttpRequestLogging();
             ExceptionHandling.UseProblemDetails(app);
             HttpWeb.UseForwardHeaders(app, logger, configuration);
             HttpWeb.UseHttp(app, logger, configuration, environment, true, false);
@@ -101,6 +100,7 @@ namespace HealthGateway.Admin.Server
             }
 
             app.UseBlazorFrameworkFiles();
+            app.UseDefaultHttpRequestLogging();
             app.MapRazorPages();
             app.MapControllers();
             app.MapFallbackToFile("index.html");
@@ -114,7 +114,7 @@ namespace HealthGateway.Admin.Server
             Db.ConfigureDatabaseServices(services, logger, configuration);
             HttpWeb.ConfigureHttpServices(services, logger);
             Audit.ConfigureAuditServices(services, logger, configuration);
-            Auth.ConfigureAuthServicesForJwtBearer(services, logger, configuration, environment);
+            Auth.ConfigureAuthServicesForJwtBearer(services, logger, configuration, environment, "preferred_username");
             Auth.ConfigureAuthorizationServices(services, logger, configuration);
             SwaggerDoc.ConfigureSwaggerServices(services, configuration);
             JobScheduler.ConfigureHangfireQueue(services, configuration);
