@@ -66,7 +66,7 @@ onMounted(async () => {
 
 <template>
     <v-app>
-        <HeaderComponent v-if="isHeaderVisible" class="d-print-none" />
+        <HeaderComponent v-if="isHeaderVisible" />
         <SidebarComponent />
         <v-main>
             <router-view />

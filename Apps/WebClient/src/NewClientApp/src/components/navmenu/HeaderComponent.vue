@@ -1,17 +1,8 @@
 <script setup lang="ts">
-import { library } from "@fortawesome/fontawesome-svg-core";
-import {
-    faBars,
-    faLightbulb,
-    faSignInAlt,
-    faSignOutAlt,
-    faTimes,
-    faUser,
-} from "@fortawesome/free-solid-svg-icons";
 import { computed, nextTick, onUnmounted, ref, watch } from "vue";
 
-// import AppTourComponent from "@/components/modal/AppTourComponent.vue";
-// import RatingComponent from "@/components/modal/RatingComponent.vue";
+import AppTourComponent from "@/components/modal/AppTourComponent.vue";
+import RatingComponent from "@/components/modal/RatingComponent.vue";
 import HgButtonComponent from "@/components/shared/HgButtonComponent.vue";
 import HgIconButtonComponent from "@/components/shared/HgIconButtonComponent.vue";
 import type { WebClientConfiguration } from "@/models/configData";
@@ -28,8 +19,6 @@ import { useAuthStore } from "@/stores/auth";
 import { useNotificationStore } from "@/stores/notification";
 import { useNavbarStore } from "@/stores/navbar";
 import { useAppStore } from "@/stores/app";
-
-library.add(faBars, faSignInAlt, faSignOutAlt, faTimes, faUser, faLightbulb);
 
 const sidebarId = "notification-centre-sidebar";
 const headerScrollThreshold = 100;
@@ -49,8 +38,7 @@ const notificationButtonClicked = ref(false);
 const hasViewedTour = ref(false);
 const isScrollNearBottom = ref(false);
 
-// const ratingComponent = ref<InstanceType<typeof RatingComponent>>();
-// const appTourComponent = ref<InstanceType<typeof AppTourComponent>>();
+const ratingComponent = ref<InstanceType<typeof RatingComponent>>();
 
 const isMobileWidth = computed<boolean>(() => appStore.isMobile);
 
@@ -200,20 +188,14 @@ function setHeaderState(isOpen: boolean): void {
 
 function handleLogoutClick(): void {
     if (isValidIdentityProvider.value) {
-        // showRating(); // TODO: Reintroduce with rating component
-        processLogout();
+        showRating();
     } else {
         processLogout();
     }
 }
 
-function handleShowTourClick(): void {
-    hasViewedTour.value = true;
-    // appTourComponent.value?.showModal();
-}
-
 function showRating(): void {
-    // ratingComponent.value?.showModal();
+    ratingComponent.value?.showModal();
 }
 
 function processLogout(): void {
@@ -252,7 +234,7 @@ nextTick(() => {
 <template>
     <v-app-bar
         :scroll-behavior="!isHeaderShown ? 'hide' : undefined"
-        class="border-b-md border-accent border-opacity-100"
+        class="border-b-md border-accent border-opacity-100 d-print-none"
         color="primary"
         :scroll-threshold="headerScrollThreshold"
     >
@@ -271,15 +253,10 @@ nextTick(() => {
             />
         </router-link>
         <v-spacer />
-        <HgIconButtonComponent
+        <AppTourComponent
             v-if="isAppTourAvailable"
-            @click="handleShowTourClick"
-            data-testid="app-tour-button"
-        >
-            <v-badge color="red" :model-value="highlightTourChangeIndicator">
-                <v-icon icon="fas fa-lightbulb" />
-            </v-badge>
-        </HgIconButtonComponent>
+            :highlight-tour-change-indicator="highlightTourChangeIndicator"
+        />
         <HgIconButtonComponent
             v-if="isNotificationCentreAvailable"
             @click="notificationButtonClicked = true"
@@ -332,9 +309,8 @@ nextTick(() => {
             prepend-icon="fas fa-sign-in-alt"
             data-testid="loginBtn"
             to="/login"
-        >
-            Log In
-        </HgButtonComponent>
+            text="Log In"
+        />
         <HgButtonComponent
             v-else-if="isLogOutButtonShown"
             variant="secondary"
@@ -346,6 +322,5 @@ nextTick(() => {
             Log Out
         </HgButtonComponent>
     </v-app-bar>
-    <!--    <RatingComponent ref="ratingComponent" @on-close="processLogout()" />-->
-    <!--    <AppTourComponent ref="appTourComponent" />-->
+    <RatingComponent ref="ratingComponent" @on-close="processLogout()" />
 </template>
