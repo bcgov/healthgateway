@@ -49,8 +49,8 @@ function handleCancel(): void {
         persistent
         no-click-animation
     >
-        <v-row justify="center">
-            <v-card :loading="isLoading" max-width="665px">
+        <div class="d-flex justify-center">
+            <v-card :loading="isLoading" max-width="700px">
                 <template v-slot:loader="{ isActive }">
                     <v-progress-linear
                         :active="isActive"
@@ -59,7 +59,7 @@ function handleCancel(): void {
                         indeterminate
                     />
                 </template>
-                <v-card-title class="bg-primary">
+                <v-card-title class="bg-primary px-0">
                     <v-toolbar :title="title" density="compact" color="primary">
                         <HgIconButtonComponent
                             data-testid="messageModalCloseButton"
@@ -89,6 +89,6 @@ function handleCancel(): void {
                     />
                 </v-card-actions>
             </v-card>
-        </v-row>
+        </div>
     </v-dialog>
 </template>
