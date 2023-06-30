@@ -6,7 +6,7 @@
         "dev": "vite",
         "build": "vue-tsc --noEmit && vite build",
         "preview": "vite preview",
-        "lint": "eslint . --fix"
+        "lint": "eslint src --fix"
     },
     "dependencies": {
         "@vuelidate/core": "^2.0.2",
@@ -38,6 +38,7 @@
         "@vue/eslint-config-prettier": "^7.1.0",
         "@vue/eslint-config-typescript": "^11.0.0",
         "eslint": "^8.0.0",
+        "eslint-plugin-simple-import-sort": "^10.0.0",
         "eslint-plugin-vue": "^9.0.0",
         "prettier": "^2.8.8",
         "sass": "^1.63.4",
