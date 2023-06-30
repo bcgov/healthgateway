@@ -19,7 +19,6 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
     using System;
     using System.Diagnostics.CodeAnalysis;
     using System.Globalization;
-    using System.Linq;
     using System.Net;
     using System.Reflection;
     using HealthGateway.Common.Models;
@@ -50,6 +49,11 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
         public const string LogOutputTemplate = "[{Timestamp:HH:mm:ss} {Level:u3} {SourceContext}] {Message:lj}{NewLine}{Exception}";
 
         /// <summary>
+        /// Array with path prefixes to exclude from request logging
+        /// </summary>
+        private static string[] excludedRequestLoggingPathPrefixes = new[] { "/health" };
+
+        /// <summary>
         /// Configures logging with default settings.
         /// </summary>
         /// <param name="builder">A host builder.</param>
@@ -78,7 +82,7 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
                 opts =>
                 {
                     opts.IncludeQueryInRequestPath = true;
-                    opts.GetLevel = ExcludeHealthChecks;
+                    opts.GetLevel = ExcludePaths;
                     opts.EnrichDiagnosticContext = (diagCtx, httpCtx) =>
                     {
                         diagCtx.Set("User", httpCtx.User.Identity?.Name ?? string.Empty);
@@ -130,8 +134,12 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
                                     .AddService(serviceName: otlpConfig.ServiceName, serviceVersion: otlpConfig.ServiceVersion))
                             .AddHttpClientInstrumentation()
                             .AddAspNetCoreInstrumentation(
-                                options => options.Filter = httpContext =>
-                                    !otlpConfig.IgnorePathPrefixes.Any(s => httpContext.Request.Path.ToString().StartsWith(s, StringComparison.OrdinalIgnoreCase)))
+                                options =>
+                                {
+                                    options.Filter = httpContext => !Array.Exists(
+                                        otlpConfig.IgnorePathPrefixes,
+                                        s => httpContext.Request.Path.ToString().StartsWith(s, StringComparison.OrdinalIgnoreCase));
+                                })
                             .AddRedisInstrumentation()
                             .AddEntityFrameworkCoreInstrumentation()
                             .AddNpgsql()
@@ -180,14 +188,14 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
             return loggerConfiguration;
         }
 
-        private static LogEventLevel ExcludeHealthChecks(HttpContext ctx, double milliseconds, Exception? ex)
+        private static LogEventLevel ExcludePaths(HttpContext ctx, double milliseconds, Exception? ex)
         {
             if (ex != null || ctx.Response.StatusCode >= (int)HttpStatusCode.InternalServerError)
             {
                 return LogEventLevel.Error;
             }
 
-            return ctx.Request.Path.StartsWithSegments("/health", StringComparison.InvariantCultureIgnoreCase)
+            return Array.Exists(excludedRequestLoggingPathPrefixes, prefix => ctx.Request.Path.StartsWithSegments(prefix, StringComparison.InvariantCultureIgnoreCase))
                 ? LogEventLevel.Verbose
                 : LogEventLevel.Information;
         }
