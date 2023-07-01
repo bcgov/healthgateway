@@ -2,10 +2,11 @@
 import { computed, useAttrs } from "vue";
 
 interface Props {
-    title: string;
+    title?: string;
     dense?: boolean;
 }
 withDefaults(defineProps<Props>(), {
+    title: "",
     dense: false,
 });
 

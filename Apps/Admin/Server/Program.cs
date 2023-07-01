@@ -86,6 +86,7 @@ namespace HealthGateway.Admin.Server
             services.AddAutoMapper(typeof(Program), typeof(BroadcastProfile), typeof(UserProfileProfile), typeof(MessagingVerificationProfile));
 
             WebApplication app = builder.Build();
+            app.UseDefaultHttpRequestLogging();
             ExceptionHandling.UseProblemDetails(app);
             HttpWeb.UseForwardHeaders(app, logger, configuration);
             HttpWeb.UseContentSecurityPolicy(app, configuration);
