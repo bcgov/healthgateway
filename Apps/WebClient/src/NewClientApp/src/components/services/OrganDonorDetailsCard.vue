@@ -102,7 +102,7 @@ function showConfirmationModal(): void {
                 >
                     <template v-slot:activator="{ props }">
                         <v-icon
-                            ata-testid="organ-donor-registration-status-info-button"
+                            data-testid="organ-donor-registration-status-info-button"
                             color="primary"
                             icon="info-circle"
                             v-bind="props"
@@ -118,23 +118,11 @@ function showConfirmationModal(): void {
                     v-if="registrationData?.registrationFileId"
                     data-testid="organ-donor-registration-download-button"
                     variant="secondary"
-                    :disabled="isLoadingFile"
+                    :prepend-icon="download"
+                    :text="Download"
+                    :loading="isLoadingFile"
                     @click="showConfirmationModal"
-                >
-                    <v-progress-circular
-                        indeterminate
-                        v-if="isLoadingFile"
-                        size="20"
-                    />
-                    <v-icon
-                        v-else
-                        icon="download"
-                        size="medium"
-                        square
-                        aria-hidden="true"
-                    />
-                    <span class="text-body-1 ml-3">Download</span>
-                </HgButtonComponent>
+                />
                 <strong
                     v-else
                     data-testid="organ-donor-registration-decision-no-file"
@@ -146,6 +134,7 @@ function showConfirmationModal(): void {
                     <a
                         href="http://www.transplant.bc.ca/Pages/Register-your-Decision.aspx"
                         target="_blank"
+                        class="text-link"
                         data-testid="organ-donor-registration-link"
                     >
                         {{ registrationData?.organDonorRegistrationLinkText }}
