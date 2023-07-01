@@ -88,10 +88,8 @@ namespace HealthGateway.Admin.Server
             WebApplication app = builder.Build();
             ExceptionHandling.UseProblemDetails(app);
             HttpWeb.UseForwardHeaders(app, logger, configuration);
-            HttpWeb.UseHttp(app, logger, configuration, environment, true, false);
             HttpWeb.UseContentSecurityPolicy(app, configuration);
             SwaggerDoc.UseSwagger(app, logger);
-            Auth.UseAuth(app, logger);
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
@@ -100,7 +98,9 @@ namespace HealthGateway.Admin.Server
             }
 
             app.UseBlazorFrameworkFiles();
-            app.UseDefaultHttpRequestLogging();
+
+            HttpWeb.UseHttp(app, logger, configuration, environment, true, false);
+            Auth.UseAuth(app, logger);
             app.MapRazorPages();
             app.MapControllers();
             app.MapFallbackToFile("index.html");

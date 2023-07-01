@@ -49,11 +49,6 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
         public const string LogOutputTemplate = "[{Timestamp:HH:mm:ss} {Level:u3} {SourceContext}] {Message:lj}{NewLine}{Exception}";
 
         /// <summary>
-        /// Array with path prefixes to exclude from request logging
-        /// </summary>
-        private static string[] excludedRequestLoggingPathPrefixes = new[] { "/health" };
-
-        /// <summary>
         /// Configures logging with default settings.
         /// </summary>
         /// <param name="builder">A host builder.</param>
@@ -72,17 +67,18 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
         }
 
         /// <summary>
-        /// Configures http request logging.
+        /// Configures http request logging
         /// </summary>
-        /// <param name="app">An app builder.</param>
-        /// <returns>The app builder.</returns>
-        public static IApplicationBuilder UseDefaultHttpRequestLogging(this IApplicationBuilder app)
+        /// <param name="app">An app builder</param>
+        /// <param name="excludePaths">Path to exclude - can use wildcards * for prefix or postfix</param>
+        /// <returns>The app builder</returns>
+        public static IApplicationBuilder UseDefaultHttpRequestLogging(this IApplicationBuilder app, string[]? excludePaths = null)
         {
             app.UseSerilogRequestLogging(
                 opts =>
                 {
                     opts.IncludeQueryInRequestPath = true;
-                    opts.GetLevel = ExcludePaths;
+                    opts.GetLevel = (httpCtx, _, exception) => ExcludePaths(httpCtx, exception, excludePaths ?? Array.Empty<string>());
                     opts.EnrichDiagnosticContext = (diagCtx, httpCtx) =>
                     {
                         diagCtx.Set("User", httpCtx.User.Identity?.Name ?? string.Empty);
@@ -188,16 +184,37 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
             return loggerConfiguration;
         }
 
-        private static LogEventLevel ExcludePaths(HttpContext ctx, double milliseconds, Exception? ex)
+        private static LogEventLevel ExcludePaths(HttpContext ctx, Exception? ex, string[] excludedPaths)
         {
             if (ex != null || ctx.Response.StatusCode >= (int)HttpStatusCode.InternalServerError)
             {
                 return LogEventLevel.Error;
             }
 
-            return Array.Exists(excludedRequestLoggingPathPrefixes, prefix => ctx.Request.Path.StartsWithSegments(prefix, StringComparison.InvariantCultureIgnoreCase))
+            return Array.Exists(excludedPaths, path => IsWildcardMatch(ctx.Request.Path, path))
                 ? LogEventLevel.Verbose
                 : LogEventLevel.Information;
+        }
+
+        private static bool IsWildcardMatch(PathString requestPath, string path)
+        {
+            if (!requestPath.HasValue)
+            {
+                return false;
+            }
+
+            if (path.EndsWith("*", StringComparison.InvariantCultureIgnoreCase))
+            {
+                return requestPath.Value!.StartsWith(path.Replace("*", string.Empty, StringComparison.InvariantCultureIgnoreCase), StringComparison.InvariantCultureIgnoreCase);
+            }
+            else if (path.StartsWith("*", StringComparison.InvariantCultureIgnoreCase))
+            {
+                return requestPath.Value!.EndsWith(path.Replace("*", string.Empty, StringComparison.InvariantCultureIgnoreCase), StringComparison.InvariantCultureIgnoreCase);
+            }
+            else
+            {
+                return requestPath.Equals(path, StringComparison.InvariantCultureIgnoreCase);
+            }
         }
     }
 }
