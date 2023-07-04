@@ -112,7 +112,7 @@ if (!showOrganDonorRegistration.value) {
         </template>
         <div class="flex-grow-1 d-flex flex-column text-body-1 card-content">
             <div>
-                <span class="text-grey-darken-2">Status: </span>
+                <span class="text-medium-emphasis">Status: </span>
                 <strong data-testid="organ-donor-registration-status">{{
                     registrationData?.status
                 }}</strong>
@@ -122,12 +122,12 @@ if (!showOrganDonorRegistration.value) {
                     content-class="bg-grey-darken-3"
                     :text="registrationData?.statusMessage"
                 >
-                    <template v-slot:activator="{ props }">
+                    <template #activator="slotProps">
                         <v-icon
                             data-testid="organ-donor-registration-status-info-button"
                             color="primary"
                             icon="info-circle"
-                            v-bind="props"
+                            v-bind="slotProps.props"
                             size="x-small"
                             class="ml-1"
                         />
@@ -135,13 +135,13 @@ if (!showOrganDonorRegistration.value) {
                 </v-tooltip>
             </div>
             <div>
-                <span class="text-grey-darken-2">Decision: </span>
+                <span class="text-medium-emphasis">Decision: </span>
                 <HgButtonComponent
                     v-if="registrationData?.registrationFileId"
                     data-testid="organ-donor-registration-download-button"
                     variant="secondary"
-                    :prepend-icon="download"
-                    :text="Download"
+                    prepend-icon="download"
+                    text="Download"
                     :loading="isLoadingFile"
                     @click="showConfirmationModal"
                 />

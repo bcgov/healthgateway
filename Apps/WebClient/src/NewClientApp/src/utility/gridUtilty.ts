@@ -1,5 +1,5 @@
-﻿import { useDisplay } from "vuetify";
-import { computed } from "vue";
+﻿import { computed } from "vue";
+import { useDisplay } from "vuetify";
 
 export const getGridCols = computed(() => {
     const { md, lg, xlAndUp } = useDisplay();

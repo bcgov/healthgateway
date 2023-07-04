@@ -1,17 +1,16 @@
 <script setup lang="ts">
 import { computed } from "vue";
 
-import LoadingComponent from "@/components/shared/LoadingComponent.vue";
 import BreadcrumbComponent from "@/components/navmenu/BreadcrumbComponent.vue";
 import OrganDonorDetailsCard from "@/components/services/OrganDonorDetailsCard.vue";
+import LoadingComponent from "@/components/shared/LoadingComponent.vue";
+import PageTitleComponent from "@/components/shared/PageTitleComponent.vue";
 import { ServiceName } from "@/constants/serviceName";
 import BreadcrumbItem from "@/models/breadcrumbItem";
 import { PatientData, PatientDataType } from "@/models/patientDataResponse";
-import ConfigUtil from "@/utility/configUtil";
-import { useUserStore } from "@/stores/user";
 import { usePatientDataStore } from "@/stores/patientData";
-import PageTitleComponent from "@/components/shared/PageTitleComponent.vue";
-import { useDisplay } from "vuetify";
+import { useUserStore } from "@/stores/user";
+import ConfigUtil from "@/utility/configUtil";
 import { getGridCols } from "@/utility/gridUtilty";
 
 const breadcrumbItems: BreadcrumbItem[] = [
@@ -23,7 +22,6 @@ const breadcrumbItems: BreadcrumbItem[] = [
     },
 ];
 
-const display = useDisplay();
 const userStore = useUserStore();
 const patientDataStore = usePatientDataStore();
 
