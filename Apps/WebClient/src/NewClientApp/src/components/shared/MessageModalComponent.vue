@@ -1,5 +1,6 @@
 ﻿<script setup lang="ts">
 import { ref } from "vue";
+
 import HgButtonComponent from "@/components/shared/HgButtonComponent.vue";
 import HgIconButtonComponent from "@/components/shared/HgIconButtonComponent.vue";
 
@@ -51,7 +52,7 @@ function handleCancel(): void {
     >
         <div class="d-flex justify-center">
             <v-card :loading="isLoading" max-width="700px">
-                <template v-slot:loader="{ isActive }">
+                <template #loader="{ isActive }">
                     <v-progress-linear
                         :active="isActive"
                         color="accent"

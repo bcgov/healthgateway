@@ -48,6 +48,8 @@ export const useUserStore = defineStore("user", () => {
     const patient = ref(new Patient());
     const patientRetrievalFailed = ref(false);
 
+    const blockedDataSources = computed(() => user.value.blockedDataSources);
+
     const lastLoginDateTime = computed(() => {
         const loginDateTimes = user.value.lastLoginDateTimes;
         const loginDateTimesLength = user.value.lastLoginDateTimes.length;
@@ -159,6 +161,7 @@ export const useUserStore = defineStore("user", () => {
             ? userProfile.closedDateTime
             : undefined;
         user.value.preferences = userProfile ? userProfile.preferences : {};
+        user.value.blockedDataSources = userProfile?.blockedDataSources ?? [];
         user.value.hasEmail = Boolean(userProfile?.email);
         user.value.verifiedEmail = userProfile?.isEmailVerified === true;
         user.value.hasSMS = Boolean(userProfile?.smsNumber);
@@ -441,6 +444,7 @@ export const useUserStore = defineStore("user", () => {
 
     return {
         user,
+        blockedDataSources,
         lastLoginDateTime,
         oidcUserInfo,
         isValidIdentityProvider,
