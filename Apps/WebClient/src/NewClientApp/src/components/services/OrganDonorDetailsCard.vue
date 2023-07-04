@@ -2,7 +2,13 @@
 import saveAs from "file-saver";
 import { computed, ref } from "vue";
 
+import HgButtonComponent from "@/components/shared/HgButtonComponent.vue";
+import HgCardComponent from "@/components/shared/HgCardComponent.vue";
 import MessageModalComponent from "@/components/shared/MessageModalComponent.vue";
+import { DataSource } from "@/constants/dataSource";
+import { ErrorSourceType } from "@/constants/errorType";
+import { container } from "@/ioc/container";
+import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
 import {
     OrganDonorRegistration,
     PatientData,
@@ -10,12 +16,10 @@ import {
     PatientDataType,
 } from "@/models/patientDataResponse";
 import { ILogger } from "@/services/interfaces";
-import SnowPlow from "@/utility/snowPlow";
-import { container } from "@/ioc/container";
-import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
+import { useErrorStore } from "@/stores/error";
 import { usePatientDataStore } from "@/stores/patientData";
-import HgCardComponent from "@/components/shared/HgCardComponent.vue";
-import HgButtonComponent from "@/components/shared/HgButtonComponent.vue";
+import { useUserStore } from "@/stores/user";
+import SnowPlow from "@/utility/snowPlow";
 
 interface Props {
     hdid: string;
@@ -23,7 +27,9 @@ interface Props {
 const props = defineProps<Props>();
 
 const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+const errorStore = useErrorStore();
 const patientDataStore = usePatientDataStore();
+const userStore = useUserStore();
 
 const sensitiveDocumentModal =
     ref<InstanceType<typeof MessageModalComponent>>();
@@ -47,6 +53,13 @@ const registrationData = computed<OrganDonorRegistration | undefined>(() => {
         ? (patientData.value[0] as OrganDonorRegistration)
         : undefined;
 });
+
+const showOrganDonorRegistration = computed(
+    () =>
+        !userStore.blockedDataSources.includes(
+            DataSource.OrganDonorRegistration
+        )
+);
 
 function getDecisionFile(): void {
     const registrationDataValue = registrationData.value;
@@ -74,10 +87,19 @@ function getDecisionFile(): void {
 function showConfirmationModal(): void {
     sensitiveDocumentModal.value?.showModal();
 }
+
+if (!showOrganDonorRegistration.value) {
+    errorStore.addCustomError(
+        "Organ Donor Registration is not available at this time. Please try again later.",
+        ErrorSourceType.User,
+        undefined
+    );
+}
 </script>
 
 <template>
     <HgCardComponent
+        v-if="showOrganDonorRegistration"
         title="Organ Donor Registration"
         data-testid="organ-donor-registration-card"
     >
