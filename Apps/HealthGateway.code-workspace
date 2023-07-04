@@ -133,6 +133,13 @@
             "editor.defaultFormatter": null,
             "editor.formatOnSave": false
         },
+        "[vue][typescript][javascript]": {
+            "editor.formatOnSave": false,
+            "editor.codeActionsOnSave": [
+                "source.addMissingImports",
+                "source.fixAll.eslint"
+            ]
+        },
         "omnisharp.defaultLaunchSolution": "HealthGateway.sln",
         "typescript.preferences.importModuleSpecifier": "non-relative"
     }
