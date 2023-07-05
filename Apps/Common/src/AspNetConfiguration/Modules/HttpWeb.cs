@@ -126,7 +126,7 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
             configuration.GetSection("RequestLogging").Bind(requestLoggingSettings);
             if (requestLoggingSettings.Enabled)
             {
-                app.UseDefaultHttpRequestLogging(requestLoggingSettings.ExcludedPaths.ToArray());
+                app.UseDefaultHttpRequestLogging(requestLoggingSettings.ExcludedPaths?.ToArray());
             }
 
             app.UseRouting();
