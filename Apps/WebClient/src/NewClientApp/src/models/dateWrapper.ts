@@ -72,6 +72,12 @@ export interface IDateWrapper {
     fromEpoch(): number;
 
     /**
+     * Determines if the date is valid.
+     * @returns true if the date is valid.
+     */
+    isValid(): boolean;
+
+    /**
      * Gets the year.
      * @returns Calendar year
      */
@@ -339,6 +345,11 @@ export class DateWrapper implements IDateWrapper {
     /** {@inheritDoc IDateWrapper.fromEpoch} */
     public fromEpoch(): number {
         return this.internalDate.valueOf();
+    }
+
+    /** {@inheritDoc IDateWrapper.isValid} */
+    public isValid(): boolean {
+        return this.internalDate.isValid;
     }
 
     /** {@inheritDoc IDateWrapper.year} */
