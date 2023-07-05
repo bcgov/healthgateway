@@ -11,6 +11,7 @@
     "dependencies": {
         "@vuelidate/core": "^2.0.2",
         "@vuelidate/validators": "^2.0.2",
+        "@vuepic/vue-datepicker": "^5.3.0",
         "axios": "^1.4.0",
         "file-saver": "^2.0.5",
         "keycloak-js": "^21.1.1",
