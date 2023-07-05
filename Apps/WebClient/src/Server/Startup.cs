@@ -98,9 +98,16 @@ namespace HealthGateway.WebClient.Server
             this.startupConfig.UsePermissionPolicy(app);
             this.startupConfig.UseForwardHeaders(app);
             this.startupConfig.UseSwagger(app);
-            this.startupConfig.UseHttp(app);
 
             DisableTraceMethod(app);
+
+            bool redirectToWww = this.configuration.GetSection("WebClient").GetValue<bool>("RedirectToWWW");
+            if (redirectToWww)
+            {
+                RewriteOptions rewriteOption = new RewriteOptions()
+                    .AddRedirectToWwwPermanent();
+                app.UseRewriter(rewriteOption);
+            }
 
             app.UseSpaStaticFiles();
 
@@ -112,51 +119,6 @@ namespace HealthGateway.WebClient.Server
             {
                 app.UseExceptionHandler("/Home/Error");
             }
-
-            if (!env.IsDevelopment())
-            {
-                app.UseResponseCompression();
-            }
-
-            app.UseEndpoints(
-                endpoints =>
-                {
-                    endpoints.MapRazorPages();
-                    endpoints.MapControllers();
-                    endpoints.MapControllerRoute("default", "{controller}/{action=Index}/{id?}");
-
-                    if (env.IsDevelopment() && Debugger.IsAttached)
-                    {
-                        endpoints.MapToVueCliProxy(
-                            "{*path}",
-                            new SpaOptions { SourcePath = "ClientApp" },
-                            "serve",
-                            8585,
-                            regex: "Compiled ",
-                            forceKill: true);
-                    }
-                });
-
-            bool redirectToWww = this.configuration.GetSection("WebClient").GetValue<bool>("RedirectToWWW");
-            if (redirectToWww)
-            {
-                RewriteOptions rewriteOption = new RewriteOptions()
-                    .AddRedirectToWwwPermanent();
-                app.UseRewriter(rewriteOption);
-            }
-
-            app.UseSpa(
-                spa =>
-                {
-                    spa.Options.SourcePath = "ClientApp";
-                    if (env.IsDevelopment() && !Debugger.IsAttached)
-                    {
-                        // change this to whatever webpack dev server says it's running on
-#pragma warning disable S1075
-                        spa.UseProxyToSpaDevelopmentServer("http://localhost:8080");
-#pragma warning restore S1075
-                    }
-                });
 
             app.UseStaticFiles(
                 new StaticFileOptions
@@ -178,6 +140,40 @@ namespace HealthGateway.WebClient.Server
                             headers["Content-Type"] = mimeType;
                         }
                     },
+                });
+
+            this.startupConfig.UseHttp(app);
+
+            app.UseEndpoints(
+                endpoints =>
+                {
+                    endpoints.MapRazorPages();
+                    endpoints.MapControllers();
+                    endpoints.MapControllerRoute("default", "{controller}/{action=Index}/{id?}");
+
+                    if (env.IsDevelopment() && Debugger.IsAttached)
+                    {
+                        endpoints.MapToVueCliProxy(
+                            "{*path}",
+                            new SpaOptions { SourcePath = "ClientApp" },
+                            "serve",
+                            8585,
+                            regex: "Compiled ",
+                            forceKill: true);
+                    }
+                });
+
+            app.UseSpa(
+                spa =>
+                {
+                    spa.Options.SourcePath = "ClientApp";
+                    if (env.IsDevelopment() && !Debugger.IsAttached)
+                    {
+                        // change this to whatever webpack dev server says it's running on
+#pragma warning disable S1075
+                        spa.UseProxyToSpaDevelopmentServer("http://localhost:8080");
+#pragma warning restore S1075
+                    }
                 });
         }
 
