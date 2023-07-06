@@ -326,233 +326,215 @@ watch(vaccineRecordState, () => {
 </script>
 
 <template>
-    <v-container>
-        <LoadingComponent
-            :is-loading="isVaccineRecordDownloading"
-            :text="vaccineRecordStatusMessage"
-        />
-        <v-alert
-            v-if="unverifiedEmail || unverifiedSMS"
-            data-testid="incomplete-profile-banner"
-            show
-            dismissible
-            type="info"
-            class="d-print-none my-3"
-            title="Verify Contact Information"
-        >
-            <span class="text-body-1">
-                Your email or cell phone number has not been verified. You can
-                use the Health Gateway without verified contact information,
-                however, you will not receive notifications. Visit the
-                <router-link
-                    id="profilePageLink"
-                    data-testid="profile-page-link"
-                    variant="primary"
-                    to="/profile"
-                    >Profile Page</router-link
-                >
-                to complete your verification.
-            </span>
-        </v-alert>
-        <v-alert
-            v-if="!isPacificTime"
-            show
-            closable
-            type="info"
-            title="Looks like you're in a different timezone."
-            text="Heads up: your health records are recorded and displayed in
+    <LoadingComponent
+        :is-loading="isVaccineRecordDownloading"
+        :text="vaccineRecordStatusMessage"
+    />
+    <v-alert
+        v-if="unverifiedEmail || unverifiedSMS"
+        data-testid="incomplete-profile-banner"
+        show
+        dismissible
+        type="info"
+        class="d-print-none my-3"
+        title="Verify Contact Information"
+    >
+        <span class="text-body-1">
+            Your email or cell phone number has not been verified. You can use
+            the Health Gateway without verified contact information, however,
+            you will not receive notifications. Visit the
+            <router-link
+                id="profilePageLink"
+                data-testid="profile-page-link"
+                variant="primary"
+                to="/profile"
+                >Profile Page</router-link
+            >
+            to complete your verification.
+        </span>
+    </v-alert>
+    <v-alert
+        v-if="!isPacificTime"
+        show
+        closable
+        type="info"
+        title="Looks like you're in a different timezone."
+        text="Heads up: your health records are recorded and displayed in
                 Pacific Time."
-            class="d-print-none my-3"
-        />
-        <PageTitleComponent title="Home">
-            <template #append>
-                <AddQuickLinkComponent
-                    :disabled="isAddQuickLinkButtonDisabled"
-                />
-            </template>
-        </PageTitleComponent>
-        <v-row>
-            <v-col :cols="getGridCols" class="d-flex">
-                <HgCardComponent
-                    title="Health Records"
-                    data-testid="health-records-card"
-                    class="flex-grow-1"
-                    @click="handleClickHealthRecords()"
-                >
-                    <template #icon>
-                        <img
-                            class="quick-link-icon"
-                            src="@/assets/images/gov/health-gateway-logo.svg"
-                            alt="Health Gateway Logo"
-                        />
-                    </template>
-                    <p class="text-body-1">
-                        View and manage all your available health records,
-                        including dispensed medications, health visits, COVID‑19
-                        test results, immunizations and more.
-                    </p>
-                </HgCardComponent>
-            </v-col>
-            <v-col
-                v-if="showFederalCardButton"
-                :cols="getGridCols"
-                class="d-flex"
+        class="d-print-none my-3"
+    />
+    <PageTitleComponent title="Home">
+        <template #append>
+            <AddQuickLinkComponent :disabled="isAddQuickLinkButtonDisabled" />
+        </template>
+    </PageTitleComponent>
+    <v-row>
+        <v-col :cols="getGridCols" class="d-flex">
+            <HgCardComponent
+                title="Health Records"
+                data-testid="health-records-card"
+                class="flex-grow-1"
+                @click="handleClickHealthRecords()"
             >
-                <HgCardComponent
-                    title="Proof of Vaccination"
-                    data-testid="proof-vaccination-card-btn"
-                    class="flex-grow-1"
-                    @click="showSensitiveDocumentDownloadModal()"
-                >
-                    <template #icon>
-                        <img
-                            class="quick-link-icon"
-                            src="@/assets/images/gov/canada-gov-logo.svg"
-                            alt="Canada Government Logo"
-                        />
-                    </template>
-                    <p class="text-body-1">
-                        Download and print your Federal Proof of Vaccination for
-                        domestic and international travel.
-                    </p>
-                </HgCardComponent>
-            </v-col>
-            <v-col
-                v-if="showHealthConnectButton"
-                :cols="getGridCols"
-                class="d-flex"
+                <template #icon>
+                    <img
+                        class="quick-link-icon"
+                        src="@/assets/images/gov/health-gateway-logo.svg"
+                        alt="Health Gateway Logo"
+                    />
+                </template>
+                <p class="text-body-1">
+                    View and manage all your available health records, including
+                    dispensed medications, health visits, COVID‑19 test results,
+                    immunizations and more.
+                </p>
+            </HgCardComponent>
+        </v-col>
+        <v-col v-if="showFederalCardButton" :cols="getGridCols" class="d-flex">
+            <HgCardComponent
+                title="Proof of Vaccination"
+                data-testid="proof-vaccination-card-btn"
+                class="flex-grow-1"
+                @click="showSensitiveDocumentDownloadModal()"
             >
-                <HgCardComponent
-                    data-testid="health-connect-registry-card"
-                    class="flex-grow-1"
-                    @click="handleClickHealthConnectCard()"
-                >
-                    <template #icon>
-                        <img
-                            class="quick-link-icon-large"
-                            src="@/assets/images/services/health-link-logo.svg"
-                            alt="Health Connect Registry Logo"
-                        />
-                    </template>
-                    <template #menu-items>
-                        <v-list-item
-                            data-testid="remove-quick-link-button"
-                            title="Remove"
-                            @click.stop="handleClickRemoveHealthConnectCard()"
-                        />
-                    </template>
-                    <p class="text-body-1">
-                        Register on the Health Connect Registry to get a family
-                        doctor or nurse practitioner in your community.
-                    </p>
-                </HgCardComponent>
-            </v-col>
-            <v-col
-                v-if="showOrganDonorButton"
-                :cols="getGridCols"
-                class="d-flex"
+                <template #icon>
+                    <img
+                        class="quick-link-icon"
+                        src="@/assets/images/gov/canada-gov-logo.svg"
+                        alt="Canada Government Logo"
+                    />
+                </template>
+                <p class="text-body-1">
+                    Download and print your Federal Proof of Vaccination for
+                    domestic and international travel.
+                </p>
+            </HgCardComponent>
+        </v-col>
+        <v-col
+            v-if="showHealthConnectButton"
+            :cols="getGridCols"
+            class="d-flex"
+        >
+            <HgCardComponent
+                data-testid="health-connect-registry-card"
+                class="flex-grow-1"
+                @click="handleClickHealthConnectCard()"
             >
-                <HgCardComponent
-                    title="Organ Donor Registration"
-                    data-testid="organ-donor-registration-card"
-                    class="flex-grow-1"
-                    @click="handleClickOrganDonorCard()"
-                >
-                    <template #icon>
-                        <img
-                            class="quick-link-icon"
-                            src="@/assets/images/services/odr-logo.svg"
-                            alt="Organ Donor Registry Logo"
-                        />
-                    </template>
-                    <template #menu-items>
-                        <v-list-item
-                            data-testid="remove-quick-link-button"
-                            title="Remove"
-                            @click.stop="handleClickRemoveOrganDonorQuickLink()"
-                        />
-                    </template>
-                    <p class="text-body-1">
-                        Check whether you are registered as an organ donor with
-                        BC Transplant. If you are registered, you can review the
-                        details of your decision.
-                    </p>
-                </HgCardComponent>
-            </v-col>
-            <v-col
-                v-if="showVaccineCardButton"
-                :cols="getGridCols"
-                class="d-flex"
+                <template #icon>
+                    <img
+                        class="quick-link-icon-large"
+                        src="@/assets/images/services/health-link-logo.svg"
+                        alt="Health Connect Registry Logo"
+                    />
+                </template>
+                <template #menu-items>
+                    <v-list-item
+                        data-testid="remove-quick-link-button"
+                        title="Remove"
+                        @click.stop="handleClickRemoveHealthConnectCard()"
+                    />
+                </template>
+                <p class="text-body-1">
+                    Register on the Health Connect Registry to get a family
+                    doctor or nurse practitioner in your community.
+                </p>
+            </HgCardComponent>
+        </v-col>
+        <v-col v-if="showOrganDonorButton" :cols="getGridCols" class="d-flex">
+            <HgCardComponent
+                title="Organ Donor Registration"
+                data-testid="organ-donor-registration-card"
+                class="flex-grow-1"
+                @click="handleClickOrganDonorCard()"
             >
-                <HgCardComponent
-                    title="BC Vaccine Card"
-                    data-testid="bc-vaccine-card-card"
-                    class="flex-grow-1"
-                    @click="handleClickVaccineCard()"
-                >
-                    <template #icon>
-                        <v-icon icon="check-circle" color="success" />
-                    </template>
-                    <template #menu-items>
-                        <v-list-item
-                            data-testid="remove-quick-link-button"
-                            title="Remove"
-                            @click.stop="
-                                handleClickRemoveVaccineCardQuickLink()
-                            "
-                        />
-                    </template>
-                    <p class="text-body-1">
-                        View, download and print your BC Vaccine Card. Present
-                        this card as proof of vaccination at some BC businesses,
-                        services and events.
-                    </p>
-                </HgCardComponent>
-            </v-col>
-            <v-col
-                v-for="card in quickLinkCards"
-                :key="card.title"
-                :cols="getGridCols"
-                class="d-flex"
+                <template #icon>
+                    <img
+                        class="quick-link-icon"
+                        src="@/assets/images/services/odr-logo.svg"
+                        alt="Organ Donor Registry Logo"
+                    />
+                </template>
+                <template #menu-items>
+                    <v-list-item
+                        data-testid="remove-quick-link-button"
+                        title="Remove"
+                        @click.stop="handleClickRemoveOrganDonorQuickLink()"
+                    />
+                </template>
+                <p class="text-body-1">
+                    Check whether you are registered as an organ donor with BC
+                    Transplant. If you are registered, you can review the
+                    details of your decision.
+                </p>
+            </HgCardComponent>
+        </v-col>
+        <v-col v-if="showVaccineCardButton" :cols="getGridCols" class="d-flex">
+            <HgCardComponent
+                title="BC Vaccine Card"
+                data-testid="bc-vaccine-card-card"
+                class="flex-grow-1"
+                @click="handleClickVaccineCard()"
             >
-                <HgCardComponent
-                    :title="card.title"
-                    data-testid="quick-link-card"
-                    class="flex-grow-1"
-                    @click="handleClickQuickLink(card.index)"
-                >
-                    <template #icon>
-                        <v-icon
-                            :icon="card.icon"
-                            class="quick-link-icon"
-                            color="primary"
-                            size="small"
-                        />
-                    </template>
-                    <template #menu-items>
-                        <v-list-item
-                            data-testid="remove-quick-link-button"
-                            title="Remove"
-                            @click.stop="handleClickRemoveQuickLink(card.index)"
-                        />
-                    </template>
-                    <p class="text-body-1">{{ card.description }}</p>
-                </HgCardComponent>
-            </v-col>
-        </v-row>
-        <MessageModalComponent
-            ref="sensitiveDocumentDownloadModal"
-            title="Sensitive Document Download"
-            message="The file that you are downloading contains personal information. If you are on a public computer, please ensure that the file is deleted before you log off."
-            @submit="retrieveVaccinePdf"
-        />
-        <MessageModalComponent
-            ref="vaccineRecordResultModal"
-            ok-only
-            title="Alert"
-            :message="vaccineRecordResultMessage"
-        />
-    </v-container>
+                <template #icon>
+                    <v-icon icon="check-circle" color="success" />
+                </template>
+                <template #menu-items>
+                    <v-list-item
+                        data-testid="remove-quick-link-button"
+                        title="Remove"
+                        @click.stop="handleClickRemoveVaccineCardQuickLink()"
+                    />
+                </template>
+                <p class="text-body-1">
+                    View, download and print your BC Vaccine Card. Present this
+                    card as proof of vaccination at some BC businesses, services
+                    and events.
+                </p>
+            </HgCardComponent>
+        </v-col>
+        <v-col
+            v-for="card in quickLinkCards"
+            :key="card.title"
+            :cols="getGridCols"
+            class="d-flex"
+        >
+            <HgCardComponent
+                :title="card.title"
+                data-testid="quick-link-card"
+                class="flex-grow-1"
+                @click="handleClickQuickLink(card.index)"
+            >
+                <template #icon>
+                    <v-icon
+                        :icon="card.icon"
+                        class="quick-link-icon"
+                        color="primary"
+                        size="small"
+                    />
+                </template>
+                <template #menu-items>
+                    <v-list-item
+                        data-testid="remove-quick-link-button"
+                        title="Remove"
+                        @click.stop="handleClickRemoveQuickLink(card.index)"
+                    />
+                </template>
+                <p class="text-body-1">{{ card.description }}</p>
+            </HgCardComponent>
+        </v-col>
+    </v-row>
+    <MessageModalComponent
+        ref="sensitiveDocumentDownloadModal"
+        title="Sensitive Document Download"
+        message="The file that you are downloading contains personal information. If you are on a public computer, please ensure that the file is deleted before you log off."
+        @submit="retrieveVaccinePdf"
+    />
+    <MessageModalComponent
+        ref="vaccineRecordResultModal"
+        ok-only
+        title="Alert"
+        :message="vaccineRecordResultMessage"
+    />
 </template>
 
 <style lang="scss" scoped>

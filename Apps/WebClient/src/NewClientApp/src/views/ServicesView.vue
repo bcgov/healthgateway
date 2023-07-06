@@ -49,22 +49,20 @@ if (isOrganDonorServiceEnabled.value) {
 </script>
 
 <template>
-    <v-container>
-        <BreadcrumbComponent :items="breadcrumbItems" />
-        <LoadingComponent :is-loading="patientDataAreLoading" />
-        <PageTitleComponent title="Services" />
-        <p>
-            You can check and update your Organ Donor Registry information here.
-            More health services will be added in future.
-        </p>
-        <v-row>
-            <v-col
-                v-if="!patientDataAreLoading && isOrganDonorServiceEnabled"
-                :cols="getGridCols"
-                class="pa-3"
-            >
-                <OrganDonorDetailsCard :hdid="hdid" />
-            </v-col>
-        </v-row>
-    </v-container>
+    <BreadcrumbComponent :items="breadcrumbItems" />
+    <LoadingComponent :is-loading="patientDataAreLoading" />
+    <PageTitleComponent title="Services" />
+    <p>
+        You can check and update your Organ Donor Registry information here.
+        More health services will be added in future.
+    </p>
+    <v-row>
+        <v-col
+            v-if="!patientDataAreLoading && isOrganDonorServiceEnabled"
+            :cols="getGridCols"
+            class="pa-3"
+        >
+            <OrganDonorDetailsCard :hdid="hdid" />
+        </v-col>
+    </v-row>
 </template>

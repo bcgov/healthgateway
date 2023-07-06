@@ -257,7 +257,7 @@ loadTermsOfService();
 
 <template>
     <LoadingComponent :is-loading="isLoading" />
-    <v-container v-if="termsOfServiceLoaded">
+    <template v-if="termsOfServiceLoaded">
         <v-form
             v-if="isValidAge === true"
             ref="registrationForm"
@@ -382,5 +382,5 @@ loadTermsOfService();
             </p>
         </div>
         <div v-else><h1>Unknown error</h1></div>
-    </v-container>
+    </template>
 </template>

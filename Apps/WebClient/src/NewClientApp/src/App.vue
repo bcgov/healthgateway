@@ -70,7 +70,9 @@ onMounted(async () => {
         <HeaderComponent v-if="isHeaderVisible" />
         <SidebarComponent />
         <v-main>
-            <router-view />
+            <v-container>
+                <router-view />
+            </v-container>
         </v-main>
     </v-app>
 </template>

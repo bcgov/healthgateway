@@ -68,68 +68,58 @@ if (oidcIsAuthenticated.value) {
 </script>
 
 <template>
-    <v-container>
-        <LoadingComponent :is-loading="isLoading" />
-        <v-row align="center" justify="center" class="mb-5">
-            <v-col md="5">
-                <v-alert
-                    v-model="showError"
-                    closable
-                    close-label="Close"
-                    type="error"
-                    title="Error"
-                    text="An unexpected error occured while processing the request, please try again."
-                />
-            </v-col>
-        </v-row>
-        <v-card
-            v-if="identityProviders && identityProviders.length > 0"
-            id="loginPicker"
-            class="shadow-lg bg-white mx-auto"
-            style="max-width: 25rem"
-            elevation="7"
-        >
-            <v-card-title>
-                <h2 class="text-h5 font-weight-bold pt-3 text-center">
-                    Log In
-                </h2>
-            </v-card-title>
-            <v-card-text
-                v-if="hasMultipleProviders || isRetry"
-                class="px-10 py-8"
-            >
-                <div v-for="provider in identityProviders" :key="provider.id">
-                    <HgButtonComponent
-                        :id="`${provider.id}Btn`"
-                        :data-testid="`${provider.id}Btn`"
-                        :disabled="provider.disabled"
-                        variant="primary"
-                        block
-                        class="justify-start"
-                        :prepend-icon="`${provider.icon}`"
-                        :text="provider.name"
-                        @click="signInAndRedirect(provider.hint)"
-                    >
-                    </HgButtonComponent>
-                    <div
-                        v-if="
-                            identityProviders.indexOf(provider) <
-                            identityProviders.length - 1
-                        "
-                        class="text-center text-body-1 my-1"
-                    >
-                        or
-                    </div>
-                </div>
-            </v-card-text>
-            <v-card-text v-else class="pa-5 text-center text-body-1">
-                <span
-                    >Redirecting to
-                    <strong>{{ identityProviders[0].name }}</strong
-                    >...</span
+    <LoadingComponent :is-loading="isLoading" />
+    <v-row align="center" justify="center" class="mb-5">
+        <v-col md="5">
+            <v-alert
+                v-model="showError"
+                closable
+                close-label="Close"
+                type="error"
+                title="Error"
+                text="An unexpected error occured while processing the request, please try again."
+            />
+        </v-col>
+    </v-row>
+    <v-card
+        v-if="identityProviders && identityProviders.length > 0"
+        id="loginPicker"
+        class="shadow-lg bg-white mx-auto"
+        style="max-width: 25rem"
+        elevation="7"
+    >
+        <v-card-title>
+            <h2 class="text-h5 font-weight-bold pt-3 text-center">Log In</h2>
+        </v-card-title>
+        <v-card-text v-if="hasMultipleProviders || isRetry" class="px-10 py-8">
+            <div v-for="provider in identityProviders" :key="provider.id">
+                <HgButtonComponent
+                    :id="`${provider.id}Btn`"
+                    :data-testid="`${provider.id}Btn`"
+                    :disabled="provider.disabled"
+                    variant="primary"
+                    block
+                    class="justify-start"
+                    :prepend-icon="`${provider.icon}`"
+                    :text="provider.name"
+                    @click="signInAndRedirect(provider.hint)"
                 >
-            </v-card-text>
-        </v-card>
-        <div v-else>No login providers configured</div>
-    </v-container>
+                </HgButtonComponent>
+                <div
+                    v-if="
+                        identityProviders.indexOf(provider) <
+                        identityProviders.length - 1
+                    "
+                    class="text-center text-body-1 my-1"
+                >
+                    or
+                </div>
+            </div>
+        </v-card-text>
+        <v-card-text v-else class="pa-5 text-center text-body-1">
+            Redirecting to <strong>{{ identityProviders[0].name }}</strong
+            >...
+        </v-card-text>
+    </v-card>
+    <div v-else>No login providers configured</div>
 </template>

@@ -15,12 +15,12 @@ setTimeout(() => {
 </script>
 
 <template>
-    <v-container class="text-center">
+    <div class="text-center">
         <h1 class="mt-12 text-h4 text-primary font-weight-bold mb-6">
             You signed out of your account
         </h1>
         <p class="text-body-1">
             It's a good idea to close all browser windows.
         </p>
-    </v-container>
+    </div>
 </template>
