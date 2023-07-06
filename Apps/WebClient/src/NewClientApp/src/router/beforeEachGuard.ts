@@ -4,9 +4,10 @@
     RouteLocationNormalizedLoaded,
 } from "vue-router";
 
+import { Path } from "@/constants/path";
 import { container } from "@/ioc/container";
 import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
-import { RouterPath, UserState } from "@/router/index";
+import { UserState } from "@/router/index";
 import { ILogger } from "@/services/interfaces";
 import { useAuthStore } from "@/stores/auth";
 import { useConfigStore } from "@/stores/config";
@@ -18,27 +19,23 @@ function getDefaultPath(
 ): string {
     switch (currentUserState) {
         case UserState.offline:
-            return RouterPath.ROOT_PATH;
+            return Path.Root;
         case UserState.pendingDeletion:
-            return RouterPath.PROFILE_PATH;
+            return Path.Profile;
         case UserState.registered:
-            return requiredFeaturesEnabled
-                ? RouterPath.HOME_PATH
-                : RouterPath.UNAUTHORIZED_PATH;
+            return requiredFeaturesEnabled ? Path.Home : Path.Unauthorized;
         case UserState.notRegistered:
-            return RouterPath.REGISTRATION_PATH;
+            return Path.Registration;
         case UserState.invalidIdentityProvider:
-            return RouterPath.IDIR_LOGGED_IN_PATH;
+            return Path.IdirLoggedIn;
         case UserState.noPatient:
-            return RouterPath.PATIENT_RETRIEVAL_ERROR_PATH;
+            return Path.PatientRetrievalError;
         case UserState.unauthenticated:
-            return requiredFeaturesEnabled
-                ? RouterPath.LOGIN_PATH
-                : RouterPath.UNAUTHORIZED_PATH;
+            return requiredFeaturesEnabled ? Path.Login : Path.Unauthorized;
         case UserState.acceptTermsOfService:
-            return RouterPath.ACCEPT_TERMS_OF_SERVICE_PATH;
+            return Path.AcceptTermsOfService;
         default:
-            return RouterPath.UNAUTHORIZED_PATH;
+            return Path.Unauthorized;
     }
 }
 
@@ -116,10 +113,7 @@ export const beforeEachGuard: NavigationGuard = async (
     let metaRequiresProcessedWaitlistTicket =
         meta.requiresProcessedWaitlistTicket;
 
-    if (
-        from.fullPath === RouterPath.QUEUE_FULL_PATH ||
-        from.fullPath === RouterPath.QUEUE_PATH
-    ) {
+    if (from.fullPath === Path.Busy || from.fullPath === Path.Queue) {
         metaRequiresProcessedWaitlistTicket = true;
     }
 
@@ -156,7 +150,7 @@ export const beforeEachGuard: NavigationGuard = async (
         requiredFeaturesEnabled
     );
 
-    if (defaultPath === RouterPath.LOGIN_PATH) {
+    if (defaultPath === Path.Login) {
         next({ path: defaultPath, query: { redirect: to.path } });
         return;
     }

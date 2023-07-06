@@ -4,6 +4,7 @@ import {
     RouteLocationNormalized,
 } from "vue-router";
 
+import { Path } from "@/constants/path";
 import { FeatureToggleConfiguration } from "@/models/configData";
 import { afterEachHook } from "@/router/afterEachHook";
 import { beforeEachGuard } from "@/router/beforeEachGuard";
@@ -57,30 +58,6 @@ const ServicesView = () =>
 const UserTimelineView = () =>
     import(/* webpackChunkName: "timeline" */ "@/views/UserTimelineView.vue");
 
-export enum RouterPath {
-    ACCEPT_TERMS_OF_SERVICE_PATH = "/acceptTermsOfService",
-    COVID19_PATH = "/covid19",
-    DEPENDENTS_PATH = "/dependents",
-    HOME_PATH = "/home",
-    IDIR_LOGGED_IN_PATH = "/idirLoggedIn",
-    LOGIN_PATH = "/login",
-    LOGIN_CALLBACK_PATH = "/loginCallback",
-    LOGOUT_PATH = "/logout",
-    LOGOUT_COMPLETE_PATH = "/logoutComplete",
-    PATIENT_RETRIEVAL_ERROR_PATH = "/patientRetrievalError",
-    PROFILE_PATH = "/profile",
-    REGISTRATION_PATH = "/registration",
-    ROOT_PATH = "/",
-    TIMELINE_PATH = "/timeline",
-    UNAUTHORIZED_PATH = "/unauthorized",
-    NOT_FOUND_PATH = "/not-found",
-    QUEUE_PATH = "/queue",
-    QUEUE_FULL_PATH = "/busy",
-    RELEASE_NOTES_PATH = "/release-notes",
-    REPORTS_PATH = "/reports",
-    SERVICES_PATH = "/services",
-}
-
 export enum UserState {
     offline = "offline",
     unauthenticated = "unauthenticated",
@@ -94,7 +71,7 @@ export enum UserState {
 
 const routes = [
     {
-        path: RouterPath.ROOT_PATH,
+        path: Path.Root,
         name: "Landing",
         component: LandingView,
         meta: {
@@ -109,7 +86,7 @@ const routes = [
         },
     },
     {
-        path: RouterPath.COVID19_PATH,
+        path: Path.Covid19,
         component: Covid19View,
         meta: {
             validStates: [UserState.registered],
@@ -117,7 +94,7 @@ const routes = [
         },
     },
     {
-        path: RouterPath.DEPENDENTS_PATH,
+        path: Path.Dependents,
         component: DependentViewSelectorComponent,
         meta: {
             validStates: [UserState.registered],
@@ -125,7 +102,7 @@ const routes = [
         },
     },
     {
-        path: RouterPath.HOME_PATH,
+        path: Path.Home,
         name: "Home",
         component: HomeView,
         meta: {
@@ -134,7 +111,7 @@ const routes = [
         },
     },
     {
-        path: RouterPath.LOGIN_PATH,
+        path: Path.Login,
         name: "Login",
         component: LoginView,
         props: (route: { query: { isRetry: string } }) => ({
@@ -146,7 +123,7 @@ const routes = [
         },
     },
     {
-        path: RouterPath.LOGIN_CALLBACK_PATH,
+        path: Path.LoginCallback,
         name: "LoginCallback",
         component: LoginCallbackView,
         meta: {
@@ -155,19 +132,19 @@ const routes = [
         },
     },
     {
-        path: RouterPath.LOGOUT_PATH,
+        path: Path.Logout,
         name: "Logout",
         component: LogoutView,
         meta: { stateless: true },
     },
     {
-        path: RouterPath.LOGOUT_COMPLETE_PATH,
+        path: Path.LogoutComplete,
         name: "LogoutComplete",
         component: LogoutCompleteView,
         meta: { stateless: true },
     },
     {
-        path: RouterPath.REGISTRATION_PATH,
+        path: Path.Registration,
         name: "Registration",
         component: RegistrationView,
         meta: {
@@ -176,7 +153,7 @@ const routes = [
         },
     },
     {
-        path: RouterPath.SERVICES_PATH,
+        path: Path.Services,
         name: "Services",
         component: ServicesView,
         meta: {
@@ -187,7 +164,7 @@ const routes = [
         },
     },
     {
-        path: RouterPath.PATIENT_RETRIEVAL_ERROR_PATH,
+        path: Path.PatientRetrievalError,
         component: PatientRetrievalErrorView,
         meta: {
             validStates: [UserState.noPatient],
@@ -195,22 +172,22 @@ const routes = [
         },
     },
     {
-        path: RouterPath.UNAUTHORIZED_PATH,
+        path: Path.Unauthorized,
         component: UnauthorizedView,
         meta: { stateless: true },
     },
     {
-        path: RouterPath.NOT_FOUND_PATH,
+        path: Path.NotFound,
         component: NotFoundView,
         meta: { stateless: true },
     },
     {
-        path: RouterPath.RELEASE_NOTES_PATH,
+        path: Path.ReleaseNotes,
         name: "ReleaseNotes",
         component: ReleaseNotesView,
     },
     {
-        path: RouterPath.REPORTS_PATH,
+        path: Path.Reports,
         component: ReportsView,
         meta: {
             validStates: [UserState.registered],
@@ -218,7 +195,7 @@ const routes = [
         },
     },
     {
-        path: RouterPath.TIMELINE_PATH,
+        path: Path.Timeline,
         component: UserTimelineView,
         meta: {
             validStates: [UserState.registered],
