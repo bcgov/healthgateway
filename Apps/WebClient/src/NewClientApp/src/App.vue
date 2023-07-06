@@ -2,8 +2,8 @@
 import { computed, nextTick, onBeforeUnmount, onMounted, ref } from "vue";
 import { useRoute } from "vue-router";
 
-import HeaderComponent from "@/components/navmenu/HeaderComponent.vue";
-import SidebarComponent from "@/components/navmenu/SidebarComponent.vue";
+import HeaderComponent from "@/components/navigation/HeaderComponent.vue";
+import SidebarComponent from "@/components/navigation/SidebarComponent.vue";
 import ScreenWidth from "@/constants/screenWidth";
 import { useAppStore } from "@/stores/app";
 

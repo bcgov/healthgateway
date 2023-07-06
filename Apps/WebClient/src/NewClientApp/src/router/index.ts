@@ -10,53 +10,69 @@ import { afterEachHook } from "@/router/afterEachHook";
 import { beforeEachGuard } from "@/router/beforeEachGuard";
 
 const Covid19View = () =>
-    import(/* webpackChunkName: "covid19" */ "@/views/Covid19View.vue");
+    import(
+        /* webpackChunkName: "covid19" */ "@/components/private/covid19/Covid19View.vue"
+    );
 const DependentViewSelectorComponent = () =>
     import(
-        /* webpackChunkName: "dependents" */ "@/components/dependent/DependentViewSelectorComponent.vue"
+        /* webpackChunkName: "dependents" */ "@/components/private/dependent/DependentViewSelectorComponent.vue"
     );
 const LandingView = () =>
-    import(/* webpackChunkName: "landing" */ "@/views/LandingView.vue");
+    import(
+        /* webpackChunkName: "landing" */ "@/components/public/landing/LandingView.vue"
+    );
 const LoginView = () =>
-    import(/* webpackChunkName: "login" */ "@/views/LoginView.vue");
+    import(
+        /* webpackChunkName: "login" */ "@/components/authentication/LoginView.vue"
+    );
 const LoginCallbackView = () =>
     import(
-        /* webpackChunkName: "loginCallback" */ "@/views/LoginCallbackView.vue"
+        /* webpackChunkName: "loginCallback" */ "@/components/authentication/LoginCallbackView.vue"
     );
 const RegistrationView = () =>
     import(
-        /* webpackChunkName: "registration" */ "@/views/RegistrationView.vue"
+        /* webpackChunkName: "registration" */ "@/components/private/registration/RegistrationView.vue"
     );
 const HomeView = () =>
-    import(/* webpackChunkName: "home" */ "@/views/HomeView.vue");
+    import(
+        /* webpackChunkName: "home" */ "@/components/private/home/HomeView.vue"
+    );
 const LogoutCompleteView = () =>
     import(
-        /* webpackChunkName: "logoutComplete" */ "@/views/LogoutCompleteView.vue"
+        /* webpackChunkName: "logoutComplete" */ "@/components/authentication/LogoutCompleteView.vue"
     );
 const LogoutView = () =>
-    import(/* webpackChunkName: "logout" */ "@/views/LogoutView.vue");
+    import(
+        /* webpackChunkName: "logout" */ "@/components/authentication/LogoutView.vue"
+    );
 const NotFoundView = () =>
     import(
-        /* webpackChunkName: "notFound" */ "@/views/errors/NotFoundView.vue"
+        /* webpackChunkName: "notFound" */ "@/components/error/NotFoundView.vue"
     );
 const UnauthorizedView = () =>
     import(
-        /* webpackChunkName: "unauthorized" */ "@/views/errors/UnauthorizedView.vue"
+        /* webpackChunkName: "unauthorized" */ "@/components/error/UnauthorizedView.vue"
     );
 const PatientRetrievalErrorView = () =>
     import(
-        /* webpackChunkName: "patientRetrievalError" */ "@/views/errors/PatientRetrievalErrorView.vue"
+        /* webpackChunkName: "patientRetrievalError" */ "@/components/error/PatientRetrievalErrorView.vue"
     );
 const ReleaseNotesView = () =>
     import(
-        /* webpackChunkName: "releaseNotes" */ "@/views/ReleaseNotesView.vue"
+        /* webpackChunkName: "releaseNotes" */ "@/components/public/release-notes/ReleaseNotesView.vue"
     );
 const ReportsView = () =>
-    import(/* webpackChunkName: "reports" */ "@/views/ReportsView.vue");
+    import(
+        /* webpackChunkName: "reports" */ "@/components/private/reports/ReportsView.vue"
+    );
 const ServicesView = () =>
-    import(/* webpackChunkName: "services" */ "@/views/ServicesView.vue");
+    import(
+        /* webpackChunkName: "services" */ "@/components/private/services/ServicesView.vue"
+    );
 const UserTimelineView = () =>
-    import(/* webpackChunkName: "timeline" */ "@/views/UserTimelineView.vue");
+    import(
+        /* webpackChunkName: "timeline" */ "@/components/private/timeline/UserTimelineView.vue"
+    );
 
 export enum UserState {
     offline = "offline",
