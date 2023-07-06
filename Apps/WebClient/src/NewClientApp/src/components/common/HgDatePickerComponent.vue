@@ -1,0 +1,154 @@
+<script setup lang="ts">
+import "@vuepic/vue-datepicker/dist/main.css";
+
+import { useVuelidate } from "@vuelidate/core";
+import { helpers } from "@vuelidate/validators";
+import VueDatePicker from "@vuepic/vue-datepicker";
+import { vMaska } from "maska";
+import { computed, ref, watch } from "vue";
+
+import HgIconButtonComponent from "@/components/common/HgIconButtonComponent.vue";
+import { DateWrapper, IDateWrapper } from "@/models/dateWrapper";
+import ValidationUtil from "@/utility/validationUtil";
+
+interface Props {
+    modelValue?: string;
+    label?: string;
+    state?: boolean;
+    errorMessages?: string[];
+    minDate?: IDateWrapper;
+    maxDate?: IDateWrapper;
+}
+const props = withDefaults(defineProps<Props>(), {
+    modelValue: "",
+    label: "Date",
+    state: undefined,
+    errorMessages: () => [],
+    minDate: () => new DateWrapper("1900-01-01"),
+    maxDate: () => new DateWrapper("2099-12-31"),
+});
+
+const emit = defineEmits<{
+    (e: "update:model-value", value: string): void;
+    (e: "validity-updated", value: boolean): void;
+    (e: "blur"): void;
+}>();
+
+const maskOptions = {
+    mask: "####-@@@-##",
+    eager: true,
+    postProcess: (value: string) => value.toUpperCase(),
+};
+
+const internalValue = ref(props.modelValue);
+
+const datePickerValue = computed<string>({
+    get() {
+        return props.modelValue;
+    },
+    set(value: string) {
+        emit("update:model-value", value);
+        notifyTouched(true);
+    },
+});
+const textFieldValue = computed<string>({
+    get() {
+        return internalValue.value;
+    },
+    set(value: string) {
+        internalValue.value = value ? value : "";
+        const convertedValue =
+            internalState.value === false || !internalValue.value
+                ? ""
+                : toIsoFormat(internalValue.value);
+
+        if (convertedValue !== props.modelValue) {
+            emit("update:model-value", convertedValue);
+        }
+        notifyTouched();
+    },
+});
+const internalState = computed(() =>
+    ValidationUtil.isValid(v$.value.textFieldValue)
+);
+const internalErrorMessages = computed(() =>
+    ValidationUtil.getErrorMessages(v$.value.textFieldValue)
+);
+const validations = computed(() => ({
+    textFieldValue: {
+        date: helpers.withMessage("Invalid date", validateDateFormat),
+    },
+}));
+
+const v$ = useVuelidate(validations, { textFieldValue });
+
+function fromIsoFormat(value: string): string {
+    return new DateWrapper(value).format().toUpperCase();
+}
+
+function toIsoFormat(value: string): string {
+    return DateWrapper.fromStringFormat(value).toISODate();
+}
+
+function validateDateFormat(value: string): boolean {
+    return value ? DateWrapper.fromStringFormat(value).isValid() : true;
+}
+
+function notifyTouched(fromDatePicker?: boolean): void {
+    const valid = fromDatePicker ? true : internalState.value === true;
+
+    emit("blur");
+    emit("validity-updated", valid);
+}
+
+watch(
+    () => props.modelValue,
+    (value) => {
+        internalValue.value = fromIsoFormat(value);
+    }
+);
+</script>
+
+<template>
+    <v-text-field
+        v-model="v$.textFieldValue.$model"
+        v-maska:[maskOptions]
+        clearable
+        type="text"
+        :label="label"
+        :placeholder="DateWrapper.defaultFormat.toUpperCase()"
+        :error="internalState === false || state === false"
+        :error-messages="internalErrorMessages.concat(errorMessages)"
+        @blur="notifyTouched"
+    >
+        <template #append>
+            <VueDatePicker
+                v-model="datePickerValue"
+                :max-date="maxDate.toJSDate()"
+                :enable-time-picker="false"
+                model-type="format"
+                format="yyyy-MM-dd"
+                auto-apply
+                month-name-format="long"
+                six-weeks="append"
+                :offset="16"
+                calendar-cell-class-name="rounded-circle"
+            >
+                <template #trigger>
+                    <HgIconButtonComponent icon="fas fa-calendar" />
+                </template>
+            </VueDatePicker>
+        </template>
+    </v-text-field>
+</template>
+
+<style lang="scss">
+.dp__theme_light {
+    --dp-text-color: rgba(
+        var(--v-theme-on-background),
+        var(--v-high-emphasis-opacity)
+    );
+    --dp-primary-color: rgb(var(--v-theme-focus));
+    --dp-primary-text-color: rgb(var(--v-theme-on-focus));
+}
+</style>

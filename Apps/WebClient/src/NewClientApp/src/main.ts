@@ -1,6 +1,7 @@
 import { createApp } from "vue";
 
 import App from "@/App.vue";
+import AppErrorView from "@/components/error/AppErrorView.vue";
 import { AppErrorType } from "@/constants/errorType";
 import { container } from "@/ioc/container";
 import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
@@ -13,7 +14,6 @@ import { useAuthStore } from "@/stores/auth";
 import { useConfigStore } from "@/stores/config";
 import { useNotificationStore } from "@/stores/notification";
 import { useUserStore } from "@/stores/user";
-import AppErrorView from "@/views/errors/AppErrorView.vue";
 
 const app = createApp(App);
 
