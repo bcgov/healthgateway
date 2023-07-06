@@ -1,22 +1,18 @@
-// Components
-import App from "@/App.vue";
-
-// Composables
 import { createApp } from "vue";
 
-// Plugins
-import { registerInitialPlugins, registerRouterPlugin } from "@/plugins";
+import App from "@/App.vue";
 import { AppErrorType } from "@/constants/errorType";
-import { isTooManyRequestsError } from "@/models/errors";
-import { useConfigStore } from "@/stores/config";
-import { useAppStore } from "@/stores/app";
-import { initializeServices } from "@/ioc/initialization";
-import { container } from "./ioc/container";
-import { ILogger } from "@/services/interfaces";
+import { container } from "@/ioc/container";
 import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
+import { initializeServices } from "@/ioc/initialization";
+import { isTooManyRequestsError } from "@/models/errors";
+import { registerInitialPlugins, registerRouterPlugin } from "@/plugins";
+import { ILogger } from "@/services/interfaces";
+import { useAppStore } from "@/stores/app";
 import { useAuthStore } from "@/stores/auth";
-import { useUserStore } from "@/stores/user";
+import { useConfigStore } from "@/stores/config";
 import { useNotificationStore } from "@/stores/notification";
+import { useUserStore } from "@/stores/user";
 import AppErrorView from "@/views/errors/AppErrorView.vue";
 
 const app = createApp(App);

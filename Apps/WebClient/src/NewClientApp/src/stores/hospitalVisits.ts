@@ -1,21 +1,22 @@
 ﻿import { defineStore } from "pinia";
 import { ref } from "vue";
+
+import { ActionType } from "@/constants/actionType";
+import { EntryType } from "@/constants/entryType";
+import { ErrorSourceType, ErrorType } from "@/constants/errorType";
+import { ResultType } from "@/constants/resulttype";
+import { container } from "@/ioc/container";
+import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
 import { HospitalVisitState } from "@/models/datasetState";
-import { LoadStatus } from "@/models/storeOperations";
+import { HospitalVisit } from "@/models/encounter";
+import { ResultError } from "@/models/errors";
 import HospitalVisitResult from "@/models/hospitalVisitResult";
 import RequestResult from "@/models/requestResult";
-import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
-import { container } from "@/ioc/container";
+import { LoadStatus } from "@/models/storeOperations";
 import { IHospitalVisitService, ILogger } from "@/services/interfaces";
-import { HospitalVisit } from "@/models/encounter";
-import { ResultType } from "@/constants/resulttype";
+import { useErrorStore } from "@/stores/error";
 import { DatasetMapUtils } from "@/stores/utils/DatasetMapUtils";
 import EventTracker from "@/utility/eventTracker";
-import { EntryType } from "@/constants/entryType";
-import { ActionType } from "@/constants/actionType";
-import { ResultError } from "@/models/errors";
-import { ErrorSourceType, ErrorType } from "@/constants/errorType";
-import { useErrorStore } from "@/stores/error";
 
 const defaultHospitalVisitState: HospitalVisitState = {
     data: [],

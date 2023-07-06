@@ -211,13 +211,13 @@ function hideModal(): void {
         persistent
         no-click-animation
     >
-        <template #activator="{ props }">
+        <template #activator="slotProps">
             <HgButtonComponent
                 id="add-quick-link-button"
                 data-testid="add-quick-link-button"
                 :disabled="disabled"
                 variant="secondary"
-                v-bind="props"
+                v-bind="slotProps.props"
                 prepend-icon="plus"
                 text="Add Quick Link"
             />

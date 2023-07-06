@@ -1,23 +1,24 @@
 ﻿import { defineStore } from "pinia";
-import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
-import { IClinicalDocumentService, ILogger } from "@/services/interfaces";
-import { container } from "@/ioc/container";
-import { useErrorStore } from "@/stores/error";
-import { LoadStatus } from "@/models/storeOperations";
-import { ClinicalDocumentDatasetState } from "@/models/datasetState";
 import { ref } from "vue";
+
+import { EntryType } from "@/constants/entryType";
+import { ErrorSourceType, ErrorType } from "@/constants/errorType";
+import { ResultType } from "@/constants/resulttype";
+import { container } from "@/ioc/container";
+import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
 import {
     ClinicalDocument,
     ClinicalDocumentFile,
 } from "@/models/clinicalDocument";
+import { ClinicalDocumentDatasetState } from "@/models/datasetState";
 import EncodedMedia from "@/models/encodedMedia";
 import { ResultError } from "@/models/errors";
-import { ErrorSourceType, ErrorType } from "@/constants/errorType";
-import { DatasetMapUtils } from "@/stores/utils/DatasetMapUtils";
 import RequestResult from "@/models/requestResult";
-import { ResultType } from "@/constants/resulttype";
+import { LoadStatus } from "@/models/storeOperations";
+import { IClinicalDocumentService, ILogger } from "@/services/interfaces";
+import { useErrorStore } from "@/stores/error";
+import { DatasetMapUtils } from "@/stores/utils/DatasetMapUtils";
 import EventTracker from "@/utility/eventTracker";
-import { EntryType } from "@/constants/entryType";
 
 const defaultClinicalDocumentDatasetState: ClinicalDocumentDatasetState = {
     data: [],

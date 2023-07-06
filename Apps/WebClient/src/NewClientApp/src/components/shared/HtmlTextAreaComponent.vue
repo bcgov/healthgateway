@@ -9,6 +9,7 @@ withDefaults(defineProps<Props>(), {
 
 <template>
     <v-sheet class="pa-6" border>
+        <!-- eslint-disable vue/no-v-html -->
         <div v-html="input" />
     </v-sheet>
 </template>

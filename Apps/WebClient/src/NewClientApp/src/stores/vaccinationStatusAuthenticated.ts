@@ -1,3 +1,6 @@
+import { defineStore } from "pinia";
+import { computed, ref } from "vue";
+
 import { ActionType } from "@/constants/actionType";
 import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import { ResultType } from "@/constants/resulttype";
@@ -11,8 +14,6 @@ import VaccinationStatus from "@/models/vaccinationStatus";
 import VaccineRecordState from "@/models/vaccineRecordState";
 import { ILogger, IVaccinationStatusService } from "@/services/interfaces";
 import { useErrorStore } from "@/stores/error";
-import { defineStore } from "pinia";
-import { computed, ref } from "vue";
 
 export const useVaccinationStatusAuthenticatedStore = defineStore(
     "vaccinationStatusAuthenticated",

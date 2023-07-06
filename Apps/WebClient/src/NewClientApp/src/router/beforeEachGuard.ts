@@ -1,14 +1,15 @@
-﻿import { RouterPath, UserState } from "@/router/index";
-import { container } from "@/ioc/container";
-import { ILogger } from "@/services/interfaces";
-import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
-import { useConfigStore } from "@/stores/config";
-import {
+﻿import {
     NavigationGuard,
     NavigationGuardNext,
     RouteLocationNormalizedLoaded,
 } from "vue-router";
+
+import { container } from "@/ioc/container";
+import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
+import { RouterPath, UserState } from "@/router/index";
+import { ILogger } from "@/services/interfaces";
 import { useAuthStore } from "@/stores/auth";
+import { useConfigStore } from "@/stores/config";
 import { useUserStore } from "@/stores/user";
 
 function getDefaultPath(

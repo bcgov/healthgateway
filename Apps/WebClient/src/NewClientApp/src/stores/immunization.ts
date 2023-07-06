@@ -1,20 +1,21 @@
 ﻿import { defineStore } from "pinia";
-import { ImmunizationDatasetState } from "@/models/datasetState";
-import { LoadStatus } from "@/models/storeOperations";
 import { ref } from "vue";
-import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
+
+import { EntryType } from "@/constants/entryType";
+import { ErrorSourceType, ErrorType } from "@/constants/errorType";
+import { ResultType } from "@/constants/resulttype";
 import { container } from "@/ioc/container";
-import { IImmunizationService, ILogger } from "@/services/interfaces";
-import { ImmunizationEvent, Recommendation } from "@/models/immunizationModel";
-import { DatasetMapUtils } from "@/stores/utils/DatasetMapUtils";
-import ImmunizationResult from "@/models/immunizationResult";
+import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
+import { ImmunizationDatasetState } from "@/models/datasetState";
 import { DateWrapper } from "@/models/dateWrapper";
 import { ResultError } from "@/models/errors";
-import { ErrorSourceType, ErrorType } from "@/constants/errorType";
+import { ImmunizationEvent, Recommendation } from "@/models/immunizationModel";
+import ImmunizationResult from "@/models/immunizationResult";
+import { LoadStatus } from "@/models/storeOperations";
+import { IImmunizationService, ILogger } from "@/services/interfaces";
 import { useErrorStore } from "@/stores/error";
-import { ResultType } from "@/constants/resulttype";
+import { DatasetMapUtils } from "@/stores/utils/DatasetMapUtils";
 import EventTracker from "@/utility/eventTracker";
-import { EntryType } from "@/constants/entryType";
 
 const defaultImmunizationDatasetState: ImmunizationDatasetState = {
     data: [],

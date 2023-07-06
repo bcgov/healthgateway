@@ -1,26 +1,27 @@
 ﻿import { defineStore } from "pinia";
 import { ref } from "vue";
+
+import { EntryType } from "@/constants/entryType";
+import { ErrorSourceType, ErrorType } from "@/constants/errorType";
+import { container } from "@/ioc/container";
+import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
 import {
     PatientDataFileState,
     PatientDataMap,
     PatientDataState,
 } from "@/models/datasetState";
-import { LoadStatus } from "@/models/storeOperations";
+import { ResultError } from "@/models/errors";
 import PatientDataResponse, {
     PatientData,
     PatientDataFile,
     PatientDataToHealthDataTypeMap,
     PatientDataType,
 } from "@/models/patientDataResponse";
-import { DatasetMapUtils } from "@/stores/utils/DatasetMapUtils";
-import { EntryType } from "@/constants/entryType";
-import EventTracker from "@/utility/eventTracker";
-import { ErrorSourceType, ErrorType } from "@/constants/errorType";
-import { ResultError } from "@/models/errors";
-import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
+import { LoadStatus } from "@/models/storeOperations";
 import { ILogger, IPatientDataService } from "@/services/interfaces";
-import { container } from "@/ioc/container";
 import { useErrorStore } from "@/stores/error";
+import { DatasetMapUtils } from "@/stores/utils/DatasetMapUtils";
+import EventTracker from "@/utility/eventTracker";
 
 const defaultPatientDataState: PatientDataState = {
     data: new Map<PatientDataType, PatientData[]>(),

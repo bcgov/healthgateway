@@ -1,9 +1,10 @@
-﻿import { computed, ref } from "vue";
-import { useAppStore } from "@/stores/app";
-import { ILogger } from "@/services/interfaces";
+﻿import { defineStore } from "pinia";
+import { computed, ref } from "vue";
+
 import { container } from "@/ioc/container";
 import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
-import { defineStore } from "pinia";
+import { ILogger } from "@/services/interfaces";
+import { useAppStore } from "@/stores/app";
 
 export const useNavbarStore = defineStore("navbar", () => {
     const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);

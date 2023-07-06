@@ -1,16 +1,15 @@
-﻿import {
+﻿import { defineStore } from "pinia";
+import { computed, ref } from "vue";
+
+import {
     ExternalConfiguration,
     IdentityProviderConfiguration,
-    OpenIdConnectConfiguration,
-    WebClientConfiguration,
 } from "@/models/configData";
-import { computed, ref } from "vue";
-import { defineStore } from "pinia";
 import { DateWrapper } from "@/models/dateWrapper";
 import { LoadStatus } from "@/models/storeOperations";
 import { HttpDelegate } from "@/services/httpDelegate";
-import { RestConfigService } from "@/services/restConfigService";
 import { LoglevelLogger } from "@/services/loglevelLogger";
+import { RestConfigService } from "@/services/restConfigService";
 
 export const useConfigStore = defineStore("config", () => {
     const config = ref(new ExternalConfiguration());
@@ -18,17 +17,13 @@ export const useConfigStore = defineStore("config", () => {
     const statusMessage = ref("");
     const status = ref(LoadStatus.NONE);
 
-    const webConfig = computed(
-        () => config.value.webClient
-    );
+    const webConfig = computed(() => config.value.webClient);
 
     const identityProviders = computed<IdentityProviderConfiguration[]>(
         () => config.value.identityProviders || []
     );
 
-    const openIdConnect = computed(
-        () => config.value.openIdConnect
-    );
+    const openIdConnect = computed(() => config.value.openIdConnect);
 
     const isOffline = computed(() => {
         if (!webConfig.value) {

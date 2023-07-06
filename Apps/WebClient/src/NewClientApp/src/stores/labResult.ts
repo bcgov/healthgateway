@@ -1,18 +1,19 @@
 ﻿import { defineStore } from "pinia";
-import { LabResultState } from "@/models/datasetState";
-import { LoadStatus } from "@/models/storeOperations";
-import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
-import { ILaboratoryService, ILogger } from "@/services/interfaces";
-import { container } from "@/ioc/container";
 import { ref } from "vue";
-import { LaboratoryOrder, LaboratoryOrderResult } from "@/models/laboratory";
-import { DatasetMapUtils } from "@/stores/utils/DatasetMapUtils";
-import { useErrorStore } from "@/stores/error";
-import { ErrorSourceType, ErrorType } from "@/constants/errorType";
-import { ResultError } from "@/models/errors";
-import RequestResult from "@/models/requestResult";
-import { ResultType } from "@/constants/resulttype";
+
 import { ActionType } from "@/constants/actionType";
+import { ErrorSourceType, ErrorType } from "@/constants/errorType";
+import { ResultType } from "@/constants/resulttype";
+import { container } from "@/ioc/container";
+import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
+import { LabResultState } from "@/models/datasetState";
+import { ResultError } from "@/models/errors";
+import { LaboratoryOrder, LaboratoryOrderResult } from "@/models/laboratory";
+import RequestResult from "@/models/requestResult";
+import { LoadStatus } from "@/models/storeOperations";
+import { ILaboratoryService, ILogger } from "@/services/interfaces";
+import { useErrorStore } from "@/stores/error";
+import { DatasetMapUtils } from "@/stores/utils/DatasetMapUtils";
 
 export const defaultLabResultState: LabResultState = {
     data: [],

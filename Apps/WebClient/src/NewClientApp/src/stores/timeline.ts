@@ -1,11 +1,12 @@
-import { DateWrapper } from "@/models/dateWrapper";
+import { defineStore } from "pinia";
+import { computed, ref } from "vue";
+
 import { container } from "@/ioc/container";
 import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
+import { DateWrapper } from "@/models/dateWrapper";
 import { StringISODate } from "@/models/dateWrapper";
 import { TimelineFilterBuilder } from "@/models/timelineFilter";
 import { ILogger } from "@/services/interfaces";
-import { defineStore } from "pinia";
-import { computed, ref } from "vue";
 
 export const useTimelineStore = defineStore("timeline", () => {
     const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);

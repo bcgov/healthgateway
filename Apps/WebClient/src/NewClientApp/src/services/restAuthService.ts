@@ -1,8 +1,8 @@
 import Keycloak, { KeycloakConfig } from "keycloak-js";
 
+import { OpenIdConnectConfiguration } from "@/models/configData";
 import { OidcTokenDetails, OidcUserInfo } from "@/models/user";
 import { IAuthenticationService, ILogger } from "@/services/interfaces";
-import { OpenIdConnectConfiguration } from "@/models/configData";
 
 /** The number of seconds between initiation of a token refresh and expiry of the old token. */
 const REFRESH_CUSHION = 30;

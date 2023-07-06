@@ -1,3 +1,6 @@
+import { defineStore } from "pinia";
+import { computed, ref } from "vue";
+
 import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import { ResultType } from "@/constants/resulttype";
 import { container } from "@/ioc/container";
@@ -7,8 +10,6 @@ import { LoadStatus, Operation, OperationType } from "@/models/storeOperations";
 import UserNote from "@/models/userNote";
 import { ILogger, IUserNoteService } from "@/services/interfaces";
 import { useErrorStore } from "@/stores/error";
-import { defineStore } from "pinia";
-import { computed, ref } from "vue";
 
 export const useNoteStore = defineStore("note", () => {
     const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);

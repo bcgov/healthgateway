@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import { computed } from "vue";
-
-import { ILogger } from "@/services/interfaces";
 import { useRoute, useRouter } from "vue-router";
+
+import LoadingComponent from "@/components/shared/LoadingComponent.vue";
 import { container } from "@/ioc/container";
 import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
-import { useUserStore } from "@/stores/user";
+import { ILogger } from "@/services/interfaces";
 import { useAuthStore } from "@/stores/auth";
 import { useNotificationStore } from "@/stores/notification";
-import LoadingComponent from "@/components/shared/LoadingComponent.vue";
+import { useUserStore } from "@/stores/user";
 
 const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
 const route = useRoute();

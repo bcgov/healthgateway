@@ -1,14 +1,15 @@
 ﻿import { defineStore } from "pinia";
-import { Dependent } from "@/models/dependent";
 import { computed, ref } from "vue";
+
+import { ErrorSourceType, ErrorType } from "@/constants/errorType";
+import { container } from "@/ioc/container";
+import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
+import { DateWrapper } from "@/models/dateWrapper";
+import { Dependent } from "@/models/dependent";
 import { ResultError } from "@/models/errors";
 import { LoadStatus } from "@/models/storeOperations";
-import { ErrorSourceType, ErrorType } from "@/constants/errorType";
-import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
 import { IDependentService, ILogger } from "@/services/interfaces";
-import { container } from "@/ioc/container";
 import { useErrorStore } from "@/stores/error";
-import { DateWrapper } from "@/models/dateWrapper";
 
 const dependentSort = (a: Dependent, b: Dependent) => {
     const firstDate = new DateWrapper(a.dependentInformation.dateOfBirth);

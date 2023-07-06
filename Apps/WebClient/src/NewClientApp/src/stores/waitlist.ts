@@ -1,12 +1,13 @@
 ﻿import { defineStore } from "pinia";
-import { LoadStatus } from "@/models/storeOperations";
 import { computed, ref } from "vue";
-import { Ticket } from "@/models/ticket";
+
 import { TicketStatus } from "@/constants/ticketStatus";
 import { container } from "@/ioc/container";
-import { IHttpDelegate, ILogger, ITicketService } from "@/services/interfaces";
 import { DELEGATE_IDENTIFIER, SERVICE_IDENTIFIER } from "@/ioc/identifier";
 import { ResultError } from "@/models/errors";
+import { LoadStatus } from "@/models/storeOperations";
+import { Ticket } from "@/models/ticket";
+import { IHttpDelegate, ILogger, ITicketService } from "@/services/interfaces";
 
 export const useWaitlistStore = defineStore(
     "waitlist",

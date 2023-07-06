@@ -1,5 +1,5 @@
-import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
 import { container } from "@/ioc/container";
+import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
 import { EventData, SnowplowWindow } from "@/plugins/extensions";
 import { ILogger } from "@/services/interfaces";
 

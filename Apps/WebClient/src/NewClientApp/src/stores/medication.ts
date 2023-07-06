@@ -1,20 +1,21 @@
 ﻿import { defineStore } from "pinia";
-import { MedicationState } from "@/models/datasetState";
-import { LoadStatus } from "@/models/storeOperations";
-import { DatasetMapUtils } from "@/stores/utils/DatasetMapUtils";
 import { ref } from "vue";
+
+import { ActionType } from "@/constants/actionType";
+import { EntryType } from "@/constants/entryType";
+import { ErrorSourceType, ErrorType } from "@/constants/errorType";
+import { ResultType } from "@/constants/resulttype";
+import { container } from "@/ioc/container";
+import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
+import { MedicationState } from "@/models/datasetState";
+import { ResultError } from "@/models/errors";
 import MedicationStatementHistory from "@/models/medicationStatementHistory";
 import RequestResult from "@/models/requestResult";
-import { ResultType } from "@/constants/resulttype";
-import { ActionType } from "@/constants/actionType";
-import { ErrorSourceType, ErrorType } from "@/constants/errorType";
-import { ResultError } from "@/models/errors";
-import { container } from "@/ioc/container";
+import { LoadStatus } from "@/models/storeOperations";
 import { ILogger, IMedicationService } from "@/services/interfaces";
-import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
 import { useErrorStore } from "@/stores/error";
+import { DatasetMapUtils } from "@/stores/utils/DatasetMapUtils";
 import EventTracker from "@/utility/eventTracker";
-import { EntryType } from "@/constants/entryType";
 
 const defaultMedicationState: MedicationState = {
     data: [],

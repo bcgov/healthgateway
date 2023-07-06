@@ -1,24 +1,24 @@
 <script setup lang="ts">
 import { computed, nextTick, onUnmounted, ref, watch } from "vue";
+import { useRoute, useRouter } from "vue-router";
 
 import AppTourComponent from "@/components/modal/AppTourComponent.vue";
 import RatingComponent from "@/components/modal/RatingComponent.vue";
 import HgButtonComponent from "@/components/shared/HgButtonComponent.vue";
 import HgIconButtonComponent from "@/components/shared/HgIconButtonComponent.vue";
+import { container } from "@/ioc/container";
+import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
 import type { WebClientConfiguration } from "@/models/configData";
 import { DateWrapper, StringISODateTime } from "@/models/dateWrapper";
 import Notification from "@/models/notification";
 import User from "@/models/user";
 import { ILogger } from "@/services/interfaces";
-import { container } from "@/ioc/container";
-import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
-import { useRoute, useRouter } from "vue-router";
-import { useConfigStore } from "@/stores/config";
-import { useUserStore } from "@/stores/user";
-import { useAuthStore } from "@/stores/auth";
-import { useNotificationStore } from "@/stores/notification";
-import { useNavbarStore } from "@/stores/navbar";
 import { useAppStore } from "@/stores/app";
+import { useAuthStore } from "@/stores/auth";
+import { useConfigStore } from "@/stores/config";
+import { useNavbarStore } from "@/stores/navbar";
+import { useNotificationStore } from "@/stores/notification";
+import { useUserStore } from "@/stores/user";
 
 const sidebarId = "notification-centre-sidebar";
 const headerScrollThreshold = 100;
@@ -238,7 +238,7 @@ nextTick(() => {
         color="primary"
         :scroll-threshold="headerScrollThreshold"
     >
-        <template #prepend v-if="isSidebarButtonShown">
+        <template v-if="isSidebarButtonShown" #prepend>
             <HgIconButtonComponent
                 :icon="isSidebarOpen ? 'fas fa-times' : 'fas fa-bars'"
                 @click="toggleSidebar"
@@ -259,8 +259,8 @@ nextTick(() => {
         />
         <HgIconButtonComponent
             v-if="isNotificationCentreAvailable"
-            @click="notificationButtonClicked = true"
             data-testid="notification-centre-button"
+            @click="notificationButtonClicked = true"
         >
             <v-badge
                 color="red"
@@ -294,9 +294,9 @@ nextTick(() => {
                         >Profile</v-list-item
                     >
                     <v-list-item
-                        @click="handleLogoutClick"
                         prepend-icon="fas fa-sign-out-alt"
                         data-testid="logoutBtn"
+                        @click="handleLogoutClick"
                         >Log Out</v-list-item
                     >
                 </v-list>

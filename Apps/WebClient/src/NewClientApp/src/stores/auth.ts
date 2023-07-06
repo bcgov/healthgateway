@@ -1,13 +1,14 @@
 ﻿import { defineStore } from "pinia";
-import { OidcTokenDetails } from "@/models/user";
 import { computed, ref } from "vue";
+
 import { container } from "@/ioc/container";
+import { DELEGATE_IDENTIFIER, SERVICE_IDENTIFIER } from "@/ioc/identifier";
+import { OidcTokenDetails } from "@/models/user";
 import {
     IAuthenticationService,
     IHttpDelegate,
     ILogger,
 } from "@/services/interfaces";
-import { DELEGATE_IDENTIFIER, SERVICE_IDENTIFIER } from "@/ioc/identifier";
 import { useUserStore } from "@/stores/user";
 
 export const useAuthStore = defineStore("auth", () => {

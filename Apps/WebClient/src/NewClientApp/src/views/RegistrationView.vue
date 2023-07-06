@@ -8,25 +8,25 @@ import {
     requiredIf,
     sameAs,
 } from "@vuelidate/validators";
-import { computed, Ref, ref } from "vue";
 import { vMaska } from "maska";
+import { computed, Ref, ref } from "vue";
+import { useRouter } from "vue-router";
 
+import HgButtonComponent from "@/components/shared/HgButtonComponent.vue";
 import HtmlTextAreaComponent from "@/components/shared/HtmlTextAreaComponent.vue";
 import LoadingComponent from "@/components/shared/LoadingComponent.vue";
+import PageTitleComponent from "@/components/shared/PageTitleComponent.vue";
 import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import ValidationRegEx from "@/constants/validationRegEx";
+import { container } from "@/ioc/container";
+import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
 import { ResultError } from "@/models/errors";
 import { TermsOfService } from "@/models/termsOfService";
 import { ILogger, IUserProfileService } from "@/services/interfaces";
-import PhoneUtil from "@/utility/phoneUtil";
-import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
-import { container } from "@/ioc/container";
-import { useRouter } from "vue-router";
 import { useConfigStore } from "@/stores/config";
-import { useUserStore } from "@/stores/user";
 import { useErrorStore } from "@/stores/error";
-import PageTitleComponent from "@/components/shared/PageTitleComponent.vue";
-import HgButtonComponent from "@/components/shared/HgButtonComponent.vue";
+import { useUserStore } from "@/stores/user";
+import PhoneUtil from "@/utility/phoneUtil";
 
 library.add(faExclamationTriangle);
 
@@ -272,8 +272,8 @@ loadTermsOfService();
                     id="emailCheckbox"
                     v-model="isEmailChecked"
                     data-testid="emailCheckbox"
-                    @change="onEmailOptout($event)"
                     label="Email Notifications"
+                    @change="onEmailOptout($event)"
                 />
                 <em class="text-body-2">
                     Receive application and health record updates
@@ -303,8 +303,8 @@ loadTermsOfService();
                 <v-checkbox
                     id="smsCheckbox"
                     v-model="isSMSNumberChecked"
-                    @change="onSMSOptout($event)"
                     label="Text Notifications"
+                    @change="onSMSOptout($event)"
                 />
                 <em class="text-body-2">
                     Receive health record updates only

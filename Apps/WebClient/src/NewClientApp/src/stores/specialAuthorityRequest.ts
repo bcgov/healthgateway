@@ -1,19 +1,20 @@
 ﻿import { defineStore } from "pinia";
-import { SpecialAuthorityRequestState } from "@/models/datasetState";
 import { ref } from "vue";
-import { DatasetMapUtils } from "@/stores/utils/DatasetMapUtils";
-import MedicationRequest from "@/models/medicationRequest";
-import { LoadStatus } from "@/models/storeOperations";
-import { ErrorSourceType, ErrorType } from "@/constants/errorType";
-import { ResultError } from "@/models/errors";
-import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
-import { ILogger, ISpecialAuthorityService } from "@/services/interfaces";
-import { container } from "@/ioc/container";
-import { useErrorStore } from "@/stores/error";
-import RequestResult from "@/models/requestResult";
-import { ResultType } from "@/constants/resulttype";
-import EventTracker from "@/utility/eventTracker";
+
 import { EntryType } from "@/constants/entryType";
+import { ErrorSourceType, ErrorType } from "@/constants/errorType";
+import { ResultType } from "@/constants/resulttype";
+import { container } from "@/ioc/container";
+import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
+import { SpecialAuthorityRequestState } from "@/models/datasetState";
+import { ResultError } from "@/models/errors";
+import MedicationRequest from "@/models/medicationRequest";
+import RequestResult from "@/models/requestResult";
+import { LoadStatus } from "@/models/storeOperations";
+import { ILogger, ISpecialAuthorityService } from "@/services/interfaces";
+import { useErrorStore } from "@/stores/error";
+import { DatasetMapUtils } from "@/stores/utils/DatasetMapUtils";
+import EventTracker from "@/utility/eventTracker";
 
 const defaultSpecialAuthorityRequestState: SpecialAuthorityRequestState = {
     data: [],

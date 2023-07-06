@@ -1,5 +1,6 @@
-import { ref } from "vue";
 import { defineStore } from "pinia";
+import { ref } from "vue";
+
 import { AppErrorType } from "@/constants/errorType";
 
 export const useAppStore = defineStore("app", () => {

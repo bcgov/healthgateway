@@ -1,14 +1,15 @@
 ﻿import { defineStore } from "pinia";
 import { ref } from "vue";
-import { ResultError } from "@/models/errors";
-import { LoadStatus } from "@/models/storeOperations";
-import Notification from "@/models/notification";
-import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
-import { ILogger, INotificationService } from "@/services/interfaces";
-import { container } from "@/ioc/container";
-import { useUserStore } from "@/stores/user";
+
 import { ErrorSourceType, ErrorType } from "@/constants/errorType";
+import { container } from "@/ioc/container";
+import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
+import { ResultError } from "@/models/errors";
+import Notification from "@/models/notification";
+import { LoadStatus } from "@/models/storeOperations";
+import { ILogger, INotificationService } from "@/services/interfaces";
 import { useErrorStore } from "@/stores/error";
+import { useUserStore } from "@/stores/user";
 
 export const useNotificationStore = defineStore("notification", () => {
     const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);

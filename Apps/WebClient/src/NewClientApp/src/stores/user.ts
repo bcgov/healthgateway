@@ -173,10 +173,6 @@ export const useUserStore = defineStore("user", () => {
         setLoadedStatus(patient.value.hdid !== undefined);
     }
 
-    function setEmailVerified() {
-        user.value.verifiedEmail = true;
-    }
-
     function updateSMSResendDateTime(date: DateWrapper) {
         smsResendDateTime.value = date;
         setLoadedStatus();

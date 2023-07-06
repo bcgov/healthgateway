@@ -6,13 +6,13 @@ import {
     faUserSecret,
 } from "@fortawesome/free-solid-svg-icons";
 import { computed, ref } from "vue";
-
-import LoadingComponent from "@/components/shared/LoadingComponent.vue";
 import { useRoute, useRouter } from "vue-router";
-import { useUserStore } from "@/stores/user";
+
+import HgButtonComponent from "@/components/shared/HgButtonComponent.vue";
+import LoadingComponent from "@/components/shared/LoadingComponent.vue";
 import { useAuthStore } from "@/stores/auth";
 import { useConfigStore } from "@/stores/config";
-import HgButtonComponent from "@/components/shared/HgButtonComponent.vue";
+import { useUserStore } from "@/stores/user";
 
 library.add(faAddressCard, faUser, faUserSecret); // icons listed in config
 
@@ -112,11 +112,11 @@ if (oidcIsAuthenticated.value) {
                     >
                     </HgButtonComponent>
                     <div
-                        class="text-center text-body-1 my-1"
                         v-if="
                             identityProviders.indexOf(provider) <
                             identityProviders.length - 1
                         "
+                        class="text-center text-body-1 my-1"
                     >
                         or
                     </div>

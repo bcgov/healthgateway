@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
-
-import { useNavbarStore } from "@/stores/navbar";
-import { useUserStore } from "@/stores/user";
-import { useAuthStore } from "@/stores/auth";
-import { useConfigStore } from "@/stores/config";
 import { useRoute } from "vue-router";
+
 import HgIconButtonComponent from "@/components/shared/HgIconButtonComponent.vue";
 import { useAppStore } from "@/stores/app";
+import { useAuthStore } from "@/stores/auth";
+import { useConfigStore } from "@/stores/config";
+import { useNavbarStore } from "@/stores/navbar";
+import { useUserStore } from "@/stores/user";
 
 const route = useRoute();
 

@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { useErrorStore } from "@/stores/error";
 import { computed } from "vue";
+
+import { useErrorStore } from "@/stores/error";
 
 interface Props {
     location?: string;

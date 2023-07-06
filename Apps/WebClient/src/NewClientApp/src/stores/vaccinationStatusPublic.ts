@@ -1,3 +1,6 @@
+import { defineStore } from "pinia";
+import { computed, ref } from "vue";
+
 import { ActionType } from "@/constants/actionType";
 import { ResultType } from "@/constants/resulttype";
 import { container } from "@/ioc/container";
@@ -9,8 +12,6 @@ import { LoadStatus } from "@/models/storeOperations";
 import VaccinationStatus from "@/models/vaccinationStatus";
 import { ILogger, IVaccinationStatusService } from "@/services/interfaces";
 import { useErrorStore } from "@/stores/error";
-import { defineStore } from "pinia";
-import { computed, ref } from "vue";
 
 export const useVaccinationStatusPublicStore = defineStore(
     "vaccinationStatusPublic",

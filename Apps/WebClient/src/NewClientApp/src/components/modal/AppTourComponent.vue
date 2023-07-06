@@ -1,9 +1,10 @@
 ﻿<script setup lang="ts">
 import { computed, ref } from "vue";
-import HgIconButtonComponent from "@/components/shared/HgIconButtonComponent.vue";
-import HgButtonComponent from "@/components/shared/HgButtonComponent.vue";
-import { VCarousel } from "vuetify/components";
 import { useDisplay } from "vuetify";
+import { VCarousel } from "vuetify/components";
+
+import HgButtonComponent from "@/components/shared/HgButtonComponent.vue";
+import HgIconButtonComponent from "@/components/shared/HgIconButtonComponent.vue";
 
 interface Props {
     highlightTourChangeIndicator: boolean;
@@ -114,7 +115,7 @@ function previous(): void {
         persistent
         no-click-animation
     >
-        <template v-slot:activator="{ props }">
+        <template #activator="{ props }">
             <HgIconButtonComponent v-bind="props" data-testid="app-tour-button">
                 <v-badge
                     color="red"
@@ -159,16 +160,16 @@ function previous(): void {
                                 <HgButtonComponent
                                     variant="link"
                                     data-testid="app-tour-skip"
-                                    @click="hideModal"
                                     text="Skip"
+                                    @click="hideModal"
                                 />
                             </v-col>
                             <v-col cols="6" class="d-flex justify-center">
                                 <HgButtonComponent
                                     variant="primary"
                                     data-testid="app-tour-start"
-                                    @click="next()"
                                     text="Start Tour"
+                                    @click="next()"
                                 />
                             </v-col>
                         </v-row>
@@ -177,32 +178,32 @@ function previous(): void {
                                 <HgButtonComponent
                                     variant="link"
                                     data-testid="app-tour-skip"
-                                    @click="hideModal"
                                     text="Skip"
+                                    @click="hideModal"
                                 />
                             </v-col>
                             <v-col class="d-flex justify-end">
                                 <HgButtonComponent
                                     data-testid="app-tour-back"
                                     variant="secondary"
-                                    @click="previous()"
                                     text="Back"
+                                    @click="previous()"
                                 />
                                 <HgButtonComponent
                                     variant="primary"
                                     class="ml-4"
                                     data-testid="app-tour-next"
-                                    @click="next()"
                                     text="Next"
+                                    @click="next()"
                                 />
                             </v-col>
                         </v-row>
-                        <div class="d-flex justify-center" v-else>
+                        <div v-else class="d-flex justify-center">
                             <HgButtonComponent
                                 variant="primary"
                                 data-testid="app-tour-done"
-                                @click="hideModal"
                                 text="Done"
+                                @click="hideModal"
                             />
                         </div>
                     </v-container>

@@ -1,10 +1,11 @@
 <script setup lang="ts">
+import { computed, nextTick, onBeforeUnmount, onMounted, ref } from "vue";
+import { useRoute } from "vue-router";
+
 import HeaderComponent from "@/components/navmenu/HeaderComponent.vue";
 import SidebarComponent from "@/components/navmenu/SidebarComponent.vue";
-import { useRoute } from "vue-router";
-import { computed, nextTick, onBeforeUnmount, onMounted, ref } from "vue";
-import { useAppStore } from "@/stores/app";
 import ScreenWidth from "@/constants/screenWidth";
+import { useAppStore } from "@/stores/app";
 
 const loginCallbackPath = "/logincallback";
 const vaccineCardPath = "/vaccinecard";

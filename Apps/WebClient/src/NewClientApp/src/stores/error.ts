@@ -1,7 +1,8 @@
-﻿import { BannerError } from "@/models/errors";
+﻿import { defineStore } from "pinia";
 import { ref } from "vue";
-import { defineStore } from "pinia";
+
 import { ErrorSourceType, ErrorType } from "@/constants/errorType";
+import { BannerError } from "@/models/errors";
 import ErrorTranslator from "@/utility/errorTranslator";
 
 export const useErrorStore = defineStore("error", () => {

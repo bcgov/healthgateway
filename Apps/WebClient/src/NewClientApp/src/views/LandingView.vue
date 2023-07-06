@@ -22,14 +22,14 @@ import {
     faXRay,
 } from "@fortawesome/free-solid-svg-icons";
 import { computed, ref } from "vue";
+import { useDisplay } from "vuetify";
 
-import { EntryType, entryTypeMap } from "@/constants/entryType";
-import ConfigUtil from "@/utility/configUtil";
-import { useConfigStore } from "@/stores/config";
-import { useAuthStore } from "@/stores/auth";
 import HgButtonComponent from "@/components/shared/HgButtonComponent.vue";
 import HgIconButtonComponent from "@/components/shared/HgIconButtonComponent.vue";
-import { useDisplay } from "vuetify";
+import { EntryType, entryTypeMap } from "@/constants/entryType";
+import { useAuthStore } from "@/stores/auth";
+import { useConfigStore } from "@/stores/config";
+import ConfigUtil from "@/utility/configUtil";
 
 library.add(
     faCheckCircle,
@@ -251,8 +251,8 @@ function selectPreviewDevice(previewDevice: PreviewDevice): void {
                             :disabled="
                                 selectedPreviewDevice === PreviewDevice.laptop
                             "
-                            @click="selectPreviewDevice(PreviewDevice.laptop)"
                             class="mx-4"
+                            @click="selectPreviewDevice(PreviewDevice.laptop)"
                         />
                     </template>
                 </v-tooltip>
@@ -268,8 +268,8 @@ function selectPreviewDevice(previewDevice: PreviewDevice): void {
                             :disabled="
                                 selectedPreviewDevice === PreviewDevice.tablet
                             "
-                            @click="selectPreviewDevice(PreviewDevice.tablet)"
                             class="mx-4"
+                            @click="selectPreviewDevice(PreviewDevice.tablet)"
                         />
                     </template>
                 </v-tooltip>
@@ -286,10 +286,10 @@ function selectPreviewDevice(previewDevice: PreviewDevice): void {
                                 selectedPreviewDevice ===
                                 PreviewDevice.smartphone
                             "
+                            class="mx-4"
                             @click="
                                 selectPreviewDevice(PreviewDevice.smartphone)
                             "
-                            class="mx-4"
                         />
                     </template>
                 </v-tooltip>

@@ -1,6 +1,6 @@
-﻿import { LoadStatus } from "@/models/storeOperations";
-import { DatasetState } from "@/models/datasetState";
+﻿import { DatasetState } from "@/models/datasetState";
 import { ResultError } from "@/models/errors";
+import { LoadStatus } from "@/models/storeOperations";
 
 export class DatasetMapUtils<T, S extends DatasetState<T>> {
     private readonly defaultState: S;

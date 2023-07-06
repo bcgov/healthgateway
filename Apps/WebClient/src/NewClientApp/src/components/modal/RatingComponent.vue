@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { ref } from "vue";
 
-import { ILogger, IUserRatingService } from "@/services/interfaces";
-import SnowPlow from "@/utility/snowPlow";
 import HgButtonComponent from "@/components/shared/HgButtonComponent.vue";
 import { container } from "@/ioc/container";
 import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
+import { ILogger, IUserRatingService } from "@/services/interfaces";
 import { useConfigStore } from "@/stores/config";
+import SnowPlow from "@/utility/snowPlow";
 
 const emit = defineEmits<{
     (e: "on-close"): void;
@@ -102,7 +102,7 @@ function handleRating(value: number | string, skip = false): void {
                             class="mb-2"
                             hover
                             size="large"
-                            @update:modelValue="handleRating"
+                            @update:model-value="handleRating"
                         />
                     </div>
                 </v-card-text>
@@ -111,8 +111,8 @@ function handleRating(value: number | string, skip = false): void {
                         id="skipButton"
                         data-testid="ratingModalSkipBtn"
                         variant="secondary"
-                        @click="handleRating(0, true)"
                         text="Skip"
+                        @click="handleRating(0, true)"
                     />
                 </v-card-actions>
             </v-card>
