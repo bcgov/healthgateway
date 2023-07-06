@@ -35,11 +35,19 @@ const isTooManyRequests = computed(
                             v-if="isTooManyRequests"
                             type="warning"
                             data-testid="app-warning"
+                            variant="outlined"
+                            border
                         >
                             We are unable to complete all actions because the
                             site is too busy. Please try again later.
                         </v-alert>
-                        <v-alert v-else type="error" data-testid="app-error">
+                        <v-alert
+                            v-else
+                            type="error"
+                            data-testid="app-error"
+                            variant="outlined"
+                            border
+                        >
                             Unable to load application. Please try refreshing
                             the page or come back later.
                         </v-alert>

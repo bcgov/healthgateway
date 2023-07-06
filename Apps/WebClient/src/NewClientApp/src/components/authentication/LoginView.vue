@@ -78,6 +78,8 @@ if (oidcIsAuthenticated.value) {
                 type="error"
                 title="Error"
                 text="An unexpected error occured while processing the request, please try again."
+                variant="outlined"
+                border
             />
         </v-col>
     </v-row>

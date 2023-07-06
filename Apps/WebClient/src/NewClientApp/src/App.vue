@@ -2,8 +2,10 @@
 import { computed, nextTick, onBeforeUnmount, onMounted, ref } from "vue";
 import { useRoute } from "vue-router";
 
+import ErrorCardComponent from "@/components/error/ErrorCardComponent.vue";
 import HeaderComponent from "@/components/navigation/HeaderComponent.vue";
 import SidebarComponent from "@/components/navigation/SidebarComponent.vue";
+import { Path } from "@/constants/path";
 import ScreenWidth from "@/constants/screenWidth";
 import { useAppStore } from "@/stores/app";
 
@@ -20,6 +22,10 @@ function currentPathMatches(...paths: string[]): boolean {
     const currentPath = route.path.toLowerCase();
     return paths.some((path) => path === currentPath);
 }
+
+const hideErrorAlerts = computed(() =>
+    currentPathMatches(Path.Root, Path.VaccineCard, Path.Queue, Path.Busy)
+);
 
 const isHeaderVisible = computed(
     () =>
@@ -71,6 +77,7 @@ onMounted(async () => {
         <SidebarComponent />
         <v-main>
             <v-container>
+                <ErrorCardComponent v-if="!hideErrorAlerts" />
                 <router-view />
             </v-container>
         </v-main>

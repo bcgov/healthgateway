@@ -246,6 +246,8 @@ function hideModal(): void {
                         type="error"
                         closable
                         class="my-3"
+                        variant="outlined"
+                        border
                     >
                         <h5 class="text-body-1 font-weight-bold mb-2">
                             {{ bannerError.title }}

@@ -333,11 +333,12 @@ watch(vaccineRecordState, () => {
     <v-alert
         v-if="unverifiedEmail || unverifiedSMS"
         data-testid="incomplete-profile-banner"
-        show
-        dismissible
+        closable
         type="info"
         class="d-print-none my-3"
         title="Verify Contact Information"
+        variant="outlined"
+        border
     >
         <span class="text-body-1">
             Your email or cell phone number has not been verified. You can use
@@ -355,13 +356,14 @@ watch(vaccineRecordState, () => {
     </v-alert>
     <v-alert
         v-if="!isPacificTime"
-        show
         closable
         type="info"
         title="Looks like you're in a different timezone."
         text="Heads up: your health records are recorded and displayed in
                 Pacific Time."
         class="d-print-none my-3"
+        variant="outlined"
+        border
     />
     <PageTitleComponent title="Home">
         <template #append>
