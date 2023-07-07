@@ -4,8 +4,8 @@ import { useRoute, useRouter } from "vue-router";
 
 import HgButtonComponent from "@/components/common/HgButtonComponent.vue";
 import HgIconButtonComponent from "@/components/common/HgIconButtonComponent.vue";
-import RatingComponent from "@/components/navigation/RatingComponent.vue";
 import AppTourComponent from "@/components/private/home/AppTourComponent.vue";
+import RatingComponent from "@/components/site/RatingComponent.vue";
 import { container } from "@/ioc/container";
 import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
 import type { WebClientConfiguration } from "@/models/configData";

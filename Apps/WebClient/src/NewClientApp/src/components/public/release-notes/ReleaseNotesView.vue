@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import PageTitleComponent from "@/components/common/PageTitleComponent.vue";
-import BreadcrumbComponent from "@/components/navigation/BreadcrumbComponent.vue";
 import ReleaseNote from "@/components/public/release-notes/ReleaseNoteComponent.vue";
+import BreadcrumbComponent from "@/components/site/BreadcrumbComponent.vue";
 import BreadcrumbItem from "@/models/breadcrumbItem";
 
 const breadcrumbItems: BreadcrumbItem[] = [
