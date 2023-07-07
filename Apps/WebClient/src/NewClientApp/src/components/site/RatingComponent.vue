@@ -13,8 +13,8 @@ const emit = defineEmits<{
 }>();
 
 defineExpose({
-    showModal,
-    hideModal,
+    showDialog,
+    hideDialog,
 });
 
 const question =
@@ -30,7 +30,7 @@ const configStore = useConfigStore();
 const ratingValue = ref(0);
 const isVisible = ref(false);
 
-function showModal(): void {
+function showDialog(): void {
     isVisible.value = true;
     setTimeout(() => {
         if (isVisible.value) {
@@ -39,7 +39,7 @@ function showModal(): void {
     }, Number(configStore.webConfig.timeouts.logoutRedirect));
 }
 
-function hideModal(): void {
+function hideDialog(): void {
     isVisible.value = false;
 }
 
@@ -67,7 +67,7 @@ function handleRating(value: number | string, skip = false): void {
             logger.error(`submitRating with error: ${err}`)
         )
         .finally(() => {
-            hideModal();
+            hideDialog();
             emit("on-close");
         });
 }

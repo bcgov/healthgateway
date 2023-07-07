@@ -39,6 +39,7 @@ const hasViewedTour = ref(false);
 const isScrollNearBottom = ref(false);
 
 const ratingComponent = ref<InstanceType<typeof RatingComponent>>();
+const appTourComponent = ref<InstanceType<typeof AppTourComponent>>();
 
 const isMobileWidth = computed<boolean>(() => appStore.isMobile);
 
@@ -195,7 +196,7 @@ function handleLogoutClick(): void {
 }
 
 function showRating(): void {
-    ratingComponent.value?.showModal();
+    ratingComponent.value?.showDialog();
 }
 
 function processLogout(): void {
@@ -214,7 +215,7 @@ watch(
     (value) => {
         if (value.registration === "success") {
             router.replace({ query: {} });
-            // appTourComponent.value?.showModal();
+            appTourComponent.value?.showDialog();
         }
     }
 );

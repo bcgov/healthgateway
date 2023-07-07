@@ -3,6 +3,7 @@ import { computed, ref } from "vue";
 import { useRoute } from "vue-router";
 
 import HgIconButtonComponent from "@/components/common/HgIconButtonComponent.vue";
+import FeedbackComponent from "@/components/site/FeedbackComponent.vue";
 import { useAppStore } from "@/stores/app";
 import { useAuthStore } from "@/stores/auth";
 import { useConfigStore } from "@/stores/config";
@@ -18,6 +19,7 @@ const navbarStore = useNavbarStore();
 const userStore = useUserStore();
 
 const collapsedOnDesktop = ref(false);
+const feedbackDialog = ref<InstanceType<typeof FeedbackComponent>>();
 
 const isMobile = computed(() => appStore.isMobile);
 const isSidebarOpen = computed(() => navbarStore.isSidebarOpen);
@@ -63,6 +65,10 @@ function dismiss() {
         collapsedOnDesktop.value = true;
     }
 }
+
+function handleSendFeedbackClick() {
+    feedbackDialog.value?.showDialog();
+}
 </script>
 
 <template>
@@ -77,98 +83,81 @@ function dismiss() {
         @click.stop="collapsedOnDesktop = false"
         @update:model-value="visibleOnMobile = false"
     >
-        <v-list-item :title="userStore.userName" nav>
-            <template #prepend>
-                <v-avatar
-                    data-testid="sidenavbar-profile-initials"
-                    color="info"
-                >
-                    {{ userStore.userInitials }}
-                </v-avatar>
-            </template>
-            <template #append>
-                <HgIconButtonComponent
-                    icon="fas fa-chevron-left"
-                    data-testid="sidenavbar-dismiss-btn"
-                    @click.stop="dismiss"
-                />
-            </template>
-        </v-list-item>
+        <v-list>
+            <v-list-item :title="userStore.userName" nav>
+                <template #prepend>
+                    <v-avatar
+                        data-testid="sidenavbar-profile-initials"
+                        color="info"
+                    >
+                        {{ userStore.userInitials }}
+                    </v-avatar>
+                </template>
+                <template #append>
+                    <HgIconButtonComponent
+                        icon="fas fa-chevron-left"
+                        data-testid="sidenavbar-dismiss-btn"
+                        @click.stop="dismiss"
+                    />
+                </template>
+            </v-list-item>
+        </v-list>
         <v-divider></v-divider>
-        <v-list density="compact" nav>
+        <v-list nav class="d-flex flex-column">
             <v-list-item
                 title="Home"
                 to="/home"
                 data-testid="menu-btn-home-link"
-            >
-                <template #prepend>
-                    <div class="nav-list-item-icon mr-8 d-flex justify-center">
-                        <v-icon icon="fas fa-house" />
-                    </div>
-                </template>
-            </v-list-item>
+                prepend-icon="house"
+            />
             <v-list-item
                 title="Timeline"
                 to="/timeline"
                 data-testid="menu-btn-time-line-link"
-            >
-                <template #prepend>
-                    <div class="nav-list-item-icon mr-8 d-flex justify-center">
-                        <v-icon icon="fas fa-box-archive" />
-                    </div>
-                </template>
-            </v-list-item>
+                prepend-icon="box-archive"
+            />
             <v-list-item
                 title="COVID-19"
                 to="/covid19"
                 data-testid="menu-btn-covid19-link"
-            >
-                <template #prepend>
-                    <div class="nav-list-item-icon mr-8 d-flex justify-center">
-                        <v-icon icon="fas fa-circle-check" />
-                    </div>
-                </template>
-            </v-list-item>
+                prepend-icon="circle-check"
+            />
             <v-list-item
                 v-show="isDependentEnabled && userStore.userIsActive"
                 title="Dependents"
                 to="/dependents"
                 data-testid="menu-btn-dependents-link"
-            >
-                <template #prepend>
-                    <div class="nav-list-item-icon mr-8 d-flex justify-center">
-                        <v-icon icon="fas fa-user-group" />
-                    </div>
-                </template>
-            </v-list-item>
+                prepend-icon="user-group"
+            />
             <v-list-item
                 v-show="isServicesEnabled && userStore.userIsActive"
                 prepend-icon="fas fa-hand-holding-medical"
                 title="Services"
                 to="/services"
                 data-testid="menu-btn-dependents-link"
-            >
-                <template #prepend>
-                    <div class="nav-list-item-icon mr-8 d-flex justify-center">
-                        <v-icon icon="fas fa-hand-holding-medical" />
-                    </div>
-                </template>
-            </v-list-item>
+            />
             <v-list-item
                 v-show="userStore.userIsActive"
                 prepend-icon="fas fa-cloud-arrow-down"
                 title="Export Records"
                 to="/reports"
                 data-testid="menu-btn-reports-link"
+            />
+        </v-list>
+        <template #append>
+            <v-list-item
+                title="Feedback"
+                data-testid="menu-btn-feedback-link"
+                class="bg-blue text-white"
+                @click.prevent="handleSendFeedbackClick()"
             >
                 <template #prepend>
-                    <div class="nav-list-item-icon mr-8 d-flex justify-center">
-                        <v-icon icon="fas fa-cloud-arrow-down" />
-                    </div>
+                    <v-icon icon="comments" class="text-white opacity-100" />
                 </template>
             </v-list-item>
-        </v-list>
+        </template>
     </v-navigation-drawer>
+    <FeedbackComponent ref="feedbackDialog" />
 </template>
 
 <style scoped>
