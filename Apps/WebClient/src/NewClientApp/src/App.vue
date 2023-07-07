@@ -3,6 +3,7 @@ import { computed, nextTick, onBeforeUnmount, onMounted, ref } from "vue";
 import { useRoute } from "vue-router";
 
 import ErrorCardComponent from "@/components/error/ErrorCardComponent.vue";
+import CommunicationComponent from "@/components/site/CommunicationComponent.vue";
 import HeaderComponent from "@/components/site/HeaderComponent.vue";
 import SidebarComponent from "@/components/site/SidebarComponent.vue";
 import { Path } from "@/constants/path";
@@ -21,6 +22,11 @@ const hideErrorAlerts = computed(() =>
 );
 const isHeaderVisible = computed(
     () => !currentPathMatches(Path.LoginCallback, Path.VaccineCard)
+);
+const isCommunicationVisible = computed(
+    () =>
+        !currentPathMatches(Path.LoginCallback, Path.VaccineCard) &&
+        !route.path.toLowerCase().startsWith(Path.PcrTest.toLowerCase())
 );
 
 function currentPathMatches(...paths: string[]): boolean {
@@ -66,6 +72,7 @@ onMounted(async () => {
         <HeaderComponent v-if="isHeaderVisible" />
         <SidebarComponent />
         <v-main>
+            <CommunicationComponent v-if="isCommunicationVisible" />
             <v-container>
                 <ErrorCardComponent v-if="!hideErrorAlerts" />
                 <router-view />

@@ -237,6 +237,7 @@ nextTick(() => {
         class="border-b-md border-accent border-opacity-100 d-print-none"
         color="primary"
         :scroll-threshold="headerScrollThreshold"
+        flat
     >
         <template v-if="isSidebarButtonShown" #prepend>
             <HgIconButtonComponent
