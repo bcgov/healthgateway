@@ -1,8 +1,8 @@
 ﻿<script setup lang="ts">
 import { computed, ref } from "vue";
 
-import HgButtonComponent from "@/components/shared/HgButtonComponent.vue";
-import HgIconButtonComponent from "@/components/shared/HgIconButtonComponent.vue";
+import HgButtonComponent from "@/components/common/HgButtonComponent.vue";
+import HgIconButtonComponent from "@/components/common/HgIconButtonComponent.vue";
 import { container } from "@/ioc/container";
 import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
 import { ResultError } from "@/models/errors";
@@ -22,7 +22,7 @@ const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
 const medicationStore = useMedicationStore();
 
 const protectiveWord = ref("");
-const forceClosed = ref(false);
+const isClosed = ref(false);
 
 const medicationsAreLoading = computed(() =>
     medicationStore.medicationsAreLoading(props.hdid)
@@ -44,26 +44,22 @@ const errorMessages = computed(() =>
 
 const isVisible = computed(
     () =>
-        !forceClosed.value &&
+        !isClosed.value &&
         medicationsAreProtected.value &&
         !medicationsAreLoading.value
 );
 
 function handleOk(): void {
-    fetchMedications();
-}
-
-function handleClose(): void {
-    forceClosed.value = true;
-    emit("abort");
-}
-
-function fetchMedications(): void {
     medicationStore
         .retrieveMedications(props.hdid, protectiveWord.value)
         .catch((err: ResultError) =>
             logger.error("Error retrieving medications: " + JSON.stringify(err))
         );
+}
+
+function handleClose(): void {
+    isClosed.value = true;
+    emit("abort");
 }
 </script>
 
@@ -91,17 +87,14 @@ function fetchMedications(): void {
                     </v-toolbar>
                 </v-card-title>
                 <v-card-text class="text-body-1 pa-3">
-                    <v-form @submit.stop.prevent="handleOk">
-                        <v-text-field
-                            id="protectiveWord-input"
-                            v-model="protectiveWord"
-                            label="Protective Word"
-                            data-testid="protectiveWordInput"
-                            type="password"
-                            :error-messages="errorMessages"
-                            required
-                        />
-                    </v-form>
+                    <v-text-field
+                        id="protectiveWord-input"
+                        v-model="protectiveWord"
+                        label="Protective Word"
+                        data-testid="protectiveWordInput"
+                        type="password"
+                        :error-messages="errorMessages"
+                    />
                 </v-card-text>
                 <v-card-actions
                     class="d-flex flex-column align-start border-t-sm pa-4"
