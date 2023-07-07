@@ -11,5 +11,6 @@ withDefaults(defineProps<Props>(), {
     <v-sheet class="pa-6" border>
         <!-- eslint-disable vue/no-v-html -->
         <div v-html="input" />
+        <!-- eslint-enable vue/no-v-html -->
     </v-sheet>
 </template>

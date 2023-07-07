@@ -28,13 +28,13 @@ export class RestCommunicationService implements ICommunicationService {
 
     public getActive(
         type: CommunicationType
-    ): Promise<RequestResult<Communication>> {
+    ): Promise<RequestResult<Communication | null>> {
         return new Promise((resolve, reject) =>
             this.http
-                .getWithCors<RequestResult<Communication>>(
+                .getWithCors<RequestResult<Communication | null>>(
                     `${this.baseUri}${this.BASE_URI}/${type}`
                 )
-                .then((communication) => resolve(communication))
+                .then((result) => resolve(result))
                 .catch((err: HttpError) => {
                     this.logger.error(
                         `Error in RestCommunicationService.getActive()`

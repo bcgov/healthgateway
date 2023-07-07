@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import PageErrorComponent from "@/components/common/PageErrorComponent.vue";
+import PageErrorComponent from "@/components/error/PageErrorComponent.vue";
 </script>
 
 <template>

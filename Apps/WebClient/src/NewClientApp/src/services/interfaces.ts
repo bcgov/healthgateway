@@ -190,7 +190,9 @@ export interface INotificationService {
 }
 
 export interface ICommunicationService {
-    getActive(type: CommunicationType): Promise<RequestResult<Communication>>;
+    getActive(
+        type: CommunicationType
+    ): Promise<RequestResult<Communication | null>>;
 }
 
 export interface IDependentService {

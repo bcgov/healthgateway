@@ -3,8 +3,8 @@ import { computed } from "vue";
 
 import LoadingComponent from "@/components/common/LoadingComponent.vue";
 import PageTitleComponent from "@/components/common/PageTitleComponent.vue";
-import BreadcrumbComponent from "@/components/navigation/BreadcrumbComponent.vue";
 import OrganDonorDetailsCard from "@/components/private/services/OrganDonorDetailsCard.vue";
+import BreadcrumbComponent from "@/components/site/BreadcrumbComponent.vue";
 import { ServiceName } from "@/constants/serviceName";
 import BreadcrumbItem from "@/models/breadcrumbItem";
 import { PatientData, PatientDataType } from "@/models/patientDataResponse";

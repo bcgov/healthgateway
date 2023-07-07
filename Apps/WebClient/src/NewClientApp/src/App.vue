@@ -3,14 +3,12 @@ import { computed, nextTick, onBeforeUnmount, onMounted, ref } from "vue";
 import { useRoute } from "vue-router";
 
 import ErrorCardComponent from "@/components/error/ErrorCardComponent.vue";
-import HeaderComponent from "@/components/navigation/HeaderComponent.vue";
-import SidebarComponent from "@/components/navigation/SidebarComponent.vue";
+import CommunicationComponent from "@/components/site/CommunicationComponent.vue";
+import HeaderComponent from "@/components/site/HeaderComponent.vue";
+import SidebarComponent from "@/components/site/SidebarComponent.vue";
 import { Path } from "@/constants/path";
 import ScreenWidth from "@/constants/screenWidth";
 import { useAppStore } from "@/stores/app";
-
-const loginCallbackPath = "/logincallback";
-const vaccineCardPath = "/vaccinecard";
 
 const route = useRoute();
 const appStore = useAppStore();
@@ -18,22 +16,24 @@ const appStore = useAppStore();
 const initialized = ref(false);
 const windowWidth = ref(0);
 
-function currentPathMatches(...paths: string[]): boolean {
-    const currentPath = route.path.toLowerCase();
-    return paths.some((path) => path === currentPath);
-}
-
+const isMobile = computed<boolean>(() => appStore.isMobile);
 const hideErrorAlerts = computed(() =>
     currentPathMatches(Path.Root, Path.VaccineCard, Path.Queue, Path.Busy)
 );
-
 const isHeaderVisible = computed(
+    () => !currentPathMatches(Path.LoginCallback, Path.VaccineCard)
+);
+const isCommunicationVisible = computed(
     () =>
-        appStore.appError === undefined &&
-        !currentPathMatches(loginCallbackPath, vaccineCardPath)
+        !currentPathMatches(Path.LoginCallback, Path.VaccineCard) &&
+        !route.path.toLowerCase().startsWith(Path.PcrTest.toLowerCase())
 );
 
-const isMobile = computed<boolean>(() => appStore.isMobile);
+function currentPathMatches(...paths: string[]): boolean {
+    return paths.some(
+        (path) => route.path.toLowerCase() === path.toLowerCase()
+    );
+}
 
 function initializeResizeListener(): void {
     window.addEventListener("resize", onResize);
@@ -45,17 +45,13 @@ function onResize(): void {
 
     if (windowWidth.value < ScreenWidth.Mobile) {
         if (!isMobile.value) {
-            setIsMobile(true);
+            appStore.setIsMobile(true);
         }
     } else {
         if (isMobile.value) {
-            setIsMobile(false);
+            appStore.setIsMobile(false);
         }
     }
-}
-
-function setIsMobile(isMobile: boolean): void {
-    appStore.setIsMobile(isMobile);
 }
 
 onBeforeUnmount(() => {
@@ -72,10 +68,11 @@ onMounted(async () => {
 </script>
 
 <template>
-    <v-app>
+    <v-app v-if="initialized">
         <HeaderComponent v-if="isHeaderVisible" />
         <SidebarComponent />
         <v-main>
+            <CommunicationComponent v-if="isCommunicationVisible" />
             <v-container>
                 <ErrorCardComponent v-if="!hideErrorAlerts" />
                 <router-view />
