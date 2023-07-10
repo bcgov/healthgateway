@@ -211,51 +211,60 @@ function resetFeedback(): void {
                         </template>
                     </v-alert>
                 </v-card-text>
-                <v-card-actions
-                    v-if="isSuccessWithoutEmail"
-                    class="pa-4 justify-end"
-                >
-                    <HgButtonComponent
-                        data-testid="noNeedBtn"
-                        variant="link"
-                        text="No Need!"
-                        @click="resetFeedback"
-                    />
-                    <HgButtonComponent
-                        data-testid="updateMyEmailButton"
-                        variant="primary"
-                        text="Update my email"
-                        to="/profile"
-                        @click="resetFeedback"
-                    />
-                </v-card-actions>
-                <v-card-actions v-else class="pa-4 justify-center">
-                    <HgButtonComponent
-                        v-if="!isSuccess && !hasSubmitted"
-                        data-testid="sendFeedbackMessageBtn"
-                        :disabled="isInvalid"
-                        :loading="isLoading"
-                        text="Send Message"
-                        type="submit"
-                    />
-                    <HgButtonComponent
-                        v-if="isSuccessWithEmail"
-                        data-testid="hasEmailResetFeedbackBtn"
-                        text="Got it!"
-                        variant="primary"
-                        :loading="isLoading"
-                        :disabled="isLoading"
-                        @click="resetFeedback"
-                    />
-                    <HgButtonComponent
-                        v-if="hasFailed"
-                        data-testid="tryAgainBtn"
-                        text="Try Again"
-                        variant="primary"
-                        :loading="isLoading"
-                        :disabled="isLoading || isInvalid"
-                        type="submit"
-                    />
+                <v-card-actions class="pa-4">
+                    <v-spacer />
+                    <template v-if="!isSuccess && !hasSubmitted">
+                        <HgButtonComponent
+                            data-testid="noNeedBtn"
+                            variant="link"
+                            text="Cancel"
+                            @click="resetFeedback"
+                        />
+                        <HgButtonComponent
+                            data-testid="sendFeedbackMessageBtn"
+                            :disabled="isInvalid"
+                            :loading="isLoading"
+                            text="Send Message"
+                            type="submit"
+                        />
+                    </template>
+                    <template v-else-if="isSuccessWithoutEmail">
+                        <HgButtonComponent
+                            data-testid="noNeedBtn"
+                            variant="link"
+                            text="No Need!"
+                            @click="resetFeedback"
+                        />
+                        <HgButtonComponent
+                            data-testid="updateMyEmailButton"
+                            variant="primary"
+                            text="Update my email"
+                            to="/profile"
+                            @click="resetFeedback"
+                        />
+                    </template>
+                    <!-- Single button States (centered) -->
+                    <template v-else>
+                        <HgButtonComponent
+                            v-if="isSuccessWithEmail"
+                            data-testid="hasEmailResetFeedbackBtn"
+                            text="Got it!"
+                            variant="primary"
+                            :loading="isLoading"
+                            :disabled="isLoading"
+                            @click="resetFeedback"
+                        />
+                        <HgButtonComponent
+                            v-if="hasFailed"
+                            data-testid="tryAgainBtn"
+                            text="Try Again"
+                            variant="primary"
+                            :loading="isLoading"
+                            :disabled="isLoading || isInvalid"
+                            type="submit"
+                        />
+                        <v-spacer />
+                    </template>
                 </v-card-actions>
             </v-card>
         </v-form>
