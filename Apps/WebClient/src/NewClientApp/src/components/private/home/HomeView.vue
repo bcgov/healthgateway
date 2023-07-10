@@ -71,8 +71,8 @@ const vaccineRecordResultMessage = computed(
 const unverifiedEmail = computed(
     () => !user.value.verifiedEmail && user.value.hasEmail
 );
-const unverifiedSMS = computed(
-    () => !user.value.verifiedSMS && user.value.hasSMS
+const unverifiedSms = computed(
+    () => !user.value.verifiedSms && user.value.hasSms
 );
 const isPacificTime = computed(() => {
     const isDaylightSavings = new DateWrapper().isInDST();
@@ -331,7 +331,7 @@ watch(vaccineRecordState, () => {
         :text="vaccineRecordStatusMessage"
     />
     <v-alert
-        v-if="unverifiedEmail || unverifiedSMS"
+        v-if="unverifiedEmail || unverifiedSms"
         data-testid="incomplete-profile-banner"
         closable
         type="info"

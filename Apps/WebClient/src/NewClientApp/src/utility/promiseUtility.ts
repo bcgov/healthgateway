@@ -1,3 +1,6 @@
+import { Loader } from "@/constants/loader";
+import { useLoadingStore } from "@/stores/loading";
+
 export default abstract class PromiseUtility {
     /**
      * Wraps a promise so it won't return or reject until a minimum amount of time has elapsed.
@@ -30,5 +33,27 @@ export default abstract class PromiseUtility {
      */
     public static delay(milliseconds: number): Promise<unknown> {
         return new Promise((resolve) => setTimeout(resolve, milliseconds));
+    }
+
+    /**
+     * Wraps a promise so a loader is enabled beforehand and disabled afterward.
+     * @param promise The provided Promise.
+     * @param loader A loader to invoke.
+     * @param reason A reason for invoking the loader.
+     * @returns A new Promise.
+     */
+    public static async withLoader<T>(
+        promise: Promise<T>,
+        loader: Loader,
+        reason?: string
+    ): Promise<T> {
+        const loadingStore = useLoadingStore();
+
+        try {
+            loadingStore.setIsLoading(true, loader, reason);
+            return await promise;
+        } finally {
+            loadingStore.setIsLoading(false, loader, reason);
+        }
     }
 }

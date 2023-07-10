@@ -6,10 +6,12 @@ import type { UserPreference } from "@/models/userPreference";
 export default class User {
     public hdid = "";
     public acceptedTermsOfService = false;
+    public email = "";
     public hasEmail = false;
     public verifiedEmail = false;
-    public hasSMS = false;
-    public verifiedSMS = false;
+    public sms = "";
+    public hasSms = false;
+    public verifiedSms = false;
     public hasTermsOfServiceUpdated = false;
     public lastLoginDateTime?: StringISODateTime;
     public lastLoginDateTimes: StringISODateTime[] = [];

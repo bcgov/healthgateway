@@ -29,6 +29,10 @@ const LoginCallbackView = () =>
     import(
         /* webpackChunkName: "loginCallback" */ "@/components/authentication/LoginCallbackView.vue"
     );
+const ProfileView = () =>
+    import(
+        /* webpackChunkName: profile" */ "@/components/private/profile/ProfileView.vue"
+    );
 const RegistrationView = () =>
     import(
         /* webpackChunkName: "registration" */ "@/components/private/registration/RegistrationView.vue"
@@ -125,6 +129,19 @@ const routes = [
         component: HomeView,
         meta: {
             validStates: [UserState.registered],
+            requiresProcessedWaitlistTicket: true,
+        },
+    },
+    {
+        path: Path.Profile,
+        name: "Profile",
+        component: ProfileView,
+        meta: {
+            validStates: [
+                UserState.registered,
+                UserState.pendingDeletion,
+                UserState.acceptTermsOfService,
+            ],
             requiresProcessedWaitlistTicket: true,
         },
     },
