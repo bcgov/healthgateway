@@ -79,7 +79,7 @@ function dismiss() {
         @click.stop="collapsedOnDesktop = false"
         @update:model-value="visibleOnMobile = false"
     >
-        <v-list-item :title="userStore.userName" nav>
+        <v-list-item :title="userStore.userName" class="my-2" nav>
             <template #prepend>
                 <v-avatar
                     data-testid="sidenavbar-profile-initials"

@@ -1,17 +1,17 @@
 <script setup lang="ts">
 import { useVuelidate } from "@vuelidate/core";
 import { maxLength, minLength, required } from "@vuelidate/validators";
-import { computed, ref } from "vue";
+import { computed, ref, unref } from "vue";
 
 import HgButtonComponent from "@/components/common/HgButtonComponent.vue";
 import HgIconButtonComponent from "@/components/common/HgIconButtonComponent.vue";
 import { container } from "@/ioc/container";
 import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
 import { ResultError } from "@/models/errors";
-import User from "@/models/user";
 import { IUserFeedbackService } from "@/services/interfaces";
 import { useErrorStore } from "@/stores/error";
 import { useUserStore } from "@/stores/user";
+import ValidationUtil from "@/utility/validationUtil";
 
 defineExpose({
     showDialog,
@@ -39,19 +39,19 @@ const validations = computed(() => ({
 
 const v$ = useVuelidate(validations, { comment });
 
-const user = computed<User>(() => userStore.user);
-const hasEmail = computed<boolean>(
+const user = computed(() => userStore.user);
+const hasEmail = computed(
     () => user.value.verifiedEmail && user.value.hasEmail
 );
-const isInvalid = computed(() => ValidationUtil.isValid(v$.value) !== true);
-const resultTitle = computed<string>(() => {
+const isValid = computed(() => ValidationUtil.isValid(v$.value));
+const resultTitle = computed(() => {
     if (hasSubmitted.value) {
         return isSuccess.value ? "Received" : "Sorry";
     }
 
     return "";
 });
-const resultDescription = computed<string>(() => {
+const resultDescription = computed(() => {
     if (hasSubmitted.value) {
         return isSuccess.value
             ? "Your message has been sent successfully!"
@@ -60,8 +60,17 @@ const resultDescription = computed<string>(() => {
 
     return "";
 });
+const commentErrors = computed(() =>
+    v$.value.comment.$errors.map((e) => unref(e.$message))
+);
+const isSuccessWithoutEmail = computed(
+    () => isSuccess.value && !hasEmail.value
+);
+const isSuccessWithEmail = computed(() => isSuccess.value && hasEmail.value);
+const hasFailed = computed(() => !isSuccess.value && hasSubmitted.value);
 
 function showDialog(): void {
+    resetFeedback();
     visible.value = true;
 }
 
@@ -71,7 +80,7 @@ function hideDialog(): void {
 
 function onSubmit(): void {
     isLoading.value = true;
-    if (isInvalid.value) {
+    if (isValid.value !== true) {
         v$.value.$touch();
         isLoading.value = false;
         return;
@@ -96,20 +105,6 @@ function onSubmit(): void {
         });
 }
 
-const commentErrors = computed(() =>
-    v$.value.comment.$errors.map((e) => unref(e.$message))
-);
-
-const isSuccessWithoutEmail = computed<boolean>(
-    () => isSuccess.value && !hasEmail.value
-);
-
-const isSuccessWithEmail = computed<boolean>(
-    () => isSuccess.value && hasEmail.value
-);
-
-const hasFailed = computed(() => !isSuccess.value && hasSubmitted.value);
-
 function resetFeedback(): void {
     hasSubmitted.value = false;
     isSuccess.value = false;
@@ -126,11 +121,7 @@ function resetFeedback(): void {
         persistent
         no-click-animation
     >
-        <v-form
-            v-model="isInvalid"
-            class="d-flex justify-center"
-            @submit.prevent="onSubmit"
-        >
+        <form class="d-flex justify-center" @submit.prevent="onSubmit">
             <v-card max-width="700px">
                 <v-card-title class="px-0">
                     <v-toolbar title="Feedback" density="compact" color="white">
@@ -209,11 +200,11 @@ function resetFeedback(): void {
                             data-testid="noNeedBtn"
                             variant="link"
                             text="Cancel"
-                            @click="resetFeedback"
+                            @click="hideDialog"
                         />
                         <HgButtonComponent
                             data-testid="sendFeedbackMessageBtn"
-                            :disabled="isInvalid"
+                            :disabled="isValid !== true"
                             :loading="isLoading"
                             text="Send Message"
                             type="submit"
@@ -224,14 +215,14 @@ function resetFeedback(): void {
                             data-testid="noNeedBtn"
                             variant="link"
                             text="No Need!"
-                            @click="resetFeedback"
+                            @click="hideDialog"
                         />
                         <HgButtonComponent
                             data-testid="updateMyEmailButton"
                             variant="primary"
                             text="Update my email"
                             to="/profile"
-                            @click="resetFeedback"
+                            @click="hideDialog"
                         />
                     </template>
                     <!-- Single button States (centered) -->
@@ -242,7 +233,7 @@ function resetFeedback(): void {
                             text="Got it!"
                             variant="primary"
                             :loading="isLoading"
-                            @click="resetFeedback"
+                            @click="hideDialog"
                         />
                         <HgButtonComponent
                             v-if="hasFailed"
@@ -250,13 +241,13 @@ function resetFeedback(): void {
                             text="Try Again"
                             variant="primary"
                             :loading="isLoading"
-                            :disabled="isLoading || isInvalid"
+                            :disabled="isValid !== true"
                             type="submit"
                         />
                         <v-spacer />
                     </template>
                 </v-card-actions>
             </v-card>
-        </v-form>
+        </form>
     </v-dialog>
 </template>
