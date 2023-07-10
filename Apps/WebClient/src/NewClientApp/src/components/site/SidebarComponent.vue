@@ -83,66 +83,94 @@ function handleSendFeedbackClick() {
         @click.stop="collapsedOnDesktop = false"
         @update:model-value="visibleOnMobile = false"
     >
-        <v-list>
-            <v-list-item :title="userStore.userName" nav>
-                <template #prepend>
-                    <v-avatar
-                        data-testid="sidenavbar-profile-initials"
-                        color="info"
-                    >
-                        {{ userStore.userInitials }}
-                    </v-avatar>
-                </template>
-                <template #append>
-                    <HgIconButtonComponent
-                        icon="fas fa-chevron-left"
-                        data-testid="sidenavbar-dismiss-btn"
-                        @click.stop="dismiss"
-                    />
-                </template>
-            </v-list-item>
-        </v-list>
+        <v-list-item :title="userStore.userName" nav>
+            <template #prepend>
+                <v-avatar
+                    data-testid="sidenavbar-profile-initials"
+                    color="info"
+                >
+                    {{ userStore.userInitials }}
+                </v-avatar>
+            </template>
+            <template #append>
+                <HgIconButtonComponent
+                    icon="fas fa-chevron-left"
+                    data-testid="sidenavbar-dismiss-btn"
+                    @click.stop="dismiss"
+                />
+            </template>
+        </v-list-item>
         <v-divider></v-divider>
-        <v-list nav class="d-flex flex-column">
+        <v-list density="compact" nav>
             <v-list-item
                 title="Home"
                 to="/home"
                 data-testid="menu-btn-home-link"
-                prepend-icon="house"
-            />
+            >
+                <template #prepend>
+                    <div class="nav-list-item-icon mr-8 d-flex justify-center">
+                        <v-icon icon="fas fa-house" />
+                    </div>
+                </template>
+            </v-list-item>
             <v-list-item
                 title="Timeline"
                 to="/timeline"
                 data-testid="menu-btn-time-line-link"
-                prepend-icon="box-archive"
-            />
+            >
+                <template #prepend>
+                    <div class="nav-list-item-icon mr-8 d-flex justify-center">
+                        <v-icon icon="fas fa-box-archive" />
+                    </div>
+                </template>
+            </v-list-item>
             <v-list-item
                 title="COVID-19"
                 to="/covid19"
                 data-testid="menu-btn-covid19-link"
-                prepend-icon="circle-check"
-            />
+            >
+                <template #prepend>
+                    <div class="nav-list-item-icon mr-8 d-flex justify-center">
+                        <v-icon icon="fas fa-circle-check" />
+                    </div>
+                </template>
+            </v-list-item>
             <v-list-item
                 v-show="isDependentEnabled && userStore.userIsActive"
                 title="Dependents"
                 to="/dependents"
                 data-testid="menu-btn-dependents-link"
-                prepend-icon="user-group"
-            />
+            >
+                <template #prepend>
+                    <div class="nav-list-item-icon mr-8 d-flex justify-center">
+                        <v-icon icon="fas fa-user-group" />
+                    </div>
+                </template>
+            </v-list-item>
             <v-list-item
                 v-show="isServicesEnabled && userStore.userIsActive"
-                prepend-icon="fas fa-hand-holding-medical"
                 title="Services"
                 to="/services"
                 data-testid="menu-btn-dependents-link"
-            />
+            >
+                <template #prepend>
+                    <div class="nav-list-item-icon mr-8 d-flex justify-center">
+                        <v-icon icon="fas fa-hand-holding-medical" />
+                    </div>
+                </template>
+            </v-list-item>
             <v-list-item
                 v-show="userStore.userIsActive"
-                prepend-icon="fas fa-cloud-arrow-down"
                 title="Export Records"
                 to="/reports"
                 data-testid="menu-btn-reports-link"
-            />
+            >
+                <template #prepend>
+                    <div class="nav-list-item-icon mr-8 d-flex justify-center">
+                        <v-icon icon="fas fa-cloud-arrow-down" />
+                    </div>
+                </template>
+            </v-list-item>
         </v-list>
         <template #append>
             <v-list-item
@@ -152,7 +180,9 @@ function handleSendFeedbackClick() {
                 @click.prevent="handleSendFeedbackClick()"
             >
                 <template #prepend>
-                    <v-icon icon="comments" class="text-white opacity-100" />
+                    <div class="nav-list-item-icon mr-8 d-flex justify-center">
+                        <v-icon icon="comments" />
+                    </div>
                 </template>
             </v-list-item>
         </template>
