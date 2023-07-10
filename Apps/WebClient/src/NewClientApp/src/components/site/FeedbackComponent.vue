@@ -49,7 +49,7 @@ const isInvalid = computed<boolean>(
 );
 const resultTitle = computed<string>(() => {
     if (hasSubmitted.value) {
-        return isSuccess.value ? "Received" : "Sorry!";
+        return isSuccess.value ? "Received" : "Sorry";
     }
 
     return "";
@@ -112,6 +112,8 @@ const isSuccessWithoutEmail = computed<boolean>(
 const isSuccessWithEmail = computed<boolean>(
     () => isSuccess.value && hasEmail.value
 );
+
+const hasFailed = computed(() => !isSuccess.value && hasSubmitted.value);
 
 function resetFeedback(): void {
     visible.value = false;
@@ -189,59 +191,52 @@ function resetFeedback(): void {
                             {{ resultDescription }}
                         </p>
                     </div>
-                    <div>
-                        <v-alert
-                            v-if="isSuccessWithoutEmail"
-                            color="white"
-                            class="text-body-2"
-                        >
-                            <template #prepend>
-                                <v-icon
-                                    color="warning"
-                                    icon="circle-exclamation"
-                                    size="small"
-                                />
-                            </template>
-                            <template #text>
-                                <p>
-                                    We won't be able to respond to your message
-                                    unless you have a verified email address in
-                                    your profile.
-                                </p>
-                                <p>
-                                    If the problem persists please send your
-                                    feedback to
-                                    <a href="mailto:HealthGateway@gov.bc.ca">
-                                        HealthGateway@gov.bc.ca
-                                    </a>
-                                </p>
-                            </template>
-                        </v-alert>
-                    </div>
-                </v-card-text>
-                <v-card-actions class="border-t-sm pa-4 d-flex justify-end">
-                    <HgButtonComponent
-                        v-if="!isSuccess && !isLoading && !hasSubmitted"
-                        data-testid="sendFeedbackMessageBtn"
-                        :disabled="isInvalid"
-                        :loading="isLoading"
-                        text="Send Message"
-                        type="submit"
-                    />
-                    <HgButtonComponent
+                    <v-alert
                         v-if="isSuccessWithoutEmail"
+                        type="warning"
+                        icon="circle-exclamation"
+                        variant="text"
+                    >
+                        <template #text>
+                            We won't be able to respond to your message unless
+                            you have a verified email address in your profile.
+                        </template>
+                    </v-alert>
+                    <v-alert v-if="hasFailed" type="error" variant="text">
+                        <template #text>
+                            If the problem persists please send your feedback to
+                            <a href="mailto:HealthGateway@gov.bc.ca">
+                                HealthGateway@gov.bc.ca
+                            </a>
+                        </template>
+                    </v-alert>
+                </v-card-text>
+                <v-card-actions
+                    v-if="isSuccessWithoutEmail"
+                    class="pa-4 justify-end"
+                >
+                    <HgButtonComponent
                         data-testid="noNeedBtn"
                         variant="link"
                         text="No Need!"
                         @click="resetFeedback"
                     />
                     <HgButtonComponent
-                        v-if="isSuccessWithoutEmail"
                         data-testid="updateMyEmailButton"
                         variant="primary"
                         text="Update my email"
                         to="/profile"
                         @click="resetFeedback"
+                    />
+                </v-card-actions>
+                <v-card-actions v-else class="pa-4 justify-center">
+                    <HgButtonComponent
+                        v-if="!isSuccess && !hasSubmitted"
+                        data-testid="sendFeedbackMessageBtn"
+                        :disabled="isInvalid"
+                        :loading="isLoading"
+                        text="Send Message"
+                        type="submit"
                     />
                     <HgButtonComponent
                         v-if="isSuccessWithEmail"
@@ -253,7 +248,7 @@ function resetFeedback(): void {
                         @click="resetFeedback"
                     />
                     <HgButtonComponent
-                        v-if="!isSuccess && hasSubmitted"
+                        v-if="hasFailed"
                         data-testid="tryAgainBtn"
                         text="Try Again"
                         variant="primary"
