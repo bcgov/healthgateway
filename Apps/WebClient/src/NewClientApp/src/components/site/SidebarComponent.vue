@@ -65,10 +65,6 @@ function dismiss() {
         collapsedOnDesktop.value = true;
     }
 }
-
-function handleSendFeedbackClick() {
-    feedbackDialog.value?.showDialog();
-}
 </script>
 
 <template>
@@ -176,8 +172,8 @@ function handleSendFeedbackClick() {
             <v-list-item
                 title="Feedback"
                 data-testid="menu-btn-feedback-link"
-                class="bg-blue text-white"
-                @click.prevent="handleSendFeedbackClick()"
+                class="bg-info"
+                @click.stop="feedbackDialog?.showDialog"
             >
                 <template #prepend>
                     <div class="nav-list-item-icon mr-8 d-flex justify-center">

@@ -20,7 +20,6 @@ defineExpose({
 const userFeedbackService = container.get<IUserFeedbackService>(
     SERVICE_IDENTIFIER.UserFeedbackService
 );
-
 const userStore = useUserStore();
 const errorStore = useErrorStore();
 
@@ -44,9 +43,7 @@ const user = computed<User>(() => userStore.user);
 const hasEmail = computed<boolean>(
     () => user.value.verifiedEmail && user.value.hasEmail
 );
-const isInvalid = computed<boolean>(
-    () => !v$.value.$dirty || (v$.value.$dirty && v$.value.$invalid)
-);
+const isInvalid = computed(() => ValidationUtil.isValid(v$.value) !== true);
 const resultTitle = computed<string>(() => {
     if (hasSubmitted.value) {
         return isSuccess.value ? "Received" : "Sorry";
@@ -100,9 +97,7 @@ function onSubmit(): void {
 }
 
 const commentErrors = computed(() =>
-    v$.value.comment.$errors.map((e) =>
-        typeof e.$message === "string" ? e.$message : e.$message.value
-    )
+    v$.value.comment.$errors.map((e) => unref(e.$message))
 );
 
 const isSuccessWithoutEmail = computed<boolean>(
@@ -116,14 +111,10 @@ const isSuccessWithEmail = computed<boolean>(
 const hasFailed = computed(() => !isSuccess.value && hasSubmitted.value);
 
 function resetFeedback(): void {
-    visible.value = false;
-    // begin closing before changing state
-    setTimeout(() => {
-        hasSubmitted.value = false;
-        isSuccess.value = false;
-        comment.value = "";
-        v$.value.$reset();
-    }, 500);
+    hasSubmitted.value = false;
+    isSuccess.value = false;
+    comment.value = "";
+    v$.value.$reset();
 }
 </script>
 
@@ -150,7 +141,7 @@ function resetFeedback(): void {
                         />
                     </v-toolbar>
                 </v-card-title>
-                <v-card-text v-if="!hasSubmitted" class="text-body-1">
+                <v-card-text v-if="!hasSubmitted" class="pa-4 text-body-1">
                     <p>
                         Do you have a suggestion or idea? Let us know in the
                         field below.
@@ -168,7 +159,7 @@ function resetFeedback(): void {
                         @input="v$.comment.$touch()"
                     />
                 </v-card-text>
-                <v-card-text v-else>
+                <v-card-text v-else class="pa-4">
                     <div class="text-center text-body-1">
                         <v-icon
                             v-if="isSuccess"
@@ -251,7 +242,6 @@ function resetFeedback(): void {
                             text="Got it!"
                             variant="primary"
                             :loading="isLoading"
-                            :disabled="isLoading"
                             @click="resetFeedback"
                         />
                         <HgButtonComponent
