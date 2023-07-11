@@ -3,6 +3,7 @@ import { computed, ref } from "vue";
 import { useRoute } from "vue-router";
 
 import HgIconButtonComponent from "@/components/common/HgIconButtonComponent.vue";
+import FeedbackComponent from "@/components/site/FeedbackComponent.vue";
 import { useAppStore } from "@/stores/app";
 import { useAuthStore } from "@/stores/auth";
 import { useConfigStore } from "@/stores/config";
@@ -18,6 +19,7 @@ const navbarStore = useNavbarStore();
 const userStore = useUserStore();
 
 const collapsedOnDesktop = ref(false);
+const feedbackDialog = ref<InstanceType<typeof FeedbackComponent>>();
 
 const isMobile = computed(() => appStore.isMobile);
 const isSidebarOpen = computed(() => navbarStore.isSidebarOpen);
@@ -77,7 +79,7 @@ function dismiss() {
         @click.stop="collapsedOnDesktop = false"
         @update:model-value="visibleOnMobile = false"
     >
-        <v-list-item :title="userStore.userName" nav>
+        <v-list-item :title="userStore.userName" class="my-2" nav>
             <template #prepend>
                 <v-avatar
                     data-testid="sidenavbar-profile-initials"
@@ -143,7 +145,6 @@ function dismiss() {
             </v-list-item>
             <v-list-item
                 v-show="isServicesEnabled && userStore.userIsActive"
-                prepend-icon="fas fa-hand-holding-medical"
                 title="Services"
                 to="/services"
                 data-testid="menu-btn-dependents-link"
@@ -156,7 +157,6 @@ function dismiss() {
             </v-list-item>
             <v-list-item
                 v-show="userStore.userIsActive"
-                prepend-icon="fas fa-cloud-arrow-down"
                 title="Export Records"
                 to="/reports"
                 data-testid="menu-btn-reports-link"
@@ -168,7 +168,22 @@ function dismiss() {
                 </template>
             </v-list-item>
         </v-list>
+        <template #append>
+            <v-list-item
+                title="Feedback"
+                data-testid="menu-btn-feedback-link"
+                class="bg-info"
+                @click.stop="feedbackDialog?.showDialog"
+            >
+                <template #prepend>
+                    <div class="nav-list-item-icon mr-8 d-flex justify-center">
+                        <v-icon icon="comments" />
+                    </div>
+                </template>
+            </v-list-item>
+        </template>
     </v-navigation-drawer>
+    <FeedbackComponent ref="feedbackDialog" />
 </template>
 
 <style scoped>

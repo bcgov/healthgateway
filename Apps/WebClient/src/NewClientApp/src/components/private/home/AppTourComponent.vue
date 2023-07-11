@@ -11,6 +11,8 @@ interface Props {
 }
 defineProps<Props>();
 
+defineExpose({ showDialog });
+
 interface TourSlide {
     // Title to be displayed for the slide.
     title: string;
@@ -91,7 +93,11 @@ const isFirstSlide = computed<boolean>(() => {
     return slideIndex.value === 0;
 });
 
-function hideModal(): void {
+function showDialog(): void {
+    isVisible.value = true;
+}
+
+function hideDialog(): void {
     slideIndex.value = 0;
     isVisible.value = false;
 }
@@ -160,7 +166,7 @@ function previous(): void {
                                 variant="link"
                                 data-testid="app-tour-skip"
                                 text="Skip"
-                                @click="hideModal"
+                                @click="hideDialog"
                             />
                         </v-col>
                         <v-col cols="6" class="d-flex justify-center">
@@ -178,7 +184,7 @@ function previous(): void {
                                 variant="link"
                                 data-testid="app-tour-skip"
                                 text="Skip"
-                                @click="hideModal"
+                                @click="hideDialog"
                             />
                         </v-col>
                         <v-col class="d-flex justify-end">
@@ -202,7 +208,7 @@ function previous(): void {
                             variant="primary"
                             data-testid="app-tour-done"
                             text="Done"
-                            @click="hideModal"
+                            @click="hideDialog"
                         />
                     </div>
                 </template>
