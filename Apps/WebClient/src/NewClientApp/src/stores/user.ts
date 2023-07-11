@@ -370,9 +370,7 @@ export const useUserStore = defineStore("user", () => {
     function closeUserAccount(): Promise<void> {
         return userProfileService
             .closeAccount(user.value.hdid)
-            .then((userProfile) => {
-                setProfileUserData(userProfile);
-            })
+            .then(retrieveProfile)
             .catch((resultError: ResultError) => {
                 setUserError(resultError.resultMessage);
                 throw resultError;
@@ -382,12 +380,7 @@ export const useUserStore = defineStore("user", () => {
     function recoverUserAccount(): Promise<void> {
         return userProfileService
             .recoverAccount(user.value.hdid)
-            .then((userProfile) => {
-                logger.debug(
-                    `recoverUserAccount: ${JSON.stringify(userProfile)}`
-                );
-                setProfileUserData(userProfile);
-            })
+            .then(retrieveProfile)
             .catch((resultError: ResultError) => {
                 setUserError(resultError.resultMessage);
                 throw resultError;
