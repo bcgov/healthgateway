@@ -142,15 +142,15 @@ function selectPreviewDevice(previewDevice: PreviewDevice): void {
 </script>
 
 <template>
-    <v-container v-if="isOffline" class="landing-container pt-10 text-center">
+    <div v-if="isOffline" class="pa-4 text-center">
         <h1 class="text-primary text-h4 font-weight-bold mb-6">
             The site is offline for maintenance
         </h1>
         <p data-testid="offlineMessage" class="text-body-1">
             {{ offlineMessage }}
         </p>
-    </v-container>
-    <v-container v-else class="landing-container pt-10">
+    </div>
+    <div v-else class="pa-4">
         <v-row justify="start" align="start">
             <v-col lg="5">
                 <h1 class="mb-6 text-primary text-h4 font-weight-bold">
@@ -419,14 +419,10 @@ function selectPreviewDevice(previewDevice: PreviewDevice): void {
                 </a>
             </v-col>
         </v-row>
-    </v-container>
+    </div>
 </template>
 
 <style lang="scss" scoped>
-.landing-container {
-    max-width: 1140px;
-}
-
 .device-preview {
     max-height: 212px;
 

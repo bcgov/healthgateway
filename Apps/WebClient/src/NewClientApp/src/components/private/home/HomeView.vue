@@ -335,7 +335,7 @@ watch(vaccineRecordState, () => {
         data-testid="incomplete-profile-banner"
         closable
         type="info"
-        class="d-print-none my-3"
+        class="d-print-none mb-4"
         title="Verify Contact Information"
         variant="outlined"
         border
@@ -361,7 +361,7 @@ watch(vaccineRecordState, () => {
         title="Looks like you're in a different timezone."
         text="Heads up: your health records are recorded and displayed in
                 Pacific Time."
-        class="d-print-none my-3"
+        class="d-print-none mb-4"
         variant="outlined"
         border
     />
