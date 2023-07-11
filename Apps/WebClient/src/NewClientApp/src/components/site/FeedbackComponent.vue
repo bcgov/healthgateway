@@ -241,7 +241,7 @@ function resetFeedback(): void {
                             text="Try Again"
                             variant="primary"
                             :loading="isLoading"
-                            :disabled="isValid !== true"
+                            :disabled="isLoading || isValid !== true"
                             type="submit"
                         />
                         <v-spacer />
