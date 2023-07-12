@@ -114,6 +114,8 @@ const routes = [
         component: DependentViewSelectorComponent,
         meta: {
             validStates: [UserState.registered],
+            requiredFeaturesEnabled: (config: FeatureToggleConfiguration) =>
+                config.dependents.enabled,
             requiresProcessedWaitlistTicket: true,
         },
     },
@@ -199,8 +201,17 @@ const routes = [
     },
     {
         path: Path.ReleaseNotes,
-        name: "ReleaseNotes",
         component: ReleaseNotesView,
+        meta: {
+            validStates: [
+                UserState.unauthenticated,
+                UserState.invalidIdentityProvider,
+                UserState.noPatient,
+                UserState.registered,
+                UserState.pendingDeletion,
+            ],
+            requiresProcessedWaitlistTicket: false,
+        },
     },
     {
         path: Path.Reports,
@@ -219,9 +230,9 @@ const routes = [
         },
     },
     {
-        path: "/*",
-        redirect: "/not-found",
-    }, // Not found; Will catch all other paths not covered previously
+        path: "/*", // will catch all other paths not covered previously
+        redirect: Path.NotFound,
+    },
 ];
 
 function scrollBehaviour(
@@ -243,6 +254,6 @@ const router = createRouter({
 });
 
 router.beforeEach(beforeEachGuard);
-
 router.afterEach(afterEachHook);
+
 export default router;
