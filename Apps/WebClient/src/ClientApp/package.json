@@ -65,7 +65,7 @@
         "https-browserify": "^1.0.0",
         "image-webpack-loader": "^8.1.0",
         "inversify": "^6.0.1",
-        "keycloak-js": "^18.0.1",
+        "keycloak-js": "^22.0.0",
         "luxon": "^3.3.0",
         "node-polyfill-webpack-plugin": "^1.1.4",
         "os-browserify": "^0.3.0",
