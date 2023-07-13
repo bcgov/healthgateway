@@ -534,7 +534,6 @@ for (const [entryType] of reportComponentMap) {
                 :hdid="hdid"
                 :filter="reportFilter"
                 :is-dependent="isDependent"
-                height="600px"
                 @on-is-loading-changed="isLoading = $event"
                 @on-is-empty-changed="hasRecords = !$event"
             />
