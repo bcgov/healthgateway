@@ -73,7 +73,7 @@ const UserTimelineView = () =>
     import(
         /* webpackChunkName: "timeline" */ "@/components/private/timeline/UserTimelineView.vue"
     );
-const termsOfServiceView = () =>
+const TermsOfServiceView = () =>
     import(
         /* webpackChunkName: "termsOfService" */ "@/components/public/terms-of-service/TermsOfServiceView.vue"
     );
@@ -224,7 +224,7 @@ const routes = [
     },
     {
         path: Path.TermsOfService,
-        component: termsOfServiceView,
+        component: TermsOfServiceView,
         meta: {
             validStates: [
                 UserState.unauthenticated,
