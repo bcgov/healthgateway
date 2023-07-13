@@ -5,6 +5,7 @@ import { useRoute } from "vue-router";
 import ErrorCardComponent from "@/components/error/ErrorCardComponent.vue";
 import CommunicationComponent from "@/components/site/CommunicationComponent.vue";
 import HeaderComponent from "@/components/site/HeaderComponent.vue";
+import IdleComponent from "@/components/site/IdleComponent.vue";
 import SidebarComponent from "@/components/site/SidebarComponent.vue";
 import { Path } from "@/constants/path";
 import ScreenWidth from "@/constants/screenWidth";
@@ -78,5 +79,6 @@ onMounted(async () => {
                 <router-view />
             </v-container>
         </v-main>
+        <IdleComponent />
     </v-app>
 </template>

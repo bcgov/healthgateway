@@ -17,12 +17,17 @@ export class IdleDetector {
 
     constructor(
         private isIdleCallback: (timeIdle: number) => void,
-        private timeBeforeIdle: number
+        private timeBeforeIdle: number,
+        startEnabled: boolean
     ) {
         this.idleTimer = new ReliableTimer(
             () => this.timerCallback(),
-            timeBeforeIdle
+            this.timeBeforeIdle
         );
+
+        if (startEnabled) {
+            this.enable();
+        }
     }
 
     public enable() {
