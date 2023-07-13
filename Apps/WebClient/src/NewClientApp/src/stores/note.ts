@@ -14,7 +14,7 @@ import { useErrorStore } from "@/stores/error";
 export const useNoteStore = defineStore("note", () => {
     const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
     const noteService = container.get<IUserNoteService>(
-        SERVICE_IDENTIFIER.NoteService
+        SERVICE_IDENTIFIER.UserNoteService
     );
 
     const errorStore = useErrorStore();
@@ -29,7 +29,7 @@ export const useNoteStore = defineStore("note", () => {
     // Computed
     const notesCount = computed(() => notes.value.length);
 
-    const noteAreLoading = computed(
+    const notesAreLoading = computed(
         () => status.value === LoadStatus.REQUESTED
     );
 
@@ -173,9 +173,10 @@ export const useNoteStore = defineStore("note", () => {
     }
 
     return {
+        notes,
         lastOperation,
         notesCount,
-        noteAreLoading,
+        notesAreLoading,
         retrieveNotes,
         createNote,
         updateNote,
