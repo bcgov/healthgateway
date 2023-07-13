@@ -109,8 +109,7 @@ const postalAddressLabel = computed(() =>
             target="_blank"
             rel="noopener"
             >here</a
-        >
-        <span>.</span>
+        >.
     </div>
     <div v-if="!isSameAddress" class="mb-4 text-body-1">
         If either of these addresses is incorrect, update them
@@ -119,8 +118,7 @@ const postalAddressLabel = computed(() =>
             target="_blank"
             rel="noopener"
             >here</a
-        >
-        <span>.</span>
+        >.
     </div>
     <div v-if="!hasAddress" class="mb-4 text-body-1">
         To add an address, visit
@@ -129,7 +127,6 @@ const postalAddressLabel = computed(() =>
             target="_blank"
             rel="noopener"
             >this page</a
-        >
-        <span>.</span>
+        >.
     </div>
 </template>
