@@ -73,6 +73,10 @@ const UserTimelineView = () =>
     import(
         /* webpackChunkName: "timeline" */ "@/components/private/timeline/UserTimelineView.vue"
     );
+const termsOfServiceView = () =>
+    import(
+        /* webpackChunkName: "termsOfService" */ "@/components/public/terms-of-service/TermsOfServiceView.vue"
+    );
 
 export enum UserState {
     offline = "offline",
@@ -216,6 +220,20 @@ const routes = [
         meta: {
             validStates: [UserState.registered],
             requiresProcessedWaitlistTicket: true,
+        },
+    },
+    {
+        path: Path.TermsOfService,
+        component: termsOfServiceView,
+        meta: {
+            validStates: [
+                UserState.unauthenticated,
+                UserState.invalidIdentityProvider,
+                UserState.noPatient,
+                UserState.registered,
+                UserState.pendingDeletion,
+            ],
+            requiresProcessedWaitlistTicket: false,
         },
     },
     {
