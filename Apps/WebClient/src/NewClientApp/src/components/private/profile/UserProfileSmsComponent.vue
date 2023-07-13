@@ -17,6 +17,7 @@ import { DateWrapper } from "@/models/dateWrapper";
 import { isTooManyRequestsError } from "@/models/errors";
 import { IUserProfileService } from "@/services/interfaces";
 import { useErrorStore } from "@/stores/error";
+import { useLoadingStore } from "@/stores/loading";
 import { useUserStore } from "@/stores/user";
 import PhoneUtil from "@/utility/phoneUtil";
 import PromiseUtility from "@/utility/promiseUtility";
@@ -33,6 +34,7 @@ const userProfileService = container.get<IUserProfileService>(
     SERVICE_IDENTIFIER.UserProfileService
 );
 const errorStore = useErrorStore();
+const loadingStore = useLoadingStore();
 const userStore = useUserStore();
 
 const isSmsEditable = ref(false);
@@ -106,7 +108,9 @@ function updateSms(): void {
     userStore.updateSmsResendDateTime(new DateWrapper());
 
     // Send update to backend
-    PromiseUtility.withLoader(
+    loadingStore.applyLoader(
+        Loader.UserProfile,
+        "updateSms",
         userProfileService
             .updateSmsNumber(userStore.user.hdid, rawValue.value)
             .then(refreshProfile)
@@ -128,9 +132,7 @@ function updateSms(): void {
                         undefined
                     );
                 }
-            }),
-        Loader.UserProfile,
-        "updateSms"
+            })
     );
 }
 
@@ -139,11 +141,7 @@ function verifySms(): void {
 }
 
 function handleSmsVerified(): void {
-    PromiseUtility.withLoader(
-        refreshProfile(),
-        Loader.UserProfile,
-        "verifySms"
-    );
+    loadingStore.applyLoader(Loader.UserProfile, "verifySms", refreshProfile());
 }
 
 function refreshProfile(): Promise<void> {

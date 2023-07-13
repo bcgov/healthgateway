@@ -13,12 +13,13 @@ import { ResultError } from "@/models/errors";
 import { ILogger } from "@/services/interfaces";
 import { useConfigStore } from "@/stores/config";
 import { useErrorStore } from "@/stores/error";
+import { useLoadingStore } from "@/stores/loading";
 import { useUserStore } from "@/stores/user";
-import PromiseUtility from "@/utility/promiseUtility";
 
 const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
 const configStore = useConfigStore();
 const errorStore = useErrorStore();
+const loadingStore = useLoadingStore();
 const userStore = useUserStore();
 
 const timeForDeletion = ref(-1);
@@ -42,7 +43,9 @@ const timeForDeletionString = computed(() => {
 });
 
 function recoverAccount(): void {
-    PromiseUtility.withLoader(
+    loadingStore.applyLoader(
+        Loader.UserProfile,
+        "recoverAccount",
         userStore.recoverUserAccount().catch((err: ResultError) => {
             logger.error(err.resultMessage);
             if (err.statusCode === 429) {
@@ -54,9 +57,7 @@ function recoverAccount(): void {
                     undefined
                 );
             }
-        }),
-        Loader.UserProfile,
-        "recoverAccount"
+        })
     );
 }
 

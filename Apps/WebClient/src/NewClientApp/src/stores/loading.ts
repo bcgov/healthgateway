@@ -33,10 +33,20 @@ export const useLoadingStore = defineStore("loading", () => {
         state.value.delete(location);
     }
 
+    function applyLoader<T>(
+        loader: Loader,
+        reason: string,
+        promise: Promise<T>
+    ): void {
+        setIsLoading(true, loader, reason);
+        promise.finally(() => setIsLoading(false, loader, reason));
+    }
+
     return {
         state,
         isLoading,
         setIsLoading,
         clearIsLoading,
+        applyLoader,
     };
 });

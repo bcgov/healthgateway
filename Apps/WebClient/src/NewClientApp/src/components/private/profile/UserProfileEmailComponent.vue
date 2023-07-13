@@ -18,8 +18,8 @@ import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
 import { isTooManyRequestsError } from "@/models/errors";
 import { ILogger } from "@/services/interfaces";
 import { useErrorStore } from "@/stores/error";
+import { useLoadingStore } from "@/stores/loading";
 import { useUserStore } from "@/stores/user";
-import PromiseUtility from "@/utility/promiseUtility";
 import ValidationUtil from "@/utility/validationUtil";
 
 const emit = defineEmits<{
@@ -28,6 +28,7 @@ const emit = defineEmits<{
 
 const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
 const errorStore = useErrorStore();
+const loadingStore = useLoadingStore();
 const userStore = useUserStore();
 
 const isEmailEditable = ref(false);
@@ -73,7 +74,9 @@ function saveEmailEdit(): void {
 }
 
 function sendUserEmailUpdate(): void {
-    PromiseUtility.withLoader(
+    loadingStore.applyLoader(
+        Loader.UserProfile,
+        "updateUserEmail",
         userStore
             .updateUserEmail(inputValue.value)
             .then(() => {
@@ -107,9 +110,7 @@ function sendUserEmailUpdate(): void {
                         undefined
                     );
                 }
-            }),
-        Loader.UserProfile,
-        "updateUserEmail"
+            })
     );
 }
 

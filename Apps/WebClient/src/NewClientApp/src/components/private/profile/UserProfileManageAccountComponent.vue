@@ -10,17 +10,20 @@ import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
 import { ResultError } from "@/models/errors";
 import { ILogger } from "@/services/interfaces";
 import { useErrorStore } from "@/stores/error";
+import { useLoadingStore } from "@/stores/loading";
 import { useUserStore } from "@/stores/user";
-import PromiseUtility from "@/utility/promiseUtility";
 
 const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
 const errorStore = useErrorStore();
+const loadingStore = useLoadingStore();
 const userStore = useUserStore();
 
 const showCloseWarning = ref(false);
 
 function closeAccount(): void {
-    PromiseUtility.withLoader(
+    loadingStore.applyLoader(
+        Loader.UserProfile,
+        "closeAccount",
         userStore
             .closeUserAccount()
             .then(() => (showCloseWarning.value = false))
@@ -35,9 +38,7 @@ function closeAccount(): void {
                         undefined
                     );
                 }
-            }),
-        Loader.UserProfile,
-        "closeAccount"
+            })
     );
 }
 </script>
