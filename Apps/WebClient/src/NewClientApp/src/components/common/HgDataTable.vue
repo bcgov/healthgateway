@@ -22,13 +22,14 @@ const props = withDefaults(defineProps<Props>(), {
 
 const slots = useSlots();
 
-const densityTextSize = computed<string>(() => {
+const densityTextSize = computed(() => {
     switch (props.density) {
         case "compact":
             return "text-caption";
         case "comfortable":
             return "text-body-2";
         case "default":
+        default:
             return "text-body-1";
     }
 });
