@@ -500,7 +500,7 @@ for (const [entryType] of reportComponentMap) {
                 @on-is-empty-changed="hasRecords = !$event"
             />
         </div>
-        <div v-else class="pa-5">
+        <div v-else class="pa-4">
             <v-img
                 class="mx-auto py-4"
                 src="@/assets/images/reports/reports.png"

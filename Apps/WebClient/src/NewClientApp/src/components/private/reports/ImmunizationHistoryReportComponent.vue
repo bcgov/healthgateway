@@ -277,7 +277,7 @@ immunizationStore
                     </v-row>
                 </template>
             </HgDataTable>
-            <v-row class="mt-3">
+            <v-row class="mt-4">
                 <v-col class="col-7">
                     <v-row>
                         <v-col>
