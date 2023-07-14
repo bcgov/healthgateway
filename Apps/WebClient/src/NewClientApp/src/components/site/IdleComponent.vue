@@ -8,13 +8,14 @@ import { useAuthStore } from "@/stores/auth";
 import { useConfigStore } from "@/stores/config";
 import { IdleDetector } from "@/utility/idleDetector";
 
+const maxIdleDialogCountdown = 60000;
+
 const authStore = useAuthStore();
 const configStore = useConfigStore();
 
 const idleDialog = ref<InstanceType<typeof IdleDialogComponent>>();
 
 const timeBeforeIdle = computed(() => configStore.webConfig.timeouts.idle);
-const maxIdleDialogCountdown = computed(() => 60000);
 const idleDetector = computed(() =>
     timeBeforeIdle.value > 0
         ? new IdleDetector(
@@ -30,7 +31,7 @@ function handleIsIdle(timeIdle: number): void {
         return;
     }
 
-    const countdownTime = maxIdleDialogCountdown.value - timeIdle;
+    const countdownTime = maxIdleDialogCountdown - timeIdle;
     if (countdownTime <= 0) {
         router.push(Path.Logout);
     } else {
