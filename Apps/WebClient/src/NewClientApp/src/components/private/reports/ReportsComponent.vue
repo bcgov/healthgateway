@@ -6,14 +6,14 @@ import HgButtonComponent from "@/components/common/HgButtonComponent.vue";
 import HgDatePickerComponent from "@/components/common/HgDatePickerComponent.vue";
 import LoadingComponent from "@/components/common/LoadingComponent.vue";
 import MessageModalComponent from "@/components/common/MessageModalComponent.vue";
-import Covid19ReportComponent from "@/components/private/reports/Covid19ReportComponent.vue";
+import Covid19TestResultReportComponent from "@/components/private/reports/Covid19TestResultReportComponent.vue";
+import HealthVisitReportComponent from "@/components/private/reports/HealthVisitReportComponent.vue";
 import HospitalVisitReportComponent from "@/components/private/reports/HospitalVisitReportComponent.vue";
-import ImmunizationHistoryReportComponent from "@/components/private/reports/ImmunizationHistoryReportComponent.vue";
-import LaboratoryReportComponent from "@/components/private/reports/LaboratoryReportComponent.vue";
-import MedicationHistoryReportComponent from "@/components/private/reports/MedicationHistoryReportComponent.vue";
-import MedicationRequestReportComponent from "@/components/private/reports/MedicationRequestReportComponent.vue";
-import MspVisitsReportComponent from "@/components/private/reports/MspVisitsReportComponent.vue";
-import NotesReportComponent from "@/components/private/reports/NotesReportComponent.vue";
+import ImmunizationReportComponent from "@/components/private/reports/ImmunizationReportComponent.vue";
+import LabResultReportComponent from "@/components/private/reports/LabResultReportComponent.vue";
+import MedicationReportComponent from "@/components/private/reports/MedicationReportComponent.vue";
+import NoteReportComponent from "@/components/private/reports/NoteReportComponent.vue";
+import SpecialAuthorityRequestReportComponent from "@/components/private/reports/SpecialAuthorityRequestReportComponent.vue";
 import { EntryType, entryTypeMap } from "@/constants/entryType";
 import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import { container } from "@/ioc/container";
@@ -45,13 +45,13 @@ const props = withDefaults(defineProps<Props>(), {
 });
 
 const reportComponentMap = new Map<EntryType, unknown>([
-    [EntryType.Medication, MedicationHistoryReportComponent],
-    [EntryType.HealthVisit, MspVisitsReportComponent],
-    [EntryType.Covid19TestResult, Covid19ReportComponent],
-    [EntryType.Immunization, ImmunizationHistoryReportComponent],
-    [EntryType.SpecialAuthorityRequest, MedicationRequestReportComponent],
-    [EntryType.Note, NotesReportComponent],
-    [EntryType.LabResult, LaboratoryReportComponent],
+    [EntryType.Medication, MedicationReportComponent],
+    [EntryType.HealthVisit, HealthVisitReportComponent],
+    [EntryType.Covid19TestResult, Covid19TestResultReportComponent],
+    [EntryType.Immunization, ImmunizationReportComponent],
+    [EntryType.SpecialAuthorityRequest, SpecialAuthorityRequestReportComponent],
+    [EntryType.Note, NoteReportComponent],
+    [EntryType.LabResult, LabResultReportComponent],
     [EntryType.HospitalVisit, HospitalVisitReportComponent],
 ]);
 
