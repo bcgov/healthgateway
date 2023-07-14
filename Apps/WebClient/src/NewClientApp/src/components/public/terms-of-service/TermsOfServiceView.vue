@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref } from "vue";
+import { ref } from "vue";
 
 import HtmlTextAreaComponent from "@/components/common/HtmlTextAreaComponent.vue";
 import LoadingComponent from "@/components/common/LoadingComponent.vue";
@@ -30,36 +30,25 @@ const errorStore = useErrorStore();
 
 const isLoading = ref(true);
 const hasErrors = ref(false);
-const errorMessage = ref("");
 const termsOfService = ref("");
 
-function loadTermsOfService(): void {
-    isLoading.value = true;
-    userProfileService
-        .getTermsOfService()
-        .then((result) => {
-            logger.debug(
-                "Terms Of Service retrieved: " + JSON.stringify(result)
-            );
-            termsOfService.value = result.content;
-        })
-        .catch((err: ResultError) => {
-            logger.error(err.resultMessage);
-            if (err.statusCode === 429) {
-                errorStore.setTooManyRequestsWarning("page");
-            } else {
-                hasErrors.value = true;
-                errorMessage.value = "Please refresh your browser.";
-            }
-        })
-        .finally(() => {
-            isLoading.value = false;
-        });
-}
-
-onMounted(() => {
-    loadTermsOfService();
-});
+userProfileService
+    .getTermsOfService()
+    .then((result) => {
+        logger.debug("Terms Of Service retrieved: " + JSON.stringify(result));
+        termsOfService.value = result.content;
+    })
+    .catch((err: ResultError) => {
+        logger.error(err.resultMessage);
+        if (err.statusCode === 429) {
+            errorStore.setTooManyRequestsWarning("page");
+        } else {
+            hasErrors.value = true;
+        }
+    })
+    .finally(() => {
+        isLoading.value = false;
+    });
 </script>
 
 <template>
@@ -67,12 +56,19 @@ onMounted(() => {
         <BreadcrumbComponent :items="breadcrumbItems" />
         <LoadingComponent :is-loading="isLoading" />
         <PageTitleComponent title="Terms of Service" />
-        <v-alert v-if="hasErrors" closable type="error" title="Error">
+        <v-alert
+            v-if="hasErrors"
+            variant="outlined"
+            border
+            closable
+            type="error"
+            title="Error"
+        >
             <template #text>
                 <p class="text-body-1">
-                    An unexpected error occured while processing the request:
+                    An unexpected error occured while processing the request.
+                    Please refresh your browser.
                 </p>
-                <p class="text-body-1">{{ errorMessage }}</p>
             </template>
         </v-alert>
         <HtmlTextAreaComponent v-if="!isLoading" :input="termsOfService" />
