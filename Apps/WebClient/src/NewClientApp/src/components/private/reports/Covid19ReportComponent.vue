@@ -13,6 +13,7 @@ import { ReportFormatType, TemplateType } from "@/models/reportRequest";
 import RequestResult from "@/models/requestResult";
 import { ILogger, IReportService } from "@/services/interfaces";
 import { useCovid19TestResultStore } from "@/stores/covid19TestResult";
+import DateWrapperSortUtility from "@/utility/dateWrapperSortUtility";
 
 interface Props {
     hdid: string;
@@ -76,24 +77,12 @@ const visibleRecords = computed(() =>
         .filter((r) =>
             props.filter.allowsDate(r.labResults[0].collectedDateTime)
         )
-        .sort((a, b) => {
-            const firstDate = new DateWrapper(
-                a.labResults[0].collectedDateTime
-            );
-            const secondDate = new DateWrapper(
+        .sort((a, b) =>
+            DateWrapperSortUtility.descendingByString(
+                a.labResults[0].collectedDateTime,
                 b.labResults[0].collectedDateTime
-            );
-
-            if (firstDate.isBefore(secondDate)) {
-                return 1;
-            }
-
-            if (firstDate.isAfter(secondDate)) {
-                return -1;
-            }
-
-            return 0;
-        })
+            )
+        )
 );
 const items = computed(() =>
     visibleRecords.value.map<Covid19LaboratoryOrderRow>((x) => {

@@ -14,6 +14,7 @@ import { ReportFormatType, TemplateType } from "@/models/reportRequest";
 import RequestResult from "@/models/requestResult";
 import { ILogger, IReportService } from "@/services/interfaces";
 import { useImmunizationStore } from "@/stores/immunization";
+import DateWrapperSortUtility from "@/utility/dateWrapperSortUtility";
 
 interface Props {
     hdid: string;
@@ -104,20 +105,12 @@ const visibleImmunizations = computed(() =>
     immunizationStore
         .immunizations(props.hdid)
         .filter((record) => props.filter.allowsDate(record.dateOfImmunization))
-        .sort((a, b) => {
-            const firstDate = new DateWrapper(a.dateOfImmunization);
-            const secondDate = new DateWrapper(b.dateOfImmunization);
-
-            if (firstDate.isBefore(secondDate)) {
-                return 1;
-            }
-
-            if (firstDate.isAfter(secondDate)) {
-                return -1;
-            }
-
-            return 0;
-        })
+        .sort((a, b) =>
+            DateWrapperSortUtility.descendingByString(
+                a.dateOfImmunization,
+                b.dateOfImmunization
+            )
+        )
 );
 const immunizationItems = computed(() =>
     visibleImmunizations.value.map<ImmunizationRow>((x) => ({
@@ -131,37 +124,12 @@ const visibleRecommendations = computed(() =>
     immunizationStore
         .recommendations(props.hdid)
         .filter((x) => x.recommendedVaccinations)
-        .sort((a, b) => {
-            const firstDateEmpty =
-                a.agentDueDate === null || a.agentDueDate === undefined;
-            const secondDateEmpty =
-                b.agentDueDate === null || b.agentDueDate === undefined;
-
-            if (firstDateEmpty && secondDateEmpty) {
-                return 0;
-            }
-
-            if (firstDateEmpty) {
-                return 1;
-            }
-
-            if (secondDateEmpty) {
-                return -1;
-            }
-
-            const firstDate = new DateWrapper(a.agentDueDate);
-            const secondDate = new DateWrapper(b.agentDueDate);
-
-            if (firstDate.isBefore(secondDate)) {
-                return 1;
-            }
-
-            if (firstDate.isAfter(secondDate)) {
-                return -1;
-            }
-
-            return 0;
-        })
+        .sort((a, b) =>
+            DateWrapperSortUtility.descendingByOptionalString(
+                a.agentDueDate,
+                b.agentDueDate
+            )
+        )
 );
 const recommendationItems = computed(() =>
     visibleRecommendations.value.map<RecommendationRow>((x) => ({

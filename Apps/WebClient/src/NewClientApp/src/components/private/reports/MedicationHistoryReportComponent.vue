@@ -14,6 +14,7 @@ import { ReportFormatType, TemplateType } from "@/models/reportRequest";
 import RequestResult from "@/models/requestResult";
 import { ILogger, IReportService } from "@/services/interfaces";
 import { useMedicationStore } from "@/stores/medication";
+import DateWrapperSortUtility from "@/utility/dateWrapperSortUtility";
 
 interface Props {
     hdid: string;
@@ -105,20 +106,12 @@ const visibleRecords = computed(() =>
                     record.medicationSummary.brandName
                 )
         )
-        .sort((a, b) => {
-            const firstDate = new DateWrapper(a.dispensedDate);
-            const secondDate = new DateWrapper(b.dispensedDate);
-
-            if (firstDate.isBefore(secondDate)) {
-                return 1;
-            }
-
-            if (firstDate.isAfter(secondDate)) {
-                return -1;
-            }
-
-            return 0;
-        })
+        .sort((a, b) =>
+            DateWrapperSortUtility.descendingByString(
+                a.dispensedDate,
+                b.dispensedDate
+            )
+        )
 );
 const items = computed(() =>
     visibleRecords.value.map<MedicationRow>((x) => ({

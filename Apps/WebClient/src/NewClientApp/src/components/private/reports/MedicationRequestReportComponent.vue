@@ -14,6 +14,7 @@ import { ReportFormatType, TemplateType } from "@/models/reportRequest";
 import RequestResult from "@/models/requestResult";
 import { ILogger, IReportService } from "@/services/interfaces";
 import { useSpecialAuthorityRequestStore } from "@/stores/specialAuthorityRequest";
+import DateWrapperSortUtility from "@/utility/dateWrapperSortUtility";
 
 interface Props {
     hdid: string;
@@ -85,20 +86,12 @@ const visibleRecords = computed(() =>
     specialAuthorityStore
         .specialAuthorityRequests(props.hdid)
         .filter((record) => props.filter.allowsDate(record.requestedDate))
-        .sort((a: MedicationRequest, b: MedicationRequest) => {
-            const firstDate = new DateWrapper(a.requestedDate);
-            const secondDate = new DateWrapper(b.requestedDate);
-
-            if (firstDate.isBefore(secondDate)) {
-                return 1;
-            }
-
-            if (firstDate.isAfter(secondDate)) {
-                return -1;
-            }
-
-            return 0;
-        })
+        .sort((a, b) =>
+            DateWrapperSortUtility.descendingByString(
+                a.requestedDate,
+                b.requestedDate
+            )
+        )
 );
 const items = computed(() =>
     visibleRecords.value.map<MedicationRequestRow>((x) => ({

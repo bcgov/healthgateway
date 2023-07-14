@@ -13,6 +13,7 @@ import { ReportFormatType, TemplateType } from "@/models/reportRequest";
 import RequestResult from "@/models/requestResult";
 import { ILogger, IReportService } from "@/services/interfaces";
 import { useHospitalVisitsStore } from "@/stores/hospitalVisits";
+import DateWrapperSortUtility from "@/utility/dateWrapperSortUtility";
 
 interface Props {
     hdid: string;
@@ -76,20 +77,12 @@ const visibleRecords = computed(() =>
     hospitalVisitsStore
         .hospitalVisits(props.hdid)
         .filter((record) => props.filter.allowsDate(record.admitDateTime))
-        .sort((a, b) => {
-            const firstDate = new DateWrapper(a.admitDateTime);
-            const secondDate = new DateWrapper(b.admitDateTime);
-
-            if (firstDate.isBefore(secondDate)) {
-                return 1;
-            }
-
-            if (firstDate.isAfter(secondDate)) {
-                return -1;
-            }
-
-            return 0;
-        })
+        .sort((a, b) =>
+            DateWrapperSortUtility.descendingByString(
+                a.admitDateTime,
+                b.admitDateTime
+            )
+        )
 );
 const items = computed(() =>
     visibleRecords.value.map<HospitalVisitRow>((x) => {

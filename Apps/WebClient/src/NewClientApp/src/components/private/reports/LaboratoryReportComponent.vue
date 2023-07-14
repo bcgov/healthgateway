@@ -13,6 +13,7 @@ import { ReportFormatType, TemplateType } from "@/models/reportRequest";
 import RequestResult from "@/models/requestResult";
 import { ILogger, IReportService } from "@/services/interfaces";
 import { useLabResultStore } from "@/stores/labResult";
+import DateWrapperSortUtility from "@/utility/dateWrapperSortUtility";
 
 interface Props {
     hdid: string;
@@ -74,20 +75,12 @@ const visibleRecords = computed(() =>
     labResultStore
         .laboratoryOrders(props.hdid)
         .filter((record) => props.filter.allowsDate(record.timelineDateTime))
-        .sort((a, b) => {
-            const firstDate = new DateWrapper(a.timelineDateTime);
-            const secondDate = new DateWrapper(b.timelineDateTime);
-
-            if (firstDate.isBefore(secondDate)) {
-                return 1;
-            }
-
-            if (firstDate.isAfter(secondDate)) {
-                return -1;
-            }
-
-            return 0;
-        })
+        .sort((a, b) =>
+            DateWrapperSortUtility.descendingByString(
+                a.timelineDateTime,
+                b.timelineDateTime
+            )
+        )
 );
 const items = computed(() =>
     visibleRecords.value.flatMap<LabTestRow>((x) => {
