@@ -276,6 +276,7 @@ nextTick(() => {
             <HgIconButtonComponent
                 id="menuBtnLogout"
                 data-testid="headerDropdownBtn"
+                class="mx-2"
             >
                 <v-avatar data-testid="profileButtonInitials" color="info">
                     {{ userStore.userInitials }}

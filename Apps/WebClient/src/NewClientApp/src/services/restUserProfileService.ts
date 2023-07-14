@@ -229,7 +229,7 @@ export class RestUserProfileService implements IUserProfileService {
         );
     }
 
-    public validateSMS(hdid: string, digit: string): Promise<boolean> {
+    public validateSms(hdid: string, digit: string): Promise<boolean> {
         return new Promise((resolve, reject) =>
             this.http
                 .get<RequestResult<boolean>>(
@@ -244,7 +244,7 @@ export class RestUserProfileService implements IUserProfileService {
                 })
                 .catch((err: HttpError) => {
                     this.logger.error(
-                        `Error in RestUserProfileService.validateSMS()`
+                        `Error in RestUserProfileService.validateSms()`
                     );
                     reject(
                         ErrorTranslator.internalNetworkError(
@@ -282,7 +282,7 @@ export class RestUserProfileService implements IUserProfileService {
         });
     }
 
-    public updateSMSNumber(hdid: string, smsNumber: string): Promise<boolean> {
+    public updateSmsNumber(hdid: string, smsNumber: string): Promise<boolean> {
         return new Promise((resolve, reject) => {
             const headers: Dictionary<string> = {};
             headers[this.CONTENT_TYPE] = this.APPLICATION_JSON;
@@ -296,7 +296,7 @@ export class RestUserProfileService implements IUserProfileService {
                 .then(() => resolve(true))
                 .catch((err: HttpError) => {
                     this.logger.error(
-                        `Error in RestUserProfileService.updateSMSNumber()`
+                        `Error in RestUserProfileService.updateSmsNumber()`
                     );
                     reject(
                         ErrorTranslator.internalNetworkError(

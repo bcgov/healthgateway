@@ -9,7 +9,7 @@ import {
 import UserPreferenceType from "@/constants/userPreferenceType";
 import { container } from "@/ioc/container";
 import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
-import { DateWrapper } from "@/models/dateWrapper";
+import { DateWrapper, IDateWrapper } from "@/models/dateWrapper";
 import { ResultError } from "@/models/errors";
 import Patient from "@/models/patient";
 import { QuickLink } from "@/models/quickLink";
@@ -41,7 +41,7 @@ export const useUserStore = defineStore("user", () => {
 
     const user = ref(new User());
     const oidcUserInfo = ref<OidcUserInfo>();
-    const smsResendDateTime = ref<DateWrapper>();
+    const smsResendDateTime = ref<IDateWrapper>();
     const error = ref<unknown>();
     const statusMessage = ref("");
     const status = ref(LoadStatus.NONE);
@@ -162,10 +162,12 @@ export const useUserStore = defineStore("user", () => {
             : undefined;
         user.value.preferences = userProfile ? userProfile.preferences : {};
         user.value.blockedDataSources = userProfile?.blockedDataSources ?? [];
+        user.value.email = userProfile?.email ?? "";
         user.value.hasEmail = Boolean(userProfile?.email);
         user.value.verifiedEmail = userProfile?.isEmailVerified === true;
-        user.value.hasSMS = Boolean(userProfile?.smsNumber);
-        user.value.verifiedSMS = userProfile?.isSMSNumberVerified === true;
+        user.value.sms = userProfile?.smsNumber ?? "";
+        user.value.hasSms = Boolean(userProfile?.smsNumber);
+        user.value.verifiedSms = userProfile?.isSMSNumberVerified === true;
         user.value.hasTourUpdated = userProfile?.hasTourUpdated === true;
 
         logger.verbose(`User: ${JSON.stringify(user.value)}`);
@@ -173,7 +175,7 @@ export const useUserStore = defineStore("user", () => {
         setLoadedStatus(patient.value.hdid !== undefined);
     }
 
-    function updateSMSResendDateTime(date: DateWrapper) {
+    function updateSmsResendDateTime(date: IDateWrapper) {
         smsResendDateTime.value = date;
         setLoadedStatus();
     }
@@ -370,9 +372,7 @@ export const useUserStore = defineStore("user", () => {
     function closeUserAccount(): Promise<void> {
         return userProfileService
             .closeAccount(user.value.hdid)
-            .then((userProfile) => {
-                setProfileUserData(userProfile);
-            })
+            .then(retrieveProfile)
             .catch((resultError: ResultError) => {
                 setUserError(resultError.resultMessage);
                 throw resultError;
@@ -382,12 +382,7 @@ export const useUserStore = defineStore("user", () => {
     function recoverUserAccount(): Promise<void> {
         return userProfileService
             .recoverAccount(user.value.hdid)
-            .then((userProfile) => {
-                logger.debug(
-                    `recoverUserAccount: ${JSON.stringify(userProfile)}`
-                );
-                setProfileUserData(userProfile);
-            })
+            .then(retrieveProfile)
             .catch((resultError: ResultError) => {
                 setUserError(resultError.resultMessage);
                 throw resultError;
@@ -457,7 +452,7 @@ export const useUserStore = defineStore("user", () => {
         createProfile,
         retrieveProfile,
         updateUserEmail,
-        updateSMSResendDateTime,
+        updateSmsResendDateTime,
         setUserPreference,
         updateQuickLinks,
         validateEmail,

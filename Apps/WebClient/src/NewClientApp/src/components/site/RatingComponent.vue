@@ -84,10 +84,14 @@ function handleRating(value: number | string, skip = false): void {
     >
         <div class="d-flex justify-center">
             <v-card max-width="600px">
-                <v-card-title class="bg-primary text-white">
-                    <h1 class="text-h5 font-weight-bold">Rating</h1>
+                <v-card-title class="bg-primary text-white px-0">
+                    <v-toolbar
+                        title="Rating"
+                        density="compact"
+                        color="primary"
+                    />
                 </v-card-title>
-                <v-card-text class="pa-3">
+                <v-card-text class="pa-4">
                     <p
                         class="text-body-1 text-center"
                         data-testid="ratingModalQuestionText"
@@ -99,14 +103,13 @@ function handleRating(value: number | string, skip = false): void {
                             v-model="ratingValue"
                             data-testid="formRating"
                             color="orange"
-                            class="mb-2"
                             hover
                             size="large"
                             @update:model-value="handleRating"
                         />
                     </div>
                 </v-card-text>
-                <v-card-actions class="justify-end border-t-sm">
+                <v-card-actions class="justify-end border-t-sm pa-4">
                     <HgButtonComponent
                         id="skipButton"
                         data-testid="ratingModalSkipBtn"

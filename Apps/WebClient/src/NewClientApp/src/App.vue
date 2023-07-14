@@ -73,7 +73,7 @@ onMounted(async () => {
         <SidebarComponent />
         <v-main>
             <CommunicationComponent v-if="isCommunicationVisible" />
-            <v-container>
+            <v-container class="pt-6">
                 <ErrorCardComponent v-if="!hideErrorAlerts" />
                 <router-view />
             </v-container>
