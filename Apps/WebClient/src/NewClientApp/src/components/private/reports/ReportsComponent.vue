@@ -320,7 +320,7 @@ for (const [entryType] of reportComponentMap) {
         />
         <v-sheet color="grey-lighten-4" class="pa-4 my-4">
             <v-row align="center">
-                <v-col>
+                <v-col cols="12" sm="auto" class="flex-grow-1">
                     <v-select
                         id="reportType"
                         v-model="selectedEntryType"
@@ -333,7 +333,7 @@ for (const [entryType] of reportComponentMap) {
                         density="compact"
                     />
                 </v-col>
-                <v-col cols="auto">
+                <v-col cols="12" sm="auto">
                     <HgButtonComponent
                         id="advanceFilterBtn"
                         variant="link"
