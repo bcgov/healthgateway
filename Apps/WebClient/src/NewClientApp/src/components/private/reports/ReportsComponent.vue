@@ -12,7 +12,7 @@ import ImmunizationHistoryReportComponent from "@/components/private/reports/Imm
 import LaboratoryReportComponent from "@/components/private/reports/LaboratoryReportComponent.vue";
 import MedicationHistoryReportComponent from "@/components/private/reports/MedicationHistoryReportComponent.vue";
 import MedicationRequestReportComponent from "@/components/private/reports/MedicationRequestReportComponent.vue";
-import MSPVisitsReportComponent from "@/components/private/reports/MSPVisitsReportComponent.vue";
+import MspVisitsReportComponent from "@/components/private/reports/MspVisitsReportComponent.vue";
 import NotesReportComponent from "@/components/private/reports/NotesReportComponent.vue";
 import { EntryType, entryTypeMap } from "@/constants/entryType";
 import { ErrorSourceType, ErrorType } from "@/constants/errorType";
@@ -46,7 +46,7 @@ const props = withDefaults(defineProps<Props>(), {
 
 const reportComponentMap = new Map<EntryType, unknown>([
     [EntryType.Medication, MedicationHistoryReportComponent],
-    [EntryType.HealthVisit, MSPVisitsReportComponent],
+    [EntryType.HealthVisit, MspVisitsReportComponent],
     [EntryType.Covid19TestResult, Covid19ReportComponent],
     [EntryType.Immunization, ImmunizationHistoryReportComponent],
     [EntryType.SpecialAuthorityRequest, MedicationRequestReportComponent],
@@ -90,7 +90,6 @@ const laboratoryOrdersAreQueued = computed(() =>
 const medications = computed(() => medicationStore.medications(props.hdid));
 const patient = computed(() => userStore.patient);
 const dependents = computed(() => dependentStore.dependents);
-
 const selectedReportComponent = computed(() => {
     if (!selectedEntryType.value) {
         return "";

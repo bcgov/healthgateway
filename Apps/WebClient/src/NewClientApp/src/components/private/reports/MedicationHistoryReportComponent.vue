@@ -6,7 +6,6 @@ import ProtectiveWordComponent from "@/components/site/ProtectiveWordComponent.v
 import { container } from "@/ioc/container";
 import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
 import { DateWrapper } from "@/models/dateWrapper";
-import MedicationStatementHistory from "@/models/medicationStatementHistory";
 import Report from "@/models/report";
 import ReportField from "@/models/reportField";
 import ReportFilter from "@/models/reportFilter";
@@ -43,12 +42,6 @@ interface MedicationRow {
     form: string;
     manufacturer: string;
 }
-
-const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-const reportService = container.get<IReportService>(
-    SERVICE_IDENTIFIER.ReportService
-);
-const medicationStore = useMedicationStore();
 
 const notFoundText = "Not Found";
 const fields: ReportField[] = [
@@ -92,16 +85,19 @@ const fields: ReportField[] = [
     },
 ];
 
-const medicationsAreLoading = computed<boolean>(() =>
+const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+const reportService = container.get<IReportService>(
+    SERVICE_IDENTIFIER.ReportService
+);
+const medicationStore = useMedicationStore();
+
+const medicationsAreLoading = computed(() =>
     medicationStore.medicationsAreLoading(props.hdid)
 );
-const medications = computed<MedicationStatementHistory[]>(() =>
-    medicationStore.medications(props.hdid)
-);
-
 const isEmpty = computed(() => visibleRecords.value.length === 0);
 const visibleRecords = computed(() =>
-    medications.value
+    medicationStore
+        .medications(props.hdid)
         .filter(
             (record) =>
                 props.filter.allowsDate(record.dispensedDate) &&

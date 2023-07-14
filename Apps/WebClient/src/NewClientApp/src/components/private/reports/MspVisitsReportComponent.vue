@@ -5,7 +5,6 @@ import HgDataTable from "@/components/common/HgDataTable.vue";
 import { container } from "@/ioc/container";
 import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
 import { DateWrapper } from "@/models/dateWrapper";
-import { Encounter } from "@/models/encounter";
 import Report from "@/models/report";
 import ReportField from "@/models/reportField";
 import ReportFilter from "@/models/reportFilter";
@@ -67,11 +66,10 @@ const healthVisitStore = useHealthVisitsStore();
 const healthVisitsAreLoading = computed(() =>
     healthVisitStore.healthVisitsAreLoading(props.hdid)
 );
-const healthVisits = computed(() => healthVisitStore.healthVisits(props.hdid));
-
-const isEmpty = computed<boolean>(() => visibleRecords.value.length === 0);
-const visibleRecords = computed<Encounter[]>(() =>
-    healthVisits.value
+const isEmpty = computed(() => visibleRecords.value.length === 0);
+const visibleRecords = computed(() =>
+    healthVisitStore
+        .healthVisits(props.hdid)
         .filter((record) => props.filter.allowsDate(record.encounterDate))
         .sort((a, b) => {
             const firstDate = new DateWrapper(a.encounterDate);
