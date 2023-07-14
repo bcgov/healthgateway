@@ -250,13 +250,13 @@ immunizationStore
             </v-row>
             <HgDataTable
                 v-if="!isEmpty || isLoading"
+                class="d-none d-md-block"
                 striped
                 :loading="isLoading"
                 :items="immunizationItems"
                 :fields="immunizationFields"
                 density="compact"
                 data-testid="immunization-history-report-table"
-                class="table-style"
             >
                 <!-- A custom formatted header cell for field 'name' -->
                 <template #header-agents>
@@ -311,13 +311,13 @@ immunizationStore
                     </v-row>
                     <HgDataTable
                         v-if="!isRecommendationEmpty || isLoading"
+                        class="d-none d-md-block"
                         fixed-header
                         :loading="isLoading"
                         :items="recommendationItems"
                         :fields="recommendationFields"
                         data-testid="recommendation-history-report-table"
-                    >
-                    </HgDataTable>
+                    />
                 </v-col>
             </v-row>
         </section>

@@ -148,6 +148,7 @@ hospitalVisitStore
 
                 <HgDataTable
                     v-else-if="!isDependent"
+                    class="d-none d-md-block"
                     fixed-header
                     :loading="hospitalVisitsAreLoading"
                     :items="items"
@@ -155,8 +156,7 @@ hospitalVisitStore
                     height="600px"
                     density="compact"
                     data-testid="hospital-visit-report-table"
-                >
-                </HgDataTable>
+                />
             </section>
         </div>
     </div>

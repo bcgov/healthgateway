@@ -190,6 +190,7 @@ specialAuthorityStore
             </v-row>
             <HgDataTable
                 v-else-if="!isDependent"
+                class="d-none d-md-block"
                 fixed-header
                 :loading="specialAuthorityRequestsAreLoading"
                 :items="items"
@@ -197,8 +198,7 @@ specialAuthorityStore
                 density="compact"
                 height="600px"
                 data-testid="medication-request-report-table"
-            >
-            </HgDataTable>
+            />
         </section>
     </div>
 </template>
