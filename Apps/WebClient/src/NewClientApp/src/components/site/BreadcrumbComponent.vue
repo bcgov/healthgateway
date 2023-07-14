@@ -37,7 +37,7 @@ const displayBreadcrumbs = computed(
     <v-breadcrumbs
         v-if="displayBreadcrumbs"
         data-testid="breadcrumbs"
-        class="pt-0 pb-0"
+        class="py-0 mb-4"
         aria-label="Breadcrumb Nav"
     >
         <template v-for="(item, index) in allBreadcrumbItems" :key="item.text">
