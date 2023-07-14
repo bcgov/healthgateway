@@ -4,7 +4,7 @@ export default class DateWrapperSortUtility {
     /**
      * Sort comparison test to determine dates in descending order.
      * @param aDate instance of DateWrapper
-     *  @param bDate instance of DateWrapper
+     * @param bDate instance of DateWrapper
      */
     static descending(aDate: DateWrapper, bDate: DateWrapper): number {
         if (aDate.isBefore(bDate)) {
