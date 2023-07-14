@@ -118,8 +118,8 @@ userProfileService
                 variant="primary"
                 :disabled="!accepted"
                 text="Continue"
-                @click.prevent.stop="onSubmit"
-            ></HgButtonComponent>
+                @click="onSubmit"
+            />
         </div>
     </template>
 </template>
