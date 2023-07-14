@@ -81,6 +81,10 @@ const TermsOfServiceView = () =>
     import(
         /* webpackChunkName: "termsOfService" */ "@/components/public/terms-of-service/TermsOfServiceView.vue"
     );
+const AcceptTermsOfServiceView = () =>
+    import(
+        /* webpackChunkName: "acceptTermsOfService" */ "@/components/private/accept-terms-of-service/AcceptTermsOfServiceView.vue"
+    );
 
 export enum UserState {
     offline = "offline",
@@ -262,6 +266,14 @@ const routes = [
                 UserState.pendingDeletion,
             ],
             requiresProcessedWaitlistTicket: false,
+        },
+    },
+    {
+        path: Path.AcceptTermsOfService,
+        component: AcceptTermsOfServiceView,
+        meta: {
+            validStates: [UserState.acceptTermsOfService],
+            requiresProcessedWaitlistTicket: true,
         },
     },
     {
