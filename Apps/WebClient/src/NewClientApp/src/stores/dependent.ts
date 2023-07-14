@@ -4,27 +4,18 @@ import { computed, ref } from "vue";
 import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import { container } from "@/ioc/container";
 import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
-import { DateWrapper } from "@/models/dateWrapper";
 import { Dependent } from "@/models/dependent";
 import { ResultError } from "@/models/errors";
 import { LoadStatus } from "@/models/storeOperations";
 import { IDependentService, ILogger } from "@/services/interfaces";
 import { useErrorStore } from "@/stores/error";
+import DateSortUtility from "@/utility/dateSortUtility";
 
-const dependentSort = (a: Dependent, b: Dependent) => {
-    const firstDate = new DateWrapper(a.dependentInformation.dateOfBirth);
-    const secondDate = new DateWrapper(b.dependentInformation.dateOfBirth);
-
-    if (firstDate.isBefore(secondDate)) {
-        return 1;
-    }
-
-    if (firstDate.isAfter(secondDate)) {
-        return -1;
-    }
-
-    return 0;
-};
+const dependentSort = (a: Dependent, b: Dependent): number =>
+    DateSortUtility.descendingByString(
+        a.dependentInformation.dateOfBirth,
+        b.dependentInformation.dateOfBirth
+    );
 
 export const useDependentStore = defineStore("dependent", () => {
     const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);

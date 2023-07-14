@@ -29,6 +29,7 @@ export class EntryTypeDetails {
     type!: EntryType;
     name!: string;
     description!: string;
+    reportEventName!: string;
     icon!: string;
     component?: Component; // TODO: Remove this optional
     commentType!: CommentEntryType;
@@ -54,6 +55,7 @@ entryTypeMap.set(EntryType.Immunization, {
     component: undefined, //ImmunizationTimelineComponent,
     eventName: "immunizations",
     moduleName: "Immunization",
+    reportEventName: "Immunization",
 });
 
 entryTypeMap.set(EntryType.Medication, {
@@ -65,6 +67,7 @@ entryTypeMap.set(EntryType.Medication, {
     component: undefined, //MedicationTimelineComponent,
     eventName: "medications",
     moduleName: "Medication",
+    reportEventName: "Medication",
 });
 
 entryTypeMap.set(EntryType.LabResult, {
@@ -77,6 +80,7 @@ entryTypeMap.set(EntryType.LabResult, {
     component: undefined, //LaboratoryOrderTimelineComponent,
     eventName: "lab_results",
     moduleName: "AllLaboratory",
+    reportEventName: "Laboratory Tests",
 });
 
 entryTypeMap.set(EntryType.Covid19TestResult, {
@@ -89,6 +93,7 @@ entryTypeMap.set(EntryType.Covid19TestResult, {
     component: undefined, //Covid19LaboratoryOrderTimelineComponent,
     eventName: "covid_test",
     moduleName: "Laboratory",
+    reportEventName: "COVID-19 Test",
 });
 
 entryTypeMap.set(EntryType.HealthVisit, {
@@ -101,6 +106,7 @@ entryTypeMap.set(EntryType.HealthVisit, {
     component: undefined, //EncounterTimelineComponent,
     eventName: "health_visits",
     moduleName: "Encounter",
+    reportEventName: "Health Visits",
 });
 
 entryTypeMap.set(EntryType.Note, {
@@ -112,6 +118,7 @@ entryTypeMap.set(EntryType.Note, {
     component: undefined, //NoteTimelineComponent,
     eventName: "my_notes",
     moduleName: "Note",
+    reportEventName: "Notes",
 });
 
 entryTypeMap.set(EntryType.SpecialAuthorityRequest, {
@@ -124,6 +131,7 @@ entryTypeMap.set(EntryType.SpecialAuthorityRequest, {
     component: undefined, //MedicationRequestTimelineComponent,
     eventName: "special_authority",
     moduleName: "MedicationRequest",
+    reportEventName: "Special Authority Requests",
 });
 
 entryTypeMap.set(EntryType.ClinicalDocument, {
@@ -136,6 +144,7 @@ entryTypeMap.set(EntryType.ClinicalDocument, {
     component: undefined, //ClinicalDocumentTimelineComponent,
     eventName: "document",
     moduleName: "ClinicalDocument",
+    reportEventName: "Clinical Documents",
 });
 
 entryTypeMap.set(EntryType.HospitalVisit, {
@@ -148,6 +157,7 @@ entryTypeMap.set(EntryType.HospitalVisit, {
     component: undefined, //HospitalVisitTimelineComponent,
     eventName: "hospital_visits",
     moduleName: "HospitalVisit",
+    reportEventName: "Hospital Visits",
 });
 
 entryTypeMap.set(EntryType.DiagnosticImaging, {
@@ -159,6 +169,7 @@ entryTypeMap.set(EntryType.DiagnosticImaging, {
     component: undefined, //DiagnosticImagingTimelineComponent,
     eventName: "diagnostic_imaging",
     moduleName: "DiagnosticImaging",
+    reportEventName: "Diagnostic Imaging Exams",
 });
 
 export { entryTypeMap };

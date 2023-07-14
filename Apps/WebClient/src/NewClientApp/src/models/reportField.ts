@@ -1,9 +1,9 @@
 export default interface ReportField {
     key: string;
-    label?: string;
-    tdClass?: string;
-    thClass: string;
-    thStyle?: { width: string };
+    title?: string;
+    thAlign?: "start" | "end" | "center";
+    tdAlign?: "start" | "end" | "center";
+    width?: number | string;
     thAttr?: { "data-testid": string };
     tdAttr?: { "data-testid": string };
 }

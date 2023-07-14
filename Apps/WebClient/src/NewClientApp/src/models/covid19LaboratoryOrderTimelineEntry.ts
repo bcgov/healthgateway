@@ -6,6 +6,7 @@ import {
 } from "@/models/laboratory";
 import TimelineEntry from "@/models/timelineEntry";
 import { UserComment } from "@/models/userComment";
+import DateSortUtility from "@/utility/dateSortUtility";
 
 // The COVID-19 laboratory order timeline entry model
 export default class Covid19LaboratoryOrderTimelineEntry extends TimelineEntry {
@@ -74,15 +75,12 @@ export default class Covid19LaboratoryOrderTimelineEntry extends TimelineEntry {
     }
 
     private sortResults(): void {
-        this.tests.sort((a, b) => {
-            if (a.collectedDateTime.isBefore(b.collectedDateTime)) {
-                return 1;
-            }
-            if (a.collectedDateTime.isAfter(b.collectedDateTime)) {
-                return -1;
-            }
-            return 0;
-        });
+        this.tests.sort((a, b) =>
+            DateSortUtility.descending(
+                a.collectedDateTime,
+                b.collectedDateTime
+            )
+        );
     }
 }
 

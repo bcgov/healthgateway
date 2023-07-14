@@ -11,19 +11,13 @@ import { LoadStatus } from "@/models/storeOperations";
 import { UserComment } from "@/models/userComment";
 import { ILogger, IUserCommentService } from "@/services/interfaces";
 import { useErrorStore } from "@/stores/error";
+import DateSortUtility from "@/utility/dateSortUtility";
 
-function commentsSort(a: UserComment, b: UserComment): number {
-    const firstDate = new Date(a.createdDateTime);
-    const secondDate = new Date(b.createdDateTime);
-
-    if (firstDate > secondDate) {
-        return 1;
-    }
-    if (firstDate < secondDate) {
-        return -1;
-    }
-    return 0;
-}
+const commentsSort = (a: UserComment, b: UserComment): number =>
+    DateSortUtility.ascendingByString(
+        a.createdDateTime,
+        b.createdDateTime
+    );
 
 export const useCommentStore = defineStore("comment", () => {
     const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
