@@ -6,7 +6,7 @@ import {
 } from "@/models/laboratory";
 import TimelineEntry from "@/models/timelineEntry";
 import { UserComment } from "@/models/userComment";
-import DateWrapperSortUtility from "@/utility/dateWrapperSortUtility";
+import DateSortUtility from "@/utility/dateSortUtility";
 
 // The COVID-19 laboratory order timeline entry model
 export default class Covid19LaboratoryOrderTimelineEntry extends TimelineEntry {
@@ -76,7 +76,7 @@ export default class Covid19LaboratoryOrderTimelineEntry extends TimelineEntry {
 
     private sortResults(): void {
         this.tests.sort((a, b) =>
-            DateWrapperSortUtility.descending(
+            DateSortUtility.descending(
                 a.collectedDateTime,
                 b.collectedDateTime
             )

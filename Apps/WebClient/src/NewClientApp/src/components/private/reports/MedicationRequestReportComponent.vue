@@ -14,7 +14,7 @@ import { ReportFormatType, TemplateType } from "@/models/reportRequest";
 import RequestResult from "@/models/requestResult";
 import { ILogger, IReportService } from "@/services/interfaces";
 import { useSpecialAuthorityRequestStore } from "@/stores/specialAuthorityRequest";
-import DateWrapperSortUtility from "@/utility/dateWrapperSortUtility";
+import DateSortUtility from "@/utility/dateSortUtility";
 
 interface Props {
     hdid: string;
@@ -87,7 +87,7 @@ const visibleRecords = computed(() =>
         .specialAuthorityRequests(props.hdid)
         .filter((record) => props.filter.allowsDate(record.requestedDate))
         .sort((a, b) =>
-            DateWrapperSortUtility.descendingByString(
+            DateSortUtility.descendingByString(
                 a.requestedDate,
                 b.requestedDate
             )

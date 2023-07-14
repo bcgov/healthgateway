@@ -9,10 +9,10 @@ import { ResultError } from "@/models/errors";
 import { LoadStatus } from "@/models/storeOperations";
 import { IDependentService, ILogger } from "@/services/interfaces";
 import { useErrorStore } from "@/stores/error";
-import DateWrapperSortUtility from "@/utility/dateWrapperSortUtility";
+import DateSortUtility from "@/utility/dateSortUtility";
 
 const dependentSort = (a: Dependent, b: Dependent): number =>
-    DateWrapperSortUtility.descendingByString(
+    DateSortUtility.descendingByString(
         a.dependentInformation.dateOfBirth,
         b.dependentInformation.dateOfBirth
     );

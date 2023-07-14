@@ -13,7 +13,7 @@ import { ReportFormatType, TemplateType } from "@/models/reportRequest";
 import RequestResult from "@/models/requestResult";
 import { ILogger, IReportService } from "@/services/interfaces";
 import { useCovid19TestResultStore } from "@/stores/covid19TestResult";
-import DateWrapperSortUtility from "@/utility/dateWrapperSortUtility";
+import DateSortUtility from "@/utility/dateSortUtility";
 
 interface Props {
     hdid: string;
@@ -78,7 +78,7 @@ const visibleRecords = computed(() =>
             props.filter.allowsDate(r.labResults[0].collectedDateTime)
         )
         .sort((a, b) =>
-            DateWrapperSortUtility.descendingByString(
+            DateSortUtility.descendingByString(
                 a.labResults[0].collectedDateTime,
                 b.labResults[0].collectedDateTime
             )

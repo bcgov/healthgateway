@@ -11,10 +11,10 @@ import { LoadStatus } from "@/models/storeOperations";
 import { UserComment } from "@/models/userComment";
 import { ILogger, IUserCommentService } from "@/services/interfaces";
 import { useErrorStore } from "@/stores/error";
-import DateWrapperSortUtility from "@/utility/dateWrapperSortUtility";
+import DateSortUtility from "@/utility/dateSortUtility";
 
 const commentsSort = (a: UserComment, b: UserComment): number =>
-    DateWrapperSortUtility.ascendingByString(
+    DateSortUtility.ascendingByString(
         a.createdDateTime,
         b.createdDateTime
     );

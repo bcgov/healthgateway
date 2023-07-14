@@ -14,7 +14,7 @@ import { LoadStatus } from "@/models/storeOperations";
 import { IImmunizationService, ILogger } from "@/services/interfaces";
 import { useErrorStore } from "@/stores/error";
 import { DatasetMapUtils } from "@/stores/utils/DatasetMapUtils";
-import DateWrapperSortUtility from "@/utility/dateWrapperSortUtility";
+import DateSortUtility from "@/utility/dateSortUtility";
 import EventTracker from "@/utility/eventTracker";
 
 const defaultImmunizationDatasetState: ImmunizationDatasetState = {
@@ -26,7 +26,7 @@ const defaultImmunizationDatasetState: ImmunizationDatasetState = {
 };
 
 const immunizationSort = (a: ImmunizationEvent, b: ImmunizationEvent): number =>
-    DateWrapperSortUtility.ascendingByString(
+    DateSortUtility.ascendingByString(
         a.dateOfImmunization,
         b.dateOfImmunization
     );

@@ -13,7 +13,7 @@ import { ReportFormatType, TemplateType } from "@/models/reportRequest";
 import RequestResult from "@/models/requestResult";
 import { ILogger, IReportService } from "@/services/interfaces";
 import { useHealthVisitsStore } from "@/stores/healthVisits";
-import DateWrapperSortUtility from "@/utility/dateWrapperSortUtility";
+import DateSortUtility from "@/utility/dateSortUtility";
 
 interface Props {
     hdid: string;
@@ -73,7 +73,7 @@ const visibleRecords = computed(() =>
         .healthVisits(props.hdid)
         .filter((record) => props.filter.allowsDate(record.encounterDate))
         .sort((a, b) =>
-            DateWrapperSortUtility.descendingByString(
+            DateSortUtility.descendingByString(
                 a.encounterDate,
                 b.encounterDate
             )

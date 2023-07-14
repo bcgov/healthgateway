@@ -14,7 +14,7 @@ import { ReportFormatType, TemplateType } from "@/models/reportRequest";
 import RequestResult from "@/models/requestResult";
 import { ILogger, IReportService } from "@/services/interfaces";
 import { useMedicationStore } from "@/stores/medication";
-import DateWrapperSortUtility from "@/utility/dateWrapperSortUtility";
+import DateSortUtility from "@/utility/dateSortUtility";
 
 interface Props {
     hdid: string;
@@ -107,7 +107,7 @@ const visibleRecords = computed(() =>
                 )
         )
         .sort((a, b) =>
-            DateWrapperSortUtility.descendingByString(
+            DateSortUtility.descendingByString(
                 a.dispensedDate,
                 b.dispensedDate
             )

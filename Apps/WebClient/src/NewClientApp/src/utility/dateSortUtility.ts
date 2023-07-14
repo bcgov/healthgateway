@@ -1,6 +1,6 @@
 ﻿import { DateWrapper } from "@/models/dateWrapper";
 
-export default class DateWrapperSortUtility {
+export default class DateSortUtility {
     /**
      * Sort comparison test to determine dates in descending order.
      * @param aDate instance of DateWrapper
@@ -20,7 +20,7 @@ export default class DateWrapperSortUtility {
      * @param bDate instance of DateWrapper
      */
     static ascending(aDate: DateWrapper, bDate: DateWrapper): number {
-        return -1 * DateWrapperSortUtility.descending(aDate, bDate);
+        return -1 * DateSortUtility.descending(aDate, bDate);
     }
 
     /**
@@ -29,7 +29,7 @@ export default class DateWrapperSortUtility {
      * @param bDate valid date string
      */
     static descendingByString(aDate: string, bDate: string): number {
-        return DateWrapperSortUtility.descending(
+        return DateSortUtility.descending(
             new DateWrapper(aDate),
             new DateWrapper(bDate)
         );
@@ -41,7 +41,7 @@ export default class DateWrapperSortUtility {
      * @param bDate valid date string
      */
     static ascendingByString(aDate: string, bDate: string): number {
-        return -1 * DateWrapperSortUtility.descendingByString(aDate, bDate);
+        return -1 * DateSortUtility.descendingByString(aDate, bDate);
     }
 
     /**
@@ -52,7 +52,7 @@ export default class DateWrapperSortUtility {
      */
     static descendingByOptionalString(aDate?: string, bDate?: string): number {
         if (aDate && bDate) {
-            return DateWrapperSortUtility.descendingByString(aDate, bDate);
+            return DateSortUtility.descendingByString(aDate, bDate);
         }
 
         const firstDateEmpty = aDate === undefined;

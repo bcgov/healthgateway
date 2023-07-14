@@ -14,7 +14,7 @@ import { ReportFormatType, TemplateType } from "@/models/reportRequest";
 import RequestResult from "@/models/requestResult";
 import { ILogger, IReportService } from "@/services/interfaces";
 import { useImmunizationStore } from "@/stores/immunization";
-import DateWrapperSortUtility from "@/utility/dateWrapperSortUtility";
+import DateSortUtility from "@/utility/dateSortUtility";
 
 interface Props {
     hdid: string;
@@ -106,7 +106,7 @@ const visibleImmunizations = computed(() =>
         .immunizations(props.hdid)
         .filter((record) => props.filter.allowsDate(record.dateOfImmunization))
         .sort((a, b) =>
-            DateWrapperSortUtility.descendingByString(
+            DateSortUtility.descendingByString(
                 a.dateOfImmunization,
                 b.dateOfImmunization
             )
@@ -125,7 +125,7 @@ const visibleRecommendations = computed(() =>
         .recommendations(props.hdid)
         .filter((x) => x.recommendedVaccinations)
         .sort((a, b) =>
-            DateWrapperSortUtility.descendingByOptionalString(
+            DateSortUtility.descendingByOptionalString(
                 a.agentDueDate,
                 b.agentDueDate
             )

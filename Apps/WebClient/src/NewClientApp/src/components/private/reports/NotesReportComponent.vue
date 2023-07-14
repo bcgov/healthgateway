@@ -13,7 +13,7 @@ import { ReportFormatType, TemplateType } from "@/models/reportRequest";
 import RequestResult from "@/models/requestResult";
 import { ILogger, IReportService } from "@/services/interfaces";
 import { useNoteStore } from "@/stores/note";
-import DateWrapperSortUtility from "@/utility/dateWrapperSortUtility";
+import DateSortUtility from "@/utility/dateSortUtility";
 
 interface Props {
     hdid: string;
@@ -62,7 +62,7 @@ const visibleRecords = computed(() =>
     noteStore.notes
         .filter((record) => props.filter.allowsDate(record.journalDate))
         .sort((a, b) =>
-            DateWrapperSortUtility.descendingByString(
+            DateSortUtility.descendingByString(
                 a.journalDate,
                 b.journalDate
             )
