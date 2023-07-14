@@ -92,7 +92,7 @@ function hasHeaderSlot(key: string): boolean {
                             <slot :name="`header-${field.key}`" />
                         </template>
                         <template v-else>
-                            {{ field.title ?? "" }}
+                            {{ field.title }}
                         </template>
                     </th>
                 </tr>
@@ -108,7 +108,7 @@ function hasHeaderSlot(key: string): boolean {
                             <slot :name="`item-${field.key}`" :item="item" />
                         </template>
                         <template v-else>
-                            {{ item[field.key] ?? "" }}
+                            {{ item[field.key] }}
                         </template>
                     </td>
                 </tr>
