@@ -26,7 +26,7 @@ const defaultImmunizationDatasetState: ImmunizationDatasetState = {
 };
 
 const immunizationSort = (a: ImmunizationEvent, b: ImmunizationEvent): number =>
-    DateWrapperSortUtility.descendingByString(
+    DateWrapperSortUtility.ascendingByString(
         a.dateOfImmunization,
         b.dateOfImmunization
     );
