@@ -5,7 +5,6 @@ import HgDataTable from "@/components/common/HgDataTable.vue";
 import { container } from "@/ioc/container";
 import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
 import { DateWrapper } from "@/models/dateWrapper";
-import { HospitalVisit } from "@/models/encounter";
 import Report from "@/models/report";
 import ReportField from "@/models/reportField";
 import ReportFilter from "@/models/reportFilter";
@@ -67,18 +66,15 @@ const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
 const reportService = container.get<IReportService>(
     SERVICE_IDENTIFIER.ReportService
 );
-const hospitalVisitStore = useHospitalVisitsStore();
+const hospitalVisitsStore = useHospitalVisitsStore();
 
-const hospitalVisits = computed<HospitalVisit[]>(() =>
-    hospitalVisitStore.hospitalVisits(props.hdid)
+const hospitalVisitsAreLoading = computed(() =>
+    hospitalVisitsStore.hospitalVisitsAreLoading(props.hdid)
 );
-const hospitalVisitsAreLoading = computed<boolean>(() =>
-    hospitalVisitStore.hospitalVisitsAreLoading(props.hdid)
-);
-
 const isEmpty = computed(() => visibleRecords.value.length === 0);
 const visibleRecords = computed(() =>
-    hospitalVisits.value
+    hospitalVisitsStore
+        .hospitalVisits(props.hdid)
         .filter((record) => props.filter.allowsDate(record.admitDateTime))
         .sort((a, b) => {
             const firstDate = new DateWrapper(a.admitDateTime);
@@ -133,7 +129,7 @@ onMounted(() => {
     emit("on-is-empty-changed", isEmpty.value);
 });
 
-hospitalVisitStore
+hospitalVisitsStore
     .retrieveHospitalVisits(props.hdid)
     .catch((err) => logger.error(`Error loading hospital visit data: ${err}`));
 </script>

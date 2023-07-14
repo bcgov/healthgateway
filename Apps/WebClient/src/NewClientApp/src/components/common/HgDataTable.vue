@@ -11,7 +11,6 @@ interface Props {
     hover?: boolean;
     height?: string;
 }
-
 const props = withDefaults(defineProps<Props>(), {
     height: undefined,
     maxHeight: undefined,
@@ -62,6 +61,7 @@ function getAlignmentClass(alignment?: string): string {
 function hasItemSlot(key: string): boolean {
     return slots[`item-${key}`] !== undefined;
 }
+
 function hasHeaderSlot(key: string): boolean {
     return slots[`header-${key}`] !== undefined;
 }

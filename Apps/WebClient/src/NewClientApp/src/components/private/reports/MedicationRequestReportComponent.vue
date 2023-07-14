@@ -77,56 +77,44 @@ const fields: ReportField[] = [
 const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
 const specialAuthorityStore = useSpecialAuthorityRequestStore();
 
-const specialAuthorityRequestsAreLoading = computed<boolean>(() =>
+const specialAuthorityRequestsAreLoading = computed(() =>
     specialAuthorityStore.specialAuthorityRequestsAreLoading(props.hdid)
 );
-const specialAuthorityRequests = computed<MedicationRequest[]>(() =>
-    specialAuthorityStore.specialAuthorityRequests(props.hdid)
-);
+const isEmpty = computed(() => visibleRecords.value.length === 0);
+const visibleRecords = computed(() =>
+    specialAuthorityStore
+        .specialAuthorityRequests(props.hdid)
+        .filter((record) => props.filter.allowsDate(record.requestedDate))
+        .sort((a: MedicationRequest, b: MedicationRequest) => {
+            const firstDate = new DateWrapper(a.requestedDate);
+            const secondDate = new DateWrapper(b.requestedDate);
 
-const isEmpty = computed<boolean>(() => visibleRecords.value.length === 0);
+            if (firstDate.isBefore(secondDate)) {
+                return 1;
+            }
 
-const visibleRecords = computed<MedicationRequest[]>(() => {
-    const records = specialAuthorityRequests.value.filter(
-        (record: MedicationRequest) =>
-            props.filter.allowsDate(record.requestedDate)
-    );
-    records.sort((a: MedicationRequest, b: MedicationRequest) => {
-        const firstDate = new DateWrapper(a.requestedDate);
-        const secondDate = new DateWrapper(b.requestedDate);
+            if (firstDate.isAfter(secondDate)) {
+                return -1;
+            }
 
-        if (firstDate.isBefore(secondDate)) {
-            return 1;
-        }
-
-        if (firstDate.isAfter(secondDate)) {
-            return -1;
-        }
-
-        return 0;
-    });
-    return records;
-});
-
-const items = computed<MedicationRequestRow[]>(() => {
-    return visibleRecords.value.map<MedicationRequestRow>(
-        (x: MedicationRequest) => ({
-            date: DateWrapper.format(x.requestedDate),
-            requested_drug_name: x.drugName || "",
-            status: x.requestStatus || "",
-            prescriber_name: prescriberName(x),
-            effective_date:
-                x.effectiveDate === undefined
-                    ? ""
-                    : DateWrapper.format(x.effectiveDate),
-            expiry_date:
-                x.expiryDate === undefined
-                    ? ""
-                    : DateWrapper.format(x.expiryDate),
-            reference_number: x.referenceNumber,
+            return 0;
         })
-    );
-});
+);
+const items = computed(() =>
+    visibleRecords.value.map<MedicationRequestRow>((x) => ({
+        date: DateWrapper.format(x.requestedDate),
+        requested_drug_name: x.drugName || "",
+        status: x.requestStatus || "",
+        prescriber_name: prescriberName(x),
+        effective_date:
+            x.effectiveDate === undefined
+                ? ""
+                : DateWrapper.format(x.effectiveDate),
+        expiry_date:
+            x.expiryDate === undefined ? "" : DateWrapper.format(x.expiryDate),
+        reference_number: x.referenceNumber,
+    }))
+);
 
 function prescriberName(medication: MedicationRequest): string {
     return (

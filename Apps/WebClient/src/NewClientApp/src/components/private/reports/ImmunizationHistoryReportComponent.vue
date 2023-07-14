@@ -5,11 +5,7 @@ import HgDataTable from "@/components/common/HgDataTable.vue";
 import { container } from "@/ioc/container";
 import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
 import { DateWrapper } from "@/models/dateWrapper";
-import {
-    ImmunizationAgent,
-    ImmunizationEvent,
-    Recommendation,
-} from "@/models/immunizationModel";
+import { ImmunizationAgent } from "@/models/immunizationModel";
 import Report from "@/models/report";
 import ReportField from "@/models/reportField";
 import ReportFilter from "@/models/reportFilter";
@@ -95,32 +91,18 @@ const recommendationFields: ReportField[] = [
 const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
 const immunizationStore = useImmunizationStore();
 
-const patientImmunizations = computed<ImmunizationEvent[]>(() =>
-    immunizationStore.immunizations(props.hdid)
-);
-
-const patientRecommendations = computed<Recommendation[]>(() =>
-    immunizationStore.recommendations(props.hdid)
-);
-
-const immunizationsAreLoading = computed<boolean>(() =>
-    immunizationStore.immunizationsAreLoading(props.hdid)
-);
-
-const immunizationsAreDeferred = computed<boolean>(() =>
-    immunizationStore.immunizationsAreDeferred(props.hdid)
-);
-
 const isEmpty = computed(() => visibleImmunizations.value.length === 0);
 const isRecommendationEmpty = computed(
     () => visibleRecommendations.value.length === 0
 );
 const isLoading = computed(
-    () => immunizationsAreDeferred.value || immunizationsAreLoading.value
+    () =>
+        immunizationStore.immunizationsAreDeferred(props.hdid) ||
+        immunizationStore.immunizationsAreLoading(props.hdid)
 );
-
 const visibleImmunizations = computed(() =>
-    patientImmunizations.value
+    immunizationStore
+        .immunizations(props.hdid)
         .filter((record) => props.filter.allowsDate(record.dateOfImmunization))
         .sort((a, b) => {
             const firstDate = new DateWrapper(a.dateOfImmunization);
@@ -137,7 +119,6 @@ const visibleImmunizations = computed(() =>
             return 0;
         })
 );
-
 const immunizationItems = computed(() =>
     visibleImmunizations.value.map<ImmunizationRow>((x) => ({
         date: DateWrapper.format(x.dateOfImmunization),
@@ -146,9 +127,9 @@ const immunizationItems = computed(() =>
         provider_clinic: x.providerOrClinic,
     }))
 );
-
 const visibleRecommendations = computed(() =>
-    patientRecommendations.value
+    immunizationStore
+        .recommendations(props.hdid)
         .filter((x) => x.recommendedVaccinations)
         .sort((a, b) => {
             const firstDateEmpty =

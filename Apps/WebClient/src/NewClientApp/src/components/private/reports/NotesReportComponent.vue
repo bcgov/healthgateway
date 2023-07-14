@@ -11,7 +11,6 @@ import ReportFilter from "@/models/reportFilter";
 import ReportHeader from "@/models/reportHeader";
 import { ReportFormatType, TemplateType } from "@/models/reportRequest";
 import RequestResult from "@/models/requestResult";
-import UserNote from "@/models/userNote";
 import { ILogger, IReportService } from "@/services/interfaces";
 import { useNoteStore } from "@/stores/note";
 
@@ -57,34 +56,27 @@ const fields: ReportField[] = [
 const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
 const noteStore = useNoteStore();
 
-const notesAreLoading = computed<boolean>(() => noteStore.notesAreLoading);
+const notesAreLoading = computed(() => noteStore.notesAreLoading);
+const visibleRecords = computed(() =>
+    noteStore.notes
+        .filter((record) => props.filter.allowsDate(record.journalDate))
+        .sort((a, b) => {
+            const firstDate = new DateWrapper(a.journalDate);
+            const secondDate = new DateWrapper(b.journalDate);
 
-const notes = computed<UserNote[]>(() => noteStore.notes);
+            if (firstDate.isBefore(secondDate)) {
+                return 1;
+            }
 
-const visibleRecords = computed<UserNote[]>(() => {
-    const records = notes.value.filter((record) =>
-        props.filter.allowsDate(record.journalDate)
-    );
-    records.sort((a, b) => {
-        const firstDate = new DateWrapper(a.journalDate);
-        const secondDate = new DateWrapper(b.journalDate);
+            if (firstDate.isAfter(secondDate)) {
+                return -1;
+            }
 
-        if (firstDate.isBefore(secondDate)) {
-            return 1;
-        }
-
-        if (firstDate.isAfter(secondDate)) {
-            return -1;
-        }
-
-        return 0;
-    });
-    return records;
-});
-
-const isEmpty = computed<boolean>(() => visibleRecords.value.length === 0);
-
-const items = computed<UserNoteRow[]>(() => {
+            return 0;
+        })
+);
+const isEmpty = computed(() => visibleRecords.value.length === 0);
+const items = computed(() => {
     return visibleRecords.value.map<UserNoteRow>((x) => ({
         date: DateWrapper.format(x.journalDate),
         title: x.title,

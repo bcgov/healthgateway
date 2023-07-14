@@ -5,7 +5,6 @@ import HgDataTable from "@/components/common/HgDataTable.vue";
 import { container } from "@/ioc/container";
 import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
 import { DateWrapper } from "@/models/dateWrapper";
-import { LaboratoryOrder } from "@/models/laboratory";
 import Report from "@/models/report";
 import ReportField from "@/models/reportField";
 import ReportFilter from "@/models/reportFilter";
@@ -67,17 +66,13 @@ const reportService = container.get<IReportService>(
 );
 const labResultStore = useLabResultStore();
 
-const laboratoryOrders = computed<LaboratoryOrder[]>(() =>
-    labResultStore.laboratoryOrders(props.hdid)
-);
-const laboratoryOrdersAreLoading = computed<boolean>(() =>
+const laboratoryOrdersAreLoading = computed(() =>
     labResultStore.laboratoryResultsAreLoading(props.hdid)
 );
-
 const isEmpty = computed(() => visibleRecords.value.length === 0);
-
 const visibleRecords = computed(() =>
-    laboratoryOrders.value
+    labResultStore
+        .laboratoryOrders(props.hdid)
         .filter((record) => props.filter.allowsDate(record.timelineDateTime))
         .sort((a, b) => {
             const firstDate = new DateWrapper(a.timelineDateTime);
@@ -94,7 +89,6 @@ const visibleRecords = computed(() =>
             return 0;
         })
 );
-
 const items = computed(() =>
     visibleRecords.value.flatMap<LabTestRow>((x) => {
         const timelineDateTime = DateWrapper.format(x.timelineDateTime);

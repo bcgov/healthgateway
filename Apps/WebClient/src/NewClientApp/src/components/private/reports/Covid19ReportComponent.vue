@@ -5,7 +5,6 @@ import HgDataTable from "@/components/common/HgDataTable.vue";
 import { container } from "@/ioc/container";
 import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
 import { DateWrapper } from "@/models/dateWrapper";
-import { Covid19LaboratoryOrder } from "@/models/laboratory";
 import Report from "@/models/report";
 import ReportField from "@/models/reportField";
 import ReportFilter from "@/models/reportFilter";
@@ -67,16 +66,13 @@ const reportService = container.get<IReportService>(
 );
 const covid19TestResultStore = useCovid19TestResultStore();
 
-const covid19LaboratoryOrders = computed<Covid19LaboratoryOrder[]>(() =>
-    covid19TestResultStore.covid19LaboratoryOrders(props.hdid)
-);
-const covid19LaboratoryOrdersAreLoading = computed<boolean>(() =>
+const covid19LaboratoryOrdersAreLoading = computed(() =>
     covid19TestResultStore.covid19LaboratoryOrdersAreLoading(props.hdid)
 );
-
 const isEmpty = computed(() => visibleRecords.value.length === 0);
 const visibleRecords = computed(() =>
-    covid19LaboratoryOrders.value
+    covid19TestResultStore
+        .covid19LaboratoryOrders(props.hdid)
         .filter((r) =>
             props.filter.allowsDate(r.labResults[0].collectedDateTime)
         )
