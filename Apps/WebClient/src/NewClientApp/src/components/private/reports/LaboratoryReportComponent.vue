@@ -144,6 +144,7 @@ labResultStore
     </p>
     <HgDataTable
         v-else-if="!isDependent"
+        class="d-none d-md-block"
         fixed-header
         :loading="laboratoryOrdersAreLoading"
         :items="items"
@@ -151,6 +152,5 @@ labResultStore
         height="600px"
         density="compact"
         data-testid="laboratory-report-table"
-    >
-    </HgDataTable>
+    />
 </template>

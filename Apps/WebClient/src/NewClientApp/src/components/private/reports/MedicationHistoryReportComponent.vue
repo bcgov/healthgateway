@@ -182,6 +182,7 @@ medicationStore
             </v-row>
             <HgDataTable
                 v-else-if="!isDependent"
+                class="d-none d-md-block"
                 :items="items"
                 :fields="fields"
                 height="600px"

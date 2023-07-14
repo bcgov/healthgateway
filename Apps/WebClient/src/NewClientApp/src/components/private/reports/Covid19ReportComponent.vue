@@ -150,6 +150,7 @@ covid19TestResultStore
             </v-row>
             <HgDataTable
                 v-else-if="!isDependent"
+                class="d-none d-md-block"
                 fixed-header
                 :loading="covid19LaboratoryOrdersAreLoading"
                 :items="items"
@@ -157,8 +158,7 @@ covid19TestResultStore
                 height="600px"
                 density="compact"
                 data-testid="covid19-report-table"
-            >
-            </HgDataTable>
+            />
         </section>
     </div>
 </template>
