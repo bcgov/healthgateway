@@ -280,11 +280,11 @@ function getMimeType(reportFormatType: ReportFormatType): string {
 }
 
 function trackDownload(): void {
-    let reportName =
-        entryTypeMap.get(selectedEntryType.value)?.reportName ?? "";
+    let reportEventName =
+        entryTypeMap.get(selectedEntryType.value)?.reportEventName ?? "";
 
     const formatTypeName = ReportFormatType[reportFormatType.value];
-    const eventName = `${reportName} (${formatTypeName})`;
+    const eventName = `${reportEventName} (${formatTypeName})`;
 
     if (!props.isDependent) {
         EventTracker.downloadReport(eventName);
