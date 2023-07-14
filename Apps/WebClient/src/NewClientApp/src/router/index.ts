@@ -29,6 +29,10 @@ const LoginCallbackView = () =>
     import(
         /* webpackChunkName: "loginCallback" */ "@/components/authentication/LoginCallbackView.vue"
     );
+const ProfileView = () =>
+    import(
+        /* webpackChunkName: profile" */ "@/components/private/profile/ProfileView.vue"
+    );
 const RegistrationView = () =>
     import(
         /* webpackChunkName: "registration" */ "@/components/private/registration/RegistrationView.vue"
@@ -73,7 +77,7 @@ const UserTimelineView = () =>
     import(
         /* webpackChunkName: "timeline" */ "@/components/private/timeline/UserTimelineView.vue"
     );
-const termsOfServiceView = () =>
+const TermsOfServiceView = () =>
     import(
         /* webpackChunkName: "termsOfService" */ "@/components/public/terms-of-service/TermsOfServiceView.vue"
     );
@@ -122,6 +126,8 @@ const routes = [
         component: DependentViewSelectorComponent,
         meta: {
             validStates: [UserState.registered],
+            requiredFeaturesEnabled: (config: FeatureToggleConfiguration) =>
+                config.dependents.enabled,
             requiresProcessedWaitlistTicket: true,
         },
     },
@@ -131,6 +137,19 @@ const routes = [
         component: HomeView,
         meta: {
             validStates: [UserState.registered],
+            requiresProcessedWaitlistTicket: true,
+        },
+    },
+    {
+        path: Path.Profile,
+        name: "Profile",
+        component: ProfileView,
+        meta: {
+            validStates: [
+                UserState.registered,
+                UserState.pendingDeletion,
+                UserState.acceptTermsOfService,
+            ],
             requiresProcessedWaitlistTicket: true,
         },
     },
@@ -207,8 +226,17 @@ const routes = [
     },
     {
         path: Path.ReleaseNotes,
-        name: "ReleaseNotes",
         component: ReleaseNotesView,
+        meta: {
+            validStates: [
+                UserState.unauthenticated,
+                UserState.invalidIdentityProvider,
+                UserState.noPatient,
+                UserState.registered,
+                UserState.pendingDeletion,
+            ],
+            requiresProcessedWaitlistTicket: false,
+        },
     },
     {
         path: Path.Reports,
@@ -228,7 +256,7 @@ const routes = [
     },
     {
         path: Path.TermsOfService,
-        component: termsOfServiceView,
+        component: TermsOfServiceView,
         meta: {
             validStates: [
                 UserState.unauthenticated,
@@ -249,9 +277,9 @@ const routes = [
         },
     },
     {
-        path: "/*",
-        redirect: "/not-found",
-    }, // Not found; Will catch all other paths not covered previously
+        path: "/*", // will catch all other paths not covered previously
+        redirect: Path.NotFound,
+    },
 ];
 
 function scrollBehaviour(
@@ -273,6 +301,6 @@ const router = createRouter({
 });
 
 router.beforeEach(beforeEachGuard);
-
 router.afterEach(afterEachHook);
+
 export default router;

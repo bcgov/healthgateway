@@ -86,7 +86,7 @@ function handleClose(): void {
                         />
                     </v-toolbar>
                 </v-card-title>
-                <v-card-text class="text-body-1 pa-3">
+                <v-card-text class="text-body-1 pa-4">
                     <v-text-field
                         id="protectiveWord-input"
                         v-model="protectiveWord"

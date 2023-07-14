@@ -60,7 +60,7 @@ if (isOrganDonorServiceEnabled.value) {
         <v-col
             v-if="!patientDataAreLoading && isOrganDonorServiceEnabled"
             :cols="getGridCols"
-            class="pa-3"
+            class="pa-4"
         >
             <OrganDonorDetailsCard :hdid="hdid" />
         </v-col>

@@ -134,9 +134,9 @@ export interface IUserProfileService {
         hdid: string,
         inviteKey: string
     ): Promise<RequestResult<boolean>>;
-    validateSMS(hdid: string, digit: string): Promise<boolean>;
+    validateSms(hdid: string, digit: string): Promise<boolean>;
     updateEmail(hdid: string, email: string): Promise<boolean>;
-    updateSMSNumber(hdid: string, smsNumber: string): Promise<boolean>;
+    updateSmsNumber(hdid: string, smsNumber: string): Promise<boolean>;
     updateUserPreference(
         hdid: string,
         userPreference: UserPreference

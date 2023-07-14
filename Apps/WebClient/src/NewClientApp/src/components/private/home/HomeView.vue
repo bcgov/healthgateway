@@ -71,8 +71,8 @@ const vaccineRecordResultMessage = computed(
 const unverifiedEmail = computed(
     () => !user.value.verifiedEmail && user.value.hasEmail
 );
-const unverifiedSMS = computed(
-    () => !user.value.verifiedSMS && user.value.hasSMS
+const unverifiedSms = computed(
+    () => !user.value.verifiedSms && user.value.hasSms
 );
 const isPacificTime = computed(() => {
     const isDaylightSavings = new DateWrapper().isInDST();
@@ -331,11 +331,11 @@ watch(vaccineRecordState, () => {
         :text="vaccineRecordStatusMessage"
     />
     <v-alert
-        v-if="unverifiedEmail || unverifiedSMS"
+        v-if="unverifiedEmail || unverifiedSms"
         data-testid="incomplete-profile-banner"
         closable
         type="info"
-        class="d-print-none my-3"
+        class="d-print-none mb-4"
         title="Verify Contact Information"
         variant="outlined"
         border
@@ -361,7 +361,7 @@ watch(vaccineRecordState, () => {
         title="Looks like you're in a different timezone."
         text="Heads up: your health records are recorded and displayed in
                 Pacific Time."
-        class="d-print-none my-3"
+        class="d-print-none mb-4"
         variant="outlined"
         border
     />

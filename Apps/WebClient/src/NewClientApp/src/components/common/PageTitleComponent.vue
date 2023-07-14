@@ -13,7 +13,7 @@ const hasAppendSlot = computed(() => slots.append !== undefined);
 </script>
 
 <template>
-    <div id="pageTitle">
+    <div id="pageTitle" class="mb-4">
         <v-row dense justify="end" align="center">
             <v-col v-if="hasPrependSlot" class="flex-grow-0">
                 <slot name="prepend" />

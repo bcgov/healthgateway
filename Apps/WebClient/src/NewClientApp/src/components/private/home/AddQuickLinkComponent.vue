@@ -238,7 +238,7 @@ function hideModal(): void {
                         />
                     </v-toolbar>
                 </v-card-title>
-                <v-card-text class="pa-3">
+                <v-card-text class="pa-4">
                     <TooManyRequestsComponent location="addQuickLinkModal" />
                     <v-alert
                         v-if="bannerError"
@@ -321,7 +321,7 @@ function hideModal(): void {
                         color="primary"
                     />
                 </v-card-text>
-                <v-card-actions class="justify-end border-t-sm">
+                <v-card-actions class="justify-end border-t-sm pa-4">
                     <HgButtonComponent
                         data-testid="cancel-add-quick-link-btn"
                         variant="secondary"

@@ -67,7 +67,7 @@ async function copyToClipboard() {
         :title="errorTitle"
         type="error"
         data-testid="errorBanner"
-        class="d-print-none"
+        class="d-print-none mb-4"
         closable
         variant="outlined"
         border
