@@ -29,7 +29,6 @@ const accepted = ref(false);
 
 function onSubmit(): void {
     if (accepted.value !== true) {
-        event.preventDefault();
         return;
     }
 
