@@ -27,33 +27,7 @@ const termsOfServiceId = ref("");
 const termsOfService = ref("");
 const accepted = ref(false);
 
-function loadTermsOfService(): void {
-    isLoading.value = true;
-    userProfileService
-        .getTermsOfService()
-        .then((result) => {
-            logger.debug(`getTermsOfService result: ${JSON.stringify(result)}`);
-            termsOfServiceId.value = result.id;
-            termsOfService.value = result.content;
-        })
-        .catch((err: ResultError) => {
-            logger.error(err.resultMessage);
-            if (err.statusCode === 429) {
-                errorStore.setTooManyRequestsWarning("page");
-            } else {
-                errorStore.addError(
-                    ErrorType.Retrieve,
-                    ErrorSourceType.TermsOfService,
-                    undefined
-                );
-            }
-        })
-        .finally(() => {
-            isLoading.value = false;
-        });
-}
-
-function onSubmit(event: Event): void {
+function onSubmit(): void {
     if (accepted.value !== true) {
         event.preventDefault();
         return;
@@ -83,8 +57,6 @@ function onSubmit(event: Event): void {
         .finally(() => {
             isLoading.value = false;
         });
-
-    event.preventDefault();
 }
 
 function redirect(): void {
@@ -92,7 +64,29 @@ function redirect(): void {
     router.push({ path: "/home" });
 }
 
-loadTermsOfService();
+// Created hook
+userProfileService
+    .getTermsOfService()
+    .then((result) => {
+        logger.debug(`getTermsOfService result: ${JSON.stringify(result)}`);
+        termsOfServiceId.value = result.id;
+        termsOfService.value = result.content;
+    })
+    .catch((err: ResultError) => {
+        logger.error(err.resultMessage);
+        if (err.statusCode === 429) {
+            errorStore.setTooManyRequestsWarning("page");
+        } else {
+            errorStore.addError(
+                ErrorType.Retrieve,
+                ErrorSourceType.TermsOfService,
+                undefined
+            );
+        }
+    })
+    .finally(() => {
+        isLoading.value = false;
+    });
 </script>
 
 <template>
@@ -101,9 +95,9 @@ loadTermsOfService();
         title="Update to our Terms of Service"
         data-testid="tos-page-title"
     />
-    <div v-if="!isLoading && termsOfService !== ''">
+    <template v-if="!isLoading && termsOfService !== ''">
         <HtmlTextAreaComponent
-            class="termsOfService mb-3"
+            class="termsOfService mb-4"
             :input="termsOfService"
             data-testid="tos-text-area-component"
         />
@@ -125,10 +119,10 @@ loadTermsOfService();
                 variant="primary"
                 :disabled="!accepted"
                 text="Continue"
-                @click.stop="onSubmit"
+                @click.prevent.stop="onSubmit"
             ></HgButtonComponent>
         </div>
-    </div>
+    </template>
 </template>
 
 <style scoped lang="scss">
