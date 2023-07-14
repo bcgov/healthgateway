@@ -14,7 +14,7 @@ import { useErrorStore } from "@/stores/error";
 import DateWrapperSortUtility from "@/utility/dateWrapperSortUtility";
 
 const commentsSort = (a: UserComment, b: UserComment): number =>
-    DateWrapperSortUtility.descendingByString(
+    DateWrapperSortUtility.ascendingByString(
         a.createdDateTime,
         b.createdDateTime
     );
