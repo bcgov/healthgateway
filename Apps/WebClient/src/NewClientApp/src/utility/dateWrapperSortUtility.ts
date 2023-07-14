@@ -41,10 +41,7 @@ export default class DateWrapperSortUtility {
      * @param bDate valid date string
      */
     static ascendingByString(aDate: string, bDate: string): number {
-        const firstDate = new DateWrapper(aDate);
-        const secondDate = new DateWrapper(bDate);
-
-        return -1 * DateWrapperSortUtility.descending(firstDate, secondDate);
+        return -1 * DateWrapperSortUtility.descendingByString(aDate, bDate);
     }
 
     /**
