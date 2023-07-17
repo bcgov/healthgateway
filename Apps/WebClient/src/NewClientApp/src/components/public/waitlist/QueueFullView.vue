@@ -9,9 +9,9 @@ const waitlistStore = useWaitlistStore();
 
 const tooBusy = computed<boolean>(() => waitlistStore.tooBusy);
 
-// if (!tooBusy.value) {
-//     router.push({ path: "/" });
-// }
+if (!tooBusy.value) {
+    router.push({ path: "/" });
+}
 </script>
 
 <template>
