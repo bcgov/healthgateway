@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { computed } from "vue";
 import { useRouter } from "vue-router";
 
 import { useWaitlistStore } from "@/stores/waitlist";
@@ -7,9 +6,7 @@ import { useWaitlistStore } from "@/stores/waitlist";
 const router = useRouter();
 const waitlistStore = useWaitlistStore();
 
-const tooBusy = computed<boolean>(() => waitlistStore.tooBusy);
-
-if (!tooBusy.value) {
+if (!waitlistStore.tooBusy) {
     router.push({ path: "/" });
 }
 </script>
