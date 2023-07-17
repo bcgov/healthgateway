@@ -56,14 +56,12 @@ loadingStore.applyLoader(
             We are verifying your email...
         </h4>
         <template v-else>
-            <!-- ICON -->
             <v-icon
                 :icon="isSuccess ? 'check-circle' : 'times-circle'"
                 size="48"
                 aria-hidden="true"
                 :color="isSuccess ? 'success' : 'error'"
             />
-            <!-- MESSAGE -->
             <h4 class="text-h6 my-4 pa-4">
                 <span v-if="isVerified" data-testid="verifiedInvite"
                     >Your email address has been verified</span
@@ -78,7 +76,6 @@ loadingStore.applyLoader(
                     verification email from your profile page
                 </span>
             </h4>
-            <!-- Button -->
             <HgButtonComponent
                 data-testid="continueButton"
                 variant="primary"
