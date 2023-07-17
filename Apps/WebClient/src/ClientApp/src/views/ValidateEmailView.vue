@@ -63,7 +63,7 @@ onMounted(() => {
 
 <template>
     <b-container class="text-center title pt-4">
-        <h4 v-if="isLoading" data-testid="verifingInvite">
+        <h4 v-if="isLoading" data-testid="verifyingInvite">
             We are verifying your email...
         </h4>
         <div v-else-if="isVerified">
