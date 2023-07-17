@@ -21,28 +21,24 @@ export const useWaitlistStore = defineStore(
         );
 
         const status = ref(LoadStatus.NONE);
-        const tooBusyField = ref(false);
-        const ticketField = ref<Ticket>();
+        const tooBusy = ref(false);
+        const ticket = ref<Ticket>();
         const checkInTimeoutId = ref<number>();
 
         const isLoading = computed(() => status.value === LoadStatus.REQUESTED);
 
-        const tooBusy = computed(() => tooBusyField.value);
-
-        const ticket = computed(() => ticketField.value);
-
         const ticketIsProcessed = computed(
-            () => ticketField.value?.status === TicketStatus.Processed
+            () => ticket.value?.status === TicketStatus.Processed
         );
 
         function setTicketRequested() {
-            ticketField.value = undefined;
-            tooBusyField.value = false;
+            ticket.value = undefined;
+            tooBusy.value = false;
             status.value = LoadStatus.REQUESTED;
         }
 
         function setTooBusy() {
-            tooBusyField.value = true;
+            tooBusy.value = true;
             status.value = LoadStatus.LOADED;
         }
 
@@ -50,16 +46,16 @@ export const useWaitlistStore = defineStore(
             status.value = LoadStatus.ERROR;
         }
 
-        function setTicket(ticket: Ticket) {
-            ticketField.value = ticket;
-            tooBusyField.value = false;
+        function setTicket(incomingTicket: Ticket) {
+            ticket.value = incomingTicket;
+            tooBusy.value = false;
             status.value = LoadStatus.LOADED;
         }
 
         function clearTicket() {
             clearTimeout(checkInTimeoutId.value);
-            ticketField.value = undefined;
-            tooBusyField.value = false;
+            ticket.value = undefined;
+            tooBusy.value = false;
             status.value = LoadStatus.NONE;
         }
 
@@ -68,11 +64,11 @@ export const useWaitlistStore = defineStore(
         }
 
         function scheduleCheckIn(
-            ticket?: Ticket,
+            incomingTicket?: Ticket,
             getTicketOnFail: boolean = false
         ): void {
             clearTimeout(checkInTimeoutId.value);
-            const localTicket = ticket ?? ticketField.value;
+            const localTicket = incomingTicket ?? ticket.value;
             if (localTicket === undefined) {
                 logger.debug(`Waitlist - Ticket undefined`);
                 return;
@@ -141,18 +137,16 @@ export const useWaitlistStore = defineStore(
         }
 
         function checkIn(): Promise<void> {
-            if (ticketField.value === undefined) {
+            if (ticket.value === undefined) {
                 logger.debug(`Waitlist - Ticket undefined`);
                 throw new Error("Ticket undefined");
             }
-            logger.debug(
-                `Waitlist - checkIn - Ticket id: ${ticketField.value.id}`
-            );
+            logger.debug(`Waitlist - checkIn - Ticket id: ${ticket.value.id}`);
             return ticketService
                 .checkIn({
-                    id: ticketField.value.id,
-                    room: ticketField.value.room,
-                    nonce: ticketField.value.nonce,
+                    id: ticket.value.id,
+                    room: ticket.value.room,
+                    nonce: ticket.value.nonce,
                 })
                 .then((result) => {
                     setTicket(result);
@@ -166,14 +160,14 @@ export const useWaitlistStore = defineStore(
         function releaseTicket(): void {
             logger.debug("Waitlist - Releasing ticket");
 
-            if (ticketField.value === undefined) {
+            if (ticket.value === undefined) {
                 clearTicket();
             } else {
                 ticketService
                     .removeTicket({
-                        id: ticketField.value.id,
-                        room: ticketField.value.room,
-                        nonce: ticketField.value.nonce,
+                        id: ticket.value.id,
+                        room: ticket.value.room,
+                        nonce: ticket.value.nonce,
                     })
                     .finally(() => {
                         clearTicket();
@@ -183,14 +177,14 @@ export const useWaitlistStore = defineStore(
 
         // must expose state variable for persistence
         return {
-            ticketField,
+            ticket,
             checkInTimeoutId,
             isLoading,
             tooBusy,
-            ticket,
             ticketIsProcessed,
             getTicket,
             handleTicket,
+            scheduleCheckIn,
             releaseTicket,
         };
     },
