@@ -85,6 +85,10 @@ const AcceptTermsOfServiceView = () =>
     import(
         /* webpackChunkName: "acceptTermsOfService" */ "@/components/private/accept-terms-of-service/AcceptTermsOfServiceView.vue"
     );
+const ValidateEmailView = () =>
+    import(
+        /* webpackChunkName: "validateEmail" */ "@/components/private/validate-email/ValidateEmailView.vue"
+    );
 
 export enum UserState {
     offline = "offline",
@@ -273,6 +277,15 @@ const routes = [
         component: AcceptTermsOfServiceView,
         meta: {
             validStates: [UserState.acceptTermsOfService],
+            requiresProcessedWaitlistTicket: true,
+        },
+    },
+    {
+        path: Path.ValidateEmail + "/:inviteKey",
+        component: ValidateEmailView,
+        props: true,
+        meta: {
+            validStates: [UserState.registered],
             requiresProcessedWaitlistTicket: true,
         },
     },

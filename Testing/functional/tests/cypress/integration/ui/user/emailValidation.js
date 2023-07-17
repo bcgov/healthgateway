@@ -24,7 +24,7 @@ describe("User Email Verification", () => {
             AuthMethod.KeyCloak,
             "/validateEmail/valid"
         );
-        cy.get("[data-testid=verifingInvite]").should("not.exist");
+        cy.get("[data-testid=verifyingInvite]").should("not.exist");
         cy.get("[data-testid=verifiedInvite]").should("be.visible");
         cy.get("[data-testid=continueButton]").click();
         cy.wait("@getUserProfile").then((interception) => {
@@ -40,7 +40,7 @@ describe("User Email Verification", () => {
             AuthMethod.KeyCloak,
             "/validateEmail/invalid"
         );
-        cy.get("[data-testid=verifingInvite]").should("not.exist");
+        cy.get("[data-testid=verifyingInvite]").should("not.exist");
         cy.get("[data-testid=alreadyVerifiedInvite]").should("be.visible");
         cy.get("[data-testid=continueButton]").click();
         cy.url().should("include", "/home");
@@ -53,7 +53,7 @@ describe("User Email Verification", () => {
             AuthMethod.KeyCloak,
             "/validateEmail/expired"
         );
-        cy.get("[data-testid=verifingInvite]").should("not.exist");
+        cy.get("[data-testid=verifyingInvite]").should("not.exist");
         cy.get("[data-testid=expiredInvite]").should("be.visible");
         cy.get("[data-testid=continueButton]").click();
         cy.url().should("include", "/profile");
