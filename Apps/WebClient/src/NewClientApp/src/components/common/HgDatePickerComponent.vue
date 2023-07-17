@@ -40,7 +40,7 @@ const maskOptions = {
     postProcess: (value: string) => value.toUpperCase(),
 };
 
-const internalValue = ref(props.modelValue);
+const internalValue = ref(fromIsoFormat(props.modelValue));
 
 const datePickerValue = computed<string>({
     get() {
@@ -65,7 +65,6 @@ const textFieldValue = computed<string>({
         if (convertedValue !== props.modelValue) {
             emit("update:model-value", convertedValue);
         }
-        notifyTouched();
     },
 });
 const internalState = computed(() =>
@@ -79,11 +78,12 @@ const validations = computed(() => ({
         date: helpers.withMessage("Invalid date", validateDateFormat),
     },
 }));
+const maxJsDate = computed(() => props.maxDate.toJSDate());
 
 const v$ = useVuelidate(validations, { textFieldValue });
 
 function fromIsoFormat(value: string): string {
-    return new DateWrapper(value).format().toUpperCase();
+    return value ? new DateWrapper(value).format().toUpperCase() : "";
 }
 
 function toIsoFormat(value: string): string {
@@ -94,7 +94,12 @@ function validateDateFormat(value: string): boolean {
     return value ? DateWrapper.fromStringFormat(value).isValid() : true;
 }
 
-function notifyTouched(fromDatePicker?: boolean): void {
+function handleBlur(): void {
+    v$.value.textFieldValue.$touch();
+    notifyTouched(false);
+}
+
+function notifyTouched(fromDatePicker: boolean): void {
     const valid = fromDatePicker ? true : internalState.value === true;
 
     emit("blur");
@@ -103,15 +108,13 @@ function notifyTouched(fromDatePicker?: boolean): void {
 
 watch(
     () => props.modelValue,
-    (value) => {
-        internalValue.value = fromIsoFormat(value);
-    }
+    (value) => (internalValue.value = fromIsoFormat(value))
 );
 </script>
 
 <template>
     <v-text-field
-        v-model="v$.textFieldValue.$model"
+        v-model="textFieldValue"
         v-maska:[maskOptions]
         clearable
         type="text"
@@ -119,12 +122,12 @@ watch(
         :placeholder="DateWrapper.defaultFormat.toUpperCase()"
         :error="internalState === false || state === false"
         :error-messages="internalErrorMessages.concat(errorMessages)"
-        @blur="notifyTouched"
+        @blur="handleBlur"
     >
         <template #append>
             <VueDatePicker
                 v-model="datePickerValue"
-                :max-date="maxDate.toJSDate()"
+                :max-date="maxJsDate"
                 :enable-time-picker="false"
                 model-type="format"
                 format="yyyy-MM-dd"
