@@ -113,6 +113,7 @@ function downloadFile(): void {
             </div>
             <div class="mt-3">
                 <hg-button
+                    class="mb-3"
                     data-testid="diagnostic-imaging-download-button"
                     variant="secondary"
                     :if="entry.fileId !== undefined"
@@ -130,10 +131,34 @@ function downloadFile(): void {
                     />
                     <span>Download Full Report</span>
                 </hg-button>
-                <p class="mt-2 mb-2">
-                    If you have questions, contact the doctor or care provider
-                    who ordered your imaging.
+                <p>
+                    If you have questions about your imaging report: Contact
+                    your primary care provider or call HealthlinkBC at 811.
                 </p>
+                <p>
+                    You can learn more about medical imaging tests on the
+                    following websites:
+                </p>
+                <ul class="mb-0">
+                    <li>
+                        <a
+                            href="https://www.healthlinkbc.ca/tests-treatments-medications/medical-tests"
+                            target="_blank"
+                            rel="noopener"
+                        >
+                            HealthLink BC
+                        </a>
+                    </li>
+                    <li>
+                        <a
+                            href="https://bcradiology.ca/patient-resources/"
+                            target="_blank"
+                            rel="noopener"
+                        >
+                            BC Radiological Society – Patient Resources
+                        </a>
+                    </li>
+                </ul>
             </div>
             <MessageModalComponent
                 ref="messageModal"

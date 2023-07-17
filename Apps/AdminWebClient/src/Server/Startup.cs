@@ -135,13 +135,7 @@ namespace HealthGateway.Admin
 
             DisableTraceMethod(app);
 
-            app.UseStaticFiles();
             app.UseSpaStaticFiles();
-
-            if (!env.IsDevelopment())
-            {
-                app.UseResponseCompression();
-            }
 
             bool debugerAttached = Debugger.IsAttached;
             bool serverOnly = bool.Parse(Environment.GetEnvironmentVariable("ServerOnly") ?? "false");
