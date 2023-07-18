@@ -19,7 +19,6 @@ export const useAuthStore = defineStore("auth", () => {
     const httpDelegate = container.get<IHttpDelegate>(
         DELEGATE_IDENTIFIER.HttpDelegate
     );
-
     const userStore = useUserStore();
 
     const tokenDetails = ref<OidcTokenDetails>();
@@ -70,9 +69,6 @@ export const useAuthStore = defineStore("auth", () => {
         idpHint?: string
     ): Promise<void> {
         try {
-            // EventBus.$emit(
-            //     EventMessageName.UnregisterOnBeforeUnloadWaitlistListener
-            // );
             const tokenDetails = await authService.signIn(
                 redirectPath,
                 idpHint
@@ -85,8 +81,6 @@ export const useAuthStore = defineStore("auth", () => {
             logger.verbose("Failed to sign in");
             setError(errorRaised);
             throw errorRaised;
-        } finally {
-            // EventBus.$emit(EventMessageName.RegisterOnBeforeUnloadWaitlistListener);
         }
     }
 

@@ -11,8 +11,12 @@ import NotificationCentreComponent from "@/components/site/NotificationCentreCom
 import ResourceCentreComponent from "@/components/site/ResourceCentreComponent.vue";
 import SidebarComponent from "@/components/site/SidebarComponent.vue";
 import { Path } from "@/constants/path";
+import { EventName, useEventStore } from "@/stores/event";
+import { useWaitlistStore } from "@/stores/waitlist";
 
 const route = useRoute();
+const eventStore = useEventStore();
+const waitlistStore = useWaitlistStore();
 
 const hideErrorAlerts = computed(() =>
     currentPathMatches(Path.Root, Path.VaccineCard, Path.Queue, Path.Busy)
@@ -43,6 +47,14 @@ function currentPathMatches(...paths: string[]): boolean {
         (path) => route.path.toLowerCase() === path.toLowerCase()
     );
 }
+
+eventStore.subscribe(EventName.RegisterOnBeforeUnloadWaitlistListener, () => {
+    window.addEventListener("beforeunload", waitlistStore.releaseTicket);
+});
+eventStore.subscribe(EventName.UnregisterOnBeforeUnloadWaitlistListener, () => {
+    window.removeEventListener("beforeunload", waitlistStore.releaseTicket);
+});
+eventStore.emit(EventName.RegisterOnBeforeUnloadWaitlistListener);
 </script>
 
 <template>

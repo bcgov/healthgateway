@@ -3,6 +3,7 @@ import Keycloak, { KeycloakConfig } from "keycloak-js";
 import { OpenIdConnectConfiguration } from "@/models/configData";
 import { OidcTokenDetails, OidcUserInfo } from "@/models/user";
 import { IAuthenticationService, ILogger } from "@/services/interfaces";
+import { EventName, useEventStore } from "@/stores/event";
 
 /** The number of seconds between initiation of a token refresh and expiry of the old token. */
 const REFRESH_CUSHION = 30;
@@ -68,10 +69,9 @@ export class RestAuthenticationService implements IAuthenticationService {
         redirectPath: string,
         idpHint?: string
     ): Promise<OidcTokenDetails> {
-        this.logger.verbose("Checking authentication...");
-        const escapedRedirectPath = encodeURI(redirectPath);
-        const callbackUri = `${this.logonCallback}?redirect=${escapedRedirectPath}`;
+        const eventStore = useEventStore();
 
+        this.logger.verbose("Checking authentication...");
         const tokenDetails = this.getOidcTokenDetails();
         if (tokenDetails !== null) {
             this.logger.verbose("Already authenticated");
@@ -81,6 +81,10 @@ export class RestAuthenticationService implements IAuthenticationService {
         this.logger.verbose(
             "Not yet authenticated; redirecting to Keycloak login..."
         );
+        const escapedRedirectPath = encodeURI(redirectPath);
+        const callbackUri = `${this.logonCallback}?redirect=${escapedRedirectPath}`;
+
+        eventStore.emit(EventName.UnregisterOnBeforeUnloadWaitlistListener);
         await this.keycloak.login({
             scope: this.scope,
             redirectUri: callbackUri,
@@ -92,6 +96,9 @@ export class RestAuthenticationService implements IAuthenticationService {
     }
 
     public signOut(): Promise<void> {
+        const eventStore = useEventStore();
+
+        eventStore.emit(EventName.UnregisterOnBeforeUnloadWaitlistListener);
         return this.keycloak.logout({
             redirectUri: this.logoutCallback,
         });
