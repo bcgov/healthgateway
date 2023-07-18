@@ -27,7 +27,7 @@ const isFooterShown = computed<boolean>(
                     variant="secondary"
                     inverse
                     data-testid="footer-terms-of-service-link"
-                    to="/termsOfService"
+                    :to="Path.TermsOfService"
                     text="Terms of Service"
                 />
             </v-col>
