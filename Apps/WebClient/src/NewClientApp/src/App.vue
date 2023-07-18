@@ -4,12 +4,17 @@ import { useRoute } from "vue-router";
 
 import ErrorCardComponent from "@/components/error/ErrorCardComponent.vue";
 import CommunicationComponent from "@/components/site/CommunicationComponent.vue";
+import FooterComponent from "@/components/site/FooterComponent.vue";
 import HeaderComponent from "@/components/site/HeaderComponent.vue";
 import IdleComponent from "@/components/site/IdleComponent.vue";
 import SidebarComponent from "@/components/site/SidebarComponent.vue";
 import { Path } from "@/constants/path";
 import ScreenWidth from "@/constants/screenWidth";
 import { useAppStore } from "@/stores/app";
+
+const loginCallbackPath = "/logincallback";
+const registrationPath = "/registration";
+const vaccineCardPath = "/vaccinecard";
 
 const route = useRoute();
 const appStore = useAppStore();
@@ -28,6 +33,16 @@ const isCommunicationVisible = computed(
     () =>
         !currentPathMatches(Path.LoginCallback, Path.VaccineCard) &&
         !route.path.toLowerCase().startsWith(Path.PcrTest.toLowerCase())
+);
+
+const isFooterVisible = computed(
+    () =>
+        appStore.appError === undefined &&
+        !currentPathMatches(
+            loginCallbackPath,
+            registrationPath,
+            vaccineCardPath
+        )
 );
 
 function currentPathMatches(...paths: string[]): boolean {
@@ -80,5 +95,6 @@ onMounted(async () => {
             </v-container>
         </v-main>
         <IdleComponent />
+        <FooterComponent v-if="isFooterVisible" :order="-1" />
     </v-app>
 </template>
