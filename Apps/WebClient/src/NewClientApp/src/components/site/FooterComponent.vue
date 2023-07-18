@@ -36,7 +36,7 @@ const isFooterShown = computed<boolean>(
                     variant="secondary"
                     inverse
                     data-testid="footer-release-notes-link"
-                    to="/release-notes"
+                    :to="Path.ReleaseNotes"
                     text="Release Notes"
                 />
             </v-col>
