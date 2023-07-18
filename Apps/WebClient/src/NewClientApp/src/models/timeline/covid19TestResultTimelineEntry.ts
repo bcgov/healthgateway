@@ -4,12 +4,12 @@ import {
     Covid19LaboratoryOrder,
     Covid19LaboratoryTest,
 } from "@/models/laboratory";
-import TimelineEntry from "@/models/timelineEntry";
+import TimelineEntry from "@/models/timeline/timelineEntry";
 import { UserComment } from "@/models/userComment";
 import DateSortUtility from "@/utility/dateSortUtility";
 
-// The COVID-19 laboratory order timeline entry model
-export default class Covid19LaboratoryOrderTimelineEntry extends TimelineEntry {
+// The COVID-19 test result timeline entry model
+export default class Covid19TestResultTimelineEntry extends TimelineEntry {
     public orderingProviderIds: string | null;
     public orderingProviders: string | null;
     public reportingLab: string | null;
@@ -23,7 +23,7 @@ export default class Covid19LaboratoryOrderTimelineEntry extends TimelineEntry {
     public summaryDescription: string;
     public summaryStatus: string;
 
-    public tests: Covid19LaboratoryTestViewModel[];
+    public tests: Covid19TestData[];
 
     private getComments: (entyId: string) => UserComment[] | null;
 
@@ -47,7 +47,7 @@ export default class Covid19LaboratoryOrderTimelineEntry extends TimelineEntry {
 
         this.tests = [];
         model.labResults.forEach((test) =>
-            this.tests.push(new Covid19LaboratoryTestViewModel(test))
+            this.tests.push(new Covid19TestData(test))
         );
 
         this.sortResults();
@@ -76,15 +76,12 @@ export default class Covid19LaboratoryOrderTimelineEntry extends TimelineEntry {
 
     private sortResults(): void {
         this.tests.sort((a, b) =>
-            DateSortUtility.descending(
-                a.collectedDateTime,
-                b.collectedDateTime
-            )
+            DateSortUtility.descending(a.collectedDateTime, b.collectedDateTime)
         );
     }
 }
 
-export class Covid19LaboratoryTestViewModel {
+export class Covid19TestData {
     public id: string;
     public testType: string;
     public outOfRange: string;

@@ -1,4 +1,3 @@
-import Clinic from "@/models/clinic";
 import { StringISODate } from "@/models/dateWrapper";
 
 export interface Encounter {
@@ -16,6 +15,13 @@ export interface Encounter {
 
     // Gets or sets the clinic.
     clinic: Clinic;
+}
+
+export interface Clinic {
+    // Clinic id.
+    clinicId: string;
+    // Name.
+    name: string;
 }
 
 export interface HospitalVisit {

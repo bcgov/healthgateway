@@ -12,7 +12,7 @@ import { ILogger } from "@/services/interfaces";
 import { useAppStore } from "@/stores/app";
 import { useAuthStore } from "@/stores/auth";
 import { useConfigStore } from "@/stores/config";
-import { useNavbarStore } from "@/stores/navbar";
+import { useNavigationStore } from "@/stores/navigation";
 import { useNotificationStore } from "@/stores/notification";
 import { useUserStore } from "@/stores/user";
 
@@ -23,7 +23,7 @@ const configStore = useConfigStore();
 const userStore = useUserStore();
 const notificationStore = useNotificationStore();
 const authStore = useAuthStore();
-const navbarStore = useNavbarStore();
+const navigationStore = useNavigationStore();
 
 const route = useRoute();
 const router = useRouter();
@@ -43,9 +43,9 @@ const isValidIdentityProvider = computed(
     () => userStore.isValidIdentityProvider
 );
 const isHeaderShown = computed(
-    () => navbarStore.isHeaderShown || isScrollNearBottom.value
+    () => navigationStore.isHeaderShown || isScrollNearBottom.value
 );
-const isSidebarOpen = computed(() => navbarStore.isSidebarOpen);
+const isSidebarOpen = computed(() => navigationStore.isSidebarOpen);
 const user = computed(() => userStore.user);
 const userIsRegistered = computed(() => userStore.userIsRegistered);
 const userIsActive = computed(() => userStore.userIsActive);
@@ -134,11 +134,11 @@ function testIfScrollIsNearBottom() {
 }
 
 function toggleSidebar(): void {
-    navbarStore.toggleSidebar();
+    navigationStore.toggleSidebar();
 }
 
 function setHeaderState(isOpen: boolean): void {
-    navbarStore.setHeaderState(isOpen);
+    navigationStore.setHeaderState(isOpen);
 }
 
 function handleNotificationCentreClick(): void {

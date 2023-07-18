@@ -1,16 +1,16 @@
-import { ClinicalDocument } from "./clinicalDocument";
-import { Encounter, HospitalVisit } from "./encounter";
-import { ResultError } from "./errors";
-import { ImmunizationEvent, Recommendation } from "./immunizationModel";
-import { Covid19LaboratoryOrder, LaboratoryOrder } from "./laboratory";
-import MedicationRequest from "./medicationRequest";
-import MedicationStatementHistory from "./medicationStatementHistory";
+import { ClinicalDocument } from "@/models/clinicalDocument";
+import { Encounter, HospitalVisit } from "@/models/encounter";
+import { ResultError } from "@/models/errors";
+import { ImmunizationEvent, Recommendation } from "@/models/immunizationModel";
+import { Covid19LaboratoryOrder, LaboratoryOrder } from "@/models/laboratory";
+import MedicationRequest from "@/models/medicationRequest";
+import MedicationStatementHistory from "@/models/medicationStatementHistory";
 import {
     PatientData,
     PatientDataFile,
     PatientDataType,
-} from "./patientDataResponse";
-import { LoadStatus } from "./storeOperations";
+} from "@/models/patientDataResponse";
+import { LoadStatus } from "@/models/storeOperations";
 
 export interface DatasetState<T> {
     data: T;

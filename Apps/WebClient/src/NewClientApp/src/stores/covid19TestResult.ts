@@ -52,23 +52,21 @@ export const useCovid19TestResultStore = defineStore(
             );
         }
 
-        function covid19LaboratoryOrders(
-            hdid: string
-        ): Covid19LaboratoryOrder[] {
+        function covid19TestResults(hdid: string): Covid19LaboratoryOrder[] {
             return getCovid19TestResultState(hdid).data;
         }
 
-        function covid19LaboratoryOrdersCount(hdid: string): number {
-            return covid19LaboratoryOrders(hdid).length;
+        function covid19TestResultsCount(hdid: string): number {
+            return covid19TestResults(hdid).length;
         }
 
-        function covid19LaboratoryOrdersAreLoading(hdid: string): boolean {
+        function covid19TestResultsAreLoading(hdid: string): boolean {
             return (
                 getCovid19TestResultState(hdid).status === LoadStatus.REQUESTED
             );
         }
 
-        function setCovid19LaboratoryOrders(
+        function setCovid19TestResults(
             hdid: string,
             orders: Covid19LaboratoryOrder[]
         ): void {
@@ -100,7 +98,7 @@ export const useCovid19TestResultStore = defineStore(
             }
         }
 
-        function retrieveCovid19LaboratoryOrders(
+        function retrieveCovid19TestResults(
             hdid: string
         ): Promise<RequestResult<Covid19LaboratoryOrderResult>> {
             if (getCovid19TestResultState(hdid).status === LoadStatus.LOADED) {
@@ -113,13 +111,13 @@ export const useCovid19TestResultStore = defineStore(
                     resourcePayload: {
                         loaded: true,
                         retryin: 0,
-                        orders: covid19LaboratoryOrders(hdid),
+                        orders: covid19TestResults(hdid),
                     },
                     resultStatus: ResultType.Success,
-                    totalResultCount: covid19LaboratoryOrders(hdid).length,
+                    totalResultCount: covid19TestResults(hdid).length,
                 });
             }
-            logger.debug("Retrieving COVID-19 laboratory orders");
+            logger.debug("Retrieving COVID-19 test results");
             datasetMapUtil.setStateRequested(covid19TestResultMap.value, hdid);
             return laboratoryService
                 .getCovid19LaboratoryOrders(hdid)
@@ -129,19 +127,19 @@ export const useCovid19TestResultStore = defineStore(
                         result.resultStatus === ResultType.Success &&
                         payload.loaded
                     ) {
-                        logger.debug("COVID-19 Laboratory orders loaded");
-                        setCovid19LaboratoryOrders(hdid, payload.orders);
+                        logger.debug("COVID-19 test results loaded");
+                        setCovid19TestResults(hdid, payload.orders);
                     } else if (
                         result.resultError?.actionCode == ActionType.Refresh &&
                         !payload.loaded &&
                         payload.retryin > 0
                     ) {
-                        logger.debug("COVID-19 laboratory orders not loaded");
+                        logger.debug("COVID-19 test results not loaded");
                         setTimeout(() => {
                             logger.info(
-                                `Re-querying for COVID-19 laboratory orders`
+                                `Re-querying for COVID-19 test results`
                             );
-                            retrieveCovid19LaboratoryOrders(hdid);
+                            retrieveCovid19TestResults(hdid);
                         }, payload.retryin);
                     } else {
                         throw result.resultError;
@@ -160,10 +158,10 @@ export const useCovid19TestResultStore = defineStore(
         }
 
         return {
-            covid19LaboratoryOrders,
-            covid19LaboratoryOrdersCount,
-            covid19LaboratoryOrdersAreLoading,
-            retrieveCovid19LaboratoryOrders,
+            covid19TestResults,
+            covid19TestResultsCount,
+            covid19TestResultsAreLoading,
+            retrieveCovid19TestResults,
         };
     }
 );

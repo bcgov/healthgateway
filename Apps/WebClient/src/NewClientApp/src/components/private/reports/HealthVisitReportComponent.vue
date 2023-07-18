@@ -12,7 +12,7 @@ import ReportHeader from "@/models/reportHeader";
 import { ReportFormatType, TemplateType } from "@/models/reportRequest";
 import RequestResult from "@/models/requestResult";
 import { ILogger, IReportService } from "@/services/interfaces";
-import { useHealthVisitsStore } from "@/stores/healthVisits";
+import { useHealthVisitStore } from "@/stores/healthVisit";
 import DateSortUtility from "@/utility/dateSortUtility";
 
 interface Props {
@@ -62,7 +62,7 @@ const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
 const reportService = container.get<IReportService>(
     SERVICE_IDENTIFIER.ReportService
 );
-const healthVisitStore = useHealthVisitsStore();
+const healthVisitStore = useHealthVisitStore();
 
 const healthVisitsAreLoading = computed(() =>
     healthVisitStore.healthVisitsAreLoading(props.hdid)
@@ -73,10 +73,7 @@ const visibleRecords = computed(() =>
         .healthVisits(props.hdid)
         .filter((record) => props.filter.allowsDate(record.encounterDate))
         .sort((a, b) =>
-            DateSortUtility.descendingByString(
-                a.encounterDate,
-                b.encounterDate
-            )
+            DateSortUtility.descendingByString(a.encounterDate, b.encounterDate)
         )
 );
 const items = computed(() =>

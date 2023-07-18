@@ -31,7 +31,7 @@ const emit = defineEmits<{
 
 defineExpose({ generateReport });
 
-interface LabTestRow {
+interface LabResultRow {
     date: string;
     test: string;
     result: string;
@@ -67,13 +67,13 @@ const reportService = container.get<IReportService>(
 );
 const labResultStore = useLabResultStore();
 
-const laboratoryOrdersAreLoading = computed(() =>
-    labResultStore.laboratoryResultsAreLoading(props.hdid)
+const labResultsAreLoading = computed(() =>
+    labResultStore.labResultsAreLoading(props.hdid)
 );
 const isEmpty = computed(() => visibleRecords.value.length === 0);
 const visibleRecords = computed(() =>
     labResultStore
-        .laboratoryOrders(props.hdid)
+        .labResults(props.hdid)
         .filter((record) => props.filter.allowsDate(record.timelineDateTime))
         .sort((a, b) =>
             DateSortUtility.descendingByString(
@@ -83,9 +83,9 @@ const visibleRecords = computed(() =>
         )
 );
 const items = computed(() =>
-    visibleRecords.value.flatMap<LabTestRow>((x) => {
+    visibleRecords.value.flatMap<LabResultRow>((x) => {
         const timelineDateTime = DateWrapper.format(x.timelineDateTime);
-        return x.laboratoryTests.map<LabTestRow>((y) => ({
+        return x.laboratoryTests.map<LabResultRow>((y) => ({
             date: timelineDateTime,
             test: y.batteryType || "",
             result: y.result,
@@ -108,8 +108,8 @@ function generateReport(
     });
 }
 
-watch(laboratoryOrdersAreLoading, () => {
-    emit("on-is-loading-changed", laboratoryOrdersAreLoading.value);
+watch(labResultsAreLoading, () => {
+    emit("on-is-loading-changed", labResultsAreLoading.value);
 });
 
 watch(isEmpty, () => {
@@ -121,19 +121,19 @@ onMounted(() => {
 });
 
 labResultStore
-    .retrieveLaboratoryOrders(props.hdid)
+    .retrieveLabResults(props.hdid)
     .catch((err) => logger.error(`Error loading Laboratory data: ${err}`));
 </script>
 
 <template>
-    <p v-if="isEmpty && !laboratoryOrdersAreLoading" class="px-4">
+    <p v-if="isEmpty && !labResultsAreLoading" class="px-4">
         <v-col>No records found.</v-col>
     </p>
     <HgDataTable
         v-else-if="!isDependent"
         class="d-none d-md-block"
         fixed-header
-        :loading="laboratoryOrdersAreLoading"
+        :loading="labResultsAreLoading"
         :items="items"
         :fields="fields"
         height="600px"

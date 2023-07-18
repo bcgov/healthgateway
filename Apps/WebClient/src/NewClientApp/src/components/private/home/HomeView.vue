@@ -21,7 +21,7 @@ import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
 import { DateWrapper } from "@/models/dateWrapper";
 import { QuickLink } from "@/models/quickLink";
 import { LoadStatus } from "@/models/storeOperations";
-import { TimelineFilterBuilder } from "@/models/timelineFilter";
+import { TimelineFilterBuilder } from "@/models/timeline/timelineFilter";
 import { ILogger } from "@/services/interfaces";
 import { useConfigStore } from "@/stores/config";
 import { useErrorStore } from "@/stores/error";

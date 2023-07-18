@@ -1,12 +1,11 @@
 import { EntryType } from "@/constants/entryType";
 import { DateWrapper } from "@/models/dateWrapper";
-import TimelineEntry from "@/models/timelineEntry";
+import MedicationRequest from "@/models/medicationRequest";
+import TimelineEntry from "@/models/timeline/timelineEntry";
 import { UserComment } from "@/models/userComment";
 
-import MedicationRequest from "./medicationRequest";
-
-// The medication timeline entry model
-export default class MedicationRequestTimelineEntry extends TimelineEntry {
+// The special authority timeline entry model
+export default class SpecialAuthorityRequestTimelineEntry extends TimelineEntry {
     public drugName: string;
     public requestStatus?: string;
     public prescriberFirstName?: string;

@@ -41,23 +41,23 @@ export const useLabResultStore = defineStore("labResult", () => {
         return datasetMapUtil.getDatasetState(labResultMap.value, hdid);
     }
 
-    function laboratoryOrders(hdid: string): LaboratoryOrder[] {
+    function labResults(hdid: string): LaboratoryOrder[] {
         return getLabResultState(hdid).data;
     }
 
-    function laboratoryOrdersCount(hdid: string): number {
-        return laboratoryOrders(hdid).length;
+    function labResultsCount(hdid: string): number {
+        return labResults(hdid).length;
     }
 
-    function laboratoryResultsAreLoading(hdid: string): boolean {
+    function labResultsAreLoading(hdid: string): boolean {
         return getLabResultState(hdid).status === LoadStatus.REQUESTED;
     }
 
-    function laboratoryOrdersAreQueued(hdid: string): boolean {
+    function labResultsAreQueued(hdid: string): boolean {
         return getLabResultState(hdid).queued;
     }
 
-    function setLaboratoryOrders(
+    function setLabResults(
         hdid: string,
         laboratoryOrderResult: LaboratoryOrderResult
     ): void {
@@ -71,7 +71,7 @@ export const useLabResultStore = defineStore("labResult", () => {
         );
     }
 
-    function setLaboratoryOrdersRefreshInProgress(
+    function setLabResultsRefreshInProgress(
         hdid: string,
         laboratoryOrderResult: LaboratoryOrderResult
     ): void {
@@ -103,11 +103,11 @@ export const useLabResultStore = defineStore("labResult", () => {
         }
     }
 
-    function retrieveLaboratoryOrders(
+    function retrieveLabResults(
         hdid: string
     ): Promise<RequestResult<LaboratoryOrderResult>> {
         if (getLabResultState(hdid).status === LoadStatus.LOADED) {
-            logger.debug("Laboratory order found stored, not querying!");
+            logger.debug("Lab results found stored, not querying!");
             return Promise.resolve({
                 pageIndex: 0,
                 pageSize: 0,
@@ -115,13 +115,13 @@ export const useLabResultStore = defineStore("labResult", () => {
                     loaded: true,
                     queued: getLabResultState(hdid).queued,
                     retryin: 0,
-                    orders: laboratoryOrders(hdid),
+                    orders: labResults(hdid),
                 },
                 resultStatus: ResultType.Success,
-                totalResultCount: laboratoryOrders(hdid).length,
+                totalResultCount: labResults(hdid).length,
             });
         }
-        logger.debug("Retrieving laboratory orders");
+        logger.debug("Retrieving Lab results");
         datasetMapUtil.setStateRequested(labResultMap.value, hdid);
         return laboratoryService
             .getLaboratoryOrders(hdid)
@@ -131,20 +131,20 @@ export const useLabResultStore = defineStore("labResult", () => {
                     result.resultStatus === ResultType.Success &&
                     payload.loaded
                 ) {
-                    logger.debug("Laboratory orders loaded");
-                    setLaboratoryOrders(hdid, payload);
+                    logger.debug("Lab results loaded");
+                    setLabResults(hdid, payload);
                 } else if (
                     result.resultError?.actionCode == ActionType.Refresh &&
                     !payload.loaded &&
                     payload.retryin > 0
                 ) {
                     logger.debug(
-                        "Refresh in progress... partially load laboratory orders"
+                        "Refresh in progress... partially loaded lab results"
                     );
-                    setLaboratoryOrdersRefreshInProgress(hdid, payload);
+                    setLabResultsRefreshInProgress(hdid, payload);
                     setTimeout(() => {
-                        logger.info(`Re-querying for laboratory orders`);
-                        retrieveLaboratoryOrders(hdid);
+                        logger.info(`Re-querying for lab results`);
+                        retrieveLabResults(hdid);
                     }, payload.retryin);
                 }
                 return result;
@@ -161,10 +161,10 @@ export const useLabResultStore = defineStore("labResult", () => {
     }
 
     return {
-        laboratoryOrders,
-        laboratoryOrdersCount,
-        laboratoryResultsAreLoading,
-        laboratoryOrdersAreQueued,
-        retrieveLaboratoryOrders,
+        labResults,
+        labResultsCount,
+        labResultsAreLoading,
+        labResultsAreQueued,
+        retrieveLabResults,
     };
 });

@@ -84,8 +84,8 @@ const reportComponent = ref<{
     ) => Promise<RequestResult<Report>>;
 }>();
 
-const laboratoryOrdersAreQueued = computed(() =>
-    labResultsStore.laboratoryOrdersAreQueued(props.hdid)
+const labResultsAreQueued = computed(() =>
+    labResultsStore.labResultsAreQueued(props.hdid)
 );
 const medications = computed(() => medicationStore.medications(props.hdid));
 const patient = computed(() => userStore.patient);
@@ -97,10 +97,10 @@ const selectedReportComponent = computed(() => {
 
     return reportComponentMap.get(selectedEntryType.value) ?? "";
 });
-const showLaboratoryOrderQueuedMessage = computed(
+const showLabResultsQueuedMessage = computed(
     () =>
         selectedEntryType.value === EntryType.LabResult &&
-        laboratoryOrdersAreQueued.value
+        labResultsAreQueued.value
 );
 const headerData = computed<ReportHeader>(() => {
     const dependent = dependents.value.find(
@@ -309,7 +309,7 @@ for (const [entryType] of reportComponentMap) {
 <template>
     <div>
         <v-alert
-            v-show="showLaboratoryOrderQueuedMessage"
+            v-show="showLabResultsQueuedMessage"
             closable
             type="info"
             class="d-print-none"
@@ -344,13 +344,13 @@ for (const [entryType] of reportComponentMap) {
                         data-testid="exportRecordBtn"
                         :disabled="isDownloadDisabled"
                     >
-                        <template #activator="{ props }">
+                        <template #activator="{ props: slotProps }">
                             <HgButtonComponent
                                 id="exportRecordBtn"
                                 text="Download"
                                 variant="primary"
                                 data-testid="exportRecordBtn"
-                                v-bind="props"
+                                v-bind="slotProps"
                                 :disabled="isDownloadDisabled"
                             />
                         </template>
