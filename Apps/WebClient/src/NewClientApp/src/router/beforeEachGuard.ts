@@ -181,10 +181,10 @@ async function redirectWhenTicketIsInvalid(
     try {
         if (ticketIsValid(ticket)) {
             logger.debug(`Router - check existing Processed ticket`);
-            await waitlistStore.scheduleCheckIn();
+            waitlistStore.scheduleCheckIn();
         } else if (ticket?.status === TicketStatus.Queued) {
             logger.debug(`Router - check existing Queued ticket`);
-            await waitlistStore.scheduleCheckIn(undefined, true);
+            waitlistStore.scheduleCheckIn(undefined, true);
             next({ path: Path.Queue, query: { redirect: to.path } });
             return;
         } else {

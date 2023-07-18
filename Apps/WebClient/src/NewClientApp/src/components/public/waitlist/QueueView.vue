@@ -11,7 +11,6 @@ const configStore = useConfigStore();
 const waitlistStore = useWaitlistStore();
 
 const ticketIsProcessed = computed(() => waitlistStore.ticketIsProcessed);
-
 const queuePosition = computed(() => waitlistStore.ticket?.queuePosition);
 
 function redirect(): void {

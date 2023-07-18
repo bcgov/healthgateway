@@ -15,10 +15,11 @@ if (!waitlistStore.tooBusy) {
     <v-row justify="center" class="mt-12">
         <v-col cols="12" md="8" lg="6" xl="4">
             <v-alert
-                show
                 type="error"
                 data-testid="too-many-tickets"
                 class="mb-12 text-center"
+                variant="outlined"
+                border
                 text="Can’t access Health Gateway. Please try again later."
             />
             <v-img
