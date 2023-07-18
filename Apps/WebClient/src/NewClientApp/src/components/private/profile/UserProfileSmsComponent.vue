@@ -112,7 +112,7 @@ function updateSms(): void {
         Loader.UserProfile,
         "updateSms",
         userProfileService
-            .updateSmsNumber(userStore.user.hdid, rawValue.value)
+            .updateSmsNumber(userStore.hdid, rawValue.value)
             .then(refreshProfile)
             .then(() => {
                 isSmsEditable.value = false;
