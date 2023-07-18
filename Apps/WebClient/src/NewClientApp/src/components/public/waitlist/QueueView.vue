@@ -46,10 +46,15 @@ if (
                 Health Gateway is busier than normal at this moment. We have
                 placed you in a queue.
             </p>
-            <h2 v-if="queuePosition !== undefined" class="mt-4 text-h5">
-                <span class="mb-3">Your position in the queue: </span>
-                <span data-testid="queue-position">{{ queuePosition }}</span>
-            </h2>
+            <div v-if="queuePosition !== undefined" class="mt-4">
+                <h2 class="mb-4 text-h5">Your position in the queue:</h2>
+                <p
+                    class="font-weight-bold text-h5"
+                    data-testid="queue-position"
+                >
+                    {{ queuePosition }}
+                </p>
+            </div>
         </v-col>
     </v-row>
 </template>
