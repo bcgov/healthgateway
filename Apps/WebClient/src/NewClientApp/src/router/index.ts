@@ -89,6 +89,14 @@ const ValidateEmailView = () =>
     import(
         /* webpackChunkName: "validateEmail" */ "@/components/private/validate-email/ValidateEmailView.vue"
     );
+const QueueView = () =>
+    import(
+        /* webpackChunkName: "queue" */ "@/components/public/waitlist/QueueView.vue"
+    );
+const QueueFullView = () =>
+    import(
+        /* webpackChunkName: "queueFull" */ "@/components/public/waitlist/QueueFullView.vue"
+    );
 
 export enum UserState {
     offline = "offline",
@@ -287,6 +295,20 @@ const routes = [
         meta: {
             validStates: [UserState.registered],
             requiresProcessedWaitlistTicket: true,
+        },
+    },
+    {
+        path: Path.Queue,
+        component: QueueView,
+        meta: {
+            stateless: true,
+        },
+    },
+    {
+        path: Path.Busy,
+        component: QueueFullView,
+        meta: {
+            stateless: true,
         },
     },
     {

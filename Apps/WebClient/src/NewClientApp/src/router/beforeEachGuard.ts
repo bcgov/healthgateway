@@ -5,13 +5,16 @@
 } from "vue-router";
 
 import { Path } from "@/constants/path";
+import { TicketStatus } from "@/constants/ticketStatus";
 import { container } from "@/ioc/container";
 import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
+import { Ticket } from "@/models/ticket";
 import { UserState } from "@/router/index";
 import { ILogger } from "@/services/interfaces";
 import { useAuthStore } from "@/stores/auth";
 import { useConfigStore } from "@/stores/config";
 import { useUserStore } from "@/stores/user";
+import { useWaitlistStore } from "@/stores/waitlist";
 
 function getDefaultPath(
     currentUserState: UserState,
@@ -122,7 +125,7 @@ export const beforeEachGuard: NavigationGuard = async (
     );
 
     if (waitlistIsEnabled && metaRequiresProcessedWaitlistTicket) {
-        // redirectWhenTicketIsInvalid(to, next); // TODO: implement
+        await redirectWhenTicketIsInvalid(to, next);
     }
 
     await authStore.checkStatus();
@@ -157,3 +160,43 @@ export const beforeEachGuard: NavigationGuard = async (
 
     next({ path: defaultPath });
 };
+
+function ticketIsValid(ticket: Ticket | undefined): boolean {
+    if (ticket?.status !== TicketStatus.Processed) {
+        return false;
+    }
+
+    const now = new Date().getTime();
+    return now < ticket.tokenExpires * 1000;
+}
+
+async function redirectWhenTicketIsInvalid(
+    to: RouteLocationNormalizedLoaded,
+    next: NavigationGuardNext
+) {
+    const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+    const waitlistStore = useWaitlistStore();
+
+    let ticket = waitlistStore.ticket;
+    try {
+        if (ticketIsValid(ticket)) {
+            logger.debug(`Router - check existing Processed ticket`);
+            waitlistStore.scheduleCheckIn();
+        } else if (ticket?.status === TicketStatus.Queued) {
+            logger.debug(`Router - check existing Queued ticket`);
+            waitlistStore.scheduleCheckIn(undefined, true);
+            next({ path: Path.Queue, query: { redirect: to.path } });
+            return;
+        } else {
+            ticket = await waitlistStore.getTicket();
+            if (!ticketIsValid(ticket)) {
+                next({ path: Path.Queue, query: { redirect: to.path } });
+                return;
+            }
+        }
+    } catch {
+        // redirect to busy page if new ticket could not be retrieved
+        next({ path: Path.Busy, query: { redirect: to.path } });
+        return;
+    }
+}
