@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 
-import HgButtonComponent from "@/components/common/HgButtonComponent.vue";
+import { Path } from "@/constants/path";
 import { useAuthStore } from "@/stores/auth";
 import { useConfigStore } from "@/stores/config";
 import { useUserStore } from "@/stores/user";
@@ -20,55 +20,54 @@ const isFooterShown = computed<boolean>(
 </script>
 
 <template>
-    <v-footer v-show="isFooterShown" data-testid="footer" color="primary" app>
-        <v-row>
+    <v-footer v-if="isFooterShown" data-testid="footer" color="primary" app>
+        <v-row class="pa-2">
             <v-col class="flex-grow-0" cols="12" md="auto">
-                <HgButtonComponent
-                    variant="secondary"
-                    inverse
+                <a
+                    :href="Path.TermsOfService"
                     data-testid="footer-terms-of-service-link"
-                    :to="Path.TermsOfService"
-                    text="Terms of Service"
-                />
+                    class="text-white"
+                >
+                    Terms of service
+                </a>
             </v-col>
             <v-col class="flex-grow-0" cols="12" md="auto">
-                <HgButtonComponent
-                    variant="secondary"
-                    inverse
+                <a
+                    :href="Path.ReleaseNotes"
                     data-testid="footer-release-notes-link"
-                    :to="Path.ReleaseNotes"
-                    text="Release Notes"
-                />
+                    class="text-white"
+                >
+                    Release Notes
+                </a>
             </v-col>
             <v-col class="flex-grow-0" cols="12" md="auto">
-                <HgButtonComponent
-                    variant="secondary"
-                    inverse
-                    data-testid="footer-about-us-link"
+                <a
                     href="https://www2.gov.bc.ca/gov/content/health/managing-your-health/health-gateway"
                     target="_blank"
-                    text="About Us"
-                />
+                    data-testid="footer-faq-link"
+                    class="text-white"
+                >
+                    About Us
+                </a>
             </v-col>
             <v-col class="flex-grow-0" cols="12" md="auto">
-                <HgButtonComponent
-                    variant="secondary"
-                    inverse
-                    data-testid="footer-faq-link"
+                <a
                     href="https://www2.gov.bc.ca/gov/content?id=FE8BA7F9F1F0416CB2D24CF71C4BAF80"
                     target="_blank"
-                    text="FAQ"
-                />
+                    data-testid="footer-faq-link"
+                    class="text-white"
+                    >FAQ</a
+                >
             </v-col>
             <v-spacer />
             <v-col class="flex-grow-0" cols="12" md="auto">
-                <HgButtonComponent
-                    variant="secondary"
-                    inverse
-                    data-testid="footer-email-link"
+                <a
                     href="mailto:healthgateway@gov.bc.ca"
-                    text="Email: HealthGateway@gov.bc.ca"
-                />
+                    data-testid="footer-email-link"
+                    class="text-white"
+                >
+                    Email: HealthGateway@gov.bc.ca
+                </a>
             </v-col>
         </v-row>
     </v-footer>

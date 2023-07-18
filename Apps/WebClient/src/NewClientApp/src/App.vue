@@ -12,10 +12,6 @@ import { Path } from "@/constants/path";
 import ScreenWidth from "@/constants/screenWidth";
 import { useAppStore } from "@/stores/app";
 
-const loginCallbackPath = "/logincallback";
-const registrationPath = "/registration";
-const vaccineCardPath = "/vaccinecard";
-
 const route = useRoute();
 const appStore = useAppStore();
 
@@ -37,11 +33,10 @@ const isCommunicationVisible = computed(
 
 const isFooterVisible = computed(
     () =>
-        appStore.appError === undefined &&
         !currentPathMatches(
-            loginCallbackPath,
-            registrationPath,
-            vaccineCardPath
+            Path.LoginCallback,
+            Path.Registration,
+            Path.VaccineCard
         )
 );
 
