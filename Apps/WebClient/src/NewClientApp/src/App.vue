@@ -4,6 +4,7 @@ import { useRoute } from "vue-router";
 
 import ErrorCardComponent from "@/components/error/ErrorCardComponent.vue";
 import CommunicationComponent from "@/components/site/CommunicationComponent.vue";
+import FooterComponent from "@/components/site/FooterComponent.vue";
 import HeaderComponent from "@/components/site/HeaderComponent.vue";
 import IdleComponent from "@/components/site/IdleComponent.vue";
 import SidebarComponent from "@/components/site/SidebarComponent.vue";
@@ -28,6 +29,15 @@ const isCommunicationVisible = computed(
     () =>
         !currentPathMatches(Path.LoginCallback, Path.VaccineCard) &&
         !route.path.toLowerCase().startsWith(Path.PcrTest.toLowerCase())
+);
+
+const isFooterVisible = computed(
+    () =>
+        !currentPathMatches(
+            Path.LoginCallback,
+            Path.Registration,
+            Path.VaccineCard
+        )
 );
 
 function currentPathMatches(...paths: string[]): boolean {
@@ -80,5 +90,6 @@ onMounted(async () => {
             </v-container>
         </v-main>
         <IdleComponent />
+        <FooterComponent v-if="isFooterVisible" :order="-1" />
     </v-app>
 </template>
