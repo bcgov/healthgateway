@@ -6,6 +6,7 @@ import ErrorCardComponent from "@/components/error/ErrorCardComponent.vue";
 import CommunicationComponent from "@/components/site/CommunicationComponent.vue";
 import HeaderComponent from "@/components/site/HeaderComponent.vue";
 import IdleComponent from "@/components/site/IdleComponent.vue";
+import NotificationCentreComponent from "@/components/site/NotificationCentreComponent.vue";
 import SidebarComponent from "@/components/site/SidebarComponent.vue";
 import { Path } from "@/constants/path";
 import ScreenWidth from "@/constants/screenWidth";
@@ -72,6 +73,7 @@ onMounted(async () => {
     <v-app v-if="initialized">
         <HeaderComponent v-if="isHeaderVisible" />
         <SidebarComponent />
+        <NotificationCentreComponent />
         <v-main>
             <CommunicationComponent v-if="isCommunicationVisible" />
             <v-container class="pt-6">
