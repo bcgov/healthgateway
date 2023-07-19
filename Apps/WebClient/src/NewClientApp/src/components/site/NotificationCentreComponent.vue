@@ -127,24 +127,26 @@ function isNew(notification: Notification): boolean {
         location="right"
         width="500"
     >
-        <v-container class="d-flex flex-column align-center">
-            <v-row align="center" class="align-self-start flex-grow-0 w-100">
-                <v-col cols="auto" class="text-primary">
-                    <HgIconButtonComponent
-                        data-testid="notification-centre-close-button"
-                        icon="angle-double-right"
-                        size="x-small"
-                        @click="
-                            notificationStore.isNotificationCenterOpen = false
-                        "
-                    />
-                </v-col>
+        <v-container class="h-100">
+            <v-row align="center" no-gutters>
                 <v-col>
-                    <h5 class="text-body-1 text-primary">
+                    <h5 class="text-h6 text-primary d-flex align-center">
+                        <HgIconButtonComponent
+                            data-testid="notification-centre-close-button"
+                            icon="angle-double-right"
+                            size="small"
+                            @click="
+                                notificationStore.isNotificationCenterOpen = false
+                            "
+                        />
                         Notification Centre
                     </h5>
                 </v-col>
-                <v-col v-if="notifications.length > 0" cols="auto">
+                <v-col
+                    v-if="notifications.length > 0"
+                    cols="auto"
+                    class="text-right"
+                >
                     <HgButtonComponent
                         data-testid="notification-centre-dismiss-all-button"
                         variant="link"
@@ -159,69 +161,93 @@ function isNew(notification: Notification): boolean {
                 v-if="notifications.length === 0"
                 align="center"
                 justify="center"
+                class="notification-section"
             >
-                <v-col>
+                <v-col cols="8">
                     <v-img
                         src="@/assets/images/home/empty-state-notifications.svg"
                         alt="No Notifications"
                     />
-                    <p class="text-center mt-4 text-body-1">No Notifications</p>
+                    <h5 class="text-center text-primary mt-4 text-h6">
+                        No Notifications
+                    </h5>
                 </v-col>
             </v-row>
             <v-row
                 v-else
-                class="flex-column w-100"
                 data-testid="notifications-div"
+                class="notification-section"
             >
                 <v-col
                     v-for="notification in notifications"
                     :key="notification.id"
-                    class="flex-grow-0 py-2 px-0"
+                    cols="12"
                 >
                     <p
                         class="text-body-2"
-                        :class="{ 'text-grey-lighten-1': !isNew(notification) }"
+                        :class="{
+                            'text-medium-emphasis': !isNew(notification),
+                        }"
                     >
                         {{ formatDate(notification.scheduledDateTimeUtc) }}
                     </p>
                     <v-card class="bg-grey-lighten-5">
-                        <v-card-title class="text-right pa-0">
-                            <HgIconButtonComponent
-                                :data-testid="`notification-${notification.id}-dismiss-button`"
-                                class="text-muted"
-                                icon="xmark"
-                                size="small"
-                                :loading="isMessageLoading(notification.id)"
-                                @click="dismissNotification(notification.id)"
-                            />
-                        </v-card-title>
                         <v-card-text
-                            class="text-body-1"
                             :class="{
-                                'text-grey-lighten-1': !isNew(notification),
+                                'text-medium-emphasis': !isNew(notification),
                             }"
                         >
-                            {{ notification.displayText }}
+                            <v-row no-gutters>
+                                <v-col cols="10" class="d-flex align-center">
+                                    <p class="text-body-1">
+                                        {{ notification.displayText }}
+                                    </p>
+                                </v-col>
+                                <v-col class="text-right">
+                                    <HgIconButtonComponent
+                                        :data-testid="`notification-${notification.id}-dismiss-button`"
+                                        icon="xmark"
+                                        size="small"
+                                        :loading="
+                                            isMessageLoading(notification.id)
+                                        "
+                                        @click="
+                                            dismissNotification(notification.id)
+                                        "
+                                    />
+                                </v-col>
+                            </v-row>
+                            <div
+                                v-if="showActionButton(notification)"
+                                class="text-right mt-2"
+                            >
+                                <HgButtonComponent
+                                    :data-testid="`notification-${notification.id}-action-button`"
+                                    variant="link"
+                                    :text="
+                                        formatActionText(
+                                            notification.actionType
+                                        )
+                                    "
+                                    @click="
+                                        handleClickNotificationAction(
+                                            notification
+                                        )
+                                    "
+                                />
+                            </div>
                         </v-card-text>
-                        <v-card-actions
-                            v-if="showActionButton(notification)"
-                            class="pa-0"
-                        >
-                            <v-spacer />
-                            <HgButtonComponent
-                                :data-testid="`notification-${notification.id}-action-button`"
-                                variant="link"
-                                :text="
-                                    formatActionText(notification.actionType)
-                                "
-                                @click="
-                                    handleClickNotificationAction(notification)
-                                "
-                            />
-                        </v-card-actions>
                     </v-card>
                 </v-col>
             </v-row>
         </v-container>
     </v-navigation-drawer>
 </template>
+
+<style scoped lang="scss">
+.notification-section {
+    // 40px "header" + 12px "no gutter positive row margin" - 16px "container top padding only"
+    height: calc(100% - 36px);
+    overflow-y: auto;
+}
+</style>
