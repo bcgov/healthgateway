@@ -1,19 +1,18 @@
 import { defineStore } from "pinia";
-import { ref } from "vue";
+import { computed, ref } from "vue";
+import { useDisplay } from "vuetify";
 
 import { AppErrorType } from "@/constants/errorType";
 
 export const useAppStore = defineStore("app", () => {
+    const display = useDisplay();
+
     const appError = ref<AppErrorType>();
-    const isMobile = ref(false);
     const isIdle = ref(false);
 
+    const isMobile = computed(() => !display.mdAndUp.value);
     function setAppError(errorType: AppErrorType): void {
         appError.value = errorType;
-    }
-
-    function setIsMobile(value: boolean) {
-        isMobile.value = value;
     }
 
     function setIsIdle(value: boolean) {
@@ -25,7 +24,6 @@ export const useAppStore = defineStore("app", () => {
         isMobile,
         isIdle,
         setAppError,
-        setIsMobile,
         setIsIdle,
     };
 });
