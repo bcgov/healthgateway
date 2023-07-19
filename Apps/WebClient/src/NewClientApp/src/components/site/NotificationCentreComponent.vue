@@ -198,12 +198,12 @@ function isNew(notification: Notification): boolean {
                             }"
                         >
                             <v-row no-gutters>
-                                <v-col cols="10" class="d-flex align-center">
+                                <v-col class="d-flex align-center">
                                     <p class="text-body-1">
                                         {{ notification.displayText }}
                                     </p>
                                 </v-col>
-                                <v-col class="text-right">
+                                <v-col cols="auto">
                                     <HgIconButtonComponent
                                         :data-testid="`notification-${notification.id}-dismiss-button`"
                                         icon="xmark"
