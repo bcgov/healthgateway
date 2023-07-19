@@ -8,10 +8,6 @@ import AppTourComponent from "@/components/private/home/AppTourComponent.vue";
 import RatingComponent from "@/components/site/RatingComponent.vue";
 import { container } from "@/ioc/container";
 import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
-import type { WebClientConfiguration } from "@/models/configData";
-import { DateWrapper, StringISODateTime } from "@/models/dateWrapper";
-import Notification from "@/models/notification";
-import User from "@/models/user";
 import { ILogger } from "@/services/interfaces";
 import { useAppStore } from "@/stores/app";
 import { useAuthStore } from "@/stores/auth";
@@ -41,51 +37,29 @@ const isScrollNearBottom = ref(false);
 const ratingComponent = ref<InstanceType<typeof RatingComponent>>();
 const appTourComponent = ref<InstanceType<typeof AppTourComponent>>();
 
-const isMobileWidth = computed<boolean>(() => appStore.isMobile);
-
-const isOffline = computed<boolean>(() => configStore.isOffline);
-
-const config = computed<WebClientConfiguration>(() => configStore.webConfig);
-
-const oidcIsAuthenticated = computed<boolean>(
-    () => authStore.oidcIsAuthenticated
-);
-
-const isValidIdentityProvider = computed<boolean>(
+const isMobileWidth = computed(() => appStore.isMobile);
+const isOffline = computed(() => configStore.isOffline);
+const oidcIsAuthenticated = computed(() => authStore.oidcIsAuthenticated);
+const isValidIdentityProvider = computed(
     () => userStore.isValidIdentityProvider
 );
-
-const isHeaderShown = computed<boolean>(
+const isHeaderShown = computed(
     () => navbarStore.isHeaderShown || isScrollNearBottom.value
 );
-
-const isSidebarOpen = computed<boolean>(() => navbarStore.isSidebarOpen);
-
-const user = computed<User>(() => userStore.user);
-
-const userLastLoginDateTime = computed<StringISODateTime | undefined>(
-    () => userStore.lastLoginDateTime
-);
-
-const userIsRegistered = computed<boolean>(() => userStore.userIsRegistered);
-
-const userIsActive = computed<boolean>(() => userStore.userIsActive);
-
-const patientRetrievalFailed = computed<boolean>(
-    () => userStore.patientRetrievalFailed
-);
-
-const isPcrTest = computed<boolean>(() =>
+const isSidebarOpen = computed(() => navbarStore.isSidebarOpen);
+const user = computed(() => userStore.user);
+const userIsRegistered = computed(() => userStore.userIsRegistered);
+const userIsActive = computed(() => userStore.userIsActive);
+const patientRetrievalFailed = computed(() => userStore.patientRetrievalFailed);
+const isPcrTest = computed(() =>
     route.path.toLowerCase().startsWith("/pcrtest")
 );
-
-const isQueuePage = computed<boolean>(
+const isQueuePage = computed(
     () =>
         route.path.toLowerCase() === "/queue" ||
         route.path.toLowerCase() === "/busy"
 );
-
-const isSidebarButtonShown = computed<boolean>(
+const isSidebarButtonShown = computed(
     () =>
         !isOffline.value &&
         oidcIsAuthenticated.value &&
@@ -97,10 +71,10 @@ const isSidebarButtonShown = computed<boolean>(
         !isPcrTest.value &&
         isMobileWidth.value
 );
-
-const isNotificationCentreAvailable = computed<boolean>(
+const isNotificationCentreAvailable = computed(
     () =>
-        config.value.featureToggleConfiguration.notificationCentre.enabled &&
+        configStore.webConfig.featureToggleConfiguration.notificationCentre
+            .enabled &&
         !isOffline.value &&
         !isQueuePage.value &&
         !isPcrTest.value &&
@@ -110,8 +84,7 @@ const isNotificationCentreAvailable = computed<boolean>(
         userIsActive.value &&
         !patientRetrievalFailed.value
 );
-
-const isAppTourAvailable = computed<boolean>(
+const isAppTourAvailable = computed(
     () =>
         !isOffline.value &&
         !isQueuePage.value &&
@@ -122,52 +95,34 @@ const isAppTourAvailable = computed<boolean>(
         userIsActive.value &&
         !patientRetrievalFailed.value
 );
-
-const isLoggedInMenuShown = computed<boolean>(
+const isLoggedInMenuShown = computed(
     () => oidcIsAuthenticated.value && !isPcrTest.value && !isQueuePage.value
 );
-
-const isLogOutButtonShown = computed<boolean>(
+const isLogOutButtonShown = computed(
     () => oidcIsAuthenticated.value && isPcrTest.value
 );
-
-const isLogInButtonShown = computed<boolean>(
+const isLogInButtonShown = computed(
     () =>
         !oidcIsAuthenticated.value &&
         !isOffline.value &&
         !isPcrTest.value &&
         !isQueuePage.value
 );
-
-const isProfileLinkAvailable = computed<boolean>(
+const isProfileLinkAvailable = computed(
     () =>
         isLoggedInMenuShown.value &&
         isValidIdentityProvider.value &&
         !patientRetrievalFailed.value
 );
-
-const newNotifications = computed<Notification[]>(() => {
-    logger.debug(`User last login: ${userLastLoginDateTime.value}`);
-    if (userLastLoginDateTime.value) {
-        const lastLoginDateTime = new DateWrapper(userLastLoginDateTime.value);
-        return notificationStore.notifications.filter((n) =>
-            new DateWrapper(n.scheduledDateTimeUtc, {
-                isUtc: true,
-                hasTime: true,
-            }).isAfter(lastLoginDateTime)
-        );
-    }
-    return notificationStore.notifications;
-});
-
-const hasNewNotifications = computed(() => newNotifications.value.length > 0);
-
+const newNotifications = computed(() => notificationStore.newNotifications);
+const hasNewNotifications = computed(
+    () => newNotifications.value.length > 0 && !notificationButtonClicked.value
+);
 const notificationBadgeContent = computed(() => {
     const count = newNotifications.value.length;
     return hasNewNotifications.value ? count.toString() : "";
 });
-
-const highlightTourChangeIndicator = computed<boolean>(
+const highlightTourChangeIndicator = computed(
     () => user.value.hasTourUpdated && !hasViewedTour.value
 );
 
@@ -185,6 +140,12 @@ function toggleSidebar(): void {
 
 function setHeaderState(isOpen: boolean): void {
     navbarStore.setHeaderState(isOpen);
+}
+
+function handleNotificationCentreClick(): void {
+    notificationButtonClicked.value = true;
+    notificationStore.isNotificationCenterOpen =
+        !notificationStore.isNotificationCenterOpen;
 }
 
 function handleLogoutClick(): void {
@@ -262,7 +223,7 @@ nextTick(() => {
         <HgIconButtonComponent
             v-if="isNotificationCentreAvailable"
             data-testid="notification-centre-button"
-            @click="notificationButtonClicked = true"
+            @click="handleNotificationCentreClick"
         >
             <v-badge
                 color="red"

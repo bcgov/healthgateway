@@ -1,9 +1,10 @@
 ﻿import { defineStore } from "pinia";
-import { ref } from "vue";
+import { computed, ref } from "vue";
 
 import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import { container } from "@/ioc/container";
 import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
+import { DateWrapper } from "@/models/dateWrapper";
 import { ResultError } from "@/models/errors";
 import Notification from "@/models/notification";
 import { LoadStatus } from "@/models/storeOperations";
@@ -24,6 +25,26 @@ export const useNotificationStore = defineStore("notification", () => {
     const statusMessage = ref("");
     const error = ref<ResultError>();
     const status = ref(LoadStatus.NONE);
+    const isNotificationCenterOpen = ref(false);
+
+    const newNotifications = computed(() => {
+        if (userStore.lastLoginDateTime) {
+            const lastLoginDateTime = new DateWrapper(
+                userStore.lastLoginDateTime,
+                {
+                    isUtc: true,
+                    hasTime: true,
+                }
+            );
+            return notifications.value.filter((n) =>
+                new DateWrapper(n.scheduledDateTimeUtc, {
+                    isUtc: true,
+                    hasTime: true,
+                }).isAfter(lastLoginDateTime)
+            );
+        }
+        return notifications.value;
+    });
 
     function setRequested() {
         status.value = LoadStatus.REQUESTED;
@@ -122,6 +143,8 @@ export const useNotificationStore = defineStore("notification", () => {
         statusMessage,
         error,
         status,
+        isNotificationCenterOpen,
+        newNotifications,
         dismissNotification,
         dismissAllNotifications,
         retrieve,
