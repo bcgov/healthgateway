@@ -56,8 +56,9 @@ const isFooterShown = computed<boolean>(
                     target="_blank"
                     data-testid="footer-faq-link"
                     class="text-white"
-                    >FAQ</a
                 >
+                    FAQ
+                </a>
             </v-col>
             <v-spacer />
             <v-col class="flex-grow-0" cols="12" md="auto">
