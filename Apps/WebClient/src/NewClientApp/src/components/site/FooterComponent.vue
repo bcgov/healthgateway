@@ -36,7 +36,7 @@ const isFooterFixed = computed(() => !appStore.isMobile);
                     data-testid="footer-terms-of-service-link"
                     class="text-white"
                 >
-                    Terms of service
+                    Terms of Service
                 </a>
             </v-col>
             <v-col class="flex-grow-0" cols="12" md="auto">

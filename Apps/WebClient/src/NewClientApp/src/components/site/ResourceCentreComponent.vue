@@ -21,8 +21,8 @@ const appStore = useAppStore();
                     v-bind="props"
                     icon="question"
                     size="large"
-                    elevation="2"
-                    color="secondary"
+                    elevation="8"
+                    color="info"
                 />
             </template>
             <v-list>
