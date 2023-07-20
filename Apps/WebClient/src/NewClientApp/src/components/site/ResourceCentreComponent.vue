@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import HgIconButtonComponent from "@/components/common/HgIconButtonComponent.vue";
+import { Path } from "@/constants/path";
 import { useAppStore } from "@/stores/app";
 
 const appStore = useAppStore();
@@ -37,7 +38,7 @@ const appStore = useAppStore();
                     target="_blank"
                     title="FAQ"
                 />
-                <v-list-item to="/release-notes" title="Release Notes" />
+                <v-list-item :to="Path.ReleaseNotes" title="Release Notes" />
             </v-list>
         </v-menu>
     </div>
