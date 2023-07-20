@@ -19,7 +19,6 @@ const isFooterShown = computed(
             !userStore.isValidIdentityProvider ||
             userStore.userIsRegistered)
 );
-
 const isFooterFixed = computed(() => !appStore.isMobile);
 </script>
 

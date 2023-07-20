@@ -50,7 +50,7 @@ function currentPathMatches(...paths: string[]): boolean {
         <HeaderComponent v-if="isHeaderVisible" />
         <SidebarComponent />
         <NotificationCentreComponent />
-        <v-main>
+        <v-main class="position-relative">
             <CommunicationComponent v-if="isCommunicationVisible" />
             <v-container class="pt-6">
                 <ErrorCardComponent v-if="!hideErrorAlerts" />
