@@ -29,13 +29,11 @@ const isDependentEnabled = computed(
 const isServicesEnabled = computed(
     () => configStore.webConfig.featureToggleConfiguration.services.enabled
 );
-
 const isQueuePage = computed(
     () =>
         route.path.toLowerCase() === "/queue" ||
         route.path.toLowerCase() === "/busy"
 );
-
 const isSidebarAvailable = computed(
     () =>
         !configStore.isOffline &&

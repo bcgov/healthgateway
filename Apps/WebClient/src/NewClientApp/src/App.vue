@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, nextTick, onBeforeUnmount, onMounted, ref } from "vue";
+import { computed } from "vue";
 import { useRoute } from "vue-router";
 
 import ErrorCardComponent from "@/components/error/ErrorCardComponent.vue";
@@ -8,18 +8,12 @@ import FooterComponent from "@/components/site/FooterComponent.vue";
 import HeaderComponent from "@/components/site/HeaderComponent.vue";
 import IdleComponent from "@/components/site/IdleComponent.vue";
 import NotificationCentreComponent from "@/components/site/NotificationCentreComponent.vue";
+import ResourceCentreComponent from "@/components/site/ResourceCentreComponent.vue";
 import SidebarComponent from "@/components/site/SidebarComponent.vue";
 import { Path } from "@/constants/path";
-import ScreenWidth from "@/constants/screenWidth";
-import { useAppStore } from "@/stores/app";
 
 const route = useRoute();
-const appStore = useAppStore();
 
-const initialized = ref(false);
-const windowWidth = ref(0);
-
-const isMobile = computed<boolean>(() => appStore.isMobile);
 const hideErrorAlerts = computed(() =>
     currentPathMatches(Path.Root, Path.VaccineCard, Path.Queue, Path.Busy)
 );
@@ -30,6 +24,9 @@ const isCommunicationVisible = computed(
     () =>
         !currentPathMatches(Path.LoginCallback, Path.VaccineCard) &&
         !route.path.toLowerCase().startsWith(Path.PcrTest.toLowerCase())
+);
+const isResourceCentreAvailable = computed(() =>
+    currentPathMatches(Path.Dependents, Path.Reports, Path.Timeline)
 );
 
 const isFooterVisible = computed(
@@ -46,50 +43,20 @@ function currentPathMatches(...paths: string[]): boolean {
         (path) => route.path.toLowerCase() === path.toLowerCase()
     );
 }
-
-function initializeResizeListener(): void {
-    window.addEventListener("resize", onResize);
-    onResize();
-}
-
-function onResize(): void {
-    windowWidth.value = window.innerWidth;
-
-    if (windowWidth.value < ScreenWidth.Mobile) {
-        if (!isMobile.value) {
-            appStore.setIsMobile(true);
-        }
-    } else {
-        if (isMobile.value) {
-            appStore.setIsMobile(false);
-        }
-    }
-}
-
-onBeforeUnmount(() => {
-    window.removeEventListener("resize", onResize);
-});
-
-onMounted(async () => {
-    windowWidth.value = window.innerWidth;
-
-    await nextTick();
-    initializeResizeListener();
-    initialized.value = true;
-});
 </script>
 
 <template>
-    <v-app v-if="initialized">
+    <v-app>
         <HeaderComponent v-if="isHeaderVisible" />
         <SidebarComponent />
         <NotificationCentreComponent />
-        <v-main>
+        <v-main class="position-relative">
             <CommunicationComponent v-if="isCommunicationVisible" />
             <v-container class="pt-6">
                 <ErrorCardComponent v-if="!hideErrorAlerts" />
                 <router-view />
             </v-container>
+            <ResourceCentreComponent v-if="isResourceCentreAvailable" />
         </v-main>
         <IdleComponent />
         <FooterComponent v-if="isFooterVisible" :order="-1" />

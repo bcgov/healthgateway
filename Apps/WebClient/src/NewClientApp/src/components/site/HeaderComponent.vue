@@ -16,7 +16,6 @@ import { useNavbarStore } from "@/stores/navbar";
 import { useNotificationStore } from "@/stores/notification";
 import { useUserStore } from "@/stores/user";
 
-const sidebarId = "notification-centre-sidebar";
 const headerScrollThreshold = 100;
 
 const appStore = useAppStore();
