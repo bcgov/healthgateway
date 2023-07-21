@@ -1,7 +1,5 @@
 <script setup lang="ts">
-import { library } from "@fortawesome/fontawesome-svg-core";
-import { faArrowCircleUp, faLock } from "@fortawesome/free-solid-svg-icons";
-import { ref } from "vue";
+import { computed, ref } from "vue";
 
 import HgIconButtonComponent from "@/components/common/HgIconButtonComponent.vue";
 import { container } from "@/ioc/container";
@@ -10,15 +8,10 @@ import { DateWrapper } from "@/models/dateWrapper";
 import { ResultError } from "@/models/errors";
 import type { UserComment } from "@/models/userComment";
 import { ILogger } from "@/services/interfaces";
+import { useAppStore } from "@/stores/app";
 import { useCommentStore } from "@/stores/comment";
 import { useErrorStore } from "@/stores/error";
 import { useUserStore } from "@/stores/user";
-
-const userStore = useUserStore();
-const errorStore = useErrorStore();
-const commentStore = useCommentStore();
-
-library.add(faArrowCircleUp, faLock);
 
 interface Props {
     comment: UserComment;
@@ -34,9 +27,16 @@ const emit = defineEmits<{
     (e: "on-comment-added", newValue: UserComment): UserComment;
 }>();
 
-const commentInput = ref("");
 const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+const userStore = useUserStore();
+const errorStore = useErrorStore();
+const commentStore = useCommentStore();
+const appStore = useAppStore();
+
 const isSaving = ref(false);
+const commentInput = ref("");
+
+const isMobile = computed(() => appStore.isMobile);
 
 function addComment(): void {
     isSaving.value = true;
@@ -84,11 +84,13 @@ function addComment(): void {
         placeholder="Write a comment"
         style="overflow-y: auto"
         class="pa-2"
+        hide-details
     >
         <template #prepend>
             <v-tooltip
                 variant="secondary"
                 location="left"
+                :open-on-click="isMobile"
                 text="Only you can see comments added to your medical records."
             >
                 <template #activator="{ props }">
@@ -96,7 +98,7 @@ function addComment(): void {
                 </template>
             </v-tooltip>
         </template>
-        <template #append>
+        <template #append-inner>
             <HgIconButtonComponent
                 color="primary"
                 variant="icon-input"

@@ -1,0 +1,158 @@
+<script setup lang="ts">
+import { computed, ref } from "vue";
+
+import HgButtonComponent from "@/components/common/HgButtonComponent.vue";
+import HgIconButtonComponent from "@/components/common/HgIconButtonComponent.vue";
+import { container } from "@/ioc/container";
+import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
+import { DateWrapper } from "@/models/dateWrapper";
+import type { UserComment } from "@/models/userComment";
+import { ILogger } from "@/services/interfaces";
+import { useAppStore } from "@/stores/app";
+import { useCommentStore } from "@/stores/comment";
+import { useUserStore } from "@/stores/user";
+
+interface Props {
+    comment: UserComment;
+}
+const commentComponentProps = defineProps<Props>();
+
+const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+const userStore = useUserStore();
+const commentStore = useCommentStore();
+const appStore = useAppStore();
+
+const commentInput = ref("");
+const isEditMode = ref(false);
+const isLoading = ref(false);
+const isUpdating = ref(false);
+
+const isMobile = computed(() => appStore.isMobile);
+
+function formatDate(date: string): string {
+    return new DateWrapper(date, { isUtc: true }).format("yyyy-MMM-dd, t");
+}
+
+function onCancel(): void {
+    isEditMode.value = false;
+}
+
+function editComment(): void {
+    commentInput.value = commentComponentProps.comment.text;
+    isEditMode.value = true;
+}
+
+function handleCommentError(err: Error): void {
+    logger.error(JSON.stringify(err));
+    window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function onSubmit(): void {
+    isUpdating.value = true;
+    const comment: UserComment = {
+        id: commentComponentProps.comment.id,
+        text: commentInput.value,
+        userProfileId: commentComponentProps.comment.userProfileId,
+        parentEntryId: commentComponentProps.comment.parentEntryId,
+        createdDateTime: commentComponentProps.comment.createdDateTime,
+        entryTypeCode: commentComponentProps.comment.entryTypeCode,
+        version: commentComponentProps.comment.version,
+    };
+    commentStore
+        .updateComment(userStore.user.hdid, comment)
+        .then(() => {
+            logger.info("Comment Updated");
+            isEditMode.value = false;
+        })
+        .catch(handleCommentError)
+        .finally(() => (isUpdating.value = false));
+}
+
+function removeComment(): void {
+    if (confirm("Are you sure you want to delete this comment?")) {
+        isUpdating.value = true;
+        commentStore
+            .deleteComment(userStore.user.hdid, commentComponentProps.comment)
+            .then(() => logger.info("Comment removed"))
+            .catch(handleCommentError)
+            .finally(() => (isUpdating.value = false));
+    }
+}
+</script>
+
+<template>
+    <v-skeleton-loader
+        :loading="isLoading"
+        type="list-item-two-line"
+        color="grey-lighten-5"
+    >
+        <v-sheet class="pa-4" color="grey-lighten-5">
+            <v-row v-if="!isEditMode">
+                <v-col data-testid="commentWrapper">
+                    <p data-testid="commentText" class="text-body-1">
+                        {{ comment.text }}
+                        <br />
+                        <span class="text-caption text-medium-emphasis">
+                            {{ formatDate(comment.createdDateTime) }}
+                        </span>
+                    </p>
+                </v-col>
+                <v-col cols="auto">
+                    <v-menu data-testid="commentMenuBtn">
+                        <template #activator="{ props }">
+                            <HgIconButtonComponent
+                                icon="ellipsis-v"
+                                size="small"
+                                v-bind="props"
+                            />
+                        </template>
+                        <v-list>
+                            <v-list-item
+                                data-testid="commentMenuEditBtn"
+                                title="Edit"
+                                @click="editComment()"
+                            />
+                            <v-list-item
+                                data-testid="commentMenuDeleteBtn"
+                                title="Delete"
+                                :loading="isUpdating"
+                                @click="removeComment()"
+                            />
+                        </v-list>
+                    </v-menu>
+                </v-col>
+            </v-row>
+            <v-row v-else :class="{ 'flex-column': isMobile }">
+                <v-col>
+                    <v-textarea
+                        id="comment-input"
+                        v-model="commentInput"
+                        data-testid="editCommentInput"
+                        max-rows="10"
+                        rows="1"
+                        auto-grow
+                        placeholder="Editing a comment"
+                        maxlength="1000"
+                        :loading="isUpdating"
+                        hide-details
+                    />
+                </v-col>
+                <v-col cols="auto">
+                    <HgButtonComponent
+                        data-testid="saveCommentBtn"
+                        class="mr-2"
+                        variant="primary"
+                        :disabled="commentInput === ''"
+                        :loading="isUpdating"
+                        @click="onSubmit"
+                    >
+                        Save
+                    </HgButtonComponent>
+                    <HgButtonComponent variant="secondary" @click="onCancel">
+                        Cancel
+                    </HgButtonComponent>
+                </v-col>
+            </v-row>
+        </v-sheet>
+    </v-skeleton-loader>
+</template>
