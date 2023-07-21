@@ -24,7 +24,6 @@ const appStore = useAppStore();
 
 const commentInput = ref("");
 const isEditMode = ref(false);
-const isLoading = ref(false);
 const isUpdating = ref(false);
 
 const isMobile = computed(() => appStore.isMobile);
@@ -81,78 +80,73 @@ function removeComment(): void {
 </script>
 
 <template>
-    <v-skeleton-loader
-        :loading="isLoading"
-        type="list-item-two-line"
-        color="grey-lighten-5"
-    >
-        <v-sheet class="pa-4" color="grey-lighten-5">
-            <v-row v-if="!isEditMode">
-                <v-col data-testid="commentWrapper">
-                    <p data-testid="commentText" class="text-body-1">
-                        {{ comment.text }}
-                        <br />
-                        <span class="text-caption text-medium-emphasis">
-                            {{ formatDate(comment.createdDateTime) }}
-                        </span>
-                    </p>
-                </v-col>
-                <v-col cols="auto">
-                    <v-menu data-testid="commentMenuBtn">
-                        <template #activator="{ props }">
-                            <HgIconButtonComponent
-                                icon="ellipsis-v"
-                                size="small"
-                                v-bind="props"
-                            />
-                        </template>
-                        <v-list>
-                            <v-list-item
-                                data-testid="commentMenuEditBtn"
-                                title="Edit"
-                                @click="editComment()"
-                            />
-                            <v-list-item
-                                data-testid="commentMenuDeleteBtn"
-                                title="Delete"
-                                :loading="isUpdating"
-                                @click="removeComment()"
-                            />
-                        </v-list>
-                    </v-menu>
-                </v-col>
-            </v-row>
-            <v-row v-else :class="{ 'flex-column': isMobile }">
-                <v-col>
-                    <v-textarea
-                        id="comment-input"
-                        v-model="commentInput"
-                        data-testid="editCommentInput"
-                        max-rows="10"
-                        rows="1"
-                        auto-grow
-                        placeholder="Editing a comment"
-                        maxlength="1000"
-                        :loading="isUpdating"
-                        hide-details
-                    />
-                </v-col>
-                <v-col cols="auto">
-                    <HgButtonComponent
-                        data-testid="saveCommentBtn"
-                        class="mr-2"
-                        variant="primary"
-                        :disabled="commentInput === ''"
-                        :loading="isUpdating"
-                        @click="onSubmit"
-                    >
-                        Save
-                    </HgButtonComponent>
-                    <HgButtonComponent variant="secondary" @click="onCancel">
-                        Cancel
-                    </HgButtonComponent>
-                </v-col>
-            </v-row>
-        </v-sheet>
-    </v-skeleton-loader>
+    <v-sheet class="px-4 py-2 my-2" color="grey-lighten-5">
+        <v-row v-if="!isEditMode">
+            <v-col data-testid="commentWrapper">
+                <p data-testid="commentText" class="text-body-1">
+                    {{ comment.text }}
+                    <br />
+                    <span class="text-caption text-medium-emphasis">
+                        {{ formatDate(comment.createdDateTime) }}
+                    </span>
+                </p>
+            </v-col>
+            <v-col cols="auto">
+                <v-menu data-testid="commentMenuBtn">
+                    <template #activator="{ props }">
+                        <HgIconButtonComponent
+                            icon="ellipsis-v"
+                            size="small"
+                            v-bind="props"
+                        />
+                    </template>
+                    <v-list>
+                        <v-list-item
+                            data-testid="commentMenuEditBtn"
+                            title="Edit"
+                            @click="editComment()"
+                        />
+                        <v-list-item
+                            data-testid="commentMenuDeleteBtn"
+                            title="Delete"
+                            :loading="isUpdating"
+                            @click="removeComment()"
+                        />
+                    </v-list>
+                </v-menu>
+            </v-col>
+        </v-row>
+        <v-row v-else :class="{ 'flex-column': isMobile }">
+            <v-col>
+                <v-textarea
+                    id="comment-input"
+                    v-model="commentInput"
+                    data-testid="editCommentInput"
+                    max-rows="10"
+                    rows="1"
+                    variant="underlined"
+                    auto-grow
+                    placeholder="Editing a comment"
+                    maxlength="1000"
+                    :loading="isUpdating"
+                    hide-details
+                />
+            </v-col>
+            <v-col cols="auto" class="d-flex align-center">
+                <HgButtonComponent
+                    data-testid="saveCommentBtn"
+                    class="mr-2"
+                    variant="primary"
+                    :disabled="commentInput === ''"
+                    :loading="isUpdating"
+                    @click="onSubmit"
+                >
+                    Save
+                </HgButtonComponent>
+                <HgButtonComponent variant="secondary" @click="onCancel">
+                    Cancel
+                </HgButtonComponent>
+            </v-col>
+        </v-row>
+    </v-sheet>
 </template>

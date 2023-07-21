@@ -83,7 +83,6 @@ function addComment(): void {
         :loading="isSaving"
         placeholder="Write a comment"
         style="overflow-y: auto"
-        class="pa-2"
         hide-details
     >
         <template #prepend>
