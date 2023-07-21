@@ -139,7 +139,7 @@ describe("Authenticated User - Home Page", () => {
         cy.get("[data-testid=content-placeholders]").should("not.exist");
         cy.get("[data-testid=loading-toast]").should("be.visible");
         cy.get("[data-testid=noTimelineEntriesText]").should("be.visible");
-        cy.get("[data-testid=displayCountText]").should("not.exist");
+        cy.get("[data-testid=timeline-record-count]").should("not.exist");
         cy.get("[data-testid=loading-toast]").should("be.visible");
     });
 });

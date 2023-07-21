@@ -4,4 +4,7 @@
 
 :is(ol, ul) {
     padding-left: 40px;
+    &.v-pagination__list {
+        padding-left: 0;
+    }
 }
