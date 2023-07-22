@@ -136,6 +136,7 @@ watch(
                 six-weeks="append"
                 :offset="16"
                 calendar-cell-class-name="rounded-circle"
+                :teleport="true"
             >
                 <template #trigger>
                     <HgIconButtonComponent icon="fas fa-calendar" />

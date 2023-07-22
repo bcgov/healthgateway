@@ -162,7 +162,7 @@ export interface IUserRatingService {
 
 export interface IUserNoteService {
     getNotes(hdid: string): Promise<RequestResult<UserNote[]>>;
-    createNote(hdid: string, note: UserNote): Promise<UserNote | undefined>;
+    createNote(hdid: string, note: UserNote): Promise<UserNote>;
     updateNote(hdid: string, note: UserNote): Promise<UserNote>;
     deleteNote(hdid: string, note: UserNote): Promise<void>;
 }

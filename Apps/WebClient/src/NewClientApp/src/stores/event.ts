@@ -6,7 +6,8 @@ import { ILogger } from "@/services/interfaces";
 
 export enum EventName {
     OpenNoteDialog = "openNoteDialog",
-    ViewEntryDetails = "viewEntryDetails",
+    OpenFullscreenTimelineEntry = "openFullscreenTimelineEntry",
+    UpdateTimelineEntry = "updateTimelineEntry",
     RegisterOnBeforeUnloadWaitlistListener = "registerOnBeforeUnloadWaitlistListener",
     UnregisterOnBeforeUnloadWaitlistListener = "unregisterOnBeforeUnloadWaitlistListener",
 }

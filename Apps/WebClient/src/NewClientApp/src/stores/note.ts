@@ -6,80 +6,35 @@ import { ResultType } from "@/constants/resulttype";
 import { container } from "@/ioc/container";
 import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
 import { ResultError } from "@/models/errors";
-import { LoadStatus, Operation, OperationType } from "@/models/storeOperations";
+import { LoadStatus } from "@/models/storeOperations";
 import UserNote from "@/models/userNote";
 import { ILogger, IUserNoteService } from "@/services/interfaces";
 import { useErrorStore } from "@/stores/error";
+import { EventName, useEventStore } from "@/stores/event";
 
 export const useNoteStore = defineStore("note", () => {
     const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
     const noteService = container.get<IUserNoteService>(
         SERVICE_IDENTIFIER.UserNoteService
     );
-
     const errorStore = useErrorStore();
+    const eventStore = useEventStore();
 
-    // Refs
     const notes = ref<UserNote[]>([]);
     const status = ref(LoadStatus.NONE);
     const statusMessage = ref("");
     const error = ref<ResultError>();
-    const lastOperation = ref<Operation>();
 
-    // Computed
     const notesCount = computed(() => notes.value.length);
-
     const notesAreLoading = computed(
         () => status.value === LoadStatus.REQUESTED
     );
 
-    // Mutations
-    function setNotesRequested() {
-        status.value = LoadStatus.REQUESTED;
-    }
-
-    function setNotesLoaded(userNotes: UserNote[]) {
-        notes.value = userNotes;
-        error.value = undefined;
-        status.value = LoadStatus.LOADED;
-    }
-
-    function commitCreateNote(note: UserNote) {
-        lastOperation.value = new Operation(
-            note.id as string,
-            OperationType.ADD
-        );
-        notes.value.push(note);
-    }
-
-    function commitUpdateNote(note: UserNote) {
-        lastOperation.value = new Operation(
-            note.id as string,
-            OperationType.UPDATE
-        );
-    }
-
-    function commitDeleteNote(note: UserNote) {
-        const noteIndex = notes.value.findIndex((x) => x.id === note.id);
-        if (noteIndex > -1) {
-            lastOperation.value = new Operation(
-                note.id as string,
-                OperationType.DELETE
-            );
-            notes.value.splice(noteIndex, 1);
-        }
-    }
-
-    function setNotesError(resultError: ResultError) {
+    function handleError(resultError: ResultError, errorType: ErrorType): void {
+        logger.error(`ERROR: ${JSON.stringify(resultError)}`);
         error.value = resultError;
         statusMessage.value = resultError.resultMessage;
         status.value = LoadStatus.ERROR;
-    }
-
-    // Helpers
-    function handleError(resultError: ResultError, errorType: ErrorType): void {
-        logger.error(`ERROR: ${JSON.stringify(resultError)}`);
-        setNotesError(resultError);
 
         if (resultError.statusCode === 429) {
             if (errorType === ErrorType.Retrieve) {
@@ -87,7 +42,7 @@ export const useNoteStore = defineStore("note", () => {
             } else if (errorType === ErrorType.Delete) {
                 errorStore.setTooManyRequestsError("page");
             } else {
-                errorStore.setTooManyRequestsError("noteEditModal");
+                errorStore.setTooManyRequestsError("noteDialog");
             }
         } else {
             errorStore.addError(
@@ -98,19 +53,20 @@ export const useNoteStore = defineStore("note", () => {
         }
     }
 
-    // Actions
     function retrieveNotes(hdid: string): Promise<void> {
         if (status.value === LoadStatus.LOADED) {
             logger.debug(`Notes found stored, not querying!`);
             return Promise.resolve();
         } else {
-            logger.debug(`Retrieving User notes`);
-            setNotesRequested();
+            logger.debug(`Retrieving user notes`);
+            status.value = LoadStatus.REQUESTED;
             return noteService
                 .getNotes(hdid)
                 .then((result) => {
                     if (result.resultStatus === ResultType.Success) {
-                        setNotesLoaded(result.resourcePayload);
+                        notes.value = result.resourcePayload;
+                        error.value = undefined;
+                        status.value = LoadStatus.LOADED;
                     } else {
                         if (result.resultError) {
                             throw result.resultError;
@@ -127,19 +83,12 @@ export const useNoteStore = defineStore("note", () => {
         }
     }
 
-    function createNote(
-        hdid: string,
-        note: UserNote
-    ): Promise<UserNote | undefined> {
+    function createNote(hdid: string, note: UserNote): Promise<void> {
         return noteService
             .createNote(hdid, note)
             .then((result) => {
-                if (result !== undefined) {
-                    commitCreateNote(result);
-                } else {
-                    logger.debug(`Note creation returned undefined!`);
-                }
-                return result;
+                notes.value.push(result);
+                eventStore.emit(EventName.UpdateTimelineEntry, result.id);
             })
             .catch((error: ResultError) => {
                 handleError(error, ErrorType.Create);
@@ -147,12 +96,15 @@ export const useNoteStore = defineStore("note", () => {
             });
     }
 
-    function updateNote(hdid: string, note: UserNote): Promise<UserNote> {
+    function updateNote(hdid: string, note: UserNote): Promise<void> {
         return noteService
             .updateNote(hdid, note)
             .then((result) => {
-                commitUpdateNote(result);
-                return result;
+                const index = notes.value.findIndex((x) => x.id === result.id);
+                if (index >= 0) {
+                    notes.value[index] = result;
+                    eventStore.emit(EventName.UpdateTimelineEntry, result.id);
+                }
             })
             .catch((error: ResultError) => {
                 handleError(error, ErrorType.Update);
@@ -164,7 +116,11 @@ export const useNoteStore = defineStore("note", () => {
         return noteService
             .deleteNote(hdid, note)
             .then(() => {
-                commitDeleteNote(note);
+                const index = notes.value.findIndex((x) => x.id === note.id);
+                if (index >= 0) {
+                    notes.value.splice(index, 1);
+                    eventStore.emit(EventName.UpdateTimelineEntry, note.id);
+                }
             })
             .catch((error: ResultError) => {
                 handleError(error, ErrorType.Delete);
@@ -174,7 +130,6 @@ export const useNoteStore = defineStore("note", () => {
 
     return {
         notes,
-        lastOperation,
         notesCount,
         notesAreLoading,
         retrieveNotes,
