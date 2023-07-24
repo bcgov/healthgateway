@@ -1,15 +1,15 @@
 import { Component } from "vue";
 
-// import ClinicalDocumentTimelineComponent from "@/components/timeline/entryCard/ClinicalDocumentTimelineComponent.vue";
-// import Covid19LaboratoryOrderTimelineComponent from "@/components/timeline/entryCard/Covid19LaboratoryOrderTimelineComponent.vue";
-// import DiagnosticImagingTimelineComponent from "@/components/timeline/entryCard/DiagnosticImagingTimelineComponent.vue";
-// import EncounterTimelineComponent from "@/components/timeline/entryCard/EncounterTimelineComponent.vue";
-// import HospitalVisitTimelineComponent from "@/components/timeline/entryCard/HospitalVisitTimelineComponent.vue";
-// import ImmunizationTimelineComponent from "@/components/timeline/entryCard/ImmunizationTimelineComponent.vue";
-// import LaboratoryOrderTimelineComponent from "@/components/timeline/entryCard/LaboratoryOrderTimelineComponent.vue";
-// import MedicationRequestTimelineComponent from "@/components/timeline/entryCard/MedicationRequestTimelineComponent.vue";
-// import MedicationTimelineComponent from "@/components/timeline/entryCard/MedicationTimelineComponent.vue";
-// import NoteTimelineComponent from "@/components/timeline/entryCard/NoteTimelineComponent.vue";
+import ClinicalDocumentTimelineComponent from "@/components/private/timeline/entry/ClinicalDocumentTimelineComponent.vue";
+import Covid19TestResultTimelineComponent from "@/components/private/timeline/entry/Covid19TestResultTimelineComponent.vue";
+import DiagnosticImagingTimelineComponent from "@/components/private/timeline/entry/DiagnosticImagingTimelineComponent.vue";
+import HealthVisitTimelineComponent from "@/components/private/timeline/entry/HealthVisitTimelineComponent.vue";
+import HospitalVisitTimelineComponent from "@/components/private/timeline/entry/HospitalVisitTimelineComponent.vue";
+import ImmunizationTimelineComponent from "@/components/private/timeline/entry/ImmunizationTimelineComponent.vue";
+import LabResultTimelineComponent from "@/components/private/timeline/entry/LabResultTimelineComponent.vue";
+import MedicationTimelineComponent from "@/components/private/timeline/entry/MedicationTimelineComponent.vue";
+import NoteTimelineComponent from "@/components/private/timeline/entry/NoteTimelineComponent.vue";
+import SpecialAuthorityRequestTimelineComponent from "@/components/private/timeline/entry/SpecialAuthorityRequestTimelineComponent.vue";
 import { CommentEntryType } from "@/constants/commentEntryType";
 
 export enum EntryType {
@@ -31,7 +31,7 @@ export class EntryTypeDetails {
     description!: string;
     reportEventName!: string;
     icon!: string;
-    component?: Component; // TODO: Remove this optional
+    component!: Component;
     commentType!: CommentEntryType;
     eventName!: string;
     moduleName!: string;
@@ -52,7 +52,7 @@ entryTypeMap.set(EntryType.Immunization, {
     description:
         "View immunizations you received from public health and community pharmacies",
     icon: "syringe",
-    component: undefined, //ImmunizationTimelineComponent,
+    component: ImmunizationTimelineComponent,
     eventName: "immunizations",
     moduleName: "Immunization",
     reportEventName: "Immunization",
@@ -64,7 +64,7 @@ entryTypeMap.set(EntryType.Medication, {
     name: "Medications",
     description: "See your medication history dating back to 1995",
     icon: "pills",
-    component: undefined, //MedicationTimelineComponent,
+    component: MedicationTimelineComponent,
     eventName: "medications",
     moduleName: "Medication",
     reportEventName: "Medication",
@@ -77,7 +77,7 @@ entryTypeMap.set(EntryType.LabResult, {
     description:
         "Find out your lab results within about 48 hours of taking a test",
     icon: "microscope",
-    component: undefined, //LaboratoryOrderTimelineComponent,
+    component: LabResultTimelineComponent,
     eventName: "lab_results",
     moduleName: "AllLaboratory",
     reportEventName: "Laboratory Tests",
@@ -90,7 +90,7 @@ entryTypeMap.set(EntryType.Covid19TestResult, {
     description:
         "View and download your COVID‑19 test results as soon as they are available",
     icon: "vial",
-    component: undefined, //Covid19LaboratoryOrderTimelineComponent,
+    component: Covid19TestResultTimelineComponent,
     eventName: "covid_test",
     moduleName: "Laboratory",
     reportEventName: "COVID-19 Test",
@@ -103,7 +103,7 @@ entryTypeMap.set(EntryType.HealthVisit, {
     description:
         "See the last seven years of your health visits billed to the BC Medical Services Plan",
     icon: "stethoscope",
-    component: undefined, //EncounterTimelineComponent,
+    component: HealthVisitTimelineComponent,
     eventName: "health_visits",
     moduleName: "Encounter",
     reportEventName: "Health Visits",
@@ -115,7 +115,7 @@ entryTypeMap.set(EntryType.Note, {
     name: "My Notes",
     description: "Create and edit your own notes on your health records",
     icon: "edit",
-    component: undefined, //NoteTimelineComponent,
+    component: NoteTimelineComponent,
     eventName: "my_notes",
     moduleName: "Note",
     reportEventName: "Notes",
@@ -128,7 +128,7 @@ entryTypeMap.set(EntryType.SpecialAuthorityRequest, {
     description:
         "Check the status of your Special Authority Requests since March 2021",
     icon: "file-medical",
-    component: undefined, //MedicationRequestTimelineComponent,
+    component: SpecialAuthorityRequestTimelineComponent,
     eventName: "special_authority",
     moduleName: "MedicationRequest",
     reportEventName: "Special Authority Requests",
@@ -141,7 +141,7 @@ entryTypeMap.set(EntryType.ClinicalDocument, {
     description:
         "View documents shared by your care providers. You can get consultation notes, hospital discharge summaries, outpatient clinic notes and more.",
     icon: "file-waveform",
-    component: undefined, //ClinicalDocumentTimelineComponent,
+    component: ClinicalDocumentTimelineComponent,
     eventName: "document",
     moduleName: "ClinicalDocument",
     reportEventName: "Clinical Documents",
@@ -154,7 +154,7 @@ entryTypeMap.set(EntryType.HospitalVisit, {
     description:
         "View a list of your hospital visits. You can get the admission and discharge dates, location and provider for each visit.",
     icon: "house-medical",
-    component: undefined, //HospitalVisitTimelineComponent,
+    component: HospitalVisitTimelineComponent,
     eventName: "hospital_visits",
     moduleName: "HospitalVisit",
     reportEventName: "Hospital Visits",
@@ -166,7 +166,7 @@ entryTypeMap.set(EntryType.DiagnosticImaging, {
     name: "Imaging Reports",
     description: "Get imaging reports for X-rays, MRIs, ultrasounds and more.",
     icon: "x-ray",
-    component: undefined, //DiagnosticImagingTimelineComponent,
+    component: DiagnosticImagingTimelineComponent,
     eventName: "diagnostic_imaging",
     moduleName: "DiagnosticImaging",
     reportEventName: "Diagnostic Imaging Exams",
