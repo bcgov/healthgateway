@@ -371,107 +371,69 @@ if (!pcrTestKitRegistrationProps.serialNumber) {
         <v-row>
             <v-col>
                 <form @submit.prevent="handleSubmit">
-                    <v-row
+                    <DisplayFieldComponent
                         v-if="dataSource === PcrDataSource.Keycloak"
-                        class="pt-2"
-                    >
-                        <v-col>
-                            <DisplayFieldComponent
-                                name="Name"
-                                :value="fullName"
-                            />
-                        </v-col>
-                    </v-row>
-                    <v-row v-if="noTestKitCode" class="mt-2">
+                        name="Name"
+                        :value="fullName"
+                    />
+                    <v-text-field
+                        v-if="noTestKitCode"
+                        v-model="v$.testKitCode.$model"
+                        label="Test Kit Code"
+                        class="mb-2"
+                        data-testid="test-kit-code-input"
+                        placeholder="Test Kit Code"
+                        :error-messages="
+                            ValidationUtil.getErrorMessages(v$.testKitCode)
+                        "
+                        @blur="v$.testKitCode.$touch()"
+                    />
+                    <v-row v-if="dataSource === PcrDataSource.Manual">
                         <v-col>
                             <v-text-field
-                                v-model="v$.testKitCode.$model"
-                                label="Test Kit Code"
-                                class="mt-2"
-                                data-testid="test-kit-code-input"
-                                placeholder="Test Kit Code"
+                                v-model="v$.firstName.$model"
+                                label="First Name"
+                                class="mb-2"
+                                data-testid="first-name-input"
+                                placeholder="First Name"
                                 :error-messages="
                                     ValidationUtil.getErrorMessages(
-                                        v$.testKitCode
+                                        v$.firstName
                                     )
                                 "
-                                @blur="v$.testKitCode.$touch()"
+                                @blur="v$.firstName.$touch()"
                             />
-                        </v-col>
-                    </v-row>
-                    <v-row
-                        v-if="dataSource === PcrDataSource.Manual"
-                        data-testid="pcr-name"
-                    >
-                        <v-col>
-                            <v-row>
-                                <v-col>
-                                    <v-text-field
-                                        v-model="v$.firstName.$model"
-                                        label="First Name"
-                                        data-testid="first-name-input"
-                                        placeholder="First Name"
-                                        :error-messages="
-                                            ValidationUtil.getErrorMessages(
-                                                v$.firstName
-                                            )
-                                        "
-                                        @blur="v$.firstName.$touch()"
-                                    />
-                                </v-col>
-                            </v-row>
-                            <v-row>
-                                <v-col>
-                                    <v-text-field
-                                        v-model="v$.lastName.$model"
-                                        label="Last Name"
-                                        data-testid="last-name-input"
-                                        type="text"
-                                        placeholder="Last Name"
-                                        :error-messages="
-                                            ValidationUtil.getErrorMessages(
-                                                v$.lastName
-                                            )
-                                        "
-                                        @blur="v$.lastName.$touch()"
-                                    />
-                                </v-col>
-                            </v-row>
-                        </v-col>
-                    </v-row>
-                    <v-row
-                        v-if="dataSource === PcrDataSource.Manual"
-                        data-testid="pcr-phn"
-                    >
-                        <v-col v-if="dataSource === PcrDataSource.Manual">
-                            <v-row>
-                                <v-col>
-                                    <v-text-field
-                                        v-model="v$.phn.$model"
-                                        v-maska:[phnMaskOptions]
-                                        label="Personal Health Number"
-                                        data-testid="phn-input"
-                                        placeholder="PHN"
-                                        aria-label="Personal Health Number"
-                                        :error-messages="
-                                            ValidationUtil.getErrorMessages(
-                                                v$.phn
-                                            )
-                                        "
-                                        :disabled="noPhn"
-                                        @blur="v$.phn.$touch()"
-                                    />
-                                </v-col>
-                            </v-row>
-                        </v-col>
-                    </v-row>
-                    <v-row>
-                        <v-col>
+                            <v-text-field
+                                v-model="v$.lastName.$model"
+                                label="Last Name"
+                                class="mb-2"
+                                data-testid="last-name-input"
+                                type="text"
+                                placeholder="Last Name"
+                                :error-messages="
+                                    ValidationUtil.getErrorMessages(v$.lastName)
+                                "
+                                @blur="v$.lastName.$touch()"
+                            />
+                            <v-text-field
+                                v-model="v$.phn.$model"
+                                v-maska:[phnMaskOptions]
+                                label="Personal Health Number"
+                                class="mb-2"
+                                data-testid="phn-input"
+                                placeholder="PHN"
+                                aria-label="Personal Health Number"
+                                :error-messages="
+                                    ValidationUtil.getErrorMessages(v$.phn)
+                                "
+                                :disabled="noPhn"
+                                @blur="v$.phn.$touch()"
+                            />
                             <v-checkbox
-                                v-if="dataSource === PcrDataSource.Manual"
                                 v-model="noPhn"
                                 data-testid="phn-checkbox"
                                 color="primary"
+                                hide-details
                                 @update:model-value="setHasNoPhn"
                             >
                                 <template #label>
@@ -489,6 +451,7 @@ if (!pcrTestKitRegistrationProps.serialNumber) {
                                                 v-bind="props"
                                                 icon="info-circle"
                                                 color="primary"
+                                                size="x-small"
                                             ></v-icon>
                                         </template>
                                     </v-tooltip>
@@ -496,67 +459,50 @@ if (!pcrTestKitRegistrationProps.serialNumber) {
                             </v-checkbox>
                         </v-col>
                     </v-row>
-                    <v-row
-                        v-if="dataSource === PcrDataSource.Manual && noPhn"
-                        data-testid="pcr-home-address"
-                    >
+                    <v-row v-if="dataSource === PcrDataSource.Manual && noPhn">
                         <v-col>
-                            <v-row>
-                                <v-col>
-                                    <v-text-field
-                                        v-model="v$.streetAddress.$model"
-                                        lable="Street Address"
-                                        data-testid="pcr-street-address-input"
-                                        type="text"
-                                        placeholder="Address"
-                                        :error-messages="
-                                            ValidationUtil.getErrorMessages(
-                                                v$.streetAddress
-                                            )
-                                        "
-                                        @blur="v$.streetAddress.$touch()"
-                                    />
-                                </v-col>
-                            </v-row>
-                            <v-row>
-                                <v-col>
-                                    <v-text-field
-                                        v-model="v$.city.$model"
-                                        label="City"
-                                        data-testid="pcr-city-input"
-                                        type="text"
-                                        placeholder="City"
-                                        :error-messages="
-                                            ValidationUtil.getErrorMessages(
-                                                v$.city
-                                            )
-                                        "
-                                        @blur="v$.city.$touch()"
-                                    />
-                                </v-col>
-                            </v-row>
-                            <v-row>
-                                <v-col>
-                                    <v-text-field
-                                        v-model="v$.postalOrZip.$model"
-                                        v-maska:[postalCodeMaskOptions]
-                                        label="Postal Code"
-                                        data-testid="pcr-zip-input"
-                                        type="text"
-                                        placeholder="Postal Code"
-                                        :error-messages="
-                                            ValidationUtil.getErrorMessages(
-                                                v$.postalOrZip
-                                            )
-                                        "
-                                        @blur="v$.postalOrZip.$touch()"
-                                    />
-                                </v-col>
-                            </v-row>
+                            <v-text-field
+                                v-model="v$.streetAddress.$model"
+                                lable="Street Address"
+                                data-testid="pcr-street-address-input"
+                                type="text"
+                                placeholder="Address"
+                                :error-messages="
+                                    ValidationUtil.getErrorMessages(
+                                        v$.streetAddress
+                                    )
+                                "
+                                @blur="v$.streetAddress.$touch()"
+                            />
+                            <v-text-field
+                                v-model="v$.city.$model"
+                                label="City"
+                                data-testid="pcr-city-input"
+                                type="text"
+                                placeholder="City"
+                                :error-messages="
+                                    ValidationUtil.getErrorMessages(v$.city)
+                                "
+                                @blur="v$.city.$touch()"
+                            />
+                            <v-text-field
+                                v-model="v$.postalOrZip.$model"
+                                v-maska:[postalCodeMaskOptions]
+                                label="Postal Code"
+                                data-testid="pcr-zip-input"
+                                type="text"
+                                placeholder="Postal Code"
+                                :error-messages="
+                                    ValidationUtil.getErrorMessages(
+                                        v$.postalOrZip
+                                    )
+                                "
+                                @blur="v$.postalOrZip.$touch()"
+                            />
                         </v-col>
                     </v-row>
-                    <v-row data-testid="pcr-dob" class="mt-2">
-                        <v-col v-if="dataSource === PcrDataSource.Manual">
+                    <v-row>
+                        <v-col>
                             <HgDatePickerComponent
                                 v-model="v$.dob.$model"
                                 label="Date of Birth"
@@ -571,38 +517,30 @@ if (!pcrTestKitRegistrationProps.serialNumber) {
                             />
                         </v-col>
                     </v-row>
-                    <v-row
-                        v-if="dataSource === PcrDataSource.Manual"
-                        data-testid="pcr-mobile-number"
-                    >
+                    <v-row v-if="dataSource === PcrDataSource.Manual">
                         <v-col>
-                            <v-row>
-                                <v-col>
-                                    <v-text-field
-                                        v-model="v$.contactPhoneNumber.$model"
-                                        v-maska:[phoneMaskOptions]
-                                        data-testid="contact-phone-number-input"
-                                        type="tel"
-                                        maxlength="14"
-                                        placeholder="(###) ###-####"
-                                        :error-messages="
-                                            ValidationUtil.getErrorMessages(
-                                                v$.contactPhoneNumber
-                                            )
-                                        "
-                                        @blur="v$.contactPhoneNumber.$touch()"
-                                    >
-                                        <template #label>
-                                            Mobile Number
-                                            <span class="ml-2 text-body-2">
-                                                (to receive a notification once
-                                                your COVID‑19 test result is
-                                                available)
-                                            </span>
-                                        </template>
-                                    </v-text-field>
-                                </v-col>
-                            </v-row>
+                            <v-text-field
+                                v-model="v$.contactPhoneNumber.$model"
+                                v-maska:[phoneMaskOptions]
+                                data-testid="contact-phone-number-input"
+                                type="tel"
+                                maxlength="14"
+                                placeholder="(###) ###-####"
+                                :error-messages="
+                                    ValidationUtil.getErrorMessages(
+                                        v$.contactPhoneNumber
+                                    )
+                                "
+                                @blur="v$.contactPhoneNumber.$touch()"
+                            >
+                                <template #label>
+                                    Mobile Number
+                                    <span class="ml-2 text-body-2">
+                                        (to receive a notification once your
+                                        COVID‑19 test result is available)
+                                    </span>
+                                </template>
+                            </v-text-field>
                         </v-col>
                     </v-row>
                     <v-row>
