@@ -15,7 +15,7 @@ import { Path } from "@/constants/path";
 const route = useRoute();
 
 const hideErrorAlerts = computed(() =>
-    currentPathMatches(Path.Root, Path.VaccineCard, Path.Queue, Path.Busy)
+    currentPathMatches(Path.Root, Path.Queue, Path.Busy)
 );
 const isHeaderVisible = computed(
     () => !currentPathMatches(Path.LoginCallback, Path.VaccineCard)
@@ -28,7 +28,6 @@ const isCommunicationVisible = computed(
 const isResourceCentreAvailable = computed(() =>
     currentPathMatches(Path.Dependents, Path.Reports, Path.Timeline)
 );
-
 const isFooterVisible = computed(
     () =>
         !currentPathMatches(
@@ -52,7 +51,8 @@ function currentPathMatches(...paths: string[]): boolean {
         <NotificationCentreComponent />
         <v-main class="position-relative">
             <CommunicationComponent v-if="isCommunicationVisible" />
-            <v-container class="pt-6">
+            <router-view v-if="currentPathMatches(Path.VaccineCard)" />
+            <v-container v-else class="pt-6">
                 <ErrorCardComponent v-if="!hideErrorAlerts" />
                 <router-view />
             </v-container>

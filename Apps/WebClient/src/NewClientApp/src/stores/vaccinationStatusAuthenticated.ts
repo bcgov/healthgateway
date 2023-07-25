@@ -4,6 +4,7 @@ import { computed, ref } from "vue";
 import { ActionType } from "@/constants/actionType";
 import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import { ResultType } from "@/constants/resulttype";
+import { VaccinationState } from "@/constants/vaccinationState";
 import { container } from "@/ioc/container";
 import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
 import CovidVaccineRecord from "@/models/covidVaccineRecord";
@@ -63,6 +64,16 @@ export const useVaccinationStatusAuthenticatedStore = defineStore(
 
         const vaccinationStatusStatusMessage = computed(
             () => vaccination.value.statusMessage
+        );
+
+        const isPartiallyVaccinated = computed(
+            () =>
+                vaccination.value.data?.state ===
+                VaccinationState.PartiallyVaccinated
+        );
+
+        const isVaccinationNotFound = computed(
+            () => vaccination.value.data?.state === VaccinationState.NotFound
         );
 
         // Getters
@@ -343,6 +354,8 @@ export const useVaccinationStatusAuthenticatedStore = defineStore(
             vaccinationStatusIsLoading,
             vaccinationStatusError,
             vaccinationStatusStatusMessage,
+            isPartiallyVaccinated,
+            isVaccinationNotFound,
             vaccineRecordState,
             retrieveVaccinationStatus,
             retrieveVaccineRecord,
