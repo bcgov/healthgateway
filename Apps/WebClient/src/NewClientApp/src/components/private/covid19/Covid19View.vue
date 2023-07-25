@@ -1,10 +1,4 @@
 <script setup lang="ts">
-import { library } from "@fortawesome/fontawesome-svg-core";
-import {
-    faCheckCircle,
-    faChevronLeft,
-    faChevronRight,
-} from "@fortawesome/free-solid-svg-icons";
 import { saveAs } from "file-saver";
 import html2canvas from "html2canvas";
 import { computed, ref, watch } from "vue";
@@ -30,8 +24,6 @@ import { useImmunizationStore } from "@/stores/immunization";
 import { useUserStore } from "@/stores/user";
 import { useVaccinationStatusAuthenticatedStore } from "@/stores/vaccinationStatusAuthenticated";
 import SnowPlow from "@/utility/snowPlow";
-
-library.add(faCheckCircle, faChevronLeft, faChevronRight);
 
 const breadcrumbItems: BreadcrumbItem[] = [
     {
@@ -255,231 +247,208 @@ fetchVaccineCardData();
 </script>
 
 <template>
-    <div class="background flex-grow-1 d-flex flex-column">
-        <BreadcrumbComponent :items="breadcrumbItems" />
-        <LoadingComponent
-            :is-loading="isLoading"
-            :text="loadingStatusMessage"
-        />
+    <BreadcrumbComponent :items="breadcrumbItems" />
+    <LoadingComponent :is-loading="isLoading" :text="loadingStatusMessage" />
+    <div class="d-flex flex-column align-center">
         <div
             v-if="!isVaccinationStatusLoading && !vaccinationStatusError"
             v-show="!isImmunizationHistoryShown"
-            class="vaccine-card align-self-center w-100 pa-4"
+            class="vaccine-card w-100 rounded elevation-6"
         >
-            <div class="bg-white rounded shadow">
-                <VaccineCardComponent
-                    :status="vaccinationStatus"
-                    :show-generic-save-instructions="!downloadButtonShown"
-                    include-previous-button
-                    include-next-button
-                    @click-previous-button="showImmunizationHistory(true)"
-                    @click-next-button="showImmunizationHistory(true)"
+            <VaccineCardComponent
+                :status="vaccinationStatus"
+                :show-generic-save-instructions="!downloadButtonShown"
+                include-previous-button
+                include-next-button
+                @click-previous-button="showImmunizationHistory(true)"
+                @click-next-button="showImmunizationHistory(true)"
+            />
+            <div
+                v-if="downloadButtonShown"
+                class="pa-4 d-flex d-print-none justify-center"
+            >
+                <HgButtonComponent
+                    v-if="saveExportPdfShown"
+                    variant="primary"
+                    append-icon="fas fa-caret-down"
+                    data-testid="save-dropdown-btn"
+                >
+                    <span>Save as</span>
+                    <v-menu activator="parent">
+                        <v-list>
+                            <v-list-item
+                                title="PDF"
+                                data-testid="save-as-pdf-dropdown-item"
+                                @click="showConfirmationModal()"
+                            />
+                            <v-list-item
+                                title="Image"
+                                data-testid="save-as-image-dropdown-item"
+                                @click="showVaccineCardMessageModal()"
+                            />
+                        </v-list>
+                    </v-menu>
+                </HgButtonComponent>
+                <HgButtonComponent
+                    v-else
+                    data-testid="save-card-btn"
+                    variant="primary"
+                    text="Save a Copy"
+                    @click="showVaccineCardMessageModal()"
                 />
-                <div
-                    v-if="downloadButtonShown"
-                    class="actions pa-4 d-flex d-print-none justify-center"
-                >
-                    <HgButtonComponent
-                        v-if="!saveExportPdfShown"
-                        data-testid="save-card-btn"
-                        aria-label="Save a Copy"
-                        variant="primary"
-                        text="Save a Copy"
-                        @click="showVaccineCardMessageModal()"
-                    >
-                    </HgButtonComponent>
-                    <HgButtonComponent
-                        v-if="saveExportPdfShown"
-                        variant="primary"
-                        append-icon="fas fa-caret-down"
-                        data-testid="save-dropdown-btn"
-                    >
-                        <span>Save as</span>
-                        <v-menu activator="parent">
-                            <v-list>
-                                <v-list-item
-                                    title="PDF"
-                                    data-testid="save-as-pdf-dropdown-item"
-                                    @click="showConfirmationModal()"
-                                />
-                                <v-list-item
-                                    title="Image"
-                                    data-testid="save-as-image-dropdown-item"
-                                    @click="showVaccineCardMessageModal()"
-                                />
-                            </v-list>
-                        </v-menu>
-                    </HgButtonComponent>
-                </div>
-                <div
-                    v-if="
-                        vaccinationStatusAuthenticatedStore.isPartiallyVaccinated ||
-                        vaccinationStatusAuthenticatedStore.isVaccinationNotFound
-                    "
-                    class="d-print-none px-4 pb-4"
-                    :class="{ 'pt-4': !downloadButtonShown }"
-                >
-                    <div class="callout">
-                        <p class="ma-0">
-                            To learn more, visit
-                            <a
-                                href="https://www2.gov.bc.ca/gov/content/covid-19/vaccine/proof"
-                                rel="noopener"
-                                target="_blank"
-                                >BC Proof of Vaccination</a
-                            >.
-                        </p>
-                    </div>
-                </div>
             </div>
-            <MessageModalComponent
-                ref="vaccineCardMessageModal"
-                title="Vaccine Card Download"
-                message="Next, you'll see an image of your card.
-                                Depending on your browser, you may need to
-                                manually save the image to your files or photos.
-                                If you want to print, we recommend you use the print function in
-                                your browser."
-                @submit="download"
-            />
-            <MessageModalComponent
-                ref="downloadConfirmationModal"
-                title="Sensitive Document Download"
-                message="The file that you are downloading contains personal information. If you are on a public computer, please ensure that the file is deleted before you log off."
-                @submit="retrieveVaccinePdf"
-            />
+            <div
+                v-if="
+                    vaccinationStatusAuthenticatedStore.isPartiallyVaccinated ||
+                    vaccinationStatusAuthenticatedStore.isVaccinationNotFound
+                "
+                class="d-print-none px-4 pb-4"
+                :class="{ 'pt-4': !downloadButtonShown }"
+            >
+                <p class="text-body-1">
+                    To learn more, visit
+                    <a
+                        href="https://www2.gov.bc.ca/gov/content/covid-19/vaccine/proof"
+                        rel="noopener"
+                        target="_blank"
+                        class="text-link"
+                        >BC Proof of Vaccination</a
+                    >.
+                </p>
+            </div>
         </div>
-        <div
+        <v-row
             v-if="!isHistoryLoading && !immunizationsError"
             v-show="isImmunizationHistoryShown"
-            class="immunization-history flex-grow-1 align-self-center w-100 pa-4"
+            no-gutters
+            class="immunization-history w-100 rounded elevation-6"
         >
-            <div class="flex-grow-1 bg-white rounded shadow">
-                <v-row no-gutters>
-                    <v-col cols="auto" class="d-print-none">
-                        <HgButtonComponent
-                            color="primary"
-                            variant="link"
-                            data-testid="vr-chevron-left-btn"
-                            class="rounded-left h-100"
-                            prepend-icon="chevron-left"
-                            @click="showImmunizationHistory(false)"
+            <v-col cols="auto" class="d-print-none">
+                <HgButtonComponent
+                    data-testid="vr-chevron-left-btn"
+                    class="rounded-s rounded-e-0 h-100"
+                    color="primary"
+                    variant="link"
+                    size="x-small"
+                    @click="showImmunizationHistory(false)"
+                >
+                    <v-icon icon="chevron-left" size="x-large" />
+                </HgButtonComponent>
+            </v-col>
+            <v-col class="pt-4 pb-6 px-2">
+                <v-row no-gutters class="d-flex align-center justify-center">
+                    <v-col cols="auto">
+                        <img
+                            class="img-fluid my-4"
+                            src="@/assets/images/gov/bcid-logo-en.svg"
+                            width="152"
+                            alt="BC Mark"
                         />
                     </v-col>
-                    <v-col class="pt-4 pb-6 px-2">
-                        <v-row
-                            no-gutters
-                            class="d-flex align-center justify-center"
-                        >
-                            <v-col cols="auto">
-                                <img
-                                    class="img-fluid my-4"
-                                    src="@/assets/images/gov/bcid-logo-en.svg"
-                                    width="152"
-                                    alt="BC Mark"
-                                />
-                            </v-col>
-                            <v-col cols="auto">
-                                <h3 class="text-center ma-0">
-                                    COVID‑19 Vaccination Record
-                                </h3>
-                            </v-col>
-                        </v-row>
-                        <div class="my-4">
-                            <div class="text-muted small">Name:</div>
-                            <div class="font-weight-bold">
-                                {{ patientName }}
-                            </div>
-                        </div>
-                        <div class="my-4">
-                            <div class="text-muted small">Date of Birth:</div>
-                            <div
-                                class="font-weight-bold"
-                                data-testid="patientBirthdate"
-                            >
-                                {{ patientBirthdate }}
-                            </div>
-                        </div>
-                        <div
-                            v-for="(dose, index) in doses"
-                            :key="index"
-                            class="my-4"
-                        >
-                            <v-row no-gutters class="mb-2 d-flex align-center">
-                                <v-col cols="auto">
-                                    <div
-                                        class="text-muted font-weight-bold mr-2"
-                                        :data-testid="'dose-' + (index + 1)"
-                                    >
-                                        Dose {{ index + 1 }}
-                                    </div>
-                                </v-col>
-                                <v-col>
-                                    <hr />
-                                </v-col>
-                            </v-row>
-                            <v-row no-gutters class="justify-content-end">
-                                <v-col>
-                                    <v-row no-gutters align-v="baseline">
-                                        <v-col
-                                            cols="auto"
-                                            class="mr-4 font-weight-bold"
-                                        >
-                                            {{ dose.product }}
-                                        </v-col>
-                                        <v-col
-                                            v-if="dose.lot"
-                                            class="text-muted small"
-                                        >
-                                            Lot {{ dose.lot }}
-                                        </v-col>
-                                    </v-row>
-                                    <div class="text-muted small">
-                                        {{ dose.provider }}
-                                    </div>
-                                </v-col>
-                                <v-col
-                                    cols="auto"
-                                    data-testid="doseDate"
-                                    class="ml-4 font-weight-bold"
-                                >
-                                    {{ dose.date }}
-                                </v-col>
-                            </v-row>
-                        </div>
-                    </v-col>
-                    <v-col cols="auto" class="d-print-none">
-                        <HgButtonComponent
-                            color="primary"
-                            variant="link"
-                            data-testid="vr-chevron-right-btn"
-                            class="rounded-right h-100"
-                            prepend-icon="chevron-right"
-                            @click="showImmunizationHistory(false)"
-                        />
+                    <v-col cols="auto">
+                        <h3 class="text-center ma-0">
+                            COVID‑19 Vaccination Record
+                        </h3>
                     </v-col>
                 </v-row>
-            </div>
-        </div>
+                <div class="my-4">
+                    <div class="text-body-2 text-medium-emphasis">Name:</div>
+                    <div class="text-body-1 font-weight-bold">
+                        {{ patientName }}
+                    </div>
+                </div>
+                <div class="my-4">
+                    <div class="text-body-2 text-medium-emphasis">
+                        Date of Birth:
+                    </div>
+                    <div
+                        data-testid="patientBirthdate"
+                        class="text-body-1 font-weight-bold"
+                    >
+                        {{ patientBirthdate }}
+                    </div>
+                </div>
+                <div v-for="(dose, index) in doses" :key="index" class="my-4">
+                    <v-row dense class="d-flex align-center">
+                        <v-col
+                            cols="auto"
+                            :data-testid="'dose-' + (index + 1)"
+                            class="text-body-1 font-weight-bold text-medium-emphasis"
+                        >
+                            Dose {{ index + 1 }}
+                        </v-col>
+                        <v-col><v-divider role="presentation" /></v-col>
+                    </v-row>
+                    <v-row dense>
+                        <v-col>
+                            <v-row dense class="align-baseline">
+                                <v-col
+                                    cols="auto"
+                                    class="text-body-1 font-weight-bold"
+                                >
+                                    {{ dose.product }}
+                                </v-col>
+                                <v-col
+                                    v-if="dose.lot"
+                                    class="text-body-2 text-medium-emphasis"
+                                >
+                                    Lot {{ dose.lot }}
+                                </v-col>
+                            </v-row>
+                            <div class="text-body-2 text-medium-emphasis">
+                                {{ dose.provider }}
+                            </div>
+                        </v-col>
+                        <v-col
+                            cols="auto"
+                            data-testid="doseDate"
+                            class="text-body-1 font-weight-bold"
+                        >
+                            {{ dose.date }}
+                        </v-col>
+                    </v-row>
+                </div>
+            </v-col>
+            <v-col cols="auto" class="d-print-none">
+                <HgButtonComponent
+                    data-testid="vr-chevron-right-btn"
+                    class="rounded-e rounded-s-0 h-100"
+                    color="primary"
+                    variant="link"
+                    size="x-small"
+                    @click="showImmunizationHistory(false)"
+                >
+                    <v-icon icon="chevron-right" size="x-large" />
+                </HgButtonComponent>
+            </v-col>
+        </v-row>
     </div>
+    <MessageModalComponent
+        ref="vaccineCardMessageModal"
+        title="Vaccine Card Download"
+        message="Next, you'll see an image of your card. Depending on your
+                    browser, you may need to manually save the image to your files
+                    or photos. If you want to print, we recommend you use the print
+                    function in your browser."
+        @submit="download"
+    />
+    <MessageModalComponent
+        ref="downloadConfirmationModal"
+        title="Sensitive Document Download"
+        message="The file that you are downloading contains personal information.
+                    If you are on a public computer, please ensure that the file is
+                    deleted before you log off."
+        @submit="retrieveVaccinePdf"
+    />
 </template>
 
 <style lang="scss" scoped>
 .vaccine-card {
     max-width: 438px;
     print-color-adjust: exact;
-
-    .actions {
-        border-bottom-left-radius: 0.25rem;
-        border-bottom-right-radius: 0.25rem;
-    }
 }
 
 .immunization-history {
     max-width: 700px;
-}
-
-a {
-    cursor: pointer !important;
 }
 </style>
