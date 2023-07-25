@@ -3,9 +3,9 @@ import { computed, ref } from "vue";
 
 import { container } from "@/ioc/container";
 import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
-import { DateWrapper } from "@/models/dateWrapper";
+import { DateWrapper, IDateWrapper } from "@/models/dateWrapper";
 import { StringISODate } from "@/models/dateWrapper";
-import { TimelineFilterBuilder } from "@/models/timelineFilter";
+import { TimelineFilterBuilder } from "@/models/timeline/timelineFilter";
 import { ILogger } from "@/services/interfaces";
 
 export const useTimelineStore = defineStore("timeline", () => {
@@ -24,11 +24,11 @@ export const useTimelineStore = defineStore("timeline", () => {
         () => timeLineFilter.value.hasActiveFilter() || keyword.value !== ""
     );
 
-    const linearDate = computed(() => {
+    const linearDate = computed<IDateWrapper>(() => {
         return new DateWrapper(timeLineLinearDate.value);
     });
 
-    const selectedDate = computed(() => {
+    const selectedDate = computed<IDateWrapper | undefined>(() => {
         if (timeLineSelectedDate.value === undefined) {
             return undefined;
         }

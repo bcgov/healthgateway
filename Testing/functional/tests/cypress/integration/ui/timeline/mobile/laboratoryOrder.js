@@ -265,7 +265,7 @@ describe("Laboratory Orders Refresh", () => {
 
     it("Validate Refresh", () => {
         cy.log("Verify on timeline and refresh in progress");
-        cy.get("[data-testid=loading-in-progress]").should("exist");
+        cy.get("[data-testid=loading-toast]").should("exist");
         cy.get("[data-testid=laboratory-orders-queued-alert-message]").should(
             "not.exist"
         );
@@ -274,7 +274,7 @@ describe("Laboratory Orders Refresh", () => {
         cy.log(
             "Verify refresh in progress call from PHSA has returned 1 record."
         );
-        cy.get("[data-testid=displayCountText]")
+        cy.get("[data-testid=timeline-record-count]")
             .should("be.visible")
             .contains("Displaying 1 out of 1 records");
 
@@ -282,11 +282,11 @@ describe("Laboratory Orders Refresh", () => {
         cy.log(
             "Verify refresh in progress call from PHSA has returned remaining records."
         );
-        cy.get("[data-testid=loading-in-progress]").should("exist");
-        cy.get("[data-testid=displayCountText]")
+        cy.get("[data-testid=loading-toast]").should("exist");
+        cy.get("[data-testid=timeline-record-count]")
             .should("be.visible")
             .contains("Displaying 9 out of 9 records");
-        cy.get("[data-testid=loading-in-progress]").should("not.exist");
+        cy.get("[data-testid=loading-toast]").should("not.exist");
     });
 });
 

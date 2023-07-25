@@ -15,7 +15,7 @@ module.exports = {
         "unused-imports/no-unused-imports": "warn",
         "unused-imports/no-unused-vars": [
             "warn",
-            { vars: "all", args: "after-used" },
+            { vars: "all", args: "after-used", argsIgnorePattern: "^_" },
         ],
         "simple-import-sort/imports": "error",
         "simple-import-sort/exports": "error",

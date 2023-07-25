@@ -1,6 +1,6 @@
 import { EntryType } from "@/constants/entryType";
 import { DateWrapper } from "@/models/dateWrapper";
-import TimelineFilter from "@/models/timelineFilter";
+import TimelineFilter from "@/models/timeline/timelineFilter";
 import { UserComment } from "@/models/userComment";
 
 export class DateGroup {

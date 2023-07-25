@@ -7,7 +7,7 @@ import HgIconButtonComponent from "@/components/common/HgIconButtonComponent.vue
 import { EntryType } from "@/constants/entryType";
 import { DateWrapper, StringISODateTime } from "@/models/dateWrapper";
 import Notification, { NotificationActionType } from "@/models/notification";
-import { TimelineFilterBuilder } from "@/models/timelineFilter";
+import { TimelineFilterBuilder } from "@/models/timeline/timelineFilter";
 import { useNotificationStore } from "@/stores/notification";
 import { useTimelineStore } from "@/stores/timeline";
 

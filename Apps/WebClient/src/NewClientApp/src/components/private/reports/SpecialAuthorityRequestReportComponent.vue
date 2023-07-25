@@ -32,7 +32,7 @@ const emit = defineEmits<{
 
 defineExpose({ generateReport });
 
-interface MedicationRequestRow {
+interface SpecialAuthorityRequestRow {
     date: string;
     requested_drug_name: string;
     status: string;
@@ -46,7 +46,6 @@ const fields: ReportField[] = [
     {
         key: "date",
         title: "Date",
-
         tdAttr: { "data-testid": "medicationRequestDateItem" },
     },
     {
@@ -87,14 +86,11 @@ const visibleRecords = computed(() =>
         .specialAuthorityRequests(props.hdid)
         .filter((record) => props.filter.allowsDate(record.requestedDate))
         .sort((a, b) =>
-            DateSortUtility.descendingByString(
-                a.requestedDate,
-                b.requestedDate
-            )
+            DateSortUtility.descendingByString(a.requestedDate, b.requestedDate)
         )
 );
 const items = computed(() =>
-    visibleRecords.value.map<MedicationRequestRow>((x) => ({
+    visibleRecords.value.map<SpecialAuthorityRequestRow>((x) => ({
         date: DateWrapper.format(x.requestedDate),
         requested_drug_name: x.drugName || "",
         status: x.requestStatus || "",

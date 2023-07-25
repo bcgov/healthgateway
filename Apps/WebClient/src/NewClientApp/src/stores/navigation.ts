@@ -6,13 +6,11 @@ import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
 import { ILogger } from "@/services/interfaces";
 import { useAppStore } from "@/stores/app";
 
-export const useNavbarStore = defineStore("navbar", () => {
+export const useNavigationStore = defineStore("navigation", () => {
     const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-
     const appStore = useAppStore();
 
     const isSidebarOpenField = ref<boolean>();
-
     const isHeaderShown = ref<boolean>(true);
 
     const isSidebarOpen = computed(
@@ -20,12 +18,12 @@ export const useNavbarStore = defineStore("navbar", () => {
     );
 
     function toggleSidebar() {
-        logger.verbose(`useNavbarStore:toggleSidebar`);
+        logger.verbose(`toggleSidebar`);
         isSidebarOpenField.value = !isSidebarOpenField.value;
     }
 
     function setHeaderState(isOpen: boolean) {
-        logger.verbose(`useNavbarStore:setHeaderState`);
+        logger.verbose(`setHeaderState`);
         isHeaderShown.value = isOpen;
     }
 

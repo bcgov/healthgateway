@@ -12,7 +12,7 @@ import ReportHeader from "@/models/reportHeader";
 import { ReportFormatType, TemplateType } from "@/models/reportRequest";
 import RequestResult from "@/models/requestResult";
 import { ILogger, IReportService } from "@/services/interfaces";
-import { useHospitalVisitsStore } from "@/stores/hospitalVisits";
+import { useHospitalVisitStore } from "@/stores/hospitalVisit";
 import DateSortUtility from "@/utility/dateSortUtility";
 
 interface Props {
@@ -67,21 +67,18 @@ const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
 const reportService = container.get<IReportService>(
     SERVICE_IDENTIFIER.ReportService
 );
-const hospitalVisitsStore = useHospitalVisitsStore();
+const hospitalVisitStore = useHospitalVisitStore();
 
 const hospitalVisitsAreLoading = computed(() =>
-    hospitalVisitsStore.hospitalVisitsAreLoading(props.hdid)
+    hospitalVisitStore.hospitalVisitsAreLoading(props.hdid)
 );
 const isEmpty = computed(() => visibleRecords.value.length === 0);
 const visibleRecords = computed(() =>
-    hospitalVisitsStore
+    hospitalVisitStore
         .hospitalVisits(props.hdid)
         .filter((record) => props.filter.allowsDate(record.admitDateTime))
         .sort((a, b) =>
-            DateSortUtility.descendingByString(
-                a.admitDateTime,
-                b.admitDateTime
-            )
+            DateSortUtility.descendingByString(a.admitDateTime, b.admitDateTime)
         )
 );
 const items = computed(() =>
@@ -122,7 +119,7 @@ onMounted(() => {
     emit("on-is-empty-changed", isEmpty.value);
 });
 
-hospitalVisitsStore
+hospitalVisitStore
     .retrieveHospitalVisits(props.hdid)
     .catch((err) => logger.error(`Error loading hospital visit data: ${err}`));
 </script>

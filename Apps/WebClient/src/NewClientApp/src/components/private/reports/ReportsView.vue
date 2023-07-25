@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { computed } from "vue";
-
 import PageTitleComponent from "@/components/common/PageTitleComponent.vue";
 import ReportsComponent from "@/components/private/reports/ReportsComponent.vue";
 import BreadcrumbComponent from "@/components/site/BreadcrumbComponent.vue";
@@ -17,14 +15,12 @@ const breadcrumbItems: BreadcrumbItem[] = [
 ];
 
 const userStore = useUserStore();
-
-const hdid = computed(() => userStore.user.hdid);
 </script>
 
 <template>
     <div>
         <BreadcrumbComponent :items="breadcrumbItems" />
         <PageTitleComponent title="Export Records" />
-        <ReportsComponent :hdid="hdid" />
+        <ReportsComponent :hdid="userStore.hdid" />
     </div>
 </template>

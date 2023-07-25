@@ -1,14 +1,13 @@
 import { Duration } from "luxon";
 
 import { EntryType } from "@/constants/entryType";
-import Clinic from "@/models/clinic";
 import { DateWrapper } from "@/models/dateWrapper";
-import { Encounter } from "@/models/encounter";
-import TimelineEntry from "@/models/timelineEntry";
+import { Clinic, Encounter } from "@/models/encounter";
+import TimelineEntry from "@/models/timeline/timelineEntry";
 import { UserComment } from "@/models/userComment";
 
-// The encounter timeline entry model
-export default class EncounterTimelineEntry extends TimelineEntry {
+// The health visit timeline entry model
+export default class HealthVisitTimelineEntry extends TimelineEntry {
     public practitionerName: string;
     public specialtyDescription: string;
     public clinic: ClinicViewModel;

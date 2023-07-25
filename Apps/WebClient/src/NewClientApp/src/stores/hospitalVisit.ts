@@ -26,7 +26,7 @@ const defaultHospitalVisitState: HospitalVisitState = {
     queued: false,
 };
 
-export const useHospitalVisitsStore = defineStore("hospitalVisits", () => {
+export const useHospitalVisitStore = defineStore("hospitalVisit", () => {
     const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
     const hospitalVisitService = container.get<IHospitalVisitService>(
         SERVICE_IDENTIFIER.HospitalVisitService

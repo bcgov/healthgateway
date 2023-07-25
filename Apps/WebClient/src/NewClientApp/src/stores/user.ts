@@ -48,6 +48,8 @@ export const useUserStore = defineStore("user", () => {
     const patient = ref(new Patient());
     const patientRetrievalFailed = ref(false);
 
+    const hdid = computed(() => user.value.hdid);
+
     const blockedDataSources = computed(() => user.value.blockedDataSources);
 
     const lastLoginDateTime = computed(() => {
@@ -435,6 +437,7 @@ export const useUserStore = defineStore("user", () => {
 
     return {
         user,
+        hdid,
         blockedDataSources,
         lastLoginDateTime,
         oidcUserInfo,

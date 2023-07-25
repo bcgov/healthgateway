@@ -49,7 +49,7 @@ describe("Home Page", () => {
         cy.get("[data-testid=loading-toast]").should("be.visible");
         cy.get("[data-testid=content-placeholders]").should("not.exist");
         cy.get("[data-testid=loading-toast]").should("be.visible");
-        cy.get("[data-testid=displayCountText]").should("be.visible");
+        cy.get("[data-testid=timeline-record-count]").should("be.visible");
     });
 
     it("Home - Medication Card link to Timeline", () => {
@@ -64,7 +64,7 @@ describe("Home Page", () => {
         cy.get("[data-testid=loading-toast]").should("be.visible");
         cy.get("[data-testid=content-placeholders]").should("not.exist");
         cy.get("[data-testid=loading-toast]").should("not.exist");
-        cy.get("[data-testid=displayCountText]").should("be.visible");
+        cy.get("[data-testid=timeline-record-count]").should("be.visible");
     });
 
     it("Home - Side Menu Timeline link to Timeline", () => {
@@ -78,6 +78,6 @@ describe("Home Page", () => {
         cy.get("[data-testid=loading-toast]").should("be.visible");
         cy.get("[data-testid=content-placeholders]").should("not.exist");
         cy.get("[data-testid=loading-toast]").should("be.visible");
-        cy.get("[data-testid=displayCountText]").should("be.visible");
+        cy.get("[data-testid=timeline-record-count]").should("be.visible");
     });
 });

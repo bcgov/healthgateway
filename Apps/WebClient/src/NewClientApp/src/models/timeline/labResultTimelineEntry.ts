@@ -1,14 +1,14 @@
 import { EntryType } from "@/constants/entryType";
 import { DateWrapper } from "@/models/dateWrapper";
 import { LaboratoryOrder, LaboratoryTest } from "@/models/laboratory";
-import TimelineEntry from "@/models/timelineEntry";
+import TimelineEntry from "@/models/timeline/timelineEntry";
 import { UserComment } from "@/models/userComment";
 
 const resultOutOfRange = "Out of Range";
 const resultInRange = "In Range";
 
-// The laboratory order timeline entry model
-export default class LaboratoryOrderTimelineEntry extends TimelineEntry {
+// The lab result timeline entry model
+export default class LabResultTimelineEntry extends TimelineEntry {
     public labPdfId: string;
     public reportingLab: string;
     public reportId: string;
