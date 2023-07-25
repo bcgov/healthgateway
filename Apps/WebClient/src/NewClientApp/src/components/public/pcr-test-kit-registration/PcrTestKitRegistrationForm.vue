@@ -94,15 +94,27 @@ const emptyPcrTestData: PcrTestData = {
 };
 
 const validationMessages = {
+    firstName: {
+        required: "First name is required.",
+    },
+    lastName: {
+        required: "Last name is required.",
+    },
     phn: {
         formatted: "A valid PHN is required.",
+    },
+    address: {
+        required: "Address is required.",
+    },
+    city: {
+        required: "City is required.",
     },
     dob: {
         required: "A valid date of birth is required.",
         maxValue: "Date of birth must be in the past.",
     },
     contactPhoneNumber: {
-        minLength: "Phone number must be at least 14 digits.",
+        minLength: "Phone number must be valid.",
     },
     postalOrZip: {
         required: "Postal code is required.",
@@ -139,22 +151,33 @@ const fullName = computed(() =>
 );
 const validations = computed(() => ({
     firstName: {
-        required: requiredIf(
-            () =>
-                pcrTestKitRegistrationProps.dataSource === PcrDataSource.Manual
+        required: helpers.withMessage(
+            validationMessages.lastName.required,
+            requiredIf(
+                () =>
+                    pcrTestKitRegistrationProps.dataSource ===
+                    PcrDataSource.Manual
+            )
         ),
     },
     lastName: {
-        required: requiredIf(
-            () =>
-                pcrTestKitRegistrationProps.dataSource === PcrDataSource.Manual
+        required: helpers.withMessage(
+            validationMessages.lastName.required,
+            requiredIf(
+                () =>
+                    pcrTestKitRegistrationProps.dataSource ===
+                    PcrDataSource.Manual
+            )
         ),
     },
     phn: {
-        required: requiredIf(
-            () =>
-                pcrTestKitRegistrationProps.dataSource ===
-                    PcrDataSource.Manual && !noPhn.value
+        required: helpers.withMessage(
+            validationMessages.phn.formatted,
+            requiredIf(
+                () =>
+                    pcrTestKitRegistrationProps.dataSource ===
+                        PcrDataSource.Manual && !noPhn.value
+            )
         ),
         formatted: helpers.withMessage(
             validationMessages.phn.formatted,
@@ -189,24 +212,33 @@ const validations = computed(() => ({
         ),
     },
     streetAddress: {
-        required: requiredIf(
-            () =>
-                pcrTestKitRegistrationProps.dataSource ===
-                    PcrDataSource.Manual && noPhn.value
+        required: helpers.withMessage(
+            validationMessages.address.required,
+            requiredIf(
+                () =>
+                    pcrTestKitRegistrationProps.dataSource ===
+                        PcrDataSource.Manual && noPhn.value
+            )
         ),
     },
     city: {
-        required: requiredIf(
-            () =>
-                pcrTestKitRegistrationProps.dataSource ===
-                    PcrDataSource.Manual && noPhn.value
+        required: helpers.withMessage(
+            validationMessages.city.required,
+            requiredIf(
+                () =>
+                    pcrTestKitRegistrationProps.dataSource ===
+                        PcrDataSource.Manual && noPhn.value
+            )
         ),
     },
     postalOrZip: {
-        required: requiredIf(
-            () =>
-                pcrTestKitRegistrationProps.dataSource ===
-                    PcrDataSource.Manual && noPhn.value
+        required: helpers.withMessage(
+            validationMessages.postalOrZip.required,
+            requiredIf(
+                () =>
+                    pcrTestKitRegistrationProps.dataSource ===
+                        PcrDataSource.Manual && noPhn.value
+            )
         ),
         minLength: helpers.withMessage(
             validationMessages.postalOrZip.minLength,
@@ -214,8 +246,14 @@ const validations = computed(() => ({
         ),
     },
     testTakenMinutesAgo: {
-        required,
-        minValue: minValue(0),
+        required: helpers.withMessage(
+            validationMessages.testTakenMinutesAgo.required,
+            required
+        ),
+        minValue: helpers.withMessage(
+            validationMessages.testTakenMinutesAgo.required,
+            minValue(0)
+        ),
     },
     testKitCode: {
         required: helpers.withMessage(
@@ -381,6 +419,7 @@ if (!pcrTestKitRegistrationProps.serialNumber) {
                         v-model="v$.testKitCode.$model"
                         label="Test Kit Code"
                         class="mb-2"
+                        required
                         data-testid="test-kit-code-input"
                         placeholder="Test Kit Code"
                         :error-messages="
@@ -466,6 +505,7 @@ if (!pcrTestKitRegistrationProps.serialNumber) {
                                 lable="Street Address"
                                 data-testid="pcr-street-address-input"
                                 type="text"
+                                class="mb-2"
                                 placeholder="Address"
                                 :error-messages="
                                     ValidationUtil.getErrorMessages(
@@ -479,6 +519,7 @@ if (!pcrTestKitRegistrationProps.serialNumber) {
                                 label="City"
                                 data-testid="pcr-city-input"
                                 type="text"
+                                class="mb-2"
                                 placeholder="City"
                                 :error-messages="
                                     ValidationUtil.getErrorMessages(v$.city)
@@ -491,6 +532,7 @@ if (!pcrTestKitRegistrationProps.serialNumber) {
                                 label="Postal Code"
                                 data-testid="pcr-zip-input"
                                 type="text"
+                                class="mb-2"
                                 placeholder="Postal Code"
                                 :error-messages="
                                     ValidationUtil.getErrorMessages(
@@ -507,6 +549,7 @@ if (!pcrTestKitRegistrationProps.serialNumber) {
                                 v-model="v$.dob.$model"
                                 label="Date of Birth"
                                 data-testid="dob-input"
+                                class="mb-2"
                                 :max-date="new DateWrapper()"
                                 :error-messages="
                                     ValidationUtil.getErrorMessages(v$.dob)
@@ -515,14 +558,12 @@ if (!pcrTestKitRegistrationProps.serialNumber) {
                                 aria-label="Date of Birth"
                                 @blur="v$.dob.$touch()"
                             />
-                        </v-col>
-                    </v-row>
-                    <v-row v-if="dataSource === PcrDataSource.Manual">
-                        <v-col>
                             <v-text-field
+                                v-if="dataSource === PcrDataSource.Manual"
                                 v-model="v$.contactPhoneNumber.$model"
                                 v-maska:[phoneMaskOptions]
                                 data-testid="contact-phone-number-input"
+                                class="mb-2"
                                 type="tel"
                                 maxlength="14"
                                 placeholder="(###) ###-####"
@@ -541,10 +582,6 @@ if (!pcrTestKitRegistrationProps.serialNumber) {
                                     </span>
                                 </template>
                             </v-text-field>
-                        </v-col>
-                    </v-row>
-                    <v-row>
-                        <v-col>
                             <v-select
                                 v-model="v$.testTakenMinutesAgo.$model"
                                 label="Time Since Test Taken"
