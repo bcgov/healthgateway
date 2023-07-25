@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { library } from "@fortawesome/fontawesome-svg-core";
-import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
 import { computed, ref } from "vue";
 
 import LoadingComponent from "@/components/common/LoadingComponent.vue";
@@ -12,8 +10,6 @@ import { Loader } from "@/constants/loader";
 import BreadcrumbItem from "@/models/breadcrumbItem";
 import { useLoadingStore } from "@/stores/loading";
 import { useUserStore } from "@/stores/user";
-
-library.add(faExclamationTriangle);
 
 const breadcrumbItems: BreadcrumbItem[] = [
     {

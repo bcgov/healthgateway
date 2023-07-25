@@ -1,10 +1,4 @@
 <script setup lang="ts">
-import { library } from "@fortawesome/fontawesome-svg-core";
-import {
-    faAddressCard,
-    faUser,
-    faUserSecret,
-} from "@fortawesome/free-solid-svg-icons";
 import { computed, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
@@ -13,8 +7,6 @@ import LoadingComponent from "@/components/common/LoadingComponent.vue";
 import { useAuthStore } from "@/stores/auth";
 import { useConfigStore } from "@/stores/config";
 import { useUserStore } from "@/stores/user";
-
-library.add(faAddressCard, faUser, faUserSecret); // icons listed in config
 
 interface Props {
     isRetry?: boolean;

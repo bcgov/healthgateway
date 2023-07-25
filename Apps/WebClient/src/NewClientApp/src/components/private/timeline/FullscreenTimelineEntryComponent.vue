@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { library } from "@fortawesome/fontawesome-svg-core";
-import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import { computed, ref, watch } from "vue";
 
 import HgIconButtonComponent from "@/components/common/HgIconButtonComponent.vue";
@@ -9,8 +7,6 @@ import TimelineEntry from "@/models/timeline/timelineEntry";
 import { useAppStore } from "@/stores/app";
 import { EventName, useEventStore } from "@/stores/event";
 import { useNavigationStore } from "@/stores/navigation";
-
-library.add(faArrowLeft);
 
 interface Props {
     hdid: string;

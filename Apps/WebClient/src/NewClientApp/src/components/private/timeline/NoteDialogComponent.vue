@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { library } from "@fortawesome/fontawesome-svg-core";
-import { faEdit } from "@fortawesome/free-solid-svg-icons";
 import { useVuelidate } from "@vuelidate/core";
 import { helpers, required } from "@vuelidate/validators";
 import { computed, ref } from "vue";
@@ -24,8 +22,6 @@ import { useNoteStore } from "@/stores/note";
 import { useTimelineStore } from "@/stores/timeline";
 import { useUserStore } from "@/stores/user";
 import ValidationUtil from "@/utility/validationUtil";
-
-library.add(faEdit);
 
 const defaultDateString = new DateWrapper().toISODate();
 

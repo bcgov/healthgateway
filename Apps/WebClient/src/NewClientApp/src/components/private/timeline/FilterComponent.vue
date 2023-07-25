@@ -1,10 +1,4 @@
 <script setup lang="ts">
-import { library } from "@fortawesome/fontawesome-svg-core";
-import {
-    faBars,
-    faChevronDown,
-    faFilter,
-} from "@fortawesome/free-solid-svg-icons";
 import { computed, ref } from "vue";
 
 import HgButtonComponent from "@/components/common/HgButtonComponent.vue";
@@ -26,8 +20,6 @@ import { useNoteStore } from "@/stores/note";
 import { usePatientDataStore } from "@/stores/patientData";
 import { useSpecialAuthorityRequestStore } from "@/stores/specialAuthorityRequest";
 import { useTimelineStore } from "@/stores/timeline";
-
-library.add(faBars, faChevronDown, faFilter);
 
 interface EntryTypeFilter {
     type: EntryType;
