@@ -174,7 +174,7 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
                 .Enrich.WithEnvironmentUserName()
                 .Enrich.WithCorrelationId()
                 .Enrich.WithCorrelationIdHeader()
-                .Enrich.WithClientAgent()
+                .Enrich.WithRequestHeader("User-Agent")
                 .Enrich.WithClientIp()
                 .Enrich.WithSpan(new SpanOptions() { IncludeBaggage = true, IncludeTags = true, IncludeOperationName = true, IncludeTraceFlags = true })
                 .WriteTo.Console(outputTemplate: LogOutputTemplate, formatProvider: CultureInfo.InvariantCulture)
