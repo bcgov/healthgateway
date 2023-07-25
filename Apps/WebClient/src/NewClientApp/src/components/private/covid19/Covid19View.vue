@@ -6,7 +6,7 @@ import { computed, ref, watch } from "vue";
 import HgButtonComponent from "@/components/common/HgButtonComponent.vue";
 import LoadingComponent from "@/components/common/LoadingComponent.vue";
 import MessageModalComponent from "@/components/common/MessageModalComponent.vue";
-import VaccineCardComponent from "@/components/common/VaccineCardComponent.vue";
+import VaccineCardComponent from "@/components/public/vaccine-card/VaccineCardComponent.vue";
 import BreadcrumbComponent from "@/components/site/BreadcrumbComponent.vue";
 import { VaccinationState } from "@/constants/vaccinationState";
 import { container } from "@/ioc/container";
