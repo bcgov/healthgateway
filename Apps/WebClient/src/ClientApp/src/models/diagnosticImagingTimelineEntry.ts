@@ -30,7 +30,7 @@ export default class DiagnosticImagingTimelineEntry extends TimelineEntry {
 
         this.title = model.modality || "N/A";
         if (model.isUpdated) {
-            this.title = this.title + " - Recently Updated";
+            this.title = `${this.title} - Recently Updated`;
         }
 
         this.procedureDescription = model.procedureDescription || "N/A";
