@@ -153,6 +153,11 @@ namespace HealthGateway.Patient.Services
         /// </summary>
         public DateTime? ExamDate { get; set; }
 
+        /// <summary>
+        /// Gets or sets if an exam has been updated.
+        /// </summary>
+        public bool? IsUpdated { get; set; }
+
         /// <inheritdoc/>
         public override string Type { get; } = nameof(DiagnosticImagingExam);
     }
