@@ -64,6 +64,7 @@ function handleCancel(): void {
                         <HgIconButtonComponent
                             data-testid="messageModalCloseButton"
                             icon="close"
+                            aria-label="Close"
                             @click="handleCancel"
                         />
                     </v-toolbar>

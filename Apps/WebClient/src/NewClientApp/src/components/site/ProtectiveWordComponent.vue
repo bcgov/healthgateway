@@ -82,6 +82,7 @@ function handleClose(): void {
                         <HgIconButtonComponent
                             data-testid="protectiveWordCloseButton"
                             icon="close"
+                            aria-label="Close"
                             @click.prevent="handleClose()"
                         />
                     </v-toolbar>
@@ -107,22 +108,24 @@ function handleClose(): void {
                         class="mb-3"
                         @click.prevent="handleOk()"
                     />
-                    <p>
-                        <small data-testid="protectiveWordModalText">
-                            Please enter the protective word required to access
-                            these restricted PharmaNet records.
-                        </small>
+                    <p
+                        class="text-body-2"
+                        data-testid="protectiveWordModalText"
+                    >
+                        Please enter the protective word required to access
+                        these restricted PharmaNet records.
                     </p>
-                    <p>
-                        <small data-testid="protectiveWordModalMoreInfoText">
-                            For more information visit
-                            <a
-                                data-testid="protectiveWordModalRulesHREF"
-                                href="https://www2.gov.bc.ca/gov/content/health/health-drug-coverage/pharmacare-for-bc-residents/pharmanet/protective-word-for-a-pharmanet-record"
-                            >
-                                protective-word-for-a-pharmanet-record
-                            </a>
-                        </small>
+                    <p
+                        class="text-body-2"
+                        data-testid="protectiveWordModalMoreInfoText"
+                    >
+                        For more information visit
+                        <a
+                            data-testid="protectiveWordModalRulesHREF"
+                            href="https://www2.gov.bc.ca/gov/content/health/health-drug-coverage/pharmacare-for-bc-residents/pharmanet/protective-word-for-a-pharmanet-record"
+                        >
+                            protective-word-for-a-pharmanet-record
+                        </a>
                     </p>
                 </v-card-actions>
             </v-card>

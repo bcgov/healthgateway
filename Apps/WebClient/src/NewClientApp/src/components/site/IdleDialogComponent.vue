@@ -81,6 +81,7 @@ function hideDialog(): void {
                     >
                         <HgIconButtonComponent
                             icon="close"
+                            aria-label="Close"
                             @click="notifyNotIdle"
                         />
                     </v-toolbar>

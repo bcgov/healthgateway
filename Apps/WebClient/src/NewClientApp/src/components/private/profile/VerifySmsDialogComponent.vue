@@ -180,6 +180,7 @@ setResendTimeout();
                         <HgIconButtonComponent
                             data-testid="messageModalCloseButton"
                             icon="close"
+                            aria-label="Close"
                             @click="hideModal"
                         />
                     </v-toolbar>
