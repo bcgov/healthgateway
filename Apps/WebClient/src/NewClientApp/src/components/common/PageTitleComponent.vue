@@ -31,6 +31,7 @@ const hasAppendSlot = computed(() => slots.append !== undefined);
             class="border-opacity-100 my-2"
             color="primary"
             :thickness="2"
+            role="presentation"
         />
     </div>
 </template>
