@@ -152,7 +152,10 @@ watch(
                 </v-row>
             </v-expansion-panel-title>
             <v-expansion-panel-text>
-                <div class="timeline-entry-content">
+                <div
+                    class="my-2"
+                    :class="{ 'indent-content': !isMobileDetails }"
+                >
                     <slot />
                     <CommentSectionComponent
                         v-if="allowComment"
@@ -171,7 +174,7 @@ watch(
     width: 4rem;
 }
 
-.timeline-entry-content {
+.indent-content {
     // icon size + icon padding + col padding
     margin-left: calc(4rem + 24px);
 }
