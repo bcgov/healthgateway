@@ -98,12 +98,12 @@ watch(
                             <v-col
                                 :data-testid="`${entry.type.toLowerCase()}Title`"
                             >
-                                <div
+                                <h2
                                     data-testid="entryCardDetailsTitle"
-                                    class="font-weight-bold"
+                                    class="text-subtitle-1 font-weight-bold"
                                 >
                                     {{ displayTitle }}
-                                </div>
+                                </h2>
                             </v-col>
                             <v-col
                                 cols="auto"
