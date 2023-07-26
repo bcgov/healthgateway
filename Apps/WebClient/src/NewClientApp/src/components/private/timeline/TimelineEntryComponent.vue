@@ -108,14 +108,14 @@ watch(
                             <v-col
                                 cols="auto"
                                 data-testid="entryCardDate"
-                                class="text-body-2 text-medium-emphasis text-no-wrap"
+                                class="text-body-2 text-no-wrap"
                             >
                                 {{ dateString }}
                             </v-col>
                         </v-row>
                         <v-row dense justify="end">
                             <v-col
-                                class="py-1 align-self-center text-medium-emphasis"
+                                class="py-1 align-self-center"
                                 data-testid="entryCardDetailsSubtitle"
                             >
                                 <slot name="header-description">
