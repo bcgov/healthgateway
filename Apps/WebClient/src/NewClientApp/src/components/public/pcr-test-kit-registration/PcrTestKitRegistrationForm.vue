@@ -14,6 +14,7 @@ import DisplayFieldComponent from "@/components/common/DisplayFieldComponent.vue
 import HgButtonComponent from "@/components/common/HgButtonComponent.vue";
 import HgDatePickerComponent from "@/components/common/HgDatePickerComponent.vue";
 import PageTitleComponent from "@/components/common/PageTitleComponent.vue";
+import PrivacyStatementComponent from "@/components/common/PrivacyStatementComponent.vue";
 import { ActionType } from "@/constants/actionType";
 import { ErrorSourceType } from "@/constants/errorType";
 import { PcrDataSource } from "@/constants/pcrTestDataSource";
@@ -448,7 +449,7 @@ if (!props.serialNumber) {
                         />
                     </v-col>
                 </v-row>
-                <v-row align="center">
+                <v-row align="center" no-gutters>
                     <v-col cols="auto"
                         ><v-checkbox
                             v-model="noPhn"
@@ -460,7 +461,7 @@ if (!props.serialNumber) {
                             @update:model-value="setHasNoPhn"
                         />
                     </v-col>
-                    <v-col class="d-flex align-center">
+                    <v-col class="d-flex align-center ml-2">
                         <v-tooltip
                             location="bottom"
                             max-width="300"
@@ -575,46 +576,9 @@ if (!props.serialNumber) {
                         />
                     </v-col>
                 </v-row>
-                <v-row data-testid="pcr-privacy-statement">
-                    <v-col>
-                        <v-menu
-                            open-on-hover
-                            location="top"
-                            close-delay="1000"
-                            eager
-                        >
-                            <template #activator="{ props }">
-                                <HgButtonComponent
-                                    aria-label="Privacy Statement"
-                                    v-bind="props"
-                                    tabindex="0"
-                                    variant="link"
-                                    data-testid="btn-privacy-statement"
-                                    text="Privacy Statement"
-                                    prepend-icon="info-circle"
-                                    density="compact"
-                                />
-                            </template>
-                            <v-card max-width="700px">
-                                <v-card-text>
-                                    Your information is being collected to
-                                    provide you with your COVID‑19 test result
-                                    under s. 26(c) of the
-                                    <em
-                                        >Freedom of Information and Protection
-                                        of Privacy Act</em
-                                    >. Contact the Ministry Privacy Officer at
-                                    <a
-                                        href="mailto:MOH.Privacy.Officer@gov.bc.ca"
-                                        >MOH.Privacy.Officer@gov.bc.ca</a
-                                    >
-                                    if you have any questions about this
-                                    collection.
-                                </v-card-text>
-                            </v-card>
-                        </v-menu>
-                    </v-col>
-                </v-row>
+                <div data-testid="pcr-privacy-statement" class="my-4">
+                    <PrivacyStatementComponent open-on-hover location="top" />
+                </div>
                 <v-row>
                     <v-col cols="4">
                         <HgButtonComponent
