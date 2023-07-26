@@ -6,7 +6,7 @@ import {
     ImmunizationAgent,
     ImmunizationEvent,
 } from "@/models/immunizationModel";
-import TimelineEntry from "@/models/timelineEntry";
+import TimelineEntry from "@/models/timeline/timelineEntry";
 import { UserComment } from "@/models/userComment";
 
 // The immunization timeline entry model

@@ -23,7 +23,7 @@ const defaultHealthVisitState: HealthVisitState = {
     error: undefined,
 };
 
-export const useHealthVisitsStore = defineStore("healthVisits", () => {
+export const useHealthVisitStore = defineStore("healthVisit", () => {
     const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
     const healthVisitsService = container.get<IEncounterService>(
         SERVICE_IDENTIFIER.EncounterService

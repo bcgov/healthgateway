@@ -46,7 +46,7 @@ const maskedStoreValue = computed(() => mask.masked(rawStoreValue.value));
 const rawValue = ref(rawStoreValue.value);
 const maskedValue = ref(maskedStoreValue.value);
 
-const verifySmsModal = ref<InstanceType<typeof VerifySmsDialogComponent>>();
+const verifySmsDialog = ref<InstanceType<typeof VerifySmsDialogComponent>>();
 
 const inputErrorMessages = computed(() =>
     !isSmsEditable.value
@@ -112,7 +112,7 @@ function updateSms(): void {
         Loader.UserProfile,
         "updateSms",
         userProfileService
-            .updateSmsNumber(userStore.user.hdid, rawValue.value)
+            .updateSmsNumber(userStore.hdid, rawValue.value)
             .then(refreshProfile)
             .then(() => {
                 isSmsEditable.value = false;
@@ -137,7 +137,7 @@ function updateSms(): void {
 }
 
 function verifySms(): void {
-    verifySmsModal.value?.showModal();
+    verifySmsDialog.value?.showDialog();
 }
 
 function handleSmsVerified(): void {
@@ -263,7 +263,7 @@ watch(maskedStoreValue, (value) => (maskedValue.value = value));
         />
     </template>
     <VerifySmsDialogComponent
-        ref="verifySmsModal"
+        ref="verifySmsDialog"
         :sms-number="rawStoreValue"
         @verified="handleSmsVerified"
     />

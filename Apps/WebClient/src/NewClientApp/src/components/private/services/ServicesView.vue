@@ -25,12 +25,10 @@ const breadcrumbItems: BreadcrumbItem[] = [
 const userStore = useUserStore();
 const patientDataStore = usePatientDataStore();
 
-const hdid = computed(() => userStore.user.hdid);
-
 const patientDataAreLoading = computed(
     () =>
         isOrganDonorServiceEnabled.value &&
-        patientDataStore.patientDataAreLoading(hdid.value)
+        patientDataStore.patientDataAreLoading(userStore.hdid)
 );
 
 const isOrganDonorServiceEnabled = computed(() =>
@@ -38,7 +36,7 @@ const isOrganDonorServiceEnabled = computed(() =>
 );
 
 function retrievePatientData(): Promise<PatientData[]> {
-    return patientDataStore.retrievePatientData(hdid.value, [
+    return patientDataStore.retrievePatientData(userStore.hdid, [
         PatientDataType.OrganDonorRegistrationStatus,
     ]);
 }
@@ -62,7 +60,7 @@ if (isOrganDonorServiceEnabled.value) {
             :cols="getGridCols"
             class="pa-4"
         >
-            <OrganDonorDetailsCard :hdid="hdid" />
+            <OrganDonorDetailsCard :hdid="userStore.hdid" />
         </v-col>
     </v-row>
 </template>

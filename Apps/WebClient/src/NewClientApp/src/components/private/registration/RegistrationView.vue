@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { library } from "@fortawesome/fontawesome-svg-core";
-import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
 import { useVuelidate } from "@vuelidate/core";
 import {
     email as emailValidator,
@@ -27,8 +25,6 @@ import { useConfigStore } from "@/stores/config";
 import { useErrorStore } from "@/stores/error";
 import { useUserStore } from "@/stores/user";
 import PhoneUtil from "@/utility/phoneUtil";
-
-library.add(faExclamationTriangle);
 
 const smsMaskaOptions = {
     mask: "(###) ###-####",

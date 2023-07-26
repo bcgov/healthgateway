@@ -3,7 +3,7 @@ import MedicationSummary from "@/models//medicationSummary";
 import { DateWrapper } from "@/models/dateWrapper";
 import MedicationStatementHistory from "@/models/medicationStatementHistory";
 import Pharmacy from "@/models/pharmacy";
-import TimelineEntry from "@/models/timelineEntry";
+import TimelineEntry from "@/models/timeline/timelineEntry";
 import { UserComment } from "@/models/userComment";
 
 // The medication timeline entry model

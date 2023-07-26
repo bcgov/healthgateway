@@ -26,7 +26,7 @@ const emit = defineEmits<{
     (e: "verified"): void;
 }>();
 
-defineExpose({ showModal });
+defineExpose({ showDialog });
 
 const mask = new Mask({ mask: "(###) ###-####" });
 
@@ -56,12 +56,12 @@ const errorMessages = computed(() =>
     validationError.value ? ["Invalid verification code. Try again."] : []
 );
 
-function showModal(): void {
+function showDialog(): void {
     getTimeout();
     isVisible.value = true;
 }
 
-function hideModal(): void {
+function hideDialog(): void {
     isVisible.value = false;
 }
 
@@ -91,7 +91,7 @@ function verifySms(): void {
         .then((result) => {
             validationError.value = !result;
             if (!validationError.value) {
-                hideModal();
+                hideDialog();
                 emit("verified");
             }
         })
@@ -181,7 +181,7 @@ setResendTimeout();
                             data-testid="messageModalCloseButton"
                             icon="close"
                             aria-label="Close"
-                            @click="hideModal"
+                            @click="hideDialog"
                         />
                     </v-toolbar>
                 </v-card-title>
@@ -237,7 +237,7 @@ setResendTimeout();
                         v-if="unexpectedError"
                         variant="primary"
                         text="OK"
-                        @click.prevent="hideModal"
+                        @click.prevent="hideDialog"
                     />
                     <HgButtonComponent
                         v-else-if="tooManyRetries"

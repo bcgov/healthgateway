@@ -1,26 +1,4 @@
 <script setup lang="ts">
-import { library } from "@fortawesome/fontawesome-svg-core";
-import {
-    faCheckCircle,
-    faClipboardCheck,
-    faClockRotateLeft,
-    faCloudArrowDown,
-    faDesktop,
-    faEdit,
-    faFileMedical,
-    faFileWaveform,
-    faHouseMedical,
-    faMagnifyingGlass,
-    faMicroscope,
-    faMobileScreenButton,
-    faPills,
-    faStethoscope,
-    faSyringe,
-    faTabletScreenButton,
-    faUserGroup,
-    faVial,
-    faXRay,
-} from "@fortawesome/free-solid-svg-icons";
 import { computed, ref } from "vue";
 import { useDisplay } from "vuetify";
 
@@ -30,28 +8,6 @@ import { EntryType, entryTypeMap } from "@/constants/entryType";
 import { useAuthStore } from "@/stores/auth";
 import { useConfigStore } from "@/stores/config";
 import ConfigUtil from "@/utility/configUtil";
-
-library.add(
-    faCheckCircle,
-    faClipboardCheck,
-    faClockRotateLeft,
-    faCloudArrowDown,
-    faDesktop,
-    faEdit,
-    faFileMedical,
-    faFileWaveform,
-    faHouseMedical,
-    faMagnifyingGlass,
-    faMicroscope,
-    faMobileScreenButton,
-    faPills,
-    faStethoscope,
-    faSyringe,
-    faTabletScreenButton,
-    faUserGroup,
-    faVial,
-    faXRay
-);
 
 interface Tile {
     type: string;

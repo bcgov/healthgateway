@@ -39,7 +39,7 @@ const errorTitle = computed(() =>
 const errorDetails = computed(() =>
     errors.value.map((error) => {
         const source = error.source?.trim() ?? "";
-        const hdid = userStore.user.hdid;
+        const hdid = userStore.hdid;
         const traceId = error.traceId ? `:${error.traceId.trim()}` : "";
         return `${source}/${today}/${hdid}${traceId}`;
     })

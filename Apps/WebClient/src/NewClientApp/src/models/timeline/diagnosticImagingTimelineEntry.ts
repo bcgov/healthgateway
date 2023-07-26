@@ -2,7 +2,7 @@
 import { EntryType } from "@/constants/entryType";
 import { DateWrapper, StringISODate } from "@/models/dateWrapper";
 import { DiagnosticImagingExam } from "@/models/patientDataResponse";
-import TimelineEntry from "@/models/timelineEntry";
+import TimelineEntry from "@/models/timeline/timelineEntry";
 import { UserComment } from "@/models/userComment";
 
 export default class DiagnosticImagingTimelineEntry extends TimelineEntry {

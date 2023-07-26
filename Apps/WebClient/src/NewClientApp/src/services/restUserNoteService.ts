@@ -65,18 +65,9 @@ export class RestUserNoteService implements IUserNoteService {
         });
     }
 
-    public createNote(
-        hdid: string,
-        note: UserNote
-    ): Promise<UserNote | undefined> {
+    public createNote(hdid: string, note: UserNote): Promise<UserNote> {
         this.logger.debug(`createNote: ${JSON.stringify(note)}`);
-        note.id = undefined;
-        return new Promise((resolve, reject) => {
-            if (!this.isEnabled) {
-                resolve(undefined);
-                return;
-            }
-
+        return new Promise((resolve, reject) =>
             this.http
                 .post<RequestResult<UserNote>>(
                     `${this.baseUri}${this.USER_NOTE_BASE_URI}/${hdid}`,
@@ -99,8 +90,8 @@ export class RestUserNoteService implements IUserNoteService {
                             ServiceCode.HealthGatewayUser
                         )
                     );
-                });
-        });
+                })
+        );
     }
 
     public updateNote(hdid: string, note: UserNote): Promise<UserNote> {

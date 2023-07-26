@@ -31,7 +31,7 @@ const emit = defineEmits<{
 
 defineExpose({ generateReport });
 
-interface Covid19LaboratoryOrderRow {
+interface Covid19TestResultRow {
     date: string;
     test_type: string;
     test_location: string;
@@ -67,13 +67,13 @@ const reportService = container.get<IReportService>(
 );
 const covid19TestResultStore = useCovid19TestResultStore();
 
-const covid19LaboratoryOrdersAreLoading = computed(() =>
-    covid19TestResultStore.covid19LaboratoryOrdersAreLoading(props.hdid)
+const covid19TestResultsAreLoading = computed(() =>
+    covid19TestResultStore.covid19TestResultsAreLoading(props.hdid)
 );
 const isEmpty = computed(() => visibleRecords.value.length === 0);
 const visibleRecords = computed(() =>
     covid19TestResultStore
-        .covid19LaboratoryOrders(props.hdid)
+        .covid19TestResults(props.hdid)
         .filter((r) =>
             props.filter.allowsDate(r.labResults[0].collectedDateTime)
         )
@@ -85,7 +85,7 @@ const visibleRecords = computed(() =>
         )
 );
 const items = computed(() =>
-    visibleRecords.value.map<Covid19LaboratoryOrderRow>((x) => {
+    visibleRecords.value.map<Covid19TestResultRow>((x) => {
         const labResult = x.labResults[0];
         return {
             date: DateWrapper.format(labResult.collectedDateTime),
@@ -110,8 +110,8 @@ function generateReport(
     });
 }
 
-watch(covid19LaboratoryOrdersAreLoading, () => {
-    emit("on-is-loading-changed", covid19LaboratoryOrdersAreLoading.value);
+watch(covid19TestResultsAreLoading, () => {
+    emit("on-is-loading-changed", covid19TestResultsAreLoading.value);
 });
 
 watch(isEmpty, () => {
@@ -123,21 +123,21 @@ onMounted(() => {
 });
 
 covid19TestResultStore
-    .retrieveCovid19LaboratoryOrders(props.hdid)
+    .retrieveCovid19TestResults(props.hdid)
     .catch((err) => logger.error(`Error loading Covid19 data: ${err}`));
 </script>
 
 <template>
     <div>
         <section>
-            <v-row v-if="isEmpty && !covid19LaboratoryOrdersAreLoading">
+            <v-row v-if="isEmpty && !covid19TestResultsAreLoading">
                 <v-col>No records found.</v-col>
             </v-row>
             <HgDataTable
                 v-else-if="!isDependent"
                 class="d-none d-md-block"
                 fixed-header
-                :loading="covid19LaboratoryOrdersAreLoading"
+                :loading="covid19TestResultsAreLoading"
                 :items="items"
                 :fields="fields"
                 height="600px"

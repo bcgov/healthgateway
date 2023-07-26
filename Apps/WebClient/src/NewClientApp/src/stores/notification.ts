@@ -73,7 +73,6 @@ export const useNotificationStore = defineStore("notification", () => {
     }
 
     function retrieve(): Promise<Notification[]> {
-        const user = userStore.user;
         const notificationsValue = notifications.value;
         if (status.value === LoadStatus.LOADED) {
             logger.debug(`Notifications found stored, not querying!`);
@@ -82,7 +81,7 @@ export const useNotificationStore = defineStore("notification", () => {
             logger.debug(`Retrieving Notifications`);
             setRequested();
             return notificationService
-                .getNotifications(user.hdid)
+                .getNotifications(userStore.hdid)
                 .then((result) => {
                     setNotifications(result);
                     return result;
@@ -95,9 +94,8 @@ export const useNotificationStore = defineStore("notification", () => {
     }
 
     function dismissNotification(notificationId: string): Promise<void> {
-        const user = userStore.user;
         return notificationService
-            .dismissNotification(user.hdid, notificationId)
+            .dismissNotification(userStore.hdid, notificationId)
             .then(() => {
                 clearNotification(notificationId);
             })
@@ -108,9 +106,8 @@ export const useNotificationStore = defineStore("notification", () => {
     }
 
     function dismissAllNotifications(): Promise<void> {
-        const user = userStore.user;
         return notificationService
-            .dismissNotifications(user.hdid)
+            .dismissNotifications(userStore.hdid)
             .then(() => {
                 clearAllNotifications();
             })

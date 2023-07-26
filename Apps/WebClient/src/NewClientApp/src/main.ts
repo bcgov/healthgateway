@@ -41,7 +41,7 @@ configStore
             }
             const isValidIdentityProvider: boolean =
                 userStore.isValidIdentityProvider;
-            if (userStore.user.hdid && isValidIdentityProvider) {
+            if (userStore.hdid && isValidIdentityProvider) {
                 await userStore.retrieveEssentialData();
                 notificationStore
                     .retrieve()
