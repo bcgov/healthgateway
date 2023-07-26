@@ -455,7 +455,19 @@ watch(vaccineRecord, (value) => {
                         />
                     </v-col>
                 </v-row>
-                <PrivacyStatementComponent data-testid="btnPrivacyStatement" />
+                <PrivacyStatementComponent data-testid="btnPrivacyStatement">
+                    Your information is being collected to provide you with your
+                    COVID‑19 vaccination status under s. 26(c) of the
+                    <em>Freedom of Information and Protection of Privacy Act</em
+                    >. Contact the Ministry Privacy Officer at
+                    <a
+                        href="mailto:MOH.Privacy.Officer@gov.bc.ca"
+                        class="text-link"
+                    >
+                        MOH.Privacy.Officer@gov.bc.ca
+                    </a>
+                    if you have any questions about this collection.
+                </PrivacyStatementComponent>
                 <div class="text-center">
                     <v-row class="my-4 no-gutters d-flex align-center">
                         <v-col><v-divider role="presentation" /></v-col>

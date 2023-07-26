@@ -23,17 +23,7 @@ const appStore = useAppStore();
                 class="pa-2 text-body-2"
                 :width="appStore.isMobile ? 250 : 472"
             >
-                Your information is being collected to provide you with your
-                COVID‑19 vaccination status under s. 26(c) of the
-                <em>Freedom of Information and Protection of Privacy Act</em>.
-                Contact the Ministry Privacy Officer at
-                <a
-                    href="mailto:MOH.Privacy.Officer@gov.bc.ca"
-                    class="text-link"
-                >
-                    MOH.Privacy.Officer@gov.bc.ca
-                </a>
-                if you have any questions about this collection.
+                <slot />
             </v-card>
         </v-overlay>
     </HgButtonComponent>

@@ -579,7 +579,19 @@ if (!props.serialNumber) {
                 <div data-testid="pcr-privacy-statement" class="my-4">
                     <PrivacyStatementComponent
                         data-testid="btn-privacy-statement"
-                    />
+                    >
+                        Your information is being collected to provide you with
+                        your COVID‑19 test result under s. 26(c) of the
+                        <em
+                            >Freedom of Information and Protection of Privacy
+                            Act</em
+                        >. Contact the Ministry Privacy Officer at
+                        <a href="mailto:MOH.Privacy.Officer@gov.bc.ca"
+                            >MOH.Privacy.Officer@gov.bc.ca</a
+                        >
+                        if you have any questions about this
+                        collection.</PrivacyStatementComponent
+                    >
                 </div>
                 <v-row>
                     <v-col cols="4">
