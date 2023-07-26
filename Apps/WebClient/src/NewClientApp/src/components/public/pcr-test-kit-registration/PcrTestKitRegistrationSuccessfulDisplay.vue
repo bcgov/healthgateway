@@ -14,7 +14,7 @@ defineProps<Props>();
             color="success"
             size="48"
             class="mb-4"
-        ></v-icon>
+        />
         <h4
             data-testid="registration-success-banner-title"
             class="text-h4 mb-4"

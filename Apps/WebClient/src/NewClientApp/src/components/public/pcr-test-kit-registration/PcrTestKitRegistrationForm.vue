@@ -152,7 +152,7 @@ const fullName = computed(() =>
 const validations = computed(() => ({
     firstName: {
         required: helpers.withMessage(
-            validationMessages.lastName.required,
+            validationMessages.firstName.required,
             requiredIf(
                 () =>
                     pcrTestKitRegistrationProps.dataSource ===
@@ -403,6 +403,8 @@ if (!pcrTestKitRegistrationProps.serialNumber) {
             data-testid="alreadyProcessedBanner"
             type="warning"
             closable
+            variant="outlined"
+            border
             class="d-print-none"
             :text="errorMessage"
         />
@@ -502,7 +504,7 @@ if (!pcrTestKitRegistrationProps.serialNumber) {
                         <v-col>
                             <v-text-field
                                 v-model="v$.streetAddress.$model"
-                                lable="Street Address"
+                                label="Street Address"
                                 data-testid="pcr-street-address-input"
                                 type="text"
                                 class="mb-2"
@@ -554,7 +556,6 @@ if (!pcrTestKitRegistrationProps.serialNumber) {
                                 :error-messages="
                                     ValidationUtil.getErrorMessages(v$.dob)
                                 "
-                                :allow-future="false"
                                 aria-label="Date of Birth"
                                 @blur="v$.dob.$touch()"
                             />
@@ -664,7 +665,5 @@ if (!pcrTestKitRegistrationProps.serialNumber) {
                 </form>
             </v-col>
         </v-row>
-
-        <v-row data-testid="pcr-form-actions"></v-row>
     </v-container>
 </template>
