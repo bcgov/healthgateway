@@ -27,7 +27,9 @@ const isHeaderVisible = computed(
 const isCommunicationVisible = computed(
     () =>
         !currentPathMatches(Path.LoginCallback, Path.VaccineCard) &&
-        !route.path.toLowerCase().startsWith(Path.PcrTest.toLowerCase())
+        !route.path
+            .toLowerCase()
+            .startsWith(Path.PcrTestKitRegistration.toLowerCase())
 );
 const isResourceCentreAvailable = computed(() =>
     currentPathMatches(Path.Dependents, Path.Reports, Path.Timeline)

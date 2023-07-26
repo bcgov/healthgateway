@@ -2,5 +2,6 @@ export type Mask = string | string[];
 
 const phnMask: Mask = "#### ### ###";
 const smsMask: Mask = "(###) ###-####";
+const postalCodeMask: Mask = "@#@ #@#";
 
-export { phnMask, smsMask };
+export { phnMask, postalCodeMask, smsMask };

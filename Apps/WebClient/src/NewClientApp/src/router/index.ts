@@ -101,6 +101,10 @@ const QueueFullView = () =>
     import(
         /* webpackChunkName: "queueFull" */ "@/components/public/waitlist/QueueFullView.vue"
     );
+const PcrTestKitRegistrationView = () =>
+    import(
+        /* webpackChunkName: "pcrTest" */ "@/components/public/pcr-test-kit-registration/PcrTestKitRegistrationView.vue"
+    );
 
 export enum UserState {
     offline = "offline",
@@ -253,6 +257,38 @@ const routes = [
         path: Path.NotFound,
         component: NotFoundView,
         meta: { stateless: true },
+    },
+    {
+        path: Path.PcrTestKitRegistration,
+        component: PcrTestKitRegistrationView,
+        props: false,
+        meta: {
+            validStates: [
+                UserState.unauthenticated,
+                UserState.registered,
+                UserState.notRegistered,
+                UserState.pendingDeletion,
+            ],
+            requiredFeaturesEnabled: (config: FeatureToggleConfiguration) =>
+                config.covid19.pcrTestEnabled,
+            requiresProcessedWaitlistTicket: true,
+        },
+    },
+    {
+        path: Path.PcrTestKitRegistration + "/:serialNumber",
+        component: PcrTestKitRegistrationView,
+        props: true,
+        meta: {
+            validStates: [
+                UserState.unauthenticated,
+                UserState.registered,
+                UserState.notRegistered,
+                UserState.pendingDeletion,
+            ],
+            requiredFeaturesEnabled: (config: FeatureToggleConfiguration) =>
+                config.covid19.pcrTestEnabled,
+            requiresProcessedWaitlistTicket: true,
+        },
     },
     {
         path: Path.ReleaseNotes,

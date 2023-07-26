@@ -11,6 +11,7 @@ import HgButtonComponent from "@/components/common/HgButtonComponent.vue";
 import HgDatePickerComponent from "@/components/common/HgDatePickerComponent.vue";
 import LoadingComponent from "@/components/common/LoadingComponent.vue";
 import MessageModalComponent from "@/components/common/MessageModalComponent.vue";
+import PrivacyStatementComponent from "@/components/common/PrivacyStatementComponent.vue";
 import TooManyRequestsComponent from "@/components/error/TooManyRequestsComponent.vue";
 import VaccineCardComponent from "@/components/public/vaccine-card/VaccineCardComponent.vue";
 import { container } from "@/ioc/container";
@@ -454,40 +455,19 @@ watch(vaccineRecord, (value) => {
                         />
                     </v-col>
                 </v-row>
-                <HgButtonComponent
-                    id="privacy-statement"
-                    aria-label="Privacy Statement"
-                    variant="link"
-                    data-testid="btnPrivacyStatement"
-                    size="small"
-                    prepend-icon="info-circle"
-                >
-                    Privacy Statement
-                    <v-overlay
-                        activator="parent"
-                        location-strategy="connected"
-                        scroll-strategy="block"
+                <PrivacyStatementComponent data-testid="btnPrivacyStatement">
+                    Your information is being collected to provide you with your
+                    COVID‑19 vaccination status under s. 26(c) of the
+                    <em>Freedom of Information and Protection of Privacy Act</em
+                    >. Contact the Ministry Privacy Officer at
+                    <a
+                        href="mailto:MOH.Privacy.Officer@gov.bc.ca"
+                        class="text-link"
                     >
-                        <v-card
-                            class="pa-2 text-body-2"
-                            :width="appStore.isMobile ? 250 : 472"
-                        >
-                            Your information is being collected to provide you
-                            with your COVID‑19 vaccination status under s. 26(c)
-                            of the
-                            <span class="font-italic"
-                                >Freedom of Information and Protection of
-                                Privacy Act</span
-                            >. Contact the Ministry Privacy Officer at
-                            <a
-                                href="mailto:MOH.Privacy.Officer@gov.bc.ca"
-                                class="text-link"
-                                >MOH.Privacy.Officer@gov.bc.ca</a
-                            >
-                            if you have any questions about this collection.
-                        </v-card>
-                    </v-overlay>
-                </HgButtonComponent>
+                        MOH.Privacy.Officer@gov.bc.ca
+                    </a>
+                    if you have any questions about this collection.
+                </PrivacyStatementComponent>
                 <div class="text-center">
                     <v-row class="my-4 no-gutters d-flex align-center">
                         <v-col><v-divider role="presentation" /></v-col>

@@ -12,7 +12,7 @@ export enum Path {
     LogoutComplete = "/logoutComplete",
     NotFound = "/not-found",
     PatientRetrievalError = "/patientRetrievalError",
-    PcrTest = "/pcrtest",
+    PcrTestKitRegistration = "/pcrtest",
     Profile = "/profile",
     Queue = "/queue",
     Registration = "/registration",
