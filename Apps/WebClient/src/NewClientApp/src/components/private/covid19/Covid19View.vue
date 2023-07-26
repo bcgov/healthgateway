@@ -338,7 +338,7 @@ fetchVaccineCardData();
             <v-col class="pt-4 pb-6 px-2">
                 <v-row no-gutters class="d-flex align-center justify-center">
                     <v-col cols="auto">
-                        <img
+                        <v-img
                             class="img-fluid my-4"
                             src="@/assets/images/gov/bcid-logo-en.svg"
                             width="152"

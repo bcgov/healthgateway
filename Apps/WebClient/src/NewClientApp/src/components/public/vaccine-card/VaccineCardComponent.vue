@@ -51,7 +51,7 @@ const visible = ref(false);
 
 const name = computed(() =>
     [props.status?.firstname ?? "", props.status?.lastname ?? ""]
-        .filter((name) => name?.length > 0)
+        .filter((name) => name.length > 0)
         .join(" ")
 );
 
