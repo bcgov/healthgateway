@@ -72,7 +72,7 @@ onMounted(() => {
 </script>
 
 <template>
-    <div class="my-4">
+    <div class="my-4" :class="{ 'mobile-padding': isMobileDetails }">
         <div v-if="commentCount > 0" class="text-right pb-2">
             <HgButtonComponent
                 variant="link"
@@ -98,11 +98,28 @@ onMounted(() => {
                 />
             </div>
         </v-expand-transition>
-        <AddCommentComponent
-            :comment="newComment"
-            :is-mobile-details="isMobileDetails"
-            :visible="visible"
-            @on-comment-added="showComments = true"
-        />
+        <div
+            :class="isMobileDetails ? ['fixed-bottom', 'pa-4', 'bg-white'] : []"
+        >
+            <AddCommentComponent
+                :comment="newComment"
+                :is-mobile-details="isMobileDetails"
+                :visible="visible"
+                @on-comment-added="showComments = true"
+            />
+        </div>
     </div>
 </template>
+
+<style scoped lang="scss">
+.fixed-bottom {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+.mobile-padding {
+    // height required to ensure that the last comment is not hidden by the add comment component
+    padding-bottom: 55px;
+}
+</style>
