@@ -346,7 +346,7 @@ fetchVaccineCardData();
                         />
                     </v-col>
                     <v-col cols="auto">
-                        <h3 class="text-center ma-0">
+                        <h3 class="text-h6 font-weight-bold text-center">
                             COVID‑19 Vaccination Record
                         </h3>
                     </v-col>
