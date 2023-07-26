@@ -9,7 +9,7 @@ import { entryTypeMap } from "@/constants/entryType";
 import { container } from "@/ioc/container";
 import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
 import { DateWrapper } from "@/models/dateWrapper";
-import TimelineEntry from "@/models/timelineEntry";
+import TimelineEntry from "@/models/timeline/timelineEntry";
 import { UserComment } from "@/models/userComment";
 import { ILogger } from "@/services/interfaces";
 import { useCommentStore } from "@/stores/comment";
@@ -72,35 +72,37 @@ onMounted(() => {
 </script>
 
 <template>
-    <div v-if="commentCount > 0" class="text-right pb-2">
-        <HgButtonComponent
-            variant="link"
-            data-testid="showCommentsBtn"
-            :text="commentButtonText"
-            @click="showComments = !showComments"
-        />
-    </div>
-    <v-expand-transition
-        v-show="showComments"
-        :id="'entryComments-' + parentEntry.id"
-    >
-        <v-skeleton-loader
-            v-if="isLoadingComments"
-            type="list-item-two-line, list-item-two-line"
-            color="grey-lighten-5"
-        />
-        <div v-else>
-            <CommentComponent
-                v-for="comment in parentEntry.comments"
-                :key="comment.id"
-                :comment="comment"
+    <div class="my-4">
+        <div v-if="commentCount > 0" class="text-right pb-2">
+            <HgButtonComponent
+                variant="link"
+                data-testid="showCommentsBtn"
+                :text="commentButtonText"
+                @click="showComments = !showComments"
             />
         </div>
-    </v-expand-transition>
-    <AddCommentComponent
-        :comment="newComment"
-        :is-mobile-details="isMobileDetails"
-        :visible="visible"
-        @on-comment-added="showComments = true"
-    />
+        <v-expand-transition
+            v-show="showComments"
+            :id="'entryComments-' + parentEntry.id"
+        >
+            <v-skeleton-loader
+                v-if="isLoadingComments"
+                type="list-item-two-line, list-item-two-line"
+                color="grey-lighten-5"
+            />
+            <div v-else>
+                <CommentComponent
+                    v-for="comment in parentEntry.comments"
+                    :key="comment.id"
+                    :comment="comment"
+                />
+            </div>
+        </v-expand-transition>
+        <AddCommentComponent
+            :comment="newComment"
+            :is-mobile-details="isMobileDetails"
+            :visible="visible"
+            @on-comment-added="showComments = true"
+        />
+    </div>
 </template>

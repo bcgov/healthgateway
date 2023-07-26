@@ -100,9 +100,9 @@ function addComment(): void {
         <template #append-inner>
             <HgIconButtonComponent
                 color="primary"
-                variant="icon-input"
                 data-testid="postCommentBtn"
-                icon="arrow-circle-up"
+                icon="arrow-up"
+                size="x-small"
                 :disabled="commentInput === '' || isSaving"
                 @click="addComment"
             />
