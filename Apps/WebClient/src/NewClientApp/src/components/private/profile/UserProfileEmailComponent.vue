@@ -185,6 +185,7 @@ watch(email, (value) => (inputValue.value = value));
                 value="Verified"
                 value-class="text-success"
                 data-testid="emailStatusVerified"
+                horizontal
             />
             <DisplayFieldComponent
                 v-else-if="!email"
@@ -192,6 +193,7 @@ watch(email, (value) => (inputValue.value = value));
                 value="Opted Out"
                 value-class="text-medium-emphasis"
                 data-testid="emailStatusOptedOut"
+                horizontal
             />
             <DisplayFieldComponent
                 v-else
@@ -199,6 +201,7 @@ watch(email, (value) => (inputValue.value = value));
                 value="Not Verified"
                 value-class="text-error"
                 data-testid="emailStatusNotVerified"
+                horizontal
             />
         </div>
         <HgButtonComponent
