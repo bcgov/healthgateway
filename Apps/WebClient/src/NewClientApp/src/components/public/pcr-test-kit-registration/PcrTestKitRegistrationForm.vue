@@ -34,7 +34,7 @@ interface Props {
     dataSource: PcrDataSource;
     serialNumber?: string;
 }
-const pcrTestKitRegistrationProps = defineProps<Props>();
+const props = defineProps<Props>();
 
 const emit = defineEmits<{
     (e: "on-success"): void;
@@ -89,7 +89,7 @@ const emptyPcrTestData: PcrTestData = {
     postalOrZip: "",
     testTakenMinutesAgo: -1,
     hdid: "",
-    testKitCid: pcrTestKitRegistrationProps.serialNumber || "",
+    testKitCid: props.serialNumber || "",
     testKitCode: "",
 };
 
@@ -153,37 +153,26 @@ const validations = computed(() => ({
     firstName: {
         required: helpers.withMessage(
             validationMessages.firstName.required,
-            requiredIf(
-                () =>
-                    pcrTestKitRegistrationProps.dataSource ===
-                    PcrDataSource.Manual
-            )
+            requiredIf(() => props.dataSource === PcrDataSource.Manual)
         ),
     },
     lastName: {
         required: helpers.withMessage(
             validationMessages.lastName.required,
-            requiredIf(
-                () =>
-                    pcrTestKitRegistrationProps.dataSource ===
-                    PcrDataSource.Manual
-            )
+            requiredIf(() => props.dataSource === PcrDataSource.Manual)
         ),
     },
     phn: {
         required: helpers.withMessage(
             validationMessages.phn.formatted,
             requiredIf(
-                () =>
-                    pcrTestKitRegistrationProps.dataSource ===
-                        PcrDataSource.Manual && !noPhn.value
+                () => props.dataSource === PcrDataSource.Manual && !noPhn.value
             )
         ),
         formatted: helpers.withMessage(
             validationMessages.phn.formatted,
             (value: string) =>
-                pcrTestKitRegistrationProps.dataSource ===
-                    PcrDataSource.Manual && !noPhn.value
+                props.dataSource === PcrDataSource.Manual && !noPhn.value
                     ? ValidationUtil.validatePhn(value)
                     : true
         ),
@@ -191,16 +180,12 @@ const validations = computed(() => ({
     dob: {
         required: helpers.withMessage(
             validationMessages.dob.required,
-            requiredIf(
-                () =>
-                    pcrTestKitRegistrationProps.dataSource ===
-                    PcrDataSource.Manual
-            )
+            requiredIf(() => props.dataSource === PcrDataSource.Manual)
         ),
         maxValue: helpers.withMessage(
             validationMessages.dob.maxValue,
             (value: string) =>
-                pcrTestKitRegistrationProps.dataSource === PcrDataSource.Manual
+                props.dataSource === PcrDataSource.Manual
                     ? new DateWrapper(value).isBefore(new DateWrapper())
                     : true
         ),
@@ -215,9 +200,7 @@ const validations = computed(() => ({
         required: helpers.withMessage(
             validationMessages.address.required,
             requiredIf(
-                () =>
-                    pcrTestKitRegistrationProps.dataSource ===
-                        PcrDataSource.Manual && noPhn.value
+                () => props.dataSource === PcrDataSource.Manual && noPhn.value
             )
         ),
     },
@@ -225,9 +208,7 @@ const validations = computed(() => ({
         required: helpers.withMessage(
             validationMessages.city.required,
             requiredIf(
-                () =>
-                    pcrTestKitRegistrationProps.dataSource ===
-                        PcrDataSource.Manual && noPhn.value
+                () => props.dataSource === PcrDataSource.Manual && noPhn.value
             )
         ),
     },
@@ -235,9 +216,7 @@ const validations = computed(() => ({
         required: helpers.withMessage(
             validationMessages.postalOrZip.required,
             requiredIf(
-                () =>
-                    pcrTestKitRegistrationProps.dataSource ===
-                        PcrDataSource.Manual && noPhn.value
+                () => props.dataSource === PcrDataSource.Manual && noPhn.value
             )
         ),
         minLength: helpers.withMessage(
@@ -349,7 +328,7 @@ function handleSubmit(): void {
             ? pcrTest.value.testKitCode.split("-")[1]
             : "";
 
-    switch (pcrTestKitRegistrationProps.dataSource) {
+    switch (props.dataSource) {
         case PcrDataSource.Keycloak:
             submitKeycloak(shortCodeFirst, shortCodeSecond);
             break;
@@ -389,7 +368,7 @@ function resetForm(): void {
     v$.value.$reset();
 }
 
-if (!pcrTestKitRegistrationProps.serialNumber) {
+if (!props.serialNumber) {
     noSerialNumber.value = true;
     noTestKitCode.value = true;
 }
@@ -397,273 +376,270 @@ if (!pcrTestKitRegistrationProps.serialNumber) {
 
 <template>
     <PageTitleComponent title="Register a Test Kit" />
-    <v-container>
-        <v-alert
-            v-if="!!errorMessage"
-            data-testid="alreadyProcessedBanner"
-            type="warning"
-            closable
-            variant="outlined"
-            border
-            class="d-print-none"
-            :text="errorMessage"
-        />
-        <v-row>
-            <v-col>
-                <form @submit.prevent="handleSubmit">
-                    <DisplayFieldComponent
-                        v-if="dataSource === PcrDataSource.Keycloak"
-                        name="Name"
-                        :value="fullName"
-                    />
-                    <v-text-field
-                        v-if="noTestKitCode"
-                        v-model="v$.testKitCode.$model"
-                        label="Test Kit Code"
-                        class="mb-2"
-                        required
-                        data-testid="test-kit-code-input"
-                        placeholder="Test Kit Code"
-                        :error-messages="
-                            ValidationUtil.getErrorMessages(v$.testKitCode)
-                        "
-                        @blur="v$.testKitCode.$touch()"
-                    />
-                    <v-row v-if="dataSource === PcrDataSource.Manual">
-                        <v-col>
-                            <v-text-field
-                                v-model="v$.firstName.$model"
-                                label="First Name"
-                                class="mb-2"
-                                data-testid="first-name-input"
-                                placeholder="First Name"
-                                :error-messages="
-                                    ValidationUtil.getErrorMessages(
-                                        v$.firstName
-                                    )
-                                "
-                                @blur="v$.firstName.$touch()"
-                            />
-                            <v-text-field
-                                v-model="v$.lastName.$model"
-                                label="Last Name"
-                                class="mb-2"
-                                data-testid="last-name-input"
-                                type="text"
-                                placeholder="Last Name"
-                                :error-messages="
-                                    ValidationUtil.getErrorMessages(v$.lastName)
-                                "
-                                @blur="v$.lastName.$touch()"
-                            />
-                            <v-text-field
-                                v-model="v$.phn.$model"
-                                v-maska:[phnMaskOptions]
-                                label="Personal Health Number"
-                                class="mb-2"
-                                data-testid="phn-input"
-                                placeholder="PHN"
-                                aria-label="Personal Health Number"
-                                :error-messages="
-                                    ValidationUtil.getErrorMessages(v$.phn)
-                                "
-                                :disabled="noPhn"
-                                @blur="v$.phn.$touch()"
-                            />
-                            <v-checkbox
-                                v-model="noPhn"
-                                data-testid="phn-checkbox"
-                                color="primary"
-                                hide-details
-                                @update:model-value="setHasNoPhn"
-                            >
-                                <template #label>
-                                    <span class="mr-2">I Don't Have a PHN</span>
-                                    <v-tooltip
-                                        location="bottom"
-                                        max-width="300"
-                                        text="You can find your personal health number
+    <v-alert
+        v-if="!!errorMessage"
+        data-testid="alreadyProcessedBanner"
+        type="warning"
+        closable
+        variant="outlined"
+        border
+        class="d-print-none"
+        :text="errorMessage"
+    />
+    <v-row>
+        <v-col>
+            <form @submit.prevent="handleSubmit">
+                <DisplayFieldComponent
+                    v-if="dataSource === PcrDataSource.Keycloak"
+                    name="Name"
+                    :value="fullName"
+                />
+                <v-text-field
+                    v-if="noTestKitCode"
+                    v-model="v$.testKitCode.$model"
+                    label="Test Kit Code"
+                    class="mb-2"
+                    required
+                    data-testid="test-kit-code-input"
+                    placeholder="Test Kit Code"
+                    :error-messages="
+                        ValidationUtil.getErrorMessages(v$.testKitCode)
+                    "
+                    @blur="v$.testKitCode.$touch()"
+                />
+                <v-row v-if="dataSource === PcrDataSource.Manual">
+                    <v-col>
+                        <v-text-field
+                            v-model="v$.firstName.$model"
+                            label="First Name"
+                            class="mb-2"
+                            data-testid="first-name-input"
+                            placeholder="First Name"
+                            :error-messages="
+                                ValidationUtil.getErrorMessages(v$.firstName)
+                            "
+                            @blur="v$.firstName.$touch()"
+                        />
+                        <v-text-field
+                            v-model="v$.lastName.$model"
+                            label="Last Name"
+                            class="mb-2"
+                            data-testid="last-name-input"
+                            type="text"
+                            placeholder="Last Name"
+                            :error-messages="
+                                ValidationUtil.getErrorMessages(v$.lastName)
+                            "
+                            @blur="v$.lastName.$touch()"
+                        />
+                        <v-text-field
+                            v-model="v$.phn.$model"
+                            v-maska:[phnMaskOptions]
+                            label="Personal Health Number"
+                            class="mb-2"
+                            data-testid="phn-input"
+                            placeholder="PHN"
+                            aria-label="Personal Health Number"
+                            :error-messages="
+                                ValidationUtil.getErrorMessages(v$.phn)
+                            "
+                            :disabled="noPhn"
+                            @blur="v$.phn.$touch()"
+                        />
+                    </v-col>
+                </v-row>
+                <v-row align="center">
+                    <v-col cols="auto"
+                        ><v-checkbox
+                            v-model="noPhn"
+                            class="d-inline"
+                            data-testid="phn-checkbox"
+                            color="primary"
+                            hide-details
+                            label="I Don't Have a PHN"
+                            @update:model-value="setHasNoPhn"
+                        />
+                    </v-col>
+                    <v-col class="d-flex align-center">
+                        <v-tooltip
+                            location="bottom"
+                            max-width="300"
+                            text="You can find your personal health number
                                     (PHN) on your BC Services Card. If you do
                                     not have a PHN, please enter your address so
                                     we can register your PCR test kit to you."
+                        >
+                            <template #activator="{ props: phnToolTipProps }">
+                                <v-icon
+                                    v-bind="phnToolTipProps"
+                                    icon="info-circle"
+                                    color="primary"
+                                    size="x-small"
+                                ></v-icon>
+                            </template>
+                        </v-tooltip>
+                    </v-col>
+                </v-row>
+                <v-row v-if="dataSource === PcrDataSource.Manual && noPhn">
+                    <v-col>
+                        <v-text-field
+                            v-model="v$.streetAddress.$model"
+                            label="Street Address"
+                            data-testid="pcr-street-address-input"
+                            type="text"
+                            class="mb-2"
+                            placeholder="Address"
+                            :error-messages="
+                                ValidationUtil.getErrorMessages(
+                                    v$.streetAddress
+                                )
+                            "
+                            @blur="v$.streetAddress.$touch()"
+                        />
+                        <v-text-field
+                            v-model="v$.city.$model"
+                            label="City"
+                            data-testid="pcr-city-input"
+                            type="text"
+                            class="mb-2"
+                            placeholder="City"
+                            :error-messages="
+                                ValidationUtil.getErrorMessages(v$.city)
+                            "
+                            @blur="v$.city.$touch()"
+                        />
+                        <v-text-field
+                            v-model="v$.postalOrZip.$model"
+                            v-maska:[postalCodeMaskOptions]
+                            label="Postal Code"
+                            data-testid="pcr-zip-input"
+                            type="text"
+                            class="mb-2"
+                            placeholder="Postal Code"
+                            :error-messages="
+                                ValidationUtil.getErrorMessages(v$.postalOrZip)
+                            "
+                            @blur="v$.postalOrZip.$touch()"
+                        />
+                    </v-col>
+                </v-row>
+                <v-row>
+                    <v-col>
+                        <HgDatePickerComponent
+                            v-model="v$.dob.$model"
+                            label="Date of Birth"
+                            data-testid="dob-input"
+                            class="mb-2"
+                            :max-date="new DateWrapper()"
+                            :error-messages="
+                                ValidationUtil.getErrorMessages(v$.dob)
+                            "
+                            aria-label="Date of Birth"
+                            @blur="v$.dob.$touch()"
+                        />
+                        <v-text-field
+                            v-if="dataSource === PcrDataSource.Manual"
+                            v-model="v$.contactPhoneNumber.$model"
+                            v-maska:[phoneMaskOptions]
+                            data-testid="contact-phone-number-input"
+                            class="mb-2"
+                            type="tel"
+                            maxlength="14"
+                            placeholder="(###) ###-####"
+                            :error-messages="
+                                ValidationUtil.getErrorMessages(
+                                    v$.contactPhoneNumber
+                                )
+                            "
+                            @blur="v$.contactPhoneNumber.$touch()"
+                        >
+                            <template #label>
+                                Mobile Number
+                                <span class="ml-2 text-medium-emphasis">
+                                    (to receive a notification once your
+                                    COVID‑19 test result is available)
+                                </span>
+                            </template>
+                        </v-text-field>
+                        <v-select
+                            v-model="v$.testTakenMinutesAgo.$model"
+                            label="Time Since Test Taken"
+                            data-testid="test-taken-minutes-ago"
+                            :items="testTakenMinutesAgoOptions"
+                            :error-messages="
+                                ValidationUtil.getErrorMessages(
+                                    v$.testTakenMinutesAgo
+                                )
+                            "
+                            @blur="v$.testTakenMinutesAgo.$touch()"
+                        />
+                    </v-col>
+                </v-row>
+                <v-row data-testid="pcr-privacy-statement">
+                    <v-col>
+                        <v-menu
+                            open-on-hover
+                            location="top"
+                            close-delay="1000"
+                            eager
+                        >
+                            <template #activator="{ props }">
+                                <HgButtonComponent
+                                    aria-label="Privacy Statement"
+                                    v-bind="props"
+                                    tabindex="0"
+                                    variant="link"
+                                    data-testid="btn-privacy-statement"
+                                    text="Privacy Statement"
+                                    prepend-icon="info-circle"
+                                    density="compact"
+                                />
+                            </template>
+                            <v-card max-width="700px">
+                                <v-card-text>
+                                    Your information is being collected to
+                                    provide you with your COVID‑19 test result
+                                    under s. 26(c) of the
+                                    <em
+                                        >Freedom of Information and Protection
+                                        of Privacy Act</em
+                                    >. Contact the Ministry Privacy Officer at
+                                    <a
+                                        href="mailto:MOH.Privacy.Officer@gov.bc.ca"
+                                        >MOH.Privacy.Officer@gov.bc.ca</a
                                     >
-                                        <template #activator="{ props }">
-                                            <v-icon
-                                                v-bind="props"
-                                                icon="info-circle"
-                                                color="primary"
-                                                size="x-small"
-                                            ></v-icon>
-                                        </template>
-                                    </v-tooltip>
-                                </template>
-                            </v-checkbox>
-                        </v-col>
-                    </v-row>
-                    <v-row v-if="dataSource === PcrDataSource.Manual && noPhn">
-                        <v-col>
-                            <v-text-field
-                                v-model="v$.streetAddress.$model"
-                                label="Street Address"
-                                data-testid="pcr-street-address-input"
-                                type="text"
-                                class="mb-2"
-                                placeholder="Address"
-                                :error-messages="
-                                    ValidationUtil.getErrorMessages(
-                                        v$.streetAddress
-                                    )
-                                "
-                                @blur="v$.streetAddress.$touch()"
-                            />
-                            <v-text-field
-                                v-model="v$.city.$model"
-                                label="City"
-                                data-testid="pcr-city-input"
-                                type="text"
-                                class="mb-2"
-                                placeholder="City"
-                                :error-messages="
-                                    ValidationUtil.getErrorMessages(v$.city)
-                                "
-                                @blur="v$.city.$touch()"
-                            />
-                            <v-text-field
-                                v-model="v$.postalOrZip.$model"
-                                v-maska:[postalCodeMaskOptions]
-                                label="Postal Code"
-                                data-testid="pcr-zip-input"
-                                type="text"
-                                class="mb-2"
-                                placeholder="Postal Code"
-                                :error-messages="
-                                    ValidationUtil.getErrorMessages(
-                                        v$.postalOrZip
-                                    )
-                                "
-                                @blur="v$.postalOrZip.$touch()"
-                            />
-                        </v-col>
-                    </v-row>
-                    <v-row>
-                        <v-col>
-                            <HgDatePickerComponent
-                                v-model="v$.dob.$model"
-                                label="Date of Birth"
-                                data-testid="dob-input"
-                                class="mb-2"
-                                :max-date="new DateWrapper()"
-                                :error-messages="
-                                    ValidationUtil.getErrorMessages(v$.dob)
-                                "
-                                aria-label="Date of Birth"
-                                @blur="v$.dob.$touch()"
-                            />
-                            <v-text-field
-                                v-if="dataSource === PcrDataSource.Manual"
-                                v-model="v$.contactPhoneNumber.$model"
-                                v-maska:[phoneMaskOptions]
-                                data-testid="contact-phone-number-input"
-                                class="mb-2"
-                                type="tel"
-                                maxlength="14"
-                                placeholder="(###) ###-####"
-                                :error-messages="
-                                    ValidationUtil.getErrorMessages(
-                                        v$.contactPhoneNumber
-                                    )
-                                "
-                                @blur="v$.contactPhoneNumber.$touch()"
-                            >
-                                <template #label>
-                                    Mobile Number
-                                    <span class="ml-2 text-body-2">
-                                        (to receive a notification once your
-                                        COVID‑19 test result is available)
-                                    </span>
-                                </template>
-                            </v-text-field>
-                            <v-select
-                                v-model="v$.testTakenMinutesAgo.$model"
-                                label="Time Since Test Taken"
-                                data-testid="test-taken-minutes-ago"
-                                :items="testTakenMinutesAgoOptions"
-                                :error-messages="
-                                    ValidationUtil.getErrorMessages(
-                                        v$.testTakenMinutesAgo
-                                    )
-                                "
-                                @blur="v$.testTakenMinutesAgo.$touch()"
-                            />
-                        </v-col>
-                    </v-row>
-                    <v-row data-testid="pcr-privacy-statement">
-                        <v-col>
-                            <v-menu
-                                open-on-hover
-                                location="top"
-                                close-delay="1000"
-                                eager
-                            >
-                                <template #activator="{ props }">
-                                    <HgButtonComponent
-                                        aria-label="Privacy Statement"
-                                        v-bind="props"
-                                        tabindex="0"
-                                        variant="link"
-                                        data-testid="btn-privacy-statement"
-                                        text="Privacy Statement"
-                                        prepend-icon="info-circle"
-                                        density="compact"
-                                    />
-                                </template>
-                                <v-card max-width="700px">
-                                    <v-card-text>
-                                        Your information is being collected to
-                                        provide you with your COVID‑19 test
-                                        result under s. 26(c) of the
-                                        <em
-                                            >Freedom of Information and
-                                            Protection of Privacy Act</em
-                                        >. Contact the Ministry Privacy Officer
-                                        at
-                                        <a
-                                            href="mailto:MOH.Privacy.Officer@gov.bc.ca"
-                                            >MOH.Privacy.Officer@gov.bc.ca</a
-                                        >
-                                        if you have any questions about this
-                                        collection.
-                                    </v-card-text>
-                                </v-card>
-                            </v-menu>
-                        </v-col>
-                    </v-row>
-                    <v-row>
-                        <v-col cols="4">
-                            <HgButtonComponent
-                                id="btn-cancel"
-                                block
-                                variant="secondary"
-                                data-testid="btn-cancel"
-                                :disabled="isLoading"
-                                text="Cancel"
-                                @click="handleCancel"
-                            />
-                        </v-col>
-                        <v-col cols="8">
-                            <HgButtonComponent
-                                id="btn-register-kit"
-                                block
-                                type="submit"
-                                variant="primary"
-                                data-testid="btn-register-kit"
-                                :loading="isLoading"
-                                text="Register Kit"
-                            />
-                        </v-col>
-                    </v-row>
-                </form>
-            </v-col>
-        </v-row>
-    </v-container>
+                                    if you have any questions about this
+                                    collection.
+                                </v-card-text>
+                            </v-card>
+                        </v-menu>
+                    </v-col>
+                </v-row>
+                <v-row>
+                    <v-col cols="4">
+                        <HgButtonComponent
+                            id="btn-cancel"
+                            block
+                            variant="secondary"
+                            data-testid="btn-cancel"
+                            :disabled="isLoading"
+                            text="Cancel"
+                            @click="handleCancel"
+                        />
+                    </v-col>
+                    <v-col cols="8">
+                        <HgButtonComponent
+                            id="btn-register-kit"
+                            block
+                            type="submit"
+                            variant="primary"
+                            data-testid="btn-register-kit"
+                            :loading="isLoading"
+                            text="Register Kit"
+                        />
+                    </v-col>
+                </v-row>
+            </form>
+        </v-col>
+    </v-row>
 </template>
