@@ -577,7 +577,9 @@ if (!props.serialNumber) {
                     </v-col>
                 </v-row>
                 <div data-testid="pcr-privacy-statement" class="my-4">
-                    <PrivacyStatementComponent open-on-hover location="top" />
+                    <PrivacyStatementComponent
+                        data-testid="btn-privacy-statement"
+                    />
                 </div>
                 <v-row>
                     <v-col cols="4">
