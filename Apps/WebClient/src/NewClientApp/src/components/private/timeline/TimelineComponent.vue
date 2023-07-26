@@ -544,7 +544,7 @@ setPageFromDate(linearDate.value);
         </v-alert>
         <template v-if="unfilteredTimelineEntries.length > 0">
             <v-banner
-                class="d-print-none px-0 py-2 mt-n2 mb-2"
+                class="timeline-filter-banner d-print-none px-4 py-2 mt-n2 mb-2 mx-n4"
                 sticky
                 border="0"
             >
@@ -694,3 +694,10 @@ setPageFromDate(linearDate.value);
         />
     </div>
 </template>
+
+<style lang="scss" scoped>
+.timeline-filter-banner {
+    z-index: 2;
+    width: calc(100% + 32px);
+}
+</style>
