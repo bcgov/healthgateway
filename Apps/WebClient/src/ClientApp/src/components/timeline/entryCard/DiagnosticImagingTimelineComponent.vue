@@ -85,7 +85,7 @@ function downloadFile(): void {
     <EntryCardTimelineComponent
         :card-id="`${index}-${datekey}`"
         :entry-icon="entryIcon"
-        :title="entry.modality"
+        :title="entry.title"
         :subtitle="`Status: ${entry.examStatus}`"
         :entry="entry"
         :is-mobile-details="isMobileDetails"
