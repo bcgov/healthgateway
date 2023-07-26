@@ -381,6 +381,6 @@ loadTermsOfService();
                 >
             </p>
         </div>
-        <div v-else><h1>Unknown error</h1></div>
+        <h1 v-else class="text-h4">Unknown error</h1>
     </template>
 </template>

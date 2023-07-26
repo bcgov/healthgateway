@@ -326,7 +326,11 @@ function selectPreviewDevice(previewDevice: PreviewDevice): void {
                                 icon="fas fa-clock-rotate-left"
                                 size="large"
                             />
-                            <h4 class="mt-2 text-primary">Stay up to date</h4>
+                            <h4
+                                class="mt-2 text-h6 font-weight-bold text-primary"
+                            >
+                                Stay up to date
+                            </h4>
                         </template>
                         <template #text>
                             <p class="text-body-1">
@@ -344,7 +348,9 @@ function selectPreviewDevice(previewDevice: PreviewDevice): void {
                                 icon="fas fa-cloud-arrow-down"
                                 size="large"
                             />
-                            <h4 class="mt-2 text-primary">
+                            <h4
+                                class="mt-2 text-h6 font-weight-bold text-primary"
+                            >
                                 Manage your information
                             </h4>
                         </template>
@@ -365,7 +371,9 @@ function selectPreviewDevice(previewDevice: PreviewDevice): void {
                                 icon="fas fa-magnifying-glass"
                                 size="large"
                             />
-                            <h4 class="mt-2 text-primary">
+                            <h4
+                                class="mt-2 text-h6 font-weight-bold text-primary"
+                            >
                                 Find what you need
                             </h4>
                         </template>

@@ -189,14 +189,8 @@ immunizationStore
             No records found.
         </div>
         <section v-else-if="!isDependent" class="d-none d-md-block">
-            <v-row>
-                <v-col>
-                    <h4>Immunization History</h4>
-                </v-col>
-            </v-row>
-            <v-row v-if="isEmpty && !isLoading">
-                <v-col>No records found.</v-col>
-            </v-row>
+            <h4 class="text-h6 font-weight-bold mb-2">Immunization History</h4>
+            <p v-if="isEmpty && !isLoading">No records found.</p>
             <HgDataTable
                 v-if="!isEmpty || isLoading"
                 class="d-none d-md-block"
@@ -228,36 +222,26 @@ immunizationStore
             </HgDataTable>
             <v-row class="mt-4">
                 <v-col class="col-7">
-                    <v-row>
-                        <v-col>
-                            <h4>Recommended Immunizations</h4>
-                        </v-col>
-                    </v-row>
-                    <v-row>
-                        <v-col>
-                            <div id="disclaimer">
-                                <p>
-                                    Health Gateway shows immunizations from
-                                    public health clinics and pharmacies in B.C.
-                                    If you got vaccinated at a pharmacy, try
-                                    searching your medications, too.
-                                </p>
-                                <p class="mb-0">
-                                    You can add or update immunizations by
-                                    visiting
-                                    <a
-                                        href="https://www.immunizationrecord.gov.bc.ca"
-                                        target="_blank"
-                                        rel="noopener"
-                                        >immunizationrecord.gov.bc.ca</a
-                                    >.
-                                </p>
-                            </div>
-                        </v-col>
-                    </v-row>
-                    <v-row v-if="isRecommendationEmpty && !isLoading">
-                        <v-col>No recommendations found.</v-col>
-                    </v-row>
+                    <h4 class="text-h6 font-weight-bold mb-2">
+                        Recommended Immunizations
+                    </h4>
+                    <p>
+                        Health Gateway shows immunizations from public health
+                        clinics and pharmacies in B.C. If you got vaccinated at
+                        a pharmacy, try searching your medications, too.
+                    </p>
+                    <p>
+                        You can add or update immunizations by visiting
+                        <a
+                            href="https://www.immunizationrecord.gov.bc.ca"
+                            target="_blank"
+                            rel="noopener"
+                            >immunizationrecord.gov.bc.ca</a
+                        >.
+                    </p>
+                    <p v-if="isRecommendationEmpty && !isLoading">
+                        No recommendations found.
+                    </p>
                     <HgDataTable
                         v-if="!isRecommendationEmpty || isLoading"
                         class="d-none d-md-block"
