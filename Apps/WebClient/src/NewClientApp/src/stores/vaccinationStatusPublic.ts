@@ -3,6 +3,7 @@ import { computed, ref } from "vue";
 
 import { ActionType } from "@/constants/actionType";
 import { ResultType } from "@/constants/resulttype";
+import { VaccinationState } from "@/constants/vaccinationState";
 import { container } from "@/ioc/container";
 import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
 import CovidVaccineRecord from "@/models/covidVaccineRecord";
@@ -65,6 +66,22 @@ export const useVaccinationStatusPublicStore = defineStore(
 
         const vaccinationStatusStatusMessage = computed(
             () => vaccination.value.statusMessage
+        );
+
+        const isFullyVaccinated = computed(
+            () =>
+                vaccination.value.data?.state ===
+                VaccinationState.FullyVaccinated
+        );
+
+        const isPartiallyVaccinated = computed(
+            () =>
+                vaccination.value.data?.state ===
+                VaccinationState.PartiallyVaccinated
+        );
+
+        const isVaccinationNotFound = computed(
+            () => vaccination.value.data?.state === VaccinationState.NotFound
         );
 
         // Vaccine Record
@@ -264,6 +281,9 @@ export const useVaccinationStatusPublicStore = defineStore(
             vaccinationStatusIsLoading,
             vaccinationStatusError,
             vaccinationStatusStatusMessage,
+            isFullyVaccinated,
+            isPartiallyVaccinated,
+            isVaccinationNotFound,
             vaccineRecord,
             vaccineRecordIsLoading,
             vaccineRecordError,

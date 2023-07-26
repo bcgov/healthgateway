@@ -33,6 +33,10 @@ const ProfileView = () =>
     import(
         /* webpackChunkName: profile" */ "@/components/private/profile/ProfileView.vue"
     );
+const PublicVaccineCardView = () =>
+    import(
+        /* webpackChunkName: "vaccinationStatus" */ "@/components/public/vaccine-card/VaccineCardView.vue"
+    );
 const RegistrationView = () =>
     import(
         /* webpackChunkName: "registration" */ "@/components/private/registration/RegistrationView.vue"
@@ -197,6 +201,20 @@ const routes = [
         name: "LogoutComplete",
         component: LogoutCompleteView,
         meta: { stateless: true },
+    },
+    {
+        path: Path.VaccineCard,
+        component: PublicVaccineCardView,
+        meta: {
+            validStates: [
+                UserState.unauthenticated,
+                UserState.invalidIdentityProvider,
+                UserState.noPatient,
+                UserState.registered,
+                UserState.pendingDeletion,
+            ],
+            requiresProcessedWaitlistTicket: true,
+        },
     },
     {
         path: Path.Registration,

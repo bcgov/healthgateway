@@ -3,12 +3,10 @@ import { computed, useSlots } from "vue";
 
 interface Props {
     variant?: HgButtonVariant;
-    size?: string;
     inverse?: boolean;
 }
 const props = withDefaults(defineProps<Props>(), {
     variant: "primary",
-    size: "",
     inverse: false,
 });
 

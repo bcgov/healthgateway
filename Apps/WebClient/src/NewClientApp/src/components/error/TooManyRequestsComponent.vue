@@ -30,32 +30,30 @@ function clearTooManyRequestsError(): void {
 </script>
 
 <template>
-    <div>
-        <v-alert
-            :model-value="showWarning"
-            data-testid="too-many-requests-warning"
-            type="warning"
-            closable
-            class="d-print-none mb-4"
-            variant="outlined"
-            border
-            @click:close="clearTooManyRequestsWarning"
-        >
-            We are unable to complete all actions because the site is too busy.
-            Please try again later.
-        </v-alert>
-        <v-alert
-            :model-value="showError"
-            data-testid="too-many-requests-error"
-            type="error"
-            closable
-            class="d-print-none mb-4"
-            variant="outlined"
-            border
-            @click:close="clearTooManyRequestsError"
-        >
-            Unable to complete action as the site is too busy. Please try again
-            later.
-        </v-alert>
-    </div>
+    <v-alert
+        v-if="showError"
+        data-testid="too-many-requests-error"
+        type="error"
+        closable
+        class="d-print-none mb-4"
+        variant="outlined"
+        border
+        @click:close="clearTooManyRequestsError"
+    >
+        Unable to complete action as the site is too busy. Please try again
+        later.
+    </v-alert>
+    <v-alert
+        v-else-if="showWarning"
+        data-testid="too-many-requests-warning"
+        type="warning"
+        closable
+        class="d-print-none mb-4"
+        variant="outlined"
+        border
+        @click:close="clearTooManyRequestsWarning"
+    >
+        We are unable to complete all actions because the site is too busy.
+        Please try again later.
+    </v-alert>
 </template>

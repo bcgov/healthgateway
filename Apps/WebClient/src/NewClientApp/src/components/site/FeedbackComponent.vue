@@ -128,6 +128,7 @@ function resetFeedback(): void {
                         <HgIconButtonComponent
                             data-testid="messageModalCloseButton"
                             icon="close"
+                            aria-label="Close"
                             @click="hideDialog"
                         />
                     </v-toolbar>

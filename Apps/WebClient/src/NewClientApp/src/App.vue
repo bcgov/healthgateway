@@ -19,7 +19,7 @@ const eventStore = useEventStore();
 const waitlistStore = useWaitlistStore();
 
 const hideErrorAlerts = computed(() =>
-    currentPathMatches(Path.Root, Path.VaccineCard, Path.Queue, Path.Busy)
+    currentPathMatches(Path.Root, Path.Queue, Path.Busy)
 );
 const isHeaderVisible = computed(
     () => !currentPathMatches(Path.LoginCallback, Path.VaccineCard)
@@ -32,7 +32,6 @@ const isCommunicationVisible = computed(
 const isResourceCentreAvailable = computed(() =>
     currentPathMatches(Path.Dependents, Path.Reports, Path.Timeline)
 );
-
 const isFooterVisible = computed(
     () =>
         !currentPathMatches(
@@ -64,7 +63,8 @@ eventStore.emit(EventName.RegisterOnBeforeUnloadWaitlistListener);
         <NotificationCentreComponent />
         <v-main class="position-relative">
             <CommunicationComponent v-if="isCommunicationVisible" />
-            <v-container class="pt-6">
+            <router-view v-if="currentPathMatches(Path.VaccineCard)" />
+            <v-container v-else class="pt-6">
                 <ErrorCardComponent v-if="!hideErrorAlerts" />
                 <router-view />
             </v-container>
