@@ -82,7 +82,7 @@ function removeComment(): void {
 <template>
     <v-sheet class="px-4 py-2 my-2" color="grey-lighten-5">
         <v-row v-if="!isEditMode">
-            <v-col data-testid="commentWrapper">
+            <v-col>
                 <p data-testid="commentText" class="text-body-1">
                     {{ comment.text }}
                     <br />
@@ -139,13 +139,14 @@ function removeComment(): void {
                     variant="primary"
                     :disabled="commentInput === ''"
                     :loading="isUpdating"
+                    text="Save"
                     @click="onSubmit"
-                >
-                    Save
-                </HgButtonComponent>
-                <HgButtonComponent variant="secondary" @click="onCancel">
-                    Cancel
-                </HgButtonComponent>
+                />
+                <HgButtonComponent
+                    variant="secondary"
+                    text="Cancel"
+                    @click="onCancel"
+                />
             </v-col>
         </v-row>
     </v-sheet>
