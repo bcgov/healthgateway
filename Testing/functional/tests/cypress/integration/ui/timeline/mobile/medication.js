@@ -88,9 +88,6 @@ describe("Medication", () => {
             ).should("be.visible");
 
             cy.get("[data-testid=pharmacist-outcome]").should("not.exist");
-            cy.get("[data-testid=pharmacist-prescription-provided]").should(
-                "not.exist"
-            );
             cy.get("[data-testid=pharmacist-redirected-to-provider]").should(
                 "not.exist"
             );
@@ -143,9 +140,8 @@ describe("Medication", () => {
             );
             cy.get("[data-testid=medication-pharmacy-fax]").should("not.exist");
 
-            cy.get("[data-testid=pharmacist-outcome]").should("be.visible");
             cy.contains(
-                "[data-testid=pharmacist-prescription-provided]",
+                "[data-testid=pharmacist-outcome]",
                 "Prescription not provided"
             ).should("be.visible");
             cy.get("[data-testid=pharmacist-redirected-to-provider]").should(
@@ -201,9 +197,8 @@ describe("Medication", () => {
             );
             cy.get("[data-testid=medication-pharmacy-fax]").should("not.exist");
 
-            cy.get("[data-testid=pharmacist-outcome]").should("be.visible");
             cy.contains(
-                "[data-testid=pharmacist-prescription-provided]",
+                "[data-testid=pharmacist-outcome]",
                 "Prescription provided"
             ).should("be.visible");
             cy.get("[data-testid=pharmacist-redirected-to-provider]").should(
