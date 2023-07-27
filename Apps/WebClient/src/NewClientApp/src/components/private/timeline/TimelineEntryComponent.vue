@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, ref, watch } from "vue";
 
+import CommentSectionComponent from "@/components/private/timeline/comment/CommentSectionComponent.vue";
 import TimelineEntry from "@/models/timeline/timelineEntry";
 import { useAppStore } from "@/stores/app";
 import { EventName, useEventStore } from "@/stores/event";
@@ -153,11 +154,11 @@ watch(
             <v-expansion-panel-text>
                 <div class="timeline-entry-content">
                     <slot />
-                    <!-- <CommentSectionComponent
+                    <CommentSectionComponent
                         v-if="allowComment"
                         :parent-entry="entry"
                         :is-mobile-details="isMobileDetails"
-                    /> -->
+                    />
                 </div>
             </v-expansion-panel-text>
         </v-expansion-panel>
