@@ -18,7 +18,7 @@ interface Props {
     visible?: boolean;
     isMobileDetails?: boolean;
 }
-const addCommentProps = withDefaults(defineProps<Props>(), {
+const props = withDefaults(defineProps<Props>(), {
     visible: false,
     isMobileDetails: false,
 });
@@ -44,9 +44,9 @@ function addComment(): void {
         .createComment(userStore.user.hdid, {
             id: "00000000-0000-0000-0000-000000000000",
             text: commentInput.value,
-            parentEntryId: addCommentProps.comment.parentEntryId,
+            parentEntryId: props.comment.parentEntryId,
             userProfileId: userStore.user.hdid,
-            entryTypeCode: addCommentProps.comment.entryTypeCode,
+            entryTypeCode: props.comment.entryTypeCode,
             version: 0,
             createdDateTime: new DateWrapper().toISO(),
         })
@@ -59,7 +59,7 @@ function addComment(): void {
         .catch((err: ResultError) => {
             logger.error(
                 `Error adding comment on entry ${
-                    addCommentProps.comment.parentEntryId
+                    props.comment.parentEntryId
                 }: ${JSON.stringify(err)}`
             );
             if (err.statusCode === 429) {
@@ -92,8 +92,8 @@ function addComment(): void {
                 :open-on-click="isMobile"
                 text="Only you can see comments added to your medical records."
             >
-                <template #activator="{ props }">
-                    <v-icon v-bind="props" icon="lock" size="small" />
+                <template #activator="{ props: slotProps }">
+                    <v-icon v-bind="slotProps" icon="lock" size="small" />
                 </template>
             </v-tooltip>
         </template>

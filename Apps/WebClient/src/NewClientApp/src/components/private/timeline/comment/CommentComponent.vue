@@ -15,7 +15,7 @@ import { useUserStore } from "@/stores/user";
 interface Props {
     comment: UserComment;
 }
-const commentComponentProps = defineProps<Props>();
+const props = defineProps<Props>();
 
 const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
 const userStore = useUserStore();
@@ -37,7 +37,7 @@ function onCancel(): void {
 }
 
 function editComment(): void {
-    commentInput.value = commentComponentProps.comment.text;
+    commentInput.value = props.comment.text;
     isEditMode.value = true;
 }
 
@@ -49,13 +49,13 @@ function handleCommentError(err: Error): void {
 function onSubmit(): void {
     isUpdating.value = true;
     const comment: UserComment = {
-        id: commentComponentProps.comment.id,
+        id: props.comment.id,
         text: commentInput.value,
-        userProfileId: commentComponentProps.comment.userProfileId,
-        parentEntryId: commentComponentProps.comment.parentEntryId,
-        createdDateTime: commentComponentProps.comment.createdDateTime,
-        entryTypeCode: commentComponentProps.comment.entryTypeCode,
-        version: commentComponentProps.comment.version,
+        userProfileId: props.comment.userProfileId,
+        parentEntryId: props.comment.parentEntryId,
+        createdDateTime: props.comment.createdDateTime,
+        entryTypeCode: props.comment.entryTypeCode,
+        version: props.comment.version,
     };
     commentStore
         .updateComment(userStore.user.hdid, comment)
@@ -71,7 +71,7 @@ function removeComment(): void {
     if (confirm("Are you sure you want to delete this comment?")) {
         isUpdating.value = true;
         commentStore
-            .deleteComment(userStore.user.hdid, commentComponentProps.comment)
+            .deleteComment(userStore.user.hdid, props.comment)
             .then(() => logger.info("Comment removed"))
             .catch(handleCommentError)
             .finally(() => (isUpdating.value = false));

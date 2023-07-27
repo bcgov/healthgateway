@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from "vue";
+import { computed, ref } from "vue";
 
 import HgButtonComponent from "@/components/common/HgButtonComponent.vue";
 import AddCommentComponent from "@/components/private/timeline/comment/AddCommentComponent.vue";
@@ -49,26 +49,17 @@ const commentButtonText = computed(() =>
 );
 const commentCount = computed(() => props.parentEntry.comments?.length ?? 0);
 
-onMounted(() => {
-    // Some comments don't have entry type. This code updates them if they don't.
-    const commentsToUpdate: UserComment[] = [];
-    if (props.parentEntry.comments !== null) {
-        props.parentEntry.comments.forEach((x) => {
-            if (x.entryTypeCode === CommentEntryType.None) {
-                x.entryTypeCode =
-                    entryTypeMap.get(props.parentEntry.type)?.commentType ??
-                    CommentEntryType.None;
-                x.updatedBy = "System_Backfill";
-                commentsToUpdate.push(x);
-            }
-        });
+// Update comments with None CommentEntryType.
+for (const c of props.parentEntry.comments ?? []) {
+    if (c.entryTypeCode === CommentEntryType.None) {
+        c.entryTypeCode =
+            entryTypeMap.get(props.parentEntry.type)?.commentType ??
+            CommentEntryType.None;
+        c.updatedBy = "System_Backfill";
+        logger.info("Updating comment " + c.id);
+        commentStore.updateComment(userStore.hdid, c);
     }
-
-    commentsToUpdate.forEach((x) => {
-        logger.info("Updating comment " + x.id);
-        commentStore.updateComment(userStore.user.hdid, x);
-    });
-});
+}
 </script>
 
 <template>
