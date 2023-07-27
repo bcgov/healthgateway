@@ -4,6 +4,7 @@ import { computed, ref } from "vue";
 
 import HgButtonComponent from "@/components/common/HgButtonComponent.vue";
 import HgCardComponent from "@/components/common/HgCardComponent.vue";
+import InfoTooltipComponent from "@/components/common/InfoTooltipComponent.vue";
 import MessageModalComponent from "@/components/common/MessageModalComponent.vue";
 import { DataSource } from "@/constants/dataSource";
 import { ErrorSourceType } from "@/constants/errorType";
@@ -113,26 +114,15 @@ if (!showOrganDonorRegistration.value) {
         <div class="flex-grow-1 d-flex flex-column text-body-1 card-content">
             <div>
                 <span class="text-medium-emphasis">Status: </span>
-                <strong data-testid="organ-donor-registration-status">{{
-                    registrationData?.status
-                }}</strong>
-                <v-tooltip
-                    data-testid="organ-donor-registration-status-info-popover"
-                    location="top start"
-                    content-class="bg-grey-darken-3"
+                <strong data-testid="organ-donor-registration-status">
+                    {{ registrationData?.status }}
+                </strong>
+                <InfoTooltipComponent
+                    data-testid="organ-donor-registration-status-info-button"
+                    tooltip-testid="organ-donor-registration-status-info-popover"
                     :text="registrationData?.statusMessage"
-                >
-                    <template #activator="slotProps">
-                        <v-icon
-                            data-testid="organ-donor-registration-status-info-button"
-                            color="primary"
-                            icon="info-circle"
-                            v-bind="slotProps.props"
-                            size="x-small"
-                            class="ml-1"
-                        />
-                    </template>
-                </v-tooltip>
+                    class="ml-2"
+                />
             </div>
             <div>
                 <span class="text-medium-emphasis">Decision: </span>

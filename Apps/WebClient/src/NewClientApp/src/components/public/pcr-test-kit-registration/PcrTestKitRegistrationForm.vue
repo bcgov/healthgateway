@@ -13,6 +13,7 @@ import { computed, ref } from "vue";
 import DisplayFieldComponent from "@/components/common/DisplayFieldComponent.vue";
 import HgButtonComponent from "@/components/common/HgButtonComponent.vue";
 import HgDatePickerComponent from "@/components/common/HgDatePickerComponent.vue";
+import InfoTooltipComponent from "@/components/common/InfoTooltipComponent.vue";
 import PageTitleComponent from "@/components/common/PageTitleComponent.vue";
 import PrivacyStatementComponent from "@/components/common/PrivacyStatementComponent.vue";
 import { ActionType } from "@/constants/actionType";
@@ -451,8 +452,8 @@ if (!props.serialNumber) {
                     </v-col>
                 </v-row>
                 <v-row align="center" no-gutters>
-                    <v-col cols="auto"
-                        ><v-checkbox
+                    <v-col cols="auto">
+                        <v-checkbox
                             v-model="noPhn"
                             class="d-inline"
                             data-testid="phn-checkbox"
@@ -462,24 +463,14 @@ if (!props.serialNumber) {
                             @update:model-value="setHasNoPhn"
                         />
                     </v-col>
-                    <v-col class="d-flex align-center ml-2">
-                        <v-tooltip
-                            location="bottom"
-                            max-width="300"
+                    <v-col class="d-flex align-center">
+                        <InfoTooltipComponent
                             text="You can find your personal health number
                                     (PHN) on your BC Services Card. If you do
                                     not have a PHN, please enter your address so
                                     we can register your PCR test kit to you."
-                        >
-                            <template #activator="{ props: phnToolTipProps }">
-                                <v-icon
-                                    v-bind="phnToolTipProps"
-                                    icon="info-circle"
-                                    color="primary"
-                                    size="x-small"
-                                ></v-icon>
-                            </template>
-                        </v-tooltip>
+                            class="ml-2"
+                        />
                     </v-col>
                 </v-row>
                 <v-row v-if="dataSource === PcrDataSource.Manual && noPhn">

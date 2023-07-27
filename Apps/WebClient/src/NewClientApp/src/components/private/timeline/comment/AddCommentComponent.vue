@@ -87,9 +87,6 @@ function addComment(): void {
     >
         <template #prepend>
             <v-tooltip
-                variant="secondary"
-                location="left"
-                :open-on-click="isMobile"
                 text="Only you can see comments added to your medical records."
             >
                 <template #activator="{ props: slotProps }">

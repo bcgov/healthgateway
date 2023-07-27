@@ -18,6 +18,11 @@ export default createVuetify({
         VIcon: {
             style: "width: auto",
         },
+        VTooltip: {
+            location: "bottom",
+            contentClass: "bg-grey-darken-3",
+            openOnClick: true,
+        },
     },
     icons: {
         defaultSet: "fa",
