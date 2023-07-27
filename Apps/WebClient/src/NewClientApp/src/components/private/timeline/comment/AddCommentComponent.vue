@@ -103,7 +103,8 @@ function addComment(): void {
                 data-testid="postCommentBtn"
                 icon="arrow-up"
                 size="x-small"
-                :disabled="commentInput === '' || isSaving"
+                :disabled="commentInput === ''"
+                :loading="isSaving"
                 @click="addComment"
             />
         </template>
