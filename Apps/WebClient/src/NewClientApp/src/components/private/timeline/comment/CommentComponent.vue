@@ -93,11 +93,11 @@ function removeComment(): void {
             </v-col>
             <v-col cols="auto">
                 <v-menu data-testid="commentMenuBtn">
-                    <template #activator="{ props }">
+                    <template #activator="{ props: slotProps }">
                         <HgIconButtonComponent
                             icon="ellipsis-v"
                             size="small"
-                            v-bind="props"
+                            v-bind="slotProps"
                         />
                     </template>
                     <v-list>

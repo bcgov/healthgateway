@@ -118,6 +118,7 @@ onMounted(() => {
     left: 0;
     right: 0;
 }
+
 .mobile-padding {
     // height required to ensure that the last comment is not hidden by the add comment component
     padding-bottom: 55px;
