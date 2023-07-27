@@ -1151,12 +1151,13 @@ watch(vaccineRecordState, () => {
                                                         <v-card
                                                             data-testid="dependent-covid-test-info-popover"
                                                             class="pa-2"
+                                                            max-width="400px"
                                                         >
-                                                            <h1>
+                                                            <h4>
                                                                 Implement the
                                                                 test description
                                                                 component
-                                                            </h1>
+                                                            </h4>
                                                             <!-- <Covid19LaboratoryTestDescriptionComponent
                                                             class="pa-2"
                                                             :description="
