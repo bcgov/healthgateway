@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, watch } from "vue";
 
-import HgDataTable from "@/components/common/HgDataTable.vue";
+import HgDataTableComponent from "@/components/common/HgDataTableComponent.vue";
 import { container } from "@/ioc/container";
 import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
 import { DateWrapper } from "@/models/dateWrapper";
@@ -191,7 +191,7 @@ immunizationStore
         <section v-else-if="!isDependent" class="d-none d-md-block">
             <h4 class="text-h6 font-weight-bold mb-2">Immunization History</h4>
             <p v-if="isEmpty && !isLoading">No records found.</p>
-            <HgDataTable
+            <HgDataTableComponent
                 v-if="!isEmpty || isLoading"
                 class="d-none d-md-block"
                 striped
@@ -219,7 +219,7 @@ immunizationStore
                         <v-col> {{ agent.lotNumber }} </v-col>
                     </v-row>
                 </template>
-            </HgDataTable>
+            </HgDataTableComponent>
             <v-row class="mt-4">
                 <v-col class="col-7">
                     <h4 class="text-h6 font-weight-bold mb-2">
@@ -242,7 +242,7 @@ immunizationStore
                     <p v-if="isRecommendationEmpty && !isLoading">
                         No recommendations found.
                     </p>
-                    <HgDataTable
+                    <HgDataTableComponent
                         v-if="!isRecommendationEmpty || isLoading"
                         class="d-none d-md-block"
                         fixed-header

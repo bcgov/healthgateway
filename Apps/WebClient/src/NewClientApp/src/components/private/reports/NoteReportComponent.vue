@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, watch } from "vue";
 
-import HgDataTable from "@/components/common/HgDataTable.vue";
+import HgDataTableComponent from "@/components/common/HgDataTableComponent.vue";
 import { container } from "@/ioc/container";
 import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
 import { DateWrapper } from "@/models/dateWrapper";
@@ -62,10 +62,7 @@ const visibleRecords = computed(() =>
     noteStore.notes
         .filter((record) => props.filter.allowsDate(record.journalDate))
         .sort((a, b) =>
-            DateSortUtility.descendingByString(
-                a.journalDate,
-                b.journalDate
-            )
+            DateSortUtility.descendingByString(a.journalDate, b.journalDate)
         )
 );
 const isEmpty = computed(() => visibleRecords.value.length === 0);
@@ -126,7 +123,7 @@ noteStore
             <v-col>No records found.</v-col>
         </v-row>
 
-        <HgDataTable
+        <HgDataTableComponent
             v-else-if="!isDependent"
             class="d-none d-md-block"
             :loading="notesAreLoading"
