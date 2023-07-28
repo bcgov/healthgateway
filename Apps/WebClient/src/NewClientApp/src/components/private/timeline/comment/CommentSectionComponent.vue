@@ -108,6 +108,7 @@ for (const c of props.parentEntry.comments ?? []) {
     bottom: 0;
     left: 0;
     right: 0;
+    z-index: 2;
 }
 
 .mobile-padding {
