@@ -60,7 +60,7 @@ retrieveDependents(user.value.hdid, false);
         <page-title title="Dependents">
             <hg-button
                 id="add-dependent-button"
-                data-testid="addNewDependentBtn"
+                data-testid="add-dependent-button"
                 class="float-right"
                 variant="secondary"
                 @click="newDependentModal?.showModal()"

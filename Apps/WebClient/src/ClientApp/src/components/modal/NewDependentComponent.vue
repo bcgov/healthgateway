@@ -172,7 +172,7 @@ watch(() => dependent.value.dateOfBirth, touchDateOfBirth);
     <b-modal
         id="new-dependent-modal"
         v-model="isVisible"
-        data-testid="newDependentModal"
+        data-testid="add-dependent-dialog"
         title="Dependent Registration"
         size="lg"
         header-bg-variant="primary"
