@@ -381,6 +381,7 @@ if (!props.serialNumber) {
         v-if="!!errorMessage"
         data-testid="alreadyProcessedBanner"
         type="warning"
+        icon="circle-exclamation"
         closable
         variant="outlined"
         border
