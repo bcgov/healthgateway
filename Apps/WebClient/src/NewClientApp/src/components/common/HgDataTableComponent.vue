@@ -13,7 +13,6 @@ interface Props {
 }
 const props = withDefaults(defineProps<Props>(), {
     height: undefined,
-    maxHeight: undefined,
     loading: false,
     density: "default",
     hover: true,
@@ -98,14 +97,17 @@ function hasHeaderSlot(key: string): boolean {
                 </tr>
             </thead>
             <tbody :class="densityTextSize">
-                <tr v-for="item in items" :key="item.id">
+                <tr v-for="(item, itemIndex) in items" :key="item.id">
                     <td
                         v-for="field in fields"
                         :key="field.key"
                         :class="getAlignmentClass(field.tdAlign)"
                     >
                         <template v-if="hasItemSlot(field.key)">
-                            <slot :name="`item-${field.key}`" :item="item" />
+                            <slot
+                                :name="`item-${field.key}`"
+                                :item="{ ...item, index: itemIndex }"
+                            />
                         </template>
                         <template v-else>
                             {{ item[field.key] }}
