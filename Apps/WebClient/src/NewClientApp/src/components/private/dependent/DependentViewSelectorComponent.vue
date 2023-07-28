@@ -12,6 +12,7 @@ function retrieveDependents(hdid: string, bypassCache: boolean): Promise<void> {
 }
 retrieveDependents(userStore.hdid, false);
 </script>
+
 <template>
     <PageTitleComponent title="Dependents">
         <template #append>
