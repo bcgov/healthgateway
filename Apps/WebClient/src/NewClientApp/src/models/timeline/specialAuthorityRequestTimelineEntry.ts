@@ -8,8 +8,7 @@ import { UserComment } from "@/models/userComment";
 export default class SpecialAuthorityRequestTimelineEntry extends TimelineEntry {
     public drugName: string;
     public requestStatus?: string;
-    public prescriberFirstName?: string;
-    public prescriberLastName?: string;
+    public prescriberName?: string;
     public effectiveDate: DateWrapper;
     public expiryDate: DateWrapper;
     public referenceNumber: string;
@@ -28,8 +27,12 @@ export default class SpecialAuthorityRequestTimelineEntry extends TimelineEntry 
 
         this.drugName = model.drugName ?? "";
         this.requestStatus = model.requestStatus;
-        this.prescriberFirstName = model.prescriberFirstName;
-        this.prescriberLastName = model.prescriberLastName;
+        this.prescriberName = [
+            model.prescriberFirstName,
+            model.prescriberLastName,
+        ]
+            .filter((s) => Boolean(s))
+            .join(" ");
         this.effectiveDate = new DateWrapper(model.effectiveDate);
         this.expiryDate = new DateWrapper(model.expiryDate);
         this.referenceNumber = model.referenceNumber;
@@ -43,8 +46,7 @@ export default class SpecialAuthorityRequestTimelineEntry extends TimelineEntry 
     public containsText(keyword: string): boolean {
         let text =
             (this.drugName || "") +
-            (this.prescriberFirstName || "") +
-            (this.prescriberLastName || "") +
+            (this.prescriberName || "") +
             (this.requestStatus || "") +
             (this.referenceNumber || "");
         text = text.toUpperCase();
