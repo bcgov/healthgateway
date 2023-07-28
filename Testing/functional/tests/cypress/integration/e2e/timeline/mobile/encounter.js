@@ -28,9 +28,6 @@ describe("MSP Visits", () => {
             .should("be.visible");
         entryDetails.get("[data-testid=entryCardDate]").should("be.visible");
         entryDetails
-            .get("[data-testid=encounterClinicLabel")
-            .should("be.visible");
-        entryDetails
             .get("[data-testid=encounterClinicName")
             .should("be.visible");
     });

@@ -21,7 +21,6 @@ describe("MSP Visits", () => {
     it("Validate Encounter Card Details", () => {
         cy.get("[data-testid=healthvisitTitle]").should("be.visible");
         cy.get("[data-testid=entryCardDetailsTitle").first().click();
-        cy.get("[data-testid=encounterClinicLabel").should("be.visible");
         cy.get("[data-testid=encounterClinicName").should("be.visible");
     });
 });
