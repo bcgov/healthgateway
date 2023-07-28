@@ -53,7 +53,11 @@ function handleCancel(): void {
         no-click-animation
     >
         <div class="d-flex justify-center">
-            <v-card :loading="isLoading" max-width="700px">
+            <v-card
+                :loading="isLoading"
+                max-width="700px"
+                data-testid="genericMessageModal"
+            >
                 <template #loader="{ isActive }">
                     <v-progress-linear
                         :active="isActive"

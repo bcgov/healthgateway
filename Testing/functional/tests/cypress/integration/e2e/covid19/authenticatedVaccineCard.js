@@ -102,9 +102,7 @@ describe("Authenticated Vaccine Card", () => {
         cy.get("[data-testid=statusNotFound]", { timeout: 60000 }).should(
             "be.visible"
         );
-        cy.get("[data-testid=save-dropdown-btn] .dropdown-toggle").should(
-            "not.exist"
-        );
+        cy.get("[data-testid=save-dropdown-btn]").should("not.exist");
     });
 
     it("Save As PDF", () => {
@@ -132,7 +130,7 @@ describe("Authenticated Vaccine Card", () => {
 
         cy.wait("@getVaccinationStatus");
 
-        cy.get("[data-testid=save-dropdown-btn] .dropdown-toggle", {
+        cy.get("[data-testid=save-dropdown-btn]", {
             timeout: 60000,
         })
             .should("be.enabled", "be.visible")
