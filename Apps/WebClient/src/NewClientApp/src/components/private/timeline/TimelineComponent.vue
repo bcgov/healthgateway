@@ -555,11 +555,12 @@ setPageFromDate(linearDate.value);
                             :entry-types="entryTypes"
                         />
                     </v-col>
-                    <v-col cols="auto">
+                    <v-col>
                         <v-chip
                             v-for="[label, value] in filterLabels"
                             :key="`${label}-${value}`"
                             data-testid="filter-label"
+                            class="mr-1 mb-1"
                             :title="`${label} Filter`"
                             closable
                             size="small"
