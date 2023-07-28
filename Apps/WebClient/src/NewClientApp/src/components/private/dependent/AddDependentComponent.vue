@@ -1,0 +1,457 @@
+<script setup lang="ts">
+import { useVuelidate } from "@vuelidate/core";
+import { helpers } from "@vuelidate/validators";
+import { minLength, required, sameAs } from "@vuelidate/validators";
+import { Duration } from "luxon";
+import { vMaska } from "maska";
+import { computed, nextTick, ref, watch } from "vue";
+
+import HgButtonComponent from "@/components/common/HgButtonComponent.vue";
+import HgDatePickerComponent from "@/components/common/HgDatePickerComponent.vue";
+import HgIconButtonComponent from "@/components/common/HgIconButtonComponent.vue";
+import LoadingComponent from "@/components/common/LoadingComponent.vue";
+import TooManyRequestsComponent from "@/components/error/TooManyRequestsComponent.vue";
+import { ActionType } from "@/constants/actionType";
+import { container } from "@/ioc/container";
+import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
+import AddDependentRequest from "@/models/addDependentRequest";
+import { DateWrapper, IDateWrapper } from "@/models/dateWrapper";
+import { ResultError } from "@/models/errors";
+import { IDependentService } from "@/services/interfaces";
+import { useConfigStore } from "@/stores/config";
+import { useDependentStore } from "@/stores/dependent";
+import { useErrorStore } from "@/stores/error";
+import { useUserStore } from "@/stores/user";
+import { phnMask } from "@/utility/masks";
+import ValidationUtil from "@/utility/validationUtil";
+
+const emit = defineEmits<{
+    (e: "handle-submit"): void;
+}>();
+
+interface props {
+    disabled?: boolean;
+}
+
+withDefaults(defineProps<props>(), {
+    disabled: false,
+});
+
+defineExpose({
+    hideDialog,
+});
+
+const phnMaskaOptions = {
+    mask: phnMask,
+    eager: true,
+};
+
+const maxBirthdate = new DateWrapper();
+
+const dependentService = container.get<IDependentService>(
+    SERVICE_IDENTIFIER.DependentService
+);
+
+const configStore = useConfigStore();
+const dependentStore = useDependentStore();
+const errorStore = useErrorStore();
+const userStore = useUserStore();
+
+const isVisible = ref(false);
+const isLoading = ref(false);
+const errorMessage = ref("");
+const errorType = ref<ActionType | null>(null);
+const accepted = ref(false);
+const dependent = ref<AddDependentRequest>({
+    firstName: "",
+    lastName: "",
+    dateOfBirth: "",
+    PHN: "",
+});
+
+const hasValidationErrors = computed(() => {
+    v$.value.accepted.$touch();
+    return v$.value.$invalid;
+});
+const isError = computed(
+    () => errorType.value !== null || errorMessage.value.length > 0
+);
+const isErrorDataMismatch = computed(
+    () => errorType.value === ActionType.DataMismatch
+);
+const isErrorNoHdid = computed(() => errorType.value === ActionType.NoHdId);
+const isErrorProtected = computed(
+    () => errorType.value === ActionType.Protected
+);
+const isDependentAlreadyAdded = computed(() =>
+    dependentStore.dependents.some(
+        (d) =>
+            d.dependentInformation.PHN ===
+            dependent.value.PHN.replace(/\s/g, "")
+    )
+);
+const minBirthdate = computed<IDateWrapper>(() =>
+    new DateWrapper().subtract(
+        Duration.fromObject({ years: configStore.webConfig.maxDependentAge })
+    )
+);
+const validations = computed(() => ({
+    dependent: {
+        firstName: {
+            required: helpers.withMessage(
+                "Given names are required.",
+                required
+            ),
+        },
+        lastName: {
+            required: helpers.withMessage("Last name is required.", required),
+        },
+        dateOfBirth: {
+            required: helpers.withMessage("Invalid date.", required),
+            minLength: helpers.withMessage("Invalid date.", minLength(10)),
+            minValue: helpers.withMessage(
+                `Dependent must be under the age of
+                        ${configStore.webConfig.maxDependentAge}.`,
+                (value: string) =>
+                    new DateWrapper(value).isAfter(minBirthdate.value)
+            ),
+            maxValue: helpers.withMessage("Invalid Date.", (value: string) =>
+                new DateWrapper(value).isBefore(new DateWrapper())
+            ),
+        },
+        PHN: {
+            required: helpers.withMessage("Valid PHN is required.", required),
+            minLength: helpers.withMessage(
+                "Valid PHN is required.",
+                minLength(12)
+            ),
+            validPersonalHealthNumber: helpers.withMessage(
+                "Personal Health Number must be valid.",
+                ValidationUtil.validatePhn
+            ),
+            isNew: helpers.withMessage(
+                "This dependent has already been added.",
+                () => !isDependentAlreadyAdded.value
+            ),
+        },
+    },
+    accepted: { isChecked: sameAs(true) },
+}));
+
+const v$ = useVuelidate(validations, { dependent, accepted });
+
+function addDependent(): void {
+    isLoading.value = true;
+    dependentService
+        .addDependent(userStore.hdid, {
+            ...dependent.value,
+            PHN: dependent.value.PHN.replace(/\D/g, ""),
+        })
+        .then(async () => {
+            errorType.value = null;
+
+            await nextTick();
+
+            hideDialog();
+            emit("handle-submit");
+        })
+        .catch((err: ResultError) => {
+            if (err.statusCode === 429) {
+                setTooManyRequestsError("addDependentDialog");
+            } else {
+                errorMessage.value = err.resultMessage;
+                errorType.value = err.actionCode ?? null;
+            }
+        })
+        .finally(() => (isLoading.value = false));
+}
+
+function clear(): void {
+    dependent.value = {
+        firstName: "",
+        lastName: "",
+        dateOfBirth: "",
+        PHN: "",
+    };
+    accepted.value = false;
+    errorMessage.value = "";
+    errorType.value = null;
+    v$.value.$reset();
+}
+
+function handleSubmit(): void {
+    v$.value.$reset();
+    addDependent();
+}
+
+function hideDialog(): void {
+    clear();
+    isVisible.value = false;
+}
+
+function setTooManyRequestsError(key: string): void {
+    errorStore.setTooManyRequestsError(key);
+}
+
+function touchDateOfBirth(): void {
+    v$.value.dependent.dateOfBirth.$touch();
+}
+
+watch(() => dependent.value.dateOfBirth, touchDateOfBirth);
+</script>
+
+<template>
+    <v-dialog
+        id="add-dependent-dialog"
+        v-model="isVisible"
+        data-testid="add-dependent-dialog"
+        scrollable
+        width="700px"
+        persistent
+        no-click-animation
+    >
+        <template #activator="slotProps">
+            <HgButtonComponent
+                id="add-dependent-button"
+                data-testid="add-dependent-button"
+                variant="secondary"
+                v-bind="slotProps.props"
+                :disabled="disabled"
+                prepend-icon="user-plus"
+                text="Add"
+            />
+        </template>
+        <div class="d-flex justify-center">
+            <v-card>
+                <v-card-title class="bg-primary text-white px-0">
+                    <v-toolbar
+                        title="Dependent Registration"
+                        density="compact"
+                        color="primary"
+                    >
+                        <HgIconButtonComponent
+                            id="add-dependent-dialog-close-button"
+                            data-testid="add-dependent-dialog-close-button"
+                            icon="fas fa-close"
+                            @click="hideDialog"
+                        />
+                    </v-toolbar>
+                </v-card-title>
+                <v-card-text class="pa-4">
+                    <TooManyRequestsComponent location="addDependentModal" />
+                    <v-alert
+                        v-if="isError"
+                        data-testid="dependentErrorBanner"
+                        class="d-print-none mx-4 mt-4"
+                        type="error"
+                        variant="outlined"
+                        border
+                    >
+                        <template #text>
+                            <p
+                                data-testid="dependentErrorText"
+                                class="text-body-1"
+                            >
+                                <span v-if="isErrorDataMismatch">
+                                    The information you entered does not match
+                                    our records. Please try again with the exact
+                                    given and last names on the BC Services
+                                    Card.
+                                </span>
+                                <span v-else-if="isErrorNoHdid">
+                                    Please ensure you are using a current
+                                    <a
+                                        href="https://www2.gov.bc.ca/gov/content/governments/government-id/bc-services-card"
+                                        target="_blank"
+                                        rel="noopener"
+                                        >BC Services Card</a
+                                    >.
+                                </span>
+                                <span v-else-if="isErrorProtected">
+                                    Unable to add dependent.
+                                </span>
+                                <span v-else>{{ errorMessage }}</span>
+                            </p>
+                            <span
+                                v-if="isErrorProtected"
+                                data-testid="condensed-error-contact-message"
+                                class="text-body-1"
+                            >
+                                Please contact
+                                <a href="mailto:HealthGateway@gov.bc.ca"
+                                    >HealthGateway@gov.bc.ca</a
+                                >.
+                            </span>
+                            <span
+                                v-else
+                                data-testid="not-condensed-error-contact-message"
+                                class="text-body-1"
+                            >
+                                If you continue to have issues, please contact
+                                <a href="mailto:HealthGateway@gov.bc.ca"
+                                    >HealthGateway@gov.bc.ca</a
+                                >.
+                            </span>
+                        </template>
+                    </v-alert>
+                    <v-container data-testid="newDependentModalText">
+                        <v-row>
+                            <v-col cols="12" sm="6">
+                                <label for="firstName"
+                                    >First and Middle Names</label
+                                >
+                                <div>
+                                    <v-text-field
+                                        id="firstName"
+                                        v-model.trim="dependent.firstName"
+                                        data-testid="firstNameInput"
+                                        label="First and Middle Names"
+                                        autofocus
+                                        clearable
+                                        type="text"
+                                        :error-messages="
+                                            ValidationUtil.getErrorMessages(
+                                                v$.dependent.firstName
+                                            )
+                                        "
+                                        @blur="v$.dependent.firstName.$touch()"
+                                    />
+                                </div>
+                            </v-col>
+                            <v-col cols="12" sm="6">
+                                <label for="lastName">Last Name</label>
+                                <div>
+                                    <v-text-field
+                                        id="lastName"
+                                        v-model.trim="dependent.lastName"
+                                        data-testid="lastNameInput"
+                                        label="Last Name"
+                                        clearable
+                                        type="text"
+                                        :error-messages="
+                                            ValidationUtil.getErrorMessages(
+                                                v$.dependent.lastName
+                                            )
+                                        "
+                                        @blur="v$.dependent.lastName.$touch()"
+                                    />
+                                </div>
+                            </v-col>
+                            <v-col cols="12" sm="6">
+                                <label for="dateOfBirth">Date of Birth</label>
+                                <div>
+                                    <HgDatePickerComponent
+                                        id="dateOfBirth"
+                                        v-model="dependent.dateOfBirth"
+                                        label="Date of Birth"
+                                        data-testid="dateOfBirthInput"
+                                        :max-date="maxBirthdate"
+                                        :error-messages="
+                                            ValidationUtil.getErrorMessages(
+                                                v$.dependent.dateOfBirth
+                                            )
+                                        "
+                                        @blur="
+                                            v$.dependent.dateOfBirth.$touch()
+                                        "
+                                    />
+                                </div>
+                            </v-col>
+                            <v-col cols="12" sm="6">
+                                <label for="phn">PHN</label>
+                                <div>
+                                    <v-text-field
+                                        id="phn"
+                                        v-model="dependent.PHN"
+                                        v-maska:[phnMaskaOptions]
+                                        label="PHN"
+                                        clearable
+                                        type="text"
+                                        data-testid="phnInput"
+                                        :error-messages="
+                                            ValidationUtil.getErrorMessages(
+                                                v$.dependent.PHN
+                                            )
+                                        "
+                                        @blur="v$.dependent.PHN.$touch()"
+                                    />
+                                </div>
+                            </v-col>
+                        </v-row>
+                        <v-row>
+                            <v-col>
+                                <v-checkbox
+                                    id="termsCheckbox"
+                                    v-model="accepted"
+                                    data-testid="termsCheckbox"
+                                    density="compact"
+                                    color="primary"
+                                    class="text-body-1 checkbox-top"
+                                    hide-details
+                                    :error="
+                                        !ValidationUtil.isValid(v$.accepted)
+                                    "
+                                    @blur="v$.accepted.$touch()"
+                                >
+                                    <template #label>
+                                        <div class="ml-1">
+                                            <p>
+                                                By providing the child’s name,
+                                                date of birth, and personal
+                                                health number, I declare that I
+                                                am the child’s guardian and that
+                                                I have the authority to request
+                                                and receive health information
+                                                respecting the child from third
+                                                parties.
+                                            </p>
+                                            <p>
+                                                If I either: (a) cease to be
+                                                guardian of this child; (b) or
+                                                lose the right to request or
+                                                receive health information from
+                                                third parties respecting this
+                                                child, I will remove them as a
+                                                dependent under my Health
+                                                Gateway account immediately.
+                                            </p>
+                                            <p class="mb-0">
+                                                I understand that I will no
+                                                longer be able to access my
+                                                child’s health records once they
+                                                are 12 years of age.
+                                            </p>
+                                        </div>
+                                    </template>
+                                </v-checkbox>
+                            </v-col>
+                        </v-row>
+                    </v-container>
+                </v-card-text>
+                <v-card-actions class="justify-end border-t-sm pa-4">
+                    <HgButtonComponent
+                        data-testid="cancelRegistrationBtn"
+                        variant="secondary"
+                        text="Cancel"
+                        @click.prevent="hideDialog"
+                    />
+                    <HgButtonComponent
+                        data-testid="registerDependentBtn"
+                        variant="primary"
+                        :loading="isLoading"
+                        :disabled="hasValidationErrors"
+                        text="Register Dependent"
+                        @click.prevent="handleSubmit"
+                    />
+                </v-card-actions>
+            </v-card>
+        </div>
+        <LoadingComponent :is-loading="isLoading" />
+    </v-dialog>
+</template>
+
+<style scope>
+.checkbox-top.v-input .v-input__control .v-selection-control {
+    align-items: start !important;
+}
+</style>
