@@ -119,7 +119,7 @@ describe("dependents", () => {
             validDependent.invalidDoB
         );
         cy.get("[data-testid=phnInput]").type(validDependent.phn);
-        cy.get("[data-testid=termsCheckbox]").check({ force: true });
+        cy.get("[data-testid=terms-checkbox]").check({ force: true });
 
         cy.get("[data-testid=registerDependentBtn]").click();
 
@@ -147,7 +147,7 @@ describe("dependents", () => {
             .clear()
             .type(validDependent.doB);
         cy.get("[data-testid=phnInput]").clear().type(validDependent.phn);
-        cy.get("[data-testid=termsCheckbox]").check({ force: true });
+        cy.get("[data-testid=terms-checkbox]").check({ force: true });
 
         cy.get("[data-testid=registerDependentBtn]").click();
 
@@ -186,7 +186,7 @@ describe("dependents", () => {
         cy.get("[data-testid=phnInput]")
             .clear()
             .type(protectedDependentWithoutAllowedDelegation.phn);
-        cy.get("[data-testid=termsCheckbox]").check({ force: true });
+        cy.get("[data-testid=terms-checkbox]").check({ force: true });
 
         cy.get("[data-testid=registerDependentBtn]").click();
 
@@ -225,7 +225,7 @@ describe("dependents", () => {
         cy.get("[data-testid=phnInput]")
             .clear()
             .type(protectedDependentWithAllowedDelegation.phn);
-        cy.get("[data-testid=termsCheckbox]").check({ force: true });
+        cy.get("[data-testid=terms-checkbox]").check({ force: true });
 
         cy.get("[data-testid=registerDependentBtn]").click();
 
@@ -273,7 +273,7 @@ describe("dependents", () => {
             .clear()
             .type(noHdidDependent.doB);
         cy.get("[data-testid=phnInput]").clear().type(noHdidDependent.phn);
-        cy.get("[data-testid=termsCheckbox]").check({ force: true });
+        cy.get("[data-testid=terms-checkbox]").check({ force: true });
 
         cy.get("[data-testid=registerDependentBtn]").click();
 
@@ -520,7 +520,7 @@ describe("dependents", () => {
             .clear()
             .type(validDependent.doB);
         cy.get("[data-testid=phnInput]").clear().type(validDependent.phn);
-        cy.get("[data-testid=termsCheckbox]").check({ force: true });
+        cy.get("[data-testid=terms-checkbox]").check({ force: true });
 
         cy.get("[data-testid=registerDependentBtn]").click();
 
@@ -600,7 +600,7 @@ describe("dependents", () => {
             .clear()
             .type(validDependent.doB);
         cy.get("[data-testid=phnInput]").clear().type(validDependent.phn);
-        cy.get("[data-testid=termsCheckbox]").check({ force: true });
+        cy.get("[data-testid=terms-checkbox]").check({ force: true });
 
         cy.get("[data-testid=registerDependentBtn]").click();
 

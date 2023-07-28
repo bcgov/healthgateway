@@ -349,7 +349,7 @@ watch(() => dependent.value.dateOfBirth, touchDateOfBirth);
             <b-checkbox
                 id="termsCheckbox"
                 v-model="accepted"
-                data-testid="termsCheckbox"
+                data-testid="terms-checkbox"
                 :state="ValidationUtil.isValid(v$.accepted)"
             >
                 <p>
