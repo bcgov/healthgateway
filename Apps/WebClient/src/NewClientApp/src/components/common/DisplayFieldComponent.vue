@@ -14,7 +14,7 @@ withDefaults(defineProps<Props>(), {
     value: undefined,
     nameClass: undefined,
     valueClass: undefined,
-    horizontal: false,
+    horizontal: true,
 });
 
 const slots = useSlots();

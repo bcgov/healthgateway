@@ -1,6 +1,5 @@
 import { defineStore } from "pinia";
 import { computed, ref } from "vue";
-import { useDisplay } from "vuetify";
 
 import { container } from "@/ioc/container";
 import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
@@ -11,7 +10,6 @@ import { ILogger } from "@/services/interfaces";
 
 export const useTimelineStore = defineStore("timeline", () => {
     const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-    const display = useDisplay();
 
     const keyword = ref("");
     const timeLineFilter = ref(TimelineFilterBuilder.buildEmpty());
@@ -33,7 +31,7 @@ export const useTimelineStore = defineStore("timeline", () => {
         return new DateWrapper(timeLineLinearDate.value);
     });
     const selectedEntryTypes = computed(() => timeLineFilter.value.entryTypes);
-    const columnCount = computed(() => (display.mdAndUp.value ? 6 : 12));
+    const columnCount = computed(() => 12);
 
     // Actions
     function setFilter(filterBuilder: TimelineFilterBuilder) {
