@@ -28,9 +28,7 @@ describe("Laboratory Orders", () => {
 
         cy.get("[data-testid=backBtn]").should("be.visible");
         cy.get("[data-testid=entryCardDetailsTitle]").should("be.visible");
-        cy.get("[data-testid=laboratory-header-order-status").should(
-            "be.visible"
-        );
+        cy.get("[data-testid=entryCardDetailsSubtitle").should("be.visible");
         cy.get("[data-testid=laboratory-collection-date]").should("be.visible");
         cy.get("[data-testid=laboratory-ordering-provider]").should(
             "be.visible"
