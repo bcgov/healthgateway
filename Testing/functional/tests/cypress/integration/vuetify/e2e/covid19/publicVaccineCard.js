@@ -1,28 +1,18 @@
-const dobYearSelector =
-    "[data-testid=dateOfBirthInput] [data-testid=formSelectYear]";
-const dobMonthSelector =
-    "[data-testid=dateOfBirthInput] [data-testid=formSelectMonth]";
-const dobDaySelector =
-    "[data-testid=dateOfBirthInput] [data-testid=formSelectDay]";
-const dovYearSelector =
-    "[data-testid=dateOfVaccineInput] [data-testid=formSelectYear]";
-const dovMonthSelector =
-    "[data-testid=dateOfVaccineInput] [data-testid=formSelectMonth]";
-const dovDaySelector =
-    "[data-testid=dateOfVaccineInput] [data-testid=formSelectDay]";
+const dateOfBirthInput = "[data-testid=dateOfBirthInput] input";
+const dateOfVaccineInput = "[data-testid=dateOfVaccineInput] input";
 
 const vaccineCardUrl = "/vaccinecard";
 
 const fullyVaccinatedPhn = "9735361219";
 const fullyVaccinatedDobYear = "1994";
-const fullyVaccinatedDobMonth = "June";
-const fullyVaccinatedDobDay = "9";
+const fullyVaccinatedDobMonth = "JUN";
+const fullyVaccinatedDobDay = "09";
 const fullyVaccinatedDovYear = "2021";
-const fullyVaccinatedDovMonth = "January";
+const fullyVaccinatedDovMonth = "JAN";
 const fullyVaccinatedDovDay = "20";
 
 function enterVaccineCardPHN(phn) {
-    cy.get("[data-testid=phnInput]")
+    cy.get("[data-testid=phnInput] input")
         .should("be.visible", "be.enabled")
         .clear()
         .type(phn);
@@ -36,11 +26,11 @@ describe("Public Vaccine Card Result", () => {
     it("Partially Vaccinated", () => {
         const phn = "9735353315";
         const dobYear = "1967";
-        const dobMonth = "June";
-        const dobDay = "2";
+        const dobMonth = "JUN";
+        const dobDay = "02";
         const dovYear = "2021";
-        const dovMonth = "July";
-        const dovDay = "4";
+        const dovMonth = "JUL";
+        const dovDay = "04";
 
         cy.configureSettings({
             covid19: {
@@ -61,12 +51,12 @@ describe("Public Vaccine Card Result", () => {
 
         enterVaccineCardPHN(phn);
 
-        cy.get(dobYearSelector).select(dobYear);
-        cy.get(dobMonthSelector).select(dobMonth);
-        cy.get(dobDaySelector).select(dobDay);
-        cy.get(dovYearSelector).select(dovYear);
-        cy.get(dovMonthSelector).select(dovMonth);
-        cy.get(dovDaySelector).select(dovDay);
+        cy.get(dateOfBirthInput).type(`${dobYear}-${dobMonth}-${dobDay}`, {
+            force: true,
+        });
+        cy.get(dateOfVaccineInput).type(`${dovYear}-${dovMonth}-${dovDay}`, {
+            force: true,
+        });
 
         clickVaccineCardEnterButton();
 
@@ -92,12 +82,12 @@ describe("Public Vaccine Card Result", () => {
         cy.visit(vaccineCardUrl);
 
         enterVaccineCardPHN(fullyVaccinatedPhn);
-        cy.get(dobYearSelector).select(fullyVaccinatedDobYear);
-        cy.get(dobMonthSelector).select(fullyVaccinatedDobMonth);
-        cy.get(dobDaySelector).select(fullyVaccinatedDobDay);
-        cy.get(dovYearSelector).select(fullyVaccinatedDovYear);
-        cy.get(dovMonthSelector).select(fullyVaccinatedDovMonth);
-        cy.get(dovDaySelector).select(fullyVaccinatedDovDay);
+        cy.get(dateOfBirthInput).type(
+            `${fullyVaccinatedDobYear}-${fullyVaccinatedDobMonth}-${fullyVaccinatedDobDay}`
+        );
+        cy.get(dateOfVaccineInput).type(
+            `${fullyVaccinatedDovYear}-${fullyVaccinatedDovMonth}-${fullyVaccinatedDovDay}`
+        );
 
         clickVaccineCardEnterButton();
 
@@ -125,12 +115,12 @@ describe("Public Vaccine Card Downloads", () => {
         cy.visit(vaccineCardUrl);
 
         enterVaccineCardPHN(fullyVaccinatedPhn);
-        cy.get(dobYearSelector).select(fullyVaccinatedDobYear);
-        cy.get(dobMonthSelector).select(fullyVaccinatedDobMonth);
-        cy.get(dobDaySelector).select(fullyVaccinatedDobDay);
-        cy.get(dovYearSelector).select(fullyVaccinatedDovYear);
-        cy.get(dovMonthSelector).select(fullyVaccinatedDovMonth);
-        cy.get(dovDaySelector).select(fullyVaccinatedDovDay);
+        cy.get(dateOfBirthInput).type(
+            `${fullyVaccinatedDobYear}-${fullyVaccinatedDobMonth}-${fullyVaccinatedDobDay}`
+        );
+        cy.get(dateOfVaccineInput).type(
+            `${fullyVaccinatedDovYear}-${fullyVaccinatedDovMonth}-${fullyVaccinatedDovDay}`
+        );
 
         clickVaccineCardEnterButton();
     });
