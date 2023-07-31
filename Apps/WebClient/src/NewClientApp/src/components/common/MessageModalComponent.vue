@@ -9,10 +9,12 @@ interface Props {
     message: string;
     isLoading?: boolean;
     okOnly?: boolean;
+    submitText?: string;
 }
 withDefaults(defineProps<Props>(), {
     isLoading: false,
     okOnly: false,
+    submitText: "Continue",
 });
 
 const emit = defineEmits<{
@@ -86,7 +88,7 @@ function handleCancel(): void {
                         data-testid="genericMessageSubmitBtn"
                         class="ml-2"
                         variant="primary"
-                        text="Continue"
+                        :text="submitText"
                         @click.prevent="handleSubmit"
                     />
                 </v-card-actions>
