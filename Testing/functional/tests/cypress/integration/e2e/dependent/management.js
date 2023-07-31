@@ -93,7 +93,7 @@ describe("dependents - dashboard", () => {
 
     it("Validate text fields on add dependent modal", () => {
         //Validate Main Add Button
-        cy.get("[data-testid=addNewDependentBtn]")
+        cy.get("[data-testid=add-dependent-button]")
             .should("be.enabled", "be.visible")
             .click();
 
@@ -127,12 +127,12 @@ describe("dependents - dashboard", () => {
             .should("be.enabled", "be.visible")
             .click();
         // Validate the modal is done
-        cy.get("[data-testid=newDependentModal]").should("not.exist");
+        cy.get("[data-testid=add-dependent-dialog]").should("not.exist");
     });
 
     it("Validate maximum age check on add dependent modal", () => {
         // Validate that adding a dependent fails when they are over the age of 12
-        cy.get("[data-testid=addNewDependentBtn]").click();
+        cy.get("[data-testid=add-dependent-button]").click();
         cy.get("[data-testid=newDependentModalText]").should(
             "exist",
             "be.visible"
@@ -143,18 +143,18 @@ describe("dependents - dashboard", () => {
             validDependent.invalidDoB
         );
         cy.get("[data-testid=phnInput]").type(validDependent.phn);
-        cy.get("[data-testid=termsCheckbox]").check({ force: true });
+        cy.get("[data-testid=terms-checkbox]").check({ force: true });
 
         cy.get("[data-testid=registerDependentBtn]").click();
 
         // Validate the modal has not closed
-        cy.get("[data-testid=newDependentModal]").should("exist");
+        cy.get("[data-testid=add-dependent-dialog]").should("exist");
 
         cy.get("[data-testid=cancelRegistrationBtn]").click();
     });
 
     it("Validate data mismatch on add dependent modal", () => {
-        cy.get("[data-testid=addNewDependentBtn]").click();
+        cy.get("[data-testid=add-dependent-button]").click();
 
         cy.get("[data-testid=newDependentModalText]").should(
             "exist",
@@ -171,12 +171,12 @@ describe("dependents - dashboard", () => {
             .clear()
             .type(validDependent.doB);
         cy.get("[data-testid=phnInput]").clear().type(validDependent.phn);
-        cy.get("[data-testid=termsCheckbox]").check({ force: true });
+        cy.get("[data-testid=terms-checkbox]").check({ force: true });
 
         cy.get("[data-testid=registerDependentBtn]").click();
 
         // Validate the modal is not done
-        cy.get("[data-testid=newDependentModal]").should("exist");
+        cy.get("[data-testid=add-dependent-dialog]").should("exist");
         cy.get("[data-testid=dependentErrorText]").should(
             "exist",
             "be.visible",
@@ -186,7 +186,7 @@ describe("dependents - dashboard", () => {
     });
 
     it("Validate no hdid on add dependent modal", () => {
-        cy.get("[data-testid=addNewDependentBtn]").click();
+        cy.get("[data-testid=add-dependent-button]").click();
 
         cy.get("[data-testid=newDependentModalText]").should(
             "exist",
@@ -203,12 +203,12 @@ describe("dependents - dashboard", () => {
             .clear()
             .type(noHdidDependent.doB);
         cy.get("[data-testid=phnInput]").clear().type(noHdidDependent.phn);
-        cy.get("[data-testid=termsCheckbox]").check({ force: true });
+        cy.get("[data-testid=terms-checkbox]").check({ force: true });
 
         cy.get("[data-testid=registerDependentBtn]").click();
 
         // Validate the modal is not done
-        cy.get("[data-testid=newDependentModal]").should("exist");
+        cy.get("[data-testid=add-dependent-dialog]").should("exist");
         cy.get("[data-testid=dependentErrorText]").should(
             "exist",
             "be.visible",
@@ -221,7 +221,7 @@ describe("dependents - dashboard", () => {
     it.skip("Validate adding, viewing, duplicate prevention and removing dependents", () => {
         cy.log("Adding dependent");
 
-        cy.get("[data-testid=addNewDependentBtn]").click();
+        cy.get("[data-testid=add-dependent-button]").click();
         cy.get("[data-testid=newDependentModalText]").should(
             "exist",
             "be.visible"
@@ -237,12 +237,12 @@ describe("dependents - dashboard", () => {
             .clear()
             .type(validDependent.doB);
         cy.get("[data-testid=phnInput]").clear().type(validDependent.phn);
-        cy.get("[data-testid=termsCheckbox]").check({ force: true });
+        cy.get("[data-testid=terms-checkbox]").check({ force: true });
 
         cy.get("[data-testid=registerDependentBtn]").click();
 
         // Validate the modal is done
-        cy.get("[data-testid=newDependentModal]").should("not.exist");
+        cy.get("[data-testid=add-dependent-dialog]").should("not.exist");
 
         cy.log("Validating dependent tab");
 
@@ -258,7 +258,7 @@ describe("dependents - dashboard", () => {
 
         cy.log("Validate duplicate dependent cannot be added by the same user");
 
-        cy.get("[data-testid=addNewDependentBtn]").click();
+        cy.get("[data-testid=add-dependent-button]").click();
         cy.get("[data-testid=newDependentModalText]").should(
             "exist",
             "be.visible"
@@ -271,7 +271,7 @@ describe("dependents - dashboard", () => {
         cy.get("[data-testid=cancelRegistrationBtn]").click();
 
         // Validate the modal is done
-        cy.get("[data-testid=newDependentModal]").should("not.exist");
+        cy.get("[data-testid=add-dependent-dialog]").should("not.exist");
 
         cy.log("Adding same dependent as another user");
 
@@ -281,7 +281,7 @@ describe("dependents - dashboard", () => {
             AuthMethod.KeyCloak,
             "/dependents"
         );
-        cy.get("[data-testid=addNewDependentBtn]").click();
+        cy.get("[data-testid=add-dependent-button]").click();
 
         cy.get("[data-testid=newDependentModalText]").should(
             "exist",
@@ -298,12 +298,12 @@ describe("dependents - dashboard", () => {
             .clear()
             .type(validDependent.doB);
         cy.get("[data-testid=phnInput]").clear().type(validDependent.phn);
-        cy.get("[data-testid=termsCheckbox]").check({ force: true });
+        cy.get("[data-testid=terms-checkbox]").check({ force: true });
 
         cy.get("[data-testid=registerDependentBtn]").click();
 
         // Validate the modal is done
-        cy.get("[data-testid=newDependentModal]").should("not.exist");
+        cy.get("[data-testid=add-dependent-dialog]").should("not.exist");
 
         cy.log("Removing dependent from other user");
         cy.get("@newDependentCard").within(() => {

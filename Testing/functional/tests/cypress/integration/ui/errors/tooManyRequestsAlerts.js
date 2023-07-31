@@ -704,7 +704,7 @@ describe("Dependents", () => {
         cy.intercept("POST", "**/UserProfile/*/Dependent", {
             statusCode: 429,
         });
-        cy.get("[data-testid=addNewDependentBtn]").click();
+        cy.get("[data-testid=add-dependent-button]").click();
 
         cy.get("[data-testid=firstNameInput]")
             .clear()
@@ -716,7 +716,7 @@ describe("Dependents", () => {
             .clear()
             .type(alternativeDependent.doB);
         cy.get("[data-testid=phnInput]").clear().type(alternativeDependent.phn);
-        cy.get("[data-testid=termsCheckbox]").check({ force: true });
+        cy.get("[data-testid=terms-checkbox]").check({ force: true });
 
         cy.get("[data-testid=registerDependentBtn]").click();
 
