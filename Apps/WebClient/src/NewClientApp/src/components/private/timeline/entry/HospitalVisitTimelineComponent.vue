@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { library } from "@fortawesome/fontawesome-svg-core";
-import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { computed } from "vue";
 
 import DisplayFieldComponent from "@/components/common/DisplayFieldComponent.vue";
@@ -10,8 +8,6 @@ import { EntryType, entryTypeMap } from "@/constants/entryType";
 import { DateWrapper } from "@/models/dateWrapper";
 import HospitalVisitTimelineEntry from "@/models/timeline/hospitalVisitTimelineEntry";
 import { useTimelineStore } from "@/stores/timeline";
-
-library.add(faInfoCircle);
 
 interface Props {
     entry: HospitalVisitTimelineEntry;

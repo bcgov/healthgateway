@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { library } from "@fortawesome/fontawesome-svg-core";
-import { faDownload } from "@fortawesome/free-solid-svg-icons";
 import saveAs from "file-saver";
 import { computed, ref } from "vue";
 
@@ -18,9 +16,6 @@ import { ILogger } from "@/services/interfaces";
 import { useClinicalDocumentStore } from "@/stores/clinicalDocument";
 import { useTimelineStore } from "@/stores/timeline";
 import SnowPlow from "@/utility/snowPlow";
-
-library.add(faDownload);
-
 interface Props {
     hdid: string;
     entry: ClinicalDocumentTimelineEntry;
