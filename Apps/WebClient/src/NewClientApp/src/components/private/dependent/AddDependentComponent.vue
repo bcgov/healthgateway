@@ -71,7 +71,7 @@ const isVisible = ref(false);
 const errorMessage = ref("");
 const errorType = ref<ActionType | null>(null);
 const accepted = ref(false);
-const dependent = ref<AddDependentRequest>(emptyDependent);
+const dependent = ref<AddDependentRequest>({ ...emptyDependent });
 
 const hasValidationErrors = computed(() => {
     v$.value.accepted.$touch();
