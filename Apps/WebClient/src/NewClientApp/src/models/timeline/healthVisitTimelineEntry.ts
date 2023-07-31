@@ -11,6 +11,7 @@ export default class HealthVisitTimelineEntry extends TimelineEntry {
     public practitionerName: string;
     public specialtyDescription: string;
     public clinic: ClinicViewModel;
+    public showRollOffWarning: boolean;
     private getComments: (entyId: string) => UserComment[] | null;
 
     public constructor(
@@ -26,6 +27,11 @@ export default class HealthVisitTimelineEntry extends TimelineEntry {
             model.practitionerName || "Unknown Practitioner";
         this.specialtyDescription = model.specialtyDescription || "";
         this.clinic = new ClinicViewModel(model.clinic);
+
+        const duration = Duration.fromObject({ years: 6 });
+        const warningDate = new DateWrapper().subtract(duration);
+        this.showRollOffWarning = this.date.isBeforeOrSame(warningDate);
+
         this.getComments = getComments;
     }
 
@@ -40,12 +46,6 @@ export default class HealthVisitTimelineEntry extends TimelineEntry {
             this.clinic.name;
         text = text.toUpperCase();
         return text.includes(keyword.toUpperCase());
-    }
-
-    public showRollOffWarning(): boolean {
-        const duration = Duration.fromObject({ years: 6 });
-        const warningDate = new DateWrapper().subtract(duration);
-        return this.date.isBeforeOrSame(warningDate);
     }
 }
 

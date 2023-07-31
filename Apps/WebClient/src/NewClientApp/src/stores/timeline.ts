@@ -11,23 +11,18 @@ import { ILogger } from "@/services/interfaces";
 export const useTimelineStore = defineStore("timeline", () => {
     const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
 
-    // Refs
     const keyword = ref("");
     const timeLineFilter = ref(TimelineFilterBuilder.buildEmpty());
     const timeLineLinearDate = ref(new DateWrapper().toISO());
     const timeLineSelectedDate = ref<StringISODate>();
 
-    // Computed
     const filter = computed(() => timeLineFilter.value);
-
     const hasActiveFilter = computed(
         () => timeLineFilter.value.hasActiveFilter() || keyword.value !== ""
     );
-
     const linearDate = computed<IDateWrapper>(() => {
         return new DateWrapper(timeLineLinearDate.value);
     });
-
     const selectedDate = computed<IDateWrapper | undefined>(() => {
         if (timeLineSelectedDate.value === undefined) {
             return undefined;
@@ -35,8 +30,8 @@ export const useTimelineStore = defineStore("timeline", () => {
 
         return new DateWrapper(timeLineLinearDate.value);
     });
-
     const selectedEntryTypes = computed(() => timeLineFilter.value.entryTypes);
+    const columnCount = computed(() => 12);
 
     // Actions
     function setFilter(filterBuilder: TimelineFilterBuilder) {
@@ -66,6 +61,7 @@ export const useTimelineStore = defineStore("timeline", () => {
         linearDate,
         selectedDate,
         selectedEntryTypes,
+        columnCount,
         setFilter,
         clearFilter,
         setLinearDate,

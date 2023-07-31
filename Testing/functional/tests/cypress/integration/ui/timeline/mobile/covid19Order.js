@@ -31,7 +31,7 @@ describe("COVID-19 Orders", () => {
         cy.get("[data-testid=laboratoryHeaderDescription]").should(
             "be.visible"
         );
-        cy.get("[data-testid=laboratoryReportAvailable]").should("be.visible");
+        cy.get("[data-testid=covid-result-download-btn]").should("be.visible");
         cy.get("[data-testid=laboratoryReportingLab]").should("be.visible");
         cy.get("[data-testid=laboratoryTestType]").should("be.visible");
         cy.get("[data-testid=laboratoryTestStatus-0]").should("be.visible");
@@ -72,7 +72,7 @@ describe("COVID-19 Orders", () => {
                 cy.get("[data-testid=attachmentIcon]").should("exist");
 
                 cy.log("Card with attachment icon should have a report.");
-                cy.get("[data-testid=laboratoryReportAvailable]").should(
+                cy.get("[data-testid=covid-result-download-btn]").should(
                     "exist"
                 );
 
@@ -142,7 +142,7 @@ describe("COVID-19 Orders", () => {
                 cy.get("[data-testid=attachmentIcon]").should("exist");
 
                 cy.log("Card with attachment icon should have a report.");
-                cy.get("[data-testid=laboratoryReportAvailable]").should(
+                cy.get("[data-testid=covid-result-download-btn]").should(
                     "exist"
                 );
 
@@ -182,7 +182,7 @@ describe("COVID-19 Orders", () => {
                 cy.get("[data-testid=attachmentIcon]").should("exist");
 
                 cy.log("Card with attachment icon should have a report.");
-                cy.get("[data-testid=laboratoryReportAvailable]").should(
+                cy.get("[data-testid=covid-result-download-btn]").should(
                     "exist"
                 );
 

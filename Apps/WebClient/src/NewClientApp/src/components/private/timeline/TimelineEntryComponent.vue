@@ -98,24 +98,24 @@ watch(
                             <v-col
                                 :data-testid="`${entry.type.toLowerCase()}Title`"
                             >
-                                <div
+                                <h2
                                     data-testid="entryCardDetailsTitle"
-                                    class="font-weight-bold"
+                                    class="text-subtitle-1 font-weight-bold"
                                 >
                                     {{ displayTitle }}
-                                </div>
+                                </h2>
                             </v-col>
                             <v-col
                                 cols="auto"
                                 data-testid="entryCardDate"
-                                class="text-body-2 text-medium-emphasis text-no-wrap"
+                                class="text-body-2 text-no-wrap"
                             >
                                 {{ dateString }}
                             </v-col>
                         </v-row>
                         <v-row dense justify="end">
                             <v-col
-                                class="py-1 align-self-center text-medium-emphasis"
+                                class="py-1 align-self-center"
                                 data-testid="entryCardDetailsSubtitle"
                             >
                                 <slot name="header-description">
@@ -152,7 +152,10 @@ watch(
                 </v-row>
             </v-expansion-panel-title>
             <v-expansion-panel-text>
-                <div class="timeline-entry-content">
+                <div
+                    class="my-2"
+                    :class="{ 'indent-content': !isMobileDetails }"
+                >
                     <slot />
                     <CommentSectionComponent
                         v-if="allowComment"
@@ -171,7 +174,7 @@ watch(
     width: 4rem;
 }
 
-.timeline-entry-content {
+.indent-content {
     // icon size + icon padding + col padding
     margin-left: calc(4rem + 24px);
 }

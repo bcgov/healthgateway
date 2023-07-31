@@ -34,6 +34,7 @@ const isTooManyRequests = computed(
                         <v-alert
                             v-if="isTooManyRequests"
                             type="warning"
+                            icon="circle-exclamation"
                             data-testid="app-warning"
                             variant="outlined"
                             border

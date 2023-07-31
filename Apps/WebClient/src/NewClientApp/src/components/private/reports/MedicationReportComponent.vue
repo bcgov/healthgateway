@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, watch } from "vue";
 
-import HgDataTable from "@/components/common/HgDataTable.vue";
+import HgDataTableComponent from "@/components/common/HgDataTableComponent.vue";
 import ProtectiveWordComponent from "@/components/site/ProtectiveWordComponent.vue";
 import { container } from "@/ioc/container";
 import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
@@ -107,10 +107,7 @@ const visibleRecords = computed(() =>
                 )
         )
         .sort((a, b) =>
-            DateSortUtility.descendingByString(
-                a.dispensedDate,
-                b.dispensedDate
-            )
+            DateSortUtility.descendingByString(a.dispensedDate, b.dispensedDate)
         )
 );
 const items = computed(() =>
@@ -169,7 +166,7 @@ medicationStore
             <v-row v-if="isEmpty && !medicationsAreLoading">
                 <v-col>No records found.</v-col>
             </v-row>
-            <HgDataTable
+            <HgDataTableComponent
                 v-else-if="!isDependent"
                 class="d-none d-md-block"
                 :items="items"

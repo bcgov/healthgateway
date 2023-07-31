@@ -49,7 +49,7 @@ describe("Laboratory Orders", () => {
                 cy.get("[data-testid=entryCardDetailsTitle]").should(
                     "be.visible"
                 );
-                cy.get("[data-testid=laboratory-header-order-status]").should(
+                cy.get("[data-testid=entryCardDetailsSubtitle]").should(
                     "be.visible"
                 );
                 cy.get("[data-testid=laboratory-collection-date]").should(
@@ -197,9 +197,10 @@ describe("Laboratory Orders", () => {
         cy.get("#entry-details-modal")
             .should("be.visible")
             .within(() => {
-                cy.get("[data-testid=laboratory-collection-date-value]").should(
-                    "be.visible"
-                );
+                cy.contains(
+                    "[data-testid=laboratory-collection-date]",
+                    "2021-Jun-05"
+                ).should("be.visible");
                 cy.get("[data-testid=backBtn]").click({ force: true });
             });
 
@@ -209,9 +210,10 @@ describe("Laboratory Orders", () => {
             .should("be.visible")
             .within(() => {
                 cy.get("[data-testid=entryDetailsCard]").within(() => {
-                    cy.get(
-                        "[data-testid=laboratory-collection-date-value]"
-                    ).should("not.exist");
+                    cy.contains(
+                        "[data-testid=laboratory-collection-date]",
+                        "N/A"
+                    ).should("be.visible");
                 });
                 cy.get("[data-testid=backBtn]").click({ force: true });
             });
@@ -222,9 +224,10 @@ describe("Laboratory Orders", () => {
             .should("be.visible")
             .within(() => {
                 cy.get("[data-testid=entryDetailsCard]").within(() => {
-                    cy.get(
-                        "[data-testid=laboratory-collection-date-value]"
-                    ).should("not.exist");
+                    cy.contains(
+                        "[data-testid=laboratory-collection-date]",
+                        "N/A"
+                    ).should("be.visible");
                 });
                 cy.get("[data-testid=backBtn]").click({ force: true });
             });

@@ -11,7 +11,7 @@ export default class NoteTimelineEntry extends TimelineEntry {
     public title: string;
     public hdid: string;
     public version?: number;
-    private static maxSumaryLenght = 40;
+    private static maxSumaryLength = 40;
 
     public constructor(model: UserNote) {
         super(
@@ -23,10 +23,10 @@ export default class NoteTimelineEntry extends TimelineEntry {
         this.title = model.title || "No Title";
         this.textSummary = this.text.substring(
             0,
-            NoteTimelineEntry.maxSumaryLenght
+            NoteTimelineEntry.maxSumaryLength
         );
-        if (this.text.length > NoteTimelineEntry.maxSumaryLenght) {
-            this.textSummary += "...";
+        if (this.text.length > NoteTimelineEntry.maxSumaryLength) {
+            this.textSummary += "…";
         }
 
         this.hdid = model.hdId || "";

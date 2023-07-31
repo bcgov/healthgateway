@@ -63,8 +63,8 @@ for (const c of props.parentEntry.comments ?? []) {
 </script>
 
 <template>
-    <div class="my-4" :class="{ 'mobile-padding': isMobileDetails }">
-        <div v-if="commentCount > 0" class="text-right pb-2">
+    <div class="mt-6" :class="{ 'mobile-padding': isMobileDetails }">
+        <div v-if="commentCount > 0" class="text-right">
             <HgButtonComponent
                 variant="link"
                 data-testid="showCommentsBtn"
@@ -90,7 +90,11 @@ for (const c of props.parentEntry.comments ?? []) {
             </div>
         </v-expand-transition>
         <div
-            :class="isMobileDetails ? ['fixed-bottom', 'pa-4', 'bg-white'] : []"
+            :class="
+                isMobileDetails
+                    ? ['fixed-bottom', 'pa-4', 'bg-white']
+                    : ['mt-4']
+            "
         >
             <AddCommentComponent
                 :comment="newComment"
@@ -108,6 +112,7 @@ for (const c of props.parentEntry.comments ?? []) {
     bottom: 0;
     left: 0;
     right: 0;
+    z-index: 2;
 }
 
 .mobile-padding {

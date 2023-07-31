@@ -6,6 +6,7 @@ import TimelineEntry from "@/models/timeline/timelineEntry";
 import { UserComment } from "@/models/userComment";
 
 export default class DiagnosticImagingTimelineEntry extends TimelineEntry {
+    public title: string;
     public procedureDescription: string;
     public bodyPart: string;
     public modality: string;
@@ -26,6 +27,11 @@ export default class DiagnosticImagingTimelineEntry extends TimelineEntry {
             EntryType.DiagnosticImaging,
             new DateWrapper(model.examDate)
         );
+
+        this.title = model.modality || "N/A";
+        if (model.isUpdated) {
+            this.title = `${this.title} - Recently Updated`;
+        }
 
         this.procedureDescription = model.procedureDescription || "N/A";
         this.bodyPart = model.bodyPart || "N/A";

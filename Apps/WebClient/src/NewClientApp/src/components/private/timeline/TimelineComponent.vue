@@ -544,7 +544,7 @@ setPageFromDate(linearDate.value);
         </v-alert>
         <template v-if="unfilteredTimelineEntries.length > 0">
             <v-banner
-                class="d-print-none px-0 py-2 mt-n2 mb-2"
+                class="timeline-filter-banner d-print-none px-4 py-2 mt-n2 mb-2 mx-n4"
                 sticky
                 border="0"
             >
@@ -555,11 +555,12 @@ setPageFromDate(linearDate.value);
                             :entry-types="entryTypes"
                         />
                     </v-col>
-                    <v-col cols="auto">
+                    <v-col>
                         <v-chip
                             v-for="[label, value] in filterLabels"
                             :key="`${label}-${value}`"
                             data-testid="filter-label"
+                            class="mr-1 mb-1"
                             :title="`${label} Filter`"
                             closable
                             size="small"
@@ -694,3 +695,10 @@ setPageFromDate(linearDate.value);
         />
     </div>
 </template>
+
+<style lang="scss" scoped>
+.timeline-filter-banner {
+    z-index: 2;
+    width: calc(100% + 32px);
+}
+</style>

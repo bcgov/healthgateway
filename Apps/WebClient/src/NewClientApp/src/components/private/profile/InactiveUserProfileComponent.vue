@@ -92,6 +92,7 @@ intervalHandler.value = window.setInterval(
     <DisplayFieldComponent
         name="Time remaining for deletion"
         :value="timeForDeletionString"
+        horizontal
     />
     <HgButtonComponent
         id="recoverAccountCancelBtn"

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, watch } from "vue";
 
-import HgDataTable from "@/components/common/HgDataTable.vue";
+import HgDataTableComponent from "@/components/common/HgDataTableComponent.vue";
 import { container } from "@/ioc/container";
 import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
 import { DateWrapper } from "@/models/dateWrapper";
@@ -122,7 +122,7 @@ healthVisitStore
             <v-col>No records found.</v-col>
         </v-row>
 
-        <HgDataTable
+        <HgDataTableComponent
             v-else-if="!isDependent"
             class="d-none d-md-block"
             fixed-header

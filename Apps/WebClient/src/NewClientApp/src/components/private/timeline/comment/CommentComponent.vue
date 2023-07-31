@@ -80,7 +80,7 @@ function removeComment(): void {
 </script>
 
 <template>
-    <v-sheet class="px-4 py-2 my-2" color="grey-lighten-5">
+    <v-sheet class="px-4 py-2 mt-2" color="grey-lighten-5">
         <v-row v-if="!isEditMode">
             <v-col>
                 <p data-testid="commentText" class="text-body-1">

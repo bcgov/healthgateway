@@ -47,6 +47,7 @@ function clearTooManyRequestsError(): void {
         v-else-if="showWarning"
         data-testid="too-many-requests-warning"
         type="warning"
+        icon="circle-exclamation"
         closable
         class="d-print-none mb-4"
         variant="outlined"

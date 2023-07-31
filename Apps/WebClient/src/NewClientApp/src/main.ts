@@ -8,6 +8,7 @@ import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
 import { initializeServices } from "@/ioc/initialization";
 import { isTooManyRequestsError } from "@/models/errors";
 import { registerInitialPlugins, registerRouterPlugin } from "@/plugins";
+import { registerGlobalComponents } from "@/plugins/components";
 import { ILogger } from "@/services/interfaces";
 import { useAppStore } from "@/stores/app";
 import { useAuthStore } from "@/stores/auth";
@@ -18,6 +19,7 @@ import { useUserStore } from "@/stores/user";
 const app = createApp(App);
 
 registerInitialPlugins(app);
+registerGlobalComponents(app);
 
 const configStore = useConfigStore();
 

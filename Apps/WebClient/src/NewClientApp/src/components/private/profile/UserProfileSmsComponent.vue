@@ -237,6 +237,7 @@ watch(maskedStoreValue, (value) => (maskedValue.value = value));
                 value="Verified"
                 value-class="text-success"
                 data-testid="smsStatusVerified"
+                horizontal
             />
             <DisplayFieldComponent
                 v-else-if="!rawStoreValue"
@@ -244,6 +245,7 @@ watch(maskedStoreValue, (value) => (maskedValue.value = value));
                 value="Opted Out"
                 value-class="text-medium-emphasis"
                 data-testid="smsStatusOptedOut"
+                horizontal
             />
             <DisplayFieldComponent
                 v-else
@@ -251,6 +253,7 @@ watch(maskedStoreValue, (value) => (maskedValue.value = value));
                 value="Not Verified"
                 value-class="text-error"
                 data-testid="smsStatusNotVerified"
+                horizontal
             />
         </div>
         <HgButtonComponent

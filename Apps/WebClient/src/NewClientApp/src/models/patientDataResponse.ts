@@ -48,6 +48,7 @@ export class DiagnosticImagingExam extends PatientData {
     public examStatus!: string;
     public fileId: string | undefined;
     public examDate!: string;
+    public isUpdated?: boolean;
 }
 
 export class PatientDataFile {

@@ -135,11 +135,11 @@ export const useClinicalDocumentStore = defineStore("clinicalDocument", () => {
             });
     }
 
-    function getFile(fileId: string, hdid: string) {
+    function getFile(fileId: string, hdid: string): Promise<EncodedMedia> {
         const file = files.value.get(fileId);
-        if (file) {
+        if (file?.file) {
             logger.debug(`File found stored, not querying!`);
-            return Promise.resolve(file);
+            return Promise.resolve(file.file);
         }
 
         setFileRequested(fileId);
@@ -159,7 +159,7 @@ export const useClinicalDocumentStore = defineStore("clinicalDocument", () => {
                         )}`
                     );
                 }
-                return result;
+                return result.resourcePayload;
             })
             .catch((error: ResultError) => {
                 handleError(error, ErrorType.Download, hdid, fileId);
