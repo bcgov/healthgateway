@@ -441,3 +441,8 @@ Cypress.Commands.add(
         cy.get(daySelector).select(day.toString());
     }
 );
+
+Cypress.Commands.add("vSelect", (selector, value) => {
+    cy.get(selector).click().trigger("mousedown");
+    cy.get(".v-list-item").contains(value).click({ force: true });
+});
