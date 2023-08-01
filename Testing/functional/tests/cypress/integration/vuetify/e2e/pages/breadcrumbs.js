@@ -11,7 +11,7 @@ function testPageBreadcrumb(url, dataTestId) {
 }
 
 describe("Breadcrumbs", () => {
-    beforeEach("Breadcrumbs present when logged in", () => {
+    beforeEach(() => {
         cy.configureSettings({
             dependents: {
                 enabled: true,
