@@ -329,6 +329,11 @@ const isOnlyImmunizationSelected = computed(
         selectedEntryTypes.value.size === 1 &&
         selectedEntryTypes.value.has(EntryType.Immunization)
 );
+const isOnlyDiagnosticImagingSelected = computed(
+    () =>
+        selectedEntryTypes.value.size === 1 &&
+        selectedEntryTypes.value.has(EntryType.DiagnosticImaging)
+);
 const showContentPlaceholders = computed(() => {
     if (selectedEntryTypes.value.size > 0) {
         return selectedDatasetsAreLoading.value;
@@ -760,6 +765,29 @@ fetchTimelineData();
                             target="_blank"
                             rel="noopener"
                             >fill in this online form</a
+                        >.
+                    </span>
+                </b-alert>
+            </div>
+            <div
+                v-show="isOnlyDiagnosticImagingSelected"
+                id="linear-timeline-diagnostic-imaging-disclaimer"
+                class="pb-2"
+            >
+                <b-alert
+                    show
+                    variant="info"
+                    class="mt-0 mb-1"
+                    data-testid="linear-timeline-diagnostic-imaging-disclaimer-alert"
+                >
+                    <span>
+                        Most reports are available 10-14 days after your
+                        procedure.
+                        <a
+                            href="https://www2.gov.bc.ca/gov/content/health/managing-your-health/health-gateway/guide#medicalimaging"
+                            target="_blank"
+                            rel="noopener"
+                            >Learn more</a
                         >.
                     </span>
                 </b-alert>
