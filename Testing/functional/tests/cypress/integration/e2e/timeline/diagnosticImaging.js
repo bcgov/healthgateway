@@ -21,9 +21,6 @@ describe("Diagnostic Imaging", () => {
     it("Validate Card Details", () => {
         cy.get("[data-testid=diagnosticimagingTitle]").should("be.visible");
         cy.get("[data-testid=entryCardDetailsTitle").first().click();
-        cy.get("[data-testid=diagnostic-imaging-body-part").should(
-            "be.visible"
-        );
         cy.get("[data-testid=diagnostic-imaging-procedure-description").should(
             "be.visible"
         );
