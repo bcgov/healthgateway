@@ -102,10 +102,6 @@ function downloadFile(): void {
                     <strong>Health Authority: </strong>
                     <span>{{ entry.healthAuthority }}</span>
                 </div>
-                <div data-testid="diagnostic-imaging-facility">
-                    <strong>Facility: </strong>
-                    <span>{{ entry.organization }}</span>
-                </div>
             </div>
             <div class="mt-3">
                 <hg-button
