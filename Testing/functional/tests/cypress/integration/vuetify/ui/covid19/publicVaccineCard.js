@@ -257,8 +257,8 @@ describe("Public Vaccine Card Downloads", () => {
         cy.get("[data-testid=save-as-pdf-dropdown-item]")
             .should("be.visible")
             .click();
-        cy.get("[data-testid=genericMessageModal]").should("be.visible");
-        cy.get("[data-testid=genericMessageSubmitBtn]").click();
+        cy.get("[data-testid=generic-message-modal]").should("be.visible");
+        cy.get("[data-testid=generic-message-submit-btn]").click();
         cy.get("[data-testid=errorTextDescription]").should("be.visible");
         cy.get("[data-testid=loadingSpinner]").should("not.be.visible");
     });
@@ -285,8 +285,8 @@ describe("Public Vaccine Card Downloads", () => {
             .should("be.visible")
             .click();
 
-        cy.get("[data-testid=genericMessageModal]").should("be.visible");
-        cy.get("[data-testid=genericMessageSubmitBtn]").click();
+        cy.get("[data-testid=generic-message-modal]").should("be.visible");
+        cy.get("[data-testid=generic-message-submit-btn]").click();
 
         cy.get("[data-testid=loadingSpinner]").should("be.visible");
         cy.wait(1000);
@@ -304,8 +304,8 @@ describe("Public Vaccine Card Downloads", () => {
             .should("be.visible")
             .click();
 
-        cy.get("[data-testid=genericMessageModal]").should("be.visible");
-        cy.get("[data-testid=genericMessageSubmitBtn]").click();
+        cy.get("[data-testid=generic-message-modal]").should("be.visible");
+        cy.get("[data-testid=generic-message-submit-btn]").click();
         cy.get("[data-testid=loadingSpinner]").should("be.visible");
         cy.verifyDownload("ProvincialVaccineProof.png");
     });
@@ -341,8 +341,8 @@ describe("Public Vaccine Card Downloads When PublicVaccineDownloadPdf Disabled",
             .should("be.visible", "be.enabled")
             .click();
 
-        cy.get("[data-testid=genericMessageModal]").should("be.visible");
-        cy.get("[data-testid=genericMessageSubmitBtn]").click();
+        cy.get("[data-testid=generic-message-modal]").should("be.visible");
+        cy.get("[data-testid=generic-message-submit-btn]").click();
         cy.get("[data-testid=loadingSpinner]").should("be.visible");
         cy.verifyDownload("ProvincialVaccineProof.png");
     });

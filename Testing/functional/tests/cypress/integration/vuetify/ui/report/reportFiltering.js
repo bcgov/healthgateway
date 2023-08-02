@@ -24,18 +24,18 @@ describe("Report Filtering", () => {
     it("Validate Dates, Cancel and Apply", () => {
         cy.get("[data-testid=advancedPanel]").should("not.be.visible");
 
-        cy.get("[data-testid=advancedBtn]")
+        cy.get("[data-testid=advanced-btn]")
             .should("be.enabled", "be.visible")
             .click();
 
-        cy.get("[data-testid=startDateInput] input")
+        cy.get("[data-testid=start-date-input] input")
             .should("be.enabled", "be.visible")
             .should("have.value", "")
             .click()
             .focus()
             .type("2021-FEB-03");
 
-        cy.get("[data-testid=endDateInput] input")
+        cy.get("[data-testid=end-date-input] input")
             .should("be.enabled", "be.visible")
             .should("have.value", "")
             .click()
@@ -43,56 +43,56 @@ describe("Report Filtering", () => {
             .type("2021-FEB-05")
             .focus();
 
-        cy.get("[data-testid=applyFilterBtn]").click();
-        cy.get("[data-testid=selectedDatesFilter]").contains(
+        cy.get("[data-testid=apply-filter-btn]").click();
+        cy.get("[data-testid=selected-dates-filter]").contains(
             "From 2021-Feb-03 Up To 2021-Feb-05"
         );
 
         // Validate filters - Cancel  button
-        cy.get("[data-testid=advancedBtn]").click();
+        cy.get("[data-testid=advanced-btn]").click();
 
         // Cancel button should not set the newly entered values
-        cy.get("[data-testid=startDateInput] input")
+        cy.get("[data-testid=start-date-input] input")
             .clear()
             .type("2020-FEB-03");
-        cy.get("[data-testid=endDateInput] input").clear().type("2020-FEB-05");
-        cy.get("[data-testid=clearBtn]").focus();
-        cy.get("[data-testid=startDateInput] input").should(
+        cy.get("[data-testid=end-date-input] input").clear().type("2020-FEB-05");
+        cy.get("[data-testid=clear-btn]").focus();
+        cy.get("[data-testid=start-date-input] input").should(
             "have.value",
             "2020-FEB-03"
         );
-        cy.get("[data-testid=endDateInput] input").should(
+        cy.get("[data-testid=end-date-input] input").should(
             "have.value",
             "2020-FEB-05"
         );
-        cy.get("[data-testid=clearBtn]")
+        cy.get("[data-testid=clear-btn]")
             .should("be.enabled", "be.visible")
             .click();
 
-        cy.get("[data-testid=advancedBtn]").click();
-        cy.get("[data-testid=startDateInput] input").should(
+        cy.get("[data-testid=advanced-btn]").click();
+        cy.get("[data-testid=start-date-input] input").should(
             "have.value",
             "2021-FEB-03"
         );
-        cy.get("[data-testid=endDateInput] input").should(
+        cy.get("[data-testid=end-date-input] input").should(
             "have.value",
             "2021-FEB-05"
         );
 
-        cy.get("[data-testid=clearFilter] button").should("be.visible").click();
-        cy.get("[data-testid=clearFilter] button").should("not.exist");
+        cy.get("[data-testid=clear-filter] button").should("be.visible").click();
+        cy.get("[data-testid=clear-filter] button").should("not.exist");
     });
 
     it("Validate Medication Exclusions", () => {
-        cy.get("[data-testid=reportType]").select("Medications");
+        cy.vSelect("[data-testid=report-type]", "Medications");
 
         cy.get("[data-testid=advancedPanel]").should("not.be.visible");
 
-        cy.get("[data-testid=advancedBtn]")
+        cy.get("[data-testid=advanced-btn]")
             .should("be.enabled", "be.visible")
             .click();
 
-        cy.get("[data-testid=medicationExclusionFilter]").should("be.visible");
+        cy.get("[data-testid=medication-exclusion-filter]").should("be.visible");
 
         cy.get("[data-testid=medicationReportBrandNameItem]")
             .should("be.visible")
@@ -100,11 +100,11 @@ describe("Report Filtering", () => {
             .then(($brandName) => {
                 const brandText = $brandName.text().trim();
 
-                cy.get("[data-testid=medicationExclusionFilter] select")
+                cy.get("[data-testid=medication-exclusion-filter] select")
                     .focus()
                     .select(brandText);
 
-                cy.get("[data-testid=applyFilterBtn]").click();
+                cy.get("[data-testid=apply-filter-btn]").click();
 
                 cy.get(
                     "[data-testid=medicationFilter] .b-form-tag-content span"
@@ -120,14 +120,14 @@ describe("Report Filtering", () => {
                         expect(filteredBrandText).to.not.equal(brandText);
                     });
 
-                cy.get("[data-testid=advancedBtn]").click();
+                cy.get("[data-testid=advanced-btn]").click();
                 cy.get(
-                    `[data-testid=medicationExclusionFilter] [title="${brandText}"] button`
+                    `[data-testid=medication-exclusion-filter] [title="${brandText}"] button`
                 )
                     .should("be.enabled", "be.visible")
                     .click();
 
-                cy.get("[data-testid=applyFilterBtn]").click();
+                cy.get("[data-testid=apply-filter-btn]").click();
 
                 cy.get(
                     "[data-testid=medicationFilter] .b-form-tag-content"

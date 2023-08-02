@@ -319,8 +319,8 @@ describe("dependents", () => {
         ).click();
 
         // Confirmation modal
-        cy.get("[data-testid=genericMessageModal]").should("be.visible");
-        cy.get("[data-testid=genericMessageSubmitBtn]").click();
+        cy.get("[data-testid=generic-message-modal]").should("be.visible");
+        cy.get("[data-testid=generic-message-submit-btn]").click();
 
         cy.verifyDownload("HealthGatewayDependentImmunizationReport.pdf", {
             timeout: 60000,
@@ -338,8 +338,8 @@ describe("dependents", () => {
         ).click();
 
         // Confirmation modal
-        cy.get("[data-testid=genericMessageModal]").should("be.visible");
-        cy.get("[data-testid=genericMessageSubmitBtn]").click();
+        cy.get("[data-testid=generic-message-modal]").should("be.visible");
+        cy.get("[data-testid=generic-message-submit-btn]").click();
 
         cy.verifyDownload("HealthGatewayDependentImmunizationReport.csv", {
             timeout: 60000,
@@ -357,8 +357,8 @@ describe("dependents", () => {
         ).click();
 
         // Confirmation modal
-        cy.get("[data-testid=genericMessageModal]").should("be.visible");
-        cy.get("[data-testid=genericMessageSubmitBtn]").click();
+        cy.get("[data-testid=generic-message-modal]").should("be.visible");
+        cy.get("[data-testid=generic-message-submit-btn]").click();
 
         cy.verifyDownload("HealthGatewayDependentImmunizationReport.xlsx", {
             timeout: 60000,
@@ -401,8 +401,8 @@ describe("dependents", () => {
         ).click({ force: true });
 
         // Confirmation modal
-        cy.get("[data-testid=genericMessageModal]").should("be.visible");
-        cy.get("[data-testid=genericMessageSubmitBtn]").click();
+        cy.get("[data-testid=generic-message-modal]").should("be.visible");
+        cy.get("[data-testid=generic-message-submit-btn]").click();
 
         cy.verifyDownload("HealthGatewayDependentImmunizationReport.pdf", {
             timeout: 60000,
@@ -420,8 +420,8 @@ describe("dependents", () => {
         ).click({ force: true });
 
         // Confirmation modal
-        cy.get("[data-testid=genericMessageModal]").should("be.visible");
-        cy.get("[data-testid=genericMessageSubmitBtn]").click();
+        cy.get("[data-testid=generic-message-modal]").should("be.visible");
+        cy.get("[data-testid=generic-message-submit-btn]").click();
 
         cy.verifyDownload("HealthGatewayDependentImmunizationReport.csv", {
             timeout: 60000,
@@ -439,8 +439,8 @@ describe("dependents", () => {
         ).click({ force: true });
 
         // Confirmation modal
-        cy.get("[data-testid=genericMessageModal]").should("be.visible");
-        cy.get("[data-testid=genericMessageSubmitBtn]").click();
+        cy.get("[data-testid=generic-message-modal]").should("be.visible");
+        cy.get("[data-testid=generic-message-submit-btn]").click();
 
         cy.verifyDownload("HealthGatewayDependentImmunizationReport.xlsx", {
             timeout: 60000,
@@ -464,8 +464,8 @@ describe("dependents", () => {
             `[data-testid=lab-results-report-download-button-${validDependentHdid}-0]`
         ).click();
 
-        cy.get("[data-testid=genericMessageModal]").should("be.visible");
-        cy.get("[data-testid=genericMessageSubmitBtn]").click();
+        cy.get("[data-testid=generic-message-modal]").should("be.visible");
+        cy.get("[data-testid=generic-message-submit-btn]").click();
 
         cy.verifyDownload("Laboratory_Report_JENNIFER_TESTFOUR", {
             timeout: 60000,
@@ -492,8 +492,8 @@ describe("dependents", () => {
             `[data-testid=clinical-document-report-download-button-${validDependentHdid}-0]`
         ).click();
 
-        cy.get("[data-testid=genericMessageModal]").should("be.visible");
-        cy.get("[data-testid=genericMessageSubmitBtn]").click();
+        cy.get("[data-testid=generic-message-modal]").should("be.visible");
+        cy.get("[data-testid=generic-message-submit-btn]").click();
 
         cy.verifyDownload("Clinical_Document_JENNIFER_TESTFOUR.pdf", {
             timeout: 60000,
@@ -567,13 +567,13 @@ describe("dependents", () => {
             " The file that you are downloading contains personal information. If you are on a public computer, please ensure that the file is deleted before you log off. ";
 
         cy.get("[data-testid=dependentCovidReportDownloadBtn]").first().click();
-        cy.get("[data-testid=genericMessageModal]").should("be.visible");
-        cy.get("[data-testid=genericMessageText]").should(
+        cy.get("[data-testid=generic-message-modal]").should("be.visible");
+        cy.get("[data-testid=generic-message-text]").should(
             "have.text",
             sensitiveDocMessage
         );
-        cy.get("[data-testid=genericMessageSubmitBtn]").click();
-        cy.get("[data-testid=genericMessageModal]").should("not.exist");
+        cy.get("[data-testid=generic-message-submit-btn]").click();
+        cy.get("[data-testid=generic-message-modal]").should("not.exist");
 
         cy.log("Adding same dependent as another user");
 

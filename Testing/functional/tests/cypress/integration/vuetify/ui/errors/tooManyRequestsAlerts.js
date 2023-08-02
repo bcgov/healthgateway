@@ -95,7 +95,7 @@ describe("Authenticated Vaccine Card Downloads", () => {
         cy.get("[data-testid=save-as-pdf-dropdown-item]")
             .should("be.visible")
             .click();
-        cy.get("[data-testid=genericMessageSubmitBtn]").click();
+        cy.get("[data-testid=generic-message-submit-btn]").click();
 
         cy.get("[data-testid=too-many-requests-warning]").should("be.visible");
     });
@@ -169,7 +169,7 @@ describe("Public Vaccine Card Downloads", () => {
         cy.get("[data-testid=save-as-pdf-dropdown-item]")
             .should("be.visible")
             .click();
-        cy.get("[data-testid=genericMessageSubmitBtn]").click();
+        cy.get("[data-testid=generic-message-submit-btn]").click();
 
         cy.get("[data-testid=too-many-requests-warning]").should("be.visible");
     });
@@ -459,8 +459,8 @@ describe("Mobile - Laboratory Orders Report Download", () => {
             });
 
         // Confirmation modal
-        cy.get("[data-testid=genericMessageModal]").should("be.visible");
-        cy.get("[data-testid=genericMessageSubmitBtn]")
+        cy.get("[data-testid=generic-message-modal]").should("be.visible");
+        cy.get("[data-testid=generic-message-submit-btn]")
             .should("be.visible")
             .click({ force: true });
 
@@ -487,8 +487,8 @@ describe("Mobile - Laboratory Orders Report Download", () => {
             });
 
         // Confirmation modal
-        cy.get("[data-testid=genericMessageModal]").should("be.visible");
-        cy.get("[data-testid=genericMessageSubmitBtn]")
+        cy.get("[data-testid=generic-message-modal]").should("be.visible");
+        cy.get("[data-testid=generic-message-submit-btn]")
             .should("be.visible")
             .click({ force: true });
 
@@ -540,8 +540,8 @@ describe("Mobile - Covid19 Orders Report Download", () => {
             });
 
         // Confirmation modal
-        cy.get("[data-testid=genericMessageModal]").should("be.visible");
-        cy.get("[data-testid=genericMessageSubmitBtn]")
+        cy.get("[data-testid=generic-message-modal]").should("be.visible");
+        cy.get("[data-testid=generic-message-submit-btn]")
             .should("be.visible")
             .click({ force: true });
 
@@ -568,8 +568,8 @@ describe("Mobile - Covid19 Orders Report Download", () => {
             });
 
         // Confirmation modal
-        cy.get("[data-testid=genericMessageModal]").should("be.visible");
-        cy.get("[data-testid=genericMessageSubmitBtn]")
+        cy.get("[data-testid=generic-message-modal]").should("be.visible");
+        cy.get("[data-testid=generic-message-submit-btn]")
             .should("be.visible")
             .click({ force: true });
 
@@ -783,8 +783,8 @@ describe("Dependent - Immunizaation History Tab - report download error handling
         ).click();
 
         // Confirmation modal
-        cy.get("[data-testid=genericMessageModal]").should("be.visible");
-        cy.get("[data-testid=genericMessageSubmitBtn]").click();
+        cy.get("[data-testid=generic-message-modal]").should("be.visible");
+        cy.get("[data-testid=generic-message-submit-btn]").click();
 
         cy.get("[data-testid=too-many-requests-error]").should("be.visible");
     });
@@ -821,8 +821,8 @@ describe("Dependent - Immunizaation History Tab - report download error handling
         ).click();
 
         // Confirmation modal
-        cy.get("[data-testid=genericMessageModal]").should("be.visible");
-        cy.get("[data-testid=genericMessageSubmitBtn]").click();
+        cy.get("[data-testid=generic-message-modal]").should("be.visible");
+        cy.get("[data-testid=generic-message-submit-btn]").click();
 
         cy.get("[data-testid=singleErrorHeader]").should("not.be.empty");
     });
@@ -979,19 +979,19 @@ describe("Notes", () => {
                 statusCode: 429,
             });
 
-            cy.get("[data-testid=reportType]").select("Immunizations");
+            cy.vSelect("[data-testid=report-type]", "Immunizations");
 
             // Click download button
-            cy.get("[data-testid=exportRecordBtn] button")
+            cy.get("[data-testid=export-record-btn]")
                 .should("be.enabled", "be.visible")
                 .click();
 
             // Select and click first option
-            cy.get("[data-testid=exportRecordBtn] a").first().click();
+            cy.get("[data-testid=export-record-menu] .v-list-item").first().click();
 
             // Confirmation modal
-            cy.get("[data-testid=genericMessageModal]").should("be.visible");
-            cy.get("[data-testid=genericMessageSubmitBtn]").click();
+            cy.get("[data-testid=generic-message-modal]").should("be.visible");
+            cy.get("[data-testid=generic-message-submit-btn]").click();
 
             cy.get("[data-testid=too-many-requests-error]").should(
                 "be.visible"
@@ -1003,19 +1003,19 @@ describe("Notes", () => {
                 statusCode: 500,
             });
 
-            cy.get("[data-testid=reportType]").select("Immunizations");
+            cy.vSelect("[data-testid=report-type]", "Immunizations");
 
             // Click download button
-            cy.get("[data-testid=exportRecordBtn] button")
+            cy.get("[data-testid=export-record-btn]")
                 .should("be.enabled", "be.visible")
                 .click();
 
             // Select and click first option
-            cy.get("[data-testid=exportRecordBtn] a").first().click();
+            cy.get("[data-testid=export-record-menu] .v-list-item").first().click();
 
             // Confirmation modal
-            cy.get("[data-testid=genericMessageModal]").should("be.visible");
-            cy.get("[data-testid=genericMessageSubmitBtn]").click();
+            cy.get("[data-testid=generic-message-modal]").should("be.visible");
+            cy.get("[data-testid=generic-message-submit-btn]").click();
 
             cy.get("[data-testid=singleErrorHeader]").should("not.be.empty");
         });

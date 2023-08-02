@@ -102,6 +102,7 @@ function hasHeaderSlot(key: string): boolean {
                         v-for="field in fields"
                         :key="field.key"
                         :class="getAlignmentClass(field.tdAlign)"
+                        v-bind="field.tdAttr"
                     >
                         <template v-if="hasItemSlot(field.key)">
                             <slot

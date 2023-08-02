@@ -43,13 +43,13 @@ describe("COVID-19", () => {
             .first()
             .contains(/\d{4}-[A-Z]{1}[a-z]{2}-\d{2}/);
         cy.get("[data-testid=dependentCovidReportDownloadBtn]").first().click();
-        cy.get("[data-testid=genericMessageModal]").should("be.visible");
-        cy.get("[data-testid=genericMessageText]").should(
+        cy.get("[data-testid=generic-message-modal]").should("be.visible");
+        cy.get("[data-testid=generic-message-text]").should(
             "have.text",
             sensitiveDocMessage
         );
-        cy.get("[data-testid=genericMessageSubmitBtn]").click();
-        cy.get("[data-testid=genericMessageModal]").should("not.exist");
+        cy.get("[data-testid=generic-message-submit-btn]").click();
+        cy.get("[data-testid=generic-message-modal]").should("not.exist");
 
         cy.get("[data-testid=covid19TabTitle]").last().parent().click();
         cy.get("[data-testid=dependentCovidTestDate]")
@@ -62,13 +62,13 @@ describe("COVID-19", () => {
             .last()
             .should("not.be.empty");
         cy.get("[data-testid=dependentCovidReportDownloadBtn]").last().click();
-        cy.get("[data-testid=genericMessageModal]").should("be.visible");
-        cy.get("[data-testid=genericMessageText]").should(
+        cy.get("[data-testid=generic-message-modal]").should("be.visible");
+        cy.get("[data-testid=generic-message-text]").should(
             "have.text",
             sensitiveDocMessage
         );
-        cy.get("[data-testid=genericMessageSubmitBtn]").click();
-        cy.get("[data-testid=genericMessageModal]").should("not.exist");
+        cy.get("[data-testid=generic-message-submit-btn]").click();
+        cy.get("[data-testid=generic-message-modal]").should("not.exist");
     });
 
     it("Validate Covid with multiple results", () => {
@@ -153,8 +153,8 @@ describe("COVID-19 - Vaccine Proof download", () => {
         cy.get(
             `[data-testid=download-proof-of-vaccination-btn-${validHdid}]`
         ).click({ force: true });
-        cy.get("[data-testid=genericMessageModal]").should("be.visible");
-        cy.get("[data-testid=genericMessageSubmitBtn]").click();
+        cy.get("[data-testid=generic-message-modal]").should("be.visible");
+        cy.get("[data-testid=generic-message-submit-btn]").click();
         cy.get("[data-testid=loadingSpinner]").should("be.visible");
         cy.wait(1000);
         cy.get("[data-testid=loadingSpinner]").should("not.be.visible");
@@ -216,11 +216,11 @@ describe("COVID-19 - Vaccine Proof download", () => {
         cy.get(
             `[data-testid=download-proof-of-vaccination-btn-${validHdid}]`
         ).click({ force: true });
-        cy.get("[data-testid=genericMessageModal]").should("be.visible");
-        cy.get("[data-testid=genericMessageSubmitBtn]").click();
+        cy.get("[data-testid=generic-message-modal]").should("be.visible");
+        cy.get("[data-testid=generic-message-submit-btn]").click();
         cy.get("[data-testid=loadingSpinner]").should("be.visible");
-        cy.get("[data-testid=genericMessageModal]").should("be.visible");
-        cy.get("[data-testid=genericMessageOkBtn]")
+        cy.get("[data-testid=generic-message-modal]").should("be.visible");
+        cy.get("[data-testid=generic-message-ok-btn]")
             .should("be.visible")
             .click({ force: true });
     });
@@ -301,8 +301,8 @@ describe("Dependents - Immunization Tab - Enabled", () => {
         ).click();
 
         // Confirmation modal
-        cy.get("[data-testid=genericMessageModal]").should("be.visible");
-        cy.get("[data-testid=genericMessageSubmitBtn]").click();
+        cy.get("[data-testid=generic-message-modal]").should("be.visible");
+        cy.get("[data-testid=generic-message-submit-btn]").click();
 
         cy.verifyDownload("HealthGatewayDependentImmunizationReport.pdf", {
             timeout: 60000,
@@ -320,8 +320,8 @@ describe("Dependents - Immunization Tab - Enabled", () => {
         ).click();
 
         // Confirmation modal
-        cy.get("[data-testid=genericMessageModal]").should("be.visible");
-        cy.get("[data-testid=genericMessageSubmitBtn]").click();
+        cy.get("[data-testid=generic-message-modal]").should("be.visible");
+        cy.get("[data-testid=generic-message-submit-btn]").click();
 
         cy.verifyDownload("HealthGatewayDependentImmunizationReport.csv", {
             timeout: 60000,
@@ -339,8 +339,8 @@ describe("Dependents - Immunization Tab - Enabled", () => {
         ).click();
 
         // Confirmation modal
-        cy.get("[data-testid=genericMessageModal]").should("be.visible");
-        cy.get("[data-testid=genericMessageSubmitBtn]").click();
+        cy.get("[data-testid=generic-message-modal]").should("be.visible");
+        cy.get("[data-testid=generic-message-submit-btn]").click();
 
         cy.verifyDownload("HealthGatewayDependentImmunizationReport.xlsx", {
             timeout: 60000,
@@ -395,8 +395,8 @@ describe("Dependents - Immunization Tab - Enabled", () => {
         ).click({ force: true });
 
         // Confirmation modal
-        cy.get("[data-testid=genericMessageModal]").should("be.visible");
-        cy.get("[data-testid=genericMessageSubmitBtn]").click();
+        cy.get("[data-testid=generic-message-modal]").should("be.visible");
+        cy.get("[data-testid=generic-message-submit-btn]").click();
 
         cy.verifyDownload("HealthGatewayDependentImmunizationReport.pdf", {
             timeout: 60000,
@@ -414,8 +414,8 @@ describe("Dependents - Immunization Tab - Enabled", () => {
         ).click({ force: true });
 
         // Confirmation modal
-        cy.get("[data-testid=genericMessageModal]").should("be.visible");
-        cy.get("[data-testid=genericMessageSubmitBtn]").click();
+        cy.get("[data-testid=generic-message-modal]").should("be.visible");
+        cy.get("[data-testid=generic-message-submit-btn]").click();
 
         cy.verifyDownload("HealthGatewayDependentImmunizationReport.csv", {
             timeout: 60000,
@@ -433,8 +433,8 @@ describe("Dependents - Immunization Tab - Enabled", () => {
         ).click({ force: true });
 
         // Confirmation modal
-        cy.get("[data-testid=genericMessageModal]").should("be.visible");
-        cy.get("[data-testid=genericMessageSubmitBtn]").click();
+        cy.get("[data-testid=generic-message-modal]").should("be.visible");
+        cy.get("[data-testid=generic-message-submit-btn]").click();
 
         cy.verifyDownload("HealthGatewayDependentImmunizationReport.xlsx", {
             timeout: 60000,

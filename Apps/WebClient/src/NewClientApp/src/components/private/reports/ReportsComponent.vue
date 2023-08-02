@@ -325,7 +325,7 @@ for (const [entryType] of reportComponentMap) {
                         v-model="selectedEntryType"
                         label="Record Type"
                         hint="Select a record type"
-                        data-testid="reportType"
+                        data-testid="report-type"
                         hide-details
                         :items="reportTypeOptions"
                         :disabled="isLoading"
@@ -336,20 +336,17 @@ for (const [entryType] of reportComponentMap) {
                     <HgButtonComponent
                         id="advanceFilterBtn"
                         variant="link"
-                        data-testid="advancedBtn"
+                        data-testid="advanced-btn"
                         text="Advanced"
                         @click="toggleAdvanced"
                     />
-                    <v-menu
-                        data-testid="exportRecordBtn"
-                        :disabled="isDownloadDisabled"
-                    >
+                    <v-menu data-testid="export-record-menu">
                         <template #activator="{ props: slotProps }">
                             <HgButtonComponent
-                                id="exportRecordBtn"
+                                id="export-record-btn"
                                 text="Download"
                                 variant="primary"
-                                data-testid="exportRecordBtn"
+                                data-testid="export-record-btn"
                                 v-bind="slotProps"
                                 :disabled="isDownloadDisabled"
                             />
@@ -382,11 +379,11 @@ for (const [entryType] of reportComponentMap) {
                     <div><strong>Date Range</strong></div>
                     <v-chip
                         color="secondary"
-                        data-testid="clearFilter"
+                        data-testid="clear-filter"
                         closable
                         @click:close="clearFilterDates"
                     >
-                        <span data-testid="selectedDatesFilter">{{
+                        <span data-testid="selected-dates-filter">{{
                             reportFilterDateString
                         }}</span>
                     </v-chip>
@@ -396,7 +393,6 @@ for (const [entryType] of reportComponentMap) {
                         reportFilter.hasMedicationsFilter() &&
                         isMedicationReport
                     "
-                    data-testid="medicationFilter"
                 >
                     <div><strong>Exclude</strong></div>
                     <v-chip
@@ -404,7 +400,7 @@ for (const [entryType] of reportComponentMap) {
                         :key="item"
                         closable
                         :title="item"
-                        :data-testid="item + '-clearFilter'"
+                        :data-testid="item + '-clear-filter'"
                         @click:close="clearFilterMedication(item)"
                     >
                         <span :data-testid="item + '-excluded'">{{
@@ -421,7 +417,7 @@ for (const [entryType] of reportComponentMap) {
                                 id="start-date"
                                 v-model="selectedStartDate"
                                 label="From"
-                                data-testid="startDateInput"
+                                data-testid="start-date-input"
                                 density="compact"
                                 hide-details
                                 :disabled="isLoading"
@@ -435,7 +431,7 @@ for (const [entryType] of reportComponentMap) {
                                 id="end-date"
                                 v-model="selectedEndDate"
                                 label="To"
-                                data-testid="endDateInput"
+                                data-testid="end-date-input"
                                 density="compact"
                                 hide-details
                                 :disabled="isLoading"
@@ -458,14 +454,14 @@ for (const [entryType] of reportComponentMap) {
                                 eager
                                 :items="medicationOptions"
                                 :disabled="isLoading"
-                                data-testid="medicationExclusionFilter"
+                                data-testid="medication-exclusion-filter"
                                 density="compact"
                             />
                         </v-col>
                         <v-col cols="12" class="d-flex justify-end">
                             <HgButtonComponent
                                 variant="secondary"
-                                data-testid="clearBtn"
+                                data-testid="clear-btn"
                                 :disabled="isLoading"
                                 text="Cancel"
                                 class="mr-4"
@@ -473,7 +469,7 @@ for (const [entryType] of reportComponentMap) {
                             />
                             <HgButtonComponent
                                 variant="primary"
-                                data-testid="applyFilterBtn"
+                                data-testid="apply-filter-btn"
                                 :disabled="
                                     isLoading ||
                                     !isReportFilterStartDateValidDate ||
@@ -488,7 +484,7 @@ for (const [entryType] of reportComponentMap) {
             </v-expand-transition>
         </v-sheet>
         <LoadingComponent :is-loading="isGeneratingReport" />
-        <div v-if="selectedEntryType" data-testid="reportSample">
+        <div v-if="selectedEntryType" data-testid="report-sample">
             <component
                 :is="selectedReportComponent"
                 ref="reportComponent"
@@ -503,18 +499,17 @@ for (const [entryType] of reportComponentMap) {
             <v-img
                 class="mx-auto py-4"
                 src="@/assets/images/reports/reports.png"
-                data-testid="infoImage"
+                data-testid="info-image"
                 width="200"
                 alt="..."
             />
-            <h5 data-testid="infoText" class="text-center text-h5">
+            <h5 data-testid="info-text" class="text-center text-h5">
                 Select a record type above to create a report
             </h5>
         </div>
 
         <MessageModalComponent
             ref="messageModal"
-            data-testid="messageModal"
             title="Sensitive Document Download"
             message="The file that you are downloading contains personal information. If you are on a public computer, please ensure that the file is deleted before you log off."
             @submit="downloadReport"

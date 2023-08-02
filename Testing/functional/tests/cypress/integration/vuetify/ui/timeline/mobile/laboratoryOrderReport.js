@@ -41,7 +41,7 @@ describe("Laboratory Orders - Report", () => {
                     .click({ force: true });
             });
 
-        cy.get("[data-testid=genericMessageSubmitBtn]")
+        cy.get("[data-testid=generic-message-submit-btn]")
             .should("be.visible")
             .click({ force: true });
         cy.verifyDownload("Laboratory_Report_2021_04_04-08_43.pdf");

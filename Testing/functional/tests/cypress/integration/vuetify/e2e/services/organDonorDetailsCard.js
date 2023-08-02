@@ -20,8 +20,8 @@ function verifyOrganDonorRegistrationExists(registered) {
             .should("be.visible", "be.enabled")
             .click();
 
-        cy.get("[data-testid=genericMessageModal]").should("be.visible");
-        cy.get("[data-testid=genericMessageSubmitBtn]").click();
+        cy.get("[data-testid=generic-message-modal]").should("be.visible");
+        cy.get("[data-testid=generic-message-submit-btn]").click();
 
         cy.verifyDownload("Organ_Donor_Registration.pdf", {
             timeout: 60000,

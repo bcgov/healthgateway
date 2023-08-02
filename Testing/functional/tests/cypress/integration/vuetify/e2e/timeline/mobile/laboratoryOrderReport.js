@@ -39,7 +39,7 @@ describe("Laboratory Orders - Download Report", () => {
                     .click({ force: true });
             });
 
-        cy.get("[data-testid=genericMessageSubmitBtn]")
+        cy.get("[data-testid=generic-message-submit-btn]")
             .should("be.visible")
             .click({ force: true });
 
