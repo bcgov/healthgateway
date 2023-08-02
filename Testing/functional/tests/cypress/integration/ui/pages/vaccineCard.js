@@ -28,7 +28,7 @@ describe("Vaccine Card Page", () => {
         cy.get("[data-testid=vaccineCardFormTitle]").should("be.visible");
         cy.get("[data-testid=btnCancel]").should("be.visible");
         cy.get("[data-testid=btnEnter]").should("be.enabled", "be.visible");
-        cy.get("[data-testid=privacy-statement-button]").should("be.visible");
+        cy.get("[data-testid=btnPrivacyStatement]").should("be.visible");
         cy.get("[data-testid=btnLogin]").should("be.enabled", "be.visible");
     });
 });
