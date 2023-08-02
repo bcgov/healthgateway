@@ -18,9 +18,9 @@ withDefaults(defineProps<Props>(), {
     buttonPrependIcon: "info-circle",
     buttonText: undefined,
     buttonSize: "small",
-    buttonTestId: undefined,
+    buttonTestId: "info-popover-button",
     popoverText: undefined,
-    popoverTestId: undefined,
+    popoverTestId: "info-popover",
 });
 </script>
 
