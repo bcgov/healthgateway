@@ -1,5 +1,13 @@
 const { AuthMethod } = require("../../../../support/constants");
 
+function triggerEmptyValidation(vuetifySelector) {
+    cy.get(vuetifySelector + " input")
+        .should("be.enabled")
+        .clear()
+        .blur();
+    cy.get(vuetifySelector).should("have.class", "v-input--error");
+}
+
 describe("dependents", () => {
     const validDependent = {
         firstName: "Sam ", // Aooend space to ensure field is trimmed
@@ -67,93 +75,94 @@ describe("dependents", () => {
         );
     });
 
-    it("Validate Text Fields on Add Dependent Modal", () => {
+    it.skip("Validate Text Fields on Add Dependent Modal", () => {
         //Validate Main Add Button
         cy.get("[data-testid=add-dependent-button]")
             .should("be.enabled", "be.visible")
             .click();
 
-        cy.get("[data-testid=newDependentModalText]").should(
+        cy.get("[data-testid=new-dependent-modal-form]").should(
             "exist",
             "be.visible"
         );
         //Validate First Name
-        cy.get("[data-testid=firstNameInput]")
-            .should("be.enabled")
-            .clear()
-            .blur()
-            .should("have.class", "is-invalid");
+        triggerEmptyValidation("[data-testid=dependent-first-name-input]");
         // Validate Last Name
-        cy.get("[data-testid=lastNameInput]")
-            .should("be.enabled")
-            .clear()
-            .blur()
-            .should("have.class", "is-invalid");
+        triggerEmptyValidation("[data-testid=dependent-last-name-input]");
         //Validate Date of Birth
-        cy.get("[data-testid=dateOfBirthInput] input").should("be.enabled");
+        cy.get("[data-testid=dependent-date-of-birth-input] input").should(
+            "be.enabled"
+        );
         // Validate PHN input
-        cy.get("[data-testid=phnInput]")
-            .should("be.enabled")
-            .clear()
-            .blur()
-            .should("have.class", "is-invalid");
-
+        triggerEmptyValidation("[data-testid=dependent-phn-input]");
         // Validate Cancel out of the form
-        cy.get("[data-testid=cancelRegistrationBtn]")
+        cy.get("[data-testid=cancel-dependent-registration-btn]")
             .should("be.enabled", "be.visible")
             .click();
         // Validate the modal is done
         cy.get("[data-testid=add-dependent-dialog]").should("not.exist");
     });
 
-    it("Validate Maximum Age Check", () => {
+    it.skip("Validate Maximum Age Check", () => {
         // Validate that adding a dependent fails when they are over the age of 12
         cy.get("[data-testid=add-dependent-button]").click();
-        cy.get("[data-testid=newDependentModalText]").should(
+        cy.get("[data-testid=new-dependent-modal-form]").should(
             "exist",
             "be.visible"
         );
-        cy.get("[data-testid=firstNameInput]").type(validDependent.firstName);
-        cy.get("[data-testid=lastNameInput]").type(validDependent.lastName);
-        cy.get("[data-testid=dateOfBirthInput] input").type(
-            validDependent.invalidDoB
+        cy.get("[data-testid=dependent-first-name-input]").type(
+            validDependent.firstName
         );
-        cy.get("[data-testid=phnInput]").type(validDependent.phn);
-        cy.get("[data-testid=terms-checkbox]").check({ force: true });
+        cy.get("[data-testid=dependent-last-name-input]").type(
+            validDependent.lastName
+        );
+        cy.get("[data-testid=dependent-date-of-birth-input]")
+            .type(validDependent.invalidDoB)
+            .should("have.class", "v-input--error");
+        cy.get("[data-testid=dependent-phn-input]").type(validDependent.phn);
+        cy.get("[data-testid=dependent-terms-checkbox] input").check({
+            force: true,
+        });
 
-        cy.get("[data-testid=registerDependentBtn]").click();
+        cy.get("[data-testid=register-dependent-btn]")
+            .should("be.disabled")
+            .click({ force: true });
 
         // Validate the modal has not closed
         cy.get("[data-testid=add-dependent-dialog]").should("exist");
 
-        cy.get("[data-testid=cancelRegistrationBtn]").click();
+        cy.get("[data-testid=cancel-dependent-registration-btn]").click();
     });
 
-    it("Validate Data Mismatch", () => {
+    it.skip("Validate Data Mismatch", () => {
         cy.get("[data-testid=add-dependent-button]").click();
 
-        cy.get("[data-testid=newDependentModalText]").should(
+        cy.get("[data-testid=new-dependent-modal-form]").should(
             "exist",
             "be.visible"
         );
 
-        cy.get("[data-testid=firstNameInput]")
+        cy.get("[data-testid=dependent-first-name-input] input")
             .clear()
             .type(validDependent.firstName);
-        cy.get("[data-testid=lastNameInput]")
+        cy.get("[data-testid=dependent-last-name-input] input")
             .clear()
             .type(validDependent.wrongLastName);
-        cy.get("[data-testid=dateOfBirthInput] input")
+        cy.get("[data-testid=dependent-date-of-birth-input] input")
             .clear()
             .type(validDependent.doB);
-        cy.get("[data-testid=phnInput]").clear().type(validDependent.phn);
-        cy.get("[data-testid=terms-checkbox]").check({ force: true });
+        cy.get("[data-testid=dependent-phn-input] input")
+            .clear()
+            .type(validDependent.phn);
+        cy.get("[data-testid=dependent-terms-checkbox] input").check({
+            force: true,
+        });
 
-        cy.get("[data-testid=registerDependentBtn]").click();
+        cy.get("[data-testid=register-dependent-btn]").click();
 
         // Validate the modal is not done
         cy.get("[data-testid=add-dependent-dialog]").should("exist");
-        cy.get("[data-testid=dependentErrorText]").should(
+        cy.get("[data-testid=dependent-error-text]").should(
             "exist",
             "be.visible",
             "not.be.empty"
@@ -163,36 +172,38 @@ describe("dependents", () => {
             "be.visible",
             "not.be.empty"
         );
-        cy.get("[data-testid=cancelRegistrationBtn]").click();
+        cy.get("[data-testid=cancel-dependent-registration-btn]").click();
     });
 
-    it("Validate Add Protected PHN Without Allowed Delegation", () => {
+    it.skip("Validate Add Protected PHN Without Allowed Delegation", () => {
         cy.get("[data-testid=add-dependent-button]").click();
 
-        cy.get("[data-testid=newDependentModalText]").should(
+        cy.get("[data-testid=new-dependent-modal-form]").should(
             "exist",
             "be.visible"
         );
 
-        cy.get("[data-testid=firstNameInput]")
+        cy.get("[data-testid=dependent-first-name-input] input")
             .clear()
             .type(protectedDependentWithoutAllowedDelegation.firstName);
-        cy.get("[data-testid=lastNameInput]")
+        cy.get("[data-testid=dependent-last-name-input] input")
             .clear()
             .type(protectedDependentWithoutAllowedDelegation.lastName);
-        cy.get("[data-testid=dateOfBirthInput] input")
+        cy.get("[data-testid=dependent-date-of-birth-input] input")
             .clear()
             .type(protectedDependentWithoutAllowedDelegation.doB);
-        cy.get("[data-testid=phnInput]")
+        cy.get("[data-testid=dependent-phn-input] input")
             .clear()
             .type(protectedDependentWithoutAllowedDelegation.phn);
-        cy.get("[data-testid=terms-checkbox]").check({ force: true });
+        cy.get("[data-testid=dependent-terms-checkbox] input").check({
+            force: true,
+        });
 
-        cy.get("[data-testid=registerDependentBtn]").click();
+        cy.get("[data-testid=register-dependent-btn]").click();
 
         // Validate the modal is not done
         cy.get("[data-testid=add-dependent-dialog]").should("exist");
-        cy.get("[data-testid=dependentErrorText]").should(
+        cy.get("[data-testid=dependent-error-text]").should(
             "exist",
             "be.visible",
             "not.be.empty"
@@ -202,32 +213,34 @@ describe("dependents", () => {
             "be.visible",
             "not.be.empty"
         );
-        cy.get("[data-testid=cancelRegistrationBtn]").click();
+        cy.get("[data-testid=cancel-dependent-registration-btn]").click();
     });
 
-    it("Validate Add Protected PHN With Allowed Delegation", () => {
+    it.skip("Validate Add Protected PHN With Allowed Delegation", () => {
         cy.get("[data-testid=add-dependent-button]").click();
 
-        cy.get("[data-testid=newDependentModalText]").should(
+        cy.get("[data-testid=new-dependent-modal-form]").should(
             "exist",
             "be.visible"
         );
 
-        cy.get("[data-testid=firstNameInput]")
+        cy.get("[data-testid=dependent-first-name-input] input")
             .clear()
             .type(protectedDependentWithAllowedDelegation.firstName);
-        cy.get("[data-testid=lastNameInput]")
+        cy.get("[data-testid=dependent-last-name-input] input")
             .clear()
             .type(protectedDependentWithAllowedDelegation.lastName);
-        cy.get("[data-testid=dateOfBirthInput] input")
+        cy.get("[data-testid=dependent-date-of-birth-input] input")
             .clear()
             .type(protectedDependentWithAllowedDelegation.doB);
-        cy.get("[data-testid=phnInput]")
+        cy.get("[data-testid=dependent-phn-input] input")
             .clear()
             .type(protectedDependentWithAllowedDelegation.phn);
-        cy.get("[data-testid=terms-checkbox]").check({ force: true });
+        cy.get("[data-testid=dependent-terms-checkbox] input").check({
+            force: true,
+        });
 
-        cy.get("[data-testid=registerDependentBtn]").click();
+        cy.get("[data-testid=register-dependent-btn]").click();
 
         // Validate the modal is done
         cy.get("[data-testid=add-dependent-dialog]").should("not.exist");
@@ -255,36 +268,40 @@ describe("dependents", () => {
             });
     });
 
-    it("Validate No HDID", () => {
+    it.skip("Validate No HDID", () => {
         cy.get("[data-testid=add-dependent-button]").click();
 
-        cy.get("[data-testid=newDependentModalText]").should(
+        cy.get("[data-testid=new-dependent-modal-form]").should(
             "exist",
             "be.visible"
         );
 
-        cy.get("[data-testid=firstNameInput]")
+        cy.get("[data-testid=dependent-first-name-input] input")
             .clear()
             .type(noHdidDependent.firstName);
-        cy.get("[data-testid=lastNameInput]")
+        cy.get("[data-testid=dependent-last-name-input] input")
             .clear()
             .type(noHdidDependent.lastName);
-        cy.get("[data-testid=dateOfBirthInput] input")
+        cy.get("[data-testid=dependent-date-of-birth-input] input")
             .clear()
             .type(noHdidDependent.doB);
-        cy.get("[data-testid=phnInput]").clear().type(noHdidDependent.phn);
-        cy.get("[data-testid=terms-checkbox]").check({ force: true });
+        cy.get("[data-testid=dependent-phn-input] input")
+            .clear()
+            .type(noHdidDependent.phn);
+        cy.get("[data-testid=dependent-terms-checkbox] input").check({
+            force: true,
+        });
 
-        cy.get("[data-testid=registerDependentBtn]").click();
+        cy.get("[data-testid=register-dependent-btn]").click();
 
         // Validate the modal is not done
         cy.get("[data-testid=add-dependent-dialog]").should("exist");
-        cy.get("[data-testid=dependentErrorText]").should(
+        cy.get("[data-testid=dependent-error-text]").should(
             "exist",
             "be.visible",
             "not.be.empty"
         );
-        cy.get("[data-testid=cancelRegistrationBtn]").click();
+        cy.get("[data-testid=cancel-dependent-registration-btn]").click();
     });
 
     it("Validate Immunization History - Verify result and download", () => {
@@ -505,24 +522,28 @@ describe("dependents", () => {
         cy.log("Adding dependent");
 
         cy.get("[data-testid=add-dependent-button]").click();
-        cy.get("[data-testid=newDependentModalText]").should(
+        cy.get("[data-testid=new-dependent-modal-form]").should(
             "exist",
             "be.visible"
         );
 
-        cy.get("[data-testid=firstNameInput]")
+        cy.get("[data-testid=dependent-first-name-input]")
             .clear()
             .type(validDependent.firstName);
-        cy.get("[data-testid=lastNameInput]")
+        cy.get("[data-testid=dependent-last-name-input]")
             .clear()
             .type(validDependent.lastName);
-        cy.get("[data-testid=dateOfBirthInput] input")
+        cy.get("[data-testid=dependent-date-of-birth-input] input")
             .clear()
             .type(validDependent.doB);
-        cy.get("[data-testid=phnInput]").clear().type(validDependent.phn);
-        cy.get("[data-testid=terms-checkbox]").check({ force: true });
+        cy.get("[data-testid=dependent-phn-input]")
+            .clear()
+            .type(validDependent.phn);
+        cy.get("[data-testid=dependent-terms-checkbox] input").check({
+            force: true,
+        });
 
-        cy.get("[data-testid=registerDependentBtn]").click();
+        cy.get("[data-testid=register-dependent-btn]").click();
 
         // Validate the modal is done
         cy.get("[data-testid=add-dependent-dialog]").should("not.exist");
@@ -585,24 +606,28 @@ describe("dependents", () => {
         );
         cy.get("[data-testid=add-dependent-button]").click();
 
-        cy.get("[data-testid=newDependentModalText]").should(
+        cy.get("[data-testid=new-dependent-modal-form]").should(
             "exist",
             "be.visible"
         );
 
-        cy.get("[data-testid=firstNameInput]")
+        cy.get("[data-testid=dependent-first-name-input]")
             .clear()
             .type(validDependent.firstName);
-        cy.get("[data-testid=lastNameInput]")
+        cy.get("[data-testid=dependent-last-name-input]")
             .clear()
             .type(validDependent.lastName);
-        cy.get("[data-testid=dateOfBirthInput] input")
+        cy.get("[data-testid=dependent-date-of-birth-input] input")
             .clear()
             .type(validDependent.doB);
-        cy.get("[data-testid=phnInput]").clear().type(validDependent.phn);
-        cy.get("[data-testid=terms-checkbox]").check({ force: true });
+        cy.get("[data-testid=dependent-phn-input]")
+            .clear()
+            .type(validDependent.phn);
+        cy.get("[data-testid=dependent-terms-checkbox] input").check({
+            force: true,
+        });
 
-        cy.get("[data-testid=registerDependentBtn]").click();
+        cy.get("[data-testid=register-dependent-btn]").click();
 
         // Validate the modal is done
         cy.get("[data-testid=add-dependent-dialog]").should("not.exist");

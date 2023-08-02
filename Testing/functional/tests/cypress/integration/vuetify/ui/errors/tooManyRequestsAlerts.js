@@ -706,19 +706,23 @@ describe("Dependents", () => {
         });
         cy.get("[data-testid=add-dependent-button]").click();
 
-        cy.get("[data-testid=firstNameInput]")
+        cy.get("[data-testid=dependent-first-name-input]")
             .clear()
             .type(alternativeDependent.firstName);
-        cy.get("[data-testid=lastNameInput]")
+        cy.get("[data-testid=dependent-last-name-input]")
             .clear()
             .type(alternativeDependent.lastName);
-        cy.get("[data-testid=dateOfBirthInput] input")
+        cy.get("[data-testid=dependent-date-of-birth-input] input")
             .clear()
             .type(alternativeDependent.doB);
-        cy.get("[data-testid=phnInput]").clear().type(alternativeDependent.phn);
-        cy.get("[data-testid=terms-checkbox]").check({ force: true });
+        cy.get("[data-testid=dependent-phn-input]")
+            .clear()
+            .type(alternativeDependent.phn);
+        cy.get("[data-testid=dependent-terms-checkbox] input").check({
+            force: true,
+        });
 
-        cy.get("[data-testid=registerDependentBtn]").click();
+        cy.get("[data-testid=register-dependent-btn]").click();
 
         cy.get("[data-testid=too-many-requests-error]").should("be.visible");
     });
@@ -987,7 +991,9 @@ describe("Notes", () => {
                 .click();
 
             // Select and click first option
-            cy.get("[data-testid=export-record-menu] .v-list-item").first().click();
+            cy.get("[data-testid=export-record-menu] .v-list-item")
+                .first()
+                .click();
 
             // Confirmation modal
             cy.get("[data-testid=generic-message-modal]").should("be.visible");
@@ -1011,7 +1017,9 @@ describe("Notes", () => {
                 .click();
 
             // Select and click first option
-            cy.get("[data-testid=export-record-menu] .v-list-item").first().click();
+            cy.get("[data-testid=export-record-menu] .v-list-item")
+                .first()
+                .click();
 
             // Confirmation modal
             cy.get("[data-testid=generic-message-modal]").should("be.visible");

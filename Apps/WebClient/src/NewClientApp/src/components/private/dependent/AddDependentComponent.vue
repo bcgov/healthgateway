@@ -240,11 +240,14 @@ watch(() => dependent.value.dateOfBirth, touchDateOfBirth);
                         />
                     </v-toolbar>
                 </v-card-title>
-                <v-card-text class="pa-4">
+                <v-card-text
+                    class="pa-4"
+                    data-testid="new-dependent-modal-form"
+                >
                     <TooManyRequestsComponent location="addDependentModal" />
                     <v-alert
                         v-if="isError"
-                        data-testid="dependentErrorBanner"
+                        data-testid="dependent-error-banner"
                         class="d-print-none mx-4 mt-4"
                         type="error"
                         variant="outlined"
@@ -252,7 +255,7 @@ watch(() => dependent.value.dateOfBirth, touchDateOfBirth);
                     >
                         <template #text>
                             <p
-                                data-testid="dependentErrorText"
+                                data-testid="dependent-error-text"
                                 class="text-body-1"
                             >
                                 <span v-if="isErrorDataMismatch">
@@ -305,7 +308,7 @@ watch(() => dependent.value.dateOfBirth, touchDateOfBirth);
                             <v-text-field
                                 id="firstName"
                                 v-model.trim="dependent.firstName"
-                                data-testid="firstNameInput"
+                                data-testid="dependent-first-name-input"
                                 label="First and Middle Names"
                                 autofocus
                                 clearable
@@ -323,7 +326,7 @@ watch(() => dependent.value.dateOfBirth, touchDateOfBirth);
                             <v-text-field
                                 id="lastName"
                                 v-model.trim="dependent.lastName"
-                                data-testid="lastNameInput"
+                                data-testid="dependent-last-name-input"
                                 label="Last Name"
                                 clearable
                                 type="text"
@@ -341,7 +344,7 @@ watch(() => dependent.value.dateOfBirth, touchDateOfBirth);
                                 id="dateOfBirth"
                                 v-model="dependent.dateOfBirth"
                                 label="Date of Birth"
-                                data-testid="dateOfBirthInput"
+                                data-testid="dependent-date-of-birth-input"
                                 :max-date="maxBirthdate"
                                 :error-messages="
                                     ValidationUtil.getErrorMessages(
@@ -360,7 +363,7 @@ watch(() => dependent.value.dateOfBirth, touchDateOfBirth);
                                 label="PHN"
                                 clearable
                                 type="text"
-                                data-testid="phnInput"
+                                data-testid="dependent-phn-input"
                                 :error-messages="
                                     ValidationUtil.getErrorMessages(
                                         v$.dependent.PHN
@@ -375,7 +378,7 @@ watch(() => dependent.value.dateOfBirth, touchDateOfBirth);
                             <v-checkbox
                                 id="termsCheckbox"
                                 v-model="accepted"
-                                data-testid="terms-checkbox"
+                                data-testid="dependent-terms-checkbox"
                                 density="compact"
                                 color="primary"
                                 class="text-body-1 checkbox-top"
@@ -418,13 +421,13 @@ watch(() => dependent.value.dateOfBirth, touchDateOfBirth);
                 </v-card-text>
                 <v-card-actions class="justify-end border-t-sm pa-4">
                     <HgButtonComponent
-                        data-testid="cancelRegistrationBtn"
+                        data-testid="cancel-dependent-registration-btn"
                         variant="secondary"
                         text="Cancel"
                         @click.prevent="hideDialog"
                     />
                     <HgButtonComponent
-                        data-testid="registerDependentBtn"
+                        data-testid="register-dependent-btn"
                         variant="primary"
                         :loading="isLoading"
                         :disabled="hasValidationErrors"
