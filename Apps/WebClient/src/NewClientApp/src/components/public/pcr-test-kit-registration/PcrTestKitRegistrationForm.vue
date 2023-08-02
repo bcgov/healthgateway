@@ -13,9 +13,9 @@ import { computed, ref } from "vue";
 import DisplayFieldComponent from "@/components/common/DisplayFieldComponent.vue";
 import HgButtonComponent from "@/components/common/HgButtonComponent.vue";
 import HgDatePickerComponent from "@/components/common/HgDatePickerComponent.vue";
+import InfoPopoverComponent from "@/components/common/InfoPopoverComponent.vue";
 import InfoTooltipComponent from "@/components/common/InfoTooltipComponent.vue";
 import PageTitleComponent from "@/components/common/PageTitleComponent.vue";
-import PrivacyStatementComponent from "@/components/common/PrivacyStatementComponent.vue";
 import { ActionType } from "@/constants/actionType";
 import { ErrorSourceType } from "@/constants/errorType";
 import { PcrDataSource } from "@/constants/pcrTestDataSource";
@@ -569,8 +569,10 @@ if (!props.serialNumber) {
                     </v-col>
                 </v-row>
                 <div data-testid="pcr-privacy-statement" class="my-4">
-                    <PrivacyStatementComponent
-                        data-testid="btn-privacy-statement"
+                    <InfoPopoverComponent
+                        button-text="Privacy Statement"
+                        button-test-id="privacy-statement-button"
+                        popover-test-id="privacy-statement-popover"
                     >
                         Your information is being collected to provide you with
                         your COVID‑19 test result under s. 26(c) of the
@@ -581,9 +583,8 @@ if (!props.serialNumber) {
                         <a href="mailto:MOH.Privacy.Officer@gov.bc.ca"
                             >MOH.Privacy.Officer@gov.bc.ca</a
                         >
-                        if you have any questions about this
-                        collection.</PrivacyStatementComponent
-                    >
+                        if you have any questions about this collection.
+                    </InfoPopoverComponent>
                 </div>
                 <v-row>
                     <v-col cols="4">

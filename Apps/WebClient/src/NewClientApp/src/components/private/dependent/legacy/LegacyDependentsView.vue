@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { computed } from "vue";
 
-import HgButtonComponent from "@/components/common/HgButtonComponent.vue";
 import LoadingComponent from "@/components/common/LoadingComponent.vue";
 import PageTitleComponent from "@/components/common/PageTitleComponent.vue";
+import AddDependentComponent from "@/components/private/dependent/AddDependentComponent.vue";
 import LegacyDependentCardComponent from "@/components/private/dependent/legacy/LegacyDependentCardComponent.vue";
 import BreadcrumbComponent from "@/components/site/BreadcrumbComponent.vue";
 import BreadcrumbItem from "@/models/breadcrumbItem";
@@ -24,8 +24,6 @@ const configStore = useConfigStore();
 const dependentStore = useDependentStore();
 const userStore = useUserStore();
 
-// const newDependentModal = ref<InstanceType<typeof NewDependentComponent>>();
-
 const webClientConfig = computed(() => configStore.webConfig);
 const dependents = computed(() => dependentStore.dependents);
 const dependentsAreLoading = computed(
@@ -40,10 +38,6 @@ function refreshDependents(): void {
     retrieveDependents(userStore.hdid, true);
 }
 
-function handleAddClick(): void {
-    alert("Not implemented need AB#15820");
-}
-
 retrieveDependents(userStore.hdid, false);
 </script>
 
@@ -52,14 +46,7 @@ retrieveDependents(userStore.hdid, false);
     <LoadingComponent :is-loading="dependentsAreLoading" />
     <PageTitleComponent title="Dependents">
         <template #append>
-            <HgButtonComponent
-                id="add-dependent-button"
-                data-testid="addNewDependentBtn"
-                variant="secondary"
-                prepend-icon="user-plus"
-                text="Add"
-                @click="handleAddClick"
-            />
+            <AddDependentComponent @handle-submit="refreshDependents" />
         </template>
     </PageTitleComponent>
     <h5 class="text-subtitle-1 font-weight-bold">
@@ -75,8 +62,4 @@ retrieveDependents(userStore.hdid, false);
         class="mt-4"
         @needs-update="refreshDependents"
     />
-    <!-- <NewDependentComponent
-            ref="newDependentModal"
-            @handle-submit="refreshDependents"
-        /> -->
 </template>

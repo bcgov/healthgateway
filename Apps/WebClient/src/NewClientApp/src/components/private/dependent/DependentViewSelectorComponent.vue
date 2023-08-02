@@ -1,22 +1,17 @@
 <script setup lang="ts">
-import PageTitleComponent from "@/components/common/PageTitleComponent.vue";
-import AddDependentComponent from "@/components/private/dependent/AddDependentComponent.vue";
-import { useDependentStore } from "@/stores/dependent";
-import { useUserStore } from "@/stores/user";
+import DependentManagementView from "@/components/private/dependent/DependentManagementView.vue";
+import LegacyDependentsView from "@/components/private/dependent/legacy/LegacyDependentsView.vue";
+import { useConfigStore } from "@/stores/config";
 
-const dependentStore = useDependentStore();
-const userStore = useUserStore();
-
-function retrieveDependents(hdid: string, bypassCache: boolean): Promise<void> {
-    return dependentStore.retrieveDependents(userStore.hdid, bypassCache);
-}
-retrieveDependents(userStore.hdid, false);
+const configStore = useConfigStore();
 </script>
 
 <template>
-    <PageTitleComponent title="Dependents">
-        <template #append>
-            <AddDependentComponent />
-        </template>
-    </PageTitleComponent>
+    <DependentManagementView
+        v-if="
+            configStore.webConfig.featureToggleConfiguration.dependents
+                .timelineEnabled
+        "
+    />
+    <LegacyDependentsView v-else />
 </template>

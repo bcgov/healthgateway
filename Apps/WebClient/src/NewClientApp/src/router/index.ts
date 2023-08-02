@@ -13,6 +13,10 @@ const Covid19View = () =>
     import(
         /* webpackChunkName: "covid19" */ "@/components/private/covid19/Covid19View.vue"
     );
+const DependentTimelineView = () =>
+    import(
+        /* webpackChunkName: "dependents" */ "@/components/private/dependent/DependentTimelineView.vue"
+    );
 const DependentViewSelectorComponent = () =>
     import(
         /* webpackChunkName: "dependents" */ "@/components/private/dependent/DependentViewSelectorComponent.vue"
@@ -148,6 +152,21 @@ const routes = [
             validStates: [UserState.registered],
             requiredFeaturesEnabled: (config: FeatureToggleConfiguration) =>
                 config.dependents.enabled,
+            requiresProcessedWaitlistTicket: true,
+        },
+    },
+    {
+        path: Path.Dependents + "/:id",
+        redirect: "/dependents/:id/timeline",
+    },
+    {
+        path: Path.Dependents + "/:id/timeline",
+        component: DependentTimelineView,
+        props: true,
+        meta: {
+            validStates: [UserState.registered],
+            requiredFeaturesEnabled: (config: FeatureToggleConfiguration) =>
+                config.dependents.enabled && config.dependents.timelineEnabled,
             requiresProcessedWaitlistTicket: true,
         },
     },
