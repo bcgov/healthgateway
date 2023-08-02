@@ -154,7 +154,9 @@ function getReport(): void {
             </v-col>
         </v-row>
         <p class="text-body-1">
-            <span>Find resources about your lab tests.</span>
+            <span data-testid="reporting-lab-information-text"
+                >Find resources about your lab tests.</span
+            >
             <v-icon
                 data-testid="other-resources-info-button"
                 aria-label="More Information"
