@@ -9,9 +9,9 @@ import { computed, ref, watch } from "vue";
 
 import HgButtonComponent from "@/components/common/HgButtonComponent.vue";
 import HgDatePickerComponent from "@/components/common/HgDatePickerComponent.vue";
+import InfoPopoverComponent from "@/components/common/InfoPopoverComponent.vue";
 import LoadingComponent from "@/components/common/LoadingComponent.vue";
 import MessageModalComponent from "@/components/common/MessageModalComponent.vue";
-import PrivacyStatementComponent from "@/components/common/PrivacyStatementComponent.vue";
 import TooManyRequestsComponent from "@/components/error/TooManyRequestsComponent.vue";
 import VaccineCardComponent from "@/components/public/vaccine-card/VaccineCardComponent.vue";
 import { container } from "@/ioc/container";
@@ -455,7 +455,11 @@ watch(vaccineRecord, (value) => {
                         />
                     </v-col>
                 </v-row>
-                <PrivacyStatementComponent data-testid="btnPrivacyStatement">
+                <InfoPopoverComponent
+                    button-text="Privacy Statement"
+                    button-test-id="privacy-statement-button"
+                    popover-test-id="privacy-statement-popover"
+                >
                     Your information is being collected to provide you with your
                     COVID‑19 vaccination status under s. 26(c) of the
                     <em>Freedom of Information and Protection of Privacy Act</em
@@ -467,7 +471,7 @@ watch(vaccineRecord, (value) => {
                         MOH.Privacy.Officer@gov.bc.ca
                     </a>
                     if you have any questions about this collection.
-                </PrivacyStatementComponent>
+                </InfoPopoverComponent>
                 <div class="text-center">
                     <v-row class="my-4 no-gutters d-flex align-center">
                         <v-col><v-divider role="presentation" /></v-col>

@@ -2,7 +2,6 @@
 import { computed } from "vue";
 
 import InfoPopoverComponent from "@/components/common/InfoPopoverComponent.vue";
-import InfoPopover from "@/constants/infoPopover";
 import { DateWrapper, StringISODate } from "@/models/dateWrapper";
 import type { Dependent } from "@/models/dependent";
 
@@ -56,11 +55,18 @@ function formatDate(date: StringISODate): string {
                 hide-details
             />
             <InfoPopoverComponent
-                :button-text="`What does this mean?`"
+                button-text="What does this mean?"
                 :button-test-id="`other-delegate-info-popover-button-${dependent.ownerId}`"
-                :popover-text="InfoPopover.otherDelegateInfo"
                 :popover-test-id="`other-delegate-info-popover-${dependent.ownerId}`"
-            />
+            >
+                This shows you how many people other than you have added your
+                dependent to their Health Gateway account. For privacy, we can’t
+                tell you their names. If this number isn’t what you expect,
+                contact us at
+                <a href="mailto:HealthGateway@gov.bc.ca"
+                    >HealthGateway@gov.bc.ca</a
+                >.
+            </InfoPopoverComponent>
         </v-col>
     </v-row>
 </template>

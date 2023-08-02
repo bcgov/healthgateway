@@ -5,6 +5,8 @@ import { useAppStore } from "@/stores/app";
 const appStore = useAppStore();
 
 interface Props {
+    buttonId?: string;
+    buttonPrependIcon?: string;
     buttonText?: string;
     buttonSize?: string;
     buttonTestId?: string;
@@ -12,7 +14,8 @@ interface Props {
     popoverTestId?: string;
 }
 withDefaults(defineProps<Props>(), {
-    text: undefined,
+    buttonId: "info-popover-button",
+    buttonPrependIcon: "info-circle",
     buttonText: undefined,
     buttonSize: "small",
     buttonTestId: undefined,
@@ -23,9 +26,9 @@ withDefaults(defineProps<Props>(), {
 
 <template>
     <HgButtonComponent
-        id="info-popover-button"
+        :id="buttonId"
         variant="link"
-        prepend-icon="info-circle"
+        :prepend-icon="buttonPrependIcon"
         :size="buttonSize"
         :aria-label="buttonText"
         :data-testid="buttonTestId"
@@ -42,9 +45,7 @@ withDefaults(defineProps<Props>(), {
                 class="pa-2 text-body-2"
                 :width="appStore.isMobile ? 250 : 472"
             >
-                <!-- eslint-disable vue/no-v-html -->
-                <div v-html="popoverText" />
-                <!-- eslint-enable vue/no-v-html -->
+                <slot />
             </v-card>
         </v-overlay>
     </HgButtonComponent>
