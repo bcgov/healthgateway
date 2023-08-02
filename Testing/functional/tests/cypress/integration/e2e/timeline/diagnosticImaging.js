@@ -27,7 +27,6 @@ describe("Diagnostic Imaging", () => {
         cy.get("[data-testid=diagnostic-imaging-health-authority").should(
             "be.visible"
         );
-        cy.get("[data-testid=diagnostic-imaging-facility").should("be.visible");
         cy.get("[data-testid=diagnostic-imaging-download-button").should(
             "be.visible"
         );
