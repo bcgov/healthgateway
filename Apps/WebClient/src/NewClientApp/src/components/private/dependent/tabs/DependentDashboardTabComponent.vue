@@ -98,7 +98,7 @@ watch(vaccineRecordState, () => {
 </script>
 
 <template>
-    <div>
+    <div class="pa-2">
         <LoadingComponent
             :is-loading="isVaccineRecordDownloading"
             :text="vaccineRecordStatusMessage"
