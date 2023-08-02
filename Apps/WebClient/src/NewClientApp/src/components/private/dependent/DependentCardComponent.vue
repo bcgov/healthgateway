@@ -6,7 +6,7 @@ import HgIconButtonComponent from "@/components/common/HgIconButtonComponent.vue
 import MessageModalComponent from "@/components/common/MessageModalComponent.vue";
 import DependentDashboardTabComponent from "@/components/private/dependent/tabs/DependentDashboardTabComponent.vue";
 import DependentProfileTabComponent from "@/components/private/dependent/tabs/DependentProfileTabComponent.vue";
-import DependentReportsTabComponent from "@/components/private/dependent/tabs/DependentReportsTabComponent.vue";
+import ReportsComponent from "@/components/private/reports/ReportsComponent.vue";
 import { DateWrapper } from "@/models/dateWrapper";
 import type { Dependent } from "@/models/dependent";
 import { useConfigStore } from "@/stores/config";
@@ -149,7 +149,10 @@ function removeDependent(): void {
                         />
                     </v-window-item>
                     <v-window-item>
-                        <DependentReportsTabComponent :dependent="dependent" />
+                        <ReportsComponent
+                            :hdid="dependent.dependentInformation.hdid"
+                            :is-dependent="true"
+                        />
                     </v-window-item>
                     <v-window-item>
                         <DependentProfileTabComponent :dependent="dependent" />

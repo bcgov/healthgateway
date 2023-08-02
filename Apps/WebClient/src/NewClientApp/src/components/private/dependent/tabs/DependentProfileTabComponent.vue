@@ -1,18 +1,16 @@
 <script setup lang="ts">
 import { computed } from "vue";
 
-import HgButtonComponent from "@/components/common/HgButtonComponent.vue";
+import InfoPopoverComponent from "@/components/common/InfoPopoverComponent.vue";
+import InfoPopover from "@/constants/infoPopover";
 import { DateWrapper, StringISODate } from "@/models/dateWrapper";
 import type { Dependent } from "@/models/dependent";
-import { useAppStore } from "@/stores/app";
 
 interface Props {
     dependent: Dependent;
 }
 
 const props = defineProps<Props>();
-
-const appStore = useAppStore();
 
 const otherDelegateCount = computed(() => {
     return props.dependent.totalDelegateCount - 1;
@@ -57,34 +55,12 @@ function formatDate(date: StringISODate): string {
                 class="mt-2"
                 hide-details
             />
-            <HgButtonComponent
-                id="other-delegate-count-overlay-button"
-                :data-testid="`other-delegate-info-popover-${dependent.ownerId}`"
-                variant="link"
-                size="small"
-                prepend-icon="info-circle"
-                aria-label="What does this mean?"
-            >
-                What does this mean?
-                <v-overlay
-                    activator="parent"
-                    location-strategy="connected"
-                    scroll-strategy="block"
-                >
-                    <v-card
-                        class="pa-2 text-body-2"
-                        :width="appStore.isMobile ? 250 : 472"
-                    >
-                        This shows you how many people other than you have added
-                        your dependent to their Health Gateway account. For
-                        privacy, we can’t tell you their names. If this number
-                        isn’t what you expect, contact us at
-                        <a href="mailto:HealthGateway@gov.bc.ca"
-                            >HealthGateway@gov.bc.ca</a
-                        >.
-                    </v-card>
-                </v-overlay>
-            </HgButtonComponent>
+            <InfoPopoverComponent
+                :button-text="`What does this mean?`"
+                :button-test-id="`other-delegate-info-popover-button-${dependent.ownerId}`"
+                :popover-text="InfoPopover.otherDelegateInfo"
+                :popover-test-id="`other-delegate-info-popover-${dependent.ownerId}`"
+            />
         </v-col>
     </v-row>
 </template>
