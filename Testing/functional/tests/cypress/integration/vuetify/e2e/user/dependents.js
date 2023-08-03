@@ -8,6 +8,20 @@ function triggerEmptyValidation(vuetifySelector) {
     cy.get(vuetifySelector).should("have.class", "v-input--error");
 }
 
+function deleteDependent(cardSelector, confirmDelete) {
+    cy.get(cardSelector).within(() => {
+        cy.get("[data-testid=dependentMenuBtn]").click();
+    });
+    cy.get("[data-testid=deleteDependentMenuBtn]").click();
+    cy.get("[data-testid=generic-message-submit-btn]").should("be.visible");
+    cy.get("[data-testid=generic-message-ok-btn]").should("be.visible");
+    if (confirmDelete) {
+        cy.get("[data-testid=generic-message-submit-btn]").click();
+    } else {
+        cy.get("[data-testid=generic-message-ok-btn]").click();
+    }
+}
+
 describe("dependents", () => {
     const validDependent = {
         firstName: "Sam ", // Aooend space to ensure field is trimmed
@@ -75,7 +89,7 @@ describe("dependents", () => {
         );
     });
 
-    it.skip("Validate Text Fields on Add Dependent Modal", () => {
+    it("Validate Text Fields on Add Dependent Modal", () => {
         //Validate Main Add Button
         cy.get("[data-testid=add-dependent-button]")
             .should("be.enabled", "be.visible")
@@ -103,7 +117,7 @@ describe("dependents", () => {
         cy.get("[data-testid=add-dependent-dialog]").should("not.exist");
     });
 
-    it.skip("Validate Maximum Age Check", () => {
+    it("Validate Maximum Age Check", () => {
         // Validate that adding a dependent fails when they are over the age of 12
         cy.get("[data-testid=add-dependent-button]").click();
         cy.get("[data-testid=new-dependent-modal-form]").should(
@@ -134,7 +148,7 @@ describe("dependents", () => {
         cy.get("[data-testid=cancel-dependent-registration-btn]").click();
     });
 
-    it.skip("Validate Data Mismatch", () => {
+    it("Validate Data Mismatch", () => {
         cy.get("[data-testid=add-dependent-button]").click();
 
         cy.get("[data-testid=new-dependent-modal-form]").should(
@@ -175,7 +189,7 @@ describe("dependents", () => {
         cy.get("[data-testid=cancel-dependent-registration-btn]").click();
     });
 
-    it.skip("Validate Add Protected PHN Without Allowed Delegation", () => {
+    it("Validate Add Protected PHN Without Allowed Delegation", () => {
         cy.get("[data-testid=add-dependent-button]").click();
 
         cy.get("[data-testid=new-dependent-modal-form]").should(
@@ -216,7 +230,7 @@ describe("dependents", () => {
         cy.get("[data-testid=cancel-dependent-registration-btn]").click();
     });
 
-    it.skip("Validate Add Protected PHN With Allowed Delegation", () => {
+    it("Validate Add Protected PHN With Allowed Delegation", () => {
         cy.get("[data-testid=add-dependent-button]").click();
 
         cy.get("[data-testid=new-dependent-modal-form]").should(
@@ -245,7 +259,6 @@ describe("dependents", () => {
         // Validate the modal is done
         cy.get("[data-testid=add-dependent-dialog]").should("not.exist");
 
-        cy.get("[data-testid=loadingSpinner]").should("not.be.visible");
         cy.get(
             `[data-testid=dependent-card-${protectedDependentWithAllowedDelegation.phn}]`
         )
@@ -256,19 +269,19 @@ describe("dependents", () => {
                     .contains(protectedDependentWithAllowedDelegation.firstName)
                     .contains(protectedDependentWithAllowedDelegation.lastName);
 
-                cy.get("[data-testid=dependentPHN]").should(
+                cy.get("[data-testid=dependentPHN] input").should(
                     "have.value",
                     protectedDependentWithAllowedDelegation.phn
                 );
 
-                cy.get("[data-testid=dependentDOB]").should(
+                cy.get("[data-testid=dependentDOB] input").should(
                     "have.value",
                     protectedDependentWithAllowedDelegation.doB
                 );
             });
     });
 
-    it.skip("Validate No HDID", () => {
+    it("Validate No HDID", () => {
         cy.get("[data-testid=add-dependent-button]").click();
 
         cy.get("[data-testid=new-dependent-modal-form]").should(
@@ -309,16 +322,16 @@ describe("dependents", () => {
             "Validating Immunization History Tab - Verify result and download"
         );
 
-        cy.get(`[data-testid=immunization-tab-title-${validDependentHdid}]`)
-            .parent()
-            .click();
+        cy.get(
+            `[data-testid=immunization-tab-title-${validDependentHdid}]`
+        ).click();
 
         // History tab
         cy.log("Validating history tab");
         cy.get(
             `[data-testid=immunization-tab-div-${validDependentHdid}]`
         ).within(() => {
-            cy.contains("a", "History").click();
+            cy.contains(".v-btn .v-btn__content", "History").click();
         });
         // Expecting more than 1 row to return because we also need to consider the table headers.
         cy.get(`[data-testid=immunization-history-table-${validDependentHdid}]`)
@@ -388,16 +401,16 @@ describe("dependents", () => {
             "Validating Immunization Forecast Tab - Verify result and download"
         );
 
-        cy.get(`[data-testid=immunization-tab-title-${validDependentHdid}]`)
-            .parent()
-            .click();
+        cy.get(
+            `[data-testid=immunization-tab-title-${validDependentHdid}]`
+        ).click();
 
         // Forecast tab
         cy.log("Validating forecast tab");
         cy.get(
             `[data-testid=immunization-tab-div-${validDependentHdid}]`
         ).within(() => {
-            cy.contains("a", "Forecast").click();
+            cy.contains(".v-btn .v-btn__content", "Forecasts").click();
         });
 
         // Expecting more than 1 row to return because we also need to consider the table headers.
@@ -429,7 +442,9 @@ describe("dependents", () => {
         // Click download dropdown under Forecasts tab
         cy.get(
             `[data-testid=download-immunization-forecast-report-btn-${validDependentHdid}`
-        ).click({ force: true });
+        )
+            .should("be.enabled")
+            .click({ force: true });
 
         // Click CSV
         cy.get(
@@ -448,7 +463,9 @@ describe("dependents", () => {
         // Click download dropdown under Forecasts tab
         cy.get(
             `[data-testid=download-immunization-forecast-report-btn-${validDependentHdid}]`
-        ).click({ force: true });
+        )
+            .should("be.enabled")
+            .click({ force: true });
 
         // Click XLSX
         cy.get(
@@ -468,9 +485,9 @@ describe("dependents", () => {
     it("Validate Lab Results - Verify result and download", () => {
         cy.log("Validating Lab Results Tab - Verify result and download");
 
-        cy.get(`[data-testid=lab-results-tab-title-${validDependentHdid}]`)
-            .parent()
-            .click();
+        cy.get(
+            `[data-testid=lab-results-tab-title-${validDependentHdid}]`
+        ).click();
 
         // Expecting more than 1 row to return because also need to consider the table headers.
         cy.get(`[data-testid=lab-results-table-${validDependentHdid}]`)
@@ -496,9 +513,7 @@ describe("dependents", () => {
 
         cy.get(
             `[data-testid=clinical-document-tab-title-${validDependentHdid}]`
-        )
-            .parent()
-            .click();
+        ).click();
 
         // Expecting more than 1 row to return because also need to consider the table headers.
         cy.get(`[data-testid=clinical-document-table-${validDependentHdid}]`)
@@ -527,16 +542,16 @@ describe("dependents", () => {
             "be.visible"
         );
 
-        cy.get("[data-testid=dependent-first-name-input]")
+        cy.get("[data-testid=dependent-first-name-input] input")
             .clear()
             .type(validDependent.firstName);
-        cy.get("[data-testid=dependent-last-name-input]")
+        cy.get("[data-testid=dependent-last-name-input] input")
             .clear()
             .type(validDependent.lastName);
         cy.get("[data-testid=dependent-date-of-birth-input] input")
             .clear()
             .type(validDependent.doB);
-        cy.get("[data-testid=dependent-phn-input]")
+        cy.get("[data-testid=dependent-phn-input] input")
             .clear()
             .type(validDependent.phn);
         cy.get("[data-testid=dependent-terms-checkbox] input").check({
@@ -550,21 +565,20 @@ describe("dependents", () => {
 
         cy.log("Validating dependent tab");
 
-        cy.get("[data-testid=loadingSpinner]").should("not.be.visible");
         cy.get(`[data-testid=dependent-card-${validDependent.phn}]`)
             .as("newDependentCard")
             .within(() => {
                 // Validate the newly added dependent tab and elements are present
                 cy.get("[data-testid=dependentName]")
-                    .contains(validDependent.firstName)
-                    .contains(validDependent.lastName);
+                    .contains(validDependent.firstName.trim())
+                    .contains(validDependent.lastName.trim());
 
-                cy.get("[data-testid=dependentPHN]").should(
+                cy.get("[data-testid=dependentPHN] input").should(
                     "have.value",
                     validDependent.phn
                 );
 
-                cy.get("[data-testid=dependentDOB]").should(
+                cy.get("[data-testid=dependentDOB] input").should(
                     "have.value",
                     validDependent.doB
                 );
@@ -574,7 +588,7 @@ describe("dependents", () => {
 
         cy.get("@newDependentCard").within(() => {
             // Validate the tab and elements are present
-            cy.get("[data-testid=covid19TabTitle]").parent().click();
+            cy.get("[data-testid=covid19TabTitle]").click();
             cy.get("[data-testid=dependentCovidTestDate]").each(($date) => {
                 cy.wrap($date).contains(/\d{4}-[A-Z]{1}[a-z]{2}-\d{2}/);
             });
@@ -585,7 +599,7 @@ describe("dependents", () => {
 
         cy.setupDownloads();
         const sensitiveDocMessage =
-            " The file that you are downloading contains personal information. If you are on a public computer, please ensure that the file is deleted before you log off. ";
+            "The file that you are downloading contains personal information. If you are on a public computer, please ensure that the file is deleted before you log off.";
 
         cy.get("[data-testid=dependentCovidReportDownloadBtn]").first().click();
         cy.get("[data-testid=generic-message-modal]").should("be.visible");
@@ -611,16 +625,16 @@ describe("dependents", () => {
             "be.visible"
         );
 
-        cy.get("[data-testid=dependent-first-name-input]")
+        cy.get("[data-testid=dependent-first-name-input] input")
             .clear()
             .type(validDependent.firstName);
-        cy.get("[data-testid=dependent-last-name-input]")
+        cy.get("[data-testid=dependent-last-name-input] input")
             .clear()
             .type(validDependent.lastName);
         cy.get("[data-testid=dependent-date-of-birth-input] input")
             .clear()
             .type(validDependent.doB);
-        cy.get("[data-testid=dependent-phn-input]")
+        cy.get("[data-testid=dependent-phn-input] input")
             .clear()
             .type(validDependent.phn);
         cy.get("[data-testid=dependent-terms-checkbox] input").check({
@@ -633,12 +647,8 @@ describe("dependents", () => {
         cy.get("[data-testid=add-dependent-dialog]").should("not.exist");
 
         cy.log("Removing dependent from other user");
-        cy.get("@newDependentCard").within(() => {
-            cy.get("[data-testid=dependentMenuBtn]").click();
-            cy.get("[data-testid=deleteDependentMenuBtn]").click();
-        });
-        // Now click the "Yes, I'm sure" to confirm deletion
-        cy.get("[data-testid=confirmDeleteBtn]").click();
+
+        deleteDependent("@newDependentCard", true);
 
         cy.log("Removing dependent from original user");
 
@@ -660,20 +670,8 @@ describe("dependents", () => {
             "/dependents"
         );
 
-        cy.get("@newDependentCard").within(() => {
-            cy.get("[data-testid=dependentMenuBtn]").click();
-            cy.get("[data-testid=deleteDependentMenuBtn]").click();
-        });
-        cy.get("[data-testid=confirmDeleteBtn]").should("be.visible");
-        cy.get("[data-testid=cancelDeleteBtn]").should("be.visible");
-        cy.get("[data-testid=cancelDeleteBtn]").click();
-
-        // Now click the "Yes, I'm sure" to confirm deletion
-        cy.get("@newDependentCard").within(() => {
-            cy.get("[data-testid=dependentMenuBtn]").click();
-            cy.get("[data-testid=deleteDependentMenuBtn]").click();
-        });
-        cy.get("[data-testid=confirmDeleteBtn]").click();
+        deleteDependent("@newDependentCard", false);
+        deleteDependent("@newDependentCard", true);
 
         cy.log("Validating Immunization tab - module disabled");
         cy.get(`[data-testid=immunization-tab-${validDependent.hdid}]`).should(
