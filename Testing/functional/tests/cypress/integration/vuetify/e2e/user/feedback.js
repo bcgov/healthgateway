@@ -12,10 +12,12 @@ describe("User Feedback", () => {
     });
 
     it("Send feedback", () => {
-        cy.get("[data-testid=feedbackContainer]").click();
-        cy.get("[data-testid=feedbackCommentInput]").type("Great job team!");
-        cy.get("[data-testid=sendFeedbackMessageBtn]").click();
-        cy.get("[data-testid=noNeedBtn]").should("be.visible");
-        cy.get("[data-testid=updateMyEmailButton]").should("be.visible");
+        cy.get("[data-testid=menu-btn-feedback-link]").click();
+        cy.get("[data-testid=feedback-comment-input]").type("Great job team!");
+        cy.get("[data-testid=send-feedback-message-btn]").click();
+        cy.get("[data-testid=feedback-no-need-btn]").should("be.visible");
+        cy.get("[data-testid=feedback-update-my-email-btn]").should(
+            "be.visible"
+        );
     });
 });

@@ -117,7 +117,6 @@ function resetFeedback(): void {
     <v-dialog
         id="feedback-container"
         v-model="visible"
-        data-testid="feedbackContainer"
         persistent
         no-click-animation
     >
@@ -144,7 +143,7 @@ function resetFeedback(): void {
                         counter
                         auto-grow
                         rows="5"
-                        data-testid="feedbackCommentInput"
+                        data-testid="feedback-comment-input"
                         placeholder="Describe your suggestion or idea..."
                         :error-messages="commentErrors"
                         :disabled="isSuccess || isLoading"
@@ -158,14 +157,12 @@ function resetFeedback(): void {
                             color="success"
                             icon="check-circle"
                             size="48"
-                            data-testid="feedbackSuccessIcon"
                         />
                         <v-icon
                             v-else
                             color="error"
                             icon="circle-xmark"
                             size="48"
-                            data-testid="feedbackErrorIcon"
                         />
                         <h3 class="text-h6 font-weight-bold pt-3">
                             {{ resultTitle }}
@@ -198,13 +195,13 @@ function resetFeedback(): void {
                     <v-spacer />
                     <template v-if="!isSuccess && !hasSubmitted">
                         <HgButtonComponent
-                            data-testid="noNeedBtn"
+                            data-testid="feedback-no-need-btn"
                             variant="link"
                             text="Cancel"
                             @click="hideDialog"
                         />
                         <HgButtonComponent
-                            data-testid="sendFeedbackMessageBtn"
+                            data-testid="send-feedback-message-btn"
                             :disabled="isValid !== true"
                             :loading="isLoading"
                             text="Send Message"
@@ -213,13 +210,13 @@ function resetFeedback(): void {
                     </template>
                     <template v-else-if="isSuccessWithoutEmail">
                         <HgButtonComponent
-                            data-testid="noNeedBtn"
+                            data-testid="feedback-no-need-btn"
                             variant="link"
                             text="No Need!"
                             @click="hideDialog"
                         />
                         <HgButtonComponent
-                            data-testid="updateMyEmailButton"
+                            data-testid="feedback-update-my-email-btn"
                             variant="primary"
                             text="Update my email"
                             to="/profile"
@@ -230,7 +227,6 @@ function resetFeedback(): void {
                     <template v-else>
                         <HgButtonComponent
                             v-if="isSuccessWithEmail"
-                            data-testid="hasEmailResetFeedbackBtn"
                             text="Got it!"
                             variant="primary"
                             :loading="isLoading"
@@ -238,7 +234,6 @@ function resetFeedback(): void {
                         />
                         <HgButtonComponent
                             v-if="hasFailed"
-                            data-testid="tryAgainBtn"
                             text="Try Again"
                             variant="primary"
                             :loading="isLoading"
