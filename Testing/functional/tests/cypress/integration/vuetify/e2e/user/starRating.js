@@ -18,7 +18,9 @@ describe("Validate Star Rating", () => {
     it("Clicking the 5 star button should log out", () => {
         cy.get("[data-testid=headerDropdownBtn]").click();
         cy.get("[data-testid=logoutBtn]").click();
-        cy.get("[data-testid=formRating] > .b-rating-star-empty:last").click();
+        cy.get(
+            "[data-testid=formRating] > .v-rating__wrapper:last button"
+        ).click();
         cy.url().should("include", "/logout");
     });
 
