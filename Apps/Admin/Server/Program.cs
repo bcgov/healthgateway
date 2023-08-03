@@ -67,7 +67,7 @@ namespace HealthGateway.Admin.Server
             IWebHostEnvironment environment = builder.Environment;
 
             // Add services to the container.
-            _ = services.AddControllersWithViews();
+            services.AddControllersWithViews();
 
             AddModules(services, configuration, logger, environment);
             AddServices(services, configuration);
@@ -77,22 +77,22 @@ namespace HealthGateway.Admin.Server
             PhsaConfigV2 phsaConfig = new();
             configuration.Bind(PhsaConfigV2.AdminConfigurationSectionKey, phsaConfig);
 
-            _ = services.AddRefitClient<ISystemBroadcastApi>()
+            services.AddRefitClient<ISystemBroadcastApi>()
                 .ConfigureHttpClient(c => c.BaseAddress = phsaConfig.BaseUrl)
                 .AddHttpMessageHandler<AuthHeaderHandler>();
 
             Uri? baseUri = configuration.GetValue<Uri>("KeycloakAdmin:BaseUrl");
-            _ = services.AddRefitClient<IKeycloakAdminApi>()
+            services.AddRefitClient<IKeycloakAdminApi>()
                 .ConfigureHttpClient(c => c.BaseAddress = baseUri);
 
-            _ = services.AddAutoMapper(typeof(Program), typeof(BroadcastProfile), typeof(UserProfileProfile), typeof(MessagingVerificationProfile));
+            services.AddAutoMapper(typeof(Program), typeof(BroadcastProfile), typeof(UserProfileProfile), typeof(MessagingVerificationProfile));
 
             WebApplication app = builder.Build();
             RequestLoggingSettings requestLoggingSettings = new();
             configuration.GetSection("RequestLogging").Bind(requestLoggingSettings);
             if (requestLoggingSettings.Enabled)
             {
-                _ = app.UseDefaultHttpRequestLogging(requestLoggingSettings.ExcludedPaths?.ToArray());
+                app.UseDefaultHttpRequestLogging(requestLoggingSettings.ExcludedPaths?.ToArray());
             }
 
             ExceptionHandling.UseProblemDetails(app);
@@ -106,13 +106,13 @@ namespace HealthGateway.Admin.Server
                 app.UseWebAssemblyDebugging();
             }
 
-            _ = app.UseBlazorFrameworkFiles();
+            app.UseBlazorFrameworkFiles();
 
             HttpWeb.UseHttp(app, logger, configuration, environment, true, false);
             Auth.UseAuth(app, logger);
-            _ = app.MapRazorPages();
-            _ = app.MapControllers();
-            _ = app.MapFallbackToFile("index.html");
+            app.MapRazorPages();
+            app.MapControllers();
+            app.MapFallbackToFile("index.html");
 
             await app.RunAsync().ConfigureAwait(true);
         }
@@ -135,35 +135,35 @@ namespace HealthGateway.Admin.Server
 
         private static void AddServices(IServiceCollection services, IConfiguration configuration)
         {
-            _ = services.AddTransient<IBroadcastService, BroadcastService>();
-            _ = services.AddTransient<IConfigurationService, ConfigurationService>();
-            _ = services.AddTransient<IUserFeedbackService, UserFeedbackService>();
-            _ = services.AddTransient<IDashboardService, DashboardService>();
-            _ = services.AddTransient<ICommunicationService, CommunicationService>();
-            _ = services.AddTransient<ICsvExportService, CsvExportService>();
-            _ = services.AddTransient<IInactiveUserService, InactiveUserService>();
-            _ = services.AddTransient<ISupportService, SupportService>();
-            _ = services.AddTransient<IAgentAccessService, AgentAccessService>();
-            _ = services.AddTransient<IDelegationService, DelegationService>();
-            _ = services.AddPatientRepositoryConfiguration(new AccountDataAccessConfiguration(configuration.GetSection("PhsaV2:BaseUrl").Get<Uri>()!));
+            services.AddTransient<IBroadcastService, BroadcastService>();
+            services.AddTransient<IConfigurationService, ConfigurationService>();
+            services.AddTransient<IUserFeedbackService, UserFeedbackService>();
+            services.AddTransient<IDashboardService, DashboardService>();
+            services.AddTransient<ICommunicationService, CommunicationService>();
+            services.AddTransient<ICsvExportService, CsvExportService>();
+            services.AddTransient<IInactiveUserService, InactiveUserService>();
+            services.AddTransient<ISupportService, SupportService>();
+            services.AddTransient<IAgentAccessService, AgentAccessService>();
+            services.AddTransient<IDelegationService, DelegationService>();
+            services.AddPatientRepositoryConfiguration(new AccountDataAccessConfiguration(configuration.GetSection("PhsaV2:BaseUrl").Get<Uri>()!));
         }
 
         private static void AddDelegates(IServiceCollection services)
         {
-            _ = services.AddTransient<IDelegationDelegate, DbDelegationDelegate>();
-            _ = services.AddTransient<IMessagingVerificationDelegate, DbMessagingVerificationDelegate>();
-            _ = services.AddTransient<IFeedbackDelegate, DbFeedbackDelegate>();
-            _ = services.AddTransient<IRatingDelegate, DbRatingDelegate>();
-            _ = services.AddTransient<IUserProfileDelegate, DbProfileDelegate>();
-            _ = services.AddTransient<ICommunicationDelegate, DbCommunicationDelegate>();
-            _ = services.AddTransient<INoteDelegate, DbNoteDelegate>();
-            _ = services.AddTransient<IResourceDelegateDelegate, DbResourceDelegateDelegate>();
-            _ = services.AddTransient<ICommentDelegate, DbCommentDelegate>();
-            _ = services.AddTransient<IAdminTagDelegate, DbAdminTagDelegate>();
-            _ = services.AddTransient<IFeedbackTagDelegate, DbFeedbackTagDelegate>();
-            _ = services.AddTransient<IVaccineProofDelegate, VaccineProofDelegate>();
-            _ = services.AddTransient<IAdminUserProfileDelegate, DbAdminUserProfileDelegate>();
-            _ = services.AddTransient<IAuthenticationDelegate, AuthenticationDelegate>();
+            services.AddTransient<IDelegationDelegate, DbDelegationDelegate>();
+            services.AddTransient<IMessagingVerificationDelegate, DbMessagingVerificationDelegate>();
+            services.AddTransient<IFeedbackDelegate, DbFeedbackDelegate>();
+            services.AddTransient<IRatingDelegate, DbRatingDelegate>();
+            services.AddTransient<IUserProfileDelegate, DbProfileDelegate>();
+            services.AddTransient<ICommunicationDelegate, DbCommunicationDelegate>();
+            services.AddTransient<INoteDelegate, DbNoteDelegate>();
+            services.AddTransient<IResourceDelegateDelegate, DbResourceDelegateDelegate>();
+            services.AddTransient<ICommentDelegate, DbCommentDelegate>();
+            services.AddTransient<IAdminTagDelegate, DbAdminTagDelegate>();
+            services.AddTransient<IFeedbackTagDelegate, DbFeedbackTagDelegate>();
+            services.AddTransient<IVaccineProofDelegate, VaccineProofDelegate>();
+            services.AddTransient<IAdminUserProfileDelegate, DbAdminUserProfileDelegate>();
+            services.AddTransient<IAuthenticationDelegate, AuthenticationDelegate>();
         }
     }
 }
