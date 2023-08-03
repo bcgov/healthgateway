@@ -80,7 +80,10 @@ describe("Quick Links", () => {
         cy.get("[data-testid=filterContainer]").should("not.exist");
         cy.get("[data-testid=filterDropdown]").click();
         cy.get("[data-testid=filterContainer]").should("be.visible");
-        cy.get("[data-testid=Covid19TestResult-filter]").should("be.checked");
+        cy.get("[data-testid=Covid19TestResult-filter] input").should(
+            "be.checked"
+        );
+        cy.get("[data-testid=btnFilterCancel]").click();
         cy.get("[data-testid=covid19testresultTitle]").should("be.visible");
 
         cy.log("Returning to home page");
@@ -89,12 +92,10 @@ describe("Quick Links", () => {
         cy.log("Removing quick link");
         getQuickLinkCard(laboratoryTitle).within(() => {
             cy.get(quickLinkMenuButtonSelector)
-                .should("be.visible")
-                .parent("a")
                 .should("be.visible", "be.enabled")
                 .click();
-            cy.get(quickLinkRemoveButtonSelector).should("be.visible").click();
         });
+        cy.get(quickLinkRemoveButtonSelector).should("be.visible").click();
 
         cy.log("Verifying quick link card no longer exists");
         cy.contains(cardButtonTitleSelector, laboratoryTitle).should(
@@ -184,20 +185,16 @@ describe("Quick Links", () => {
         cy.log("Removing quick links");
         getQuickLinkCard(encounterTitle).within(() => {
             cy.get(quickLinkMenuButtonSelector)
-                .should("be.visible")
-                .parent("a")
                 .should("be.visible", "be.enabled")
                 .click();
-            cy.get(quickLinkRemoveButtonSelector).should("be.visible").click();
         });
+        cy.get(quickLinkRemoveButtonSelector).should("be.visible").click();
         getQuickLinkCard(immunizationTitle).within(() => {
             cy.get(quickLinkMenuButtonSelector)
-                .should("be.visible")
-                .parent("a")
                 .should("be.visible", "be.enabled")
                 .click();
-            cy.get(quickLinkRemoveButtonSelector).should("be.visible").click();
         });
+        cy.get(quickLinkRemoveButtonSelector).should("be.visible").click();
 
         cy.log("Verifying quick link cards no longer exists");
         cy.contains(cardButtonTitleSelector, encounterTitle).should(
