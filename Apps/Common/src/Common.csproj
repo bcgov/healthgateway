@@ -8,28 +8,28 @@
         <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
         <PackageReference Include="Azure.Messaging.ServiceBus" Version="7.15.0" />
         <PackageReference Include="Hangfire.AspNetCore" Version="1.8.3" />
-        <PackageReference Include="Hangfire.PostgreSql" Version="1.19.12" />
+        <PackageReference Include="Hangfire.PostgreSql" Version="1.19.13" />
         <PackageReference Include="Hellang.Middleware.ProblemDetails" Version="6.5.1" />
         <PackageReference Include="Macross.Json.Extensions" Version="3.0.0" />
-        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.8" />
-        <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="7.0.8" />
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.9" />
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="7.0.9" />
         <PackageReference Include="Microsoft.AspNetCore.HttpOverrides" Version="2.2.0" />
         <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning.ApiExplorer" Version="5.1.0" />
         <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.2.0" PrivateAssets="All" />
         <PackageReference Include="Microsoft.AspNetCore.SpaServices" Version="3.1.32" />
-        <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="7.0.8" />
+        <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="7.0.9" />
         <PackageReference Include="Microsoft.Extensions.Azure" Version="1.6.3" />
-        <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="7.0.8" />
-        <PackageReference Include="Microsoft.OpenApi" Version="1.6.5" />
+        <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="7.0.9" />
+        <PackageReference Include="Microsoft.OpenApi" Version="1.6.6" />
         <PackageReference Include="Npgsql.OpenTelemetry" Version="7.0.4" />
         <PackageReference Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.5.1" />
         <PackageReference Include="OpenTelemetry.Instrumentation.EntityFrameworkCore" Version="1.0.0-beta.7" />
         <PackageReference Include="OpenTelemetry.Instrumentation.Runtime" Version="1.5.0" />
         <PackageReference Include="OpenTelemetry.Instrumentation.StackExchangeRedis" Version="1.0.0-rc9.10" />
-        <PackageReference Include="Refit" Version="6.3.2" />
-        <PackageReference Include="Refit.HttpClientFactory" Version="6.3.2" />
+        <PackageReference Include="Refit" Version="7.0.0" />
+        <PackageReference Include="Refit.HttpClientFactory" Version="7.0.0" />
         <PackageReference Include="Serilog.AspNetCore" Version="7.0.0" />
-        <PackageReference Include="Serilog.Enrichers.ClientInfo" Version="1.3.0" />
+        <PackageReference Include="Serilog.Enrichers.ClientInfo" Version="2.0.0" />
         <PackageReference Include="Serilog.Enrichers.CorrelationId" Version="3.0.1" />
         <PackageReference Include="Serilog.Enrichers.Environment" Version="2.2.0" />
         <PackageReference Include="Serilog.Enrichers.Process" Version="2.0.2" />
@@ -38,16 +38,16 @@
         <PackageReference Include="Serilog.Sinks.Console" Version="4.1.0" />
         <PackageReference Include="Serilog.Sinks.Seq" Version="5.2.2" />
         <PackageReference Include="SerilogTraceListener" Version="3.2.0" />
-        <PackageReference Include="StackExchange.Redis" Version="2.6.116" />
+        <PackageReference Include="StackExchange.Redis" Version="2.6.122" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
         <PackageReference Include="Microsoft.AspNetCore.Diagnostics.HealthChecks" Version="2.2.0" />
-        <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore" Version="7.0.8" />
+        <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore" Version="7.0.9" />
         <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="7.0.0" />
         <PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.0.0-rc8" />
         <PackageReference Include="OpenTelemetry.Extensions.Hosting" Version="1.5.1" />
         <PackageReference Include="OpenTelemetry.Instrumentation.Http" Version="1.0.0-rc8" />
         <PackageReference Include="System.Diagnostics.DiagnosticSource" Version="7.0.2" />
-        <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.31.0" />
+        <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.32.0" />
         <PackageReference Include="System.ServiceModel.Duplex" Version="6.0.0" />
         <PackageReference Include="System.ServiceModel.Http" Version="6.0.0" />
         <PackageReference Include="System.ServiceModel.NetTcp" Version="6.0.0" />

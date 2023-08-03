@@ -121,6 +121,8 @@ namespace HealthGateway.PatientDataAccess.Api
         public DiagnosticImagingStatus Status { get; set; }
 
         public DateTime? ExamDate { get; set; }
+
+        public bool? IsUpdated { get; set; }
     }
 }
 #pragma warning restore SA1600

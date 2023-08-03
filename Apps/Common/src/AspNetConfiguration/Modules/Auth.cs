@@ -21,6 +21,7 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
     using System.Security.Claims;
     using System.Threading.Tasks;
     using HealthGateway.Common.AccessManagement.Authorization.Admin;
+    using HealthGateway.Common.AccessManagement.Authorization.Claims;
     using HealthGateway.Common.AccessManagement.Authorization.Handlers;
     using HealthGateway.Common.AccessManagement.Authorization.Policy;
     using HealthGateway.Common.AccessManagement.Authorization.Requirements;
@@ -277,7 +278,13 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
         /// <param name="logger">The logger to use.</param>
         /// <param name="configuration">The configuration to use for values.</param>
         /// <param name="environment">The environment to use.</param>
-        public static void ConfigureAuthServicesForJwtBearer(IServiceCollection services, ILogger logger, IConfiguration configuration, IWebHostEnvironment environment)
+        /// <param name="nameClaimType">The claim type for Name property, default to hdid.</param>
+        public static void ConfigureAuthServicesForJwtBearer(
+            IServiceCollection services,
+            ILogger logger,
+            IConfiguration configuration,
+            IWebHostEnvironment environment,
+            string nameClaimType = GatewayClaims.Hdid)
         {
             IAuditLogger? auditLogger = services.BuildServiceProvider().GetService<IAuditLogger>();
             bool debugEnabled = environment.IsDevelopment() || configuration.GetValue("EnableDebug", true);
@@ -305,6 +312,7 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
                             ValidateIssuerSigningKey = true,
                             ValidateAudience = true,
                             ValidateIssuer = true,
+                            NameClaimType = nameClaimType,
                         };
                         options.Events = new JwtBearerEvents
                         {

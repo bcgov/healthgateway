@@ -73,6 +73,11 @@ namespace HealthGateway.PatientDataAccess
         /// Gets or sets the exam's date.
         /// </summary>
         public DateTime? ExamDate { get; set; }
+
+        /// <summary>
+        /// Gets or sets whether the diagnostic imaging has recently been updated.
+        /// </summary>
+        public bool? IsUpdated { get; set; }
     }
 
     /// <summary>

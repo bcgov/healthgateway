@@ -19,7 +19,6 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
     using System;
     using System.Diagnostics.CodeAnalysis;
     using System.Globalization;
-    using System.Linq;
     using System.Net;
     using System.Reflection;
     using HealthGateway.Common.Models;
@@ -68,17 +67,18 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
         }
 
         /// <summary>
-        /// Configures http request logging.
+        /// Configures http request logging
         /// </summary>
-        /// <param name="app">An app builder.</param>
-        /// <returns>The app builder.</returns>
-        public static IApplicationBuilder UseDefaultHttpRequestLogging(this IApplicationBuilder app)
+        /// <param name="app">An app builder</param>
+        /// <param name="excludePaths">Path to exclude - can use wildcards * for prefix or postfix</param>
+        /// <returns>The app builder</returns>
+        public static IApplicationBuilder UseDefaultHttpRequestLogging(this IApplicationBuilder app, string[]? excludePaths = null)
         {
             app.UseSerilogRequestLogging(
                 opts =>
                 {
                     opts.IncludeQueryInRequestPath = true;
-                    opts.GetLevel = ExcludeHealthChecks;
+                    opts.GetLevel = (httpCtx, _, exception) => ExcludePaths(httpCtx, exception, excludePaths ?? Array.Empty<string>());
                     opts.EnrichDiagnosticContext = (diagCtx, httpCtx) =>
                     {
                         diagCtx.Set("User", httpCtx.User.Identity?.Name ?? string.Empty);
@@ -130,8 +130,12 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
                                     .AddService(serviceName: otlpConfig.ServiceName, serviceVersion: otlpConfig.ServiceVersion))
                             .AddHttpClientInstrumentation()
                             .AddAspNetCoreInstrumentation(
-                                options => options.Filter = httpContext =>
-                                    !otlpConfig.IgnorePathPrefixes.Any(s => httpContext.Request.Path.ToString().StartsWith(s, StringComparison.OrdinalIgnoreCase)))
+                                options =>
+                                {
+                                    options.Filter = httpContext => !Array.Exists(
+                                        otlpConfig.IgnorePathPrefixes,
+                                        s => httpContext.Request.Path.ToString().StartsWith(s, StringComparison.OrdinalIgnoreCase));
+                                })
                             .AddRedisInstrumentation()
                             .AddEntityFrameworkCoreInstrumentation()
                             .AddNpgsql()
@@ -170,7 +174,7 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
                 .Enrich.WithEnvironmentUserName()
                 .Enrich.WithCorrelationId()
                 .Enrich.WithCorrelationIdHeader()
-                .Enrich.WithClientAgent()
+                .Enrich.WithRequestHeader("User-Agent")
                 .Enrich.WithClientIp()
                 .Enrich.WithSpan(new SpanOptions() { IncludeBaggage = true, IncludeTags = true, IncludeOperationName = true, IncludeTraceFlags = true })
                 .WriteTo.Console(outputTemplate: LogOutputTemplate, formatProvider: CultureInfo.InvariantCulture)
@@ -180,16 +184,37 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
             return loggerConfiguration;
         }
 
-        private static LogEventLevel ExcludeHealthChecks(HttpContext ctx, double milliseconds, Exception? ex)
+        private static LogEventLevel ExcludePaths(HttpContext ctx, Exception? ex, string[] excludedPaths)
         {
             if (ex != null || ctx.Response.StatusCode >= (int)HttpStatusCode.InternalServerError)
             {
                 return LogEventLevel.Error;
             }
 
-            return ctx.Request.Path.StartsWithSegments("/health", StringComparison.InvariantCultureIgnoreCase)
+            return Array.Exists(excludedPaths, path => IsWildcardMatch(ctx.Request.Path, path))
                 ? LogEventLevel.Verbose
                 : LogEventLevel.Information;
+        }
+
+        private static bool IsWildcardMatch(PathString requestPath, string path)
+        {
+            if (!requestPath.HasValue)
+            {
+                return false;
+            }
+
+            if (path.EndsWith("*", StringComparison.InvariantCultureIgnoreCase))
+            {
+                return requestPath.Value!.StartsWith(path.Replace("*", string.Empty, StringComparison.InvariantCultureIgnoreCase), StringComparison.InvariantCultureIgnoreCase);
+            }
+            else if (path.StartsWith("*", StringComparison.InvariantCultureIgnoreCase))
+            {
+                return requestPath.Value!.EndsWith(path.Replace("*", string.Empty, StringComparison.InvariantCultureIgnoreCase), StringComparison.InvariantCultureIgnoreCase);
+            }
+            else
+            {
+                return requestPath.Equals(path, StringComparison.InvariantCultureIgnoreCase);
+            }
         }
     }
 }

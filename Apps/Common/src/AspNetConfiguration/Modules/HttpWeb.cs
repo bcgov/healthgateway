@@ -16,7 +16,9 @@
 namespace HealthGateway.Common.AspNetConfiguration.Modules
 {
     using System;
+    using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
+    using System.Linq;
     using System.Net;
     using HealthGateway.Common.Models;
     using HealthGateway.Database.Context;
@@ -29,7 +31,6 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
     using Microsoft.Net.Http.Headers;
-    using Serilog;
     using ILogger = Microsoft.Extensions.Logging.ILogger;
 
     /// <summary>
@@ -81,8 +82,10 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
         /// </param>
         public static void UseHttp(IApplicationBuilder app, ILogger logger, IConfiguration configuration, IWebHostEnvironment environment, bool blazor, bool useExceptionPage)
         {
-            app.UseDefaultHttpRequestLogging();
-            app.UseResponseCompression();
+            if (!environment.IsDevelopment())
+            {
+                app.UseResponseCompression();
+            }
 
             if (useExceptionPage && environment.IsDevelopment())
             {
@@ -117,6 +120,13 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
                             }
                         },
                     });
+            }
+
+            RequestLoggingSettings requestLoggingSettings = new();
+            configuration.GetSection("RequestLogging").Bind(requestLoggingSettings);
+            if (requestLoggingSettings.Enabled)
+            {
+                app.UseDefaultHttpRequestLogging(requestLoggingSettings.ExcludedPaths?.ToArray());
             }
 
             app.UseRouting();
@@ -300,4 +310,11 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
                 });
         }
     }
+
+    /// <summary>
+    /// Settings to control request logging
+    /// </summary>
+    /// <param name="Enabled">Enable or disable request logging</param>
+    /// <param name="ExcludedPaths">Optional request paths to exclude, can handle * wildcard in prefix or postfix</param>
+    public record RequestLoggingSettings(bool Enabled = true, IEnumerable<string>? ExcludedPaths = null);
 }
