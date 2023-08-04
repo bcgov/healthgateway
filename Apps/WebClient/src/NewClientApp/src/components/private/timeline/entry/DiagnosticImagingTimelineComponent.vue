@@ -107,14 +107,6 @@ function downloadFile(): void {
                     :value="entry.healthAuthority"
                 />
             </v-col>
-            <v-col :cols="cols">
-                <DisplayFieldComponent
-                    data-testid="diagnostic-imaging-facility"
-                    name="Facility"
-                    name-class="font-weight-bold"
-                    :value="entry.organization"
-                />
-            </v-col>
         </v-row>
         <HgButtonComponent
             :if="entry.fileId !== undefined"
