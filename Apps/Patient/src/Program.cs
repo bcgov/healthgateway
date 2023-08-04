@@ -17,6 +17,7 @@ namespace HealthGateway.Patient
 {
     using System;
     using System.Diagnostics.CodeAnalysis;
+    using System.Linq;
     using System.Threading.Tasks;
     using HealthGateway.AccountDataAccess;
     using HealthGateway.Common.AspNetConfiguration;
@@ -74,7 +75,13 @@ namespace HealthGateway.Patient
             ExceptionHandling.ConfigureProblemDetails(services, environment);
 
             WebApplication app = builder.Build();
-            app.UseDefaultHttpRequestLogging();
+            RequestLoggingSettings requestLoggingSettings = new();
+            configuration.GetSection("RequestLogging").Bind(requestLoggingSettings);
+            if (requestLoggingSettings.Enabled)
+            {
+                app.UseDefaultHttpRequestLogging(requestLoggingSettings.ExcludedPaths?.ToArray());
+            }
+
             ExceptionHandling.UseProblemDetails(app);
             HttpWeb.UseForwardHeaders(app, logger, configuration);
             SwaggerDoc.UseSwagger(app, logger);
