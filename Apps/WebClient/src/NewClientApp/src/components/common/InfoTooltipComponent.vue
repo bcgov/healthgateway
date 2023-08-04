@@ -1,20 +1,24 @@
 <script setup lang="ts">
+import { computed } from "vue";
+
 interface Props {
     text?: string;
     size?: string;
     maxWidth?: number;
     tooltipTestid?: string;
 }
-withDefaults(defineProps<Props>(), {
+const props = withDefaults(defineProps<Props>(), {
     text: undefined,
     size: "small",
     maxWidth: 300,
     tooltipTestid: undefined,
 });
+
+const hasText = computed(() => !!props.text);
 </script>
 
 <template>
-    <v-tooltip :text="text" :max-width="maxWidth" :data-testid="tooltipTestid">
+    <v-tooltip :max-width="maxWidth" :data-testid="tooltipTestid">
         <template #activator="{ props: slotProps }">
             <v-icon
                 v-bind="{ ...slotProps, ...$attrs }"
@@ -23,6 +27,7 @@ withDefaults(defineProps<Props>(), {
                 :size="size"
             />
         </template>
-        <slot name="default" />
+        <span v-if="hasText">{{ text }}</span>
+        <slot v-else name="default" />
     </v-tooltip>
 </template>
