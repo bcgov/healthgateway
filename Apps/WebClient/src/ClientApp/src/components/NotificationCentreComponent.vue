@@ -2,13 +2,16 @@
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faAngleDoubleRight, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { computed, ref } from "vue";
-import { useRouter, useStore } from "vue-composition-wrapper";
+import { useRoute, useRouter, useStore } from "vue-composition-wrapper";
 
 import { EntryType } from "@/constants/entryType";
 import { DateWrapper, StringISODateTime } from "@/models/dateWrapper";
 import Notification, { NotificationActionType } from "@/models/notification";
 import { TimelineFilterBuilder } from "@/models/timelineFilter";
 import User from "@/models/user";
+import container from "@/plugins/container";
+import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import { ILogger } from "@/services/interfaces";
 
 const bctOdrCategory = "BctOdr";
 const clinicalDocumentCategory = "ClinicalDocument";
@@ -22,6 +25,9 @@ const specialAuthorityCategory = "SpecialAuthority";
 
 library.add(faAngleDoubleRight, faXmark);
 
+const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+
+const route = useRoute();
 const router = useRouter();
 const store = useStore();
 
@@ -63,16 +69,70 @@ function handleClickNotificationAction(notification: Notification): void {
     } else if (notification.categoryName === bctOdrCategory) {
         router.push({ path: "/services" });
     } else {
-        const isExternalUrl = notification.actionUrl
-            .toLowerCase()
-            .startsWith("https://");
-        if (isExternalUrl) {
+        const isExternal = isExternalUrl(notification.actionUrl);
+        logger.debug(`is External: ${isExternal}`);
+
+        if (isExternal) {
             // Open the external url in a new tab/window
             window.open(notification.actionUrl, "_blank");
         } else {
-            router.push({ path: notification.actionUrl });
+            const internalRoute = stripInternalPath(notification.actionUrl);
+            const resolvedRoute = router.resolve(internalRoute);
+
+            if (resolvedRoute.route.matched.length > 0) {
+                if (route.value.path !== internalRoute) {
+                    router.push({ path: internalRoute });
+                }
+            } else {
+                logger.error(
+                    `Invalid internal link: ${notification.actionUrl}`
+                );
+            }
         }
     }
+}
+
+function isExternalUrl(url: string): boolean {
+    const currentDomain = window.location.hostname;
+    logger.debug(`Domain: ${currentDomain}`);
+
+    // Create a regular expression to extract the domain from the URL.
+    const domainRegex =
+        /^(?:https?:\/\/)?(?:[^@\n]+@)?(?:www\.)?([^:\/\n?]+)/im;
+    const match = url.match(domainRegex);
+    const urlDomain = match ? match[1] : "";
+    logger.debug(`URL Domain: ${urlDomain}`);
+    return urlDomain !== currentDomain;
+}
+
+function stripInternalPath(url: string): string {
+    const domainRegex =
+        /^(?:https?:\/\/)?(?:[^@\n]+@)?(?:www\.)?([^:\/\n?]+)/im;
+    const match = url.match(domainRegex);
+    logger.debug(`Match: ${match}`);
+
+    if (match) {
+        const domainWithProtocol = match[0];
+        logger.debug(`Domain with Protocol: ${domainWithProtocol}`);
+
+        // Extract the path part of the URL after the domain.
+        const pathStartIndex = domainWithProtocol.length;
+        const path = url.slice(pathStartIndex);
+
+        // Split the path by slashes.
+        const pathSegments = path.split("/");
+
+        // Find the index of the first segment that matches the domain.
+        const domainIndex = pathSegments.findIndex(
+            (segment) => segment === match[1]
+        );
+
+        // Return the path segments starting from the domain index.
+        return `/${pathSegments.slice(domainIndex).join("/")}`;
+    }
+
+    // Return the url if the domain regex does not match (fallback behavior).
+    return url;
 }
 
 function getEntryType(categoryName: string): EntryType | undefined {

@@ -37,14 +37,14 @@ INSERT INTO gateway."UserProfile"(
 VALUES (
 	'P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A',	
 	'System', 
-	current_timestamp - INTERVAL '500 day',  
+	current_timestamp - INTERVAL '2 day',  
 	'System', 
-	current_timestamp - INTERVAL '500 day',  
+	current_timestamp,  
 	'2fab66e7-37c9-4b03-ba25-e8fad604dc7f', 
 	null,
 	null,
 	null,
-	current_timestamp - INTERVAL '500 day', 
+	current_timestamp, 
 	'CwqU7+gCkL3jMWWcUpq80Oh42QejXOwI+Ov0tmsVWBI=',
 	null,
 	'1967',
@@ -337,6 +337,88 @@ VALUES (
     'eafeee76-8a64-49ee-81ba-ddfe2c01deb8',
 	'2001',
 	'Mobile'
+);
+
+/* User keycloak (hthgtwy11) - last logged in 1 day ago  */
+INSERT INTO gateway."UserProfileHistory"(
+	"UserProfileHistoryId", 
+	"CreatedBy", 
+	"CreatedDateTime", 
+	"UpdatedBy", 
+	"UpdatedDateTime", 
+	"UserProfileId", 
+	"AcceptedTermsOfService",
+    "Email",
+	"ClosedDateTime", 
+	"IdentityManagementId", 
+	"LastLoginDateTime",
+    "Operation",
+    "OperationDateTime",
+	"EncryptionKey", 
+	"SMSNumber",
+    "TermsOfServiceId",
+	"YearOfBirth",
+	"LastLoginClientCode")
+VALUES (
+	uuid_generate_v4(),	
+	'System', 
+	current_timestamp - INTERVAL '2 day', 
+	'System', 
+	current_timestamp - INTERVAL '1 day',  
+	'P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A', 
+	null,
+    null,
+	null,
+	null,
+	current_timestamp - INTERVAL '1 day',
+    'UPDATE_LOGIN',
+    current_timestamp,
+	'CwqU7+gCkL3jMWWcUpq80Oh42QejXOwI+Ov0tmsVWBI=',
+	null,
+    'eafeee76-8a64-49ee-81ba-ddfe2c01deb8',
+	'1967',
+	'Web'
+);
+
+/* User keycloak (hthgtwy11) - last logged in 2 days ago  */
+INSERT INTO gateway."UserProfileHistory"(
+	"UserProfileHistoryId", 
+	"CreatedBy", 
+	"CreatedDateTime", 
+	"UpdatedBy", 
+	"UpdatedDateTime", 
+	"UserProfileId", 
+	"AcceptedTermsOfService",
+    "Email",
+	"ClosedDateTime", 
+	"IdentityManagementId", 
+	"LastLoginDateTime", 
+    "Operation",
+    "OperationDateTime",
+	"EncryptionKey", 
+	"SMSNumber",
+    "TermsOfServiceId",
+	"YearOfBirth",
+	"LastLoginClientCode")
+VALUES (
+	uuid_generate_v4(),		
+	'System', 
+	current_timestamp - INTERVAL '2 day',  
+	'System', 
+	current_timestamp - INTERVAL '2 day',  
+	'P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A', 
+	null,
+    null,
+	null,
+	null,
+	current_timestamp - INTERVAL '2 day', 
+    'UPDATE_LOGIN',
+    current_timestamp,
+	'CwqU7+gCkL3jMWWcUpq80Oh42QejXOwI+Ov0tmsVWBI=',
+	null,
+    'eafeee76-8a64-49ee-81ba-ddfe2c01deb8',
+	'1967',
+	'Web'
 );
 
 /* Notfound - Keycloak User - Last logged in 2 days ago */
