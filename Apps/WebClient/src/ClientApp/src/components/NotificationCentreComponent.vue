@@ -2,13 +2,16 @@
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faAngleDoubleRight, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { computed, ref } from "vue";
-import { useRouter, useStore } from "vue-composition-wrapper";
+import { useRoute, useRouter, useStore } from "vue-composition-wrapper";
 
 import { EntryType } from "@/constants/entryType";
 import { DateWrapper, StringISODateTime } from "@/models/dateWrapper";
 import Notification, { NotificationActionType } from "@/models/notification";
 import { TimelineFilterBuilder } from "@/models/timelineFilter";
 import User from "@/models/user";
+import container from "@/plugins/container";
+import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
+import { ILogger } from "@/services/interfaces";
 
 const bctOdrCategory = "BctOdr";
 const clinicalDocumentCategory = "ClinicalDocument";
@@ -22,6 +25,9 @@ const specialAuthorityCategory = "SpecialAuthority";
 
 library.add(faAngleDoubleRight, faXmark);
 
+const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+
+const route = useRoute();
 const router = useRouter();
 const store = useStore();
 
@@ -63,8 +69,42 @@ function handleClickNotificationAction(notification: Notification): void {
     } else if (notification.categoryName === bctOdrCategory) {
         router.push({ path: "/services" });
     } else {
-        router.push({ path: notification.actionUrl });
+        const isExternal = isExternalUrl(notification.actionUrl);
+        logger.debug(`is External: ${isExternal}`);
+
+        if (isExternal) {
+            // Open the external url in a new tab/window
+            window.open(notification.actionUrl, "_blank");
+        } else {
+            const internalRoute = notification.actionUrl.replace(
+                /(^\w+:|^)\/\/[^/]+/,
+                ""
+            );
+            const resolvedRoute = router.resolve(internalRoute);
+
+            if (resolvedRoute.route.matched.length > 0) {
+                if (route.value.path !== internalRoute) {
+                    router.push({ path: internalRoute });
+                }
+            } else {
+                logger.error(
+                    `Invalid internal link: ${notification.actionUrl}`
+                );
+            }
+        }
     }
+}
+
+function isExternalUrl(url: string): boolean {
+    const currentDomain = window.location.hostname;
+    logger.debug(`Domain: ${currentDomain}`);
+
+    // Create a regular expression to extract the domain from the URL.
+    const domainRegex = /^(?:https:\/\/)?(?:[^@\n]+@)?(?:www\.)?([^:\/\n?]+)/im;
+    const match = url.match(domainRegex);
+    const urlDomain = match ? match[1] : "";
+    logger.debug(`URL Domain: ${urlDomain}`);
+    return urlDomain !== currentDomain;
 }
 
 function getEntryType(categoryName: string): EntryType | undefined {
