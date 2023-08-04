@@ -50,6 +50,11 @@ watch(
         }
     }
 );
+
+// Start timer if the user refreshes the page while authenticated
+if (authStore.oidcIsAuthenticated) {
+    idleDetector.value?.enable();
+}
 </script>
 
 <template>
