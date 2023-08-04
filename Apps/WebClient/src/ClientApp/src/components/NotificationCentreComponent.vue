@@ -63,7 +63,15 @@ function handleClickNotificationAction(notification: Notification): void {
     } else if (notification.categoryName === bctOdrCategory) {
         router.push({ path: "/services" });
     } else {
-        router.push({ path: notification.actionUrl });
+        const isExternalUrl = notification.actionUrl
+            .toLowerCase()
+            .startsWith("https://");
+        if (isExternalUrl) {
+            // Open the external url in a new tab/window
+            window.open(notification.actionUrl, "_blank");
+        } else {
+            router.push({ path: notification.actionUrl });
+        }
     }
 }
 
