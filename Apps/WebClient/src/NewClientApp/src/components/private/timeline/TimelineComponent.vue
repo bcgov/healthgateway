@@ -434,7 +434,7 @@ function fetchTimelineData(): Promise<any> {
     showDatasetWarning(blockedEntryTypes);
 
     return Promise.all(promises).catch((err) =>
-        logger.error(`Error loading timeline data: ${err}`)
+        logger.error(`Error loading timeline data: ${JSON.stringify(err)}`)
     );
 }
 

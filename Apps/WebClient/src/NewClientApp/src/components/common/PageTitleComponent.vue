@@ -1,12 +1,15 @@
 <script setup lang="ts">
 import { computed, useSlots } from "vue";
 
+import { useAppStore } from "@/stores/app";
+
 interface Props {
     title: string;
 }
 defineProps<Props>();
 
 const slots = useSlots();
+const appStore = useAppStore();
 
 const hasPrependSlot = computed(() => slots.prepend !== undefined);
 const hasAppendSlot = computed(() => slots.append !== undefined);
@@ -19,7 +22,11 @@ const hasAppendSlot = computed(() => slots.append !== undefined);
                 <slot name="prepend" />
             </v-col>
             <v-col>
-                <h1 id="subject" class="text-primary text-h4 font-weight-bold">
+                <h1
+                    id="subject"
+                    class="text-primary font-weight-bold"
+                    :class="appStore.isMobile ? 'text-h5' : 'text-h4'"
+                >
                     {{ title }}
                 </h1>
             </v-col>

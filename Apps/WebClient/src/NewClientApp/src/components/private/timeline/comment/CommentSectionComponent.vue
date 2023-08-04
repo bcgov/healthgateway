@@ -12,6 +12,7 @@ import { DateWrapper } from "@/models/dateWrapper";
 import TimelineEntry from "@/models/timeline/timelineEntry";
 import { UserComment } from "@/models/userComment";
 import { ILogger } from "@/services/interfaces";
+import { useAppStore } from "@/stores/app";
 import { useCommentStore } from "@/stores/comment";
 import { useUserStore } from "@/stores/user";
 
@@ -40,9 +41,11 @@ const newComment: UserComment = {
 const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
 const userStore = useUserStore();
 const commentStore = useCommentStore();
+const appStore = useAppStore();
 
 const showComments = ref(false);
 const isLoadingComments = ref(false);
+const commentList = ref();
 
 const commentButtonText = computed(() =>
     commentCount.value === 1 ? "1 Comment" : `${commentCount.value} Comments`
@@ -60,6 +63,14 @@ for (const c of props.parentEntry.comments ?? []) {
         commentStore.updateComment(userStore.hdid, c);
     }
 }
+
+function handleCommentExpandChange(): void {
+    if (appStore.isMobile) {
+        commentList.value?.$el.scrollIntoView({
+            behavior: "smooth",
+        });
+    }
+}
 </script>
 
 <template>
@@ -75,6 +86,8 @@ for (const c of props.parentEntry.comments ?? []) {
         <v-expand-transition
             v-show="showComments"
             :id="'entryComments-' + parentEntry.id"
+            ref="commentList"
+            @transitionend="handleCommentExpandChange"
         >
             <v-skeleton-loader
                 v-if="isLoadingComments"
@@ -117,6 +130,6 @@ for (const c of props.parentEntry.comments ?? []) {
 
 .mobile-padding {
     // height required to ensure that the last comment is not hidden by the add comment component
-    padding-bottom: 55px;
+    padding-bottom: 65px;
 }
 </style>
