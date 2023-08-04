@@ -76,7 +76,10 @@ function handleClickNotificationAction(notification: Notification): void {
             // Open the external url in a new tab/window
             window.open(notification.actionUrl, "_blank");
         } else {
-            const internalRoute = notification.actionUrl.replace(/(^\w+:|^)\/\/[^/]+/, "");
+            const internalRoute = notification.actionUrl.replace(
+                /(^\w+:|^)\/\/[^/]+/,
+                ""
+            );
             const resolvedRoute = router.resolve(internalRoute);
 
             if (resolvedRoute.route.matched.length > 0) {
@@ -97,8 +100,7 @@ function isExternalUrl(url: string): boolean {
     logger.debug(`Domain: ${currentDomain}`);
 
     // Create a regular expression to extract the domain from the URL.
-    const domainRegex =
-        /^(?:https:\/\/)?(?:[^@\n]+@)?(?:www\.)?([^:\/\n?]+)/im;
+    const domainRegex = /^(?:https:\/\/)?(?:[^@\n]+@)?(?:www\.)?([^:\/\n?]+)/im;
     const match = url.match(domainRegex);
     const urlDomain = match ? match[1] : "";
     logger.debug(`URL Domain: ${urlDomain}`);
