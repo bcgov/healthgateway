@@ -53,6 +53,10 @@ public partial class BroadcastDialog : FluxorComponent
             switch (this.Broadcast.ActionType)
             {
                 case BroadcastActionType.InternalLink:
+                    return urlString.StartsWith("/", StringComparison.InvariantCultureIgnoreCase)
+                           && !urlString.StartsWith("http", StringComparison.InvariantCultureIgnoreCase)
+                        ? null
+                        : "Internal link is invalid";
                 case BroadcastActionType.ExternalLink:
                     return urlString.StartsWith("https://", StringComparison.InvariantCultureIgnoreCase)
                            && Uri.TryCreate(this.ActionUrlString, UriKind.Absolute, out Uri? _)
