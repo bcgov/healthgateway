@@ -421,7 +421,7 @@ watch(vaccineRecord, (value) => {
                                 id="dateOfVaccine"
                                 v-model="dateOfVaccine"
                                 label="Date of Vaccine (Any Dose)"
-                                data-testid="dateOfBirthInput"
+                                data-testid="dateOfVaccineInput"
                                 :error-messages="
                                     ValidationUtil.getErrorMessages(
                                         v$.dateOfVaccine

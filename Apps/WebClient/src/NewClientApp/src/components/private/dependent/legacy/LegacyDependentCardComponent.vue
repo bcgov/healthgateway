@@ -1236,8 +1236,8 @@ watch(vaccineRecordState, () => {
                                 v-model="immunizationTabIndex"
                                 color="primary"
                             >
-                                <v-tab :key="1"> History</v-tab>
-                                <v-tab :key="2"> Recommendations </v-tab>
+                                <v-tab :key="1">History</v-tab>
+                                <v-tab :key="2">Forecasts</v-tab>
                             </v-tabs>
                             <v-window
                                 v-model="immunizationTabIndex"
@@ -1399,7 +1399,7 @@ watch(vaccineRecordState, () => {
                                         </v-table>
                                     </div>
                                 </v-window-item>
-                                <v-window-item title="Forecasts">
+                                <v-window-item>
                                     <v-row justify="end" no-gutters>
                                         <v-col cols="12" :md="true">
                                             <p class="mb-md-0 text-body-1">
@@ -1427,8 +1427,8 @@ watch(vaccineRecordState, () => {
                                             class="pl-4 d-flex align-start"
                                         >
                                             <v-menu
-                                                id="download-immunization-forecast-report-btn"
-                                                :data-testid="`download-immunization-forecast-report-btn-${dependent.ownerId}`"
+                                                id="download-immunization-forecast-report-menu"
+                                                :data-testid="`download-immunization-forecast-report-menu-${dependent.ownerId}`"
                                             >
                                                 <template
                                                     #activator="{
@@ -1442,6 +1442,7 @@ watch(vaccineRecordState, () => {
                                                         v-bind="
                                                             immunizationForecastMenuProps
                                                         "
+                                                        :data-testid="`download-immunization-forecast-report-btn-${dependent.ownerId}`"
                                                         :disabled="
                                                             isDownloadImmunizationReportButtonDisabled
                                                         "

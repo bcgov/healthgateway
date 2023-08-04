@@ -53,7 +53,11 @@ function handleCancel(): void {
         no-click-animation
     >
         <div class="d-flex justify-center">
-            <v-card :loading="isLoading" max-width="700px">
+            <v-card
+                :loading="isLoading"
+                max-width="700px"
+                data-testid="generic-message-modal"
+            >
                 <template #loader="{ isActive }">
                     <v-progress-linear
                         :active="isActive"
@@ -64,7 +68,7 @@ function handleCancel(): void {
                 <v-card-title class="bg-primary px-0">
                     <v-toolbar :title="title" density="compact" color="primary">
                         <HgIconButtonComponent
-                            data-testid="messageModalCloseButton"
+                            data-testid="message-modal-close-button"
                             icon="close"
                             aria-label="Close"
                             @click="handleCancel"
@@ -72,20 +76,20 @@ function handleCancel(): void {
                     </v-toolbar>
                 </v-card-title>
                 <v-card-text class="text-body-1 pa-4">
-                    <p data-testid="genericMessageText">
+                    <p data-testid="generic-message-text">
                         {{ message }}
                     </p>
                 </v-card-text>
                 <v-card-actions class="justify-end border-t-sm pa-4">
                     <HgButtonComponent
-                        data-testid="genericMessageOkBtn"
+                        data-testid="generic-message-ok-btn"
                         :variant="okOnly ? 'primary' : 'secondary'"
                         :text="okOnly ? 'OK' : 'Cancel'"
                         @click.prevent="handleCancel"
                     />
                     <HgButtonComponent
                         v-if="!okOnly"
-                        data-testid="genericMessageSubmitBtn"
+                        data-testid="generic-message-submit-btn"
                         class="ml-2"
                         variant="primary"
                         :text="submitText"

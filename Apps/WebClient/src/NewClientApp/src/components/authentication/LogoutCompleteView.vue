@@ -16,7 +16,10 @@ setTimeout(() => {
 
 <template>
     <div class="text-center">
-        <h1 class="mt-12 text-h4 text-primary font-weight-bold mb-6">
+        <h1
+            data-testid="logout-complete-msg"
+            class="mt-12 text-h4 text-primary font-weight-bold mb-6"
+        >
             You signed out of your account
         </h1>
         <p class="text-body-1">
