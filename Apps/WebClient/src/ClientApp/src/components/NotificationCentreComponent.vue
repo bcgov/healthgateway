@@ -76,7 +76,7 @@ function handleClickNotificationAction(notification: Notification): void {
             // Open the external url in a new tab/window
             window.open(notification.actionUrl, "_blank");
         } else {
-            const internalRoute = stripInternalPath(notification.actionUrl);
+            const internalRoute = notification.actionUrl.replace(/(^\w+:|^)\/\/[^/]+/, "");
             const resolvedRoute = router.resolve(internalRoute);
 
             if (resolvedRoute.route.matched.length > 0) {
@@ -98,41 +98,11 @@ function isExternalUrl(url: string): boolean {
 
     // Create a regular expression to extract the domain from the URL.
     const domainRegex =
-        /^(?:https?:\/\/)?(?:[^@\n]+@)?(?:www\.)?([^:\/\n?]+)/im;
+        /^(?:https:\/\/)?(?:[^@\n]+@)?(?:www\.)?([^:\/\n?]+)/im;
     const match = url.match(domainRegex);
     const urlDomain = match ? match[1] : "";
     logger.debug(`URL Domain: ${urlDomain}`);
     return urlDomain !== currentDomain;
-}
-
-function stripInternalPath(url: string): string {
-    const domainRegex =
-        /^(?:https?:\/\/)?(?:[^@\n]+@)?(?:www\.)?([^:\/\n?]+)/im;
-    const match = url.match(domainRegex);
-    logger.debug(`Match: ${match}`);
-
-    if (match) {
-        const domainWithProtocol = match[0];
-        logger.debug(`Domain with Protocol: ${domainWithProtocol}`);
-
-        // Extract the path part of the URL after the domain.
-        const pathStartIndex = domainWithProtocol.length;
-        const path = url.slice(pathStartIndex);
-
-        // Split the path by slashes.
-        const pathSegments = path.split("/");
-
-        // Find the index of the first segment that matches the domain.
-        const domainIndex = pathSegments.findIndex(
-            (segment) => segment === match[1]
-        );
-
-        // Return the path segments starting from the domain index.
-        return `/${pathSegments.slice(domainIndex).join("/")}`;
-    }
-
-    // Return the url if the domain regex does not match (fallback behavior).
-    return url;
 }
 
 function getEntryType(categoryName: string): EntryType | undefined {
