@@ -16,11 +16,13 @@
 
 #pragma warning disable S1118 // Utility classes should not have public constructors
 #pragma warning disable CA1052 // Static holder types should be Static or NotInheritable
+#pragma warning disable CA1506 // Avoid excessive class coupling
 
 namespace HealthGateway.Admin.Server
 {
     using System;
     using System.Diagnostics.CodeAnalysis;
+    using System.Linq;
     using System.Threading.Tasks;
     using HealthGateway.AccountDataAccess;
     using HealthGateway.Admin.Server.Services;
@@ -86,7 +88,13 @@ namespace HealthGateway.Admin.Server
             services.AddAutoMapper(typeof(Program), typeof(BroadcastProfile), typeof(UserProfileProfile), typeof(MessagingVerificationProfile));
 
             WebApplication app = builder.Build();
-            app.UseDefaultHttpRequestLogging();
+            RequestLoggingSettings requestLoggingSettings = new();
+            configuration.GetSection("RequestLogging").Bind(requestLoggingSettings);
+            if (requestLoggingSettings.Enabled)
+            {
+                app.UseDefaultHttpRequestLogging(requestLoggingSettings.ExcludedPaths?.ToArray());
+            }
+
             ExceptionHandling.UseProblemDetails(app);
             HttpWeb.UseForwardHeaders(app, logger, configuration);
             HttpWeb.UseContentSecurityPolicy(app, configuration);

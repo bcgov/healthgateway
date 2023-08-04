@@ -85,14 +85,6 @@ function downloadFile(): void {
         <v-row class="mb-3">
             <v-col :cols="cols">
                 <DisplayFieldComponent
-                    data-testid="diagnostic-imaging-body-part"
-                    name="Body Part"
-                    name-class="font-weight-bold"
-                    :value="entry.bodyPart"
-                />
-            </v-col>
-            <v-col :cols="cols">
-                <DisplayFieldComponent
                     data-testid="diagnostic-imaging-procedure-description"
                     name="Description"
                     name-class="font-weight-bold"
@@ -105,14 +97,6 @@ function downloadFile(): void {
                     name="Health Authority"
                     name-class="font-weight-bold"
                     :value="entry.healthAuthority"
-                />
-            </v-col>
-            <v-col :cols="cols">
-                <DisplayFieldComponent
-                    data-testid="diagnostic-imaging-facility"
-                    name="Facility"
-                    name-class="font-weight-bold"
-                    :value="entry.organization"
                 />
             </v-col>
         </v-row>
