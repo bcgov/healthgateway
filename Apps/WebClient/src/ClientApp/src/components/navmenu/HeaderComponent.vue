@@ -182,11 +182,12 @@ const isProfileLinkAvailable = computed<boolean>(
 const newNotifications = computed<Notification[]>(() => {
     logger.debug(`User last login: ${userLastLoginDateTime.value}`);
     if (userLastLoginDateTime.value) {
-        const lastLoginDateTime = new DateWrapper(userLastLoginDateTime.value);
+        const lastLoginDateTime = new DateWrapper(userLastLoginDateTime.value, {
+            isUtc: true,
+        });
         return notifications.value.filter((n) =>
             new DateWrapper(n.scheduledDateTimeUtc, {
                 isUtc: true,
-                hasTime: true,
             }).isAfter(lastLoginDateTime)
         );
     }
