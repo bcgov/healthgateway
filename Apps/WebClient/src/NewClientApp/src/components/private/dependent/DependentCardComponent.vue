@@ -88,18 +88,18 @@ function removeDependent(): void {
                     selected-class="bg-white"
                 >
                     <v-tab
-                        :button-id="`dashboard-tab-button-${dependent.ownerId}`"
+                        :id="`dashboard-tab-button-${dependent.ownerId}`"
                         data-testid="dashboard-tab"
                         text="Dashboard"
                     />
                     <v-tab
-                        :button-id="`report-tab-button-${dependent.ownerId}`"
+                        :id="`report-tab-button-${dependent.ownerId}`"
                         :disabled="isExpired"
                         data-testid="report-tab"
                         text="Export Records"
                     />
                     <v-tab
-                        :button-id="`profile-tab-button-${dependent.ownerId}`"
+                        :id="`profile-tab-button-${dependent.ownerId}`"
                         :disabled="isExpired"
                         data-testid="profile-tab"
                         text="Profile"
@@ -138,6 +138,7 @@ function removeDependent(): void {
                                     <HgButtonComponent
                                         variant="secondary"
                                         text="Remove Dependent"
+                                        :data-testid="`remove-dependent-btn-${dependent.ownerId}`"
                                         @click="removeDependent"
                                     />
                                 </v-col>
