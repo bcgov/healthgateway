@@ -4,6 +4,7 @@ import { useRoute } from "vue-router";
 
 import ErrorCardComponent from "@/components/error/ErrorCardComponent.vue";
 import CommunicationComponent from "@/components/site/CommunicationComponent.vue";
+import DevBannerComponent from "@/components/site/DevBannerComponent.vue";
 import FooterComponent from "@/components/site/FooterComponent.vue";
 import HeaderComponent from "@/components/site/HeaderComponent.vue";
 import IdleComponent from "@/components/site/IdleComponent.vue";
@@ -60,6 +61,7 @@ eventStore.emit(EventName.RegisterOnBeforeUnloadWaitlistListener);
 
 <template>
     <v-app>
+        <DevBannerComponent />
         <HeaderComponent v-if="isHeaderVisible" />
         <SidebarComponent />
         <NotificationCentreComponent />
