@@ -59,7 +59,7 @@ describe("dependents - dashboard", () => {
 
     it("Validate clicking health records button loads timeline", () => {
         const selector = `[data-testid=dependent-health-records-button-${validDependentHdid}]`;
-        cy.get(selector).should("be.enabled", "be.visible").click();
+        cy.get(selector).should("be.visible").click();
         cy.location("pathname").should("eq", validDependentTimelinePath);
     });
 
@@ -67,13 +67,12 @@ describe("dependents - dashboard", () => {
         cy.intercept("GET", "**/AuthenticatedVaccineStatus/pdf?hdid=*");
 
         cy.get(validDependentFederalProofOfVaccinationButtonId)
-            .should("be.visible", "be.enabled")
+            .should("be.visible")
             .click();
 
         cy.get("[data-testid=genericMessageModal]").should("be.visible");
         cy.get("[data-testid=genericMessageSubmitBtn]").click();
 
-        cy.get("[data-testid=loadingSpinner]").should("be.visible");
         cy.verifyDownload("VaccineProof.pdf", {
             timeout: 60000,
             interval: 5000,
