@@ -89,7 +89,7 @@ describe("dependents", () => {
         );
     });
 
-    it.skip("Validate Text Fields on Add Dependent Modal", () => {
+    it("Validate Text Fields on Add Dependent Modal", () => {
         //Validate Main Add Button
         cy.get("[data-testid=add-dependent-button]")
             .should("be.enabled", "be.visible")
@@ -117,7 +117,7 @@ describe("dependents", () => {
         cy.get("[data-testid=add-dependent-dialog]").should("not.exist");
     });
 
-    it.skip("Validate Maximum Age Check", () => {
+    it("Validate Maximum Age Check", () => {
         // Validate that adding a dependent fails when they are over the age of 12
         cy.get("[data-testid=add-dependent-button]").click();
         cy.get("[data-testid=new-dependent-modal-form]").should(
@@ -148,7 +148,7 @@ describe("dependents", () => {
         cy.get("[data-testid=cancel-dependent-registration-btn]").click();
     });
 
-    it.skip("Validate Data Mismatch", () => {
+    it("Validate Data Mismatch", () => {
         cy.get("[data-testid=add-dependent-button]").click();
 
         cy.get("[data-testid=new-dependent-modal-form]").should(
@@ -189,7 +189,7 @@ describe("dependents", () => {
         cy.get("[data-testid=cancel-dependent-registration-btn]").click();
     });
 
-    it.skip("Validate Add Protected PHN Without Allowed Delegation", () => {
+    it("Validate Add Protected PHN Without Allowed Delegation", () => {
         cy.get("[data-testid=add-dependent-button]").click();
 
         cy.get("[data-testid=new-dependent-modal-form]").should(
@@ -230,7 +230,7 @@ describe("dependents", () => {
         cy.get("[data-testid=cancel-dependent-registration-btn]").click();
     });
 
-    it.skip("Validate Add Protected PHN With Allowed Delegation", () => {
+    it("Validate Add Protected PHN With Allowed Delegation", () => {
         cy.get("[data-testid=add-dependent-button]").click();
 
         cy.get("[data-testid=new-dependent-modal-form]").should(
@@ -281,7 +281,7 @@ describe("dependents", () => {
             });
     });
 
-    it.skip("Validate No HDID", () => {
+    it("Validate No HDID", () => {
         cy.get("[data-testid=add-dependent-button]").click();
 
         cy.get("[data-testid=new-dependent-modal-form]").should(
@@ -317,7 +317,7 @@ describe("dependents", () => {
         cy.get("[data-testid=cancel-dependent-registration-btn]").click();
     });
 
-    it.skip("Validate Immunization History - Verify result and download", () => {
+    it("Validate Immunization History - Verify result and download", () => {
         cy.log(
             "Validating Immunization History Tab - Verify result and download"
         );
@@ -396,7 +396,7 @@ describe("dependents", () => {
         });
     });
 
-    it.skip("Validate Immunization Forecast - Verify result and download", () => {
+    it("Validate Immunization Forecast - Verify result and download", () => {
         cy.log(
             "Validating Immunization Forecast Tab - Verify result and download"
         );
@@ -482,7 +482,7 @@ describe("dependents", () => {
         });
     });
 
-    it.skip("Validate Lab Results - Verify result and download", () => {
+    it("Validate Lab Results - Verify result and download", () => {
         cy.log("Validating Lab Results Tab - Verify result and download");
 
         cy.get(
@@ -508,7 +508,7 @@ describe("dependents", () => {
         });
     });
 
-    it.skip("Validate Clinical Document - Verify result and download", () => {
+    it("Validate Clinical Document - Verify result and download", () => {
         cy.log("Validating Clinical Document Tab - Verify result and download");
 
         cy.get(
