@@ -607,8 +607,8 @@ export default class CovidCardView extends Vue {
                             <v-data-table
                                 :headers="tableHeaders"
                                 :items="immunizations"
-                                :items-per-page="5"
-                                :hide-default-footer="immunizations.length <= 5"
+                                :items-per-page="8"
+                                :hide-default-footer="immunizations.length <= 8"
                             >
                                 <template #[`item.date`]="{ item }">
                                     <span>{{ formatDate(item.date) }}</span>
