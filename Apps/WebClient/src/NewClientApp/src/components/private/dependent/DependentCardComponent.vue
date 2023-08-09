@@ -89,26 +89,23 @@ function removeDependent(): void {
                 >
                     <v-tab
                         :id="`dashboard-tab-button-${dependent.ownerId}`"
-                        data-testid="dashboard-tab"
                         text="Dashboard"
                     />
                     <v-tab
                         :id="`report-tab-button-${dependent.ownerId}`"
                         :disabled="isExpired"
-                        data-testid="report-tab"
                         text="Export Records"
                     />
                     <v-tab
                         :id="`profile-tab-button-${dependent.ownerId}`"
                         :disabled="isExpired"
-                        data-testid="profile-tab"
                         text="Profile"
                     />
                 </v-tabs>
             </v-card-title>
             <v-card-text class="pa-4">
                 <v-window v-model="selectedTabIndex">
-                    <v-window-item>
+                    <v-window-item data-testid="dashboard-tab">
                         <div
                             v-if="isExpired"
                             class="text-center"
@@ -149,13 +146,13 @@ function removeDependent(): void {
                             :dependent="dependent"
                         />
                     </v-window-item>
-                    <v-window-item>
+                    <v-window-item data-testid="report-tab">
                         <ReportsComponent
                             :hdid="dependent.dependentInformation.hdid"
                             :is-dependent="true"
                         />
                     </v-window-item>
-                    <v-window-item>
+                    <v-window-item data-testid="profile-tab">
                         <DependentProfileTabComponent :dependent="dependent" />
                     </v-window-item>
                 </v-window>

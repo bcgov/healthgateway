@@ -19,6 +19,40 @@ const specialAuthorityDependent = {
     hdid: "IASGH65211V6WHXKGQDSEJAHYMYR",
 };
 
+function testReportSelection(
+    cardSelector,
+    tabButtonSelector,
+    tabSelector,
+    reportType,
+    reportTableTest
+) {
+    cy.get(cardSelector)
+        .should("be.visible")
+        .within(() => {
+            cy.get(tabButtonSelector)
+                .should("be.visible")
+                .should("not.be.disabled")
+                .click();
+
+            cy.get(tabSelector).within(() => {
+                cy.vSelect("[data-testid=report-type]", reportType);
+
+                reportTableTest();
+
+                cy.get(`[data-testid=export-record-btn]`)
+                    .should("be.enabled", "be.visible")
+                    .click();
+            });
+        });
+    cy.get(`[data-testid=export-record-menu] .v-list-item`).first().click();
+
+    cy.get("[data-testid=generic-message-modal]").should("be.visible");
+
+    cy.get("[data-testid=generic-message-submit-btn]").click();
+
+    cy.get("[data-testid=generic-message-modal]").should("not.exist");
+}
+
 describe("Reports", () => {
     beforeEach(() => {
         cy.setupDownloads();
@@ -85,42 +119,38 @@ describe("Reports", () => {
 
         const cardSelector = getCardSelector(hdid);
         const tabButtonSelector = getTabButtonSelector(hdid, "report");
-        const tabSelector = `${cardSelector} [data-testid=report-tab]`;
+        const tabSelector = `[data-testid=report-tab]`;
 
-        cy.get(tabButtonSelector)
+        cy.get(cardSelector)
             .should("be.visible")
-            .should("not.be.disabled")
-            .should("not.have.class", "disabled")
-            .click();
+            .within(() => {
+                cy.get(tabButtonSelector)
+                    .should("be.visible")
+                    .should("not.be.disabled")
+                    .click();
 
-        cy.get(`${tabSelector} [data-testid=export-record-btn]`).should(
-            "be.disabled",
-            "be.visible"
-        );
+                cy.get(tabSelector).within(() => {
+                    cy.get(`[data-testid=export-record-btn]`).should(
+                        "be.disabled",
+                        "be.visible"
+                    );
 
-        cy.get(`${tabSelector} [data-testid=info-text]`).should("be.visible");
+                    cy.get(`[data-testid=info-text]`).should("be.visible");
 
-        // display visual when no record type selected (mobile and desktop)
-        cy.get(`${tabSelector} [data-testid=info-image]`).should("be.visible");
-        cy.viewport("iphone-6");
-        cy.get(`${tabSelector} [data-testid=info-image]`).should("be.visible");
-        cy.viewport(1440, 600);
+                    // display visual when no record type selected (mobile and desktop)
+                    cy.get(`[data-testid=info-image]`).should("be.visible");
+                    cy.viewport("iphone-6");
+                    cy.get(`[data-testid=info-image]`).should("be.visible");
+                    cy.viewport(1440, 600);
 
-        cy.get(`${tabSelector} [data-testid=report-type]`).select(
-            "COVID‑19 Tests"
-        );
+                    cy.vSelect(`[data-testid=report-type]`, "COVID‑19 Tests");
 
-        cy.get(`${tabSelector} [data-testid=export-record-btn]`).should(
-            "be.enabled",
-            "be.visible"
-        );
-
-        cy.get(`${tabSelector} [data-testid=report-type]`).select("");
-
-        cy.get(`${tabSelector} [data-testid=export-record-btn]`).should(
-            "be.disabled",
-            "be.visible"
-        );
+                    cy.get(`[data-testid=export-record-btn]`).should(
+                        "be.enabled",
+                        "be.visible"
+                    );
+                });
+            });
     });
 
     it("Validate Medication Report", () => {
@@ -128,26 +158,29 @@ describe("Reports", () => {
 
         const cardSelector = getCardSelector(hdid);
         const tabButtonSelector = getTabButtonSelector(hdid, "report");
-        const tabSelector = `${cardSelector} [data-testid=report-tab]`;
+        const tabSelector = `[data-testid=report-tab]`;
 
-        cy.get(tabButtonSelector)
+        cy.get(cardSelector)
             .should("be.visible")
-            .should("not.be.disabled")
-            .should("not.have.class", "disabled")
-            .click();
+            .within(() => {
+                cy.get(tabButtonSelector)
+                    .should("be.visible")
+                    .should("not.be.disabled")
+                    .click();
 
-        cy.get(`${tabSelector} [data-testid=report-type]`).select("Medications");
-        cy.get(
-            `${tabSelector} [data-testid=medication-history-report-table]`
-        ).should("not.exist");
+                cy.get(tabSelector).within(() => {
+                    cy.vSelect("[data-testid=report-type]", "Medications");
 
-        cy.get(`${tabSelector} [data-testid=export-record-btn]`)
-            .should("be.enabled", "be.visible")
-            .click();
+                    cy.get(
+                        `[data-testid=medication-history-report-table]`
+                    ).should("not.exist");
 
-        cy.get(`${tabSelector} [data-testid=export-record-btn] .v-list-item`)
-            .first()
-            .click();
+                    cy.get(`[data-testid=export-record-btn]`)
+                        .should("be.enabled", "be.visible")
+                        .click();
+                });
+            });
+        cy.get(`[data-testid=export-record-menu] .v-list-item`).first().click();
 
         cy.get("[data-testid=generic-message-modal]").should("be.visible");
 
@@ -161,35 +194,19 @@ describe("Reports", () => {
 
         const cardSelector = getCardSelector(hdid);
         const tabButtonSelector = getTabButtonSelector(hdid, "report");
-        const tabSelector = `${cardSelector} [data-testid=report-tab]`;
+        const tabSelector = `[data-testid=report-tab]`;
 
-        cy.get(tabButtonSelector)
-            .should("be.visible")
-            .should("not.be.disabled")
-            .should("not.have.class", "disabled")
-            .click();
-
-        cy.get(`${tabSelector} [data-testid=report-type]`).select(
-            "Health Visits"
+        testReportSelection(
+            cardSelector,
+            tabButtonSelector,
+            tabSelector,
+            "Health Visits",
+            () => {
+                cy.get(
+                    `${tabSelector} [data-testid=msp-visits-report-table]`
+                ).should("not.exist");
+            }
         );
-
-        cy.get(`${tabSelector} [data-testid=msp-visits-report-table]`).should(
-            "not.exist"
-        );
-
-        cy.get(`${tabSelector} [data-testid=export-record-btn]`)
-            .should("be.enabled", "be.visible")
-            .click();
-
-        cy.get(`${tabSelector} [data-testid=export-record-btn] .v-list-item`)
-            .first()
-            .click();
-
-        cy.get("[data-testid=generic-message-modal]").should("be.visible");
-
-        cy.get("[data-testid=generic-message-submit-btn]").click();
-
-        cy.get("[data-testid=generic-message-modal]").should("not.exist");
     });
 
     it("Validate COVID-19 Report", () => {
@@ -197,35 +214,19 @@ describe("Reports", () => {
 
         const cardSelector = getCardSelector(hdid);
         const tabButtonSelector = getTabButtonSelector(hdid, "report");
-        const tabSelector = `${cardSelector} [data-testid=report-tab]`;
+        const tabSelector = `[data-testid=report-tab]`;
 
-        cy.get(tabButtonSelector)
-            .should("be.visible")
-            .should("not.be.disabled")
-            .should("not.have.class", "disabled")
-            .click();
-
-        cy.get(`${tabSelector} [data-testid=report-type]`).select(
-            "COVID‑19 Tests"
+        testReportSelection(
+            cardSelector,
+            tabButtonSelector,
+            tabSelector,
+            "COVID‑19 Tests",
+            () => {
+                cy.get(
+                    `${tabSelector} [data-testid=covid19-report-table]`
+                ).should("not.exist");
+            }
         );
-
-        cy.get(`${tabSelector} [data-testid=covid19-report-table]`).should(
-            "not.exist"
-        );
-
-        cy.get(`${tabSelector} [data-testid=export-record-btn]`)
-            .should("be.enabled", "be.visible")
-            .click();
-
-        cy.get(`${tabSelector} [data-testid=export-record-btn] .v-list-item`)
-            .first()
-            .click();
-
-        cy.get("[data-testid=generic-message-modal]").should("be.visible");
-
-        cy.get("[data-testid=generic-message-submit-btn]").click();
-
-        cy.get("[data-testid=generic-message-modal]").should("not.exist");
     });
 
     it("Validate Immunization Report", () => {
@@ -233,35 +234,19 @@ describe("Reports", () => {
 
         const cardSelector = getCardSelector(hdid);
         const tabButtonSelector = getTabButtonSelector(hdid, "report");
-        const tabSelector = `${cardSelector} [data-testid=report-tab]`;
+        const tabSelector = `[data-testid=report-tab]`;
 
-        cy.get(tabButtonSelector)
-            .should("be.visible")
-            .should("not.be.disabled")
-            .should("not.have.class", "disabled")
-            .click();
-
-        cy.get(`${tabSelector} [data-testid=report-type]`).select(
-            "Immunizations"
+        testReportSelection(
+            cardSelector,
+            tabButtonSelector,
+            tabSelector,
+            "Immunizations",
+            () => {
+                cy.get(
+                    `${tabSelector} [data-testid=immunization-history-report-table]`
+                ).should("not.exist");
+            }
         );
-
-        cy.get(
-            `${tabSelector} [data-testid=immunization-history-report-table]`
-        ).should("not.exist");
-
-        cy.get(`${tabSelector} [data-testid=export-record-btn]`)
-            .should("be.enabled", "be.visible")
-            .click();
-
-        cy.get(`${tabSelector} [data-testid=export-record-btn] .v-list-item`)
-            .first()
-            .click();
-
-        cy.get("[data-testid=generic-message-modal]").should("be.visible");
-
-        cy.get("[data-testid=generic-message-submit-btn]").click();
-
-        cy.get("[data-testid=generic-message-modal]").should("not.exist");
     });
 
     it("Validate Special Authority Report", () => {
@@ -269,35 +254,19 @@ describe("Reports", () => {
 
         const cardSelector = getCardSelector(hdid);
         const tabButtonSelector = getTabButtonSelector(hdid, "report");
-        const tabSelector = `${cardSelector} [data-testid=report-tab]`;
+        const tabSelector = `[data-testid=report-tab]`;
 
-        cy.get(tabButtonSelector)
-            .should("be.visible")
-            .should("not.be.disabled")
-            .should("not.have.class", "disabled")
-            .click();
-
-        cy.get(`${tabSelector} [data-testid=report-type]`).select(
-            "Special Authority"
+        testReportSelection(
+            cardSelector,
+            tabButtonSelector,
+            tabSelector,
+            "Special Authority",
+            () => {
+                cy.get(
+                    `${tabSelector} [data-testid=medication-request-report-table]`
+                ).should("not.exist");
+            }
         );
-
-        cy.get(
-            `${tabSelector} [data-testid=medication-request-report-table]`
-        ).should("not.exist");
-
-        cy.get(`${tabSelector} [data-testid=export-record-btn]`)
-            .should("be.enabled", "be.visible")
-            .click();
-
-        cy.get(`${tabSelector} [data-testid=export-record-btn] .v-list-item`)
-            .first()
-            .click();
-
-        cy.get("[data-testid=generic-message-modal]").should("be.visible");
-
-        cy.get("[data-testid=generic-message-submit-btn]").click();
-
-        cy.get("[data-testid=generic-message-modal]").should("not.exist");
     });
 
     it("Validate Laboratory Report", () => {
@@ -305,33 +274,19 @@ describe("Reports", () => {
 
         const cardSelector = getCardSelector(hdid);
         const tabButtonSelector = getTabButtonSelector(hdid, "report");
-        const tabSelector = `${cardSelector} [data-testid=report-tab]`;
+        const tabSelector = `[data-testid=report-tab]`;
 
-        cy.get(tabButtonSelector)
-            .should("be.visible")
-            .should("not.be.disabled")
-            .should("not.have.class", "disabled")
-            .click();
-
-        cy.get(`${tabSelector} [data-testid=report-type]`).select("Lab Results");
-
-        cy.get(`${tabSelector} [data-testid=laboratory-report-table]`).should(
-            "not.exist"
+        testReportSelection(
+            cardSelector,
+            tabButtonSelector,
+            tabSelector,
+            "Lab Results",
+            () => {
+                cy.get(
+                    `${tabSelector} [data-testid=laboratory-report-table]`
+                ).should("not.exist");
+            }
         );
-
-        cy.get(`${tabSelector} [data-testid=export-record-btn]`)
-            .should("be.enabled", "be.visible")
-            .click();
-
-        cy.get(`${tabSelector} [data-testid=export-record-btn] .v-list-item`)
-            .first()
-            .click();
-
-        cy.get("[data-testid=generic-message-modal]").should("be.visible");
-
-        cy.get("[data-testid=generic-message-submit-btn]").click();
-
-        cy.get("[data-testid=generic-message-modal]").should("not.exist");
     });
 
     it("Validate Hospital Visits Report", () => {
@@ -339,34 +294,18 @@ describe("Reports", () => {
 
         const cardSelector = getCardSelector(hdid);
         const tabButtonSelector = getTabButtonSelector(hdid, "report");
-        const tabSelector = `${cardSelector} [data-testid=report-tab]`;
+        const tabSelector = `[data-testid=report-tab]`;
 
-        cy.get(tabButtonSelector)
-            .should("be.visible")
-            .should("not.be.disabled")
-            .should("not.have.class", "disabled")
-            .click();
-
-        cy.get(`${tabSelector} [data-testid=report-type]`).select(
-            "Hospital Visits"
+        testReportSelection(
+            cardSelector,
+            tabButtonSelector,
+            tabSelector,
+            "Hospital Visits",
+            () => {
+                cy.get(
+                    `${tabSelector} [data-testid=hospital-visit-report-table]`
+                ).should("not.exist");
+            }
         );
-
-        cy.get(
-            `${tabSelector} [data-testid=hospital-visit-report-table]`
-        ).should("not.exist");
-
-        cy.get(`${tabSelector} [data-testid=export-record-btn]`)
-            .should("be.enabled", "be.visible")
-            .click();
-
-        cy.get(`${tabSelector} [data-testid=export-record-btn] .v-list-item`)
-            .first()
-            .click();
-
-        cy.get("[data-testid=generic-message-modal]").should("be.visible");
-
-        cy.get("[data-testid=generic-message-submit-btn]").click();
-
-        cy.get("[data-testid=generic-message-modal]").should("not.exist");
     });
 });

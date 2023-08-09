@@ -329,6 +329,7 @@ for (const [entryType] of reportComponentMap) {
                         hide-details
                         :items="reportTypeOptions"
                         :disabled="isLoading"
+                        :loading="isLoading"
                         density="compact"
                     />
                 </v-col>
@@ -349,6 +350,7 @@ for (const [entryType] of reportComponentMap) {
                                 data-testid="export-record-btn"
                                 v-bind="slotProps"
                                 :disabled="isDownloadDisabled"
+                                :loading="isGeneratingReport"
                             />
                         </template>
                         <v-list>
