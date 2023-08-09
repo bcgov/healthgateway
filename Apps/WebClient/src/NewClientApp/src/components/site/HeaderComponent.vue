@@ -32,6 +32,7 @@ const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
 const notificationButtonClicked = ref(false);
 const hasViewedTour = ref(false);
 const isScrollNearBottom = ref(false);
+const isHeaderVisible = ref();
 
 const ratingComponent = ref<InstanceType<typeof RatingComponent>>();
 const appTourComponent = ref<InstanceType<typeof AppTourComponent>>();
@@ -180,6 +181,13 @@ watch(
     }
 );
 
+watch(
+    () => route.path,
+    () => {
+        isHeaderVisible.value = true;
+    }
+);
+
 onUnmounted(() => {
     window.removeEventListener("scroll", testIfScrollIsNearBottom);
 });
@@ -194,6 +202,7 @@ nextTick(() => {
 
 <template>
     <v-app-bar
+        v-model="isHeaderVisible"
         :scroll-behavior="!isHeaderShown ? 'hide' : undefined"
         class="border-b-md border-accent border-opacity-100 d-print-none"
         color="primary"
@@ -216,7 +225,8 @@ nextTick(() => {
         </router-link>
         <v-spacer />
         <AppTourComponent
-            v-if="isAppTourAvailable"
+            ref="appTourComponent"
+            :is-available="isAppTourAvailable"
             :highlight-tour-change-indicator="highlightTourChangeIndicator"
         />
         <HgIconButtonComponent

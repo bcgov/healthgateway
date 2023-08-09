@@ -8,6 +8,7 @@ import HgIconButtonComponent from "@/components/common/HgIconButtonComponent.vue
 
 interface Props {
     highlightTourChangeIndicator: boolean;
+    isAvailable: boolean;
 }
 defineProps<Props>();
 
@@ -122,7 +123,11 @@ function previous(): void {
         no-click-animation
     >
         <template #activator="{ props }">
-            <HgIconButtonComponent v-bind="props" data-testid="app-tour-button">
+            <HgIconButtonComponent
+                v-if="isAvailable"
+                v-bind="props"
+                data-testid="app-tour-button"
+            >
                 <v-badge
                     color="red"
                     :model-value="highlightTourChangeIndicator"
@@ -132,7 +137,7 @@ function previous(): void {
             </HgIconButtonComponent>
         </template>
         <div class="d-flex justify-center">
-            <v-card max-width="675px">
+            <v-card max-width="675px" data-testid="app-tour-modal">
                 <v-carousel
                     id="tourCarousel"
                     v-model="slideIndex"
