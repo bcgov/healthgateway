@@ -2,7 +2,7 @@ import {
     clickManualRegistrationButton,
     clickRegisterKitButton,
     getPcrTestTakenTime,
-} from "../../../../support/functions/pcrTestKit";
+} from "../../../support/functions/pcrTestKit";
 
 const landingPagePath = "/";
 const pcrTestUrl = "/pcrtest";

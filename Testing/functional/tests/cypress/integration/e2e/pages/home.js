@@ -1,4 +1,4 @@
-const { AuthMethod } = require("../../../../support/constants");
+const { AuthMethod } = require("../../../support/constants");
 const homeUrl = "/home";
 const timelineUrl = "/timeline";
 

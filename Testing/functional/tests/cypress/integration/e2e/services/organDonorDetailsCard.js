@@ -1,4 +1,4 @@
-const { AuthMethod } = require("../../../../support/constants");
+const { AuthMethod } = require("../../../support/constants");
 
 function verifyOrganDonorRegistrationExists(registered) {
     cy.get("[data-testid=organ-donor-registration-card]").should("exist");

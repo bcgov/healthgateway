@@ -1,4 +1,4 @@
-const { AuthMethod } = require("../../../../support/constants");
+const { AuthMethod } = require("../../../support/constants");
 const HDID = "K6HL4VX67CZ2PGSZ2ZOIR4C3PGMFFBW5CIOXM74D6EQ7RYYL7P4A";
 
 describe("Need to accept terms of service", () => {

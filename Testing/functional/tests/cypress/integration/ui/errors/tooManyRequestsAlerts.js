@@ -1,4 +1,4 @@
-const { AuthMethod } = require("../../../../support/constants");
+const { AuthMethod } = require("../../../support/constants");
 
 const vaccineCardUrl = "/vaccinecard";
 const dependentHdid = "645645767756756767";

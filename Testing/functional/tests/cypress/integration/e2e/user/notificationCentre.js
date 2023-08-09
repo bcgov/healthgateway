@@ -1,4 +1,4 @@
-const { AuthMethod } = require("../../../../support/constants");
+const { AuthMethod } = require("../../../support/constants");
 const HDID = "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A";
 
 describe("Notification Centre", () => {

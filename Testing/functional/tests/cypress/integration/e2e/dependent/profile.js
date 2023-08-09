@@ -1,8 +1,8 @@
-const { AuthMethod } = require("../../../../support/constants");
+const { AuthMethod } = require("../../../support/constants");
 import {
     getCardSelector,
     getTabButtonSelector,
-} from "../../../../support/functions/dependent";
+} from "../../../support/functions/dependent";
 
 const existingDependent = {
     hdid: "162346565465464564565463257",

@@ -1,7 +1,7 @@
 import {
     verifyProvincialDrug,
     verifyFedDrug,
-} from "../../../../support/functions/medication";
+} from "../../../support/functions/medication";
 
 describe("Medication Service", () => {
     beforeEach(() => {

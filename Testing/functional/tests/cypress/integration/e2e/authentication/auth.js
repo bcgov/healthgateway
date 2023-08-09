@@ -1,4 +1,4 @@
-const { AuthMethod, localDevUri } = require("../../../../support/constants");
+const { AuthMethod, localDevUri } = require("../../../support/constants");
 
 describe("Authentication", () => {
     beforeEach(() => {

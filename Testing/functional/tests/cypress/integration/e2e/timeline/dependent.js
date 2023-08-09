@@ -1,4 +1,4 @@
-const { AuthMethod, Dataset } = require("../../../../support/constants");
+const { AuthMethod, Dataset } = require("../../../support/constants");
 
 const authorizedSpecialAuthorityDependentHdid = "IASGH65211V6WHXKGQDSEJAHYMYR";
 const authorizedDependentHdid = "162346565465464564565463257";

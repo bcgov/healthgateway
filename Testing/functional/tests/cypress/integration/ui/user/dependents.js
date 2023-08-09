@@ -1,4 +1,4 @@
-const { AuthMethod } = require("../../../../support/constants");
+const { AuthMethod } = require("../../../support/constants");
 
 const sensitiveDocMessage =
     " The file that you are downloading contains personal information. If you are on a public computer, please ensure that the file is deleted before you log off. ";

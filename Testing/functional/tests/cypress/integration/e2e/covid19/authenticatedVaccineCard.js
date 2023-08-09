@@ -1,4 +1,4 @@
-const { AuthMethod } = require("../../../../support/constants");
+const { AuthMethod } = require("../../../support/constants");
 const covid19Url = "/covid19";
 
 describe("Authenticated Vaccine Card", () => {

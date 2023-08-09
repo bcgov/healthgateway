@@ -1,8 +1,8 @@
-const { AuthMethod } = require("../../../../support/constants");
+const { AuthMethod } = require("../../../support/constants");
 import {
     clickRegisterKitButton,
     getPcrTestTakenTime,
-} from "../../../../support/functions/pcrTestKit";
+} from "../../../support/functions/pcrTestKit";
 
 const pcrTestUrl = "/pcrtest/222BAAB1-8C6E-4FA1-86ED-C4E3517A16A2";
 const HDID = "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A";

@@ -1,8 +1,8 @@
-const { AuthMethod } = require("../../../../support/constants");
+const { AuthMethod } = require("../../../support/constants");
 import {
     getCardSelector,
     getTabButtonSelector,
-} from "../../../../support/functions/dependent";
+} from "../../../support/functions/dependent";
 
 // JENNIFER TESTFOUR
 const dependent1 = {

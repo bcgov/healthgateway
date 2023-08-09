@@ -1,4 +1,4 @@
-const { AuthMethod } = require("../../../../support/constants");
+const { AuthMethod } = require("../../../support/constants");
 
 const validDependentHdid = "162346565465464564565463257";
 const validDependentTimelinePath = `/dependents/${validDependentHdid}/timeline`;

@@ -1,4 +1,4 @@
-const { AuthMethod } = require("../../../../support/constants");
+const { AuthMethod } = require("../../../support/constants");
 const notificationIdOne = "f57bcb39-64ca-0a17-5477-92ea7f084fbf";
 const notificationIdTwo = "72c2d6c0-b370-24e6-0b5c-04e42b6511c8";
 const notificationIdImms = "9eb24f30-ab74-4cdc-3280-08db134f5424";

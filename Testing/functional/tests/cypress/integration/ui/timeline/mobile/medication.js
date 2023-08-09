@@ -1,4 +1,4 @@
-const { AuthMethod } = require("../../../../../support/constants");
+const { AuthMethod } = require("../../../../support/constants");
 
 function selectCardByDate(date) {
     cy.contains("[data-testid=entryCardDate]", date)

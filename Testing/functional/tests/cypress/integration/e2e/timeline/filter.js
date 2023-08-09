@@ -1,4 +1,4 @@
-const { AuthMethod } = require("../../../../support/constants");
+const { AuthMethod } = require("../../../support/constants");
 
 function verifyActiveFilters(filterLabels) {
     cy.get("[data-testid=filterDropdown]").should(

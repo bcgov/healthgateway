@@ -1,4 +1,4 @@
-const { AuthMethod } = require("../../../../../support/constants");
+const { AuthMethod } = require("../../../../support/constants");
 
 describe("Validate Modals Popup", () => {
     it("Protective Word Modal", () => {

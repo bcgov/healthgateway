@@ -1,4 +1,4 @@
-import { AuthMethod } from "../../../../support/constants";
+import { AuthMethod } from "../../../support/constants";
 
 const addQuickLinkButtonSelector = "[data-testid=add-quick-link-button]";
 const addQuickLinkCheckboxSelector =

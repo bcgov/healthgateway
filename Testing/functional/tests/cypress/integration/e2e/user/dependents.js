@@ -1,4 +1,4 @@
-const { AuthMethod } = require("../../../../support/constants");
+const { AuthMethod } = require("../../../support/constants");
 
 function triggerEmptyValidation(vuetifySelector) {
     cy.get(vuetifySelector + " input")

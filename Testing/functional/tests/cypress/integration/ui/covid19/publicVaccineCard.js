@@ -1,4 +1,4 @@
-const { monthNames } = require("../../../../support/constants");
+const { monthNames } = require("../../../support/constants");
 
 const dobYearSelector =
     "[data-testid=dateOfBirthInput] [data-testid=formSelectYear]";

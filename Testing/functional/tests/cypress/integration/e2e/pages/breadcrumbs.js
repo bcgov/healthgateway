@@ -1,4 +1,4 @@
-const { AuthMethod } = require("../../../../support/constants");
+const { AuthMethod } = require("../../../support/constants");
 
 function testPageBreadcrumb(url, dataTestId) {
     cy.visit(url);

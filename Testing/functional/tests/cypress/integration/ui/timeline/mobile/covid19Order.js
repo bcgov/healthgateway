@@ -1,4 +1,4 @@
-const { AuthMethod } = require("../../../../../support/constants");
+const { AuthMethod } = require("../../../../support/constants");
 
 describe("COVID-19 Orders", () => {
     beforeEach(() => {

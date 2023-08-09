@@ -1,4 +1,4 @@
-const { AuthMethod } = require("../../../../../support/constants");
+const { AuthMethod } = require("../../../../support/constants");
 
 function checkPopoverIsVisible() {
     cy.get("[data-testid=laboratory-test-status-info-button]")
