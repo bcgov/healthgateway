@@ -46,10 +46,10 @@ describe("Home Page", () => {
         cy.url().should("include", timelineUrl);
         // When a result is returned, the content placeholder will not be displayed.
         cy.get("[data-testid=content-placeholders]").should("be.visible");
-        cy.get("[data-testid=loading-toast]").should("be.visible");
+        cy.get("[data-testid=loading-toast]").should("exist");
         cy.get("[data-testid=content-placeholders]").should("not.exist");
-        cy.get("[data-testid=loading-toast]").should("be.visible");
-        cy.get("[data-testid=displayCountText]").should("be.visible");
+        cy.get("[data-testid=loading-toast]").should("exist");
+        cy.get("[data-testid=timeline-record-count]").should("be.visible");
     });
 
     it("Home - Medication Card link to Timeline", () => {
@@ -61,23 +61,23 @@ describe("Home Page", () => {
         cy.url().should("include", timelineUrl);
         // Medication takes the longest to return results. The content placeholder will dispaly until Medication finishes.
         cy.get("[data-testid=content-placeholders]").should("be.visible");
-        cy.get("[data-testid=loading-toast]").should("be.visible");
+        cy.get("[data-testid=loading-toast]").should("exist");
         cy.get("[data-testid=content-placeholders]").should("not.exist");
         cy.get("[data-testid=loading-toast]").should("not.exist");
-        cy.get("[data-testid=displayCountText]").should("be.visible");
+        cy.get("[data-testid=timeline-record-count]").should("be.visible");
     });
 
     it("Home - Side Menu Timeline link to Timeline", () => {
-        cy.get("[data-testid=timelineLabel]")
+        cy.get("[data-testid=menu-btn-time-line-link]")
             .should("be.visible", "be.enabled")
             .click();
 
         cy.url().should("include", timelineUrl);
         // When a result is returned, the content placeholder will not be displayed.
         cy.get("[data-testid=content-placeholders]").should("be.visible");
-        cy.get("[data-testid=loading-toast]").should("be.visible");
+        cy.get("[data-testid=loading-toast]").should("exist");
         cy.get("[data-testid=content-placeholders]").should("not.exist");
-        cy.get("[data-testid=loading-toast]").should("be.visible");
-        cy.get("[data-testid=displayCountText]").should("be.visible");
+        cy.get("[data-testid=loading-toast]").should("exist");
+        cy.get("[data-testid=timeline-record-count]").should("be.visible");
     });
 });

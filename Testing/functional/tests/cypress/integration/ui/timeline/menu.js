@@ -108,7 +108,7 @@ describe("Menu System", () => {
             "/dependents"
         );
         cy.get("[data-testid=sidebarToggle]").should("be.visible");
-        cy.get("[data-testid=feedbackContainer]").should("be.visible");
+        cy.get("[data-testid=menu-btn-feedback-link]").should("be.visible");
     });
 
     it("Side bar expands on login for desktop", () => {

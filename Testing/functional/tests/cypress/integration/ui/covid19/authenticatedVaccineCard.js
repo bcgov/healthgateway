@@ -24,8 +24,8 @@ describe("Authenticated Vaccine Card Downloads", () => {
         cy.get("[data-testid=save-card-btn]")
             .should("be.visible", "be.enabled")
             .click();
-        cy.get("[data-testid=genericMessageModal]").should("be.visible");
-        cy.get("[data-testid=genericMessageSubmitBtn]").click();
+        cy.get("[data-testid=generic-message-modal]").should("be.visible");
+        cy.get("[data-testid=generic-message-submit-btn]").click();
         cy.get("[data-testid=loadingSpinner]").should("be.visible");
         cy.verifyDownload("ProvincialVaccineProof.png");
     });
@@ -72,8 +72,8 @@ describe("Authenticated Vaccine Card Downloads", () => {
             .should("be.visible")
             .click();
 
-        cy.get("[data-testid=genericMessageModal]").should("be.visible");
-        cy.get("[data-testid=genericMessageSubmitBtn]").click();
+        cy.get("[data-testid=generic-message-modal]").should("be.visible");
+        cy.get("[data-testid=generic-message-submit-btn]").click();
 
         cy.get("[data-testid=loadingSpinner]").should("be.visible");
 

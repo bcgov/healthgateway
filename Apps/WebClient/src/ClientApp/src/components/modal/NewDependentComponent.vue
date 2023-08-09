@@ -172,7 +172,7 @@ watch(() => dependent.value.dateOfBirth, touchDateOfBirth);
     <b-modal
         id="new-dependent-modal"
         v-model="isVisible"
-        data-testid="newDependentModal"
+        data-testid="add-dependent-dialog"
         title="Dependent Registration"
         size="lg"
         header-bg-variant="primary"
@@ -349,7 +349,7 @@ watch(() => dependent.value.dateOfBirth, touchDateOfBirth);
             <b-checkbox
                 id="termsCheckbox"
                 v-model="accepted"
-                data-testid="termsCheckbox"
+                data-testid="terms-checkbox"
                 :state="ValidationUtil.isValid(v$.accepted)"
             >
                 <p>

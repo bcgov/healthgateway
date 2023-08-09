@@ -82,7 +82,7 @@ onUnmounted(() => {
             </template>
         </LoadingOverlay>
         <div v-else>
-            <div class="spinner" data-testid="timelineLoading">
+            <div class="spinner" data-testid="loadingSpinner">
                 <div id="first" class="double-bounce">
                     <hg-icon icon="pills" size="large" />
                 </div>

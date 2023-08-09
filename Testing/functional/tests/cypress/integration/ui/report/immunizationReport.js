@@ -36,17 +36,17 @@ describe("Immunization History Report", () => {
     });
 
     it("Validate Immunization Loading", () => {
-        cy.get("[data-testid=reportType]").select("Immunizations");
-        cy.get("[data-testid=timelineLoading]").should("be.visible");
-        cy.get("[data-testid=timelineLoading]").should("not.be.visible");
+        cy.vSelect("[data-testid=report-type]", "Immunizations");
+        cy.get("[data-testid=loadingSpinner]").should("be.visible");
+        cy.get("[data-testid=loadingSpinner]").should("not.be.visible");
     });
 
     it("Validate Immunization History Report", () => {
-        cy.get("[data-testid=reportType]").select("Immunizations");
+        cy.vSelect("[data-testid=report-type]", "Immunizations");
 
-        cy.get("[data-testid=reportSample]").scrollTo("bottom");
+        cy.get("[data-testid=report-sample]").scrollTo("bottom");
 
-        cy.get("[data-testid=reportSample]").should("be.visible");
+        cy.get("[data-testid=report-sample]").should("be.visible");
 
         cy.get("[data-testid=immunizationDateTitle]").should("be.visible");
         cy.get("[data-testid=immunizationProviderClinicTitle]").should(
@@ -74,22 +74,22 @@ describe("Immunization History Report", () => {
             .last()
             .contains(/\d{4}-[A-Z]{1}[a-z]{2}-\d{2}/);
 
-        cy.get("[data-testid=exportRecordBtn] button")
+        cy.get("[data-testid=export-record-btn]")
             .should("be.enabled", "be.visible")
             .click();
 
-        cy.get("[data-testid=exportRecordBtn] a").first().click();
+        cy.get("[data-testid=export-record-menu] .v-list-item").first().click();
 
-        cy.get("[data-testid=genericMessageModal]").should("be.visible");
+        cy.get("[data-testid=generic-message-modal]").should("be.visible");
 
-        cy.get("[data-testid=genericMessageText]").should(
+        cy.get("[data-testid=generic-message-text]").should(
             "have.text",
             sensitiveDocText
         );
 
-        cy.get("[data-testid=genericMessageSubmitBtn]").click();
+        cy.get("[data-testid=generic-message-submit-btn]").click();
 
-        cy.get("[data-testid=genericMessageModal]").should("not.exist");
+        cy.get("[data-testid=generic-message-modal]").should("not.exist");
     });
 });
 
@@ -116,7 +116,7 @@ describe("Export Reports - Immunizations - Invalid Doses", () => {
             "/reports"
         );
 
-        cy.get("[data-testid=reportType]").select("Immunizations");
+        cy.vSelect("[data-testid=report-type]", "Immunizations");
 
         cy.get("[data-testid=immunizationDateItem]", { timeout: 60000 })
             .contains(validDoseDate1)

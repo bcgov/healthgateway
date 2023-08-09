@@ -31,8 +31,8 @@ describe("Reports - Medication", () => {
         cy.intercept("GET", `**/MedicationStatement/${HDID}`, {
             fixture: "Report/medicationStatementUnSorted.json",
         });
-        cy.get("[data-testid=reportType]").select("Medications");
-        cy.get("[data-testid=reportSample]").should("be.visible");
+        cy.vSelect("[data-testid=report-type]", "Medications");
+        cy.get("[data-testid=report-sample]").should("be.visible");
 
         cy.get("[data-testid=medicationDateItem]")
             .first()
@@ -64,9 +64,9 @@ describe("Reports - Medication", () => {
         cy.intercept("GET", `**/Immunization?hdid=${HDID}`, {
             fixture: "Report/immunizationUnSorted.json",
         });
-        cy.get("[data-testid=reportType]").select("Immunizations");
+        cy.vSelect("[data-testid=report-type]", "Immunizations");
 
-        cy.get("[data-testid=reportSample]").should("be.visible");
+        cy.get("[data-testid=report-sample]").should("be.visible");
 
         cy.get("[data-testid=immunizationDateItem]")
             .first()
@@ -140,9 +140,9 @@ describe("Reports - Covid19", () => {
         cy.intercept("GET", `**/Laboratory/Covid19Orders?hdid=${HDID}`, {
             fixture: "Report/covid19UnSorted.json",
         });
-        cy.get("[data-testid=reportType]").select("COVID‑19 Tests");
+        cy.vSelect("[data-testid=report-type]", "COVID‑19 Tests");
 
-        cy.get("[data-testid=reportSample]").should("be.visible");
+        cy.get("[data-testid=report-sample]").should("be.visible");
 
         cy.get("[data-testid=covid19DateItem]")
             .first()
@@ -193,9 +193,9 @@ describe("Reports - Immunization", () => {
         cy.intercept("GET", `**/Immunization?hdid=${HDID}`, {
             fixture: "Report/immunizationUnSorted.json",
         });
-        cy.get("[data-testid=reportType]").select("Immunizations");
+        cy.vSelect("[data-testid=report-type]", "Immunizations");
 
-        cy.get("[data-testid=reportSample]").should("be.visible");
+        cy.get("[data-testid=report-sample]").should("be.visible");
 
         cy.get("[data-testid=immunizationDateItem]")
             .first()
@@ -277,9 +277,9 @@ describe("Reports - MSP Visit", () => {
         cy.intercept("GET", `**/Encounter/${HDID}`, {
             fixture: "Report/mspVisitUnSorted.json",
         });
-        cy.get("[data-testid=reportType]").select("Health Visits");
+        cy.vSelect("[data-testid=report-type]", "Health Visits");
 
-        cy.get("[data-testid=reportSample]").should("be.visible");
+        cy.get("[data-testid=report-sample]").should("be.visible");
 
         cy.get("[data-testid=mspVisitDateItem]")
             .first()
@@ -330,9 +330,9 @@ describe("Reports - Hospital Visits", () => {
         cy.intercept("GET", `**/Encounter/HospitalVisit/${HDID}`, {
             fixture: "Report/hospitalVisitUnSorted.json",
         });
-        cy.get("[data-testid=reportType]").select("Hospital Visits");
+        cy.vSelect("[data-testid=report-type]", "Hospital Visits");
 
-        cy.get("[data-testid=reportSample]").should("be.visible");
+        cy.get("[data-testid=report-sample]").should("be.visible");
 
         cy.get("[data-testid=hospital-visit-date]")
             .first()
@@ -383,9 +383,9 @@ describe("Reports - Notes (User-Entered)", () => {
         cy.intercept("GET", `**/Note/${HDID}`, {
             fixture: "Report/noteUnSorted.json",
         });
-        cy.get("[data-testid=reportType]").select("My Notes");
+        cy.vSelect("[data-testid=report-type]", "My Notes");
 
-        cy.get("[data-testid=reportSample]").should("be.visible");
+        cy.get("[data-testid=report-sample]").should("be.visible");
 
         cy.get("[data-testid=user-note-date]")
             .first()
@@ -436,9 +436,9 @@ describe("Reports - Laboratory Tests", () => {
         cy.intercept("GET", `**/Laboratory/LaboratoryOrders?hdid=${HDID}`, {
             fixture: "Report/laboratoryUnSorted.json",
         });
-        cy.get("[data-testid=reportType]").select("Lab Results");
+        cy.vSelect("[data-testid=report-type]", "Lab Results");
 
-        cy.get("[data-testid=reportSample]").should("be.visible");
+        cy.get("[data-testid=report-sample]").should("be.visible");
 
         cy.get("[data-testid=labResultDateItem]")
             .first()

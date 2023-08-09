@@ -4,6 +4,7 @@ import {
     clickRegisterKitButton,
     getPcrTestTakenTime,
 } from "../../../support/functions/pcrTestKit";
+import { formatToDatePickerInput } from "../../../support/functions/datePicker";
 
 const landingPagePath = "/";
 
@@ -17,9 +18,7 @@ const testTakenMinutesAgo = "[data-testid=test-taken-minutes-ago]";
 const firstNameInput = "[data-testid=first-name-input]";
 const lastNameInput = "[data-testid=last-name-input]";
 const phnInput = "[data-testid=phn-input]";
-const formSelectYear = "[data-testid=formSelectYear]";
-const formSelectMonth = "[data-testid=formSelectMonth]";
-const formSelectDay = "[data-testid=formSelectDay]";
+const formDobInput = "[data-testid=dob-input]";
 const stressAddressInput = "[data-testid=pcr-street-address-input]";
 const cityInput = "[data-testid=pcr-city-input]";
 const zipInput = "[data-testid=pcr-zip-input]";
@@ -55,7 +54,8 @@ describe("Authenticated PCR Test Kit Registration", () => {
         cy.fixture(
             "LaboratoryService/authenticatedPcrTestWithTestKit.json"
         ).then((data) => {
-            cy.get(testTakenMinutesAgo).select(
+            cy.vSelect(
+                testTakenMinutesAgo,
                 getPcrTestTakenTime(data.resourcePayload.testTakenMinutesAgo)
             );
         });
@@ -75,7 +75,8 @@ describe("Authenticated PCR Test Kit Registration", () => {
         cy.fixture(
             "LaboratoryService/authenticatedPcrTestDuplicateWithTestKit.json"
         ).then((data) => {
-            cy.get(testTakenMinutesAgo).select(
+            cy.vSelect(
+                testTakenMinutesAgo,
                 getPcrTestTakenTime(data.resourcePayload.testTakenMinutesAgo)
             );
         });
@@ -91,7 +92,8 @@ describe("Authenticated PCR Test Kit Registration", () => {
         // populate the form with values from the fixture
         cy.fixture("LaboratoryService/authenticatedPcrTestError.json").then(
             (data) => {
-                cy.get(testTakenMinutesAgo).select(
+                cy.vSelect(
+                    testTakenMinutesAgo,
                     getPcrTestTakenTime(
                         data.resourcePayload.testTakenMinutesAgo
                     )
@@ -115,7 +117,8 @@ describe("Authenticated PCR Test Kit Registration", () => {
                         "-" +
                         data.resourcePayload.shortCodeSecond
                 );
-                cy.get(testTakenMinutesAgo).select(
+                cy.vSelect(
+                    testTakenMinutesAgo,
                     getPcrTestTakenTime(
                         data.resourcePayload.testTakenMinutesAgo
                     )
@@ -150,13 +153,12 @@ describe("Unauthenticated PCR Test Kit Registration", () => {
                 cy.get(lastNameInput).type(data.resourcePayload.lastName);
                 cy.get(phnInput).type(data.resourcePayload.phn);
 
-                cy.populateDateDropdowns(
-                    formSelectYear,
-                    formSelectMonth,
-                    formSelectDay,
-                    data.resourcePayload.dob
+                cy.get(formDobInput).type(
+                    formatToDatePickerInput(data.resourcePayload.dob)
                 );
-                cy.get(testTakenMinutesAgo).select(
+
+                cy.vSelect(
+                    testTakenMinutesAgo,
                     getPcrTestTakenTime(
                         data.resourcePayload.testTakenMinutesAgo
                     )
@@ -183,9 +185,9 @@ describe("Unauthenticated PCR Test Kit Registration", () => {
                 cy.get(firstNameInput).type(data.resourcePayload.firstName);
                 cy.get(lastNameInput).type(data.resourcePayload.lastName);
 
-                cy.get("[data-testid=phn-checkbox]")
-                    .should("be.enabled")
-                    .check({ force: true });
+                cy.get("[data-testid=phn-checkbox] input[type=checkbox]").click(
+                    { force: true }
+                );
 
                 cy.get(stressAddressInput).type(
                     data.resourcePayload.streetAddress
@@ -193,13 +195,11 @@ describe("Unauthenticated PCR Test Kit Registration", () => {
                 cy.get(cityInput).type(data.resourcePayload.city);
                 cy.get(zipInput).type(data.resourcePayload.postalOrZip);
 
-                cy.populateDateDropdowns(
-                    formSelectYear,
-                    formSelectMonth,
-                    formSelectDay,
-                    data.resourcePayload.dob
+                cy.get(formDobInput).type(
+                    formatToDatePickerInput(data.resourcePayload.dob)
                 );
-                cy.get(testTakenMinutesAgo).select(
+                cy.vSelect(
+                    testTakenMinutesAgo,
                     getPcrTestTakenTime(
                         data.resourcePayload.testTakenMinutesAgo
                     )
@@ -227,13 +227,11 @@ describe("Unauthenticated PCR Test Kit Registration", () => {
                 cy.get(lastNameInput).type(data.resourcePayload.lastName);
                 cy.get(phnInput).type(data.resourcePayload.phn);
 
-                cy.populateDateDropdowns(
-                    formSelectYear,
-                    formSelectMonth,
-                    formSelectDay,
-                    data.resourcePayload.dob
+                cy.get(formDobInput).type(
+                    formatToDatePickerInput(data.resourcePayload.dob)
                 );
-                cy.get(testTakenMinutesAgo).select(
+                cy.vSelect(
+                    testTakenMinutesAgo,
                     getPcrTestTakenTime(
                         data.resourcePayload.testTakenMinutesAgo
                     )
@@ -257,13 +255,11 @@ describe("Unauthenticated PCR Test Kit Registration", () => {
                 cy.get(lastNameInput).type(data.resourcePayload.lastName);
                 cy.get(phnInput).type(data.resourcePayload.phn);
 
-                cy.populateDateDropdowns(
-                    formSelectYear,
-                    formSelectMonth,
-                    formSelectDay,
-                    data.resourcePayload.dob
+                cy.get(formDobInput).type(
+                    formatToDatePickerInput(data.resourcePayload.dob)
                 );
-                cy.get(testTakenMinutesAgo).select(
+                cy.vSelect(
+                    testTakenMinutesAgo,
                     getPcrTestTakenTime(
                         data.resourcePayload.testTakenMinutesAgo
                     )
@@ -288,7 +284,8 @@ describe("Unauthenticated PCR Test Kit Registration", () => {
                         "-" +
                         data.resourcePayload.shortCodeSecond
                 );
-                cy.get(testTakenMinutesAgo).select(
+                cy.vSelect(
+                    testTakenMinutesAgo,
                     getPcrTestTakenTime(
                         data.resourcePayload.testTakenMinutesAgo
                     )
@@ -301,11 +298,8 @@ describe("Unauthenticated PCR Test Kit Registration", () => {
                 cy.get(lastNameInput).type(data.resourcePayload.lastName);
                 cy.get(phnInput).type(data.resourcePayload.phn);
 
-                cy.populateDateDropdowns(
-                    formSelectYear,
-                    formSelectMonth,
-                    formSelectDay,
-                    data.resourcePayload.dob
+                cy.get(formDobInput).type(
+                    formatToDatePickerInput(data.resourcePayload.dob)
                 );
             }
         );

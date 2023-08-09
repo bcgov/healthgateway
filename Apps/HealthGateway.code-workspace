@@ -1,69 +1,16 @@
 {
     "folders": [
         {
-            "name": "ClientApp",
+            "name": "NewClientApp",
+            "path": "WebClient/src/NewClientApp"
+        },
+        {
+            "name": "OldClientApp",
             "path": "WebClient/src/ClientApp"
         },
         {
-            "name": "Admin_ClientApp",
+            "name": "AdminClientApp",
             "path": "AdminWebClient/src/ClientApp"
-        },
-        {
-            "path": "Admin"
-        },
-        {
-            "path": "AdminWebClient"
-        },
-        {
-            "path": "ClinicalDocument"
-        },
-        {
-            "path": "Common"
-        },
-        {
-            "path": "CommonData"
-        },
-        {
-            "path": "CommonUi"
-        },
-        {
-            "path": "Database"
-        },
-        {
-            "path": "DBMaintainer"
-        },
-        {
-            "path": "Encounter"
-        },
-        {
-            "path": "GatewayApi"
-        },
-        {
-            "path": "Immunization"
-        },
-        {
-            "path": "JobScheduler"
-        },
-        {
-            "path": "Laboratory"
-        },
-        {
-            "path": "Medication"
-        },
-        {
-            "path": "Mock"
-        },
-        {
-            "path": "ODRProxy"
-        },
-        {
-            "path": "Offline"
-        },
-        {
-            "path": "Patient"
-        },
-        {
-            "path": "WebClient"
         },
         {
             "name": "../Testing/functional/tests",
@@ -72,8 +19,92 @@
         {
             "name": "../Tools",
             "path": "../Tools"
+        },
+        {
+            "name": "Apps",
+            "path": "."
         }
     ],
+    "tasks": {
+        "version": "2.0.0",
+        "tasks": [
+            {
+                "label": "Run Gateway",
+                "type": "shell",
+                "command": "npm run dev",
+                "group": {
+                    "kind": "build",
+                    "isDefault": true
+                },
+                "options": {
+                    "cwd": "${workspaceFolder:Apps}/WebClient/src/NewClientApp"
+                },
+                "presentation": {
+                    "clear": true
+                }
+            },
+            {
+                "label": "Run Cypress Tests",
+                "type": "shell",
+                "command": "npx cypress open --e2e --browser chrome",
+                "group": {
+                    "kind": "test",
+                    "isDefault": true
+                },
+                "options": {
+                    "cwd": "${workspaceFolder:../Testing/functional/tests}",
+                    "env": { "CYPRESS_BASE_URL": "${input:cypressBaseUrl}" }
+                },
+                "presentation": {
+                    "clear": true,
+                    "close": true
+                }
+            },
+            {
+                "label": "Apply Migrations (DBMaintainer)",
+                "type": "shell",
+                "command": "dotnet ef database update --project \"../Database/src\"",
+                "group": "none",
+                "options": {
+                    "cwd": "${workspaceFolder:Apps}/DBMaintainer"
+                }
+            },
+            {
+                "label": "Create Migration (DBMaintainer)",
+                "type": "shell",
+                "command": "dotnet ef migrations add ${input:migrationName} --project \"../Database/src\"",
+                "group": "none",
+                "options": {
+                    "cwd": "${workspaceFolder:Apps}/DBMaintainer"
+                }
+            },
+            {
+                "label": "Revert Migration (DBMaintainer)",
+                "type": "shell",
+                "command": "dotnet ef migrations remove --project \"../Database/src\"",
+                "group": "none",
+                "options": {
+                    "cwd": "${workspaceFolder:Apps}/DBMaintainer"
+                }
+            }
+        ],
+        "inputs": [
+            {
+                "type": "promptString",
+                "id": "migrationName",
+                "description": "Name your migration."
+            },
+            {
+                "type": "pickString",
+                "id": "cypressBaseUrl",
+                "description": "Choose your environment.",
+                "options": [
+                    "https://dev.healthgateway.gov.bc.ca",
+                    "http://localhost:5002"
+                ]
+            }
+        ]
+    },
     "extensions": {
         "recommendations": [
             "DavidAnson.vscode-markdownlint",
@@ -99,29 +130,17 @@
         "editor.formatOnSave": true,
         "editor.guides.bracketPairs": true,
         "[csharp]": {
-            "editor.defaultFormatter": "ms-dotnettools.csharp",
+            "editor.defaultFormatter": null,
             "editor.formatOnSave": false
         },
+        "[vue][typescript][javascript]": {
+            "editor.formatOnSave": false,
+            "editor.codeActionsOnSave": [
+                "source.addMissingImports",
+                "source.fixAll.eslint"
+            ]
+        },
         "omnisharp.defaultLaunchSolution": "HealthGateway.sln",
-        "jest.disabledWorkspaceFolders": [
-            "Admin_ClientApp",
-            "AdminWebClient",
-            "Common",
-            "Database",
-            "DBMaintainer",
-            "Documentation",
-            "Immunization",
-            "JobScheduler",
-            "Laboratory",
-            "Medication",
-            "ODRProxy",
-            "Patient",
-            "WebClient",
-            "Encounter",
-            "Mock",
-            "tests",
-            "sampler",
-            "Design"
-        ]
+        "typescript.preferences.importModuleSpecifier": "non-relative"
     }
 }

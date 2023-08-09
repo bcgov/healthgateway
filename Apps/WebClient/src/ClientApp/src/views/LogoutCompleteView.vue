@@ -23,7 +23,7 @@ setTimeout(() => {
     <b-row class="justify-content-center h-100 pt-5">
         <b-col md="6">
             <div class="shadow-lg p-3 mb-5 bg-white rounded border">
-                <h3>
+                <h3 data-testid="logout-complete-msg">
                     <strong>You signed out of your account</strong>
                 </h3>
                 <p>It's a good idea to close all browser windows.</p>

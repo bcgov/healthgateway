@@ -21,12 +21,16 @@ describe("Diagnostic Imaging", () => {
     it("Validate Card Details", () => {
         cy.get("[data-testid=diagnosticimagingTitle]").should("be.visible");
         cy.get("[data-testid=entryCardDetailsTitle").first().click();
+        cy.get("[data-testid=diagnostic-imaging-body-part").should(
+            "be.visible"
+        );
         cy.get("[data-testid=diagnostic-imaging-procedure-description").should(
             "be.visible"
         );
         cy.get("[data-testid=diagnostic-imaging-health-authority").should(
             "be.visible"
         );
+        cy.get("[data-testid=diagnostic-imaging-facility").should("be.visible");
         cy.get("[data-testid=diagnostic-imaging-download-button").should(
             "be.visible"
         );
@@ -42,10 +46,10 @@ describe("Diagnostic Imaging", () => {
         cy.get("[data-testid=diagnostic-imaging-download-button")
             .first()
             .click();
-        cy.get("[data-testid=genericMessageModal]").should("be.visible");
+        cy.get("[data-testid=generic-message-modal]").should("be.visible");
         // Submit the generic message modal, which should close the modal
-        cy.get("[data-testid=genericMessageSubmitBtn]").click();
-        cy.get("[data-testid=genericMessageModal]").should("not.exist");
+        cy.get("[data-testid=generic-message-submit-btn]").click();
+        cy.get("[data-testid=generic-message-modal]").should("not.exist");
 
         // Test for file download with the entry date prefxied to the file name.
         cy.get("[data-testid=entryCardDate]")

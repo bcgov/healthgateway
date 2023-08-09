@@ -4,12 +4,12 @@ const homePath = "/home";
 
 const addQuickLinkButtonSelector = "[data-testid=add-quick-link-button]";
 const addQuickLinkSubmitButtonSelector = "[data-testid=add-quick-link-btn]";
-const quickLinkMenuButtonSelector = "[data-testid=quick-link-menu-button]";
+const quickLinkMenuButtonSelector = "[data-testid=card-menu-button]";
 const quickLinkRemoveButtonSelector = "[data-testid=remove-quick-link-button]";
 const healthConnectQuickLinkCardSelector =
     "[data-testid=health-connect-registry-card]";
 const healthConnectAddQuickLinkCheckboxSelector =
-    "[data-testid=health-connect-registry-filter]";
+    "[data-testid=health-connect-registry-filter] input";
 const serviceName = "healthConnectRegistry";
 
 describe("Health Connect Registry Card", () => {
@@ -42,20 +42,17 @@ describe("Health Connect Registry Card", () => {
         cy.log("Removing health connect quick link");
         cy.get(healthConnectQuickLinkCardSelector).within(() => {
             cy.get(quickLinkMenuButtonSelector)
-                .should("be.visible")
-                .parent("a")
                 .should("be.visible", "be.enabled")
                 .click();
-            cy.get(quickLinkRemoveButtonSelector).should("be.visible").click();
         });
+        cy.get(quickLinkRemoveButtonSelector).should("be.visible").click();
 
         cy.log("Verifying health connect quick link no longer exists");
         cy.get(healthConnectQuickLinkCardSelector).should("not.exist");
 
         cy.log("Adding health connect quick link");
         cy.get(addQuickLinkButtonSelector)
-            .should("be.visible")
-            .should("be.enabled")
+            .should("be.visible", "be.enabled")
             .click();
         cy.get(healthConnectAddQuickLinkCheckboxSelector)
             .should("exist")
@@ -66,9 +63,10 @@ describe("Health Connect Registry Card", () => {
             .click();
 
         cy.log("Verifying add quick link button is disabled");
-        cy.get(addQuickLinkButtonSelector)
-            .should("be.visible")
-            .should("not.be.enabled");
+        cy.get(addQuickLinkButtonSelector).should(
+            "be.visible",
+            "not.be.enabled"
+        );
 
         cy.log("Verifying health connect quick link card is present");
         cy.get(healthConnectQuickLinkCardSelector).should(
@@ -91,8 +89,7 @@ describe("Disabling health connect services", () => {
 
         cy.log("Verifying add health connect checkbox not present");
         cy.get(addQuickLinkButtonSelector)
-            .should("be.visible")
-            .should("be.enabled")
+            .should("be.visible", "be.enabled")
             .click();
         cy.get(healthConnectAddQuickLinkCheckboxSelector).should("not.exist");
     };

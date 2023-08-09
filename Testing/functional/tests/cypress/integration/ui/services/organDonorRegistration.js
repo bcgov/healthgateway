@@ -79,7 +79,7 @@ describe("Services - Organ Donor Registration Card", () => {
             .should("be.visible")
             .click();
 
-        cy.get("[data-testid=genericMessageModal]").should("be.visible");
+        cy.get("[data-testid=generic-message-modal]").should("be.visible");
     });
 });
 
