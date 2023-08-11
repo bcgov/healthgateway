@@ -45,7 +45,7 @@ describe("Notes", () => {
         cy.log("Editing Note.");
         cy.get("[data-testid=noteMenuBtn]").first().click();
         cy.get("[data-testid=editNoteMenuBtn]").first().click();
-        cy.get("[data-testid=noteTitleInput]").clear().type("Test Edit");
+        cy.get("[data-testid=noteTitleInput] input").clear().type("Test Edit");
         cy.get("[data-testid=saveNoteBtn]").click();
 
         // Confirm edited note
