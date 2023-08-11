@@ -64,5 +64,10 @@ namespace HealthGateway.Database.Constants
         /// The code representing Hospital Visit.
         /// </summary>
         public const string HospitalVisit = "Hos";
+
+        /// <summary>
+        /// The code representing Diagnostic Imaging.
+        /// </summary>
+        public const string DiagnosticImaging = "DIA";
     }
 }

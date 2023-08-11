@@ -1118,6 +1118,15 @@ namespace HealthGateway.Database.Context
                         CreatedDateTime = this.DefaultSeedDate.ToUniversalTime(),
                         UpdatedBy = UserId.DefaultUser,
                         UpdatedDateTime = this.DefaultSeedDate.ToUniversalTime(),
+                    },
+                    new CommentEntryTypeCode
+                    {
+                        CommentEntryCode = CommentEntryType.DiagnosticImaging,
+                        Description = "Comment for a Diagnostic Imaging Entry",
+                        CreatedBy = UserId.DefaultUser,
+                        CreatedDateTime = this.DefaultSeedDate.ToUniversalTime(),
+                        UpdatedBy = UserId.DefaultUser,
+                        UpdatedDateTime = this.DefaultSeedDate.ToUniversalTime(),
                     });
         }
 
