@@ -20,7 +20,9 @@ describe("Clinical Document", () => {
 
     it("Validate Card Details", () => {
         cy.get("[data-testid=clinicaldocumentTitle]").should("be.visible");
-        cy.get("[data-testid=entryCardDetailsTitle").first().click();
+        cy.get("[data-testid=entryCardDetailsTitle")
+            .first()
+            .click({ force: true });
         cy.get("[data-testid=clinical-document-discipline").should(
             "be.visible"
         );

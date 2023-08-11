@@ -213,8 +213,8 @@ function testAddCommentError(statusCode = serverErrorStatusCode) {
         .scrollIntoView()
         .click()
         .within(() => {
-            cy.get("[data-testid=addCommentTextArea]").type("Test Comment");
-            cy.get("[data-testid=postCommentBtn]").click();
+            cy.get("[data-testid=add-comment-text-area]").type("Test Comment");
+            cy.get("[data-testid=post-comment-btn]").click();
         });
 
     if (statusCode === tooManyRequestsStatusCode) {

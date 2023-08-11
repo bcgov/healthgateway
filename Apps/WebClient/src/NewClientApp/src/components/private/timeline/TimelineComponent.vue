@@ -664,7 +664,8 @@ setPageFromDate(linearDate.value);
         <div
             v-if="
                 filteredTimelineEntries.length === 0 &&
-                !selectedDatasetsAreLoading
+                !selectedDatasetsAreLoading &&
+                isFullyLoaded
             "
             class="d-flex flex-column align-center mb-4"
         >

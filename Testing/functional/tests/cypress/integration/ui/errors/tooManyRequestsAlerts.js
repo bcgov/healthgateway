@@ -858,8 +858,8 @@ describe("Comments", () => {
         cy.get("[data-testid=entryCardDetailsTitle]").first().click();
 
         // Add comment
-        cy.get("[data-testid=addCommentTextArea]").first().type(testComment);
-        cy.get("[data-testid=postCommentBtn]").first().click();
+        cy.get("[data-testid=add-comment-text-area]").first().type(testComment);
+        cy.get("[data-testid=post-comment-btn]").first().click();
 
         // Verify
         cy.get("[data-testid=too-many-requests-error]").should("be.visible");

@@ -74,7 +74,7 @@ function addComment(): void {
 <template>
     <v-textarea
         v-model="commentInput"
-        data-testid="addCommentTextArea"
+        data-testid="add-comment-text-area"
         max-rows="10"
         maxlength="1000"
         auto-grow
@@ -97,7 +97,7 @@ function addComment(): void {
         <template #append-inner>
             <HgIconButtonComponent
                 color="primary"
-                data-testid="postCommentBtn"
+                data-testid="post-comment-btn"
                 icon="arrow-up"
                 size="x-small"
                 :disabled="commentInput === ''"
