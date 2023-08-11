@@ -167,7 +167,7 @@ describe("dependents - dashboard", () => {
         cy.get("[data-testid=new-dependent-modal-form]").should(
             "exist",
             "be.visible"
-        );
+        );data-testid=dependent-first-name-input
 
         cy.get("[data-testid=dependent-first-name-input]")
             .clear()
@@ -203,7 +203,7 @@ describe("dependents - dashboard", () => {
         cy.get("[data-testid=new-dependent-modal-form]").should(
             "exist",
             "be.visible"
-        );
+        );data-testid=dependent-first-name-input
 
         cy.get("[data-testid=dependent-first-name-input]")
             .clear()

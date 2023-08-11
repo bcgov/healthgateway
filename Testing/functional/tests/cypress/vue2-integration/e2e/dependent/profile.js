@@ -32,42 +32,24 @@ describe("dependents - profile", () => {
 
         const cardSelector = getCardSelector(hdid);
         const tabButtonSelector = getTabButtonSelector(hdid, "profile");
-        const tabSelector = `[data-testid=profile-tab]`;
+        const tabSelector = `${cardSelector} [data-testid=profile-tab]`;
 
-        cy.get(cardSelector)
+        cy.get(tabButtonSelector)
             .should("be.visible")
-            .within(() => {
-                cy.get(tabButtonSelector)
-                    .should("be.visible")
-                    .should("not.be.disabled")
-                    .click();
+            .should("not.be.disabled")
+            .should("not.have.class", "disabled")
+            .click();
 
-                cy.get(`[data-testid=dependent-phn]`)
-                    .should("be.visible")
-                    .within(() => {
-                        cy.get("input").should(
-                            "have.value",
-                            existingDependent.phn
-                        );
-                    });
+        cy.get(`${tabSelector} [data-testid=dependent-phn]`)
+            .should("be.visible")
+            .should("have.value", existingDependent.phn);
 
-                cy.get(`[data-testid=dependent-date-of-birth]`)
-                    .should("be.visible")
-                    .within(() => {
-                        cy.get("input").should(
-                            "have.value",
-                            existingDependent.dateOfBirth
-                        );
-                    });
+        cy.get(`${tabSelector} [data-testid=dependent-date-of-birth]`)
+            .should("be.visible")
+            .should("have.value", existingDependent.dateOfBirth);
 
-                cy.get(`[data-testid=dependent-other-delegate-count]`)
-                    .should("be.visible")
-                    .within(() => {
-                        cy.get("input").should(
-                            "have.value",
-                            existingDependent.otherDelegateCount
-                        );
-                    });
-            });
+        cy.get(`${tabSelector} [data-testid=dependent-other-delegate-count]`)
+            .should("be.visible")
+            .should("have.value", existingDependent.otherDelegateCount);
     });
 });

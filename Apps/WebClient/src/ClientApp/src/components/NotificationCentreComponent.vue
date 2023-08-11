@@ -69,10 +69,7 @@ function handleClickNotificationAction(notification: Notification): void {
     } else if (notification.categoryName === bctOdrCategory) {
         router.push({ path: "/services" });
     } else {
-        const isExternal = isExternalUrl(notification.actionUrl);
-        logger.debug(`is External: ${isExternal}`);
-
-        if (isExternal) {
+        if (notification.actionType === NotificationActionType.ExternalLink) {
             // Open the external url in a new tab/window
             window.open(notification.actionUrl, "_blank");
         } else {
@@ -93,18 +90,6 @@ function handleClickNotificationAction(notification: Notification): void {
             }
         }
     }
-}
-
-function isExternalUrl(url: string): boolean {
-    const currentDomain = window.location.hostname;
-    logger.debug(`Domain: ${currentDomain}`);
-
-    // Create a regular expression to extract the domain from the URL.
-    const domainRegex = /^(?:https:\/\/)?(?:[^@\n]+@)?(?:www\.)?([^:\/\n?]+)/im;
-    const match = url.match(domainRegex);
-    const urlDomain = match ? match[1] : "";
-    logger.debug(`URL Domain: ${urlDomain}`);
-    return urlDomain !== currentDomain;
 }
 
 function getEntryType(categoryName: string): EntryType | undefined {
