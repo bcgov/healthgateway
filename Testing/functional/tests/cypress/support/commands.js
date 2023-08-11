@@ -447,6 +447,9 @@ Cypress.Commands.add(
 );
 
 Cypress.Commands.add("vSelect", (selector, value) => {
-    cy.get(selector).click().trigger("mousedown");
-    cy.get(".v-list-item").contains(value).click({ force: true });
+    cy.get(selector).click({ force: true }).trigger("mousedown");
+    cy.document()
+        .find(".v-overlay--active.v-menu .v-list-item")
+        .contains(value)
+        .click({ force: true });
 });

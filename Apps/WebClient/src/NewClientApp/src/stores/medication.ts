@@ -71,7 +71,7 @@ export const useMedicationStore = defineStore("medication", () => {
             datasetMapUtil.setStateData(
                 medicationMap.value,
                 hdid,
-                medicationResult.resourcePayload,
+                medicationResult.resourcePayload ?? [],
                 {
                     protectiveWordAttempts: 0,
                 }
@@ -84,7 +84,7 @@ export const useMedicationStore = defineStore("medication", () => {
             datasetMapUtil.setStateData(
                 medicationMap.value,
                 hdid,
-                medicationResult.resourcePayload,
+                medicationResult.resourcePayload ?? [],
                 {
                     protectiveWordAttempts:
                         currentState.protectiveWordAttempts + 1,

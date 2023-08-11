@@ -83,8 +83,8 @@ function removeComment(): void {
     <v-sheet class="px-4 py-2 mt-2" color="grey-lighten-5">
         <v-row v-if="!isEditMode">
             <v-col>
-                <p data-testid="commentText" class="text-body-1">
-                    {{ comment.text }}
+                <p class="text-body-1">
+                    <span data-testid="commentText">{{ comment.text }}</span>
                     <br />
                     <span class="text-caption text-medium-emphasis">
                         {{ formatDate(comment.createdDateTime) }}
@@ -92,12 +92,13 @@ function removeComment(): void {
                 </p>
             </v-col>
             <v-col cols="auto">
-                <v-menu data-testid="commentMenuBtn">
+                <v-menu>
                     <template #activator="{ props: slotProps }">
                         <HgIconButtonComponent
                             icon="ellipsis-v"
                             size="small"
                             v-bind="slotProps"
+                            data-testid="commentMenuBtn"
                         />
                     </template>
                     <v-list>

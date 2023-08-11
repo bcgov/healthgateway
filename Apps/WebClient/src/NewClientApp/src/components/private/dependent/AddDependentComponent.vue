@@ -383,8 +383,10 @@ watch(() => dependent.value.dateOfBirth, touchDateOfBirth);
                                 color="primary"
                                 class="text-body-1 checkbox-top"
                                 hide-details
-                                :error="!ValidationUtil.isValid(v$.accepted)"
-                                @blur="v$.accepted.$touch()"
+                                :error="
+                                    ValidationUtil.isValid(v$.dependent) &&
+                                    !ValidationUtil.isValid(v$.accepted)
+                                "
                             >
                                 <template #label>
                                     <div class="ml-1">

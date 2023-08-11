@@ -44,6 +44,9 @@ const isLoadingFile = computed(
         props.entry.fileId !== undefined &&
         patientDataStore.isPatientDataFileLoading(props.entry.fileId)
 );
+const hasFile = computed(
+    () => props.entry.fileId !== undefined && props.entry.fileId !== ""
+);
 
 function showConfirmationModal(): void {
     messageModal.value?.showModal();
@@ -101,7 +104,7 @@ function downloadFile(): void {
             </v-col>
         </v-row>
         <HgButtonComponent
-            :if="entry.fileId !== undefined"
+            v-if="hasFile"
             data-testid="diagnostic-imaging-download-button"
             class="mb-6"
             variant="secondary"

@@ -217,6 +217,7 @@ eventStore.subscribe(EventName.OpenNoteDialog, openDialog);
                         <v-col cols="12" sm="6">
                             <v-text-field
                                 v-model.trim="noteTitle"
+                                data-testid="noteTitleInput"
                                 clearable
                                 label="Title"
                                 maxlength="100"
