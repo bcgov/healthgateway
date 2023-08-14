@@ -224,221 +224,210 @@ watch(() => dependent.value.dateOfBirth, touchDateOfBirth);
                 text="Add"
             />
         </template>
-        <div class="d-flex justify-center">
-            <v-card>
-                <v-card-title class="bg-primary text-white px-0">
-                    <v-toolbar
-                        title="Dependent Registration"
-                        density="compact"
-                        color="primary"
-                    >
-                        <HgIconButtonComponent
-                            id="add-dependent-dialog-close-button"
-                            data-testid="add-dependent-dialog-close-button"
-                            icon="fas fa-close"
-                            @click="hideDialog"
-                        />
-                    </v-toolbar>
-                </v-card-title>
-                <v-card-text
-                    class="pa-4"
-                    data-testid="new-dependent-modal-form"
+        <v-card>
+            <v-card-title class="bg-primary text-white px-0">
+                <v-toolbar
+                    title="Dependent Registration"
+                    density="compact"
+                    color="primary"
                 >
-                    <TooManyRequestsComponent location="addDependentModal" />
-                    <v-alert
-                        v-if="isError"
-                        data-testid="dependent-error-banner"
-                        class="d-print-none mx-4 mt-4"
-                        type="error"
-                        variant="outlined"
-                        border
-                    >
-                        <template #text>
-                            <p
-                                data-testid="dependent-error-text"
-                                class="text-body-1"
-                            >
-                                <span v-if="isErrorDataMismatch">
-                                    The information you entered does not match
-                                    our records. Please try again with the exact
-                                    given and last names on the BC Services
-                                    Card.
-                                </span>
-                                <span v-else-if="isErrorNoHdid">
-                                    Please ensure you are using a current
-                                    <a
-                                        href="https://www2.gov.bc.ca/gov/content/governments/government-id/bc-services-card"
-                                        target="_blank"
-                                        rel="noopener"
-                                        >BC Services Card</a
-                                    >.
-                                </span>
-                                <span v-else-if="isErrorProtected">
-                                    Unable to add dependent.
-                                </span>
-                                <span v-else>{{ errorMessage }}</span>
-                            </p>
-                            <span
-                                v-if="isErrorProtected"
-                                data-testid="condensed-error-contact-message"
-                                class="text-body-1"
-                            >
-                                Please contact
-                                <a href="mailto:HealthGateway@gov.bc.ca"
-                                    >HealthGateway@gov.bc.ca</a
+                    <HgIconButtonComponent
+                        id="add-dependent-dialog-close-button"
+                        data-testid="add-dependent-dialog-close-button"
+                        icon="fas fa-close"
+                        @click="hideDialog"
+                    />
+                </v-toolbar>
+            </v-card-title>
+            <v-card-text class="pa-4" data-testid="new-dependent-modal-form">
+                <TooManyRequestsComponent location="addDependentModal" />
+                <v-alert
+                    v-if="isError"
+                    data-testid="dependent-error-banner"
+                    class="d-print-none mx-4 mt-4"
+                    type="error"
+                    variant="outlined"
+                    border
+                >
+                    <template #text>
+                        <p
+                            data-testid="dependent-error-text"
+                            class="text-body-1"
+                        >
+                            <span v-if="isErrorDataMismatch">
+                                The information you entered does not match our
+                                records. Please try again with the exact given
+                                and last names on the BC Services Card.
+                            </span>
+                            <span v-else-if="isErrorNoHdid">
+                                Please ensure you are using a current
+                                <a
+                                    href="https://www2.gov.bc.ca/gov/content/governments/government-id/bc-services-card"
+                                    target="_blank"
+                                    rel="noopener"
+                                    >BC Services Card</a
                                 >.
                             </span>
-                            <span
-                                v-else
-                                data-testid="not-condensed-error-contact-message"
-                                class="text-body-1"
-                            >
-                                If you continue to have issues, please contact
-                                <a href="mailto:HealthGateway@gov.bc.ca"
-                                    >HealthGateway@gov.bc.ca</a
-                                >.
+                            <span v-else-if="isErrorProtected">
+                                Unable to add dependent.
                             </span>
-                        </template>
-                    </v-alert>
-                    <v-row>
-                        <v-col cols="12" sm="6">
-                            <label for="firstName"
-                                >First and Middle Names</label
-                            >
-                            <v-text-field
-                                id="firstName"
-                                v-model.trim="dependent.firstName"
-                                data-testid="dependent-first-name-input"
-                                label="First and Middle Names"
-                                autofocus
-                                clearable
-                                type="text"
-                                :error-messages="
-                                    ValidationUtil.getErrorMessages(
-                                        v$.dependent.firstName
-                                    )
-                                "
-                                @blur="v$.dependent.firstName.$touch()"
-                            />
-                        </v-col>
-                        <v-col cols="12" sm="6">
-                            <label for="lastName">Last Name</label>
-                            <v-text-field
-                                id="lastName"
-                                v-model.trim="dependent.lastName"
-                                data-testid="dependent-last-name-input"
-                                label="Last Name"
-                                clearable
-                                type="text"
-                                :error-messages="
-                                    ValidationUtil.getErrorMessages(
-                                        v$.dependent.lastName
-                                    )
-                                "
-                                @blur="v$.dependent.lastName.$touch()"
-                            />
-                        </v-col>
-                        <v-col cols="12" sm="6">
-                            <label for="dateOfBirth">Date of Birth</label>
-                            <HgDatePickerComponent
-                                id="dateOfBirth"
-                                v-model="dependent.dateOfBirth"
-                                label="Date of Birth"
-                                data-testid="dependent-date-of-birth-input"
-                                :max-date="maxBirthdate"
-                                :error-messages="
-                                    ValidationUtil.getErrorMessages(
-                                        v$.dependent.dateOfBirth
-                                    )
-                                "
-                                @blur="v$.dependent.dateOfBirth.$touch()"
-                            />
-                        </v-col>
-                        <v-col cols="12" sm="6">
-                            <label for="phn">PHN</label>
-                            <v-text-field
-                                id="phn"
-                                v-model="dependent.PHN"
-                                v-maska:[phnMaskaOptions]
-                                label="PHN"
-                                clearable
-                                type="text"
-                                data-testid="dependent-phn-input"
-                                :error-messages="
-                                    ValidationUtil.getErrorMessages(
-                                        v$.dependent.PHN
-                                    )
-                                "
-                                @blur="v$.dependent.PHN.$touch()"
-                            />
-                        </v-col>
-                    </v-row>
-                    <v-row>
-                        <v-col>
-                            <v-checkbox
-                                id="termsCheckbox"
-                                v-model="accepted"
-                                data-testid="dependent-terms-checkbox"
-                                density="compact"
-                                color="primary"
-                                class="text-body-1 checkbox-top"
-                                hide-details
-                                :error="
-                                    ValidationUtil.isValid(v$.dependent) &&
-                                    !ValidationUtil.isValid(v$.accepted)
-                                "
-                            >
-                                <template #label>
-                                    <div class="ml-1">
-                                        <p>
-                                            By providing the child’s name, date
-                                            of birth, and personal health
-                                            number, I declare that I am the
-                                            child’s guardian and that I have the
-                                            authority to request and receive
-                                            health information respecting the
-                                            child from third parties.
-                                        </p>
-                                        <p>
-                                            If I either: (a) cease to be
-                                            guardian of this child; (b) or lose
-                                            the right to request or receive
-                                            health information from third
-                                            parties respecting this child, I
-                                            will remove them as a dependent
-                                            under my Health Gateway account
-                                            immediately.
-                                        </p>
-                                        <p class="mb-0">
-                                            I understand that I will no longer
-                                            be able to access my child’s health
-                                            records once they are 12 years of
-                                            age.
-                                        </p>
-                                    </div>
-                                </template>
-                            </v-checkbox>
-                        </v-col>
-                    </v-row>
-                </v-card-text>
-                <v-card-actions class="justify-end border-t-sm pa-4">
-                    <HgButtonComponent
-                        data-testid="cancel-dependent-registration-btn"
-                        variant="secondary"
-                        text="Cancel"
-                        @click.prevent="hideDialog"
-                    />
-                    <HgButtonComponent
-                        data-testid="register-dependent-btn"
-                        variant="primary"
-                        :loading="isLoading"
-                        :disabled="hasValidationErrors"
-                        text="Register Dependent"
-                        @click.prevent="handleSubmit"
-                    />
-                </v-card-actions>
-            </v-card>
-        </div>
+                            <span v-else>{{ errorMessage }}</span>
+                        </p>
+                        <span
+                            v-if="isErrorProtected"
+                            data-testid="condensed-error-contact-message"
+                            class="text-body-1"
+                        >
+                            Please contact
+                            <a href="mailto:HealthGateway@gov.bc.ca"
+                                >HealthGateway@gov.bc.ca</a
+                            >.
+                        </span>
+                        <span
+                            v-else
+                            data-testid="not-condensed-error-contact-message"
+                            class="text-body-1"
+                        >
+                            If you continue to have issues, please contact
+                            <a href="mailto:HealthGateway@gov.bc.ca"
+                                >HealthGateway@gov.bc.ca</a
+                            >.
+                        </span>
+                    </template>
+                </v-alert>
+                <v-row>
+                    <v-col cols="12" sm="6">
+                        <label for="firstName">First and Middle Names</label>
+                        <v-text-field
+                            id="firstName"
+                            v-model.trim="dependent.firstName"
+                            data-testid="dependent-first-name-input"
+                            label="First and Middle Names"
+                            autofocus
+                            clearable
+                            type="text"
+                            :error-messages="
+                                ValidationUtil.getErrorMessages(
+                                    v$.dependent.firstName
+                                )
+                            "
+                            @blur="v$.dependent.firstName.$touch()"
+                        />
+                    </v-col>
+                    <v-col cols="12" sm="6">
+                        <label for="lastName">Last Name</label>
+                        <v-text-field
+                            id="lastName"
+                            v-model.trim="dependent.lastName"
+                            data-testid="dependent-last-name-input"
+                            label="Last Name"
+                            clearable
+                            type="text"
+                            :error-messages="
+                                ValidationUtil.getErrorMessages(
+                                    v$.dependent.lastName
+                                )
+                            "
+                            @blur="v$.dependent.lastName.$touch()"
+                        />
+                    </v-col>
+                    <v-col cols="12" sm="6">
+                        <label for="dateOfBirth">Date of Birth</label>
+                        <HgDatePickerComponent
+                            id="dateOfBirth"
+                            v-model="dependent.dateOfBirth"
+                            label="Date of Birth"
+                            data-testid="dependent-date-of-birth-input"
+                            :max-date="maxBirthdate"
+                            :error-messages="
+                                ValidationUtil.getErrorMessages(
+                                    v$.dependent.dateOfBirth
+                                )
+                            "
+                            @blur="v$.dependent.dateOfBirth.$touch()"
+                        />
+                    </v-col>
+                    <v-col cols="12" sm="6">
+                        <label for="phn">PHN</label>
+                        <v-text-field
+                            id="phn"
+                            v-model="dependent.PHN"
+                            v-maska:[phnMaskaOptions]
+                            label="PHN"
+                            clearable
+                            type="text"
+                            data-testid="dependent-phn-input"
+                            :error-messages="
+                                ValidationUtil.getErrorMessages(
+                                    v$.dependent.PHN
+                                )
+                            "
+                            @blur="v$.dependent.PHN.$touch()"
+                        />
+                    </v-col>
+                </v-row>
+                <v-row>
+                    <v-col>
+                        <v-checkbox
+                            id="termsCheckbox"
+                            v-model="accepted"
+                            data-testid="dependent-terms-checkbox"
+                            density="compact"
+                            color="primary"
+                            class="text-body-1 checkbox-top"
+                            hide-details
+                            :error="
+                                ValidationUtil.isValid(v$.dependent) &&
+                                !ValidationUtil.isValid(v$.accepted)
+                            "
+                        >
+                            <template #label>
+                                <div class="ml-1">
+                                    <p>
+                                        By providing the child’s name, date of
+                                        birth, and personal health number, I
+                                        declare that I am the child’s guardian
+                                        and that I have the authority to request
+                                        and receive health information
+                                        respecting the child from third parties.
+                                    </p>
+                                    <p>
+                                        If I either: (a) cease to be guardian of
+                                        this child; (b) or lose the right to
+                                        request or receive health information
+                                        from third parties respecting this
+                                        child, I will remove them as a dependent
+                                        under my Health Gateway account
+                                        immediately.
+                                    </p>
+                                    <p class="mb-0">
+                                        I understand that I will no longer be
+                                        able to access my child’s health records
+                                        once they are 12 years of age.
+                                    </p>
+                                </div>
+                            </template>
+                        </v-checkbox>
+                    </v-col>
+                </v-row>
+            </v-card-text>
+            <v-card-actions class="justify-end border-t-sm pa-4">
+                <HgButtonComponent
+                    data-testid="cancel-dependent-registration-btn"
+                    variant="secondary"
+                    text="Cancel"
+                    @click.prevent="hideDialog"
+                />
+                <HgButtonComponent
+                    data-testid="register-dependent-btn"
+                    variant="primary"
+                    :loading="isLoading"
+                    :disabled="hasValidationErrors"
+                    text="Register Dependent"
+                    @click.prevent="handleSubmit"
+                />
+            </v-card-actions>
+        </v-card>
         <LoadingComponent :is-loading="isLoading" />
     </v-dialog>
 </template>
