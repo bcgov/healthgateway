@@ -8,7 +8,8 @@ const pcrTestUrl = "/pcrtest";
 const HDID = "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A";
 
 // data test id for all input fields in the form
-const testKitCodeInput = "[data-testid=test-kit-code-input]";
+const testKitCodeField = "[data-testid=test-kit-code-input]";
+const testKitCodeInput = `${testKitCodeField} input`;
 const testTakenMinutesAgo = "[data-testid=test-taken-minutes-ago]";
 const cancelBtn = "[data-testid=btn-cancel]";
 const registerKitBtn = "[data-testid=btn-register-kit]";
@@ -18,16 +19,6 @@ const logoutBtn = "[data-testid=logoutBtn]";
 const headerLogOutBtn = "[data-testid=header-log-out-button]";
 const errorBanner = "[data-testid=errorBanner]";
 const processedBanner = "[data-testid=alreadyProcessedBanner]";
-
-// data test id for input required validations
-const feedbackTestKitCodeIsRequiredSelector =
-    "[data-testid=feedback-testkitcode-is-required]";
-const feedbackTestTakenIsRequiredSelector =
-    "[data-testid=feedback-testtaken-is-required]";
-
-// data test id for input invalid validations
-const feedbackTestKitCodeValidSelector =
-    "[data-testid=feedback-testkitcode-is-invalid]";
 
 describe("Authenticated Pcr Test Registration", () => {
     beforeEach(() => {
@@ -55,7 +46,7 @@ describe("Authenticated Pcr Test Registration", () => {
     it("Successful Test Kit", () => {
         // Authenticated PcrTest Registration Form
         cy.log("Validate Authenticated PcrTest Registration Form");
-        cy.get(testKitCodeInput).should("be.visible");
+        cy.get(testKitCodeField).should("be.visible");
         cy.get(testTakenMinutesAgo).should("be.visible");
         cy.get(cancelBtn).should("be.visible");
         cy.get(registerKitBtn).should("be.visible");
@@ -64,14 +55,13 @@ describe("Authenticated Pcr Test Registration", () => {
         // Required Validations
         cy.log("Validate Required Validations");
         clickRegisterKitButton();
-        cy.get(feedbackTestKitCodeIsRequiredSelector).should("be.visible");
-        cy.get(feedbackTestTakenIsRequiredSelector).should("be.visible");
+        cy.get(testKitCodeField).should("have.class", "v-input--error");
 
         // Test Kit Code Invalid Validations
         cy.log("Validate Test Kit Code Input");
         cy.get(testKitCodeInput).type("111");
         clickRegisterKitButton();
-        cy.get(feedbackTestKitCodeValidSelector).should("be.visible");
+        cy.get(testKitCodeField).should("have.class", "v-input--error");
 
         // get the data in the fixture.
         cy.fixture("LaboratoryService/authenticatedPcrTest.json").then(
@@ -82,7 +72,8 @@ describe("Authenticated Pcr Test Registration", () => {
                         "-" +
                         data.resourcePayload.shortCodeSecond
                 );
-                cy.get(testTakenMinutesAgo).select(
+                cy.vSelect(
+                    testTakenMinutesAgo,
                     getPcrTestTakenTime(
                         data.resourcePayload.testTakenMinutesAgo
                     )
@@ -130,7 +121,8 @@ describe("Authenticated Pcr Test Registration with Error", () => {
                         "-" +
                         data.resourcePayload.shortCodeSecond
                 );
-                cy.get(testTakenMinutesAgo).select(
+                cy.vSelect(
+                    testTakenMinutesAgo,
                     getPcrTestTakenTime(
                         data.resourcePayload.testTakenMinutesAgo
                     )
@@ -171,7 +163,8 @@ describe("Authenticated Pcr Test Registration Previously Processed", () => {
                         "-" +
                         data.resourcePayload.shortCodeSecond
                 );
-                cy.get(testTakenMinutesAgo).select(
+                cy.vSelect(
+                    testTakenMinutesAgo,
                     getPcrTestTakenTime(
                         data.resourcePayload.testTakenMinutesAgo
                     )

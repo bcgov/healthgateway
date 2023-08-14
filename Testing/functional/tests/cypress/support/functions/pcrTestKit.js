@@ -1,7 +1,7 @@
 export function clickManualRegistrationButton() {
     cy.get("[data-testid=btn-manual]")
         .should("be.enabled", "be.visible")
-        .click();
+        .click({ force: true });
 }
 
 export function clickRegisterKitButton() {

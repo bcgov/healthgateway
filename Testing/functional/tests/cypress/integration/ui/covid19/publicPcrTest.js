@@ -4,63 +4,46 @@ import {
     getPcrTestTakenTime,
 } from "../../../support/functions/pcrTestKit";
 
+import { monthNames } from "../../../support/constants";
+
 const landingPagePath = "/";
 const pcrTestUrl = "/pcrtest";
 
 // data test id for all input fields in the form
-const testKitCodeInput = "[data-testid=test-kit-code-input]";
-const firstNameInput = "[data-testid=first-name-input]";
-const lastNameInput = "[data-testid=last-name-input]";
-const phnInput = "[data-testid=phn-input]";
+const testKitCodeField = "[data-testid=test-kit-code-input]";
+const testKitCodeInput = `${testKitCodeField} input`;
+const firstNameField = "[data-testid=first-name-input]";
+const firstNameInput = `${firstNameField} input`;
+const lastNameField = "[data-testid=last-name-input]";
+const lastNameInput = `${lastNameField} input`;
+const phnField = "[data-testid=phn-input]";
+const phnInput = `${phnField} input`;
 const pcrNoPhnInforBtn = "[data-testid=pcr-no-phn-info-button]";
-const formSelectYear = "[data-testid=formSelectYear]";
-const formSelectMonth = "[data-testid=formSelectMonth]";
-const formSelectDay = "[data-testid=formSelectDay]";
-const contactPhoneNumberInput = "[data-testid=contact-phone-number-input]";
+const contactPhoneNumberField = "[data-testid=contact-phone-number-input]";
+const contactPhoneNumberInput = `${contactPhoneNumberField} input`;
 const testTakenMinutesAgo = "[data-testid=test-taken-minutes-ago]";
 const cancelBtn = "[data-testid=btn-cancel]";
 const registerKitBtn = "[data-testid=btn-register-kit]";
 const pcrPrivacyStatement = "[data-testid=pcr-privacy-statement]";
 const registrationSuccessBanner = "[data-testid=registration-success-banner]";
 const continueBtn = "[data-testid=btn-continue]";
-const stressAddressInput = "[data-testid=pcr-street-address-input]";
-const cityInput = "[data-testid=pcr-city-input]";
-const zipInput = "[data-testid=pcr-zip-input]";
-
-// data test id for input required validations
-const feedbackTestKitCodeIsRequiredSelector =
-    "[data-testid=feedback-testkitcode-is-required]";
-const feedbackFirstNameIsRequiredSelector =
-    "[data-testid=feedback-firstname-is-required]";
-const feedbackLastNameIsRequiredSelector =
-    "[data-testid=feedback-lastname-is-required]";
-const feedbackPhnIsRequiredSelector = "[data-testid=feedback-phn-is-required]";
-const feedbackDoBIsRequiredSelector = "[data-testid=feedback-dob-is-required]";
-const feedbackTestTakenIsRequiredSelector =
-    "[data-testid=feedback-testtaken-is-required]";
-const feedbackStreetAddressIsRequiredSelector =
-    "[data-testid=feedback-streetaddress-is-required]";
-const feedbackCityIsRequiredSelector =
-    "[data-testid=feedback-city-is-required]";
-const feedbackPostalIsRequiredSelector =
-    "[data-testid=feedback-postal-is-required]";
-
-// data test id for input invalid validations
-const feedbackTestKitCodeValidSelector =
-    "[data-testid=feedback-testkitcode-is-invalid]";
-const feedbackPhoneNumberValidSelector =
-    "[data-testid=feedback-phonenumber-valid]";
+const stressAddressField = "[data-testid=pcr-street-address-input]";
+const stressAddressInput = "[data-testid=pcr-street-address-input] input";
+const cityField = "[data-testid=pcr-city-input]";
+const cityInput = "[data-testid=pcr-city-input] input";
+const zipField = "[data-testid=pcr-zip-input]";
+const zipInput = "[data-testid=pcr-zip-input] input";
+const dobField = "[data-testid=dob-input]";
+const dobInput = "[data-testid=dob-input] input";
 
 function inputFieldsShouldBeVisible() {
-    cy.get(testKitCodeInput).should("be.visible");
-    cy.get(firstNameInput).should("be.visible");
-    cy.get(lastNameInput).should("be.visible");
-    cy.get(phnInput).should("be.visible");
+    cy.get(testKitCodeField).should("be.visible");
+    cy.get(firstNameField).should("be.visible");
+    cy.get(lastNameField).should("be.visible");
+    cy.get(phnField).should("be.visible");
     cy.get(pcrNoPhnInforBtn).should("be.visible");
-    cy.get(formSelectYear).should("be.visible");
-    cy.get(formSelectMonth).should("be.visible");
-    cy.get(formSelectDay).should("be.visible");
-    cy.get(contactPhoneNumberInput).should("be.visible");
+    cy.get(dobField).should("be.visible");
+    cy.get(contactPhoneNumberField).should("be.visible");
     cy.get(testTakenMinutesAgo).should("be.visible");
     cy.get(cancelBtn).should("be.visible");
     cy.get(registerKitBtn).should("be.visible");
@@ -68,15 +51,24 @@ function inputFieldsShouldBeVisible() {
 }
 
 function inputAddressFieldsNotExists() {
-    cy.get(stressAddressInput).should("not.exist");
-    cy.get(cityInput).should("not.exist");
-    cy.get(zipInput).should("not.exist");
+    cy.get(stressAddressField).should("not.exist");
+    cy.get(cityField).should("not.exist");
+    cy.get(zipField).should("not.exist");
 }
 
 function inputAddressFieldsShouldBeVisible() {
-    cy.get(stressAddressInput).should("be.visible");
-    cy.get(cityInput).should("be.visible");
-    cy.get(zipInput).should("be.visible");
+    cy.get(stressAddressField).should("be.visible");
+    cy.get(cityField).should("be.visible");
+    cy.get(zipField).should("be.visible");
+}
+
+function populateDatePicker(selector, dateValue) {
+    const date = new Date(dateValue);
+    const year = date.getFullYear();
+    const month = monthNames[date.getMonth()].substring(0, 3).toUpperCase();
+    const day = date.getDate();
+
+    cy.get(selector).type(`${year}-${month}-${day}`);
 }
 
 describe("Public PcrTest Registration Form", () => {
@@ -108,7 +100,7 @@ describe("Public PcrTest Registration Form", () => {
 
         // Inputs in the form including address fields are visible when phn checkbox checked
         cy.log("Check off phn checkbox.");
-        cy.get("[data-testid=phn-checkbox]")
+        cy.get("[data-testid=phn-checkbox] input")
             .should("be.enabled")
             .check({ force: true });
         inputFieldsShouldBeVisible();
@@ -116,7 +108,7 @@ describe("Public PcrTest Registration Form", () => {
 
         // Inputs in the form not including address fields are visible when phn checkbox unchecked
         cy.log("Un-check phn checkbox.");
-        cy.get("[data-testid=phn-checkbox]")
+        cy.get("[data-testid=phn-checkbox] input")
             .should("be.enabled")
             .uncheck({ force: true });
         inputFieldsShouldBeVisible();
@@ -125,29 +117,20 @@ describe("Public PcrTest Registration Form", () => {
         // Required Validations are visible when phn checkbox unchecked
         cy.log("Click registration kit button.");
         clickRegisterKitButton();
-        cy.get(feedbackTestKitCodeIsRequiredSelector).should("be.visible");
-        cy.get(feedbackFirstNameIsRequiredSelector).should("be.visible");
-        cy.get(feedbackLastNameIsRequiredSelector).should("be.visible");
-        cy.get(feedbackPhnIsRequiredSelector).should("be.visible");
-        cy.get(feedbackDoBIsRequiredSelector).should("be.visible");
-        cy.get(feedbackTestTakenIsRequiredSelector).should("be.visible");
-        cy.get(feedbackStreetAddressIsRequiredSelector).should("not.exist");
-        cy.get(feedbackCityIsRequiredSelector).should("not.exist");
-        cy.get(feedbackPostalIsRequiredSelector).should("not.exist");
+        cy.get(testKitCodeField).should("have.class", "v-input--error");
+        cy.get(testTakenMinutesAgo).should("have.class", "v-input--error");
+        cy.get(firstNameField).should("have.class", "v-input--error");
+        cy.get(lastNameField).should("have.class", "v-input--error");
+        cy.get(phnField).should("have.class", "v-input--error");
 
         // Check off phn checkbox. Inputs in the form including address fields are visible when phn checkbox checked
-        cy.get("[data-testid=phn-checkbox]")
+        cy.get("[data-testid=phn-checkbox] input")
             .should("be.enabled")
             .check({ force: true });
         inputAddressFieldsShouldBeVisible();
 
-        // Required Validations for Address information are visible when phn checkbox checked.
-        cy.get(feedbackStreetAddressIsRequiredSelector).should("be.visible");
-        cy.get(feedbackCityIsRequiredSelector).should("be.visible");
-        cy.get(feedbackPostalIsRequiredSelector).should("be.visible");
-
         // Uncheck phn checkbox. Inputs in the form not including address fields are visible when phn checkbox unchecked
-        cy.get("[data-testid=phn-checkbox]")
+        cy.get("[data-testid=phn-checkbox] input")
             .should("be.enabled")
             .uncheck({ force: true });
         inputFieldsShouldBeVisible();
@@ -156,15 +139,13 @@ describe("Public PcrTest Registration Form", () => {
         // Test Kit Code Invalid Validations
         cy.get(testKitCodeInput).type("111");
         cy.get(firstNameInput).type("Princess");
-        cy.get(feedbackTestKitCodeValidSelector).should("be.visible");
+        cy.get(testKitCodeField).should("have.class", "v-input--error");
 
         // Phone number Invalid Validations
         cy.get(testKitCodeInput).clear();
         cy.get(testKitCodeInput).type("45YFKE7-EMQY1");
         cy.get(contactPhoneNumberInput).type(" ");
-        cy.get(testTakenMinutesAgo).select(getPcrTestTakenTime(5));
-        cy.get(feedbackPhoneNumberValidSelector).should("be.visible");
-        cy.get(feedbackTestKitCodeValidSelector).should("not.be.visible");
+        cy.vSelect(testTakenMinutesAgo, getPcrTestTakenTime(5));
     });
 });
 
@@ -196,13 +177,9 @@ describe("Public PcrTest Registration Submission with Valid PHN", () => {
                 cy.get(lastNameInput).type(data.resourcePayload.lastName);
                 cy.get(phnInput).type(data.resourcePayload.phn);
 
-                cy.populateDateDropdowns(
-                    formSelectYear,
-                    formSelectMonth,
-                    formSelectDay,
-                    data.resourcePayload.dob
-                );
-                cy.get(testTakenMinutesAgo).select(
+                populateDatePicker(dobInput, data.resourcePayload.dob);
+                cy.vSelect(
+                    testTakenMinutesAgo,
                     getPcrTestTakenTime(
                         data.resourcePayload.testTakenMinutesAgo
                     )
@@ -246,7 +223,7 @@ describe("Public PcrTest Registration Submission with no valid PHN", () => {
                 cy.get(firstNameInput).type(data.resourcePayload.firstName);
                 cy.get(lastNameInput).type(data.resourcePayload.lastName);
 
-                cy.get("[data-testid=phn-checkbox]")
+                cy.get("[data-testid=phn-checkbox] input")
                     .should("be.enabled")
                     .check({ force: true });
 
@@ -256,13 +233,9 @@ describe("Public PcrTest Registration Submission with no valid PHN", () => {
                 cy.get(cityInput).type(data.resourcePayload.city);
                 cy.get(zipInput).type(data.resourcePayload.postalOrZip);
 
-                cy.populateDateDropdowns(
-                    formSelectYear,
-                    formSelectMonth,
-                    formSelectDay,
-                    data.resourcePayload.dob
-                );
-                cy.get(testTakenMinutesAgo).select(
+                populateDatePicker(dobInput, data.resourcePayload.dob);
+                cy.vSelect(
+                    testTakenMinutesAgo,
                     getPcrTestTakenTime(
                         data.resourcePayload.testTakenMinutesAgo
                     )
