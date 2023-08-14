@@ -17,10 +17,6 @@ const logoutBtn = "[data-testid=logoutBtn]";
 const errorBanner = "[data-testid=errorBanner]";
 const processedBanner = "[data-testid=alreadyProcessedBanner]";
 
-// data test id for input required validations
-const feedbackTestTakenIsRequiredSelector =
-    "[data-testid=feedback-testtaken-is-required]";
-
 describe("Authenticated Pcr Test Registration", () => {
     beforeEach(() => {
         cy.configureSettings({
@@ -55,13 +51,14 @@ describe("Authenticated Pcr Test Registration", () => {
         // Required Validations
         cy.log("Validate Required Validations");
         clickRegisterKitButton();
-        cy.get(feedbackTestTakenIsRequiredSelector).should("be.visible");
+        cy.get(testTakenMinutesAgo).should("have.class", "v-input--error");
 
         // get the data in the fixture.
         cy.fixture(
             "LaboratoryService/authenticatedPcrTestWithTestKit.json"
         ).then((data) => {
-            cy.get(testTakenMinutesAgo).select(
+            cy.vSelect(
+                testTakenMinutesAgo,
                 getPcrTestTakenTime(data.resourcePayload.testTakenMinutesAgo)
             );
         });
@@ -101,7 +98,8 @@ describe("Authenticated Pcr Test Registration with Test Kit ID (Error)", () => {
         cy.fixture(
             "LaboratoryService/authenticatedPcrTestErrorWithTestKit.json"
         ).then((data) => {
-            cy.get(testTakenMinutesAgo).select(
+            cy.vSelect(
+                testTakenMinutesAgo,
                 getPcrTestTakenTime(data.resourcePayload.testTakenMinutesAgo)
             );
         });
@@ -139,7 +137,8 @@ describe("Previously Registered Test Kit", () => {
         cy.fixture(
             "LaboratoryService/authenticatedPcrTestDuplicateWithTestKit.json"
         ).then((data) => {
-            cy.get(testTakenMinutesAgo).select(
+            cy.vSelect(
+                testTakenMinutesAgo,
                 getPcrTestTakenTime(data.resourcePayload.testTakenMinutesAgo)
             );
         });

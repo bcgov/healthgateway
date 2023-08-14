@@ -465,6 +465,7 @@ if (!props.serialNumber) {
                     </v-col>
                     <v-col class="d-flex align-center">
                         <InfoTooltipComponent
+                            data-testid="pcr-no-phn-info-button"
                             text="You can find your personal health number
                                     (PHN) on your BC Services Card. If you do
                                     not have a PHN, please enter your address so
@@ -607,6 +608,7 @@ if (!props.serialNumber) {
                             data-testid="btn-register-kit"
                             :loading="isLoading"
                             text="Register Kit"
+                            @click="v$.$touch()"
                         />
                     </v-col>
                 </v-row>

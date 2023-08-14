@@ -401,6 +401,7 @@ watch(vaccineRecord, (value) => {
                                 v-model="dateOfBirth"
                                 label="Date of Birth"
                                 data-testid="dateOfBirthInput"
+                                :max-date="new DateWrapper()"
                                 :error-messages="
                                     ValidationUtil.getErrorMessages(
                                         v$.dateOfBirth
@@ -420,6 +421,7 @@ watch(vaccineRecord, (value) => {
                             <HgDatePickerComponent
                                 id="dateOfVaccine"
                                 v-model="dateOfVaccine"
+                                :max-date="new DateWrapper()"
                                 label="Date of Vaccine (Any Dose)"
                                 data-testid="dateOfVaccineInput"
                                 :error-messages="
