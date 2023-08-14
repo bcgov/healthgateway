@@ -6,19 +6,19 @@
 
     <ItemGroup>
         <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
-        <PackageReference Include="Azure.Messaging.ServiceBus" Version="7.15.0" />
-        <PackageReference Include="Hangfire.AspNetCore" Version="1.8.4" />
+        <PackageReference Include="Azure.Messaging.ServiceBus" Version="7.16.0" />
+        <PackageReference Include="Hangfire.AspNetCore" Version="1.8.5" />
         <PackageReference Include="Hangfire.PostgreSql" Version="1.20.0" />
         <PackageReference Include="Hellang.Middleware.ProblemDetails" Version="6.5.1" />
         <PackageReference Include="Macross.Json.Extensions" Version="3.0.0" />
         <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.10" />
-        <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="7.0.9" />
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="7.0.10" />
         <PackageReference Include="Microsoft.AspNetCore.HttpOverrides" Version="2.2.0" />
         <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning.ApiExplorer" Version="5.1.0" />
         <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.2.0" PrivateAssets="All" />
         <PackageReference Include="Microsoft.AspNetCore.SpaServices" Version="3.1.32" />
         <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="7.0.10" />
-        <PackageReference Include="Microsoft.Extensions.Azure" Version="1.6.3" />
+        <PackageReference Include="Microsoft.Extensions.Azure" Version="1.7.0" />
         <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="7.0.10" />
         <PackageReference Include="Microsoft.OpenApi" Version="1.6.6" />
         <PackageReference Include="Npgsql.OpenTelemetry" Version="7.0.4" />
