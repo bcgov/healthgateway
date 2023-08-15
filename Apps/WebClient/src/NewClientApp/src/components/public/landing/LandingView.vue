@@ -203,6 +203,7 @@ function selectPreviewDevice(previewDevice: PreviewDevice): void {
                     <template #activator="{ props }">
                         <HgIconButtonComponent
                             icon="fas fa-desktop"
+                            data-testid="preview-device-button-laptop"
                             v-bind="props"
                             :disabled="
                                 selectedPreviewDevice === PreviewDevice.laptop
@@ -221,6 +222,7 @@ function selectPreviewDevice(previewDevice: PreviewDevice): void {
                         <HgIconButtonComponent
                             icon="fas fa-tablet-screen-button"
                             v-bind="props"
+                            data-testid="preview-device-button-tablet"
                             :disabled="
                                 selectedPreviewDevice === PreviewDevice.tablet
                             "
@@ -238,6 +240,7 @@ function selectPreviewDevice(previewDevice: PreviewDevice): void {
                         <HgIconButtonComponent
                             icon="fas fa-mobile-screen-button"
                             v-bind="props"
+                            data-testid="preview-device-button-smartphone"
                             :disabled="
                                 selectedPreviewDevice ===
                                 PreviewDevice.smartphone

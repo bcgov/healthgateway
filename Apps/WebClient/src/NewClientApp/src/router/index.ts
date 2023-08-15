@@ -385,8 +385,11 @@ const routes = [
         },
     },
     {
-        path: "/*", // will catch all other paths not covered previously
+        path: "/:pathMatch(.*)*", // will catch all other paths not covered previously
         redirect: Path.NotFound,
+        meta: {
+            stateless: true,
+        },
     },
 ];
 

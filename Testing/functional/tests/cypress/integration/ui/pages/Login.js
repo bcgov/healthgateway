@@ -9,11 +9,11 @@ describe("Login Page", () => {
     });
 
     it("Greeting", () => {
-        cy.contains("h3", "Log In");
+        cy.contains("h2", "Log In");
     });
 
     it("Menu Login", () => {
-        cy.get("[data-testid=loginBtn] a")
+        cy.get("[data-testid=loginBtn]")
             .should("be.visible")
             .should("have.attr", "href", "/login")
             .should("have.text", "Log In");
