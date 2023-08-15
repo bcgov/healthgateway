@@ -1,8 +1,9 @@
 const { AuthMethod } = require("../../../support/constants");
+const HDID = "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A";
 
 describe("Immunization History Report", () => {
     let sensitiveDocText =
-        " The file that you are downloading contains personal information. If you are on a public computer, please ensure that the file is deleted before you log off. ";
+        "The file that you are downloading contains personal information. If you are on a public computer, please ensure that the file is deleted before you log off.";
 
     beforeEach(() => {
         cy.setupDownloads();
@@ -15,7 +16,7 @@ describe("Immunization History Report", () => {
                 },
             ],
         });
-        cy.intercept("GET", "**/Immunization?*", (req) => {
+        cy.intercept("GET", "**/Immunization?hdid=*", (req) => {
             if (!isLoading) {
                 req.reply({
                     fixture: "ImmunizationService/immunizationrefresh.json",
@@ -35,16 +36,17 @@ describe("Immunization History Report", () => {
         );
     });
 
-    it("Validate Immunization Loading", () => {
-        cy.vSelect("[data-testid=report-type]", "Immunizations");
-        cy.get("[data-testid=loadingSpinner]").should("be.visible");
-        cy.get("[data-testid=loadingSpinner]").should("not.be.visible");
-    });
-
     it("Validate Immunization History Report", () => {
         cy.vSelect("[data-testid=report-type]", "Immunizations");
 
-        cy.get("[data-testid=report-sample]").scrollTo("bottom");
+        // Test refresh by checking if skeleton is displayed or not
+        cy.get("[data-testid=table-skeleton-loader]").should("be.visible");
+
+        cy.get("[data-testid=table-skeleton-loader]").should("not.exist");
+
+        cy.get("[data-testid=report-sample]").scrollTo("bottom", {
+            ensureScrollable: false,
+        });
 
         cy.get("[data-testid=report-sample]").should("be.visible");
 
@@ -98,7 +100,7 @@ describe("Export Reports - Immunizations - Invalid Doses", () => {
         const validDoseDate1 = "2021-Jul-14";
         const invalidDoseDate1 = "2021-Mar-30";
 
-        cy.intercept("GET", "**/Immunization?*", {
+        cy.intercept("GET", "**/Immunization?hdid=*", {
             fixture: "ImmunizationService/immunizationInvalidDoses.json",
         });
         cy.configureSettings({

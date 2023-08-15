@@ -13,6 +13,7 @@ declare namespace Cypress {
         configureSettings(settings: any, modules?: string[]): Chainable<any>;
         setupDownloads(): void;
         restoreAuthCookies(): void;
+        vSelect(): void;
         /**
          * Select an `<option>` with specific text, value, or index within a `<select>`.
          * This overwrite ensures the `<select>` element is visible and enabled.
