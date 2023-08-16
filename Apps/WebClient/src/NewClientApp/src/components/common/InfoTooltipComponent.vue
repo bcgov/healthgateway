@@ -18,7 +18,7 @@ const hasText = computed(() => !!props.text);
 </script>
 
 <template>
-    <v-tooltip :max-width="maxWidth" :data-testid="tooltipTestid">
+    <v-tooltip :max-width="maxWidth">
         <template #activator="{ props: slotProps }">
             <v-icon
                 v-bind="{ ...slotProps, ...$attrs }"
@@ -27,7 +27,7 @@ const hasText = computed(() => !!props.text);
                 :size="size"
             />
         </template>
-        <span v-if="hasText">{{ text }}</span>
+        <span v-if="hasText" :data-testid="tooltipTestid">{{ text }}</span>
         <slot v-else name="default" />
     </v-tooltip>
 </template>

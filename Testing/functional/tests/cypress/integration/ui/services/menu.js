@@ -20,38 +20,39 @@ function login(isMobile) {
     );
 }
 
-describe("Menu System when services is enabled", () => {
+describe("Menu System when services are enabled", () => {
     beforeEach(() => {
         toggleServices(true);
     });
-    it("Validate Toggle Sidebar", () => {
-        login(false);
-        cy.get("[data-testid=servicesLabel]")
-            .should("be.visible")
-            .should("have.text", "Services");
-        cy.get("[data-testid=sidebarToggle]").click();
-        cy.get("[data-testid=servicesLabel]").should("not.be.visible");
-        cy.get("[data-testid=sidebarToggle]").click();
-        cy.get("[data-testid=servicesLabel]").should("be.visible");
-    });
 
-    it("Side bar contains services nav link", () => {
+    it("Side bar contains services nav link and toggle validated", () => {
         login(false);
+        cy.get("[data-testid=menu-btn-services-link]").should("be.visible");
         cy.get("[data-testid=menu-btn-services-link]").should(
             "have.attr",
             "href",
             "/services"
         );
-        cy.get("[data-testid=sidebarToggle]").should("be.visible");
+
+        cy.get("[data-testid=sidenavbar-dismiss-btn]").click();
+        cy.get("[data-testid=sidenavbar]").should(
+            "have.class",
+            "v-navigation-drawer--rail"
+        );
+        cy.get("[data-testid=sidenavbar-profile-initials]").click();
+        cy.get("[data-testid=sidenavbar]").should(
+            "not.have.class",
+            "v-navigation-drawer--rail"
+        );
     });
 
-    it("Side bar expands on login for desktop", () => {
+    it("Side navigation bar does not expand on mobile", () => {
         login(true);
-        cy.get("[data-testid=servicesLabel]").should("not.be.visible");
+        cy.get("[data-testid=sidenavbar]").should("not.be.visible");
     });
 });
 
-describe("Menu system when services is disabled", () => {
+describe("Menu system when services are disabled", () => {
     beforeEach(() => {
         toggleServices(false);
     });
@@ -62,7 +63,6 @@ describe("Menu system when services is disabled", () => {
             },
         });
         login(false);
-        cy.get("[data-testid=sidebarToggle]").should("be.visible");
         cy.get("[data-testid=menu-btn-services-link]").should("not.be.visible");
     });
 });
