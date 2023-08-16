@@ -292,6 +292,10 @@ function trackDownload(): void {
     }
 }
 
+function replaceSpaceWithDash(source: string): string {
+    return source.replace(/ /g, "-");
+}
+
 const reportIsEnabled = props.isDependent
     ? ConfigUtil.isDependentDatasetEnabled
     : ConfigUtil.isDatasetEnabled;
@@ -402,12 +406,17 @@ for (const [entryType] of reportComponentMap) {
                         :key="item"
                         closable
                         :title="item"
-                        :data-testid="item + '-clear-filter'"
+                        :data-testid="`${replaceSpaceWithDash(
+                            item
+                        )}-clear-filter`"
                         @click:close="clearFilterMedication(item)"
                     >
-                        <span :data-testid="item + '-excluded'">{{
-                            item
-                        }}</span>
+                        <span
+                            :data-testid="`${replaceSpaceWithDash(
+                                item
+                            )}-excluded`"
+                            >{{ item }}</span
+                        >
                     </v-chip>
                 </v-col>
             </v-row>

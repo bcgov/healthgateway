@@ -1,5 +1,44 @@
 const { AuthMethod } = require("../../../support/constants");
 
+const startDateId = "[data-testid=start-date-input] input";
+const endDateId = "[data-testid=end-date-input] input";
+
+function enterDate(selector, currentDate, newDate) {
+    cy.get(selector)
+        .should("be.enabled", "be.visible")
+        .should("have.value", currentDate)
+        .click()
+        .focus()
+        .clear()
+        .type(newDate);
+}
+
+function verifyDate(selector, date) {
+    cy.get(selector).should("have.value", date);
+}
+
+function verifyDateRange(dateRange) {
+    cy.get("[data-testid=selected-dates-filter]").contains(dateRange);
+}
+
+function verifyAdvancedFiltersVisible(visible) {
+    if (visible) {
+        cy.get("[data-testid=clear-btn]").should("be.visible");
+        cy.get("[data-testid=apply-filter-btn]").should("be.visible");
+        cy.get(startDateId).should("be.enabled", "be.visible");
+        cy.get(endDateId).should("be.enabled", "be.visible");
+    } else {
+        cy.get("[data-testid=clear-btn]").should("not.be.visible");
+        cy.get("[data-testid=apply-filter-btn]").should("not.be.visible");
+        cy.get(startDateId).should("not.be.visible");
+        cy.get(endDateId).should("not.be.visible");
+    }
+}
+
+function replaceSpaceWithDash(source) {
+    return source.replace(/ /g, "-");
+}
+
 describe("Report Filtering", () => {
     beforeEach(() => {
         cy.configureSettings({
@@ -22,93 +61,83 @@ describe("Report Filtering", () => {
     });
 
     it("Validate Dates, Cancel and Apply", () => {
-        cy.get("[data-testid=advancedPanel]").should("not.be.visible");
+        verifyAdvancedFiltersVisible(false);
 
         cy.get("[data-testid=advanced-btn]")
             .should("be.enabled", "be.visible")
             .click();
 
-        cy.get("[data-testid=start-date-input] input")
-            .should("be.enabled", "be.visible")
-            .should("have.value", "")
-            .click()
-            .focus()
-            .type("2021-FEB-03");
+        verifyAdvancedFiltersVisible(true);
 
-        cy.get("[data-testid=end-date-input] input")
-            .should("be.enabled", "be.visible")
-            .should("have.value", "")
-            .click()
-            .focus()
-            .type("2021-FEB-05")
-            .focus();
+        enterDate(startDateId, "", "2020-FEB-03");
+        enterDate(endDateId, "", "2020-FEB-05");
 
         cy.get("[data-testid=apply-filter-btn]").click();
-        cy.get("[data-testid=selected-dates-filter]").contains(
-            "From 2021-Feb-03 Up To 2021-Feb-05"
-        );
+        verifyDateRange("From 2020-Feb-03 Up To 2020-Feb-05");
 
         // Validate filters - Cancel  button
+        cy.get("[data-testid=clear-btn").click();
+        verifyAdvancedFiltersVisible(false);
+
+        // Click on Advanced button see advanced filter options
         cy.get("[data-testid=advanced-btn]").click();
+        verifyAdvancedFiltersVisible(true);
 
         // Cancel button should not set the newly entered values
-        cy.get("[data-testid=start-date-input] input")
-            .clear()
-            .type("2020-FEB-03");
-        cy.get("[data-testid=end-date-input] input").clear().type("2020-FEB-05");
+        // Also, set new date range and apply
+        enterDate(startDateId, "2020-FEB-03", "2021-FEB-03");
+        enterDate(endDateId, "2020-FEB-05", "2021-FEB-05");
+
+        cy.get("[data-testid=apply-filter-btn]").click();
+        verifyDateRange("From 2021-Feb-03 Up To 2021-Feb-05");
+
         cy.get("[data-testid=clear-btn]").focus();
-        cy.get("[data-testid=start-date-input] input").should(
-            "have.value",
-            "2020-FEB-03"
-        );
-        cy.get("[data-testid=end-date-input] input").should(
-            "have.value",
-            "2020-FEB-05"
-        );
+        verifyDate(startDateId, "2021-FEB-03");
+        verifyDate(endDateId, "2021-FEB-05");
+
+        // Click on canel button to close date range filter
         cy.get("[data-testid=clear-btn]")
             .should("be.enabled", "be.visible")
             .click();
+        verifyAdvancedFiltersVisible(false);
 
+        // Click on advnaced button to open date range filter
         cy.get("[data-testid=advanced-btn]").click();
-        cy.get("[data-testid=start-date-input] input").should(
-            "have.value",
-            "2021-FEB-03"
-        );
-        cy.get("[data-testid=end-date-input] input").should(
-            "have.value",
-            "2021-FEB-05"
-        );
+        verifyAdvancedFiltersVisible(true);
+        verifyDate(startDateId, "2021-FEB-03");
+        verifyDate(endDateId, "2021-FEB-05");
+        verifyDateRange("From 2021-Feb-03 Up To 2021-Feb-05");
 
-        cy.get("[data-testid=clear-filter] button").should("be.visible").click();
-        cy.get("[data-testid=clear-filter] button").should("not.exist");
+        // Click on advnaced button to close date range filter
+        cy.get("[data-testid=advanced-btn]").click();
+        verifyAdvancedFiltersVisible(false);
+        verifyDateRange("From 2021-Feb-03 Up To 2021-Feb-05");
     });
 
     it("Validate Medication Exclusions", () => {
         cy.vSelect("[data-testid=report-type]", "Medications");
-
-        cy.get("[data-testid=advancedPanel]").should("not.be.visible");
-
+        cy.get("[data-testid=advancedPanel]").should("not.exist");
         cy.get("[data-testid=advanced-btn]")
             .should("be.enabled", "be.visible")
             .click();
-
-        cy.get("[data-testid=medication-exclusion-filter]").should("be.visible");
-
+        cy.get("[data-testid=medication-exclusion-filter]").should(
+            "be.visible"
+        );
         cy.get("[data-testid=medicationReportBrandNameItem]")
             .should("be.visible")
             .first()
             .then(($brandName) => {
                 const brandText = $brandName.text().trim();
-
-                cy.get("[data-testid=medication-exclusion-filter] select")
-                    .focus()
-                    .select(brandText);
-
+                cy.vSelect(
+                    "[data-testid=medication-exclusion-filter]",
+                    brandText
+                );
                 cy.get("[data-testid=apply-filter-btn]").click();
 
-                cy.get(
-                    "[data-testid=medicationFilter] .b-form-tag-content span"
-                ).should("contain", brandText);
+                const excludedFilterId = `[data-testid=${replaceSpaceWithDash(
+                    brandText
+                )}-excluded]`;
+                cy.get(excludedFilterId).contains(brandText);
 
                 cy.get("[data-testid=medicationReportBrandNameItem]")
                     .should("be.visible")
@@ -121,17 +150,12 @@ describe("Report Filtering", () => {
                     });
 
                 cy.get("[data-testid=advanced-btn]").click();
-                cy.get(
-                    `[data-testid=medication-exclusion-filter] [title="${brandText}"] button`
-                )
-                    .should("be.enabled", "be.visible")
-                    .click();
+                cy.get(excludedFilterId).contains(brandText);
 
-                cy.get("[data-testid=apply-filter-btn]").click();
-
-                cy.get(
-                    "[data-testid=medicationFilter] .b-form-tag-content"
-                ).should("not.exist");
+                const clearExcludedFilterId = `[data-testid=${replaceSpaceWithDash(
+                    brandText
+                )}-clear-filter]`;
+                cy.get(`${clearExcludedFilterId} .v-chip__close`).click();
 
                 cy.get("[data-testid=medicationReportBrandNameItem]")
                     .should("be.visible")
@@ -142,6 +166,8 @@ describe("Report Filtering", () => {
                             .trim();
                         expect(unfilteredBrandText).to.equal(brandText);
                     });
+
+                cy.get("[data-testid=advancedPanel]").should("not.exist");
             });
     });
 });

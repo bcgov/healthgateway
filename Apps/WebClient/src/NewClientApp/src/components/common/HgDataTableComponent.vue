@@ -75,7 +75,10 @@ function hasHeaderSlot(key: string): boolean {
         class="text-center table-fixed"
     >
         <template v-if="loading">
-            <v-skeleton-loader type="table-thead, table-tbody" />
+            <v-skeleton-loader
+                type="table-thead, table-tbody"
+                data-testid="table-skeleton-loader"
+            />
         </template>
         <template v-else>
             <thead>
