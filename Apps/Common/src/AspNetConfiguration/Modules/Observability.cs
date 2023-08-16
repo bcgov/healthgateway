@@ -122,6 +122,7 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
                                     config.Protocol = OtlpExportProtocol.HttpProtobuf;
                                     config.Endpoint = otlpConfig.Endpoint;
                                 })
+                            .AddConsoleExporter()
                             .AddSource(otlpConfig.ServiceName)
                             .SetSampler(new AlwaysOnSampler())
                             .SetResourceBuilder(
@@ -151,6 +152,7 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
                                     config.Protocol = otlpConfig.ExportProtocol;
                                     config.Endpoint = otlpConfig.Endpoint;
                                 })
+                            .AddConsoleExporter()
                             .AddHttpClientInstrumentation()
                             .AddAspNetCoreInstrumentation()
                             .AddRuntimeInstrumentation()
