@@ -74,6 +74,7 @@ function dismiss() {
         :rail="isMobile ? false : collapsedOnDesktop"
         color="primary"
         class="d-print-none"
+        data-testid="sidenavbar"
         @click.stop="collapsedOnDesktop = false"
         @update:model-value="visibleOnMobile = false"
     >
@@ -145,7 +146,7 @@ function dismiss() {
                 v-show="isServicesEnabled && userStore.userIsActive"
                 title="Services"
                 to="/services"
-                data-testid="menu-btn-dependents-link"
+                data-testid="menu-btn-services-link"
             >
                 <template #prepend>
                     <div class="nav-list-item-icon mr-8 d-flex justify-center">
