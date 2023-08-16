@@ -179,8 +179,11 @@ describe("Reports", () => {
                         .should("be.enabled", "be.visible")
                         .click();
                 });
+                cy.document()
+                    .find(`[data-testid=export-record-menu] .v-list-item`)
+                    .first()
+                    .click();
             });
-        cy.get(`[data-testid=export-record-menu] .v-list-item`).first().click();
 
         cy.get("[data-testid=generic-message-modal]").should("be.visible");
 

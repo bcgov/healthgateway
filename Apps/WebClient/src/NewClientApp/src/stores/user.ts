@@ -393,6 +393,7 @@ export const useUserStore = defineStore("user", () => {
 
     function retrieveEssentialData(): Promise<void> {
         status.value = LoadStatus.REQUESTED;
+        appStore.setAppError(AppErrorType.TooManyRequests);
         return patientService
             .getPatient(user.value.hdid)
             .then((result: Patient) => {
@@ -411,6 +412,7 @@ export const useUserStore = defineStore("user", () => {
                         setProfileUserData(userProfile);
                     })
                     .catch((resultError: ResultError) => {
+                        patientRetrievalFailed.value = true;
                         if (resultError.statusCode === 429) {
                             logger.debug(
                                 "User profile retrieval failed because of too many requests"
@@ -418,7 +420,11 @@ export const useUserStore = defineStore("user", () => {
                             appStore.setAppError(AppErrorType.TooManyRequests);
                         } else {
                             logger.debug("User profile retrieval failed");
-                            appStore.setAppError(AppErrorType.General);
+                            errorStore.addError(
+                                ErrorType.Retrieve,
+                                ErrorSourceType.User,
+                                resultError.traceId
+                            );
                         }
                     });
             })

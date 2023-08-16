@@ -1,6 +1,7 @@
-﻿import { useErrorStore } from "@/stores/error";
+﻿import { SnowplowWindow } from "@/plugins/extensions";
+import { useErrorStore } from "@/stores/error";
 
-// declare let window: SnowplowWindow; // TODO: Implement snowplow
+declare let window: SnowplowWindow;
 
 export function afterEachHook() {
     const errorStore = useErrorStore();
@@ -9,5 +10,5 @@ export function afterEachHook() {
     errorStore.clearTooManyRequestsWarning();
     errorStore.clearTooManyRequestsError();
 
-    // window.snowplow("trackPageView"); // TODO: Implement snowplow
+    window.snowplow("trackPageView");
 }

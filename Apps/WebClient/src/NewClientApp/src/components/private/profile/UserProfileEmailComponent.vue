@@ -135,6 +135,7 @@ watch(email, (value) => (inputValue.value = value));
         <v-text-field
             v-model.trim="inputValue"
             :class="{ 'mb-4': inputErrorMessages.length > 0 }"
+            data-testId="email-input"
             type="email"
             clearable
             label="Email Address"

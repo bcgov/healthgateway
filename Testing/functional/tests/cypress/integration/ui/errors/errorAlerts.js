@@ -37,7 +37,7 @@ function testGetProfileErrorOnLoad(statusCode = serverErrorStatusCode) {
     if (statusCode === tooManyRequestsStatusCode) {
         cy.get("[data-testid=app-warning]").should("be.visible");
     } else {
-        cy.get("[data-testid=app-error]").should("be.visible");
+        cy.get("[data-testid=patient-retrieval-error]").should("be.visible");
     }
 }
 
@@ -66,19 +66,25 @@ function testRegisterError(statusCode = serverErrorStatusCode) {
     );
 
     cy.location("pathname").should("eq", "/registration");
-    cy.get("[data-testid=emailCheckbox]")
+    cy.get("[data-testid=emailCheckbox] input")
         .should("be.enabled")
         .check({ force: true });
     cy.get("[data-testid=emailInput]")
-        .should("be.visible", "be.enabled")
+        .should("be.visible")
+        .find("input")
+        .should("be.enabled")
         .type(Cypress.env("emailAddress"));
     cy.get("[data-testid=emailConfirmationInput]")
-        .should("be.visible", "be.enabled")
+        .should("be.visible")
+        .find("input")
+        .should("be.enabled")
         .type(Cypress.env("emailAddress"));
     cy.get("[data-testid=smsNumberInput]")
-        .should("be.visible", "be.enabled")
+        .should("be.visible")
+        .find("input")
+        .should("be.enabled")
         .type(Cypress.env("phoneNumber"));
-    cy.get("[data-testid=acceptCheckbox]")
+    cy.get("[data-testid=acceptCheckbox] input")
         .should("be.enabled")
         .check({ force: true })
         .wait(500);
@@ -282,11 +288,10 @@ function testRemoveQuickLinkError(statusCode = serverErrorStatusCode) {
 
     getQuickLinkCard("Medications").within(() => {
         cy.get("[data-testid=card-menu-button]")
-            .should("be.visible")
-            .parent("a")
             .should("be.visible", "be.enabled")
             .click();
-        cy.get("[data-testid=remove-quick-link-button]")
+        cy.document()
+            .find("[data-testid=remove-quick-link-button]")
             .should("be.visible")
             .click();
     });
@@ -315,11 +320,10 @@ function testHideVaccineCardQuickLinkError(statusCode = serverErrorStatusCode) {
 
     cy.get("[data-testid=bc-vaccine-card-card]").within(() => {
         cy.get("[data-testid=card-menu-button]")
-            .should("be.visible")
-            .parent("a")
             .should("be.visible", "be.enabled")
             .click();
-        cy.get("[data-testid=remove-quick-link-button]")
+        cy.document()
+            .find("[data-testid=remove-quick-link-button]")
             .should("be.visible")
             .click();
     });
@@ -353,7 +357,7 @@ function testEditSmsError(statusCode = serverErrorStatusCode) {
     );
 
     cy.get("[data-testid=editSMSBtn]").click();
-    cy.get("[data-testid=smsNumberInput]").clear().type("2506714848");
+    cy.get("[data-testid=smsNumberInput] input").clear().type("2506714848");
     cy.get("[data-testid=saveSMSEditBtn]").click();
 
     if (statusCode === tooManyRequestsStatusCode) {
@@ -379,12 +383,12 @@ function testVerifySmsError(statusCode = serverErrorStatusCode) {
     );
 
     cy.get("[data-testid=verifySMSBtn]")
-        .should("be.visible")
-        .should("be.enabled")
+        .should("be.visible", "be.enabled")
         .click();
 
     cy.get("[data-testid=verifySMSModalCodeInput]")
         .should("be.visible")
+        .find("input")
         .should("have.focus")
         .type("123456");
 
@@ -416,7 +420,7 @@ function testEditEmailError(statusCode = serverErrorStatusCode) {
     );
 
     cy.get("[data-testid=editEmailBtn]").click();
-    cy.get("[data-testid=emailInput]").type(Cypress.env("emailAddress"));
+    cy.get("[data-testid=email-input] input").type(Cypress.env("emailAddress"));
     cy.get("[data-testid=editEmailSaveBtn]").click();
 
     if (statusCode === tooManyRequestsStatusCode) {

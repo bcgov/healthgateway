@@ -240,7 +240,7 @@ watch(() => dependent.value.dateOfBirth, touchDateOfBirth);
                 </v-toolbar>
             </v-card-title>
             <v-card-text class="pa-4" data-testid="new-dependent-modal-form">
-                <TooManyRequestsComponent location="addDependentModal" />
+                <TooManyRequestsComponent location="addDependentDialog" />
                 <v-alert
                     v-if="isError"
                     data-testid="dependent-error-banner"

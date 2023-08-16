@@ -73,6 +73,14 @@ interface RecommendationRow {
     due_date: string;
 }
 
+const tabIndices = {
+    profile: 0,
+    covid19: 1,
+    immunization: 2,
+    labResults: 3,
+    clinicalDocs: 4,
+};
+
 const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
 const clinicalDocumentService = container.get<IClinicalDocumentService>(
     SERVICE_IDENTIFIER.ClinicalDocumentService
@@ -142,13 +150,14 @@ const headerData = computed<ReportHeader>(() => {
 const isVaccineRecordDownloading = computed(
     () => vaccineRecordState.value.status === LoadStatus.REQUESTED
 );
-const isDownloadImmunizationReportButtonDisabled = computed(
-    () =>
+const isDownloadImmunizationReportButtonDisabled = computed(() => {
+    return (
         isReportDownloading.value ||
-        selectedTabIndex.value !== tabIndicesMap.value[2] ||
+        selectedTabIndex.value !== tabIndices.immunization ||
         (immunizationItems.value.length == 0 &&
             recommendationItems.value.length == 0)
-);
+    );
+});
 const isExpired = computed(() => {
     const birthDate = new DateWrapper(
         props.dependent.dependentInformation.dateOfBirth
@@ -171,22 +180,7 @@ const isLaboratoryOrderTabShown = computed(() =>
 const isClinicalDocumentTabShown = computed(() =>
     ConfigUtil.isDependentDatasetEnabled(EntryType.ClinicalDocument)
 );
-const tabIndicesMap = computed(() => {
-    const tabIndices: (number | undefined)[] = [0];
-    const optionalTabs = [
-        isCovid19TabShown.value,
-        isImmunizationTabShown.value,
-        isLaboratoryOrderTabShown.value,
-        isClinicalDocumentTabShown.value,
-    ];
 
-    let index = 0;
-    optionalTabs.forEach((shown) =>
-        tabIndices.push(shown ? ++index : undefined)
-    );
-
-    return tabIndices;
-});
 const immunizationItems = computed(() =>
     immunizations.value.map<ImmunizationRow>((x) => ({
         date: DateWrapper.format(x.dateOfImmunization),
@@ -406,13 +400,13 @@ function downloadDocument(): void {
             `Download document from dependent tab: ${selectedTabIndex.value}`
         );
 
-        if (selectedTabIndex.value === tabIndicesMap.value[1]) {
+        if (selectedTabIndex.value === tabIndices.covid19) {
             downloadCovid19Report();
-        } else if (selectedTabIndex.value === tabIndicesMap.value[2]) {
+        } else if (selectedTabIndex.value === tabIndices.immunization) {
             downloadImmunizationReport();
-        } else if (selectedTabIndex.value === tabIndicesMap.value[3]) {
+        } else if (selectedTabIndex.value === tabIndices.labResults) {
             downloadLaboratoryOrderReport();
-        } else if (selectedTabIndex.value === tabIndicesMap.value[4]) {
+        } else if (selectedTabIndex.value === tabIndices.clinicalDocs) {
             downloadClinicalDocument();
         }
     } else {
@@ -927,11 +921,12 @@ watch(vaccineRecordState, () => {
                     color="primary"
                     selected-class="bg-white"
                 >
-                    <v-tab>Profile</v-tab>
+                    <v-tab :value="0">Profile</v-tab>
                     <v-tab
                         v-if="isCovid19TabShown"
                         :disabled="isExpired"
                         data-testid="covid19TabTitle"
+                        :value="1"
                         @click="fetchCovid19LaboratoryTests"
                     >
                         COVID-19
@@ -940,25 +935,25 @@ watch(vaccineRecordState, () => {
                         v-if="isImmunizationTabShown"
                         :disabled="isExpired"
                         :data-testid="`immunization-tab-title-${dependent.ownerId}`"
+                        :value="2"
                         @click="fetchPatientImmunizations"
                     >
                         Immunization
                     </v-tab>
-                    <!-- TODO: are the id attributes necessary -->
                     <v-tab
                         v-if="isLaboratoryOrderTabShown"
-                        :id="`lab-results-tab-title-${dependent.ownerId}`"
                         :disabled="isExpired"
                         :data-testid="`lab-results-tab-title-${dependent.ownerId}`"
+                        :value="3"
                         @click="fetchLaboratoryOrders"
                     >
                         Lab Results
                     </v-tab>
                     <v-tab
                         v-if="isClinicalDocumentTabShown"
-                        :id="`clinical-document-tab-title-${dependent.ownerId}`"
                         :disabled="isExpired"
                         :data-testid="`clinical-document-tab-title-${dependent.ownerId}`"
+                        :value="4"
                         @click="fetchClinicalDocuments"
                     >
                         Clinical Docs

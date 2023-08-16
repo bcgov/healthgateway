@@ -29,10 +29,6 @@ function clearStorage(): void {
     authStore.clearStorage();
 }
 
-function retrieveEssentialData(): Promise<void> {
-    return userStore.retrieveEssentialData();
-}
-
 function retrieveNotifications(): void {
     notificationStore.retrieve();
 }
@@ -53,7 +49,7 @@ signIn(defaultPath.value)
             return;
         }
 
-        return retrieveEssentialData().then(() => {
+        return userStore.retrieveEssentialData().then(() => {
             retrieveNotifications();
             redirect();
         });
