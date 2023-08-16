@@ -68,7 +68,7 @@ function populateDatePicker(selector, dateValue) {
     const month = monthNames[date.getMonth()].substring(0, 3).toUpperCase();
     const day = date.getDate();
 
-    cy.get(selector).type(`${year}-${month}-${day}`);
+    cy.get(selector).type(`${year}-${month}-${day}`).blur();
 }
 
 describe("Public PcrTest Registration Form", () => {

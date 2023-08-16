@@ -219,6 +219,7 @@ setResendTimeout();
                             v-model="smsVerificationCode"
                             data-testid="verifySMSModalCodeInput"
                             label="Verification Code"
+                            autofocus
                             maxlength="6"
                             :disabled="isLoading"
                             :error-messages="errorMessages"

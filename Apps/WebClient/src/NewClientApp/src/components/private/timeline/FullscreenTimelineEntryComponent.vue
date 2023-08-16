@@ -2,6 +2,7 @@
 import { computed, ref, watch } from "vue";
 
 import HgIconButtonComponent from "@/components/common/HgIconButtonComponent.vue";
+import ErrorCardComponent from "@/components/error/ErrorCardComponent.vue";
 import { entryTypeMap } from "@/constants/entryType";
 import TimelineEntry from "@/models/timeline/timelineEntry";
 import { useAppStore } from "@/stores/app";
@@ -90,6 +91,7 @@ window.onpopstate = (event: PopStateEvent) => {
             </v-card-title>
             <v-divider />
             <v-card-text v-if="entry != null" class="pa-0">
+                <div class="mx-2"><ErrorCardComponent /></div>
                 <component
                     :is="componentForEntry"
                     data-testid="entryDetailsCard"
