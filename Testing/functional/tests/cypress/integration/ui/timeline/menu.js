@@ -25,12 +25,12 @@ describe("Menu System", () => {
         login(false);
         cy.get("[data-testid=menu-btn-timeline-link]").should("be.visible");
 
-        cy.get("[data-testid=sidenavbar-dismiss-btn]").click();
+        cy.get("[data-testid=navbar-toggle-button]").click();
         cy.get("[data-testid=sidenavbar]").should(
             "have.class",
             "v-navigation-drawer--rail"
         );
-        cy.get("[data-testid=sidenavbar-profile-initials]").click();
+        cy.get("[data-testid=navbar-toggle-button]").click();
         cy.get("[data-testid=sidenavbar]").should(
             "not.have.class",
             "v-navigation-drawer--rail"
@@ -39,7 +39,6 @@ describe("Menu System", () => {
 
     it("Validate Profile Button for Desktop", () => {
         login(false);
-        cy.get("[data-testid=sidebarUserName]").should("not.exist");
         cy.get("[data-testid=profileButtonInitials]")
             .should("be.visible")
             .should("include.text", "DG");
@@ -104,7 +103,7 @@ describe("Menu System", () => {
             "href",
             "/dependents"
         );
-        cy.get("[data-testid=sidenavbar-dismiss-btn]").should("be.visible");
+        cy.get("[data-testid=navbar-toggle-button]").should("be.visible");
         cy.get("[data-testid=menu-btn-feedback-link]").should("be.visible");
     });
 

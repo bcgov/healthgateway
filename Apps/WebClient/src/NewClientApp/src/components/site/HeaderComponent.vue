@@ -208,7 +208,11 @@ nextTick(() => {
         flat
     >
         <template v-if="isSidebarButtonShown" #prepend>
-            <HgIconButtonComponent icon="bars" @click="toggleSidebar" />
+            <HgIconButtonComponent
+                icon="bars"
+                data-testid="navbar-toggle-button"
+                @click="toggleSidebar"
+            />
         </template>
         <router-link to="/">
             <v-img
