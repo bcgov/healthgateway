@@ -543,7 +543,7 @@ watch(vaccineRecordState, () => {
 .quick-link-icon {
     height: 1.5em;
     &-large {
-        height: 2.5em;
+        height: 2.1em;
     }
 }
 </style>
