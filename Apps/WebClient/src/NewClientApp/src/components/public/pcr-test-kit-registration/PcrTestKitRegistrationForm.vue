@@ -67,6 +67,8 @@ interface ISelectOption {
     value: unknown;
 }
 
+const currentDate = new DateWrapper();
+
 const testTakenMinutesAgoOptions: ISelectOption[] = [
     { value: -1, title: "Time" },
     { value: 5, title: "Just now" },
@@ -524,7 +526,7 @@ if (!props.serialNumber) {
                             label="Date of Birth"
                             data-testid="dob-input"
                             class="mb-2"
-                            :max-date="new DateWrapper()"
+                            :max-date="currentDate"
                             :error-messages="
                                 ValidationUtil.getErrorMessages(v$.dob)
                             "

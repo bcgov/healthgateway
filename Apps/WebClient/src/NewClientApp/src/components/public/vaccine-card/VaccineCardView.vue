@@ -32,6 +32,8 @@ const phnMaskaOptions = {
     eager: true,
 };
 
+const currentDate = new DateWrapper();
+
 const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
 
 const appStore = useAppStore();
@@ -401,7 +403,7 @@ watch(vaccineRecord, (value) => {
                                 v-model="dateOfBirth"
                                 label="Date of Birth"
                                 data-testid="dateOfBirthInput"
-                                :max-date="new DateWrapper()"
+                                :max-date="currentDate"
                                 :error-messages="
                                     ValidationUtil.getErrorMessages(
                                         v$.dateOfBirth
@@ -421,7 +423,7 @@ watch(vaccineRecord, (value) => {
                             <HgDatePickerComponent
                                 id="dateOfVaccine"
                                 v-model="dateOfVaccine"
-                                :max-date="new DateWrapper()"
+                                :max-date="currentDate"
                                 label="Date of Vaccine (Any Dose)"
                                 data-testid="dateOfVaccineInput"
                                 :error-messages="
