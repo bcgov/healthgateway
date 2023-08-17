@@ -54,5 +54,15 @@ namespace HealthGateway.Common.Models
         /// Gets or sets OpenTelemetry export protocol.
         /// </summary>
         public OtlpExportProtocol ExportProtocol { get; set; } = OtlpExportProtocol.HttpProtobuf;
+
+        /// <summary>
+        /// Gets or sets a value indicating whether  OpenTelemetry console export for tracing, default to false.
+        /// </summary>
+        public bool TraceConsoleExporterEnabled { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether OpenTelemetry console export for metrics, default to false.
+        /// </summary>
+        public bool MetricsConsoleExporterEnabled { get; set; }
     }
 }
