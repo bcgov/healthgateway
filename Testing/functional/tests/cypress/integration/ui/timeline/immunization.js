@@ -3,7 +3,7 @@ const { AuthMethod } = require("../../../support/constants");
 describe("Immunization - With Refresh", () => {
     beforeEach(() => {
         let isLoading = false;
-        cy.intercept("GET", "**/Immunization?*", (req) => {
+        cy.intercept("GET", "**/Immunization?hdid=*", (req) => {
             if (!isLoading) {
                 req.reply({
                     fixture: "ImmunizationService/immunizationrefresh.json",
@@ -61,7 +61,7 @@ describe("Immunization - With Refresh", () => {
 
 describe("Immunization", () => {
     it("Validate Empty Title", () => {
-        cy.intercept("GET", "**/Immunization?*", {
+        cy.intercept("GET", "**/Immunization?hdid=*", {
             fixture: "ImmunizationService/immunizationEmptyName.json",
         });
         cy.configureSettings({
@@ -90,7 +90,7 @@ describe("Timeline - Immunization - Invalid Doses", () => {
         const validDoseDate1 = "2021-Jul-14";
         const invalidDoseDate1 = "2021-Mar-30";
 
-        cy.intercept("GET", "**/Immunization?*", {
+        cy.intercept("GET", "**/Immunization?hdid=*", {
             fixture: "ImmunizationService/immunizationInvalidDoses.json",
         });
         cy.configureSettings({

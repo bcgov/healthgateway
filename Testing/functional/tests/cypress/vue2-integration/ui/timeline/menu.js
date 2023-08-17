@@ -92,7 +92,7 @@ describe("Menu System", () => {
             "href",
             "/home"
         );
-        cy.get("[data-testid=menu-btn-time-line-link]").should(
+        cy.get("[data-testid=menu-btn-timeline-link]").should(
             "have.attr",
             "href",
             "/timeline"

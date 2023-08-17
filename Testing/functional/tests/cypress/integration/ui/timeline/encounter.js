@@ -26,7 +26,7 @@ describe("MSP Visits Rolloff", () => {
     it("Verify rolloff message not visible", () => {
         let cards = cy.get("[data-testid=timelineCard");
         cards.first().click();
-        cy.get("[data-testid=encounterRolloffAlert]").should("not.be.visible");
+        cy.get("[data-testid=encounterRolloffAlert]").should("not.exist");
     });
 
     it("Verify rolloff message visible", () => {

@@ -25,8 +25,10 @@ describe("Medication Request", () => {
         cy.get("[data-testid=specialauthorityrequestTitle]").should(
             "be.visible"
         );
-        cy.get("[data-testid=medicationPractitioner]").should("not.be.visible");
-        cy.get("[data-testid=entryCardDetailsTitle]").first().click();
+        cy.get("[data-testid=medicationPractitioner]").should("not.exist");
+        cy.get("[data-testid=entryCardDetailsTitle]")
+            .first()
+            .click({ force: true });
         cy.get("[data-testid=medicationPractitioner]").should("be.visible");
     });
 });

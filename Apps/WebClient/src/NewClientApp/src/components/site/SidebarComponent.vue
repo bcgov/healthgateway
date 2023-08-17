@@ -111,7 +111,7 @@ function dismiss() {
             <v-list-item
                 title="Timeline"
                 to="/timeline"
-                data-testid="menu-btn-time-line-link"
+                data-testid="menu-btn-timeline-link"
             >
                 <template #prepend>
                     <div class="nav-list-item-icon mr-8 d-flex justify-center">
