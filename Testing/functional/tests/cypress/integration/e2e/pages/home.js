@@ -68,7 +68,7 @@ describe("Home Page", () => {
     });
 
     it("Home - Side Menu Timeline link to Timeline", () => {
-        cy.get("[data-testid=menu-btn-time-line-link]")
+        cy.get("[data-testid=menu-btn-timeline-link]")
             .should("be.visible", "be.enabled")
             .click();
 

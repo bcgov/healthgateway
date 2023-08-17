@@ -23,17 +23,13 @@ describe("Banner Error", () => {
     });
 
     it("Verify banner error", () => {
-        cy.get("[data-testid=singleErrorHeader]").should("be.visible");
-        cy.get("[data-testid=singleErrorHeader]").contains(
+        cy.get("[data-testid=errorBanner]").should("be.visible");
+        cy.get("[data-testid=errorBanner]").contains(
             "Unable to retrieve notes"
         );
         cy.get("[data-testid=errorDetailsBtn]").should("be.visible");
-        cy.get("[data-testid=viewDetailsIcon]").should("be.visible");
 
         cy.get("[data-testid=errorDetailsBtn]").click();
-
-        cy.get("[data-testid=viewDetailsIcon]").should("be.not.visible");
-        cy.get("[data-testid=hideDetailsIcon]").should("be.visible");
 
         cy.get("[data-testid=error-details-span-1]").should("be.visible");
 

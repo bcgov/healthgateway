@@ -165,7 +165,7 @@ onMounted(async () => {
                     <hg-button
                         v-show="userIsActive"
                         id="menuBtnTimeline"
-                        data-testid="menu-btn-time-line-link"
+                        data-testid="menu-btn-timeline-link"
                         to="/timeline"
                         variant="nav"
                         class="my-3 px-3 px-md-4"
