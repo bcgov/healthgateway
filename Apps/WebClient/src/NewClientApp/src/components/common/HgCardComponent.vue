@@ -7,7 +7,7 @@ interface Props {
     title?: string;
 }
 withDefaults(defineProps<Props>(), {
-    title: "",
+    title: undefined,
 });
 
 const slots = useSlots();
@@ -36,9 +36,14 @@ const hasDefaultSlot = computed<boolean>(() => {
                 <v-col v-if="hasIconSlot" class="flex-grow-0 d-flex py-5">
                     <slot name="icon" />
                 </v-col>
-                <v-col data-testid="card-button-title" class="py-5">
+                <v-col
+                    v-if="title"
+                    data-testid="card-button-title"
+                    class="py-5"
+                >
                     {{ title }}
                 </v-col>
+                <v-spacer v-else />
                 <v-col v-if="hasActionIconSlot" class="flex-grow-0 d-flex pa-5">
                     <slot name="action-icon" />
                 </v-col>

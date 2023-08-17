@@ -228,6 +228,7 @@ nextTick(() => {
             ref="appTourComponent"
             :is-available="isAppTourAvailable"
             :highlight-tour-change-indicator="highlightTourChangeIndicator"
+            @click="hasViewedTour = true"
         />
         <HgIconButtonComponent
             v-if="isNotificationCentreAvailable"

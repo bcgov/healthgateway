@@ -1,7 +1,7 @@
 const { AuthMethod } = require("../../../support/constants");
 
 const sensitiveDocMessage =
-    " The file that you are downloading contains personal information. If you are on a public computer, please ensure that the file is deleted before you log off. ";
+    "The file that you are downloading contains personal information. If you are on a public computer, please ensure that the file is deleted before you log off.";
 const validHdid = "645645767756756767";
 
 function getDate(value) {
@@ -38,7 +38,7 @@ describe("COVID-19", () => {
 
     it("Validate Covid Tab with Results", () => {
         // Validate the tab and elements are present
-        cy.get("[data-testid=covid19TabTitle]").last().parent().click();
+        cy.get("[data-testid=covid19TabTitle]").click();
         cy.get("[data-testid=dependentCovidTestDate]")
             .first()
             .contains(/\d{4}-[A-Z]{1}[a-z]{2}-\d{2}/);
@@ -51,7 +51,7 @@ describe("COVID-19", () => {
         cy.get("[data-testid=generic-message-submit-btn]").click();
         cy.get("[data-testid=generic-message-modal]").should("not.exist");
 
-        cy.get("[data-testid=covid19TabTitle]").last().parent().click();
+        cy.get("[data-testid=covid19TabTitle]").click();
         cy.get("[data-testid=dependentCovidTestDate]")
             .last()
             .contains(/\d{4}-[A-Z]{1}[a-z]{2}-\d{2}/);
@@ -72,7 +72,7 @@ describe("COVID-19", () => {
     });
 
     it("Validate Covid with multiple results", () => {
-        cy.get("[data-testid=covid19TabTitle]").last().parent().click();
+        cy.get("[data-testid=covid19TabTitle]").click();
         cy.get("[data-testid=dependentCovidTestDate]")
             .contains("td", "2020-Oct-06")
             .siblings("[data-testid=dependentCovidTestLabResult]")
@@ -149,15 +149,13 @@ describe("COVID-19 - Vaccine Proof download", () => {
             "/dependents"
         );
 
-        cy.get("[data-testid=covid19TabTitle]").last().parent().click();
+        cy.get("[data-testid=covid19TabTitle]").click();
         cy.get(
             `[data-testid=download-proof-of-vaccination-btn-${validHdid}]`
         ).click({ force: true });
         cy.get("[data-testid=generic-message-modal]").should("be.visible");
         cy.get("[data-testid=generic-message-submit-btn]").click();
-        cy.get("[data-testid=loadingSpinner]").should("be.visible");
-        cy.wait(1000);
-        cy.get("[data-testid=loadingSpinner]").should("not.be.visible");
+        cy.get("[data-testid=loadingSpinner]").should("not.exist");
         cy.verifyDownload("VaccineProof.pdf");
     });
 
@@ -212,7 +210,7 @@ describe("COVID-19 - Vaccine Proof download", () => {
             "/dependents"
         );
 
-        cy.get("[data-testid=covid19TabTitle]").last().parent().click();
+        cy.get("[data-testid=covid19TabTitle]").click();
         cy.get(
             `[data-testid=download-proof-of-vaccination-btn-${validHdid}]`
         ).click({ force: true });
@@ -260,15 +258,13 @@ describe("Dependents - Immunization Tab - Enabled", () => {
 
         cy.log("Validating Immunization Tab - Verify sort and download");
 
-        cy.get(`[data-testid=immunization-tab-title-${dependentHdid}]`)
-            .parent()
-            .click();
+        cy.get(`[data-testid=immunization-tab-title-${dependentHdid}]`).click();
 
         // History tab
         cy.log("Validating History Tab");
         cy.get(`[data-testid=immunization-tab-div-${dependentHdid}]`).within(
             () => {
-                cy.contains("a", "History").click();
+                cy.contains("button", "History").click();
             }
         );
         cy.get(
@@ -355,12 +351,13 @@ describe("Dependents - Immunization Tab - Enabled", () => {
 
         cy.log("Validating Immunization Tab - Verify sort and download");
 
-        cy.get(`[data-testid=immunization-tab-title-${dependentHdid}]`)
-            .parent()
-            .click();
+        cy.get(`[data-testid=immunization-tab-title-${dependentHdid}]`).click();
 
         // Click download dropdown under Forecasts tab
         cy.log("Validating Forecasts Tab");
+        cy.get(`[data-testid=immunization-tab-div-${dependentHdid}]`)
+            .contains("button", "Forecasts")
+            .click();
         cy.get(
             `[data-testid=download-immunization-forecast-report-btn-${dependentHdid}]`
         ).click({ force: true });
@@ -397,7 +394,7 @@ describe("Dependents - Immunization Tab - Enabled", () => {
         // Confirmation modal
         cy.get("[data-testid=generic-message-modal]").should("be.visible");
         cy.get("[data-testid=generic-message-submit-btn]").click();
-
+        cy.get("[data-testid=loadingSpinner]").should("not.exist");
         cy.verifyDownload("HealthGatewayDependentImmunizationReport.pdf", {
             timeout: 60000,
             interval: 5000,
@@ -416,6 +413,7 @@ describe("Dependents - Immunization Tab - Enabled", () => {
         // Confirmation modal
         cy.get("[data-testid=generic-message-modal]").should("be.visible");
         cy.get("[data-testid=generic-message-submit-btn]").click();
+        cy.get("[data-testid=loadingSpinner]").should("not.exist");
 
         cy.verifyDownload("HealthGatewayDependentImmunizationReport.csv", {
             timeout: 60000,
@@ -435,6 +433,7 @@ describe("Dependents - Immunization Tab - Enabled", () => {
         // Confirmation modal
         cy.get("[data-testid=generic-message-modal]").should("be.visible");
         cy.get("[data-testid=generic-message-submit-btn]").click();
+        cy.get("[data-testid=loadingSpinner]").should("not.exist");
 
         cy.verifyDownload("HealthGatewayDependentImmunizationReport.xlsx", {
             timeout: 60000,
@@ -449,9 +448,7 @@ describe("Dependents - Immunization Tab - Enabled", () => {
 
         cy.log("Validating Immunization Tab - No Data Found");
 
-        cy.get(`[data-testid=immunization-tab-title-${dependentHdid}]`)
-            .parent()
-            .click();
+        cy.get(`[data-testid=immunization-tab-title-${dependentHdid}]`).click();
         cy.get(
             `[data-testid=immunization-history-no-rows-found-${dependentHdid}]`
         ).should("be.visible");
@@ -460,7 +457,7 @@ describe("Dependents - Immunization Tab - Enabled", () => {
         ).should("not.exist");
         cy.get(`[data-testid=immunization-tab-div-${dependentHdid}]`).within(
             () => {
-                cy.contains("a", "Forecasts").click();
+                cy.contains("button", "Forecasts").click();
             }
         );
         cy.get(
@@ -506,9 +503,7 @@ describe("Dependents - Lab Results Tab - Enabled", () => {
 
         cy.log("Validating Lab Results Tab - Verify result and sort");
 
-        cy.get(`[data-testid=lab-results-tab-title-${dependentHdid}]`)
-            .parent()
-            .click();
+        cy.get(`[data-testid=lab-results-tab-title-${dependentHdid}]`).click();
 
         // Expecting 9 rows to return but we also need to consider the table headers.
         cy.get(`[data-testid=lab-results-table-${dependentHdid}]`)
@@ -538,9 +533,7 @@ describe("Dependents - Lab Results Tab - Enabled", () => {
 
         cy.log("Validating Lab Results Tab - No Data Found");
 
-        cy.get(`[data-testid=lab-results-tab-title-${dependentHdid}]`)
-            .parent()
-            .click();
+        cy.get(`[data-testid=lab-results-tab-title-${dependentHdid}]`).click();
 
         cy.get(`[data-testid=lab-results-no-records-${dependentHdid}]`).should(
             "be.visible"
@@ -582,9 +575,9 @@ describe("Dependents - Clinical Document Tab - Enabled", () => {
 
         cy.log("Validating Clinical Document Tab - Verify result and sort");
 
-        cy.get(`[data-testid=clinical-document-tab-title-${dependentHdid}]`)
-            .parent()
-            .click();
+        cy.get(
+            `[data-testid=clinical-document-tab-title-${dependentHdid}]`
+        ).click();
 
         // Expecting 2 rows to return but we also need to consider the table headers.
         cy.get(`[data-testid=clinical-document-table-${dependentHdid}]`)
@@ -614,9 +607,9 @@ describe("Dependents - Clinical Document Tab - Enabled", () => {
 
         cy.log("Validating Clinical Document Tab - No Data Found");
 
-        cy.get(`[data-testid=clinical-document-tab-title-${dependentHdid}]`)
-            .parent()
-            .click();
+        cy.get(
+            `[data-testid=clinical-document-tab-title-${dependentHdid}]`
+        ).click();
 
         cy.get(
             `[data-testid=clinical-document-no-records-${dependentHdid}]`

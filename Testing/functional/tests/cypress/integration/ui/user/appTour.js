@@ -19,15 +19,15 @@ describe("App Tour Authenticated", () => {
         cy.get("[data-testid=app-tour-button]")
             .should("be.visible")
             .find("span")
-            .should("have.class", "b-avatar-badge badge-danger");
+            .should("have.class", "v-badge__badge");
 
         cy.get("[data-testid=app-tour-button").click();
         cy.get("[data-testid=app-tour-modal]").should("be.visible");
 
         // Badge should be removed once tour is opened
         cy.get("[data-testid=app-tour-button")
-            .find("span.b-avatar-badge")
-            .should("not.exist");
+            .find("span.v-badge__badge")
+            .should("not.be.visible");
     });
 
     function keepClickingNext(resolve) {
