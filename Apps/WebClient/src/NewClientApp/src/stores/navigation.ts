@@ -19,7 +19,12 @@ export const useNavigationStore = defineStore("navigation", () => {
 
     function toggleSidebar() {
         logger.verbose(`toggleSidebar`);
-        isSidebarOpenField.value = !isSidebarOpenField.value;
+        // default state for desktop is open, this ensures the first click toggles the sidebar correctly.
+        if (isSidebarOpenField.value === undefined && !appStore.isMobile) {
+            isSidebarOpenField.value = false;
+        } else {
+            isSidebarOpenField.value = !isSidebarOpenField.value;
+        }
     }
 
     function setHeaderState(isOpen: boolean) {

@@ -1,8 +1,7 @@
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 
-import HgIconButtonComponent from "@/components/common/HgIconButtonComponent.vue";
 import FeedbackComponent from "@/components/site/FeedbackComponent.vue";
 import { useAppStore } from "@/stores/app";
 import { useAuthStore } from "@/stores/auth";
@@ -11,7 +10,6 @@ import { useNavigationStore } from "@/stores/navigation";
 import { useUserStore } from "@/stores/user";
 
 const route = useRoute();
-
 const appStore = useAppStore();
 const authStore = useAuthStore();
 const configStore = useConfigStore();
@@ -56,13 +54,17 @@ const visibleOnMobile = computed({
     },
 });
 
-function dismiss() {
+function toggleOpenClose(state: boolean) {
     if (isMobile.value) {
-        visibleOnMobile.value = false;
+        visibleOnMobile.value = state;
     } else {
-        collapsedOnDesktop.value = true;
+        collapsedOnDesktop.value = !state;
     }
 }
+
+watch(isSidebarOpen, (value: boolean) => {
+    toggleOpenClose(value);
+});
 </script>
 
 <template>
@@ -78,24 +80,6 @@ function dismiss() {
         @click.stop="collapsedOnDesktop = false"
         @update:model-value="visibleOnMobile = false"
     >
-        <v-list-item :title="userStore.userName" class="my-2" nav>
-            <template #prepend>
-                <v-avatar
-                    data-testid="sidenavbar-profile-initials"
-                    color="info"
-                >
-                    {{ userStore.userInitials }}
-                </v-avatar>
-            </template>
-            <template #append>
-                <HgIconButtonComponent
-                    icon="fas fa-chevron-left"
-                    data-testid="sidenavbar-dismiss-btn"
-                    @click.stop="dismiss"
-                />
-            </template>
-        </v-list-item>
-        <v-divider></v-divider>
         <v-list density="compact" nav>
             <v-list-item
                 title="Home"

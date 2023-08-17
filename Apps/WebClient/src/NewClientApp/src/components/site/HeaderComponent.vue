@@ -46,7 +46,6 @@ const isValidIdentityProvider = computed(
 const isHeaderShown = computed(
     () => navigationStore.isHeaderShown || isScrollNearBottom.value
 );
-const isSidebarOpen = computed(() => navigationStore.isSidebarOpen);
 const user = computed(() => userStore.user);
 const userIsRegistered = computed(() => userStore.userIsRegistered);
 const userIsActive = computed(() => userStore.userIsActive);
@@ -68,8 +67,7 @@ const isSidebarButtonShown = computed(
         userIsActive.value &&
         !patientRetrievalFailed.value &&
         !isQueuePage.value &&
-        !isPcrTest.value &&
-        isMobileWidth.value
+        !isPcrTest.value
 );
 const isNotificationCentreAvailable = computed(
     () =>
@@ -210,10 +208,7 @@ nextTick(() => {
         flat
     >
         <template v-if="isSidebarButtonShown" #prepend>
-            <HgIconButtonComponent
-                :icon="isSidebarOpen ? 'fas fa-times' : 'fas fa-bars'"
-                @click="toggleSidebar"
-            />
+            <HgIconButtonComponent icon="bars" @click="toggleSidebar" />
         </template>
         <router-link to="/">
             <v-img
