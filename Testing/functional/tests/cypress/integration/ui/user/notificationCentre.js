@@ -117,6 +117,7 @@ describe("Notification Centre", () => {
                 notificationIdTwo +
                 "-dismiss-button]"
         ).should("not.exist");
+        cy.get("[data-testid=notification-centre-button]").click();
         cy.get("[data-testid=notification-centre-dismiss-all-button]").should(
             "not.exist"
         );
@@ -160,7 +161,7 @@ describe("Notification Badge", () => {
     it("Verify notification badge", () => {
         cy.get("[data-testid=notification-centre-button]")
             .get("span")
-            .should("have.class", "b-avatar-badge badge-danger")
+            .should("have.class", "v-badge__badge")
             .contains("3");
 
         cy.get("[data-testid=notification-centre-button]")
@@ -175,14 +176,14 @@ describe("Notification Badge", () => {
 
         cy.get("[data-testid=notification-centre-button]").should(
             "not.have.class",
-            "b-avatar-badge badge-danger"
+            "v-badge__badge"
         );
 
         cy.reload();
 
         cy.get("[data-testid=notification-centre-button]")
             .get("span")
-            .should("have.class", "b-avatar-badge badge-danger")
+            .should("have.class", "v-badge__badge")
             .contains("3");
     });
 });
@@ -193,6 +194,12 @@ describe("Categorized web alerts", () => {
             notificationCentre: {
                 enabled: true,
             },
+            datasets: [
+                {
+                    name: "immunization",
+                    enabled: true,
+                },
+            ],
             services: {
                 enabled: true,
             },
@@ -200,6 +207,10 @@ describe("Categorized web alerts", () => {
 
         cy.intercept("GET", `**/Notification/${HDID}`, {
             fixture: "NotificationService/notifications.json",
+        });
+
+        cy.intercept("GET", `**/Immunization?hdid*`, {
+            fixture: "ImmunizationService/immunization.json",
         });
 
         cy.login(

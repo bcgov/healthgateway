@@ -54,7 +54,22 @@ describe("User Profile", () => {
 
         cy.log("Edit email address");
         cy.get("[data-testid=editEmailBtn]").click();
-        cy.get("[data-testid=emailInput]").type(Cypress.env("emailAddress"));
+        cy.get("[data-testid=email-input] input").type(
+            Cypress.env("emailAddress")
+        );
+        cy.readFile(
+            "cypress/fixtures/UserProfileService/userProfile.json",
+            (err, data) => {
+                if (err) {
+                    throw err;
+                }
+            }
+        ).then((data) => {
+            data.resourcePayload.email = Cypress.env("emailAddress");
+            cy.intercept("GET", `**/UserProfile/${HDID}`, {
+                ...data,
+            });
+        });
         cy.get("[data-testid=editEmailSaveBtn]").click();
         cy.get("[data-testid=emailStatusNotVerified]").should("be.visible");
         cy.get("[data-testid=resendEmailBtn]").should("be.visible");
@@ -62,17 +77,24 @@ describe("User Profile", () => {
         cy.log("Invalid email address");
         cy.get("[data-testid=editEmailBtn]").click();
         cy.get("[data-testid=editEmailSaveBtn]").should("be.disabled");
-        cy.get("[data-testid=emailInvalidNewEqualsOld]").should("be.visible");
+        cy.get("[data-testid=email-input]")
+            .find(".v-messages__message")
+            .contains("New email must be different from the previous one")
+            .should("be.visible");
         cy.get("[data-testid=editEmailCancelBtn]").click();
-        cy.get("[data-testid=emailInput]")
+        cy.get("[data-testid=email-input] input")
             .should("be.disabled")
             .should("have.value", Cypress.env("emailAddress"));
 
         cy.log("Clear/OptOut email address");
         cy.get("[data-testid=editEmailBtn]").click();
-        cy.get("[data-testid=emailInput]").clear();
+        cy.get("[data-testid=email-input] input").clear();
         cy.get("[data-testid=emailOptOutMessage]").should("be.visible");
+        cy.intercept("GET", `**/UserProfile/${HDID}`, {
+            fixture: "UserProfileService/userProfile.json",
+        });
         cy.get("[data-testid=editEmailSaveBtn]").click();
+        cy.get("[data-testid=loadingSpinner]").should("not.exist");
         cy.get("[data-testid=emailStatusOptedOut]").should("be.visible");
     });
 
@@ -101,6 +123,7 @@ describe("User Profile", () => {
 
         cy.get("[data-testid=verifySMSModalCodeInput]")
             .should("be.visible")
+            .find("input")
             .should("have.focus")
             .type("123456");
 
@@ -114,10 +137,15 @@ describe("User Profile", () => {
             fixture: "UserProfileService/userProfile.json",
         });
         cy.get("[data-testid=editSMSBtn]").click();
-        cy.get("[data-testid=smsInvalidNewEqualsOld]").should("be.visible");
-        cy.get("[data-testid=smsNumberInput]").clear().type(fakeSMSNumber);
+        cy.get("[data-testid=smsNumberInput]")
+            .find(".v-messages__message")
+            .contains("New SMS number must be different from the previous one")
+            .should("be.visible");
+        cy.get("[data-testid=smsNumberInput] input")
+            .clear()
+            .type(fakeSMSNumber);
         cy.get("[data-testid=saveSMSEditBtn]").click();
-        cy.get("[data-testid=verifySMSModal] button.close").click();
+        cy.get("[data-testid=messageModalCloseButton]").click();
         cy.get("[data-testid=smsStatusNotVerified]").should("be.visible");
         cy.get("[data-testid=verifySMSBtn]")
             .should("be.visible")
@@ -125,8 +153,21 @@ describe("User Profile", () => {
 
         cy.log("Clear/OptOut SMS number");
         cy.get("[data-testid=editSMSBtn]").click();
-        cy.get("[data-testid=smsNumberInput]").clear();
+        cy.get("[data-testid=smsNumberInput] input").clear();
         cy.get("[data-testid=smsOptOutMessage]").should("be.visible");
+        cy.readFile(
+            "cypress/fixtures/UserProfileService/userProfile.json",
+            (err, data) => {
+                if (err) {
+                    throw err;
+                }
+            }
+        ).then((data) => {
+            data.resourcePayload.smsNumber = undefined;
+            cy.intercept("GET", `**/UserProfile/${HDID}`, {
+                ...data,
+            });
+        });
         cy.get("[data-testid=saveSMSEditBtn]").click();
         cy.get("[data-testid=smsStatusOptedOut]").should("be.visible");
     });
