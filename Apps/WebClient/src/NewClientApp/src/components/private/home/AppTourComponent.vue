@@ -113,49 +113,49 @@ function previous(): void {
 </script>
 
 <template>
-    <v-dialog
-        id="app-tour"
-        v-model="isVisible"
-        body-class="p-0"
-        content-class="overflow-hidden"
-        size="lg"
-        persistent
-        no-click-animation
-    >
-        <template #activator="{ props }">
-            <HgIconButtonComponent
-                v-if="isAvailable"
-                v-bind="props"
-                data-testid="app-tour-button"
-            >
-                <v-badge
-                    color="red"
-                    :model-value="highlightTourChangeIndicator"
+    <row justify="center">
+        <v-dialog
+            id="app-tour"
+            v-model="isVisible"
+            body-class="p-0"
+            persistent
+            no-click-animation
+            max-width="675px"
+        >
+            <template #activator="{ props }">
+                <HgIconButtonComponent
+                    v-if="isAvailable"
+                    v-bind="props"
+                    data-testid="app-tour-button"
                 >
-                    <v-icon icon="lightbulb" />
-                </v-badge>
-            </HgIconButtonComponent>
-        </template>
-        <div class="d-flex justify-center">
-            <v-card max-width="675px" data-testid="app-tour-modal">
-                <v-carousel
-                    id="tourCarousel"
-                    v-model="slideIndex"
-                    :continuous="false"
-                    :show-arrows="false"
-                    hide-delimiter-background
-                    :height="mdAndUp ? 480 : 250"
-                >
-                    <v-carousel-item
-                        v-for="slide in slides"
-                        :key="slide.title"
-                        :src="slide.imageUri"
-                        :alt="slide.imageAlt ?? slide.title"
-                        transition="scroll-x-reverse-transition"
-                    />
-                </v-carousel>
-                <v-card-text>
-                    <div v-if="currentSlide">
+                    <v-badge
+                        color="red"
+                        :model-value="highlightTourChangeIndicator"
+                    >
+                        <v-icon icon="lightbulb" />
+                    </v-badge>
+                </HgIconButtonComponent>
+            </template>
+            <v-card data-testid="app-tour-modal">
+                <v-card-text class="pa-0">
+                    <v-carousel
+                        id="tourCarousel"
+                        v-model="slideIndex"
+                        :continuous="false"
+                        :show-arrows="false"
+                        hide-delimiter-background
+                        :height="mdAndUp ? 480 : 250"
+                        class="overflow-hidden"
+                    >
+                        <v-carousel-item
+                            v-for="slide in slides"
+                            :key="slide.title"
+                            :src="slide.imageUri"
+                            :alt="slide.imageAlt ?? slide.title"
+                            transition="scroll-x-reverse-transition"
+                        />
+                    </v-carousel>
+                    <div v-if="currentSlide" class="pa-4">
                         <h3 class="text-h6 font-weight-bold">
                             {{ currentSlide.title }}
                         </h3>
@@ -165,7 +165,7 @@ function previous(): void {
                     </div>
                 </v-card-text>
                 <template #actions>
-                    <v-row v-if="isFirstSlide">
+                    <v-row v-if="isFirstSlide" no-gutters>
                         <v-col cols="3">
                             <HgButtonComponent
                                 variant="link"
@@ -183,7 +183,10 @@ function previous(): void {
                             />
                         </v-col>
                     </v-row>
-                    <v-row v-else-if="!isFirstSlide && !isFinalSlide">
+                    <v-row
+                        v-else-if="!isFirstSlide && !isFinalSlide"
+                        no-gutters
+                    >
                         <v-col>
                             <HgButtonComponent
                                 variant="link"
@@ -208,7 +211,7 @@ function previous(): void {
                             />
                         </v-col>
                     </v-row>
-                    <div v-else class="d-flex justify-center">
+                    <div v-else class="d-flex flex-grow-1 justify-center">
                         <HgButtonComponent
                             variant="primary"
                             data-testid="app-tour-done"
@@ -218,6 +221,6 @@ function previous(): void {
                     </div>
                 </template>
             </v-card>
-        </div>
-    </v-dialog>
+        </v-dialog>
+    </row>
 </template>
