@@ -113,7 +113,7 @@ function previous(): void {
 </script>
 
 <template>
-    <row justify="center">
+    <div class="d-flex justify-center">
         <v-dialog
             id="app-tour"
             v-model="isVisible"
@@ -222,5 +222,5 @@ function previous(): void {
                 </template>
             </v-card>
         </v-dialog>
-    </row>
+    </div>
 </template>
