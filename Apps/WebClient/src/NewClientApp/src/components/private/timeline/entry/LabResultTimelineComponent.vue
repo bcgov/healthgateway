@@ -262,6 +262,7 @@ function getReport(): void {
             <template #item-status="data">
                 <span>{{ data.item.status }}</span>
                 <InfoTooltipComponent
+                    :id="`${getStatusInfoId(entry.labPdfId, data.item.index)}`"
                     data-testid="laboratory-test-status-info-button"
                     :tooltip-testid="`${getStatusInfoId(
                         entry.labPdfId,

@@ -66,7 +66,7 @@ export const useLabResultStore = defineStore("labResult", () => {
             hdid,
             laboratoryOrderResult.orders,
             {
-                queue: laboratoryOrderResult.queued,
+                queued: laboratoryOrderResult.queued,
             }
         );
     }
@@ -80,7 +80,7 @@ export const useLabResultStore = defineStore("labResult", () => {
             hdid,
             laboratoryOrderResult.orders,
             {
-                queue: laboratoryOrderResult.queued,
+                queued: laboratoryOrderResult.queued,
                 status: LoadStatus.REQUESTED,
             }
         );

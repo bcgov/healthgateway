@@ -85,7 +85,9 @@ describe("Medication", () => {
             cy.contains(
                 "[data-testid=medication-pharmacy-fax]",
                 "(604) 909-2387"
-            ).should("be.visible");
+            )
+                .scrollIntoView()
+                .should("be.visible");
 
             cy.get("[data-testid=pharmacist-outcome]").should("not.exist");
             cy.get("[data-testid=pharmacist-redirected-to-provider]").should(

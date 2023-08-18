@@ -27,7 +27,9 @@ const hasText = computed(() => !!props.text);
                 :size="size"
             />
         </template>
-        <span v-if="hasText" :data-testid="tooltipTestid">{{ text }}</span>
-        <slot v-else name="default" />
+        <div :data-testid="tooltipTestid">
+            <span v-if="hasText">{{ text }}</span>
+            <slot v-else name="default" />
+        </div>
     </v-tooltip>
 </template>

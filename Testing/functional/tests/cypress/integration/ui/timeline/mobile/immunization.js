@@ -2,7 +2,7 @@ const { AuthMethod } = require("../../../../support/constants");
 
 describe("Immunization", () => {
     beforeEach(() => {
-        cy.intercept("GET", "**/Immunization?*", {
+        cy.intercept("GET", "**/Immunization?hdid=*", {
             fixture: "ImmunizationService/immunization.json",
         });
         cy.configureSettings({
