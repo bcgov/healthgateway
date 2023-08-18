@@ -214,12 +214,11 @@ nextTick(() => {
                 @click="toggleSidebar"
             />
         </template>
-        <router-link to="/">
+        <router-link to="/" class="px-2" style="width: 160px">
             <v-img
                 alt="Go to Health Gateway home page"
                 src="@/assets/images/gov/hg-logo-rev.svg"
-                max-width="143px"
-                class="pa-1"
+                max-width="135px"
             />
         </router-link>
         <v-spacer />
