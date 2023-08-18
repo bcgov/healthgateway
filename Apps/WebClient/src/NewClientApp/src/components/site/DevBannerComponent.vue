@@ -2,6 +2,9 @@
 import { computed, ref } from "vue";
 
 import Process, { EnvironmentType } from "@/constants/process";
+import { useAppStore } from "@/stores/app";
+
+const appStore = useAppStore();
 
 const host = ref(window.location.hostname.toLocaleUpperCase());
 
@@ -19,8 +22,8 @@ const isProduction = computed(
         class="d-flex justify-center bg-accent small d-print-none"
     >
         <p>
-            Non-production environment:
-            <strong>{{ host }}</strong>
+            <span v-if="!appStore.isMobile">Non-production environment: </span
+            ><strong>{{ host }}</strong>
         </p>
     </v-system-bar>
 </template>
