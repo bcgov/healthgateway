@@ -34,12 +34,12 @@ describe("Menu System when services are enabled", () => {
             "/services"
         );
 
-        cy.get("[data-testid=sidenavbar-dismiss-btn]").click();
+        cy.get("[data-testid=navbar-toggle-button]").click();
         cy.get("[data-testid=sidenavbar]").should(
             "have.class",
             "v-navigation-drawer--rail"
         );
-        cy.get("[data-testid=sidenavbar-profile-initials]").click();
+        cy.get("[data-testid=navbar-toggle-button]").click();
         cy.get("[data-testid=sidenavbar]").should(
             "not.have.class",
             "v-navigation-drawer--rail"
