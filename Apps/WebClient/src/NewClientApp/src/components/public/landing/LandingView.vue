@@ -5,6 +5,7 @@ import { useDisplay } from "vuetify";
 import HgButtonComponent from "@/components/common/HgButtonComponent.vue";
 import HgIconButtonComponent from "@/components/common/HgIconButtonComponent.vue";
 import { EntryType, entryTypeMap } from "@/constants/entryType";
+import { useAppStore } from "@/stores/app";
 import { useAuthStore } from "@/stores/auth";
 import { useConfigStore } from "@/stores/config";
 import ConfigUtil from "@/utility/configUtil";
@@ -37,6 +38,7 @@ const entryTypes: EntryType[] = [
 
 const configStore = useConfigStore();
 const authStore = useAuthStore();
+const appStore = useAppStore();
 
 const selectedPreviewDevice = ref(PreviewDevice.laptop);
 const { mdAndUp } = useDisplay();
@@ -143,7 +145,6 @@ function selectPreviewDevice(previewDevice: PreviewDevice): void {
                 class="d-none d-lg-block text-center col-7"
             >
                 <v-img
-                    class="img-fluid"
                     src="@/assets/images/landing/landing-top.png"
                     alt="Health Gateway Preview"
                     data-testid="landing-top-image-id"
@@ -348,8 +349,7 @@ function selectPreviewDevice(previewDevice: PreviewDevice): void {
         </div>
         <v-row align="center">
             <v-col cols="12" lg="6" class="text-center">
-                <img
-                    class="img-fluid"
+                <v-img
                     src="@/assets/images/landing/mobile-app.png"
                     alt="Health Gateway Splash Page App"
                     data-testid="spash-page-app"
@@ -362,28 +362,33 @@ function selectPreviewDevice(previewDevice: PreviewDevice): void {
                 <p class="text-body-1 mb-6">
                     You can download it for free to your phone, tablet or iPad.
                 </p>
-                <a
-                    href="https://play.google.com/store/apps/details?id=ca.bc.gov.myhealth&hl=en_CA&gl=US"
-                    rel="noopener"
-                    target="_blank"
+                <div
+                    class="d-flex justify-center"
+                    :class="{ 'flex-column': appStore.isMobile }"
                 >
-                    <img
-                        class="img-fluid mr-4"
-                        src="@/assets/images/landing/google-play-badge.png"
-                        alt="Go to Google Play"
-                    />
-                </a>
-                <a
-                    href="https://apps.apple.com/ca/app/health-gateway/id1590009068"
-                    rel="noopener"
-                    target="_blank"
-                >
-                    <img
-                        class="img-fluid"
-                        src="@/assets/images/landing/apple-badge.png"
-                        alt="Go to App Store"
-                    />
-                </a>
+                    <a
+                        href="https://play.google.com/store/apps/details?id=ca.bc.gov.myhealth&hl=en_CA&gl=US"
+                        rel="noopener"
+                        target="_blank"
+                        class="px-2"
+                    >
+                        <img
+                            src="@/assets/images/landing/google-play-badge.png"
+                            alt="Go to Google Play"
+                        />
+                    </a>
+                    <a
+                        href="https://apps.apple.com/ca/app/health-gateway/id1590009068"
+                        rel="noopener"
+                        target="_blank"
+                        class="px-2"
+                    >
+                        <img
+                            src="@/assets/images/landing/apple-badge.png"
+                            alt="Go to App Store"
+                        />
+                    </a>
+                </div>
             </v-col>
         </v-row>
     </div>
