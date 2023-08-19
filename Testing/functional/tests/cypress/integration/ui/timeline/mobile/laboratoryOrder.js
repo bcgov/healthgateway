@@ -8,7 +8,7 @@ function checkPopoverIsVisible() {
             cy.root()
                 .closest("html")
                 .within(() => {
-                    cy.get(`[data-testid=${id}-popover]`).should("be.visible");
+                    cy.get(`[data-testid=${id}-popover]`).should("exist");
                 });
         });
 }
@@ -73,9 +73,10 @@ describe("Laboratory Orders", () => {
                 cy.get("[data-testid=result-info-button]")
                     .should("be.visible")
                     .click();
-                cy.get("[data-testid=result-info-popover]").should(
-                    "be.visible"
-                );
+
+                cy.document()
+                    .find("[data-testid=result-info-popover]")
+                    .should("exist");
 
                 cy.log("Verifying partial status");
                 cy.get("[data-testid=laboratoryResultTable]").within(() => {

@@ -79,7 +79,7 @@ function formatPhone(phoneNumber: string | undefined): string {
                 </v-col>
             </v-row>
             <v-divider class="my-4" />
-            <div data-testid="medication-directions">
+            <div>
                 <DisplayFieldComponent
                     data-testid="pharmacist-outcome"
                     name="Outcome"
