@@ -152,6 +152,10 @@ const hasActiveFilter = computed(() => timelineStore.hasActiveFilter);
 const linearDate = computed(() => timelineStore.linearDate);
 const selectedDate = computed(() => timelineStore.selectedDate);
 const blockedDataSources = computed(() => userStore.blockedDataSources);
+const lowerPageStart = computed(() => (currentPage.value - 1) * pageSize + 1);
+const upperPageEnd = computed(() =>
+    Math.min(currentPage.value * pageSize, filteredTimelineEntries.value.length)
+);
 
 const filterLabels = computed(() => {
     const labels: [string, string][] = [];
@@ -504,6 +508,7 @@ function setPageFromDate(eventDate: IDateWrapper): boolean {
 }
 
 watch(currentPage, () => {
+    window.scrollTo(0, 0);
     // Handle the current page being beyond the max number of pages
     if (currentPage.value > numberOfPages.value) {
         currentPage.value = numberOfPages.value;
@@ -588,7 +593,8 @@ setPageFromDate(linearDate.value);
                 data-testid="timeline-record-count"
                 class="text-body-1"
             >
-                Displaying {{ visibleTimelineEntries.length }} out of
+                Displaying
+                {{ lowerPageStart }} to {{ upperPageEnd }} out of
                 {{ filteredTimelineEntries.length }} records
             </p>
             <v-alert
