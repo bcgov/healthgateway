@@ -68,7 +68,7 @@ eventStore.emit(EventName.RegisterOnBeforeUnloadWaitlistListener);
         <v-main class="position-relative">
             <CommunicationComponent v-if="isCommunicationVisible" />
             <router-view v-if="currentPathMatches(Path.VaccineCard)" />
-            <v-container v-else class="pt-6">
+            <v-container v-else fluid class="pt-6">
                 <ErrorCardComponent v-if="!hideErrorAlerts" />
                 <router-view />
             </v-container>
