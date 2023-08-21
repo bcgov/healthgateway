@@ -417,13 +417,16 @@ function scrollBehaviour(
     }
 }
 
-const router = createRouter({
-    history: createWebHistory(process.env.BASE_URL),
-    routes,
-    scrollBehavior: scrollBehaviour,
-});
+function initializeRouter() {
+    const router = createRouter({
+        history: createWebHistory(process.env.BASE_URL),
+        routes,
+        scrollBehavior: scrollBehaviour,
+    });
 
-router.beforeEach(beforeEachGuard);
-router.afterEach(afterEachHook);
+    router.beforeEach(beforeEachGuard);
+    router.afterEach(afterEachHook);
+    return router;
+}
 
-export default router;
+export default initializeRouter;

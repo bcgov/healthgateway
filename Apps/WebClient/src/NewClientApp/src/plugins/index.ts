@@ -2,7 +2,7 @@ import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import type { App } from "vue";
 
 import vuetify from "@/plugins/vuetify";
-import router from "@/router";
+import initializeRouter from "@/router";
 import pinia from "@/stores";
 
 export function registerInitialPlugins(app: App) {
@@ -11,5 +11,6 @@ export function registerInitialPlugins(app: App) {
 }
 
 export function registerRouterPlugin(app: App) {
+    const router = initializeRouter();
     app.use(router);
 }

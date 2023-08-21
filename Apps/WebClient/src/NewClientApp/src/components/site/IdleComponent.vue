@@ -1,9 +1,9 @@
 ﻿<script setup lang="ts">
 import { computed, ref, watch } from "vue";
+import { useRouter } from "vue-router";
 
 import IdleDialogComponent from "@/components/site/IdleDialogComponent.vue";
 import { Path } from "@/constants/path";
-import router from "@/router";
 import { useAuthStore } from "@/stores/auth";
 import { useConfigStore } from "@/stores/config";
 import { IdleDetector } from "@/utility/idleDetector";
@@ -12,6 +12,7 @@ const maxIdleDialogCountdown = 60000;
 
 const authStore = useAuthStore();
 const configStore = useConfigStore();
+const router = useRouter();
 
 const idleDialog = ref<InstanceType<typeof IdleDialogComponent>>();
 
