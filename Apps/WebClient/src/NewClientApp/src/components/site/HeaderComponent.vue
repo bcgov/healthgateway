@@ -104,7 +104,8 @@ const isLogInButtonShown = computed(
         !oidcIsAuthenticated.value &&
         !isOffline.value &&
         !isPcrTest.value &&
-        !isQueuePage.value
+        !isQueuePage.value &&
+        route.path.toLowerCase() !== "/login"
 );
 const isProfileLinkAvailable = computed(
     () =>
