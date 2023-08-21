@@ -521,7 +521,7 @@ for (const [entryType] of reportComponentMap) {
 
         <MessageModalComponent
             ref="messageModal"
-            title="Sensitive Document Download"
+            title="Sensitive Document"
             message="The file that you are downloading contains personal information. If you are on a public computer, please ensure that the file is deleted before you log off."
             @submit="downloadReport"
         />

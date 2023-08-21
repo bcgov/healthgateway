@@ -19,7 +19,6 @@ import { useErrorStore } from "@/stores/error";
 import { useTimelineStore } from "@/stores/timeline";
 import SnowPlow from "@/utility/snowPlow";
 
-
 interface Props {
     hdid: string;
     entry: Covid19TestResultTimelineEntry;
@@ -207,7 +206,7 @@ function getReport(): void {
         </template>
         <MessageModalComponent
             ref="sensitiveDocumentModal"
-            title="Sensitive Document Download"
+            title="Sensitive Document"
             message="The file that you are downloading contains personal information. If you are on a public computer, please ensure that the file is deleted before you log off."
             @submit="getReport"
         />
