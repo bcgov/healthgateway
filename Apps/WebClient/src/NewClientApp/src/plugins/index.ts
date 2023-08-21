@@ -11,5 +11,6 @@ export function registerInitialPlugins(app: App) {
 }
 
 export function registerRouterPlugin(app: App) {
-    app.use(initializeRouter());
+    const router = initializeRouter();
+    app.use(router);
 }
