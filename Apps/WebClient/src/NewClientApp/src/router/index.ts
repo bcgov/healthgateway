@@ -49,6 +49,10 @@ const HomeView = () =>
     import(
         /* webpackChunkName: "home" */ "@/components/private/home/HomeView.vue"
     );
+const IdirLoggedInView = () =>
+    import(
+        /* webpackChunkName: "idirLoggedIn" */ "@/components/error/IdirLoggedInView.vue"
+    );
 const LogoutCompleteView = () =>
     import(
         /* webpackChunkName: "logoutComplete" */ "@/components/authentication/LogoutCompleteView.vue"
@@ -167,6 +171,14 @@ const routes = [
             validStates: [UserState.registered],
             requiredFeaturesEnabled: (config: FeatureToggleConfiguration) =>
                 config.dependents.enabled && config.dependents.timelineEnabled,
+            requiresProcessedWaitlistTicket: true,
+        },
+    },
+    {
+        path: Path.IdirLoggedIn,
+        component: IdirLoggedInView,
+        meta: {
+            validStates: [UserState.invalidIdentityProvider],
             requiresProcessedWaitlistTicket: true,
         },
     },
