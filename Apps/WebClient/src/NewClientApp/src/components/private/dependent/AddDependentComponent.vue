@@ -244,7 +244,7 @@ watch(() => dependent.value.dateOfBirth, touchDateOfBirth);
                 <v-alert
                     v-if="isError"
                     data-testid="dependent-error-banner"
-                    class="d-print-none mx-4 mt-4"
+                    class="d-print-none mb-4"
                     type="error"
                     variant="outlined"
                     border
