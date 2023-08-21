@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, ref } from "vue";
 
 interface Props {
     text?: string;
@@ -14,17 +14,33 @@ const props = withDefaults(defineProps<Props>(), {
     tooltipTestid: undefined,
 });
 
+const openedFromClick = ref(false);
+const openedFromHover = ref(false);
+
 const hasText = computed(() => !!props.text);
+
+function handleClick() {
+    openedFromClick.value = !openedFromClick.value;
+    openedFromHover.value = false;
+}
 </script>
 
 <template>
-    <v-tooltip :max-width="maxWidth">
+    <v-tooltip
+        :max-width="maxWidth"
+        :model-value="openedFromClick || openedFromHover"
+        :open-on-click="false"
+        :open-on-hover="false"
+    >
         <template #activator="{ props: slotProps }">
             <v-icon
                 v-bind="{ ...slotProps, ...$attrs }"
                 icon="info-circle"
                 color="primary"
                 :size="size"
+                @click="handleClick"
+                @mouseenter="openedFromHover = true"
+                @mouseleave="openedFromHover = false"
             />
         </template>
         <div :data-testid="tooltipTestid">
