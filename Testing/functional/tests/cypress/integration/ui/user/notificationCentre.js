@@ -69,7 +69,7 @@ describe("Notification Centre", () => {
 
         cy.get("[data-testid=notification-centre-close-button]")
             .should("be.visible", "be.enabled")
-            .click();
+            .click({ force: true });
         cy.get("[data-testid=notification-centre-close-button]").should(
             "not.be.visible"
         );
@@ -81,8 +81,8 @@ describe("Notification Centre", () => {
             .click();
 
         cy.get(`[data-testid=notification-${notificationIdOne}-dismiss-button]`)
-            .scrollIntoView()
-            .should("be.visible");
+            .should("be.visible")
+            .scrollIntoView();
 
         cy.get(
             `[data-testid=notification-${notificationIdTwo}-dismiss-button]`
@@ -151,9 +151,9 @@ describe("Notification Badge", () => {
             .click();
 
         cy.get("[data-testid=notification-centre-close-button]")
-            .scrollIntoView()
             .should("be.visible", "be.enabled")
-            .click();
+            .scrollIntoView()
+            .click({ force: true });
 
         cy.get("[data-testid=notification-centre-button]").should(
             "not.have.class",
@@ -223,8 +223,8 @@ describe("Categorized web alerts", () => {
         cy.get(
             `[data-testid=notification-${notificationIdBctOdr}-action-button]`
         )
-            .scrollIntoView()
             .should("be.visible", "be.enabled")
+            .scrollIntoView()
             .click();
 
         cy.location("pathname").should("eq", servicesPath);
@@ -239,6 +239,7 @@ describe("Categorized web alerts", () => {
             `[data-testid=notification-${notificationIdOtherInternal}-action-button]`
         )
             .should("be.visible", "be.enabled")
+            .scrollIntoView()
             .click();
 
         cy.location("pathname").should("eq", reportsPath);
