@@ -79,9 +79,10 @@ describe("dependents - dashboard", () => {
                     hdid,
                     "profile"
                 );
-                cy.get(profileTabButtonSelector)
-                    .should("be.visible")
-                    .should("have.class", "disabled");
+                cy.get(profileTabButtonSelector).should(
+                    "be.visible",
+                    "be.disabled"
+                );
             });
 
         cy.get("@agedOutDependentCard").within(() => {
@@ -102,27 +103,36 @@ describe("dependents - dashboard", () => {
             "be.visible"
         );
         //Validate First Name
-        cy.get("[data-testid=dependent-first-name-input]")
+        cy.get("[data-testid=dependent-first-name-input] input")
             .should("be.enabled")
             .clear()
-            .blur()
-            .should("have.class", "is-invalid");
+            .blur();
+        cy.get("[data-testid=dependent-first-name-input]").should(
+            "have.class",
+            "v-input--error"
+        );
         // Validate Last Name
-        cy.get("[data-testid=dependent-last-name-input]")
+        cy.get("[data-testid=dependent-last-name-input] input")
             .should("be.enabled")
             .clear()
-            .blur()
-            .should("have.class", "is-invalid");
+            .blur();
+        cy.get("[data-testid=dependent-last-name-input]").should(
+            "have.class",
+            "v-input--error"
+        );
         //Validate Date of Birth
         cy.get("[data-testid=dependent-date-of-birth-input] input").should(
             "be.enabled"
         );
         // Validate PHN input
-        cy.get("[data-testid=dependent-phn-input]")
+        cy.get("[data-testid=dependent-phn-input] input")
             .should("be.enabled")
             .clear()
-            .blur()
-            .should("have.class", "is-invalid");
+            .blur();
+        cy.get("[data-testid=dependent-phn-input]").should(
+            "have.class",
+            "v-input--error"
+        );
 
         // Validate Cancel out of the form
         cy.get("[data-testid=cancel-dependent-registration-btn]")
@@ -139,25 +149,23 @@ describe("dependents - dashboard", () => {
             "exist",
             "be.visible"
         );
-        cy.get("[data-testid=dependent-first-name-input]").type(
+        cy.get("[data-testid=dependent-first-name-input] input").type(
             validDependent.firstName
         );
-        cy.get("[data-testid=dependent-last-name-input]").type(
+        cy.get("[data-testid=dependent-last-name-input] input").type(
             validDependent.lastName
         );
         cy.get("[data-testid=dependent-date-of-birth-input] input").type(
             validDependent.invalidDoB
         );
-        cy.get("[data-testid=dependent-phn-input]").type(validDependent.phn);
+        cy.get("[data-testid=dependent-phn-input] input").type(
+            validDependent.phn
+        );
         cy.get("[data-testid=dependent-terms-checkbox] input").check({
             force: true,
         });
 
-        cy.get("[data-testid=register-dependent-btn]").click();
-
-        // Validate the modal has not closed
-        cy.get("[data-testid=add-dependent-dialog]").should("exist");
-
+        cy.get("[data-testid=register-dependent-btn]").should("be.disabled");
         cy.get("[data-testid=cancel-dependent-registration-btn]").click();
     });
 
@@ -169,16 +177,16 @@ describe("dependents - dashboard", () => {
             "be.visible"
         );
 
-        cy.get("[data-testid=dependent-first-name-input]")
+        cy.get("[data-testid=dependent-first-name-input] input")
             .clear()
             .type(validDependent.firstName);
-        cy.get("[data-testid=dependent-last-name-input]")
+        cy.get("[data-testid=dependent-last-name-input] input")
             .clear()
             .type(validDependent.wrongLastName);
         cy.get("[data-testid=dependent-date-of-birth-input] input")
             .clear()
             .type(validDependent.doB);
-        cy.get("[data-testid=dependent-phn-input]")
+        cy.get("[data-testid=dependent-phn-input] input")
             .clear()
             .type(validDependent.phn);
         cy.get("[data-testid=dependent-terms-checkbox] input").check({
@@ -205,16 +213,16 @@ describe("dependents - dashboard", () => {
             "be.visible"
         );
 
-        cy.get("[data-testid=dependent-first-name-input]")
+        cy.get("[data-testid=dependent-first-name-input] input")
             .clear()
             .type(noHdidDependent.firstName);
-        cy.get("[data-testid=dependent-last-name-input]")
+        cy.get("[data-testid=dependent-last-name-input] input")
             .clear()
             .type(noHdidDependent.lastName);
         cy.get("[data-testid=dependent-date-of-birth-input] input")
             .clear()
             .type(noHdidDependent.doB);
-        cy.get("[data-testid=dependent-phn-input]")
+        cy.get("[data-testid=dependent-phn-input] input")
             .clear()
             .type(noHdidDependent.phn);
         cy.get("[data-testid=dependent-terms-checkbox] input").check({
@@ -243,16 +251,16 @@ describe("dependents - dashboard", () => {
             "be.visible"
         );
 
-        cy.get("[data-testid=dependent-first-name-input]")
+        cy.get("[data-testid=dependent-first-name-input] input")
             .clear()
             .type(validDependent.firstName);
-        cy.get("[data-testid=dependent-last-name-input]")
+        cy.get("[data-testid=dependent-last-name-input] input")
             .clear()
             .type(validDependent.lastName);
         cy.get("[data-testid=dependent-date-of-birth-input] input")
             .clear()
             .type(validDependent.doB);
-        cy.get("[data-testid=dependent-phn-input]")
+        cy.get("[data-testid=dependent-phn-input] input")
             .clear()
             .type(validDependent.phn);
         cy.get("[data-testid=dependent-terms-checkbox] input").check({
@@ -283,7 +291,7 @@ describe("dependents - dashboard", () => {
             "exist",
             "be.visible"
         );
-        cy.get("[data-testid=dependent-phn-input]")
+        cy.get("[data-testid=dependent-phn-input] input")
             .clear()
             .type(validDependent.phn)
             .blur();
@@ -308,16 +316,16 @@ describe("dependents - dashboard", () => {
             "be.visible"
         );
 
-        cy.get("[data-testid=dependent-first-name-input]")
+        cy.get("[data-testid=dependent-first-name-input] input")
             .clear()
             .type(validDependent.firstName);
-        cy.get("[data-testid=dependent-last-name-input]")
+        cy.get("[data-testid=dependent-last-name-input] input")
             .clear()
             .type(validDependent.lastName);
         cy.get("[data-testid=dependent-date-of-birth-input] input")
             .clear()
             .type(validDependent.doB);
-        cy.get("[data-testid=dependent-phn-input]")
+        cy.get("[data-testid=dependent-phn-input] input")
             .clear()
             .type(validDependent.phn);
         cy.get("[data-testid=dependent-terms-checkbox] input").check({

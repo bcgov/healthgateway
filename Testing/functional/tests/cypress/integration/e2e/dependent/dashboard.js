@@ -59,7 +59,7 @@ describe("dependents - dashboard", () => {
 
     it("Validate clicking health records button loads timeline", () => {
         const selector = `[data-testid=dependent-health-records-button-${validDependentHdid}]`;
-        cy.get(selector).should("be.enabled", "be.visible").click();
+        cy.get(selector).should("be.visible").click();
         cy.location("pathname").should("eq", validDependentTimelinePath);
     });
 
