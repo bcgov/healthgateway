@@ -208,7 +208,9 @@ eventStore.subscribe(EventName.OpenNoteDialog, openDialog);
                         </p>
                         <p>
                             If you continue to have issues, please contact
-                            <a href="mailto:HealthGateway@gov.bc.ca"
+                            <a
+                                href="mailto:HealthGateway@gov.bc.ca"
+                                class="text-link"
                                 >HealthGateway@gov.bc.ca</a
                             >.
                         </p>

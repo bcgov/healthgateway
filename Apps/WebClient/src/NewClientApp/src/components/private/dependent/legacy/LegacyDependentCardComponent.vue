@@ -1209,6 +1209,7 @@ watch(vaccineRecordState, () => {
                                         href="https://www.immunizationrecord.gov.bc.ca/"
                                         target="_blank"
                                         rel="noopener"
+                                        class="text-link"
                                         >fill in this online form</a
                                     >.
                                 </span>

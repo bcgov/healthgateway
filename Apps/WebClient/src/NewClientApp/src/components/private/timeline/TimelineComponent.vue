@@ -648,6 +648,7 @@ setPageFromDate(linearDate.value);
                     href="https://www2.gov.bc.ca/gov/content/health/managing-your-health/health-gateway/guide#medicalimaging"
                     target="_blank"
                     rel="noopener"
+                    class="text-link"
                     >Learn more</a
                 >.
             </v-alert>

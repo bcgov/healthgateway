@@ -265,6 +265,7 @@ watch(() => dependent.value.dateOfBirth, touchDateOfBirth);
                                     href="https://www2.gov.bc.ca/gov/content/governments/government-id/bc-services-card"
                                     target="_blank"
                                     rel="noopener"
+                                    class="text-link"
                                     >BC Services Card</a
                                 >.
                             </span>
@@ -279,7 +280,9 @@ watch(() => dependent.value.dateOfBirth, touchDateOfBirth);
                             class="text-body-1"
                         >
                             Please contact
-                            <a href="mailto:HealthGateway@gov.bc.ca"
+                            <a
+                                href="mailto:HealthGateway@gov.bc.ca"
+                                class="text-link"
                                 >HealthGateway@gov.bc.ca</a
                             >.
                         </span>
@@ -289,7 +292,9 @@ watch(() => dependent.value.dateOfBirth, touchDateOfBirth);
                             class="text-body-1"
                         >
                             If you continue to have issues, please contact
-                            <a href="mailto:HealthGateway@gov.bc.ca"
+                            <a
+                                href="mailto:HealthGateway@gov.bc.ca"
+                                class="text-link"
                                 >HealthGateway@gov.bc.ca</a
                             >.
                         </span>

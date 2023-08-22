@@ -370,10 +370,10 @@ loadTermsOfService();
             <p class="text-h4">Error retrieving user information</p>
             <p data-testid="clientRegistryErrorText" class="text-body-1">
                 There may be an issue in our Client Registry. Please contact
-                <strong
-                    ><a href="mailto:HealthGateway@gov.bc.ca"
-                        >HealthGateway@gov.bc.ca</a
-                    ></strong
+                <a
+                    href="mailto:HealthGateway@gov.bc.ca"
+                    class="text-link font-weight-bold"
+                    >HealthGateway@gov.bc.ca</a
                 >
             </p>
         </div>

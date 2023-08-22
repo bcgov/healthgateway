@@ -63,7 +63,7 @@ function formatDate(date: StringISODate): string {
                 dependent to their Health Gateway account. For privacy, we can’t
                 tell you their names. If this number isn’t what you expect,
                 contact us at
-                <a href="mailto:HealthGateway@gov.bc.ca"
+                <a href="mailto:HealthGateway@gov.bc.ca" class="text-link"
                     >HealthGateway@gov.bc.ca</a
                 >.
             </InfoPopoverComponent>

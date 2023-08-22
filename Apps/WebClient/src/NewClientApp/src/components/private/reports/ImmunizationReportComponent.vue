@@ -236,6 +236,7 @@ immunizationStore
                             href="https://www.immunizationrecord.gov.bc.ca"
                             target="_blank"
                             rel="noopener"
+                            class="text-link"
                             >immunizationrecord.gov.bc.ca</a
                         >.
                     </p>
