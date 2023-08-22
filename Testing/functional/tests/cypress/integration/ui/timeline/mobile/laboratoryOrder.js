@@ -16,7 +16,7 @@ function checkPopoverIsVisible() {
 const recordDisplayMessage = (lower, upper, total) =>
     `Displaying ${lower} to ${upper} out of ${total} records`;
 
-describe.skip("Laboratory Orders", () => {
+describe("Laboratory Orders", () => {
     beforeEach(() => {
         cy.intercept("GET", "**/Laboratory/LaboratoryOrders*", {
             fixture: "LaboratoryService/laboratoryOrders.json",
@@ -289,7 +289,7 @@ describe("Laboratory Orders Refresh", () => {
     });
 });
 
-describe.skip("Laboratory Orders Queued", () => {
+describe("Laboratory Orders Queued", () => {
     beforeEach(() => {
         cy.intercept("GET", "**/Laboratory/LaboratoryOrders*", {
             fixture: "LaboratoryService/laboratoryOrdersQueued.json",
