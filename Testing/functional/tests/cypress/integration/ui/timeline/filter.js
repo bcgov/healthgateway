@@ -37,10 +37,11 @@ describe("Filters", () => {
     });
 
     it("Verify filtered record count", () => {
-        const unfilteredRecordsMessage = "Displaying 25 out of 34 records";
+        const recordDisplayMessage = (lower, upper, total) =>
+            `Displaying ${lower} to ${upper} out of ${total} records`;
 
         cy.get("[data-testid=timeline-record-count]").contains(
-            unfilteredRecordsMessage
+            recordDisplayMessage(1, 25, 34)
         );
 
         cy.get("[data-testid=filterDropdown]").click();
@@ -50,7 +51,7 @@ describe("Filters", () => {
         cy.get("[data-testid=immunizationTitle]").should("be.visible");
 
         cy.get("[data-testid=timeline-record-count]").contains(
-            "Displaying 9 out of 9 records"
+            recordDisplayMessage(1, 9, 9)
         );
 
         cy.contains("[data-testid=filter-label]", "Immunizations").within(
@@ -60,7 +61,7 @@ describe("Filters", () => {
         );
 
         cy.get("[data-testid=timeline-record-count]").contains(
-            unfilteredRecordsMessage
+            recordDisplayMessage(1, 25, 34)
         );
 
         cy.get("[data-testid=filterDropdown]").click();
@@ -83,7 +84,7 @@ describe("Filters", () => {
 
         cy.get("[data-testid=clear-filters-button]").click();
         cy.get("[data-testid=timeline-record-count]").contains(
-            unfilteredRecordsMessage
+            recordDisplayMessage(1, 25, 34)
         );
     });
 

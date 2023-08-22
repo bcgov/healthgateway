@@ -327,6 +327,11 @@ const isOnlyDiagnosticImagingSelected = computed(
         selectedEntryTypes.value.size === 1 &&
         selectedEntryTypes.value.has(EntryType.DiagnosticImaging)
 );
+const recordCountMessage = computed(() =>
+    filteredTimelineEntries.value.length === 1
+        ? "Displaying 1 out of 1 records"
+        : `Displaying ${lowerPageStart.value} to ${upperPageEnd.value} out of ${filteredTimelineEntries.value.length} records`
+);
 
 function clearFilter(label: string, value: string | undefined): void {
     let keyword = filter.value.keyword;
@@ -593,9 +598,7 @@ setPageFromDate(linearDate.value);
                 data-testid="timeline-record-count"
                 class="text-body-1"
             >
-                Displaying
-                {{ lowerPageStart }} to {{ upperPageEnd }} out of
-                {{ filteredTimelineEntries.length }} records
+                {{ recordCountMessage }}
             </p>
             <v-alert
                 v-if="isOnlyClinicalDocumentSelected"
