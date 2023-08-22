@@ -45,6 +45,7 @@ const displayBreadcrumbs = computed(
                 :to="item.to"
                 :active="item.active"
                 :data-testid="item.dataTestId"
+                :disabled="item.active"
             >
                 {{ item.text }}
             </v-breadcrumbs-item>
