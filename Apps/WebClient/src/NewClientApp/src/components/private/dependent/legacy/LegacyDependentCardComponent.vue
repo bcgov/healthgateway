@@ -6,6 +6,7 @@ import HgButtonComponent from "@/components/common/HgButtonComponent.vue";
 import HgIconButtonComponent from "@/components/common/HgIconButtonComponent.vue";
 import LoadingComponent from "@/components/common/LoadingComponent.vue";
 import MessageModalComponent from "@/components/common/MessageModalComponent.vue";
+import Covid19TestResultDescriptionComponent from "@/components/private/timeline/entry/Covid19TestResultDescriptionComponent.vue";
 import { ActionType } from "@/constants/actionType";
 import { EntryType } from "@/constants/entryType";
 import { ErrorSourceType, ErrorType } from "@/constants/errorType";
@@ -1124,47 +1125,50 @@ watch(vaccineRecordState, () => {
                                                         .filteredLabResultOutcome
                                                 }}
                                             </span>
-                                            <span v-if="row.test.resultReady">
-                                                <HgIconButtonComponent
-                                                    :id="
-                                                        'dependent-covid-test-info-button-' +
-                                                        index
-                                                    "
-                                                    aria-label="Result Description"
-                                                    data-testid="dependent-covid-test-info-button"
+                                            <HgIconButtonComponent
+                                                v-if="
+                                                    row.test.resultReady &&
+                                                    row.test.resultDescription
+                                                "
+                                                :id="
+                                                    'dependent-covid-test-info-button-' +
+                                                    index
+                                                "
+                                                aria-label="Result Description"
+                                                data-testid="dependent-covid-test-info-button"
+                                                size="x-small"
+                                                class="ml-1"
+                                            >
+                                                <v-icon
+                                                    icon="info-circle"
+                                                    color="primary"
+                                                    size="large"
+                                                />
+                                                <v-overlay
+                                                    activator="parent"
+                                                    location-strategy="connected"
+                                                    scroll-strategy="close"
+                                                    open-on-click
+                                                    :open-on-hover="false"
                                                 >
-                                                    <v-icon
-                                                        icon="info-circle"
-                                                        size="small"
-                                                    />
-                                                    <v-overlay
-                                                        activator="parent"
-                                                        location-strategy="connected"
-                                                        scroll-strategy="block"
-                                                        open-on-hover
+                                                    <v-card
+                                                        data-testid="dependent-covid-test-info-popover"
+                                                        class="pa-2"
+                                                        max-width="400px"
                                                     >
-                                                        <v-card
-                                                            data-testid="dependent-covid-test-info-popover"
-                                                            class="pa-2"
-                                                            max-width="400px"
-                                                        >
-                                                            <h4>
-                                                                Implement the
-                                                                test description
-                                                                component
-                                                            </h4>
-                                                            <!-- <Covid19LaboratoryTestDescriptionComponent
-                                                            class="pa-2"
+                                                        <Covid19TestResultDescriptionComponent
                                                             :description="
                                                                 row.test
                                                                     .resultDescription
                                                             "
-                                                            :link="row.test.resultLink"
-                                                        /> -->
-                                                        </v-card>
-                                                    </v-overlay>
-                                                </HgIconButtonComponent>
-                                            </span>
+                                                            :link="
+                                                                row.test
+                                                                    .resultLink
+                                                            "
+                                                        />
+                                                    </v-card>
+                                                </v-overlay>
+                                            </HgIconButtonComponent>
                                         </td>
                                         <td class="text-center">
                                             <HgIconButtonComponent
