@@ -18,14 +18,6 @@ describe("Notification Centre", () => {
             },
         });
 
-        cy.intercept("GET", `**/UserProfile/${HDID}`, {
-            fixture: "UserProfileService/userProfile.json",
-        });
-
-        cy.intercept("GET", `**/Patient/${HDID}*`, {
-            fixture: "PatientService/patientNoAddress.json",
-        });
-
         cy.intercept("GET", `**/Notification/${HDID}`, {
             fixture: "NotificationService/notifications.json",
         });
@@ -44,6 +36,9 @@ describe("Notification Centre", () => {
             AuthMethod.KeyCloak,
             "/home"
         );
+
+        // Validate home page has displayed before clicking on notifications
+        cy.get("[data-testid=health-records-card]").should("be.visible");
     });
 
     it("Dismiss individual notification", () => {
@@ -77,7 +72,7 @@ describe("Notification Centre", () => {
 
         cy.get("[data-testid=notification-centre-close-button]")
             .should("be.visible", "be.enabled")
-            .click({ force: true });
+            .click();
         cy.get("[data-testid=notification-centre-close-button]").should(
             "not.be.visible"
         );
@@ -89,8 +84,8 @@ describe("Notification Centre", () => {
             .click();
 
         cy.get(`[data-testid=notification-${notificationIdOne}-dismiss-button]`)
-            .should("be.visible")
-            .scrollIntoView();
+            .scrollIntoView()
+            .should("be.visible");
 
         cy.get(
             `[data-testid=notification-${notificationIdTwo}-dismiss-button]`
@@ -134,10 +129,6 @@ describe("Notification Badge", () => {
             fixture: "UserProfileService/userProfile.json",
         });
 
-        cy.intercept("GET", `**/Patient/${HDID}*`, {
-            fixture: "PatientService/patientNoAddress.json",
-        });
-
         // The scheduledDateTimeUtc must be after user profile's last login in lastLoginDateTimes, which is the second entry
         // not the first entry. The first entry is the current login.
         cy.intercept("GET", `**/Notification/${HDID}`, {
@@ -150,6 +141,9 @@ describe("Notification Badge", () => {
             AuthMethod.KeyCloak,
             "/home"
         );
+
+        // Validate home page has displayed before clicking on notifications
+        cy.get("[data-testid=health-records-card]").should("be.visible");
     });
 
     it("Verify notification badge", () => {
@@ -164,8 +158,7 @@ describe("Notification Badge", () => {
 
         cy.get("[data-testid=notification-centre-close-button]")
             .should("be.visible", "be.enabled")
-            .scrollIntoView()
-            .click({ force: true });
+            .click();
 
         cy.get("[data-testid=notification-centre-button]").should(
             "not.have.class",
@@ -183,24 +176,6 @@ describe("Notification Badge", () => {
 
 describe("Categorized web alerts", () => {
     beforeEach(() => {
-        cy.intercept("GET", `**/UserProfile/${HDID}`, {
-            fixture: "UserProfileService/userProfile.json",
-        });
-
-        cy.intercept("GET", `**/Patient/${HDID}*`, {
-            fixture: "PatientService/patientNoAddress.json",
-        });
-
-        cy.intercept("GET", `**/Notification/${HDID}`, {
-            fixture: "NotificationService/notifications.json",
-        });
-    });
-
-    it("Web alert category to pre-filtered timeline", () => {
-        cy.intercept("GET", `**/Immunization?hdid=*`, {
-            fixture: "ImmunizationService/immunization.json",
-        });
-
         cy.configureSettings({
             notificationCentre: {
                 enabled: true,
@@ -211,6 +186,17 @@ describe("Categorized web alerts", () => {
                     enabled: true,
                 },
             ],
+            services: {
+                enabled: true,
+            },
+        });
+
+        cy.intercept("GET", `**/Notification/${HDID}`, {
+            fixture: "NotificationService/notifications.json",
+        });
+
+        cy.intercept("GET", `**/Immunization?hdid=*`, {
+            fixture: "ImmunizationService/immunization.json",
         });
 
         cy.login(
@@ -220,13 +206,17 @@ describe("Categorized web alerts", () => {
             "/home"
         );
 
+        // Validate home page has displayed before clicking on notifications
+        cy.get("[data-testid=health-records-card]").should("be.visible");
+    });
+
+    it("Web alert category to pre-filtered timeline", () => {
         cy.get("[data-testid=notification-centre-button]")
             .should("be.visible", "be.enabled")
             .click();
 
         cy.get(`[data-testid=notification-${notificationIdImms}-action-button]`)
             .should("be.visible", "be.enabled")
-            .scrollIntoView()
             .click();
 
         cy.location("pathname").should("eq", timelinePath);
@@ -234,22 +224,6 @@ describe("Categorized web alerts", () => {
     });
 
     it("Web alert category to services", () => {
-        cy.configureSettings({
-            notificationCentre: {
-                enabled: true,
-            },
-            services: {
-                enabled: true,
-            },
-        });
-
-        cy.login(
-            Cypress.env("keycloak.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak,
-            "/home"
-        );
-
         cy.get("[data-testid=notification-centre-button]")
             .should("be.visible", "be.enabled")
             .click();
@@ -258,26 +232,12 @@ describe("Categorized web alerts", () => {
             `[data-testid=notification-${notificationIdBctOdr}-action-button]`
         )
             .should("be.visible", "be.enabled")
-            .scrollIntoView()
             .click();
 
         cy.location("pathname").should("eq", servicesPath);
     });
 
     it("Web alert category to other internal link", () => {
-        cy.configureSettings({
-            notificationCentre: {
-                enabled: true,
-            },
-        });
-
-        cy.login(
-            Cypress.env("keycloak.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak,
-            "/home"
-        );
-
         cy.get("[data-testid=notification-centre-button]")
             .should("be.visible", "be.enabled")
             .click();
@@ -286,7 +246,6 @@ describe("Categorized web alerts", () => {
             `[data-testid=notification-${notificationIdOtherInternal}-action-button]`
         )
             .should("be.visible", "be.enabled")
-            .scrollIntoView()
             .click();
 
         cy.location("pathname").should("eq", reportsPath);
