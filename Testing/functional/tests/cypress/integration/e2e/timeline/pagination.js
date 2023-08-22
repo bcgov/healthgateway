@@ -25,7 +25,7 @@ describe("Pagination", () => {
     it("Count Records", () => {
         cy.get("[data-testid=timelineCard]").then(($cards) => {
             cy.get("[data-testid=timeline-record-count]").contains(
-                `Displaying ${$cards.length} out of `
+                `Displaying 1 to ${$cards.length} out of `
             );
         });
     });
