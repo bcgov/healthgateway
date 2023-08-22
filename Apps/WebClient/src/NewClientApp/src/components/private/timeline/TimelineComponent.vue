@@ -332,6 +332,7 @@ const recordCountMessage = computed(() =>
         ? "Displaying 1 out of 1 records"
         : `Displaying ${lowerPageStart.value} to ${upperPageEnd.value} out of ${filteredTimelineEntries.value.length} records`
 );
+
 function clearFilter(label: string, value: string | undefined): void {
     let keyword = filter.value.keyword;
     let startDate = filter.value.startDate;
