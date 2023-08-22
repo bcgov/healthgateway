@@ -36,6 +36,9 @@ describe("Notification Centre", () => {
             AuthMethod.KeyCloak,
             "/home"
         );
+
+        // Validate home page has displayed before clicking on notifications
+        cy.get("[data-testid=health-records-card]").should("be.visible");
     });
 
     it("Dismiss individual notification", () => {
@@ -138,6 +141,9 @@ describe("Notification Badge", () => {
             AuthMethod.KeyCloak,
             "/home"
         );
+
+        // Validate home page has displayed before clicking on notifications
+        cy.get("[data-testid=health-records-card]").should("be.visible");
     });
 
     it("Verify notification badge", () => {
@@ -151,7 +157,6 @@ describe("Notification Badge", () => {
             .click();
 
         cy.get("[data-testid=notification-centre-close-button]")
-            .scrollIntoView()
             .should("be.visible", "be.enabled")
             .click();
 
@@ -200,6 +205,9 @@ describe("Categorized web alerts", () => {
             AuthMethod.KeyCloak,
             "/home"
         );
+
+        // Validate home page has displayed before clicking on notifications
+        cy.get("[data-testid=health-records-card]").should("be.visible");
     });
 
     it("Web alert category to pre-filtered timeline", () => {
@@ -223,7 +231,6 @@ describe("Categorized web alerts", () => {
         cy.get(
             `[data-testid=notification-${notificationIdBctOdr}-action-button]`
         )
-            .scrollIntoView()
             .should("be.visible", "be.enabled")
             .click();
 

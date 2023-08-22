@@ -16,6 +16,9 @@ describe("Notification Centre", () => {
             AuthMethod.KeyCloak,
             "/home"
         );
+
+        // Validate home page has displayed before clicking on notification.
+        cy.get("[data-testid=health-records-card]").should("be.visible");
     });
 
     it("Get notifications", () => {
@@ -28,6 +31,7 @@ describe("Notification Centre", () => {
 
         cy.get("[data-testid=notification-centre-dismiss-all-button]")
             .should("be.visible", "be.enabled")
+            .scrollIntoView()
             .click();
 
         cy.get("[data-testid=notifications-div]").should("not.exist");
