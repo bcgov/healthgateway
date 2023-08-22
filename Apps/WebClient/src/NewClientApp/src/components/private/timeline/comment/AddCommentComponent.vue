@@ -79,11 +79,11 @@ function addComment(): void {
         maxlength="1000"
         auto-grow
         rows="1"
-        variant="outlined"
         :loading="isSaving"
         placeholder="Write a comment"
         style="overflow-y: auto"
         hide-details
+        class="pa-1"
     >
         <template #prepend>
             <v-tooltip

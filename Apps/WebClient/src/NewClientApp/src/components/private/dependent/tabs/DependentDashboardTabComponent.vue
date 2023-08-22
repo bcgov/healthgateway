@@ -106,7 +106,7 @@ watch(vaccineRecordState, () => {
         <v-col :cols="getGridCols" class="d-flex">
             <HgCardComponent
                 title="Health Records"
-                class="flex-grow-1 ma-1"
+                class="flex-grow-1"
                 :data-testid="`dependent-health-records-button-${dependent.ownerId}`"
                 @click="handleClickHealthRecordsButton"
             >

@@ -105,7 +105,7 @@ function removeDependent(): void {
             </v-card-title>
             <v-card-text class="pa-4">
                 <v-window v-model="selectedTabIndex">
-                    <v-window-item data-testid="dashboard-tab">
+                    <v-window-item data-testid="dashboard-tab" class="pa-1">
                         <div
                             v-if="isExpired"
                             class="text-center"
@@ -146,13 +146,13 @@ function removeDependent(): void {
                             :dependent="dependent"
                         />
                     </v-window-item>
-                    <v-window-item data-testid="report-tab">
+                    <v-window-item data-testid="report-tab" class="pa-1">
                         <ReportsComponent
                             :hdid="dependent.dependentInformation.hdid"
                             :is-dependent="true"
                         />
                     </v-window-item>
-                    <v-window-item data-testid="profile-tab">
+                    <v-window-item data-testid="profile-tab" class="pa-1">
                         <DependentProfileTabComponent :dependent="dependent" />
                     </v-window-item>
                 </v-window>
