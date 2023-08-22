@@ -19,9 +19,9 @@ interface Tile {
 }
 
 enum PreviewDevice {
-    laptop = "laptop",
-    tablet = "tablet",
-    smartphone = "smartphone",
+    laptop,
+    tablet,
+    smartphone,
 }
 
 const entryTypes: EntryType[] = [
@@ -108,7 +108,7 @@ function selectPreviewDevice(previewDevice: PreviewDevice): void {
             {{ offlineMessage }}
         </p>
     </div>
-    <div v-else class="pa-4">
+    <v-container>
         <v-row justify="start" align="start">
             <v-col lg="5">
                 <h1 class="mb-6 text-primary text-h4 font-weight-bold">
@@ -157,7 +157,7 @@ function selectPreviewDevice(previewDevice: PreviewDevice): void {
             >
                 What you can access
             </h2>
-            <v-row align="center" justify="center">
+            <v-row align="center">
                 <v-col
                     v-for="tile in activeTiles"
                     :key="tile.name"
@@ -203,12 +203,14 @@ function selectPreviewDevice(previewDevice: PreviewDevice): void {
                 >
                     <template #activator="{ props }">
                         <HgIconButtonComponent
-                            icon="fas fa-desktop"
+                            icon="desktop"
                             data-testid="preview-device-button-laptop"
+                            :class="{
+                                'bg-grey-lighten-3':
+                                    selectedPreviewDevice ===
+                                    PreviewDevice.laptop,
+                            }"
                             v-bind="props"
-                            :disabled="
-                                selectedPreviewDevice === PreviewDevice.laptop
-                            "
                             class="mx-4"
                             @click="selectPreviewDevice(PreviewDevice.laptop)"
                         />
@@ -224,9 +226,11 @@ function selectPreviewDevice(previewDevice: PreviewDevice): void {
                             icon="fas fa-tablet-screen-button"
                             v-bind="props"
                             data-testid="preview-device-button-tablet"
-                            :disabled="
-                                selectedPreviewDevice === PreviewDevice.tablet
-                            "
+                            :class="{
+                                'bg-grey-lighten-3':
+                                    selectedPreviewDevice ===
+                                    PreviewDevice.tablet,
+                            }"
                             class="mx-4"
                             @click="selectPreviewDevice(PreviewDevice.tablet)"
                         />
@@ -242,10 +246,11 @@ function selectPreviewDevice(previewDevice: PreviewDevice): void {
                             icon="fas fa-mobile-screen-button"
                             v-bind="props"
                             data-testid="preview-device-button-smartphone"
-                            :disabled="
-                                selectedPreviewDevice ===
-                                PreviewDevice.smartphone
-                            "
+                            :class="{
+                                'bg-grey-lighten-3':
+                                    selectedPreviewDevice ===
+                                    PreviewDevice.smartphone,
+                            }"
                             class="mx-4"
                             @click="
                                 selectPreviewDevice(PreviewDevice.smartphone)
@@ -259,19 +264,19 @@ function selectPreviewDevice(previewDevice: PreviewDevice): void {
                 :class="{ 'device-preview-md': mdAndUp }"
             >
                 <v-img
-                    v-show="selectedPreviewDevice === 'laptop'"
+                    v-show="selectedPreviewDevice === PreviewDevice.laptop"
                     src="@/assets/images/landing/preview-laptop.png"
                     data-testid="preview-image-laptop"
                     alt="Preview of Health Gateway on a Laptop"
                 />
                 <v-img
-                    v-show="selectedPreviewDevice === 'tablet'"
+                    v-show="selectedPreviewDevice === PreviewDevice.tablet"
                     src="@/assets/images/landing/preview-tablet.png"
                     data-testid="preview-image-tablet"
                     alt="Preview of Health Gateway on a Tablet"
                 />
                 <v-img
-                    v-show="selectedPreviewDevice === 'smartphone'"
+                    v-show="selectedPreviewDevice === PreviewDevice.smartphone"
                     src="@/assets/images/landing/preview-smartphone.png"
                     data-testid="preview-image-smartphone"
                     alt="Preview of Health Gateway on a Smartphone"
@@ -347,15 +352,16 @@ function selectPreviewDevice(previewDevice: PreviewDevice): void {
                 </v-col>
             </v-row>
         </div>
-        <v-row align="center">
-            <v-col cols="12" lg="6" class="text-center">
+        <v-row align="center" justify="center">
+            <v-col cols="12" md="6" lg="3" class="text-center">
                 <v-img
                     src="@/assets/images/landing/mobile-app.png"
                     alt="Health Gateway Splash Page App"
                     data-testid="spash-page-app"
+                    max-height="374px"
                 />
             </v-col>
-            <v-col cols="12" lg="6" class="text-center mb-6 mb-md-12">
+            <v-col cols="12" md="6" lg="3" class="text-center mb-6 mb-md-12">
                 <h2 class="text-primary text-h4 font-weight-bold mb-6">
                     Try the mobile app.
                 </h2>
@@ -391,7 +397,7 @@ function selectPreviewDevice(previewDevice: PreviewDevice): void {
                 </div>
             </v-col>
         </v-row>
-    </div>
+    </v-container>
 </template>
 
 <style lang="scss" scoped>
