@@ -12,12 +12,14 @@ import NotificationCentreComponent from "@/components/site/NotificationCentreCom
 import ResourceCentreComponent from "@/components/site/ResourceCentreComponent.vue";
 import SidebarComponent from "@/components/site/SidebarComponent.vue";
 import { Path } from "@/constants/path";
+import { useAuthStore } from "@/stores/auth";
 import { EventName, useEventStore } from "@/stores/event";
 import { useWaitlistStore } from "@/stores/waitlist";
 
 const route = useRoute();
 const eventStore = useEventStore();
 const waitlistStore = useWaitlistStore();
+const authStore = useAuthStore();
 
 const hideErrorAlerts = computed(() =>
     currentPathMatches(Path.Root, Path.Queue, Path.Busy)
@@ -64,7 +66,7 @@ eventStore.emit(EventName.RegisterOnBeforeUnloadWaitlistListener);
         <DevBannerComponent />
         <HeaderComponent v-if="isHeaderVisible" />
         <SidebarComponent />
-        <NotificationCentreComponent />
+        <NotificationCentreComponent v-if="authStore.oidcIsAuthenticated" />
         <v-main class="position-relative">
             <CommunicationComponent v-if="isCommunicationVisible" />
             <router-view v-if="currentPathMatches(Path.VaccineCard)" />

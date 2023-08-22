@@ -127,6 +127,7 @@ function isNew(notification: Notification): boolean {
         temporary
         location="right"
         width="500"
+        touchless
     >
         <v-container class="h-100">
             <v-row align="center" no-gutters>
