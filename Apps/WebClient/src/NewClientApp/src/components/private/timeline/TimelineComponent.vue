@@ -685,7 +685,6 @@ setPageFromDate(linearDate.value);
                 :length="numberOfPages"
                 :total-visible="appStore.isMobile ? 3 : 8"
                 :density="appStore.isMobile ? 'comfortable' : 'default'"
-                :size="appStore.isMobile ? 'samll' : 'default'"
             />
         </div>
         <div

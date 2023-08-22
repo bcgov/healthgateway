@@ -12,10 +12,12 @@ import NotificationCentreComponent from "@/components/site/NotificationCentreCom
 import ResourceCentreComponent from "@/components/site/ResourceCentreComponent.vue";
 import SidebarComponent from "@/components/site/SidebarComponent.vue";
 import { Path } from "@/constants/path";
+import { useAppStore } from "@/stores/app";
 import { EventName, useEventStore } from "@/stores/event";
 import { useWaitlistStore } from "@/stores/waitlist";
 
 const route = useRoute();
+const appStore = useAppStore();
 const eventStore = useEventStore();
 const waitlistStore = useWaitlistStore();
 
@@ -72,7 +74,9 @@ eventStore.emit(EventName.RegisterOnBeforeUnloadWaitlistListener);
                 <ErrorCardComponent v-if="!hideErrorAlerts" />
                 <router-view />
             </v-container>
-            <ResourceCentreComponent v-if="isResourceCentreAvailable" />
+            <ResourceCentreComponent
+                v-if="isResourceCentreAvailable && !appStore.isMobile"
+            />
         </v-main>
         <IdleComponent />
         <FooterComponent v-if="isFooterVisible" :order="-1" />
