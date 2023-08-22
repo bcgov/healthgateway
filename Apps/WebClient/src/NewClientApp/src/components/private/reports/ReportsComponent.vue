@@ -404,6 +404,7 @@ for (const [entryType] of reportComponentMap) {
                     <v-chip
                         v-for="item in reportFilter.medications"
                         :key="item"
+                        class="excluded-medication"
                         closable
                         :title="item"
                         :data-testid="`${replaceSpaceWithDash(
@@ -527,3 +528,9 @@ for (const [entryType] of reportComponentMap) {
         />
     </div>
 </template>
+
+<style lang="scss">
+.excluded-medication .v-chip__content {
+    overflow: hidden !important;
+}
+</style>
