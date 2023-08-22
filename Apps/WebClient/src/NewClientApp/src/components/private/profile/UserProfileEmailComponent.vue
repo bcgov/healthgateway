@@ -141,7 +141,7 @@ watch(email, (value) => (inputValue.value = value));
             label="Email Address"
             :placeholder="isEmailEditable ? 'Your email address' : 'Empty'"
             persistent-placeholder
-            :disabled="!isEmailEditable"
+            :readonly="!isEmailEditable"
             :error-messages="inputErrorMessages"
             @blur="v$.inputValue.$touch()"
         />

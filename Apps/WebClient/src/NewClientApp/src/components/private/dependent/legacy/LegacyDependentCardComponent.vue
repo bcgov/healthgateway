@@ -963,7 +963,7 @@ watch(vaccineRecordState, () => {
             </v-card-title>
             <v-card-text class="pa-4">
                 <v-window v-model="selectedTabIndex">
-                    <v-window-item data-testid="dependentTab">
+                    <v-window-item data-testid="dependentTab" class="pa-1">
                         <div v-if="isExpired">
                             <v-row>
                                 <v-col class="d-flex justify-content-center">
@@ -1025,7 +1025,7 @@ watch(vaccineRecordState, () => {
                             </v-row>
                         </div>
                     </v-window-item>
-                    <v-window-item data-testid="covid19Tab">
+                    <v-window-item data-testid="covid19Tab" class="pa-1">
                         <div class="d-flex justify-center">
                             <HgButtonComponent
                                 :id="`download-proof-of-vaccination-btn-id-${dependent.ownerId}`"
@@ -1196,6 +1196,7 @@ watch(vaccineRecordState, () => {
                     </v-window-item>
                     <v-window-item
                         :data-testid="`immunization-tab-${dependent.ownerId}`"
+                        class="pa-1"
                     >
                         <v-alert
                             v-if="immunizationItems.length != 0"
@@ -1239,7 +1240,7 @@ watch(vaccineRecordState, () => {
                                 v-model="immunizationTabIndex"
                                 class="pa-4"
                             >
-                                <v-window-item>
+                                <v-window-item class="pa-1">
                                     <p
                                         v-if="immunizationItems.length === 0"
                                         class="text-body-1"
@@ -1395,7 +1396,7 @@ watch(vaccineRecordState, () => {
                                         </v-table>
                                     </div>
                                 </v-window-item>
-                                <v-window-item>
+                                <v-window-item class="pa-1">
                                     <v-row justify="end" no-gutters>
                                         <v-col cols="12" :md="true">
                                             <p class="mb-md-0 text-body-1">
@@ -1528,6 +1529,7 @@ watch(vaccineRecordState, () => {
                     </v-window-item>
                     <v-window-item
                         :data-testid="`lab-results-tab-${dependent.ownerId}`"
+                        class="pa-1"
                     >
                         <v-progress-circular
                             v-if="isLoading"
@@ -1615,6 +1617,7 @@ watch(vaccineRecordState, () => {
                     </v-window-item>
                     <v-window-item
                         :data-testid="`clinical-document-tab-${dependent.ownerId}`"
+                        class="pa-1"
                     >
                         <v-progress-circular
                             v-if="isLoading"

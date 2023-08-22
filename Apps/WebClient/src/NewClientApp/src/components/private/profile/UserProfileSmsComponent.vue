@@ -186,7 +186,7 @@ watch(maskedStoreValue, (value) => (maskedValue.value = value));
             label="Cell Number"
             :placeholder="isSmsEditable ? 'Your phone number' : 'Empty'"
             persistent-placeholder
-            :disabled="!isSmsEditable"
+            :readonly="!isSmsEditable"
             :error-messages="inputErrorMessages"
         >
             <template #append-inner>

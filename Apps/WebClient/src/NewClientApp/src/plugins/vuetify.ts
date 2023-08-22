@@ -18,6 +18,15 @@ export default createVuetify({
         VIcon: {
             style: "width: auto",
         },
+        VSelect: {
+            variant: "solo",
+        },
+        VTextarea: {
+            variant: "solo",
+        },
+        VTextField: {
+            variant: "solo",
+        },
         VTooltip: {
             location: "bottom",
             contentClass: "bg-grey-darken-3",
