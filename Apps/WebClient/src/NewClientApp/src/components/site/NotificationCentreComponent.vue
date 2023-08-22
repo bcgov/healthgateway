@@ -63,6 +63,7 @@ function handleClickNotificationAction(notification: Notification): void {
     } else {
         router.push({ path: notification.actionUrl });
     }
+    notificationStore.isNotificationCenterOpen = false;
 }
 
 function getEntryType(categoryName: string): EntryType | undefined {
