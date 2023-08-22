@@ -83,7 +83,7 @@ function downloadFile(): void {
         :entry="entry"
         :is-mobile-details="isMobileDetails"
         :allow-comment="commentsAreEnabled"
-        :has-attachment="entry.fileId !== undefined"
+        :has-attachment="Boolean(entry.fileId)"
     >
         <v-row class="mb-3">
             <v-col :cols="cols">
