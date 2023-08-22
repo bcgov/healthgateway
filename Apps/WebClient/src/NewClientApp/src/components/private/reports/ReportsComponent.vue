@@ -316,12 +316,14 @@ for (const [entryType] of reportComponentMap) {
             v-show="showLabResultsQueuedMessage"
             closable
             type="info"
-            class="d-print-none"
+            class="d-print-none mb-4"
             data-testid="laboratory-orders-queued-alert-message"
             text="We are getting your lab results. It may take up to 48 hours until
             you can see them."
+            variant="outlined"
+            border
         />
-        <v-sheet color="grey-lighten-4" class="pa-4 my-4">
+        <v-sheet color="grey-lighten-4" class="pa-4 mb-4">
             <v-row align="center">
                 <v-col cols="12" sm="auto" class="flex-grow-1">
                     <v-select
@@ -340,6 +342,7 @@ for (const [entryType] of reportComponentMap) {
                 <v-col cols="12" sm="auto">
                     <HgButtonComponent
                         id="advanceFilterBtn"
+                        class="mr-2"
                         variant="link"
                         data-testid="advanced-btn"
                         text="Advanced"
@@ -404,7 +407,7 @@ for (const [entryType] of reportComponentMap) {
                     <v-chip
                         v-for="item in reportFilter.medications"
                         :key="item"
-                        class="excluded-medication"
+                        class="excluded-medication mb-1"
                         closable
                         :title="item"
                         :data-testid="`${replaceSpaceWithDash(
@@ -476,7 +479,7 @@ for (const [entryType] of reportComponentMap) {
                                 data-testid="clear-btn"
                                 :disabled="isLoading"
                                 text="Cancel"
-                                class="mr-4"
+                                class="mr-2"
                                 @click="cancelFilterChanges"
                             />
                             <HgButtonComponent

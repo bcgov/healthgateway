@@ -1193,31 +1193,27 @@ watch(vaccineRecordState, () => {
                     <v-window-item
                         :data-testid="`immunization-tab-${dependent.ownerId}`"
                     >
-                        <div
-                            id="dependent-immunization-disclaimer"
+                        <v-alert
+                            v-if="immunizationItems.length != 0"
                             class="mb-4"
+                            type="info"
+                            variant="outlined"
+                            border
+                            data-testid="dependent-immunization-disclaimer-alert"
                         >
-                            <v-alert
-                                v-if="immunizationItems.length != 0"
-                                type="info"
-                                variant="outlined"
-                                border
-                                data-testid="dependent-immunization-disclaimer-alert"
-                            >
-                                <template #text>
-                                    <span class="text-body-1">
-                                        If your dependent's immunizations are
-                                        missing or incorrect,
-                                        <a
-                                            href="https://www.immunizationrecord.gov.bc.ca/"
-                                            target="_blank"
-                                            rel="noopener"
-                                            >fill in this online form</a
-                                        >.
-                                    </span>
-                                </template>
-                            </v-alert>
-                        </div>
+                            <template #text>
+                                <span class="text-body-1">
+                                    If your dependent’s immunizations are
+                                    missing or incorrect,
+                                    <a
+                                        href="https://www.immunizationrecord.gov.bc.ca/"
+                                        target="_blank"
+                                        rel="noopener"
+                                        >fill in this online form</a
+                                    >.
+                                </span>
+                            </template>
+                        </v-alert>
                         <v-progress-circular
                             v-if="isLoading"
                             indeterminate
@@ -1410,6 +1406,7 @@ watch(vaccineRecordState, () => {
                                                     href="https://www2.gov.bc.ca/gov/content/covid-19/vaccine"
                                                     rel="noopener"
                                                     target="_blank"
+                                                    class="text-link"
                                                     >Find out how.</a
                                                 >
                                             </p>
