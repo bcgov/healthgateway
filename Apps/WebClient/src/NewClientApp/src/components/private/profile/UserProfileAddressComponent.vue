@@ -108,6 +108,7 @@ const postalAddressLabel = computed(() =>
             href="https://www.addresschange.gov.bc.ca/"
             target="_blank"
             rel="noopener"
+            class="text-link"
             >here</a
         >.
     </div>
@@ -117,6 +118,7 @@ const postalAddressLabel = computed(() =>
             href="https://www.addresschange.gov.bc.ca/"
             target="_blank"
             rel="noopener"
+            class="text-link"
             >here</a
         >.
     </div>
@@ -126,6 +128,7 @@ const postalAddressLabel = computed(() =>
             href="https://www.addresschange.gov.bc.ca/"
             target="_blank"
             rel="noopener"
+            class="text-link"
             >this page</a
         >.
     </div>

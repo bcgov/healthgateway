@@ -123,6 +123,7 @@ function handleClose(): void {
                         <a
                             data-testid="protectiveWordModalRulesHREF"
                             href="https://www2.gov.bc.ca/gov/content/health/health-drug-coverage/pharmacare-for-bc-residents/pharmanet/protective-word-for-a-pharmanet-record"
+                            class="text-link"
                         >
                             protective-word-for-a-pharmanet-record
                         </a>

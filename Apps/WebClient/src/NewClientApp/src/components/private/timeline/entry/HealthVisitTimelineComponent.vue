@@ -76,6 +76,7 @@ const entryIcon = computed(() => entryTypeMap.get(EntryType.HealthVisit)?.icon);
                         href="https://www2.gov.bc.ca/gov/content?id=FE8BA7F9F1F0416CB2D24CF71C4BAF80#healthandhospital"
                         target="_blank"
                         rel="noopener"
+                        class="text-link"
                         >FAQ</a
                     >
                     page.

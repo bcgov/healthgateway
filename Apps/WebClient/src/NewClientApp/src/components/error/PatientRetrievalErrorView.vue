@@ -25,7 +25,9 @@ const isTooManyRequestsError = computed(
         </p>
         <p v-else class="text-body-1">
             There may be an issue in our Client Registry. Please contact
-            <a class="font-weight-bold" href="mailto:HealthGateway@gov.bc.ca"
+            <a
+                class="text-link font-weight-bold"
+                href="mailto:HealthGateway@gov.bc.ca"
                 >HealthGateway@gov.bc.ca
             </a>
         </p>

@@ -185,7 +185,10 @@ function resetFeedback(): void {
                     <v-alert v-if="hasFailed" type="error" variant="text">
                         <template #text>
                             If the problem persists please send your feedback to
-                            <a href="mailto:HealthGateway@gov.bc.ca">
+                            <a
+                                href="mailto:HealthGateway@gov.bc.ca"
+                                class="text-link"
+                            >
                                 HealthGateway@gov.bc.ca
                             </a>
                         </template>
