@@ -171,6 +171,16 @@ describe("Notification Badge", () => {
 
 describe("Categorized web alerts", () => {
     beforeEach(() => {
+        cy.intercept("GET", `**/Notification/${HDID}`, {
+            fixture: "NotificationService/notifications.json",
+        });
+    });
+
+    it("Web alert category to pre-filtered timeline", () => {
+        cy.intercept("GET", `**/Immunization?hdid=*`, {
+            fixture: "ImmunizationService/immunization.json",
+        });
+
         cy.configureSettings({
             notificationCentre: {
                 enabled: true,
@@ -181,17 +191,6 @@ describe("Categorized web alerts", () => {
                     enabled: true,
                 },
             ],
-            services: {
-                enabled: true,
-            },
-        });
-
-        cy.intercept("GET", `**/Notification/${HDID}`, {
-            fixture: "NotificationService/notifications.json",
-        });
-
-        cy.intercept("GET", `**/Immunization?hdid=*`, {
-            fixture: "ImmunizationService/immunization.json",
         });
 
         cy.login(
@@ -200,9 +199,7 @@ describe("Categorized web alerts", () => {
             AuthMethod.KeyCloak,
             "/home"
         );
-    });
 
-    it("Web alert category to pre-filtered timeline", () => {
         cy.get("[data-testid=notification-centre-button]")
             .should("be.visible", "be.enabled")
             .click();
@@ -216,6 +213,22 @@ describe("Categorized web alerts", () => {
     });
 
     it("Web alert category to services", () => {
+        cy.configureSettings({
+            notificationCentre: {
+                enabled: true,
+            },
+            services: {
+                enabled: true,
+            },
+        });
+
+        cy.login(
+            Cypress.env("keycloak.username"),
+            Cypress.env("keycloak.password"),
+            AuthMethod.KeyCloak,
+            "/home"
+        );
+
         cy.get("[data-testid=notification-centre-button]")
             .should("be.visible", "be.enabled")
             .click();
@@ -231,6 +244,19 @@ describe("Categorized web alerts", () => {
     });
 
     it("Web alert category to other internal link", () => {
+        cy.configureSettings({
+            notificationCentre: {
+                enabled: true,
+            },
+        });
+
+        cy.login(
+            Cypress.env("keycloak.username"),
+            Cypress.env("keycloak.password"),
+            AuthMethod.KeyCloak,
+            "/home"
+        );
+
         cy.get("[data-testid=notification-centre-button]")
             .should("be.visible", "be.enabled")
             .click();
