@@ -18,6 +18,14 @@ describe("Notification Centre", () => {
             },
         });
 
+        cy.intercept("GET", `**/UserProfile/${HDID}`, {
+            fixture: "UserProfileService/userProfile.json",
+        });
+
+        cy.intercept("GET", `**/Patient/${HDID}*`, {
+            fixture: "PatientService/patientNoAddress.json",
+        });
+
         cy.intercept("GET", `**/Notification/${HDID}`, {
             fixture: "NotificationService/notifications.json",
         });
@@ -126,6 +134,10 @@ describe("Notification Badge", () => {
             fixture: "UserProfileService/userProfile.json",
         });
 
+        cy.intercept("GET", `**/Patient/${HDID}*`, {
+            fixture: "PatientService/patientNoAddress.json",
+        });
+
         // The scheduledDateTimeUtc must be after user profile's last login in lastLoginDateTimes, which is the second entry
         // not the first entry. The first entry is the current login.
         cy.intercept("GET", `**/Notification/${HDID}`, {
@@ -171,6 +183,14 @@ describe("Notification Badge", () => {
 
 describe("Categorized web alerts", () => {
     beforeEach(() => {
+        cy.intercept("GET", `**/UserProfile/${HDID}`, {
+            fixture: "UserProfileService/userProfile.json",
+        });
+
+        cy.intercept("GET", `**/Patient/${HDID}*`, {
+            fixture: "PatientService/patientNoAddress.json",
+        });
+
         cy.intercept("GET", `**/Notification/${HDID}`, {
             fixture: "NotificationService/notifications.json",
         });
@@ -206,6 +226,7 @@ describe("Categorized web alerts", () => {
 
         cy.get(`[data-testid=notification-${notificationIdImms}-action-button]`)
             .should("be.visible", "be.enabled")
+            .scrollIntoView()
             .click();
 
         cy.location("pathname").should("eq", timelinePath);
