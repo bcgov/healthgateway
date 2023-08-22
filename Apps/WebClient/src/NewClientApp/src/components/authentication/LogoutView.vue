@@ -3,18 +3,11 @@ import { onMounted } from "vue";
 
 import LoadingComponent from "@/components/common/LoadingComponent.vue";
 import { useAuthStore } from "@/stores/auth";
-import { useWaitlistStore } from "@/stores/waitlist";
 
 const authStore = useAuthStore();
-const waitlistStore = useWaitlistStore();
-
-function signOut(): void {
-    authStore.signOut();
-    waitlistStore.releaseTicket();
-}
 
 onMounted(() => {
-    signOut();
+    authStore.signOut();
 });
 </script>
 
