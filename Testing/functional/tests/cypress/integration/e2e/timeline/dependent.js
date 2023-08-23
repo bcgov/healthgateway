@@ -124,7 +124,7 @@ function disabledDependentDatasetShouldNotBePresent(
     assertDatasetPresence(dataset, false);
 }
 
-describe.skip("Dependent Timeline", () => {
+describe("Dependent Timeline", () => {
     beforeEach(() => {
         cy.configureSettings({
             timeline: {

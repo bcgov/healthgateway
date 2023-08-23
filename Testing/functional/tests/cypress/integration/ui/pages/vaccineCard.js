@@ -2,21 +2,21 @@ const homeUrl = "/";
 const vaccineCardUrl = "/vaccinecard";
 
 describe("Vaccine Card Page", () => {
-    it.skip("Landing Page - Vaccine Card Button does not exist - Vaccine Status module disabled", () => {
+    it("Landing Page - Vaccine Card Button does not exist - Vaccine Status module disabled", () => {
         cy.configureSettings({});
         cy.logout();
         cy.visit(homeUrl);
         cy.get("[data-testid=btnVaccineCard]").should("not.exist");
     });
 
-    it.skip("Landing Page - Log In - Vaccine Status module disabled and vaccine card URL entered directly", () => {
+    it("Landing Page - Log In - Vaccine Status module disabled and vaccine card URL entered directly", () => {
         cy.configureSettings({});
         cy.logout();
         cy.visit(vaccineCardUrl);
         cy.get("[data-testid=vaccineCardFormTitle]").should("not.exist");
     });
 
-    it.skip("Landing Page - Vaccine Card Button Exists - Vaccine Status module enabled", () => {
+    it("Landing Page - Vaccine Card Button Exists - Vaccine Status module enabled", () => {
         cy.logout();
         cy.visit(homeUrl);
     });
