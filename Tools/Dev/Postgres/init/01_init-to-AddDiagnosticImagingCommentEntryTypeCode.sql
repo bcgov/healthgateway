@@ -1,4 +1,7 @@
-﻿DO $EF$
+﻿\c hglocal
+SET ROLE hglocal;
+
+DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM pg_namespace WHERE nspname = 'gateway') THEN
         CREATE SCHEMA gateway;
