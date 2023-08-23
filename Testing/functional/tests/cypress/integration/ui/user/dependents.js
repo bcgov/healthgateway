@@ -77,8 +77,7 @@ describe("COVID-19", () => {
             .contains("td", "2020-Oct-06")
             .siblings("[data-testid=dependentCovidTestLabResult]")
             .contains("Negative")
-            .next()
-            .find("[data-testid=dependent-covid-test-info-button]")
+            .siblings("[data-testid=dependent-covid-test-info-button]")
             .click();
         cy.get("[data-testid=dependent-covid-test-info-popover]").should(
             "be.visible"
