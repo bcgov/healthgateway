@@ -135,6 +135,7 @@ function isNew(notification: Notification): boolean {
                     <h5 class="text-h6 text-primary d-flex align-center">
                         <HgIconButtonComponent
                             data-testid="notification-centre-close-button"
+                            class="mr-1"
                             icon="angle-double-right"
                             size="small"
                             @click="
@@ -152,7 +153,6 @@ function isNew(notification: Notification): boolean {
                     <HgButtonComponent
                         data-testid="notification-centre-dismiss-all-button"
                         variant="link"
-                        color="grey"
                         text="Clear All"
                         :loading="isMessageLoading()"
                         @click="dismissAllNotifications"
