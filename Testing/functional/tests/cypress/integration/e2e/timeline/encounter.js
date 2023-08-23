@@ -19,10 +19,16 @@ describe("MSP Visits", () => {
     });
 
     it("Validate Encounter Card Details", () => {
-        cy.get("[data-testid=healthvisitTitle]").should("be.visible");
-        cy.get("[data-testid=entryCardDetailsTitle").first().click();
-        cy.get("[data-testid=encounterClinicLabel").should("be.visible");
-        cy.get("[data-testid=encounterClinicName").should("be.visible");
+        cy.get("[data-testid=timelineCard")
+            .first()
+            .within(() => {
+                cy.get("[data-testid=healthvisitTitle]")
+                    .should("be.visible")
+                    .click({ force: true });
+                cy.get("[data-testid=encounterClinicName]").should(
+                    "be.visible"
+                );
+            });
     });
 });
 
@@ -45,14 +51,27 @@ describe("Hospital Visits", () => {
     });
 
     it("Validate Hospital Visit Card Details", () => {
-        cy.get("[data-testid=hospitalvisitTitle]").should("be.visible");
-        cy.get("[data-testid=entryCardDetailsTitle").first().click();
-        cy.get("[data-testid=hospital-visit-location").should("be.visible");
-        cy.get("[data-testid=hospital-visit-provider").should("be.visible");
-        cy.get("[data-testid=hospital-visit-service").should("be.visible");
-        cy.get("[data-testid=hospital-visit-date").should("be.visible");
-        cy.get("[data-testid=hospital-visit-discharge-date").should(
-            "be.visible"
-        );
+        cy.get("[data-testid=timelineCard")
+            .first()
+            .within(() => {
+                cy.get("[data-testid=hospitalvisitTitle]")
+                    .first()
+                    .click({ force: true });
+                cy.get("[data-testid=hospital-visit-location]").should(
+                    "be.visible"
+                );
+                cy.get("[data-testid=hospital-visit-provider]").should(
+                    "be.visible"
+                );
+                cy.get("[data-testid=hospital-visit-service]").should(
+                    "be.visible"
+                );
+                cy.get("[data-testid=hospital-visit-date]").should(
+                    "be.visible"
+                );
+                cy.get("[data-testid=hospital-visit-discharge-date]").should(
+                    "be.visible"
+                );
+            });
     });
 });

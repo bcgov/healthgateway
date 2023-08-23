@@ -36,49 +36,42 @@ describe("Notification Centre", () => {
             AuthMethod.KeyCloak,
             "/home"
         );
+
+        // Validate home page has displayed before clicking on notifications
+        cy.get("[data-testid=health-records-card]").should("be.visible");
     });
 
     it("Dismiss individual notification", () => {
         cy.get("[data-testid=notification-centre-button]")
-            .should("be.visible")
-            .should("be.enabled")
+            .should("be.visible", "be.enabled")
             .click();
 
         cy.get(
-            "[data-testid=notification-" + notificationIdOne + "-action-button]"
-        ).should("be.visible");
-        cy.get(
-            "[data-testid=notification-" +
-                notificationIdOne +
-                "-dismiss-button]"
+            `[data-testid=notification-${notificationIdOne}-action-button]`
         ).should("be.visible");
 
         cy.get(
-            "[data-testid=notification-" + notificationIdTwo + "-action-button]"
+            `[data-testid=notification-${notificationIdOne}-dismiss-button]`
+        ).should("be.visible");
+
+        cy.get(
+            `[data-testid=notification-${notificationIdTwo}-action-button]`
         ).should("not.exist");
-        cy.get(
-            "[data-testid=notification-" +
-                notificationIdTwo +
-                "-dismiss-button]"
-        )
-            .should("be.visible")
-            .should("be.enabled")
+
+        cy.get(`[data-testid=notification-${notificationIdTwo}-dismiss-button]`)
+            .should("be.visible", "be.enabled")
             .click();
 
         cy.get(
-            "[data-testid=notification-" +
-                notificationIdOne +
-                "-dismiss-button]"
+            `[data-testid=notification-${notificationIdOne}-dismiss-button]`
         ).should("be.visible");
+
         cy.get(
-            "[data-testid=notification-" +
-                notificationIdTwo +
-                "-dismiss-button]"
+            `[data-testid=notification-${notificationIdTwo}-dismiss-button]`
         ).should("not.exist");
 
         cy.get("[data-testid=notification-centre-close-button]")
-            .should("be.visible")
-            .should("be.enabled")
+            .should("be.visible", "be.enabled")
             .click();
         cy.get("[data-testid=notification-centre-close-button]").should(
             "not.be.visible"
@@ -87,44 +80,37 @@ describe("Notification Centre", () => {
 
     it("Dismiss all notifications", () => {
         cy.get("[data-testid=notification-centre-button]")
-            .should("be.visible")
-            .should("be.enabled")
+            .should("be.visible", "be.enabled")
             .click();
 
+        cy.get(`[data-testid=notification-${notificationIdOne}-dismiss-button]`)
+            .scrollIntoView()
+            .should("be.visible");
+
         cy.get(
-            "[data-testid=notification-" +
-                notificationIdOne +
-                "-dismiss-button]"
-        ).should("be.visible");
-        cy.get(
-            "[data-testid=notification-" +
-                notificationIdTwo +
-                "-dismiss-button]"
+            `[data-testid=notification-${notificationIdTwo}-dismiss-button]`
         ).should("be.visible");
 
         cy.get("[data-testid=notification-centre-dismiss-all-button]")
-            .should("be.visible")
-            .should("be.enabled")
+            .should("be.visible", "be.enabled")
             .click();
 
         cy.get(
-            "[data-testid=notification-" +
-                notificationIdOne +
-                "-dismiss-button]"
+            `[data-testid=notification-${notificationIdOne}-dismiss-button]`
         ).should("not.exist");
+
         cy.get(
-            "[data-testid=notification-" +
-                notificationIdTwo +
-                "-dismiss-button]"
+            `[data-testid=notification-${notificationIdTwo}-dismiss-button]`
         ).should("not.exist");
+
+        cy.get("[data-testid=notification-centre-button]").click();
         cy.get("[data-testid=notification-centre-dismiss-all-button]").should(
             "not.exist"
         );
 
         cy.get("[data-testid=notification-centre-close-button]")
-            .should("be.visible")
-            .should("be.enabled")
-            .click();
+            .should("be.visible", "be.enabled")
+            .click({ force: true });
         cy.get("[data-testid=notification-centre-close-button]").should(
             "not.be.visible"
         );
@@ -155,34 +141,35 @@ describe("Notification Badge", () => {
             AuthMethod.KeyCloak,
             "/home"
         );
+
+        // Validate home page has displayed before clicking on notifications
+        cy.get("[data-testid=health-records-card]").should("be.visible");
     });
 
     it("Verify notification badge", () => {
         cy.get("[data-testid=notification-centre-button]")
             .get("span")
-            .should("have.class", "b-avatar-badge badge-danger")
+            .should("have.class", "v-badge__badge")
             .contains("3");
 
         cy.get("[data-testid=notification-centre-button]")
-            .should("be.visible")
-            .should("be.enabled")
+            .should("be.visible", "be.enabled")
             .click();
 
         cy.get("[data-testid=notification-centre-close-button]")
-            .should("be.visible")
-            .should("be.enabled")
+            .should("be.visible", "be.enabled")
             .click();
 
         cy.get("[data-testid=notification-centre-button]").should(
             "not.have.class",
-            "b-avatar-badge badge-danger"
+            "v-badge__badge"
         );
 
         cy.reload();
 
         cy.get("[data-testid=notification-centre-button]")
             .get("span")
-            .should("have.class", "b-avatar-badge badge-danger")
+            .should("have.class", "v-badge__badge")
             .contains("3");
     });
 });
@@ -193,6 +180,12 @@ describe("Categorized web alerts", () => {
             notificationCentre: {
                 enabled: true,
             },
+            datasets: [
+                {
+                    name: "immunization",
+                    enabled: true,
+                },
+            ],
             services: {
                 enabled: true,
             },
@@ -202,27 +195,28 @@ describe("Categorized web alerts", () => {
             fixture: "NotificationService/notifications.json",
         });
 
+        cy.intercept("GET", `**/Immunization?hdid=*`, {
+            fixture: "ImmunizationService/immunization.json",
+        });
+
         cy.login(
             Cypress.env("keycloak.username"),
             Cypress.env("keycloak.password"),
             AuthMethod.KeyCloak,
             "/home"
         );
+
+        // Validate home page has displayed before clicking on notifications
+        cy.get("[data-testid=health-records-card]").should("be.visible");
     });
 
     it("Web alert category to pre-filtered timeline", () => {
         cy.get("[data-testid=notification-centre-button]")
-            .should("be.visible")
-            .should("be.enabled")
+            .should("be.visible", "be.enabled")
             .click();
 
-        cy.get(
-            "[data-testid=notification-" +
-                notificationIdImms +
-                "-action-button]"
-        )
-            .should("be.visible")
-            .should("be.enabled")
+        cy.get(`[data-testid=notification-${notificationIdImms}-action-button]`)
+            .should("be.visible", "be.enabled")
             .click();
 
         cy.location("pathname").should("eq", timelinePath);
@@ -231,17 +225,13 @@ describe("Categorized web alerts", () => {
 
     it("Web alert category to services", () => {
         cy.get("[data-testid=notification-centre-button]")
-            .should("be.visible")
-            .should("be.enabled")
+            .should("be.visible", "be.enabled")
             .click();
 
         cy.get(
-            "[data-testid=notification-" +
-                notificationIdBctOdr +
-                "-action-button]"
+            `[data-testid=notification-${notificationIdBctOdr}-action-button]`
         )
-            .should("be.visible")
-            .should("be.enabled")
+            .should("be.visible", "be.enabled")
             .click();
 
         cy.location("pathname").should("eq", servicesPath);
@@ -249,17 +239,13 @@ describe("Categorized web alerts", () => {
 
     it("Web alert category to other internal link", () => {
         cy.get("[data-testid=notification-centre-button]")
-            .should("be.visible")
-            .should("be.enabled")
+            .should("be.visible", "be.enabled")
             .click();
 
         cy.get(
-            "[data-testid=notification-" +
-                notificationIdOtherInternal +
-                "-action-button]"
+            `[data-testid=notification-${notificationIdOtherInternal}-action-button]`
         )
-            .should("be.visible")
-            .should("be.enabled")
+            .should("be.visible", "be.enabled")
             .click();
 
         cy.location("pathname").should("eq", reportsPath);

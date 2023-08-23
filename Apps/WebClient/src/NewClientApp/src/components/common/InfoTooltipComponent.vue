@@ -1,0 +1,51 @@
+<script setup lang="ts">
+import { computed, ref } from "vue";
+
+interface Props {
+    text?: string;
+    size?: string;
+    maxWidth?: number;
+    tooltipTestid?: string;
+}
+const props = withDefaults(defineProps<Props>(), {
+    text: undefined,
+    size: "small",
+    maxWidth: 300,
+    tooltipTestid: undefined,
+});
+
+const openedFromClick = ref(false);
+const openedFromHover = ref(false);
+
+const hasText = computed(() => !!props.text);
+
+function handleClick() {
+    openedFromClick.value = !openedFromClick.value;
+    openedFromHover.value = false;
+}
+</script>
+
+<template>
+    <v-tooltip
+        :max-width="maxWidth"
+        :model-value="openedFromClick || openedFromHover"
+        :open-on-click="false"
+        :open-on-hover="false"
+    >
+        <template #activator="{ props: slotProps }">
+            <v-icon
+                v-bind="{ ...slotProps, ...$attrs }"
+                icon="info-circle"
+                color="primary"
+                :size="size"
+                @click="handleClick"
+                @mouseenter="openedFromHover = true"
+                @mouseleave="openedFromHover = false"
+            />
+        </template>
+        <div :data-testid="tooltipTestid">
+            <span v-if="hasText">{{ text }}</span>
+            <slot v-else name="default" />
+        </div>
+    </v-tooltip>
+</template>

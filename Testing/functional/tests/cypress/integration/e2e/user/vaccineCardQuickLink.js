@@ -4,11 +4,11 @@ const homePath = "/home";
 
 const addQuickLinkButtonSelector = "[data-testid=add-quick-link-button]";
 const addQuickLinkSubmitButtonSelector = "[data-testid=add-quick-link-btn]";
-const quickLinkMenuButtonSelector = "[data-testid=quick-link-menu-button]";
+const quickLinkMenuButtonSelector = "[data-testid=card-menu-button]";
 const quickLinkRemoveButtonSelector = "[data-testid=remove-quick-link-button]";
 const vaccineCardQuickLinkCardSelector = "[data-testid=bc-vaccine-card-card]";
 const vaccineCardAddQuickLinkCheckboxSelector =
-    "[data-testid=bc-vaccine-card-filter]";
+    "[data-testid=bc-vaccine-card-filter] input";
 
 describe("Vaccine Card Quick Link", () => {
     it("Remove and Add Vaccine Card Quick Link", () => {
@@ -30,12 +30,10 @@ describe("Vaccine Card Quick Link", () => {
         cy.log("Removing vaccine card quick link");
         cy.get(vaccineCardQuickLinkCardSelector).within(() => {
             cy.get(quickLinkMenuButtonSelector)
-                .should("be.visible")
-                .parent("a")
                 .should("be.visible", "be.enabled")
                 .click();
-            cy.get(quickLinkRemoveButtonSelector).should("be.visible").click();
         });
+        cy.get(quickLinkRemoveButtonSelector).should("be.visible").click();
 
         cy.log("Verifying vaccine card quick link no longer exists");
         cy.get(vaccineCardQuickLinkCardSelector).should("not.exist");

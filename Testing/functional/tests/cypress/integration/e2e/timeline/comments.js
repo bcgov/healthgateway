@@ -18,8 +18,8 @@ describe("Comments Disable", () => {
     });
 
     it("Comments Disable", () => {
-        cy.get("[data-testid=addCommentTextArea]").should("not.exist");
-        cy.get("[data-testid=postCommentBtn]").should("not.exist");
+        cy.get("[data-testid=add-comment-text-area]").should("not.exist");
+        cy.get("[data-testid=post-comment-btn]").should("not.exist");
     });
 });
 
@@ -49,16 +49,22 @@ describe("Comments Enable", () => {
         cy.get("[data-testid=commentIcon]").should("not.exist");
         cy.get("[data-testid=commentCount]").should("not.exist");
 
-        cy.get("[data-testid=entryCardDetailsTitle]").first().click();
+        cy.get('[data-testid="timelineCard"]')
+            .first()
+            .within(() => {
+                cy.get("[data-testid=entryCardDetailsTitle]").click({
+                    force: true,
+                });
 
-        // Add comment
-        cy.get("[data-testid=addCommentTextArea]").first().type(testComment);
-        cy.get("[data-testid=postCommentBtn]").first().click();
+                // Add comment
+                cy.get("[data-testid=add-comment-text-area]").type(testComment);
+                cy.get("[data-testid=post-comment-btn]").click({ force: true });
 
-        // Verify
-        cy.get("[data-testid=commentText]").first().contains(testComment);
-        cy.get("[data-testid=commentIcon]").should("exist");
-        cy.get("[data-testid=commentCount]").should("not.exist");
+                // Verify
+                cy.get("[data-testid=commentText]").contains(testComment);
+                cy.get("[data-testid=commentIcon]").should("exist");
+                cy.get("[data-testid=commentCount]").should("not.exist");
+            });
     });
 
     it("Validate Filter", () => {
@@ -70,55 +76,88 @@ describe("Comments Enable", () => {
         cy.get("[data-testid=btnFilterApply]").click();
         cy.get("[data-testid=noTimelineEntriesText]").should("not.exist");
 
-        cy.get("[data-testid=entryCardDetailsTitle]").first().click();
-        cy.get("[data-testid=showCommentsBtn]").first().click();
-
-        // Verify
-        cy.get("[data-testid=commentText]").first().contains(testComment);
-        cy.get("[data-testid=commentIcon]").should("exist");
-        cy.get("[data-testid=commentCount]").should("not.exist");
-    });
-
-    it("Validate Edit", () => {
-        var testEditComment = "Test Edit Comment";
-
-        cy.get("[data-testid=entryCardDetailsTitle]").first().click();
-        cy.get("[data-testid=showCommentsBtn]").first().click();
-        var currentText = cy
-            .get("[data-testid=commentText]")
+        cy.get('[data-testid="timelineCard"]')
             .first()
-            .then((element) => {
-                currentText = element.text();
-                cy.log(currentText);
+            .within(() => {
+                cy.get("[data-testid=entryCardDetailsTitle]").click({
+                    force: true,
+                });
+                cy.get("[data-testid=showCommentsBtn]").click();
 
-                // Edit comment
-                cy.get("[data-testid=commentMenuBtn]").first().click();
-                cy.get("[data-testid=commentMenuEditBtn]").first().click();
-                cy.get("[data-testid=editCommentInput]").type(testEditComment);
-                cy.get("[data-testid=saveCommentBtn]").click();
-
-                // Veriy
-                cy.get("[data-testid=commentText]").contains(
-                    currentText + testEditComment
-                );
+                // Verify
+                cy.get("[data-testid=commentText]")
+                    .first()
+                    .contains(testComment);
                 cy.get("[data-testid=commentIcon]").should("exist");
                 cy.get("[data-testid=commentCount]").should("not.exist");
             });
     });
 
+    it("Validate Edit", () => {
+        var testEditComment = "Test Edit Comment";
+
+        cy.get("[data-testid=timelineCard]")
+            .first()
+            .within(() => {
+                cy.get("[data-testid=entryCardDetailsTitle]").click({
+                    force: true,
+                });
+                cy.get("[data-testid=showCommentsBtn]").click();
+                var currentText = cy
+                    .get("[data-testid=commentText]")
+                    .first()
+                    .then((element) => {
+                        currentText = element.text();
+                        cy.log(currentText);
+
+                        cy.get("[data-testid=commentMenuBtn]")
+                            .first()
+                            .click({ force: true });
+                        cy.document()
+                            .find("[data-testid=commentMenuEditBtn]")
+                            .click();
+                        cy.get("[data-testid=editCommentInput] textarea")
+                            .first()
+                            .type(testEditComment);
+                        cy.get("[data-testid=saveCommentBtn]").click();
+
+                        cy.get("[data-testid=commentText]")
+                            .first()
+                            .contains(currentText + testEditComment);
+                        cy.get("[data-testid=commentIcon]").should("exist");
+                        cy.get("[data-testid=commentCount]").should(
+                            "not.exist"
+                        );
+                    });
+            });
+    });
+
     it("Validate Delete", () => {
-        cy.get("[data-testid=entryCardDetailsTitle]").first().click();
-        cy.get("[data-testid=showCommentsBtn]").first().click();
+        cy.get("[data-testid=timelineCard]")
+            .first()
+            .within(() => {
+                cy.get("[data-testid=entryCardDetailsTitle]").click({
+                    force: true,
+                });
+                cy.get("[data-testid=showCommentsBtn]").click({ force: true });
 
-        // Delete comment
-        cy.get("[data-testid=commentMenuBtn]").first().click();
-        cy.on("window:confirm", (str) => {
-            expect(str).to.eq("Are you sure you want to delete this comment?");
-        });
-        cy.get("[data-testid=commentMenuDeleteBtn]").first().click();
+                // Delete comment
+                cy.get("[data-testid=commentMenuBtn]")
+                    .first()
+                    .click({ force: true });
+                cy.on("window:confirm", (str) => {
+                    expect(str).to.eq(
+                        "Are you sure you want to delete this comment?"
+                    );
+                });
+                cy.document()
+                    .find("[data-testid=commentMenuDeleteBtn]")
+                    .first()
+                    .click({ force: true });
 
-        // Veriy
-        cy.get("[data-testid=commentIcon]").should("not.exist");
-        cy.get("[data-testid=commentCount]").should("not.exist");
+                // Veriy
+                cy.get("[data-testid=commentIcon]").should("not.exist");
+                cy.get("[data-testid=commentCount]").should("not.exist");
+            });
     });
 });

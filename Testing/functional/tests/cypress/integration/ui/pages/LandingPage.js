@@ -16,7 +16,6 @@ describe("Landing Page", () => {
         cy.visit("/");
         cy.get("[data-testid=btnLogin]")
             .should("be.visible")
-            .parent()
             .should("have.attr", "href", "/login");
     });
 
@@ -32,7 +31,9 @@ describe("Landing Page", () => {
         cy.get("[data-testid=preview-device-button-smartphone]").should(
             "not.be.disabled"
         );
-        cy.get("[data-testid=preview-image-laptop]").should("be.visible");
+        cy.get("[data-testid=preview-image-laptop]")
+            .scrollIntoView()
+            .should("be.visible");
         cy.get("[data-testid=preview-image-tablet]").should("not.be.visible");
         cy.get("[data-testid=preview-image-smartphone]").should(
             "not.be.visible"
@@ -113,7 +114,7 @@ describe("Landing Page", () => {
         );
         cy.get("#btnLogin").should("not.exist");
         cy.get("#menuBtnLogin").should("not.exist");
-        cy.get("footer > .navbar").should("not.visible");
+        cy.get("[data-testid=footer]").should("not.exist");
     });
 
     it("Validate clinical doc tile when module enabled", () => {

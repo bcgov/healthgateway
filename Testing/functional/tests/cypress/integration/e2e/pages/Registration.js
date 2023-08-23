@@ -36,7 +36,7 @@ describe("Registration Page", () => {
             homePath
         );
         cy.location("pathname").should("eq", registrationPath);
-        cy.get("[data-testid=emailCheckbox]")
+        cy.get("[data-testid=emailCheckbox] input")
             .should("be.enabled")
             .check({ force: true });
         cy.get("[data-testid=emailInput]")
@@ -48,7 +48,7 @@ describe("Registration Page", () => {
         cy.get("[data-testid=smsNumberInput]")
             .should("be.visible", "be.enabled")
             .type(Cypress.env("phoneNumber"));
-        cy.get("[data-testid=acceptCheckbox]")
+        cy.get("[data-testid=acceptCheckbox] input")
             .should("be.enabled")
             .check({ force: true })
             .wait(500);
@@ -57,6 +57,7 @@ describe("Registration Page", () => {
             .click();
         cy.location("pathname").should("eq", homePath);
         cy.get("[data-testid=app-tour-modal").should("be.visible");
+        cy.get("[data-testid=app-tour-skip]").click();
         cy.get("[data-testid=incomplete-profile-banner]").should("be.visible");
     });
 

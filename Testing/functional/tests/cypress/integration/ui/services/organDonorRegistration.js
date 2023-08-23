@@ -65,7 +65,9 @@ describe("Services - Organ Donor Registration Card", () => {
             .should("be.visible")
             .contains("Registered");
 
-        cy.get("[data-testid=organ-donor-registration-status-info-button]")
+        cy.get(
+            "[data-testid=organ-donor-registration-card] [data-testid=organ-donor-registration-status-info-button]"
+        )
             .should("be.visible")
             .click();
 
@@ -79,7 +81,7 @@ describe("Services - Organ Donor Registration Card", () => {
             .should("be.visible")
             .click();
 
-        cy.get("[data-testid=genericMessageModal]").should("be.visible");
+        cy.get("[data-testid=generic-message-modal]").should("be.visible");
     });
 });
 
@@ -114,7 +116,7 @@ describe("Services - Organ Donor Registration Card - ODR Dataset Blocked", () =>
             "not.exist"
         );
 
-        cy.get("[data-testid=singleErrorHeader")
+        cy.get("[data-testid=errorBanner]")
             .should("be.visible")
             .contains(
                 "Organ Donor Registration is not available at this time. Please try again later."

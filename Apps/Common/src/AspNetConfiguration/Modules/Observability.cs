@@ -116,12 +116,6 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
                     builder =>
                     {
                         builder
-                            .AddOtlpExporter(
-                                config =>
-                                {
-                                    config.Protocol = OtlpExportProtocol.HttpProtobuf;
-                                    config.Endpoint = otlpConfig.Endpoint;
-                                })
                             .AddSource(otlpConfig.ServiceName)
                             .SetSampler(new AlwaysOnSampler())
                             .SetResourceBuilder(
@@ -140,21 +134,45 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
                             .AddEntityFrameworkCoreInstrumentation()
                             .AddNpgsql()
                             ;
+
+                        if (otlpConfig.TraceConsoleExporterEnabled)
+                        {
+                            builder.AddConsoleExporter();
+                        }
+
+                        if (otlpConfig.Endpoint != null)
+                        {
+                            builder.AddOtlpExporter(
+                                config =>
+                                {
+                                    config.Protocol = otlpConfig.ExportProtocol;
+                                    config.Endpoint = otlpConfig.Endpoint;
+                                });
+                        }
                     })
                 .WithMetrics(
                     builder =>
                     {
                         builder
-                            .AddOtlpExporter(
-                                config =>
-                                {
-                                    config.Protocol = otlpConfig.ExportProtocol;
-                                    config.Endpoint = otlpConfig.Endpoint;
-                                })
                             .AddHttpClientInstrumentation()
                             .AddAspNetCoreInstrumentation()
                             .AddRuntimeInstrumentation()
                             ;
+
+                        if (otlpConfig.MetricsConsoleExporterEnabled)
+                        {
+                            builder.AddConsoleExporter();
+                        }
+
+                        if (otlpConfig.Endpoint != null)
+                        {
+                            builder.AddOtlpExporter(
+                                config =>
+                                {
+                                    config.Protocol = otlpConfig.ExportProtocol;
+                                    config.Endpoint = otlpConfig.Endpoint;
+                                });
+                        }
                     })
                 ;
 

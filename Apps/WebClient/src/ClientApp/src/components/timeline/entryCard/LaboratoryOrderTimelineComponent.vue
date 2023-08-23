@@ -128,11 +128,14 @@ function getReport(): void {
                 <div data-testid="laboratory-collection-date">
                     <strong>Collection Date: </strong>
                     <span
-                        v-if="entry.collectionDateTime !== undefined"
                         class="text-nowrap"
                         data-testid="laboratory-collection-date-value"
                     >
-                        {{ formatDate(entry.collectionDateTime) }}
+                        {{
+                            entry.collectionDateTime
+                                ? formatDate(entry.collectionDateTime)
+                                : "N/A"
+                        }}
                     </span>
                 </div>
             </div>

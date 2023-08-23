@@ -1,38 +1,18 @@
-const { AuthMethod } = require("../../../support/constants");
+const { AuthMethod, monthNames } = require("../../../support/constants");
 
 const vaccineCardUrl = "/vaccinecard";
 const dependentHdid = "645645767756756767";
 const HDID = "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A";
 
-const dobYearSelector =
-    "[data-testid=dateOfBirthInput] [data-testid=formSelectYear]";
-const dobMonthSelector =
-    "[data-testid=dateOfBirthInput] [data-testid=formSelectMonth]";
-const dobDaySelector =
-    "[data-testid=dateOfBirthInput] [data-testid=formSelectDay]";
-const dovYearSelector =
-    "[data-testid=dateOfVaccineInput] [data-testid=formSelectYear]";
-const dovMonthSelector =
-    "[data-testid=dateOfVaccineInput] [data-testid=formSelectMonth]";
-const dovDaySelector =
-    "[data-testid=dateOfVaccineInput] [data-testid=formSelectDay]";
-const collectionDateYearSelector =
-    "[data-testid=dateOfCollectionInput] [data-testid=formSelectYear]";
-const collectionDateMonthSelector =
-    "[data-testid=dateOfCollectionInput] [data-testid=formSelectMonth]";
-const collectionDateDaySelector =
-    "[data-testid=dateOfCollectionInput] [data-testid=formSelectDay]";
+const dobSelector = "[data-testid=dateOfBirthInput] input";
+const dovSelector = "[data-testid=dateOfVaccineInput] input";
 
 const fullyVaccinatedPhn = "9735361219";
-const fullyVaccinatedDobYear = "1994";
-const fullyVaccinatedDobMonth = "June";
-const fullyVaccinatedDobDay = "9";
-const fullyVaccinatedDovYear = "2021";
-const fullyVaccinatedDovMonth = "January";
-const fullyVaccinatedDovDay = "20";
+const fullyVaccinatedDob = "1994-JUN-09";
+const fullyVaccinatedDov = "2021-JAN-20";
 
 function enterVaccineCardPHN(phn) {
-    cy.get("[data-testid=phnInput]")
+    cy.get("[data-testid=phnInput] input")
         .should("be.visible", "be.enabled")
         .clear()
         .type(phn);
@@ -40,6 +20,15 @@ function enterVaccineCardPHN(phn) {
 
 function clickVaccineCardEnterButton() {
     cy.get("[data-testid=btnEnter]").should("be.enabled", "be.visible").click();
+}
+
+function populateDatePicker(selector, dateValue) {
+    const date = new Date(dateValue);
+    const year = date.getFullYear();
+    const month = monthNames[date.getMonth()].substring(0, 3).toUpperCase();
+    const day = date.getDate() < 10 ? `0${date.getDate()}` : date.getDate();
+
+    cy.get(selector).clear().type(`${year}-${month}-${day}`).blur();
 }
 
 describe("Authenticated Vaccine Card Downloads", () => {
@@ -89,13 +78,13 @@ describe("Authenticated Vaccine Card Downloads", () => {
             "/covid19"
         );
 
-        cy.get("[data-testid=save-dropdown-btn] .dropdown-toggle")
+        cy.get("[data-testid=save-dropdown-btn]")
             .should("be.enabled", "be.visible")
             .click();
         cy.get("[data-testid=save-as-pdf-dropdown-item]")
             .should("be.visible")
             .click();
-        cy.get("[data-testid=genericMessageSubmitBtn]").click();
+        cy.get("[data-testid=generic-message-submit-btn]").click();
 
         cy.get("[data-testid=too-many-requests-warning]").should("be.visible");
     });
@@ -118,12 +107,8 @@ describe("Public Vaccine Card Form", () => {
         cy.visit(vaccineCardUrl);
 
         enterVaccineCardPHN(fullyVaccinatedPhn);
-        cy.get(dobYearSelector).select(fullyVaccinatedDobYear);
-        cy.get(dobMonthSelector).select(fullyVaccinatedDobMonth);
-        cy.get(dobDaySelector).select(fullyVaccinatedDobDay);
-        cy.get(dovYearSelector).select(fullyVaccinatedDovYear);
-        cy.get(dovMonthSelector).select(fullyVaccinatedDovMonth);
-        cy.get(dovDaySelector).select(fullyVaccinatedDovDay);
+        populateDatePicker(dobSelector, fullyVaccinatedDob);
+        populateDatePicker(dovSelector, fullyVaccinatedDov);
         clickVaccineCardEnterButton();
 
         cy.get("[data-testid=too-many-requests-warning]").should("be.visible");
@@ -155,12 +140,8 @@ describe("Public Vaccine Card Downloads", () => {
         cy.visit(vaccineCardUrl);
 
         enterVaccineCardPHN(fullyVaccinatedPhn);
-        cy.get(dobYearSelector).select(fullyVaccinatedDobYear);
-        cy.get(dobMonthSelector).select(fullyVaccinatedDobMonth);
-        cy.get(dobDaySelector).select(fullyVaccinatedDobDay);
-        cy.get(dovYearSelector).select(fullyVaccinatedDovYear);
-        cy.get(dovMonthSelector).select(fullyVaccinatedDovMonth);
-        cy.get(dovDaySelector).select(fullyVaccinatedDovDay);
+        populateDatePicker(dobSelector, fullyVaccinatedDob);
+        populateDatePicker(dovSelector, fullyVaccinatedDov);
         clickVaccineCardEnterButton();
 
         cy.get("[data-testid=save-dropdown-btn]")
@@ -169,7 +150,7 @@ describe("Public Vaccine Card Downloads", () => {
         cy.get("[data-testid=save-as-pdf-dropdown-item]")
             .should("be.visible")
             .click();
-        cy.get("[data-testid=genericMessageSubmitBtn]").click();
+        cy.get("[data-testid=generic-message-submit-btn]").click();
 
         cy.get("[data-testid=too-many-requests-warning]").should("be.visible");
     });
@@ -207,7 +188,7 @@ describe("Landing Page - Too Many Requests", () => {
 
 describe("Immunization", () => {
     it("Unsuccessful Response: Too Many Requests", () => {
-        cy.intercept("GET", "**/Immunization?*", {
+        cy.intercept("GET", "**/Immunization?hdid*", {
             statusCode: 429,
         });
         cy.configureSettings({
@@ -323,7 +304,7 @@ describe("Mobile - COVID-19 Orders", () => {
 
 describe("Mobile - Immunization: Unsuccessful Response", () => {
     it("Unsuccessful Response: Too Many Requests", () => {
-        cy.intercept("GET", "**/Immunization?*", {
+        cy.intercept("GET", "**/Immunization?hdid*", {
             statusCode: 429,
         });
         cy.configureSettings({
@@ -459,8 +440,8 @@ describe("Mobile - Laboratory Orders Report Download", () => {
             });
 
         // Confirmation modal
-        cy.get("[data-testid=genericMessageModal]").should("be.visible");
-        cy.get("[data-testid=genericMessageSubmitBtn]")
+        cy.get("[data-testid=generic-message-modal]").should("be.visible");
+        cy.get("[data-testid=generic-message-submit-btn]")
             .should("be.visible")
             .click({ force: true });
 
@@ -487,12 +468,12 @@ describe("Mobile - Laboratory Orders Report Download", () => {
             });
 
         // Confirmation modal
-        cy.get("[data-testid=genericMessageModal]").should("be.visible");
-        cy.get("[data-testid=genericMessageSubmitBtn]")
+        cy.get("[data-testid=generic-message-modal]").should("be.visible");
+        cy.get("[data-testid=generic-message-submit-btn]")
             .should("be.visible")
             .click({ force: true });
 
-        cy.get("[data-testid=singleErrorHeader]").contains(
+        cy.get("[data-testid=errorBanner]").contains(
             "Unable to download laboratory report"
         );
         cy.get("[data-testid=backBtn]").click({ force: true });
@@ -540,8 +521,8 @@ describe("Mobile - Covid19 Orders Report Download", () => {
             });
 
         // Confirmation modal
-        cy.get("[data-testid=genericMessageModal]").should("be.visible");
-        cy.get("[data-testid=genericMessageSubmitBtn]")
+        cy.get("[data-testid=generic-message-modal]").should("be.visible");
+        cy.get("[data-testid=generic-message-submit-btn]")
             .should("be.visible")
             .click({ force: true });
 
@@ -568,12 +549,12 @@ describe("Mobile - Covid19 Orders Report Download", () => {
             });
 
         // Confirmation modal
-        cy.get("[data-testid=genericMessageModal]").should("be.visible");
-        cy.get("[data-testid=genericMessageSubmitBtn]")
+        cy.get("[data-testid=generic-message-modal]").should("be.visible");
+        cy.get("[data-testid=generic-message-submit-btn]")
             .should("be.visible")
             .click({ force: true });
 
-        cy.get("[data-testid=singleErrorHeader]").contains(
+        cy.get("[data-testid=errorBanner]").contains(
             "Unable to download COVID‑19 laboratory report"
         );
         cy.get("[data-testid=backBtn]").click({ force: true });
@@ -605,7 +586,9 @@ describe("User Profile", () => {
 
         cy.log("Edit email address");
         cy.get("[data-testid=editEmailBtn]").click();
-        cy.get("[data-testid=emailInput]").type(Cypress.env("emailAddress"));
+        cy.get("[data-testid=email-input] input").type(
+            Cypress.env("emailAddress")
+        );
         cy.get("[data-testid=editEmailSaveBtn]").click();
 
         cy.get("[data-testid=too-many-requests-error]").should("be.visible");
@@ -625,6 +608,7 @@ describe("User Profile", () => {
 
         cy.get("[data-testid=verifySMSModalCodeInput]")
             .should("be.visible")
+            .find("input")
             .should("have.focus")
             .type("123456");
 
@@ -692,10 +676,12 @@ describe("Dependents", () => {
         cy.get(`[data-testid=dependent-card-${validDependent.phn}]`).within(
             () => {
                 cy.get("[data-testid=dependentMenuBtn]").click();
-                cy.get("[data-testid=deleteDependentMenuBtn]").click();
+                cy.document()
+                    .find("[data-testid=deleteDependentMenuBtn]")
+                    .click();
             }
         );
-        cy.get("[data-testid=confirmDeleteBtn]").click();
+        cy.get("[data-testid=generic-message-submit-btn]").click();
 
         cy.get("[data-testid=too-many-requests-error]").should("be.visible");
     });
@@ -704,21 +690,25 @@ describe("Dependents", () => {
         cy.intercept("POST", "**/UserProfile/*/Dependent", {
             statusCode: 429,
         });
-        cy.get("[data-testid=addNewDependentBtn]").click();
+        cy.get("[data-testid=add-dependent-button]").click();
 
-        cy.get("[data-testid=firstNameInput]")
+        cy.get("[data-testid=dependent-first-name-input] input")
             .clear()
             .type(alternativeDependent.firstName);
-        cy.get("[data-testid=lastNameInput]")
+        cy.get("[data-testid=dependent-last-name-input] input")
             .clear()
             .type(alternativeDependent.lastName);
-        cy.get("[data-testid=dateOfBirthInput] input")
+        cy.get("[data-testid=dependent-date-of-birth-input] input")
             .clear()
             .type(alternativeDependent.doB);
-        cy.get("[data-testid=phnInput]").clear().type(alternativeDependent.phn);
-        cy.get("[data-testid=termsCheckbox]").check({ force: true });
+        cy.get("[data-testid=dependent-phn-input]  input")
+            .clear()
+            .type(alternativeDependent.phn);
+        cy.get("[data-testid=dependent-terms-checkbox]  input").check({
+            force: true,
+        });
 
-        cy.get("[data-testid=registerDependentBtn]").click();
+        cy.get("[data-testid=register-dependent-btn]").click();
 
         cy.get("[data-testid=too-many-requests-error]").should("be.visible");
     });
@@ -756,14 +746,12 @@ describe("Dependent - Immunizaation History Tab - report download error handling
             statusCode: 429,
         });
 
-        cy.get(`[data-testid=immunization-tab-title-${dependentHdid}]`)
-            .parent()
-            .click();
+        cy.get(`[data-testid=immunization-tab-title-${dependentHdid}]`).click();
 
         // History tab
         cy.get(`[data-testid=immunization-tab-div-${dependentHdid}]`).within(
             () => {
-                cy.contains("a", "History").click();
+                cy.contains("button", "History").click();
             }
         );
         cy.get(
@@ -783,8 +771,8 @@ describe("Dependent - Immunizaation History Tab - report download error handling
         ).click();
 
         // Confirmation modal
-        cy.get("[data-testid=genericMessageModal]").should("be.visible");
-        cy.get("[data-testid=genericMessageSubmitBtn]").click();
+        cy.get("[data-testid=generic-message-modal]").should("be.visible");
+        cy.get("[data-testid=generic-message-submit-btn]").click();
 
         cy.get("[data-testid=too-many-requests-error]").should("be.visible");
     });
@@ -794,14 +782,12 @@ describe("Dependent - Immunizaation History Tab - report download error handling
             statusCode: 500,
         });
 
-        cy.get(`[data-testid=immunization-tab-title-${dependentHdid}]`)
-            .parent()
-            .click();
+        cy.get(`[data-testid=immunization-tab-title-${dependentHdid}]`).click();
 
         // History tab
         cy.get(`[data-testid=immunization-tab-div-${dependentHdid}]`).within(
             () => {
-                cy.contains("a", "History").click();
+                cy.contains("button", "History").click();
             }
         );
         cy.get(
@@ -821,10 +807,10 @@ describe("Dependent - Immunizaation History Tab - report download error handling
         ).click();
 
         // Confirmation modal
-        cy.get("[data-testid=genericMessageModal]").should("be.visible");
-        cy.get("[data-testid=genericMessageSubmitBtn]").click();
+        cy.get("[data-testid=generic-message-modal]").should("be.visible");
+        cy.get("[data-testid=generic-message-submit-btn]").click();
 
-        cy.get("[data-testid=singleErrorHeader]").should("not.be.empty");
+        cy.get("[data-testid=errorBanner]").should("not.be.empty");
     });
 });
 
@@ -851,11 +837,15 @@ describe("Comments", () => {
         );
         var testComment = "Test Add Comment";
 
-        cy.get("[data-testid=entryCardDetailsTitle]").first().click();
+        cy.get("[data-testid=entryCardDetailsTitle]")
+            .first()
+            .click({ force: true });
 
         // Add comment
-        cy.get("[data-testid=addCommentTextArea]").first().type(testComment);
-        cy.get("[data-testid=postCommentBtn]").first().click();
+        cy.get("[data-testid=add-comment-text-area] textarea")
+            .first()
+            .type(testComment);
+        cy.get("[data-testid=post-comment-btn]").first().click();
 
         // Verify
         cy.get("[data-testid=too-many-requests-error]").should("be.visible");
@@ -918,7 +908,7 @@ describe("Notes", () => {
         cy.log("Editing Note.");
         cy.get("[data-testid=noteMenuBtn]").first().click();
         cy.get("[data-testid=editNoteMenuBtn]").first().click();
-        cy.get("[data-testid=noteTitleInput]").clear().type("Test Edit");
+        cy.get("[data-testid=noteTitleInput] input").clear().type("Test Edit");
         cy.get("[data-testid=saveNoteBtn]").click();
 
         // Verify
@@ -952,72 +942,76 @@ describe("Notes", () => {
         // Verify
         cy.get("[data-testid=too-many-requests-error]").should("be.visible");
     });
+});
 
-    describe("Export Records - Immunizaation - report download error handling", () => {
-        beforeEach(() => {
-            cy.intercept("GET", "**/Immunization?hdid=*", {
-                fixture: "ImmunizationService/immunization.json",
-            });
-            cy.configureSettings({
-                datasets: [
-                    {
-                        name: "immunization",
-                        enabled: true,
-                    },
-                ],
-            });
-            cy.login(
-                Cypress.env("keycloak.username"),
-                Cypress.env("keycloak.password"),
-                AuthMethod.KeyCloak,
-                "/reports"
-            );
+describe("Export Records - Immunizaation - report download error handling", () => {
+    beforeEach(() => {
+        cy.intercept("GET", "**/Immunization?hdid=*", {
+            fixture: "ImmunizationService/immunization.json",
+        });
+        cy.configureSettings({
+            datasets: [
+                {
+                    name: "immunization",
+                    enabled: true,
+                },
+            ],
+        });
+        cy.login(
+            Cypress.env("keycloak.username"),
+            Cypress.env("keycloak.password"),
+            AuthMethod.KeyCloak,
+            "/reports"
+        );
+    });
+
+    it("Unsuccessful Response: Too Many Requests", () => {
+        cy.intercept("POST", "**/Report", {
+            statusCode: 429,
         });
 
-        it("Unsuccessful Response: Too Many Requests", () => {
-            cy.intercept("POST", "**/Report", {
-                statusCode: 429,
-            });
+        cy.vSelect("[data-testid=report-type]", "Immunizations");
 
-            cy.get("[data-testid=reportType]").select("Immunizations");
+        // Click download button
+        cy.get("[data-testid=export-record-btn]")
+            .should("be.enabled", "be.visible")
+            .click();
 
-            // Click download button
-            cy.get("[data-testid=exportRecordBtn] button")
-                .should("be.enabled", "be.visible")
-                .click();
+        // Select and click first option
+        cy.document()
+            .find(`[data-testid=export-record-menu] .v-list-item`)
+            .first()
+            .click();
 
-            // Select and click first option
-            cy.get("[data-testid=exportRecordBtn] a").first().click();
+        // Confirmation modal
+        cy.get("[data-testid=generic-message-modal]").should("be.visible");
+        cy.get("[data-testid=generic-message-submit-btn]").click();
 
-            // Confirmation modal
-            cy.get("[data-testid=genericMessageModal]").should("be.visible");
-            cy.get("[data-testid=genericMessageSubmitBtn]").click();
+        cy.get("[data-testid=too-many-requests-error]").should("be.visible");
+    });
 
-            cy.get("[data-testid=too-many-requests-error]").should(
-                "be.visible"
-            );
+    it("Unsuccessful Response: Internal Server Error", () => {
+        cy.intercept("POST", "**/Report", {
+            statusCode: 500,
         });
 
-        it("Unsuccessful Response: Internal Server Error", () => {
-            cy.intercept("POST", "**/Report", {
-                statusCode: 500,
-            });
+        cy.vSelect("[data-testid=report-type]", "Immunizations");
 
-            cy.get("[data-testid=reportType]").select("Immunizations");
+        // Click download button
+        cy.get("[data-testid=export-record-btn]")
+            .should("be.enabled", "be.visible")
+            .click();
 
-            // Click download button
-            cy.get("[data-testid=exportRecordBtn] button")
-                .should("be.enabled", "be.visible")
-                .click();
+        // Select and click first option
+        cy.document()
+            .find(`[data-testid=export-record-menu] .v-list-item`)
+            .first()
+            .click();
 
-            // Select and click first option
-            cy.get("[data-testid=exportRecordBtn] a").first().click();
+        // Confirmation modal
+        cy.get("[data-testid=generic-message-modal]").should("be.visible");
+        cy.get("[data-testid=generic-message-submit-btn]").click();
 
-            // Confirmation modal
-            cy.get("[data-testid=genericMessageModal]").should("be.visible");
-            cy.get("[data-testid=genericMessageSubmitBtn]").click();
-
-            cy.get("[data-testid=singleErrorHeader]").should("not.be.empty");
-        });
+        cy.get("[data-testid=errorBanner]").should("not.be.empty");
     });
 });

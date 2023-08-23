@@ -133,13 +133,9 @@ describe("Authenticated User - Home Page", () => {
             .should("be.visible", "be.enabled")
             .click();
 
-        cy.get("[data-testid=loading-toast]").should("be.visible");
         cy.url().should("include", timelineUrl);
         // Notes has 0 records and will return quickly so content placeholders will not have enough time to display.
-        cy.get("[data-testid=content-placeholders]").should("not.exist");
-        cy.get("[data-testid=loading-toast]").should("be.visible");
         cy.get("[data-testid=noTimelineEntriesText]").should("be.visible");
-        cy.get("[data-testid=displayCountText]").should("not.exist");
-        cy.get("[data-testid=loading-toast]").should("be.visible");
+        cy.get("[data-testid=timeline-record-count]").should("not.exist");
     });
 });

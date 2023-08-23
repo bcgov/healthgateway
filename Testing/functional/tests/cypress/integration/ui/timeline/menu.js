@@ -23,31 +23,32 @@ function login(isMobile) {
 describe("Menu System", () => {
     it("Validate Toggle Sidebar", { scrollBehavior: "top" }, () => {
         login(false);
-        cy.get("[data-testid=timelineLabel]")
-            .should("be.visible")
-            .should("have.text", "Timeline");
-        cy.get("[data-testid=sidebarToggle]").click();
-        cy.get("[data-testid=timelineLabel]").should("not.be.visible");
-        cy.get("[data-testid=sidebarToggle]").click();
-        cy.get("[data-testid=timelineLabel]").should("be.visible");
+        cy.get("[data-testid=menu-btn-timeline-link]").should("be.visible");
+
+        cy.get("[data-testid=navbar-toggle-button]").click();
+        cy.get("[data-testid=sidenavbar]").should(
+            "have.class",
+            "v-navigation-drawer--rail"
+        );
+        cy.get("[data-testid=navbar-toggle-button]").click();
+        cy.get("[data-testid=sidenavbar]").should(
+            "not.have.class",
+            "v-navigation-drawer--rail"
+        );
     });
 
     it("Validate Profile Button for Desktop", () => {
         login(false);
-        cy.get("[data-testid=sidebarUserName]").should("not.exist");
         cy.get("[data-testid=profileButtonInitials]")
             .should("be.visible")
             .should("include.text", "DG");
-        cy.get("[data-testid=profileBtn]").should("not.be.visible");
-        cy.get("[data-testid=profileDropDownIcon]").should("not.be.visible");
-        cy.get("[data-testid=logoutBtn]").should("not.be.visible");
-        cy.get("[data-testid=logoutDropDownIcon]").should("not.be.visible");
+        cy.get("[data-testid=profileBtn]").should("not.exist");
+        cy.get("[data-testid=logoutBtn]").should("not.exist");
         cy.get("[data-testid=headerDropdownBtn]")
             .should("be.visible", "be.enabled")
             .click();
         cy.get("[data-testid=profileUserName]").should("be.visible");
         cy.get("[data-testid=profileBtn]").should("be.visible");
-        cy.get("[data-testid=profileDropDownIcon]").should("be.visible");
         cy.get("[data-testid=profileBtn]").should(
             "have.attr",
             "href",
@@ -56,7 +57,6 @@ describe("Menu System", () => {
         cy.get("[data-testid=logoutBtn]")
             .should("be.visible")
             .should("include.text", "Log Out");
-        cy.get("[data-testid=logoutDropDownIcon]").should("be.visible");
     });
 
     it("Validate Profile Button for Mobile", () => {
@@ -64,16 +64,13 @@ describe("Menu System", () => {
         cy.get("[data-testid=profileButtonInitials]")
             .should("be.visible")
             .should("include.text", "DG");
-        cy.get("[data-testid=profileBtn]").should("not.be.visible");
-        cy.get("[data-testid=profileDropDownIcon]").should("not.be.visible");
-        cy.get("[data-testid=logoutBtn]").should("not.be.visible");
-        cy.get("[data-testid=logoutDropDownIcon]").should("not.be.visible");
+        cy.get("[data-testid=profileBtn]").should("not.exist");
+        cy.get("[data-testid=logoutBtn]").should("not.exist");
         cy.get("[data-testid=headerDropdownBtn]")
             .should("be.visible", "be.enabled")
             .click();
         cy.get("[data-testid=profileUserName]").should("be.visible");
         cy.get("[data-testid=profileBtn]").should("be.visible", "be.visible");
-        cy.get("[data-testid=profileDropDownIcon]").should("be.visible");
         cy.get("[data-testid=profileBtn]").should(
             "have.attr",
             "href",
@@ -82,7 +79,6 @@ describe("Menu System", () => {
         cy.get("[data-testid=logoutBtn]")
             .should("be.visible")
             .should("include.text", "Log Out");
-        cy.get("[data-testid=logoutDropDownIcon]").should("be.visible");
     });
 
     it("Side bar contains nav links", () => {
@@ -92,7 +88,7 @@ describe("Menu System", () => {
             "href",
             "/home"
         );
-        cy.get("[data-testid=menu-btn-time-line-link]").should(
+        cy.get("[data-testid=menu-btn-timeline-link]").should(
             "have.attr",
             "href",
             "/timeline"
@@ -107,12 +103,12 @@ describe("Menu System", () => {
             "href",
             "/dependents"
         );
-        cy.get("[data-testid=sidebarToggle]").should("be.visible");
-        cy.get("[data-testid=feedbackContainer]").should("be.visible");
+        cy.get("[data-testid=navbar-toggle-button]").should("be.visible");
+        cy.get("[data-testid=menu-btn-feedback-link]").should("be.visible");
     });
 
     it("Side bar expands on login for desktop", () => {
         login(true);
-        cy.get("[data-testid=timelineLabel]").should("not.be.visible");
+        cy.get("[data-testid=sidenavbar]").should("not.be.visible");
     });
 });

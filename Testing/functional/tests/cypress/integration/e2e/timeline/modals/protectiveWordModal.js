@@ -39,17 +39,17 @@ describe("Validate Modals Popup", () => {
         cy.get("[data-testid=protectiveWordModalErrorText]").should(
             "not.exist"
         );
-        cy.get("[data-testid=protectiveWordInput]")
+        cy.get("[data-testid=protectiveWordInput] input")
             .should("be.enabled")
             .type("WRONGKEYWORK");
         cy.get("[data-testid=protectiveWordContinueBtn]")
             .should("be.enabled")
             .click()
             .wait(250);
-        cy.get("[data-testid=protectiveWordModalErrorText]").contains(
+        cy.get("[data-testid=protectiveWordInput]").contains(
             "Invalid protective word. Try again."
         );
-        cy.get("[data-testid=protectiveWordInput]")
+        cy.get("[data-testid=protectiveWordInput] input")
             .clear()
             .should("be.enabled")
             .type("KEYWORD");
@@ -76,10 +76,7 @@ describe("Validate Modals Popup", () => {
             AuthMethod.KeyCloak
         );
         cy.checkTimelineHasLoaded();
-        cy.get("[data-testid=protectiveWordModal] header:first")
-            .find("button")
-            .should("have.text", "×")
-            .click();
+        cy.get("[data-testid=protectiveWordCloseButton]").click();
         cy.get("[data-testid=protectiveWordModal]").should("not.exist");
     });
 });

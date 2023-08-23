@@ -25,7 +25,7 @@ describe("Pagination", () => {
     it("Count Records", () => {
         cy.get("[data-testid=timelineCard]").then(($cards) => {
             cy.get("[data-testid=timeline-record-count]").contains(
-                `Displaying ${$cards.length} out of `
+                `Displaying 1 to ${$cards.length} out of `
             );
         });
     });
@@ -34,7 +34,9 @@ describe("Pagination", () => {
         cy.get("[data-testid=entryCardDate]")
             .eq(3)
             .then((firstPageDateElement) => {
-                cy.get("[data-testid=pagination]").contains("Next").click();
+                cy.get("[data-testid=pagination]")
+                    .find("[data-icon=chevron-right]")
+                    .click({ force: true });
 
                 cy.get("[data-testid=entryCardDate]")
                     .first()
@@ -50,7 +52,9 @@ describe("Pagination", () => {
         cy.get("[data-testid=entryCardDate]")
             .eq(3)
             .then((secondPageDateElement) => {
-                cy.get("[data-testid=pagination]").contains("Prev").click();
+                cy.get("[data-testid=pagination]")
+                    .find("[data-icon=chevron-left]")
+                    .click({ force: true });
 
                 cy.get("[data-testid=entryCardDate]")
                     .eq(3)

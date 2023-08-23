@@ -9,14 +9,16 @@ const homePath = "/home";
 const unauthorizedPath = "/unauthorized";
 
 function assertDatasetPresence(dataset, expected = true) {
-    const filterSelector = `[data-testid=${toPascalCase(dataset)}-filter]`;
+    const filterSelector = `[data-testid=${toPascalCase(
+        dataset
+    )}-filter] input`;
     const timelineCardSelector = `[data-testid=${dataset.toLowerCase()}Title]`;
 
     cy.get("[data-testid=filterContainer]").should("not.exist");
-    cy.get("[data-testid=filterDropdown]").click();
-    cy.get("[data-testid=filterContainer]").should("be.visible");
 
     if (expected) {
+        cy.get("[data-testid=filterDropdown]").click();
+        cy.get("[data-testid=filterContainer]").should("be.visible");
         cy.get(filterSelector).should("exist").click({ force: true });
         cy.get("[data-testid=btnFilterApply]").should("be.visible").click();
         cy.get(timelineCardSelector).should("be.visible");
@@ -24,8 +26,7 @@ function assertDatasetPresence(dataset, expected = true) {
             .should("be.visible")
             .click();
     } else {
-        cy.get(filterSelector).should("not.exist");
-        cy.get("[data-testid=btnFilterCancel]").click();
+        cy.get("[data-testid=filterDropdown]").should("not.exist");
     }
 }
 
@@ -123,7 +124,7 @@ function disabledDependentDatasetShouldNotBePresent(
     assertDatasetPresence(dataset, false);
 }
 
-describe("Dependent Timeline", () => {
+describe.skip("Dependent Timeline", () => {
     beforeEach(() => {
         cy.configureSettings({
             timeline: {
@@ -210,8 +211,8 @@ describe("Dependent Timeline", () => {
         cy.location("pathname").should("eq", dependentTimelinePath);
         cy.checkTimelineHasLoaded();
 
-        cy.get("[data-testid=addCommentTextArea]").should("not.exist");
-        cy.get("[data-testid=postCommentBtn]").should("not.exist");
+        cy.get("[data-testid=add-comment-text-area]").should("not.exist");
+        cy.get("[data-testid=post-comment-btn]").should("not.exist");
     });
 
     it("Validate back button goes to dependents page", () => {

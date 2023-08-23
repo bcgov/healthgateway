@@ -19,10 +19,9 @@ describe("Need to accept terms of service", () => {
         cy.get("[data-testid=tos-page-title]").should("be.visible");
         cy.get("[data-testid=tos-text-area-component]").should("be.visible");
 
-        cy.get("[data-testid=accept-tos-checkbox]").should("be.enabled");
         cy.get("[data-testid=continue-btn]").should("be.disabled");
 
-        cy.get("[data-testid=accept-tos-checkbox]")
+        cy.get("[data-testid=accept-tos-checkbox] input")
             .should("be.enabled")
             .check({ force: true });
         cy.get("[data-testid=continue-btn]").should("be.enabled");

@@ -31,7 +31,7 @@ describe("COVID-19 Orders", () => {
         cy.get("[data-testid=laboratoryHeaderDescription]").should(
             "be.visible"
         );
-        cy.get("[data-testid=laboratoryReportAvailable]").should("be.visible");
+        cy.get("[data-testid=covid-result-download-btn]").should("be.visible");
         cy.get("[data-testid=laboratoryReportingLab]").should("be.visible");
         cy.get("[data-testid=laboratoryTestType]").should("be.visible");
         cy.get("[data-testid=laboratoryTestStatus-0]").should("be.visible");
@@ -52,7 +52,9 @@ describe("COVID-19 Orders", () => {
                         expect($div.text().trim()).equal(negativeSummary);
                     }
                 );
-                cy.get("[data-testid=entryCardDetailsTitle]").click();
+                cy.get("[data-testid=entryCardDetailsTitle]").click({
+                    force: true,
+                });
             });
 
         cy.get("#entry-details-modal")
@@ -63,16 +65,18 @@ describe("COVID-19 Orders", () => {
                 );
                 cy.get("[data-testid=laboratoryTestStatus-0]", {
                     timeout: 1000,
-                }).should(($div) => {
-                    expect($div.text().trim()).equal(finalStatus);
-                });
+                })
+                    .first()
+                    .should(($div) => {
+                        expect($div.text().trim()).equal(finalStatus);
+                    });
 
                 // Validate Report Attachment Icon
                 cy.log("Card with reports should have an attachment icon.");
                 cy.get("[data-testid=attachmentIcon]").should("exist");
 
                 cy.log("Card with attachment icon should have a report.");
-                cy.get("[data-testid=laboratoryReportAvailable]").should(
+                cy.get("[data-testid=covid-result-download-btn]").should(
                     "exist"
                 );
 
@@ -88,18 +92,21 @@ describe("COVID-19 Orders", () => {
                 cy.get("[data-testid=laboratoryHeaderDescription]").should(
                     "not.exist"
                 );
-                cy.get("[data-testid=entryCardDetailsTitle]").click();
+                cy.get("[data-testid=entryCardDetailsTitle]").click({
+                    force: true,
+                });
             });
 
         cy.get("#entry-details-modal")
             .should("be.visible")
             .within(() => {
-                cy.get(
-                    "[data-testid=laboratoryResultDescription-0]"
-                ).scrollIntoView();
+                cy.get("[data-testid=laboratoryResultDescription-0]")
+                    .first()
+                    .scrollIntoView();
                 cy.get("[data-testid=result-link]").should("be.visible");
 
                 cy.get("[data-testid=laboratoryTestStatus-2]")
+                    .first()
                     .scrollIntoView()
                     .should(($div) => {
                         expect($div.text().trim()).equal(otherStatus);
@@ -121,7 +128,9 @@ describe("COVID-19 Orders", () => {
                 }).should(($div) => {
                     expect($div.text().trim()).equal(positiveSummary);
                 });
-                cy.get("[data-testid=entryCardDetailsTitle]").click();
+                cy.get("[data-testid=entryCardDetailsTitle]").click({
+                    force: true,
+                });
             });
 
         const correctedStatus = "Test Status: Corrected";
@@ -131,18 +140,18 @@ describe("COVID-19 Orders", () => {
                 cy.get("[data-testid=laboratoryTestStatus-0]").should(
                     "be.visible"
                 );
-                cy.get("[data-testid=laboratoryTestStatus-0]").should(
-                    ($div) => {
+                cy.get("[data-testid=laboratoryTestStatus-0]")
+                    .first()
+                    .should(($div) => {
                         expect($div.text().trim()).equal(correctedStatus);
-                    }
-                );
+                    });
 
                 // Validate Report Attachment Icon
                 cy.log("Card with reports should have an attachment icon.");
                 cy.get("[data-testid=attachmentIcon]").should("exist");
 
                 cy.log("Card with attachment icon should have a report.");
-                cy.get("[data-testid=laboratoryReportAvailable]").should(
+                cy.get("[data-testid=covid-result-download-btn]").should(
                     "exist"
                 );
 
@@ -161,7 +170,9 @@ describe("COVID-19 Orders", () => {
                         expect($div.text().trim()).equal(positiveSummary);
                     }
                 );
-                cy.get("[data-testid=entryCardDetailsTitle]").click();
+                cy.get("[data-testid=entryCardDetailsTitle]").click({
+                    force: true,
+                });
             });
 
         const amendedStatus = "Test Status: Amended";
@@ -171,18 +182,18 @@ describe("COVID-19 Orders", () => {
                 cy.get("[data-testid=laboratoryTestStatus-0]").should(
                     "be.visible"
                 );
-                cy.get("[data-testid=laboratoryTestStatus-0]").should(
-                    ($div) => {
+                cy.get("[data-testid=laboratoryTestStatus-0]")
+                    .first()
+                    .should(($div) => {
                         expect($div.text().trim()).equal(amendedStatus);
-                    }
-                );
+                    });
 
                 // Validate Report Attachment Icon
                 cy.log("Card with reports should have an attachment icon.");
                 cy.get("[data-testid=attachmentIcon]").should("exist");
 
                 cy.log("Card with attachment icon should have a report.");
-                cy.get("[data-testid=laboratoryReportAvailable]").should(
+                cy.get("[data-testid=covid-result-download-btn]").should(
                     "exist"
                 );
 
@@ -214,7 +225,7 @@ describe("COVID-19 Orders", () => {
                     .click({ force: true });
             });
 
-        cy.get("[data-testid=genericMessageSubmitBtn]")
+        cy.get("[data-testid=generic-message-submit-btn]")
             .should("be.visible")
             .click({ force: true });
 

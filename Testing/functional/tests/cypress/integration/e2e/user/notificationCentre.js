@@ -3,6 +3,8 @@ const HDID = "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A";
 
 describe("Notification Centre", () => {
     beforeEach(() => {
+        cy.intercept("GET", "**/Notification/*").as("getNotification");
+
         cy.configureSettings({
             notificationCentre: {
                 enabled: true,
@@ -14,15 +16,22 @@ describe("Notification Centre", () => {
             AuthMethod.KeyCloak,
             "/home"
         );
+
+        // Validate home page has displayed before clicking on notification.
+        cy.get("[data-testid=health-records-card]").should("be.visible");
     });
 
     it("Get notifications", () => {
+        // Wait for request to complete
+        cy.wait("@getNotification");
+
         cy.get("[data-testid=notification-centre-button]")
             .should("be.visible", "be.enabled")
             .click();
 
         cy.get("[data-testid=notification-centre-dismiss-all-button]")
             .should("be.visible", "be.enabled")
+            .scrollIntoView()
             .click();
 
         cy.get("[data-testid=notifications-div]").should("not.exist");
