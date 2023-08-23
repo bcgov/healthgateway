@@ -108,7 +108,7 @@ function selectPreviewDevice(previewDevice: PreviewDevice): void {
             {{ offlineMessage }}
         </p>
     </div>
-    <v-container>
+    <v-container v-else>
         <v-row justify="start" align="start">
             <v-col lg="5">
                 <h1 class="mb-6 text-primary text-h4 font-weight-bold">

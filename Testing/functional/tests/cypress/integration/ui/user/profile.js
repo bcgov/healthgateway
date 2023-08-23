@@ -82,9 +82,14 @@ describe("User Profile", () => {
             .contains("New email must be different from the previous one")
             .should("be.visible");
         cy.get("[data-testid=editEmailCancelBtn]").click();
-        cy.get("[data-testid=email-input] input")
-            .should("be.disabled")
-            .should("have.value", Cypress.env("emailAddress"));
+        cy.get("[data-testid=email-input] input").should(
+            "have.attr",
+            "readonly"
+        );
+        cy.get("[data-testid=email-input] input").should(
+            "have.value",
+            Cypress.env("emailAddress")
+        );
 
         cy.log("Clear/OptOut email address");
         cy.get("[data-testid=editEmailBtn]").click();

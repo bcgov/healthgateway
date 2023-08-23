@@ -23,13 +23,16 @@ describe("Landing Page", () => {
         cy.visit("/");
         cy.log("Laptop preview should be displayed by default");
         cy.get("[data-testid=preview-device-button-laptop]").should(
-            "be.disabled"
+            "have.class",
+            "bg-grey-lighten-3"
         );
         cy.get("[data-testid=preview-device-button-tablet]").should(
-            "not.be.disabled"
+            "not.have.class",
+            "bg-grey-lighten-3"
         );
         cy.get("[data-testid=preview-device-button-smartphone]").should(
-            "not.be.disabled"
+            "not.have.class",
+            "bg-grey-lighten-3"
         );
         cy.get("[data-testid=preview-image-laptop]")
             .scrollIntoView()
@@ -44,13 +47,16 @@ describe("Landing Page", () => {
         );
         cy.get("[data-testid=preview-device-button-tablet]").click();
         cy.get("[data-testid=preview-device-button-laptop]").should(
-            "not.be.disabled"
+            "not.have.class",
+            "bg-grey-lighten-3"
         );
         cy.get("[data-testid=preview-device-button-tablet]").should(
-            "be.disabled"
+            "have.class",
+            "bg-grey-lighten-3"
         );
         cy.get("[data-testid=preview-device-button-smartphone]").should(
-            "not.be.disabled"
+            "not.have.class",
+            "bg-grey-lighten-3"
         );
         cy.get("[data-testid=preview-image-laptop]").should("not.be.visible");
         cy.get("[data-testid=preview-image-tablet]").should("be.visible");
@@ -63,13 +69,16 @@ describe("Landing Page", () => {
         );
         cy.get("[data-testid=preview-device-button-smartphone]").click();
         cy.get("[data-testid=preview-device-button-laptop]").should(
-            "not.be.disabled"
+            "not.have.class",
+            "bg-grey-lighten-3"
         );
         cy.get("[data-testid=preview-device-button-tablet]").should(
-            "not.be.disabled"
+            "not.have.class",
+            "bg-grey-lighten-3"
         );
         cy.get("[data-testid=preview-device-button-smartphone]").should(
-            "be.disabled"
+            "have.class",
+            "bg-grey-lighten-3"
         );
         cy.get("[data-testid=preview-image-laptop]").should("not.be.visible");
         cy.get("[data-testid=preview-image-tablet]").should("not.be.visible");
@@ -80,13 +89,16 @@ describe("Landing Page", () => {
         );
         cy.get("[data-testid=preview-device-button-laptop]").click();
         cy.get("[data-testid=preview-device-button-laptop]").should(
-            "be.disabled"
+            "have.class",
+            "bg-grey-lighten-3"
         );
         cy.get("[data-testid=preview-device-button-tablet]").should(
-            "not.be.disabled"
+            "not.have.class",
+            "bg-grey-lighten-3"
         );
         cy.get("[data-testid=preview-device-button-smartphone]").should(
-            "not.be.disabled"
+            "not.have.class",
+            "bg-grey-lighten-3"
         );
         cy.get("[data-testid=preview-image-laptop]").should("be.visible");
         cy.get("[data-testid=preview-image-tablet]").should("not.be.visible");
