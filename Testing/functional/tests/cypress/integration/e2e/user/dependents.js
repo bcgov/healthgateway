@@ -22,41 +22,41 @@ function deleteDependent(cardSelector, confirmDelete) {
     }
 }
 
+const validDependent = {
+    firstName: "Sam ", // Aooend space to ensure field is trimmed
+    lastName: "Testfive ", // Aooend space to ensure field is trimmed
+    wrongLastName: "Testfive2",
+    invalidDoB: "2007-Aug-05",
+    doB: "2014-Mar-15",
+    phn: "9874307168",
+    hdid: "645645767756756767",
+};
+
+const protectedDependentWithAllowedDelegation = {
+    firstName: "Leroy Desmond",
+    lastName: "Tobias",
+    doB: "2015-Dec-02",
+    phn: "9872868128",
+    hdid: "35224807075386200",
+};
+
+const protectedDependentWithoutAllowedDelegation = {
+    firstName: "Lenny Francesco",
+    lastName: "Dansereau",
+    doB: "2019-May-14",
+    phn: "9872868103",
+};
+
+const noHdidDependent = {
+    firstName: "Baby Girl",
+    lastName: "Reid",
+    doB: "2018-Feb-04",
+    phn: "9879187222",
+};
+
+const validDependentHdid = "162346565465464564565463257";
+
 describe("dependents", () => {
-    const validDependent = {
-        firstName: "Sam ", // Aooend space to ensure field is trimmed
-        lastName: "Testfive ", // Aooend space to ensure field is trimmed
-        wrongLastName: "Testfive2",
-        invalidDoB: "2007-Aug-05",
-        doB: "2014-Mar-15",
-        phn: "9874307168",
-        hdid: "645645767756756767",
-    };
-
-    const protectedDependentWithAllowedDelegation = {
-        firstName: "Leroy Desmond",
-        lastName: "Tobias",
-        doB: "2015-Dec-02",
-        phn: "9872868128",
-        hdid: "35224807075386200",
-    };
-
-    const protectedDependentWithoutAllowedDelegation = {
-        firstName: "Lenny Francesco",
-        lastName: "Dansereau",
-        doB: "2019-May-14",
-        phn: "9872868103",
-    };
-
-    const noHdidDependent = {
-        firstName: "Baby Girl",
-        lastName: "Reid",
-        doB: "2018-Feb-04",
-        phn: "9879187222",
-    };
-
-    const validDependentHdid = "162346565465464564565463257";
-
     beforeEach(() => {
         cy.configureSettings({
             dependents: {
@@ -531,6 +531,40 @@ describe("dependents", () => {
             timeout: 60000,
             interval: 5000,
         });
+    });
+});
+
+describe("CRUD Operations", () => {
+    beforeEach(() => {
+        cy.configureSettings({
+            dependents: {
+                enabled: true,
+            },
+            datasets: [
+                {
+                    name: "immunization",
+                    enabled: true,
+                },
+                {
+                    name: "covid19TestResult",
+                    enabled: true,
+                },
+                {
+                    name: "clinicalDocument",
+                    enabled: true,
+                },
+                {
+                    name: "labResult",
+                    enabled: true,
+                },
+            ],
+        });
+        cy.login(
+            Cypress.env("keycloak.username"),
+            Cypress.env("keycloak.password"),
+            AuthMethod.KeyCloak,
+            "/dependents"
+        );
     });
 
     it("Validate Adding, Viewing, and Removing Dependents", () => {
