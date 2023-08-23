@@ -135,11 +135,9 @@ hospitalVisitStore
                 <HgDataTableComponent
                     v-else-if="!isDependent"
                     class="d-none d-md-block"
-                    fixed-header
                     :loading="hospitalVisitsAreLoading"
                     :items="items"
                     :fields="fields"
-                    height="600px"
                     density="compact"
                     data-testid="hospital-visit-report-table"
                 />

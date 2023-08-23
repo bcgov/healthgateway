@@ -168,12 +168,10 @@ specialAuthorityStore
             <HgDataTableComponent
                 v-else-if="!isDependent"
                 class="d-none d-md-block"
-                fixed-header
                 :loading="specialAuthorityRequestsAreLoading"
                 :items="items"
                 :fields="fields"
                 density="compact"
-                height="600px"
                 data-testid="medication-request-report-table"
             />
         </section>

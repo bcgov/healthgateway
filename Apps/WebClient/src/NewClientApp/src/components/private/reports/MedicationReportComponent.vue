@@ -171,8 +171,6 @@ medicationStore
                 class="d-none d-md-block"
                 :items="items"
                 :fields="fields"
-                height="600px"
-                fixed-header
                 density="compact"
                 :loading="medicationsAreLoading"
                 data-testid="medication-history-report-table"
