@@ -182,11 +182,11 @@ watch(maskedStoreValue, (value) => (maskedValue.value = value));
             :class="{ 'mb-4': inputErrorMessages.length > 0 }"
             type="tel"
             maxlength="14"
-            clearable
             label="Cell Number"
             :placeholder="isSmsEditable ? 'Your phone number' : 'Empty'"
             persistent-placeholder
             :readonly="!isSmsEditable"
+            :clearable="isSmsEditable"
             :error-messages="inputErrorMessages"
         >
             <template #append-inner>

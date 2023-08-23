@@ -90,7 +90,9 @@ namespace HealthGateway.DBMaintainer
                     (hostContext, services) =>
                     {
                         Console.WriteLine("Configuring Services...");
-                        services.AddDbContextPool<GatewayDbContext>(options => options.UseNpgsql(hostContext.Configuration.GetConnectionString("GatewayConnection")));
+                        services.AddDbContextPool<GatewayDbContext>(options => options.UseNpgsql(
+                            hostContext.Configuration.GetConnectionString("GatewayConnection"),
+                            x => x.MigrationsHistoryTable("__EFMigrationsHistory", "gateway")));
 
                         // Add HTTP Client
                         services.AddHttpClient();

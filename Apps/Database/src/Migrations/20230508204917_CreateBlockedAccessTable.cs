@@ -34,9 +34,10 @@ namespace HealthGateway.Database.Migrations
             // Store DependentAudit data into a temporary table to be used later to populate AgentAddit
             string dependentAuditTempTable = "TempDependentAudit";
             string dependentAuditTempTableSql = @$"
-                SELECT ""DependentAuditId"", ""HdId"", ""AgentUsername"", ""ProtectedReason"", ""OperationCode""||'Dependent',
-                'Dependent' AS ""GroupCode"", ""TransactionDateTime"", ""CreatedBy"", ""CreatedDateTime"", ""UpdatedBy"", ""UpdatedDateTime""
-                INTO TEMPORARY {dependentAuditTempTable} FROM gateway.""DependentAudit"";
+                CREATE TEMP TABLE {dependentAuditTempTable} AS
+                SELECT ""DependentAuditId"", ""HdId"", ""AgentUsername"", ""ProtectedReason"", ""OperationCode""||'Dependent' AS ""OperationCode"",
+                    'Dependent' AS ""GroupCode"", ""TransactionDateTime"", ""CreatedBy"", ""CreatedDateTime"", ""UpdatedBy"", ""UpdatedDateTime""
+                FROM gateway.""DependentAudit"";
                 ";
             migrationBuilder.Sql(dependentAuditTempTableSql);
 

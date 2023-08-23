@@ -137,11 +137,11 @@ watch(email, (value) => (inputValue.value = value));
             :class="{ 'mb-4': inputErrorMessages.length > 0 }"
             data-testId="email-input"
             type="email"
-            clearable
             label="Email Address"
             :placeholder="isEmailEditable ? 'Your email address' : 'Empty'"
             persistent-placeholder
             :readonly="!isEmailEditable"
+            :clearable="isEmailEditable"
             :error-messages="inputErrorMessages"
             @blur="v$.inputValue.$touch()"
         />
