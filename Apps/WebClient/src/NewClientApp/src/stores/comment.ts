@@ -14,10 +14,7 @@ import { useErrorStore } from "@/stores/error";
 import DateSortUtility from "@/utility/dateSortUtility";
 
 const commentsSort = (a: UserComment, b: UserComment): number =>
-    DateSortUtility.ascendingByString(
-        a.createdDateTime,
-        b.createdDateTime
-    );
+    DateSortUtility.ascendingByString(a.createdDateTime, b.createdDateTime);
 
 export const useCommentStore = defineStore("comment", () => {
     const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
