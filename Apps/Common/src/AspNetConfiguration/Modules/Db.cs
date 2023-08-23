@@ -44,7 +44,9 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
             services.AddDbContextPool<GatewayDbContext>(
                 options =>
                 {
-                    options.UseNpgsql(configuration.GetConnectionString("GatewayConnection"));
+                    options.UseNpgsql(
+                        configuration.GetConnectionString("GatewayConnection"),
+                        x => x.MigrationsHistoryTable("__EFMigrationsHistory", "gateway"));
                     if (isSensitiveDataLoggingEnabled)
                     {
                         options.EnableSensitiveDataLogging();
