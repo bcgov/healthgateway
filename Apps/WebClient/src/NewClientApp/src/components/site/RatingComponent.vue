@@ -39,9 +39,6 @@ function showDialog(): void {
         isNaN(autoSkipConfigValue) || autoSkipConfigValue <= 0
             ? 10000
             : autoSkipConfigValue;
-    logger.info(
-        `autoSkipConfigValue: ${autoSkipConfigValue}, autoSkip: ${autoSkip}`
-    );
     setTimeout(() => {
         if (isVisible.value) {
             handleRating(0, true);
