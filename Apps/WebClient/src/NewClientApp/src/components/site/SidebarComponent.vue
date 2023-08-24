@@ -104,17 +104,6 @@ watch(isSidebarOpen, (value: boolean) => {
                 </template>
             </v-list-item>
             <v-list-item
-                title="COVID-19"
-                to="/covid19"
-                data-testid="menu-btn-covid19-link"
-            >
-                <template #prepend>
-                    <div class="nav-list-item-icon mr-8 d-flex justify-center">
-                        <v-icon icon="fas fa-circle-check" />
-                    </div>
-                </template>
-            </v-list-item>
-            <v-list-item
                 v-show="isDependentEnabled && userStore.userIsActive"
                 title="Dependents"
                 to="/dependents"
