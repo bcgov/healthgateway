@@ -32,11 +32,18 @@ const isVisible = ref(false);
 
 function showDialog(): void {
     isVisible.value = true;
+    const autoSkipConfigValue = Number(
+        configStore.webConfig?.timeouts.logoutRedirect
+    );
+    const autoSkip =
+        isNaN(autoSkipConfigValue) || autoSkipConfigValue <= 0
+            ? 10000
+            : autoSkipConfigValue;
     setTimeout(() => {
         if (isVisible.value) {
             handleRating(0, true);
         }
-    }, Number(configStore.webConfig.timeouts.logoutRedirect));
+    }, autoSkip);
 }
 
 function hideDialog(): void {
