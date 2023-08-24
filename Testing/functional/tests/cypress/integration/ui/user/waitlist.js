@@ -41,11 +41,11 @@ describe("Waitlist Ticket Module Enabled", () => {
         cy.intercept("POST", "**/Ticket?room=healthgateway", {
             statusCode: serviceUnavailable,
         });
-        cy.visit("/vaccinecard");
+        cy.visit("/termsOfService");
         cy.log(
             "Verify unprotected page was accessed successfully without creating ticket."
         );
-        cy.url().should("include", "/vaccinecard");
+        cy.url().should("include", "/termsOfService");
     });
 
     it("Verify creating a ticket and then successfully checking in on a protected page", () => {
