@@ -41,7 +41,8 @@ const isFooterFixed = computed(() => !appStore.isMobile);
             </v-col>
             <v-col class="flex-grow-0" cols="12" md="auto">
                 <a
-                    :href="Path.ReleaseNotes"
+                    href="https://www2.gov.bc.ca/gov/content?id=D5206BCE6B3F46279080D9CC5B977D3E"
+                    target="_blank"
                     data-testid="footer-release-notes-link"
                     class="text-white"
                 >

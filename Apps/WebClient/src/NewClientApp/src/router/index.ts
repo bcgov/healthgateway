@@ -73,10 +73,6 @@ const PatientRetrievalErrorView = () =>
     import(
         /* webpackChunkName: "patientRetrievalError" */ "@/components/error/PatientRetrievalErrorView.vue"
     );
-const ReleaseNotesView = () =>
-    import(
-        /* webpackChunkName: "releaseNotes" */ "@/components/public/release-notes/ReleaseNotesView.vue"
-    );
 const ReportsView = () =>
     import(
         /* webpackChunkName: "reports" */ "@/components/private/reports/ReportsView.vue"
@@ -319,20 +315,6 @@ const routes = [
             requiredFeaturesEnabled: (config: FeatureToggleConfiguration) =>
                 config.covid19.pcrTestEnabled,
             requiresProcessedWaitlistTicket: true,
-        },
-    },
-    {
-        path: Path.ReleaseNotes,
-        component: ReleaseNotesView,
-        meta: {
-            validStates: [
-                UserState.unauthenticated,
-                UserState.invalidIdentityProvider,
-                UserState.noPatient,
-                UserState.registered,
-                UserState.pendingDeletion,
-            ],
-            requiresProcessedWaitlistTicket: false,
         },
     },
     {
