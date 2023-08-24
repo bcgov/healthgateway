@@ -69,5 +69,10 @@ namespace HealthGateway.Database.Constants
         /// The code representing Diagnostic Imaging.
         /// </summary>
         public const string DiagnosticImaging = "DIA";
+
+        /// <summary>
+        /// The code representing Cancer Screening.
+        /// </summary>
+        public const string CancerScreening = "CNS";
     }
 }
