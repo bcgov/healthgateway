@@ -1127,6 +1127,15 @@ namespace HealthGateway.Database.Context
                         CreatedDateTime = this.DefaultSeedDate.ToUniversalTime(),
                         UpdatedBy = UserId.DefaultUser,
                         UpdatedDateTime = this.DefaultSeedDate.ToUniversalTime(),
+                    },
+                    new CommentEntryTypeCode
+                    {
+                        CommentEntryCode = CommentEntryType.CancerScreening,
+                        Description = "Comment for a Cancer Screening Entry",
+                        CreatedBy = UserId.DefaultUser,
+                        CreatedDateTime = this.DefaultSeedDate.ToUniversalTime(),
+                        UpdatedBy = UserId.DefaultUser,
+                        UpdatedDateTime = this.DefaultSeedDate.ToUniversalTime(),
                     });
         }
 

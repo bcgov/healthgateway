@@ -13,6 +13,10 @@
     },
     "datasets": [
         {
+            "name": "cancerScreening",
+            "enabled": true
+        },
+        {
             "name": "clinicalDocument",
             "enabled": true
         },

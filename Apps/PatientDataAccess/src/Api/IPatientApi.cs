@@ -37,6 +37,7 @@ namespace HealthGateway.PatientDataAccess.Api
         Covid19Laboratory,
         ClinicalDocument,
         DiagnosticImaging,
+        BcCancerScreening,
     }
 
     internal enum DiagnosticImagingStatus
@@ -47,6 +48,12 @@ namespace HealthGateway.PatientDataAccess.Api
         Pending,
         Completed,
         Amended,
+    }
+
+    internal enum CancerScreeningType
+    {
+        Recall,
+        Result,
     }
 
     internal interface IPatientApi

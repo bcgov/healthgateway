@@ -36,6 +36,8 @@ namespace HealthGateway.PatientDataAccess
                 .ForMember(d => d.RegistrationFileId, opts => opts.MapFrom(s => s.HealthOptionsFileId));
 
             this.CreateMap<Api.DiagnosticImagingExam, DiagnosticImagingExam>();
+
+            this.CreateMap<Api.CancerScreeningExam, CancerScreeningExam>();
         }
     }
 }

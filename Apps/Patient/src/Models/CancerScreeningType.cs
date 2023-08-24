@@ -13,29 +13,30 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Patient.Constants
+namespace HealthGateway.Patient.Models
 {
     using System.Text.Json.Serialization;
 
     /// <summary>
-    /// Patient data types.
+    /// Cancer screening types.
     /// </summary>
     [JsonConverter(typeof(JsonStringEnumMemberConverter))]
-    public enum PatientDataType
+    [JsonStringEnumMemberConverterOptions(deserializationFailureFallbackValue: Unknown)]
+    public enum CancerScreeningType
     {
         /// <summary>
-        /// Organ donor registration status.
+        /// Unknown status.
         /// </summary>
-        OrganDonorRegistrationStatus,
+        Unknown,
 
         /// <summary>
-        /// Diagnostic imaging exams.
+        /// Screening type is recall
         /// </summary>
-        DiagnosticImaging,
+        Recall,
 
         /// <summary>
-        /// Cancer screening.
+        /// Screening type is result.
         /// </summary>
-        CancerScreening,
+        Result,
     }
 }
