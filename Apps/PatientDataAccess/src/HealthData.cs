@@ -81,27 +81,27 @@ namespace HealthGateway.PatientDataAccess
     }
 
     /// <summary>
-    /// The details of a BC Cancer screening exam.
+    /// The details of a cancer screening exam.
     /// </summary>
     public record CancerScreeningExam : HealthData
     {
         /// <summary>
-        /// Gets or sets the cancer screening's event type.
+        /// Gets or sets the type.
         /// </summary>
         public CancerScreeningType EventType { get; set; }
 
         /// <summary>
-        /// Gets or sets the cancer screening's program name.
+        /// Gets or sets the program name.
         /// </summary>
         public string? ProgramName { get; set; }
 
         /// <summary>
-        /// Gets or sets the cancer screening's date.
+        /// Gets or sets the event timestamp utc.
         /// </summary>
         public DateTime EventTimestampUtc { get; set; }
 
         /// <summary>
-        /// Gets or sets the cancer screening's result timestamp.
+        /// Gets or sets the result timestamp.
         /// </summary>
         public DateTime ResultTimestamp { get; set; }
     }
