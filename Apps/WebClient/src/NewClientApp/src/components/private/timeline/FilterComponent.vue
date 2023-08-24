@@ -246,7 +246,7 @@ function getFormattedFilterCount(entryType: EntryType): string {
                     <v-spacer />
                     <HgButtonComponent
                         data-testid="btnFilterCancel"
-                        variant="link"
+                        variant="secondary"
                         text="Cancel"
                         @click="hideDialog"
                     />

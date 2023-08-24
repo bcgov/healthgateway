@@ -243,7 +243,7 @@ setResendTimeout();
                     <HgButtonComponent
                         v-else-if="tooManyRetries"
                         id="resendSMSVerification"
-                        variant="link"
+                        variant="secondary"
                         block
                         text="Send New Code"
                         :disabled="smsVerificationSent"
