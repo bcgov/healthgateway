@@ -35,7 +35,7 @@ namespace HealthGateway.Patient.Models
         Recall,
 
         /// <summary>
-        /// Screening type is result.
+        /// Screening result.
         /// </summary>
         Result,
     }
