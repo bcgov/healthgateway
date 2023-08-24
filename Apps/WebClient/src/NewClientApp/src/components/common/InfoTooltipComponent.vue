@@ -35,7 +35,7 @@ function handleClick() {
         <template #activator="{ props: slotProps }">
             <v-icon
                 v-bind="{ ...slotProps, ...$attrs }"
-                icon="info-circle"
+                icon="circle-question"
                 color="primary"
                 :size="size"
                 @click="handleClick"
