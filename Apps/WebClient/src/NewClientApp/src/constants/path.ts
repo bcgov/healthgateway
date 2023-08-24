@@ -16,7 +16,6 @@ export enum Path {
     Profile = "/profile",
     Queue = "/queue",
     Registration = "/registration",
-    ReleaseNotes = "/release-notes",
     Reports = "/reports",
     Services = "/services",
     TermsOfService = "/termsOfService",

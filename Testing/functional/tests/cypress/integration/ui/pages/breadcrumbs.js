@@ -1,4 +1,4 @@
-const pageUrls = ["/release-notes", "/termsOfService"];
+const pageUrls = ["/termsOfService"];
 
 describe("Breadcrumbs", () => {
     it("Breadcrumbs hidden when logged out", () => {
