@@ -132,11 +132,9 @@ labResultStore
     <HgDataTableComponent
         v-else-if="!isDependent"
         class="d-none d-md-block"
-        fixed-header
         :loading="labResultsAreLoading"
         :items="items"
         :fields="fields"
-        height="600px"
         density="compact"
         data-testid="laboratory-report-table"
     />

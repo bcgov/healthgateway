@@ -55,6 +55,7 @@ function formatDate(date: StringISODate): string {
                 hide-details
             />
             <InfoPopoverComponent
+                class="mt-2"
                 button-text="What does this mean?"
                 :button-test-id="`other-delegate-info-popover-button-${dependent.ownerId}`"
                 :popover-test-id="`other-delegate-info-popover-${dependent.ownerId}`"

@@ -199,7 +199,7 @@ function resetFeedback(): void {
                     <template v-if="!isSuccess && !hasSubmitted">
                         <HgButtonComponent
                             data-testid="feedback-no-need-btn"
-                            variant="link"
+                            variant="secondary"
                             text="Cancel"
                             @click="hideDialog"
                         />
@@ -214,7 +214,7 @@ function resetFeedback(): void {
                     <template v-else-if="isSuccessWithoutEmail">
                         <HgButtonComponent
                             data-testid="feedback-no-need-btn"
-                            variant="link"
+                            variant="secondary"
                             text="No Need!"
                             @click="hideDialog"
                         />

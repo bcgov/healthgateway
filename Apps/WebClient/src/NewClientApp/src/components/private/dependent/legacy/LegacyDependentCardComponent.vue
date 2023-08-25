@@ -1134,14 +1134,13 @@ watch(vaccineRecordState, () => {
                                                     'dependent-covid-test-info-button-' +
                                                     index
                                                 "
-                                                aria-label="Result Description"
                                                 data-testid="dependent-covid-test-info-button"
+                                                aria-label="Result Description"
+                                                class="ml-1 text-primary"
                                                 size="x-small"
-                                                class="ml-1"
                                             >
                                                 <v-icon
                                                     icon="info-circle"
-                                                    color="primary"
                                                     size="large"
                                                 />
                                                 <v-overlay

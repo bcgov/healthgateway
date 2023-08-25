@@ -203,6 +203,11 @@ function cancelFilterChanges(): void {
     isAdvancedOpen.value = false;
 }
 
+function applyFilterChanges(): void {
+    updateFilter();
+    isAdvancedOpen.value = false;
+}
+
 function updateFilter(): void {
     reportFilter.value = ReportFilterBuilder.create()
         .withStartDate(convertEmptyStringDateToNull(selectedStartDate.value))
@@ -407,7 +412,7 @@ for (const [entryType] of reportComponentMap) {
                     <v-chip
                         v-for="item in reportFilter.medications"
                         :key="item"
-                        class="excluded-medication mb-1"
+                        class="excluded-medication mb-1 mr-1"
                         closable
                         :title="item"
                         :data-testid="`${replaceSpaceWithDash(
@@ -464,7 +469,6 @@ for (const [entryType] of reportComponentMap) {
                                 v-model="selectedMedicationOptions"
                                 hint="Choose a medication"
                                 multiple
-                                hide-selected
                                 chips
                                 eager
                                 :items="medicationOptions"
@@ -491,7 +495,7 @@ for (const [entryType] of reportComponentMap) {
                                     !isReportFilterEndDateValidDate
                                 "
                                 text="Apply"
-                                @click="updateFilter"
+                                @click="applyFilterChanges"
                             />
                         </v-col>
                     </v-row>

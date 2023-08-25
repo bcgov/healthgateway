@@ -129,7 +129,6 @@ noteStore
             :loading="notesAreLoading"
             :items="items"
             :fields="fields"
-            height="600px"
             density="compact"
             data-testid="notes-report-table"
         />

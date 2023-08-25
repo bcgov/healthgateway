@@ -5,6 +5,7 @@ import { computed, ref } from "vue";
 import DisplayFieldComponent from "@/components/common/DisplayFieldComponent.vue";
 import HgButtonComponent from "@/components/common/HgButtonComponent.vue";
 import HgDataTableComponent from "@/components/common/HgDataTableComponent.vue";
+import HgIconButtonComponent from "@/components/common/HgIconButtonComponent.vue";
 import InfoTooltipComponent from "@/components/common/InfoTooltipComponent.vue";
 import MessageModalComponent from "@/components/common/MessageModalComponent.vue";
 import TimelineEntryComponent from "@/components/private/timeline/TimelineEntryComponent.vue";
@@ -157,15 +158,16 @@ function getReport(): void {
             <span data-testid="reporting-lab-information-text"
                 >Find resources about your lab tests.</span
             >
-            <v-icon
+
+            <HgIconButtonComponent
                 data-testid="other-resources-info-button"
                 aria-label="More Information"
-                class="ml-2"
-                icon="info-circle"
-                color="primary"
-                size="small"
+                class="ml-1 text-primary"
+                size="x-small"
                 @click="showInfoDetails = !showInfoDetails"
-            />
+            >
+                <v-icon icon="info-circle" size="large" />
+            </HgIconButtonComponent>
         </p>
         <v-slide-y-transition>
             <v-alert

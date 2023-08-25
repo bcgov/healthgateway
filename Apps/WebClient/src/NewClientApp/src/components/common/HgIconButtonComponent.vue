@@ -1,11 +1,17 @@
 <script setup lang="ts">
 import { computed, useSlots } from "vue";
 
+import HgButtonComponent, {
+    HgButtonVariant,
+} from "@/components/common/HgButtonComponent.vue";
+
 interface Props {
     icon?: string | boolean;
+    variant?: HgButtonVariant;
 }
 withDefaults(defineProps<Props>(), {
     icon: true,
+    variant: "transparent",
 });
 
 const slots = useSlots();
@@ -14,8 +20,8 @@ const hasSlot = computed(() => slots.default !== undefined);
 </script>
 
 <template>
-    <v-btn v-if="hasSlot" :icon="icon" variant="flat" class="bg-transparent">
+    <HgButtonComponent v-if="hasSlot" :icon="icon" :variant="variant">
         <slot />
-    </v-btn>
-    <v-btn v-else :icon="icon" variant="flat" class="bg-transparent" />
+    </HgButtonComponent>
+    <HgButtonComponent v-else :icon="icon" :variant="variant" />
 </template>

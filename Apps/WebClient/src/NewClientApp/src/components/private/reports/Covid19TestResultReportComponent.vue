@@ -136,11 +136,9 @@ covid19TestResultStore
             <HgDataTableComponent
                 v-else-if="!isDependent"
                 class="d-none d-md-block"
-                fixed-header
                 :loading="covid19TestResultsAreLoading"
                 :items="items"
                 :fields="fields"
-                height="600px"
                 density="compact"
                 data-testid="covid19-report-table"
             />

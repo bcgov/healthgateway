@@ -27,7 +27,8 @@ withDefaults(defineProps<Props>(), {
 <template>
     <HgButtonComponent
         :id="buttonId"
-        variant="link"
+        variant="transparent"
+        class="text-primary"
         :prepend-icon="buttonPrependIcon"
         :size="buttonSize"
         :aria-label="buttonText"
