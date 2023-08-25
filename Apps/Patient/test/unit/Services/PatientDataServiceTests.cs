@@ -16,6 +16,7 @@
 namespace HealthGateway.PatientTests.Services
 {
     using System;
+    using System.Globalization;
     using System.Linq;
     using System.Security.Cryptography;
     using System.Text.Json;
@@ -33,6 +34,7 @@ namespace HealthGateway.PatientTests.Services
     using Moq;
     using Shouldly;
     using Xunit;
+    using CancerScreeningExam = HealthGateway.PatientDataAccess.CancerScreeningExam;
     using DiagnosticImagingExam = HealthGateway.Patient.Services.DiagnosticImagingExam;
     using DiagnosticImagingStatus = HealthGateway.Patient.Models.DiagnosticImagingStatus;
     using OrganDonorRegistration = HealthGateway.Patient.Services.OrganDonorRegistration;
@@ -151,6 +153,75 @@ namespace HealthGateway.PatientTests.Services
                 actual.Status.ShouldBe(OrganDonorRegistrationStatus.Registered);
                 actual.StatusMessage.ShouldBe(expected.StatusMessage);
                 actual.RegistrationFileId.ShouldBe(expected.RegistrationFileId);
+            }
+            else
+            {
+                result.Items.ShouldBeEmpty();
+            }
+        }
+
+        [Fact]
+        public async Task CannotGetCancerScreeningData()
+        {
+            CancerScreeningExam expected = new()
+            {
+                EventType = CancerScreeningType.Recall,
+            };
+
+            Mock<IPatientDataRepository> patientDataRepository = new();
+            patientDataRepository.AttachMockQuery<HealthQuery>(
+                q => q.Pid == this.pid && q.Categories.Any(c => c == HealthCategory.BcCancerScreening),
+                expected);
+            Mock<IPersonalAccountsService> personalAccountService = this.GetMockPersonalAccountService();
+
+            Mock<IPatientRepository> patientRepository = new();
+            patientRepository.Setup(p => p.CanAccessDataSourceAsync(It.IsAny<string>(), It.IsAny<DataSource>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
+
+            PatientDataService sut = new(patientDataRepository.Object, patientRepository.Object, personalAccountService.Object, this.mapper);
+
+            PatientDataResponse result = await sut.Query(new PatientDataQuery(this.hdid, new[] { PatientDataType.CancerScreening }), CancellationToken.None)
+                .ConfigureAwait(true);
+
+            result.Items.ShouldBeEmpty();
+        }
+
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public async Task CanGetCancerScreeningData(bool canAccessDataSource)
+        {
+            CancerScreeningExam expected = new()
+            {
+                Id = "12345678931",
+                FileId = "12345678931",
+                ProgramName = "Cervical Cancer",
+                EventType = CancerScreeningType.Result,
+                EventTimestampUtc = Convert.ToDateTime("2022-10-18T08:49:37.3051315Z", CultureInfo.InvariantCulture),
+                ResultTimestamp = Convert.ToDateTime("2023-05-03T08:29:41.2820921+00:00", CultureInfo.InvariantCulture),
+            };
+
+            Mock<IPatientDataRepository> patientDataRepository = new();
+            patientDataRepository.AttachMockQuery<HealthQuery>(
+                q => q.Pid == this.pid && q.Categories.Any(c => c == HealthCategory.BcCancerScreening),
+                expected);
+            Mock<IPersonalAccountsService> personalAccountService = this.GetMockPersonalAccountService();
+
+            Mock<IPatientRepository> patientRepository = new();
+            patientRepository.Setup(p => p.CanAccessDataSourceAsync(It.IsAny<string>(), It.IsAny<DataSource>(), It.IsAny<CancellationToken>())).ReturnsAsync(canAccessDataSource);
+
+            PatientDataService sut = new(patientDataRepository.Object, patientRepository.Object, personalAccountService.Object, this.mapper);
+
+            PatientDataResponse result = await sut.Query(new PatientDataQuery(this.hdid, new[] { PatientDataType.CancerScreening }), CancellationToken.None)
+                .ConfigureAwait(true);
+
+            if (canAccessDataSource)
+            {
+                Patient.Services.CancerScreeningExam actual = result.Items.ShouldHaveSingleItem().ShouldBeOfType<Patient.Services.CancerScreeningExam>();
+                actual.Id.ShouldBe(expected.Id);
+                actual.FileId.ShouldBe(expected.FileId);
+                actual.ProgramName.ShouldBe(expected.ProgramName);
+                actual.EventTimestampUtc.ShouldBe(expected.EventTimestampUtc);
+                actual.ResultTimestamp.ShouldBe(expected.ResultTimestamp);
             }
             else
             {
