@@ -31,13 +31,14 @@ namespace HealthGateway.PatientDataAccess
                 .ForMember(hd => hd.Id, opts => opts.MapFrom(hde => hde.HealthDataId))
                 .ForMember(exam => exam.FileId, opts => opts.MapFrom(diExam => diExam.HealthDataFileId));
 
+            this.CreateMap<Api.CancerScreeningExam, CancerScreeningExam>()
+                .ForMember(d => d.FileId, opts => opts.MapFrom(s => s.HealthDataFileId));
+
             this.CreateMap<Api.OrganDonorRegistration, OrganDonorRegistration>()
                 .ForMember(d => d.Status, opts => opts.MapFrom(s => s.DonorStatus))
                 .ForMember(d => d.RegistrationFileId, opts => opts.MapFrom(s => s.HealthOptionsFileId));
 
             this.CreateMap<Api.DiagnosticImagingExam, DiagnosticImagingExam>();
-
-            this.CreateMap<Api.CancerScreeningExam, CancerScreeningExam>();
         }
     }
 }

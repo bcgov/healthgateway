@@ -173,6 +173,11 @@ namespace HealthGateway.Patient.Services
         public string? ProgramName { get; set; }
 
         /// <summary>
+        /// Gets or sets the file id.
+        /// </summary>
+        public string? FileId { get; set; }
+
+        /// <summary>
         /// Gets or sets the event timestamp utc.
         /// </summary>
         public DateTime EventTimestampUtc { get; set; }
