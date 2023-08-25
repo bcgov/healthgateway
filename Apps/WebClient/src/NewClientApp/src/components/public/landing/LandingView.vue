@@ -70,13 +70,13 @@ const organDonorRegistrationTile = computed<InfoTile>(() => ({
         "Check your Organ Donor Registration status with BC Transplant.",
     active: ConfigUtil.isServiceEnabled(ServiceName.OrganDonorRegistration),
 }));
-const servicesTiles = computed(() => {
-    return [
+const servicesTiles = computed(() =>
+    [
         proofOfVaccinationTile.value,
         organDonorRegistrationTile.value,
-    ].filter((tile) => tile.active);
-});
-const shouldDisplayServices = computed<boolean>(
+    ].filter((tile) => tile.active)
+);
+const shouldDisplayServices = computed(
     () => servicesTiles.value.length > 0
 );
 const datasetTiles = computed(() =>
@@ -94,7 +94,7 @@ const datasetTiles = computed(() =>
 const activeDatasetTiles = computed(() =>
     datasetTiles.value.filter((tile) => tile.active)
 );
-const shouldDisplayDatasets = computed<boolean>(
+const shouldDisplayDatasets = computed(
     () => activeDatasetTiles.value.length > 0
 );
 

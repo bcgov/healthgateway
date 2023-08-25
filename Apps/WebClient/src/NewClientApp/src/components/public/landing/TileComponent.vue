@@ -1,11 +1,9 @@
-<!-- Empty vue 3 component using setup script in typescript -->
 <script setup lang="ts">
 import { InfoTile } from "@/models/infoTile";
 
 interface Props {
     tile: InfoTile;
 }
-
 defineProps<Props>();
 </script>
 
