@@ -4,19 +4,14 @@ import { useDisplay } from "vuetify";
 
 import HgButtonComponent from "@/components/common/HgButtonComponent.vue";
 import HgIconButtonComponent from "@/components/common/HgIconButtonComponent.vue";
+import TileComponent from "@/components/public/landing/TileComponent.vue";
 import { EntryType, entryTypeMap } from "@/constants/entryType";
+import { ServiceName } from "@/constants/serviceName";
+import { InfoTile } from "@/models/infoTile";
 import { useAppStore } from "@/stores/app";
 import { useAuthStore } from "@/stores/auth";
 import { useConfigStore } from "@/stores/config";
 import ConfigUtil from "@/utility/configUtil";
-
-interface Tile {
-    type: string;
-    name: string;
-    description: string;
-    icon: string;
-    active: boolean;
-}
 
 enum PreviewDevice {
     laptop,
@@ -55,17 +50,37 @@ const oidcIsAuthenticated = computed<boolean>(
 const offlineMessage = computed(
     () => configStore.webConfig.offlineMode?.message ?? ""
 );
-const proofOfVaccinationTile = computed<Tile>(() => ({
+const proofOfVaccinationTile = computed<InfoTile>(() => ({
     type: "ProofOfVaccination",
     icon: "check-circle",
+    logoUrl: new URL("@/assets/images/gov/canada-gov-logo.svg", import.meta.url)
+        .href,
     name: "Proof of Vaccination",
-    description: "View and download your proof of vaccination",
+    description: "View and download your proof of vaccination.",
     active: configStore.webConfig.featureToggleConfiguration.covid19
         .publicCovid19.showFederalProofOfVaccination,
 }));
-const tiles = computed(() => {
-    // Get core tiles from entry type constants
-    const tiles = entryTypes.map<Tile>((type) => {
+const organDonorRegistrationTile = computed<InfoTile>(() => ({
+    type: "OrganDonorRegistration",
+    icon: "check-circle",
+    logoUrl: new URL("@/assets/images/services/odr-logo.svg", import.meta.url)
+        .href,
+    name: "Organ Donor Registration",
+    description:
+        "Check your Organ Donor Registration status with BC Transplant.",
+    active: ConfigUtil.isServiceEnabled(ServiceName.OrganDonorRegistration),
+}));
+const servicesTiles = computed(() => {
+    return [
+        proofOfVaccinationTile.value,
+        organDonorRegistrationTile.value,
+    ].filter((tile) => tile.active);
+});
+const shouldDisplayServices = computed<boolean>(
+    () => servicesTiles.value.length > 0
+);
+const datasetTiles = computed(() =>
+    entryTypes.map<InfoTile>((type) => {
         const details = entryTypeMap.get(type);
         return {
             type,
@@ -74,14 +89,14 @@ const tiles = computed(() => {
             description: details?.description ?? "",
             active: ConfigUtil.isDatasetEnabled(type) && details !== undefined,
         };
-    });
-
-    // Add Proof of Vaccination tile
-    tiles.splice(2, 0, proofOfVaccinationTile.value);
-
-    return tiles;
-});
-const activeTiles = computed(() => tiles.value.filter((tile) => tile.active));
+    })
+);
+const activeDatasetTiles = computed(() =>
+    datasetTiles.value.filter((tile) => tile.active)
+);
+const shouldDisplayDatasets = computed<boolean>(
+    () => activeDatasetTiles.value.length > 0
+);
 
 function selectPreviewDevice(previewDevice: PreviewDevice): void {
     selectedPreviewDevice.value = previewDevice;
@@ -151,32 +166,45 @@ function selectPreviewDevice(previewDevice: PreviewDevice): void {
                 />
             </v-col>
         </v-row>
-        <div class="mt-6 mt-md-12">
+        <div v-if="shouldDisplayDatasets" class="mt-6 mt-md-12">
             <h2
                 class="text-primary text-h4 font-weight-bold mb-2 mb-md-4 mb-lg-6"
+                data-testid="active-dataset-tiles-header"
             >
                 What you can access
             </h2>
-            <v-row align="center">
+            <v-row>
                 <v-col
-                    v-for="tile in activeTiles"
+                    v-for="tile in activeDatasetTiles"
                     :key="tile.name"
                     class="text-center px-6 px-md-12 pb-6 pb-md-12"
-                    :data-testid="`active-tile-${tile.type}`"
+                    :data-testid="`active-dataset-tile-${tile.type}`"
                     cols="12"
                     md="6"
                     lg="4"
                 >
-                    <v-icon
-                        :icon="tile.icon"
-                        color="primary"
-                        size="x-large"
-                        class="ma-4"
-                    />
-                    <h3 class="text-primary text-h5 font-weight-bold mb-2">
-                        {{ tile.name }}
-                    </h3>
-                    <p class="text-body-1 mb-0">{{ tile.description }}</p>
+                    <TileComponent :tile="tile" />
+                </v-col>
+            </v-row>
+        </div>
+        <div v-if="shouldDisplayServices" class="mt-6 mt-md-12">
+            <h2
+                class="text-primary text-h4 font-weight-bold mb-2 mb-md-4 mb-lg-6"
+                data-testid="active-service-tiles-header"
+            >
+                Services you have access to
+            </h2>
+            <v-row>
+                <v-col
+                    v-for="tile in servicesTiles"
+                    :key="tile.name"
+                    class="text-center px-6 px-md-12 pb-6 pb-md-12"
+                    :data-testid="`active-service-tile-${tile.type}`"
+                    cols="12"
+                    md="6"
+                    lg="4"
+                >
+                    <TileComponent :tile="tile" />
                 </v-col>
             </v-row>
         </div>
