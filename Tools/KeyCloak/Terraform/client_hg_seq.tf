@@ -1,4 +1,5 @@
 resource "keycloak_openid_client" "hgseq_client" {
+  count                        = local.development ? 1 : 0
   realm_id                     = data.keycloak_realm.hg_realm.id
   client_id                    = var.client_hg_seq.id
   name                         = "Health Gateway Seq - ${var.environment.name}"
@@ -15,6 +16,7 @@ resource "keycloak_openid_client" "hgseq_client" {
 }
 
 resource "keycloak_openid_client_default_scopes" "hgseq_client_default_scopes" {
+  count     = local.development ? 1 : 0
   realm_id  = data.keycloak_realm.hg_realm.id
   client_id = keycloak_openid_client.hgkeycloak_client.id
   default_scopes = [
