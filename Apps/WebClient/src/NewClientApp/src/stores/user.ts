@@ -303,13 +303,10 @@ export const useUserStore = defineStore("user", () => {
             .then((result) => {
                 logger.debug(`setUserPreference: ${JSON.stringify(result)}`);
                 if (result) {
-                    user.value.preferences = Object.assign(
-                        {},
-                        user.value.preferences,
-                        {
-                            [result.preference]: result,
-                        }
-                    );
+                    user.value.preferences = {
+                        ...user.value.preferences,
+                        [result.preference]: result,
+                    };
                     setLoadedStatus();
                 }
             })

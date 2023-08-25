@@ -90,7 +90,7 @@ const items = computed(() =>
         return {
             date: DateWrapper.format(labResult.collectedDateTime),
             test_type: labResult.testType,
-            test_location: x.location || "",
+            test_location: x.location ?? "",
             result: labResult.filteredLabResultOutcome,
         };
     })

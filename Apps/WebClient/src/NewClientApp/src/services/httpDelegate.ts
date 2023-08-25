@@ -111,7 +111,7 @@ export class HttpDelegate implements IHttpDelegate {
 
     public delete<T>(
         url: string,
-        payload: unknown | undefined = undefined,
+        payload: unknown = undefined,
         headers: Dictionary<string> | undefined = undefined
     ): Promise<T> {
         return new Promise<T>((resolve, reject) => {
@@ -132,14 +132,17 @@ export class HttpDelegate implements IHttpDelegate {
         error: Error | AxiosError,
         requestType: string
     ): HttpError {
-        const errorMessage = `${requestType} ${error.toString()}`;
+        const errorMessage = `${requestType} ${error.message}`;
         const httpError: HttpError = {
             message: errorMessage,
         };
 
         if (Axios.isAxiosError(error) && error.response) {
             httpError.statusCode = error.response.status;
-            httpError.message = error.response.data?.detail ?? errorMessage;
+
+            const detail = (error.response.data as { detail: unknown })?.detail;
+            httpError.message =
+                typeof detail === "string" ? detail : errorMessage;
         }
 
         this.logger.error(httpError.message);

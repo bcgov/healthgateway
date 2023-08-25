@@ -30,7 +30,7 @@ export const useConfigStore = defineStore("config", () => {
             return true;
         }
 
-        const clientIP = webConfig.value.clientIP || "";
+        const clientIP = webConfig.value.clientIP ?? "";
         const offlineConfig = webConfig.value.offlineMode;
 
         if (offlineConfig) {

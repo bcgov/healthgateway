@@ -12,7 +12,6 @@ import { container } from "@/ioc/container";
 import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
 import {
     OrganDonorRegistration,
-    PatientData,
     PatientDataFile,
     PatientDataType,
 } from "@/models/patientDataResponse";
@@ -35,26 +34,23 @@ const userStore = useUserStore();
 const sensitiveDocumentModal =
     ref<InstanceType<typeof MessageModalComponent>>();
 
-const patientData = computed<PatientData[]>(() => {
-    return patientDataStore.patientData(props.hdid, [
+const patientData = computed(() =>
+    patientDataStore.patientData(props.hdid, [
         PatientDataType.OrganDonorRegistrationStatus,
-    ]);
-});
-
-const isLoadingFile = computed<boolean>(
+    ])
+);
+const isLoadingFile = computed(
     () =>
         registrationData.value?.registrationFileId !== undefined &&
         patientDataStore.isPatientDataFileLoading(
             registrationData.value?.registrationFileId
         )
 );
-
-const registrationData = computed<OrganDonorRegistration | undefined>(() => {
+const registrationData = computed(() => {
     return patientData.value
         ? (patientData.value[0] as OrganDonorRegistration)
         : undefined;
 });
-
 const showOrganDonorRegistration = computed(
     () =>
         !userStore.blockedDataSources.includes(
@@ -64,7 +60,7 @@ const showOrganDonorRegistration = computed(
 
 function getDecisionFile(): void {
     const registrationDataValue = registrationData.value;
-    if (registrationDataValue && registrationDataValue.registrationFileId) {
+    if (registrationDataValue?.registrationFileId) {
         SnowPlow.trackEvent({
             action: "download_report",
             text: "Organ Donor",
@@ -146,6 +142,7 @@ if (!showOrganDonorRegistration.value) {
                     <a
                         href="http://www.transplant.bc.ca/Pages/Register-your-Decision.aspx"
                         target="_blank"
+                        rel="noopener"
                         class="text-link"
                         data-testid="organ-donor-registration-link"
                     >

@@ -10,15 +10,6 @@ import { DateWrapper } from "@/models/dateWrapper";
 import { CustomBannerError } from "@/models/errors";
 import VaccinationStatus from "@/models/vaccinationStatus";
 
-defineExpose({
-    showDialog,
-});
-
-const emit = defineEmits<{
-    (e: "click-previous-button"): void;
-    (e: "click-next-button"): void;
-}>();
-
 interface Props {
     showGenericSaveInstructions: boolean;
     status?: VaccinationStatus;
@@ -34,6 +25,13 @@ const props = withDefaults(defineProps<Props>(), {
     includePreviousButton: false,
     includeNextButton: false,
 });
+
+const emit = defineEmits<{
+    (e: "click-previous-button"): void;
+    (e: "click-next-button"): void;
+}>();
+
+defineExpose({ showDialog });
 
 const isFullyVaccinated = computed(
     () => props.status?.state === VaccinationState.FullyVaccinated

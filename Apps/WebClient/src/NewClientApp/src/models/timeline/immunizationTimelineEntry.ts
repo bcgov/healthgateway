@@ -28,9 +28,9 @@ export default class ImmunizationTimelineEntry extends TimelineEntry {
 
     public containsText(keyword: string): boolean {
         let text =
-            (this.immunization.name || "") +
-            (this.immunization.searchableAgentsText || "") +
-            (this.immunization.providerOrClinic || "");
+            (this.immunization.name ?? "") +
+            (this.immunization.searchableAgentsText ?? "") +
+            (this.immunization.providerOrClinic ?? "");
         text = text.toUpperCase();
         return text.includes(keyword.toUpperCase());
     }
@@ -108,9 +108,9 @@ class ImmunizationViewModel {
         this.searchableAgentsText = this.immunizationAgents.reduce(
             (accumulator: string, current: ImmunizationAgentViewModel) =>
                 accumulator +
-                (current.lotNumber || "") +
-                (current.name || "") +
-                (current.productName || ""),
+                (current.lotNumber ?? "") +
+                (current.name ?? "") +
+                (current.productName ?? ""),
             ""
         );
     }

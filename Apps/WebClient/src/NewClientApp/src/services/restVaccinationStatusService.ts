@@ -39,39 +39,31 @@ export class RestVaccinationStatusService implements IVaccinationStatusService {
         dateOfBirth: StringISODate,
         dateOfVaccine: StringISODate
     ): Promise<RequestResult<VaccinationStatus>> {
-        return new Promise((resolve, reject) => {
-            if (!this.isEnabled) {
-                reject(
-                    ErrorTranslator.moduleDisabledError(
-                        ServiceCode.Immunization
-                    )
+        if (!this.isEnabled) {
+            return Promise.reject(
+                ErrorTranslator.moduleDisabledError(ServiceCode.Immunization)
+            );
+        }
+
+        const headers: Dictionary<string> = {};
+        headers["phn"] = phn;
+        headers["dateOfBirth"] = dateOfBirth;
+        headers["dateOfVaccine"] = dateOfVaccine;
+
+        return this.http
+            .getWithCors<RequestResult<VaccinationStatus>>(
+                `${this.baseUri}${this.PUBLIC_VACCINATION_STATUS_BASE_URI}`,
+                headers
+            )
+            .catch((err: HttpError) => {
+                this.logger.error(
+                    `Error in RestVaccinationStatusService.getPublicVaccineStatus()`
                 );
-                return;
-            }
-
-            const headers: Dictionary<string> = {};
-            headers["phn"] = phn;
-            headers["dateOfBirth"] = dateOfBirth;
-            headers["dateOfVaccine"] = dateOfVaccine;
-
-            return this.http
-                .getWithCors<RequestResult<VaccinationStatus>>(
-                    `${this.baseUri}${this.PUBLIC_VACCINATION_STATUS_BASE_URI}`,
-                    headers
-                )
-                .then((requestResult) => resolve(requestResult))
-                .catch((err: HttpError) => {
-                    this.logger.error(
-                        `Error in RestVaccinationStatusService.getPublicVaccineStatus()`
-                    );
-                    reject(
-                        ErrorTranslator.internalNetworkError(
-                            err,
-                            ServiceCode.Immunization
-                        )
-                    );
-                });
-        });
+                throw ErrorTranslator.internalNetworkError(
+                    err,
+                    ServiceCode.Immunization
+                );
+            });
     }
 
     public getPublicVaccineStatusPdf(
@@ -79,101 +71,77 @@ export class RestVaccinationStatusService implements IVaccinationStatusService {
         dateOfBirth: StringISODate,
         dateOfVaccine: StringISODate
     ): Promise<RequestResult<CovidVaccineRecord>> {
-        return new Promise((resolve, reject) => {
-            if (!this.isEnabled) {
-                reject(
-                    ErrorTranslator.moduleDisabledError(
-                        ServiceCode.Immunization
-                    )
-                );
-                return;
-            }
+        if (!this.isEnabled) {
+            return Promise.reject(
+                ErrorTranslator.moduleDisabledError(ServiceCode.Immunization)
+            );
+        }
 
-            const headers: Dictionary<string> = {};
-            headers["phn"] = phn;
-            headers["dateOfBirth"] = dateOfBirth;
-            headers["dateOfVaccine"] = dateOfVaccine;
-            return this.http
-                .getWithCors<RequestResult<CovidVaccineRecord>>(
-                    `${this.baseUri}${this.PUBLIC_VACCINATION_STATUS_BASE_URI}/pdf`,
-                    headers
-                )
-                .then((requestResult) => resolve(requestResult))
-                .catch((err: HttpError) => {
-                    this.logger.error(
-                        `Error in RestVaccinationStatusService.getPublicVaccineStatusPdf()`
-                    );
-                    reject(
-                        ErrorTranslator.internalNetworkError(
-                            err,
-                            ServiceCode.Immunization
-                        )
-                    );
-                });
-        });
+        const headers: Dictionary<string> = {};
+        headers["phn"] = phn;
+        headers["dateOfBirth"] = dateOfBirth;
+        headers["dateOfVaccine"] = dateOfVaccine;
+        return this.http
+            .getWithCors<RequestResult<CovidVaccineRecord>>(
+                `${this.baseUri}${this.PUBLIC_VACCINATION_STATUS_BASE_URI}/pdf`,
+                headers
+            )
+            .catch((err: HttpError) => {
+                this.logger.error(
+                    `Error in RestVaccinationStatusService.getPublicVaccineStatusPdf()`
+                );
+                throw ErrorTranslator.internalNetworkError(
+                    err,
+                    ServiceCode.Immunization
+                );
+            });
     }
 
     public getAuthenticatedVaccineStatus(
         hdid: string
     ): Promise<RequestResult<VaccinationStatus>> {
-        return new Promise((resolve, reject) => {
-            if (!this.isEnabled) {
-                reject(
-                    ErrorTranslator.moduleDisabledError(
-                        ServiceCode.Immunization
-                    )
-                );
-                return;
-            }
+        if (!this.isEnabled) {
+            return Promise.reject(
+                ErrorTranslator.moduleDisabledError(ServiceCode.Immunization)
+            );
+        }
 
-            return this.http
-                .getWithCors<RequestResult<VaccinationStatus>>(
-                    `${this.baseUri}${this.AUTHENTICATED_VACCINATION_STATUS_BASE_URI}?hdid=${hdid}`
-                )
-                .then((requestResult) => resolve(requestResult))
-                .catch((err: HttpError) => {
-                    this.logger.error(
-                        `Error in RestVaccinationStatusService.getAuthenticatedVaccineStatus()`
-                    );
-                    reject(
-                        ErrorTranslator.internalNetworkError(
-                            err,
-                            ServiceCode.Immunization
-                        )
-                    );
-                });
-        });
+        return this.http
+            .getWithCors<RequestResult<VaccinationStatus>>(
+                `${this.baseUri}${this.AUTHENTICATED_VACCINATION_STATUS_BASE_URI}?hdid=${hdid}`
+            )
+            .catch((err: HttpError) => {
+                this.logger.error(
+                    `Error in RestVaccinationStatusService.getAuthenticatedVaccineStatus()`
+                );
+                throw ErrorTranslator.internalNetworkError(
+                    err,
+                    ServiceCode.Immunization
+                );
+            });
     }
 
     public getAuthenticatedVaccineRecord(
         hdid: string
     ): Promise<RequestResult<CovidVaccineRecord>> {
-        return new Promise((resolve, reject) => {
-            if (!this.isEnabled) {
-                reject(
-                    ErrorTranslator.moduleDisabledError(
-                        ServiceCode.Immunization
-                    )
-                );
-                return;
-            }
+        if (!this.isEnabled) {
+            return Promise.reject(
+                ErrorTranslator.moduleDisabledError(ServiceCode.Immunization)
+            );
+        }
 
-            return this.http
-                .getWithCors<RequestResult<CovidVaccineRecord>>(
-                    `${this.baseUri}${this.AUTHENTICATED_VACCINATION_STATUS_BASE_URI}/pdf?hdid=${hdid}`
-                )
-                .then((requestResult) => resolve(requestResult))
-                .catch((err: HttpError) => {
-                    this.logger.error(
-                        `Error in RestVaccinationStatusService.getAuthenticatedVaccineRecord()`
-                    );
-                    reject(
-                        ErrorTranslator.internalNetworkError(
-                            err,
-                            ServiceCode.Immunization
-                        )
-                    );
-                });
-        });
+        return this.http
+            .getWithCors<RequestResult<CovidVaccineRecord>>(
+                `${this.baseUri}${this.AUTHENTICATED_VACCINATION_STATUS_BASE_URI}/pdf?hdid=${hdid}`
+            )
+            .catch((err: HttpError) => {
+                this.logger.error(
+                    `Error in RestVaccinationStatusService.getAuthenticatedVaccineRecord()`
+                );
+                throw ErrorTranslator.internalNetworkError(
+                    err,
+                    ServiceCode.Immunization
+                );
+            });
     }
 }

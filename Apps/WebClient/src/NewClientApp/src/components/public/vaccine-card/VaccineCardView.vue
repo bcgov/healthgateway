@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { useVuelidate } from "@vuelidate/core";
-import { helpers } from "@vuelidate/validators";
-import { required } from "@vuelidate/validators";
+import { helpers, required } from "@vuelidate/validators";
 import { saveAs } from "file-saver";
 import html2canvas from "html2canvas";
 import { vMaska } from "maska";
@@ -63,13 +62,15 @@ const bannerError = computed(
         vaccinationStatusPublicStore.vaccineRecordError
 );
 
-const loadingStatusMessage = computed(() =>
-    isDownloading.value
-        ? "Downloading..."
-        : vaccinationStatusPublicStore.vaccineRecordIsLoading
-        ? vaccinationStatusPublicStore.vaccineRecordStatusMessage
-        : vaccinationStatusPublicStore.vaccinationStatusStatusMessage
-);
+const loadingStatusMessage = computed(() => {
+    if (isDownloading.value) {
+        return "Downloading";
+    } else if (vaccinationStatusPublicStore.vaccineRecordIsLoading) {
+        return vaccinationStatusPublicStore.vaccineRecordStatusMessage;
+    } else {
+        return vaccinationStatusPublicStore.vaccinationStatusStatusMessage;
+    }
+});
 
 const downloadButtonShown = computed(
     () =>
