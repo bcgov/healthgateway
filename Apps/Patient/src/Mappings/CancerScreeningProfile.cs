@@ -38,7 +38,7 @@ namespace HealthGateway.Patient.Mappings
                     d => d.ResultTimestamp,
                     opts => opts.MapFrom(s => DateFormatter.SpecifyUtc(s.ResultTimestamp)))
                 .ForMember(
-                    d => d.CancerScreeningType,
+                    d => d.EventType,
                     opts => opts.MapFrom(s => MapCancerScreeningType(s.EventType)));
         }
 

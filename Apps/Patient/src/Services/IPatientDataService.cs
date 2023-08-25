@@ -168,9 +168,9 @@ namespace HealthGateway.Patient.Services
     public record CancerScreeningExam : PatientData
     {
         /// <summary>
-        /// Gets or sets the cancer screening type.
+        /// Gets or sets the event type.
         /// </summary>
-        public CancerScreeningType CancerScreeningType { get; set; }
+        public CancerScreeningType EventType { get; set; }
 
         /// <summary>
         /// Gets or sets the program name.
