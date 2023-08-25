@@ -15,6 +15,7 @@
 // -------------------------------------------------------------------------
 namespace PatientDataAccessTests
 {
+    using System.Text;
     using System.Text.Json;
     using HealthGateway.PatientDataAccess.Api;
 
@@ -33,10 +34,11 @@ namespace PatientDataAccessTests
         [InlineData("{\"healthDataType\":\"COVID19Laboratory\"}", typeof(LaboratoryOrder))]
         [InlineData("{\"healthDataType\":\"ClinicalDocument\"}", typeof(ClinicalDocument))]
         [InlineData("{\"healthDataType\":\"DiagnosticImaging\"}", typeof(DiagnosticImagingExam))]
+        [InlineData("{\"healthDataType\":\"BcCancerScreening\"}", typeof(CancerScreeningExam))]
         public void TestValidHealthDataJsonConversions(string json, Type expectedType)
         {
             // Create Utf8JsonReader from json string.
-            Utf8JsonReader reader = new(System.Text.Encoding.UTF8.GetBytes(json));
+            Utf8JsonReader reader = new(Encoding.UTF8.GetBytes(json));
             HealthDataEntry result = new HealthDataJsonConverter().Read(ref reader, expectedType, JsonSerializerOptions.Default);
             Assert.IsType(expectedType, result);
         }
