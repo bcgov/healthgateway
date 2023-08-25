@@ -42,10 +42,8 @@ const showLaptopTooltip = ref(false);
 const showTabletTooltip = ref(false);
 const showSmartphoneTooltip = ref(false);
 
-const isOffline = computed<boolean>(() => configStore.isOffline);
-const oidcIsAuthenticated = computed<boolean>(
-    () => authStore.oidcIsAuthenticated
-);
+const isOffline = computed(() => configStore.isOffline);
+const oidcIsAuthenticated = computed(() => authStore.oidcIsAuthenticated);
 
 const offlineMessage = computed(
     () => configStore.webConfig.offlineMode?.message ?? ""
@@ -71,14 +69,11 @@ const organDonorRegistrationTile = computed<InfoTile>(() => ({
     active: ConfigUtil.isServiceEnabled(ServiceName.OrganDonorRegistration),
 }));
 const servicesTiles = computed(() =>
-    [
-        proofOfVaccinationTile.value,
-        organDonorRegistrationTile.value,
-    ].filter((tile) => tile.active)
+    [proofOfVaccinationTile.value, organDonorRegistrationTile.value].filter(
+        (tile) => tile.active
+    )
 );
-const shouldDisplayServices = computed(
-    () => servicesTiles.value.length > 0
-);
+const shouldDisplayServices = computed(() => servicesTiles.value.length > 0);
 const datasetTiles = computed(() =>
     entryTypes.map<InfoTile>((type) => {
         const details = entryTypeMap.get(type);
