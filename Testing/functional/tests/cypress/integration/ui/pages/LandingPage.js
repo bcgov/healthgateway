@@ -139,7 +139,7 @@ describe("Landing Page", () => {
             ],
         });
         cy.visit("/");
-        cy.get("[data-testid=active-tile-ClinicalDocument]").should(
+        cy.get("[data-testid=active-dataset-tile-ClinicalDocument]").should(
             "be.visible"
         );
     });
@@ -154,8 +154,12 @@ describe("Landing Page", () => {
             ],
         });
         cy.visit("/");
-        cy.get("[data-testid=active-tile-Medication]").should("be.visible");
-        cy.get("[data-testid=active-tile-ClinicalDocument]").should(
+        cy.get("[data-testid=active-dataset-tiles-header").should("be.visible");
+        cy.get("[data-testid=active-service-tiles-header").should("not.exist");
+        cy.get("[data-testid=active-dataset-tile-Medication]").should(
+            "be.visible"
+        );
+        cy.get("[data-testid=active-dataset-tile-ClinicalDocument]").should(
             "not.exist"
         );
     });
@@ -169,7 +173,9 @@ describe("Landing Page", () => {
             },
         });
         cy.visit("/");
-        cy.get("[data-testid=active-tile-ProofOfVaccination]").should(
+        cy.get("[data-testid=active-service-tiles-header").should("be.visible");
+        cy.get("[data-testid=active-dataset-tiles-header").should("not.exist");
+        cy.get("[data-testid=active-service-tile-ProofOfVaccination]").should(
             "be.visible"
         );
     });
@@ -184,9 +190,44 @@ describe("Landing Page", () => {
             ],
         });
         cy.visit("/");
-        cy.get("[data-testid=active-tile-Medication]").should("be.visible");
-        cy.get("[data-testid=active-tile-ProofOfVaccination]").should(
+        cy.get("[data-testid=active-dataset-tiles-header").should("be.visible");
+        cy.get("[data-testid=active-dataset-tile-Medication]").should(
+            "be.visible"
+        );
+        cy.get("[data-testid=active-service-tile-ProofOfVaccination]").should(
             "not.exist"
+        );
+    });
+
+    it("Should not show dataset access and services section if no active datasets", () => {
+        cy.configureSettings({});
+        cy.visit("/");
+        cy.get("[data-testid=active-dataset-tiles-header").should("not.exist");
+        cy.get("[data-testid=active-service-tiles-header").should("not.exist");
+    });
+
+    it("Should show both sections and tiles if configuration is correct", () => {
+        cy.configureSettings({
+            datasets: [
+                {
+                    name: "medication",
+                    enabled: true,
+                },
+            ],
+            covid19: {
+                publicCovid19: {
+                    showFederalProofOfVaccination: true,
+                },
+            },
+        });
+        cy.visit("/");
+        cy.get("[data-testid=active-dataset-tiles-header").should("be.visible");
+        cy.get("[data-testid=active-service-tiles-header").should("be.visible");
+        cy.get("[data-testid=active-dataset-tile-Medication]").should(
+            "be.visible"
+        );
+        cy.get("[data-testid=active-service-tile-ProofOfVaccination]").should(
+            "be.visible"
         );
     });
 });
