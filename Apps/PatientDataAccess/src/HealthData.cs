@@ -148,12 +148,12 @@ namespace HealthGateway.PatientDataAccess
     public enum CancerScreeningType
     {
         /// <summary>
-        /// Cancer screening type for a recall.
+        /// Cancer screening recall.
         /// </summary>
         Recall,
 
         /// <summary>
-        /// Cancer screening type for a result.
+        /// Cancer screening result.
         /// </summary>
         Result,
     }

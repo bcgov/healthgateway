@@ -85,7 +85,7 @@ namespace HealthGateway.Common.Data.Constants
         OrganDonorRegistration,
 
         /// <summary>
-        /// Represents a data source for bc cancer screening.
+        /// Represents a data source for BC Cancer screenings.
         /// </summary>
         CancerScreening,
     }

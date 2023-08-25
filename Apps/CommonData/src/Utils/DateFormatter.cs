@@ -111,10 +111,10 @@ public static class DateFormatter
     }
 
     /// <summary>
-    /// Specifies the supplied dateTime to UTC if it has not already been specified.
+    /// Sets the kind of a supplied DateTime to UTC if it is currently unspecified.
     /// </summary>
-    /// <param name="dateTime">The dateTime to specify to UTC.</param>
-    /// <returns>The dateTime specified to UTC.</returns>
+    /// <param name="dateTime">The DateTime to modify.</param>
+    /// <returns>The supplied DateTime, no longer with an unspecified kind.</returns>
     public static DateTime SpecifyUtc(DateTime dateTime)
     {
         return dateTime.Kind != DateTimeKind.Unspecified ? dateTime : DateTime.SpecifyKind(dateTime, DateTimeKind.Utc);

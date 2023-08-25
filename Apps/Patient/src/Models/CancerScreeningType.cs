@@ -30,7 +30,7 @@ namespace HealthGateway.Patient.Models
         Unknown,
 
         /// <summary>
-        /// Screening type is recall
+        /// Screening recall
         /// </summary>
         Recall,
 
