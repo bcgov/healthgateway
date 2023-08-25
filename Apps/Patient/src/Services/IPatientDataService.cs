@@ -168,11 +168,6 @@ namespace HealthGateway.Patient.Services
     public record CancerScreeningExam : PatientData
     {
         /// <summary>
-        /// Gets or sets the event type.
-        /// </summary>
-        public CancerScreeningType EventType { get; set; }
-
-        /// <summary>
         /// Gets or sets the program name.
         /// </summary>
         public string? ProgramName { get; set; }
