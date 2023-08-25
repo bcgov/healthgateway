@@ -18,7 +18,6 @@ namespace HealthGateway.Patient.Mappings
     using AutoMapper;
     using HealthGateway.Common.Data.Utils;
     using HealthGateway.PatientDataAccess;
-    using CancerScreeningType = HealthGateway.Patient.Models.CancerScreeningType;
 
     /// <summary>
     /// The AutoMapper profile for the Cancer Screening Profile.
@@ -36,20 +35,7 @@ namespace HealthGateway.Patient.Mappings
                     opts => opts.MapFrom(s => DateFormatter.SpecifyUtc(s.EventTimestampUtc)))
                 .ForMember(
                     d => d.ResultTimestamp,
-                    opts => opts.MapFrom(s => DateFormatter.SpecifyUtc(s.ResultTimestamp)))
-                .ForMember(
-                    d => d.CancerScreeningType,
-                    opts => opts.MapFrom(s => MapCancerScreeningType(s.EventType)));
-        }
-
-        private static CancerScreeningType MapCancerScreeningType(PatientDataAccess.CancerScreeningType type)
-        {
-            return type switch
-            {
-                PatientDataAccess.CancerScreeningType.Recall => CancerScreeningType.Recall,
-                PatientDataAccess.CancerScreeningType.Result => CancerScreeningType.Result,
-                _ => CancerScreeningType.Unknown,
-            };
+                    opts => opts.MapFrom(s => DateFormatter.SpecifyUtc(s.ResultTimestamp)));
         }
     }
 }

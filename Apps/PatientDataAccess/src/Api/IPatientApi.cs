@@ -62,10 +62,10 @@ namespace HealthGateway.PatientDataAccess.Api
         Task<FileResult?> GetFile(Guid pid, string fileId, CancellationToken ct);
 
         [Get("/patient/{pid}/health-options")]
-        Task<HealthOptionsResult?> GetHealthOptionsAsync(Guid pid, [Query] string[] categories, CancellationToken ct);
+        Task<HealthOptionsResult?> GetHealthOptionsAsync(Guid pid, [Query(CollectionFormat.Multi)] string[] categories, CancellationToken ct);
 
         [Get("/patient/{pid}/health-data")]
-        Task<HealthDataResult?> GetHealthDataAsync(Guid pid, [Query] string[] categories, CancellationToken ct);
+        Task<HealthDataResult?> GetHealthDataAsync(Guid pid, [Query(CollectionFormat.Multi)] string[] categories, CancellationToken ct);
     }
 
     internal record FileResult(string? MediaType, string? Data, string? Encoding);

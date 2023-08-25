@@ -168,14 +168,14 @@ namespace HealthGateway.Patient.Services
     public record CancerScreeningExam : PatientData
     {
         /// <summary>
-        /// Gets or sets the cancer screening type.
-        /// </summary>
-        public CancerScreeningType CancerScreeningType { get; set; }
-
-        /// <summary>
         /// Gets or sets the program name.
         /// </summary>
         public string? ProgramName { get; set; }
+
+        /// <summary>
+        /// Gets or sets the file id.
+        /// </summary>
+        public string? FileId { get; set; }
 
         /// <summary>
         /// Gets or sets the event timestamp utc.
