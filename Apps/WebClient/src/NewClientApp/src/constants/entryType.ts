@@ -62,8 +62,7 @@ entryTypeMap.set(EntryType.LabResult, {
     type: EntryType.LabResult,
     commentType: CommentEntryType.LabResult,
     name: "Lab Results",
-    description:
-        "Find out your lab results within about 48 hours of taking a test.",
+    description: "View and download the results of your lab tests.",
     icon: "microscope",
     component: "LabResultTimelineComponent",
     eventName: "lab_results",
