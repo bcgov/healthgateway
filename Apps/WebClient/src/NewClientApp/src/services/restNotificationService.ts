@@ -28,81 +28,68 @@ export class RestNotificationService implements INotificationService {
         this.baseUri = config.serviceEndpoints["GatewayApi"];
     }
 
-    getNotifications(hdid: string): Promise<Notification[]> {
-        return new Promise((resolve, reject) => {
-            if (!this.isEnabled) {
-                resolve([]);
-                return;
-            }
+    public getNotifications(hdid: string): Promise<Notification[]> {
+        if (!this.isEnabled) {
+            return Promise.resolve([]);
+        }
 
-            this.http
-                .getWithCors<Notification[]>(
-                    `${this.baseUri}${this.NOTIFICATION_BASE_URI}/${hdid}`
-                )
-                .then((result) => resolve(result))
-                .catch((err: HttpError) => {
-                    this.logger.error(
-                        `Error in RestNotificationService.getNotifications()`
-                    );
-                    return reject(
-                        ErrorTranslator.internalNetworkError(
-                            err,
-                            ServiceCode.HealthGatewayUser
-                        )
-                    );
-                });
-        });
+        return this.http
+            .getWithCors<Notification[]>(
+                `${this.baseUri}${this.NOTIFICATION_BASE_URI}/${hdid}`
+            )
+            .catch((err: HttpError) => {
+                this.logger.error(
+                    `Error in RestNotificationService.getNotifications()`
+                );
+                throw ErrorTranslator.internalNetworkError(
+                    err,
+                    ServiceCode.HealthGatewayUser
+                );
+            });
     }
-    dismissNotification(hdid: string, notificationId: string): Promise<void> {
-        return new Promise((resolve, reject) => {
-            if (!this.isEnabled) {
-                resolve();
-                return;
-            }
 
-            this.http
-                .delete<void>(
-                    `${this.baseUri}${this.NOTIFICATION_BASE_URI}/${hdid}/${notificationId}`,
-                    notificationId
-                )
-                .then(() => resolve())
-                .catch((err: HttpError) => {
-                    this.logger.error(
-                        `Error in RestNotificationService.dismissNotification()`
-                    );
-                    return reject(
-                        ErrorTranslator.internalNetworkError(
-                            err,
-                            ServiceCode.HealthGatewayUser
-                        )
-                    );
-                });
-        });
+    public dismissNotification(
+        hdid: string,
+        notificationId: string
+    ): Promise<void> {
+        if (!this.isEnabled) {
+            return Promise.resolve();
+        }
+
+        return this.http
+            .delete<void>(
+                `${this.baseUri}${this.NOTIFICATION_BASE_URI}/${hdid}/${notificationId}`,
+                notificationId
+            )
+            .catch((err: HttpError) => {
+                this.logger.error(
+                    `Error in RestNotificationService.dismissNotification()`
+                );
+                throw ErrorTranslator.internalNetworkError(
+                    err,
+                    ServiceCode.HealthGatewayUser
+                );
+            });
     }
-    dismissNotifications(hdid: string): Promise<void> {
-        return new Promise((resolve, reject) => {
-            if (!this.isEnabled) {
-                resolve();
-                return;
-            }
 
-            this.http
-                .delete<void>(
-                    `${this.baseUri}${this.NOTIFICATION_BASE_URI}/${hdid}`,
-                    hdid
-                )
-                .then(() => resolve())
-                .catch((err: HttpError) => {
-                    this.logger.error(
-                        `Error in RestNotificationService.dismissNotifications()`
-                    );
-                    return reject(
-                        ErrorTranslator.internalNetworkError(
-                            err,
-                            ServiceCode.HealthGatewayUser
-                        )
-                    );
-                });
-        });
+    public dismissNotifications(hdid: string): Promise<void> {
+        if (!this.isEnabled) {
+            return Promise.resolve();
+        }
+
+        return this.http
+            .delete<void>(
+                `${this.baseUri}${this.NOTIFICATION_BASE_URI}/${hdid}`,
+                hdid
+            )
+            .catch((err: HttpError) => {
+                this.logger.error(
+                    `Error in RestNotificationService.dismissNotifications()`
+                );
+                throw ErrorTranslator.internalNetworkError(
+                    err,
+                    ServiceCode.HealthGatewayUser
+                );
+            });
     }
 }

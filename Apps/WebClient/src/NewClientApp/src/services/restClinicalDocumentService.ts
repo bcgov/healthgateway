@@ -37,67 +37,57 @@ export class RestClinicalDocumentService implements IClinicalDocumentService {
     public getRecords(
         hdid: string
     ): Promise<RequestResult<ClinicalDocument[]>> {
-        return new Promise((resolve, reject) => {
-            if (!this.isEnabled) {
-                resolve({
-                    pageIndex: 0,
-                    pageSize: 0,
-                    resourcePayload: [],
-                    resultStatus: ResultType.Success,
-                    totalResultCount: 0,
-                });
-                return;
-            }
-            this.http
-                .getWithCors<RequestResult<ClinicalDocument[]>>(
-                    `${this.baseUri}${this.BASE_URI}/${hdid}`
-                )
-                .then((requestResult) => resolve(requestResult))
-                .catch((err: HttpError) => {
-                    this.logger.error(
-                        `Error in RestClinicalDocumentService.getRecords()`
-                    );
-                    reject(
-                        ErrorTranslator.internalNetworkError(
-                            err,
-                            ServiceCode.ClinicalDocument
-                        )
-                    );
-                });
-        });
+        if (!this.isEnabled) {
+            return Promise.resolve({
+                pageIndex: 0,
+                pageSize: 0,
+                resourcePayload: [],
+                resultStatus: ResultType.Success,
+                totalResultCount: 0,
+            });
+        }
+
+        return this.http
+            .getWithCors<RequestResult<ClinicalDocument[]>>(
+                `${this.baseUri}${this.BASE_URI}/${hdid}`
+            )
+            .catch((err: HttpError) => {
+                this.logger.error(
+                    `Error in RestClinicalDocumentService.getRecords()`
+                );
+                throw ErrorTranslator.internalNetworkError(
+                    err,
+                    ServiceCode.ClinicalDocument
+                );
+            });
     }
 
     public getFile(
         fileId: string,
         hdid: string
     ): Promise<RequestResult<EncodedMedia>> {
-        return new Promise((resolve, reject) => {
-            if (!this.isEnabled) {
-                resolve({
-                    pageIndex: 0,
-                    pageSize: 0,
-                    resourcePayload: { data: "", encoding: "", mediaType: "" },
-                    resultStatus: ResultType.Success,
-                    totalResultCount: 0,
-                });
-                return;
-            }
-            this.http
-                .getWithCors<RequestResult<EncodedMedia>>(
-                    `${this.baseUri}${this.BASE_URI}/${hdid}/file/${fileId}`
-                )
-                .then((requestResult) => resolve(requestResult))
-                .catch((err: HttpError) => {
-                    this.logger.error(
-                        `Error in RestClinicalDocumentService.getFile()`
-                    );
-                    reject(
-                        ErrorTranslator.internalNetworkError(
-                            err,
-                            ServiceCode.ClinicalDocument
-                        )
-                    );
-                });
-        });
+        if (!this.isEnabled) {
+            return Promise.resolve({
+                pageIndex: 0,
+                pageSize: 0,
+                resourcePayload: { data: "", encoding: "", mediaType: "" },
+                resultStatus: ResultType.Success,
+                totalResultCount: 0,
+            });
+        }
+
+        return this.http
+            .getWithCors<RequestResult<EncodedMedia>>(
+                `${this.baseUri}${this.BASE_URI}/${hdid}/file/${fileId}`
+            )
+            .catch((err: HttpError) => {
+                this.logger.error(
+                    `Error in RestClinicalDocumentService.getFile()`
+                );
+                throw ErrorTranslator.internalNetworkError(
+                    err,
+                    ServiceCode.ClinicalDocument
+                );
+            });
     }
 }

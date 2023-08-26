@@ -26,24 +26,19 @@ export class RestReportService implements IReportService {
     public generateReport(
         reportRequest: ReportRequest
     ): Promise<RequestResult<Report>> {
-        return new Promise((resolve, reject) =>
-            this.http
-                .post<RequestResult<Report>>(
-                    `${this.baseUri}${this.REPORT_BASE_URI}`,
-                    reportRequest
-                )
-                .then((result) => resolve(result))
-                .catch((err: HttpError) => {
-                    this.logger.error(
-                        `Error in RestReportService.generateReport()`
-                    );
-                    reject(
-                        ErrorTranslator.internalNetworkError(
-                            err,
-                            ServiceCode.Report
-                        )
-                    );
-                })
-        );
+        return this.http
+            .post<RequestResult<Report>>(
+                `${this.baseUri}${this.REPORT_BASE_URI}`,
+                reportRequest
+            )
+            .catch((err: HttpError) => {
+                this.logger.error(
+                    `Error in RestReportService.generateReport()`
+                );
+                throw ErrorTranslator.internalNetworkError(
+                    err,
+                    ServiceCode.Report
+                );
+            });
     }
 }

@@ -81,6 +81,7 @@ export class RestVaccinationStatusService implements IVaccinationStatusService {
         headers["phn"] = phn;
         headers["dateOfBirth"] = dateOfBirth;
         headers["dateOfVaccine"] = dateOfVaccine;
+
         return this.http
             .getWithCors<RequestResult<CovidVaccineRecord>>(
                 `${this.baseUri}${this.PUBLIC_VACCINATION_STATUS_BASE_URI}/pdf`,
