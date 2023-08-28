@@ -16,6 +16,7 @@
 namespace HealthGateway.Admin.Server.Controllers
 {
     using System.Collections.Generic;
+    using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Admin.Common.Models;
@@ -32,8 +33,8 @@ namespace HealthGateway.Admin.Server.Controllers
     [ApiVersion("1.0")]
     [Route("v{version:apiVersion}/api/[controller]")]
     [Produces("application/json")]
-    [Authorize(Roles = "AdminUser,AdminReviewer")]
-    public class SupportController
+    [Authorize(Roles = "AdminUser,AdminReviewer,SupportUser")]
+    public class SupportController : ControllerBase
     {
         private readonly ISupportService supportService;
 
@@ -79,7 +80,7 @@ namespace HealthGateway.Admin.Server.Controllers
         /// </summary>
         /// <param name="hdid">The HDID associated with the patient support details.</param>
         /// <param name="ct">A cancellation token.</param>
-        /// <returns>A patient support details matching the query.</returns>
+        /// <returns>Patient support details matching the query.</returns>
         /// <response code="200">Returns the patient support details matching the query.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
         /// <response code="403">
@@ -90,7 +91,10 @@ namespace HealthGateway.Admin.Server.Controllers
         [Route("PatientSupportDetails")]
         public async Task<PatientSupportDetails> GetPatientSupportDetails([FromQuery] string hdid, CancellationToken ct)
         {
-            return await this.supportService.GetPatientSupportDetailsAsync(hdid, ct).ConfigureAwait(true);
+            ClaimsPrincipal user = this.HttpContext.User;
+            bool includeEverything = user.IsInRole("AdminUser") || user.IsInRole("AdminReviewer");
+
+            return await this.supportService.GetPatientSupportDetailsAsync(hdid, includeEverything, includeEverything, includeEverything, ct).ConfigureAwait(true);
         }
 
         /// <summary>

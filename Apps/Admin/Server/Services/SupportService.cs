@@ -33,6 +33,7 @@ namespace HealthGateway.Admin.Server.Services
     using HealthGateway.Common.Data.ErrorHandling;
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Data.Utils;
+    using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.MapUtils;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
@@ -88,26 +89,49 @@ namespace HealthGateway.Admin.Server.Services
         }
 
         /// <inheritdoc/>
-        public async Task<PatientSupportDetails> GetPatientSupportDetailsAsync(string hdid, CancellationToken ct = default)
+        public async Task<PatientSupportDetails> GetPatientSupportDetailsAsync(
+            string hdid,
+            bool includeMessagingVerifications,
+            bool includeBlockedDataSources,
+            bool includeAgentActions,
+            CancellationToken ct = default)
         {
-            IList<MessagingVerification> messagingVerifications = await this.messagingVerificationDelegate.GetUserMessageVerificationsAsync(hdid).ConfigureAwait(true);
-            AgentAuditQuery agentAuditQuery = new(hdid);
-            IEnumerable<AgentAudit> agentAudits = await this.auditRepository.Handle(agentAuditQuery, ct).ConfigureAwait(true);
+            IEnumerable<MessagingVerificationModel>? messagingVerifications = null;
+            IEnumerable<DataSource>? blockedDataSources = null;
+            IEnumerable<AgentAction>? agentActions = null;
 
-            // Invalidate blocked data source cache and then get newest value(s) from database.
-            string blockedAccessCacheKey = string.Format(CultureInfo.InvariantCulture, ICacheProvider.BlockedAccessCachePrefixKey, hdid);
-            string message = $"Removing item for key: {blockedAccessCacheKey} from cache";
-            this.logger.LogDebug("{Message}", message);
-            await this.cacheProvider.RemoveItemAsync(blockedAccessCacheKey).ConfigureAwait(true);
+            if (includeMessagingVerifications)
+            {
+                IList<MessagingVerification>? verifications = await this.messagingVerificationDelegate.GetUserMessageVerificationsAsync(hdid).ConfigureAwait(true);
 
-            IEnumerable<DataSource> dataSources = await this.patientRepository.GetDataSources(hdid, ct).ConfigureAwait(true);
-            TimeZoneInfo localTimezone = DateFormatter.GetLocalTimeZone(this.configuration);
+                TimeZoneInfo localTimezone = DateFormatter.GetLocalTimeZone(this.configuration);
+                messagingVerifications = verifications.Select(m => MessagingVerificationMapUtils.ToUiModel(m, this.autoMapper, localTimezone));
+            }
+
+            if (includeAgentActions)
+            {
+                AgentAuditQuery agentAuditQuery = new(hdid);
+                IEnumerable<AgentAudit> audits = await this.auditRepository.Handle(agentAuditQuery, ct).ConfigureAwait(true);
+
+                agentActions = audits.Select(audit => this.autoMapper.Map<AgentAction>(audit));
+            }
+
+            if (includeBlockedDataSources)
+            {
+                // Invalidate blocked data source cache and then get newest value(s) from database.
+                string blockedAccessCacheKey = string.Format(CultureInfo.InvariantCulture, ICacheProvider.BlockedAccessCachePrefixKey, hdid);
+                string message = $"Removing item for key: {blockedAccessCacheKey} from cache";
+                this.logger.LogDebug("{Message}", message);
+                await this.cacheProvider.RemoveItemAsync(blockedAccessCacheKey).ConfigureAwait(true);
+
+                blockedDataSources = await this.patientRepository.GetDataSources(hdid, ct).ConfigureAwait(true);
+            }
 
             PatientSupportDetails details = new()
             {
-                MessagingVerifications = messagingVerifications.Select(m => MessagingVerificationMapUtils.ToUiModel(m, this.autoMapper, localTimezone)),
-                AgentActions = agentAudits.Select(audit => this.autoMapper.Map<AgentAction>(audit)),
-                BlockedDataSources = dataSources,
+                MessagingVerifications = messagingVerifications,
+                AgentActions = agentActions,
+                BlockedDataSources = blockedDataSources,
             };
 
             return details;

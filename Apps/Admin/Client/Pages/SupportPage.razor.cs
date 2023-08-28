@@ -22,6 +22,7 @@ namespace HealthGateway.Admin.Client.Pages
     using System.Threading.Tasks;
     using Fluxor;
     using Fluxor.Blazor.Web.Components;
+    using HealthGateway.Admin.Client.Authorization;
     using HealthGateway.Admin.Client.Store.PatientSupport;
     using HealthGateway.Admin.Common.Constants;
     using HealthGateway.Admin.Common.Models;
@@ -29,6 +30,7 @@ namespace HealthGateway.Admin.Client.Pages
     using HealthGateway.Common.Data.Utils;
     using HealthGateway.Common.Data.Validations;
     using Microsoft.AspNetCore.Components;
+    using Microsoft.AspNetCore.Components.Authorization;
     using Microsoft.AspNetCore.WebUtilities;
     using Microsoft.Extensions.Primitives;
     using MudBlazor;
@@ -40,8 +42,6 @@ namespace HealthGateway.Admin.Client.Pages
     {
         private static readonly PhnValidator PhnValidator = new();
 
-        private static List<PatientQueryType> QueryTypes => new() { PatientQueryType.Phn, PatientQueryType.Email, PatientQueryType.Sms, PatientQueryType.Hdid, PatientQueryType.Dependent };
-
         [Inject]
         private IDispatcher Dispatcher { get; set; } = default!;
 
@@ -50,6 +50,13 @@ namespace HealthGateway.Admin.Client.Pages
 
         [Inject]
         private NavigationManager NavigationManager { get; set; } = default!;
+
+        [Inject]
+        private AuthenticationStateProvider AuthenticationStateProvider { get; set; } = default!;
+
+        private List<PatientQueryType> QueryTypes => this.UserHasRole(Roles.Admin) || this.UserHasRole(Roles.Reviewer)
+            ? new() { PatientQueryType.Phn, PatientQueryType.Email, PatientQueryType.Sms, PatientQueryType.Hdid, PatientQueryType.Dependent }
+            : new() { PatientQueryType.Phn };
 
         private PatientQueryType QueryType { get; set; } = PatientQueryType.Phn;
 
@@ -105,14 +112,16 @@ namespace HealthGateway.Admin.Client.Pages
             };
         };
 
+        private AuthenticationState? AuthenticationState { get; set; }
+
         /// <inheritdoc/>
-        protected override void OnInitialized()
+        protected override async Task OnInitializedAsync()
         {
-            base.OnInitialized();
+            await base.OnInitializedAsync();
             this.ResetPatientSupportState();
+            this.AuthenticationState = await this.AuthenticationStateProvider.GetAuthenticationStateAsync();
 
             Uri uri = this.NavigationManager.ToAbsoluteUri(this.NavigationManager.Uri);
-
             if (QueryHelpers.ParseQuery(uri.Query).TryGetValue(PatientQueryType.Hdid.ToString(), out StringValues hdid))
             {
                 this.Dispatcher.Dispatch(new PatientSupportActions.LoadAction(PatientQueryType.Hdid, StringManipulator.StripWhitespace(hdid)));
@@ -130,6 +139,11 @@ namespace HealthGateway.Admin.Client.Pages
                 PatientQueryType.Sms => "SMS",
                 _ => queryType.ToString(),
             };
+        }
+
+        private bool UserHasRole(string role)
+        {
+            return this.AuthenticationState?.User.IsInRole(role) == true;
         }
 
         private void Clear()
