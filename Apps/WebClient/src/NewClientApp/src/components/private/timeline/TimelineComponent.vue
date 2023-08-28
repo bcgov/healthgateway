@@ -18,9 +18,13 @@ import { container } from "@/ioc/container";
 import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
 import { DateWrapper, IDateWrapper } from "@/models/dateWrapper";
 import {
+    CancerScreeningExam,
     DiagnosticImagingExam,
+    HealthDataType,
+    PatientData,
     PatientDataType,
 } from "@/models/patientDataResponse";
+import BcCancerScreeningResultTimelineEntry from "@/models/timeline/BcCancerScreeningResultTimelineEntry";
 import ClinicalDocumentTimelineEntry from "@/models/timeline/clinicalDocumentTimelineEntry";
 import Covid19TestResultTimelineEntry from "@/models/timeline/covid19TestResultTimelineEntry";
 import DiagnosticImagingTimelineEntry from "@/models/timeline/diagnosticImagingTimelineEntry";
@@ -34,6 +38,7 @@ import SpecialAuthorityRequestTimelineEntry from "@/models/timeline/specialAutho
 import TimelineEntry, { DateGroup } from "@/models/timeline/timelineEntry";
 import { TimelineFilterBuilder } from "@/models/timeline/timelineFilter";
 import { ILogger } from "@/services/interfaces";
+import { entryTypeToPatientdataTypeMap } from "@/services/restPatientDataService";
 import { useAppStore } from "@/stores/app";
 import { useClinicalDocumentStore } from "@/stores/clinicalDocument";
 import { useCommentStore } from "@/stores/comment";
@@ -238,11 +243,29 @@ const unfilteredTimelineEntries = computed(() => {
         entries.push(new ImmunizationTimelineEntry(immunization));
     }
 
-    // Add the diagnostic imaging entries to the timeline list
+    // Add patient data entries to the timeline list
     for (const exam of patientData.value(props.hdid, [
         PatientDataType.DiagnosticImaging,
-    ]) as DiagnosticImagingExam[]) {
-        entries.push(new DiagnosticImagingTimelineEntry(exam, getComments));
+        PatientDataType.CancerScreening,
+    ]) as PatientData[]) {
+        switch (exam.type) {
+            case HealthDataType.DiagnosticImagingExam:
+                entries.push(
+                    new DiagnosticImagingTimelineEntry(
+                        exam as DiagnosticImagingExam,
+                        getComments
+                    )
+                );
+                break;
+            case HealthDataType.CancerScreeningExam:
+                entries.push(
+                    new BcCancerScreeningResultTimelineEntry(
+                        exam as CancerScreeningExam,
+                        getComments
+                    )
+                );
+                break;
+        }
     }
 
     // Sort entries with newest first
@@ -388,6 +411,7 @@ function datasetIsLoading(entryType: EntryType): boolean {
         case EntryType.SpecialAuthorityRequest:
             return specialAuthorityRequestsAreLoading.value;
         case EntryType.DiagnosticImaging:
+        case EntryType.CancerScreening:
             return patientDataAreLoading.value;
         default:
             throw new Error(`Unknown dataset "${entryType}"`);
@@ -418,10 +442,6 @@ function fetchDataset(entryType: EntryType): Promise<any> {
             return specialAuthorityRequestStore.retrieveSpecialAuthorityRequests(
                 props.hdid
             );
-        case EntryType.DiagnosticImaging:
-            return patientDataStore.retrievePatientData(props.hdid, [
-                PatientDataType.DiagnosticImaging,
-            ]);
         default:
             return Promise.reject(`Unknown dataset "${entryType}"`);
     }
@@ -429,14 +449,32 @@ function fetchDataset(entryType: EntryType): Promise<any> {
 
 function fetchTimelineData(): Promise<any> {
     const blockedEntryTypes: EntryType[] = [];
-
+    const patientDataEntryTypes = [...entryTypeToPatientdataTypeMap.keys()];
+    const patientDataEntryTypesToRequest = [];
     const promises: Promise<any>[] = [];
     for (const entryType of props.entryTypes) {
         if (canAccessDataset(entryType)) {
-            promises.push(fetchDataset(entryType));
+            if (patientDataEntryTypes.includes(entryType)) {
+                patientDataEntryTypesToRequest.push(
+                    entryTypeToPatientdataTypeMap.get(
+                        entryType
+                    ) as PatientDataType
+                );
+            } else {
+                promises.push(fetchDataset(entryType));
+            }
         } else {
             blockedEntryTypes.push(entryType);
         }
+    }
+
+    if (patientDataEntryTypesToRequest.length > 0) {
+        promises.push(
+            patientDataStore.retrievePatientData(
+                props.hdid,
+                patientDataEntryTypesToRequest
+            )
+        );
     }
 
     if (props.commentsAreEnabled) {

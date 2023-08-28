@@ -10,4 +10,5 @@ export const enum DataSource {
     SpecialAuthorityRequest = "SpecialAuthorityRequest",
     DiagnosticImaging = "DiagnosticImaging",
     OrganDonorRegistration = "OrganDonorRegistration",
+    CancerScreening = "CancerScreening",
 }
