@@ -27,7 +27,9 @@ using HealthGateway.Admin.Client.Store.Tag;
 using HealthGateway.Admin.Client.Store.UserFeedback;
 using HealthGateway.Admin.Common.Models;
 using HealthGateway.Common.Data.Constants;
+using HealthGateway.Common.Data.Utils;
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Configuration;
 using MudBlazor;
 
 /// <summary>
@@ -35,6 +37,9 @@ using MudBlazor;
 /// </summary>
 public partial class FeedbackPage : FluxorComponent
 {
+    [Inject]
+    private IConfiguration Configuration { get; set; } = default!;
+
     [Inject]
     private IDispatcher Dispatcher { get; set; } = default!;
 
@@ -206,6 +211,11 @@ public partial class FeedbackPage : FluxorComponent
             updatedFeedback.IsReviewed = !updatedFeedback.IsReviewed;
             this.Dispatcher.Dispatch(new UserFeedbackActions.UpdateAction(updatedFeedback));
         }
+    }
+
+    private DateTime ConvertDateTime(DateTime utcDateTime)
+    {
+        return TimeZoneInfo.ConvertTimeFromUtc(utcDateTime, DateFormatter.GetLocalTimeZone(this.Configuration));
     }
 
     private sealed class AddTagFormModel
