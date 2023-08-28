@@ -59,7 +59,7 @@ const textFieldValue = computed<string>({
         return internalValue.value;
     },
     set(value: string) {
-        internalValue.value = value ? value : "";
+        internalValue.value = value ?? "";
         const convertedValue =
             internalState.value === false || !internalValue.value
                 ? ""

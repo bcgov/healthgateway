@@ -25,7 +25,7 @@ export default class HealthVisitTimelineEntry extends TimelineEntry {
         );
         this.practitionerName =
             model.practitionerName || "Unknown Practitioner";
-        this.specialtyDescription = model.specialtyDescription || "";
+        this.specialtyDescription = model.specialtyDescription ?? "";
         this.clinic = new ClinicViewModel(model.clinic);
 
         const duration = Duration.fromObject({ years: 6 });
@@ -54,7 +54,7 @@ class ClinicViewModel {
     public name: string;
 
     constructor(model: Clinic) {
-        this.id = model.clinicId || "";
+        this.id = model.clinicId ?? "";
         this.name = model.name;
     }
 }

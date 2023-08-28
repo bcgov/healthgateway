@@ -29,24 +29,20 @@ export class RestUserFeedbackService implements IUserFeedbackService {
         hdid: string,
         feedback: UserFeedback
     ): Promise<boolean> {
-        return new Promise((resolve, reject) =>
-            this.http
-                .post<void>(
-                    `${this.baseUri}${this.USER_FEEDBACK_BASE_URI}/${hdid}`,
-                    feedback
-                )
-                .then(() => resolve(true))
-                .catch((err: HttpError) => {
-                    this.logger.error(
-                        `Error in RestUserFeedbackService.submitFeedback()`
-                    );
-                    reject(
-                        ErrorTranslator.internalNetworkError(
-                            err,
-                            ServiceCode.HealthGatewayUser
-                        )
-                    );
-                })
-        );
+        return this.http
+            .post<void>(
+                `${this.baseUri}${this.USER_FEEDBACK_BASE_URI}/${hdid}`,
+                feedback
+            )
+            .catch((err: HttpError) => {
+                this.logger.error(
+                    `Error in RestUserFeedbackService.submitFeedback()`
+                );
+                throw ErrorTranslator.internalNetworkError(
+                    err,
+                    ServiceCode.HealthGatewayUser
+                );
+            })
+            .then(() => true);
     }
 }

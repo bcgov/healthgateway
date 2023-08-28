@@ -3,8 +3,7 @@ import { computed, ref } from "vue";
 
 import { container } from "@/ioc/container";
 import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
-import { DateWrapper, IDateWrapper } from "@/models/dateWrapper";
-import { StringISODate } from "@/models/dateWrapper";
+import { DateWrapper, IDateWrapper, StringISODate } from "@/models/dateWrapper";
 import { TimelineFilterBuilder } from "@/models/timeline/timelineFilter";
 import { ILogger } from "@/services/interfaces";
 

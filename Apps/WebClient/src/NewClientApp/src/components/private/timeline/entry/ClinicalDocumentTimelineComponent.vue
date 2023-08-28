@@ -16,6 +16,7 @@ import { ILogger } from "@/services/interfaces";
 import { useClinicalDocumentStore } from "@/stores/clinicalDocument";
 import { useTimelineStore } from "@/stores/timeline";
 import SnowPlow from "@/utility/snowPlow";
+
 interface Props {
     hdid: string;
     entry: ClinicalDocumentTimelineEntry;

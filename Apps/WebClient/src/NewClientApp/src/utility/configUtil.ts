@@ -40,11 +40,7 @@ export default abstract class ConfigUtil {
 
     public static isServiceEnabled(serviceName: ServiceName) {
         const config = ConfigUtil.getFeatureConfiguration();
-        if (
-            config.services &&
-            config.services.enabled &&
-            config.services.services
-        ) {
+        if (config.services?.enabled && config.services.services) {
             return config.services.services.some(
                 (service) =>
                     service.name.toLowerCase() === serviceName.toLowerCase() &&
@@ -56,6 +52,6 @@ export default abstract class ConfigUtil {
 
     public static isServicesFeatureEnabled() {
         const config = ConfigUtil.getFeatureConfiguration();
-        return config.services && config.services.enabled;
+        return config.services?.enabled;
     }
 }

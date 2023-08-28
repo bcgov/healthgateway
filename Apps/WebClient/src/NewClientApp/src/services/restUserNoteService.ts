@@ -34,125 +34,91 @@ export class RestUserNoteService implements IUserNoteService {
     }
 
     public getNotes(hdid: string): Promise<RequestResult<UserNote[]>> {
-        return new Promise((resolve, reject) => {
-            if (!this.isEnabled) {
-                resolve({
-                    pageIndex: 0,
-                    pageSize: 0,
-                    resourcePayload: [],
-                    resultStatus: ResultType.Success,
-                    totalResultCount: 0,
-                });
-                return;
-            }
+        if (!this.isEnabled) {
+            return Promise.resolve({
+                pageIndex: 0,
+                pageSize: 0,
+                resourcePayload: [],
+                resultStatus: ResultType.Success,
+                totalResultCount: 0,
+            });
+        }
 
-            this.http
-                .getWithCors<RequestResult<UserNote[]>>(
-                    `${this.baseUri}${this.USER_NOTE_BASE_URI}/${hdid}`
-                )
-                .then((requestResult) => resolve(requestResult))
-                .catch((err: HttpError) => {
-                    this.logger.error(
-                        `Error in RestUserNoteService.getNotes()`
-                    );
-                    return reject(
-                        ErrorTranslator.internalNetworkError(
-                            err,
-                            ServiceCode.HealthGatewayUser
-                        )
-                    );
-                });
-        });
+        return this.http
+            .getWithCors<RequestResult<UserNote[]>>(
+                `${this.baseUri}${this.USER_NOTE_BASE_URI}/${hdid}`
+            )
+            .catch((err: HttpError) => {
+                this.logger.error(`Error in RestUserNoteService.getNotes()`);
+                throw ErrorTranslator.internalNetworkError(
+                    err,
+                    ServiceCode.HealthGatewayUser
+                );
+            });
     }
 
     public createNote(hdid: string, note: UserNote): Promise<UserNote> {
         this.logger.debug(`createNote: ${JSON.stringify(note)}`);
-        return new Promise((resolve, reject) =>
-            this.http
-                .post<RequestResult<UserNote>>(
-                    `${this.baseUri}${this.USER_NOTE_BASE_URI}/${hdid}`,
-                    note
-                )
-                .then((requestResult) =>
-                    RequestResultUtil.handleResult(
-                        requestResult,
-                        resolve,
-                        reject
-                    )
-                )
-                .catch((err: HttpError) => {
-                    this.logger.error(
-                        `Error in RestUserNoteService.createNote()`
-                    );
-                    return reject(
-                        ErrorTranslator.internalNetworkError(
-                            err,
-                            ServiceCode.HealthGatewayUser
-                        )
-                    );
-                })
-        );
+        return this.http
+            .post<RequestResult<UserNote>>(
+                `${this.baseUri}${this.USER_NOTE_BASE_URI}/${hdid}`,
+                note
+            )
+            .catch((err: HttpError) => {
+                this.logger.error(`Error in RestUserNoteService.createNote()`);
+                throw ErrorTranslator.internalNetworkError(
+                    err,
+                    ServiceCode.HealthGatewayUser
+                );
+            })
+            .then((requestResult) =>
+                RequestResultUtil.handleResult(requestResult)
+            );
     }
 
     public updateNote(hdid: string, note: UserNote): Promise<UserNote> {
-        return new Promise((resolve, reject) =>
-            this.http
-                .put<RequestResult<UserNote>>(
-                    `${this.baseUri}${this.USER_NOTE_BASE_URI}/${hdid}`,
-                    note
-                )
-                .then((requestResult) => {
-                    this.logger.debug(`updateNote ${requestResult}`);
-                    RequestResultUtil.handleResult(
-                        requestResult,
-                        resolve,
-                        reject
-                    );
-                })
-                .catch((err: HttpError) => {
-                    this.logger.error(
-                        `Error in RestUserNoteService.updateNote()`
-                    );
-                    return reject(
-                        ErrorTranslator.internalNetworkError(
-                            err,
-                            ServiceCode.HealthGatewayUser
-                        )
-                    );
-                })
-        );
+        return this.http
+            .put<RequestResult<UserNote>>(
+                `${this.baseUri}${this.USER_NOTE_BASE_URI}/${hdid}`,
+                note
+            )
+            .catch((err: HttpError) => {
+                this.logger.error(`Error in RestUserNoteService.updateNote()`);
+                throw ErrorTranslator.internalNetworkError(
+                    err,
+                    ServiceCode.HealthGatewayUser
+                );
+            })
+            .then((requestResult) => {
+                this.logger.debug(
+                    `updateNote ${JSON.stringify(requestResult)}`
+                );
+                return RequestResultUtil.handleResult(requestResult);
+            });
     }
 
     public deleteNote(hdid: string, note: UserNote): Promise<void> {
-        return new Promise((resolve, reject) => {
-            const headers: Dictionary<string> = {};
-            headers["Content-Type"] = "application/json; charset=utf-8";
+        const headers: Dictionary<string> = {};
+        headers["Content-Type"] = "application/json; charset=utf-8";
 
-            this.http
-                .delete<RequestResult<void>>(
-                    `${this.baseUri}${this.USER_NOTE_BASE_URI}/${hdid}`,
-                    JSON.stringify(note),
-                    headers
-                )
-                .then((requestResult) => {
-                    this.logger.debug(`deleteNote ${requestResult}`);
-                    RequestResultUtil.handleResult(
-                        requestResult,
-                        resolve,
-                        reject
-                    );
-                })
-                .catch((err: HttpError) => {
-                    this.logger.error(
-                        `Error in RestUserNoteService.deleteNote()`
-                    );
-                    return reject(
-                        ErrorTranslator.internalNetworkError(
-                            err,
-                            ServiceCode.HealthGatewayUser
-                        )
-                    );
-                });
-        });
+        return this.http
+            .delete<RequestResult<void>>(
+                `${this.baseUri}${this.USER_NOTE_BASE_URI}/${hdid}`,
+                JSON.stringify(note),
+                headers
+            )
+            .catch((err: HttpError) => {
+                this.logger.error(`Error in RestUserNoteService.deleteNote()`);
+                throw ErrorTranslator.internalNetworkError(
+                    err,
+                    ServiceCode.HealthGatewayUser
+                );
+            })
+            .then((requestResult) => {
+                this.logger.debug(
+                    `deleteNote ${JSON.stringify(requestResult)}`
+                );
+                return RequestResultUtil.handleResult(requestResult);
+            });
     }
 }

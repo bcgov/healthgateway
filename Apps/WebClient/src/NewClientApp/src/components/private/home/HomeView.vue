@@ -231,7 +231,11 @@ function handleClickOrganDonorCard(): void {
 
 function handleClickHealthConnectCard(): void {
     trackClickLink("primarycare");
-    window.open("https://www.healthlinkbc.ca/health-connect-registry");
+    window.open(
+        "https://www.healthlinkbc.ca/health-connect-registry",
+        undefined,
+        "noopener"
+    );
 }
 
 function handleClickRemoveQuickLink(index: number): void {

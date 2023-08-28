@@ -136,7 +136,7 @@ const headerData = computed<ReportHeader>(() => {
     return {
         phn: props.dependent.dependentInformation.PHN,
         dateOfBirth: formatDate(
-            props.dependent.dependentInformation.dateOfBirth || ""
+            props.dependent.dependentInformation.dateOfBirth ?? ""
         ),
         name: props.dependent.dependentInformation
             ? props.dependent.dependentInformation.firstname +
@@ -1061,19 +1061,27 @@ watch(vaccineRecordState, () => {
                             >
                                 <thead>
                                     <tr>
-                                        <th class="text-center">Date</th>
+                                        <th class="text-center" scope="col">
+                                            Date
+                                        </th>
                                         <th
                                             class="d-none d-md-table-cell text-center"
+                                            scope="col"
                                         >
                                             Type
                                         </th>
                                         <th
                                             class="d-none d-md-table-cell text-center"
+                                            scope="col"
                                         >
                                             Status
                                         </th>
-                                        <th class="text-center">Result</th>
-                                        <th class="text-center">Report</th>
+                                        <th class="text-center" scope="col">
+                                            Result
+                                        </th>
+                                        <th class="text-center" scope="col">
+                                            Report
+                                        </th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -1319,27 +1327,39 @@ watch(vaccineRecordState, () => {
                                         >
                                             <thead>
                                                 <tr>
-                                                    <th class="text-center">
+                                                    <th
+                                                        class="text-center"
+                                                        scope="col"
+                                                    >
                                                         Date
                                                     </th>
-                                                    <th class="text-center">
+                                                    <th
+                                                        class="text-center"
+                                                        scope="col"
+                                                    >
                                                         Immunization
                                                     </th>
                                                     <th
                                                         class="d-none d-lg-table-cell text-center"
+                                                        scope="col"
                                                     >
                                                         Agent
                                                     </th>
                                                     <th
                                                         class="d-none d-lg-table-cell text-center"
+                                                        scope="col"
                                                     >
                                                         Product
                                                     </th>
-                                                    <th class="text-center">
+                                                    <th
+                                                        class="text-center"
+                                                        scope="col"
+                                                    >
                                                         Provider/Clinic
                                                     </th>
                                                     <th
                                                         class="d-none d-lg-table-cell text-center"
+                                                        scope="col"
                                                     >
                                                         Lot Number
                                                     </th>
@@ -1492,10 +1512,16 @@ watch(vaccineRecordState, () => {
                                     >
                                         <thead>
                                             <tr>
-                                                <th class="text-center">
+                                                <th
+                                                    class="text-center"
+                                                    scope="col"
+                                                >
                                                     Immunization
                                                 </th>
-                                                <th class="text-center">
+                                                <th
+                                                    class="text-center"
+                                                    scope="col"
+                                                >
                                                     Due Date
                                                 </th>
                                             </tr>
@@ -1551,19 +1577,27 @@ watch(vaccineRecordState, () => {
                         >
                             <thead>
                                 <tr>
-                                    <th class="text-center">Date</th>
-                                    <th class="text-center">Title</th>
+                                    <th class="text-center" scope="col">
+                                        Date
+                                    </th>
+                                    <th class="text-center" scope="col">
+                                        Title
+                                    </th>
                                     <th
                                         class="d-none d-lg-table-cell text-center"
+                                        scope="col"
                                     >
                                         Lab
                                     </th>
                                     <th
                                         class="d-none d-md-table-cell text-center"
+                                        scope="col"
                                     >
                                         Status
                                     </th>
-                                    <th class="text-center">Detailed Report</th>
+                                    <th class="text-center" scope="col">
+                                        Detailed Report
+                                    </th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -1638,24 +1672,33 @@ watch(vaccineRecordState, () => {
                         >
                             <thead>
                                 <tr>
-                                    <th class="text-center">Date</th>
-                                    <th class="text-center">Title</th>
+                                    <th class="text-center" scope="col">
+                                        Date
+                                    </th>
+                                    <th class="text-center" scope="col">
+                                        Title
+                                    </th>
                                     <th
                                         class="d-none d-md-table-cell text-center"
+                                        scope="col"
                                     >
                                         Document Type
                                     </th>
                                     <th
                                         class="d-none d-md-table-cell text-center"
+                                        scope="col"
                                     >
                                         Discipline
                                     </th>
                                     <th
                                         class="d-none d-md-table-cell text-center"
+                                        scope="col"
                                     >
                                         Facility Name
                                     </th>
-                                    <th class="text-center">Report</th>
+                                    <th class="text-center" scope="col">
+                                        Report
+                                    </th>
                                 </tr>
                             </thead>
                             <tbody>

@@ -32,82 +32,60 @@ export class RestPcrTestService implements IPcrTestService {
         hdid: string,
         testKit: RegisterTestKitRequest
     ): Promise<RegisterTestKitRequest | undefined> {
-        return new Promise<RegisterTestKitRequest | undefined>(
-            (resolve, reject) => {
-                if (!this.isEnabled) {
-                    resolve(undefined);
-                    return;
-                }
-                this.http
-                    .post<RequestResult<RegisterTestKitRequest>>(
-                        `${this.baseUri}${this.LABORATORY_BASE_URI}/${hdid}/LabTestKit`,
-                        testKit
-                    )
-                    .then((requestResult) => {
-                        this.logger.verbose(
-                            `registerTestKit result: ${JSON.stringify(
-                                requestResult
-                            )}`
-                        );
-                        return RequestResultUtil.handleResult(
-                            requestResult,
-                            resolve,
-                            reject
-                        );
-                    })
-                    .catch((err: HttpError) => {
-                        this.logger.error(
-                            `Error in RestPcrTestService.registerTestKit()`
-                        );
-                        return reject(
-                            ErrorTranslator.internalNetworkError(
-                                err,
-                                ServiceCode.HealthGatewayUser
-                            )
-                        );
-                    });
-            }
-        );
+        if (!this.isEnabled) {
+            return Promise.resolve(undefined);
+        }
+
+        return this.http
+            .post<RequestResult<RegisterTestKitRequest>>(
+                `${this.baseUri}${this.LABORATORY_BASE_URI}/${hdid}/LabTestKit`,
+                testKit
+            )
+            .catch((err: HttpError) => {
+                this.logger.error(
+                    `Error in RestPcrTestService.registerTestKit()`
+                );
+                throw ErrorTranslator.internalNetworkError(
+                    err,
+                    ServiceCode.HealthGatewayUser
+                );
+            })
+            .then((requestResult) => {
+                this.logger.verbose(
+                    `registerTestKit result: ${JSON.stringify(requestResult)}`
+                );
+                return RequestResultUtil.handleResult(requestResult);
+            });
     }
 
     public registerTestKitPublic(
         testKit: RegisterTestKitPublicRequest
     ): Promise<RegisterTestKitPublicRequest | undefined> {
-        return new Promise<RegisterTestKitPublicRequest | undefined>(
-            (resolve, reject) => {
-                if (!this.isEnabled) {
-                    resolve(undefined);
-                    return;
-                }
-                this.http
-                    .post<RequestResult<RegisterTestKitPublicRequest>>(
-                        `${this.baseUri}${this.PUBLIC_LABORATORY_BASE_URI}/LabTestKit`,
-                        testKit
-                    )
-                    .then((requestResult) => {
-                        this.logger.verbose(
-                            `registerTestKitPublic result: ${JSON.stringify(
-                                requestResult
-                            )}`
-                        );
-                        return RequestResultUtil.handleResult(
-                            requestResult,
-                            resolve,
-                            reject
-                        );
-                    })
-                    .catch((err: HttpError) => {
-                        this.logger.error(
-                            `Error in RestPcrTestService.registerTestKitPublic()`
-                        );
-                        return reject(
-                            ErrorTranslator.internalNetworkError(
-                                err,
-                                ServiceCode.HealthGatewayUser
-                            )
-                        );
-                    });
-            }
-        );
+        if (!this.isEnabled) {
+            return Promise.resolve(undefined);
+        }
+
+        return this.http
+            .post<RequestResult<RegisterTestKitPublicRequest>>(
+                `${this.baseUri}${this.PUBLIC_LABORATORY_BASE_URI}/LabTestKit`,
+                testKit
+            )
+            .catch((err: HttpError) => {
+                this.logger.error(
+                    `Error in RestPcrTestService.registerTestKitPublic()`
+                );
+                throw ErrorTranslator.internalNetworkError(
+                    err,
+                    ServiceCode.HealthGatewayUser
+                );
+            })
+            .then((requestResult) => {
+                this.logger.verbose(
+                    `registerTestKitPublic result: ${JSON.stringify(
+                        requestResult
+                    )}`
+                );
+                return RequestResultUtil.handleResult(requestResult);
+            });
     }
 }

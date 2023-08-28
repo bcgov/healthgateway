@@ -2,7 +2,7 @@
 import { ServiceCode } from "@/constants/serviceCodes";
 import { ServiceName } from "@/constants/serviceName";
 import { ExternalConfiguration } from "@/models/configData";
-import { HttpError } from "@/models/errors";
+import { HttpError, ResultError } from "@/models/errors";
 import PatientDataResponse, {
     PatientDataFile,
     PatientDataType,
@@ -46,24 +46,6 @@ export class RestPatientDataService implements IPatientDataService {
         this.baseUri = config.serviceEndpoints["PatientData"];
     }
 
-    private canProcessRequest(
-        patientDataTypes: PatientDataType[],
-        reject: (reason?: unknown) => void
-    ) {
-        patientDataTypes.forEach((patientDataType) => {
-            const serviceName = serviceTypeMap.get(patientDataType);
-            const datasetName = datasetTypeMap.get(patientDataType);
-
-            if (serviceName && !ConfigUtil.isServiceEnabled(serviceName)) {
-                reject(`Service ${serviceName} is not enabled`);
-            }
-
-            if (datasetName && !ConfigUtil.isDatasetEnabled(datasetName)) {
-                reject(`Dataset ${datasetName} is not enabled`);
-            }
-        });
-    }
-
     public getPatientData(
         hdid: string,
         patientDataTypes: PatientDataType[]
@@ -71,45 +53,54 @@ export class RestPatientDataService implements IPatientDataService {
         const delimiter = "patientDataTypes=";
         const patientDataTypeQueryArray =
             delimiter + patientDataTypes.join(`&${delimiter}`);
-        return new Promise((resolve, reject) => {
-            this.canProcessRequest(patientDataTypes, reject);
-            this.http
-                .getWithCors<PatientDataResponse>(
-                    `${this.baseUri}${this.BASE_URI}/${hdid}?${patientDataTypeQueryArray}&api-version=2.0`
-                )
-                .then(resolve)
-                .catch((err: HttpError) => {
-                    this.logger.error(
-                        `Error in RestPatientDataService.getPatientData()`
-                    );
-                    reject(
-                        ErrorTranslator.internalNetworkError(
-                            err,
-                            ServiceCode.PatientData
-                        )
-                    );
-                });
-        });
+
+        this.canProcessRequest(patientDataTypes);
+
+        return this.http
+            .getWithCors<PatientDataResponse>(
+                `${this.baseUri}${this.BASE_URI}/${hdid}?${patientDataTypeQueryArray}&api-version=2.0`
+            )
+            .catch((err: HttpError) => {
+                this.logger.error(
+                    `Error in RestPatientDataService.getPatientData()`
+                );
+                throw ErrorTranslator.internalNetworkError(
+                    err,
+                    ServiceCode.PatientData
+                );
+            });
     }
 
     public getFile(hdid: string, fileId: string): Promise<PatientDataFile> {
-        return new Promise((resolve, reject) => {
-            this.http
-                .getWithCors<PatientDataFile>(
-                    `${this.baseUri}${this.BASE_URI}/${hdid}/file/${fileId}?api-version=2.0`
-                )
-                .then(resolve)
-                .catch((err: HttpError) => {
-                    this.logger.error(
-                        `Error in RestPatientDataService.getFile()`
-                    );
-                    reject(
-                        ErrorTranslator.internalNetworkError(
-                            err,
-                            ServiceCode.PatientData
-                        )
-                    );
-                });
-        });
+        return this.http
+            .getWithCors<PatientDataFile>(
+                `${this.baseUri}${this.BASE_URI}/${hdid}/file/${fileId}?api-version=2.0`
+            )
+            .catch((err: HttpError) => {
+                this.logger.error(`Error in RestPatientDataService.getFile()`);
+                throw ErrorTranslator.internalNetworkError(
+                    err,
+                    ServiceCode.PatientData
+                );
+            });
+    }
+
+    private canProcessRequest(patientDataTypes: PatientDataType[]) {
+        for (const patientDataType of patientDataTypes) {
+            const serviceName = serviceTypeMap.get(patientDataType);
+            const datasetName = datasetTypeMap.get(patientDataType);
+
+            if (serviceName && !ConfigUtil.isServiceEnabled(serviceName)) {
+                throw {
+                    resultMessage: `Service ${serviceName} is not enabled`,
+                } as ResultError;
+            }
+
+            if (datasetName && !ConfigUtil.isDatasetEnabled(datasetName)) {
+                throw {
+                    resultMessage: `Dataset ${datasetName} is not enabled`,
+                } as ResultError;
+            }
+        }
     }
 }

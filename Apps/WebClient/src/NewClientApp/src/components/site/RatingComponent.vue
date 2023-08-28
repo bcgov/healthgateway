@@ -12,10 +12,7 @@ const emit = defineEmits<{
     (e: "on-close"): void;
 }>();
 
-defineExpose({
-    showDialog,
-    hideDialog,
-});
+defineExpose({ showDialog, hideDialog });
 
 const question =
     "Did the Health Gateway improve your access to health information today? Please provide a rating.";

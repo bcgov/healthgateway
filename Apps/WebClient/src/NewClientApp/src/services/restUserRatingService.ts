@@ -26,24 +26,17 @@ export class RestUserRatingService implements IUserRatingService {
     }
 
     public submitRating(rating: UserRating): Promise<boolean> {
-        return new Promise((resolve, reject) =>
-            this.http
-                .post<void>(
-                    `${this.baseUri}${this.USER_RATING_BASE_URI}`,
-                    rating
-                )
-                .then(() => resolve(true))
-                .catch((err: HttpError) => {
-                    this.logger.error(
-                        `Error in RestUserRatingService.submitRating()`
-                    );
-                    reject(
-                        ErrorTranslator.internalNetworkError(
-                            err,
-                            ServiceCode.HealthGatewayUser
-                        )
-                    );
-                })
-        );
+        return this.http
+            .post<void>(`${this.baseUri}${this.USER_RATING_BASE_URI}`, rating)
+            .catch((err: HttpError) => {
+                this.logger.error(
+                    `Error in RestUserRatingService.submitRating()`
+                );
+                throw ErrorTranslator.internalNetworkError(
+                    err,
+                    ServiceCode.HealthGatewayUser
+                );
+            })
+            .then(() => true);
     }
 }

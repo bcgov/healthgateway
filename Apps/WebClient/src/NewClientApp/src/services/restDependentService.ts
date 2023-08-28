@@ -35,104 +35,72 @@ export class RestDependentService implements IDependentService {
         hdid: string,
         dependent: AddDependentRequest
     ): Promise<AddDependentRequest | undefined> {
-        return new Promise<AddDependentRequest | undefined>(
-            (resolve, reject) => {
-                if (!this.isEnabled) {
-                    resolve(undefined);
-                    return;
-                }
-                this.http
-                    .post<RequestResult<AddDependentRequest>>(
-                        `${this.baseUri}${this.DEPENDENT_BASE_URI}/${hdid}/Dependent`,
-                        dependent
-                    )
-                    .then((requestResult) => {
-                        this.logger.verbose(
-                            `addDependent result: ${JSON.stringify(
-                                requestResult
-                            )}`
-                        );
-                        return RequestResultUtil.handleResult(
-                            requestResult,
-                            resolve,
-                            reject
-                        );
-                    })
-                    .catch((err: HttpError) => {
-                        this.logger.error(
-                            `Error in RestDependentService.addDependent()`
-                        );
-                        return reject(
-                            ErrorTranslator.internalNetworkError(
-                                err,
-                                ServiceCode.HealthGatewayUser
-                            )
-                        );
-                    });
-            }
-        );
+        if (!this.isEnabled) {
+            return Promise.resolve(undefined);
+        }
+
+        return this.http
+            .post<RequestResult<AddDependentRequest>>(
+                `${this.baseUri}${this.DEPENDENT_BASE_URI}/${hdid}/Dependent`,
+                dependent
+            )
+            .catch((err: HttpError) => {
+                this.logger.error(
+                    `Error in RestDependentService.addDependent()`
+                );
+                throw ErrorTranslator.internalNetworkError(
+                    err,
+                    ServiceCode.HealthGatewayUser
+                );
+            })
+            .then((requestResult) => {
+                this.logger.verbose(
+                    `addDependent result: ${JSON.stringify(requestResult)}`
+                );
+                return RequestResultUtil.handleResult(requestResult);
+            });
     }
 
     public getAll(hdid: string): Promise<Dependent[]> {
-        return new Promise((resolve, reject) =>
-            this.http
-                .getWithCors<RequestResult<Dependent[]>>(
-                    `${this.baseUri}${this.DEPENDENT_BASE_URI}/${hdid}/Dependent`
-                )
-                .then((requestResult) => {
-                    this.logger.verbose(
-                        `getAll dependents result: ${JSON.stringify(
-                            requestResult
-                        )}`
-                    );
-                    return RequestResultUtil.handleResult(
-                        requestResult,
-                        resolve,
-                        reject
-                    );
-                })
-                .catch((err: HttpError) => {
-                    this.logger.error(`Error in RestDependentService.getAll()`);
-                    return reject(
-                        ErrorTranslator.internalNetworkError(
-                            err,
-                            ServiceCode.HealthGatewayUser
-                        )
-                    );
-                })
-        );
+        return this.http
+            .getWithCors<RequestResult<Dependent[]>>(
+                `${this.baseUri}${this.DEPENDENT_BASE_URI}/${hdid}/Dependent`
+            )
+            .catch((err: HttpError) => {
+                this.logger.error(`Error in RestDependentService.getAll()`);
+                throw ErrorTranslator.internalNetworkError(
+                    err,
+                    ServiceCode.HealthGatewayUser
+                );
+            })
+            .then((requestResult) => {
+                this.logger.verbose(
+                    `getAll dependents result: ${JSON.stringify(requestResult)}`
+                );
+                return RequestResultUtil.handleResult(requestResult);
+            });
     }
 
     public removeDependent(hdid: string, dependent: Dependent): Promise<void> {
-        return new Promise((resolve, reject) =>
-            this.http
-                .delete<RequestResult<void>>(
-                    `${this.baseUri}${this.DEPENDENT_BASE_URI}/${hdid}/Dependent/${dependent.ownerId}`,
-                    dependent
-                )
-                .then((requestResult) => {
-                    this.logger.verbose(
-                        `removeDependent result: ${JSON.stringify(
-                            requestResult
-                        )}`
-                    );
-                    RequestResultUtil.handleResult(
-                        requestResult,
-                        resolve,
-                        reject
-                    );
-                })
-                .catch((err: HttpError) => {
-                    this.logger.error(
-                        `Error in RestDependentService.removeDependent()`
-                    );
-                    return reject(
-                        ErrorTranslator.internalNetworkError(
-                            err,
-                            ServiceCode.HealthGatewayUser
-                        )
-                    );
-                })
-        );
+        return this.http
+            .delete<RequestResult<void>>(
+                `${this.baseUri}${this.DEPENDENT_BASE_URI}/${hdid}/Dependent/${dependent.ownerId}`,
+                dependent
+            )
+            .catch((err: HttpError) => {
+                this.logger.error(
+                    `Error in RestDependentService.removeDependent()`
+                );
+                throw ErrorTranslator.internalNetworkError(
+                    err,
+                    ServiceCode.HealthGatewayUser
+                );
+            })
+            .then((requestResult) => {
+                this.logger.verbose(
+                    `removeDependent result: ${JSON.stringify(requestResult)}`
+                );
+                RequestResultUtil.handleResult(requestResult);
+            });
     }
 }

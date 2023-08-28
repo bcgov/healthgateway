@@ -77,27 +77,27 @@ export class TimelineFilterBuilder {
         return new TimelineFilter(new TimelineFilterBuilder());
     }
 
-    public withKeyword(keyword: string): TimelineFilterBuilder {
+    public withKeyword(keyword: string): this {
         this._keyword = keyword;
         return this;
     }
 
-    public withStartDate(dateString: StringISODate): TimelineFilterBuilder {
+    public withStartDate(dateString: StringISODate): this {
         this._startDate = dateString;
         return this;
     }
 
-    public withEndDate(dateString: StringISODate): TimelineFilterBuilder {
+    public withEndDate(dateString: StringISODate): this {
         this._endDate = dateString;
         return this;
     }
 
-    public withEntryTypes(entryTypes: EntryType[]): TimelineFilterBuilder {
+    public withEntryTypes(entryTypes: EntryType[]): this {
         this._entryTypes = new Set<EntryType>(entryTypes);
         return this;
     }
 
-    public withEntryType(entryType: EntryType): TimelineFilterBuilder {
+    public withEntryType(entryType: EntryType): this {
         this._entryTypes.add(entryType);
         return this;
     }

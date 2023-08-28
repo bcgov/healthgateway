@@ -31,18 +31,19 @@ const isFooterFixed = computed(() => !appStore.isMobile);
     >
         <v-row class="pa-2">
             <v-col class="flex-grow-0" cols="12" md="auto">
-                <a
-                    :href="Path.TermsOfService"
+                <router-link
+                    :to="Path.TermsOfService"
                     data-testid="footer-terms-of-service-link"
                     class="text-white"
                 >
                     Terms of Service
-                </a>
+                </router-link>
             </v-col>
             <v-col class="flex-grow-0" cols="12" md="auto">
                 <a
                     href="https://www2.gov.bc.ca/gov/content?id=D5206BCE6B3F46279080D9CC5B977D3E"
                     target="_blank"
+                    rel="noopener"
                     data-testid="footer-release-notes-link"
                     class="text-white"
                 >
@@ -53,6 +54,7 @@ const isFooterFixed = computed(() => !appStore.isMobile);
                 <a
                     href="https://www2.gov.bc.ca/gov/content/health/managing-your-health/health-gateway"
                     target="_blank"
+                    rel="noopener"
                     data-testid="footer-faq-link"
                     class="text-white"
                 >
@@ -63,6 +65,7 @@ const isFooterFixed = computed(() => !appStore.isMobile);
                 <a
                     href="https://www2.gov.bc.ca/gov/content?id=FE8BA7F9F1F0416CB2D24CF71C4BAF80"
                     target="_blank"
+                    rel="noopener"
                     data-testid="footer-faq-link"
                     class="text-white"
                 >

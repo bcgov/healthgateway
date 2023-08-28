@@ -2,7 +2,7 @@ import {
     DateTime,
     DateTimeUnit,
     Duration,
-    DurationLikeObject,
+    DurationLike,
     DurationUnit,
 } from "luxon";
 
@@ -163,14 +163,14 @@ export interface IDateWrapper {
      * @param duration The duration as a unit or object
      * @returns the calculated date
      */
-    subtract(duration: Duration | number | DurationLikeObject): DateWrapper;
+    subtract(duration: DurationLike): DateWrapper;
 
     /**
      * Adds a duration to this date.
      * @param duration The duration as a unit or object
      * @returns the calculated date
      */
-    add(duration: Duration | number | DurationLikeObject): DateWrapper;
+    add(duration: DurationLike): DateWrapper;
 
     /**
      * Checks if the date is in DST.
@@ -286,7 +286,7 @@ export class DateWrapper implements IDateWrapper {
         format?: string
     ): DateWrapper {
         return new DateWrapper(
-            DateTime.fromFormat(param, format || this.defaultFormat)
+            DateTime.fromFormat(param, format ?? this.defaultFormat)
         );
     }
 
@@ -309,14 +309,14 @@ export class DateWrapper implements IDateWrapper {
      */
     public static format(dateString: string, formatString?: string): string {
         return new DateWrapper(dateString).format(
-            formatString || DateWrapper.defaultFormat
+            formatString ?? DateWrapper.defaultFormat
         );
     }
 
     /** {@inheritDoc IDateWrapper.format} */
     public format(formatString?: string): string {
         return this.internalDate.toFormat(
-            formatString || DateWrapper.defaultFormat,
+            formatString ?? DateWrapper.defaultFormat,
             {
                 locale,
             }
@@ -425,15 +425,13 @@ export class DateWrapper implements IDateWrapper {
     }
 
     /** {@inheritDoc IDateWrapper.subtract} */
-    public subtract(
-        duration: Duration | number | DurationLikeObject
-    ): DateWrapper {
+    public subtract(duration: DurationLike): DateWrapper {
         const temp_date = this.internalDate.minus(duration);
         return new DateWrapper(temp_date);
     }
 
     /** {@inheritDoc IDateWrapper.add} */
-    public add(duration: Duration | number | DurationLikeObject): DateWrapper {
+    public add(duration: DurationLike): DateWrapper {
         const temp_date = this.internalDate.plus(duration);
         return new DateWrapper(temp_date);
     }

@@ -13,9 +13,7 @@ import { useErrorStore } from "@/stores/error";
 import { useUserStore } from "@/stores/user";
 import ValidationUtil from "@/utility/validationUtil";
 
-defineExpose({
-    showDialog,
-});
+defineExpose({ showDialog });
 
 const userFeedbackService = container.get<IUserFeedbackService>(
     SERVICE_IDENTIFIER.UserFeedbackService
