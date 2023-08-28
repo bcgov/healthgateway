@@ -51,7 +51,7 @@ function downloadFile(): void {
     if (props.entry.fileId) {
         SnowPlow.trackEvent({
             action: "download_report",
-            text: "Cancer Screening PDF",
+            text: "BC Cancer Result PDF",
         });
         const dateString = props.entry.date.format("yyyy_MM_dd-HH_mm");
         patientDataStore
