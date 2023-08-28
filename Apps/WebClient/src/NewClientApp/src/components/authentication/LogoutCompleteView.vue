@@ -1,17 +1,33 @@
 ﻿<script setup lang="ts">
 import { useRoute, useRouter } from "vue-router";
 
+import { Path } from "@/constants/path";
+import { container } from "@/ioc/container";
+import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
+import { ILogger } from "@/services/interfaces";
 import { useConfigStore } from "@/stores/config";
 
+const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
 const route = useRoute();
 const router = useRouter();
 const configStore = useConfigStore();
 
-setTimeout(() => {
-    if (route.path == "/logoutComplete") {
-        router.push({ path: "/" });
+function getRedirectTimeout() {
+    const configValue = Number(configStore.webConfig?.timeouts.logoutRedirect);
+    if (isNaN(configValue) || configValue <= 0) {
+        logger.warn(
+            `Logout redirect timeout is invalid: ${configValue}, using default value of 10000ms`
+        );
+        return 10000;
     }
-}, Number(configStore.webConfig.timeouts.logoutRedirect));
+    return configValue;
+}
+
+setTimeout(() => {
+    if (route.path == Path.LogoutComplete) {
+        router.push({ path: Path.Root });
+    }
+}, getRedirectTimeout());
 </script>
 
 <template>

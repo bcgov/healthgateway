@@ -118,7 +118,8 @@ function hideDialog(): void {
         <v-col v-if="includePreviousButton" cols="auto" class="d-print-none">
             <HgButtonComponent
                 data-testid="vc-chevron-left-btn"
-                class="py-2 h-100 bg-secondary rounded-0"
+                class="py-2 h-100 rounded-0"
+                variant="transparent"
                 size="x-small"
                 @click="onClickPreviousButton"
             >
@@ -228,7 +229,8 @@ function hideDialog(): void {
         <v-col v-if="includeNextButton" cols="auto" class="d-print-none">
             <HgButtonComponent
                 data-testid="vc-chevron-right-btn"
-                class="py-2 h-100 bg-secondary rounded-0"
+                variant="transparent"
+                class="py-2 h-100 rounded-0"
                 size="x-small"
                 @click="onClickNextButton"
             >

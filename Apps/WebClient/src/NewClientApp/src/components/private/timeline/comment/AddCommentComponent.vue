@@ -96,8 +96,8 @@ function addComment(): void {
         </template>
         <template #append-inner>
             <HgIconButtonComponent
-                color="primary"
                 data-testid="post-comment-btn"
+                variant="secondary"
                 icon="arrow-up"
                 size="x-small"
                 :disabled="commentInput === ''"

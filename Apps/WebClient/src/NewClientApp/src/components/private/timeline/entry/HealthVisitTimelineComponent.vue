@@ -2,6 +2,7 @@
 import { computed, ref } from "vue";
 
 import DisplayFieldComponent from "@/components/common/DisplayFieldComponent.vue";
+import HgIconButtonComponent from "@/components/common/HgIconButtonComponent.vue";
 import TimelineEntryComponent from "@/components/private/timeline/TimelineEntryComponent.vue";
 import { EntryType, entryTypeMap } from "@/constants/entryType";
 import HealthVisitTimelineEntry from "@/models/timeline/healthVisitTimelineEntry";
@@ -38,7 +39,7 @@ const entryIcon = computed(() => entryTypeMap.get(EntryType.HealthVisit)?.icon);
         :is-mobile-details="isMobileDetails"
         :allow-comment="commentsAreEnabled"
     >
-        <v-row class="mb-3">
+        <v-row class="mb-1">
             <v-col :cols="cols">
                 <DisplayFieldComponent
                     data-testid="encounterClinicName"
@@ -47,14 +48,15 @@ const entryIcon = computed(() => entryTypeMap.get(EntryType.HealthVisit)?.icon);
                     :value="entry.clinic.name"
                 >
                     <template #append>
-                        <v-icon
+                        <HgIconButtonComponent
+                            data-testid="health-visit-clinic-info-button"
                             aria-label="More Information"
-                            class="ml-2"
-                            icon="info-circle"
-                            color="primary"
-                            size="small"
+                            class="ml-1 text-primary"
+                            size="x-small"
                             @click="showInfoDetails = !showInfoDetails"
-                        />
+                        >
+                            <v-icon icon="info-circle" size="large" />
+                        </HgIconButtonComponent>
                     </template>
                 </DisplayFieldComponent>
             </v-col>

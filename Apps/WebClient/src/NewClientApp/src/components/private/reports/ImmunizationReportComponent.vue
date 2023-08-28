@@ -194,29 +194,28 @@ immunizationStore
             <HgDataTableComponent
                 v-if="!isEmpty || isLoading"
                 class="d-none d-md-block"
-                striped
                 :loading="isLoading"
                 :items="immunizationItems"
                 :fields="immunizationFields"
                 density="compact"
                 data-testid="immunization-history-report-table"
             >
-                <!-- A custom formatted header cell for field 'name' -->
                 <template #header-agents>
-                    <v-row>
-                        <v-col>Agent</v-col>
-                        <v-col>Product</v-col>
-                        <v-col>Lot Number</v-col>
+                    <v-row no-gutters align="center">
+                        <v-col class="pr-4">Agent</v-col>
+                        <v-col class="px-4">Product</v-col>
+                        <v-col class="pl-4">Lot Number</v-col>
                     </v-row>
                 </template>
                 <template #item-agents="data">
                     <v-row
                         v-for="(agent, index) in data.item.agents"
                         :key="index"
+                        no-gutters
                     >
-                        <v-col> {{ agent.name }} </v-col>
-                        <v-col> {{ agent.productName }} </v-col>
-                        <v-col> {{ agent.lotNumber }} </v-col>
+                        <v-col class="pr-4">{{ agent.name }}</v-col>
+                        <v-col class="px-4">{{ agent.productName }}</v-col>
+                        <v-col class="pl-4">{{ agent.lotNumber }}</v-col>
                     </v-row>
                 </template>
             </HgDataTableComponent>

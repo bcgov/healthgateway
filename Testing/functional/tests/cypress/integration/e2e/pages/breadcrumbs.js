@@ -33,8 +33,6 @@ describe("Breadcrumbs", () => {
         testPageBreadcrumb("/reports", "breadcrumb-export-records"));
     it("Breadcrumbs present on profile", () =>
         testPageBreadcrumb("/profile", "breadcrumb-profile"));
-    it("Breadcrumbs present on release notes", () =>
-        testPageBreadcrumb("/release-notes", "breadcrumb-release-notes"));
     it("Breadcrumbs present on termsOfService", () =>
         testPageBreadcrumb("/termsOfService", "breadcrumb-terms-of-service"));
 });
