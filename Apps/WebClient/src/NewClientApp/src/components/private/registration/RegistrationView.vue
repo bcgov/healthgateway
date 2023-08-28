@@ -213,11 +213,11 @@ async function onSubmit(): Promise<void> {
         submittingRegistration.value = true;
         await userStore.createProfile({
             hdid: userStore.oidcUserInfo.hdid,
-            termsOfServiceId: termsOfService.value?.id || "",
+            termsOfServiceId: termsOfService.value?.id ?? "",
             acceptedTermsOfService: accepted.value,
-            email: email.value || "",
+            email: email.value ?? "",
             isEmailVerified: false,
-            smsNumber: smsNumber.value || "",
+            smsNumber: smsNumber.value ?? "",
             isSMSNumberVerified: false,
             preferences: {},
             lastLoginDateTimes: [],

@@ -110,7 +110,7 @@ const headerData = computed<ReportHeader>(() => {
         return {
             phn: dependent.dependentInformation.PHN,
             dateOfBirth: formatDate(
-                dependent.dependentInformation.dateOfBirth || ""
+                dependent.dependentInformation.dateOfBirth ?? ""
             ),
             name: dependent.dependentInformation
                 ? dependent.dependentInformation.firstname +
@@ -124,7 +124,7 @@ const headerData = computed<ReportHeader>(() => {
     } else {
         return {
             phn: patient.value.personalHealthNumber,
-            dateOfBirth: formatDate(patient.value.birthdate || ""),
+            dateOfBirth: formatDate(patient.value.birthdate ?? ""),
             name: patient.value
                 ? patient.value.preferredName.givenName +
                   " " +
@@ -197,8 +197,8 @@ function clearFilterMedication(medicationName: string): void {
 }
 
 function cancelFilterChanges(): void {
-    selectedStartDate.value = reportFilter.value.startDate || "";
-    selectedEndDate.value = reportFilter.value.endDate || "";
+    selectedStartDate.value = reportFilter.value.startDate ?? "";
+    selectedEndDate.value = reportFilter.value.endDate ?? "";
     selectedMedicationOptions.value = reportFilter.value.medications;
     isAdvancedOpen.value = false;
 }

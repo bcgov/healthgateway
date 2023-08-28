@@ -8,12 +8,11 @@ import type { Dependent } from "@/models/dependent";
 interface Props {
     dependent: Dependent;
 }
-
 const props = defineProps<Props>();
 
-const otherDelegateCount = computed(() => {
-    return props.dependent.totalDelegateCount - 1;
-});
+const otherDelegateCount = computed(
+    () => props.dependent.totalDelegateCount - 1
+);
 
 function formatDate(date: StringISODate): string {
     return DateWrapper.format(date);

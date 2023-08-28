@@ -19,7 +19,7 @@ export default class NoteTimelineEntry extends TimelineEntry {
             EntryType.Note,
             new DateWrapper(model.journalDate ?? "")
         );
-        this.text = model.text || "";
+        this.text = model.text ?? "";
         this.title = model.title || "No Title";
         this.textSummary = this.text.substring(
             0,
@@ -29,7 +29,7 @@ export default class NoteTimelineEntry extends TimelineEntry {
             this.textSummary += "…";
         }
 
-        this.hdid = model.hdId || "";
+        this.hdid = model.hdId ?? "";
         this.version = model.version;
     }
 
@@ -38,7 +38,7 @@ export default class NoteTimelineEntry extends TimelineEntry {
     }
 
     public containsText(keyword: string): boolean {
-        let text = (this.title || "") + (this.text || "");
+        let text = (this.title ?? "") + (this.text ?? "");
         text = text.toUpperCase();
         return text.includes(keyword.toUpperCase());
     }
@@ -50,7 +50,7 @@ export default class NoteTimelineEntry extends TimelineEntry {
             title: this.title,
             text: this.text,
             journalDate: this.date.toISODate(),
-            version: this.version || 0,
+            version: this.version ?? 0,
         };
     }
 }

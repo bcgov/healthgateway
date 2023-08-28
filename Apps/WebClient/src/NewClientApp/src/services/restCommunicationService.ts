@@ -29,23 +29,18 @@ export class RestCommunicationService implements ICommunicationService {
     public getActive(
         type: CommunicationType
     ): Promise<RequestResult<Communication | null>> {
-        return new Promise((resolve, reject) =>
-            this.http
-                .getWithCors<RequestResult<Communication | null>>(
-                    `${this.baseUri}${this.BASE_URI}/${type}`
-                )
-                .then((result) => resolve(result))
-                .catch((err: HttpError) => {
-                    this.logger.error(
-                        `Error in RestCommunicationService.getActive()`
-                    );
-                    return reject(
-                        ErrorTranslator.internalNetworkError(
-                            err,
-                            ServiceCode.HealthGatewayUser
-                        )
-                    );
-                })
-        );
+        return this.http
+            .getWithCors<RequestResult<Communication | null>>(
+                `${this.baseUri}${this.BASE_URI}/${type}`
+            )
+            .catch((err: HttpError) => {
+                this.logger.error(
+                    `Error in RestCommunicationService.getActive()`
+                );
+                throw ErrorTranslator.internalNetworkError(
+                    err,
+                    ServiceCode.HealthGatewayUser
+                );
+            });
     }
 }

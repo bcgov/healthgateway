@@ -116,14 +116,14 @@ const items = computed(() =>
         din_pin: x.medicationSummary.din,
         brand: x.medicationSummary.brandName,
         generic: x.medicationSummary.genericName || notFoundText,
-        practitioner: x.practitionerSurname || "",
+        practitioner: x.practitionerSurname ?? "",
         quantity:
             x.medicationSummary.quantity === undefined
                 ? ""
                 : x.medicationSummary.quantity.toString(),
         strength:
-            (x.medicationSummary.strength || "") +
-                (x.medicationSummary.strengthUnit || "") || notFoundText,
+            (x.medicationSummary.strength ?? "") +
+                (x.medicationSummary.strengthUnit ?? "") || notFoundText,
         form: x.medicationSummary.form || notFoundText,
         manufacturer: x.medicationSummary.manufacturer || notFoundText,
     }))

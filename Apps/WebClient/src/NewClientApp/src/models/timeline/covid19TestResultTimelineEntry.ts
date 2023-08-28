@@ -55,9 +55,9 @@ export default class Covid19TestResultTimelineEntry extends TimelineEntry {
         const firstResult = this.tests[0];
         this.displayDate = firstResult.collectedDateTime;
 
-        this.summaryTitle = firstResult.loincName || "";
-        this.summaryDescription = firstResult.testType || "";
-        this.summaryStatus = firstResult.testStatus || "";
+        this.summaryTitle = firstResult.loincName ?? "";
+        this.summaryDescription = firstResult.testType ?? "";
+        this.summaryStatus = firstResult.testStatus ?? "";
         this.resultReady = firstResult.resultReady;
         this.labResultOutcome = firstResult.labResultOutcome;
 

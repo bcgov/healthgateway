@@ -66,9 +66,9 @@ export default class MedicationTimelineEntry extends TimelineEntry {
 
     public containsText(keyword: string): boolean {
         let text =
-            (this.practitionerSurname || "") +
-            (this.medication.brandName || "") +
-            (this.medication.genericName || "");
+            (this.practitionerSurname ?? "") +
+            (this.medication.brandName ?? "") +
+            (this.medication.genericName ?? "");
         text = text.toUpperCase();
         return text.includes(keyword.toUpperCase());
     }
@@ -82,7 +82,7 @@ class PharmacyViewModel {
     public faxNumber?: string;
 
     constructor(id: string | undefined) {
-        this.id = id ? id : "";
+        this.id = id ?? "";
     }
 
     public populateFromModel(model: Pharmacy): void {
@@ -113,7 +113,7 @@ class MedicationViewModel {
     public isPin!: boolean;
 
     constructor(model: MedicationSummary) {
-        this.din = model.din ? model.din : "";
+        this.din = model.din ?? "";
         this.brandName = model.brandName;
         this.genericName = model.genericName;
         this.quantity = model.quantity;

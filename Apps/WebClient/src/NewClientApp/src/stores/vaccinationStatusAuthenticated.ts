@@ -228,16 +228,14 @@ export const useVaccinationStatusAuthenticatedStore = defineStore(
 
             if (error.statusCode === 429) {
                 errorStore.setTooManyRequestsWarning("vaccineCardComponent");
+            } else if (error.actionCode === ActionType.Invalid) {
+                setVaccineRecordResultMessage(hdid, "No records found");
             } else {
-                if (error.actionCode === ActionType.Invalid) {
-                    setVaccineRecordResultMessage(hdid, "No records found");
-                } else {
-                    errorStore.addError(
-                        errorType,
-                        ErrorSourceType.VaccineCard,
-                        error.traceId
-                    );
-                }
+                errorStore.addError(
+                    errorType,
+                    ErrorSourceType.VaccineCard,
+                    error.traceId
+                );
             }
         }
 

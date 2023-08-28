@@ -15,21 +15,16 @@ export class RestConfigService implements IConfigService {
     }
 
     public getConfiguration(): Promise<ExternalConfiguration> {
-        return new Promise((resolve, reject) =>
-            this.http
-                .getWithCors<ExternalConfiguration>(`${this.CONFIG_BASE_URI}/`)
-                .then((result) => resolve(result))
-                .catch((err: HttpError) => {
-                    this.logger.error(
-                        `Error in RestConfigService.getConfiguration()`
-                    );
-                    reject(
-                        ErrorTranslator.internalNetworkError(
-                            err,
-                            ServiceCode.HealthGatewayUser
-                        )
-                    );
-                })
-        );
+        return this.http
+            .getWithCors<ExternalConfiguration>(`${this.CONFIG_BASE_URI}/`)
+            .catch((err: HttpError) => {
+                this.logger.error(
+                    `Error in RestConfigService.getConfiguration()`
+                );
+                throw ErrorTranslator.internalNetworkError(
+                    err,
+                    ServiceCode.HealthGatewayUser
+                );
+            });
     }
 }

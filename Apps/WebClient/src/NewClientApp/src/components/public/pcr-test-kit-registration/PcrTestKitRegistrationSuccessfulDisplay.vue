@@ -4,9 +4,9 @@ import HgButtonComponent from "@/components/common/HgButtonComponent.vue";
 interface Props {
     oidcIsAuthenticated: boolean;
 }
-
 defineProps<Props>();
 </script>
+
 <template>
     <div class="text-center py-12" data-testid="registration-success-banner">
         <v-icon icon="circle-check" color="success" size="48" class="mb-4" />

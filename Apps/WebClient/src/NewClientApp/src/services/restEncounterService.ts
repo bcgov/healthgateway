@@ -34,33 +34,28 @@ export class RestEncounterService implements IEncounterService {
     public getPatientEncounters(
         hdid: string
     ): Promise<RequestResult<Encounter[]>> {
-        return new Promise((resolve, reject) => {
-            if (!this.isEnabled) {
-                resolve({
-                    pageIndex: 0,
-                    pageSize: 0,
-                    resourcePayload: [],
-                    resultStatus: ResultType.Success,
-                    totalResultCount: 0,
-                });
-                return;
-            }
-            this.http
-                .getWithCors<RequestResult<Encounter[]>>(
-                    `${this.baseUri}${this.ENCOUNTER_BASE_URI}/${hdid}`
-                )
-                .then((requestResult) => resolve(requestResult))
-                .catch((err: HttpError) => {
-                    this.logger.error(
-                        `Error in RestEncounterService.getPatientEncounters()`
-                    );
-                    reject(
-                        ErrorTranslator.internalNetworkError(
-                            err,
-                            ServiceCode.Encounter
-                        )
-                    );
-                });
-        });
+        if (!this.isEnabled) {
+            return Promise.resolve({
+                pageIndex: 0,
+                pageSize: 0,
+                resourcePayload: [],
+                resultStatus: ResultType.Success,
+                totalResultCount: 0,
+            });
+        }
+
+        return this.http
+            .getWithCors<RequestResult<Encounter[]>>(
+                `${this.baseUri}${this.ENCOUNTER_BASE_URI}/${hdid}`
+            )
+            .catch((err: HttpError) => {
+                this.logger.error(
+                    `Error in RestEncounterService.getPatientEncounters()`
+                );
+                throw ErrorTranslator.internalNetworkError(
+                    err,
+                    ServiceCode.Encounter
+                );
+            });
     }
 }

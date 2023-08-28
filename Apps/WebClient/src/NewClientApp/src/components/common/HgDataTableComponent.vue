@@ -89,6 +89,7 @@ function hasHeaderSlot(key: string): boolean {
                         v-bind="field.thAttr"
                         :class="getHeaderAlignmentClass(field.thAlign)"
                         :style="field.width ? { width: field.width } : {}"
+                        scope="col"
                     >
                         <template v-if="hasHeaderSlot(field.key)">
                             <slot :name="`header-${field.key}`" />

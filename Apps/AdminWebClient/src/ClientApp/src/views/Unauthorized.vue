@@ -22,6 +22,7 @@ export default class UnauthorizedView extends Vue {
                 <img
                     src="assets/images/health-gateway-logo.svg"
                     title="Health Gateway Logo"
+                    alt="Health Gateway Logo"
                 />
             </div>
             <h4 class="text-h4 text-center">

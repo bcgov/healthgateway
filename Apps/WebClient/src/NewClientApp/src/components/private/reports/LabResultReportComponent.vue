@@ -87,7 +87,7 @@ const items = computed(() =>
         const timelineDateTime = DateWrapper.format(x.timelineDateTime);
         return x.laboratoryTests.map<LabResultRow>((y) => ({
             date: timelineDateTime,
-            test: y.batteryType || "",
+            test: y.batteryType ?? "",
             result: y.result,
             status: y.testStatus,
         }));

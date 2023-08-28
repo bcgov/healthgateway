@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { useVuelidate } from "@vuelidate/core";
-import { helpers } from "@vuelidate/validators";
-import { minLength, required, sameAs } from "@vuelidate/validators";
+import { helpers, minLength, required, sameAs } from "@vuelidate/validators";
 import { Duration } from "luxon";
 import { vMaska } from "maska";
 import { computed, nextTick, ref, watch } from "vue";
@@ -27,21 +26,18 @@ import { useUserStore } from "@/stores/user";
 import { phnMask } from "@/utility/masks";
 import ValidationUtil from "@/utility/validationUtil";
 
+interface Props {
+    disabled?: boolean;
+}
+withDefaults(defineProps<Props>(), {
+    disabled: false,
+});
+
 const emit = defineEmits<{
     (e: "handle-submit"): void;
 }>();
 
-interface props {
-    disabled?: boolean;
-}
-
-withDefaults(defineProps<props>(), {
-    disabled: false,
-});
-
-defineExpose({
-    hideDialog,
-});
+defineExpose({ hideDialog });
 
 const emptyDependent = {
     firstName: "",
@@ -60,7 +56,6 @@ const maxBirthdate = new DateWrapper();
 const dependentService = container.get<IDependentService>(
     SERVICE_IDENTIFIER.DependentService
 );
-
 const configStore = useConfigStore();
 const dependentStore = useDependentStore();
 const errorStore = useErrorStore();
@@ -94,7 +89,6 @@ const isDependentAlreadyAdded = computed(() =>
             dependent.value.PHN.replace(/\s/g, "")
     )
 );
-
 const isLoading = computed(() => loadingStore.isLoading(Loader.AddDependent));
 const minBirthdate = computed<IDateWrapper>(() =>
     new DateWrapper().subtract(

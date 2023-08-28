@@ -34,38 +34,33 @@ export class RestHospitalVisitService implements IHospitalVisitService {
     public getHospitalVisits(
         hdid: string
     ): Promise<RequestResult<HospitalVisitResult>> {
-        return new Promise((resolve, reject) => {
-            if (!this.isEnabled) {
-                resolve({
-                    pageIndex: 0,
-                    pageSize: 0,
-                    resourcePayload: {
-                        loaded: true,
-                        queued: false,
-                        retryin: 0,
-                        hospitalVisits: [],
-                    },
-                    resultStatus: ResultType.Success,
-                    totalResultCount: 0,
-                });
-                return;
-            }
-            this.http
-                .getWithCors<RequestResult<HospitalVisitResult>>(
-                    `${this.baseUri}${this.HOSPITAL_VISIT_BASE_URI}/HospitalVisit/${hdid}`
-                )
-                .then((requestResult) => resolve(requestResult))
-                .catch((err: HttpError) => {
-                    this.logger.error(
-                        `Error in RestHospitalVisitService.getHospitalVisits()`
-                    );
-                    reject(
-                        ErrorTranslator.internalNetworkError(
-                            err,
-                            ServiceCode.HospitalVisit
-                        )
-                    );
-                });
-        });
+        if (!this.isEnabled) {
+            return Promise.resolve({
+                pageIndex: 0,
+                pageSize: 0,
+                resourcePayload: {
+                    loaded: true,
+                    queued: false,
+                    retryin: 0,
+                    hospitalVisits: [],
+                },
+                resultStatus: ResultType.Success,
+                totalResultCount: 0,
+            });
+        }
+
+        return this.http
+            .getWithCors<RequestResult<HospitalVisitResult>>(
+                `${this.baseUri}${this.HOSPITAL_VISIT_BASE_URI}/HospitalVisit/${hdid}`
+            )
+            .catch((err: HttpError) => {
+                this.logger.error(
+                    `Error in RestHospitalVisitService.getHospitalVisits()`
+                );
+                throw ErrorTranslator.internalNetworkError(
+                    err,
+                    ServiceCode.HospitalVisit
+                );
+            });
     }
 }

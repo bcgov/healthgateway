@@ -93,7 +93,7 @@ const emptyPcrTestData: PcrTestData = {
     postalOrZip: "",
     testTakenMinutesAgo: -1,
     hdid: "",
-    testKitCid: props.serialNumber || "",
+    testKitCid: props.serialNumber ?? "",
     testKitCode: "",
 };
 
