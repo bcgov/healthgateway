@@ -74,7 +74,7 @@ function downloadFile(): void {
         :entry-icon="entryIcon"
         icon-class="bg-primary"
         :title="entry.title"
-        :subtitle="`Status: ${entry.documentType}`"
+        :subtitle="`Program: ${entry.programName}`"
         :entry="entry"
         :is-mobile-details="isMobileDetails"
         :allow-comment="commentsAreEnabled"

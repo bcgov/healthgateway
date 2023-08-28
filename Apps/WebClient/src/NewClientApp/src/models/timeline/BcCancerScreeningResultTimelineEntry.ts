@@ -10,6 +10,7 @@ export default class BcCancerScreeningResultTimelineEntry extends TimelineEntry 
     public documentType: string;
     public fileId: string;
     public resultDate: StringISODate;
+    public programName: string;
 
     private getComments: (entryId: string) => UserComment[] | null;
 
@@ -25,6 +26,7 @@ export default class BcCancerScreeningResultTimelineEntry extends TimelineEntry 
 
         this.title = "BC Cancer";
         this.documentType = "Screening results";
+        this.programName = model.programName;
         this.fileId = model.fileId;
         this.resultDate = model.resultTimestamp;
         this.getComments = getComments;
