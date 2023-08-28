@@ -20,7 +20,7 @@ export default abstract class ValidationUtil {
         }
 
         let ok = false;
-        if (phn[0] == "9") {
+        if (phn.startsWith("9")) {
             let digit: number;
             let checksum = 0;
             for (let i = 1; i < 9; i++) {

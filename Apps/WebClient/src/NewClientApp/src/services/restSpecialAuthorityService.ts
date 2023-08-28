@@ -36,33 +36,28 @@ export class RestSpecialAuthorityService implements ISpecialAuthorityService {
     public getPatientMedicationRequest(
         hdid: string
     ): Promise<RequestResult<MedicationRequest[]>> {
-        return new Promise((resolve, reject) => {
-            if (!this.isEnabled) {
-                resolve({
-                    pageIndex: 0,
-                    pageSize: 0,
-                    resourcePayload: [],
-                    resultStatus: ResultType.Success,
-                    totalResultCount: 0,
-                });
-                return;
-            }
-            this.http
-                .get<RequestResult<MedicationRequest[]>>(
-                    `${this.baseUri}${this.SPECIAL_AUTHORITY_BASE_URI}/${hdid}`
-                )
-                .then((requestResult) => resolve(requestResult))
-                .catch((err: HttpError) => {
-                    this.logger.error(
-                        `Error in RestSpecialAuthorityService.getPatientMedicationRequest()`
-                    );
-                    reject(
-                        ErrorTranslator.internalNetworkError(
-                            err,
-                            ServiceCode.SpecialAuthority
-                        )
-                    );
-                });
-        });
+        if (!this.isEnabled) {
+            return Promise.resolve({
+                pageIndex: 0,
+                pageSize: 0,
+                resourcePayload: [],
+                resultStatus: ResultType.Success,
+                totalResultCount: 0,
+            });
+        }
+
+        return this.http
+            .get<RequestResult<MedicationRequest[]>>(
+                `${this.baseUri}${this.SPECIAL_AUTHORITY_BASE_URI}/${hdid}`
+            )
+            .catch((err: HttpError) => {
+                this.logger.error(
+                    `Error in RestSpecialAuthorityService.getPatientMedicationRequest()`
+                );
+                throw ErrorTranslator.internalNetworkError(
+                    err,
+                    ServiceCode.SpecialAuthority
+                );
+            });
     }
 }

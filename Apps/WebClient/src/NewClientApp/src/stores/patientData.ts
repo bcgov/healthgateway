@@ -188,22 +188,20 @@ export const usePatientDataStore = defineStore("patientData", () => {
 
         if (error.statusCode === 429) {
             errorStore.setTooManyRequestsWarning("page");
-        } else {
-            if (patientDataTypes && patientDataTypes.length > 0) {
-                patientDataTypes.forEach((patientDataType) => {
-                    errorStore.addError(
-                        errorType,
-                        getErrorSource(patientDataType),
-                        error.traceId
-                    );
-                });
-            } else {
+        } else if (patientDataTypes && patientDataTypes.length > 0) {
+            patientDataTypes.forEach((patientDataType) => {
                 errorStore.addError(
                     errorType,
-                    ErrorSourceType.PatientData,
+                    getErrorSource(patientDataType),
                     error.traceId
                 );
-            }
+            });
+        } else {
+            errorStore.addError(
+                errorType,
+                ErrorSourceType.PatientData,
+                error.traceId
+            );
         }
     }
 

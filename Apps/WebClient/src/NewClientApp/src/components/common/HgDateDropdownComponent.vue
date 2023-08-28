@@ -107,7 +107,7 @@ function onChange(): void {
             month.value,
             day.value
         );
-        emit("update:model-value", date.toISODate() || "");
+        emit("update:model-value", date.toISODate());
     } else {
         emit("update:model-value", "");
     }

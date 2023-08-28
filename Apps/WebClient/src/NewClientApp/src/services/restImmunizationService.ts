@@ -35,37 +35,32 @@ export class RestImmunizationService implements IImmunizationService {
         hdid: string
     ): Promise<RequestResult<ImmunizationResult>> {
         this.logger.debug(`Get patient inmmunization for hdid::  ${hdid}`);
-        return new Promise((resolve, reject) => {
-            if (!this.isEnabled) {
-                return resolve({
-                    pageIndex: 0,
-                    pageSize: 0,
-                    resourcePayload: {
-                        loadState: { refreshInProgress: false },
-                        immunizations: [],
-                        recommendations: [],
-                    },
-                    resultStatus: ResultType.Success,
-                    totalResultCount: 0,
-                });
-            }
+        if (!this.isEnabled) {
+            return Promise.resolve({
+                pageIndex: 0,
+                pageSize: 0,
+                resourcePayload: {
+                    loadState: { refreshInProgress: false },
+                    immunizations: [],
+                    recommendations: [],
+                },
+                resultStatus: ResultType.Success,
+                totalResultCount: 0,
+            });
+        }
 
-            return this.http
-                .getWithCors<RequestResult<ImmunizationResult>>(
-                    `${this.baseUri}${this.IMMS_BASE_URI}?hdid=${hdid}`
-                )
-                .then((requestResult) => resolve(requestResult))
-                .catch((err: HttpError) => {
-                    this.logger.error(
-                        `Error in RestImmunizationService.getPatientImmunizations()`
-                    );
-                    reject(
-                        ErrorTranslator.internalNetworkError(
-                            err,
-                            ServiceCode.Immunization
-                        )
-                    );
-                });
-        });
+        return this.http
+            .getWithCors<RequestResult<ImmunizationResult>>(
+                `${this.baseUri}${this.IMMS_BASE_URI}?hdid=${hdid}`
+            )
+            .catch((err: HttpError) => {
+                this.logger.error(
+                    `Error in RestImmunizationService.getPatientImmunizations()`
+                );
+                throw ErrorTranslator.internalNetworkError(
+                    err,
+                    ServiceCode.Immunization
+                );
+            });
     }
 }

@@ -92,8 +92,8 @@ const visibleRecords = computed(() =>
 const items = computed(() =>
     visibleRecords.value.map<SpecialAuthorityRequestRow>((x) => ({
         date: DateWrapper.format(x.requestedDate),
-        requested_drug_name: x.drugName || "",
-        status: x.requestStatus || "",
+        requested_drug_name: x.drugName ?? "",
+        status: x.requestStatus ?? "",
         prescriber_name: prescriberName(x),
         effective_date:
             x.effectiveDate === undefined

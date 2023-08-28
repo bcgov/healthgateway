@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { ref } from "vue";
 
 import HgIconButtonComponent from "@/components/common/HgIconButtonComponent.vue";
 import { container } from "@/ioc/container";
@@ -8,7 +8,6 @@ import { DateWrapper } from "@/models/dateWrapper";
 import { ResultError } from "@/models/errors";
 import type { UserComment } from "@/models/userComment";
 import { ILogger } from "@/services/interfaces";
-import { useAppStore } from "@/stores/app";
 import { useCommentStore } from "@/stores/comment";
 import { useErrorStore } from "@/stores/error";
 import { useUserStore } from "@/stores/user";
@@ -31,12 +30,9 @@ const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
 const userStore = useUserStore();
 const errorStore = useErrorStore();
 const commentStore = useCommentStore();
-const appStore = useAppStore();
 
 const isSaving = ref(false);
 const commentInput = ref("");
-
-const isMobile = computed(() => appStore.isMobile);
 
 function addComment(): void {
     isSaving.value = true;

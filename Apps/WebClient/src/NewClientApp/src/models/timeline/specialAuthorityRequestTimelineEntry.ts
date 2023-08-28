@@ -45,10 +45,10 @@ export default class SpecialAuthorityRequestTimelineEntry extends TimelineEntry 
 
     public containsText(keyword: string): boolean {
         let text =
-            (this.drugName || "") +
-            (this.prescriberName || "") +
-            (this.requestStatus || "") +
-            (this.referenceNumber || "");
+            (this.drugName ?? "") +
+            (this.prescriberName ?? "") +
+            (this.requestStatus ?? "") +
+            (this.referenceNumber ?? "");
         text = text.toUpperCase();
         return text.includes(keyword.toUpperCase());
     }

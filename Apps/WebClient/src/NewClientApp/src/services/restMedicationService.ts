@@ -40,34 +40,30 @@ export class RestMedicationService implements IMedicationService {
         if (protectiveWord) {
             headers["protectiveWord"] = protectiveWord;
         }
-        return new Promise((resolve, reject) => {
-            if (!this.isEnabled) {
-                resolve({
-                    pageIndex: 0,
-                    pageSize: 0,
-                    resourcePayload: [],
-                    resultStatus: ResultType.Success,
-                    totalResultCount: 0,
-                });
-                return;
-            }
-            this.http
-                .get<RequestResult<MedicationStatementHistory[]>>(
-                    `${this.baseUri}${this.BASE_URI}/${hdid}`,
-                    headers
-                )
-                .then((requestResult) => resolve(requestResult))
-                .catch((err: HttpError) => {
-                    this.logger.error(
-                        `Error in RestMedicationService.getPatientMedicationStatementHistory()`
-                    );
-                    reject(
-                        ErrorTranslator.internalNetworkError(
-                            err,
-                            ServiceCode.Medication
-                        )
-                    );
-                });
-        });
+
+        if (!this.isEnabled) {
+            return Promise.resolve({
+                pageIndex: 0,
+                pageSize: 0,
+                resourcePayload: [],
+                resultStatus: ResultType.Success,
+                totalResultCount: 0,
+            });
+        }
+
+        return this.http
+            .get<RequestResult<MedicationStatementHistory[]>>(
+                `${this.baseUri}${this.BASE_URI}/${hdid}`,
+                headers
+            )
+            .catch((err: HttpError) => {
+                this.logger.error(
+                    `Error in RestMedicationService.getPatientMedicationStatementHistory()`
+                );
+                throw ErrorTranslator.internalNetworkError(
+                    err,
+                    ServiceCode.Medication
+                );
+            });
     }
 }

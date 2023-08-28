@@ -44,16 +44,14 @@ export class HttpDelegate implements IHttpDelegate {
         url: string,
         headers: Dictionary<string> | undefined = undefined
     ): Promise<T> {
-        return new Promise<T>((resolve, reject) => {
-            const config: AxiosRequestConfig = {
-                headers,
-            };
-            Axios.get(url, config)
-                .then((response: AxiosResponse<T>) => resolve(response.data))
-                .catch((error: Error | AxiosError) =>
-                    reject(this.toHttpError(error, "GET"))
-                );
-        });
+        const config: AxiosRequestConfig = {
+            headers,
+        };
+        return Axios.get(url, config)
+            .then((response: AxiosResponse<T>) => response.data)
+            .catch((error: Error | AxiosError) => {
+                throw this.toHttpError(error, "GET");
+            });
     }
 
     public post<T>(
@@ -61,16 +59,14 @@ export class HttpDelegate implements IHttpDelegate {
         payload: unknown,
         headers: Dictionary<string> | undefined = undefined
     ): Promise<T> {
-        return new Promise<T>((resolve, reject) => {
-            const config: AxiosRequestConfig = {
-                headers,
-            };
-            Axios.post(url, payload, config)
-                .then((response: AxiosResponse<T>) => resolve(response.data))
-                .catch((error: Error | AxiosError) =>
-                    reject(this.toHttpError(error, "POST"))
-                );
-        });
+        const config: AxiosRequestConfig = {
+            headers,
+        };
+        return Axios.post(url, payload, config)
+            .then((response: AxiosResponse<T>) => response.data)
+            .catch((error: Error | AxiosError) => {
+                throw this.toHttpError(error, "POST");
+            });
     }
 
     public put<T>(
@@ -78,17 +74,14 @@ export class HttpDelegate implements IHttpDelegate {
         payload: unknown,
         headers: Dictionary<string> | undefined = undefined
     ): Promise<T> {
-        return new Promise<T>((resolve, reject) => {
-            const config: AxiosRequestConfig = {
-                headers,
-            };
-            this.logger.debug(`Config: ${JSON.stringify(config)}`);
-            Axios.put(url, payload, config)
-                .then((response: AxiosResponse<T>) => resolve(response.data))
-                .catch((error: Error | AxiosError) =>
-                    reject(this.toHttpError(error, "PUT"))
-                );
-        });
+        const config: AxiosRequestConfig = {
+            headers,
+        };
+        return Axios.put(url, payload, config)
+            .then((response: AxiosResponse<T>) => response.data)
+            .catch((error: Error | AxiosError) => {
+                throw this.toHttpError(error, "PUT");
+            });
     }
 
     public patch<T>(
@@ -96,50 +89,47 @@ export class HttpDelegate implements IHttpDelegate {
         payload: unknown,
         headers: Dictionary<string> | undefined = undefined
     ): Promise<T> {
-        return new Promise<T>((resolve, reject) => {
-            const config: AxiosRequestConfig = {
-                headers,
-            };
-            this.logger.debug(`Config: ${JSON.stringify(config)}`);
-            Axios.patch(url, payload, config)
-                .then((response: AxiosResponse<T>) => resolve(response.data))
-                .catch((error: Error | AxiosError) =>
-                    reject(this.toHttpError(error, "PATCH"))
-                );
-        });
+        const config: AxiosRequestConfig = {
+            headers,
+        };
+        return Axios.patch(url, payload, config)
+            .then((response: AxiosResponse<T>) => response.data)
+            .catch((error: Error | AxiosError) => {
+                throw this.toHttpError(error, "PATCH");
+            });
     }
 
     public delete<T>(
         url: string,
-        payload: unknown | undefined = undefined,
+        payload: unknown = undefined,
         headers: Dictionary<string> | undefined = undefined
     ): Promise<T> {
-        return new Promise<T>((resolve, reject) => {
-            const config: AxiosRequestConfig = {
-                headers,
-            };
-            this.logger.debug(`Config: ${JSON.stringify(config)}`);
-
-            Axios.delete(url, { data: payload, headers })
-                .then((response: AxiosResponse<T>) => resolve(response.data))
-                .catch((error: Error | AxiosError) =>
-                    reject(this.toHttpError(error, "DELETE"))
-                );
-        });
+        const config: AxiosRequestConfig = {
+            headers,
+            data: payload,
+        };
+        return Axios.delete(url, config)
+            .then((response: AxiosResponse<T>) => response.data)
+            .catch((error: Error | AxiosError) => {
+                throw this.toHttpError(error, "DELETE");
+            });
     }
 
     private toHttpError(
         error: Error | AxiosError,
         requestType: string
     ): HttpError {
-        const errorMessage = `${requestType} ${error.toString()}`;
+        const errorMessage = `${requestType} ${error.message}`;
         const httpError: HttpError = {
             message: errorMessage,
         };
 
         if (Axios.isAxiosError(error) && error.response) {
             httpError.statusCode = error.response.status;
-            httpError.message = error.response.data?.detail ?? errorMessage;
+
+            const detail = (error.response.data as { detail: unknown })?.detail;
+            httpError.message =
+                typeof detail === "string" ? detail : errorMessage;
         }
 
         this.logger.error(httpError.message);

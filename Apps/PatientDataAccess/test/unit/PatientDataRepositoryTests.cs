@@ -15,12 +15,15 @@
 // -------------------------------------------------------------------------
 namespace PatientDataAccessTests
 {
+    using System.Globalization;
     using System.Net;
     using AutoMapper;
     using HealthGateway.PatientDataAccess;
     using HealthGateway.PatientDataAccess.Api;
     using Moq;
     using Refit;
+    using CancerScreeningExam = HealthGateway.PatientDataAccess.Api.CancerScreeningExam;
+    using CancerScreeningType = HealthGateway.PatientDataAccess.Api.CancerScreeningType;
     using DiagnosticImagingExam = HealthGateway.PatientDataAccess.Api.DiagnosticImagingExam;
     using DiagnosticImagingStatus = HealthGateway.PatientDataAccess.Api.DiagnosticImagingStatus;
     using OrganDonorRegistration = HealthGateway.PatientDataAccess.Api.OrganDonorRegistration;
@@ -61,6 +64,45 @@ namespace PatientDataAccessTests
         }
 
         [Fact]
+        public async Task CanGetCancerScreeningData()
+        {
+            Mock<IPatientApi> patientApi = new();
+
+            CancerScreeningExam cancerScreeningExam = new()
+            {
+                HealthDataId = "12345678931",
+                HealthDataFileId = "12345678931",
+                ProgramName = "Cervical Cancer",
+                EventType = CancerScreeningType.Result,
+                EventTimestampUtc = Convert.ToDateTime("2022-10-18T08:49:37.3051315Z", CultureInfo.InvariantCulture),
+                ResultTimestamp = Convert.ToDateTime("2023-05-03T08:29:41.2820921+00:00", CultureInfo.InvariantCulture),
+            };
+
+            patientApi
+                .Setup(api => api.GetHealthDataAsync(this.pid, It.IsAny<string[]>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(
+                    new HealthDataResult(
+                        new HealthDataMetadata(),
+                        new[]
+                        {
+                            cancerScreeningExam,
+                        }));
+
+            IPatientDataRepository sut = CreateSut(patientApi.Object);
+
+            PatientDataQueryResult result = await sut.Query(new HealthQuery(this.pid, new[] { HealthCategory.BcCancerScreening }), CancellationToken.None).ConfigureAwait(true);
+
+            result.ShouldNotBeNull();
+            HealthGateway.PatientDataAccess.CancerScreeningExam exam = result.Items.ShouldHaveSingleItem().ShouldBeOfType<HealthGateway.PatientDataAccess.CancerScreeningExam>();
+            exam.Id.ShouldBe(cancerScreeningExam.HealthDataId);
+            exam.FileId.ShouldBe(cancerScreeningExam.HealthDataFileId);
+            exam.ProgramName.ShouldBe(cancerScreeningExam.ProgramName);
+            exam.EventType.ShouldBe(HealthGateway.PatientDataAccess.CancerScreeningType.Result);
+            exam.EventTimestampUtc.ShouldBe(cancerScreeningExam.EventTimestampUtc);
+            exam.ResultTimestamp.ShouldBe(cancerScreeningExam.ResultTimestamp);
+        }
+
+        [Fact]
         public async Task CanGetDiagnosticImagingData()
         {
             Mock<IPatientApi> patientApi = new();
@@ -78,7 +120,13 @@ namespace PatientDataAccessTests
 
             patientApi
                 .Setup(api => api.GetHealthDataAsync(this.pid, It.IsAny<string[]>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new HealthDataResult(new HealthDataMetadata(), new[] { phsaDiagnosticImageExam }));
+                .ReturnsAsync(
+                    new HealthDataResult(
+                        new HealthDataMetadata(),
+                        new[]
+                        {
+                            phsaDiagnosticImageExam,
+                        }));
 
             IPatientDataRepository sut = CreateSut(patientApi.Object);
 
@@ -94,6 +142,38 @@ namespace PatientDataAccessTests
             exam.Modality.ShouldBe(phsaDiagnosticImageExam.Modality);
             exam.Organization.ShouldBe(phsaDiagnosticImageExam.Organization);
             exam.ProcedureDescription.ShouldBe(phsaDiagnosticImageExam.ProcedureDescription);
+        }
+
+        [Fact]
+        public async Task CanGetCancerScreeningAndDiagnosticImagingData()
+        {
+            Mock<IPatientApi> patientApi = new();
+
+            CancerScreeningExam cancerScreeningExam = new()
+            {
+                HealthDataId = "bccancerscreening_vpp_12345678931",
+            };
+
+            DiagnosticImagingExam phsaDiagnosticImageExam = new()
+            {
+                HealthDataId = "diexam_vpp_12345678935",
+            };
+
+            patientApi
+                .Setup(api => api.GetHealthDataAsync(this.pid, It.IsAny<string[]>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new HealthDataResult(new HealthDataMetadata(), new HealthDataEntry[] { phsaDiagnosticImageExam, cancerScreeningExam }));
+
+            IPatientDataRepository sut = CreateSut(patientApi.Object);
+
+            PatientDataQueryResult result = await sut.Query(new HealthQuery(this.pid, new[] { HealthCategory.DiagnosticImaging, HealthCategory.BcCancerScreening }), CancellationToken.None)
+                .ConfigureAwait(true);
+
+            result.ShouldNotBeNull();
+            HealthGateway.PatientDataAccess.DiagnosticImagingExam diExam = result.Items.First().ShouldBeOfType<HealthGateway.PatientDataAccess.DiagnosticImagingExam>();
+            diExam.Id.ShouldBe(phsaDiagnosticImageExam.HealthDataId);
+
+            HealthGateway.PatientDataAccess.CancerScreeningExam csExam = result.Items.Last().ShouldBeOfType<HealthGateway.PatientDataAccess.CancerScreeningExam>();
+            csExam.Id.ShouldBe(cancerScreeningExam.HealthDataId);
         }
 
         [Fact]

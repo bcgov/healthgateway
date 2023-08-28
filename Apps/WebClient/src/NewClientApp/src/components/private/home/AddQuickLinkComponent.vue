@@ -19,17 +19,14 @@ import ConfigUtil from "@/utility/configUtil";
 import ErrorTranslator from "@/utility/errorTranslator";
 import PromiseUtility from "@/utility/promiseUtility";
 
-interface props {
+interface Props {
     disabled?: boolean;
 }
-
-withDefaults(defineProps<props>(), {
+withDefaults(defineProps<Props>(), {
     disabled: false,
 });
 
-defineExpose({
-    hideModal,
-});
+defineExpose({ hideModal });
 
 interface QuickLinkFilter {
     name: string;
