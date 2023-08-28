@@ -60,7 +60,7 @@ function downloadFile(): void {
         });
         const dateString = props.entry.date.format("yyyy_MM_dd-HH_mm");
         patientDataStore
-            .retrievePatientDataFile(props.entry.fileId, props.hdid)
+            .retrievePatientDataFile(props.hdid, props.entry.fileId)
             .then(
                 (patientFile: PatientDataFile) =>
                     new Blob([new Uint8Array(patientFile.content)], {
