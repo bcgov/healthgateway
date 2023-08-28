@@ -46,6 +46,9 @@ namespace HealthGateway.Admin.Client.Pages
         private IDispatcher Dispatcher { get; set; } = default!;
 
         [Inject]
+        private IActionSubscriber ActionSubscriber { get; set; } = default!;
+
+        [Inject]
         private IState<PatientSupportState> PatientSupportState { get; set; } = default!;
 
         [Inject]
@@ -128,6 +131,8 @@ namespace HealthGateway.Admin.Client.Pages
                 this.QueryParameter = hdid!;
                 this.SelectedQueryType = PatientQueryType.Hdid;
             }
+
+            this.ActionSubscriber.SubscribeToAction<PatientSupportActions.LoadSuccessAction>(this, this.CheckForSingleResult);
         }
 
         private static string FormatQueryType(PatientQueryType queryType)
@@ -171,9 +176,22 @@ namespace HealthGateway.Admin.Client.Pages
             }
         }
 
+        private void CheckForSingleResult(PatientSupportActions.LoadSuccessAction action)
+        {
+            if (action.Data.Count == 1)
+            {
+                this.NavigateToPatientDetails(action.Data.Single().Hdid);
+            }
+        }
+
+        private void NavigateToPatientDetails(string hdid)
+        {
+            this.NavigationManager.NavigateTo($"patient-details?hdid={hdid}");
+        }
+
         private void RowClickEvent(TableRowClickEventArgs<PatientRow> tableRowClickEventArgs)
         {
-            this.NavigationManager.NavigateTo($"patient-details?hdid={tableRowClickEventArgs.Item.Hdid}");
+            this.NavigateToPatientDetails(tableRowClickEventArgs.Item.Hdid);
         }
 
         private sealed record PatientRow
