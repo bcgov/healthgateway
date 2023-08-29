@@ -43,6 +43,32 @@ describe("Disabled Filters", () => {
 });
 
 describe("Filters", () => {
+    function testFiltering(filterTestId, titleTestId, activeFilters) {
+        const toBeOrNotToBe = (titleId, testingTitleId) =>
+            titleId === testingTitleId ? "be.visible" : "not.exist";
+
+        cy.get("[data-testid=filterContainer]").should("not.exist");
+        cy.get("[data-testid=filterDropdown]").click();
+        cy.get(`${filterTestId} input`).click({ force: true });
+        cy.get("[data-testid=btnFilterApply]").click();
+
+        const titleIds = [
+            "[data-testid=healthvisitTitle]",
+            "[data-testid=noteTitle]",
+            "[data-testid=immunizationTitle]",
+            "[data-testid=covid19testresultTitle]",
+            "[data-testid=labresultTitle]",
+            "[data-testid=medicationTitle]",
+            "[data-testid=specialauthorityrequestTitle]",
+            "[data-testid=clinicaldocumentTitle]",
+            "[data-testid=hospitalvisitTitle]",
+            "[data-testid=diagnosticimagingTitle]",
+        ];
+        for (var i = 0; i < titleIds.length; i++) {
+            cy.get(titleIds[i]).should(toBeOrNotToBe(titleIds[i], titleTestId));
+        }
+        verifyActiveFilters(activeFilters);
+    }
     beforeEach(() => {
         cy.configureSettings({
             datasets: [
@@ -84,6 +110,10 @@ describe("Filters", () => {
                 },
                 {
                     name: "diagnosticImaging",
+                    enabled: true,
+                },
+                {
+                    name: "cancerScreening",
                     enabled: true,
                 },
             ],
@@ -209,26 +239,11 @@ describe("Filters", () => {
     });
 
     it("Filter Immunization", () => {
-        cy.get("[data-testid=filterContainer]").should("not.exist");
-        cy.get("[data-testid=filterDropdown]").click();
-        cy.get("[data-testid=Immunization-filter] input").click({
-            force: true,
-        });
-        cy.get("[data-testid=btnFilterApply]").click();
-
-        cy.get("[data-testid=noteTitle]").should("not.exist");
-        cy.get("[data-testid=healthvisitTitle]").should("not.exist");
-        cy.get("[data-testid=covid19testresultTitle]").should("not.exist");
-        cy.get("[data-testid=labresultTitle]").should("not.exist");
-        cy.get("[data-testid=medicationTitle]").should("not.exist");
-        cy.get("[data-testid=immunizationTitle]").should("be.visible");
-        cy.get("[data-testid=specialauthorityrequestTitle]").should(
-            "not.exist"
+        testFiltering(
+            "[data-testid=Immunization-filter]",
+            "[data-testid=immunizationTitle]",
+            ["Immunization"]
         );
-        cy.get("[data-testid=clinicaldocumentTitle]").should("not.exist");
-        cy.get("[data-testid=hospitalvisitTitle]").should("not.exist");
-        cy.get("[data-testid=diagnosticimagingTitle]").should("not.exist");
-        verifyActiveFilters(["Immunization"]);
     });
 
     it("Filter Immunization By Text", () => {
@@ -251,181 +266,75 @@ describe("Filters", () => {
     });
 
     it("Filter Medication", () => {
-        cy.get("[data-testid=filterContainer]").should("not.exist");
-        cy.get("[data-testid=filterDropdown]").click();
-        cy.get("[data-testid=Medication-filter] input").click({ force: true });
-        cy.get("[data-testid=btnFilterApply]").click();
-
-        cy.get("[data-testid=immunizationTitle]").should("not.exist");
-        cy.get("[data-testid=noteTitle]").should("not.exist");
-        cy.get("[data-testid=healthvisitTitle]").should("not.exist");
-        cy.get("[data-testid=covid19testresultTitle]").should("not.exist");
-        cy.get("[data-testid=labresultTitle]").should("not.exist");
-        cy.get("[data-testid=medicationTitle]").should("be.visible");
-        cy.get("[data-testid=specialauthorityrequestTitle]").should(
-            "not.exist"
+        testFiltering(
+            "[data-testid=Medication-filter]",
+            "[data-testid=medicationTitle]",
+            ["Medication"]
         );
-        cy.get("[data-testid=clinicaldocumentTitle]").should("not.exist");
-        cy.get("[data-testid=hospitalvisitTitle]").should("not.exist");
-        cy.get("[data-testid=diagnosticimagingTitle]").should("not.exist");
-        verifyActiveFilters(["Medication"]);
     });
 
     it("Filter Encounter", () => {
-        cy.get("[data-testid=filterContainer]").should("not.exist");
-        cy.get("[data-testid=filterDropdown]").click();
-        cy.get("[data-testid=HealthVisit-filter] input").click({ force: true });
-        cy.get("[data-testid=btnFilterApply]").click();
-
-        cy.get("[data-testid=healthvisitTitle]").should("be.visible");
-        cy.get("[data-testid=noteTitle]").should("not.exist");
-        cy.get("[data-testid=immunizationTitle]").should("not.exist");
-        cy.get("[data-testid=covid19testresultTitle]").should("not.exist");
-        cy.get("[data-testid=labresultTitle]").should("not.exist");
-        cy.get("[data-testid=medicationTitle]").should("not.exist");
-        cy.get("[data-testid=specialauthorityrequestTitle]").should(
-            "not.exist"
+        testFiltering(
+            "[data-testid=HealthVisit-filter]",
+            "[data-testid=healthvisitTitle]",
+            ["Health Visits"]
         );
-        cy.get("[data-testid=clinicaldocumentTitle]").should("not.exist");
-        cy.get("[data-testid=hospitalvisitTitle]").should("not.exist");
-        cy.get("[data-testid=diagnosticimagingTitle]").should("not.exist");
-        verifyActiveFilters(["Health Visits"]);
     });
 
     it("Filter COVID-19", () => {
-        cy.get("[data-testid=filterContainer]").should("not.exist");
-        cy.get("[data-testid=filterDropdown]").click();
-        cy.get("[data-testid=Covid19TestResult-filter] input").click({
-            force: true,
-        });
-        cy.get("[data-testid=btnFilterApply]").click();
-
-        cy.get("[data-testid=healthvisitTitle]").should("not.exist");
-        cy.get("[data-testid=noteTitle]").should("not.exist");
-        cy.get("[data-testid=immunizationTitle]").should("not.exist");
-        cy.get("[data-testid=covid19testresultTitle]").should("be.visible");
-        cy.get("[data-testid=medicationTitle]").should("not.exist");
-        cy.get("[data-testid=labresultTitle]").should("not.exist");
-        cy.get("[data-testid=specialauthorityrequestTitle]").should(
-            "not.exist"
+        testFiltering(
+            "[data-testid=Covid19TestResult-filter]",
+            "[data-testid=covid19testresultTitle]",
+            ["COVID‑19 Tests"]
         );
-        cy.get("[data-testid=clinicaldocumentTitle]").should("not.exist");
-        cy.get("[data-testid=hospitalvisitTitle]").should("not.exist");
-        cy.get("[data-testid=diagnosticimagingTitle]").should("not.exist");
-        verifyActiveFilters(["COVID‑19 Tests"]);
     });
 
     it("Filter Laboratory", () => {
-        cy.get("[data-testid=filterContainer]").should("not.exist");
-        cy.get("[data-testid=filterDropdown]").click();
-        cy.get("[data-testid=LabResult-filter] input").click({ force: true });
-        cy.get("[data-testid=btnFilterApply]").click();
-
-        cy.get("[data-testid=healthvisitTitle]").should("not.exist");
-        cy.get("[data-testid=noteTitle]").should("not.exist");
-        cy.get("[data-testid=immunizationTitle]").should("not.exist");
-        cy.get("[data-testid=covid19testresultTitle]").should("not.exist");
-        cy.get("[data-testid=labresultTitle]").should("be.visible");
-        cy.get("[data-testid=medicationTitle]").should("not.exist");
-        cy.get("[data-testid=specialauthorityrequestTitle]").should(
-            "not.exist"
+        testFiltering(
+            "[data-testid=LabResult-filter]",
+            "[data-testid=labresultTitle]",
+            ["Lab Results"]
         );
-        cy.get("[data-testid=clinicaldocumentTitle]").should("not.exist");
-        cy.get("[data-testid=hospitalvisitTitle]").should("not.exist");
-        cy.get("[data-testid=diagnosticimagingTitle]").should("not.exist");
-        verifyActiveFilters(["Lab Results"]);
     });
 
     it("Filter Special Authority", () => {
-        cy.get("[data-testid=filterContainer]").should("not.exist");
-        cy.get("[data-testid=filterDropdown]").click();
-        cy.get("[data-testid=SpecialAuthorityRequest-filter] input").click({
-            force: true,
-        });
-        cy.get("[data-testid=btnFilterApply]").click();
-
-        cy.get("[data-testid=healthvisitTitle]").should("not.exist");
-        cy.get("[data-testid=noteTitle]").should("not.exist");
-        cy.get("[data-testid=immunizationTitle]").should("not.exist");
-        cy.get("[data-testid=medicationTitle]").should("not.exist");
-        cy.get("[data-testid=covid19testresultTitle]").should("not.exist");
-        cy.get("[data-testid=labresultTitle]").should("not.exist");
-        cy.get("[data-testid=specialauthorityrequestTitle]").should(
-            "be.visible"
+        testFiltering(
+            "[data-testid=SpecialAuthorityRequest-filter]",
+            "[data-testid=specialauthorityrequestTitle]",
+            ["Special Authority"]
         );
-        cy.get("[data-testid=clinicaldocumentTitle]").should("not.exist");
-        cy.get("[data-testid=hospitalvisitTitle]").should("not.exist");
-        cy.get("[data-testid=diagnosticimagingTitle]").should("not.exist");
-        verifyActiveFilters(["Special Authority"]);
     });
 
     it("Filter Clinical Documents", () => {
-        cy.get("[data-testid=filterContainer]").should("not.exist");
-        cy.get("[data-testid=filterDropdown]").click();
-        cy.get("[data-testid=ClinicalDocument-filter] input").click({
-            force: true,
-        });
-        cy.get("[data-testid=btnFilterApply]").click();
-
-        cy.get("[data-testid=healthvisitTitle]").should("not.exist");
-        cy.get("[data-testid=noteTitle]").should("not.exist");
-        cy.get("[data-testid=immunizationTitle]").should("not.exist");
-        cy.get("[data-testid=covid19testresultTitle]").should("not.exist");
-        cy.get("[data-testid=labresultTitle]").should("not.exist");
-        cy.get("[data-testid=medicationTitle]").should("not.exist");
-        cy.get("[data-testid=specialauthorityrequestTitle]").should(
-            "not.exist"
+        testFiltering(
+            "[data-testid=ClinicalDocument-filter]",
+            "[data-testid=clinicaldocumentTitle]",
+            ["Clinical Documents"]
         );
-        cy.get("[data-testid=clinicaldocumentTitle]").should("be.visible");
-        cy.get("[data-testid=hospitalvisitTitle]").should("not.exist");
-        cy.get("[data-testid=diagnosticimagingTitle]").should("not.exist");
-        verifyActiveFilters(["Clinical Documents"]);
     });
 
     it("Filter Hospital Visits", () => {
-        cy.get("[data-testid=filterContainer]").should("not.exist");
-        cy.get("[data-testid=filterDropdown]").click();
-        cy.get("[data-testid=HospitalVisit-filter] input").click({
-            force: true,
-        });
-        cy.get("[data-testid=btnFilterApply]").click();
-
-        cy.get("[data-testid=healthvisitTitle]").should("not.exist");
-        cy.get("[data-testid=noteTitle]").should("not.exist");
-        cy.get("[data-testid=immunizationTitle]").should("not.exist");
-        cy.get("[data-testid=covid19testresultTitle]").should("not.exist");
-        cy.get("[data-testid=labresultTitle]").should("not.exist");
-        cy.get("[data-testid=medicationTitle]").should("not.exist");
-        cy.get("[data-testid=specialauthorityrequestTitle]").should(
-            "not.exist"
+        testFiltering(
+            "[data-testid=HospitalVisit-filter]",
+            "[data-testid=hospitalvisitTitle]",
+            ["Hospital Visits"]
         );
-        cy.get("[data-testid=clinicaldocumentTitle]").should("not.exist");
-        cy.get("[data-testid=hospitalvisitTitle]").should("be.visible");
-        cy.get("[data-testid=diagnosticimagingTitle]").should("not.exist");
-        verifyActiveFilters(["Hospital Visits"]);
     });
 
     it("Filter Diagnostic Imaging", () => {
-        cy.get("[data-testid=filterContainer]").should("not.exist");
-        cy.get("[data-testid=filterDropdown]").click();
-        cy.get("[data-testid=DiagnosticImaging-filter] input").click({
-            force: true,
-        });
-        cy.get("[data-testid=btnFilterApply]").click();
-
-        cy.get("[data-testid=healthvisitTitle]").should("not.exist");
-        cy.get("[data-testid=noteTitle]").should("not.exist");
-        cy.get("[data-testid=immunizationTitle]").should("not.exist");
-        cy.get("[data-testid=covid19testresultTitle]").should("not.exist");
-        cy.get("[data-testid=labresultTitle]").should("not.exist");
-        cy.get("[data-testid=medicationTitle]").should("not.exist");
-        cy.get("[data-testid=specialauthorityrequestTitle]").should(
-            "not.exist"
+        testFiltering(
+            "[data-testid=DiagnosticImaging-filter]",
+            "[data-testid=diagnosticimagingTitle]",
+            ["Imaging Reports"]
         );
-        cy.get("[data-testid=clinicaldocumentTitle]").should("not.exist");
-        cy.get("[data-testid=hospitalvisitTitle]").should("not.exist");
-        cy.get("[data-testid=diagnosticimagingTitle]").should("be.visible");
-        verifyActiveFilters(["Imaging Reports"]);
+    });
+
+    it("Filter Cancer Screening", () => {
+        testFiltering(
+            "[data-testid=CancerScreening-filter]",
+            "[data-testid=cancerscreeningTitle]",
+            ["BC Cancer"]
+        );
     });
 
     it("Validate Apply and Cancel buttons", () => {
