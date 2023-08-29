@@ -26,18 +26,18 @@ namespace HealthGateway.Admin.Common.Models
     public class PatientSupportDetails
     {
         /// <summary>
-        /// Gets or sets the patient's status.
+        /// Gets or sets the messaging verifications.
         /// </summary>
-        public IEnumerable<MessagingVerificationModel> MessagingVerifications { get; set; } = Enumerable.Empty<MessagingVerificationModel>();
+        public IEnumerable<MessagingVerificationModel>? MessagingVerifications { get; set; } = Enumerable.Empty<MessagingVerificationModel>();
 
         /// <summary>
-        /// Gets or sets a warning message associated with the patient.
+        /// Gets or sets the agent actions.
         /// </summary>
-        public IEnumerable<AgentAction> AgentActions { get; set; } = Enumerable.Empty<AgentAction>();
+        public IEnumerable<AgentAction>? AgentActions { get; set; } = Enumerable.Empty<AgentAction>();
 
         /// <summary>
-        /// Gets or sets the blocked access data sources.
+        /// Gets or sets the blocked data sources.
         /// </summary>
-        public IEnumerable<DataSource> BlockedDataSources { get; set; } = Enumerable.Empty<DataSource>();
+        public IEnumerable<DataSource>? BlockedDataSources { get; set; } = Enumerable.Empty<DataSource>();
     }
 }

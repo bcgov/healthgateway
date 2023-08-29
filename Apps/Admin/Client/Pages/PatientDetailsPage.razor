@@ -1,6 +1,6 @@
 @page "/patient-details"
 @layout MainLayout
-@attribute [Authorize(Roles = $"{Roles.Admin},{Roles.Reviewer}")]
+@attribute [Authorize(Roles = $"{Roles.Admin},{Roles.Reviewer},{Roles.Support}")]
 @using HealthGateway.Admin.Client.Store.PatientDetails
 @using HealthGateway.Admin.Client.Store.PatientSupport
 @using HealthGateway.Admin.Common.Constants
@@ -76,25 +76,43 @@
             <HgField Label="Mailing Address" Value="@Patient.PostalAddress" data-testid="patient-mailing-address" />
         </MudItem>
     </MudGrid>
-    <MudText Class="my-3" Typo="Typo.subtitle1">
-        Account Details
-    </MudText>
     @if (Patient.Status == PatientStatus.Default)
     {
-        <MudGrid>
-            <MudItem xs="12" lg="6">
-                <HgField Label="Account Created" Value="@ProfileCreatedDateTime.ToString()" data-testid="profile-created-datetime" />
-            </MudItem>
-            <MudItem xs="12" lg="6">
-                <HgField Label="Last Login" Value="@ProfileLastLoginDateTime.ToString()" data-testid="profile-last-login-datetime" />
-            </MudItem>
-        </MudGrid>
-        <MessageVerificationTable Data="@MessagingVerifications" IsLoading="@PatientSupportDetailsLoading" />
-        <DatasetAccessSection Data="@BlockedDataSources" IsLoading="@PatientSupportDetailsLoading" Hdid="@Hdid" CanEdit="@CanEditDatasetAccess" />
-        <AgentAuditHistory Title="Agent Reason History" AgentActions="@AgentAuditHistory" IsLoading="@PatientSupportDetailsLoading" />
+        if (CanViewAccountDetails)
+        {
+            <MudText Class="my-3" Typo="Typo.subtitle1">
+                Account Details
+            </MudText>
+            <MudGrid>
+                <MudItem xs="12" lg="6">
+                    <HgField Label="Account Created" Value="@ProfileCreatedDateTime.ToString()" data-testid="profile-created-datetime" />
+                </MudItem>
+                <MudItem xs="12" lg="6">
+                    <HgField Label="Last Login" Value="@ProfileLastLoginDateTime.ToString()" data-testid="profile-last-login-datetime" />
+                </MudItem>
+            </MudGrid>
+        }
+
+        if (CanViewMessagingVerifications)
+        {
+            <MessageVerificationTable Data="@MessagingVerifications" IsLoading="@PatientSupportDetailsLoading" />
+        }
+
+        if (CanViewDatasetAccess)
+        {
+            <DatasetAccessSection Data="@BlockedDataSources" IsLoading="@PatientSupportDetailsLoading" Hdid="@Hdid" CanEdit="@CanEditDatasetAccess" />
+        }
+
+        if (CanViewAgentAuditHistory)
+        {
+            <AgentAuditHistory Title="Agent Reason History" AgentActions="@AgentAuditHistory" IsLoading="@PatientSupportDetailsLoading" />
+        }
     }
-    else
+    else if (CanViewAccountDetails)
     {
+        <MudText Class="my-3" Typo="Typo.subtitle1">
+            Account Details
+        </MudText>
         <MudText Class="my-3" data-testid="no-hg-profile">
             No Health Gateway Profile
         </MudText>

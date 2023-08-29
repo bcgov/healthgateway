@@ -31,9 +31,17 @@ namespace HealthGateway.Admin.Server.Services
         /// matching the query.
         /// </summary>
         /// <param name="hdid">The HDID associated with the patient support details.</param>
+        /// <param name="includeMessagingVerifications">A value indicating whether messaging verifications should be returned.</param>
+        /// <param name="includeBlockedDataSources">A value indicating whether blocked data sources should be returned.</param>
+        /// <param name="includeAgentActions">A value indicating whether agent actions should be returned.</param>
         /// <param name="ct">A cancellation token.</param>
         /// <returns>A patient support details matching the query.</returns>
-        Task<PatientSupportDetails> GetPatientSupportDetailsAsync(string hdid, CancellationToken ct = default);
+        Task<PatientSupportDetails> GetPatientSupportDetailsAsync(
+            string hdid,
+            bool includeMessagingVerifications,
+            bool includeBlockedDataSources,
+            bool includeAgentActions,
+            CancellationToken ct = default);
 
         /// <summary>
         /// Retrieves the collection of patients that match the query.

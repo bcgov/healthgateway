@@ -91,15 +91,23 @@ namespace HealthGateway.Admin.Client.Pages
 
         private DateTime? ProfileLastLoginDateTime { get; set; }
 
-        private bool CanEditDatasetAccess { get; set; }
+        private bool CanViewAccountDetails => this.UserHasRole(Roles.Admin) || this.UserHasRole(Roles.Reviewer);
+
+        private bool CanViewMessagingVerifications => this.UserHasRole(Roles.Admin) || this.UserHasRole(Roles.Reviewer);
+
+        private bool CanViewDatasetAccess => this.UserHasRole(Roles.Admin) || this.UserHasRole(Roles.Reviewer);
+
+        private bool CanEditDatasetAccess => this.UserHasRole(Roles.Admin);
+
+        private bool CanViewAgentAuditHistory => this.UserHasRole(Roles.Admin) || this.UserHasRole(Roles.Reviewer);
+
+        private AuthenticationState? AuthenticationState { get; set; }
 
         /// <inheritdoc/>
         protected override async Task OnInitializedAsync()
         {
             await base.OnInitializedAsync();
-
-            AuthenticationState state = await this.AuthenticationStateProvider.GetAuthenticationStateAsync();
-            this.CanEditDatasetAccess = state.User.IsInRole(Roles.Admin);
+            this.AuthenticationState = await this.AuthenticationStateProvider.GetAuthenticationStateAsync();
         }
 
         /// <inheritdoc/>
@@ -129,6 +137,11 @@ namespace HealthGateway.Admin.Client.Pages
                 PatientStatus.NotUser => "Patient is not a user",
                 _ => null,
             };
+        }
+
+        private bool UserHasRole(string role)
+        {
+            return this.AuthenticationState?.User.IsInRole(role) == true;
         }
 
         private void RetrievePatientData()

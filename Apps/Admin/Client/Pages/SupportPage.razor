@@ -1,6 +1,6 @@
 @page "/support"
 @layout MainLayout
-@attribute [Authorize(Roles = $"{Roles.Admin},{Roles.Reviewer}")]
+@attribute [Authorize(Roles = $"{Roles.Admin},{Roles.Reviewer},{Roles.Support}")]
 @using HealthGateway.Admin.Client.Store.PatientSupport
 @using HealthGateway.Common.Data.Constants
 @using HealthGateway.Common.Data.Utils
