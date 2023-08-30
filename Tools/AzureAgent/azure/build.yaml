@@ -6,17 +6,27 @@ trigger:
     include:
       - Tools/AzureAgent
 
-pool:
-  name: "HealthGateway"
-  vmImage: "ubuntu-latest"
+resources:
+- repo: self
 
-steps:
-- task: Docker@2
-  displayName: Build Azure Agent
-  inputs:
-    command: 'buildAndPush'
-    repository: $(DockerRepo)/azure-agent
-    buildContext: '$(Build.SourcesDirectory)/Tools/AzureAgent'
-    dockerfile: '$(Build.SourcesDirectory)/Tools/AzureAgent/docker/Dockerfile'
-    tags: |
-      latest
+variables:
+  tag: '$(Build.BuildId)'
+
+stages:
+- stage: Build
+  displayName: Build image
+  jobs:
+  - job: Build
+    displayName: Build
+    pool:
+      vmImage: ubuntu-latest
+    steps:
+    - task: Docker@2
+      displayName: Build Azure Agent
+      inputs:
+        command: 'buildAndPush'
+        repository: $(DockerRepo)/azure-agent
+        buildContext: '$(Build.SourcesDirectory)/Tools/AzureAgent'
+        dockerfile: '$(Build.SourcesDirectory)/Tools/AzureAgent/docker/Dockerfile'
+        tags: |
+          $(tag)
