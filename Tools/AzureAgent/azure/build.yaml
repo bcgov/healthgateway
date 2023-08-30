@@ -10,7 +10,7 @@ resources:
 - repo: self
 
 variables:
-  tag: '$(Build.BuildId)'
+  tag: "$(Build.BuildNumber)"
 
 stages:
 - stage: Build
