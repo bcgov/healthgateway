@@ -19,7 +19,7 @@ enum PreviewDevice {
     smartphone,
 }
 
-const datasetEntryTypes: EntryType[] = [
+const entryTypes: EntryType[] = [
     EntryType.Medication,
     EntryType.LabResult,
     EntryType.Covid19TestResult,
@@ -29,10 +29,7 @@ const datasetEntryTypes: EntryType[] = [
     EntryType.ClinicalDocument,
     EntryType.HospitalVisit,
     EntryType.DiagnosticImaging,
-    EntryType.CancerScreening,
 ];
-
-const serviceEntryTypes: EntryType[] = [];
 
 const configStore = useConfigStore();
 const authStore = useAuthStore();
@@ -72,15 +69,22 @@ const organDonorRegistrationTile = computed<InfoTile>(() => ({
     active: ConfigUtil.isServiceEnabled(ServiceName.OrganDonorRegistration),
 }));
 const servicesTiles = computed(() =>
-    [
-        proofOfVaccinationTile.value,
-        organDonorRegistrationTile.value,
-        ...serviceEntryTypes.map<InfoTile>(mapEntryTypeToTile),
-    ].filter((tile) => tile.active)
+    [proofOfVaccinationTile.value, organDonorRegistrationTile.value].filter(
+        (tile) => tile.active
+    )
 );
 const shouldDisplayServices = computed(() => servicesTiles.value.length > 0);
 const datasetTiles = computed(() =>
-    datasetEntryTypes.map<InfoTile>(mapEntryTypeToTile)
+    entryTypes.map<InfoTile>((type) => {
+        const details = entryTypeMap.get(type);
+        return {
+            type,
+            icon: details?.icon ?? "",
+            name: details?.name ?? "",
+            description: details?.description ?? "",
+            active: ConfigUtil.isDatasetEnabled(type) && details !== undefined,
+        };
+    })
 );
 const activeDatasetTiles = computed(() =>
     datasetTiles.value.filter((tile) => tile.active)
@@ -88,17 +92,6 @@ const activeDatasetTiles = computed(() =>
 const shouldDisplayDatasets = computed(
     () => activeDatasetTiles.value.length > 0
 );
-
-function mapEntryTypeToTile(type: EntryType): InfoTile {
-    const details = entryTypeMap.get(type);
-    return {
-        type,
-        icon: details?.icon ?? "",
-        name: details?.name ?? "",
-        description: details?.description ?? "",
-        active: ConfigUtil.isDatasetEnabled(type) && details !== undefined,
-    };
-}
 
 function selectPreviewDevice(previewDevice: PreviewDevice): void {
     selectedPreviewDevice.value = previewDevice;

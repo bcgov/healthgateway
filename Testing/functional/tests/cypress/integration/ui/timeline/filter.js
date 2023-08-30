@@ -26,14 +26,6 @@ describe("Filters", () => {
                     name: "immunization",
                     enabled: true,
                 },
-                {
-                    name: "diagnosticImaging",
-                    enabled: true,
-                },
-                {
-                    name: "cancerScreening",
-                    enabled: true,
-                },
             ],
         });
         cy.login(
@@ -49,7 +41,7 @@ describe("Filters", () => {
             `Displaying ${lower} to ${upper} out of ${total} records`;
 
         cy.get("[data-testid=timeline-record-count]").contains(
-            recordDisplayMessage(1, 25, 44)
+            recordDisplayMessage(1, 25, 34)
         );
 
         cy.get("[data-testid=filterDropdown]").click();
@@ -69,7 +61,7 @@ describe("Filters", () => {
         );
 
         cy.get("[data-testid=timeline-record-count]").contains(
-            recordDisplayMessage(1, 25, 44)
+            recordDisplayMessage(1, 25, 34)
         );
 
         cy.get("[data-testid=filterDropdown]").click();
@@ -92,7 +84,7 @@ describe("Filters", () => {
 
         cy.get("[data-testid=clear-filters-button]").click();
         cy.get("[data-testid=timeline-record-count]").contains(
-            recordDisplayMessage(1, 25, 44)
+            recordDisplayMessage(1, 25, 34)
         );
     });
 
@@ -139,56 +131,6 @@ describe("Filters", () => {
 
         cy.get(
             "[data-testid=timeline-clinical-document-disclaimer-alert]"
-        ).should("not.exist");
-    });
-
-    it("Verify diagnostic imaging record alert appears when only imaging reports is selected", () => {
-        cy.get(
-            "[data-testid=linear-timeline-diagnostic-imaging-disclaimer-alert]"
-        ).should("not.exist");
-
-        cy.get("[data-testid=filterDropdown]").click();
-        cy.get("[data-testid=DiagnosticImaging-filter] input").click({
-            force: true,
-        });
-        cy.get("[data-testid=btnFilterApply]").click();
-        cy.get("[data-testid=btnFilterApply]").should("not.exist");
-
-        cy.get(
-            "[data-testid=linear-timeline-diagnostic-imaging-disclaimer]"
-        ).should("be.visible");
-
-        cy.get("[data-testid=filterDropdown]").click();
-        cy.get("[data-testid=HealthVisit-filter] input").click({ force: true });
-        cy.get("[data-testid=btnFilterApply]").click();
-
-        cy.get(
-            "[data-testid=linear-timeline-diagnostic-imaging-disclaimer]"
-        ).should("not.exist");
-    });
-
-    it("Verify cancer screening record alert appears when only imaging reports is selected", () => {
-        cy.get(
-            "[data-testid=linear-timeline-cancer-screening-disclaimer]"
-        ).should("not.exist");
-
-        cy.get("[data-testid=filterDropdown]").click();
-        cy.get("[data-testid=CancerScreening-filter] input").click({
-            force: true,
-        });
-        cy.get("[data-testid=btnFilterApply]").click();
-        cy.get("[data-testid=btnFilterApply]").should("not.exist");
-
-        cy.get(
-            "[data-testid=linear-timeline-cancer-screening-disclaimer]"
-        ).should("be.visible");
-
-        cy.get("[data-testid=filterDropdown]").click();
-        cy.get("[data-testid=HealthVisit-filter] input").click({ force: true });
-        cy.get("[data-testid=btnFilterApply]").click();
-
-        cy.get(
-            "[data-testid=linear-timeline-cancer-screening-disclaimer]"
         ).should("not.exist");
     });
 });

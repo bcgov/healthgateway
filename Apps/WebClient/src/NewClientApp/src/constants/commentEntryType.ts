@@ -9,5 +9,4 @@ export const enum CommentEntryType {
     LabResult = "ALO",
     Medication = "Med",
     SpecialAuthorityRequest = "SAR",
-    CancerScreening = "CNS",
 }

@@ -11,7 +11,6 @@ export enum EntryType {
     Medication = "Medication",
     Note = "Note",
     SpecialAuthorityRequest = "SpecialAuthorityRequest",
-    CancerScreening = "CancerScreening",
 }
 
 export class EntryTypeDetails {
@@ -158,19 +157,6 @@ entryTypeMap.set(EntryType.DiagnosticImaging, {
     eventName: "diagnostic_imaging",
     moduleName: "DiagnosticImaging",
     reportEventName: "Diagnostic Imaging Exams",
-});
-
-entryTypeMap.set(EntryType.CancerScreening, {
-    type: EntryType.CancerScreening,
-    commentType: CommentEntryType.CancerScreening,
-    name: "BC Cancer Results",
-    description:
-        "View and download your results as soon as they are available.",
-    icon: "ribbon",
-    component: "BcCancerScreeningResultTimelineComponent",
-    eventName: "bc_cancer_screening",
-    moduleName: "BcCancerScreening",
-    reportEventName: "BC Cancer Screening Exams",
 });
 
 export { entryTypeMap };

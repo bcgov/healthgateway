@@ -1,6 +1,7 @@
 ﻿import { defineStore } from "pinia";
 import { ref } from "vue";
 
+import { EntryType } from "@/constants/entryType";
 import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import { container } from "@/ioc/container";
 import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
@@ -18,7 +19,6 @@ import PatientDataResponse, {
 } from "@/models/patientDataResponse";
 import { LoadStatus } from "@/models/storeOperations";
 import { ILogger, IPatientDataService } from "@/services/interfaces";
-import { patientDataTypeToEntryTypeMap } from "@/services/restPatientDataService";
 import { useErrorStore } from "@/stores/error";
 import { DatasetMapUtils } from "@/stores/utils/DatasetMapUtils";
 import EventTracker from "@/utility/eventTracker";
@@ -37,6 +37,10 @@ const defaultPatientDataFileState: PatientDataFileState = {
     error: undefined,
 };
 
+const patientDataTypeMap = new Map<PatientDataType, EntryType>([
+    [PatientDataType.DiagnosticImaging, EntryType.DiagnosticImaging],
+]);
+
 function reportDataLoaded(
     patientDataTypes: PatientDataType[],
     data: PatientDataResponse
@@ -46,7 +50,7 @@ function reportDataLoaded(
             (i) =>
                 i.type === PatientDataToHealthDataTypeMap.get(patientDataType)
         );
-        const entryType = patientDataTypeToEntryTypeMap.get(patientDataType);
+        const entryType = patientDataTypeMap.get(patientDataType);
         if (dataSet && entryType !== undefined) {
             EventTracker.loadData(entryType, dataSet.length);
         }
@@ -59,8 +63,6 @@ function getErrorSource(patientDataType: PatientDataType): ErrorSourceType {
             return ErrorSourceType.DiagnosticImaging;
         case PatientDataType.OrganDonorRegistrationStatus:
             return ErrorSourceType.OrganDonorRegistration;
-        case PatientDataType.CancerScreening:
-            return ErrorSourceType.CancerScreening;
         default:
             return ErrorSourceType.PatientData;
     }
