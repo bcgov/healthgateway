@@ -73,13 +73,13 @@ export const useImmunizationStore = defineStore("immunization", () => {
         return getImmunizationDatasetState(hdid).data.length;
     }
 
-    function immunizationsAreLoading(hdid: string): boolean {
+    function areImmunizationsLoading(hdid: string): boolean {
         return (
             getImmunizationDatasetState(hdid).status === LoadStatus.REQUESTED
         );
     }
 
-    function immunizationsAreDeferred(hdid: string): boolean {
+    function areImmunizationsDeferred(hdid: string): boolean {
         const datasetState = getImmunizationDatasetState(hdid);
         return (
             datasetState.status === LoadStatus.DEFERRED ||
@@ -168,8 +168,8 @@ export const useImmunizationStore = defineStore("immunization", () => {
         covidImmunizations,
         recommendations,
         immunizationsCount,
-        immunizationsAreLoading,
-        immunizationsAreDeferred,
+        areImmunizationsLoading,
+        areImmunizationsDeferred,
         immunizationsError,
         retrieveImmunizations,
     };

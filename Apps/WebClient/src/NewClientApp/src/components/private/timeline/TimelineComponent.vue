@@ -109,11 +109,11 @@ const hospitalVisitsAreLoading = computed(() =>
 const immunizations = computed(() =>
     immunizationStore.immunizations(props.hdid)
 );
-const immunizationsAreLoading = computed(() =>
-    immunizationStore.immunizationsAreLoading(props.hdid)
+const areImmunizationsLoading = computed(() =>
+    immunizationStore.areImmunizationsLoading(props.hdid)
 );
-const immunizationsAreDeferred = computed(() =>
-    immunizationStore.immunizationsAreDeferred(props.hdid)
+const areImmunizationsDeferred = computed(() =>
+    immunizationStore.areImmunizationsDeferred(props.hdid)
 );
 const covid19TestResults = computed(() =>
     covid19TestResultStore.covid19TestResults(props.hdid)
@@ -308,7 +308,7 @@ const isFullyLoaded = computed(() => {
 
     const loadingMoreImmunizations =
         props.entryTypes.includes(EntryType.Immunization) &&
-        immunizationsAreDeferred.value;
+        areImmunizationsDeferred.value;
 
     return !loadingDatasets && !loadingComments && !loadingMoreImmunizations;
 });
@@ -378,7 +378,7 @@ function datasetIsLoading(entryType: EntryType): boolean {
         case EntryType.HospitalVisit:
             return hospitalVisitsAreLoading.value;
         case EntryType.Immunization:
-            return immunizationsAreLoading.value;
+            return areImmunizationsLoading.value;
         case EntryType.LabResult:
             return labResultsAreLoading.value;
         case EntryType.Medication:

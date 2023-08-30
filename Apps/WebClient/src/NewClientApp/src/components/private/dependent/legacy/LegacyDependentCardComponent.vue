@@ -18,11 +18,7 @@ import { DateWrapper, StringISODate } from "@/models/dateWrapper";
 import type { Dependent } from "@/models/dependent";
 import EncodedMedia from "@/models/encodedMedia";
 import { ResultError } from "@/models/errors";
-import {
-    ImmunizationAgent,
-    ImmunizationEvent,
-    Recommendation,
-} from "@/models/immunizationModel";
+import { ImmunizationAgent } from "@/models/immunizationModel";
 import { Covid19LaboratoryTest, LaboratoryOrder } from "@/models/laboratory";
 import Report from "@/models/report";
 import ReportHeader from "@/models/reportHeader";
@@ -33,13 +29,13 @@ import User from "@/models/user";
 import {
     IClinicalDocumentService,
     IDependentService,
-    IImmunizationService,
     ILaboratoryService,
     ILogger,
     IReportService,
 } from "@/services/interfaces";
 import { useConfigStore } from "@/stores/config";
 import { useErrorStore } from "@/stores/error";
+import { useImmunizationStore } from "@/stores/immunization";
 import { useUserStore } from "@/stores/user";
 import { useVaccinationStatusAuthenticatedStore } from "@/stores/vaccinationStatusAuthenticated";
 import ConfigUtil from "@/utility/configUtil";
@@ -86,9 +82,6 @@ const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
 const clinicalDocumentService = container.get<IClinicalDocumentService>(
     SERVICE_IDENTIFIER.ClinicalDocumentService
 );
-const immunizationService = container.get<IImmunizationService>(
-    SERVICE_IDENTIFIER.ImmunizationService
-);
 const laboratoryService = container.get<ILaboratoryService>(
     SERVICE_IDENTIFIER.LaboratoryService
 );
@@ -99,6 +92,7 @@ const userStore = useUserStore();
 const configStore = useConfigStore();
 const vaccinationStatusStore = useVaccinationStatusAuthenticatedStore();
 const errorStore = useErrorStore();
+const immunizationStore = useImmunizationStore();
 
 const reportFormatType = ref(ReportFormatType.PDF);
 const csvFormatType = ref(ReportFormatType.CSV);
@@ -108,10 +102,7 @@ const isLoading = ref(false);
 const laboratoryOrders = ref<LaboratoryOrder[]>([]);
 const clinicalDocuments = ref<ClinicalDocument[]>([]);
 const testRows = ref<Covid19LaboratoryTestRow[]>([]);
-const immunizations = ref<ImmunizationEvent[]>([]);
-const recommendations = ref<Recommendation[]>([]);
 const isCovid19DataLoading = ref(false);
-const isImmunizationDataLoaded = ref(false);
 const isLaboratoryOrdersDataLoaded = ref(false);
 const isClinicalDocumentsDataLoaded = ref(false);
 const isReport = ref(false);
@@ -127,10 +118,11 @@ const vaccineRecordResultModal =
     ref<InstanceType<typeof MessageModalComponent>>();
 const deleteModal = ref<InstanceType<typeof MessageModalComponent>>();
 
+const dependentHdid = computed(() => props.dependent.ownerId);
 const user = computed<User>(() => userStore.user);
 const webClientConfig = computed(() => configStore.webConfig);
 const vaccineRecordState = computed(() =>
-    vaccinationStatusStore.vaccineRecordState(props.dependent.ownerId)
+    vaccinationStatusStore.vaccineRecordState(dependentHdid.value)
 );
 const headerData = computed<ReportHeader>(() => {
     return {
@@ -151,14 +143,6 @@ const headerData = computed<ReportHeader>(() => {
 const isVaccineRecordDownloading = computed(
     () => vaccineRecordState.value.status === LoadStatus.REQUESTED
 );
-const isDownloadImmunizationReportButtonDisabled = computed(() => {
-    return (
-        isReportDownloading.value ||
-        selectedTabIndex.value !== tabIndices.immunization ||
-        (immunizationItems.value.length == 0 &&
-            recommendationItems.value.length == 0)
-    );
-});
 const isExpired = computed(() => {
     const birthDate = new DateWrapper(
         props.dependent.dependentInformation.dateOfBirth
@@ -172,9 +156,6 @@ const isExpired = computed(() => {
 const isCovid19TabShown = computed(() =>
     ConfigUtil.isDependentDatasetEnabled(EntryType.Covid19TestResult)
 );
-const isImmunizationTabShown = computed(() =>
-    ConfigUtil.isDependentDatasetEnabled(EntryType.Immunization)
-);
 const isLaboratoryOrderTabShown = computed(() =>
     ConfigUtil.isDependentDatasetEnabled(EntryType.LabResult)
 );
@@ -182,25 +163,46 @@ const isClinicalDocumentTabShown = computed(() =>
     ConfigUtil.isDependentDatasetEnabled(EntryType.ClinicalDocument)
 );
 
+// Immunizations
+const isImmunizationTabShown = computed(() =>
+    ConfigUtil.isDependentDatasetEnabled(EntryType.Immunization)
+);
+const areImmunizationsLoading = computed(
+    () =>
+        immunizationStore.areImmunizationsLoading(dependentHdid.value) ||
+        immunizationStore.areImmunizationsDeferred(dependentHdid.value)
+);
 const immunizationItems = computed(() =>
-    immunizations.value.map<ImmunizationRow>((x) => ({
-        date: DateWrapper.format(x.dateOfImmunization),
-        immunization: x.immunization.name,
-        agent: getAgentNames(x.immunization.immunizationAgents),
-        product: getProductNames(x.immunization.immunizationAgents),
-        provider_clinic: x.providerOrClinic,
-        lotNumber: getAgentLotNumbers(x.immunization.immunizationAgents),
-    }))
+    immunizationStore
+        .immunizations(dependentHdid.value)
+        .map<ImmunizationRow>((x) => ({
+            date: DateWrapper.format(x.dateOfImmunization),
+            immunization: x.immunization.name,
+            agent: getAgentNames(x.immunization.immunizationAgents),
+            product: getProductNames(x.immunization.immunizationAgents),
+            provider_clinic: x.providerOrClinic,
+            lotNumber: getAgentLotNumbers(x.immunization.immunizationAgents),
+        }))
 );
 const recommendationItems = computed(() =>
-    recommendations.value.map<RecommendationRow>((x) => ({
-        immunization: x.recommendedVaccinations,
-        due_date:
-            x.agentDueDate === undefined || x.agentDueDate === null
-                ? ""
-                : DateWrapper.format(x.agentDueDate),
-    }))
+    immunizationStore
+        .recommendations(dependentHdid.value)
+        .map<RecommendationRow>((x) => ({
+            immunization: x.recommendedVaccinations,
+            due_date:
+                x.agentDueDate === undefined || x.agentDueDate === null
+                    ? ""
+                    : DateWrapper.format(x.agentDueDate),
+        }))
 );
+const isDownloadImmunizationReportButtonDisabled = computed(() => {
+    return (
+        isReportDownloading.value ||
+        selectedTabIndex.value !== tabIndices.immunization ||
+        (immunizationItems.value.length == 0 &&
+            recommendationItems.value.length == 0)
+    );
+});
 
 function deleteDependent(): void {
     isLoading.value = true;
@@ -231,11 +233,7 @@ function downloadCovid19Report(): void {
     isReportDownloading.value = true;
     const test = selectedTestRow.value.test;
     laboratoryService
-        .getReportDocument(
-            selectedTestRow.value.id,
-            props.dependent.ownerId,
-            true
-        )
+        .getReportDocument(selectedTestRow.value.id, dependentHdid.value, true)
         .then((result) => {
             const report = result.resourcePayload;
             fetch(`data:${report.mediaType};${report.encoding},${report.data}`)
@@ -280,7 +278,7 @@ function downloadLaboratoryOrderReport(): void {
     laboratoryService
         .getReportDocument(
             selectedLaboratoryOrderRow.value.reportId,
-            props.dependent.ownerId,
+            dependentHdid.value,
             false
         )
         .then((result) => {
@@ -362,10 +360,7 @@ function downloadClinicalDocument(): void {
     trackClickLink("download_report", "Dependent Clinical Doc");
 
     clinicalDocumentService
-        .getFile(
-            selectedClinicalDocumentRow.value.fileId,
-            props.dependent.ownerId
-        )
+        .getFile(selectedClinicalDocumentRow.value.fileId, dependentHdid.value)
         .then((result: RequestResult<EncodedMedia>) => {
             fetch(
                 `data:${result.resourcePayload.mediaType};${result.resourcePayload.encoding},${result.resourcePayload.data}`
@@ -416,11 +411,9 @@ function downloadDocument(): void {
 }
 
 function downloadVaccinePdf(): void {
-    logger.debug(
-        `Downloading vaccine PDF for hdid: ${props.dependent.ownerId}`
-    );
+    logger.debug(`Downloading vaccine PDF for hdid: ${dependentHdid.value}`);
     trackClickLink("Click Button", "Dependent Proof");
-    vaccinationStatusStore.retrieveVaccineRecord(props.dependent.ownerId);
+    vaccinationStatusStore.retrieveVaccineRecord(dependentHdid.value);
 }
 
 function formatDate(date: StringISODate): string {
@@ -428,7 +421,7 @@ function formatDate(date: StringISODate): string {
 }
 
 function fetchClinicalDocuments(): void {
-    const hdid = props.dependent.ownerId;
+    const hdid = dependentHdid.value;
     logger.debug(`Fetching Clinical Documents for Hdid: ${hdid}`);
     if (isClinicalDocumentsDataLoaded.value) {
         return;
@@ -472,14 +465,14 @@ function fetchClinicalDocuments(): void {
 
 function fetchCovid19LaboratoryTests(): void {
     logger.debug(
-        `Fetching COVID 19 Laboratory Tests for Hdid: ${props.dependent.ownerId}`
+        `Fetching COVID 19 Laboratory Tests for Hdid: ${dependentHdid.value}`
     );
     if (isCovid19DataLoading.value) {
         return;
     }
     isLoading.value = true;
     laboratoryService
-        .getCovid19LaboratoryOrders(props.dependent.ownerId)
+        .getCovid19LaboratoryOrders(dependentHdid.value)
         .then((result) => {
             const payload = result.resourcePayload;
             if (result.resultStatus == ResultType.Success) {
@@ -533,13 +526,13 @@ function fetchCovid19LaboratoryTests(): void {
 }
 
 function fetchLaboratoryOrders(): void {
-    logger.debug(`Fetching Lab Results for Hdid: ${props.dependent.ownerId}`);
+    logger.debug(`Fetching Lab Results for Hdid: ${dependentHdid.value}`);
     if (isLaboratoryOrdersDataLoaded.value) {
         return;
     }
     isLoading.value = true;
     laboratoryService
-        .getLaboratoryOrders(props.dependent.ownerId)
+        .getLaboratoryOrders(dependentHdid.value)
         .then((result) => {
             const payload = result.resourcePayload;
             if (result.resultStatus == ResultType.Success) {
@@ -582,60 +575,9 @@ function fetchLaboratoryOrders(): void {
 }
 
 function fetchPatientImmunizations(): void {
-    const hdid = props.dependent.ownerId;
+    const hdid = dependentHdid.value;
     logger.debug(`Fetching Patient Immunizations for Hdid: ${hdid}`);
-    if (isImmunizationDataLoaded.value) {
-        return;
-    }
-    isLoading.value = true;
-    immunizationService
-        .getPatientImmunizations(hdid)
-        .then((result) => {
-            if (result.resultStatus == ResultType.Success) {
-                const payload = result.resourcePayload;
-                if (payload.loadState.refreshInProgress) {
-                    logger.info("Re-querying Patient Immunizations");
-                    setTimeout(() => fetchPatientImmunizations(), 10000);
-                } else {
-                    setImmunizations(payload.immunizations);
-                    setRecommendations(payload.recommendations);
-                    isImmunizationDataLoaded.value = true;
-                    logger.debug(
-                        `Patient Immunizations:
-                            ${JSON.stringify(immunizations.value)}`
-                    );
-                    logger.debug(
-                        `Patient Recommendations:
-                            ${JSON.stringify(recommendations.value)}`
-                    );
-                }
-            } else {
-                logger.error(
-                    `Error returned from the Patient Immunizations call:
-                        ${JSON.stringify(result.resultError)}`
-                );
-                errorStore.addError(
-                    ErrorType.Retrieve,
-                    ErrorSourceType.Immunization,
-                    result.resultError?.traceId
-                );
-            }
-        })
-        .catch((err: ResultError) => {
-            logger.error(err.resultMessage);
-            if (err.statusCode === 429) {
-                errorStore.setTooManyRequestsWarning("page");
-            } else {
-                errorStore.addError(
-                    ErrorType.Retrieve,
-                    ErrorSourceType.Immunization,
-                    err.traceId
-                );
-            }
-        })
-        .finally(() => {
-            isLoading.value = false;
-        });
+    immunizationStore.retrieveImmunizations(hdid);
 }
 
 function generateReport(
@@ -731,59 +673,6 @@ function setClinicalDocuments(records: ClinicalDocument[]): void {
     });
 }
 
-function setImmunizations(records: ImmunizationEvent[]): void {
-    immunizations.value = [...records].sort((a, b) => {
-        const firstDate = new DateWrapper(a.dateOfImmunization);
-        const secondDate = new DateWrapper(b.dateOfImmunization);
-
-        if (firstDate.isBefore(secondDate)) {
-            return 1;
-        }
-
-        if (firstDate.isAfter(secondDate)) {
-            return -1;
-        }
-
-        return 0;
-    });
-}
-
-function setRecommendations(records: Recommendation[]): void {
-    recommendations.value = records
-        .filter((x) => x.recommendedVaccinations)
-        .sort((a, b) => {
-            const firstDateEmpty =
-                a.agentDueDate === null || a.agentDueDate === undefined;
-            const secondDateEmpty =
-                b.agentDueDate === null || b.agentDueDate === undefined;
-
-            if (firstDateEmpty && secondDateEmpty) {
-                return 0;
-            }
-
-            if (firstDateEmpty) {
-                return -1;
-            }
-
-            if (secondDateEmpty) {
-                return 1;
-            }
-
-            const firstDate = new DateWrapper(a.agentDueDate);
-            const secondDate = new DateWrapper(b.agentDueDate);
-
-            if (firstDate.isBefore(secondDate)) {
-                return -1;
-            }
-
-            if (firstDate.isAfter(secondDate)) {
-                return 1;
-            }
-
-            return 0;
-        });
-}
-
 function sortEntries(): void {
     testRows.value.sort((a, b) => {
         const dateA = new DateWrapper(a.test.collectedDateTime);
@@ -864,9 +753,7 @@ watch(vaccineRecordState, () => {
             trackClickLink("Download Card", "Dependent Proof");
             res.blob().then((blob) => saveAs(blob, "VaccineProof.pdf"));
         });
-        vaccinationStatusStore.stopVaccineRecordDownload(
-            props.dependent.ownerId
-        );
+        vaccinationStatusStore.stopVaccineRecordDownload(dependentHdid.value);
     }
 });
 </script>
@@ -1227,13 +1114,8 @@ watch(vaccineRecordState, () => {
                                 </span>
                             </template>
                         </v-alert>
-                        <v-progress-circular
-                            v-if="isLoading"
-                            indeterminate
-                            class="ma-4"
-                        />
+
                         <div
-                            v-else
                             :data-testid="`immunization-tab-div-${dependent.ownerId}`"
                         >
                             <v-tabs
@@ -1243,7 +1125,13 @@ watch(vaccineRecordState, () => {
                                 <v-tab :key="1">History</v-tab>
                                 <v-tab :key="2">Forecasts</v-tab>
                             </v-tabs>
+                            <v-skeleton-loader
+                                v-if="areImmunizationsLoading"
+                                type="table-thead, table-row@2"
+                                data-testid="table-skeleton-loader"
+                            />
                             <v-window
+                                v-else
                                 v-model="immunizationTabIndex"
                                 class="pa-4"
                             >

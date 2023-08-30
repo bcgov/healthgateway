@@ -115,8 +115,8 @@ const saveExportPdfShown = computed(
 );
 const isHistoryLoading = computed(
     () =>
-        immunizationStore.immunizationsAreLoading(userStore.user.hdid) ||
-        immunizationStore.immunizationsAreDeferred(userStore.user.hdid)
+        immunizationStore.areImmunizationsLoading(userStore.user.hdid) ||
+        immunizationStore.areImmunizationsDeferred(userStore.user.hdid)
 );
 const isLoading = computed(
     () =>

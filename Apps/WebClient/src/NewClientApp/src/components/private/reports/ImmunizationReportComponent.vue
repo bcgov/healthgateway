@@ -98,8 +98,8 @@ const isRecommendationEmpty = computed(
 );
 const isLoading = computed(
     () =>
-        immunizationStore.immunizationsAreDeferred(props.hdid) ||
-        immunizationStore.immunizationsAreLoading(props.hdid)
+        immunizationStore.areImmunizationsDeferred(props.hdid) ||
+        immunizationStore.areImmunizationsLoading(props.hdid)
 );
 const visibleImmunizations = computed(() =>
     immunizationStore
