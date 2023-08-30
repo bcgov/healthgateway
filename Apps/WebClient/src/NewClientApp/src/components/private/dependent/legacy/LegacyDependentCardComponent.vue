@@ -9,7 +9,6 @@ import MessageModalComponent from "@/components/common/MessageModalComponent.vue
 import Covid19TestResultDescriptionComponent from "@/components/private/timeline/entry/Covid19TestResultDescriptionComponent.vue";
 import { EntryType } from "@/constants/entryType";
 import { ErrorSourceType, ErrorType } from "@/constants/errorType";
-import { ResultType } from "@/constants/resulttype";
 import { container } from "@/ioc/container";
 import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
 import { ClinicalDocument } from "@/models/clinicalDocument";
@@ -31,13 +30,14 @@ import { LoadStatus } from "@/models/storeOperations";
 import User from "@/models/user";
 import {
     IClinicalDocumentService,
-    IDependentService,
     ILaboratoryService,
     ILogger,
     IReportService,
 } from "@/services/interfaces";
+import { useClinicalDocumentStore } from "@/stores/clinicalDocument";
 import { useConfigStore } from "@/stores/config";
 import { useCovid19TestResultStore } from "@/stores/covid19TestResult";
+import { useDependentStore } from "@/stores/dependent";
 import { useErrorStore } from "@/stores/error";
 import { useImmunizationStore } from "@/stores/immunization";
 import { useLabResultStore } from "@/stores/labResult";
@@ -90,9 +90,6 @@ const clinicalDocumentService = container.get<IClinicalDocumentService>(
 const laboratoryService = container.get<ILaboratoryService>(
     SERVICE_IDENTIFIER.LaboratoryService
 );
-const dependentService = container.get<IDependentService>(
-    SERVICE_IDENTIFIER.DependentService
-);
 const userStore = useUserStore();
 const configStore = useConfigStore();
 const vaccinationStatusStore = useVaccinationStatusAuthenticatedStore();
@@ -100,14 +97,13 @@ const errorStore = useErrorStore();
 const immunizationStore = useImmunizationStore();
 const covid19TestResultStore = useCovid19TestResultStore();
 const labResultStore = useLabResultStore();
+const clinicalDocumentStore = useClinicalDocumentStore();
+const dependentStore = useDependentStore();
 
 const reportFormatType = ref(ReportFormatType.PDF);
 const csvFormatType = ref(ReportFormatType.CSV);
 const pdfFormatType = ref(ReportFormatType.PDF);
 const xlsxFormatType = ref(ReportFormatType.XLSX);
-const isLoading = ref(false);
-const clinicalDocuments = ref<ClinicalDocument[]>([]);
-const isClinicalDocumentsDataLoaded = ref(false);
 const isReport = ref(false);
 const isReportDownloading = ref(false);
 const selectedTabIndex = ref(0);
@@ -170,6 +166,12 @@ const labResults = computed(() =>
 const isClinicalDocumentTabShown = computed(() =>
     ConfigUtil.isDependentDatasetEnabled(EntryType.ClinicalDocument)
 );
+const areClinicalDocumentsLoading = computed(() =>
+    clinicalDocumentStore.areClinicalDocumentsLoading(dependentHdid.value)
+);
+const clinicalDocuments = computed(() =>
+    clinicalDocumentStore.clinicalDocuments(dependentHdid.value)
+);
 // Covid-19
 const isCovid19TabShown = computed(() =>
     ConfigUtil.isDependentDatasetEnabled(EntryType.Covid19TestResult)
@@ -231,24 +233,9 @@ const isDownloadImmunizationReportButtonDisabled = computed(() => {
 });
 
 function deleteDependent(): void {
-    isLoading.value = true;
-    dependentService
+    dependentStore
         .removeDependent(user.value.hdid, props.dependent)
-        .then(() => emit("needs-update"))
-        .catch((err: ResultError) => {
-            if (err.statusCode === 429) {
-                errorStore.setTooManyRequestsError("page");
-            } else {
-                errorStore.addError(
-                    ErrorType.Delete,
-                    ErrorSourceType.Dependent,
-                    err.traceId
-                );
-            }
-        })
-        .finally(() => {
-            isLoading.value = false;
-        });
+        .then(() => emit("needs-update"));
 }
 
 function downloadCovid19Report(): void {
@@ -447,46 +434,10 @@ function formatDate(date: StringISODate): string {
 }
 
 function fetchClinicalDocuments(): void {
-    const hdid = dependentHdid.value;
-    logger.debug(`Fetching Clinical Documents for Hdid: ${hdid}`);
-    if (isClinicalDocumentsDataLoaded.value) {
-        return;
-    }
-    isLoading.value = true;
-    clinicalDocumentService
-        .getRecords(hdid)
-        .then((result) => {
-            if (result.resultStatus == ResultType.Success) {
-                const payload = result.resourcePayload;
-                setClinicalDocuments(payload);
-                isClinicalDocumentsDataLoaded.value = true;
-            } else {
-                logger.error(
-                    `Error returned from the Clinical Documents call:
-                        ${JSON.stringify(result.resultError)}`
-                );
-                errorStore.addError(
-                    ErrorType.Retrieve,
-                    ErrorSourceType.ClinicalDocument,
-                    result.resultError?.traceId
-                );
-            }
-        })
-        .catch((err: ResultError) => {
-            logger.error(err.resultMessage);
-            if (err.statusCode === 429) {
-                errorStore.setTooManyRequestsWarning("page");
-            } else {
-                errorStore.addError(
-                    ErrorType.Retrieve,
-                    ErrorSourceType.ClinicalDocument,
-                    err.traceId
-                );
-            }
-        })
-        .finally(() => {
-            isLoading.value = false;
-        });
+    logger.debug(
+        `Fetching Clinical Documents for Hdid: ${dependentHdid.value}`
+    );
+    clinicalDocumentStore.retrieveClinicalDocuments(dependentHdid.value);
 }
 
 function fetchCovid19LaboratoryTests(): void {
@@ -560,23 +511,6 @@ function getOutcomeClasses(outcome: string): string[] {
         default:
             return ["text-muted"];
     }
-}
-
-function setClinicalDocuments(records: ClinicalDocument[]): void {
-    clinicalDocuments.value = [...records].sort((a, b) => {
-        const firstDate = new DateWrapper(a.serviceDate);
-        const secondDate = new DateWrapper(b.serviceDate);
-
-        if (firstDate.isBefore(secondDate)) {
-            return 1;
-        }
-
-        if (firstDate.isAfter(secondDate)) {
-            return -1;
-        }
-
-        return 0;
-    });
 }
 
 function showVaccineProofDownloadConfirmationModal(): void {
@@ -1438,10 +1372,10 @@ watch(vaccineRecordState, () => {
                         :data-testid="`clinical-document-tab-${dependent.ownerId}`"
                         class="pa-1"
                     >
-                        <v-progress-circular
-                            v-if="isLoading"
-                            indeterminate
-                            class="mt-3"
+                        <v-skeleton-loader
+                            v-if="areClinicalDocumentsLoading"
+                            type="table-thead, table-row@2"
+                            data-testid="table-skeleton-loader"
                         />
                         <div
                             v-else-if="clinicalDocuments.length === 0"

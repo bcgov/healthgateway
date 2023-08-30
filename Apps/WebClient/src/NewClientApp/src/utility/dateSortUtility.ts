@@ -64,4 +64,14 @@ export default class DateSortUtility {
 
         return firstDateEmpty ? 1 : -1;
     }
+
+    /**
+     * Sort comparison test to determine dates in ascending order. Using the DateWrapper class to handle the date comparison.
+     * undefined dates are sorted to the end of the list.
+     * @param aDate
+     * @param bDate
+     */
+    static ascendingByOptionalString(aDate?: string, bDate?: string): number {
+        return -1 * DateSortUtility.descendingByOptionalString(aDate, bDate);
+    }
 }
