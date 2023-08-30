@@ -25,10 +25,17 @@ const serviceTypeMap: Map<PatientDataType, ServiceName> = new Map<
     ],
 ]);
 
-const datasetTypeMap: Map<PatientDataType, EntryType> = new Map<
-    PatientDataType,
-    EntryType
->([[PatientDataType.DiagnosticImaging, EntryType.DiagnosticImaging]]);
+export const patientDataTypeToEntryTypeMap: Map<PatientDataType, EntryType> =
+    new Map<PatientDataType, EntryType>([
+        [PatientDataType.DiagnosticImaging, EntryType.DiagnosticImaging],
+        [PatientDataType.CancerScreening, EntryType.CancerScreening],
+    ]);
+
+export const entryTypeToPatientdataTypeMap: Map<EntryType, PatientDataType> =
+    new Map<EntryType, PatientDataType>([
+        [EntryType.DiagnosticImaging, PatientDataType.DiagnosticImaging],
+        [EntryType.CancerScreening, PatientDataType.CancerScreening],
+    ]);
 
 export class RestPatientDataService implements IPatientDataService {
     private readonly BASE_URI = "PatientData";
@@ -88,7 +95,8 @@ export class RestPatientDataService implements IPatientDataService {
     private canProcessRequest(patientDataTypes: PatientDataType[]) {
         for (const patientDataType of patientDataTypes) {
             const serviceName = serviceTypeMap.get(patientDataType);
-            const datasetName = datasetTypeMap.get(patientDataType);
+            const datasetName =
+                patientDataTypeToEntryTypeMap.get(patientDataType);
 
             if (serviceName && !ConfigUtil.isServiceEnabled(serviceName)) {
                 throw {
