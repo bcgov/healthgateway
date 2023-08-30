@@ -10,7 +10,7 @@ resources:
 - repo: self
 
 variables:
-  tag: "$(Build.BuildNumber)"
+  tag: '$(Build.BuildNumber)'
 
 stages:
 - stage: Build
@@ -25,7 +25,7 @@ stages:
       displayName: Build Azure Agent
       inputs:
         command: 'buildAndPush'
-        repository: $(DockerRepo)/azure-agent
+        repository: '$(DockerRepo)/azure-agent'
         buildContext: '$(Build.SourcesDirectory)/Tools/AzureAgent'
         dockerfile: '$(Build.SourcesDirectory)/Tools/AzureAgent/docker/Dockerfile'
         tags: |
