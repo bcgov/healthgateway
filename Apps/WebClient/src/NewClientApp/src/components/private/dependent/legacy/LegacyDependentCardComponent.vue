@@ -44,6 +44,7 @@ import { useLabResultStore } from "@/stores/labResult";
 import { useUserStore } from "@/stores/user";
 import { useVaccinationStatusAuthenticatedStore } from "@/stores/vaccinationStatusAuthenticated";
 import ConfigUtil from "@/utility/configUtil";
+import DateSortUtility from "@/utility/dateSortUtility";
 import SnowPlow from "@/utility/snowPlow";
 
 interface Props {
@@ -160,7 +161,14 @@ const areLabResultsLoading = computed(() =>
     labResultStore.areLabResultsLoading(dependentHdid.value)
 );
 const labResults = computed(() =>
-    labResultStore.labResults(dependentHdid.value)
+    labResultStore
+        .labResults(dependentHdid.value)
+        .sort((a, b) =>
+            DateSortUtility.descendingByString(
+                a.timelineDateTime,
+                b.timelineDateTime
+            )
+        )
 );
 // Clinical Documents
 const isClinicalDocumentTabShown = computed(() =>
@@ -170,7 +178,11 @@ const areClinicalDocumentsLoading = computed(() =>
     clinicalDocumentStore.areClinicalDocumentsLoading(dependentHdid.value)
 );
 const clinicalDocuments = computed(() =>
-    clinicalDocumentStore.clinicalDocuments(dependentHdid.value)
+    clinicalDocumentStore
+        .clinicalDocuments(dependentHdid.value)
+        .sort((a, b) =>
+            DateSortUtility.descendingByString(a.serviceDate, b.serviceDate)
+        )
 );
 // Covid-19
 const isCovid19TabShown = computed(() =>

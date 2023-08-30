@@ -583,7 +583,7 @@ describe("Dependents - Clinical Document Tab - Enabled", () => {
             .find("tr")
             .should("have.length", 3);
 
-        // Verify forecast table has been sorted by due date descending
+        // Verify document table has been sorted by due date descending
         cy.get(
             `[data-testid=clinical-document-service-date-${dependentHdid}-0]`
         ).then(($dateItem) => {
