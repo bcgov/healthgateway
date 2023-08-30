@@ -19,7 +19,11 @@ import type { Dependent } from "@/models/dependent";
 import EncodedMedia from "@/models/encodedMedia";
 import { ResultError } from "@/models/errors";
 import { ImmunizationAgent } from "@/models/immunizationModel";
-import { Covid19LaboratoryTest, LaboratoryOrder } from "@/models/laboratory";
+import {
+    Covid19LaboratoryOrder,
+    Covid19LaboratoryTest,
+    LaboratoryOrder,
+} from "@/models/laboratory";
 import Report from "@/models/report";
 import ReportHeader from "@/models/reportHeader";
 import { ReportFormatType, TemplateType } from "@/models/reportRequest";
@@ -34,6 +38,7 @@ import {
     IReportService,
 } from "@/services/interfaces";
 import { useConfigStore } from "@/stores/config";
+import { useCovid19TestResultStore } from "@/stores/covid19TestResult";
 import { useErrorStore } from "@/stores/error";
 import { useImmunizationStore } from "@/stores/immunization";
 import { useUserStore } from "@/stores/user";
@@ -93,6 +98,7 @@ const configStore = useConfigStore();
 const vaccinationStatusStore = useVaccinationStatusAuthenticatedStore();
 const errorStore = useErrorStore();
 const immunizationStore = useImmunizationStore();
+const covid19TestResultStore = useCovid19TestResultStore();
 
 const reportFormatType = ref(ReportFormatType.PDF);
 const csvFormatType = ref(ReportFormatType.CSV);
@@ -101,8 +107,6 @@ const xlsxFormatType = ref(ReportFormatType.XLSX);
 const isLoading = ref(false);
 const laboratoryOrders = ref<LaboratoryOrder[]>([]);
 const clinicalDocuments = ref<ClinicalDocument[]>([]);
-const testRows = ref<Covid19LaboratoryTestRow[]>([]);
-const isCovid19DataLoading = ref(false);
 const isLaboratoryOrdersDataLoaded = ref(false);
 const isClinicalDocumentsDataLoaded = ref(false);
 const isReport = ref(false);
@@ -153,14 +157,30 @@ const isExpired = computed(() => {
         webClientConfig.value.maxDependentAge
     );
 });
-const isCovid19TabShown = computed(() =>
-    ConfigUtil.isDependentDatasetEnabled(EntryType.Covid19TestResult)
-);
 const isLaboratoryOrderTabShown = computed(() =>
     ConfigUtil.isDependentDatasetEnabled(EntryType.LabResult)
 );
 const isClinicalDocumentTabShown = computed(() =>
     ConfigUtil.isDependentDatasetEnabled(EntryType.ClinicalDocument)
+);
+// Covid-19
+const isCovid19TabShown = computed(() =>
+    ConfigUtil.isDependentDatasetEnabled(EntryType.Covid19TestResult)
+);
+const areCovid19TestsLoading = computed(() =>
+    covid19TestResultStore.areCovid19TestResultsLoading(dependentHdid.value)
+);
+const covid19TestResultRows = computed(
+    () =>
+        covid19TestResultStore
+            .covid19TestResults(dependentHdid.value)
+            .flatMap((o: Covid19LaboratoryOrder) =>
+                o.labResults.map((r) => ({
+                    id: o.id,
+                    reportAvailable: o.reportAvailable,
+                    test: r,
+                }))
+            ) ?? []
 );
 
 // Immunizations
@@ -467,62 +487,7 @@ function fetchCovid19LaboratoryTests(): void {
     logger.debug(
         `Fetching COVID 19 Laboratory Tests for Hdid: ${dependentHdid.value}`
     );
-    if (isCovid19DataLoading.value) {
-        return;
-    }
-    isLoading.value = true;
-    laboratoryService
-        .getCovid19LaboratoryOrders(dependentHdid.value)
-        .then((result) => {
-            const payload = result.resourcePayload;
-            if (result.resultStatus == ResultType.Success) {
-                testRows.value =
-                    payload.orders.flatMap<Covid19LaboratoryTestRow>((o) =>
-                        o.labResults.map<Covid19LaboratoryTestRow>((r) => ({
-                            id: o.id,
-                            reportAvailable: o.reportAvailable,
-                            test: r,
-                        }))
-                    );
-                sortEntries();
-                isCovid19DataLoading.value = true;
-            } else if (
-                result.resultError?.actionCode === ActionType.Refresh &&
-                !payload.loaded &&
-                payload.retryin > 0
-            ) {
-                logger.info("Re-querying for COVID-19 Laboratory Orders");
-                setTimeout(
-                    () => fetchCovid19LaboratoryTests(),
-                    payload.retryin
-                );
-            } else {
-                logger.error(
-                    "Error returned from the COVID-19 Laboratory Orders call: " +
-                        JSON.stringify(result.resultError)
-                );
-                errorStore.addError(
-                    ErrorType.Retrieve,
-                    ErrorSourceType.Covid19Laboratory,
-                    result.resultError?.traceId
-                );
-            }
-        })
-        .catch((err: ResultError) => {
-            logger.error(err.resultMessage);
-            if (err.statusCode === 429) {
-                errorStore.setTooManyRequestsWarning("page");
-            } else {
-                errorStore.addError(
-                    ErrorType.Retrieve,
-                    ErrorSourceType.Covid19Laboratory,
-                    err.traceId
-                );
-            }
-        })
-        .finally(() => {
-            isLoading.value = false;
-        });
+    covid19TestResultStore.retrieveCovid19TestResults(dependentHdid.value);
 }
 
 function fetchLaboratoryOrders(): void {
@@ -669,20 +634,6 @@ function setClinicalDocuments(records: ClinicalDocument[]): void {
             return -1;
         }
 
-        return 0;
-    });
-}
-
-function sortEntries(): void {
-    testRows.value.sort((a, b) => {
-        const dateA = new DateWrapper(a.test.collectedDateTime);
-        const dateB = new DateWrapper(b.test.collectedDateTime);
-        if (dateA.isBefore(dateB)) {
-            return 1;
-        }
-        if (dateA.isAfter(dateB)) {
-            return -1;
-        }
         return 0;
     });
 }
@@ -931,10 +882,14 @@ watch(vaccineRecordState, () => {
                         >
                             COVID-19 Test Results
                         </p>
-                        <v-progress-circular v-if="isLoading" indeterminate />
+                        <v-skeleton-loader
+                            v-if="areCovid19TestsLoading"
+                            type="table-thead, table-row@2"
+                            data-testid="table-skeleton-loader"
+                        />
                         <template v-else>
                             <p
-                                v-if="testRows.length === 0"
+                                v-if="covid19TestResultRows.length === 0"
                                 data-testid="covid19NoRecords"
                                 class="text-body-2"
                             >
@@ -973,7 +928,9 @@ watch(vaccineRecordState, () => {
                                 </thead>
                                 <tbody>
                                     <tr
-                                        v-for="(row, index) in testRows"
+                                        v-for="(
+                                            row, index
+                                        ) in covid19TestResultRows"
                                         :key="index"
                                     >
                                         <td
