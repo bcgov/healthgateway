@@ -7,7 +7,6 @@ import HgIconButtonComponent from "@/components/common/HgIconButtonComponent.vue
 import LoadingComponent from "@/components/common/LoadingComponent.vue";
 import MessageModalComponent from "@/components/common/MessageModalComponent.vue";
 import Covid19TestResultDescriptionComponent from "@/components/private/timeline/entry/Covid19TestResultDescriptionComponent.vue";
-import { ActionType } from "@/constants/actionType";
 import { EntryType } from "@/constants/entryType";
 import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import { ResultType } from "@/constants/resulttype";
@@ -41,6 +40,7 @@ import { useConfigStore } from "@/stores/config";
 import { useCovid19TestResultStore } from "@/stores/covid19TestResult";
 import { useErrorStore } from "@/stores/error";
 import { useImmunizationStore } from "@/stores/immunization";
+import { useLabResultStore } from "@/stores/labResult";
 import { useUserStore } from "@/stores/user";
 import { useVaccinationStatusAuthenticatedStore } from "@/stores/vaccinationStatusAuthenticated";
 import ConfigUtil from "@/utility/configUtil";
@@ -99,15 +99,14 @@ const vaccinationStatusStore = useVaccinationStatusAuthenticatedStore();
 const errorStore = useErrorStore();
 const immunizationStore = useImmunizationStore();
 const covid19TestResultStore = useCovid19TestResultStore();
+const labResultStore = useLabResultStore();
 
 const reportFormatType = ref(ReportFormatType.PDF);
 const csvFormatType = ref(ReportFormatType.CSV);
 const pdfFormatType = ref(ReportFormatType.PDF);
 const xlsxFormatType = ref(ReportFormatType.XLSX);
 const isLoading = ref(false);
-const laboratoryOrders = ref<LaboratoryOrder[]>([]);
 const clinicalDocuments = ref<ClinicalDocument[]>([]);
-const isLaboratoryOrdersDataLoaded = ref(false);
 const isClinicalDocumentsDataLoaded = ref(false);
 const isReport = ref(false);
 const isReportDownloading = ref(false);
@@ -157,9 +156,17 @@ const isExpired = computed(() => {
         webClientConfig.value.maxDependentAge
     );
 });
+// Lab Results
 const isLaboratoryOrderTabShown = computed(() =>
     ConfigUtil.isDependentDatasetEnabled(EntryType.LabResult)
 );
+const areLabResultsLoading = computed(() =>
+    labResultStore.areLabResultsLoading(dependentHdid.value)
+);
+const labResults = computed(() =>
+    labResultStore.labResults(dependentHdid.value)
+);
+// Clinical Documents
 const isClinicalDocumentTabShown = computed(() =>
     ConfigUtil.isDependentDatasetEnabled(EntryType.ClinicalDocument)
 );
@@ -182,7 +189,6 @@ const covid19TestResultRows = computed(
                 }))
             ) ?? []
 );
-
 // Immunizations
 const isImmunizationTabShown = computed(() =>
     ConfigUtil.isDependentDatasetEnabled(EntryType.Immunization)
@@ -492,51 +498,7 @@ function fetchCovid19LaboratoryTests(): void {
 
 function fetchLaboratoryOrders(): void {
     logger.debug(`Fetching Lab Results for Hdid: ${dependentHdid.value}`);
-    if (isLaboratoryOrdersDataLoaded.value) {
-        return;
-    }
-    isLoading.value = true;
-    laboratoryService
-        .getLaboratoryOrders(dependentHdid.value)
-        .then((result) => {
-            const payload = result.resourcePayload;
-            if (result.resultStatus == ResultType.Success) {
-                setLaboratoryOrders(payload.orders);
-                isLaboratoryOrdersDataLoaded.value = true;
-                isLoading.value = false;
-            } else if (
-                result.resultError?.actionCode === ActionType.Refresh &&
-                !payload.loaded &&
-                payload.retryin > 0
-            ) {
-                logger.info("Re-querying for Laboratory Orders");
-                setTimeout(() => fetchLaboratoryOrders(), payload.retryin);
-            } else {
-                logger.error(
-                    "Error returned from the Laboratory Orders call: " +
-                        JSON.stringify(result.resultError)
-                );
-                errorStore.addError(
-                    ErrorType.Retrieve,
-                    ErrorSourceType.Laboratory,
-                    result.resultError?.traceId
-                );
-                isLoading.value = false;
-            }
-        })
-        .catch((err: ResultError) => {
-            logger.error(err.resultMessage);
-            if (err.statusCode === 429) {
-                errorStore.setTooManyRequestsWarning("page");
-            } else {
-                errorStore.addError(
-                    ErrorType.Retrieve,
-                    ErrorSourceType.Laboratory,
-                    err.traceId
-                );
-            }
-            isLoading.value = false;
-        });
+    labResultStore.retrieveLabResults(dependentHdid.value);
 }
 
 function fetchPatientImmunizations(): void {
@@ -598,27 +560,6 @@ function getOutcomeClasses(outcome: string): string[] {
         default:
             return ["text-muted"];
     }
-}
-
-function setLaboratoryOrders(records: LaboratoryOrder[]): void {
-    laboratoryOrders.value = [...records].sort((a, b) => {
-        const firstDate = new DateWrapper(a.timelineDateTime, {
-            hasTime: true,
-        });
-        const secondDate = new DateWrapper(b.timelineDateTime, {
-            hasTime: true,
-        });
-
-        if (firstDate.isBefore(secondDate)) {
-            return 1;
-        }
-
-        if (firstDate.isAfter(secondDate)) {
-            return -1;
-        }
-
-        return 0;
-    });
 }
 
 function setClinicalDocuments(records: ClinicalDocument[]): void {
@@ -1401,13 +1342,13 @@ watch(vaccineRecordState, () => {
                         :data-testid="`lab-results-tab-${dependent.ownerId}`"
                         class="pa-1"
                     >
-                        <v-progress-circular
-                            v-if="isLoading"
-                            indeterminate
-                            class="mt-3"
+                        <v-skeleton-loader
+                            v-if="areLabResultsLoading"
+                            type="table-thead, table-row@2"
+                            data-testid="table-skeleton-loader"
                         />
                         <div
-                            v-else-if="laboratoryOrders.length === 0"
+                            v-else-if="labResults.length === 0"
                             :data-testid="`lab-results-no-records-${dependent.ownerId}`"
                             class="text-body-1"
                         >
@@ -1447,7 +1388,7 @@ watch(vaccineRecordState, () => {
                             </thead>
                             <tbody>
                                 <tr
-                                    v-for="(row, index) in laboratoryOrders"
+                                    v-for="(row, index) in labResults"
                                     :key="index"
                                 >
                                     <td
