@@ -1,0 +1,28 @@
+name: 1.0.0$(Rev:.r) #Build number
+
+#Build variables
+variables:
+  App.Home: $(Build.SourcesDirectory)/Tools/Base/
+  App.Name: dotnet22-base
+
+pr: none
+
+trigger:
+  batch: "true"
+  paths:
+    include:
+      - Tools/AzureAgent
+
+pool:
+  name: "HealthGateway"
+
+steps:
+- task: Docker@2
+  displayName: Build Azure Agent
+  inputs:
+    command: 'buildAndPush'
+    repository: $(DockerRepo)/azure-agent
+    buildContext: '$(Build.SourcesDirectory)/Tools/AzureAgent'
+    dockerfile: '$(Build.SourcesDirectory)/Tools/AzureAgent/docker/Dockerfile'
+    tags: |
+      latest
