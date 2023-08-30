@@ -333,7 +333,7 @@ describe("Filters", () => {
         testFiltering(
             "[data-testid=CancerScreening-filter]",
             "[data-testid=cancerscreeningTitle]",
-            ["BC Cancer"]
+            ["BC Cancer Results"]
         );
     });
 

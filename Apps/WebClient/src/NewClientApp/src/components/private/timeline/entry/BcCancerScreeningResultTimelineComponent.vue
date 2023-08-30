@@ -83,12 +83,12 @@ function downloadFile(): void {
         <p class="text-body-1 mb-3">
             For information about your results, you can contact
             <a
-                href="http://www.bccancer.bc.ca/"
+                href="http://www.bccancer.bc.ca/contact"
                 target="_blank"
                 rel="noopener"
                 class="text-link"
                 >BC Cancer</a
-            >
+            >.
         </p>
         <HgButtonComponent
             v-if="hasFile"

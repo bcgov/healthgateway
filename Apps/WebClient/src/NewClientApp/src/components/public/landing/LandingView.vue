@@ -29,9 +29,10 @@ const datasetEntryTypes: EntryType[] = [
     EntryType.ClinicalDocument,
     EntryType.HospitalVisit,
     EntryType.DiagnosticImaging,
+    EntryType.CancerScreening,
 ];
 
-const serviceEntryTypes: EntryType[] = [EntryType.CancerScreening];
+const serviceEntryTypes: EntryType[] = [];
 
 const configStore = useConfigStore();
 const authStore = useAuthStore();

@@ -350,6 +350,11 @@ const isOnlyDiagnosticImagingSelected = computed(
         selectedEntryTypes.value.size === 1 &&
         selectedEntryTypes.value.has(EntryType.DiagnosticImaging)
 );
+const isOnlyCancerScreeningSelected = computed(
+    () =>
+        selectedEntryTypes.value.size === 1 &&
+        selectedEntryTypes.value.has(EntryType.CancerScreening)
+);
 const recordCountMessage = computed(() =>
     filteredTimelineEntries.value.length === 1
         ? "Displaying 1 out of 1 records"
@@ -687,6 +692,24 @@ setPageFromDate(linearDate.value);
                 Most reports are available 10-14 days after your procedure.
                 <a
                     href="https://www2.gov.bc.ca/gov/content/health/managing-your-health/health-gateway/guide#medicalimaging"
+                    target="_blank"
+                    rel="noopener"
+                    class="text-link"
+                    >Learn more</a
+                >.
+            </v-alert>
+            <v-alert
+                v-else-if="isOnlyCancerScreeningSelected"
+                type="info"
+                data-testid="linear-timeline-cancer-screening-disclaimer"
+                class="d-print-none mb-4"
+                closable
+                variant="outlined"
+                border
+            >
+                Only results from screening tests are available.
+                <a
+                    href="http://www.bccancer.bc.ca/screening"
                     target="_blank"
                     rel="noopener"
                     class="text-link"

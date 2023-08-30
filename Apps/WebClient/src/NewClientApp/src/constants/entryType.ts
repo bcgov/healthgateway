@@ -163,8 +163,9 @@ entryTypeMap.set(EntryType.DiagnosticImaging, {
 entryTypeMap.set(EntryType.CancerScreening, {
     type: EntryType.CancerScreening,
     commentType: CommentEntryType.CancerScreening,
-    name: "BC Cancer",
-    description: "MANDAD TO SUPPLY DESCRIPTION",
+    name: "BC Cancer Results",
+    description:
+        "View and download your results as soon as they are available.",
     icon: "ribbon",
     component: "BcCancerScreeningResultTimelineComponent",
     eventName: "bc_cancer_screening",

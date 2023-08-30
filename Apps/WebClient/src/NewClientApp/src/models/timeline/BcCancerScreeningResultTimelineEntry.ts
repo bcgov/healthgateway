@@ -24,7 +24,7 @@ export default class BcCancerScreeningResultTimelineEntry extends TimelineEntry 
             new DateWrapper(model.resultTimestamp)
         );
 
-        this.title = "BC Cancer";
+        this.title = "BC Cancer Result";
         this.documentType = "Screening results";
         this.programName = model.programName;
         this.fileId = model.fileId;
