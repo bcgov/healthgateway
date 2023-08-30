@@ -93,18 +93,18 @@ const dateRefs = ref(new Map<string, Element | null>());
 const clinicalDocuments = computed(() =>
     clinicalDocumentStore.clinicalDocuments(props.hdid)
 );
-const clinicalDocumentsAreLoading = computed(() =>
-    clinicalDocumentStore.clinicalDocumentsAreLoading(props.hdid)
+const areClinicalDocumentsLoading = computed(() =>
+    clinicalDocumentStore.areClinicalDocumentsLoading(props.hdid)
 );
 const healthVisits = computed(() => healthVisitStore.healthVisits(props.hdid));
-const healthVisitsAreLoading = computed(() =>
-    healthVisitStore.healthVisitsAreLoading(props.hdid)
+const areHealthVisitsLoading = computed(() =>
+    healthVisitStore.areHealthVisitsLoading(props.hdid)
 );
 const hospitalVisits = computed(() =>
     hospitalVisitStore.hospitalVisits(props.hdid)
 );
-const hospitalVisitsAreLoading = computed(() =>
-    hospitalVisitStore.hospitalVisitsAreLoading(props.hdid)
+const areHospitalVisitsLoading = computed(() =>
+    hospitalVisitStore.areHospitalVisitsLoading(props.hdid)
 );
 const immunizations = computed(() =>
     immunizationStore.immunizations(props.hdid)
@@ -118,34 +118,34 @@ const areImmunizationsDeferred = computed(() =>
 const covid19TestResults = computed(() =>
     covid19TestResultStore.covid19TestResults(props.hdid)
 );
-const covid19TestResultsAreLoading = computed(() =>
-    covid19TestResultStore.covid19TestResultsAreLoading(props.hdid)
+const areCovid19TestResultsLoading = computed(() =>
+    covid19TestResultStore.areCovid19TestResultsLoading(props.hdid)
 );
 const labResults = computed(() => labResultStore.labResults(props.hdid));
-const labResultsAreLoading = computed(() =>
-    labResultStore.labResultsAreLoading(props.hdid)
+const areLabResultsLoading = computed(() =>
+    labResultStore.areLabResultsLoading(props.hdid)
 );
-const labResultsAreQueued = computed(() =>
-    labResultStore.labResultsAreQueued(props.hdid)
+const areLabResultsQueued = computed(() =>
+    labResultStore.areLabResultsQueued(props.hdid)
 );
 const medications = computed(() => medicationStore.medications(props.hdid));
-const medicationsAreLoading = computed(() =>
-    medicationStore.medicationsAreLoading(props.hdid)
+const areMedicationsLoading = computed(() =>
+    medicationStore.areMedicationsLoading(props.hdid)
 );
 const specialAuthorityRequests = computed(() =>
     specialAuthorityRequestStore.specialAuthorityRequests(props.hdid)
 );
-const specialAuthorityRequestsAreLoading = computed(() =>
-    specialAuthorityRequestStore.specialAuthorityRequestsAreLoading(props.hdid)
+const areSpecialAuthorityRequestsLoading = computed(() =>
+    specialAuthorityRequestStore.areSpecialAuthorityRequestsLoading(props.hdid)
 );
 const userNotes = computed(() => noteStore.notes);
-const notesAreLoading = computed(() => noteStore.notesAreLoading);
+const areNotesLoading = computed(() => noteStore.areNotesLoading);
 const patientData = computed(() => patientDataStore.patientData);
-const patientDataAreLoading = computed(() =>
-    patientDataStore.patientDataAreLoading(props.hdid)
+const arePatientDataLoading = computed(() =>
+    patientDataStore.arePatientDataLoading(props.hdid)
 );
 const getEntryComments = computed(() => commentStore.getEntryComments);
-const commentsAreLoading = computed(() => commentStore.commentsAreLoading);
+const areCommentsLoading = computed(() => commentStore.areCommentsLoading);
 const selectedEntryTypes = computed(() => timelineStore.selectedEntryTypes);
 const filter = computed(() => timelineStore.filter);
 const hasActiveFilter = computed(() => timelineStore.hasActiveFilter);
@@ -291,20 +291,20 @@ const dateGroups = computed(() => {
 
     return DateGroup.sortGroups(newGroupArray);
 });
-const selectedDatasetsAreLoading = computed(() => {
+const areSelectedDatasetsLoading = computed(() => {
     return props.entryTypes.some(
         (entryType) =>
             selectedEntryTypes.value.has(entryType) &&
-            datasetIsLoading(entryType)
+            isDatasetLoading(entryType)
     );
 });
 const isFullyLoaded = computed(() => {
     const loadingDatasets = props.entryTypes.some((entryType) =>
-        datasetIsLoading(entryType)
+        isDatasetLoading(entryType)
     );
 
     const loadingComments =
-        props.commentsAreEnabled && commentsAreLoading.value;
+        props.commentsAreEnabled && areCommentsLoading.value;
 
     const loadingMoreImmunizations =
         props.entryTypes.includes(EntryType.Immunization) &&
@@ -367,28 +367,28 @@ function clearFilters(): void {
     timelineStore.setFilter(TimelineFilterBuilder.create());
 }
 
-function datasetIsLoading(entryType: EntryType): boolean {
+function isDatasetLoading(entryType: EntryType): boolean {
     switch (entryType) {
         case EntryType.ClinicalDocument:
-            return clinicalDocumentsAreLoading.value;
+            return areClinicalDocumentsLoading.value;
         case EntryType.Covid19TestResult:
-            return covid19TestResultsAreLoading.value;
+            return areCovid19TestResultsLoading.value;
         case EntryType.HealthVisit:
-            return healthVisitsAreLoading.value;
+            return areHealthVisitsLoading.value;
         case EntryType.HospitalVisit:
-            return hospitalVisitsAreLoading.value;
+            return areHospitalVisitsLoading.value;
         case EntryType.Immunization:
             return areImmunizationsLoading.value;
         case EntryType.LabResult:
-            return labResultsAreLoading.value;
+            return areLabResultsLoading.value;
         case EntryType.Medication:
-            return medicationsAreLoading.value;
+            return areMedicationsLoading.value;
         case EntryType.Note:
-            return notesAreLoading.value;
+            return areNotesLoading.value;
         case EntryType.SpecialAuthorityRequest:
-            return specialAuthorityRequestsAreLoading.value;
+            return areSpecialAuthorityRequestsLoading.value;
         case EntryType.DiagnosticImaging:
-            return patientDataAreLoading.value;
+            return arePatientDataLoading.value;
         default:
             throw new Error(`Unknown dataset "${entryType}"`);
     }
@@ -544,7 +544,7 @@ setPageFromDate(linearDate.value);
 <template>
     <div>
         <v-alert
-            v-if="labResultsAreQueued"
+            v-if="areLabResultsQueued"
             type="info"
             data-testid="laboratory-orders-queued-alert-message"
             class="d-print-none mb-4"
@@ -675,7 +675,7 @@ setPageFromDate(linearDate.value);
         <v-skeleton-loader
             v-if="
                 selectedEntryTypes.size > 0
-                    ? selectedDatasetsAreLoading
+                    ? areSelectedDatasetsLoading
                     : !isFullyLoaded && filteredTimelineEntries.length === 0
             "
             data-testid="content-placeholders"
@@ -694,7 +694,7 @@ setPageFromDate(linearDate.value);
         <div
             v-if="
                 filteredTimelineEntries.length === 0 &&
-                !selectedDatasetsAreLoading &&
+                !areSelectedDatasetsLoading &&
                 isFullyLoaded
             "
             class="d-flex flex-column align-center mb-4"

@@ -29,7 +29,7 @@ export const useCommentStore = defineStore("comment", () => {
     const statusMessage = ref("");
     const error = ref<ResultError>();
 
-    const commentsAreLoading = computed(
+    const areCommentsLoading = computed(
         () => status.value === LoadStatus.REQUESTED
     );
 
@@ -185,7 +185,7 @@ export const useCommentStore = defineStore("comment", () => {
 
     return {
         comments,
-        commentsAreLoading,
+        areCommentsLoading,
         getEntryComments,
         entryHasComments,
         retrieveComments,

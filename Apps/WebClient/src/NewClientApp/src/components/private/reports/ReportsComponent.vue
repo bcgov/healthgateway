@@ -85,7 +85,7 @@ const reportComponent = ref<{
 }>();
 
 const labResultsAreQueued = computed(() =>
-    labResultsStore.labResultsAreQueued(props.hdid)
+    labResultsStore.areLabResultsQueued(props.hdid)
 );
 const medications = computed(() => medicationStore.medications(props.hdid));
 const patient = computed(() => userStore.patient);

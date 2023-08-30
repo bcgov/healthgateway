@@ -77,8 +77,8 @@ const fields: ReportField[] = [
 const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
 const specialAuthorityStore = useSpecialAuthorityRequestStore();
 
-const specialAuthorityRequestsAreLoading = computed(() =>
-    specialAuthorityStore.specialAuthorityRequestsAreLoading(props.hdid)
+const areSpecialAuthorityRequestsLoading = computed(() =>
+    specialAuthorityStore.areSpecialAuthorityRequestsLoading(props.hdid)
 );
 const isEmpty = computed(() => visibleRecords.value.length === 0);
 const visibleRecords = computed(() =>
@@ -132,14 +132,14 @@ function generateReport(
 }
 
 function onIsLoadingChanged(): void {
-    emit("on-is-loading-changed", specialAuthorityRequestsAreLoading.value);
+    emit("on-is-loading-changed", areSpecialAuthorityRequestsLoading.value);
 }
 
 function onIsEmptyChanged(): void {
     emit("on-is-empty-changed", isEmpty.value);
 }
 
-watch(specialAuthorityRequestsAreLoading, () => {
+watch(areSpecialAuthorityRequestsLoading, () => {
     onIsLoadingChanged();
 });
 
@@ -162,13 +162,13 @@ specialAuthorityStore
 <template>
     <div>
         <section>
-            <v-row v-if="isEmpty && !specialAuthorityRequestsAreLoading">
+            <v-row v-if="isEmpty && !areSpecialAuthorityRequestsLoading">
                 <v-col>No records found.</v-col>
             </v-row>
             <HgDataTableComponent
                 v-else-if="!isDependent"
                 class="d-none d-md-block"
-                :loading="specialAuthorityRequestsAreLoading"
+                :loading="areSpecialAuthorityRequestsLoading"
                 :items="items"
                 :fields="fields"
                 density="compact"

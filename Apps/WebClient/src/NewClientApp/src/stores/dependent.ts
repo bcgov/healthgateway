@@ -30,7 +30,7 @@ export const useDependentStore = defineStore("dependent", () => {
     const statusMessage = ref("");
     const error = ref<ResultError>();
 
-    const dependentsAreLoading = computed(
+    const areDependentsLoading = computed(
         () => status.value === LoadStatus.REQUESTED
     );
 
@@ -121,7 +121,7 @@ export const useDependentStore = defineStore("dependent", () => {
 
     return {
         dependents,
-        dependentsAreLoading,
+        areDependentsLoading,
         retrieveDependents,
         removeDependent,
     };

@@ -26,8 +26,8 @@ const userStore = useUserStore();
 
 const webClientConfig = computed(() => configStore.webConfig);
 const dependents = computed(() => dependentStore.dependents);
-const dependentsAreLoading = computed(
-    () => dependentStore.dependentsAreLoading
+const areDependentsLoading = computed(
+    () => dependentStore.areDependentsLoading
 );
 
 function retrieveDependents(hdid: string, bypassCache: boolean): Promise<void> {
@@ -43,7 +43,7 @@ retrieveDependents(userStore.hdid, false);
 
 <template>
     <BreadcrumbComponent :items="breadcrumbItems" />
-    <LoadingComponent :is-loading="dependentsAreLoading" />
+    <LoadingComponent :is-loading="areDependentsLoading" />
     <PageTitleComponent title="Dependents">
         <template #append>
             <AddDependentComponent @handle-submit="refreshDependents" />

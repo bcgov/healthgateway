@@ -24,12 +24,12 @@ const medicationStore = useMedicationStore();
 const protectiveWord = ref("");
 const isClosed = ref(false);
 
-const medicationsAreLoading = computed(() =>
-    medicationStore.medicationsAreLoading(props.hdid)
+const areMedicationsLoading = computed(() =>
+    medicationStore.areMedicationsLoading(props.hdid)
 );
 
-const medicationsAreProtected = computed(() =>
-    medicationStore.medicationsAreProtected(props.hdid)
+const areMedicationsProtected = computed(() =>
+    medicationStore.areMedicationsProtected(props.hdid)
 );
 
 const protectiveWordAttempts = computed(() =>
@@ -45,8 +45,8 @@ const errorMessages = computed(() =>
 const isVisible = computed(
     () =>
         !isClosed.value &&
-        medicationsAreProtected.value &&
-        !medicationsAreLoading.value
+        areMedicationsProtected.value &&
+        !areMedicationsLoading.value
 );
 
 function handleOk(): void {

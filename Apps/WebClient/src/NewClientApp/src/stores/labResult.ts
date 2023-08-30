@@ -49,11 +49,11 @@ export const useLabResultStore = defineStore("labResult", () => {
         return labResults(hdid).length;
     }
 
-    function labResultsAreLoading(hdid: string): boolean {
+    function areLabResultsLoading(hdid: string): boolean {
         return getLabResultState(hdid).status === LoadStatus.REQUESTED;
     }
 
-    function labResultsAreQueued(hdid: string): boolean {
+    function areLabResultsQueued(hdid: string): boolean {
         return getLabResultState(hdid).queued;
     }
 
@@ -163,8 +163,8 @@ export const useLabResultStore = defineStore("labResult", () => {
     return {
         labResults,
         labResultsCount,
-        labResultsAreLoading,
-        labResultsAreQueued,
+        areLabResultsLoading: areLabResultsLoading,
+        areLabResultsQueued: areLabResultsQueued,
         retrieveLabResults,
     };
 });

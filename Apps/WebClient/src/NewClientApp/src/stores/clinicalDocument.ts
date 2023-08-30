@@ -54,7 +54,7 @@ export const useClinicalDocumentStore = defineStore("clinicalDocument", () => {
         return getClinicalDocumentState(hdid).data;
     }
 
-    function clinicalDocumentsAreLoading(hdid: string): boolean {
+    function areClinicalDocumentsLoading(hdid: string): boolean {
         return getClinicalDocumentState(hdid).status === LoadStatus.REQUESTED;
     }
 
@@ -199,7 +199,7 @@ export const useClinicalDocumentStore = defineStore("clinicalDocument", () => {
         files,
         clinicalDocuments,
         clinicalDocumentsCount,
-        clinicalDocumentsAreLoading,
+        areClinicalDocumentsLoading,
         retrieveClinicalDocuments,
         getFile,
     };

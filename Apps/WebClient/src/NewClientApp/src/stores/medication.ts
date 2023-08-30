@@ -51,11 +51,11 @@ export const useMedicationStore = defineStore("medication", () => {
         return getMedicationState(hdid).data.length;
     }
 
-    function medicationsAreLoading(hdid: string) {
+    function areMedicationsLoading(hdid: string) {
         return getMedicationState(hdid).status === LoadStatus.REQUESTED;
     }
 
-    function medicationsAreProtected(hdid: string) {
+    function areMedicationsProtected(hdid: string) {
         return getMedicationState(hdid).status === LoadStatus.PROTECTED;
     }
 
@@ -163,8 +163,8 @@ export const useMedicationStore = defineStore("medication", () => {
     return {
         medications,
         medicationsCount,
-        medicationsAreLoading,
-        medicationsAreProtected,
+        areMedicationsLoading,
+        areMedicationsProtected,
         protectiveWordAttempts,
         retrieveMedications,
     };

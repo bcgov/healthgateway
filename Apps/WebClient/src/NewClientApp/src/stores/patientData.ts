@@ -119,7 +119,7 @@ export const usePatientDataStore = defineStore("patientData", () => {
         return patientData(hdid, patientDataTypes).length;
     }
 
-    function patientDataAreLoading(hdid: string): boolean {
+    function arePatientDataLoading(hdid: string): boolean {
         return getPatientDataState(hdid)?.status === LoadStatus.REQUESTED;
     }
 
@@ -269,7 +269,7 @@ export const usePatientDataStore = defineStore("patientData", () => {
         patientDataFilesMap,
         patientData,
         patientDataCount,
-        patientDataAreLoading,
+        arePatientDataLoading,
         patientDataFile,
         isPatientDataFileLoading,
         retrievePatientData,

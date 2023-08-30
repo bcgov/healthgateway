@@ -30,7 +30,7 @@ refreshDependents();
 <template>
     <div>
         <BreadcrumbComponent :items="breadcrumbItems" />
-        <LoadingComponent :is-loading="dependentStore.dependentsAreLoading" />
+        <LoadingComponent :is-loading="dependentStore.areDependentsLoading" />
         <PageTitleComponent title="Dependents">
             <template #append>
                 <AddDependentComponent @handle-submit="refreshDependents" />

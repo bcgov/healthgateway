@@ -92,8 +92,8 @@ const reportService = container.get<IReportService>(
 );
 const medicationStore = useMedicationStore();
 
-const medicationsAreLoading = computed(() =>
-    medicationStore.medicationsAreLoading(props.hdid)
+const areMedicationsLoading = computed(() =>
+    medicationStore.areMedicationsLoading(props.hdid)
 );
 const isEmpty = computed(() => visibleRecords.value.length === 0);
 const visibleRecords = computed(() =>
@@ -143,8 +143,8 @@ function generateReport(
     });
 }
 
-watch(medicationsAreLoading, () => {
-    emit("on-is-loading-changed", medicationsAreLoading.value);
+watch(areMedicationsLoading, () => {
+    emit("on-is-loading-changed", areMedicationsLoading.value);
 });
 
 watch(isEmpty, () => {
@@ -163,7 +163,7 @@ medicationStore
 <template>
     <div>
         <section>
-            <v-row v-if="isEmpty && !medicationsAreLoading">
+            <v-row v-if="isEmpty && !areMedicationsLoading">
                 <v-col>No records found.</v-col>
             </v-row>
             <HgDataTableComponent
@@ -172,7 +172,7 @@ medicationStore
                 :items="items"
                 :fields="fields"
                 density="compact"
-                :loading="medicationsAreLoading"
+                :loading="areMedicationsLoading"
                 data-testid="medication-history-report-table"
             />
         </section>

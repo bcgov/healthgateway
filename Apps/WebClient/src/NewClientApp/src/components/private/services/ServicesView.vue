@@ -25,10 +25,10 @@ const breadcrumbItems: BreadcrumbItem[] = [
 const userStore = useUserStore();
 const patientDataStore = usePatientDataStore();
 
-const patientDataAreLoading = computed(
+const arePatientDataLoading = computed(
     () =>
         isOrganDonorServiceEnabled.value &&
-        patientDataStore.patientDataAreLoading(userStore.hdid)
+        patientDataStore.arePatientDataLoading(userStore.hdid)
 );
 
 const isOrganDonorServiceEnabled = computed(() =>
@@ -48,7 +48,7 @@ if (isOrganDonorServiceEnabled.value) {
 
 <template>
     <BreadcrumbComponent :items="breadcrumbItems" />
-    <LoadingComponent :is-loading="patientDataAreLoading" />
+    <LoadingComponent :is-loading="arePatientDataLoading" />
     <PageTitleComponent title="Services" />
     <p>
         You can check and update your Organ Donor Registry information here.
@@ -56,7 +56,7 @@ if (isOrganDonorServiceEnabled.value) {
     </p>
     <v-row>
         <v-col
-            v-if="!patientDataAreLoading && isOrganDonorServiceEnabled"
+            v-if="!arePatientDataLoading && isOrganDonorServiceEnabled"
             :cols="getGridCols"
             class="pa-4"
         >

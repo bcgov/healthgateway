@@ -57,7 +57,7 @@ const fields: ReportField[] = [
 const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
 const noteStore = useNoteStore();
 
-const notesAreLoading = computed(() => noteStore.notesAreLoading);
+const areNotesLoading = computed(() => noteStore.areNotesLoading);
 const visibleRecords = computed(() =>
     noteStore.notes
         .filter((record) => props.filter.allowsDate(record.journalDate))
@@ -92,14 +92,14 @@ function generateReport(
     });
 }
 function onIsLoadingChanged(): void {
-    emit("on-is-loading-changed", notesAreLoading.value);
+    emit("on-is-loading-changed", areNotesLoading.value);
 }
 
 function onIsEmptyChanged(): void {
     emit("on-is-empty-changed", isEmpty.value);
 }
 
-watch(notesAreLoading, () => {
+watch(areNotesLoading, () => {
     onIsLoadingChanged();
 });
 
@@ -119,14 +119,14 @@ noteStore
 
 <template>
     <section>
-        <v-row v-if="isEmpty && !notesAreLoading">
+        <v-row v-if="isEmpty && !areNotesLoading">
             <v-col>No records found.</v-col>
         </v-row>
 
         <HgDataTableComponent
             v-else-if="!isDependent"
             class="d-none d-md-block"
-            :loading="notesAreLoading"
+            :loading="areNotesLoading"
             :items="items"
             :fields="fields"
             density="compact"

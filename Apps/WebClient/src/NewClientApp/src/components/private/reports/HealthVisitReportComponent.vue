@@ -64,8 +64,8 @@ const reportService = container.get<IReportService>(
 );
 const healthVisitStore = useHealthVisitStore();
 
-const healthVisitsAreLoading = computed(() =>
-    healthVisitStore.healthVisitsAreLoading(props.hdid)
+const areHealthVisitsLoading = computed(() =>
+    healthVisitStore.areHealthVisitsLoading(props.hdid)
 );
 const isEmpty = computed(() => visibleRecords.value.length === 0);
 const visibleRecords = computed(() =>
@@ -99,8 +99,8 @@ function generateReport(
     });
 }
 
-watch(healthVisitsAreLoading, () => {
-    emit("on-is-loading-changed", healthVisitsAreLoading.value);
+watch(areHealthVisitsLoading, () => {
+    emit("on-is-loading-changed", areHealthVisitsLoading.value);
 });
 
 watch(isEmpty, () => {
@@ -118,14 +118,14 @@ healthVisitStore
 
 <template>
     <section>
-        <v-row v-if="isEmpty && !healthVisitsAreLoading">
+        <v-row v-if="isEmpty && !areHealthVisitsLoading">
             <v-col>No records found.</v-col>
         </v-row>
 
         <HgDataTableComponent
             v-else-if="!isDependent"
             class="d-none d-md-block"
-            :loading="healthVisitsAreLoading"
+            :loading="areHealthVisitsLoading"
             :items="items"
             :fields="fields"
             density="compact"
