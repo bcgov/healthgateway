@@ -10,7 +10,9 @@ resources:
 - repo: self
 
 variables:
-  tag: '$(Build.BuildNumber)'
+  - group: Secrets
+  - name: tag
+    value: '$(Build.BuildNumber)'
 
 stages:
 - stage: Build
