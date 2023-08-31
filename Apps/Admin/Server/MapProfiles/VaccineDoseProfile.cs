@@ -13,27 +13,23 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Immunization.MapProfiles
+namespace HealthGateway.Admin.Server.MapProfiles
 {
-    using System;
     using AutoMapper;
-    using HealthGateway.Common.Constants.PHSA;
-    using HealthGateway.Common.Data.Models.PHSA;
-    using HealthGateway.Immunization.Models;
+    using HealthGateway.Admin.Common.Models.CovidSupport;
+    using HealthGateway.Admin.Server.Models.Immunization;
 
     /// <summary>
-    /// An AutoMapper profile that defines mappings between PHSA and Health Gateway Models.
+    /// An AutoMapper profile class which defines mapping between PHSA and UI Models.
     /// </summary>
-    public class VaccineStatusProfile : Profile
+    public class VaccineDoseProfile : Profile
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="VaccineStatusProfile"/> class.
+        /// Initializes a new instance of the <see cref="VaccineDoseProfile"/> class.
         /// </summary>
-        public VaccineStatusProfile()
+        public VaccineDoseProfile()
         {
-            this.CreateMap<VaccineStatusResult, VaccineStatus>()
-                .ForMember(dest => dest.Doses, opt => opt.MapFrom(src => src.DoseCount))
-                .ForMember(dest => dest.State, opt => opt.MapFrom(src => Enum.Parse<VaccineState>(src.StatusIndicator)));
+            this.CreateMap<VaccineDoseResponse, VaccineDose>();
         }
     }
 }

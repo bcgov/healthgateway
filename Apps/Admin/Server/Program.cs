@@ -25,6 +25,8 @@ namespace HealthGateway.Admin.Server
     using System.Linq;
     using System.Threading.Tasks;
     using HealthGateway.AccountDataAccess;
+    using HealthGateway.Admin.Server.Api;
+    using HealthGateway.Admin.Server.Delegates;
     using HealthGateway.Admin.Server.Services;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.Api;
@@ -74,16 +76,21 @@ namespace HealthGateway.Admin.Server
             AddDelegates(services);
 
             // Add Refit clients
-            PhsaConfigV2 phsaConfig = new();
-            configuration.Bind(PhsaConfigV2.AdminConfigurationSectionKey, phsaConfig);
+            PhsaConfigV2 phsaConfigV2 = new();
+            configuration.Bind(PhsaConfigV2.AdminConfigurationSectionKey, phsaConfigV2);
 
             services.AddRefitClient<ISystemBroadcastApi>()
-                .ConfigureHttpClient(c => c.BaseAddress = phsaConfig.BaseUrl)
+                .ConfigureHttpClient(c => c.BaseAddress = phsaConfigV2.BaseUrl)
                 .AddHttpMessageHandler<AuthHeaderHandler>();
 
             Uri? baseUri = configuration.GetValue<Uri>("KeycloakAdmin:BaseUrl");
             services.AddRefitClient<IKeycloakAdminApi>()
                 .ConfigureHttpClient(c => c.BaseAddress = baseUri);
+
+            PhsaConfig phsaConfigV1 = new();
+            configuration.Bind(PhsaConfig.ConfigurationSectionKey, phsaConfigV1);
+            services.AddRefitClient<IImmunizationAdminApi>()
+                .ConfigureHttpClient(c => c.BaseAddress = phsaConfigV1.BaseUrl);
 
             services.AddAutoMapper(typeof(Program), typeof(BroadcastProfile), typeof(UserProfileProfile), typeof(MessagingVerificationProfile));
 
@@ -145,6 +152,7 @@ namespace HealthGateway.Admin.Server
             services.AddTransient<ISupportService, SupportService>();
             services.AddTransient<IAgentAccessService, AgentAccessService>();
             services.AddTransient<IDelegationService, DelegationService>();
+            services.AddTransient<ICovidSupportService, CovidSupportService>();
             services.AddPatientRepositoryConfiguration(new AccountDataAccessConfiguration(configuration.GetSection("PhsaV2:BaseUrl").Get<Uri>()!));
         }
 
@@ -164,6 +172,8 @@ namespace HealthGateway.Admin.Server
             services.AddTransient<IVaccineProofDelegate, VaccineProofDelegate>();
             services.AddTransient<IAdminUserProfileDelegate, DbAdminUserProfileDelegate>();
             services.AddTransient<IAuthenticationDelegate, AuthenticationDelegate>();
+            services.AddTransient<IImmunizationAdminDelegate, RestImmunizationAdminDelegate>();
+            services.AddTransient<IVaccineStatusDelegate, RestVaccineStatusDelegate>();
         }
     }
 }

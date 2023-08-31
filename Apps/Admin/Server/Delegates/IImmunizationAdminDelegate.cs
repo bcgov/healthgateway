@@ -13,29 +13,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Admin.Server.Models.CovidSupport
+namespace HealthGateway.Admin.Server.Delegates
 {
+    using System.Threading.Tasks;
+    using HealthGateway.AccountDataAccess.Patient;
     using HealthGateway.Admin.Common.Models.CovidSupport;
-    using HealthGateway.Common.Models;
 
     /// <summary>
-    /// Represents the retrieved COVID-19 information for a patient.
+    /// Provides access to Administrative Immunization data.
     /// </summary>
-    public class CovidInformation
+    public interface IImmunizationAdminDelegate
     {
         /// <summary>
-        /// Gets or sets the retrieved patient information.
+        /// Gets the vaccine details for the provided patient, retrying multiple times if there is a refresh in progress.
+        /// The patient must have the PHN and DOB provided.
         /// </summary>
-        public PatientModel Patient { get; set; } = new();
-
-        /// <summary>
-        /// Gets or sets the Vaccine Details.
-        /// </summary>
-        public VaccineDetails? VaccineDetails { get; set; }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether the requested record has been protected from being accessed.
-        /// </summary>
-        public bool Blocked { get; set; }
+        /// <param name="patient">The patient to query for vaccine details.</param>
+        /// <param name="accessToken">The connection access token.</param>
+        /// <param name="refresh">Whether the call should force cached data to be refreshed.</param>
+        /// <returns>The wrapped vaccine details.</returns>
+        Task<VaccineDetails> GetVaccineDetailsWithRetries(PatientModel patient, string accessToken, bool refresh = false);
     }
 }

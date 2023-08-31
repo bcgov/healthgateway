@@ -13,11 +13,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Admin.Api;
+namespace HealthGateway.Admin.Server.Api;
 
 using System.Threading.Tasks;
-using HealthGateway.Admin.Models.CovidSupport;
-using HealthGateway.Admin.Models.Immunization;
+using HealthGateway.Admin.Common.Models.CovidSupport;
+using HealthGateway.Admin.Server.Models.CovidSupport;
+using HealthGateway.Admin.Server.Models.Immunization;
 using HealthGateway.Common.Data.Models.PHSA;
 using HealthGateway.Common.Models.PHSA;
 using Refit;
@@ -46,15 +47,6 @@ public interface IImmunizationAdminApi
     Task<CovidAssessmentDetailsResponse> GetCovidAssessmentDetails([Body] CovidAssessmentDetailsRequest request, [Authorize] string token);
 
     /// <summary>
-    /// Gets the vaccine validation details for the provided patient information.
-    /// </summary>
-    /// <param name="request">The covid immunization details request to identify the patient.</param>
-    /// <param name="token">The bearer token to authorize the call.</param>
-    /// <returns>The vaccine validation details for the patient request.</returns>
-    [Post("/api/v1/Support/Immunizations/VaccineValidationDetails")]
-    Task<PhsaResult<VaccineDetailsResponse>> GetVaccineDetails([Body] CovidImmunizationsRequest request, [Authorize] string token);
-
-    /// <summary>
     /// Retrieves a PhsaResult containing the vaccine status of a given patient.
     /// </summary>
     /// <param name="query">The model containing details of the request.</param>
@@ -64,4 +56,13 @@ public interface IImmunizationAdminApi
     /// </returns>
     [Post("/api/v1/Support/Immunizations/VaccineStatusIndicator")]
     Task<PhsaResult<VaccineStatusResult>> GetVaccineStatus(VaccineStatusQuery query, [Authorize] string token);
+
+    /// <summary>
+    /// Gets the vaccine validation details for the provided patient information.
+    /// </summary>
+    /// <param name="request">The covid immunization details request to identify the patient.</param>
+    /// <param name="token">The bearer token to authorize the call.</param>
+    /// <returns>The vaccine validation details for the patient request.</returns>
+    [Post("/api/v1/Support/Immunizations/VaccineValidationDetails")]
+    Task<PhsaResult<VaccineDetailsResponse>> GetVaccineDetails([Body] CovidImmunizationsRequest request, [Authorize] string token);
 }

@@ -13,38 +13,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Admin.Server.Models.CovidSupport
+namespace HealthGateway.Admin.Server.Delegates
 {
     using System;
-    using System.Text.Json.Serialization;
+    using System.Threading.Tasks;
+    using HealthGateway.Common.Data.Models.PHSA;
+    using HealthGateway.Common.Models.PHSA;
 
     /// <summary>
-    /// Represents a vaccine dose.
+    /// Interface that defines a delegate to retrieve vaccine status information.
     /// </summary>
-    public class VaccineDose
+    public interface IVaccineStatusDelegate
     {
         /// <summary>
-        /// Gets or sets the name of the product.
+        /// Returns the vaccine status for the given patient, retrying multiple times if there is a refresh in progress.
         /// </summary>
-        [JsonPropertyName("product")]
-        public string? Product { get; set; }
-
-        /// <summary>
-        /// Gets or sets the lot identifier of the immunization.
-        /// </summary>
-        [JsonPropertyName("lot")]
-        public string? Lot { get; set; }
-
-        /// <summary>
-        /// Gets or sets the location where the dose was administered.
-        /// </summary>
-        [JsonPropertyName("location")]
-        public string? Location { get; set; }
-
-        /// <summary>
-        /// Gets or sets the date the dose was administered.
-        /// </summary>
-        [JsonPropertyName("date")]
-        public DateTime? Date { get; set; }
+        /// <param name="phn">The PHN identifying the patient.</param>
+        /// <param name="dateOfBirth">The date of birth of the patient.</param>
+        /// <param name="accessToken">The connection access token.</param>
+        /// <returns>The vaccine status result for the given patient.</returns>
+        Task<PhsaResult<VaccineStatusResult>> GetVaccineStatusWithRetries(string phn, DateTime dateOfBirth, string accessToken);
     }
 }

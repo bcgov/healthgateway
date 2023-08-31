@@ -27,8 +27,11 @@ namespace HealthGateway.Admin.Tests.Services
     using HealthGateway.AccountDataAccess.Patient;
     using HealthGateway.Admin.Common.Constants;
     using HealthGateway.Admin.Common.Models;
+    using HealthGateway.Admin.Server.Api;
+    using HealthGateway.Admin.Server.Delegates;
     using HealthGateway.Admin.Server.Services;
     using HealthGateway.Admin.Tests.Utils;
+    using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.CacheProviders;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ErrorHandling;
@@ -636,6 +639,9 @@ namespace HealthGateway.Admin.Tests.Services
                 patientRepositoryMock.Object,
                 resourceDelegateDelegateMock.Object,
                 userProfileDelegateMock.Object,
+                new Mock<IAuthenticationDelegate>().Object,
+                new Mock<IImmunizationAdminDelegate>().Object,
+                new Mock<IImmunizationAdminApi>().Object,
                 new Mock<IAuditRepository>().Object,
                 new Mock<ICacheProvider>().Object,
                 new Mock<ILogger<SupportService>>().Object);

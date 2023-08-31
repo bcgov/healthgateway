@@ -89,5 +89,30 @@ namespace HealthGateway.Common.Constants
         /// Error message to return when Keycloak already has the user being added.
         /// </summary>
         public const string KeycloakUserAlreadyExists = "Keycloak user already exists";
+
+        /// <summary>
+        /// Error message to return when access token cannot be found.
+        /// </summary>
+        public const string CannotFindAccessToken = "Cannot find access token.";
+
+        /// <summary>
+        /// Error message to return when maximum retry attempts reached.
+        /// </summary>
+        public const string MaximumRetryAttemptsReached = "Maximum retry attempts reached.";
+
+        /// <summary>
+        /// Error message to return when maximum retry attempts reached.
+        /// </summary>
+        public const string PhnOrDateOfBirthInvalid = "Personal Health Number and/or Date of Birth are invalid.";
+
+        /// <summary>
+        /// Error message to return when vaccine status not found.
+        /// </summary>
+        public const string VaccineStatusNotFound = "Vaccine status not found";
+
+        /// <summary>
+        /// Error message to return when vaccination status is unknown.
+        /// </summary>
+        public const string VaccinationStatusUnknown = "Vaccination status is unknown.";
     }
 }

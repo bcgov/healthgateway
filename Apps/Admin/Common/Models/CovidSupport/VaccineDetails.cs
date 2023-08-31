@@ -13,11 +13,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Admin.Server.Models.CovidSupport
+namespace HealthGateway.Admin.Common.Models.CovidSupport
 {
     using System.Collections.Generic;
     using System.Text.Json.Serialization;
-    using HealthGateway.Common.Models.PHSA;
+    using HealthGateway.Common.Data.Models.PHSA;
 
     /// <summary>
     /// Represents the retrieved vaccination information.

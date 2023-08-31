@@ -16,7 +16,7 @@
 namespace HealthGateway.Immunization.Models
 {
     using System.Text.Json.Serialization;
-    using HealthGateway.Common.Models.PHSA;
+    using HealthGateway.Common.Data.Models.PHSA;
 
     /// <summary>
     /// The Vaccine Proof result model.
