@@ -1,4 +1,5 @@
 // create public class DiagnosticImagingTimelineEntry which extends TimelineEntry
+
 import { EntryType } from "@/constants/entryType";
 import { DateWrapper, StringISODate } from "@/models/dateWrapper";
 import { BcCancerScreeningExam } from "@/models/patientDataResponse";
@@ -21,7 +22,7 @@ export default class BcCancerScreeningResultTimelineEntry extends TimelineEntry 
         super(
             model.id ?? `cancerScreening-${model.resultDateTime}`,
             EntryType.BcCancerScreening,
-            new DateWrapper(model.resultDateTime)
+            new DateWrapper(model.resultDateTime, { isUtc: true })
         );
 
         this.title = "BC Cancer Result";
