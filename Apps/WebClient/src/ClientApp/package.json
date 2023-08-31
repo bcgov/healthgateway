@@ -11,7 +11,7 @@
     },
     "devDependencies": {
         "@types/luxon": "^1.27.0",
-        "@types/qrcode": "^1.5.1",
+        "@types/qrcode": "^1.5.2",
         "@types/throttle-debounce": "^5.0.0",
         "@types/vuelidate": "^0.7.18",
         "@types/webpack-env": "^1.18.1",
