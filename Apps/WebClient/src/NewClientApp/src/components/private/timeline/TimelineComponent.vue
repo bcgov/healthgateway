@@ -24,7 +24,7 @@ import {
     PatientData,
     PatientDataType,
 } from "@/models/patientDataResponse";
-import BcCancerScreeningResultTimelineEntry from "@/models/timeline/BcCancerScreeningResultTimelineEntry";
+import CancerScreeningResultTimelineEntry from "@/models/timeline/cancerScreeningResultTimelineEntry";
 import ClinicalDocumentTimelineEntry from "@/models/timeline/clinicalDocumentTimelineEntry";
 import Covid19TestResultTimelineEntry from "@/models/timeline/covid19TestResultTimelineEntry";
 import DiagnosticImagingTimelineEntry from "@/models/timeline/diagnosticImagingTimelineEntry";
@@ -259,7 +259,7 @@ const unfilteredTimelineEntries = computed(() => {
                 break;
             case HealthDataType.CancerScreeningExam:
                 entries.push(
-                    new BcCancerScreeningResultTimelineEntry(
+                    new CancerScreeningResultTimelineEntry(
                         exam as CancerScreeningExam,
                         getComments
                     )

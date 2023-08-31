@@ -167,9 +167,9 @@ entryTypeMap.set(EntryType.CancerScreening, {
     description:
         "View and download your results as soon as they are available.",
     icon: "ribbon",
-    component: "BcCancerScreeningResultTimelineComponent",
+    component: "CancerScreeningResultTimelineComponent",
     eventName: "bc_cancer_screening",
-    moduleName: "BcCancerScreening",
+    moduleName: "CancerScreening",
     reportEventName: "BC Cancer Screening Exams",
 });
 

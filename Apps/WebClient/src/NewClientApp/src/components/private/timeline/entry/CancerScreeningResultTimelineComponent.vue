@@ -9,14 +9,14 @@ import { EntryType, entryTypeMap } from "@/constants/entryType";
 import { container } from "@/ioc/container";
 import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
 import { PatientDataFile } from "@/models/patientDataResponse";
-import BcCancerScreeningResultTimelineEntry from "@/models/timeline/BcCancerScreeningResultTimelineEntry";
+import CancerScreeningResultTimelineEntry from "@/models/timeline/cancerScreeningResultTimelineEntry";
 import { ILogger } from "@/services/interfaces";
 import { usePatientDataStore } from "@/stores/patientData";
 import SnowPlow from "@/utility/snowPlow";
 
 interface Props {
     hdid: string;
-    entry: BcCancerScreeningResultTimelineEntry;
+    entry: CancerScreeningResultTimelineEntry;
     index: number;
     datekey: string;
     isMobileDetails?: boolean;

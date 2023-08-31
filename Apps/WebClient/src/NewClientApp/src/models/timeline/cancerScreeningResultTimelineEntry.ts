@@ -5,7 +5,7 @@ import { CancerScreeningExam } from "@/models/patientDataResponse";
 import TimelineEntry from "@/models/timeline/timelineEntry";
 import { UserComment } from "@/models/userComment";
 
-export default class BcCancerScreeningResultTimelineEntry extends TimelineEntry {
+export default class CancerScreeningResultTimelineEntry extends TimelineEntry {
     public title: string;
     public documentType: string;
     public fileId: string;
