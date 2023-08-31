@@ -26,6 +26,7 @@ stages:
     - task: Docker@2
       displayName: Build Azure Agent
       inputs:
+        containerRegistry: "docker-health"
         command: 'buildAndPush'
         repository: '$(DockerRepo)/azure-agent'
         buildContext: '$(Build.SourcesDirectory)/Tools/AzureAgent'
