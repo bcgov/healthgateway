@@ -18,13 +18,13 @@ import { container } from "@/ioc/container";
 import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
 import { DateWrapper, IDateWrapper } from "@/models/dateWrapper";
 import {
-    CancerScreeningExam,
+    BcCancerScreeningExam,
     DiagnosticImagingExam,
     HealthDataType,
     PatientData,
     PatientDataType,
 } from "@/models/patientDataResponse";
-import CancerScreeningResultTimelineEntry from "@/models/timeline/cancerScreeningResultTimelineEntry";
+import BcCancerScreeningResultTimelineEntry from "@/models/timeline/bcCancerScreeningResultTimelineEntry";
 import ClinicalDocumentTimelineEntry from "@/models/timeline/clinicalDocumentTimelineEntry";
 import Covid19TestResultTimelineEntry from "@/models/timeline/covid19TestResultTimelineEntry";
 import DiagnosticImagingTimelineEntry from "@/models/timeline/diagnosticImagingTimelineEntry";
@@ -246,7 +246,7 @@ const unfilteredTimelineEntries = computed(() => {
     // Add patient data entries to the timeline list
     for (const exam of patientData.value(props.hdid, [
         PatientDataType.DiagnosticImaging,
-        PatientDataType.CancerScreening,
+        PatientDataType.BcCancerScreening,
     ]) as PatientData[]) {
         switch (exam.type) {
             case HealthDataType.DiagnosticImagingExam:
@@ -257,10 +257,10 @@ const unfilteredTimelineEntries = computed(() => {
                     )
                 );
                 break;
-            case HealthDataType.CancerScreeningExam:
+            case HealthDataType.BcCancerScreeningExam:
                 entries.push(
-                    new CancerScreeningResultTimelineEntry(
-                        exam as CancerScreeningExam,
+                    new BcCancerScreeningResultTimelineEntry(
+                        exam as BcCancerScreeningExam,
                         getComments
                     )
                 );
@@ -350,10 +350,10 @@ const isOnlyDiagnosticImagingSelected = computed(
         selectedEntryTypes.value.size === 1 &&
         selectedEntryTypes.value.has(EntryType.DiagnosticImaging)
 );
-const isOnlyCancerScreeningSelected = computed(
+const isOnlyBcCancerScreeningSelected = computed(
     () =>
         selectedEntryTypes.value.size === 1 &&
-        selectedEntryTypes.value.has(EntryType.CancerScreening)
+        selectedEntryTypes.value.has(EntryType.BcCancerScreening)
 );
 const recordCountMessage = computed(() =>
     filteredTimelineEntries.value.length === 1
@@ -416,7 +416,7 @@ function datasetIsLoading(entryType: EntryType): boolean {
         case EntryType.SpecialAuthorityRequest:
             return specialAuthorityRequestsAreLoading.value;
         case EntryType.DiagnosticImaging:
-        case EntryType.CancerScreening:
+        case EntryType.BcCancerScreening:
             return patientDataAreLoading.value;
         default:
             throw new Error(`Unknown dataset "${entryType}"`);
@@ -699,7 +699,7 @@ setPageFromDate(linearDate.value);
                 >.
             </v-alert>
             <v-alert
-                v-else-if="isOnlyCancerScreeningSelected"
+                v-else-if="isOnlyBcCancerScreeningSelected"
                 type="info"
                 data-testid="linear-timeline-cancer-screening-disclaimer"
                 class="d-print-none mb-4"

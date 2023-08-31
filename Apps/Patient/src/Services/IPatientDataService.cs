@@ -165,7 +165,7 @@ namespace HealthGateway.Patient.Services
     /// <summary>
     /// Cancer screening exam patient data.
     /// </summary>
-    public record CancerScreeningExam : PatientData
+    public record BcCancerScreeningExam : PatientData
     {
         /// <summary>
         /// Gets or sets the program name.
@@ -180,15 +180,15 @@ namespace HealthGateway.Patient.Services
         /// <summary>
         /// Gets or sets the event timestamp utc.
         /// </summary>
-        public DateTime EventTimestampUtc { get; set; }
+        public DateTime EventDateTime { get; set; }
 
         /// <summary>
         /// Gets or sets the result timestamp.
         /// </summary>
-        public DateTime ResultTimestamp { get; set; }
+        public DateTime ResultDateTime { get; set; }
 
         /// <inheritdoc/>
-        public override string Type { get; } = nameof(CancerScreeningExam);
+        public override string Type { get; } = nameof(BcCancerScreeningExam);
     }
 
     /// <summary>

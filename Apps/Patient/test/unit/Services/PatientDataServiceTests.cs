@@ -34,7 +34,7 @@ namespace HealthGateway.PatientTests.Services
     using Moq;
     using Shouldly;
     using Xunit;
-    using CancerScreeningExam = HealthGateway.PatientDataAccess.CancerScreeningExam;
+    using BcCancerScreeningExam = HealthGateway.PatientDataAccess.BcCancerScreeningExam;
     using DiagnosticImagingExam = HealthGateway.Patient.Services.DiagnosticImagingExam;
     using DiagnosticImagingStatus = HealthGateway.Patient.Models.DiagnosticImagingStatus;
     using OrganDonorRegistration = HealthGateway.Patient.Services.OrganDonorRegistration;
@@ -163,9 +163,9 @@ namespace HealthGateway.PatientTests.Services
         [Fact]
         public async Task CannotGetCancerScreeningData()
         {
-            CancerScreeningExam expected = new()
+            BcCancerScreeningExam expected = new()
             {
-                EventType = CancerScreeningType.Recall,
+                EventType = BcCancerScreeningType.Recall,
             };
 
             Mock<IPatientDataRepository> patientDataRepository = new();
@@ -179,7 +179,7 @@ namespace HealthGateway.PatientTests.Services
 
             PatientDataService sut = new(patientDataRepository.Object, patientRepository.Object, personalAccountService.Object, this.mapper);
 
-            PatientDataResponse result = await sut.Query(new PatientDataQuery(this.hdid, new[] { PatientDataType.CancerScreening }), CancellationToken.None)
+            PatientDataResponse result = await sut.Query(new PatientDataQuery(this.hdid, new[] { PatientDataType.BcCancerScreening }), CancellationToken.None)
                 .ConfigureAwait(true);
 
             result.Items.ShouldBeEmpty();
@@ -190,14 +190,14 @@ namespace HealthGateway.PatientTests.Services
         [InlineData(false)]
         public async Task CanGetCancerScreeningData(bool canAccessDataSource)
         {
-            CancerScreeningExam expected = new()
+            BcCancerScreeningExam expected = new()
             {
                 Id = "12345678931",
                 FileId = "12345678931",
                 ProgramName = "Cervical Cancer",
-                EventType = CancerScreeningType.Result,
-                EventTimestampUtc = Convert.ToDateTime("2022-10-18T08:49:37.3051315Z", CultureInfo.InvariantCulture),
-                ResultTimestamp = Convert.ToDateTime("2023-05-03T08:29:41.2820921+00:00", CultureInfo.InvariantCulture),
+                EventType = BcCancerScreeningType.Result,
+                EventDateTime = Convert.ToDateTime("2022-10-18T08:49:37.3051315Z", CultureInfo.InvariantCulture),
+                ResultDateTime = Convert.ToDateTime("2023-05-03T08:29:41.2820921+00:00", CultureInfo.InvariantCulture),
             };
 
             Mock<IPatientDataRepository> patientDataRepository = new();
@@ -211,17 +211,17 @@ namespace HealthGateway.PatientTests.Services
 
             PatientDataService sut = new(patientDataRepository.Object, patientRepository.Object, personalAccountService.Object, this.mapper);
 
-            PatientDataResponse result = await sut.Query(new PatientDataQuery(this.hdid, new[] { PatientDataType.CancerScreening }), CancellationToken.None)
+            PatientDataResponse result = await sut.Query(new PatientDataQuery(this.hdid, new[] { PatientDataType.BcCancerScreening }), CancellationToken.None)
                 .ConfigureAwait(true);
 
             if (canAccessDataSource)
             {
-                Patient.Services.CancerScreeningExam actual = result.Items.ShouldHaveSingleItem().ShouldBeOfType<Patient.Services.CancerScreeningExam>();
+                Patient.Services.BcCancerScreeningExam actual = result.Items.ShouldHaveSingleItem().ShouldBeOfType<Patient.Services.BcCancerScreeningExam>();
                 actual.Id.ShouldBe(expected.Id);
                 actual.FileId.ShouldBe(expected.FileId);
                 actual.ProgramName.ShouldBe(expected.ProgramName);
-                actual.EventTimestampUtc.ShouldBe(expected.EventTimestampUtc);
-                actual.ResultTimestamp.ShouldBe(expected.ResultTimestamp);
+                actual.EventDateTime.ShouldBe(expected.EventDateTime);
+                actual.ResultDateTime.ShouldBe(expected.ResultDateTime);
             }
             else
             {

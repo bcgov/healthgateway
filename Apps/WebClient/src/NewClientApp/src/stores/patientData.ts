@@ -59,8 +59,8 @@ function getErrorSource(patientDataType: PatientDataType): ErrorSourceType {
             return ErrorSourceType.DiagnosticImaging;
         case PatientDataType.OrganDonorRegistrationStatus:
             return ErrorSourceType.OrganDonorRegistration;
-        case PatientDataType.CancerScreening:
-            return ErrorSourceType.CancerScreening;
+        case PatientDataType.BcCancerScreening:
+            return ErrorSourceType.BcCancerScreening;
         default:
             return ErrorSourceType.PatientData;
     }

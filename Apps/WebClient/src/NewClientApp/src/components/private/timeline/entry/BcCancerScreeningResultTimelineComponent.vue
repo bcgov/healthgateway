@@ -9,14 +9,14 @@ import { EntryType, entryTypeMap } from "@/constants/entryType";
 import { container } from "@/ioc/container";
 import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
 import { PatientDataFile } from "@/models/patientDataResponse";
-import CancerScreeningResultTimelineEntry from "@/models/timeline/cancerScreeningResultTimelineEntry";
+import BcCancerScreeningResultTimelineEntry from "@/models/timeline/bcCancerScreeningResultTimelineEntry";
 import { ILogger } from "@/services/interfaces";
 import { usePatientDataStore } from "@/stores/patientData";
 import SnowPlow from "@/utility/snowPlow";
 
 interface Props {
     hdid: string;
-    entry: CancerScreeningResultTimelineEntry;
+    entry: BcCancerScreeningResultTimelineEntry;
     index: number;
     datekey: string;
     isMobileDetails?: boolean;
@@ -32,7 +32,7 @@ const patientDataStore = usePatientDataStore();
 const messageModal = ref<InstanceType<typeof MessageModalComponent>>();
 
 const entryIcon = computed(
-    () => entryTypeMap.get(EntryType.CancerScreening)?.icon
+    () => entryTypeMap.get(EntryType.BcCancerScreening)?.icon
 );
 const isLoadingFile = computed(
     () =>

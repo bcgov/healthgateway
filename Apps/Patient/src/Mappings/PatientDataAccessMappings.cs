@@ -21,7 +21,7 @@ namespace HealthGateway.Patient.Mappings
     using HealthGateway.Patient.Constants;
     using HealthGateway.Patient.Services;
     using HealthGateway.PatientDataAccess;
-    using CancerScreeningExam = HealthGateway.PatientDataAccess.CancerScreeningExam;
+    using BcCancerScreeningExam = HealthGateway.Patient.Services.BcCancerScreeningExam;
     using DiagnosticImagingExam = HealthGateway.PatientDataAccess.DiagnosticImagingExam;
     using OrganDonorRegistration = HealthGateway.PatientDataAccess.OrganDonorRegistration;
 
@@ -43,7 +43,7 @@ namespace HealthGateway.Patient.Mappings
                         {
                             PatientDataType.OrganDonorRegistrationStatus => HealthCategory.OrganDonorRegistrationStatus,
                             PatientDataType.DiagnosticImaging => HealthCategory.DiagnosticImaging,
-                            PatientDataType.CancerScreening => HealthCategory.BcCancerScreening,
+                            PatientDataType.BcCancerScreening => HealthCategory.BcCancerScreening,
                             _ => throw new NotImplementedException($"Mapping for {source} is not implemented"),
                         };
                     });
@@ -57,7 +57,7 @@ namespace HealthGateway.Patient.Mappings
                         {
                             PatientDataType.OrganDonorRegistrationStatus => DataSource.OrganDonorRegistration,
                             PatientDataType.DiagnosticImaging => DataSource.DiagnosticImaging,
-                            PatientDataType.CancerScreening => DataSource.CancerScreening,
+                            PatientDataType.BcCancerScreening => DataSource.BcCancerScreening,
                             _ => throw new NotImplementedException($"Mapping for {source} is not implemented"),
                         };
                     });
@@ -73,7 +73,7 @@ namespace HealthGateway.Patient.Mappings
                 {
                     OrganDonorRegistration hd => context.Mapper.Map<Services.OrganDonorRegistration>(hd),
                     DiagnosticImagingExam hd => context.Mapper.Map<Services.DiagnosticImagingExam>(hd),
-                    CancerScreeningExam hd => context.Mapper.Map<Services.CancerScreeningExam>(hd),
+                    PatientDataAccess.BcCancerScreeningExam hd => context.Mapper.Map<BcCancerScreeningExam>(hd),
                     _ => throw new NotImplementedException($"{source.GetType().Name} is not mapped to {nameof(PatientData)}"),
                 };
             }

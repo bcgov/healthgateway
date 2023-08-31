@@ -31,7 +31,7 @@ describe("Filters", () => {
                     enabled: true,
                 },
                 {
-                    name: "cancerScreening",
+                    name: "bcCancerScreening",
                     enabled: true,
                 },
             ],
@@ -173,7 +173,7 @@ describe("Filters", () => {
         ).should("not.exist");
 
         cy.get("[data-testid=filterDropdown]").click();
-        cy.get("[data-testid=CancerScreening-filter] input").click({
+        cy.get("[data-testid=BcCancerScreening-filter] input").click({
             force: true,
         });
         cy.get("[data-testid=btnFilterApply]").click();

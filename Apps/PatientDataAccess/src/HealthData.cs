@@ -83,12 +83,12 @@ namespace HealthGateway.PatientDataAccess
     /// <summary>
     /// The details of a cancer screening exam.
     /// </summary>
-    public record CancerScreeningExam : HealthData
+    public record BcCancerScreeningExam : HealthData
     {
         /// <summary>
         /// Gets or sets the type.
         /// </summary>
-        public CancerScreeningType EventType { get; set; }
+        public BcCancerScreeningType EventType { get; set; }
 
         /// <summary>
         /// Gets or sets the program name.
@@ -98,12 +98,12 @@ namespace HealthGateway.PatientDataAccess
         /// <summary>
         /// Gets or sets the event timestamp utc.
         /// </summary>
-        public DateTime EventTimestampUtc { get; set; }
+        public DateTime EventDateTime { get; set; }
 
         /// <summary>
         /// Gets or sets the result timestamp.
         /// </summary>
-        public DateTime ResultTimestamp { get; set; }
+        public DateTime ResultDateTime { get; set; }
     }
 
     /// <summary>
@@ -145,7 +145,7 @@ namespace HealthGateway.PatientDataAccess
     /// <summary>
     /// Cancer screening types.
     /// </summary>
-    public enum CancerScreeningType
+    public enum BcCancerScreeningType
     {
         /// <summary>
         /// Cancer screening recall.

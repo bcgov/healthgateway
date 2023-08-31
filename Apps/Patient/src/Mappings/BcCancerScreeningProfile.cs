@@ -22,20 +22,20 @@ namespace HealthGateway.Patient.Mappings
     /// <summary>
     /// The AutoMapper profile for the Cancer Screening Profile.
     /// </summary>
-    public class CancerScreeningProfile : Profile
+    public class BcCancerScreeningProfile : Profile
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="CancerScreeningProfile"/> class.
+        /// Initializes a new instance of the <see cref="BcCancerScreeningProfile"/> class.
         /// </summary>
-        public CancerScreeningProfile()
+        public BcCancerScreeningProfile()
         {
-            this.CreateMap<CancerScreeningExam, Services.CancerScreeningExam>()
+            this.CreateMap<BcCancerScreeningExam, Services.BcCancerScreeningExam>()
                 .ForMember(
-                    d => d.EventTimestampUtc,
-                    opts => opts.MapFrom(s => DateFormatter.SpecifyUtc(s.EventTimestampUtc)))
+                    d => d.EventDateTime,
+                    opts => opts.MapFrom(s => DateFormatter.SpecifyUtc(s.EventDateTime)))
                 .ForMember(
-                    d => d.ResultTimestamp,
-                    opts => opts.MapFrom(s => DateFormatter.SpecifyUtc(s.ResultTimestamp)));
+                    d => d.ResultDateTime,
+                    opts => opts.MapFrom(s => DateFormatter.SpecifyUtc(s.ResultDateTime)));
         }
     }
 }

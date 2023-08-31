@@ -113,7 +113,7 @@ describe("Filters", () => {
                     enabled: true,
                 },
                 {
-                    name: "cancerScreening",
+                    name: "bcCancerScreening",
                     enabled: true,
                 },
             ],

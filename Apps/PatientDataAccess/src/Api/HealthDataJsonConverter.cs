@@ -32,7 +32,7 @@ namespace HealthGateway.PatientDataAccess.Api
                 "COVID19Laboratory" => typeof(LaboratoryOrder),
                 "ClinicalDocument" => typeof(ClinicalDocument),
                 "DiagnosticImaging" => typeof(DiagnosticImagingExam),
-                "BcCancerScreening" => typeof(CancerScreeningExam),
+                "BcCancerScreening" => typeof(BcCancerScreeningExam),
                 _ => null,
             };
         }
