@@ -20,7 +20,7 @@ namespace HealthGateway.Patient.Mappings
     using HealthGateway.PatientDataAccess;
 
     /// <summary>
-    /// The AutoMapper profile for the Cancer Screening Profile.
+    /// The AutoMapper profile for BcCancerScreeningExam.
     /// </summary>
     public class BcCancerScreeningProfile : Profile
     {

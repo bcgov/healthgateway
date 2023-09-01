@@ -163,7 +163,7 @@ namespace HealthGateway.Patient.Services
     }
 
     /// <summary>
-    /// Cancer screening exam patient data.
+    /// BC Cancer screening exam patient data.
     /// </summary>
     public record BcCancerScreeningExam : PatientData
     {
@@ -178,12 +178,12 @@ namespace HealthGateway.Patient.Services
         public string? FileId { get; set; }
 
         /// <summary>
-        /// Gets or sets the event timestamp utc.
+        /// Gets or sets the event datetime.
         /// </summary>
         public DateTime EventDateTime { get; set; }
 
         /// <summary>
-        /// Gets or sets the result timestamp.
+        /// Gets or sets the result datetime.
         /// </summary>
         public DateTime ResultDateTime { get; set; }
 
