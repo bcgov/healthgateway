@@ -135,7 +135,7 @@ const medicationsAreLoading = computed(() =>
 const specialAuthorityRequests = computed(() =>
     specialAuthorityRequestStore.specialAuthorityRequests(props.hdid)
 );
-const sppecialAuthorityRequestsAreLoading = computed(() =>
+const specialAuthorityRequestsAreLoading = computed(() =>
     specialAuthorityRequestStore.specialAuthorityRequestsAreLoading(props.hdid)
 );
 const userNotes = computed(() => noteStore.notes);
@@ -295,12 +295,12 @@ const selectedDatasetsAreLoading = computed(() => {
     return props.entryTypes.some(
         (entryType) =>
             selectedEntryTypes.value.has(entryType) &&
-            isDatasetLoading(entryType)
+            datasetIsLoading(entryType)
     );
 });
 const isFullyLoaded = computed(() => {
     const loadingDatasets = props.entryTypes.some((entryType) =>
-        isDatasetLoading(entryType)
+        datasetIsLoading(entryType)
     );
 
     const loadingComments =
@@ -367,7 +367,7 @@ function clearFilters(): void {
     timelineStore.setFilter(TimelineFilterBuilder.create());
 }
 
-function isDatasetLoading(entryType: EntryType): boolean {
+function datasetIsLoading(entryType: EntryType): boolean {
     switch (entryType) {
         case EntryType.ClinicalDocument:
             return clinicalDocumentsAreLoading.value;
@@ -386,7 +386,7 @@ function isDatasetLoading(entryType: EntryType): boolean {
         case EntryType.Note:
             return notesAreLoading.value;
         case EntryType.SpecialAuthorityRequest:
-            return sppecialAuthorityRequestsAreLoading.value;
+            return specialAuthorityRequestsAreLoading.value;
         case EntryType.DiagnosticImaging:
             return patientDataAreLoading.value;
         default:
