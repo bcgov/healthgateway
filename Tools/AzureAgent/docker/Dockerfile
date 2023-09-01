@@ -6,21 +6,14 @@ ARG SONARSCANNER_VERSION=5.3.2
 ENV SUMMARY="Azure DevOps agent with .NET"  \
     DESCRIPTION="Azure DevOps agent base image with .NET v${DOTNET_VERSION}, nodejs ${NODE_VERSION}, OpenShift CLI"
 
-LABEL summary="$SUMMARY" \
-    description="$DESCRIPTION" \
-    io.k8s.description="$DESCRIPTION" \
-    io.k8s.display-name="azure-devlops-.net${DOTNET_VERSION}" \
-    io.openshift.expose-services="8080:http" \
-    io.openshift.tags="builder,azure,devops,agent,.net-v${DOTNET_VERSION},nodejs-${NODE_VERSION},openshift" \
-    release="1"
 
 RUN  export DEBIAN_FRONTEND=noninteractive && \
     apt-get update -y && \
     apt-get install -y g++ build-essential python git default-jdk tzdata iputils-ping telnet traceroute curl apt-transport-https libpng-dev jq && \
     curl -sLO https://packages.microsoft.com/config/ubuntu/20.04/packages-microsoft-prod.deb && \
-    dpkg -i packages-microsoft-prod.deb && \ 
+    dpkg -i packages-microsoft-prod.deb && \
     rm packages-microsoft-prod.deb && \
-    apt-get update -y && \ 
+    apt-get update -y && \
     apt-get install -y dotnet-sdk-${DOTNET_VERSION} && \
     apt-get install -y postgresql-client && \
     apt-get install -y dh-autoreconf && \
