@@ -117,6 +117,10 @@ function getFilterCount(entryType: EntryType): number | undefined {
             return patientDataStore.patientDataCount(props.hdid, [
                 PatientDataType.DiagnosticImaging,
             ]);
+        case EntryType.BcCancerScreening:
+            return patientDataStore.patientDataCount(props.hdid, [
+                PatientDataType.BcCancerScreening,
+            ]);
         default:
             return undefined;
     }

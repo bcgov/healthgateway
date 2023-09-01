@@ -134,31 +134,6 @@ describe("Filters", () => {
             "[data-testid=timeline-clinical-document-disclaimer-alert]"
         ).should("not.be.visible");
     });
-
-    it("Verify diagnostic imaging record alert appears when only imaging reports is selected", () => {
-        cy.get(
-            "[data-testid=linear-timeline-diagnostic-imaging-disclaimer-alert]"
-        ).should("not.be.visible");
-
-        cy.get("[data-testid=filterDropdown]").click();
-        cy.get("[data-testid=DiagnosticImaging-filter]").click({
-            force: true,
-        });
-        cy.get("[data-testid=btnFilterApply]").click();
-        cy.get("[data-testid=btnFilterApply]").should("not.exist");
-
-        cy.get(
-            "[data-testid=linear-timeline-diagnostic-imaging-disclaimer-alert]"
-        ).should("be.visible");
-
-        cy.get("[data-testid=filterDropdown]").click();
-        cy.get("[data-testid=HealthVisit-filter]").click({ force: true });
-        cy.get("[data-testid=btnFilterApply]").click();
-
-        cy.get(
-            "[data-testid=linear-timeline-diagnostic-imaging-disclaimer-alert]"
-        ).should("not.be.visible");
-    });
 });
 
 describe("Describe Filters when all datasets blocked", () => {

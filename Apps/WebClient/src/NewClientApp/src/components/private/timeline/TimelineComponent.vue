@@ -18,9 +18,13 @@ import { container } from "@/ioc/container";
 import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
 import { DateWrapper, IDateWrapper } from "@/models/dateWrapper";
 import {
+    BcCancerScreening,
     DiagnosticImagingExam,
+    HealthDataType,
+    PatientData,
     PatientDataType,
 } from "@/models/patientDataResponse";
+import BcCancerScreeningTimelineEntry from "@/models/timeline/bcCancerScreeningTimelineEntry";
 import ClinicalDocumentTimelineEntry from "@/models/timeline/clinicalDocumentTimelineEntry";
 import Covid19TestResultTimelineEntry from "@/models/timeline/covid19TestResultTimelineEntry";
 import DiagnosticImagingTimelineEntry from "@/models/timeline/diagnosticImagingTimelineEntry";
@@ -34,6 +38,7 @@ import SpecialAuthorityRequestTimelineEntry from "@/models/timeline/specialAutho
 import TimelineEntry, { DateGroup } from "@/models/timeline/timelineEntry";
 import { TimelineFilterBuilder } from "@/models/timeline/timelineFilter";
 import { ILogger } from "@/services/interfaces";
+import { entryTypeToPatientDataTypeMap } from "@/services/restPatientDataService";
 import { useAppStore } from "@/stores/app";
 import { useClinicalDocumentStore } from "@/stores/clinicalDocument";
 import { useCommentStore } from "@/stores/comment";
@@ -238,11 +243,29 @@ const unfilteredTimelineEntries = computed(() => {
         entries.push(new ImmunizationTimelineEntry(immunization));
     }
 
-    // Add the diagnostic imaging entries to the timeline list
+    // Add patient data entries to the timeline list
     for (const exam of patientData.value(props.hdid, [
         PatientDataType.DiagnosticImaging,
-    ]) as DiagnosticImagingExam[]) {
-        entries.push(new DiagnosticImagingTimelineEntry(exam, getComments));
+        PatientDataType.BcCancerScreening,
+    ]) as PatientData[]) {
+        switch (exam.type) {
+            case HealthDataType.DiagnosticImagingExam:
+                entries.push(
+                    new DiagnosticImagingTimelineEntry(
+                        exam as DiagnosticImagingExam,
+                        getComments
+                    )
+                );
+                break;
+            case HealthDataType.BcCancerScreening:
+                entries.push(
+                    new BcCancerScreeningTimelineEntry(
+                        exam as BcCancerScreening,
+                        getComments
+                    )
+                );
+                break;
+        }
     }
 
     // Sort entries with newest first
@@ -327,6 +350,11 @@ const isOnlyDiagnosticImagingSelected = computed(
         selectedEntryTypes.value.size === 1 &&
         selectedEntryTypes.value.has(EntryType.DiagnosticImaging)
 );
+const isOnlyBcCancerScreeningSelected = computed(
+    () =>
+        selectedEntryTypes.value.size === 1 &&
+        selectedEntryTypes.value.has(EntryType.BcCancerScreening)
+);
 const recordCountMessage = computed(() =>
     filteredTimelineEntries.value.length === 1
         ? "Displaying 1 out of 1 records"
@@ -388,6 +416,7 @@ function datasetIsLoading(entryType: EntryType): boolean {
         case EntryType.SpecialAuthorityRequest:
             return specialAuthorityRequestsAreLoading.value;
         case EntryType.DiagnosticImaging:
+        case EntryType.BcCancerScreening:
             return patientDataAreLoading.value;
         default:
             throw new Error(`Unknown dataset "${entryType}"`);
@@ -418,10 +447,6 @@ function fetchDataset(entryType: EntryType): Promise<any> {
             return specialAuthorityRequestStore.retrieveSpecialAuthorityRequests(
                 props.hdid
             );
-        case EntryType.DiagnosticImaging:
-            return patientDataStore.retrievePatientData(props.hdid, [
-                PatientDataType.DiagnosticImaging,
-            ]);
         default:
             return Promise.reject(`Unknown dataset "${entryType}"`);
     }
@@ -429,14 +454,32 @@ function fetchDataset(entryType: EntryType): Promise<any> {
 
 function fetchTimelineData(): Promise<any> {
     const blockedEntryTypes: EntryType[] = [];
-
+    const patientDataEntryTypes = [...entryTypeToPatientDataTypeMap.keys()];
+    const patientDataEntryTypesToRequest = [];
     const promises: Promise<any>[] = [];
     for (const entryType of props.entryTypes) {
         if (canAccessDataset(entryType)) {
-            promises.push(fetchDataset(entryType));
+            if (patientDataEntryTypes.includes(entryType)) {
+                patientDataEntryTypesToRequest.push(
+                    entryTypeToPatientDataTypeMap.get(
+                        entryType
+                    ) as PatientDataType
+                );
+            } else {
+                promises.push(fetchDataset(entryType));
+            }
         } else {
             blockedEntryTypes.push(entryType);
         }
+    }
+
+    if (patientDataEntryTypesToRequest.length > 0) {
+        promises.push(
+            patientDataStore.retrievePatientData(
+                props.hdid,
+                patientDataEntryTypesToRequest
+            )
+        );
     }
 
     if (props.commentsAreEnabled) {
@@ -603,7 +646,7 @@ setPageFromDate(linearDate.value);
             <v-alert
                 v-if="isOnlyClinicalDocumentSelected"
                 type="info"
-                data-testid="timeline-clinical-document-disclaimer-alert"
+                data-testid="timeline-clinical-document-alert"
                 class="d-print-none mb-4"
                 closable
                 variant="outlined"
@@ -622,7 +665,7 @@ setPageFromDate(linearDate.value);
             <v-alert
                 v-else-if="isOnlyImmunizationSelected"
                 type="info"
-                data-testid="linear-timeline-immunization-disclaimer-alert"
+                data-testid="timeline-immunization-alert"
                 class="d-print-none mb-4"
                 closable
                 variant="outlined"
@@ -640,7 +683,7 @@ setPageFromDate(linearDate.value);
             <v-alert
                 v-else-if="isOnlyDiagnosticImagingSelected"
                 type="info"
-                data-testid="linear-timeline-diagnostic-imaging-disclaimer"
+                data-testid="timeline-diagnostic-imaging-alert"
                 class="d-print-none mb-4"
                 closable
                 variant="outlined"
@@ -649,6 +692,24 @@ setPageFromDate(linearDate.value);
                 Most reports are available 10-14 days after your procedure.
                 <a
                     href="https://www2.gov.bc.ca/gov/content/health/managing-your-health/health-gateway/guide#medicalimaging"
+                    target="_blank"
+                    rel="noopener"
+                    class="text-link"
+                    >Learn more</a
+                >.
+            </v-alert>
+            <v-alert
+                v-else-if="isOnlyBcCancerScreeningSelected"
+                type="info"
+                data-testid="timeline-cancer-screening-alert"
+                class="d-print-none mb-4"
+                closable
+                variant="outlined"
+                border
+            >
+                Only results from screening tests are available.
+                <a
+                    href="http://www.bccancer.bc.ca/screening"
                     target="_blank"
                     rel="noopener"
                     class="text-link"

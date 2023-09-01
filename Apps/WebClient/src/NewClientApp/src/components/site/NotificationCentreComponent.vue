@@ -11,15 +11,18 @@ import { TimelineFilterBuilder } from "@/models/timeline/timelineFilter";
 import { useNotificationStore } from "@/stores/notification";
 import { useTimelineStore } from "@/stores/timeline";
 
-const bctOdrCategory = "BctOdr";
-const clinicalDocumentCategory = "ClinicalDocument";
-const covid19LaboratoryCategory = "COVID19Laboratory";
-const healthVisitCategory = "HealthVisit";
-const immunizationCategory = "Immunization";
-const laboratoryCategory = "Laboratory";
-const medicationCategory = "Medications";
-const noteCategory = "MyNote";
-const specialAuthorityCategory = "SpecialAuthority";
+enum AlertCategory {
+    BctOdr = "BctOdr",
+    ClinicalDocument = "ClinicalDocument",
+    Covid19Laboratory = "COVID19Laboratory",
+    HealthVisit = "HealthVisit",
+    Immunization = "Immunization",
+    LabResult = "Laboratory",
+    Medication = "Medications",
+    Note = "MyNote",
+    SpecialAuthority = "SpecialAuthority",
+    BcCancerScreening = "BcCancerScreening",
+}
 
 const router = useRouter();
 const notificationStore = useNotificationStore();
@@ -58,7 +61,7 @@ function handleClickNotificationAction(notification: Notification): void {
         const builder = TimelineFilterBuilder.create().withEntryType(entryType);
         timelineStore.setFilter(builder);
         router.push({ path: "/timeline" });
-    } else if (notification.categoryName === bctOdrCategory) {
+    } else if (notification.categoryName === AlertCategory.BctOdr) {
         router.push({ path: "/services" });
     } else {
         router.push({ path: notification.actionUrl });
@@ -68,22 +71,24 @@ function handleClickNotificationAction(notification: Notification): void {
 
 function getEntryType(categoryName: string): EntryType | undefined {
     switch (categoryName) {
-        case clinicalDocumentCategory:
+        case AlertCategory.ClinicalDocument:
             return EntryType.ClinicalDocument;
-        case covid19LaboratoryCategory:
+        case AlertCategory.Covid19Laboratory:
             return EntryType.Covid19TestResult;
-        case healthVisitCategory:
+        case AlertCategory.HealthVisit:
             return EntryType.HealthVisit;
-        case immunizationCategory:
+        case AlertCategory.Immunization:
             return EntryType.Immunization;
-        case laboratoryCategory:
+        case AlertCategory.LabResult:
             return EntryType.LabResult;
-        case medicationCategory:
+        case AlertCategory.Medication:
             return EntryType.Medication;
-        case noteCategory:
+        case AlertCategory.Note:
             return EntryType.Note;
-        case specialAuthorityCategory:
+        case AlertCategory.SpecialAuthority:
             return EntryType.SpecialAuthorityRequest;
+        case AlertCategory.BcCancerScreening:
+            return EntryType.BcCancerScreening;
         default:
             return undefined;
     }

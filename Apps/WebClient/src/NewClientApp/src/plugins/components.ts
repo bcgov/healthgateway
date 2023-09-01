@@ -1,5 +1,6 @@
 import type { App } from "vue";
 
+import BcCancerScreeningTimelineComponent from "@/components/private/timeline/entry/BcCancerScreeningTimelineComponent.vue";
 import ClinicalDocumentTimelineComponent from "@/components/private/timeline/entry/ClinicalDocumentTimelineComponent.vue";
 import Covid19TestResultTimelineComponent from "@/components/private/timeline/entry/Covid19TestResultTimelineComponent.vue";
 import DiagnosticImagingTimelineComponent from "@/components/private/timeline/entry/DiagnosticImagingTimelineComponent.vue";
@@ -39,5 +40,9 @@ export function registerGlobalComponents(app: App) {
         .component(
             "SpecialAuthorityRequestTimelineComponent",
             SpecialAuthorityRequestTimelineComponent
+        )
+        .component(
+            "BcCancerScreeningTimelineComponent",
+            BcCancerScreeningTimelineComponent
         );
 }

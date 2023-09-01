@@ -13,29 +13,29 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Patient.Constants
+namespace HealthGateway.Patient.Mappings
 {
-    using System.Text.Json.Serialization;
+    using AutoMapper;
+    using HealthGateway.Common.Data.Utils;
+    using HealthGateway.PatientDataAccess;
 
     /// <summary>
-    /// Patient data types.
+    /// The AutoMapper profile for BcCancerScreening.
     /// </summary>
-    [JsonConverter(typeof(JsonStringEnumMemberConverter))]
-    public enum PatientDataType
+    public class BcCancerScreeningProfile : Profile
     {
         /// <summary>
-        /// Organ donor registration status.
+        /// Initializes a new instance of the <see cref="BcCancerScreeningProfile"/> class.
         /// </summary>
-        OrganDonorRegistrationStatus,
-
-        /// <summary>
-        /// Diagnostic imaging exam.
-        /// </summary>
-        DiagnosticImaging,
-
-        /// <summary>
-        /// BC Cancer screening.
-        /// </summary>
-        BcCancerScreening,
+        public BcCancerScreeningProfile()
+        {
+            this.CreateMap<BcCancerScreening, Services.BcCancerScreening>()
+                .ForMember(
+                    d => d.EventDateTime,
+                    opts => opts.MapFrom(s => DateFormatter.SpecifyUtc(s.EventDateTime)))
+                .ForMember(
+                    d => d.ResultDateTime,
+                    opts => opts.MapFrom(s => DateFormatter.SpecifyUtc(s.ResultDateTime)));
+        }
     }
 }

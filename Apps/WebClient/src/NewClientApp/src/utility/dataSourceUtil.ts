@@ -24,6 +24,8 @@ export default abstract class DataSourceUtil {
                 return DataSource.SpecialAuthorityRequest;
             case EntryType.DiagnosticImaging:
                 return DataSource.DiagnosticImaging;
+            case EntryType.BcCancerScreening:
+                return DataSource.BcCancerScreening;
             default:
                 throw new Error(`Unknown entry type "${entryType}"`);
         }

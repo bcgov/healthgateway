@@ -5,11 +5,13 @@
 export enum PatientDataType {
     OrganDonorRegistrationStatus = "OrganDonorRegistrationStatus",
     DiagnosticImaging = "DiagnosticImaging",
+    BcCancerScreening = "BcCancerScreening",
 }
 
 export enum HealthDataType {
     OrganDonorRegistration = "OrganDonorRegistration",
     DiagnosticImagingExam = "DiagnosticImagingExam",
+    BcCancerScreening = "BcCancerScreening",
 }
 
 export const PatientDataToHealthDataTypeMap: Map<
@@ -25,6 +27,11 @@ PatientDataToHealthDataTypeMap.set(
 PatientDataToHealthDataTypeMap.set(
     PatientDataType.DiagnosticImaging,
     HealthDataType.DiagnosticImagingExam
+);
+
+PatientDataToHealthDataTypeMap.set(
+    PatientDataType.BcCancerScreening,
+    HealthDataType.BcCancerScreening
 );
 
 export abstract class PatientData {
@@ -49,6 +56,13 @@ export class DiagnosticImagingExam extends PatientData {
     public fileId: string | undefined;
     public examDate!: string;
     public isUpdated?: boolean;
+}
+
+export class BcCancerScreening extends PatientData {
+    public programName!: string;
+    public fileId!: string;
+    public eventDateTime!: string;
+    public resultDateTime!: string;
 }
 
 export class PatientDataFile {

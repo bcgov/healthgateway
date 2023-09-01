@@ -75,6 +75,7 @@ namespace HealthGateway.PatientDataAccess
             return category switch
             {
                 HealthCategory.DiagnosticImaging => "DiagnosticImaging",
+                HealthCategory.BcCancerScreening => "BcCancerScreening",
                 _ => null,
             };
         }

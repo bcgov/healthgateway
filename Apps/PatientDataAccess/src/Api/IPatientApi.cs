@@ -37,6 +37,7 @@ namespace HealthGateway.PatientDataAccess.Api
         Covid19Laboratory,
         ClinicalDocument,
         DiagnosticImaging,
+        BcCancerScreening,
     }
 
     internal enum DiagnosticImagingStatus
@@ -49,16 +50,22 @@ namespace HealthGateway.PatientDataAccess.Api
         Amended,
     }
 
+    internal enum CancerScreeningType
+    {
+        Recall,
+        Result,
+    }
+
     internal interface IPatientApi
     {
         [Get("/patient/{pid}/file/{fileId}")]
         Task<FileResult?> GetFile(Guid pid, string fileId, CancellationToken ct);
 
         [Get("/patient/{pid}/health-options")]
-        Task<HealthOptionsResult?> GetHealthOptionsAsync(Guid pid, [Query] string[] categories, CancellationToken ct);
+        Task<HealthOptionsResult?> GetHealthOptionsAsync(Guid pid, [Query(CollectionFormat.Multi)] string[] categories, CancellationToken ct);
 
         [Get("/patient/{pid}/health-data")]
-        Task<HealthDataResult?> GetHealthDataAsync(Guid pid, [Query] string[] categories, CancellationToken ct);
+        Task<HealthDataResult?> GetHealthDataAsync(Guid pid, [Query(CollectionFormat.Multi)] string[] categories, CancellationToken ct);
     }
 
     internal record FileResult(string? MediaType, string? Data, string? Encoding);
