@@ -56,18 +56,18 @@ describe("Diagnostic Imaging", () => {
                     .find("[data-testid=generic-message-modal]")
                     .should("not.exist");
 
-                // Test for file download with the entry date prefxied to the file name.
+                // Test for file download with the entry date suffix.
                 cy.get("[data-testid=entryCardDate]")
                     .first()
                     .invoke("text")
                     .then((text) => {
                         var date = new Date(text);
-                        var datePrefix = date
+                        var dateSuffix = date
                             .toISOString()
                             .slice(0, 10)
                             .replace(/-/g, "_");
 
-                        cy.verifyDownload(`cancer_screening_${datePrefix}`, {
+                        cy.verifyDownload(`bc_cancer_screening_${dateSuffix}`, {
                             contains: true,
                         });
                     });

@@ -21,7 +21,7 @@ namespace HealthGateway.Patient.Mappings
     using HealthGateway.Patient.Constants;
     using HealthGateway.Patient.Services;
     using HealthGateway.PatientDataAccess;
-    using BcCancerScreeningExam = HealthGateway.Patient.Services.BcCancerScreeningExam;
+    using BcCancerScreening = HealthGateway.PatientDataAccess.BcCancerScreening;
     using DiagnosticImagingExam = HealthGateway.PatientDataAccess.DiagnosticImagingExam;
     using OrganDonorRegistration = HealthGateway.PatientDataAccess.OrganDonorRegistration;
 
@@ -73,7 +73,7 @@ namespace HealthGateway.Patient.Mappings
                 {
                     OrganDonorRegistration hd => context.Mapper.Map<Services.OrganDonorRegistration>(hd),
                     DiagnosticImagingExam hd => context.Mapper.Map<Services.DiagnosticImagingExam>(hd),
-                    PatientDataAccess.BcCancerScreeningExam hd => context.Mapper.Map<BcCancerScreeningExam>(hd),
+                    BcCancerScreening hd => context.Mapper.Map<Services.BcCancerScreening>(hd),
                     _ => throw new NotImplementedException($"{source.GetType().Name} is not mapped to {nameof(PatientData)}"),
                 };
             }

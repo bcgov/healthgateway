@@ -34,7 +34,7 @@ namespace HealthGateway.PatientTests.Services
     using Moq;
     using Shouldly;
     using Xunit;
-    using BcCancerScreeningExam = HealthGateway.PatientDataAccess.BcCancerScreeningExam;
+    using BcCancerScreening = HealthGateway.PatientDataAccess.BcCancerScreening;
     using DiagnosticImagingExam = HealthGateway.Patient.Services.DiagnosticImagingExam;
     using DiagnosticImagingStatus = HealthGateway.Patient.Models.DiagnosticImagingStatus;
     using OrganDonorRegistration = HealthGateway.Patient.Services.OrganDonorRegistration;
@@ -163,7 +163,7 @@ namespace HealthGateway.PatientTests.Services
         [Fact]
         public async Task CannotGetCancerScreeningData()
         {
-            BcCancerScreeningExam expected = new()
+            BcCancerScreening expected = new()
             {
                 EventType = BcCancerScreeningType.Recall,
             };
@@ -190,7 +190,7 @@ namespace HealthGateway.PatientTests.Services
         [InlineData(false)]
         public async Task CanGetCancerScreeningData(bool canAccessDataSource)
         {
-            BcCancerScreeningExam expected = new()
+            BcCancerScreening expected = new()
             {
                 Id = "12345678931",
                 FileId = "12345678931",
@@ -216,7 +216,7 @@ namespace HealthGateway.PatientTests.Services
 
             if (canAccessDataSource)
             {
-                Patient.Services.BcCancerScreeningExam actual = result.Items.ShouldHaveSingleItem().ShouldBeOfType<Patient.Services.BcCancerScreeningExam>();
+                Patient.Services.BcCancerScreening actual = result.Items.ShouldHaveSingleItem().ShouldBeOfType<Patient.Services.BcCancerScreening>();
                 actual.Id.ShouldBe(expected.Id);
                 actual.FileId.ShouldBe(expected.FileId);
                 actual.ProgramName.ShouldBe(expected.ProgramName);

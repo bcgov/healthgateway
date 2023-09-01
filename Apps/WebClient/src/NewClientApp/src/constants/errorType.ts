@@ -40,5 +40,5 @@ export enum ErrorSourceType {
     OrganDonorRegistration = "organ donor registration",
     DiagnosticImaging = "diagnostic imaging exam",
     PatientData = "patient data",
-    BcCancerScreening = "BC cancer screening exam",
+    BcCancerScreening = "BC Cancer screening",
 }

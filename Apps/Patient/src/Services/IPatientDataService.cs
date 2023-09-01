@@ -165,7 +165,7 @@ namespace HealthGateway.Patient.Services
     /// <summary>
     /// BC Cancer screening exam patient data.
     /// </summary>
-    public record BcCancerScreeningExam : PatientData
+    public record BcCancerScreening : PatientData
     {
         /// <summary>
         /// Gets or sets the program name.
@@ -188,7 +188,7 @@ namespace HealthGateway.Patient.Services
         public DateTime ResultDateTime { get; set; }
 
         /// <inheritdoc/>
-        public override string Type { get; } = nameof(BcCancerScreeningExam);
+        public override string Type { get; } = nameof(BcCancerScreening);
     }
 
     /// <summary>

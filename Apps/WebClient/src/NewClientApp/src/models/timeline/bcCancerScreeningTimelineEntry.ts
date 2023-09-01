@@ -1,11 +1,8 @@
-// create public class DiagnosticImagingTimelineEntry which extends TimelineEntry
-
 import { EntryType } from "@/constants/entryType";
 import { DateWrapper, StringISODate } from "@/models/dateWrapper";
-import { BcCancerScreeningExam } from "@/models/patientDataResponse";
+import { BcCancerScreening } from "@/models/patientDataResponse";
 import TimelineEntry from "@/models/timeline/timelineEntry";
 import { UserComment } from "@/models/userComment";
-
 export default class BcCancerScreeningResultTimelineEntry extends TimelineEntry {
     public title: string;
     public documentType: string;
@@ -16,7 +13,7 @@ export default class BcCancerScreeningResultTimelineEntry extends TimelineEntry 
     private getComments: (entryId: string) => UserComment[] | null;
 
     public constructor(
-        model: BcCancerScreeningExam,
+        model: BcCancerScreening,
         getComments: (entryId: string) => UserComment[] | null
     ) {
         super(

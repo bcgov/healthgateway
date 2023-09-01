@@ -43,8 +43,12 @@ describe("Disabled Filters", () => {
 });
 
 describe("Filters", () => {
-    function testFiltering(filterTestId, titleTestId, activeFilters) {
-        const toBeOrNotToBe = (titleId, testingTitleId) =>
+    function testDatasetTimelineFiltering(
+        filterTestId,
+        titleTestId,
+        activeFilters
+    ) {
+        const isVisibleOrNonExistent = (titleId, testingTitleId) =>
             titleId === testingTitleId ? "be.visible" : "not.exist";
 
         cy.get("[data-testid=filterContainer]").should("not.exist");
@@ -65,10 +69,13 @@ describe("Filters", () => {
             "[data-testid=diagnosticimagingTitle]",
         ];
         for (var i = 0; i < titleIds.length; i++) {
-            cy.get(titleIds[i]).should(toBeOrNotToBe(titleIds[i], titleTestId));
+            cy.get(titleIds[i]).should(
+                isVisibleOrNonExistent(titleIds[i], titleTestId)
+            );
         }
         verifyActiveFilters(activeFilters);
     }
+
     beforeEach(() => {
         cy.configureSettings({
             datasets: [
@@ -239,7 +246,7 @@ describe("Filters", () => {
     });
 
     it("Filter Immunization", () => {
-        testFiltering(
+        testDatasetTimelineFiltering(
             "[data-testid=Immunization-filter]",
             "[data-testid=immunizationTitle]",
             ["Immunization"]
@@ -266,7 +273,7 @@ describe("Filters", () => {
     });
 
     it("Filter Medication", () => {
-        testFiltering(
+        testDatasetTimelineFiltering(
             "[data-testid=Medication-filter]",
             "[data-testid=medicationTitle]",
             ["Medication"]
@@ -274,7 +281,7 @@ describe("Filters", () => {
     });
 
     it("Filter Encounter", () => {
-        testFiltering(
+        testDatasetTimelineFiltering(
             "[data-testid=HealthVisit-filter]",
             "[data-testid=healthvisitTitle]",
             ["Health Visits"]
@@ -282,7 +289,7 @@ describe("Filters", () => {
     });
 
     it("Filter COVID-19", () => {
-        testFiltering(
+        testDatasetTimelineFiltering(
             "[data-testid=Covid19TestResult-filter]",
             "[data-testid=covid19testresultTitle]",
             ["COVID‑19 Tests"]
@@ -290,7 +297,7 @@ describe("Filters", () => {
     });
 
     it("Filter Laboratory", () => {
-        testFiltering(
+        testDatasetTimelineFiltering(
             "[data-testid=LabResult-filter]",
             "[data-testid=labresultTitle]",
             ["Lab Results"]
@@ -298,7 +305,7 @@ describe("Filters", () => {
     });
 
     it("Filter Special Authority", () => {
-        testFiltering(
+        testDatasetTimelineFiltering(
             "[data-testid=SpecialAuthorityRequest-filter]",
             "[data-testid=specialauthorityrequestTitle]",
             ["Special Authority"]
@@ -306,7 +313,7 @@ describe("Filters", () => {
     });
 
     it("Filter Clinical Documents", () => {
-        testFiltering(
+        testDatasetTimelineFiltering(
             "[data-testid=ClinicalDocument-filter]",
             "[data-testid=clinicaldocumentTitle]",
             ["Clinical Documents"]
@@ -314,7 +321,7 @@ describe("Filters", () => {
     });
 
     it("Filter Hospital Visits", () => {
-        testFiltering(
+        testDatasetTimelineFiltering(
             "[data-testid=HospitalVisit-filter]",
             "[data-testid=hospitalvisitTitle]",
             ["Hospital Visits"]
@@ -322,7 +329,7 @@ describe("Filters", () => {
     });
 
     it("Filter Diagnostic Imaging", () => {
-        testFiltering(
+        testDatasetTimelineFiltering(
             "[data-testid=DiagnosticImaging-filter]",
             "[data-testid=diagnosticimagingTitle]",
             ["Imaging Reports"]
@@ -330,7 +337,7 @@ describe("Filters", () => {
     });
 
     it("Filter Cancer Screening", () => {
-        testFiltering(
+        testDatasetTimelineFiltering(
             "[data-testid=BcCancerScreening-filter]",
             "[data-testid=bccancerscreeningTitle]",
             ["BC Cancer Results"]

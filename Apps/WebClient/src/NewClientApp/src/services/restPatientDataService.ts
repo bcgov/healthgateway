@@ -31,7 +31,7 @@ export const patientDataTypeToEntryTypeMap: Map<PatientDataType, EntryType> =
         [PatientDataType.BcCancerScreening, EntryType.BcCancerScreening],
     ]);
 
-export const entryTypeToPatientdataTypeMap: Map<EntryType, PatientDataType> =
+export const entryTypeToPatientDataTypeMap: Map<EntryType, PatientDataType> =
     new Map<EntryType, PatientDataType>([
         [EntryType.DiagnosticImaging, PatientDataType.DiagnosticImaging],
         [EntryType.BcCancerScreening, PatientDataType.BcCancerScreening],

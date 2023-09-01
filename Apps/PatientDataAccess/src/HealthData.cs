@@ -83,7 +83,7 @@ namespace HealthGateway.PatientDataAccess
     /// <summary>
     /// The details of a BC Cancer screening exam.
     /// </summary>
-    public record BcCancerScreeningExam : HealthData
+    public record BcCancerScreening : HealthData
     {
         /// <summary>
         /// Gets or sets the type.

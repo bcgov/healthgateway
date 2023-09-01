@@ -22,7 +22,7 @@ namespace PatientDataAccessTests
     using HealthGateway.PatientDataAccess.Api;
     using Moq;
     using Refit;
-    using BcCancerScreeningExam = HealthGateway.PatientDataAccess.Api.BcCancerScreeningExam;
+    using BcCancerScreening = HealthGateway.PatientDataAccess.Api.BcCancerScreening;
     using BcCancerScreeningType = HealthGateway.PatientDataAccess.Api.CancerScreeningType;
     using DiagnosticImagingExam = HealthGateway.PatientDataAccess.Api.DiagnosticImagingExam;
     using DiagnosticImagingStatus = HealthGateway.PatientDataAccess.Api.DiagnosticImagingStatus;
@@ -68,7 +68,7 @@ namespace PatientDataAccessTests
         {
             Mock<IPatientApi> patientApi = new();
 
-            BcCancerScreeningExam bcCancerScreeningExam = new()
+            BcCancerScreening bcCancerScreening = new()
             {
                 HealthDataId = "12345678931",
                 HealthDataFileId = "12345678931",
@@ -85,7 +85,7 @@ namespace PatientDataAccessTests
                         new HealthDataMetadata(),
                         new[]
                         {
-                            bcCancerScreeningExam,
+                            bcCancerScreening,
                         }));
 
             IPatientDataRepository sut = CreateSut(patientApi.Object);
@@ -93,13 +93,13 @@ namespace PatientDataAccessTests
             PatientDataQueryResult result = await sut.Query(new HealthQuery(this.pid, new[] { HealthCategory.BcCancerScreening }), CancellationToken.None).ConfigureAwait(true);
 
             result.ShouldNotBeNull();
-            HealthGateway.PatientDataAccess.BcCancerScreeningExam exam = result.Items.ShouldHaveSingleItem().ShouldBeOfType<HealthGateway.PatientDataAccess.BcCancerScreeningExam>();
-            exam.Id.ShouldBe(bcCancerScreeningExam.HealthDataId);
-            exam.FileId.ShouldBe(bcCancerScreeningExam.HealthDataFileId);
-            exam.ProgramName.ShouldBe(bcCancerScreeningExam.ProgramName);
+            HealthGateway.PatientDataAccess.BcCancerScreening exam = result.Items.ShouldHaveSingleItem().ShouldBeOfType<HealthGateway.PatientDataAccess.BcCancerScreening>();
+            exam.Id.ShouldBe(bcCancerScreening.HealthDataId);
+            exam.FileId.ShouldBe(bcCancerScreening.HealthDataFileId);
+            exam.ProgramName.ShouldBe(bcCancerScreening.ProgramName);
             exam.EventType.ShouldBe(HealthGateway.PatientDataAccess.BcCancerScreeningType.Result);
-            exam.EventDateTime.ShouldBe(bcCancerScreeningExam.EventTimestampUtc);
-            exam.ResultDateTime.ShouldBe(bcCancerScreeningExam.ResultTimestamp.UtcDateTime);
+            exam.EventDateTime.ShouldBe(bcCancerScreening.EventTimestampUtc);
+            exam.ResultDateTime.ShouldBe(bcCancerScreening.ResultTimestamp.UtcDateTime);
         }
 
         [Fact]
@@ -149,7 +149,7 @@ namespace PatientDataAccessTests
         {
             Mock<IPatientApi> patientApi = new();
 
-            BcCancerScreeningExam bcCancerScreeningExam = new()
+            BcCancerScreening bcCancerScreening = new()
             {
                 HealthDataId = "bccancerscreening_vpp_12345678931",
             };
@@ -161,7 +161,7 @@ namespace PatientDataAccessTests
 
             patientApi
                 .Setup(api => api.GetHealthDataAsync(this.pid, It.IsAny<string[]>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new HealthDataResult(new HealthDataMetadata(), new HealthDataEntry[] { phsaDiagnosticImageExam, bcCancerScreeningExam }));
+                .ReturnsAsync(new HealthDataResult(new HealthDataMetadata(), new HealthDataEntry[] { phsaDiagnosticImageExam, bcCancerScreening }));
 
             IPatientDataRepository sut = CreateSut(patientApi.Object);
 
@@ -172,8 +172,8 @@ namespace PatientDataAccessTests
             HealthGateway.PatientDataAccess.DiagnosticImagingExam diExam = result.Items.First().ShouldBeOfType<HealthGateway.PatientDataAccess.DiagnosticImagingExam>();
             diExam.Id.ShouldBe(phsaDiagnosticImageExam.HealthDataId);
 
-            HealthGateway.PatientDataAccess.BcCancerScreeningExam csExam = result.Items.Last().ShouldBeOfType<HealthGateway.PatientDataAccess.BcCancerScreeningExam>();
-            csExam.Id.ShouldBe(bcCancerScreeningExam.HealthDataId);
+            HealthGateway.PatientDataAccess.BcCancerScreening csExam = result.Items.Last().ShouldBeOfType<HealthGateway.PatientDataAccess.BcCancerScreening>();
+            csExam.Id.ShouldBe(bcCancerScreening.HealthDataId);
         }
 
         [Fact]

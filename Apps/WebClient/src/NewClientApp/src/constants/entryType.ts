@@ -163,14 +163,14 @@ entryTypeMap.set(EntryType.DiagnosticImaging, {
 entryTypeMap.set(EntryType.BcCancerScreening, {
     type: EntryType.BcCancerScreening,
     commentType: CommentEntryType.BcCancerScreening,
-    name: "BC Cancer Results",
+    name: "BC Cancer Screening",
     description:
         "View and download your results as soon as they are available.",
     icon: "ribbon",
-    component: "BcCancerScreeningResultTimelineComponent",
+    component: "BcCancerScreeningTimelineComponent",
     eventName: "bc_cancer_screening",
     moduleName: "BcCancerScreening",
-    reportEventName: "BC Cancer Screening Exams",
+    reportEventName: "BC Cancer Screening",
 });
 
 export { entryTypeMap };

@@ -9,14 +9,14 @@ import { EntryType, entryTypeMap } from "@/constants/entryType";
 import { container } from "@/ioc/container";
 import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
 import { PatientDataFile } from "@/models/patientDataResponse";
-import BcCancerScreeningResultTimelineEntry from "@/models/timeline/bcCancerScreeningResultTimelineEntry";
+import BcCancerScreeningTimelineEntry from "@/models/timeline/bcCancerScreeningTimelineEntry";
 import { ILogger } from "@/services/interfaces";
 import { usePatientDataStore } from "@/stores/patientData";
 import SnowPlow from "@/utility/snowPlow";
 
 interface Props {
     hdid: string;
-    entry: BcCancerScreeningResultTimelineEntry;
+    entry: BcCancerScreeningTimelineEntry;
     index: number;
     datekey: string;
     isMobileDetails?: boolean;
@@ -62,7 +62,9 @@ function downloadFile(): void {
                         type: patientFile.contentType,
                     })
             )
-            .then((blob) => saveAs(blob, `cancer_screening_${dateString}.pdf`))
+            .then((blob) =>
+                saveAs(blob, `bc_cancer_screening_${dateString}.pdf`)
+            )
             .catch((err) => logger.error(err));
     }
 }

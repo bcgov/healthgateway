@@ -105,7 +105,49 @@ describe("Filters", () => {
         );
     });
 
-    it("Verify immunization record alert appears when only immunization is selected", () => {
+    const alertTestCases = [
+        {
+            name: "immunization",
+            filter: "Immunization",
+            alert: "timeline-immunization-alert",
+        },
+        {
+            name: "clinical document",
+            filter: "ClinicalDocument",
+            alert: "timeline-clinical-document-alert",
+        },
+        {
+            name: "diagnostic imaging",
+            filter: "DiagnosticImaging",
+            alert: "timeline-diagnostic-imaging-alert",
+        },
+        {
+            name: "cancer screening",
+            filter: "BcCancerScreening",
+            alert: "timeline-cancer-screening-alert",
+        },
+    ];
+
+    alertTestCases.forEach((testCase) => {
+        it(`Verify ${testCase.name} alert appears when the ${testCase.filter} filter is the only active filter`, () => {
+            cy.get(`[data-testid=${testCase.alert}]`).should("not.exist");
+
+            cy.get("[data-testid=filterDropdown]").click();
+            cy.get(`[data-testid=${testCase.filter}-filter] input`).click();
+            cy.get("[data-testid=btnFilterApply]").click();
+            cy.get("[data-testid=btnFilterApply]").should("not.exist");
+
+            cy.get(`[data-testid=${testCase.alert}]`).should("be.visible");
+
+            cy.get("[data-testid=filterDropdown]").click();
+            cy.get("[data-testid=HealthVisit-filter] input").click();
+            cy.get("[data-testid=btnFilterApply]").click();
+
+            cy.get(`[data-testid=${testCase.alert}]`).should("not.exist");
+        });
+    });
+
+    it("Verify 'immunization' alert appears when the 'immunization' filter is the only active filter", () => {
         cy.get(
             "[data-testid=linear-timeline-immunization-disclaimer-alert]"
         ).should("not.exist");
@@ -128,7 +170,7 @@ describe("Filters", () => {
         ).should("not.exist");
     });
 
-    it("Verify clinical document record alert appears when only clinical document is selected", () => {
+    it("Verify 'clinical document' alert appears when the 'clinical document' filter is the only active filter", () => {
         cy.get(
             "[data-testid=timeline-clinical-document-disclaimer-alert]"
         ).should("not.exist");
@@ -151,7 +193,7 @@ describe("Filters", () => {
         ).should("not.exist");
     });
 
-    it("Verify diagnostic imaging record alert appears when only imaging reports is selected", () => {
+    it("Verify 'diagnostic imaging' alert appears when the 'diagnostic imaging' filter is the only active filter", () => {
         cy.get(
             "[data-testid=linear-timeline-diagnostic-imaging-disclaimer-alert]"
         ).should("not.exist");
@@ -176,7 +218,7 @@ describe("Filters", () => {
         ).should("not.exist");
     });
 
-    it("Verify cancer screening record alert appears when only imaging reports is selected", () => {
+    it("Verify 'cancer screening' alert appears when the 'cancer screening' filter is the only active filter", () => {
         cy.get(
             "[data-testid=linear-timeline-cancer-screening-disclaimer]"
         ).should("not.exist");

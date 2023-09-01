@@ -37,7 +37,7 @@ namespace HealthGateway.PatientDataAccess
 
             this.CreateMap<Api.DiagnosticImagingExam, DiagnosticImagingExam>();
 
-            this.CreateMap<Api.BcCancerScreeningExam, BcCancerScreeningExam>()
+            this.CreateMap<Api.BcCancerScreening, BcCancerScreening>()
                 .ForMember(d => d.EventDateTime, opts => opts.MapFrom(cse => cse.EventTimestampUtc))
                 .ForMember(d => d.ResultDateTime, opts => opts.MapFrom(cse => cse.ResultTimestamp.UtcDateTime));
         }

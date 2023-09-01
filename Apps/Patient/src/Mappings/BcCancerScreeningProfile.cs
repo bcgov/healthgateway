@@ -20,7 +20,7 @@ namespace HealthGateway.Patient.Mappings
     using HealthGateway.PatientDataAccess;
 
     /// <summary>
-    /// The AutoMapper profile for BcCancerScreeningExam.
+    /// The AutoMapper profile for BcCancerScreening.
     /// </summary>
     public class BcCancerScreeningProfile : Profile
     {
@@ -29,7 +29,7 @@ namespace HealthGateway.Patient.Mappings
         /// </summary>
         public BcCancerScreeningProfile()
         {
-            this.CreateMap<BcCancerScreeningExam, Services.BcCancerScreeningExam>()
+            this.CreateMap<BcCancerScreening, Services.BcCancerScreening>()
                 .ForMember(
                     d => d.EventDateTime,
                     opts => opts.MapFrom(s => DateFormatter.SpecifyUtc(s.EventDateTime)))

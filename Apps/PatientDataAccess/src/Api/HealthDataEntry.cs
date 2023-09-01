@@ -126,7 +126,7 @@ namespace HealthGateway.PatientDataAccess.Api
         public bool? IsUpdated { get; set; }
     }
 
-    internal record BcCancerScreeningExam : HealthDataEntry
+    internal record BcCancerScreening : HealthDataEntry
     {
         public CancerScreeningType EventType { get; set; }
 

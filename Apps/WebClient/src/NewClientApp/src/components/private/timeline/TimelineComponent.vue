@@ -38,7 +38,7 @@ import SpecialAuthorityRequestTimelineEntry from "@/models/timeline/specialAutho
 import TimelineEntry, { DateGroup } from "@/models/timeline/timelineEntry";
 import { TimelineFilterBuilder } from "@/models/timeline/timelineFilter";
 import { ILogger } from "@/services/interfaces";
-import { entryTypeToPatientdataTypeMap } from "@/services/restPatientDataService";
+import { entryTypeToPatientDataTypeMap } from "@/services/restPatientDataService";
 import { useAppStore } from "@/stores/app";
 import { useClinicalDocumentStore } from "@/stores/clinicalDocument";
 import { useCommentStore } from "@/stores/comment";
@@ -257,7 +257,7 @@ const unfilteredTimelineEntries = computed(() => {
                     )
                 );
                 break;
-            case HealthDataType.BcCancerScreeningExam:
+            case HealthDataType.BcCancerScreening:
                 entries.push(
                     new BcCancerScreeningResultTimelineEntry(
                         exam as BcCancerScreeningExam,
@@ -454,14 +454,14 @@ function fetchDataset(entryType: EntryType): Promise<any> {
 
 function fetchTimelineData(): Promise<any> {
     const blockedEntryTypes: EntryType[] = [];
-    const patientDataEntryTypes = [...entryTypeToPatientdataTypeMap.keys()];
+    const patientDataEntryTypes = [...entryTypeToPatientDataTypeMap.keys()];
     const patientDataEntryTypesToRequest = [];
     const promises: Promise<any>[] = [];
     for (const entryType of props.entryTypes) {
         if (canAccessDataset(entryType)) {
             if (patientDataEntryTypes.includes(entryType)) {
                 patientDataEntryTypesToRequest.push(
-                    entryTypeToPatientdataTypeMap.get(
+                    entryTypeToPatientDataTypeMap.get(
                         entryType
                     ) as PatientDataType
                 );
@@ -646,7 +646,7 @@ setPageFromDate(linearDate.value);
             <v-alert
                 v-if="isOnlyClinicalDocumentSelected"
                 type="info"
-                data-testid="timeline-clinical-document-disclaimer-alert"
+                data-testid="timeline-clinical-document-alert"
                 class="d-print-none mb-4"
                 closable
                 variant="outlined"
@@ -665,7 +665,7 @@ setPageFromDate(linearDate.value);
             <v-alert
                 v-else-if="isOnlyImmunizationSelected"
                 type="info"
-                data-testid="linear-timeline-immunization-disclaimer-alert"
+                data-testid="timeline-immunization-alert"
                 class="d-print-none mb-4"
                 closable
                 variant="outlined"
@@ -683,7 +683,7 @@ setPageFromDate(linearDate.value);
             <v-alert
                 v-else-if="isOnlyDiagnosticImagingSelected"
                 type="info"
-                data-testid="linear-timeline-diagnostic-imaging-disclaimer"
+                data-testid="timeline-diagnostic-imaging-alert"
                 class="d-print-none mb-4"
                 closable
                 variant="outlined"
@@ -701,7 +701,7 @@ setPageFromDate(linearDate.value);
             <v-alert
                 v-else-if="isOnlyBcCancerScreeningSelected"
                 type="info"
-                data-testid="linear-timeline-cancer-screening-disclaimer"
+                data-testid="timeline-cancer-screening-alert"
                 class="d-print-none mb-4"
                 closable
                 variant="outlined"
