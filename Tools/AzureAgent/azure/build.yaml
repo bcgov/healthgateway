@@ -1,7 +1,12 @@
 name: 1.0.0$(Rev:.r) #Build number
 
+pr: none
+
 trigger:
   batch: "true"
+  branches:
+    include:
+    - dev
   paths:
     include:
       - Tools/AzureAgent
