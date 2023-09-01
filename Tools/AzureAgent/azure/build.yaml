@@ -1,7 +1,12 @@
 name: 1.0.0$(Rev:.r) #Build number
 
+pr: none
+
 trigger:
   batch: "true"
+  branches:
+    include:
+    - dev
   paths:
     include:
       - Tools/AzureAgent
@@ -26,7 +31,6 @@ stages:
     - task: Docker@2
       displayName: Build Azure Agent
       inputs:
-        containerRegistry: "docker-health"
         command: 'buildAndPush'
         repository: '$(DockerRepo)/azure-agent'
         buildContext: '$(Build.SourcesDirectory)/Tools/AzureAgent'
