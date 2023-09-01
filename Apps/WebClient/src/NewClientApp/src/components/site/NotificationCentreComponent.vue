@@ -21,7 +21,7 @@ enum AlertCategory {
     Medication = "Medications",
     Note = "MyNote",
     SpecialAuthority = "SpecialAuthority",
-    CancerScreening = "BcCancerScreening",
+    BcCancerScreening = "BcCancerScreening",
 }
 
 const router = useRouter();
@@ -87,8 +87,8 @@ function getEntryType(categoryName: string): EntryType | undefined {
             return EntryType.Note;
         case AlertCategory.SpecialAuthority:
             return EntryType.SpecialAuthorityRequest;
-        case AlertCategory.CancerScreening:
-            return EntryType.CancerScreening;
+        case AlertCategory.BcCancerScreening:
+            return EntryType.BcCancerScreening;
         default:
             return undefined;
     }

@@ -5,7 +5,7 @@ describe("Diagnostic Imaging", () => {
         cy.configureSettings({
             datasets: [
                 {
-                    name: "cancerScreening",
+                    name: "bcCancerScreening",
                     enabled: true,
                 },
             ],
@@ -22,7 +22,7 @@ describe("Diagnostic Imaging", () => {
         cy.get("[data-testid=timelineCard")
             .first()
             .within(() => {
-                cy.get("[data-testid=cancerscreeningTitle]")
+                cy.get("[data-testid=bccancerscreeningTitle]")
                     .should("be.visible")
                     .click({ force: true });
                 cy.get(
@@ -35,7 +35,7 @@ describe("Diagnostic Imaging", () => {
         cy.get("[data-testid=timelineCard")
             .first()
             .within(() => {
-                cy.get("[data-testid=cancerscreeningTitle]")
+                cy.get("[data-testid=bccancerscreeningTitle]")
                     .should("be.visible")
                     .click({ force: true });
                 cy.get(

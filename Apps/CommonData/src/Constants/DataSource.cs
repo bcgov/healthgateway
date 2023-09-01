@@ -87,6 +87,6 @@ namespace HealthGateway.Common.Data.Constants
         /// <summary>
         /// Represents a data source for BC Cancer screenings.
         /// </summary>
-        CancerScreening,
+        BcCancerScreening,
     }
 }

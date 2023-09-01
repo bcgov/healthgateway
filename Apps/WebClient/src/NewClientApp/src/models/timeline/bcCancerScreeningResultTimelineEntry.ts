@@ -1,7 +1,8 @@
 // create public class DiagnosticImagingTimelineEntry which extends TimelineEntry
+
 import { EntryType } from "@/constants/entryType";
 import { DateWrapper, StringISODate } from "@/models/dateWrapper";
-import { CancerScreeningExam } from "@/models/patientDataResponse";
+import { BcCancerScreeningExam } from "@/models/patientDataResponse";
 import TimelineEntry from "@/models/timeline/timelineEntry";
 import { UserComment } from "@/models/userComment";
 
@@ -15,20 +16,20 @@ export default class BcCancerScreeningResultTimelineEntry extends TimelineEntry 
     private getComments: (entryId: string) => UserComment[] | null;
 
     public constructor(
-        model: CancerScreeningExam,
+        model: BcCancerScreeningExam,
         getComments: (entryId: string) => UserComment[] | null
     ) {
         super(
-            model.id ?? `cancerScreening-${model.resultTimestamp}`,
-            EntryType.CancerScreening,
-            new DateWrapper(model.resultTimestamp)
+            model.id ?? `cancerScreening-${model.resultDateTime}`,
+            EntryType.BcCancerScreening,
+            new DateWrapper(model.resultDateTime, { isUtc: true })
         );
 
         this.title = "BC Cancer Result";
         this.documentType = "Screening results";
         this.programName = model.programName;
         this.fileId = model.fileId;
-        this.resultDate = model.resultTimestamp;
+        this.resultDate = model.resultDateTime;
         this.getComments = getComments;
     }
 

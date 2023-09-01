@@ -71,9 +71,9 @@ namespace HealthGateway.Patient.Services
 
         private static bool Filter(HealthData healthData)
         {
-            if (healthData is PatientDataAccess.CancerScreeningExam cse)
+            if (healthData is PatientDataAccess.BcCancerScreeningExam cse)
             {
-                return cse.EventType == CancerScreeningType.Result;
+                return cse.EventType == BcCancerScreeningType.Result;
             }
 
             return true;

@@ -11,7 +11,7 @@ export enum EntryType {
     Medication = "Medication",
     Note = "Note",
     SpecialAuthorityRequest = "SpecialAuthorityRequest",
-    CancerScreening = "CancerScreening",
+    BcCancerScreening = "BcCancerScreening",
 }
 
 export class EntryTypeDetails {
@@ -160,9 +160,9 @@ entryTypeMap.set(EntryType.DiagnosticImaging, {
     reportEventName: "Diagnostic Imaging Exams",
 });
 
-entryTypeMap.set(EntryType.CancerScreening, {
-    type: EntryType.CancerScreening,
-    commentType: CommentEntryType.CancerScreening,
+entryTypeMap.set(EntryType.BcCancerScreening, {
+    type: EntryType.BcCancerScreening,
+    commentType: CommentEntryType.BcCancerScreening,
     name: "BC Cancer Results",
     description:
         "View and download your results as soon as they are available.",

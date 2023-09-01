@@ -3,14 +3,21 @@ const HDID = "K6HL4VX67CZ2PGSZ2ZOIR4C3PGMFFBW5CIOXM74D6EQ7RYYL7P4A";
 
 describe("Filters", () => {
     beforeEach(() => {
+        // 2 records
         cy.intercept("GET", "**/ClinicalDocument/*", {
             fixture: "ClinicalDocumentService/clinicalDocument.json",
         });
+        // 9 records
         cy.intercept("GET", "**/Immunization?hdid=*", {
             fixture: "ImmunizationService/immunization.json",
         });
+        // 23 records
         cy.intercept("GET", "**/Encounter/*", {
             fixture: "EncounterService/encounters.json",
+        });
+        // 3 records
+        cy.intercept("GET", "**/PatientData/*?patientDataTypes=*", {
+            fixture: "PatientData/allTimelineData.json",
         });
         cy.configureSettings({
             datasets: [
@@ -31,7 +38,7 @@ describe("Filters", () => {
                     enabled: true,
                 },
                 {
-                    name: "cancerScreening",
+                    name: "bcCancerScreening",
                     enabled: true,
                 },
             ],
@@ -45,11 +52,13 @@ describe("Filters", () => {
     });
 
     it("Verify filtered record count", () => {
+        const totalRecordsUnfiltered = 37;
+        const pageSize = 25;
         const recordDisplayMessage = (lower, upper, total) =>
             `Displaying ${lower} to ${upper} out of ${total} records`;
 
         cy.get("[data-testid=timeline-record-count]").contains(
-            recordDisplayMessage(1, 25, 44)
+            recordDisplayMessage(1, pageSize, totalRecordsUnfiltered)
         );
 
         cy.get("[data-testid=filterDropdown]").click();
@@ -69,7 +78,7 @@ describe("Filters", () => {
         );
 
         cy.get("[data-testid=timeline-record-count]").contains(
-            recordDisplayMessage(1, 25, 44)
+            recordDisplayMessage(1, pageSize, totalRecordsUnfiltered)
         );
 
         cy.get("[data-testid=filterDropdown]").click();
@@ -92,7 +101,7 @@ describe("Filters", () => {
 
         cy.get("[data-testid=clear-filters-button]").click();
         cy.get("[data-testid=timeline-record-count]").contains(
-            recordDisplayMessage(1, 25, 44)
+            recordDisplayMessage(1, pageSize, totalRecordsUnfiltered)
         );
     });
 
@@ -173,7 +182,7 @@ describe("Filters", () => {
         ).should("not.exist");
 
         cy.get("[data-testid=filterDropdown]").click();
-        cy.get("[data-testid=CancerScreening-filter] input").click({
+        cy.get("[data-testid=BcCancerScreening-filter] input").click({
             force: true,
         });
         cy.get("[data-testid=btnFilterApply]").click();

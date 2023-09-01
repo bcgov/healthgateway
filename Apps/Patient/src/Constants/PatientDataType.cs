@@ -34,8 +34,8 @@ namespace HealthGateway.Patient.Constants
         DiagnosticImaging,
 
         /// <summary>
-        /// Cancer screening.
+        /// BC Cancer screening.
         /// </summary>
-        CancerScreening,
+        BcCancerScreening,
     }
 }

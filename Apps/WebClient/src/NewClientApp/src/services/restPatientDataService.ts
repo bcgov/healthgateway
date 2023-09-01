@@ -28,13 +28,13 @@ const serviceTypeMap: Map<PatientDataType, ServiceName> = new Map<
 export const patientDataTypeToEntryTypeMap: Map<PatientDataType, EntryType> =
     new Map<PatientDataType, EntryType>([
         [PatientDataType.DiagnosticImaging, EntryType.DiagnosticImaging],
-        [PatientDataType.CancerScreening, EntryType.CancerScreening],
+        [PatientDataType.BcCancerScreening, EntryType.BcCancerScreening],
     ]);
 
 export const entryTypeToPatientdataTypeMap: Map<EntryType, PatientDataType> =
     new Map<EntryType, PatientDataType>([
         [EntryType.DiagnosticImaging, PatientDataType.DiagnosticImaging],
-        [EntryType.CancerScreening, PatientDataType.CancerScreening],
+        [EntryType.BcCancerScreening, PatientDataType.BcCancerScreening],
     ]);
 
 export class RestPatientDataService implements IPatientDataService {

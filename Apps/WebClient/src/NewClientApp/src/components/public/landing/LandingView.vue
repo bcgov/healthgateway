@@ -29,7 +29,7 @@ const datasetEntryTypes: EntryType[] = [
     EntryType.ClinicalDocument,
     EntryType.HospitalVisit,
     EntryType.DiagnosticImaging,
-    EntryType.CancerScreening,
+    EntryType.BcCancerScreening,
 ];
 
 const serviceEntryTypes: EntryType[] = [];

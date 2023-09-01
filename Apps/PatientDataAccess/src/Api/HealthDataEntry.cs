@@ -126,7 +126,7 @@ namespace HealthGateway.PatientDataAccess.Api
         public bool? IsUpdated { get; set; }
     }
 
-    internal record CancerScreeningExam : HealthDataEntry
+    internal record BcCancerScreeningExam : HealthDataEntry
     {
         public CancerScreeningType EventType { get; set; }
 
@@ -134,7 +134,7 @@ namespace HealthGateway.PatientDataAccess.Api
 
         public DateTime EventTimestampUtc { get; set; }
 
-        public DateTime ResultTimestamp { get; set; }
+        public DateTimeOffset ResultTimestamp { get; set; }
     }
 }
 #pragma warning restore SA1600
