@@ -331,8 +331,8 @@ describe("Filters", () => {
 
     it("Filter Cancer Screening", () => {
         testFiltering(
-            "[data-testid=CancerScreening-filter]",
-            "[data-testid=cancerscreeningTitle]",
+            "[data-testid=BcCancerScreening-filter]",
+            "[data-testid=bccancerscreeningTitle]",
             ["BC Cancer Results"]
         );
     });
