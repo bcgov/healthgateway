@@ -18,13 +18,13 @@ import { container } from "@/ioc/container";
 import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
 import { DateWrapper, IDateWrapper } from "@/models/dateWrapper";
 import {
-    BcCancerScreeningExam,
+    BcCancerScreening,
     DiagnosticImagingExam,
     HealthDataType,
     PatientData,
     PatientDataType,
 } from "@/models/patientDataResponse";
-import BcCancerScreeningResultTimelineEntry from "@/models/timeline/bcCancerScreeningResultTimelineEntry";
+import BcCancerScreeningTimelineEntry from "@/models/timeline/bcCancerScreeningTimelineEntry";
 import ClinicalDocumentTimelineEntry from "@/models/timeline/clinicalDocumentTimelineEntry";
 import Covid19TestResultTimelineEntry from "@/models/timeline/covid19TestResultTimelineEntry";
 import DiagnosticImagingTimelineEntry from "@/models/timeline/diagnosticImagingTimelineEntry";
@@ -259,8 +259,8 @@ const unfilteredTimelineEntries = computed(() => {
                 break;
             case HealthDataType.BcCancerScreening:
                 entries.push(
-                    new BcCancerScreeningResultTimelineEntry(
-                        exam as BcCancerScreeningExam,
+                    new BcCancerScreeningTimelineEntry(
+                        exam as BcCancerScreening,
                         getComments
                     )
                 );

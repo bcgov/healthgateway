@@ -3,7 +3,7 @@ import { DateWrapper, StringISODate } from "@/models/dateWrapper";
 import { BcCancerScreening } from "@/models/patientDataResponse";
 import TimelineEntry from "@/models/timeline/timelineEntry";
 import { UserComment } from "@/models/userComment";
-export default class BcCancerScreeningResultTimelineEntry extends TimelineEntry {
+export default class BcCancerScreeningTimelineEntry extends TimelineEntry {
     public title: string;
     public documentType: string;
     public fileId: string;
