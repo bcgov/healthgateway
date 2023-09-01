@@ -1,7 +1,5 @@
 import { StringISODate } from "@/models/dateWrapper";
 
-export type ForecastStatus = string;
-
 export interface Immunization {
     name: string;
     immunizationAgents: ImmunizationAgent[];
@@ -35,7 +33,7 @@ export interface Recommendation {
     agentEligibleDate?: StringISODate;
     agentDueDate?: StringISODate;
 
-    status: ForecastStatus;
+    status: string;
     targetDiseases: TargetDisease[];
 
     immunization: Immunization;
@@ -49,7 +47,7 @@ export interface TargetDisease {
 export interface Forecast {
     recommendationId: string;
     createDate: StringISODate;
-    status: ForecastStatus;
+    status: string;
     displayName: string;
     eligibleDate: StringISODate;
     dueDate: StringISODate;

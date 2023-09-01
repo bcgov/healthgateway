@@ -1,4 +1,10 @@
-import { DateTime, Duration, DurationObject, DurationUnit } from "luxon";
+import {
+    DateTime,
+    DateTimeUnit,
+    Duration,
+    DurationLike,
+    DurationUnit,
+} from "luxon";
 
 const timezone = "America/Vancouver";
 const locale = "en-US"; // times display as 4:07 PM in en-US locale and 4:07 p.m. in en-CA locale
@@ -64,6 +70,12 @@ export interface IDateWrapper {
      * @returns the number milliseconds since the Unix epoch
      */
     fromEpoch(): number;
+
+    /**
+     * Determines if the date is valid.
+     * @returns true if the date is valid.
+     */
+    isValid(): boolean;
 
     /**
      * Gets the year.
@@ -151,14 +163,14 @@ export interface IDateWrapper {
      * @param duration The duration as a unit or object
      * @returns the calculated date
      */
-    subtract(duration: Duration | number | DurationObject): DateWrapper;
+    subtract(duration: DurationLike): DateWrapper;
 
     /**
      * Adds a duration to this date.
      * @param duration The duration as a unit or object
      * @returns the calculated date
      */
-    add(duration: Duration | number | DurationObject): DateWrapper;
+    add(duration: DurationLike): DateWrapper;
 
     /**
      * Checks if the date is in DST.
@@ -196,7 +208,7 @@ export class DateWrapper implements IDateWrapper {
     /**
      * Creates an immutable DateWrapper object.
      * @param param type of object to base this object. If none passed creates sets the current date time to NOW.
-     * @param isUtc True if the date passed is in UTC, false by default.
+     * @param options { isUtc: boolean, hasTime: boolean } manages time and timezone formatting.
      */
     constructor(
         param?: StringISODate | StringISODateTime | IDateWrapper | DateTime,
@@ -208,7 +220,7 @@ export class DateWrapper implements IDateWrapper {
             this._internal_date = param.internalDate;
         } else if (param instanceof DateTime) {
             this._date_source = "DateTime";
-            this._raw_string_value = param.toISO();
+            this._raw_string_value = param.toISO() ?? "";
             this._internal_date = param;
         } else if (typeof param === "string") {
             this._date_source = "string";
@@ -274,7 +286,7 @@ export class DateWrapper implements IDateWrapper {
         format?: string
     ): DateWrapper {
         return new DateWrapper(
-            DateTime.fromFormat(param, format || this.defaultFormat)
+            DateTime.fromFormat(param, format ?? this.defaultFormat)
         );
     }
 
@@ -284,7 +296,7 @@ export class DateWrapper implements IDateWrapper {
      * @param month The month to check
      * @returns the number of days in the month
      */
-    public static daysInMonth(year: number, month: number): number {
+    public static daysInMonth(year: number, month: number): number | undefined {
         return DateTime.local(year, month).daysInMonth;
     }
 
@@ -297,14 +309,14 @@ export class DateWrapper implements IDateWrapper {
      */
     public static format(dateString: string, formatString?: string): string {
         return new DateWrapper(dateString).format(
-            formatString || DateWrapper.defaultFormat
+            formatString ?? DateWrapper.defaultFormat
         );
     }
 
     /** {@inheritDoc IDateWrapper.format} */
     public format(formatString?: string): string {
         return this.internalDate.toFormat(
-            formatString || DateWrapper.defaultFormat,
+            formatString ?? DateWrapper.defaultFormat,
             {
                 locale,
             }
@@ -317,12 +329,12 @@ export class DateWrapper implements IDateWrapper {
         if (toUtc) {
             dateTime = dateTime.toUTC();
         }
-        return dateTime.toISO();
+        return dateTime.toISO() ?? "";
     }
 
     /** {@inheritDoc IDateWrapper.toISODate} */
     public toISODate(): StringISODate {
-        return this.internalDate.toISODate();
+        return this.internalDate.toISODate() ?? "";
     }
 
     /** {@inheritDoc IDateWrapper.toJSDate} */
@@ -333,6 +345,11 @@ export class DateWrapper implements IDateWrapper {
     /** {@inheritDoc IDateWrapper.fromEpoch} */
     public fromEpoch(): number {
         return this.internalDate.valueOf();
+    }
+
+    /** {@inheritDoc IDateWrapper.isValid} */
+    public isValid(): boolean {
+        return this.internalDate.isValid;
     }
 
     /** {@inheritDoc IDateWrapper.year} */
@@ -375,7 +392,7 @@ export class DateWrapper implements IDateWrapper {
     public isSame(other: IDateWrapper, unit?: DurationUnit): boolean {
         if (unit) {
             const otherDate = DateWrapper.getDateTime(other);
-            return this.internalDate.hasSame(otherDate, unit);
+            return this.internalDate.hasSame(otherDate, unit as DateTimeUnit);
         } else {
             return this.fromEpoch() === other.fromEpoch();
         }
@@ -403,18 +420,18 @@ export class DateWrapper implements IDateWrapper {
 
     /** {@inheritDoc IDateWrapper.startOf} */
     public startOf(unit: DurationUnit): DateWrapper {
-        const temp_date = this.internalDate.startOf(unit);
+        const temp_date = this.internalDate.startOf(unit as DateTimeUnit);
         return new DateWrapper(temp_date);
     }
 
     /** {@inheritDoc IDateWrapper.subtract} */
-    public subtract(duration: Duration | number | DurationObject): DateWrapper {
+    public subtract(duration: DurationLike): DateWrapper {
         const temp_date = this.internalDate.minus(duration);
         return new DateWrapper(temp_date);
     }
 
     /** {@inheritDoc IDateWrapper.add} */
-    public add(duration: Duration | number | DurationObject): DateWrapper {
+    public add(duration: DurationLike): DateWrapper {
         const temp_date = this.internalDate.plus(duration);
         return new DateWrapper(temp_date);
     }

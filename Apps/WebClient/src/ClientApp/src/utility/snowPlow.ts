@@ -1,6 +1,6 @@
-import container from "@/plugins/container";
+import { container } from "@/ioc/container";
+import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
 import { EventData, SnowplowWindow } from "@/plugins/extensions";
-import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { ILogger } from "@/services/interfaces";
 
 declare let window: SnowplowWindow;

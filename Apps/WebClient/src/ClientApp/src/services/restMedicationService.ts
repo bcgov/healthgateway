@@ -1,5 +1,3 @@
-import { injectable } from "inversify";
-
 import { EntryType } from "@/constants/entryType";
 import { ResultType } from "@/constants/resulttype";
 import { ServiceCode } from "@/constants/serviceCodes";
@@ -8,8 +6,6 @@ import { ExternalConfiguration } from "@/models/configData";
 import { HttpError } from "@/models/errors";
 import MedicationStatementHistory from "@/models/medicationStatementHistory";
 import RequestResult from "@/models/requestResult";
-import container from "@/plugins/container";
-import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import {
     IHttpDelegate,
     ILogger,
@@ -18,21 +14,21 @@ import {
 import ConfigUtil from "@/utility/configUtil";
 import ErrorTranslator from "@/utility/errorTranslator";
 
-@injectable()
 export class RestMedicationService implements IMedicationService {
-    private logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-    private readonly MEDICATION_STATEMENT_BASE_URI: string =
-        "MedicationStatement";
-    private baseUri = "";
-    private http!: IHttpDelegate;
-    private isEnabled = false;
+    private readonly BASE_URI: string = "MedicationStatement";
+    private logger;
+    private http;
+    private baseUri;
+    private isEnabled;
 
-    public initialize(
-        config: ExternalConfiguration,
-        http: IHttpDelegate
-    ): void {
-        this.baseUri = config.serviceEndpoints["Medication"];
+    constructor(
+        logger: ILogger,
+        http: IHttpDelegate,
+        config: ExternalConfiguration
+    ) {
+        this.logger = logger;
         this.http = http;
+        this.baseUri = config.serviceEndpoints["Medication"];
         this.isEnabled = ConfigUtil.isDatasetEnabled(EntryType.Medication);
     }
 
@@ -44,34 +40,30 @@ export class RestMedicationService implements IMedicationService {
         if (protectiveWord) {
             headers["protectiveWord"] = protectiveWord;
         }
-        return new Promise((resolve, reject) => {
-            if (!this.isEnabled) {
-                resolve({
-                    pageIndex: 0,
-                    pageSize: 0,
-                    resourcePayload: [],
-                    resultStatus: ResultType.Success,
-                    totalResultCount: 0,
-                });
-                return;
-            }
-            this.http
-                .get<RequestResult<MedicationStatementHistory[]>>(
-                    `${this.baseUri}${this.MEDICATION_STATEMENT_BASE_URI}/${hdid}`,
-                    headers
-                )
-                .then((requestResult) => resolve(requestResult))
-                .catch((err: HttpError) => {
-                    this.logger.error(
-                        `Error in RestMedicationService.getPatientMedicationStatementHistory()`
-                    );
-                    reject(
-                        ErrorTranslator.internalNetworkError(
-                            err,
-                            ServiceCode.Medication
-                        )
-                    );
-                });
-        });
+
+        if (!this.isEnabled) {
+            return Promise.resolve({
+                pageIndex: 0,
+                pageSize: 0,
+                resourcePayload: [],
+                resultStatus: ResultType.Success,
+                totalResultCount: 0,
+            });
+        }
+
+        return this.http
+            .get<RequestResult<MedicationStatementHistory[]>>(
+                `${this.baseUri}${this.BASE_URI}/${hdid}`,
+                headers
+            )
+            .catch((err: HttpError) => {
+                this.logger.error(
+                    `Error in RestMedicationService.getPatientMedicationStatementHistory()`
+                );
+                throw ErrorTranslator.internalNetworkError(
+                    err,
+                    ServiceCode.Medication
+                );
+            });
     }
 }

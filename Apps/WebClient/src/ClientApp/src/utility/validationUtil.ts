@@ -1,4 +1,5 @@
 import { BaseValidation } from "@vuelidate/core";
+import { unref } from "vue";
 
 const PHNsigDigits = [2, 4, 8, 5, 10, 9, 7, 3];
 
@@ -19,7 +20,7 @@ export default abstract class ValidationUtil {
         }
 
         let ok = false;
-        if (phn[0] == "9") {
+        if (phn.startsWith("9")) {
             let digit: number;
             let checksum = 0;
             for (let i = 1; i < 9; i++) {
@@ -46,9 +47,25 @@ export default abstract class ValidationUtil {
         ignoreUntouched = true
     ): boolean | undefined {
         validator ??= rootValidator;
-        const untouched = rootValidator.$dirty === false;
+        const untouched = !rootValidator.$dirty;
         return untouched && ignoreUntouched
             ? undefined
             : !validator.$invalid && !validator.$pending;
+    }
+
+    /**
+     * Returns the error messages associated with failed validation rules on a validator.
+     * @param validator The validator for a parameter.
+     * @param ignoreUntouched Determines whether untouched parameters should be ignored when retrieving error messages (defaults to true).
+     * @returns an empty array if the parameter is untouched (and ignoreUntouched is true), otherwise an array containing the error messages associated with all failed validation rules on the validator.
+     */
+    public static getErrorMessages(
+        validator: BaseValidation,
+        ignoreUntouched = true
+    ): string[] {
+        const errors = ignoreUntouched
+            ? validator.$errors
+            : validator.$silentErrors;
+        return errors.map((e) => unref(e.$message));
     }
 }

@@ -1,14 +1,9 @@
-import { Store } from "vuex";
-
 import AddDependentRequest from "@/models/addDependentRequest";
 import { Dictionary } from "@/models/baseTypes";
 import { CheckInRequest } from "@/models/checkInRequest";
 import { ClinicalDocument } from "@/models/clinicalDocument";
 import Communication, { CommunicationType } from "@/models/communication";
-import {
-    ExternalConfiguration,
-    OpenIdConnectConfiguration,
-} from "@/models/configData";
+import { ExternalConfiguration } from "@/models/configData";
 import CovidVaccineRecord from "@/models/covidVaccineRecord";
 import { StringISODate } from "@/models/dateWrapper";
 import type { Dependent } from "@/models/dependent";
@@ -43,14 +38,8 @@ import type { UserPreference } from "@/models/userPreference";
 import UserProfile, { CreateUserRequest } from "@/models/userProfile";
 import UserRating from "@/models/userRating";
 import VaccinationStatus from "@/models/vaccinationStatus";
-import { RootState } from "@/store/types";
-
-export interface IHttpDelegateService {
-    initialize(config: ExternalConfiguration, http: IHttpDelegate): void;
-}
 
 export interface IAuthenticationService {
-    initialize(config: OpenIdConnectConfiguration): Promise<void>;
     signIn(redirectPath: string, idpHint?: string): Promise<OidcTokenDetails>;
     signOut(): Promise<void>;
     refreshToken(): Promise<boolean>;
@@ -60,14 +49,12 @@ export interface IAuthenticationService {
 }
 
 export interface IImmunizationService {
-    initialize(config: ExternalConfiguration, http: IHttpDelegate): void;
     getPatientImmunizations(
         hdid: string
     ): Promise<RequestResult<ImmunizationResult>>;
 }
 
 export interface IVaccinationStatusService {
-    initialize(config: ExternalConfiguration, http: IHttpDelegate): void;
     getPublicVaccineStatus(
         phn: string,
         dateOfBirth: StringISODate,
@@ -87,12 +74,10 @@ export interface IVaccinationStatusService {
 }
 
 export interface IPatientService {
-    initialize(config: ExternalConfiguration, http: IHttpDelegate): void;
     getPatient(hdid: string): Promise<Patient>;
 }
 
 export interface IMedicationService {
-    initialize(config: ExternalConfiguration, http: IHttpDelegate): void;
     getPatientMedicationStatementHistory(
         hdid: string,
         protectiveWord?: string
@@ -100,26 +85,22 @@ export interface IMedicationService {
 }
 
 export interface ISpecialAuthorityService {
-    initialize(config: ExternalConfiguration, http: IHttpDelegate): void;
     getPatientMedicationRequest(
         hdid: string
     ): Promise<RequestResult<MedicationRequest[]>>;
 }
 
 export interface IEncounterService {
-    initialize(config: ExternalConfiguration, http: IHttpDelegate): void;
     getPatientEncounters(hdid: string): Promise<RequestResult<Encounter[]>>;
 }
 
 export interface IHospitalVisitService {
-    initialize(config: ExternalConfiguration, http: IHttpDelegate): void;
     getHospitalVisits(
         hdid: string
     ): Promise<RequestResult<HospitalVisitResult>>;
 }
 
 export interface ILaboratoryService {
-    initialize(config: ExternalConfiguration, http: IHttpDelegate): void;
     getCovid19LaboratoryOrders(
         hdid: string
     ): Promise<RequestResult<Covid19LaboratoryOrderResult>>;
@@ -134,18 +115,15 @@ export interface ILaboratoryService {
 }
 
 export interface IClinicalDocumentService {
-    initialize(config: ExternalConfiguration, http: IHttpDelegate): void;
     getRecords(hdid: string): Promise<RequestResult<ClinicalDocument[]>>;
     getFile(fileId: string, hdid: string): Promise<RequestResult<EncodedMedia>>;
 }
 
 export interface IConfigService {
-    initialize(http: IHttpDelegate): void;
     getConfiguration(): Promise<ExternalConfiguration>;
 }
 
 export interface IUserProfileService {
-    initialize(config: ExternalConfiguration, http: IHttpDelegate): void;
     createProfile(createRequest: CreateUserRequest): Promise<UserProfile>;
     getProfile(hdid: string): Promise<UserProfile>;
     validateAge(hdid: string): Promise<boolean>;
@@ -156,9 +134,9 @@ export interface IUserProfileService {
         hdid: string,
         inviteKey: string
     ): Promise<RequestResult<boolean>>;
-    validateSMS(hdid: string, digit: string): Promise<boolean>;
+    validateSms(hdid: string, digit: string): Promise<boolean>;
     updateEmail(hdid: string, email: string): Promise<boolean>;
-    updateSMSNumber(hdid: string, smsNumber: string): Promise<boolean>;
+    updateSmsNumber(hdid: string, smsNumber: string): Promise<boolean>;
     updateUserPreference(
         hdid: string,
         userPreference: UserPreference
@@ -175,25 +153,21 @@ export interface IUserProfileService {
 }
 
 export interface IUserFeedbackService {
-    initialize(config: ExternalConfiguration, http: IHttpDelegate): void;
     submitFeedback(hdid: string, feedback: UserFeedback): Promise<boolean>;
 }
 
 export interface IUserRatingService {
-    initialize(config: ExternalConfiguration, http: IHttpDelegate): void;
     submitRating(rating: UserRating): Promise<boolean>;
 }
 
 export interface IUserNoteService {
-    initialize(config: ExternalConfiguration, http: IHttpDelegate): void;
     getNotes(hdid: string): Promise<RequestResult<UserNote[]>>;
-    createNote(hdid: string, note: UserNote): Promise<UserNote | undefined>;
+    createNote(hdid: string, note: UserNote): Promise<UserNote>;
     updateNote(hdid: string, note: UserNote): Promise<UserNote>;
     deleteNote(hdid: string, note: UserNote): Promise<void>;
 }
 
 export interface IUserCommentService {
-    initialize(config: ExternalConfiguration, http: IHttpDelegate): void;
     getCommentsForEntry(
         hdid: string,
         parentEntryId: string
@@ -210,19 +184,18 @@ export interface IUserCommentService {
 }
 
 export interface INotificationService {
-    initialize(config: ExternalConfiguration, http: IHttpDelegate): void;
     getNotifications(hdid: string): Promise<Notification[]>;
     dismissNotification(hdid: string, notificationId: string): Promise<void>;
     dismissNotifications(hdid: string): Promise<void>;
 }
 
 export interface ICommunicationService {
-    initialize(config: ExternalConfiguration, http: IHttpDelegate): void;
-    getActive(type: CommunicationType): Promise<RequestResult<Communication>>;
+    getActive(
+        type: CommunicationType
+    ): Promise<RequestResult<Communication | null>>;
 }
 
 export interface IDependentService {
-    initialize(config: ExternalConfiguration, http: IHttpDelegate): void;
     addDependent(
         hdid: string,
         dependent: AddDependentRequest
@@ -260,7 +233,6 @@ export interface IHttpDelegate {
 }
 
 export interface IPcrTestService {
-    initialize(config: ExternalConfiguration, http: IHttpDelegate): void;
     registerTestKit(
         hdid: string,
         testKit: RegisterTestKitRequest
@@ -271,15 +243,12 @@ export interface IPcrTestService {
 }
 
 export interface IReportService {
-    initialize(config: ExternalConfiguration, http: IHttpDelegate): void;
     generateReport(
         reportRequest: ReportRequest
     ): Promise<RequestResult<Report>>;
 }
 
 export interface ILogger {
-    initialize(logLevel?: string): void;
-    log(level: string, message: string): void;
     warn(message: string): void;
     error(message: string): void;
     info(message: string): void;
@@ -287,18 +256,13 @@ export interface ILogger {
     debug(message: string): void;
 }
 
-export interface IStoreProvider {
-    getStore(): Store<RootState>;
-}
-
 export interface ITicketService {
-    initialize(config: ExternalConfiguration, http: IHttpDelegate): void;
     createTicket(room: string): Promise<Ticket | undefined>;
     checkIn(checkInRequest: CheckInRequest): Promise<Ticket>;
     removeTicket(checkInRequest: CheckInRequest): Promise<void>;
 }
 
-export interface IPatientDataService extends IHttpDelegateService {
+export interface IPatientDataService {
     getPatientData(
         hdid: string,
         patientDataTypes: PatientDataType[]
