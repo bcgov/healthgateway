@@ -60,7 +60,7 @@ export const useCovid19TestResultStore = defineStore(
             return covid19TestResults(hdid).length;
         }
 
-        function areCovid19TestResultsLoading(hdid: string): boolean {
+        function covid19TestResultsAreLoading(hdid: string): boolean {
             return (
                 getCovid19TestResultState(hdid).status === LoadStatus.REQUESTED
             );
@@ -160,7 +160,7 @@ export const useCovid19TestResultStore = defineStore(
         return {
             covid19TestResults,
             covid19TestResultsCount,
-            areCovid19TestResultsLoading,
+            covid19TestResultsAreLoading,
             retrieveCovid19TestResults,
         };
     }

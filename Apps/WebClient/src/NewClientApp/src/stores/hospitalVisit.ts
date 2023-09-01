@@ -48,11 +48,11 @@ export const useHospitalVisitStore = defineStore("hospitalVisit", () => {
         return getHospitalVisitsState(hdid).data;
     }
 
-    function areHospitalVisitsLoading(hdid: string): boolean {
+    function hospitalVisitsAreLoading(hdid: string): boolean {
         return getHospitalVisitsState(hdid).status === LoadStatus.REQUESTED;
     }
 
-    function areHospitalVisitsQueued(hdid: string): boolean {
+    function hospitalVisitsAreQueued(hdid: string): boolean {
         return getHospitalVisitsState(hdid).queued;
     }
 
@@ -118,7 +118,7 @@ export const useHospitalVisitStore = defineStore("hospitalVisit", () => {
         if (getHospitalVisitsState(hdid).status === LoadStatus.LOADED) {
             logger.debug(`Hospital Visits found stored, not querying!`);
             const visits: HospitalVisit[] = hospitalVisits(hdid);
-            const hospitalVisitsQueued: boolean = areHospitalVisitsQueued(hdid);
+            const hospitalVisitsQueued: boolean = hospitalVisitsAreQueued(hdid);
             return Promise.resolve({
                 pageIndex: 0,
                 pageSize: 0,
@@ -183,8 +183,8 @@ export const useHospitalVisitStore = defineStore("hospitalVisit", () => {
 
     return {
         hospitalVisits,
-        areHospitalVisitsLoading,
-        areHospitalVisitsQueued,
+        hospitalVisitsAreLoading,
+        hospitalVisitsAreQueued,
         hospitalVisitsCount,
         retrieveHospitalVisits,
     };

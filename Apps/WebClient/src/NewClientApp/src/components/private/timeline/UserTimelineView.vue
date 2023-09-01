@@ -31,7 +31,7 @@ const userStore = useUserStore();
 const commentsAreEnabled = computed(
     () => configStore.webConfig.featureToggleConfiguration.timeline.comment
 );
-const areNotesLoading = computed(() => noteStore.areNotesLoading);
+const notesAreLoading = computed(() => noteStore.notesAreLoading);
 const notesAreEnabled = computed(() =>
     ConfigUtil.isDatasetEnabled(EntryType.Note)
 );
@@ -51,7 +51,7 @@ function openNoteDialog(): void {
     <PageTitleComponent title="Timeline">
         <template #append>
             <HgButtonComponent
-                v-if="notesAreEnabled && !areNotesLoading"
+                v-if="notesAreEnabled && !notesAreLoading"
                 data-testid="addNoteBtn"
                 variant="secondary"
                 @click="openNoteDialog"
@@ -66,5 +66,5 @@ function openNoteDialog(): void {
         :entry-types="entryTypes"
         :comments-are-enabled="commentsAreEnabled"
     />
-    <NoteDialogComponent :is-loading="areNotesLoading" />
+    <NoteDialogComponent :is-loading="notesAreLoading" />
 </template>

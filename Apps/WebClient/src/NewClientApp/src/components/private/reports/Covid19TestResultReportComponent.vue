@@ -67,8 +67,8 @@ const reportService = container.get<IReportService>(
 );
 const covid19TestResultStore = useCovid19TestResultStore();
 
-const areCovid19TestResultsLoading = computed(() =>
-    covid19TestResultStore.areCovid19TestResultsLoading(props.hdid)
+const covid19TestResultsAreLoading = computed(() =>
+    covid19TestResultStore.covid19TestResultsAreLoading(props.hdid)
 );
 const isEmpty = computed(() => visibleRecords.value.length === 0);
 const visibleRecords = computed(() =>
@@ -110,8 +110,8 @@ function generateReport(
     });
 }
 
-watch(areCovid19TestResultsLoading, () => {
-    emit("on-is-loading-changed", areCovid19TestResultsLoading.value);
+watch(covid19TestResultsAreLoading, () => {
+    emit("on-is-loading-changed", covid19TestResultsAreLoading.value);
 });
 
 watch(isEmpty, () => {
@@ -130,13 +130,13 @@ covid19TestResultStore
 <template>
     <div>
         <section>
-            <v-row v-if="isEmpty && !areCovid19TestResultsLoading">
+            <v-row v-if="isEmpty && !covid19TestResultsAreLoading">
                 <v-col>No records found.</v-col>
             </v-row>
             <HgDataTableComponent
                 v-else-if="!isDependent"
                 class="d-none d-md-block"
-                :loading="areCovid19TestResultsLoading"
+                :loading="covid19TestResultsAreLoading"
                 :items="items"
                 :fields="fields"
                 density="compact"

@@ -66,10 +66,10 @@ retrieveDependents(userStore.hdid, false).then(() => {
 
 <template>
     <div>
-        <LoadingComponent :is-loading="dependentStore.areDependentsLoading" />
+        <LoadingComponent :is-loading="dependentStore.dependentsAreLoading" />
         <div
             v-if="
-                !dependentStore.areDependentsLoading && dependent !== undefined
+                !dependentStore.dependentsAreLoading && dependent !== undefined
             "
         >
             <BreadcrumbComponent :items="breadcrumbItems" />

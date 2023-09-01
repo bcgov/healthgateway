@@ -157,8 +157,8 @@ const isExpired = computed(() => {
 const isLaboratoryOrderTabShown = computed(() =>
     ConfigUtil.isDependentDatasetEnabled(EntryType.LabResult)
 );
-const areLabResultsLoading = computed(() =>
-    labResultStore.areLabResultsLoading(dependentHdid.value)
+const labResultsAreLoading = computed(() =>
+    labResultStore.labResultsAreLoading(dependentHdid.value)
 );
 const labResults = computed(() =>
     labResultStore
@@ -174,8 +174,8 @@ const labResults = computed(() =>
 const isClinicalDocumentTabShown = computed(() =>
     ConfigUtil.isDependentDatasetEnabled(EntryType.ClinicalDocument)
 );
-const areClinicalDocumentsLoading = computed(() =>
-    clinicalDocumentStore.areClinicalDocumentsLoading(dependentHdid.value)
+const clinicalDocumentsAreLoading = computed(() =>
+    clinicalDocumentStore.clinicalDocumentsAreLoading(dependentHdid.value)
 );
 const clinicalDocuments = computed(() =>
     clinicalDocumentStore
@@ -188,8 +188,8 @@ const clinicalDocuments = computed(() =>
 const isCovid19TabShown = computed(() =>
     ConfigUtil.isDependentDatasetEnabled(EntryType.Covid19TestResult)
 );
-const areCovid19TestsLoading = computed(() =>
-    covid19TestResultStore.areCovid19TestResultsLoading(dependentHdid.value)
+const covid19TestsAreLoading = computed(() =>
+    covid19TestResultStore.covid19TestResultsAreLoading(dependentHdid.value)
 );
 const covid19TestResultRows = computed(
     () =>
@@ -207,10 +207,10 @@ const covid19TestResultRows = computed(
 const isImmunizationTabShown = computed(() =>
     ConfigUtil.isDependentDatasetEnabled(EntryType.Immunization)
 );
-const areImmunizationsLoading = computed(
+const immunizationsAreLoading = computed(
     () =>
-        immunizationStore.areImmunizationsLoading(dependentHdid.value) ||
-        immunizationStore.areImmunizationsDeferred(dependentHdid.value)
+        immunizationStore.immunizationsAreLoading(dependentHdid.value) ||
+        immunizationStore.immunizationsAreDeferred(dependentHdid.value)
 );
 const immunizationItems = computed(() =>
     immunizationStore
@@ -770,7 +770,7 @@ watch(vaccineRecordState, () => {
                             COVID-19 Test Results
                         </p>
                         <v-skeleton-loader
-                            v-if="areCovid19TestsLoading"
+                            v-if="covid19TestsAreLoading"
                             type="table-thead, table-row@2"
                             data-testid="table-skeleton-loader"
                         />
@@ -970,7 +970,7 @@ watch(vaccineRecordState, () => {
                                 <v-tab :key="2">Forecasts</v-tab>
                             </v-tabs>
                             <v-skeleton-loader
-                                v-if="areImmunizationsLoading"
+                                v-if="immunizationsAreLoading"
                                 type="table-thead, table-row@2"
                                 data-testid="table-skeleton-loader"
                             />
@@ -1289,7 +1289,7 @@ watch(vaccineRecordState, () => {
                         class="pa-1"
                     >
                         <v-skeleton-loader
-                            v-if="areLabResultsLoading"
+                            v-if="labResultsAreLoading"
                             type="table-thead, table-row@2"
                             data-testid="table-skeleton-loader"
                         />
@@ -1385,7 +1385,7 @@ watch(vaccineRecordState, () => {
                         class="pa-1"
                     >
                         <v-skeleton-loader
-                            v-if="areClinicalDocumentsLoading"
+                            v-if="clinicalDocumentsAreLoading"
                             type="table-thead, table-row@2"
                             data-testid="table-skeleton-loader"
                         />

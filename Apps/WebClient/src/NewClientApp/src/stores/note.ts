@@ -26,7 +26,7 @@ export const useNoteStore = defineStore("note", () => {
     const error = ref<ResultError>();
 
     const notesCount = computed(() => notes.value.length);
-    const areNotesLoading = computed(
+    const notesAreLoading = computed(
         () => status.value === LoadStatus.REQUESTED
     );
 
@@ -131,7 +131,7 @@ export const useNoteStore = defineStore("note", () => {
     return {
         notes,
         notesCount,
-        areNotesLoading,
+        notesAreLoading,
         retrieveNotes,
         createNote,
         updateNote,

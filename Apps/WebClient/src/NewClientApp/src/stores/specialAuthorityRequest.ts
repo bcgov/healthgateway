@@ -57,7 +57,7 @@ export const useSpecialAuthorityRequestStore = defineStore(
             return getSpecialAuthorityRequestState(hdid).data.length;
         }
 
-        function areSpecialAuthorityRequestsLoading(hdid: string): boolean {
+        function specialAuthorityRequestsAreLoading(hdid: string): boolean {
             return (
                 getSpecialAuthorityRequestState(hdid).status ===
                 LoadStatus.REQUESTED
@@ -151,7 +151,7 @@ export const useSpecialAuthorityRequestStore = defineStore(
         return {
             specialAuthorityRequests,
             specialAuthorityRequestsCount,
-            areSpecialAuthorityRequestsLoading,
+            specialAuthorityRequestsAreLoading,
             retrieveSpecialAuthorityRequests,
         };
     }

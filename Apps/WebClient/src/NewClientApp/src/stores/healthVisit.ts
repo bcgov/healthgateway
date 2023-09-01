@@ -44,7 +44,7 @@ export const useHealthVisitStore = defineStore("healthVisit", () => {
         return getHealthVisitState(hdid).data;
     }
 
-    function areHealthVisitsLoading(hdid: string): boolean {
+    function healthVisitsAreLoading(hdid: string): boolean {
         return getHealthVisitState(hdid).status === LoadStatus.REQUESTED;
     }
 
@@ -128,7 +128,7 @@ export const useHealthVisitStore = defineStore("healthVisit", () => {
 
     return {
         healthVisits,
-        areHealthVisitsLoading,
+        healthVisitsAreLoading,
         healthVisitsCount,
         retrieveHealthVisits,
     };
