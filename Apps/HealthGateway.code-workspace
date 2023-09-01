@@ -1,11 +1,7 @@
 {
     "folders": [
         {
-            "name": "NewClientApp",
-            "path": "WebClient/src/NewClientApp"
-        },
-        {
-            "name": "OldClientApp",
+            "name": "ClientApp",
             "path": "WebClient/src/ClientApp"
         },
         {
@@ -37,7 +33,7 @@
                     "isDefault": true
                 },
                 "options": {
-                    "cwd": "${workspaceFolder:Apps}/WebClient/src/NewClientApp"
+                    "cwd": "${workspaceFolder:Apps}/WebClient/src/ClientApp"
                 },
                 "presentation": {
                     "clear": true
