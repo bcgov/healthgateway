@@ -33,9 +33,9 @@
             "fileId": "bccancerscreening_vpp_12345678931",
             "eventDateTime": "2022-11-11T13:57:48.3540006Z",
             "resultDateTime": "2022-10-20T02:28:57.2514321Z",
-            "type": "BcCancerScreeningExam",
+            "type": "BcCancerScreening",
             "id": "bccancerscreening_vpp_12345678931",
-            "$type": "BcCancerScreeningExam"
+            "$type": "BcCancerScreening"
         }
     ]
 }
