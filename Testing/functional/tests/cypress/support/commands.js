@@ -330,6 +330,7 @@ Cypress.Commands.add("checkOnTimeline", () => {
 
 Cypress.Commands.add("checkTimelineHasLoaded", () => {
     cy.contains("#subject", "Timeline").should("be.visible");
+    cy.get("[data-testid=loadingSpinner]").should("not.exist");
     cy.get("[data-testid=loading-toast]").should(($el) => {
         const doesNotExist = $el.length === 0;
         const isNotVisible = !$el.is("visible");

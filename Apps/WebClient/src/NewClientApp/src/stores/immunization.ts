@@ -31,6 +31,9 @@ const immunizationSort = (a: ImmunizationEvent, b: ImmunizationEvent): number =>
         b.dateOfImmunization
     );
 
+const recommendationSort = (a: Recommendation, b: Recommendation): number =>
+    DateSortUtility.ascendingByOptionalString(a.agentDueDate, b.agentDueDate);
+
 export const useImmunizationStore = defineStore("immunization", () => {
     const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
     const immunizationService = container.get<IImmunizationService>(
@@ -100,7 +103,9 @@ export const useImmunizationStore = defineStore("immunization", () => {
             hdid,
             immunizationResult.immunizations,
             {
-                recommendations: immunizationResult.recommendations,
+                recommendations: immunizationResult.recommendations
+                    .filter((x) => x.recommendedVaccinations)
+                    .sort(recommendationSort),
                 status: immunizationResult.loadState.refreshInProgress
                     ? LoadStatus.DEFERRED
                     : LoadStatus.LOADED,
