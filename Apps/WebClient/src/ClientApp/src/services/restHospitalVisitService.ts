@@ -1,5 +1,3 @@
-import { injectable } from "inversify";
-
 import { EntryType } from "@/constants/entryType";
 import { ResultType } from "@/constants/resulttype";
 import { ServiceCode } from "@/constants/serviceCodes";
@@ -7,8 +5,6 @@ import { ExternalConfiguration } from "@/models/configData";
 import { HttpError } from "@/models/errors";
 import HospitalVisitResult from "@/models/hospitalVisitResult";
 import RequestResult from "@/models/requestResult";
-import container from "@/plugins/container";
-import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import {
     IHospitalVisitService,
     IHttpDelegate,
@@ -17,58 +13,54 @@ import {
 import ConfigUtil from "@/utility/configUtil";
 import ErrorTranslator from "@/utility/errorTranslator";
 
-@injectable()
 export class RestHospitalVisitService implements IHospitalVisitService {
-    private logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
     private readonly HOSPITAL_VISIT_BASE_URI: string = "Encounter";
-    private baseUri = "";
-    private http!: IHttpDelegate;
-    private isEnabled = false;
+    private logger;
+    private http;
+    private baseUri;
+    private isEnabled;
 
-    public initialize(
-        config: ExternalConfiguration,
-        http: IHttpDelegate
-    ): void {
-        this.baseUri = config.serviceEndpoints["HospitalVisit"];
+    constructor(
+        logger: ILogger,
+        http: IHttpDelegate,
+        config: ExternalConfiguration
+    ) {
+        this.logger = logger;
         this.http = http;
+        this.baseUri = config.serviceEndpoints["HospitalVisit"];
         this.isEnabled = ConfigUtil.isDatasetEnabled(EntryType.HospitalVisit);
     }
 
     public getHospitalVisits(
         hdid: string
     ): Promise<RequestResult<HospitalVisitResult>> {
-        return new Promise((resolve, reject) => {
-            if (!this.isEnabled) {
-                resolve({
-                    pageIndex: 0,
-                    pageSize: 0,
-                    resourcePayload: {
-                        loaded: true,
-                        queued: false,
-                        retryin: 0,
-                        hospitalVisits: [],
-                    },
-                    resultStatus: ResultType.Success,
-                    totalResultCount: 0,
-                });
-                return;
-            }
-            this.http
-                .getWithCors<RequestResult<HospitalVisitResult>>(
-                    `${this.baseUri}${this.HOSPITAL_VISIT_BASE_URI}/HospitalVisit/${hdid}`
-                )
-                .then((requestResult) => resolve(requestResult))
-                .catch((err: HttpError) => {
-                    this.logger.error(
-                        `Error in RestHospitalVisitService.getHospitalVisits()`
-                    );
-                    reject(
-                        ErrorTranslator.internalNetworkError(
-                            err,
-                            ServiceCode.HospitalVisit
-                        )
-                    );
-                });
-        });
+        if (!this.isEnabled) {
+            return Promise.resolve({
+                pageIndex: 0,
+                pageSize: 0,
+                resourcePayload: {
+                    loaded: true,
+                    queued: false,
+                    retryin: 0,
+                    hospitalVisits: [],
+                },
+                resultStatus: ResultType.Success,
+                totalResultCount: 0,
+            });
+        }
+
+        return this.http
+            .getWithCors<RequestResult<HospitalVisitResult>>(
+                `${this.baseUri}${this.HOSPITAL_VISIT_BASE_URI}/HospitalVisit/${hdid}`
+            )
+            .catch((err: HttpError) => {
+                this.logger.error(
+                    `Error in RestHospitalVisitService.getHospitalVisits()`
+                );
+                throw ErrorTranslator.internalNetworkError(
+                    err,
+                    ServiceCode.HospitalVisit
+                );
+            });
     }
 }

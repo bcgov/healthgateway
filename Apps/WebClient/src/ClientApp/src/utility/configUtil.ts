@@ -4,18 +4,12 @@ import {
     FeatureToggleConfiguration,
     WebClientConfiguration,
 } from "@/models/configData";
-import container from "@/plugins/container";
-import { STORE_IDENTIFIER } from "@/plugins/inversify";
-import { IStoreProvider } from "@/services/interfaces";
+import { useConfigStore } from "@/stores/config";
 
 export default abstract class ConfigUtil {
     public static getWebClientConfiguration(): WebClientConfiguration {
-        const storeWrapper = container.get<IStoreProvider>(
-            STORE_IDENTIFIER.StoreProvider
-        );
-        const store = storeWrapper.getStore();
-
-        return store.getters["config/webClient"];
+        const configStore = useConfigStore();
+        return configStore.webConfig;
     }
 
     public static getFeatureConfiguration(): FeatureToggleConfiguration {
@@ -46,11 +40,7 @@ export default abstract class ConfigUtil {
 
     public static isServiceEnabled(serviceName: ServiceName) {
         const config = ConfigUtil.getFeatureConfiguration();
-        if (
-            config.services &&
-            config.services.enabled &&
-            config.services.services
-        ) {
+        if (config.services?.enabled && config.services.services) {
             return config.services.services.some(
                 (service) =>
                     service.name.toLowerCase() === serviceName.toLowerCase() &&
@@ -62,6 +52,6 @@ export default abstract class ConfigUtil {
 
     public static isServicesFeatureEnabled() {
         const config = ConfigUtil.getFeatureConfiguration();
-        return config.services && config.services.enabled;
+        return config.services?.enabled;
     }
 }

@@ -163,6 +163,35 @@ namespace HealthGateway.Patient.Services
     }
 
     /// <summary>
+    /// BC Cancer screening exam patient data.
+    /// </summary>
+    public record BcCancerScreening : PatientData
+    {
+        /// <summary>
+        /// Gets or sets the program name.
+        /// </summary>
+        public string? ProgramName { get; set; }
+
+        /// <summary>
+        /// Gets or sets the file id.
+        /// </summary>
+        public string? FileId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the event datetime.
+        /// </summary>
+        public DateTime EventDateTime { get; set; }
+
+        /// <summary>
+        /// Gets or sets the result datetime.
+        /// </summary>
+        public DateTime ResultDateTime { get; set; }
+
+        /// <inheritdoc/>
+        public override string Type { get; } = nameof(BcCancerScreening);
+    }
+
+    /// <summary>
     /// Query patient files.
     /// </summary>
     /// <param name="Hdid">Patient's hdid.</param>

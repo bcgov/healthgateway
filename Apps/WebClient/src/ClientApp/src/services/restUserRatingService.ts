@@ -1,11 +1,7 @@
-import { injectable } from "inversify";
-
 import { ServiceCode } from "@/constants/serviceCodes";
 import { ExternalConfiguration } from "@/models/configData";
 import { HttpError } from "@/models/errors";
 import UserRating from "@/models/userRating";
-import container from "@/plugins/container";
-import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import {
     IHttpDelegate,
     ILogger,
@@ -13,40 +9,34 @@ import {
 } from "@/services/interfaces";
 import ErrorTranslator from "@/utility/errorTranslator";
 
-@injectable()
 export class RestUserRatingService implements IUserRatingService {
-    private logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
     private readonly USER_RATING_BASE_URI: string = "UserFeedback/Rating";
-    private http!: IHttpDelegate;
-    private baseUri = "";
+    private logger;
+    private http;
+    private baseUri;
 
-    public initialize(
-        config: ExternalConfiguration,
-        http: IHttpDelegate
-    ): void {
+    constructor(
+        logger: ILogger,
+        http: IHttpDelegate,
+        config: ExternalConfiguration
+    ) {
+        this.logger = logger;
         this.http = http;
         this.baseUri = config.serviceEndpoints["GatewayApi"];
     }
 
     public submitRating(rating: UserRating): Promise<boolean> {
-        return new Promise((resolve, reject) =>
-            this.http
-                .post<void>(
-                    `${this.baseUri}${this.USER_RATING_BASE_URI}`,
-                    rating
-                )
-                .then(() => resolve(true))
-                .catch((err: HttpError) => {
-                    this.logger.error(
-                        `Error in RestUserRatingService.submitRating()`
-                    );
-                    reject(
-                        ErrorTranslator.internalNetworkError(
-                            err,
-                            ServiceCode.HealthGatewayUser
-                        )
-                    );
-                })
-        );
+        return this.http
+            .post<void>(`${this.baseUri}${this.USER_RATING_BASE_URI}`, rating)
+            .catch((err: HttpError) => {
+                this.logger.error(
+                    `Error in RestUserRatingService.submitRating()`
+                );
+                throw ErrorTranslator.internalNetworkError(
+                    err,
+                    ServiceCode.HealthGatewayUser
+                );
+            })
+            .then(() => true);
     }
 }

@@ -81,6 +81,32 @@ namespace HealthGateway.PatientDataAccess
     }
 
     /// <summary>
+    /// The details of a BC Cancer screening exam.
+    /// </summary>
+    public record BcCancerScreening : HealthData
+    {
+        /// <summary>
+        /// Gets or sets the type.
+        /// </summary>
+        public BcCancerScreeningType EventType { get; set; }
+
+        /// <summary>
+        /// Gets or sets the program name.
+        /// </summary>
+        public string? ProgramName { get; set; }
+
+        /// <summary>
+        /// Gets or sets the event datetime.
+        /// </summary>
+        public DateTime EventDateTime { get; set; }
+
+        /// <summary>
+        /// Gets or sets the result datetime.
+        /// </summary>
+        public DateTime ResultDateTime { get; set; }
+    }
+
+    /// <summary>
     /// Diagnostic image exam statuses.
     /// </summary>
     public enum DiagnosticImagingStatus
@@ -114,6 +140,22 @@ namespace HealthGateway.PatientDataAccess
         /// Exam is amended.
         /// </summary>
         Amended,
+    }
+
+    /// <summary>
+    /// BC Cancer screening types.
+    /// </summary>
+    public enum BcCancerScreeningType
+    {
+        /// <summary>
+        /// Cancer screening recall.
+        /// </summary>
+        Recall,
+
+        /// <summary>
+        /// Cancer screening result.
+        /// </summary>
+        Result,
     }
 }
 #pragma warning restore SA1201

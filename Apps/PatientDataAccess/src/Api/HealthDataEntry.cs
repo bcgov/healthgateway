@@ -19,6 +19,7 @@ namespace HealthGateway.PatientDataAccess.Api
 #pragma warning disable SA1602 // Disables documentation for internal class.
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.Text.Json.Serialization;
 
     [JsonConverter(typeof(HealthDataJsonConverter))]
@@ -30,7 +31,7 @@ namespace HealthGateway.PatientDataAccess.Api
     }
 
     // Class is currently not being passed by the front end
-    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+    [ExcludeFromCodeCoverage]
     internal record ClinicalDocument : HealthDataEntry
     {
         public string? Name { get; set; }
@@ -47,7 +48,7 @@ namespace HealthGateway.PatientDataAccess.Api
     }
 
     // Class is currently not being passed by the front end
-    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+    [ExcludeFromCodeCoverage]
     internal record LaboratoryOrder : HealthDataEntry
     {
         public string? SourceSystemId { get; set; }
@@ -76,7 +77,7 @@ namespace HealthGateway.PatientDataAccess.Api
     }
 
     // Class is currently not being passed by the front end
-    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+    [ExcludeFromCodeCoverage]
     internal record LaboratoryResult
     {
         public string? Id { get; set; }
@@ -123,6 +124,17 @@ namespace HealthGateway.PatientDataAccess.Api
         public DateTime? ExamDate { get; set; }
 
         public bool? IsUpdated { get; set; }
+    }
+
+    internal record BcCancerScreening : HealthDataEntry
+    {
+        public CancerScreeningType EventType { get; set; }
+
+        public string? ProgramName { get; set; }
+
+        public DateTime EventTimestampUtc { get; set; }
+
+        public DateTimeOffset ResultTimestamp { get; set; }
     }
 }
 #pragma warning restore SA1600

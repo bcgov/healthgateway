@@ -1,11 +1,7 @@
-﻿import { injectable } from "inversify";
-
-import { ServiceCode } from "@/constants/serviceCodes";
+﻿import { ServiceCode } from "@/constants/serviceCodes";
 import { ExternalConfiguration } from "@/models/configData";
 import { HttpError } from "@/models/errors";
 import UserFeedback from "@/models/userFeedback";
-import container from "@/plugins/container";
-import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import {
     IHttpDelegate,
     ILogger,
@@ -13,17 +9,18 @@ import {
 } from "@/services/interfaces";
 import ErrorTranslator from "@/utility/errorTranslator";
 
-@injectable()
 export class RestUserFeedbackService implements IUserFeedbackService {
-    private logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
     private readonly USER_FEEDBACK_BASE_URI: string = "UserFeedback";
-    private http!: IHttpDelegate;
-    private baseUri = "";
+    private logger;
+    private http;
+    private baseUri;
 
-    public initialize(
-        config: ExternalConfiguration,
-        http: IHttpDelegate
-    ): void {
+    constructor(
+        logger: ILogger,
+        http: IHttpDelegate,
+        config: ExternalConfiguration
+    ) {
+        this.logger = logger;
         this.http = http;
         this.baseUri = config.serviceEndpoints["GatewayApi"];
     }
@@ -32,24 +29,20 @@ export class RestUserFeedbackService implements IUserFeedbackService {
         hdid: string,
         feedback: UserFeedback
     ): Promise<boolean> {
-        return new Promise((resolve, reject) =>
-            this.http
-                .post<void>(
-                    `${this.baseUri}${this.USER_FEEDBACK_BASE_URI}/${hdid}`,
-                    feedback
-                )
-                .then(() => resolve(true))
-                .catch((err: HttpError) => {
-                    this.logger.error(
-                        `Error in RestUserFeedbackService.submitFeedback()`
-                    );
-                    reject(
-                        ErrorTranslator.internalNetworkError(
-                            err,
-                            ServiceCode.HealthGatewayUser
-                        )
-                    );
-                })
-        );
+        return this.http
+            .post<void>(
+                `${this.baseUri}${this.USER_FEEDBACK_BASE_URI}/${hdid}`,
+                feedback
+            )
+            .catch((err: HttpError) => {
+                this.logger.error(
+                    `Error in RestUserFeedbackService.submitFeedback()`
+                );
+                throw ErrorTranslator.internalNetworkError(
+                    err,
+                    ServiceCode.HealthGatewayUser
+                );
+            })
+            .then(() => true);
     }
 }
