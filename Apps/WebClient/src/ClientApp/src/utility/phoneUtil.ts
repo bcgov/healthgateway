@@ -9,7 +9,7 @@ export default abstract class PhoneUtil {
     public static stripPhoneMask(
         phoneNumber: string | null | undefined
     ): string {
-        phoneNumber = phoneNumber || "";
+        phoneNumber = phoneNumber ?? "";
         return phoneNumber.replace(/\D/g, "");
     }
 }

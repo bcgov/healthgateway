@@ -8,7 +8,7 @@
         }
     },
     "profiles": {
-        "HealthGateway.WebClient": {
+        "WebClient": {
             "commandName": "Project",
             "launchBrowser": true,
             "applicationUrl": "http://localhost:5002",
@@ -16,15 +16,6 @@
                 "DOTNET_USE_POLLING_FILE_WATCHER": "1",
                 "ASPNETCORE_ENVIRONMENT": "Development",
                 "HealthGateway_WebClient__NewClient": "true"
-            }
-        },
-        "HealthGateway.WebClient (Old Client)": {
-            "commandName": "Project",
-            "launchBrowser": true,
-            "applicationUrl": "http://localhost:5002",
-            "environmentVariables": {
-                "DOTNET_USE_POLLING_FILE_WATCHER": "1",
-                "ASPNETCORE_ENVIRONMENT": "Development"
             }
         }
     }

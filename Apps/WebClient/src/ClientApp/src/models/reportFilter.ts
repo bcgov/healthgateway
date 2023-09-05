@@ -107,24 +107,22 @@ export class ReportFilterBuilder {
         return new ReportFilter(new ReportFilterBuilder());
     }
 
-    public withStartDate(
-        dateString: StringISODate | null
-    ): ReportFilterBuilder {
+    public withStartDate(dateString: StringISODate | null): this {
         this._startDate = dateString;
         return this;
     }
 
-    public withEndDate(dateString: StringISODate | null): ReportFilterBuilder {
+    public withEndDate(dateString: StringISODate | null): this {
         this._endDate = dateString;
         return this;
     }
 
-    public withMedications(medications: string[]): ReportFilterBuilder {
+    public withMedications(medications: string[]): this {
         this._medications = medications;
         return this;
     }
 
-    public withMedication(medication: string): ReportFilterBuilder {
+    public withMedication(medication: string): this {
         this._medications.push(medication);
         return this;
     }

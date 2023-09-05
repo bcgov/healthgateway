@@ -109,6 +109,7 @@ namespace HealthGateway.Admin.Client.Components.Support
                 DataSource.Covid19TestResult => "COVID-19 Test Results",
                 DataSource.OrganDonorRegistration => "Organ Donor Registration",
                 DataSource.SpecialAuthorityRequest => "Special Authority Requests",
+                DataSource.BcCancerScreening => "BC Cancer Screening",
                 _ => dataSource.ToString(),
             };
         }

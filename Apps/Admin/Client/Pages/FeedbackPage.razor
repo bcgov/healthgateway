@@ -112,7 +112,7 @@ else
             </HeaderContent>
             <RowTemplate>
                 <MudTd DataLabel="Date" data-testid="feedback-date">
-                    @DateFormatter.ToShortDateAndTime(context.DateTime)
+                    @DateFormatter.ToShortDateAndTime(ConvertDateTime(context.DateTime))
                 </MudTd>
                 <MudTd DataLabel="Email" data-testid="feedback-email">
                     @if (context.Hdid.Length > 0)

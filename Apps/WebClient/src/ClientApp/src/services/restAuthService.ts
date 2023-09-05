@@ -1,68 +1,77 @@
-import { injectable } from "inversify";
 import Keycloak, { KeycloakConfig } from "keycloak-js";
 
 import { OpenIdConnectConfiguration } from "@/models/configData";
 import { OidcTokenDetails, OidcUserInfo } from "@/models/user";
-import container from "@/plugins/container";
-import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import { IAuthenticationService, ILogger } from "@/services/interfaces";
+import { EventName, useEventStore } from "@/stores/event";
 
 /** The number of seconds between initiation of a token refresh and expiry of the old token. */
 const REFRESH_CUSHION = 30;
 
-@injectable()
 export class RestAuthenticationService implements IAuthenticationService {
-    private logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-
-    private keycloak!: Keycloak;
+    private logger;
+    private keycloak;
     private scope!: string;
     private logonCallback!: string;
     private logoutCallback!: string;
 
-    public async initialize(config: OpenIdConnectConfiguration): Promise<void> {
-        this.scope = config.scope;
-        this.logonCallback = config.callbacks["Logon"];
-        this.logoutCallback = config.callbacks["Logout"];
+    // RestAuthenticationService.GetService() should be called instead of using the constructor directly.
+    constructor(
+        logger: ILogger,
+        keycloak: Keycloak,
+        oidcConfig: OpenIdConnectConfiguration
+    ) {
+        this.logger = logger;
+        this.keycloak = keycloak;
 
-        const [url, realm] = config.authority.split("/realms/");
+        this.scope = oidcConfig.scope;
+        this.logonCallback = oidcConfig.callbacks["Logon"];
+        this.logoutCallback = oidcConfig.callbacks["Logout"];
+    }
+
+    public static async GetService(
+        logger: ILogger,
+        oidcConfig: OpenIdConnectConfiguration
+    ): Promise<IAuthenticationService> {
+        const [url, realm] = oidcConfig.authority.split("/realms/");
         const keycloakConfig: KeycloakConfig = {
             url,
             realm,
-            clientId: config.clientId,
+            clientId: oidcConfig.clientId,
         };
-        this.keycloak = new Keycloak(keycloakConfig);
+        const keycloak = new Keycloak(keycloakConfig);
 
-        this.keycloak.onReady = () => this.logger.verbose("Keycloak: onReady");
-        this.keycloak.onAuthSuccess = () =>
-            this.logger.verbose("Keycloak: onAuthSuccess");
-        this.keycloak.onAuthError = (error) => {
-            this.logger.verbose(`Keycloak: onAuthError - ${error.error}`);
-            this.logger.error(error.error_description);
+        keycloak.onReady = () => logger.verbose("Keycloak: onReady");
+        keycloak.onAuthSuccess = () =>
+            logger.verbose("Keycloak: onAuthSuccess");
+        keycloak.onAuthError = (error) => {
+            logger.verbose(`Keycloak: onAuthError - ${error.error}`);
+            logger.error(error.error_description);
         };
-        this.keycloak.onAuthRefreshSuccess = () =>
-            this.logger.verbose("Keycloak: onAuthRefreshSuccess");
-        this.keycloak.onAuthRefreshError = () =>
-            this.logger.verbose("Keycloak: onAuthRefreshError");
-        this.keycloak.onAuthLogout = () =>
-            this.logger.verbose("Keycloak: onAuthLogout");
-        this.keycloak.onTokenExpired = () =>
-            this.logger.verbose("Keycloak: onTokenExpired");
-        this.keycloak.onActionUpdate = (status) =>
-            this.logger.verbose(`Keycloak: onActionUpdate - ${status}`);
+        keycloak.onAuthRefreshSuccess = () =>
+            logger.verbose("Keycloak: onAuthRefreshSuccess");
+        keycloak.onAuthRefreshError = () =>
+            logger.verbose("Keycloak: onAuthRefreshError");
+        keycloak.onAuthLogout = () => logger.verbose("Keycloak: onAuthLogout");
+        keycloak.onTokenExpired = () =>
+            logger.verbose("Keycloak: onTokenExpired");
+        keycloak.onActionUpdate = (status) =>
+            logger.verbose(`Keycloak: onActionUpdate - ${status}`);
 
-        await this.keycloak.init({
+        await keycloak.init({
             onLoad: "check-sso",
         });
+
+        return new RestAuthenticationService(logger, keycloak, oidcConfig);
     }
 
     public async signIn(
         redirectPath: string,
         idpHint?: string
     ): Promise<OidcTokenDetails> {
-        this.logger.verbose("Checking authentication...");
-        const escapedRedirectPath = encodeURI(redirectPath);
-        const callbackUri = `${this.logonCallback}?redirect=${escapedRedirectPath}`;
+        const eventStore = useEventStore();
 
+        this.logger.verbose("Checking authentication...");
         const tokenDetails = this.getOidcTokenDetails();
         if (tokenDetails !== null) {
             this.logger.verbose("Already authenticated");
@@ -72,6 +81,10 @@ export class RestAuthenticationService implements IAuthenticationService {
         this.logger.verbose(
             "Not yet authenticated; redirecting to Keycloak login..."
         );
+        const escapedRedirectPath = encodeURI(redirectPath);
+        const callbackUri = `${this.logonCallback}?redirect=${escapedRedirectPath}`;
+
+        eventStore.emit(EventName.UnregisterOnBeforeUnloadWaitlistListener);
         await this.keycloak.login({
             scope: this.scope,
             redirectUri: callbackUri,
@@ -83,6 +96,9 @@ export class RestAuthenticationService implements IAuthenticationService {
     }
 
     public signOut(): Promise<void> {
+        const eventStore = useEventStore();
+
+        eventStore.emit(EventName.UnregisterOnBeforeUnloadWaitlistListener);
         return this.keycloak.logout({
             redirectUri: this.logoutCallback,
         });

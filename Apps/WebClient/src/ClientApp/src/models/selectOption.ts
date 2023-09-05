@@ -1,5 +1,5 @@
 export default interface SelectOption {
     value: string | number | null;
-    text: string;
+    title: string;
     disabled?: boolean;
 }

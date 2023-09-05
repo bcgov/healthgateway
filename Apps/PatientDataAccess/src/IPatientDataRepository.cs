@@ -59,6 +59,11 @@ namespace HealthGateway.PatientDataAccess
         /// Diagnostic Imaging services data.
         /// </summary>
         DiagnosticImaging,
+
+        /// <summary>
+        /// BC Cancer Screening.
+        /// </summary>
+        BcCancerScreening,
     }
 
     /// <summary>
