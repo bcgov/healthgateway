@@ -340,7 +340,7 @@ describe("Filters", () => {
         testDatasetTimelineFiltering(
             "[data-testid=BcCancerScreening-filter]",
             "[data-testid=bccancerscreeningTitle]",
-            ["BC Cancer Results"]
+            ["BC Cancer Screening"]
         );
     });
 
