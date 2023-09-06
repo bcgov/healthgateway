@@ -144,7 +144,7 @@ namespace HealthGateway.Admin.Server.Services
             }
 
             PatientModel patient = await this.GetPatientAsync(hdid, ct).ConfigureAwait(true);
-            VaccineDetails vaccineDetails = await this.immunizationAdminDelegate.GetVaccineDetailsWithRetries(patient, this.GetAccessToken()).ConfigureAwait(true);
+            VaccineDetails vaccineDetails = await this.GetVaccineDetails(patient).ConfigureAwait(true);
             CovidAssessmentDetailsResponse covidAssessmentDetails = await this.immunizationAdminApi.GetCovidAssessmentDetails(new() { Phn = patient.Phn }, this.GetAccessToken()).ConfigureAwait(true);
 
             PatientSupportDetails details = new()
@@ -274,6 +274,17 @@ namespace HealthGateway.Admin.Server.Services
             }
 
             return patient;
+        }
+
+        private async Task<VaccineDetails> GetVaccineDetails(PatientModel patient)
+        {
+            if (!string.IsNullOrEmpty(patient.Phn) && patient.Birthdate != DateTime.MinValue)
+            {
+                return await this.immunizationAdminDelegate.GetVaccineDetailsWithRetries(patient, this.GetAccessToken()).ConfigureAwait(true);
+            }
+
+            this.logger.LogError("Patient PHN {PersonalHealthNumber} or DOB {Birthdate}) are invalid", patient.Phn, patient.Birthdate);
+            throw new ProblemDetailsException(ExceptionUtility.CreateProblemDetails(ErrorMessages.PhnOrDateAndBirthInvalid, HttpStatusCode.BadRequest, nameof(CovidSupportService)));
         }
 
         private PatientSupportResult MapToPatientSupportResult(PatientModel? patient, UserProfile? userProfile)

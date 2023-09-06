@@ -18,16 +18,12 @@ namespace HealthGateway.Admin.Server.Delegates
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
-    using System.Net;
     using System.Threading.Tasks;
     using AutoMapper;
     using HealthGateway.AccountDataAccess.Patient;
     using HealthGateway.Admin.Common.Models.CovidSupport;
     using HealthGateway.Admin.Server.Api;
     using HealthGateway.Admin.Server.Models.Immunization;
-    using HealthGateway.Admin.Server.Services;
-    using HealthGateway.Common.Constants;
-    using HealthGateway.Common.Data.ErrorHandling;
     using HealthGateway.Common.Models.PHSA;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
@@ -68,42 +64,36 @@ namespace HealthGateway.Admin.Server.Delegates
             this.logger.LogDebug("Getting vaccine details with retries...");
             using Activity? activity = Source.StartActivity();
 
-            if (!string.IsNullOrEmpty(patient.Phn) && patient.Birthdate != DateTime.MinValue)
+            CovidImmunizationsRequest request = new()
             {
-                CovidImmunizationsRequest request = new()
+                PersonalHealthNumber = patient.Phn,
+                IgnoreCache = refresh,
+            };
+
+            PhsaResult<VaccineDetailsResponse> response;
+            int retryCount = 0;
+            bool refreshInProgress;
+            do
+            {
+                response = await this.immunizationAdminApi.GetVaccineDetails(request, accessToken).ConfigureAwait(true);
+
+                refreshInProgress = response.LoadState.RefreshInProgress;
+
+                if (refreshInProgress)
                 {
-                    PersonalHealthNumber = patient.Phn,
-                    IgnoreCache = refresh,
-                };
-
-                PhsaResult<VaccineDetailsResponse> response;
-                int retryCount = 0;
-                bool refreshInProgress;
-                do
-                {
-                    response = await this.immunizationAdminApi.GetVaccineDetails(request, accessToken).ConfigureAwait(true);
-
-                    refreshInProgress = response.LoadState.RefreshInProgress;
-
-                    if (refreshInProgress)
-                    {
-                        this.logger.LogDebug("Refresh in progress, trying again....");
-                        await Task.Delay(Math.Max(response.LoadState.BackOffMilliseconds, this.phsaConfig.BackOffMilliseconds)).ConfigureAwait(true);
-                    }
+                    this.logger.LogDebug("Refresh in progress, trying again....");
+                    await Task.Delay(Math.Max(response.LoadState.BackOffMilliseconds, this.phsaConfig.BackOffMilliseconds)).ConfigureAwait(true);
                 }
-                while (refreshInProgress && retryCount++ < this.phsaConfig.MaxRetries);
-
-                return new VaccineDetails(
-                    this.autoMapper.Map<IEnumerable<VaccineDoseResponse>, IList<VaccineDose>>(response.Result?.Doses),
-                    response.Result?.VaccineStatusResult)
-                {
-                    Blocked = response.Result?.Blocked ?? false,
-                    ContainsInvalidDoses = response.Result?.ContainsInvalidDoses ?? false,
-                };
             }
+            while (refreshInProgress && retryCount++ < this.phsaConfig.MaxRetries);
 
-            this.logger.LogDebug("Patient PHN {PersonalHealthNumber} or DOB {Birthdate}) are invalid", patient.Phn, patient.Birthdate);
-            throw new ProblemDetailsException(ExceptionUtility.CreateProblemDetails(ErrorMessages.PhnOrDateAndBirthInvalid, HttpStatusCode.BadRequest, nameof(CovidSupportService)));
+            return new VaccineDetails(
+                this.autoMapper.Map<IEnumerable<VaccineDoseResponse>, IList<VaccineDose>>(response.Result?.Doses),
+                response.Result?.VaccineStatusResult)
+            {
+                Blocked = response.Result?.Blocked ?? false,
+                ContainsInvalidDoses = response.Result?.ContainsInvalidDoses ?? false,
+            };
         }
     }
 }
