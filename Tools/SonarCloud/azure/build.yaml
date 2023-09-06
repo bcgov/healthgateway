@@ -6,6 +6,7 @@ schedules:
     branches:
       include:
         - dev
+        - bugs/16034
 pool:
   vmImage: "ubuntu-20.04"
 
@@ -18,12 +19,18 @@ jobs:
     timeoutInMinutes: 120
     steps:
       - task: UseDotNet@2
-        displayName: 'Install .NET SDK'
+        displayName: "Install .NET SDK"
         condition: eq(variables['EnableAzure'], True)
         inputs:
           packageType: sdk
           version: 7.x
           installationPath: $(Agent.ToolsDirectory)/dotnet
+
+      - task: DownloadSecureFile@1
+        name: testSecrets
+        displayName: "Download test secrets"
+        inputs:
+          secureFile: "integration_test_secrets.json"
 
       - script: |
           dotnet tool install --global JetBrains.dotCover.GlobalTool
@@ -48,6 +55,8 @@ jobs:
         enabled: "true"
 
       - script: |
+          set -e
+          export SECRETS_PATH=$(testSecrets.secureFilePath)
           dotnet build --no-incremental
           dotnet dotcover test --dcReportType=HTML --dcAttributeFilters=System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverageAttribute;
         displayName: "Build and Test"
