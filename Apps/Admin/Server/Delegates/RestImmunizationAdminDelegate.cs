@@ -103,7 +103,7 @@ namespace HealthGateway.Admin.Server.Delegates
             }
 
             this.logger.LogDebug("Patient PHN {PersonalHealthNumber} or DOB {Birthdate}) are invalid", patient.Phn, patient.Birthdate);
-            throw new ProblemDetailsException(ExceptionUtility.CreateProblemDetails(ErrorMessages.PhnOrDateOfBirthInvalid, HttpStatusCode.BadRequest, nameof(CovidSupportService)));
+            throw new ProblemDetailsException(ExceptionUtility.CreateProblemDetails(ErrorMessages.PhnOrDateAndBirthInvalid, HttpStatusCode.BadRequest, nameof(CovidSupportService)));
         }
     }
 }
