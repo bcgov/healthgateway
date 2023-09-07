@@ -57,10 +57,9 @@ namespace HealthGateway.Common.AspNetConfiguration
         /// Configures the http services.
         /// </summary>
         /// <param name="services">The service collection provider.</param>
-        /// <param name="dbHealth">If true, DB Health checks will be added.</param>
-        public void ConfigureHttpServices(IServiceCollection services, bool dbHealth = true)
+        public void ConfigureHttpServices(IServiceCollection services)
         {
-            HttpWeb.ConfigureHttpServices(services, this.Logger, dbHealth);
+            HttpWeb.ConfigureHttpServices(services, this.Logger);
         }
 
         /// <summary>
