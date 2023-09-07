@@ -61,7 +61,7 @@ namespace HealthGateway.DBMaintainer.FileDownload
                 Directory.CreateDirectory(targetFolder);
             }
 
-            fd.Name = Path.GetRandomFileName() + Path.GetExtension(fileUrl.ToString());
+            fd.Name = Path.GetRandomFileName() + Path.GetExtension(fileUrl.AbsolutePath);
             fd.LocalFilePath = targetFolder;
             string filePath = Path.Combine(fd.LocalFilePath, fd.Name);
             try
