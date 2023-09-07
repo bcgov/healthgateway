@@ -1,0 +1,19 @@
+@typeparam T
+@inherits HgComponentBase
+
+<MudAutocomplete
+    @ref="MudComponent"
+    Class="@CombinedClass"
+    Style="@Style"
+    Tag="@Tag"
+    T="T"
+    SearchFunc="@SearchFunc"
+    ValueChanged="@ValueChanged"
+    Variant="@Variant.Filled"
+    Margin="@Margin.Dense"
+    ResetValueOnEmptyText="@true"
+    CoerceText="@true"
+    Clearable="@true"
+    @attributes="UnmatchedAttributes">
+    @ChildContent
+</MudAutocomplete>

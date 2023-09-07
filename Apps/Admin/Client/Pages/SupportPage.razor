@@ -45,7 +45,7 @@
                         Label="@FormatQueryType(PatientQueryType.Phn)"
                         Required="@true"
                         Validation="@ValidateQueryParameter"
-                        Mask="@(new PatternMask(Mask.PhnMaskTemplate))"
+                        Mask="@Mask.PhnMask"
                         @bind-Value="QueryParameter"
                         TopMargin="Breakpoint.None"
                         LeftMargin="Breakpoint.Sm"
