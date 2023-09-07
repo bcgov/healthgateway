@@ -31,55 +31,17 @@ namespace HealthGateway.Common.Data.Utils
         /// <summary>
         /// Canadian province and territory abbreviations ordered alphabetically by province name.
         /// </summary>
-        public static readonly IEnumerable<ProvinceAbbreviation> ProvinceAbbreviations = new List<ProvinceAbbreviation>
-        {
-            ProvinceAbbreviation.AB, ProvinceAbbreviation.BC, ProvinceAbbreviation.MB, ProvinceAbbreviation.NB, ProvinceAbbreviation.NL, ProvinceAbbreviation.NT, ProvinceAbbreviation.NS,
-            ProvinceAbbreviation.NU, ProvinceAbbreviation.ON, ProvinceAbbreviation.PE, ProvinceAbbreviation.QC, ProvinceAbbreviation.SK, ProvinceAbbreviation.YT,
-        };
+        public static readonly IEnumerable<ProvinceAbbreviation> ProvinceAbbreviations = Enum.GetValues<ProvinceAbbreviation>()[1..];
 
         /// <summary>
         /// American state abbreviations ordered alphabetically by state name.
         /// </summary>
-        public static readonly IEnumerable<StateAbbreviation> StateAbbreviations = new List<StateAbbreviation>
-        {
-            StateAbbreviation.AL, StateAbbreviation.AK, StateAbbreviation.AZ, StateAbbreviation.AR, StateAbbreviation.CA, StateAbbreviation.CO, StateAbbreviation.CT, StateAbbreviation.DE,
-            StateAbbreviation.DC, StateAbbreviation.FL, StateAbbreviation.GA, StateAbbreviation.HI, StateAbbreviation.ID, StateAbbreviation.IL, StateAbbreviation.IN, StateAbbreviation.IA,
-            StateAbbreviation.KS, StateAbbreviation.KY, StateAbbreviation.LA, StateAbbreviation.ME, StateAbbreviation.MD, StateAbbreviation.MA, StateAbbreviation.MI, StateAbbreviation.MN,
-            StateAbbreviation.MS, StateAbbreviation.MO, StateAbbreviation.MT, StateAbbreviation.NE, StateAbbreviation.NV, StateAbbreviation.NH, StateAbbreviation.NJ, StateAbbreviation.NM,
-            StateAbbreviation.NY, StateAbbreviation.NC, StateAbbreviation.ND, StateAbbreviation.OH, StateAbbreviation.OK, StateAbbreviation.OR, StateAbbreviation.PA, StateAbbreviation.RI,
-            StateAbbreviation.SC, StateAbbreviation.SD, StateAbbreviation.TN, StateAbbreviation.TX, StateAbbreviation.UT, StateAbbreviation.VT, StateAbbreviation.VA, StateAbbreviation.WA,
-            StateAbbreviation.WV, StateAbbreviation.WI, StateAbbreviation.WY,
-        };
+        public static readonly IEnumerable<StateAbbreviation> StateAbbreviations = Enum.GetValues<StateAbbreviation>()[1..];
 
         /// <summary>
         /// Country codes with Canada first, followed by USA, then the remaining countries ordered alphabetically by country name.
         /// </summary>
-        public static readonly IEnumerable<CountryCode> CountryCodes = new List<CountryCode>
-        {
-            CountryCode.CA, CountryCode.US, CountryCode.AF, CountryCode.AX, CountryCode.AL, CountryCode.DZ, CountryCode.AS, CountryCode.AD, CountryCode.AO, CountryCode.AI, CountryCode.AQ,
-            CountryCode.AG, CountryCode.AR, CountryCode.AM, CountryCode.AW, CountryCode.AU, CountryCode.AT, CountryCode.AZ, CountryCode.BS, CountryCode.BH, CountryCode.BD, CountryCode.BB,
-            CountryCode.BY, CountryCode.BE, CountryCode.BZ, CountryCode.BJ, CountryCode.BM, CountryCode.BT, CountryCode.BO, CountryCode.BA, CountryCode.BW, CountryCode.BV, CountryCode.BR,
-            CountryCode.VG, CountryCode.BN, CountryCode.BG, CountryCode.BF, CountryCode.BI, CountryCode.KH, CountryCode.CM, CountryCode.CV, CountryCode.KY, CountryCode.CF, CountryCode.TD,
-            CountryCode.CL, CountryCode.CN, CountryCode.CX, CountryCode.CC, CountryCode.CO, CountryCode.KM, CountryCode.CG, CountryCode.CD, CountryCode.CK, CountryCode.CR, CountryCode.CI,
-            CountryCode.HR, CountryCode.CU, CountryCode.CW, CountryCode.CY, CountryCode.CZ, CountryCode.DK, CountryCode.DJ, CountryCode.DM, CountryCode.DO, CountryCode.BQ, CountryCode.EC,
-            CountryCode.EG, CountryCode.SV, CountryCode.GQ, CountryCode.ER, CountryCode.EE, CountryCode.SZ, CountryCode.ET, CountryCode.FK, CountryCode.FO, CountryCode.FJ, CountryCode.FI,
-            CountryCode.FR, CountryCode.GF, CountryCode.PF, CountryCode.TF, CountryCode.GA, CountryCode.GM, CountryCode.GE, CountryCode.DE, CountryCode.GH, CountryCode.GI, CountryCode.GR,
-            CountryCode.GL, CountryCode.GD, CountryCode.GP, CountryCode.GU, CountryCode.GT, CountryCode.GG, CountryCode.GN, CountryCode.GW, CountryCode.GY, CountryCode.HT, CountryCode.HM,
-            CountryCode.VA, CountryCode.HN, CountryCode.HK, CountryCode.HU, CountryCode.IS, CountryCode.IN, CountryCode.ID, CountryCode.IR, CountryCode.IQ, CountryCode.IE, CountryCode.IM,
-            CountryCode.IL, CountryCode.IT, CountryCode.JM, CountryCode.JP, CountryCode.JE, CountryCode.JO, CountryCode.KZ, CountryCode.KE, CountryCode.KI, CountryCode.KP, CountryCode.KR,
-            CountryCode.XZ, CountryCode.KW, CountryCode.KG, CountryCode.LA, CountryCode.LV, CountryCode.LB, CountryCode.LS, CountryCode.LR, CountryCode.LY, CountryCode.LI, CountryCode.LT,
-            CountryCode.LU, CountryCode.MO, CountryCode.MK, CountryCode.MG, CountryCode.MW, CountryCode.MY, CountryCode.MV, CountryCode.ML, CountryCode.MT, CountryCode.MH, CountryCode.MQ,
-            CountryCode.MR, CountryCode.MU, CountryCode.YT, CountryCode.MX, CountryCode.FM, CountryCode.MD, CountryCode.MC, CountryCode.MN, CountryCode.ME, CountryCode.MS, CountryCode.MA,
-            CountryCode.MZ, CountryCode.MM, CountryCode.NA, CountryCode.NR, CountryCode.NP, CountryCode.NL, CountryCode.NC, CountryCode.NZ, CountryCode.NI, CountryCode.NE, CountryCode.NG,
-            CountryCode.NU, CountryCode.NF, CountryCode.MP, CountryCode.NO, CountryCode.OM, CountryCode.PK, CountryCode.PW, CountryCode.PA, CountryCode.PG, CountryCode.PY, CountryCode.PE,
-            CountryCode.PH, CountryCode.PN, CountryCode.PL, CountryCode.PT, CountryCode.PR, CountryCode.QA, CountryCode.RE, CountryCode.RO, CountryCode.RU, CountryCode.RW, CountryCode.BL,
-            CountryCode.SH, CountryCode.KN, CountryCode.LC, CountryCode.MF, CountryCode.PM, CountryCode.WS, CountryCode.SM, CountryCode.ST, CountryCode.SA, CountryCode.SN, CountryCode.RS,
-            CountryCode.SC, CountryCode.SL, CountryCode.SG, CountryCode.SX, CountryCode.SK, CountryCode.SI, CountryCode.SB, CountryCode.SO, CountryCode.ZA, CountryCode.SS, CountryCode.ES,
-            CountryCode.LK, CountryCode.VC, CountryCode.SD, CountryCode.SR, CountryCode.SJ, CountryCode.SE, CountryCode.CH, CountryCode.SY, CountryCode.TW, CountryCode.TJ, CountryCode.TZ,
-            CountryCode.TH, CountryCode.TL, CountryCode.TG, CountryCode.TK, CountryCode.TO, CountryCode.TT, CountryCode.TA, CountryCode.TN, CountryCode.TR, CountryCode.TM, CountryCode.TC,
-            CountryCode.TV, CountryCode.UM, CountryCode.VI, CountryCode.UG, CountryCode.UA, CountryCode.AE, CountryCode.GB, CountryCode.UY, CountryCode.UZ, CountryCode.VU, CountryCode.VE,
-            CountryCode.VN, CountryCode.WF, CountryCode.PS, CountryCode.EH, CountryCode.YE, CountryCode.ZM, CountryCode.ZW,
-        };
+        public static readonly IEnumerable<CountryCode> CountryCodes = Enum.GetValues<CountryCode>()[1..];
 
         [SuppressMessage("ReSharper", "StringLiteralTypo", Justification = "Country names don't require spellchecking")]
         private static readonly IDictionary<string, CountryCode> CountryAliases = new Dictionary<string, CountryCode>
