@@ -62,7 +62,7 @@ namespace HealthGateway.WebClient.Server
         public void ConfigureServices(IServiceCollection services)
         {
             this.startupConfig.ConfigureForwardHeaders(services);
-            this.startupConfig.ConfigureHttpServices(services, false);
+            this.startupConfig.ConfigureHttpServices(services);
             this.startupConfig.ConfigureSwaggerServices(services);
             this.startupConfig.ConfigureTracing(services);
 

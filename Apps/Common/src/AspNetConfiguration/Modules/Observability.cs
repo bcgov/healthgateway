@@ -28,7 +28,6 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
     using Npgsql;
-    using OpenTelemetry.Exporter;
     using OpenTelemetry.Metrics;
     using OpenTelemetry.Resources;
     using OpenTelemetry.Trace;
