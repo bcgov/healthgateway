@@ -23,7 +23,7 @@ describe("Provision", () => {
             "be.visible"
         );
         cy.get("[data-testid=username-input]").clear().type(user);
-        cy.get("[data-testid=identity-provider-select]").click({ force: true });
+        cy.get("[data-testid=identity-provider-select]").click();
         cy.get("[data-testid=identity-provider]").contains("IDIR").click();
         cy.get("[data-testid=roles-select]").click();
         cy.get("[data-testid=role]").contains("AdminUser").click();
@@ -68,7 +68,7 @@ describe("Provision", () => {
     });
 
     it("Edit User", () => {
-        cy.get("[data-testid=query-input]").clear().type("fnct");
+        cy.get("[data-testid=query-input]").clear().type(user);
         cy.get("[data-testid=search-btn]").click();
         cy.get("[data-testid^=agent-table-username-]")
             .contains(user.toLowerCase())
@@ -81,7 +81,7 @@ describe("Provision", () => {
         cy.get("[data-testid=roles-select]").click();
         cy.get("[data-testid=role]").contains("AdminAnalyst").click();
         cy.get("[data-testid=save-btn]").parent().parent().click(0, 0);
-        cy.get("[data-testid=save-btn]").click({ force: true });
+        cy.get("[data-testid=save-btn]").click();
         cy.get("[data-testid=provision-dialog-modal-text]").should("not.exist");
 
         cy.log("Validate user edit.");
