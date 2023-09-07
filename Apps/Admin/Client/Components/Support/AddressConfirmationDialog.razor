@@ -24,16 +24,16 @@
                         Lines="@(2)"
                         data-testid="address-lines-input" />
                 </MudItem>
-                <MudItem xs="6">
+                <MudItem xs="12" sm="6">
                     <HgTextField
                         Label="City"
                         @bind-Value="@City"
                         T="@string"
                         Required="@true"
-                        RightMargin="@Breakpoint.Always"
+                        RightMargin="@Breakpoint.Sm"
                         data-testid="city-input" />
                 </MudItem>
-                <MudItem xs="6">
+                <MudItem xs="12" sm="6">
                     @switch (SelectedCountryCode)
                     {
                         case CountryCode.CA:
