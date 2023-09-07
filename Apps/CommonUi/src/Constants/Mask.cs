@@ -15,14 +15,30 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Common.Ui.Constants
 {
+    using MudBlazor;
+
     /// <summary>
-    /// A class with constants representing the various format masks.
+    /// A class with fields representing the various format masks.
     /// </summary>
     public static class Mask
     {
         /// <summary>
-        /// Format mask template for PHN.
+        /// Format mask for Personal Health Number (PHN).
         /// </summary>
-        public const string PhnMaskTemplate = "0000 000 000";
+        public static readonly IMask PhnMask = new PatternMask("0000 000 000");
+
+        /// <summary>
+        /// Format mask for Canadian postal codes.
+        /// </summary>
+        public static readonly IMask PostalCodeMask = new PatternMask("a0a 0a0")
+        {
+            Transformation = char.ToUpperInvariant,
+        };
+
+        /// <summary>
+        /// Format mask for American zip codes (00000 or 00000-0000).
+        /// </summary>
+        // Using a RegexMask instead of a PatternMask ensures the hyphen won't appear after 5 digits are entered.
+        public static readonly IMask ZipCodeMask = new RegexMask(@"^\d{0,4}$|^\d{5}(-\d{0,4})?$");
     }
 }

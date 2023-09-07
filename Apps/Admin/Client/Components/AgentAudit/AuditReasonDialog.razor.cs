@@ -22,26 +22,27 @@ using Microsoft.AspNetCore.Components;
 using MudBlazor;
 
 /// <summary>
-/// Backing logic for the DelegationConfirmationDialog component.
-/// If the Save button is pressed, the dialog's Result will have the Data property populated with a bool value of true.
+/// Backing logic for the AuditReasonDialog component.
+/// If the Confirm button is pressed, the dialog's Result will have the Data property populated with a string representing
+/// the audit reason.
 /// If the Cancel button is pressed, the dialog's Result will have the Cancelled property set to true.
 /// </summary>
-/// <typeparam name="TAction">An action to be performed when confirmation complete.</typeparam>
-/// <typeparam name="TErrorAction">An action to subscribe to when an error occurs dispatching TAction.</typeparam>
-/// <typeparam name="TSuccessAction">An action to subscribe to when TAction dispatch is successful.</typeparam>
+/// <typeparam name="TAction">An action to dispatch when the confirmation button is pressed.</typeparam>
+/// <typeparam name="TErrorAction">An action that indicates <typeparamref name="TAction"/> encountered an error.</typeparam>
+/// <typeparam name="TSuccessAction">An action that indicates <typeparamref name="TAction"/> completed successfully.</typeparam>
 public partial class AuditReasonDialog<TAction, TErrorAction, TSuccessAction> : FluxorComponent
     where TErrorAction : BaseFailAction
     where TAction : BaseAgentAuditAction
 {
     /// <summary>
-    /// Gets or sets the action to be performed when confirmation complete.
+    /// Gets or sets the action to dispatch when an audit reason has been confirmed.
     /// </summary>
     [Parameter]
     [EditorRequired]
     public TAction AuditableAction { get; set; } = default!;
 
     /// <summary>
-    /// Gets or sets the action to be performed when confirmation is cancelled.
+    /// Gets or sets the action to dispatch when the dialog is cancelled.
     /// </summary>
     [Parameter]
     public object? CancelAction { get; set; }
