@@ -242,7 +242,7 @@ namespace HealthGateway.Admin.Tests.Services
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public async Task SubmitCovidAssessmentAsyncAsync()
+        public async Task ShouldSubmitCovidAssessmentAsyncAsync()
         {
             // Arrange
             Guid covidAssessmentId = Guid.NewGuid();
