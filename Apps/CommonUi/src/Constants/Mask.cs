@@ -28,6 +28,11 @@ namespace HealthGateway.Common.Ui.Constants
         public static readonly IMask PhnMask = new PatternMask("0000 000 000");
 
         /// <summary>
+        /// Format mask for North American phone numbers.
+        /// </summary>
+        public static readonly IMask PhoneMask = new PatternMask("(000) 000-0000");
+
+        /// <summary>
         /// Format mask for Canadian postal codes.
         /// </summary>
         public static readonly IMask PostalCodeMask = new PatternMask("a0a 0a0")

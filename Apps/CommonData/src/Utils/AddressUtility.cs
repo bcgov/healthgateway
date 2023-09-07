@@ -261,5 +261,11 @@ namespace HealthGateway.Common.Data.Utils
         /// </summary>
         [GeneratedRegex(@"^\d{5}(-\d{4})?$")]
         public static partial Regex ZipCodeRegex();
+
+        /// <summary>
+        /// Regular expression for North American phone numbers.
+        /// </summary>
+        [GeneratedRegex(@"^\([2-9]\d{2}\) [2-9]\d{2}-\d{4}$")]
+        public static partial Regex PhoneNumberRegex();
     }
 }
