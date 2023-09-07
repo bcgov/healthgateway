@@ -17,6 +17,7 @@ namespace HealthGateway.Admin.Common.Models
 {
     using System.Collections.Generic;
     using System.Linq;
+    using HealthGateway.Admin.Common.Models.CovidSupport;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ViewModels;
 
@@ -39,5 +40,15 @@ namespace HealthGateway.Admin.Common.Models
         /// Gets or sets the blocked data sources.
         /// </summary>
         public IEnumerable<DataSource>? BlockedDataSources { get; set; } = Enumerable.Empty<DataSource>();
+
+        /// <summary>
+        /// Gets or sets the vaccine details.
+        /// </summary>
+        public VaccineDetails? VaccineDetails { get; set; }
+
+        /// <summary>
+        /// Gets or sets the Covid assessment details.
+        /// </summary>
+        public CovidAssessmentDetailsResponse? CovidAssessmentDetails { get; set; }
     }
 }

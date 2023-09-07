@@ -28,6 +28,7 @@ namespace HealthGateway.Admin.Services
     using HealthGateway.Common.Constants.PHSA;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ErrorHandling;
+    using HealthGateway.Common.Data.Models.PHSA;
     using HealthGateway.Common.Data.Validations;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Delegates;
@@ -40,7 +41,7 @@ namespace HealthGateway.Admin.Services
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
-    using ApiException = Refit.ApiException;
+    using Refit;
 
     /// <summary>
     /// Service that provides COVID-19 Support functionality.
@@ -102,7 +103,7 @@ namespace HealthGateway.Admin.Services
         /// <inheritdoc/>
         public async Task<RequestResult<CovidInformation>> GetCovidInformation(string phn, bool refresh)
         {
-            var patientResult = await this.patientService.GetPatient(phn, PatientIdentifierType.Phn, true).ConfigureAwait(true);
+            RequestResult<PatientModel> patientResult = await this.patientService.GetPatient(phn, PatientIdentifierType.Phn, true).ConfigureAwait(true);
 
             if (patientResult.ResultStatus != ResultType.Success)
             {
@@ -110,7 +111,7 @@ namespace HealthGateway.Admin.Services
                 return RequestResultFactory.Error<CovidInformation>(patientResult.ResultError);
             }
 
-            var vaccineDetailsResult = await this.immunizationDelegate.GetVaccineDetailsWithRetries(patientResult.ResourcePayload, refresh).ConfigureAwait(true);
+            RequestResult<VaccineDetails> vaccineDetailsResult = await this.immunizationDelegate.GetVaccineDetailsWithRetries(patientResult.ResourcePayload, refresh).ConfigureAwait(true);
 
             if (vaccineDetailsResult.ResultStatus != ResultType.Success || vaccineDetailsResult.ResourcePayload == null)
             {
@@ -118,7 +119,7 @@ namespace HealthGateway.Admin.Services
                 return RequestResultFactory.Error<CovidInformation>(patientResult.ResultError);
             }
 
-            var covidInformation = new CovidInformation()
+            CovidInformation covidInformation = new CovidInformation
             {
                 Blocked = vaccineDetailsResult.ResourcePayload.Blocked,
                 Patient = patientResult.ResourcePayload,
@@ -149,7 +150,8 @@ namespace HealthGateway.Admin.Services
             }
 
             DateTime birthdate = patientResult.ResourcePayload!.Birthdate;
-            RequestResult<PhsaResult<VaccineStatusResult>> vaccineStatusResult = await this.vaccineStatusDelegate.GetVaccineStatusWithRetries(request.PersonalHealthNumber, birthdate, bearerToken).ConfigureAwait(true);
+            RequestResult<PhsaResult<VaccineStatusResult>> vaccineStatusResult =
+                await this.vaccineStatusDelegate.GetVaccineStatusWithRetries(request.PersonalHealthNumber, birthdate, bearerToken).ConfigureAwait(true);
 
             if (vaccineStatusResult.ResultStatus != ResultType.Success || vaccineStatusResult.ResourcePayload == null)
             {
@@ -184,14 +186,15 @@ namespace HealthGateway.Admin.Services
                 SmartHealthCardQr = vaccineStatusResult.ResourcePayload.Result.QrCode.Data!,
             };
 
-            RequestResult<VaccineProofResponse> vaccineProofResponse = await this.vaccineProofDelegate.MailAsync(this.vaccineCardConfig.MailTemplate, vaccineProofRequest, request.MailAddress).ConfigureAwait(true);
+            RequestResult<VaccineProofResponse> vaccineProofResponse =
+                await this.vaccineProofDelegate.MailAsync(this.vaccineCardConfig.MailTemplate, vaccineProofRequest, request.MailAddress).ConfigureAwait(true);
 
             if (vaccineProofResponse.ResultStatus != ResultType.Success)
             {
                 this.logger.LogError(
-                       "Error mailing via BCMailPlus - error code: {ResultErrorCode} and error message: {ResultErrorMessage}",
-                       vaccineProofResponse.ResultError?.ErrorCode,
-                       vaccineProofResponse.ResultError?.ResultMessage);
+                    "Error mailing via BCMailPlus - error code: {ResultErrorCode} and error message: {ResultErrorMessage}",
+                    vaccineProofResponse.ResultError?.ErrorCode,
+                    vaccineProofResponse.ResultError?.ResultMessage);
 
                 return RequestResultFactory.Error<bool>(vaccineProofResponse.ResultError);
             }
@@ -236,7 +239,7 @@ namespace HealthGateway.Admin.Services
             try
             {
                 CovidAssessmentResponse response = await this.immunizationAdminApi.SubmitCovidAssessment(request, accessToken).ConfigureAwait(true);
-                return RequestResultFactory.Success(response, totalResultCount: 1);
+                return RequestResultFactory.Success(response, 1);
             }
             catch (Exception e) when (e is ApiException or HttpRequestException)
             {

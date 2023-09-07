@@ -17,7 +17,7 @@ namespace HealthGateway.Admin.Models.CovidSupport
 {
     using System.Collections.Generic;
     using System.Text.Json.Serialization;
-    using HealthGateway.Common.Models.PHSA;
+    using HealthGateway.Common.Data.Models.PHSA;
 
     /// <summary>
     /// Represents the retrieved vaccination information.

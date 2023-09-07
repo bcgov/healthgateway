@@ -18,7 +18,7 @@ namespace HealthGateway.ClinicalDocument.Api
     using System;
     using System.Threading.Tasks;
     using HealthGateway.ClinicalDocument.Models.PHSA;
-    using HealthGateway.Common.Models.PHSA;
+    using HealthGateway.Common.Data.Models.PHSA;
     using Refit;
 
     /// <summary>

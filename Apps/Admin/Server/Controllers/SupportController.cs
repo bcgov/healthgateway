@@ -20,6 +20,7 @@ namespace HealthGateway.Admin.Server.Controllers
     using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Admin.Common.Models;
+    using HealthGateway.Admin.Server.Models.CovidSupport;
     using HealthGateway.Admin.Server.Services;
     using HealthGateway.Common.Data.Constants;
     using Microsoft.AspNetCore.Authorization;
@@ -36,14 +37,17 @@ namespace HealthGateway.Admin.Server.Controllers
     [Authorize(Roles = "AdminUser,AdminReviewer,SupportUser")]
     public class SupportController : ControllerBase
     {
+        private readonly ICovidSupportService covidSupportService;
         private readonly ISupportService supportService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SupportController"/> class.
         /// </summary>
+        /// <param name="covidSupportService">The injected covid support service.</param>
         /// <param name="supportService">The injected support service.</param>
-        public SupportController(ISupportService supportService)
+        public SupportController(ICovidSupportService covidSupportService, ISupportService supportService)
         {
+            this.covidSupportService = covidSupportService;
             this.supportService = supportService;
         }
 
@@ -113,6 +117,46 @@ namespace HealthGateway.Admin.Server.Controllers
         public async Task BlockAccess(string hdid, BlockAccessRequest request)
         {
             await this.supportService.BlockAccessAsync(hdid, request.DataSources, request.Reason).ConfigureAwait(true);
+        }
+
+        /// <summary>
+        /// Triggers the process to physically mail the Vaccine Card document.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        /// <param name="request">The mail document request.</param>
+        /// <response code="200">The vaccine proof request could be submitted successfully.</response>
+        /// <response code="400">The vaccine proof request could not be submitted successfully.</response>
+        /// <response code="401">The client must authenticate itself to get the requested response.</response>
+        /// <response code="403">
+        /// The client does not have access rights to the content; that is, it is unauthorized, so the server
+        /// is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.
+        /// </response>
+        /// <response code="404">The patient could not be found for the personal health number..</response>
+        [HttpPost]
+        [Route("Patient/Document")]
+        public async Task MailVaccineCard([FromBody] MailDocumentRequest request)
+        {
+            await this.covidSupportService.MailVaccineCardAsync(request).ConfigureAwait(true);
+        }
+
+        /// <summary>
+        /// Submitting a completed anti viral screening form.
+        /// </summary>
+        /// <param name="request">The covid therapy assessment request to use for submission.</param>
+        /// <returns>A CovidAssessmentResponse object wrapped in a request result.</returns>
+        /// <response code="200">The covid assessment request was submitted.</response>
+        /// <response code="401">The client must authenticate itself to get the requested response.</response>
+        /// <response code="403">
+        /// The client does not have access rights to the content; that is, it is unauthorized, so the server
+        /// is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.
+        /// </response>
+        /// <response code="503">The service is unavailable for use.</response>
+        [HttpPost]
+        [Produces("application/json")]
+        [Route("CovidAssessment")]
+        public async Task<CovidAssessmentResponse> SubmitCovidAssessment([FromBody] CovidAssessmentRequest request)
+        {
+            return await this.covidSupportService.SubmitCovidAssessmentAsync(request).ConfigureAwait(true);
         }
     }
 }

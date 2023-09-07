@@ -13,29 +13,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Admin.Server.Models.CovidSupport
+namespace HealthGateway.Admin.Common.Models.CovidSupport;
+
+using System;
+using System.Text.Json.Serialization;
+
+/// <summary>
+/// Model object representing previous assessment details.
+/// </summary>
+public class PreviousAssessmentDetails
 {
-    using HealthGateway.Admin.Common.Models.CovidSupport;
-    using HealthGateway.Common.Models;
+    /// <summary>
+    /// Gets or sets the date time of assessment.
+    /// </summary>
+    [JsonPropertyName("dateTimeOfAssessment")]
+    public DateTime DateTimeOfAssessment { get; set; }
 
     /// <summary>
-    /// Represents the retrieved COVID-19 information for a patient.
+    /// Gets or sets the form id.
     /// </summary>
-    public class CovidInformation
-    {
-        /// <summary>
-        /// Gets or sets the retrieved patient information.
-        /// </summary>
-        public PatientModel Patient { get; set; } = new();
-
-        /// <summary>
-        /// Gets or sets the Vaccine Details.
-        /// </summary>
-        public VaccineDetails? VaccineDetails { get; set; }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether the requested record has been protected from being accessed.
-        /// </summary>
-        public bool Blocked { get; set; }
-    }
+    [JsonPropertyName("formId")]
+    public string? FormId { get; set; }
 }
