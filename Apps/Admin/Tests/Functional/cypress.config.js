@@ -21,6 +21,7 @@ module.exports = defineConfig({
             keycloak_password: "",
             keycloak_reviewer_username: "blazorreviewer",
             keycloak_unauthorized_username: "healthgateway",
+            keycloak_admin_client: "hg-keycloak",
         },
         trashAssetsBeforeRuns: true,
         setupNodeEvents(on, config) {

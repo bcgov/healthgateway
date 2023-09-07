@@ -15,7 +15,7 @@
     "devDependencies": {
         "@cypress/skip-test": "^2.6.1",
         "cy-verify-downloads": "^0.1.15",
-        "cypress": "^12.17.2",
+        "cypress": "^13.1.0",
         "cypress-xpath": "^1.8.0",
         "eslint": "^8.45.0",
         "eslint-plugin-chai-friendly": "^0.7.2",

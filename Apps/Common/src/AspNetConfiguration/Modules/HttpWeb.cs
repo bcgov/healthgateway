@@ -21,7 +21,6 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
     using System.Linq;
     using System.Net;
     using HealthGateway.Common.Models;
-    using HealthGateway.Database.Context;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Http;
@@ -44,8 +43,7 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
         /// </summary>
         /// <param name="services">The service collection provider.</param>
         /// <param name="logger">The logger to use.</param>
-        /// <param name="dbHealth">If true, DB Health checks will be added.</param>
-        public static void ConfigureHttpServices(IServiceCollection services, ILogger logger, bool dbHealth = true)
+        public static void ConfigureHttpServices(IServiceCollection services, ILogger logger)
         {
             logger.LogDebug("Configure Http Services...");
 
@@ -53,15 +51,7 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
 
             services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
 
-            if (dbHealth)
-            {
-                services.AddHealthChecks()
-                    .AddDbContextCheck<GatewayDbContext>();
-            }
-            else
-            {
-                services.AddHealthChecks();
-            }
+            services.AddHealthChecks();
 
             services
                 .AddRazorPages()
