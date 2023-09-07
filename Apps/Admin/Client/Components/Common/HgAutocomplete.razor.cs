@@ -20,6 +20,7 @@ namespace HealthGateway.Admin.Client.Components.Common
     using System.Diagnostics.CodeAnalysis;
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Components;
+    using Microsoft.AspNetCore.Components.Web;
     using MudBlazor;
 
     /// <summary>
@@ -44,6 +45,12 @@ namespace HealthGateway.Admin.Client.Components.Common
         /// </summary>
         [Parameter]
         public EventCallback<T> ValueChanged { get; set; }
+
+        /// <summary>
+        /// Gets or sets the event callback that will be triggered when the value is cleared.
+        /// </summary>
+        [Parameter]
+        public EventCallback<MouseEventArgs> OnClearButtonClick { get; set; }
 
         /// <summary>
         /// Gets or sets the function used to narrow the results when text is typed.
