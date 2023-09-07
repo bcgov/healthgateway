@@ -64,7 +64,16 @@ public class WebAppFixture : IAsyncLifetime
                     { "RedisConnection", this.redisContainer.GetConnectionString() },
                 };
                 // set or override configuration settings
-                builder.ConfigureAppConfiguration((context, configBuilder) => { configBuilder.AddInMemoryCollection(configOverrides); });
+                builder.ConfigureAppConfiguration(
+                    (context, configBuilder) =>
+                    {
+                        string? secretsPath = Environment.GetEnvironmentVariable("SECRETS_PATH");
+                        configBuilder.AddInMemoryCollection(configOverrides);
+                        if (!string.IsNullOrEmpty(secretsPath))
+                        {
+                            configBuilder.AddJsonFile(secretsPath);
+                        }
+                    });
             },
             extensions?.ToArray() ?? Array.Empty<IAlbaExtension>());
         return host;
