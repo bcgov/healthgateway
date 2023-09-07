@@ -56,7 +56,7 @@ namespace HealthGateway.Admin.Client.Components.Common
         /// Gets or sets the function used to narrow the results when text is typed.
         /// </summary>
         [Parameter]
-        public Func<string, Task<IEnumerable<T>>> SearchFunc { get; set; }
+        public Func<string, Task<IEnumerable<T>>> SearchFunc { get; set; } = default!;
 
         /// <summary>
         /// Gets the underlying MudBlazor component.

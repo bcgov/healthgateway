@@ -29,18 +29,6 @@ namespace HealthGateway.Common.Data.Utils
     public static partial class AddressUtility
     {
         /// <summary>
-        /// Regular expression for Canadian postal codes.
-        /// </summary>
-        [GeneratedRegex(@"^[A-Z]\d[A-Z] \d[A-Z]\d$")]
-        public static partial Regex PostalCodeRegex();
-
-        /// <summary>
-        /// Regular expression for American ZIP codes and ZIP+4 codes.
-        /// </summary>
-        [GeneratedRegex(@"^\d{5}(-\d{4})?$")]
-        public static partial Regex ZipCodeRegex();
-
-        /// <summary>
         /// Canadian province and territory abbreviations ordered alphabetically by province name.
         /// </summary>
         public static readonly IEnumerable<ProvinceAbbreviation> ProvinceAbbreviations = new List<ProvinceAbbreviation>
@@ -299,5 +287,17 @@ namespace HealthGateway.Common.Data.Utils
 
             return StringManipulator.JoinWithoutBlanks(addressElements, ", ");
         }
+
+        /// <summary>
+        /// Regular expression for Canadian postal codes.
+        /// </summary>
+        [GeneratedRegex(@"^[A-Z]\d[A-Z] \d[A-Z]\d$")]
+        public static partial Regex PostalCodeRegex();
+
+        /// <summary>
+        /// Regular expression for American ZIP codes and ZIP+4 codes.
+        /// </summary>
+        [GeneratedRegex(@"^\d{5}(-\d{4})?$")]
+        public static partial Regex ZipCodeRegex();
     }
 }
