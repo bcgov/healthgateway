@@ -350,14 +350,14 @@ namespace HealthGateway.Admin.Tests.Services
             };
         }
 
-        private static VaccineStatusResult GenerateVaccineStatusResult(string? status = null)
+        private static VaccineStatusResult GenerateVaccineStatusResult(string status = "AllDosesReceived")
         {
             return new()
             {
                 Birthdate = DateTime.Now.AddDays(-7300),
                 FirstName = "Ted",
                 LastName = "Rogers",
-                StatusIndicator = status ?? "AllDosesReceived",
+                StatusIndicator = status,
             };
         }
 
