@@ -84,7 +84,7 @@ export let soakOptions = {
     stages: [
         { duration: "1m", target: 10 }, // below normal load
         { duration: "2m", target: maxVus },
-        { duration: "3h56m", target: maxVus }, // stay at high users for hours 'soaking' the system
+        { duration: "5m", target: maxVus }, // stay at high users for hours 'soaking' the system
         { duration: "2m", target: 0 }, // drop back down
     ],
 };
@@ -240,6 +240,10 @@ export function getConfigurations() {
             ServiceEndpoints.Laboratory = endpoints["Laboratory"];
             ServiceEndpoints.Medication = endpoints["Medication"];
             ServiceEndpoints.Patient = endpoints["Patient"];
+            ServiceEndpoints.HospitalVisit = endpoints["HospitalVisit"];
+            ServiceEndpoints.PatientData = endpoints["PatientData"];
+            ServiceEndpoints.ClinicalDocument = endpoints["ClinicalDocument"];
+            ServiceEndpoints.SpecialAuthority = endpoints["SpecialAuthority"];
 
             let openIdConnect = responseJson["openIdConnect"];
             OpenIdConnect.AuthorityEndpoint = openIdConnect["authority"];
@@ -397,24 +401,9 @@ export function params(user) {
 
 export function timelineRequests(user) {
     let timelineRequests = {
-        "comments": {
-            method: "GET",
-            url: ServiceEndpoints.GatewayApi + "UserProfile/" + user.hdid + "/Comment",
-            params: params(user),
-        },
-        "encounter": {
-            method: "GET",
-            url: ServiceEndpoints.Encounter + "Encounter/" + user.hdid,
-            params: params(user),
-        },
         "immz": {
             method: "GET",
             url: ServiceEndpoints.Immunization + "Immunization?hdid=" + user.hdid,
-            params: params(user),
-        },
-        "labs": {
-            method: "GET",
-            url: ServiceEndpoints.Laboratory + "Laboratory/LaboratoryOrders?hdid=" + user.hdid,
             params: params(user),
         },
         "meds": {
@@ -422,11 +411,56 @@ export function timelineRequests(user) {
             url: ServiceEndpoints.Medication + "MedicationStatement/" + user.hdid,
             params: params(user),
         },
+        "labs": {
+            method: "GET",
+            url: ServiceEndpoints.Laboratory + "Laboratory/LaboratoryOrders?hdid=" + user.hdid,
+            params: params(user),
+        },
+        "covidlabs": {
+            method: "GET",
+            url: ServiceEndpoints.Laboratory + "Laboratory/Covid19Orders?hdid=" + user.hdid,
+            params: params(user),
+        },
+        "encounter": {
+            method: "GET",
+            url: ServiceEndpoints.Encounter + "Encounter/" + user.hdid,
+            params: params(user),
+        },
         "notes": {
             method: "GET",
             url: ServiceEndpoints.GatewayApi + "Note/" + user.hdid,
             params: params(user),
-        }
+        },
+        "specialauthority": {
+            method: "GET",
+            url: ServiceEndpoints.SpecialAuthority + "MedicationRequest/" + user.hdid,
+            params: params(user),
+        },
+        "clinicaldocs": {
+            method: "GET",
+            url: ServiceEndpoints.ClinicalDocument + "ClinicalDocument/" + user.hdid,
+            params: params(user),
+        },
+        "hospitalvisits": {
+            method: "GET",
+            url: ServiceEndpoints.HospitalVisit + "Encounter/HospitalVisit/" + user.hdid,
+            params: params(user),
+        },
+        "patientdata": {
+            method: "GET",
+            url: ServiceEndpoints.PatientData + "PatientData/" + user.hdid + "?patientDataTypes=DiagnosticImaging&patientDataTypes=BcCancerScreening&api-version=2.0",
+            params: params(user),
+        },
+        "comments": {
+            method: "GET",
+            url: ServiceEndpoints.GatewayApi + "UserProfile/" + user.hdid + "/Comment",
+            params: params(user),
+        },
+
+
+
+
+
     };
     return timelineRequests;
 }
@@ -449,39 +483,79 @@ export function spaAssetRequests() {
         url: BaseSiteUrl,
         params: { headers: HttpHeaders }
     };
-    const vendorChunk = {
+    const jsIndex = {
         method: "GET",
-        url: BaseSiteUrl + "js/chunk-vendors.c61f122d.js",
+        url: BaseSiteUrl + "assets/index-2050807c.js",
         params: { headers: HttpHeaders }
     };
-    const siteChunk = {
+    const cssIndex = {
         method: "GET",
-        url: BaseSiteUrl + "js/app.8136e1c8.js",
+        url: BaseSiteUrl + "assets/index-861fa900.css",
         params: { headers: HttpHeaders }
     };
-    const css = {
+    const bcFont1 = {
         method: "GET",
-        url: BaseSiteUrl + "css/app.c90e9393.css",
+        url: BaseSiteUrl + "assets/2023_01_01_BCSans-Regular_2f-2be3c263.woff2",
         params: { headers: HttpHeaders }
     };
-    const cssVendor = {
+    const bcFont2 = {
         method: "GET",
-        url: BaseSiteUrl + "/css/chunk-vendors.21f4bba7.css",
+        url: BaseSiteUrl + "assets/2023_01_01_BCSans-Bold_2f-f282c079.woff2",
         params: { headers: HttpHeaders }
     };
-    return [baseSite, vendorChunk, siteChunk, css, cssVendor];
+    const jsLanding = {
+        method: "GET",
+        url: BaseSiteUrl + "assets/LandingView-50a11d55.js",
+        params: { headers: HttpHeaders }
+    };
+    const cssLanding = {
+        method: "GET",
+        url: BaseSiteUrl + "assets/LandingView-e7bf429c.css",
+        params: { headers: HttpHeaders }
+    };
+    const hgLogo = {
+        method: "GET",
+        url: BaseSiteUrl + "assets/hg-logo-rev-82308ab5.svg",
+        params: { headers: HttpHeaders }
+    };
+    const imageLanding = {
+        method: "GET",
+        url: BaseSiteUrl + "assets/landing-top-26554ade.png",
+        params: { headers: HttpHeaders }
+    };
+    const configuration = {
+        method: "GET",
+        url: BaseSiteUrl + "configuration",
+        params: { headers: HttpHeaders }
+    };
+    const banner = {
+        method: "GET",
+        url: ServiceEndpoints.GatewayApi + "Communication/0",
+        params: { headers: HttpHeaders }
+    };
+    const inAppBanner = {
+        method: "GET",
+        url: ServiceEndpoints.GatewayApi + "Communication/2",
+        params: { headers: HttpHeaders }
+    };
+    return [baseSite, jsIndex, cssIndex, bcFont1, bcFont2, jsLanding, cssLanding, hgLogo, imageLanding, configuration, banner, inAppBanner];
 }
 
 export function webClientRequests(user) {
     let webClientRequests = {
         "patient": {
             method: "GET",
-            url: ServiceEndpoints.Patient + "Patient/" + user.hdid,
+            url: ServiceEndpoints.Patient + "Patient/" + user.hdid + "?api-version=2.0",
             params: params(user),
         },
         "profile": {
             method: "GET",
             url: ServiceEndpoints.GatewayApi + "UserProfile/" + user.hdid,
+            params: params(user),
+        },
+        "notifications": {
+            method: "GET",
+            url: ServiceEndpoints.GatewayApi + "Notification/" + user.hdid,
             params: params(user),
         },
     };
@@ -518,7 +592,7 @@ export function checkForRequestResult(response) {
 export function checkResponse(response, successCode) {
     if (isObject(response)) {
         var okCode = (successCode != null) ? successCode : 200;
-        check(response, {
+        const checks = {
             "Status is 2xx success": (r) => (r.status === okCode),
             "Status is NOT 301 Moved Permanently": (r) => r.status != 301,
             "Status is NOT 307 Temporary Redirect": (r) => r.status != 307,
@@ -539,9 +613,17 @@ export function checkResponse(response, successCode) {
             "Status is NOT 500 Method Not Allowed": (r) => r.status != 500,
             "Status is NOT 5xx Server Error": (r) => !(r.status >= 500 && r.status <= 599),
             "Status is NOT 0 (Timeout Error)": (r) => r.status != 0,
-        }) || ErrorRate.add(1);
+        };
+
+        let checkResults = check(response, checks);
+
+        if (!checkResults) {
+            ErrorRate.add(1);
+        }
+
     } else {
         console.error("response variable is not an Object!");
+        ErrorRate.add(1);
     }
     return;
 }
