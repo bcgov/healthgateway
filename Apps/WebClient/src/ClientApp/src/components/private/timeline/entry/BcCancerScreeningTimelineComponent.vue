@@ -8,7 +8,10 @@ import TimelineEntryComponent from "@/components/private/timeline/TimelineEntryC
 import { EntryType, entryTypeMap } from "@/constants/entryType";
 import { container } from "@/ioc/container";
 import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
-import { PatientDataFile } from "@/models/patientDataResponse";
+import {
+    BcCancerScreeningType,
+    PatientDataFile,
+} from "@/models/patientDataResponse";
 import BcCancerScreeningTimelineEntry from "@/models/timeline/bcCancerScreeningTimelineEntry";
 import { ILogger } from "@/services/interfaces";
 import { usePatientDataStore } from "@/stores/patientData";
@@ -42,6 +45,9 @@ const isLoadingFile = computed(
 const hasFile = computed(
     () => props.entry.fileId !== undefined && props.entry.fileId !== ""
 );
+const isResult = computed(
+    () => props.entry.screeningType === BcCancerScreeningType.Result
+);
 
 function showConfirmationModal(): void {
     messageModal.value?.showModal();
@@ -49,9 +55,15 @@ function showConfirmationModal(): void {
 
 function downloadFile(): void {
     if (props.entry.fileId) {
+        const eventText = isResult.value
+            ? "BC Cancer Result PDF"
+            : "BC Cancer Screening PDF";
+        const fileName = isResult.value
+            ? "bc_cancer_result"
+            : "bc_cancer_screening";
         SnowPlow.trackEvent({
             action: "download_report",
-            text: "BC Cancer Result PDF",
+            text: eventText,
         });
         const dateString = props.entry.date.format("yyyy_MM_dd-HH_mm");
         patientDataStore
@@ -62,9 +74,7 @@ function downloadFile(): void {
                         type: patientFile.contentType,
                     })
             )
-            .then((blob) =>
-                saveAs(blob, `bc_cancer_screening_${dateString}.pdf`)
-            )
+            .then((blob) => saveAs(blob, `${fileName}_${dateString}.pdf`))
             .catch((err) => logger.error(err));
     }
 }
@@ -76,28 +86,50 @@ function downloadFile(): void {
         :entry-icon="entryIcon"
         icon-class="bg-primary"
         :title="entry.title"
-        :subtitle="`Program: ${entry.programName}`"
+        :subtitle="entry.subtitle"
         :entry="entry"
         :is-mobile-details="isMobileDetails"
         :allow-comment="commentsAreEnabled"
         :has-attachment="Boolean(entry.fileId)"
     >
         <p class="text-body-1 mb-3">
-            For information about your results, you can contact
-            <a
-                href="http://www.bccancer.bc.ca/contact"
-                target="_blank"
-                rel="noopener"
-                class="text-link"
-                >BC Cancer</a
-            >.
+            <span v-if="isResult">
+                For information about your results, you can contact
+                <a
+                    href="http://www.bccancer.bc.ca/contact"
+                    target="_blank"
+                    rel="noopener"
+                    class="text-link"
+                    >BC Cancer</a
+                >.
+            </span>
+            <span v-else>
+                <a
+                    href="http://www.bccancer.bc.ca/screening/cervix/get-screened/what-is-cervical-screening"
+                    target="_blank"
+                    rel="noopener"
+                    class="text-link"
+                    >Cervix screening</a
+                >
+                (Pap test) can stop at age 69 if your results have always been
+                normal. Ask your health care provider if you should still be
+                tested. To book your next Pap test, contact your health care
+                provider or a
+                <a
+                    href="http://www.bccancer.bc.ca/screening/cervix/clinic-locator"
+                    target="_blank"
+                    rel="noopener"
+                    class="text-link"
+                    >medical clinic</a
+                >.
+            </span>
         </p>
         <HgButtonComponent
             v-if="hasFile"
             data-testid="bc-cancer-screening-download-button"
             class="mb-6"
             variant="secondary"
-            text="View PDF"
+            :text="entry.callToActionText"
             prepend-icon="eye"
             :loading="isLoadingFile"
             @click="showConfirmationModal()"
