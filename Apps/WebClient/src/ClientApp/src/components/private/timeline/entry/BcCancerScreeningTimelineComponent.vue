@@ -93,7 +93,7 @@ function downloadFile(): void {
         :has-attachment="Boolean(entry.fileId)"
     >
         <p class="text-body-1 mb-3">
-            <span v-if="isResult">
+            <span v-if="isResult" data-testid="bc-cancer-result-body">
                 For information about your results, you can contact
                 <a
                     href="http://www.bccancer.bc.ca/contact"
@@ -103,7 +103,7 @@ function downloadFile(): void {
                     >BC Cancer</a
                 >.
             </span>
-            <span v-else>
+            <span v-else data-testid="bc-cancer-screening-body">
                 <a
                     href="http://www.bccancer.bc.ca/screening/cervix/get-screened/what-is-cervical-screening"
                     target="_blank"
