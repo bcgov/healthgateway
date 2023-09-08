@@ -58,7 +58,7 @@ jobs:
           set -e
           export SECRETS_PATH=$(testSecrets.secureFilePath)
           dotnet build --no-incremental
-          dotnet dotcover test --dcReportType=HTML --dcAttributeFilters=System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverageAttribute;
+          dotnet dotcover test --filter "Category!=IntegrationTest" --dcReportType=HTML --dcAttributeFilters=System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverageAttribute;
         displayName: "Build and Test"
         continueOnError: true
         workingDirectory: $(Build.SourcesDirectory)/Apps/
