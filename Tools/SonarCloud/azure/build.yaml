@@ -6,7 +6,6 @@ schedules:
     branches:
       include:
         - dev
-        - bugs/16034
 pool:
   vmImage: "ubuntu-20.04"
 
