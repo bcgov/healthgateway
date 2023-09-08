@@ -16,14 +16,16 @@
 
 namespace HealthGateway.IntegrationTests.Dependents;
 
-using System.Threading.Tasks;
 using Alba;
 using HealthGateway.Common.Data.ViewModels;
 using HealthGateway.Common.Models.Events;
+using HealthGateway.Database.Models;
 using HealthGateway.GatewayApi.Models;
 using Microsoft.EntityFrameworkCore;
 using Xunit.Abstractions;
+using Xunit.Categories;
 
+[IntegrationTest]
 public class GatewayApiDependentTests : ScenarioContextBase<GatewayApi.Startup>
 {
     private readonly DateTime dependentDob = DateTime.Parse("2014-Mar-15");
@@ -39,51 +41,59 @@ public class GatewayApiDependentTests : ScenarioContextBase<GatewayApi.Startup>
     [Fact]
     public async Task AddDependent()
     {
-        var scenarioResponse = await this.Host.Scenario(scenario =>
-        {
-            scenario.Post.Json(new AddDependentRequest
+        IScenarioResult scenarioResponse = await this.Host.Scenario(
+            scenario =>
             {
-                DateOfBirth = dependentDob,
-                Phn = dependentPhn,
-                FirstName = dependentFirstName,
-                LastName = dependentLastName,
-            }).ToUrl($"/UserProfile/{delegateHdid}/dependent");
+                scenario.Post.Json(
+                        new AddDependentRequest
+                        {
+                            DateOfBirth = this.dependentDob,
+                            Phn = this.dependentPhn,
+                            FirstName = this.dependentFirstName,
+                            LastName = this.dependentLastName,
+                        })
+                    .ToUrl($"/UserProfile/{this.delegateHdid}/dependent");
 
-            scenario.StatusCodeShouldBeOk();
-        });
+                scenario.StatusCodeShouldBeOk();
+            });
 
-        var response = (await scenarioResponse.ReadAsJsonAsync<RequestResult<DependentModel>>()).ShouldNotBeNull();
+        RequestResult<DependentModel> response = (await scenarioResponse.ReadAsJsonAsync<RequestResult<DependentModel>>()).ShouldNotBeNull();
         response.ResultStatus.ShouldNotBe(Common.Data.Constants.ResultType.Error);
 
-        await this.Assert(async ctx =>
-        {
-            var outboxItems = await ctx.Outbox.Where(i => i.Metadata.SessionId == delegateHdid && i.Metadata.Type == typeof(DependentAddedEvent).Name).ToListAsync();
-            outboxItems.Count.ShouldBe(1);
-        });
+        await this.Assert(
+            async ctx =>
+            {
+                List<OutboxItem> outboxItems = await ctx.Outbox.Where(i => i.Metadata.SessionId == this.delegateHdid && i.Metadata.Type == typeof(DependentAddedEvent).Name).ToListAsync();
+                outboxItems.Count.ShouldBe(1);
+            });
     }
 
     [Fact]
     public async Task RemoveDependent()
     {
-        var dependentHdidToRemove = "232434345442257";
-        var scenarioResponse = await this.Host.Scenario(scenario =>
-        {
-            scenario.Delete.Json(new DependentModel
+        string dependentHdidToRemove = "232434345442257";
+        IScenarioResult scenarioResponse = await this.Host.Scenario(
+            scenario =>
             {
-                DelegateId = delegateHdid,
-                OwnerId = dependentHdidToRemove,
-            }).ToUrl($"/UserProfile/{delegateHdid}/dependent/{dependentHdidToRemove}");
+                scenario.Delete.Json(
+                        new DependentModel
+                        {
+                            DelegateId = this.delegateHdid,
+                            OwnerId = dependentHdidToRemove,
+                        })
+                    .ToUrl($"/UserProfile/{this.delegateHdid}/dependent/{dependentHdidToRemove}");
 
-            scenario.StatusCodeShouldBeOk();
-        });
+                scenario.StatusCodeShouldBeOk();
+            });
 
-        var response = (await scenarioResponse.ReadAsJsonAsync<RequestResult<DependentModel>>()).ShouldNotBeNull();
+        RequestResult<DependentModel> response = (await scenarioResponse.ReadAsJsonAsync<RequestResult<DependentModel>>()).ShouldNotBeNull();
         response.ResultStatus.ShouldNotBe(Common.Data.Constants.ResultType.Error);
 
-        await this.Assert(async ctx =>
-        {
-            var outboxItems = await ctx.Outbox.Where(i => i.Metadata.SessionId == delegateHdid && i.Metadata.Type == typeof(DependentRemovedEvent).Name).ToListAsync();
-            outboxItems.Count.ShouldBe(1);
-        });
+        await this.Assert(
+            async ctx =>
+            {
+                List<OutboxItem> outboxItems = await ctx.Outbox.Where(i => i.Metadata.SessionId == this.delegateHdid && i.Metadata.Type == typeof(DependentRemovedEvent).Name).ToListAsync();
+                outboxItems.Count.ShouldBe(1);
+            });
     }
 }

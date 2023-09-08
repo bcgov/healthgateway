@@ -25,9 +25,11 @@ using HealthGateway.Common.Utils;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit.Abstractions;
+using Xunit.Categories;
 
 #pragma warning disable CA1063 // Implement IDisposable Correctly
 
+[IntegrationTest]
 public class MessagingTests : ScenarioContextBase<GatewayApi.Startup>, IDisposable
 {
     private readonly CancellationTokenSource cts;
