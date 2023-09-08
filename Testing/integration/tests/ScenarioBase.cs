@@ -16,6 +16,7 @@
 
 namespace HealthGateway.IntegrationTests;
 
+using System.Data.Common;
 using System.Reflection;
 using Alba;
 using Alba.Security;
@@ -57,13 +58,22 @@ public class WebAppFixture : IAsyncLifetime
                     });
 
                 // override the db connection string
-                var configOverrides = new Dictionary<string, string?>(configurationSettings ?? Enumerable.Empty<KeyValuePair<string, string?>>())
+                Dictionary<string, string?> configOverrides = new(configurationSettings ?? Enumerable.Empty<KeyValuePair<string, string?>>())
                 {
                     { "ConnectionStrings:GatewayConnection", this.postgreSqlContainer.GetConnectionString() },
                     { "RedisConnection", this.redisContainer.GetConnectionString() },
                 };
                 // set or override configuration settings
-                builder.ConfigureAppConfiguration((context, configBuilder) => { configBuilder.AddInMemoryCollection(configOverrides); });
+                builder.ConfigureAppConfiguration(
+                    (context, configBuilder) =>
+                    {
+                        string? secretsPath = Environment.GetEnvironmentVariable("SECRETS_PATH");
+                        configBuilder.AddInMemoryCollection(configOverrides);
+                        if (!string.IsNullOrEmpty(secretsPath))
+                        {
+                            configBuilder.AddJsonFile(secretsPath);
+                        }
+                    });
             },
             extensions?.ToArray() ?? Array.Empty<IAlbaExtension>());
         return host;
@@ -109,16 +119,23 @@ public abstract class ScenarioContextBase<TStartup> : IAsyncLifetime, IClassFixt
     {
         this.Output = output;
         this.fixture = fixture;
-        this.testConfiguration = new ConfigurationBuilder().AddUserSecrets(Assembly.GetExecutingAssembly()).Build().GetSection(configSectionName).Get<TestConfiguration>()!;
+        string? secretsPath = Environment.GetEnvironmentVariable("SECRETS_PATH");
+        IConfigurationBuilder configBuilder = new ConfigurationBuilder().AddUserSecrets(Assembly.GetExecutingAssembly());
+        if (!string.IsNullOrEmpty(secretsPath))
+        {
+            configBuilder.AddJsonFile(secretsPath);
+        }
+
+        this.testConfiguration = configBuilder.Build().GetSection(configSectionName).Get<TestConfiguration>()!;
     }
 
     public virtual async Task InitializeAsync()
     {
-        var authentication = CreateClientCredentials(this.testConfiguration.DefaultUserName);
+        IAlbaExtension authentication = this.CreateClientCredentials(this.testConfiguration.DefaultUserName);
         this.Host = await this.fixture.CreateHost<TStartup>(this.Output, extensions: new[] { authentication });
 
-        using var migrationScope = this.Host.Services.CreateScope();
-        var dbCtx = migrationScope.ServiceProvider.GetRequiredService<GatewayDbContext>();
+        using IServiceScope migrationScope = this.Host.Services.CreateScope();
+        GatewayDbContext dbCtx = migrationScope.ServiceProvider.GetRequiredService<GatewayDbContext>();
         await MigrateDatabase(dbCtx);
         await SeedData(dbCtx);
     }
@@ -130,14 +147,14 @@ public abstract class ScenarioContextBase<TStartup> : IAsyncLifetime, IClassFixt
 
     private static async Task SeedData(GatewayDbContext ctx)
     {
-        var conn = ctx.Database.GetDbConnection();
+        DbConnection conn = ctx.Database.GetDbConnection();
         if (conn.State != System.Data.ConnectionState.Open)
         {
             await conn.OpenAsync();
         }
 
-        await using var command = conn.CreateCommand();
-        var seedScript = "CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\";\n" + await File.ReadAllTextAsync("../../../../../functional/tests/cypress/db/seed.sql");
+        await using DbCommand command = conn.CreateCommand();
+        string seedScript = "CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\";\n" + await File.ReadAllTextAsync("../../../../../functional/tests/cypress/db/seed.sql");
 #pragma warning disable CA2100 // Review SQL queries for security vulnerabilities
         command.CommandText = seedScript;
 #pragma warning restore CA2100 // Review SQL queries for security vulnerabilities
@@ -151,17 +168,21 @@ public abstract class ScenarioContextBase<TStartup> : IAsyncLifetime, IClassFixt
 
     public TestUser GetTestUser(string userName)
     {
-        var user = this.testConfiguration.Users.FirstOrDefault(u => u.UserName == userName);
-        if (user == null) throw new InvalidOperationException($"User {userName} not found in the test configuration");
+        TestUser? user = this.testConfiguration.Users.FirstOrDefault(u => u.UserName == userName);
+        if (user == null)
+        {
+            throw new InvalidOperationException($"User {userName} not found in the test configuration");
+        }
+
         return user;
     }
 
     private IAlbaExtension CreateClientCredentials(string userName)
     {
-        var clientId = this.testConfiguration.ClientId;
-        var clientSecret = this.testConfiguration.ClientSecret;
-        var user = GetTestUser(userName);
-        var userAuth = new OpenConnectUserPassword
+        string clientId = this.testConfiguration.ClientId;
+        string clientSecret = this.testConfiguration.ClientSecret;
+        TestUser user = this.GetTestUser(userName);
+        OpenConnectUserPassword userAuth = new()
         {
             ClientId = clientId,
             ClientSecret = clientSecret,
