@@ -26,7 +26,7 @@ namespace HealthGateway.Common.Models
         /// <summary>
         /// Gets or sets the value for vaccine card config section key.
         /// </summary>
-        public const string VaccineCardConfigSectionKey = "VaccineCard";
+        public const string ConfigSectionKey = "VaccineCard";
 
         /// <summary>
         /// Gets or sets the name of the print template.

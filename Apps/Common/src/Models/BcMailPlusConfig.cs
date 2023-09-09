@@ -24,6 +24,11 @@ namespace HealthGateway.Common.Models
     public class BcMailPlusConfig
     {
         /// <summary>
+        /// Gets or sets the value for bc mail plus config section key.
+        /// </summary>
+        public const string ConfigSectionKey = "BCMailPlus";
+
+        /// <summary>
         /// Gets or sets the endpoint for the BCMailPlus integration.
         /// </summary>
         public string Endpoint { get; set; } = null!;

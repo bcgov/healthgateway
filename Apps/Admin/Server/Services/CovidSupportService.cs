@@ -44,6 +44,7 @@ namespace HealthGateway.Admin.Server.Services
     /// </summary>
     public class CovidSupportService : ICovidSupportService
     {
+        private readonly BcMailPlusConfig bcmpConfig;
         private readonly VaccineCardConfig vaccineCardConfig;
         private readonly ILogger<CovidSupportService> logger;
         private readonly IAuthenticationDelegate authenticationDelegate;
@@ -78,28 +79,30 @@ namespace HealthGateway.Admin.Server.Services
             this.immunizationAdminApi = immunizationAdminApi;
             this.patientRepository = patientRepository;
 
+            this.bcmpConfig = new();
+            configuration.Bind(BcMailPlusConfig.ConfigSectionKey, this.bcmpConfig);
+
             this.vaccineCardConfig = new();
-            configuration.Bind(VaccineCardConfig.VaccineCardConfigSectionKey, this.vaccineCardConfig);
+            configuration.Bind(VaccineCardConfig.ConfigSectionKey, this.vaccineCardConfig);
         }
 
         /// <inheritdoc/>
         public async Task MailVaccineCardAsync(MailDocumentRequest request, CancellationToken ct = default)
         {
-            string accessToken = this.GetAccessToken();
+            PatientModel patient = await this.GetPatientAsync(request.PersonalHealthNumber, ct).ConfigureAwait(true);
+            VaccineStatusResult vaccineStatusResult = await this.GetVaccineStatusResult(request.PersonalHealthNumber, patient.Birthdate, this.GetAccessToken()).ConfigureAwait(true);
+            VaccinationStatus vaccinationStatus = this.GetVaccinationStatus(vaccineStatusResult);
+            await this.SendVaccineProofRequest(vaccinationStatus, vaccineStatusResult.QrCode.Data, request.MailAddress).ConfigureAwait(true);
+        }
 
-            PatientDetailsQuery query = new(request.PersonalHealthNumber, Source: PatientDetailSource.Empi, UseCache: true);
-            PatientModel? patient = (await this.patientRepository.Query(query, ct).ConfigureAwait(true)).Items.SingleOrDefault();
-            if (patient == null)
-            {
-                throw new ProblemDetailsException(ExceptionUtility.CreateProblemDetails(ErrorMessages.ClientRegistryRecordsNotFound, HttpStatusCode.NotFound, nameof(SupportService)));
-            }
-
-            PhsaResult<VaccineStatusResult> vaccineStatusResult =
-                await this.vaccineStatusDelegate.GetVaccineStatusWithRetries(request.PersonalHealthNumber, patient.Birthdate, accessToken).ConfigureAwait(true);
-
-            VaccinationStatus status = this.GetVaccinationStatus(vaccineStatusResult.Result);
-
-            await this.SendVaccineProofRequest(status, vaccineStatusResult.Result.QrCode.Data, request.MailAddress).ConfigureAwait(true);
+        /// <inheritdoc/>
+        public async Task<ReportModel> RetrieveVaccineRecordAsync(string phn, CancellationToken ct = default)
+        {
+            PatientModel patient = await this.GetPatientAsync(phn, ct).ConfigureAwait(true);
+            VaccineStatusResult vaccineStatusResult = await this.GetVaccineStatusResult(phn, patient.Birthdate, this.GetAccessToken()).ConfigureAwait(true);
+            VaccinationStatus vaccinationStatus = this.GetVaccinationStatus(vaccineStatusResult);
+            VaccineProofResponse vaccineProofResponse = await this.GetVaccineProof(vaccinationStatus, vaccineStatusResult.QrCode.Data).ConfigureAwait(true);
+            return await this.GetVaccineProofReport(vaccineProofResponse.AssetUri).ConfigureAwait(true);
         }
 
         /// <inheritdoc/>
@@ -121,6 +124,30 @@ namespace HealthGateway.Admin.Server.Services
             return accessToken;
         }
 
+        private async Task<PatientModel> GetPatientAsync(string phn, CancellationToken ct = default)
+        {
+            PatientDetailsQuery query = new(phn, Source: PatientDetailSource.Empi, UseCache: true);
+            PatientModel? patient = (await this.patientRepository.Query(query, ct).ConfigureAwait(true)).Items.SingleOrDefault();
+            if (patient == null)
+            {
+                throw new ProblemDetailsException(ExceptionUtility.CreateProblemDetails(ErrorMessages.ClientRegistryRecordsNotFound, HttpStatusCode.NotFound, nameof(SupportService)));
+            }
+
+            return patient;
+        }
+
+        private async Task<VaccineStatusResult> GetVaccineStatusResult(string phn, DateTime birthdate, string accessToken)
+        {
+            PhsaResult<VaccineStatusResult> phsaResult = await this.vaccineStatusDelegate.GetVaccineStatusWithRetries(phn, birthdate, accessToken).ConfigureAwait(true);
+
+            if (phsaResult.Result == null)
+            {
+                throw new ProblemDetailsException(ExceptionUtility.CreateProblemDetails(ErrorMessages.CannotGetVaccineStatus, HttpStatusCode.BadRequest, nameof(CovidSupportService)));
+            }
+
+            return phsaResult.Result;
+        }
+
         private VaccinationStatus GetVaccinationStatus(VaccineStatusResult result)
         {
             this.logger.LogDebug("Vaccination Status Indicator: {Indicator}", result.StatusIndicator);
@@ -137,14 +164,60 @@ namespace HealthGateway.Admin.Server.Services
                 VaccineState.Exempt => VaccinationStatus.Exempt,
                 _ => VaccinationStatus.Unknown,
             };
+            this.logger.LogDebug("Vaccination Status: {Status}", status);
 
-            this.logger.LogDebug("Vaccination Status: {RequestState}", status);
             if (status == VaccinationStatus.Unknown)
             {
                 throw new ProblemDetailsException(ExceptionUtility.CreateProblemDetails(ErrorMessages.VaccinationStatusUnknown, HttpStatusCode.BadRequest, nameof(CovidSupportService)));
             }
 
             return status;
+        }
+
+        private async Task<VaccineProofResponse> GetVaccineProof(VaccinationStatus vaccinationStatus, string qrCode)
+        {
+            VaccineProofRequest request = new()
+            {
+                Status = vaccinationStatus,
+                SmartHealthCardQr = qrCode,
+            };
+
+            RequestResult<VaccineProofResponse> vaccineProof = await this.vaccineProofDelegate.GenerateAsync(this.vaccineCardConfig.PrintTemplate, request).ConfigureAwait(true);
+            if (vaccineProof.ResultStatus != ResultType.Success || vaccineProof.ResourcePayload == null)
+            {
+                throw new ProblemDetailsException(
+                    ExceptionUtility.CreateProblemDetails(vaccineProof.ResultError?.ResultMessage ?? ErrorMessages.CannotGetVaccineProof, HttpStatusCode.BadRequest, nameof(CovidSupportService)));
+            }
+
+            return vaccineProof.ResourcePayload;
+        }
+
+        private async Task<ReportModel> GetVaccineProofReport(Uri assetUri)
+        {
+            bool processing = true;
+            int retryCount = 0;
+            RequestResult<ReportModel> result = new();
+
+            while (processing && retryCount++ <= this.bcmpConfig.MaxRetries)
+            {
+                this.logger.LogInformation("Waiting to fetch Vaccine Proof Asset...");
+                await Task.Delay(this.bcmpConfig.BackOffMilliseconds).ConfigureAwait(true);
+
+                result = await this.vaccineProofDelegate.GetAssetAsync(assetUri).ConfigureAwait(true);
+                processing = result.ResultStatus == ResultType.ActionRequired;
+            }
+
+            if (result.ResultStatus != ResultType.Success || result.ResourcePayload == null)
+            {
+                if (result.ResultError != null)
+                {
+                    throw new ProblemDetailsException(ExceptionUtility.CreateProblemDetails(result.ResultError.ResultMessage, HttpStatusCode.BadRequest, nameof(CovidSupportService)));
+                }
+
+                throw new ProblemDetailsException(ExceptionUtility.CreateProblemDetails(ErrorMessages.CannotGetVaccineProofPdf, HttpStatusCode.BadRequest, nameof(CovidSupportService)));
+            }
+
+            return result.ResourcePayload;
         }
 
         private async Task SendVaccineProofRequest(VaccinationStatus status, string smartHealthCardQr, Address address)
