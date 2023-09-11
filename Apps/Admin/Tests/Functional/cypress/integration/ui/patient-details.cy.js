@@ -62,11 +62,6 @@ describe("Patient details", () => {
     it("Verify patient details", () => {
         performSearch("HDID", hdid);
 
-        cy.get("[data-testid=user-table]")
-            .find("tbody tr.mud-table-row")
-            .first()
-            .click();
-
         cy.get("[data-testid=patient-name]").should("be.visible");
         cy.get("[data-testid=patient-dob]").should("be.visible");
         cy.get("[data-testid=patient-phn]").should("be.visible");
@@ -87,11 +82,6 @@ describe("Patient details", () => {
 
     it("Verify patient not found", () => {
         performSearch("HDID", hdidPatientNotFound);
-
-        cy.get("[data-testid=user-table]")
-            .find("tbody tr.mud-table-row")
-            .first()
-            .click();
 
         cy.get("[data-testid=patient-name]").should("be.visible");
         cy.get("[data-testid=patient-dob]").should("be.visible");
@@ -117,11 +107,6 @@ describe("Patient details", () => {
     it("Verify patient deceased", () => {
         performSearch("HDID", hdidPatientDeceased);
 
-        cy.get("[data-testid=user-table]")
-            .find("tbody tr.mud-table-row")
-            .first()
-            .click();
-
         cy.get("[data-testid=patient-name]").should("be.visible");
         cy.get("[data-testid=patient-dob]").should("be.visible");
         cy.get("[data-testid=patient-phn]").should("be.visible");
@@ -145,11 +130,6 @@ describe("Patient details", () => {
 
     it("Verify patient not a user", () => {
         performSearch("HDID", hdidPatientNotUser);
-
-        cy.get("[data-testid=user-table]")
-            .find("tbody tr.mud-table-row")
-            .first()
-            .click();
 
         cy.get("[data-testid=patient-name]").should("be.visible");
         cy.get("[data-testid=patient-dob]").should("be.visible");
