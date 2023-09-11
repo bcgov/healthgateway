@@ -23,6 +23,7 @@ namespace HealthGateway.Admin.Server.Controllers
     using HealthGateway.Admin.Server.Models.CovidSupport;
     using HealthGateway.Admin.Server.Services;
     using HealthGateway.Common.Data.Constants;
+    using HealthGateway.Common.Models;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
@@ -137,6 +138,25 @@ namespace HealthGateway.Admin.Server.Controllers
         public async Task MailVaccineCard([FromBody] MailDocumentRequest request)
         {
             await this.covidSupportService.MailVaccineCardAsync(request).ConfigureAwait(true);
+        }
+
+        /// <summary>
+        /// Gets the COVID-19 Vaccine Record document that includes the Vaccine Card and Vaccination History.
+        /// </summary>
+        /// <returns>The encoded immunization document.</returns>
+        /// <param name="phn">The personal health number that matches the document to retrieve.</param>
+        /// <response code="200">The request to retrieve the encoded immunization document was successful.</response>
+        /// <response code="400">The request could not be submitted successfully.</response>
+        /// <response code="401">the client must authenticate itself to get the requested response.</response>
+        /// <response code="403">
+        /// The client does not have access rights to the content; that is, it is unauthorized, so the server
+        /// is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.
+        /// </response>
+        [HttpGet]
+        [Route("Patient/Document")]
+        public async Task<ReportModel> RetrieveVaccineRecord([FromHeader] string phn)
+        {
+            return await this.covidSupportService.RetrieveVaccineRecordAsync(phn).ConfigureAwait(true);
         }
 
         /// <summary>

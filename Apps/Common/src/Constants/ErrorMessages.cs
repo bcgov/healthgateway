@@ -114,5 +114,20 @@ namespace HealthGateway.Common.Constants
         /// Error message to return when vaccination status is unknown.
         /// </summary>
         public const string VaccinationStatusUnknown = "Vaccination status is unknown.";
+
+        /// <summary>
+        /// Error message to return when unable to get vaccine proof.
+        /// </summary>
+        public const string CannotGetVaccineProof = "Unable to obtain Vaccine Proof.";
+
+        /// <summary>
+        /// Error message to return when unable to get vaccine proof pdf.
+        /// </summary>
+        public const string CannotGetVaccineProofPdf = "Unable to obtain Vaccine Proof PDF.";
+
+        /// <summary>
+        /// Error message to return when unable to get vaccine status.
+        /// </summary>
+        public const string CannotGetVaccineStatus = "Error retrieving vaccine status information.";
     }
 }

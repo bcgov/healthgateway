@@ -18,6 +18,7 @@ namespace HealthGateway.Admin.Server.Services
     using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Admin.Server.Models.CovidSupport;
+    using HealthGateway.Common.Models;
 
     /// <summary>
     /// Service that provides COVID-19 Support functionality.
@@ -31,6 +32,14 @@ namespace HealthGateway.Admin.Server.Services
         /// <param name="ct">A cancellation token.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         Task MailVaccineCardAsync(MailDocumentRequest request, CancellationToken ct = default);
+
+        /// <summary>
+        /// Gets a document that represents a patient's vaccine card and vaccine history.
+        /// </summary>
+        /// <param name="phn">The personal health number that matches the person to retrieve.</param>
+        /// <param name="ct">A cancellation token.</param>
+        /// <returns>The encoded document.</returns>
+        Task<ReportModel> RetrieveVaccineRecordAsync(string phn, CancellationToken ct = default);
 
         /// <summary>
         /// Submits a covid therapy assessment request.
