@@ -8,8 +8,8 @@
         "legalName": null,
         "preferredName": null,
         "birthdate": null,
-        "physicalAddress": "",
-        "postalAddress": "",
+        "physicalAddress": null,
+        "postalAddress": null,
         "profileCreatedDateTime": "2023-05-08T21:18:08.312207Z",
         "profileLastLoginDateTime": "2023-05-08T21:18:08.312207Z"
     }

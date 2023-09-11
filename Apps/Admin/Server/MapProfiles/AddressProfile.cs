@@ -16,7 +16,6 @@
 namespace HealthGateway.Admin.Server.MapProfiles
 {
     using AutoMapper;
-    using HealthGateway.Common.Data.Utils;
 
     /// <summary>
     /// An AutoMapper profile class which defines a mapping between a data access model and common model.
@@ -30,14 +29,6 @@ namespace HealthGateway.Admin.Server.MapProfiles
         {
             this.CreateMap<AccountDataAccess.Patient.Address?, HealthGateway.Common.Data.Models.Address?>()
                 .ReverseMap();
-
-            this.CreateMap<HealthGateway.Common.Data.Models.Address?, string>()
-                .ConvertUsing(address => AddressUtility.GetAddressAsSingleLine(address, false));
-
-            this.CreateMap<AccountDataAccess.Patient.Address?, string>()
-                .ConvertUsing(
-                    (src, _, context) => context.Mapper.Map<HealthGateway.Common.Data.Models.Address?, string>(
-                        context.Mapper.Map<AccountDataAccess.Patient.Address?, HealthGateway.Common.Data.Models.Address?>(src)));
         }
     }
 }

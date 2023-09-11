@@ -17,8 +17,20 @@
             "surname": "PROTERVITY"
         },
         "birthdate": "1967-06-02",
-        "physicalAddress": "3815 HILLSPOINT STREET, CHATHAM, BC, V0G8B8",
-        "postalAddress": "3815 HILLSPOINT STREET, CHATHAM, BC, V0G8B8",
+        "physicalAddress": {
+            "streetLines": ["3815 HILLSPOINT STREET"],
+            "city": "CHATHAM",
+            "state": "BC",
+            "postalCode": "V0G8B8",
+            "country": ""
+        },
+        "postalAddress": {
+            "streetLines": ["3815 HILLSPOINT STREET"],
+            "city": "CHATHAM",
+            "state": "BC",
+            "postalCode": "V0G8B8",
+            "country": ""
+        },
         "profileCreatedDateTime": "2023-04-29T16:47:23.554687Z",
         "profileLastLoginDateTime": "2023-05-01T16:47:23.554687Z"
     }
