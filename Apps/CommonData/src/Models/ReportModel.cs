@@ -13,19 +13,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Admin.Server.Models.CovidSupport;
-
-using System;
-using System.Text.Json.Serialization;
-
-/// <summary>
-/// Model object representing an anti viral screener support submission response.
-/// </summary>
-public class CovidAssessmentResponse
+namespace HealthGateway.Common.Data.Models
 {
     /// <summary>
-    /// Gets or sets the id for covid therapy assessment response.
+    /// Object that defines a report.
     /// </summary>
-    [JsonPropertyName("id")]
-    public Guid Id { get; set; }
+    public class ReportModel
+    {
+        /// <summary>
+        /// Gets or sets the report type.
+        /// </summary>
+        public string FileName { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets the report data.
+        /// </summary>
+        public string Data { get; set; } = string.Empty;
+    }
 }

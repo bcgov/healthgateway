@@ -22,14 +22,15 @@ namespace HealthGateway.Admin.Tests.Services
     using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.AccountDataAccess.Patient;
+    using HealthGateway.Admin.Common.Models.CovidSupport;
     using HealthGateway.Admin.Server.Api;
     using HealthGateway.Admin.Server.Delegates;
-    using HealthGateway.Admin.Server.Models.CovidSupport;
     using HealthGateway.Admin.Server.Services;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ErrorHandling;
+    using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Data.Models.PHSA;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Delegates;

@@ -20,10 +20,10 @@ namespace HealthGateway.Admin.Server.Controllers
     using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Admin.Common.Models;
-    using HealthGateway.Admin.Server.Models.CovidSupport;
+    using HealthGateway.Admin.Common.Models.CovidSupport;
     using HealthGateway.Admin.Server.Services;
     using HealthGateway.Common.Data.Constants;
-    using HealthGateway.Common.Models;
+    using HealthGateway.Common.Data.Models;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
@@ -163,7 +163,7 @@ namespace HealthGateway.Admin.Server.Controllers
         /// Submitting a completed anti viral screening form.
         /// </summary>
         /// <param name="request">The covid therapy assessment request to use for submission.</param>
-        /// <returns>A CovidAssessmentResponse object wrapped in a request result.</returns>
+        /// <returns>A CovidAssessmentResponse object.</returns>
         /// <response code="200">The covid assessment request was submitted.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
         /// <response code="403">

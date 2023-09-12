@@ -28,6 +28,7 @@ namespace HealthGateway.Admin.Services
     using HealthGateway.Common.Constants.PHSA;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ErrorHandling;
+    using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Data.Models.PHSA;
     using HealthGateway.Common.Data.Validations;
     using HealthGateway.Common.Data.ViewModels;
@@ -119,7 +120,7 @@ namespace HealthGateway.Admin.Services
                 return RequestResultFactory.Error<CovidInformation>(patientResult.ResultError);
             }
 
-            CovidInformation covidInformation = new CovidInformation
+            CovidInformation covidInformation = new()
             {
                 Blocked = vaccineDetailsResult.ResourcePayload.Blocked,
                 Patient = patientResult.ResourcePayload,

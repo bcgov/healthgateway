@@ -17,8 +17,8 @@ namespace HealthGateway.Admin.Server.Services
 {
     using System.Threading;
     using System.Threading.Tasks;
-    using HealthGateway.Admin.Server.Models.CovidSupport;
-    using HealthGateway.Common.Models;
+    using HealthGateway.Admin.Common.Models.CovidSupport;
+    using HealthGateway.Common.Data.Models;
 
     /// <summary>
     /// Service that provides COVID-19 Support functionality.
