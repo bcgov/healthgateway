@@ -40,7 +40,6 @@ namespace HealthGateway.Admin.Tests.Services
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ErrorHandling;
     using HealthGateway.Common.Data.Models;
-    using HealthGateway.Common.Data.Utils;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
@@ -647,8 +646,8 @@ namespace HealthGateway.Admin.Tests.Services
                 CommonName = Map(patient?.CommonName),
                 LegalName = Map(patient?.LegalName),
                 Birthdate = patient == null ? null : DateOnly.FromDateTime(patient.Birthdate),
-                PhysicalAddress = AddressUtility.GetAddressAsSingleLine(AutoMapper.Map<HealthGateway.Common.Data.Models.Address?>(patient?.PhysicalAddress)),
-                PostalAddress = AddressUtility.GetAddressAsSingleLine(AutoMapper.Map<HealthGateway.Common.Data.Models.Address?>(patient?.PostalAddress)),
+                PhysicalAddress = AutoMapper.Map<HealthGateway.Common.Data.Models.Address?>(patient?.PhysicalAddress),
+                PostalAddress = AutoMapper.Map<HealthGateway.Common.Data.Models.Address?>(patient?.PostalAddress),
                 ProfileCreatedDateTime = profile?.CreatedDateTime,
                 ProfileLastLoginDateTime = profile?.LastLoginDateTime,
             };

@@ -3,6 +3,7 @@
 @attribute [Authorize(Roles = $"{Roles.Admin},{Roles.Reviewer},{Roles.Support}")]
 @using HealthGateway.Admin.Client.Store.PatientDetails
 @using HealthGateway.Admin.Client.Store.PatientSupport
+@using HealthGateway.Common.Data.Utils
 @using HealthGateway.Admin.Common.Constants
 @using HealthGateway.Admin.Client.Components.Support
 @using HealthGateway.Admin.Client.Components.AgentAudit
@@ -70,10 +71,10 @@
             <HgField Label="HDID" Value="@Patient.Hdid" data-testid="patient-hdid" />
         </MudItem>
         <MudItem xs="12" lg="6">
-            <HgField Label="Physical Address" Value="@Patient.PhysicalAddress" data-testid="patient-physical-address" />
+            <HgField Label="Physical Address" Value="@AddressUtility.GetAddressAsSingleLine(Patient.PhysicalAddress)" data-testid="patient-physical-address" />
         </MudItem>
         <MudItem xs="12" lg="6">
-            <HgField Label="Mailing Address" Value="@Patient.PostalAddress" data-testid="patient-mailing-address" />
+            <HgField Label="Mailing Address" Value="@AddressUtility.GetAddressAsSingleLine(Patient.PostalAddress)" data-testid="patient-mailing-address" />
         </MudItem>
     </MudGrid>
     @if (Patient.Status == PatientStatus.Default)

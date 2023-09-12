@@ -17,8 +17,14 @@
             "surname": "ONE"
         },
         "birthdate": "2015-07-06",
-        "physicalAddress": "6860 BRIARWOOD ROW, TRAIL, BC, V1R 4J6",
-        "postalAddress": "",
+        "physicalAddress": {
+            "streetLines": ["6860 BRIARWOOD ROW"],
+            "city": "TRAIL",
+            "state": "BC",
+            "postalCode": "V1R 4J6",
+            "country": ""
+        },
+        "postalAddress": null,
         "profileCreatedDateTime": null,
         "profileLastLoginDateTime": null
     }
