@@ -6,19 +6,18 @@ ARG SONARSCANNER_VERSION=5.13.1
 ENV SUMMARY="Azure DevOps agent with .NET"  \
     DESCRIPTION="Azure DevOps agent base image with .NET v${DOTNET_VERSION}, nodejs ${NODE_VERSION}, OpenShift CLI"
 
+RUN DEBIAN_FRONTEND=noninteractive apt-get update
+RUN DEBIAN_FRONTEND=noninteractive apt-get upgrade -y
 
-RUN  export DEBIAN_FRONTEND=noninteractive && \
-    apt-get update -y && \
-    apt-get install -y g++ build-essential python3 git default-jdk tzdata iputils-ping telnet traceroute curl apt-transport-https libpng-dev jq && \
-    curl -sLO https://packages.microsoft.com/config/ubuntu/20.04/packages-microsoft-prod.deb && \
-    dpkg -i packages-microsoft-prod.deb && \
-    rm packages-microsoft-prod.deb && \
-    apt-get update -y && \
-    apt-get install -y dotnet-sdk-${DOTNET_VERSION} && \
-    apt-get install -y postgresql-client && \
-    apt-get install -y dh-autoreconf && \
-    ln -fs /usr/share/zoneinfo/America/Vancouver /etc/localtime && \
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y -qq --no-install-recommends \
+    ca-certificates lsb-release git tzdata iputils-ping netcat traceroute curl \
+    apt-transport-https libpng-dev jq postgresql-client dh-autoreconf apt-utils  software-properties-common zip unzip \
+    dotnet-sdk-${DOTNET_VERSION} default-jdk python3 g++ build-essential
+
+RUN ln -fs /usr/share/zoneinfo/America/Vancouver /etc/localtime && \
     dpkg-reconfigure --frontend noninteractive tzdata
+
+RUN curl -sL https://aka.ms/InstallAzureCLIDeb | bash
 
 # Fetch stock nodejs and install
 RUN mkdir -p /opt && \
@@ -29,10 +28,11 @@ RUN mkdir -p /opt && \
 #Fetch OpenShift client and install
 RUN mkdir -p /opt/bin && \
     cd /opt/bin && \
-    curl -sL https://downloads-openshift-console.apps.silver.devops.gov.bc.ca/amd64/linux/oc.tar | tar -x && \
+    curl -sL https://downloads-openshift-console.apps.gold.devops.gov.bc.ca/amd64/linux/oc.tar | tar -x && \
     rm -f oc.tar
 
 # Update environment variables
+ENV TARGETARCH=linux-x64
 ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib
 ENV AZP_URL=set_me_to_the_org_url
 ENV AZP_TOKEN=set_me_to_a_pat
@@ -53,7 +53,7 @@ RUN dotnet tool install --global dotnet-sonarscanner --version ${SONARSCANNER_VE
     rm -rf /tmp/NuGetScratch/lock/* && \
     chmod 777 /tmp/.nuget
 
-RUN mkdir /opt/az &&\
+RUN mkdir -p /opt/az &&\
     chmod -R 777 /opt/az
 
 ADD https://github.com/bcgov/healthgateway/blob/dev/Tools/AzureAgent/scripts/start.sh?raw=true /opt/az/start.sh
