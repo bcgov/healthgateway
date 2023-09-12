@@ -34,12 +34,13 @@ using MudBlazor;
 /// If the Confirmation button is pressed, the dialog's Result will have the Data property populated with an Address.
 /// If the Cancel button is pressed, the dialog's Result will have the Cancelled property set to true.
 /// </summary>
-/// <typeparam name="TAction">An action to dispatch when the confirmation button is pressed.</typeparam>
-/// <typeparam name="TErrorAction">An action that indicates <typeparamref name="TAction"/> encountered an error.</typeparam>
-/// <typeparam name="TSuccessAction">An action that indicates <typeparamref name="TAction"/> completed successfully.</typeparam>
-public partial class AddressConfirmationDialog<TAction, TErrorAction, TSuccessAction> : FluxorComponent
+/// <typeparam name="TErrorAction">
+/// An action that indicates an error was encountered while performing the action on
+/// confirmation.
+/// </typeparam>
+/// <typeparam name="TSuccessAction">An action that indicates the action on confirmation completed successfully.</typeparam>
+public partial class AddressConfirmationDialog<TErrorAction, TSuccessAction> : FluxorComponent
     where TErrorAction : BaseFailAction
-    where TAction : IAddressAction
 {
     private string country = string.Empty;
 
@@ -47,21 +48,14 @@ public partial class AddressConfirmationDialog<TAction, TErrorAction, TSuccessAc
     /// Gets or sets the default address to populate the dialog with.
     /// </summary>
     [Parameter]
-    [EditorRequired]
-    public Address DefaultAddress { get; set; } = default!;
+    public Address? DefaultAddress { get; set; }
 
     /// <summary>
-    /// Gets or sets the action to dispatch when an address has been confirmed.
+    /// Gets or sets an Action to execute when an address has been confirmed.
     /// </summary>
     [Parameter]
     [EditorRequired]
-    public TAction ActionOnConfirm { get; set; } = default!;
-
-    /// <summary>
-    /// Gets or sets the action to dispatch when the dialog is cancelled.
-    /// </summary>
-    [Parameter]
-    public object? ActionOnCancel { get; set; }
+    public Action<Address> ActionOnConfirm { get; set; } = _ => { };
 
     /// <summary>
     /// Gets or sets the text to display on the dialog's confirmation button.
@@ -74,9 +68,6 @@ public partial class AddressConfirmationDialog<TAction, TErrorAction, TSuccessAc
 
     [Inject]
     private IActionSubscriber ActionSubscriber { get; set; } = default!;
-
-    [Inject]
-    private IDispatcher Dispatcher { get; set; } = default!;
 
     private bool IsLoading { get; set; }
 
@@ -137,7 +128,10 @@ public partial class AddressConfirmationDialog<TAction, TErrorAction, TSuccessAc
         base.OnInitialized();
         this.ActionSubscriber.SubscribeToAction<TErrorAction>(this, this.HandleActionFailed);
         this.ActionSubscriber.SubscribeToAction<TSuccessAction>(this, this.HandleActionSuccess);
-        this.PopulateInputs(this.DefaultAddress);
+        if (this.DefaultAddress != null)
+        {
+            this.PopulateInputs(this.DefaultAddress);
+        }
     }
 
     /// <inheritdoc/>
@@ -236,11 +230,6 @@ public partial class AddressConfirmationDialog<TAction, TErrorAction, TSuccessAc
 
     private void HandleClickCancel()
     {
-        if (this.ActionOnCancel is not null)
-        {
-            this.Dispatcher.Dispatch(this.ActionOnCancel);
-        }
-
         this.MudDialog.Cancel();
     }
 
@@ -253,7 +242,6 @@ public partial class AddressConfirmationDialog<TAction, TErrorAction, TSuccessAc
         }
 
         this.IsLoading = true;
-        this.ActionOnConfirm.Address = this.GetAddressModel();
-        this.Dispatcher.Dispatch(this.ActionOnConfirm);
+        this.ActionOnConfirm(this.GetAddressModel());
     }
 }

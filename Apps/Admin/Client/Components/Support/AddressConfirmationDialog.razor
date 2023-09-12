@@ -1,4 +1,3 @@
-@typeparam TAction
 @typeparam TErrorAction
 @typeparam TSuccessAction
 @using HealthGateway.Common.Data.Constants
@@ -10,7 +9,7 @@
         <HgBannerFeedback
             Severity="@Severity.Error"
             IsEnabled="@HasError"
-            TResetAction="@TAction">
+            TResetAction="@TErrorAction">
             @ErrorMessage
         </HgBannerFeedback>
         <MudForm @ref="Form" data-testid="address-confirmation-form">
