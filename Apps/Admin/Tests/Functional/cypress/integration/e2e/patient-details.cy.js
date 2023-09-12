@@ -28,11 +28,6 @@ describe("Patient details page as admin", () => {
     it("Verify message verification", () => {
         performSearch("HDID", hdid);
 
-        cy.get("[data-testid=user-table]")
-            .find("tbody tr.mud-table-row")
-            .first()
-            .click();
-
         cy.get("[data-testid=patient-name]").should("be.visible");
         cy.get("[data-testid=patient-dob]").should("be.visible");
         cy.get("[data-testid=patient-phn]").should("be.visible");
@@ -53,10 +48,6 @@ describe("Patient details page as admin", () => {
 
     it("Verify block access initial", () => {
         performSearch("HDID", hdid);
-        cy.get("[data-testid=user-table]")
-            .find("tbody tr.mud-table-row")
-            .first()
-            .click();
 
         cy.get("[data-testid=block-access-switches]").should("be.visible");
         cy.get(`[data-testid*="block-access-switch"]`).should(
@@ -69,10 +60,6 @@ describe("Patient details page as admin", () => {
 
     it("Verify block access change can be cancelled", () => {
         performSearch("HDID", hdid);
-        cy.get("[data-testid=user-table]")
-            .find("tbody tr.mud-table-row")
-            .first()
-            .click();
 
         cy.get("[data-testid=block-access-loader]").should("not.be.visible");
 
@@ -96,10 +83,6 @@ describe("Patient details page as admin", () => {
 
     it("Verify block access can be blocked with audit reason.", () => {
         performSearch("HDID", hdid);
-        cy.get("[data-testid=user-table]")
-            .find("tbody tr.mud-table-row")
-            .first()
-            .click();
 
         cy.get("[data-testid=block-access-loader]").should("not.be.visible");
 
@@ -143,10 +126,6 @@ describe("Patient details page as admin", () => {
 
     it("Verify block access can be unblocked with audit reason.", () => {
         performSearch("HDID", hdid);
-        cy.get("[data-testid=user-table]")
-            .find("tbody tr.mud-table-row")
-            .first()
-            .click();
 
         cy.get("[data-testid=block-access-loader]").should("not.be.visible");
 
@@ -205,10 +184,6 @@ describe("Patient details page as reviewer", () => {
     // verify that the reviewer cannot use the block access controls
     it("Verify block access readonly", () => {
         performSearch("HDID", hdid);
-        cy.get("[data-testid=user-table]")
-            .find("tbody tr.mud-table-row")
-            .first()
-            .click();
 
         cy.get(`[data-testid*="block-access-switch-"]`).each(($el) => {
             // follow the mud tag structure to find the mud-readonly class
