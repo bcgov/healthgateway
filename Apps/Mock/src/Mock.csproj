@@ -8,7 +8,7 @@
   <ItemGroup>
     <PackageReference Include="CoreWCF.Http" Version="1.4.0" />
     <PackageReference Include="CoreWCF.NetTcp" Version="1.4.0" />
-    <PackageReference Include="CoreWCF.Primitives" Version="1.4.0" />
+    <PackageReference Include="CoreWCF.Primitives" Version="1.4.1" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Certificate" Version="7.0.10" />
   </ItemGroup>
   <ItemGroup>
