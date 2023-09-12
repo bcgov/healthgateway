@@ -14,6 +14,9 @@ export default class BcCancerScreeningTimelineEntry extends TimelineEntry {
     public subtitle: string;
     public callToActionText!: string;
     public screeningType: BcCancerScreeningType;
+    public isResult!: boolean;
+    public fileName!: string;
+    public eventText!: string;
 
     private getComments: (entryId: string) => UserComment[] | null;
 
@@ -32,6 +35,14 @@ export default class BcCancerScreeningTimelineEntry extends TimelineEntry {
         this.screeningType = model.eventType;
         this.setEntryProperties(model);
         this.getComments = getComments;
+
+        this.isResult = model.eventType === BcCancerScreeningType.Result;
+        this.fileName = this.isResult
+            ? "bc_cancer_result"
+            : "bc_cancer_screening";
+        this.eventText = this.isResult
+            ? "BC Cancer Result PDF"
+            : "BC Cancer Screening PDF";
     }
 
     private setEntryProperties(model: BcCancerScreening): void {

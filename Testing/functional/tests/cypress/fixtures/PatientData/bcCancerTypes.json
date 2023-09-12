@@ -1,7 +1,7 @@
 {
     "items": [
         {
-            "eventType": 1,
+            "eventType": "Result",
             "programName": "Cervical Cancer",
             "fileId": "bccancerscreening_vpp_12345678931",
             "eventDateTime": "2022-11-13T18:02:58.8640659Z",
@@ -11,7 +11,7 @@
             "$type": "BcCancerScreening"
         },
         {
-            "eventType": 0,
+            "eventType": "Recall",
             "programName": "Cervical Cancer",
             "fileId": "bccancerscreening_vpp_12345678932",
             "eventDateTime": "2023-03-01T10:59:45.5481227Z",

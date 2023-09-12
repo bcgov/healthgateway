@@ -72,6 +72,7 @@ export class PatientDataFile {
 }
 
 export enum BcCancerScreeningType {
-    Recall,
-    Result,
+    Unknown = "Unknown",
+    Recall = "Recall",
+    Result = "Result",
 }

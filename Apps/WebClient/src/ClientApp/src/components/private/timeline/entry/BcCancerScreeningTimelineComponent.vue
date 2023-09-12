@@ -8,10 +8,7 @@ import TimelineEntryComponent from "@/components/private/timeline/TimelineEntryC
 import { EntryType, entryTypeMap } from "@/constants/entryType";
 import { container } from "@/ioc/container";
 import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
-import {
-    BcCancerScreeningType,
-    PatientDataFile,
-} from "@/models/patientDataResponse";
+import { PatientDataFile } from "@/models/patientDataResponse";
 import BcCancerScreeningTimelineEntry from "@/models/timeline/bcCancerScreeningTimelineEntry";
 import { ILogger } from "@/services/interfaces";
 import { usePatientDataStore } from "@/stores/patientData";
@@ -45,9 +42,6 @@ const isLoadingFile = computed(
 const hasFile = computed(
     () => props.entry.fileId !== undefined && props.entry.fileId !== ""
 );
-const isResult = computed(
-    () => props.entry.screeningType === BcCancerScreeningType.Result
-);
 
 function showConfirmationModal(): void {
     messageModal.value?.showModal();
@@ -55,15 +49,9 @@ function showConfirmationModal(): void {
 
 function downloadFile(): void {
     if (props.entry.fileId) {
-        const eventText = isResult.value
-            ? "BC Cancer Result PDF"
-            : "BC Cancer Screening PDF";
-        const fileName = isResult.value
-            ? "bc_cancer_result"
-            : "bc_cancer_screening";
         SnowPlow.trackEvent({
             action: "download_report",
-            text: eventText,
+            text: props.entry.eventText,
         });
         const dateString = props.entry.date.format("yyyy_MM_dd-HH_mm");
         patientDataStore
@@ -74,7 +62,9 @@ function downloadFile(): void {
                         type: patientFile.contentType,
                     })
             )
-            .then((blob) => saveAs(blob, `${fileName}_${dateString}.pdf`))
+            .then((blob) =>
+                saveAs(blob, `${props.entry.fileName}_${dateString}.pdf`)
+            )
             .catch((err) => logger.error(err));
     }
 }
@@ -93,7 +83,10 @@ function downloadFile(): void {
         :has-attachment="Boolean(entry.fileId)"
     >
         <p class="text-body-1 mb-3">
-            <span v-if="isResult" data-testid="bc-cancer-result-body">
+            <span
+                v-if="props.entry.isResult"
+                data-testid="bc-cancer-result-body"
+            >
                 For information about your results, you can contact
                 <a
                     href="http://www.bccancer.bc.ca/contact"

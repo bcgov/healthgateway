@@ -15,11 +15,20 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Patient.Models
 {
+    using System.Text.Json.Serialization;
+
     /// <summary>
     /// BC Cancer screening types.
     /// </summary>
+    [JsonStringEnumMemberConverterOptions(deserializationFailureFallbackValue: Unknown)]
+    [JsonConverter(typeof(JsonStringEnumMemberConverter))]
     public enum BcCancerScreeningType
     {
+        /// <summary>
+        /// Unknown result from PHSA
+        /// </summary>
+        Unknown,
+
         /// <summary>
         /// Cancer screening recall.
         /// </summary>
