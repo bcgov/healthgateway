@@ -9,7 +9,7 @@ ENV SUMMARY="Azure DevOps agent with .NET"  \
 
 RUN  export DEBIAN_FRONTEND=noninteractive && \
     apt-get update -y && \
-    apt-get install -y g++ build-essential python git default-jdk tzdata iputils-ping telnet traceroute curl apt-transport-https libpng-dev jq && \
+    apt-get install -y g++ build-essential python3 git default-jdk tzdata iputils-ping telnet traceroute curl apt-transport-https libpng-dev jq && \
     curl -sLO https://packages.microsoft.com/config/ubuntu/20.04/packages-microsoft-prod.deb && \
     dpkg -i packages-microsoft-prod.deb && \
     rm packages-microsoft-prod.deb && \
