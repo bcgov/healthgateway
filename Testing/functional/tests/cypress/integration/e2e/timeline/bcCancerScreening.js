@@ -68,14 +68,14 @@ describe("Diagnostic Imaging", () => {
 
     it("Validate result file download", () => {
         cy.get("[data-testid=timelineCard")
-            .filter(`:contains(BC Cancer Result)`)
+            .filter(`:contains("BC Cancer Result")`)
             .first()
             .within(() => downloadFileTests("bc_cancer_result"));
     });
 
     it("Validate recall file download", () => {
         cy.get("[data-testid=timelineCard]")
-            .filter(`:contains(BC Cancer Screening)`)
+            .filter(`:contains("BC Cancer Screening")`)
             .first()
             .within(() => downloadFileTests("bc_cancer_screening"));
     });

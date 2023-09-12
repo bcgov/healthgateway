@@ -3,7 +3,7 @@ const { AuthMethod } = require("../../../support/constants");
 describe("BC Cancer Screening cards", () => {
     function testCard(cardTitle, cardButtonText) {
         cy.get("[data-testid=timelineCard")
-            .filter(`:contains(${cardTitle})`)
+            .filter(`:contains("${cardTitle}")`)
             .first()
             .within(() => {
                 cy.get("[data-testid=bccancerscreeningTitle]").click({

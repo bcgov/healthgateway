@@ -1,5 +1,5 @@
 import { EntryType } from "@/constants/entryType";
-import { DateWrapper, StringISODate } from "@/models/dateWrapper";
+import { DateWrapper } from "@/models/dateWrapper";
 import {
     BcCancerScreening,
     BcCancerScreeningType,
@@ -10,7 +10,6 @@ export default class BcCancerScreeningTimelineEntry extends TimelineEntry {
     public title!: string;
     public documentType!: string;
     public fileId: string;
-    public entryDate!: StringISODate;
     public subtitle: string;
     public callToActionText!: string;
     public screeningType: BcCancerScreeningType;
@@ -32,16 +31,9 @@ export default class BcCancerScreeningTimelineEntry extends TimelineEntry {
             new DateWrapper(date, { isUtc: true })
         );
         this.isResult = isResult;
-        this.entryDate = date;
         this.subtitle = `Programe: ${model.programName}`;
         this.fileId = model.fileId;
         this.screeningType = model.eventType;
-        this.fileName = this.isResult
-            ? "bc_cancer_result"
-            : "bc_cancer_screening";
-        this.eventText = this.isResult
-            ? "BC Cancer Result PDF"
-            : "BC Cancer Screening PDF";
         this.setEntryProperties();
         this.getComments = getComments;
     }
@@ -51,10 +43,14 @@ export default class BcCancerScreeningTimelineEntry extends TimelineEntry {
             this.title = "BC Cancer Result";
             this.callToActionText = "View PDF";
             this.documentType = "Screening results";
+            this.fileName = "bc_cancer_result";
+            this.eventText = "BC Cancer Result PDF";
         } else {
             this.title = "BC Cancer Screening";
             this.callToActionText = "View Letter";
             this.documentType = "Screening letter";
+            this.fileName = "bc_cancer_screening";
+            this.eventText = "BC Cancer Screening PDF";
         }
     }
 
