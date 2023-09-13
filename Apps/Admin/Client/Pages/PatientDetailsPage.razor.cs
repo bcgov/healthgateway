@@ -26,7 +26,9 @@ namespace HealthGateway.Admin.Client.Pages
     using HealthGateway.Admin.Client.Store.PatientSupport;
     using HealthGateway.Admin.Common.Constants;
     using HealthGateway.Admin.Common.Models;
+    using HealthGateway.Admin.Common.Models.CovidSupport;
     using HealthGateway.Common.Data.Constants;
+    using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Data.Utils;
     using HealthGateway.Common.Data.ViewModels;
     using Microsoft.AspNetCore.Components;
@@ -72,6 +74,14 @@ namespace HealthGateway.Admin.Client.Pages
         private IEnumerable<AgentAction> AgentAuditHistory =>
             this.PatientDetailsState.Value.AgentActions?.OrderByDescending(a => a.TransactionDateTime) ?? Enumerable.Empty<AgentAction>();
 
+        private IEnumerable<VaccineDose> VaccineDoses =>
+            this.PatientDetailsState.Value.VaccineDetails?.Doses
+                ?.Where(dose => this.PatientDetailsState.Value.VaccineDetails?.Blocked == false)
+                .OrderByDescending(dose => dose.Date) ?? Enumerable.Empty<VaccineDose>();
+
+        private IEnumerable<PreviousAssessmentDetails> AssessmentDetails =>
+            this.PatientDetailsState.Value.CovidAssessmentDetails?.PreviousAssessmentDetailsList.OrderByDescending(a => a.DateTimeOfAssessment) ?? Enumerable.Empty<PreviousAssessmentDetails>();
+
         private bool PatientsLoaded => this.PatientSupportState.Value.Loaded;
 
         private bool HasPatientsError => this.PatientSupportState.Value.Error is { Message.Length: > 0 };
@@ -84,6 +94,8 @@ namespace HealthGateway.Admin.Client.Pages
         private string PatientName => StringManipulator.JoinWithoutBlanks(new[] { this.Patient?.PreferredName?.GivenName, this.Patient?.PreferredName?.Surname });
 
         private string? StatusWarning => this.Patient == null ? null : MapStatusToWarning(this.Patient.Status);
+
+        private Address? MailAddress => this.Patient?.PostalAddress ?? this.Patient?.PhysicalAddress;
 
         private string? Hdid { get; set; }
 

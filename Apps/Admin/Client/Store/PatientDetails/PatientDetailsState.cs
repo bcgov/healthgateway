@@ -19,6 +19,7 @@ namespace HealthGateway.Admin.Client.Store.PatientDetails
     using System.Collections.Immutable;
     using Fluxor;
     using HealthGateway.Admin.Common.Models;
+    using HealthGateway.Admin.Common.Models.CovidSupport;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ViewModels;
 
@@ -43,6 +44,16 @@ namespace HealthGateway.Admin.Client.Store.PatientDetails
         /// Gets the blocked data sources linked to the patient support details.
         /// </summary>
         public ImmutableList<DataSource>? BlockedDataSources { get; init; }
+
+        /// <summary>
+        /// Gets the vaccine details linked to the patient support details.
+        /// </summary>
+        public VaccineDetails? VaccineDetails { get; init; }
+
+        /// <summary>
+        /// Gets the covid assessment details linked to the patient support details.
+        /// </summary>
+        public CovidAssessmentDetailsResponse? CovidAssessmentDetails { get; init; }
 
         /// <summary>
         /// Gets the request state for block access requests.
