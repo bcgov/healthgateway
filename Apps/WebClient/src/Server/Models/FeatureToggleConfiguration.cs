@@ -43,7 +43,8 @@ namespace HealthGateway.WebClient.Server.Models
     /// </summary>
     /// <param name="ShowFederalProofOfVaccination">Toggles federal proof of vaccination.</param>
     public record HomepageSettings(
-        bool ShowFederalProofOfVaccination);
+        bool ShowFederalProofOfVaccination,
+        bool ShowRecommendationsLink);
 
     /// <summary>
     /// Settings for the waiting queue.

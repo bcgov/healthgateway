@@ -39,7 +39,7 @@ entryTypeMap.set(EntryType.Immunization, {
     commentType: CommentEntryType.Immunization,
     name: "Immunizations",
     description:
-        "View immunizations you received from public health and community pharmacies.",
+        "View immunizations you received from public health and community pharmacies and recommended vaccines.",
     icon: "syringe",
     component: "ImmunizationTimelineComponent",
     eventName: "immunizations",

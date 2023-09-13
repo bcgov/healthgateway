@@ -1,6 +1,7 @@
 {
     "homepage": {
-        "showFederalProofOfVaccination": true
+        "showFederalProofOfVaccination": true,
+        "showRecommendationsLink": true
     },
     "waitingQueue": {
         "enabled": true

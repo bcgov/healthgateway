@@ -76,6 +76,7 @@ export interface FeatureToggleConfiguration {
 
 export interface HomepageSettings {
     showFederalProofOfVaccination: boolean;
+    showRecommendationsLink: boolean;
 }
 
 export interface WaitingQueueSettings {
