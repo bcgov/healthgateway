@@ -17,10 +17,13 @@ resource "keycloak_openid_client_default_scopes" "hgadminblazor_client_default_s
   realm_id  = data.keycloak_realm.hg_realm.id
   client_id = keycloak_openid_client.hgadminblazor_client.id
   default_scopes = [
+    "email",
     "profile",
     "web-origins",
     "roles",
     keycloak_openid_client_scope.audience_scope.name,
+    keycloak_openid_client_scope.immunization_read_scope.name,
+    keycloak_openid_client_scope.laboratory_read_scope.name,
   ]
 }
 resource "keycloak_openid_client_optional_scopes" "hgadminblazor_client_optional_scopes" {
@@ -87,4 +90,12 @@ resource "keycloak_openid_user_realm_role_protocol_mapper" "hgadminblazor_realmr
   add_to_id_token     = true
   add_to_access_token = true
   add_to_userinfo     = true
+}
+
+resource "keycloak_openid_hardcoded_claim_protocol_mapper" "hgadminblazor_emailOverride" {
+  realm_id    = data.keycloak_realm.hg_realm.id
+  client_id   = keycloak_openid_client.hgadminblazor_client.id
+  name        = "emailOverride"
+  claim_name  = "email"
+  claim_value = "no_email@hg.gov.bc.ca"
 }
