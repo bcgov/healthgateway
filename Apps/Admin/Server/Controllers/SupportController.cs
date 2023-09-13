@@ -154,7 +154,7 @@ namespace HealthGateway.Admin.Server.Controllers
         /// </response>
         [HttpGet]
         [Route("Patient/Document")]
-        public async Task<ReportModel> RetrieveVaccineRecord([FromHeader] string phn)
+        public async Task<ReportModel> RetrieveVaccineRecord([FromQuery] string phn)
         {
             return await this.covidSupportService.RetrieveVaccineRecordAsync(phn).ConfigureAwait(true);
         }
