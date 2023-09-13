@@ -24,14 +24,14 @@ import MedicationSummary from "@/models/medicationSummary";
 import Report from "@/models/report";
 import ReportFilter, { ReportFilterBuilder } from "@/models/reportFilter";
 import ReportHeader from "@/models/reportHeader";
-import { ReportFormatType } from "@/models/reportRequest";
+import { ReportFormatType, reportMimeTypeMap } from "@/models/reportRequest";
 import RequestResult from "@/models/requestResult";
 import SelectOption from "@/models/selectOption";
 import { ILogger } from "@/services/interfaces";
-import { useDependentStore } from "@/stores/dependent";
 import { useErrorStore } from "@/stores/error";
 import { useLabResultStore } from "@/stores/labResult";
 import { useMedicationStore } from "@/stores/medication";
+import { useReportStore } from "@/stores/report";
 import { useUserStore } from "@/stores/user";
 import ConfigUtil from "@/utility/configUtil";
 import EventTracker from "@/utility/eventTracker";
@@ -58,9 +58,9 @@ const reportComponentMap = new Map<EntryType, unknown>([
 const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
 const medicationStore = useMedicationStore();
 const userStore = useUserStore();
-const dependentStore = useDependentStore();
 const labResultsStore = useLabResultStore();
 const errorStore = useErrorStore();
+const reportStore = useReportStore();
 
 const isLoading = ref(false);
 const isGeneratingReport = ref(false);
@@ -89,7 +89,6 @@ const labResultsAreQueued = computed(() =>
 );
 const medications = computed(() => medicationStore.medications(props.hdid));
 const patient = computed(() => userStore.patient);
-const dependents = computed(() => dependentStore.dependents);
 const selectedReportComponent = computed(() => {
     if (!selectedEntryType.value) {
         return "";
@@ -102,40 +101,9 @@ const showLabResultsQueuedMessage = computed(
         selectedEntryType.value === EntryType.LabResult &&
         labResultsAreQueued.value
 );
-const headerData = computed<ReportHeader>(() => {
-    const dependent = dependents.value.find(
-        (d) => d.dependentInformation.hdid === props.hdid
-    );
-    if (dependent) {
-        return {
-            phn: dependent.dependentInformation.PHN,
-            dateOfBirth: formatDate(
-                dependent.dependentInformation.dateOfBirth ?? ""
-            ),
-            name: dependent.dependentInformation
-                ? dependent.dependentInformation.firstname +
-                  " " +
-                  dependent.dependentInformation.lastname
-                : "",
-            isRedacted: reportFilter.value.hasMedicationsFilter(),
-            datePrinted: new DateWrapper(new DateWrapper().toISO()).format(),
-            filterText: reportFilter.value.filterText,
-        };
-    } else {
-        return {
-            phn: patient.value.personalHealthNumber,
-            dateOfBirth: formatDate(patient.value.birthdate ?? ""),
-            name: patient.value
-                ? patient.value.preferredName.givenName +
-                  " " +
-                  patient.value.preferredName.surname
-                : "",
-            isRedacted: reportFilter.value.hasMedicationsFilter(),
-            datePrinted: new DateWrapper(new DateWrapper().toISO()).format(),
-            filterText: reportFilter.value.filterText,
-        };
-    }
-});
+const headerData = computed<ReportHeader>(() =>
+    reportStore.getHeaderData(props.hdid, reportFilter.value as ReportFilter)
+);
 const isMedicationReport = computed(
     () => selectedEntryType.value === EntryType.Medication
 );
@@ -242,7 +210,8 @@ function downloadReport(): void {
     reportComponent.value
         .generateReport(reportFormatType.value, headerData.value)
         .then((result: RequestResult<Report>) => {
-            const mimeType = getMimeType(reportFormatType.value);
+            const mimeType =
+                reportMimeTypeMap.get(reportFormatType.value) ?? "";
             const downloadLink = `data:${mimeType};base64,${result.resourcePayload.data}`;
             fetch(downloadLink).then((res) =>
                 res
@@ -267,19 +236,6 @@ function downloadReport(): void {
         .finally(() => {
             isGeneratingReport.value = false;
         });
-}
-
-function getMimeType(reportFormatType: ReportFormatType): string {
-    switch (reportFormatType) {
-        case ReportFormatType.PDF:
-            return "application/pdf";
-        case ReportFormatType.CSV:
-            return "text/csv";
-        case ReportFormatType.XLSX:
-            return "application/vnd.openxmlformats";
-        default:
-            return "";
-    }
 }
 
 function trackDownload(): void {
