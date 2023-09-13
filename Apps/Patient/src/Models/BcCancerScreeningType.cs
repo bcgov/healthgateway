@@ -25,7 +25,7 @@ namespace HealthGateway.Patient.Models
     public enum BcCancerScreeningType
     {
         /// <summary>
-        /// Unknown result from PHSA
+        /// Unknown result from PHSA.
         /// </summary>
         Unknown,
 
