@@ -10,11 +10,6 @@ if [ "$#" -ne 1 ]; then
     exit 1
 fi
 
-# Get admin token
-if [[ -z "$ADMIN_KEYCLOAK_SECRET" ]]; then
-    echo "Error: ADMIN_KEYCLOAK_SECRET is not set or is empty."
-    exit 1
-fi
 echo "Authenticating to $ADMIN_KEYCLOAK_AUTHORITY as $ADMIN_KEYCLOAK_CLIENT using grant type $ADMIN_KEYCLOAK_GRANT_TYPE"
 ADMIN_TOKEN_RESPONSE=$(curl -fsS -X POST -d "client_id=$ADMIN_KEYCLOAK_CLIENT&client_secret=$ADMIN_KEYCLOAK_SECRET&grant_type=$ADMIN_KEYCLOAK_GRANT_TYPE" $ADMIN_KEYCLOAK_AUTHORITY/protocol/openid-connect/token)
 #echo $ADMIN_TOKEN_RESPONSE
