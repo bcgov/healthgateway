@@ -34,7 +34,7 @@ namespace HealthGateway.Admin.Client.Components.Support
         Store.VaccineCard.VaccineCardActions.MailVaccineCardSuccessAction>;
 
     /// <summary>
-    /// The covid19 immunization section component.
+    /// Backing logic for the COVID-19 immunization section.
     /// </summary>
     public partial class Covid19ImmunizationSection : FluxorComponent
     {
