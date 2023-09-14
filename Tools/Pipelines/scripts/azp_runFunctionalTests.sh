@@ -26,6 +26,11 @@ pushd "$workDir"
 echo "Installing dependencies"
 npm ci
 
+if [ -z "$IDIR_PASSWORD" ]; then
+  echo "ERROR: The IDIR_PASSWORD variable is not set or is empty."
+  exit 1
+fi
+
 echo "Running Cypress Functional Tests"
 TZ=America/Vancouver npx cypress run \
   --env "bcsc.password=$(bcsc.pw),\

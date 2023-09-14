@@ -29,6 +29,7 @@ jobs:
     dependsOn: "Admin_Seed"
     pool: 
       vmImage: "ubuntu-latest"
+    displayName: "Admin Functional Tests"  
     strategy:
       parallel: 9
     steps:
