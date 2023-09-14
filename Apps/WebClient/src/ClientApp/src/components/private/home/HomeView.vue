@@ -503,14 +503,13 @@ watch(vaccineRecordState, () => {
             class="d-flex"
         >
             <HgCardComponent
-                title="Recommendations"
                 data-testid="immunizations-card-btn"
                 class="flex-grow-1"
                 @click="showRecommendationsDialog()"
             >
                 <template #icon>
                     <img
-                        class="quick-link-icon"
+                        class="quick-link-icon-large"
                         src="@/assets/images/services/immunize-bc-logo.svg"
                         alt="Immunize BC Logo"
                     />
