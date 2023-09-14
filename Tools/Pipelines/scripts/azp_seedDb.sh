@@ -30,7 +30,7 @@ PHSA_ACCESS_TOKEN=$(echo $PHSA_TOKEN_RESPONSE | jq -r '.access_token')
 echo "Done getting PHSA_ACCESS_TOKEN"
 
 # Seed PHSA data
-PAYLOAD='{"dataType": "$PHSA_SEEDING_DATATYPE"}'
+PAYLOAD="{\"dataType\": \"$PHSA_SEEDING_DATATYPE\"}"
 echo "Calling PHSA seed data endpoint"
 curl -fsS -X POST -H "Content-Type: application/json" -H "Authorization: Bearer $PHSA_ACCESS_TOKEN" -d "$PAYLOAD" $PHSA_SEEDING_URL -w '%{http_code}\n' -o /dev/null
 echo "Done calling PHSA seed data endpoint"
