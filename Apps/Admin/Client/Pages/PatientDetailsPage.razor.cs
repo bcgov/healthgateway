@@ -76,7 +76,7 @@ namespace HealthGateway.Admin.Client.Pages
 
         private IEnumerable<VaccineDose> VaccineDoses =>
             this.PatientDetailsState.Value.VaccineDetails?.Doses
-                ?.Where(dose => this.PatientDetailsState.Value.VaccineDetails?.Blocked == false)
+                .Where(_ => this.PatientDetailsState.Value.VaccineDetails?.Blocked == false)
                 .OrderByDescending(dose => dose.Date) ?? Enumerable.Empty<VaccineDose>();
 
         private IEnumerable<PreviousAssessmentDetails> AssessmentDetails =>
