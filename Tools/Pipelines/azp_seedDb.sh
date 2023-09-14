@@ -12,7 +12,7 @@ fi
 
 # Get admin token
 ADMIN_TOKEN_RESPONSE=$(curl -X POST -d "client_id=$ADMIN_KEYCLOAK_CLIENT&client_secret=$ADMIN_KEYCLOAK_SECRET&grant_type=$ADMIN_KEYCLOAK_GRANT_TYPE" $ADMIN_KEYCLOAK_AUTHORITY/protocol/openid-connect/token)
-#echo $ADMIN_TOKEN_RESPONSE
+echo $ADMIN_TOKEN_RESPONSE
 echo "Done getting ADMIN_TOKEN_RESPONSE"
 # Get access token from admin token response
 ADMIN_ACCESS_TOKEN=$(echo $ADMIN_TOKEN_RESPONSE | jq -r '.access_token')
