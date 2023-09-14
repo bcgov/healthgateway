@@ -26,13 +26,13 @@ PHSA_TOKEN_RESPONSE=$(curl -fsS -X POST -d "client_id=$PHSA_KEYCLOAK_DEVTOOLS_CL
 echo "Done getting PHSA_TOKEN_RESPONSE"
 # Get access token from phsa token response
 PHSA_ACCESS_TOKEN=$(echo $PHSA_TOKEN_RESPONSE | jq -r '.access_token')
-echo $PHSA_ACCESS_TOKEN
+#echo $PHSA_ACCESS_TOKEN
 echo "Done getting PHSA_ACCESS_TOKEN"
 
 # Seed PHSA data
 PAYLOAD='{"dataType": "$(phsa.seeding.datatype)"}'
 echo "Calling PHSA seed data endpoint"
-curl -X POST -H "Content-Type: application/json" -H "Authorization: Bearer $PHSA_ACCESS_TOKEN" -d "$PAYLOAD" $PHSA_SEEDING_URL -w '%{http_code}\n' -o /dev/null
+curl -fsS -X POST -H "Content-Type: application/json" -H "Authorization: Bearer $PHSA_ACCESS_TOKEN" -d "$PAYLOAD" $PHSA_SEEDING_URL -w '%{http_code}\n' -o /dev/null
 echo "Done calling PHSA seed data endpoint"
 
 workDir="$1/cypress"

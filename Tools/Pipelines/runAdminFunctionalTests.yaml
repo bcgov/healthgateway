@@ -11,8 +11,8 @@ variables:
 
 jobs:
   - job: "Admin_Functional_Tests"
-    pool:
-      vmImage: "ubuntu-latest"
+    pool: 
+      name: "HealthGatewayDev"
     displayName: "Admin Functional Tests"
     steps:
     - task: Bash@3
