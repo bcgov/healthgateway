@@ -30,7 +30,7 @@ jobs:
     pool: 
       vmImage: "ubuntu-latest"
     strategy:
-      maxParallel: 9
+      parallel: 9
     steps:
     - task: Bash@3
       displayName: 'Run Admin Functional Tests'
@@ -38,7 +38,8 @@ jobs:
         targetType: filePath
         filePath: './Tools/Pipelines/scripts/azp_runAdminFunctionalTests.sh'
         arguments: Apps/Admin/Tests/Functional $(Build.BuildNumber)-$(System.JobAttempt) "dev,$(Build.Reason)"
-      env: # Required secrets for admin tests
+      env: # Required environment settings and secrets for admin tests
+        TERM: xterm
         KEYCLOAK_PASSWORD: $(keycloak.pw)
         IDIR_PASSWORD: $(idir.password)
         KEYCLOAK_ADMIN_SECRET: $(keycloak.admin.secret)
