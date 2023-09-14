@@ -105,7 +105,7 @@ describe("Home page - Recommendations", () => {
     });
 
     it("Recommendation Quick link should be visible by default and configurable", () => {
-        cy.get("[data-testid=recommendations-card-btn]")
+        cy.get("[data-testid=recommendations-card-button]")
             .should("be.visible")
             .within(() => {
                 cy.get("[data-testid=card-menu-button]")
@@ -116,7 +116,7 @@ describe("Home page - Recommendations", () => {
                     .should("be.visible")
                     .click();
             });
-        cy.get("[data-testid=recommendations-card-btn]").should("not.exist");
+        cy.get("[data-testid=recommendations-card-button]").should("not.exist");
         cy.get("[data-testid=add-quick-link-button]").click();
         cy.get("[data-testid=recommendations-dialog-filter]")
             .should("be.visible")
@@ -125,11 +125,13 @@ describe("Home page - Recommendations", () => {
             .check({ force: true });
         cy.get("[data-testid=add-quick-link-btn]").click();
 
-        cy.get("[data-testid=recommendations-card-btn]").should("be.visible");
+        cy.get("[data-testid=recommendations-card-button]").should(
+            "be.visible"
+        );
     });
 
     it("Link should open recommendations dialog", () => {
-        cy.get("[data-testid=recommendations-card-btn]").click();
+        cy.get("[data-testid=recommendations-card-button]").click();
         cy.get("[data-testid=recommendations-dialog]")
             .should("be.visible")
             .within(() => {

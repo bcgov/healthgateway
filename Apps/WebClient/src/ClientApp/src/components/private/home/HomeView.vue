@@ -505,7 +505,7 @@ watch(vaccineRecordState, () => {
             class="d-flex"
         >
             <HgCardComponent
-                data-testid="recommendations-card-btn"
+                data-testid="recommendations-card-button"
                 class="flex-grow-1"
                 @click="showRecommendationsDialog()"
             >
