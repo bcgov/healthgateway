@@ -281,6 +281,7 @@ function handleClickRemoveHealthConnectCard(): void {
         "true"
     );
 }
+
 function handleClickRemoveRecommendations(): void {
     logger.debug("Removing Immunize BC card");
     setPreferenceValue(UserPreferenceType.HideRecommendationsQuickLink, "true");
