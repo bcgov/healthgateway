@@ -32,7 +32,7 @@ echo "Done getting PHSA_ACCESS_TOKEN"
 # Seed PHSA data
 PAYLOAD='{"dataType": "$(phsa.seeding.datatype)"}'
 echo "Calling PHSA seed data endpoint"
-curl -fsS -vvv -X POST -H "Content-Type: application/json" -H "Authorization: Bearer $PHSA_ACCESS_TOKEN" -d "$PAYLOAD" $PHSA_SEEDING_URL -w '%{http_code}\n' -o /dev/null
+curl -X POST -H "Content-Type: application/json" -H "Authorization: Bearer $PHSA_ACCESS_TOKEN" -d "$PAYLOAD" $PHSA_SEEDING_URL -w '%{http_code}\n' -o /dev/null
 echo "Done calling PHSA seed data endpoint"
 
 workDir="$1/cypress"
