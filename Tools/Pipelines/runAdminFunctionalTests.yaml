@@ -26,7 +26,7 @@ jobs:
         ADMIN_KEYCLOAK_SECRET: $(admin.keycloak.secret)
         PHSA_KEYCLOAK_DEVTOOLS_SECRET: $(phsa.keycloak.devtools.secret)
   - job: "Admin_Tests"
-    depends_on: "Admin_Seed"
+    dependsOn: "Admin_Seed"
     pool: 
       vm_image: "ubuntu-latest"
     strategy:
