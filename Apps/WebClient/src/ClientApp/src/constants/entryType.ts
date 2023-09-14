@@ -165,7 +165,7 @@ entryTypeMap.set(EntryType.BcCancerScreening, {
     commentType: CommentEntryType.BcCancerScreening,
     name: "BC Cancer Screening",
     description:
-        "View and download your results as soon as they are available.",
+        "View and download your notices and results as soon as they are available.",
     icon: "ribbon",
     component: "BcCancerScreeningTimelineComponent",
     eventName: "bc_cancer_screening",
