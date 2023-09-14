@@ -1,0 +1,20 @@
+name: $(date:yyyy).$(date:MM).$(date:dd).$(rev:r)
+
+pr: none
+trigger: none
+#Build variables
+variables:
+  - group: Secrets
+
+jobs:
+  - job: "Admin_Functional_Tests"
+    pool:
+      vmImage: "ubuntu-latest"
+    displayName: "Admin Functional Tests"
+    steps:
+    - task: Bash@3
+      displayName: 'Seed Databases'
+      inputs:
+        targetType: filePath
+        filePath: './Tools/Pipelines/azp_seedDb.sh'
+        arguments: Testing/functional/tests
