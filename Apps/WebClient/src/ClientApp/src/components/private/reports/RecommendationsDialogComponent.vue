@@ -95,11 +95,12 @@ function showDialog() {
     <div class="d-flex justify-content">
         <v-dialog v-model="isVisible" max-width="1000px" persistent>
             <v-card data-testid="recommendations-dialog">
-                <v-card-title>
+                <v-card-title class="px-o">
                     <v-toolbar
                         title="Vaccine Recommendations"
                         color="transparent"
-                        ><HgIconButtonComponent
+                    >
+                        <HgIconButtonComponent
                             id="recommendations-dialog-close-button"
                             data-testid="recommendations-dialog-close-button"
                             icon="close"
