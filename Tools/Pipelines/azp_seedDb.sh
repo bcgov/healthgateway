@@ -11,18 +11,19 @@ if [ "$#" -ne 1 ]; then
 fi
 
 # Get admin token
+ADMIN_KEYCLOAK_SECRET=$(admin.keycloak.secret)
 echo "Authenticating to $ADMIN_KEYCLOAK_AUTHORITY as $ADMIN_KEYCLOAK_CLIENT using grant type $ADMIN_KEYCLOAK_GRANT_TYPE"
-ADMIN_TOKEN_RESPONSE=$(curl -X POST -d "client_id=$ADMIN_KEYCLOAK_CLIENT&client_secret=$ADMIN_KEYCLOAK_SECRET&grant_type=$ADMIN_KEYCLOAK_GRANT_TYPE" $ADMIN_KEYCLOAK_AUTHORITY/protocol/openid-connect/token)
-echo $ADMIN_TOKEN_RESPONSE
+ADMIN_TOKEN_RESPONSE=$(curl -fsS -X POST -d "client_id=$ADMIN_KEYCLOAK_CLIENT&client_secret=$ADMIN_KEYCLOAK_SECRET&grant_type=$ADMIN_KEYCLOAK_GRANT_TYPE" $ADMIN_KEYCLOAK_AUTHORITY/protocol/openid-connect/token)
+#echo $ADMIN_TOKEN_RESPONSE
 echo "Done getting ADMIN_TOKEN_RESPONSE"
 # Get access token from admin token response
 ADMIN_ACCESS_TOKEN=$(echo $ADMIN_TOKEN_RESPONSE | jq -r '.access_token')
-echo $ADMIN_ACCESS_TOKEN
+#echo $ADMIN_ACCESS_TOKEN
 echo "Done getting ADMIN_ACCESS_TOKEN"
 
 # Swap Admin access token for a PHSA  access token
 #echo $PHSA_TOKEN_RESPONSE
-PHSA_TOKEN_RESPONSE=$(curl -X POST -d "client_id=$PHSA_KEYCLOAK_DEVTOOLS_CLIENT&client_secret=$PHSA_KEYCLOAK_DEVTOOLS_SECRET&grant_type=$PHSA_KEYCLOAK_DEVTOOLS_GRANT_TYPE&scope=$PHSA_KEYCLOAK_DEVTOOLS_SCOPE&token=$ADMIN_ACCESS_TOKEN" $PHSA_KEYCLOAK_IDENTITY/connect/token)
+PHSA_TOKEN_RESPONSE=$(curl -fsS -X POST -d "client_id=$PHSA_KEYCLOAK_DEVTOOLS_CLIENT&client_secret=$PHSA_KEYCLOAK_DEVTOOLS_SECRET&grant_type=$PHSA_KEYCLOAK_DEVTOOLS_GRANT_TYPE&scope=$PHSA_KEYCLOAK_DEVTOOLS_SCOPE&token=$ADMIN_ACCESS_TOKEN" $PHSA_KEYCLOAK_IDENTITY/connect/token)
 #echo $PHSA_TOKEN_RESPONSE
 echo "Done getting PHSA_TOKEN_RESPONSE"
 # Get access token from phsa token response
