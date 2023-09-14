@@ -44,7 +44,7 @@ psql postgres://$DB_USER:$DB_PASSWORD@$DB_HOST/$DB_NAME?sslmode=require -f db/se
 popd
 
 # Seconds to sleep
-wait=90
+wait=$PHSA_SEEDING_WAIT_TIME
 
 echo "Waiting $wait seconds before exiting script."
 
