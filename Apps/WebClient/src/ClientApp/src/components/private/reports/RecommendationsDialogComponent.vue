@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import saveAs from "file-saver";
-import { computed, ref } from "vue";
+import { ref } from "vue";
 
 import HgButtonComponent from "@/components/common/HgButtonComponent.vue";
 import HgIconButtonComponent from "@/components/common/HgIconButtonComponent.vue";
@@ -17,7 +17,6 @@ import { ReportFormatType, reportMimeTypeMap } from "@/models/reportRequest";
 import RequestResult from "@/models/requestResult";
 import { ILogger } from "@/services/interfaces";
 import { useErrorStore } from "@/stores/error";
-import { useImmunizationStore } from "@/stores/immunization";
 import { useReportStore } from "@/stores/report";
 
 interface Props {
@@ -36,7 +35,6 @@ const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
 
 const reportStore = useReportStore();
 const errorStore = useErrorStore();
-const immunizationStore = useImmunizationStore();
 
 const messageModal = ref<InstanceType<typeof MessageModalComponent>>();
 const recommendationsReportComponent =
@@ -44,11 +42,8 @@ const recommendationsReportComponent =
 
 const isVisible = ref(false);
 const isGeneratingReport = ref(false);
+const hasRecords = ref(false);
 const reportFormatType = ref<ReportFormatType>(ReportFormatType.PDF);
-
-const isDownloadDisabled = computed(
-    () => immunizationStore.immunizationsCount(props.hdid) === 0
-);
 
 function showConfirmationModal(type: ReportFormatType): void {
     reportFormatType.value = type;
@@ -124,6 +119,7 @@ function showDialog() {
                         :filter="reportFilter"
                         hide-immunizations
                         hide-recommendation-header
+                        @on-is-empty-changed="hasRecords = !$event"
                     />
                 </v-card-text>
                 <v-card-actions class="pa-4 justify-end">
@@ -141,7 +137,7 @@ function showDialog() {
                                 variant="primary"
                                 data-testid="export-recommendations-record-btn"
                                 v-bind="slotProps"
-                                :disabled="isDownloadDisabled"
+                                :disabled="!hasRecords"
                                 :loading="isGeneratingReport"
                             />
                         </template>
