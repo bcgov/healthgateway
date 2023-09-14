@@ -49,7 +49,7 @@ namespace HealthGateway.Admin.Client.Components.Support
         [Inject]
         private IConfiguration Configuration { get; set; } = default!;
 
-        private IEnumerable<AssessmentDetailRow> Rows => this.Data.Select(mv => new AssessmentDetailRow(mv));
+        private IEnumerable<AssessmentDetailRow> Rows => this.Data.Select(a => new AssessmentDetailRow(a));
 
         private DateTime ConvertDateTime(DateTime utcDateTime)
         {
