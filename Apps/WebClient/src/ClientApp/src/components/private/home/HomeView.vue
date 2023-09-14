@@ -181,7 +181,8 @@ const isAddQuickLinkButtonDisabled = computed(
         !preferenceImmunizationRecordHidden.value &&
         !preferenceVaccineCardHidden.value &&
         !preferenceOrganDonorHidden.value &&
-        !preferenceHealthConnectHidden.value
+        !preferenceHealthConnectHidden.value &&
+        !preferenceRecommendationsLinkHidden.value
 );
 
 function retrieveAuthenticatedVaccineRecord(hdid: string): Promise<void> {
