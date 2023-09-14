@@ -88,7 +88,7 @@ namespace HealthGateway.Admin.Client.Components.Support
 
         private bool PrintVaccineCardIsLoading => this.VaccineCardState.Value.PrintVaccineCard.IsLoading;
 
-        private IEnumerable<VaccineDoseRow> Rows => this.Data.Select(mv => new VaccineDoseRow(mv));
+        private IEnumerable<VaccineDoseRow> Rows => this.Data.Select(d => new VaccineDoseRow(d));
 
         private ReportModel VaccineCardStateData => this.VaccineCardState.Value.PrintVaccineCard.Result ?? default!;
 
