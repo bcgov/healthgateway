@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+set -e
+
 if [ "$#" -ne 1 ]; then
     echo "The work directory needs to be specified"
     #Release should use:
