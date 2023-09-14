@@ -15,6 +15,7 @@ import RequestResult from "@/models/requestResult";
 import { ILogger, IReportService } from "@/services/interfaces";
 import { useImmunizationStore } from "@/stores/immunization";
 import DateSortUtility from "@/utility/dateSortUtility";
+import EventTracker from "@/utility/eventTracker";
 
 interface Props {
     hdid: string;
@@ -177,6 +178,11 @@ function onIsEmptyChanged(): void {
     emit("on-is-empty-changed", isEmpty.value && isRecommendationEmpty.value);
 }
 
+function trackLink(href: string, text: string) {
+    EventTracker.click(text);
+    window.open(href, "_blank", "noopener");
+}
+
 watch(isLoading, () => {
     emit("on-is-loading-changed", isLoading.value);
 });
@@ -252,20 +258,30 @@ immunizationStore
                     <p>
                         Vaccine recommendations are based on the
                         <a
-                            href="https://immunizebc.ca/tools-resources/immunization-schedules"
-                            target="_blank"
-                            rel="noopener"
                             class="text-link"
-                            >BC Vaccine Schedule</a
-                        >. For information on booking COVID or Flu vaccinations,
+                            @click.prevent="
+                                trackLink(
+                                    'https://immunizebc.ca/tools-resources/immunization-schedules',
+                                    'public_health_page'
+                                )
+                            "
+                        >
+                            BC Vaccine Schedule
+                        </a>
+                        . For information on booking COVID or Flu vaccinations,
                         please visit the
                         <a
-                            href="https://www2.gov.bc.ca/gov/content/health/managing-your-health/immunizations#resources"
-                            target="_blank"
-                            rel="noopener"
                             class="text-link"
-                            >BC Government Immunization page</a
-                        >.
+                            @click.prevent="
+                                trackLink(
+                                    'https://www2.gov.bc.ca/gov/content/health/managing-your-health/immunizations#resources',
+                                    'bc_gov_imms'
+                                )
+                            "
+                        >
+                            BC Government Immunization page
+                        </a>
+                        .
                     </p>
                 </template>
                 <p v-if="isRecommendationEmpty && !isLoading">
