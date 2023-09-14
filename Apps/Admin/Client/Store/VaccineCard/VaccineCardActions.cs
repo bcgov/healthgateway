@@ -63,19 +63,7 @@ namespace HealthGateway.Admin.Client.Store.VaccineCard
             /// <param name="mailAddress">The mailing address that matches the document.</param>
             public MailVaccineCardSuccessAction(string phn, Address mailAddress)
             {
-                this.Phn = phn;
-                this.MailAddress = mailAddress;
             }
-
-            /// <summary>
-            /// Gets the personal health number that matches the document that was successfully requested to mail.
-            /// </summary>
-            public string Phn { get; init; }
-
-            /// <summary>
-            /// Gets the mailing address that matches the document that was successfully requested to mail.
-            /// </summary>
-            public Address MailAddress { get; init; }
         }
 
         /// <summary>
@@ -128,13 +116,7 @@ namespace HealthGateway.Admin.Client.Store.VaccineCard
             public PrintVaccineCardSuccessAction(ReportModel data, string phn)
                 : base(data)
             {
-                this.Phn = phn;
             }
-
-            /// <summary>
-            /// Gets the personal health number used that was used to successfully retrieve the document.
-            /// </summary>
-            public string Phn { get; init; }
         }
 
         /// <summary>

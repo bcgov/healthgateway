@@ -21,7 +21,6 @@ namespace HealthGateway.Admin.Client.Store.VaccineCard
     using System.Threading.Tasks;
     using Fluxor;
     using HealthGateway.Admin.Client.Api;
-    using HealthGateway.Admin.Client.Store.PatientDetails;
     using HealthGateway.Admin.Client.Utils;
     using HealthGateway.Admin.Common.Models.CovidSupport;
     using HealthGateway.Common.Data.Models;
@@ -36,7 +35,6 @@ namespace HealthGateway.Admin.Client.Store.VaccineCard
         {
             this.Logger = logger;
             this.SupportApi = supportApi;
-            this.VaccineCardState = vaccineCardState;
         }
 
         [Inject]
@@ -44,9 +42,6 @@ namespace HealthGateway.Admin.Client.Store.VaccineCard
 
         [Inject]
         private ISupportApi SupportApi { get; set; }
-
-        [Inject]
-        private IState<VaccineCardState> VaccineCardState { get; set; }
 
         [EffectMethod]
         public async Task HandleMailVaccineCardAction(VaccineCardActions.MailVaccineCardAction action, IDispatcher dispatcher)

@@ -90,7 +90,7 @@ namespace HealthGateway.Admin.Client.Components.Support
 
         private IEnumerable<VaccineDoseRow> Rows => this.Data.Select(d => new VaccineDoseRow(d));
 
-        private ReportModel VaccineCardStateData => this.VaccineCardState.Value.PrintVaccineCard.Result ?? default!;
+        private ReportModel? VaccineCardStateData => this.VaccineCardState.Value.PrintVaccineCard.Result;
 
         /// <inheritdoc/>
         protected override void OnInitialized()
@@ -107,9 +107,12 @@ namespace HealthGateway.Admin.Client.Components.Support
             base.Dispose(disposing);
         }
 
-        private async Task DownloadReport(ReportModel report)
+        private async Task DownloadReport(ReportModel? report)
         {
-            await this.JsRuntime.InvokeAsync<object>("saveAsFile", report.FileName, report.Data).ConfigureAwait(true);
+            if (report != null)
+            {
+                await this.JsRuntime.InvokeAsync<object>("saveAsFile", report.FileName, report.Data).ConfigureAwait(true);
+            }
         }
 
         private async Task OpenMailVaccineCardAddressConfirmationDialog()
