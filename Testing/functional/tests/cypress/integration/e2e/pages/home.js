@@ -81,3 +81,64 @@ describe("Home Page", () => {
         cy.get("[data-testid=timeline-record-count]").should("be.visible");
     });
 });
+
+describe("Home page - Recommendations", () => {
+    beforeEach(() => {
+        cy.configureSettings({
+            homepage: {
+                showRecommendationsLink: true,
+            },
+            datasets: [
+                {
+                    name: "immunization",
+                    enabled: true,
+                },
+            ],
+        });
+
+        cy.login(
+            Cypress.env("keycloak.hthgtwy20.username"),
+            Cypress.env("keycloak.password"),
+            AuthMethod.KeyCloak,
+            homeUrl
+        );
+    });
+
+    it("Recommendation Quick link should be visible by default and configurable", () => {
+        cy.get("[data-testid=recommendations-card-btn]")
+            .should("be.visible")
+            .within(() => {
+                cy.get("[data-testid=card-menu-button]")
+                    .should("be.visible")
+                    .click();
+                cy.document()
+                    .find("[data-testid=remove-quick-link-button")
+                    .should("be.visible")
+                    .click();
+            });
+        cy.get("[data-testid=recommendations-card-btn]").should("not.exist");
+        cy.get("[data-testid=add-quick-link-button]").click();
+        cy.get("[data-testid=recommendations-dialog-filter]")
+            .should("be.visible")
+            .find("input")
+            .should("not.to.be.checked")
+            .check({ force: true });
+        cy.get("[data-testid=add-quick-link-btn]").click();
+
+        cy.get("[data-testid=recommendations-card-btn]").should("be.visible");
+    });
+
+    it("Link should open recommendations dialog", () => {
+        cy.get("[data-testid=recommendations-card-btn]").click();
+        cy.get("[data-testid=recommendations-dialog]")
+            .should("be.visible")
+            .within(() => {
+                cy.get("[data-testid=recommendation-history-report-table]");
+                cy.get("tbody tr").should("have.length.least", 1);
+                cy.get(
+                    "[data-testid=close-recommendations-dialog-btn]"
+                ).click();
+            });
+        cy.get("[data-testid=recommendations-dialog]").should("not.exist");
+    });
+});
