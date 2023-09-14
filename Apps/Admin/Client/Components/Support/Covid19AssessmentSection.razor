@@ -1,0 +1,43 @@
+@using HealthGateway.Common.Data.Utils
+@inherits Fluxor.Blazor.Web.Components.FluxorComponent
+
+<MudText Class="mt-4" Typo="Typo.subtitle1">
+    Assessment History
+</MudText>
+
+<MudTable Class="mt-4"
+          Items="@Rows"
+          Loading="@IsLoading"
+          AllowUnsorted="false"
+          Breakpoint="@Breakpoint.Md"
+          HorizontalScrollbar="true"
+          Striped="true"
+          Dense="true"
+          data-testid="assessment-history-table">
+    <ColGroup>
+        <MudHidden Breakpoint="@Breakpoint.MdAndDown">
+            <col style="width: 125px;" />
+            <col />
+        </MudHidden>
+    </ColGroup>
+    <HeaderContent>
+        <MudTh>
+            <MudTableSortLabel SortBy="new Func<AssessmentDetailRow, object>(x => x.DateTimeOfAssessment)"
+                               InitialDirection="@SortDirection.Descending">
+                Date
+            </MudTableSortLabel>
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortBy="new Func<AssessmentDetailRow, object>(x => x.FormId ?? string.Empty)">
+                ID
+            </MudTableSortLabel>
+        </MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd data-testid="assessment-date" DataLabel="Date">@DateFormatter.ToShortDateAndTime(ConvertDateTime(context.DateTimeOfAssessment))</MudTd>
+        <MudTd data-testid="assessment-product" DataLabel="Product">@context.FormId</MudTd>
+    </RowTemplate>
+    <PagerContent>
+        <MudTablePager />
+    </PagerContent>
+</MudTable>

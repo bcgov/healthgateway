@@ -67,7 +67,7 @@ public interface ISupportApi
     /// </summary>
     /// <param name="phn">The personal health number that matches the document to retrieve.</param>
     /// <returns>The encoded immunization document.</returns>
-    [Get("/Patient/Document")]
+    [Get("/Patient/Document?phn={phn}")]
     Task<ReportModel> RetrieveVaccineRecord(string phn);
 
     /// <summary>
