@@ -1,7 +1,19 @@
 import { DateWrapper, StringISODate } from "@/models/dateWrapper";
 
+export interface IReportFilter {
+    readonly startDate: StringISODate | null;
+    readonly endDate: StringISODate | null;
+    readonly medications: string[];
+    readonly filterText: string;
+    allowsDate(dateString: StringISODate): boolean;
+    allowsMedication(medicationName: string): boolean;
+    hasActiveFilter(): boolean;
+    hasMedicationsFilter(): boolean;
+    hasDateFilter(): boolean;
+}
+
 // Report filter model
-export default class ReportFilter {
+export default class ReportFilter implements IReportFilter {
     public readonly startDate: StringISODate | null;
     public readonly endDate: StringISODate | null;
     public readonly medications: string[];

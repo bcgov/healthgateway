@@ -72,6 +72,11 @@ const showVaccineCard = computed(
         user.value.preferences[UserPreferenceType.HideVaccineCardQuickLink]
             ?.value === "true"
 );
+const showRecommendationsDialogCard = computed(
+    () =>
+        user.value.preferences[UserPreferenceType.HideRecommendationsQuickLink]
+            ?.value === "true"
+);
 const showOrganDonorRegistration = computed(
     () =>
         ConfigUtil.isServiceEnabled(ServiceName.OrganDonorRegistration) &&
@@ -169,6 +174,10 @@ async function handleSubmit(): Promise<void> {
             updateSelectedUserPreference(
                 "immunization-record",
                 UserPreferenceType.HideImmunizationRecordQuickLink
+            ),
+            updateSelectedUserPreference(
+                "recommendations-dialog",
+                UserPreferenceType.HideRecommendationsQuickLink
             ),
         ].filter((p) => p !== undefined);
 
@@ -315,6 +324,18 @@ function hideModal(): void {
                         name="immunization-record-filter"
                         value="immunization-record"
                         label="Add Vaccines"
+                        density="compact"
+                        hide-details
+                        color="primary"
+                    />
+                    <v-checkbox
+                        v-if="showRecommendationsDialogCard"
+                        id="recommendations-dialog-filter"
+                        v-model="selectedQuickLinks"
+                        data-testid="recommendations-dialog-filter"
+                        name="recommendations-dialog-filter"
+                        value="recommendations-dialog"
+                        label="Vaccine Recommendations"
                         density="compact"
                         hide-details
                         color="primary"
