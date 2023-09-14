@@ -11,7 +11,6 @@ if [ "$#" -ne 1 ]; then
 fi
 
 # Get admin token
-ADMIN_KEYCLOAK_SECRET=$(admin.keycloak.secret)
 echo "Authenticating to $ADMIN_KEYCLOAK_AUTHORITY as $ADMIN_KEYCLOAK_CLIENT using grant type $ADMIN_KEYCLOAK_GRANT_TYPE"
 ADMIN_TOKEN_RESPONSE=$(curl -fsS -X POST -d "client_id=$ADMIN_KEYCLOAK_CLIENT&client_secret=$ADMIN_KEYCLOAK_SECRET&grant_type=$ADMIN_KEYCLOAK_GRANT_TYPE" $ADMIN_KEYCLOAK_AUTHORITY/protocol/openid-connect/token)
 #echo $ADMIN_TOKEN_RESPONSE
