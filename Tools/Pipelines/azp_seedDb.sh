@@ -9,11 +9,7 @@ if [ "$#" -ne 1 ]; then
 fi
 
 # Get admin token
-ADMIN_KEYCLOAK_CLIENT="${admin.keycloak.client}"
-ADMIN_KEYCLOAK_SECRET="${admin.keycloak.secret}"
-ADMIN_KEYCLOAK_GRANT_TYPE="${admin.keycloak.grant.type}"
-ADMIN_TOKEN_ENDPOINT="${admin.keycloak.authority}/protocol/openid-connect/token"
-ADMIN_TOKEN_RESPONSE=$(curl -X POST -d "client_id=$ADMIN_KEYCLOAK_CLIENT&client_secret=$ADMIN_KEYCLOAK_SECRET&grant_type=$ADMIN_KEYCLOAK_GRANT_TYPE" $ADMIN_TOKEN_ENDPOINT)
+ADMIN_TOKEN_RESPONSE=$(curl -X POST -d "client_id=$ADMIN_KEYCLOAK_CLIENT&client_secret=$ADMIN_KEYCLOAK_SECRET&grant_type=$ADMIN_KEYCLOAK_GRANT_TYPE" $ADMIN_KEYCLOAK_AUTHORITY/protocol/openid-connect/token)
 #echo $ADMIN_TOKEN_RESPONSE
 echo "Done getting ADMIN_TOKEN_RESPONSE"
 # Get access token from admin token response
@@ -22,13 +18,8 @@ ADMIN_ACCESS_TOKEN=echo $ADMIN_TOKEN_RESPONSE | jq -r '.access_token'
 echo "Done getting ADMIN_ACCESS_TOKEN"
 
 # Swap Admin access token for a PHSA  access token
-PHSA_KEYCLOAK_CLIENT="${phsa.keycloak.devtools.client}"
-PHSA_KEYCLOAK_SECRET="${phsa.keycloak.devtools.secret}"
-PHSA_KEYCLOAK_GRANT_TYPE="${phsa.keycloak.devtools.grant.type}"
-PHSA_KEYCLOAK_SCOPE="${phsa.keycloak.devtools.scope}"
-PHSA_TOKEN_ENDPOINT="${phsa.keycloak.identity)/connect/token}"
 #echo $PHSA_TOKEN_RESPONSE
-PHSA_TOKEN_RESPONSE=$(curl -X POST -d "client_id=$PHSA_KEYCLOAK_CLIENT&client_secret=$PHSA_KEYCLOAK_SECRET&grant_type=$PHSA_KEYCLOAK_GRANT_TYPE&scope=$PHSA_KEYCLOAK_SCOPE&token=$ADMIN_ACCESS_TOKEN" $PHSA_TOKEN_ENDPOINT)
+PHSA_TOKEN_RESPONSE=$(curl -X POST -d "client_id=$PHSA_KEYCLOAK_DEVTOOLS_CLIENT&client_secret=$PHSA_KEYCLOAK_DEVTOOLS_SECRET&grant_type=$PHSA_KEYCLOAK_DEVTOOLS_GRANT_TYPE&scope=$PHSA_KEYCLOAK_DEVTOOLS_SCOPE&token=$ADMIN_ACCESS_TOKEN" $PHSA_KEYCLOAK.IDENTITY/connect/token)
 #echo $PHSA_TOKEN_RESPONSE
 echo "Done getting PHSA_TOKEN_RESPONSE"
 # Get access token from phsa token response
@@ -39,15 +30,15 @@ echo "Done getting PHSA_ACCESS_TOKEN"
 # Seed PHSA data
 PAYLOAD='{"dataType": "$(phsa.seeding.datatype)"}'
 echo "Calling PHSA seed data endpoint"
-curl -X POST -H "Content-Type: application/json" -H "Authorization: Bearer $PHSA_ACCESS_TOKEN" -d "$PAYLOAD" ${phsa.seeding.url} -w '%{http_code}\n' -o /dev/null
+curl -X POST -H "Content-Type: application/json" -H "Authorization: Bearer $PHSA_ACCESS_TOKEN" -d "$PAYLOAD" $PHSA_SEEDING_URL -w '%{http_code}\n' -o /dev/null
 echo "Done calling PHSA seed data endpoint"
 
 workDir="$1/cypress"
 
 pushd "$workDir"
 echo "Seeding database"
-psql postgres://${db.user}:${db.password}@${db.host}/${db.name}?sslmode=require -f db/seed.sql
-#psql postgres://$(db.user):$(db.password)@$PATRONI_POSTGRES_MASTER_SERVICE_HOST:$PATRONI_POSTGRES_MASTER_SERVICE_PORT/$(db.name) -f db/seed.sql
+psql postgres://$DB_USER:$DB_PASSWORD@$DB_HOST/$DB_NAME?sslmode=require -f db/seed.sql
+#psql postgres://$DB_USER:$DB_PASSWORD@$PATRONI_POSTGRES_MASTER_SERVICE_HOST:$PATRONI_POSTGRES_MASTER_SERVICE_PORT/$DB_NAME -f db/seed.sql
 popd
 
 # Seconds to sleep
