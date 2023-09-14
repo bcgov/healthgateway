@@ -28,7 +28,7 @@ jobs:
   - job: "Admin_Tests"
     dependsOn: "Admin_Seed"
     pool: 
-      vm_image: "ubuntu-latest"
+      vmImage: "ubuntu-latest"
     strategy:
       maxParallel: 9
     steps:
