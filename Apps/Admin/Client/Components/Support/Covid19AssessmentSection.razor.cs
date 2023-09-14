@@ -25,7 +25,7 @@ namespace HealthGateway.Admin.Client.Components.Support
     using Microsoft.Extensions.Configuration;
 
     /// <summary>
-    /// The covid19 assessment section component.
+    /// Backing logic for the COVID-19 treatment assessment section.
     /// </summary>
     public partial class Covid19AssessmentSection : FluxorComponent
     {
