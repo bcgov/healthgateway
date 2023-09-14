@@ -60,7 +60,7 @@ namespace HealthGateway.Admin.Client.Components.Support
         public bool IsLoading { get; set; } = true;
 
         /// <summary>
-        /// Gets or sets the patient's address.
+        /// Gets or sets the patient's mailing address.
         /// </summary>
         [Parameter]
         [EditorRequired]
