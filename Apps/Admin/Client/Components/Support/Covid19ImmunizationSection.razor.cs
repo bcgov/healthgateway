@@ -39,7 +39,7 @@ namespace HealthGateway.Admin.Client.Components.Support
     public partial class Covid19ImmunizationSection : FluxorComponent
     {
         /// <summary>
-        /// Gets or sets the patient's phn.
+        /// Gets or sets the patient's PHN.
         /// </summary>
         [Parameter]
         [EditorRequired]
