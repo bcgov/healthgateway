@@ -19,5 +19,5 @@ jobs:
       displayName: 'Seed Databases'
       inputs:
         targetType: filePath
-        filePath: './Tools/Pipelines/azp_seedDb.sh'
+        filePath: './Tools/Pipelines/scripts/azp_seedDb.sh'
         arguments: Testing/functional/tests
