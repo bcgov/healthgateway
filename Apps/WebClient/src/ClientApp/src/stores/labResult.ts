@@ -2,6 +2,7 @@
 import { ref } from "vue";
 
 import { ActionType } from "@/constants/actionType";
+import { EntryType } from "@/constants/entryType";
 import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import { ResultType } from "@/constants/resulttype";
 import { container } from "@/ioc/container";
@@ -14,6 +15,7 @@ import { LoadStatus } from "@/models/storeOperations";
 import { ILaboratoryService, ILogger } from "@/services/interfaces";
 import { useErrorStore } from "@/stores/error";
 import { DatasetMapUtils } from "@/stores/utils/DatasetMapUtils";
+import EventTracker from "@/utility/eventTracker";
 
 export const defaultLabResultState: LabResultState = {
     data: [],
@@ -126,6 +128,10 @@ export const useLabResultStore = defineStore("labResult", () => {
         return laboratoryService
             .getLaboratoryOrders(hdid)
             .then((result) => {
+                EventTracker.loadData(
+                    EntryType.LabResult,
+                    result.resourcePayload.orders.length
+                );
                 const payload = result.resourcePayload;
                 if (
                     result.resultStatus === ResultType.Success &&
