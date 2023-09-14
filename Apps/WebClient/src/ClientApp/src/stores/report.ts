@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 
 import { DateWrapper } from "@/models/dateWrapper";
-import ReportFilter from "@/models/reportFilter";
+import { IReportFilter } from "@/models/reportFilter";
 import { useDependentStore } from "@/stores/dependent";
 import { useUserStore } from "@/stores/user";
 
@@ -9,7 +9,7 @@ export const useReportStore = defineStore("reports", () => {
     const dependentsStore = useDependentStore();
     const userStore = useUserStore();
 
-    function getHeaderData(hdid: string, reportFilter: ReportFilter) {
+    function getHeaderData(hdid: string, reportFilter: IReportFilter) {
         const dependent = dependentsStore.dependents.find(
             (d) => d.dependentInformation.hdid === hdid
         );

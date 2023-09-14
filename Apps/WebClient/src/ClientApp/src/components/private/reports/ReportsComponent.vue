@@ -102,7 +102,7 @@ const showLabResultsQueuedMessage = computed(
         labResultsAreQueued.value
 );
 const headerData = computed<ReportHeader>(() =>
-    reportStore.getHeaderData(props.hdid, reportFilter.value as ReportFilter)
+    reportStore.getHeaderData(props.hdid, reportFilter.value)
 );
 const isMedicationReport = computed(
     () => selectedEntryType.value === EntryType.Medication
