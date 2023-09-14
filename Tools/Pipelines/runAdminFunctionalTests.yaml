@@ -4,7 +4,10 @@ pr: none
 trigger: none
 #Build variables
 variables:
-  - group: Secrets
+  - group: Cypress
+  - group: Azure DB - Dev
+  - group: Admin - Dev
+  - group: Phsa - Dev
 
 jobs:
   - job: "Admin_Functional_Tests"
