@@ -36,17 +36,17 @@ echo "Installing dependencies"
 npm ci
 
 echo "Running Cypress Functional Tests"
-TZ=America/Vancouver npx cypress run \
-  --env "keycloak_password=${KEYCLOAK_PASSWORD},\
+TZ=America/Vancouver npx -c "cypress run \
+  --env 'keycloak_password=${KEYCLOAK_PASSWORD},\
   idir_password=${IDIR_PASSWORD},\
-  keycloak_admin_secret=${KEYCLOAK_ADMIN_SECRET}" \
+  keycloak_admin_secret=${KEYCLOAK_ADMIN_SECRET}' \
   --record \
   --key $CYPRESS_ADMIN_KEY \
   --parallel \
-  --ci-build-id "$buildId" \
-  --group "$buildId" \
-  --tag "$tags" \
-  --spec "cypress/integration/ui/**/*,cypress/integration/e2e/**/*" \
+  --ci-build-id \"$buildId\" \
+  --group \"$buildId\" \
+  --tag \"$tags\" \
+  --spec \"cypress/integration/ui/**/*,cypress/integration/e2e/**/*\" \
   --headless \
-  --browser chrome
+  --browser chrome"
 popd
