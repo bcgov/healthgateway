@@ -241,7 +241,7 @@ namespace HealthGateway.Admin.Server.Services
             string? accessToken = this.authenticationDelegate.FetchAuthenticatedUserToken();
             if (accessToken == null)
             {
-                throw new ProblemDetailsException(ExceptionUtility.CreateProblemDetails(ErrorMessages.CannotFindAccessToken, HttpStatusCode.Unauthorized, nameof(CovidSupportService)));
+                throw new ProblemDetailsException(ExceptionUtility.CreateProblemDetails(ErrorMessages.CannotFindAccessToken, HttpStatusCode.Unauthorized, nameof(SupportService)));
             }
 
             return accessToken;
@@ -284,7 +284,7 @@ namespace HealthGateway.Admin.Server.Services
             }
 
             this.logger.LogError("Patient PHN {PersonalHealthNumber} or DOB {Birthdate}) are invalid", patient.Phn, patient.Birthdate);
-            throw new ProblemDetailsException(ExceptionUtility.CreateProblemDetails(ErrorMessages.PhnOrDateAndBirthInvalid, HttpStatusCode.BadRequest, nameof(CovidSupportService)));
+            throw new ProblemDetailsException(ExceptionUtility.CreateProblemDetails(ErrorMessages.PhnOrDateAndBirthInvalid, HttpStatusCode.BadRequest, nameof(SupportService)));
         }
 
         private PatientSupportResult MapToPatientSupportResult(PatientModel? patient, UserProfile? userProfile)

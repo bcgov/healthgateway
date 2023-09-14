@@ -18,12 +18,15 @@ namespace HealthGateway.Admin.Server.Delegates
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
+    using System.Net;
     using System.Threading.Tasks;
     using AutoMapper;
     using HealthGateway.AccountDataAccess.Patient;
     using HealthGateway.Admin.Common.Models.CovidSupport;
     using HealthGateway.Admin.Server.Api;
     using HealthGateway.Admin.Server.Models.Immunization;
+    using HealthGateway.Common.Constants;
+    using HealthGateway.Common.Data.ErrorHandling;
     using HealthGateway.Common.Models.PHSA;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
@@ -86,6 +89,11 @@ namespace HealthGateway.Admin.Server.Delegates
                 }
             }
             while (refreshInProgress && retryCount++ < this.phsaConfig.MaxRetries);
+
+            if (refreshInProgress)
+            {
+                throw new ProblemDetailsException(ExceptionUtility.CreateProblemDetails(ErrorMessages.MaximumRetryAttemptsReached, HttpStatusCode.BadRequest, nameof(RestImmunizationAdminDelegate)));
+            }
 
             return new VaccineDetails(
                 this.autoMapper.Map<IEnumerable<VaccineDoseResponse>, IList<VaccineDose>>(response.Result?.Doses),

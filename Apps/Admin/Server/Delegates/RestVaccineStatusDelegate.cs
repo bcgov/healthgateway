@@ -20,7 +20,6 @@ namespace HealthGateway.Admin.Server.Delegates
     using System.Net;
     using System.Threading.Tasks;
     using HealthGateway.Admin.Server.Api;
-    using HealthGateway.Admin.Server.Services;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.ErrorHandling;
     using HealthGateway.Common.Data.Models.PHSA;
@@ -88,7 +87,7 @@ namespace HealthGateway.Admin.Server.Delegates
 
             if (refreshInProgress)
             {
-                throw new ProblemDetailsException(ExceptionUtility.CreateProblemDetails(ErrorMessages.MaximumRetryAttemptsReached, HttpStatusCode.BadRequest, nameof(CovidSupportService)));
+                throw new ProblemDetailsException(ExceptionUtility.CreateProblemDetails(ErrorMessages.MaximumRetryAttemptsReached, HttpStatusCode.BadRequest, nameof(RestVaccineStatusDelegate)));
             }
 
             return response;
