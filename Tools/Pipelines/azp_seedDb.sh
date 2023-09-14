@@ -9,7 +9,11 @@ if [ "$#" -ne 1 ]; then
 fi
 
 # Get admin token
-ADMIN_TOKEN_RESPONSE=curl -X POST -d "client_id=$(admin.keycloak.client)&client_secret=$(admin.keycloak.secret)&grant_type=$(admin.keycloak.grant.type)" $(admin.keycloak.authority)/protocol/openid-connect/token
+ADMIN_KEYCLOAK_CLIENT="$(admin.keycloak.client)"
+ADMIN_KEYCLOAK_SECRET="$(admin.keycloak.secret)"
+ADMIN_KEYCLOAK_GRANT_TYPE="$(admin.keycloak.grant.type)"
+ADMIN_TOKEN_ENDPOINT="$(admin.keycloak.authority)/protocol/openid-connect/token"
+ADMIN_TOKEN_RESPONSE=$(curl -X POST -d "client_id=$ADMIN_KEYCLOAK_CLIENT&client_secret=$ADMIN_KEYCLOAK_SECRET&grant_type=$ADMIN_KEYCLOAK_GRANT_TYPE" $ADMIN_TOKEN_ENDPOINT)
 #echo $ADMIN_TOKEN_RESPONSE
 echo "Done getting ADMIN_TOKEN_RESPONSE"
 # Get access token from admin token response
@@ -18,18 +22,25 @@ ADMIN_ACCESS_TOKEN=echo $ADMIN_TOKEN_RESPONSE | jq -r '.access_token'
 echo "Done getting ADMIN_ACCESS_TOKEN"
 
 # Swap Admin access token for a PHSA  access token
-PHSA_TOKEN_RESPONSE=curl -X POST -d "client_id=$(phsa.keycloak.devtools.client)&client_secret=$(phsa.keycloak.devtools.secret)&grant_type=$(phsa.keycloak.devtools.grant.type)&scope=$(phsa.keycloak.devtools.scope)&token=$ADMIN_ACCESS_TOKEN" $(phsa.keycloak.identity)/connect/token
+PHSA_KEYCLOAK_CLIENT="$(phsa.keycloak.devtools.client)"
+PHSA_KEYCLOAK_SECRET="$(phsa.keycloak.devtools.secret)"
+PHSA_KEYCLOAK_GRANT_TYPE="$(phsa.keycloak.devtools.grant.type)"
+PHSA_KEYCLOAK_SCOPE="$(phsa.keycloak.devtools.scope)"
+PHSA_TOKEN_ENDPOINT="$(phsa.keycloak.identity)/connect/token"
+#echo $PHSA_TOKEN_RESPONSE
+PHSA_TOKEN_RESPONSE=$(curl -X POST -d "client_id=$PHSA_KEYCLOAK_CLIENT&client_secret=$PHSA_KEYCLOAK_SECRET&grant_type=$PHSA_KEYCLOAK_GRANT_TYPE&scope=$PHSA_KEYCLOAK_SCOPE&token=$ADMIN_ACCESS_TOKEN" $PHSA_TOKEN_ENDPOINT)
 #echo $PHSA_TOKEN_RESPONSE
 echo "Done getting PHSA_TOKEN_RESPONSE"
 # Get access token from phsa token response
-PHSA_ACCESS_TOKEN=echo $PHSA_TOKEN_RESPONSE | jq -r '.access_token'
+PHSA_ACCESS_TOKEN=$(echo $PHSA_TOKEN_RESPONSE | jq -r '.access_token')
 #echo $PHSA_ACCESS_TOKEN
 echo "Done getting PHSA_ACCESS_TOKEN"
 
 # Seed PHSA data
 # Use curl to make the POST request with the JSON body data and Authorization header
+PHSA_SEEDING_URL="$(phsa.seeding.url)"
 PAYLOAD='{"dataType": "$(phsa.seeding.datatype)"}'
-curl -X POST -H "Content-Type: application/json" -H "Authorization: Bearer $PHSA_ACCESS_TOKEN" -d "$PAYLOAD" $(phsa.seeding.url) -w '%{http_code}\n' -o /dev/null
+curl -X POST -H "Content-Type: application/json" -H "Authorization: Bearer $PHSA_ACCESS_TOKEN" -d "$PAYLOAD" $PHSA_SEEDING_URL -w '%{http_code}\n' -o /dev/null
 echo "Done calling PHSA seed data endpoint"
 
 workDir="$1/cypress"
