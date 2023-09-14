@@ -23,7 +23,7 @@ describe("Provision", () => {
             "be.visible"
         );
         cy.get("[data-testid=username-input]").clear().type(user);
-        cy.get("[data-testid=identity-provider-select]").click();
+        cy.get("[data-testid=identity-provider-select]").click({ force: true });
         cy.get("[data-testid=identity-provider]").contains("IDIR").click();
         cy.get("[data-testid=roles-select]").click();
         cy.get("[data-testid=role]").contains("AdminUser").click();

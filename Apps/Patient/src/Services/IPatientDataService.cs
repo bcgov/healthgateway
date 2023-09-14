@@ -66,6 +66,7 @@ namespace HealthGateway.Patient.Services
     [JsonConverter(typeof(PatientDataJsonConverter))]
     [KnownType(typeof(OrganDonorRegistration))]
     [KnownType(typeof(DiagnosticImagingExam))]
+    [KnownType(typeof(BcCancerScreening))]
     public abstract record PatientData
     {
         /// <summary>
@@ -167,6 +168,11 @@ namespace HealthGateway.Patient.Services
     /// </summary>
     public record BcCancerScreening : PatientData
     {
+        /// <summary>
+        /// Gets or sets the type.
+        /// </summary>
+        public BcCancerScreeningType EventType { get; set; }
+
         /// <summary>
         /// Gets or sets the program name.
         /// </summary>
