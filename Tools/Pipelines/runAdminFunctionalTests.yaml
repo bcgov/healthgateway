@@ -9,6 +9,20 @@ variables:
   - group: Admin - Dev
   - group: Phsa - Dev
 
+env: # These are required to expose the variables to the bash scripts
+    BCSC_PW: $(bcsc.pw)
+    CYPRESS_ADMIN_KEY: $(cypress.admin.key)
+    CYPRESS_KEY: $(cypress.key)
+    IDIR_PASSWORD: $(idir.password)
+    KEYCLOAK_ADMIN_SECRET: $(keycloak.admin.secret)
+    KEYCLOAK_PHSA_CLIENT: $(keycloak.phsa.client)
+    KEYCLOAK_PHSA_SECRET: $(keycloak.phsa.secret)
+    KEYCLOAK_PW: $(keycloak.pw)
+    PHONENUMBER: $(phoneNumber)
+    DB_PASSWORD: $(db.password)
+    ADMIN_KEYCLOAK_SECRET: $(admin.keycloak.secret)
+    PHSA_KEYCLOAK_DEVTOOLS_SECRET: $(phsa.keycloak.devtools.secret)
+
 jobs:
   - job: "Admin_Functional_Tests"
     pool:
