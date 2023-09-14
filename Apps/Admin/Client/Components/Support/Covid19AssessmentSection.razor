@@ -14,6 +14,12 @@
           Striped="true"
           Dense="true"
           data-testid="assessment-history-table">
+    <ColGroup>
+        <MudHidden Breakpoint="@Breakpoint.MdAndDown">
+            <col style="width: 125px;" />
+            <col />
+        </MudHidden>
+    </ColGroup>
     <HeaderContent>
         <MudTh>
             <MudTableSortLabel SortBy="new Func<AssessmentDetailRow, object>(x => x.DateTimeOfAssessment)"
