@@ -9,20 +9,20 @@ if [ "$#" -ne 1 ]; then
 fi
 
 # Get admin token
-ADMIN_TOKEN_RESPONSE=$(curl -X POST -d "client_id=$(admin.keycloak.client)&client_secret=$(admin.keycloak.secret)&grant_type=$(admin.keycloak.grant.type)" $(admin.keycloak.authority)/protocol/openid-connect/token)
+ADMIN_TOKEN_RESPONSE=curl -X POST -d "client_id=$(admin.keycloak.client)&client_secret=$(admin.keycloak.secret)&grant_type=$(admin.keycloak.grant.type)" $(admin.keycloak.authority)/protocol/openid-connect/token
 #echo $ADMIN_TOKEN_RESPONSE
 echo "Done getting ADMIN_TOKEN_RESPONSE"
 # Get access token from admin token response
-ADMIN_ACCESS_TOKEN=$(echo $ADMIN_TOKEN_RESPONSE | jq -r '.access_token')
+ADMIN_ACCESS_TOKEN=echo $ADMIN_TOKEN_RESPONSE | jq -r '.access_token'
 #echo $ADMIN_ACCESS_TOKEN
 echo "Done getting ADMIN_ACCESS_TOKEN"
 
 # Swap Admin access token for a PHSA  access token
-PHSA_TOKEN_RESPONSE=$(curl -X POST -d "client_id=$(phsa.keycloak.devtools.client)&client_secret=$(phsa.keycloak.devtools.secret)&grant_type=$(phsa.keycloak.devtools.grant.type)&scope=$(phsa.keycloak.devtools.scope)&token=$ADMIN_ACCESS_TOKEN" $(phsa.keycloak.identity)/connect/token)
+PHSA_TOKEN_RESPONSE=curl -X POST -d "client_id=$(phsa.keycloak.devtools.client)&client_secret=$(phsa.keycloak.devtools.secret)&grant_type=$(phsa.keycloak.devtools.grant.type)&scope=$(phsa.keycloak.devtools.scope)&token=$ADMIN_ACCESS_TOKEN" $(phsa.keycloak.identity)/connect/token
 #echo $PHSA_TOKEN_RESPONSE
 echo "Done getting PHSA_TOKEN_RESPONSE"
 # Get access token from phsa token response
-PHSA_ACCESS_TOKEN=$(echo $PHSA_TOKEN_RESPONSE | jq -r '.access_token')
+PHSA_ACCESS_TOKEN=echo $PHSA_TOKEN_RESPONSE | jq -r '.access_token'
 #echo $PHSA_ACCESS_TOKEN
 echo "Done getting PHSA_ACCESS_TOKEN"
 
