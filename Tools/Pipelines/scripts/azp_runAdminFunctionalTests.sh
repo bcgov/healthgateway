@@ -22,17 +22,21 @@ if [ ! -d "$workDir" ]; then
     exit 1
 fi
 
+echo WorkDir: $workDir
+echo buildId: $buildId
+echo tags: $tags
+
 pushd "$workDir"
 echo "Installing dependencies"
 npm ci
 
 echo "Running Cypress Functional Tests"
 TZ=America/Vancouver npx cypress run \
-  --env "keycloak_password=$(keycloak.pw),\
-  idir_password=$(idir.password),\
-  keycloak_admin_secret=$(keycloak.admin.secret)" \
+  --env "keycloak_password=$KEYCLOAK_PASSWORD,\
+  idir_password=$IDIR_PASSWORD,\
+  keycloak_admin_secret=$KEYCLOAK_ADMIN_SECRET" \
   --record \
-  --key $(cypress.admin.key) \
+  --key $CYPRESS_ADMIN_KEY \
   --parallel \
   --ci-build-id "$buildId" \
   --group "$buildId" \

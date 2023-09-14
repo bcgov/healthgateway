@@ -10,13 +10,13 @@ variables:
   - group: Phsa - Dev
 
 jobs:
-  - job: "Admin_Functional_Tests"
+  - job: "Admin_Seed"
     pool: 
       name: "HealthGatewayDev"
-    displayName: "Admin Functional Tests"
+    displayName: "Re-seed DB and PHSA data for Admin"
     steps:
     - task: Bash@3
-      displayName: 'Seed Databases'
+      displayName: 'Re-seed DB and PHSA data for Admin'
       inputs:
         targetType: filePath
         filePath: './Tools/Pipelines/scripts/azp_seedDb.sh'
@@ -25,8 +25,26 @@ jobs:
         DB_PASSWORD: $(db.password)
         ADMIN_KEYCLOAK_SECRET: $(admin.keycloak.secret)
         PHSA_KEYCLOAK_DEVTOOLS_SECRET: $(phsa.keycloak.devtools.secret)
+  - job: "Admin_Tests"
+    depends_on: "Admin_Seed"
+    pool: 
+      vm_image: "ubuntu-latest"
+    strategy:
+      maxParallel: 9
+    steps:
+    - task: Bash@3
+      displayName: 'Run Admin Functional Tests'
+      inputs:
+        targetType: filePath
+        filePath: './Tools/Pipelines/scripts/azp_runAdminFunctionalTests.sh'
+        arguments: Apps/Admin/Tests/Functional $(Build.BuildNumber)-$(System.JobAttempt) "dev,$(Build.Reason)"
+      env: # Required secrets for admin tests
+        KEYCLOAK_PASSWORD: $(keycloak.pw)
+        IDIR_PASSWORD: $(idir.password)
+        KEYCLOAK_ADMIN_SECRET: $(keycloak.admin.secret)
+        CYPRESS_ADMIN_KEY: $(cypress.admin.key)
 
-#Future Use:
+#Future Use
         # BCSC_PW: $(bcsc.pw)
         # CYPRESS_ADMIN_KEY: $(cypress.admin.key)
         # CYPRESS_KEY: $(cypress.key)
