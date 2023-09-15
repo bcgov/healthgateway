@@ -182,6 +182,7 @@ namespace HealthGateway.Admin.Client.Pages
                 [nameof(AssessmentAddressConfirmationDialog.ActionOnConfirm)] = (Action<Address>)this.SubmitAssessment,
                 [nameof(AssessmentAddressConfirmationDialog.DefaultAddress)] = address,
                 [nameof(AssessmentAddressConfirmationDialog.ConfirmButtonLabel)] = "Send",
+                [nameof(AssessmentAddressConfirmationDialog.OutputCountryCodeFormat)] = true,
             };
             DialogOptions options = new()
             {
