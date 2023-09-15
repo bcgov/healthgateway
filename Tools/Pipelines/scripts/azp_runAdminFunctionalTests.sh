@@ -31,6 +31,11 @@ if [ -z "$IDIR_PASSWORD" ]; then
   exit 1
 fi
 
+if [ -z "$KEYCLOAK_ADMIN_SECRET" ]; then
+  echo "ERROR: The KEYCLOAK_ADMIN_SECRET variable is not set or is empty."
+  exit 1
+fi
+
 pushd "$workDir"
 echo "Installing dependencies"
 npm ci
