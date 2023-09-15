@@ -30,8 +30,8 @@ namespace HealthGateway.Admin.Client.Components.Support
     using Microsoft.JSInterop;
     using MudBlazor;
     using MailVaccineCardAddressConfirmationDialog = AddressConfirmationDialog<
-        Store.VaccineCard.VaccineCardActions.MailVaccineCardFailureAction,
-        Store.VaccineCard.VaccineCardActions.MailVaccineCardSuccessAction>;
+        HealthGateway.Admin.Client.Store.VaccineCard.VaccineCardActions.MailVaccineCardFailureAction,
+        HealthGateway.Admin.Client.Store.VaccineCard.VaccineCardActions.MailVaccineCardSuccessAction>;
 
     /// <summary>
     /// Backing logic for the COVID-19 immunization section.
@@ -123,6 +123,7 @@ namespace HealthGateway.Admin.Client.Components.Support
                 [nameof(MailVaccineCardAddressConfirmationDialog.ActionOnConfirm)] = (Action<Address>)this.MailVaccineCard,
                 [nameof(MailVaccineCardAddressConfirmationDialog.DefaultAddress)] = this.MailAddress,
                 [nameof(MailVaccineCardAddressConfirmationDialog.ConfirmButtonLabel)] = "Send",
+                [nameof(MailVaccineCardAddressConfirmationDialog.OutputCanadaAsEmptyString)] = true,
             };
             DialogOptions options = new()
             {

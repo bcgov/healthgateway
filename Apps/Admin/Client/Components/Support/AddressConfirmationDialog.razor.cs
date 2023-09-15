@@ -63,6 +63,20 @@ public partial class AddressConfirmationDialog<TErrorAction, TSuccessAction> : F
     [Parameter]
     public string ConfirmButtonLabel { get; set; } = "Confirm";
 
+    /// <summary>
+    /// Gets or sets a value indicating whether the country property in the resulting address should contain a country code
+    /// instead of a country name.
+    /// </summary>
+    [Parameter]
+    public bool OutputCountryCodeFormat { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the country property in the resulting address should be set to the empty string
+    /// when Canada is selected.
+    /// </summary>
+    [Parameter]
+    public bool OutputCanadaAsEmptyString { get; set; }
+
     [CascadingParameter]
     private MudDialogInstance MudDialog { get; set; } = default!;
 
@@ -149,6 +163,24 @@ public partial class AddressConfirmationDialog<TErrorAction, TSuccessAction> : F
                 : AddressUtility.CountriesWithAliases.Where(c => c.ToUpperInvariant().StartsWith(value.ToUpperInvariant(), StringComparison.InvariantCulture)));
     }
 
+    private static string GetCountryNameFromInput(string input)
+    {
+        if (AddressUtility.CountryCodes.Any(c => c.ToString() == input))
+        {
+            // country code
+            return EnumUtility.ToEnumString(EnumUtility.ToEnum<CountryCode>(input), true);
+        }
+
+        if (AddressUtility.GetCountryCode(input) != CountryCode.Unknown)
+        {
+            // recognized country name
+            return input;
+        }
+
+        // unrecognized country
+        return string.Empty;
+    }
+
     private void PopulateInputs(Address address)
     {
         this.AddressLines = string.Join(Environment.NewLine, address.StreetLines);
@@ -163,11 +195,21 @@ public partial class AddressConfirmationDialog<TErrorAction, TSuccessAction> : F
 
         this.OtherState = this.CanadianProvince.Length > 0 || this.AmericanState.Length > 0 ? string.Empty : address.State;
 
-        this.Country = AddressUtility.GetCountryCode(address.Country) == CountryCode.Unknown ? string.Empty : address.Country;
+        this.Country = GetCountryNameFromInput(address.Country);
 
         this.PostalCode = this.SelectedCountryCode == CountryCode.CA && address.PostalCode.Length == 6
             ? $"{address.PostalCode[..3]} {address.PostalCode[^3..]}"
             : address.PostalCode;
+    }
+
+    private string GetCountryToOutput()
+    {
+        if (this.SelectedCountryCode == CountryCode.CA && this.OutputCanadaAsEmptyString)
+        {
+            return string.Empty;
+        }
+
+        return this.OutputCountryCodeFormat ? this.SelectedCountryCode.ToString() : AddressUtility.GetCountryName(this.SelectedCountryCode);
     }
 
     private Address GetAddressModel()
@@ -183,9 +225,7 @@ public partial class AddressConfirmationDialog<TErrorAction, TSuccessAction> : F
                 _ => this.OtherState,
             },
             PostalCode = this.PostalCode,
-            Country = this.SelectedCountryCode == CountryCode.CA
-                ? string.Empty
-                : AddressUtility.GetCountryName(this.SelectedCountryCode),
+            Country = this.GetCountryToOutput(),
         };
     }
 
