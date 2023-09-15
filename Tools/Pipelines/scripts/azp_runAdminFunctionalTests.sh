@@ -40,23 +40,7 @@ pushd "$workDir"
 echo "Installing dependencies"
 npm ci
 
-#echo "Generating Cypress command"
-#cmd=$(echo "cypress run --env 'keycloak_password=$KEYCLOAK_PASSWORD,\
-#  idir_password=$IDIR_PASSWORD,\
-#  keycloak_admin_secret=$KEYCLOAK_ADMIN_SECRET' \
-#  --record \
-#  --key $CYPRESS_ADMIN_KEY \
-#  --parallel \
-#  --ci-build-id \"$buildId\" \
-#  --group \"$buildId\" \
-#  --tag \"$tags\" \
-#  --spec \"cypress/integration/ui/**/*,cypress/integration/e2e/**/*\" \
-#  --headless \
-#  --browser chrome")
-
-#echo "Running Cypress Functional Tests"
-#TZ=America/Vancouver npx -c "$cmd"
-
+echo "Running Cypress Functional Tests"
 TZ=America/Vancouver npx cypress run \
     --env "keycloak_password=$KEYCLOAK_PASSWORD,idir_password=$IDIR_PASSWORD,keycloak_admin_secret=$KEYCLOAK_ADMIN_SECRET" \
     --record \
