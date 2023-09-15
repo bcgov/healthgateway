@@ -1,0 +1,244 @@
+@page "/covid-19-treatment-assessment"
+@layout MainLayout
+@attribute [Authorize(Roles = $"{Roles.Admin},{Roles.Reviewer},{Roles.Support}")]
+@using HealthGateway.Admin.Client.Store.PatientDetails
+@using HealthGateway.Admin.Client.Store.PatientSupport
+@using HealthGateway.Admin.Common.Constants
+@using HealthGateway.Common.Ui.Constants
+@using System.Globalization
+@using HealthGateway.Admin.Client.Components.Support
+@inherits Fluxor.Blazor.Web.Components.FluxorComponent
+
+<PageTitle>Health Gateway Admin COVID-19 Treatment Assessment</PageTitle>
+
+<MudLink Href="@PatientDetailsUrl">
+    <MudText Typo="Typo.h5" class="mb-4">
+        <MudIcon Icon="fas fa-arrow-left" /><span class="ml-2">Back</span>
+    </MudText>
+</MudLink>
+
+<HgPageHeading>COVID-19 Treatment Assessment</HgPageHeading>
+
+<HgBannerFeedback
+    Severity="Severity.Error"
+    IsEnabled="HasPatientSupportDetailsError"
+    TResetAction="PatientDetailsActions.ResetStateAction"
+    DataTestId="messaging-verification-banner-feedback-error-message">
+    @PatientDetailsState.Value.Error?.Message
+</HgBannerFeedback>
+
+<HgBannerFeedback
+    Severity="Severity.Error"
+    IsEnabled="HasPatientsError"
+    TResetAction="PatientSupportActions.ResetStateAction"
+    DataTestId="user-banner-feedback-error-message">
+    @PatientSupportState.Value.Error?.Message
+</HgBannerFeedback>
+
+<HgBannerFeedback
+    Severity="@Severity.Info"
+    IsEnabled="HasPatientsWarning"
+    TResetAction="PatientSupportActions.ResetStateAction"
+    Class="mt-3"
+    DataTestId="user-banner-feedback-warning-message">
+    <ul>
+        @foreach (string warning in PatientSupportState.Value.WarningMessages)
+        {
+            <li>@warning</li>
+        }
+    </ul>
+</HgBannerFeedback>
+
+<HgBannerFeedback
+    Severity="@Severity.Info"
+    IsEnabled="@(StatusWarning != null)"
+    TResetAction="PatientSupportActions.ResetStateAction"
+    Class="mt-3"
+    DataTestId="user-banner-feedback-status-warning-message">
+    @StatusWarning
+</HgBannerFeedback>
+
+@if (Patient != null && AssessmentInfo != null)
+{
+    <MudText Class="my-3" Typo="Typo.subtitle1">
+        Patient Information
+    </MudText>
+    <MudGrid Spacing="2">
+        <MudItem xs="12" lg="4">
+            <HgField Label="Name" Value="@PatientName" data-testid="patient-name" />
+        </MudItem>
+        <MudItem xs="12" lg="4">
+            <HgField Label="Birthdate" Value="@Patient?.Birthdate?.ToString()" data-testid="patient-dob" />
+        </MudItem>
+        <MudItem xs="12" lg="4">
+            <HgField Label="PHN" Value="@Patient?.PersonalHealthNumber" data-testid="patient-phn" />
+        </MudItem>
+    </MudGrid>
+
+    @if (Patient.Status == PatientStatus.Default)
+    {
+        <MudForm @ref="Form">
+            <MudPaper Elevation="0" Class="mt-4 py-4 px-10">
+                <MudGrid Spacing="0">
+                    <MudItem xs="12" sm="6" md="3" lg="2">
+                        <HgTextField
+                            Label="Phone Number"
+                            @bind-Value="@Request.PhoneNumber"
+                            T="@string"
+                            Validation="@ValidatePhoneNumber"
+                            Required="@true"
+                            Mask="@Mask.PhoneMask"
+                            data-testid="phone-number-input" />
+                    </MudItem>
+                </MudGrid>
+            </MudPaper>
+            <AssessmentQuestion Title="Do you have a family doctor or nurse practitioner?">
+                <AssessmentOptionRadio @bind-SelectedOption="Request.HasAFamilyDoctorOrNp" />
+            </AssessmentQuestion>
+            <AssessmentQuestion
+                Number="1"
+                Title="Please confirm that you are over 18 years or older. *"
+                AdditionalInfo="@($"This citizen is {Age} years old.")"
+                DisplayAdditionalInfo="@true">
+                <AssessmentOptionRadio
+                    @bind-SelectedOption="Request.ConfirmsOver12"
+                    Validation="@ValidateRequiredOption"
+                    OptionThatIndicatesNoBenefit="CovidTherapyAssessmentOption.No" />
+            </AssessmentQuestion>
+            <AssessmentQuestion
+                Number="2"
+                Title="Have you recently tested positive for COVID‑19 in the last 7 days? *"
+                AdditionalInfo="This citizen has tested positive for COVID‑19 within the last 7 days."
+                DisplayAdditionalInfo="@(AssessmentInfo.HasKnownPositiveC19Past7Days)">
+                <AssessmentOptionRadio
+                    @bind-SelectedOption="Request.TestedPositiveInPast7Days"
+                    Validation="@ValidateRequiredOption"
+                    OptionThatIndicatesNoBenefit="CovidTherapyAssessmentOption.No" />
+            </AssessmentQuestion>
+            <AssessmentQuestion Number="3" Title="Do you have any severe symptoms of COVID‑19? *">
+                <AssessmentOptionRadio
+                    @bind-SelectedOption="Request.HasSevereCovid19Symptoms"
+                    Validation="@ValidateRequiredOption" />
+            </AssessmentQuestion>
+            <AssessmentQuestion Number="4" Title="COVID‑19 symptoms can range from mild to moderate. Mild and moderate symptoms are symptoms that can be managed at home. Do you have any symptoms of COVID‑19? *">
+                <AssessmentOptionRadio
+                    @bind-SelectedOption="Request.HasMildOrModerateCovid19Symptoms"
+                    Validation="@ValidateRequiredOption"
+                    IncludeNotSureOption="@true" />
+            </AssessmentQuestion>
+            <AssessmentQuestion
+                Number="5"
+                Title="When did your symptoms first start?">
+                <MudGrid Spacing="0">
+                    <MudItem xs="12" sm="6" md="3" lg="2">
+                        <MudDatePicker
+                            @ref="@SymptomOnsetDatePicker"
+                            @bind-Date="@Request.SymptomOnsetDate"
+                            Label="Date"
+                            MaxDate="@DateTime.Today"
+                            PickerVariant="@PickerVariant.Dialog"
+                            Culture="@CultureInfo.InvariantCulture"
+                            DateFormat="yyyy-MM-dd"
+                            AutoClose="@true"
+                            DisableToolbar="@true"
+                            Variant="@Variant.Filled"
+                            Margin="@Margin.Dense"
+                            Class="mb-2"
+                            data-testid="symptom-onset-input">
+                            <PickerActions>
+                                <MudButton Class="mr-auto align-self-start" OnClick="@(() => SymptomOnsetDatePicker.Clear())">
+                                    Clear
+                                </MudButton>
+                            </PickerActions>
+                        </MudDatePicker>
+                    </MudItem>
+                </MudGrid>
+                @if (SymptomOnsetTooLongAgo)
+                {
+                    <MudText Color="Color.Primary" Typo="@Typo.body1">Citizen would likely not benefit from COVID‑19 treatment.</MudText>
+                }
+            </AssessmentQuestion>
+            <AssessmentQuestion
+                Number="6"
+                Title="Do you have a medical condition or are you taking medications that suppress or weaken your immune system? *"
+                AdditionalInfo="Citizen is considered immunocompromised."
+                DisplayAdditionalInfo="@(AssessmentInfo.CitizenIsConsideredImmunoCompromised)">
+                <AssessmentOptionRadio
+                    @bind-SelectedOption="Request.HasImmunityCompromisingMedicalCondition"
+                    Validation="@ValidateRequiredOption"
+                    IncludeNotSureOption="@true"
+                    OptionThatIndicatesBenefit="CovidTherapyAssessmentOption.Yes" />
+            </AssessmentQuestion>
+            <AssessmentQuestion
+                Number="7"
+                Title="Have you been diagnosed by a health care provider with a chronic condition or received a letter from Dr. Bonnie Henry stating that you are Clinically Extremely Vulnerable (CEV)?"
+                AdditionalInfo="Citizen has a chronic condition."
+                DisplayAdditionalInfo="@(AssessmentInfo.HasDocumentedChronicCondition)">
+                <AssessmentOptionRadio
+                    @bind-SelectedOption="Request.HasChronicConditionDiagnoses"
+                    IncludeNotSureOption="@true"
+                    OptionThatIndicatesBenefit="CovidTherapyAssessmentOption.Yes" />
+            </AssessmentQuestion>
+            <AssessmentQuestion Number="8" Title="Do you identify as Indigenous?">
+                <AssessmentOptionRadio
+                    @bind-SelectedOption="Request.IdentifiesIndigenous"
+                    OptionThatIndicatesBenefit="CovidTherapyAssessmentOption.Yes" />
+            </AssessmentQuestion>
+            <AssessmentQuestion
+                Number="9"
+                Title="Are you up to date on your COVID‑19 vaccines?"
+                AdditionalInfo="Citizen has had 3 doses of vaccine for more than 14 days."
+                DisplayAdditionalInfo="@AssessmentInfo.Has3DoseMoreThan14Days">
+                <AssessmentOptionRadio
+                    @bind-SelectedOption="Request.Reports3DosesC19Vaccine"
+                    IncludeNotSureOption="@true"
+                    OptionThatIndicatesBenefit="CovidTherapyAssessmentOption.No" />
+            </AssessmentQuestion>
+            <AssessmentQuestion Number="10" Title="Do you agree to the information being added to your CareConnect electronic health record as part of the process to obtain COVID‑19 treatment? *">
+                <AssessmentOptionRadio @bind-SelectedOption="Request.ConsentToSendCc" />
+            </AssessmentQuestion>
+            <MudPaper Elevation="0" Class="mt-4 py-4 px-10">
+                <MudTextField
+                    Label="Notes"
+                    @bind-Value="@Request.AgentComments"
+                    T="@string"
+                    MaxLength="2000"
+                    Counter="2000"
+                    Immediate="true"
+                    Lines="@(3)"
+                    data-testid="notes-input" />
+            </MudPaper>
+            <AssessmentQuestion Title="Confirm Phone Number">
+                <MudText Typo="Typo.body1" Style="font-style: italic" Color="@Color.Tertiary">
+                    @(string.IsNullOrWhiteSpace(Request.PhoneNumber) ? "Not provided" : Request.PhoneNumber)
+                </MudText>
+            </AssessmentQuestion>
+        </MudForm>
+
+        <div class="mt-4 d-flex justify-end">
+            <HgButton
+                Color="@Color.Tertiary"
+                Href="@PatientDetailsUrl"
+                data-testid="cancel-covid-19-treatment-assessment">
+                Cancel
+            </HgButton>
+            <HgButton
+                LeftMargin="Breakpoint.Always"
+                Color="@Color.Success"
+                OnClick="@HandleClickConfirm"
+                data-testid="submit-covid-19-treatment-assessment">
+                Submit
+            </HgButton>
+        </div>
+    }
+}
+else if (PatientsLoaded && PatientDetailsLoaded)
+{
+    <MudText Class="my-3" Typo="Typo.subtitle1">
+        No user found with the specified HDID.
+    </MudText>
+}
+else
+{
+    <MudProgressCircular Indeterminate="true" Size="Size.Large" Class="mt-3" />
+}

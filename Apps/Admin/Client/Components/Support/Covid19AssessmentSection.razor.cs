@@ -44,12 +44,24 @@ namespace HealthGateway.Admin.Client.Components.Support
         public bool IsLoading { get; set; } = true;
 
         /// <summary>
-        /// Gets or sets the application's configuration.
+        /// Gets or sets the path for the assessment page.
         /// </summary>
+        [Parameter]
+        [EditorRequired]
+        public string AssessmentPagePath { get; set; } = string.Empty;
+
         [Inject]
         private IConfiguration Configuration { get; set; } = default!;
 
+        [Inject]
+        private NavigationManager NavigationManager { get; set; } = default!;
+
         private IEnumerable<AssessmentDetailRow> Rows => this.Data.Select(a => new AssessmentDetailRow(a));
+
+        private void NavigateToCovid19TreatmentAssessment()
+        {
+            this.NavigationManager.NavigateTo(this.AssessmentPagePath);
+        }
 
         private DateTime ConvertDateTime(DateTime utcDateTime)
         {

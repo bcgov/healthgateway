@@ -12,7 +12,9 @@
 <PageTitle>Health Gateway Admin Patient Details</PageTitle>
 
 <MudLink Href="/support?details" data-testid="patient-details-back-button">
-    <MudText Typo="Typo.h5"><MudIcon Icon="fas fa-arrow-left" /> Back</MudText>
+    <MudText Typo="Typo.h5" class="mb-4">
+        <MudIcon Icon="fas fa-arrow-left" /><span class="ml-2">Back</span>
+    </MudText>
 </MudLink>
 
 <HgBannerFeedback
@@ -57,7 +59,7 @@
 @if (Patient != null)
 {
     <HgPageHeading Class="mt-3">User Details</HgPageHeading>
-    <MudGrid>
+    <MudGrid Spacing="2">
         <MudItem xs="12" lg="4">
             <HgField Label="Name" Value="@PatientName" data-testid="patient-name" />
         </MudItem>
@@ -84,7 +86,7 @@
             <MudText Class="my-3" Typo="Typo.subtitle1">
                 Account Details
             </MudText>
-            <MudGrid>
+            <MudGrid Spacing="2">
                 <MudItem xs="12" lg="6">
                     <HgField Label="Account Created" Value="@ProfileCreatedDateTime.ToString()" data-testid="profile-created-datetime" />
                 </MudItem>
@@ -111,7 +113,7 @@
 
         <Covid19ImmunizationSection Phn="@Patient.PersonalHealthNumber" Data="@VaccineDoses" IsLoading="@PatientSupportDetailsLoading" MailAddress="@MailAddress" />
 
-        <Covid19AssessmentSection Data="@AssessmentDetails" IsLoading="@PatientSupportDetailsLoading" />
+        <Covid19AssessmentSection Data="@AssessmentDetails" IsLoading="@PatientSupportDetailsLoading" AssessmentPagePath="@Covid19TreatmentAssessmentPath" />
     }
     else if (CanViewAccountDetails)
     {

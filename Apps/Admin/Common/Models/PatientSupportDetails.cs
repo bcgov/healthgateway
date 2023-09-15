@@ -44,11 +44,11 @@ namespace HealthGateway.Admin.Common.Models
         /// <summary>
         /// Gets or sets the vaccine details.
         /// </summary>
-        public VaccineDetails? VaccineDetails { get; set; }
+        public VaccineDetails VaccineDetails { get; set; }
 
         /// <summary>
         /// Gets or sets the Covid assessment details.
         /// </summary>
-        public CovidAssessmentDetailsResponse? CovidAssessmentDetails { get; set; }
+        public CovidAssessmentDetailsResponse CovidAssessmentDetails { get; set; }
     }
 }

@@ -50,19 +50,19 @@ namespace HealthGateway.Admin.Client.Store.PatientDetails
         [EffectMethod]
         public async Task HandleLoadAction(PatientDetailsActions.LoadAction action, IDispatcher dispatcher)
         {
-            this.Logger.LogInformation("Loading messaging verifications");
+            this.Logger.LogInformation("Loading patient details");
 
             try
             {
                 PatientSupportDetails response = await this.SupportApi.GetPatientSupportDetailsAsync(action.Hdid).ConfigureAwait(true);
-                this.Logger.LogInformation("Messaging verifications loaded successfully!");
+                this.Logger.LogInformation("Patient details loaded successfully!");
                 dispatcher.Dispatch(new PatientDetailsActions.LoadSuccessAction(response, action.Hdid));
             }
             catch (Exception e) when (e is ApiException or HttpRequestException)
             {
-                this.Logger.LogError("Error loading messaging verifications...{Error}", e);
+                this.Logger.LogError("Error loading patient details...{Error}", e);
                 RequestError error = StoreUtility.FormatRequestError(e);
-                this.Logger.LogError("Error loading messaging verifications, reason: {ErrorMessage}", error.Message);
+                this.Logger.LogError("Error loading patient details, reason: {ErrorMessage}", error.Message);
                 dispatcher.Dispatch(new PatientDetailsActions.LoadFailAction(error));
             }
         }
@@ -87,6 +87,31 @@ namespace HealthGateway.Admin.Client.Store.PatientDetails
 
         [EffectMethod]
         public Task HandleBlockSuccessAction(PatientDetailsActions.BlockAccessSuccessAction action, IDispatcher dispatcher)
+        {
+            this.Logger.LogInformation("Reload the patient's data for details page");
+            dispatcher.Dispatch(new PatientDetailsActions.LoadAction(action.Hdid));
+            return Task.CompletedTask;
+        }
+
+        [EffectMethod]
+        public async Task HandleSubmitCovid19TreatmentAssessmentAction(PatientDetailsActions.SubmitCovid19TreatmentAssessmentAction action, IDispatcher dispatcher)
+        {
+            this.Logger.LogInformation("Submitting COVID-19 treatment assessment");
+            try
+            {
+                await this.SupportApi.SubmitCovidAssessment(action.Request).ConfigureAwait(true);
+                dispatcher.Dispatch(new PatientDetailsActions.SubmitCovid19TreatmentAssessmentSuccessAction { Hdid = action.Hdid });
+            }
+            catch (Exception e) when (e is ApiException or HttpRequestException)
+            {
+                this.Logger.LogError("Error submitting COVID-19 treatment assessment: {Exception}", e.ToString());
+                RequestError error = StoreUtility.FormatRequestError(e);
+                dispatcher.Dispatch(new PatientDetailsActions.SubmitCovid19TreatmentAssessmentFailAction(error));
+            }
+        }
+
+        [EffectMethod]
+        public Task HandleSubmitCovid19TreatmentAssessmentSuccessAction(PatientDetailsActions.SubmitCovid19TreatmentAssessmentSuccessAction action, IDispatcher dispatcher)
         {
             this.Logger.LogInformation("Reload the patient's data for details page");
             dispatcher.Dispatch(new PatientDetailsActions.LoadAction(action.Hdid));

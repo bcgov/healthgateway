@@ -48,15 +48,14 @@
     </PagerContent>
 </MudTable>
 
-<div class="d-flex justify-end">
+<div class="d-flex justify-end mt-4">
     <HgButton
         EndIcon="fas fa-paper-plane"
         Variant="@Variant.Filled"
         Color="@Color.Primary"
-        TopMargin="Breakpoint.Always"
         RightMargin="Breakpoint.Always"
         Loading="@MailVaccineCardIsLoading"
-        Disabled="@(!Rows.Any())"
+        Disabled="@(IsLoading || !Rows.Any())"
         OnClick="@OpenMailVaccineCardAddressConfirmationDialog"
         data-testid="mail-button">
         Mail
@@ -65,9 +64,8 @@
         EndIcon="fas fa-print"
         Variant="@Variant.Filled"
         Color="@Color.Primary"
-        TopMargin="Breakpoint.Always"
         Loading="@PrintVaccineCardIsLoading"
-        Disabled="@(!Rows.Any())"
+        Disabled="@(IsLoading || !Rows.Any())"
         OnClick="@Print"
         data-testid="print-button">
         Print

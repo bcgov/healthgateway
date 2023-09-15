@@ -1,8 +1,16 @@
 @using HealthGateway.Common.Data.Utils
 @inherits Fluxor.Blazor.Web.Components.FluxorComponent
 
-<MudText Class="mt-4" Typo="Typo.subtitle1">
-    Assessment History
+<MudText Class="mt-4 d-flex justify-space-between align-end" Typo="Typo.subtitle1">
+    <div>Assessment History</div>
+    <HgButton
+        Color="@Color.Success"
+        EndIcon="fas fa-clipboard-list"
+        OnClick="@NavigateToCovid19TreatmentAssessment"
+        Disabled="@IsLoading"
+        data-testid="start-covid-19-treatment-assessment-button">
+        Start COVID-19 Treatment Assessment
+    </HgButton>
 </MudText>
 
 <MudTable Class="mt-4"

@@ -1,0 +1,21 @@
+﻿@inherits Fluxor.Blazor.Web.Components.FluxorComponent
+
+<MudPaper Elevation="0" Class="mt-4 py-4 px-10" @attributes="@UnmatchedAttributes">
+    <MudText Typo="@Typo.body1" Class="mb-1">
+        @if (Number != null)
+        {
+            <ol start="@Number">
+                <li>@Title</li>
+            </ol>
+        }
+        else
+        {
+            @Title
+        }
+    </MudText>
+    @if (DisplayAdditionalInfo)
+    {
+        <MudText Typo="Typo.body1" Color="@Color.Primary" Class="mt-2 mb-1">@AdditionalInfo</MudText>
+    }
+    @ChildContent
+</MudPaper>
