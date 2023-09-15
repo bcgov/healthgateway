@@ -41,9 +41,9 @@ jobs:
         arguments: Apps/Admin/Tests/Functional $(Build.BuildNumber)-$(System.JobAttempt) "dev,$(Build.Reason)"
       env: # Required environment settings and secrets for admin tests
         TERM: xterm
-        keycloak_password: $(keycloak.pw)
-        idir_password: $(idir.password)
-        keycloak_admin_secret: $(keycloak.admin.secret)
+        KEYCLOAK_PASSWORD: $(keycloak.pw)
+        IDIR_PASSWORD: $(idir.password)
+        KEYCLOAK_ADMIN_SECRET: $(keycloak.admin.secret)
         CYPRESS_ADMIN_KEY: $(cypress.admin.key)
 
 #Future Use
