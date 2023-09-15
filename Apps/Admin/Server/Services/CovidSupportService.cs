@@ -111,6 +111,7 @@ namespace HealthGateway.Admin.Server.Services
         {
             string accessToken = this.GetAccessToken();
 
+            request.Submitted = DateTime.UtcNow;
             return await this.immunizationAdminApi.SubmitCovidAssessment(request, accessToken).ConfigureAwait(true);
         }
 

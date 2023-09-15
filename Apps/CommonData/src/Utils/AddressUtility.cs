@@ -253,13 +253,19 @@ namespace HealthGateway.Common.Data.Utils
         /// <summary>
         /// Regular expression for Canadian postal codes.
         /// </summary>
-        [GeneratedRegex(@"^[A-Z]\d[A-Z] \d[A-Z]\d$")]
+        [GeneratedRegex(@"^[A-Z]\d[A-Z] \d[A-Z]\d\z")]
         public static partial Regex PostalCodeRegex();
 
         /// <summary>
         /// Regular expression for American ZIP codes and ZIP+4 codes.
         /// </summary>
-        [GeneratedRegex(@"^\d{5}(-\d{4})?$")]
+        [GeneratedRegex(@"^\d{5}(-\d{4})?\z")]
         public static partial Regex ZipCodeRegex();
+
+        /// <summary>
+        /// Regular expression for North American phone numbers.
+        /// </summary>
+        [GeneratedRegex(@"^\([2-9]\d{2}\) [2-9]\d{2}-\d{4}\z")]
+        public static partial Regex PhoneNumberRegex();
     }
 }

@@ -55,11 +55,17 @@ namespace HealthGateway.Common.Data.Validations
             return new AgeRangeValidator(olderThan, youngerThan).Validate(dateOfBirth).IsValid;
         }
 
-        private static int CalculateAge(DateTime reference, DateTime dateOfBirth)
+        /// <summary>
+        /// Calculates a person's age (in years) at a given date.
+        /// </summary>
+        /// <param name="referenceDate">Date at which to calculate age.</param>
+        /// <param name="dateOfBirth">Date of birth.</param>
+        /// <returns>Age in years.</returns>
+        public static int CalculateAge(DateTime referenceDate, DateTime dateOfBirth)
         {
-            if (reference.Kind == DateTimeKind.Unspecified)
+            if (referenceDate.Kind == DateTimeKind.Unspecified)
             {
-                reference = DateTime.SpecifyKind(reference, DateTimeKind.Utc);
+                referenceDate = DateTime.SpecifyKind(referenceDate, DateTimeKind.Utc);
             }
 
             if (dateOfBirth.Kind == DateTimeKind.Unspecified)
@@ -68,7 +74,7 @@ namespace HealthGateway.Common.Data.Validations
             }
 
             // convert to yyyyMMdd integers
-            int referenceDateValue = (((reference.Year * 100) + reference.Month) * 100) + reference.Day;
+            int referenceDateValue = (((referenceDate.Year * 100) + referenceDate.Month) * 100) + referenceDate.Day;
             int dobDateValue = (((dateOfBirth.Year * 100) + dateOfBirth.Month) * 100) + dateOfBirth.Day;
 
             // calculate age and trim non year values

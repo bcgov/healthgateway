@@ -18,6 +18,7 @@ namespace HealthGateway.Admin.Client.Store.PatientDetails
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using HealthGateway.Admin.Common.Models;
+    using HealthGateway.Admin.Common.Models.CovidSupport;
     using HealthGateway.Common.Data.Constants;
 
     /// <summary>
@@ -84,13 +85,6 @@ namespace HealthGateway.Admin.Client.Store.PatientDetails
         }
 
         /// <summary>
-        /// The action that clears the state.
-        /// </summary>
-        public class ResetStateAction
-        {
-        }
-
-        /// <summary>
         /// The action representing the configuring of a patient's level of access.
         /// </summary>
         public class BlockAccessAction : BaseAgentAuditAction
@@ -150,6 +144,46 @@ namespace HealthGateway.Admin.Client.Store.PatientDetails
                 : base(error)
             {
             }
+        }
+
+        public class SubmitCovid19TreatmentAssessmentAction
+        {
+            /// <summary>
+            /// Gets or sets the COVID-19 therapy assessment request.
+            /// </summary>
+            public CovidAssessmentRequest Request { get; set; }
+
+            /// <summary>
+            /// Gets or sets the HDID associated with the patient.
+            /// </summary>
+            public string Hdid { get; set; }
+        }
+
+        public class SubmitCovid19TreatmentAssessmentSuccessAction
+        {
+            /// <summary>
+            /// Gets or sets the HDID associated with the patient.
+            /// </summary>
+            public string Hdid { get; set; }
+        }
+
+        public class SubmitCovid19TreatmentAssessmentFailAction : BaseFailAction
+        {
+            /// <summary>
+            /// Initializes a new instance of the <see cref="SubmitCovid19TreatmentAssessmentFailAction"/> class.
+            /// </summary>
+            /// <param name="error">The request error.</param>
+            public SubmitCovid19TreatmentAssessmentFailAction(RequestError error)
+                : base(error)
+            {
+            }
+        }
+
+        /// <summary>
+        /// The action that clears the state.
+        /// </summary>
+        public class ResetStateAction
+        {
         }
     }
 }

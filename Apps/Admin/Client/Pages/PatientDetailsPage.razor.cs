@@ -79,8 +79,10 @@ namespace HealthGateway.Admin.Client.Pages
                 .Where(_ => this.PatientDetailsState.Value.VaccineDetails?.Blocked == false)
                 .OrderByDescending(dose => dose.Date) ?? Enumerable.Empty<VaccineDose>();
 
+        private CovidAssessmentDetailsResponse? AssessmentInfo => this.PatientDetailsState.Value.Result?.CovidAssessmentDetails;
+
         private IEnumerable<PreviousAssessmentDetails> AssessmentDetails =>
-            this.PatientDetailsState.Value.CovidAssessmentDetails?.PreviousAssessmentDetailsList.OrderByDescending(a => a.DateTimeOfAssessment) ?? Enumerable.Empty<PreviousAssessmentDetails>();
+            this.AssessmentInfo?.PreviousAssessmentDetailsList.OrderByDescending(a => a.DateTimeOfAssessment) ?? Enumerable.Empty<PreviousAssessmentDetails>();
 
         private bool PatientsLoaded => this.PatientSupportState.Value.Loaded;
 
@@ -97,11 +99,11 @@ namespace HealthGateway.Admin.Client.Pages
 
         private Address? MailAddress => this.Patient?.PostalAddress ?? this.Patient?.PhysicalAddress;
 
-        private string? Hdid { get; set; }
+        private DateTime? ProfileCreatedDateTime =>
+            this.Patient?.ProfileCreatedDateTime == null ? null : TimeZoneInfo.ConvertTimeFromUtc(this.Patient.ProfileCreatedDateTime.Value, this.GetTimeZone());
 
-        private DateTime? ProfileCreatedDateTime { get; set; }
-
-        private DateTime? ProfileLastLoginDateTime { get; set; }
+        private DateTime? ProfileLastLoginDateTime =>
+            this.Patient?.ProfileLastLoginDateTime == null ? null : TimeZoneInfo.ConvertTimeFromUtc(this.Patient.ProfileLastLoginDateTime.Value, this.GetTimeZone());
 
         private bool CanViewAccountDetails => this.UserHasRole(Roles.Admin) || this.UserHasRole(Roles.Reviewer);
 
@@ -113,7 +115,11 @@ namespace HealthGateway.Admin.Client.Pages
 
         private bool CanViewAgentAuditHistory => this.UserHasRole(Roles.Admin) || this.UserHasRole(Roles.Reviewer);
 
+        private string Covid19TreatmentAssessmentPath => $"/covid-19-treatment-assessment?hdid={this.Hdid}";
+
         private AuthenticationState? AuthenticationState { get; set; }
+
+        private string? Hdid { get; set; }
 
         /// <inheritdoc/>
         protected override async Task OnInitializedAsync()
@@ -131,8 +137,7 @@ namespace HealthGateway.Admin.Client.Pages
             if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("hdid", out StringValues hdid))
             {
                 this.Hdid = hdid;
-                this.RetrievePatientData();
-                this.ActionSubscriber.SubscribeToAction<PatientSupportActions.LoadSuccessAction>(this, _ => this.RetrieveMessagingVerifications());
+                this.RetrievePatientDetails();
             }
             else
             {
@@ -151,44 +156,24 @@ namespace HealthGateway.Admin.Client.Pages
             };
         }
 
-        private bool UserHasRole(string role)
-        {
-            return this.AuthenticationState?.User.IsInRole(role) == true;
-        }
-
-        private void RetrievePatientData()
+        private void RetrievePatientDetails()
         {
             if (this.Patient == null)
             {
                 this.Dispatcher.Dispatch(new PatientSupportActions.ResetStateAction());
-                this.Dispatcher.Dispatch(new PatientDetailsActions.ResetStateAction());
                 this.Dispatcher.Dispatch(new PatientSupportActions.LoadAction(PatientQueryType.Hdid, this.Hdid));
             }
-            else
-            {
-                this.RetrieveMessagingVerifications();
-            }
 
-            DateTime? patientProfileCreatedDateTime = this.Patient?.ProfileCreatedDateTime;
-            if (patientProfileCreatedDateTime != null)
+            if (this.AssessmentInfo == null)
             {
-                this.ProfileCreatedDateTime = TimeZoneInfo.ConvertTimeFromUtc(patientProfileCreatedDateTime.Value, this.GetTimeZone());
-            }
-
-            DateTime? profileLastLoginDateTime = this.Patient?.ProfileLastLoginDateTime;
-            if (profileLastLoginDateTime != null)
-            {
-                this.ProfileLastLoginDateTime = TimeZoneInfo.ConvertTimeFromUtc(profileLastLoginDateTime.Value, this.GetTimeZone());
+                this.Dispatcher.Dispatch(new PatientDetailsActions.ResetStateAction());
+                this.Dispatcher.Dispatch(new PatientDetailsActions.LoadAction(this.Hdid));
             }
         }
 
-        private void RetrieveMessagingVerifications()
+        private bool UserHasRole(string role)
         {
-            this.Dispatcher.Dispatch(new PatientDetailsActions.ResetStateAction());
-            if (this.Patient?.ProfileCreatedDateTime != null)
-            {
-                this.Dispatcher.Dispatch(new PatientDetailsActions.LoadAction(this.Hdid));
-            }
+            return this.AuthenticationState?.User.IsInRole(role) == true;
         }
 
         private TimeZoneInfo GetTimeZone()
