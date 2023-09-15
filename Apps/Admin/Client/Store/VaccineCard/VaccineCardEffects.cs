@@ -24,24 +24,21 @@ namespace HealthGateway.Admin.Client.Store.VaccineCard
     using HealthGateway.Admin.Client.Utils;
     using HealthGateway.Admin.Common.Models.CovidSupport;
     using HealthGateway.Common.Data.Models;
-    using Microsoft.AspNetCore.Components;
     using Microsoft.Extensions.Logging;
     using Refit;
 
 #pragma warning disable CS1591, SA1600
     public class VaccineCardEffects
     {
-        public VaccineCardEffects(ILogger<VaccineCardEffects> logger, ISupportApi supportApi, IState<VaccineCardState> vaccineCardState)
+        public VaccineCardEffects(ILogger<VaccineCardEffects> logger, ISupportApi supportApi)
         {
             this.Logger = logger;
             this.SupportApi = supportApi;
         }
 
-        [Inject]
-        private ILogger<VaccineCardEffects> Logger { get; set; }
+        private ILogger<VaccineCardEffects> Logger { get; }
 
-        [Inject]
-        private ISupportApi SupportApi { get; set; }
+        private ISupportApi SupportApi { get; }
 
         [EffectMethod]
         public async Task HandleMailVaccineCardAction(VaccineCardActions.MailVaccineCardAction action, IDispatcher dispatcher)
@@ -56,7 +53,7 @@ namespace HealthGateway.Admin.Client.Store.VaccineCard
                 };
 
                 await this.SupportApi.MailVaccineCard(request).ConfigureAwait(true);
-                dispatcher.Dispatch(new VaccineCardActions.MailVaccineCardSuccessAction(action.Phn, action.MailAddress));
+                dispatcher.Dispatch(new VaccineCardActions.MailVaccineCardSuccessAction());
             }
             catch (Exception e) when (e is ApiException or HttpRequestException)
             {
@@ -73,7 +70,7 @@ namespace HealthGateway.Admin.Client.Store.VaccineCard
             try
             {
                 ReportModel report = await this.SupportApi.RetrieveVaccineRecord(action.Phn).ConfigureAwait(true);
-                dispatcher.Dispatch(new VaccineCardActions.PrintVaccineCardSuccessAction(report, action.Phn));
+                dispatcher.Dispatch(new VaccineCardActions.PrintVaccineCardSuccessAction(report));
             }
             catch (Exception e) when (e is ApiException or HttpRequestException)
             {

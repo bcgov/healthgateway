@@ -55,9 +55,6 @@ namespace HealthGateway.Admin.Client.Pages
         private NavigationManager NavigationManager { get; set; } = default!;
 
         [Inject]
-        private IActionSubscriber ActionSubscriber { get; set; } = default!;
-
-        [Inject]
         private IConfiguration Configuration { get; set; } = default!;
 
         [Inject]
@@ -119,7 +116,7 @@ namespace HealthGateway.Admin.Client.Pages
 
         private AuthenticationState? AuthenticationState { get; set; }
 
-        private string? Hdid { get; set; }
+        private string Hdid { get; set; } = string.Empty;
 
         /// <inheritdoc/>
         protected override async Task OnInitializedAsync()
@@ -134,9 +131,9 @@ namespace HealthGateway.Admin.Client.Pages
             base.OnInitialized();
 
             Uri uri = this.NavigationManager.ToAbsoluteUri(this.NavigationManager.Uri);
-            if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("hdid", out StringValues hdid))
+            if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("hdid", out StringValues hdid) && hdid != StringValues.Empty)
             {
-                this.Hdid = hdid;
+                this.Hdid = hdid.ToString();
                 this.RetrievePatientDetails();
             }
             else
@@ -161,13 +158,13 @@ namespace HealthGateway.Admin.Client.Pages
             if (this.Patient == null)
             {
                 this.Dispatcher.Dispatch(new PatientSupportActions.ResetStateAction());
-                this.Dispatcher.Dispatch(new PatientSupportActions.LoadAction(PatientQueryType.Hdid, this.Hdid));
+                this.Dispatcher.Dispatch(new PatientSupportActions.LoadAction { QueryType = PatientQueryType.Hdid, QueryString = this.Hdid });
             }
 
             if (this.AssessmentInfo == null)
             {
                 this.Dispatcher.Dispatch(new PatientDetailsActions.ResetStateAction());
-                this.Dispatcher.Dispatch(new PatientDetailsActions.LoadAction(this.Hdid));
+                this.Dispatcher.Dispatch(new PatientDetailsActions.LoadAction { Hdid = this.Hdid });
             }
         }
 

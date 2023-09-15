@@ -57,9 +57,6 @@ namespace HealthGateway.Admin.Client.Pages
         [Inject]
         private NavigationManager NavigationManager { get; set; } = default!;
 
-        [Inject]
-        private IActionSubscriber ActionSubscriber { get; set; } = default!;
-
         private bool HasPatientSupportDetailsError => this.PatientDetailsState.Value.Error is { Message.Length: > 0 };
 
         private bool PatientsLoaded => this.PatientSupportState.Value.Loaded;
@@ -77,7 +74,7 @@ namespace HealthGateway.Admin.Client.Pages
 
         private string PatientName => StringManipulator.JoinWithoutBlanks(new[] { this.Patient?.PreferredName?.GivenName, this.Patient?.PreferredName?.Surname });
 
-        private int Age => AgeRangeValidator.CalculateAge(DateTime.UtcNow, this.Patient?.Birthdate.Value.ToDateTime(TimeOnly.MinValue) ?? DateTime.UtcNow);
+        private int Age => AgeRangeValidator.CalculateAge(DateTime.UtcNow, this.Patient?.Birthdate?.ToDateTime(TimeOnly.MinValue) ?? DateTime.UtcNow);
 
         private string? StatusWarning => this.Patient == null ? null : MapStatusToWarning(this.Patient.Status);
 
@@ -87,7 +84,7 @@ namespace HealthGateway.Admin.Client.Pages
 
         private MudDatePicker SymptomOnsetDatePicker { get; set; } = default!;
 
-        private string? Hdid { get; set; }
+        private string Hdid { get; set; } = string.Empty;
 
         private CovidAssessmentRequest Request { get; } = new();
 
@@ -111,9 +108,9 @@ namespace HealthGateway.Admin.Client.Pages
             base.OnInitialized();
 
             Uri uri = this.NavigationManager.ToAbsoluteUri(this.NavigationManager.Uri);
-            if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("hdid", out StringValues hdid))
+            if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("hdid", out StringValues hdid) && hdid != StringValues.Empty)
             {
-                this.Hdid = hdid;
+                this.Hdid = hdid.ToString();
                 this.RetrievePatientDetails();
             }
             else
@@ -133,18 +130,33 @@ namespace HealthGateway.Admin.Client.Pages
             };
         }
 
+        private static string? ValidatePhoneNumber(string number)
+        {
+            if (string.IsNullOrWhiteSpace(number))
+            {
+                return "Required";
+            }
+
+            return !AddressUtility.PhoneNumberRegex().IsMatch(number) ? "Invalid phone number" : null;
+        }
+
+        private static string? ValidateRequiredOption(CovidTherapyAssessmentOption option)
+        {
+            return option == CovidTherapyAssessmentOption.Unspecified ? "Required" : null;
+        }
+
         private void RetrievePatientDetails()
         {
             if (this.Patient == null)
             {
                 this.Dispatcher.Dispatch(new PatientSupportActions.ResetStateAction());
-                this.Dispatcher.Dispatch(new PatientSupportActions.LoadAction(PatientQueryType.Hdid, this.Hdid));
+                this.Dispatcher.Dispatch(new PatientSupportActions.LoadAction { QueryType = PatientQueryType.Hdid, QueryString = this.Hdid });
             }
 
             if (this.AssessmentInfo == null)
             {
                 this.Dispatcher.Dispatch(new PatientDetailsActions.ResetStateAction());
-                this.Dispatcher.Dispatch(new PatientDetailsActions.LoadAction(this.Hdid));
+                this.Dispatcher.Dispatch(new PatientDetailsActions.LoadAction { Hdid = this.Hdid });
             }
         }
 
@@ -202,21 +214,6 @@ namespace HealthGateway.Admin.Client.Pages
             {
                 this.NavigationManager.NavigateTo(this.PatientDetailsUrl);
             }
-        }
-
-        private static string? ValidatePhoneNumber(string number)
-        {
-            if (string.IsNullOrWhiteSpace(number))
-            {
-                return "Required";
-            }
-
-            return !AddressUtility.PhoneNumberRegex().IsMatch(number) ? "Invalid phone number" : null;
-        }
-
-        private static string? ValidateRequiredOption(CovidTherapyAssessmentOption option)
-        {
-            return option == CovidTherapyAssessmentOption.Unspecified ? "Required" : null;
         }
     }
 }

@@ -42,13 +42,13 @@ namespace HealthGateway.Admin.Common.Models
         public IEnumerable<DataSource>? BlockedDataSources { get; set; } = Enumerable.Empty<DataSource>();
 
         /// <summary>
-        /// Gets or sets the vaccine details.
+        /// Gets the vaccine details.
         /// </summary>
-        public VaccineDetails VaccineDetails { get; set; }
+        public required VaccineDetails VaccineDetails { get; init; }
 
         /// <summary>
-        /// Gets or sets the Covid assessment details.
+        /// Gets the COVID-19 treatment assessment details.
         /// </summary>
-        public CovidAssessmentDetailsResponse CovidAssessmentDetails { get; set; }
+        public required CovidAssessmentDetailsResponse CovidAssessmentDetails { get; init; }
     }
 }

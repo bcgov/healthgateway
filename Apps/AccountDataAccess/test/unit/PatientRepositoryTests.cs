@@ -411,7 +411,7 @@ namespace AccountDataAccessTest
         {
             blockedAccessDelegate ??= blockedAccessDelegate ?? new();
             blockedAccessDelegate.Setup(p => p.GetBlockedAccessAsync(It.IsAny<string>())).ReturnsAsync(blockedAccess);
-            blockedAccessDelegate.Setup(p => p.GetDataSourcesAsync(It.IsAny<string>())).ReturnsAsync(blockedAccess.DataSources ?? Enumerable.Empty<DataSource>());
+            blockedAccessDelegate.Setup(p => p.GetDataSourcesAsync(It.IsAny<string>())).ReturnsAsync(blockedAccess.DataSources);
 
             string blockedAccessCacheKey = string.Format(CultureInfo.InvariantCulture, ICacheProvider.BlockedAccessCachePrefixKey, blockedAccess.Hdid);
             Mock<ICacheProvider> cacheProvider = new();

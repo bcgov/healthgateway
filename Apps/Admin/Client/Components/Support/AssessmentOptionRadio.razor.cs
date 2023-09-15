@@ -16,6 +16,7 @@
 namespace HealthGateway.Admin.Client.Components.Support
 {
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using Fluxor.Blazor.Web.Components;
     using HealthGateway.Admin.Common.Constants;
     using Microsoft.AspNetCore.Components;
@@ -32,6 +33,7 @@ namespace HealthGateway.Admin.Client.Components.Support
         /// </summary>
         [Parameter]
         [EditorRequired]
+        [SuppressMessage("Usage", "BL0007:Component parameters should be auto properties", Justification = "Two-way binding")]
         public CovidTherapyAssessmentOption SelectedOption
         {
             get => this.selectedOption;

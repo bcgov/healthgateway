@@ -187,7 +187,7 @@ namespace HealthGateway.Admin.Tests.Delegates
             return mock;
         }
 
-        private static IImmunizationAdminDelegate CreateImmunizationAdminDelegate(Mock<IImmunizationAdminApi> immunizationAdminApiMock)
+        private static IImmunizationAdminDelegate CreateImmunizationAdminDelegate(Mock<IImmunizationAdminApi>? immunizationAdminApiMock)
         {
             immunizationAdminApiMock ??= new Mock<IImmunizationAdminApi>();
 

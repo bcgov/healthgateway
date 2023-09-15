@@ -30,25 +30,14 @@ namespace HealthGateway.Admin.Client.Store.VaccineCard
         public class MailVaccineCardAction
         {
             /// <summary>
-            /// Initializes a new instance of the <see cref="MailVaccineCardAction"/> class.
-            /// </summary>
-            /// <param name="phn">The personal health number that matches the document to request to mail.</param>
-            /// <param name="mailAddress">The mailing address that matches the document to request to mail.</param>
-            public MailVaccineCardAction(string phn, Address mailAddress)
-            {
-                this.Phn = phn;
-                this.MailAddress = mailAddress;
-            }
-
-            /// <summary>
             /// Gets the personal health number that matches the document that was requested to mail.
             /// </summary>
-            public string Phn { get; init; }
+            public required string Phn { get; init; }
 
             /// <summary>
             /// Gets the mailing address that matches the document that was requested to mail.
             /// </summary>
-            public Address MailAddress { get; init; }
+            public required Address MailAddress { get; init; }
         }
 
         /// <summary>
@@ -56,14 +45,6 @@ namespace HealthGateway.Admin.Client.Store.VaccineCard
         /// </summary>
         public class MailVaccineCardSuccessAction
         {
-            /// <summary>
-            /// Initializes a new instance of the <see cref="MailVaccineCardSuccessAction"/> class.
-            /// </summary>
-            /// <param name="phn">The personal health number that matches the document.</param>
-            /// <param name="mailAddress">The mailing address that matches the document.</param>
-            public MailVaccineCardSuccessAction(string phn, Address mailAddress)
-            {
-            }
         }
 
         /// <summary>
@@ -88,18 +69,9 @@ namespace HealthGateway.Admin.Client.Store.VaccineCard
         public class PrintVaccineCardAction
         {
             /// <summary>
-            /// Initializes a new instance of the <see cref="PrintVaccineCardAction"/> class.
-            /// </summary>
-            /// <param name="phn">The personal health number that matches the document.</param>
-            public PrintVaccineCardAction(string phn)
-            {
-                this.Phn = phn;
-            }
-
-            /// <summary>
             /// Gets the personal health number that matches the document to retrieve.
             /// </summary>
-            public string Phn { get; init; }
+            public required string Phn { get; init; }
         }
 
         /// <summary>
@@ -112,8 +84,7 @@ namespace HealthGateway.Admin.Client.Store.VaccineCard
             /// Initializes a new instance of the <see cref="PrintVaccineCardSuccessAction"/> class.
             /// </summary>
             /// <param name="data">Result data.</param>
-            /// <param name="phn">The personal health number that matches the document.</param>
-            public PrintVaccineCardSuccessAction(ReportModel data, string phn)
+            public PrintVaccineCardSuccessAction(ReportModel data)
                 : base(data)
             {
             }
