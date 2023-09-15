@@ -173,15 +173,18 @@ namespace HealthGateway.Admin.Client.Pages
 
         private void SubmitAssessment(Address address)
         {
-            CovidAssessmentRequest request = new()
-            {
-                StreetAddresses = address.StreetLines.ToList(),
-                City = address.City,
-                ProvOrState = address.State,
-                PostalCode = address.PostalCode,
-                Country = address.Country,
-            };
-            this.Dispatcher.Dispatch(new PatientDetailsActions.SubmitCovid19TreatmentAssessmentAction { Request = request, Hdid = this.Hdid });
+            this.Request.StreetAddresses = address.StreetLines.ToList();
+            this.Request.City = address.City;
+            this.Request.ProvOrState = address.State;
+            this.Request.PostalCode = address.PostalCode;
+            this.Request.Country = address.Country;
+
+            this.Request.Phn = this.Patient?.PersonalHealthNumber ?? string.Empty;
+            this.Request.FirstName = this.Patient?.LegalName?.GivenName ?? string.Empty;
+            this.Request.LastName = this.Patient?.LegalName?.Surname ?? string.Empty;
+            this.Request.Birthdate = this.Patient?.Birthdate?.ToDateTime(TimeOnly.MinValue);
+
+            this.Dispatcher.Dispatch(new PatientDetailsActions.SubmitCovid19TreatmentAssessmentAction { Request = this.Request, Hdid = this.Hdid });
         }
 
         private async Task OpenAddressConfirmationDialog()
