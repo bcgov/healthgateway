@@ -146,16 +146,16 @@ function showDialog() {
                     <HgButtonComponent
                         variant="secondary"
                         text="Close"
-                        data-testid="close-recommendations-dialog-btn"
+                        data-testid="close-recommendations-dialog-button"
                         @click="isVisible = false"
                     />
                     <v-menu data-testid="export-record-menu">
                         <template #activator="{ props: slotProps }">
                             <HgButtonComponent
-                                id="export-recommendations-record-btn"
+                                id="export-recommendations-record-button"
                                 text="Download"
                                 variant="primary"
-                                data-testid="export-recommendations-record-btn"
+                                data-testid="export-recommendations-record-button"
                                 v-bind="slotProps"
                                 :disabled="!hasRecords"
                                 :loading="isGeneratingReport"

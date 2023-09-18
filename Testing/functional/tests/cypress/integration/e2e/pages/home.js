@@ -138,7 +138,7 @@ describe("Home page - Recommendations", () => {
                 cy.get("[data-testid=recommendation-history-report-table]");
                 cy.get("tbody tr").should("have.length.least", 1);
                 cy.get(
-                    "[data-testid=close-recommendations-dialog-btn]"
+                    "[data-testid=close-recommendations-dialog-button]"
                 ).click();
             });
         cy.get("[data-testid=recommendations-dialog]").should("not.exist");
