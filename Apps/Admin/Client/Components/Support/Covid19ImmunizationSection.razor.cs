@@ -30,8 +30,8 @@ namespace HealthGateway.Admin.Client.Components.Support
     using Microsoft.JSInterop;
     using MudBlazor;
     using MailVaccineCardAddressConfirmationDialog = AddressConfirmationDialog<
-        HealthGateway.Admin.Client.Store.VaccineCard.VaccineCardActions.MailVaccineCardFailureAction,
-        HealthGateway.Admin.Client.Store.VaccineCard.VaccineCardActions.MailVaccineCardSuccessAction>;
+        Store.VaccineCard.VaccineCardActions.MailVaccineCardFailureAction,
+        Store.VaccineCard.VaccineCardActions.MailVaccineCardSuccessAction>;
 
     /// <summary>
     /// Backing logic for the COVID-19 immunization section.
@@ -82,6 +82,9 @@ namespace HealthGateway.Admin.Client.Components.Support
         private IJSRuntime JsRuntime { get; set; } = default!;
 
         [Inject]
+        private ISnackbar Snackbar { get; set; } = default!;
+
+        [Inject]
         private IState<VaccineCardState> VaccineCardState { get; set; } = default!;
 
         private bool MailVaccineCardIsLoading => this.VaccineCardState.Value.MailVaccineCard.IsLoading;
@@ -98,6 +101,7 @@ namespace HealthGateway.Admin.Client.Components.Support
             base.OnInitialized();
             this.ResetVaccineCardState();
             this.ActionSubscriber.SubscribeToAction<VaccineCardActions.PrintVaccineCardSuccessAction>(this, this.PrintVaccineCard);
+            this.ActionSubscriber.SubscribeToAction<VaccineCardActions.MailVaccineCardSuccessAction>(this, this.DisplayMailVaccineCardSuccessful);
         }
 
         /// <inheritdoc/>
@@ -148,6 +152,11 @@ namespace HealthGateway.Admin.Client.Components.Support
             }
 
             return null;
+        }
+
+        private void DisplayMailVaccineCardSuccessful(VaccineCardActions.MailVaccineCardSuccessAction action)
+        {
+            this.Snackbar.Add("BC Vaccine Card mailed successfully.", Severity.Success);
         }
 
         private void PrintVaccineCard(VaccineCardActions.PrintVaccineCardSuccessAction action)

@@ -1,6 +1,6 @@
 ﻿@inherits Fluxor.Blazor.Web.Components.FluxorComponent
 
-<MudPaper Elevation="0" Class="mt-4 py-4 px-10" @attributes="@UnmatchedAttributes">
+<MudPaper Elevation="0" Class="mt-4 py-4 px-10" @attributes="@UnmatchedAttributes" data-testid=@($"assessment-question-{Number}")>
     <MudText Typo="@Typo.body1" Class="mb-1">
         @if (Number != null)
         {
