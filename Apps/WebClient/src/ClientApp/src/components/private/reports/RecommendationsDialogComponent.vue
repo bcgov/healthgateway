@@ -119,7 +119,28 @@ function showDialog() {
                         hide-immunizations
                         hide-recommendation-header
                         @on-is-empty-changed="hasRecords = !$event"
-                    />
+                    >
+                        <template
+                            v-if="isDependent"
+                            #recommendations-description
+                        >
+                            <p>
+                                School-aged children are offered most
+                                immunizations in their school, particularly in
+                                grades 6 and 9. The school can let you know
+                                which vaccines are offered. You need to book an
+                                appointment to get your child vaccinated against
+                                COVID‑19.
+                                <a
+                                    href="https://www2.gov.bc.ca/gov/content/covid-19/vaccine"
+                                    target="_blank"
+                                    rel="noopener"
+                                    class="text-link"
+                                    >Find out how.</a
+                                >
+                            </p>
+                        </template>
+                    </ImmunizationReportComponent>
                 </v-card-text>
                 <v-card-actions class="pa-4 justify-end">
                     <HgButtonComponent

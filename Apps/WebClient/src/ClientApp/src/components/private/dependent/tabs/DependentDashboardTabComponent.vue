@@ -6,6 +6,7 @@ import { useRouter } from "vue-router";
 import HgCardComponent from "@/components/common/HgCardComponent.vue";
 import LoadingComponent from "@/components/common/LoadingComponent.vue";
 import MessageModalComponent from "@/components/common/MessageModalComponent.vue";
+import RecommendationsDialogComponent from "@/components/private/reports/RecommendationsDialogComponent.vue";
 import type { Dependent } from "@/models/dependent";
 import { LoadStatus } from "@/models/storeOperations";
 import VaccineRecordState from "@/models/vaccineRecordState";
@@ -24,6 +25,8 @@ const vaccinationStatusStore = useVaccinationStatusAuthenticatedStore();
 
 const router = useRouter();
 
+const recommendationsDialogComponent =
+    ref<InstanceType<typeof RecommendationsDialogComponent>>();
 const sensitiveDocumentDownloadModal =
     ref<InstanceType<typeof MessageModalComponent>>();
 const vaccineRecordResultModal =
@@ -39,6 +42,11 @@ const showFederalProofOfVaccination = computed(
     () =>
         configStore.webConfig.featureToggleConfiguration.homepage
             .showFederalProofOfVaccination
+);
+const showRecommendations = computed(
+    () =>
+        configStore.webConfig.featureToggleConfiguration.homepage
+            .showRecommendationsLink
 );
 const vaccineRecordStatusMessage = computed(
     () => vaccineRecordState.value.statusMessage
@@ -63,6 +71,14 @@ function handleClickHealthRecordsButton(): void {
     router.push({
         path: `/dependents/${props.dependent.ownerId}/timeline`,
     });
+}
+
+function showRecommendationsDialog(): void {
+    SnowPlow.trackEvent({
+        action: "click",
+        text: "dependent_recommendations",
+    });
+    recommendationsDialogComponent.value?.showDialog();
 }
 
 function handleFederalProofOfVaccinationDownload(): void {
@@ -122,6 +138,18 @@ watch(vaccineRecordState, () => {
                 </template>
             </HgCardComponent>
         </v-col>
+        <v-col v-if="showRecommendations" :cols="getGridCols" class="d-flex">
+            <HgCardComponent
+                title="Vaccine Recommendations"
+                class="flex-grow-1 ma-1"
+                :data-testid="`recommendations-card-${dependent.ownerId}`"
+                @click="showRecommendationsDialog()"
+            >
+                <template #icon>
+                    <v-icon icon="vial-circle-check" color="primary" />
+                </template>
+            </HgCardComponent>
+        </v-col>
         <v-col
             v-if="showFederalProofOfVaccination"
             :cols="getGridCols"
@@ -142,6 +170,11 @@ watch(vaccineRecordState, () => {
             </HgCardComponent>
         </v-col>
     </v-row>
+    <RecommendationsDialogComponent
+        ref="recommendationsDialogComponent"
+        :hdid="dependent.ownerId"
+        :is-dependent="true"
+    />
     <MessageModalComponent
         ref="sensitiveDocumentDownloadModal"
         title="Sensitive Document"
