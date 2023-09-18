@@ -1,7 +1,7 @@
 # APS netpol to allow it to access API pods
 {{- $name := print $.Release.Name "-aps" -}}
 {{- $namespace := $.Values.namespace | default $.Release.Namespace -}}
-{{- $labels := include "standard.labels" . -}}
+{{- $labels := include "standard.labels" . }}
 kind: NetworkPolicy
 apiVersion: networking.k8s.io/v1
 metadata:

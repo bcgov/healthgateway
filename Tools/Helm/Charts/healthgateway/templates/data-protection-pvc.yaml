@@ -1,7 +1,7 @@
 # common volume to manage asp.net data protection keys
 {{- $name := print $.Release.Name "-data-protection" }}
 {{- $namespace := $.Values.namespace | default $.Release.Namespace -}}
-{{- $labels := include "standard.labels" . -}}
+{{- $labels := include "standard.labels" . }}
 kind: "PersistentVolumeClaim"
 apiVersion: "v1"
 metadata:

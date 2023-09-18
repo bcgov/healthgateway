@@ -1,7 +1,7 @@
 # a commonly shared configmap
 {{- $name := printf "%s-%s" .Release.Name "common-config" }}
 {{- $namespace := $.Values.namespace | default $.Release.Namespace -}}
-{{- $labels := include "standard.labels" . -}}
+{{- $labels := include "standard.labels" . }}
 kind: ConfigMap
 apiVersion: v1
 metadata:
