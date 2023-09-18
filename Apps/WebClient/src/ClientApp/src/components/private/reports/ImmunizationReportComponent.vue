@@ -150,7 +150,7 @@ const recommendationItems = computed(() =>
                 : DateWrapper.format(x.agentDueDate),
     }))
 );
-const hasReccommendationsSlot = computed(
+const hasRecommendationsSlot = computed(
     () => slots["recommendations-description"] !== undefined
 );
 
@@ -251,8 +251,8 @@ immunizationStore
                 >
                     Recommended Immunizations
                 </h4>
-                <template v-if="hasReccommendationsSlot">
-                    <slot name="recommendations-description"></slot>
+                <template v-if="hasRecommendationsSlot">
+                    <slot name="recommendations-description" />
                 </template>
                 <template v-else>
                     <p>

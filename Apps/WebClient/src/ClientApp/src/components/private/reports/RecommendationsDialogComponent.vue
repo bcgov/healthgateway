@@ -95,7 +95,7 @@ function showDialog() {
     <div class="d-flex justify-content">
         <v-dialog v-model="isVisible" max-width="1000px" persistent>
             <v-card data-testid="recommendations-dialog">
-                <v-card-title class="px-o">
+                <v-card-title class="px-0">
                     <v-toolbar
                         title="Vaccine Recommendations"
                         color="transparent"
@@ -108,12 +108,10 @@ function showDialog() {
                         />
                     </v-toolbar>
                 </v-card-title>
-                <v-card-text>
-                    <div class="mx-2">
-                        <TooManyRequestsComponent
-                            location="recommendationsDialog"
-                        />
-                    </div>
+                <v-card-text class="pa-4">
+                    <TooManyRequestsComponent
+                        location="recommendationsDialog"
+                    />
                     <ImmunizationReportComponent
                         ref="recommendationsReportComponent"
                         :hdid="hdid"
@@ -121,22 +119,43 @@ function showDialog() {
                         hide-immunizations
                         hide-recommendation-header
                         @on-is-empty-changed="hasRecords = !$event"
-                    />
+                    >
+                        <template
+                            v-if="isDependent"
+                            #recommendations-description
+                        >
+                            <p>
+                                School-aged children are offered most
+                                immunizations in their school, particularly in
+                                grades 6 and 9. The school can let you know
+                                which vaccines are offered. You need to book an
+                                appointment to get your child vaccinated against
+                                COVID‑19.
+                                <a
+                                    href="https://www2.gov.bc.ca/gov/content/covid-19/vaccine"
+                                    target="_blank"
+                                    rel="noopener"
+                                    class="text-link"
+                                    >Find out how.</a
+                                >
+                            </p>
+                        </template>
+                    </ImmunizationReportComponent>
                 </v-card-text>
                 <v-card-actions class="pa-4 justify-end">
                     <HgButtonComponent
                         variant="secondary"
                         text="Close"
-                        data-testid="close-recommendations-dialog-btn"
+                        data-testid="close-recommendations-dialog-button"
                         @click="isVisible = false"
                     />
                     <v-menu data-testid="export-record-menu">
                         <template #activator="{ props: slotProps }">
                             <HgButtonComponent
-                                id="export-recommendations-record-btn"
+                                id="export-recommendations-record-button"
                                 text="Download"
                                 variant="primary"
-                                data-testid="export-recommendations-record-btn"
+                                data-testid="export-recommendations-record-button"
                                 v-bind="slotProps"
                                 :disabled="!hasRecords"
                                 :loading="isGeneratingReport"
