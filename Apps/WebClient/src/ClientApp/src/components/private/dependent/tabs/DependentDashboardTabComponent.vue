@@ -106,7 +106,7 @@ watch(vaccineRecordState, () => {
         <v-col :cols="getGridCols" class="d-flex">
             <HgCardComponent
                 title="Health Records"
-                class="flex-grow-1"
+                class="flex-grow-1 ma-1"
                 :data-testid="`dependent-health-records-button-${dependent.ownerId}`"
                 @click="handleClickHealthRecordsButton"
             >
@@ -118,7 +118,7 @@ watch(vaccineRecordState, () => {
                     />
                 </template>
                 <template #action-icon>
-                    <v-icon icon="chevron-right" />
+                    <v-icon icon="chevron-right" color="primary" />
                 </template>
             </HgCardComponent>
         </v-col>
@@ -134,10 +134,10 @@ watch(vaccineRecordState, () => {
                 @click="showSensitiveDocumentDownloadModal()"
             >
                 <template #icon>
-                    <v-icon icon="check-circle" />
+                    <v-icon icon="check-circle" color="success" />
                 </template>
                 <template #action-icon>
-                    <v-icon icon="download" />
+                    <v-icon icon="download" color="primary" />
                 </template>
             </HgCardComponent>
         </v-col>
