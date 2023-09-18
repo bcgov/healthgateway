@@ -79,7 +79,7 @@ function validateMailAddressFormSubmission() {
 function validateCovid19TreatmentAssessmentFormBackCancel() {
     cy.get("[data-testid=start-covid-19-treatment-assessment-button]").click();
     cy.url().should("include", "/covid-19-treatment-assessment");
-    cy.get("[data-testid=back-icon]").click();
+    cy.get("[data-testid=back-button]").click();
     cy.url().should("include", "/patient-details");
     cy.get("[data-testid=start-covid-19-treatment-assessment-button]").click();
     cy.url().should("include", "/covid-19-treatment-assessment");
@@ -90,104 +90,81 @@ function validateCovid19TreatmentAssessmentFormBackCancel() {
 
 function validateCovid19TreatmentAssessmentInfoMessageForRadioSelection() {
     cy.get("[data-testid=start-covid-19-treatment-assessment-button]").click();
-    cy.get(
-        "[data-testid=assessment-question-1] [data-testid=assessment-option-yes]"
-    ).click();
-    cy.get(
-        "[data-testid=assessment-question-1] [data-testid=treatment-benefit-not-indicated]"
-    ).should("not.exist");
-    cy.get(
-        "[data-testid=assessment-question-1] [data-testid=assessment-option-no]"
-    ).click();
-    cy.get(
-        "[data-testid=assessment-question-1] [data-testid=treatment-benefit-not-indicated]"
-    ).should("be.visible");
 
-    cy.get(
-        "[data-testid=assessment-question-2] [data-testid=assessment-option-yes]"
-    ).click();
-    cy.get(
-        "[data-testid=assessment-question-2] [data-testid=treatment-benefit-not-indicated]"
-    ).should("not.exist");
-    cy.get(
-        "[data-testid=assessment-question-2] [data-testid=assessment-option-no]"
-    ).click();
-    cy.get(
-        "[data-testid=assessment-question-2] [data-testid=treatment-benefit-not-indicated]"
-    ).should("be.visible");
+    cy.get("[data-testid=assessment-question-1]").within(() => {
+        cy.get("[data-testid=assessment-option-yes]").click();
+        cy.get("[data-testid=treatment-benefit-not-indicated]").should(
+            "not.exist"
+        );
+        cy.get("[data-testid=assessment-option-no]").click();
+        cy.get("[data-testid=treatment-benefit-not-indicated]").should(
+            "be.visible"
+        );
+    });
+
+    cy.get("[data-testid=assessment-question-2]").within(() => {
+        cy.get("[data-testid=assessment-option-yes]").click();
+        cy.get("[data-testid=treatment-benefit-not-indicated]").should(
+            "not.exist"
+        );
+        cy.get("[data-testid=assessment-option-no]").click();
+        cy.get("[data-testid=treatment-benefit-not-indicated]").should(
+            "be.visible"
+        );
+    });
 
     cy.scrollTo("bottom");
 
-    cy.get(
-        "[data-testid=assessment-question-6] [data-testid=assessment-option-yes]"
-    ).click();
-    cy.get(
-        "[data-testid=assessment-question-6] [data-testid=treatment-benefit-indicated]"
-    ).should("be.visible");
-    cy.get(
-        "[data-testid=assessment-question-6] [data-testid=assessment-option-no]"
-    ).click();
-    cy.get(
-        "[data-testid=assessment-question-6] [data-testid=treatment-benefit-indicated]"
-    ).should("be.not.exist");
-    cy.get(
-        "[data-testid=assessment-question-6] [data-testid=assessment-option-not-sure]"
-    ).click();
-    cy.get(
-        "[data-testid=assessment-question-6] [data-testid=treatment-benefit-indicated]"
-    ).should("not.exist");
+    cy.get("[data-testid=assessment-question-6]").within(() => {
+        cy.get("[data-testid=assessment-option-yes]").click();
+        cy.get(" [data-testid=treatment-benefit-indicated]").should(
+            "be.visible"
+        );
+        cy.get("[data-testid=assessment-option-no]").click();
+        cy.get(" [data-testid=treatment-benefit-indicated]").should(
+            "be.not.exist"
+        );
+        cy.get("[data-testid=assessment-option-not-sure]").click();
+        cy.get("[data-testid=treatment-benefit-indicated]").should("not.exist");
+    });
 
-    cy.get(
-        "[data-testid=assessment-question-7] [data-testid=assessment-option-yes]"
-    ).click();
-    cy.get(
-        "[data-testid=assessment-question-7] [data-testid=treatment-benefit-indicated]"
-    ).should("be.visible");
-    cy.get(
-        "[data-testid=assessment-question-7] [data-testid=assessment-option-no]"
-    ).click();
-    cy.get(
-        "[data-testid=assessment-question-7] [data-testid=treatment-benefit-indicated]"
-    ).should("not.exist");
-    cy.get(
-        "[data-testid=assessment-question-7] [data-testid=assessment-option-not-sure]"
-    ).click();
-    cy.get(
-        "[data-testid=assessment-question-7] [data-testid=treatment-benefit-indicated]"
-    ).should("not.exist");
+    cy.get("[data-testid=assessment-question-7]").within(() => {
+        cy.get("[data-testid=assessment-option-yes]").click();
+        cy.get(" [data-testid=treatment-benefit-indicated]").should(
+            "be.visible"
+        );
+        cy.get(" [data-testid=assessment-option-no]").click();
+        cy.get(" [data-testid=treatment-benefit-indicated]").should(
+            "not.exist"
+        );
+        cy.get("[data-testid=assessment-option-not-sure]").click();
+        cy.get("[data-testid=treatment-benefit-indicated]").should("not.exist");
+    });
 
-    cy.get(
-        "[data-testid=assessment-question-8] [data-testid=assessment-option-yes]"
-    ).click();
-    cy.get(
-        "[data-testid=assessment-question-8] [data-testid=treatment-benefit-indicated]"
-    ).should("be.visible");
+    cy.get("[data-testid=assessment-question-8]").within(() => {
+        cy.get(" [data-testid=assessment-option-yes]").click();
+        cy.get(" [data-testid=treatment-benefit-indicated]").should(
+            "be.visible"
+        );
 
-    cy.get(
-        "[data-testid=assessment-question-8] [data-testid=assessment-option-no]"
-    ).click();
-    cy.get(
-        "[data-testid=assessment-question-8] [data-testid=treatment-benefit-indicated]"
-    ).should("not.exist");
+        cy.get("[data-testid=assessment-option-no]").click();
+        cy.get(" [data-testid=treatment-benefit-indicated]").should(
+            "not.exist"
+        );
+    });
 
-    cy.get(
-        "[data-testid=assessment-question-9] [data-testid=assessment-option-yes]"
-    ).click();
-    cy.get(
-        "[data-testid=assessment-question-9] [data-testid=treatment-benefit-indicated]"
-    ).should("not.exist");
-    cy.get(
-        "[data-testid=assessment-question-9] [data-testid=assessment-option-no]"
-    ).click();
-    cy.get(
-        "[data-testid=assessment-question-9] [data-testid=treatment-benefit-indicated]"
-    ).should("be.visible");
-    cy.get(
-        "[data-testid=assessment-question-9] [data-testid=assessment-option-not-sure]"
-    ).click();
-    cy.get(
-        "[data-testid=assessment-question-9] [data-testid=treatment-benefit-indicated]"
-    ).should("not.exist");
+    cy.get("[data-testid=assessment-question-9]").within(() => {
+        cy.get("[data-testid=assessment-option-yes]").click();
+        cy.get("[data-testid=treatment-benefit-indicated]").should("not.exist");
+        cy.get("[data-testid=assessment-option-no]").click();
+        cy.get("[data-testid=treatment-benefit-indicated]").should(
+            "be.visible"
+        );
+        cy.get("[data-testid=assessment-option-not-sure]").click();
+        cy.get(" [data-testid=treatment-benefit-indicated]").should(
+            "not.exist"
+        );
+    });
 
     cy.get("[data-testid=cancel-covid-19-treatment-assessment]").click();
     cy.url().should("include", "/patient-details");
@@ -201,23 +178,46 @@ function validateCovid19TreatmentAssessmentFormRequiredInputs() {
 
     cy.scrollTo("top");
     validateCovid19InputContainsError("[data-testid=phone-number-input]");
-    cy.get("[data-testid=assessment-question-1], div")
+    cy.get("[data-testid=assessment-question-]")
+        .contains("Do you have a family doctor or nurse practitioner?")
+        .parent()
+        .within(() => {
+            cy.get("div").contains("Required").should("not.exist");
+        });
+    cy.get("[data-testid=assessment-question-1] div")
         .contains("Required")
         .should("be.visible");
-    cy.get("[data-testid=assessment-question-2], div")
+    cy.get("[data-testid=assessment-question-2] div")
         .contains("Required")
         .should("be.visible");
-    cy.get("[data-testid=assessment-question-3], div")
+    cy.get("[data-testid=assessment-question-3] div")
         .contains("Required")
         .should("be.visible");
-    cy.get("[data-testid=assessment-question-4], div")
+    cy.get("[data-testid=assessment-question-4] div")
         .contains("Required")
         .should("be.visible");
 
-    cy.scrollTo("bottom");
-    cy.get("[data-testid=assessment-question-5], div")
+    cy.get("[data-testid=assessment-question-4]").scrollIntoView();
+    cy.get("[data-testid=assessment-question-5] div")
+        .contains("Required")
+        .should("not.exist");
+    cy.get("[data-testid=assessment-question-6] div")
         .contains("Required")
         .should("be.visible");
+    cy.get("[data-testid=assessment-question-7] div")
+        .contains("Required")
+        .should("not.exist");
+
+    cy.scrollTo("bottom");
+    cy.get("[data-testid=assessment-question-8] div")
+        .contains("Required")
+        .should("not.exist");
+    cy.get("[data-testid=assessment-question-9] div")
+        .contains("Required")
+        .should("not.exist");
+    cy.get("[data-testid=assessment-question-10] div")
+        .contains("Required")
+        .should("not.exist");
 
     cy.get("[data-testid=cancel-covid-19-treatment-assessment]").click();
     cy.url().should("include", "/patient-details");
