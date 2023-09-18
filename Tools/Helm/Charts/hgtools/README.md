@@ -1,6 +1,6 @@
 # Health Gateway Tools Helm Chart
 
-This directory contains a Helm chart to deploy Health Gateway related tools and utilities in OpenShift Gold cluster.
+This directory contains a Helm chart to deploy Health Gateway related tools and utilities in OpenShift Gold clusters.
 
 ## Usage
 

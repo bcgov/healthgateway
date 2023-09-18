@@ -1,0 +1,11 @@
+Redis has been deployed to OpenShift
+
+You will need to initialize the cluster:
+
+Take note of the pod IP addresses from:
+oc get pods -l name=<redis statefulset name> -o jsonpath='{range.items[*]}{.status.podIP}:6379 '
+
+oc exec -it <any redis pod> -- redis-cli --cluster create --cluster-replicas 1 [the pod IPs]
+
+Validate cluster
+oc exec -it <any redis pod> -- redis-cli --cluster check <redis service name>:6379

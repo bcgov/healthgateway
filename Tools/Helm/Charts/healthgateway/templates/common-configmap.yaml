@@ -1,0 +1,11 @@
+# a commonly shared configmap
+{{- $name := printf "%s-%s" .Release.Name "common-config" }}
+{{- $namespace := $.Values.namespace | default $.Release.Namespace -}}
+{{- $labels := include "standard.labels" . -}}
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: {{ $name }}
+  namespace: {{ $namespace }}
+  labels: {{ $labels | nindent 4 }}
+data: {{ include "all.data" .Values.commonConfig | nindent 2 }}
