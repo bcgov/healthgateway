@@ -258,6 +258,7 @@ immunizationStore
                     <p>
                         Vaccine recommendations are based on the
                         <a
+                            href="https://immunizebc.ca/tools-resources/immunization-schedules"
                             class="text-link"
                             @click.prevent="
                                 trackLink(
@@ -266,11 +267,11 @@ immunizationStore
                                 )
                             "
                         >
-                            BC Vaccine Schedule
-                        </a>
-                        . For information on booking COVID or Flu vaccinations,
+                            BC Vaccine Schedule</a
+                        >. For information on booking COVID or Flu vaccinations,
                         please visit the
                         <a
+                            href="https://www2.gov.bc.ca/gov/content/health/managing-your-health/immunizations#resources"
                             class="text-link"
                             @click.prevent="
                                 trackLink(
@@ -279,9 +280,8 @@ immunizationStore
                                 )
                             "
                         >
-                            BC Government Immunization page
-                        </a>
-                        .
+                            BC Government Immunization page</a
+                        >.
                     </p>
                 </template>
                 <p v-if="isRecommendationEmpty && !isLoading">
