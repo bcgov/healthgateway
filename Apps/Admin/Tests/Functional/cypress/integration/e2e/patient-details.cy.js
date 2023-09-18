@@ -334,7 +334,7 @@ describe("Patient details page as admin", () => {
         );
     });
 
-    it("Verify covid imminuization and assessment sections", () => {
+    it("Verify covid immunization and assessment sections", () => {
         performSearch("HDID", hdidWithCovidDetails);
 
         cy.get("[data-testid=patient-hdid]")
