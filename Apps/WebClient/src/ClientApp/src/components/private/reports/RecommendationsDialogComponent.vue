@@ -95,7 +95,7 @@ function showDialog() {
     <div class="d-flex justify-content">
         <v-dialog v-model="isVisible" max-width="1000px" persistent>
             <v-card data-testid="recommendations-dialog">
-                <v-card-title class="px-o">
+                <v-card-title class="px-0">
                     <v-toolbar
                         title="Vaccine Recommendations"
                         color="transparent"
@@ -108,12 +108,10 @@ function showDialog() {
                         />
                     </v-toolbar>
                 </v-card-title>
-                <v-card-text>
-                    <div class="mx-2">
-                        <TooManyRequestsComponent
-                            location="recommendationsDialog"
-                        />
-                    </div>
+                <v-card-text class="pa-4">
+                    <TooManyRequestsComponent
+                        location="recommendationsDialog"
+                    />
                     <ImmunizationReportComponent
                         ref="recommendationsReportComponent"
                         :hdid="hdid"
