@@ -266,6 +266,7 @@ public partial class AddressConfirmationDialog<TErrorAction, TSuccessAction> : F
     {
         this.IsLoading = false;
         this.Error = failAction.Error;
+        this.StateHasChanged();
     }
 
     private void HandleClickCancel()

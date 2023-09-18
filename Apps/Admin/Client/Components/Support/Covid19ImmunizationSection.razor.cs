@@ -167,12 +167,12 @@ namespace HealthGateway.Admin.Client.Components.Support
 
         private void MailVaccineCard(Address address)
         {
-            this.Dispatcher.Dispatch(new VaccineCardActions.MailVaccineCardAction(this.Phn, address));
+            this.Dispatcher.Dispatch(new VaccineCardActions.MailVaccineCardAction { Phn = this.Phn, MailAddress = address });
         }
 
         private void Print()
         {
-            this.Dispatcher.Dispatch(new VaccineCardActions.PrintVaccineCardAction(this.Phn));
+            this.Dispatcher.Dispatch(new VaccineCardActions.PrintVaccineCardAction { Phn = this.Phn });
         }
 
         private sealed record VaccineDoseRow

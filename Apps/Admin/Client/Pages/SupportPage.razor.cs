@@ -107,7 +107,7 @@ namespace HealthGateway.Admin.Client.Pages
 
             return this.SelectedQueryType switch
             {
-                PatientQueryType.Email or PatientQueryType.Sms when StringManipulator.StripWhitespace(parameter)?.Length < 5
+                PatientQueryType.Email or PatientQueryType.Sms when StringManipulator.StripWhitespace(parameter).Length < 5
                     => "Email/SMS must be minimum 5 characters",
                 PatientQueryType.Sms when !StringManipulator.IsPositiveNumeric(parameter)
                     => "SMS must contain digits only",
@@ -127,7 +127,13 @@ namespace HealthGateway.Admin.Client.Pages
             Uri uri = this.NavigationManager.ToAbsoluteUri(this.NavigationManager.Uri);
             if (QueryHelpers.ParseQuery(uri.Query).TryGetValue(PatientQueryType.Hdid.ToString(), out StringValues hdid))
             {
-                this.Dispatcher.Dispatch(new PatientSupportActions.LoadAction(PatientQueryType.Hdid, StringManipulator.StripWhitespace(hdid)));
+                this.Dispatcher.Dispatch(
+                    new PatientSupportActions.LoadAction
+                    {
+                        QueryType = PatientQueryType.Hdid,
+                        QueryString = StringManipulator.StripWhitespace(hdid),
+                    });
+
                 this.QueryParameter = hdid!;
                 this.SelectedQueryType = PatientQueryType.Hdid;
             }
@@ -172,7 +178,12 @@ namespace HealthGateway.Admin.Client.Pages
             if (this.Form.IsValid)
             {
                 this.ResetPatientSupportState();
-                this.Dispatcher.Dispatch(new PatientSupportActions.LoadAction(this.SelectedQueryType, StringManipulator.StripWhitespace(this.QueryParameter)));
+                this.Dispatcher.Dispatch(
+                    new PatientSupportActions.LoadAction
+                    {
+                        QueryType = this.SelectedQueryType,
+                        QueryString = StringManipulator.StripWhitespace(this.QueryParameter),
+                    });
             }
         }
 

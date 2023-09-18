@@ -32,25 +32,14 @@ namespace HealthGateway.Admin.Client.Store.PatientSupport
         public class LoadAction
         {
             /// <summary>
-            /// Initializes a new instance of the <see cref="LoadAction"/> class.
+            /// Gets the query type.
             /// </summary>
-            /// <param name="queryType">Represents the type of query being performed.</param>
-            /// <param name="queryString">Represents the query string being performed.</param>
-            public LoadAction(PatientQueryType queryType, string queryString)
-            {
-                this.QueryString = queryString;
-                this.QueryType = queryType;
-            }
+            public required PatientQueryType QueryType { get; init; }
 
             /// <summary>
-            /// Gets or sets query type.
+            /// Gets the query string.
             /// </summary>
-            public PatientQueryType QueryType { get; set; }
-
-            /// <summary>
-            /// Gets or sets query string.
-            /// </summary>
-            public string QueryString { get; set; }
+            public required string QueryString { get; init; }
         }
 
         /// <summary>
