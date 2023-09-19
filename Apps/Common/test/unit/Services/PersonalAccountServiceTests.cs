@@ -52,7 +52,7 @@ namespace HealthGateway.CommonTests.Services
             IPersonalAccountsService personalAccountsServiceService = GetPersonalAccountsService(expectedPersonalAccount, false, false);
 
             // Act
-            RequestResult<PersonalAccount> actualResult = await personalAccountsServiceService.GetPatientAccountResultAsync(It.IsAny<string>()).ConfigureAwait(true);
+            RequestResult<PersonalAccount> actualResult = await personalAccountsServiceService.GetPatientAccountResultAsync(It.IsAny<string>());
 
             // Assert
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
@@ -74,7 +74,7 @@ namespace HealthGateway.CommonTests.Services
             IPersonalAccountsService personalAccountsServiceService = GetPersonalAccountsService(expectedPersonalAccount, true, false);
 
             // Act
-            RequestResult<PersonalAccount> actualResult = await personalAccountsServiceService.GetPatientAccountResultAsync(It.IsAny<string>()).ConfigureAwait(true);
+            RequestResult<PersonalAccount> actualResult = await personalAccountsServiceService.GetPatientAccountResultAsync(It.IsAny<string>());
 
             // Assert
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
@@ -96,7 +96,7 @@ namespace HealthGateway.CommonTests.Services
             IPersonalAccountsService personalAccountsServiceService = GetPersonalAccountsService(expectedPersonalAccount, false, true);
 
             // Act
-            RequestResult<PersonalAccount> actualResult = await personalAccountsServiceService.GetPatientAccountResultAsync(It.IsAny<string>()).ConfigureAwait(true);
+            RequestResult<PersonalAccount> actualResult = await personalAccountsServiceService.GetPatientAccountResultAsync(It.IsAny<string>());
 
             // Assert
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);

@@ -59,7 +59,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             IWebAlertService service = GetWebAlertService();
 
             // Act
-            IEnumerable<WebAlert> actual = await service.GetWebAlertsAsync(Hdid).ConfigureAwait(true);
+            IEnumerable<WebAlert> actual = await service.GetWebAlertsAsync(Hdid);
 
             // Assert
             expected.ShouldDeepEqual(actual);
@@ -76,7 +76,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             IWebAlertService service = GetWebAlertService();
 
             // Act
-            Exception? exception = await Record.ExceptionAsync(() => service.DismissWebAlertsAsync(Hdid)).ConfigureAwait(true);
+            Exception? exception = await Record.ExceptionAsync(() => service.DismissWebAlertsAsync(Hdid));
 
             // Assert
             Assert.Null(exception);
@@ -93,7 +93,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             IWebAlertService service = GetWebAlertService();
 
             // Act
-            Exception? exception = await Record.ExceptionAsync(() => service.DismissWebAlertAsync(Hdid, WebAlertId)).ConfigureAwait(true);
+            Exception? exception = await Record.ExceptionAsync(() => service.DismissWebAlertAsync(Hdid, WebAlertId));
 
             // Assert
             Assert.Null(exception);

@@ -215,8 +215,8 @@ namespace HealthGateway.CommonTests.CacheProviders
         /// <returns>A task representing nothing.</returns>
         public async Task InitializeAsync()
         {
-            await this.redisContainer.StartAsync().ConfigureAwait(true);
-            this.connectionMultiplexer = await ConnectionMultiplexer.ConnectAsync(this.redisContainer.GetConnectionString()).ConfigureAwait(true);
+            await this.redisContainer.StartAsync();
+            this.connectionMultiplexer = await ConnectionMultiplexer.ConnectAsync(this.redisContainer.GetConnectionString());
         }
 
         /// <summary>
@@ -225,7 +225,7 @@ namespace HealthGateway.CommonTests.CacheProviders
         /// <returns>A task representing nothing.</returns>
         public async Task DisposeAsync()
         {
-            await this.redisContainer.DisposeAsync().ConfigureAwait(true);
+            await this.redisContainer.DisposeAsync();
         }
     }
 }

@@ -73,11 +73,11 @@ namespace HealthGateway.Admin.Tests.Services
             // Act
             async Task Actual()
             {
-                await service.RetrieveVaccineRecordAsync(Phn).ConfigureAwait(true);
+                await service.RetrieveVaccineRecordAsync(Phn);
             }
 
             // Verify
-            ProblemDetailsException exception = await Assert.ThrowsAsync<ProblemDetailsException>(Actual).ConfigureAwait(true);
+            ProblemDetailsException exception = await Assert.ThrowsAsync<ProblemDetailsException>(Actual);
             Assert.Equal(ErrorMessages.ClientRegistryRecordsNotFound, exception.ProblemDetails!.Detail);
         }
 
@@ -122,11 +122,11 @@ namespace HealthGateway.Admin.Tests.Services
             // Act
             async Task Actual()
             {
-                await service.RetrieveVaccineRecordAsync(Phn).ConfigureAwait(true);
+                await service.RetrieveVaccineRecordAsync(Phn);
             }
 
             // Verify
-            ProblemDetailsException exception = await Assert.ThrowsAsync<ProblemDetailsException>(Actual).ConfigureAwait(true);
+            ProblemDetailsException exception = await Assert.ThrowsAsync<ProblemDetailsException>(Actual);
             Assert.Equal(ErrorMessages.CannotGetVaccineProofPdf, exception.ProblemDetails!.Detail);
         }
 
@@ -175,11 +175,11 @@ namespace HealthGateway.Admin.Tests.Services
             // Act
             async Task Actual()
             {
-                await service.RetrieveVaccineRecordAsync(Phn).ConfigureAwait(true);
+                await service.RetrieveVaccineRecordAsync(Phn);
             }
 
             // Verify
-            ProblemDetailsException exception = await Assert.ThrowsAsync<ProblemDetailsException>(Actual).ConfigureAwait(true);
+            ProblemDetailsException exception = await Assert.ThrowsAsync<ProblemDetailsException>(Actual);
             Assert.Equal(expected.ResultError.ResultMessage, exception.ProblemDetails!.Detail);
         }
 
@@ -215,11 +215,11 @@ namespace HealthGateway.Admin.Tests.Services
             // Act
             async Task Actual()
             {
-                await service.RetrieveVaccineRecordAsync(Phn).ConfigureAwait(true);
+                await service.RetrieveVaccineRecordAsync(Phn);
             }
 
             // Verify
-            ProblemDetailsException exception = await Assert.ThrowsAsync<ProblemDetailsException>(Actual).ConfigureAwait(true);
+            ProblemDetailsException exception = await Assert.ThrowsAsync<ProblemDetailsException>(Actual);
             Assert.Equal(ErrorMessages.CannotGetVaccineProof, exception.ProblemDetails!.Detail);
         }
 
@@ -254,11 +254,11 @@ namespace HealthGateway.Admin.Tests.Services
             // Act
             async Task Actual()
             {
-                await service.RetrieveVaccineRecordAsync(Phn).ConfigureAwait(true);
+                await service.RetrieveVaccineRecordAsync(Phn);
             }
 
             // Verify
-            ProblemDetailsException exception = await Assert.ThrowsAsync<ProblemDetailsException>(Actual).ConfigureAwait(true);
+            ProblemDetailsException exception = await Assert.ThrowsAsync<ProblemDetailsException>(Actual);
             Assert.Equal(expected.ResultError.ResultMessage, exception.ProblemDetails!.Detail);
         }
 
@@ -293,11 +293,11 @@ namespace HealthGateway.Admin.Tests.Services
             // Act
             async Task Actual()
             {
-                await service.RetrieveVaccineRecordAsync(Phn).ConfigureAwait(true);
+                await service.RetrieveVaccineRecordAsync(Phn);
             }
 
             // Verify
-            ProblemDetailsException exception = await Assert.ThrowsAsync<ProblemDetailsException>(Actual).ConfigureAwait(true);
+            ProblemDetailsException exception = await Assert.ThrowsAsync<ProblemDetailsException>(Actual);
             Assert.Equal(ErrorMessages.VaccineStatusNotFound, exception.ProblemDetails!.Detail);
         }
 
@@ -328,11 +328,11 @@ namespace HealthGateway.Admin.Tests.Services
             // Act
             async Task Actual()
             {
-                await service.RetrieveVaccineRecordAsync(Phn).ConfigureAwait(true);
+                await service.RetrieveVaccineRecordAsync(Phn);
             }
 
             // Verify
-            ProblemDetailsException exception = await Assert.ThrowsAsync<ProblemDetailsException>(Actual).ConfigureAwait(true);
+            ProblemDetailsException exception = await Assert.ThrowsAsync<ProblemDetailsException>(Actual);
             Assert.Equal(ErrorMessages.CannotGetVaccineStatus, exception.ProblemDetails!.Detail);
         }
 
@@ -355,11 +355,11 @@ namespace HealthGateway.Admin.Tests.Services
             // Act
             async Task Actual()
             {
-                await service.RetrieveVaccineRecordAsync(Phn).ConfigureAwait(true);
+                await service.RetrieveVaccineRecordAsync(Phn);
             }
 
             // Verify
-            ProblemDetailsException exception = await Assert.ThrowsAsync<ProblemDetailsException>(Actual).ConfigureAwait(true);
+            ProblemDetailsException exception = await Assert.ThrowsAsync<ProblemDetailsException>(Actual);
             Assert.Equal(ErrorMessages.MaximumRetryAttemptsReached, exception.ProblemDetails!.Detail);
         }
 
@@ -392,11 +392,11 @@ namespace HealthGateway.Admin.Tests.Services
             // Act
             async Task Actual()
             {
-                await service.MailVaccineCardAsync(request).ConfigureAwait(true);
+                await service.MailVaccineCardAsync(request);
             }
 
             // Verify
-            ProblemDetailsException exception = await Assert.ThrowsAsync<ProblemDetailsException>(Actual).ConfigureAwait(true);
+            ProblemDetailsException exception = await Assert.ThrowsAsync<ProblemDetailsException>(Actual);
             Assert.Equal(ErrorMessages.CannotGetVaccineStatus, exception.ProblemDetails!.Detail);
         }
 
@@ -420,11 +420,11 @@ namespace HealthGateway.Admin.Tests.Services
             // Act
             async Task Actual()
             {
-                await service.MailVaccineCardAsync(request).ConfigureAwait(true);
+                await service.MailVaccineCardAsync(request);
             }
 
             // Verify
-            ProblemDetailsException exception = await Assert.ThrowsAsync<ProblemDetailsException>(Actual).ConfigureAwait(true);
+            ProblemDetailsException exception = await Assert.ThrowsAsync<ProblemDetailsException>(Actual);
             Assert.Equal(ErrorMessages.ClientRegistryRecordsNotFound, exception.ProblemDetails!.Detail);
         }
 
@@ -460,11 +460,11 @@ namespace HealthGateway.Admin.Tests.Services
             // Act
             async Task Actual()
             {
-                await service.MailVaccineCardAsync(request).ConfigureAwait(true);
+                await service.MailVaccineCardAsync(request);
             }
 
             // Verify
-            ProblemDetailsException exception = await Assert.ThrowsAsync<ProblemDetailsException>(Actual).ConfigureAwait(true);
+            ProblemDetailsException exception = await Assert.ThrowsAsync<ProblemDetailsException>(Actual);
             Assert.Equal(expected.ResultError.ResultMessage, exception.ProblemDetails!.Detail);
         }
 
@@ -501,11 +501,11 @@ namespace HealthGateway.Admin.Tests.Services
             // Act
             async Task Actual()
             {
-                await service.MailVaccineCardAsync(request).ConfigureAwait(true);
+                await service.MailVaccineCardAsync(request);
             }
 
             // Verify
-            ProblemDetailsException exception = await Assert.ThrowsAsync<ProblemDetailsException>(Actual).ConfigureAwait(true);
+            ProblemDetailsException exception = await Assert.ThrowsAsync<ProblemDetailsException>(Actual);
             Assert.Equal(ErrorMessages.VaccineStatusNotFound, exception.ProblemDetails!.Detail);
         }
 
@@ -530,11 +530,11 @@ namespace HealthGateway.Admin.Tests.Services
             // Act
             async Task Actual()
             {
-                await service.MailVaccineCardAsync(request).ConfigureAwait(true);
+                await service.MailVaccineCardAsync(request);
             }
 
             // Verify
-            ProblemDetailsException exception = await Assert.ThrowsAsync<ProblemDetailsException>(Actual).ConfigureAwait(true);
+            ProblemDetailsException exception = await Assert.ThrowsAsync<ProblemDetailsException>(Actual);
             Assert.Equal(ErrorMessages.MaximumRetryAttemptsReached, exception.ProblemDetails!.Detail);
         }
 
@@ -574,7 +574,7 @@ namespace HealthGateway.Admin.Tests.Services
             // Act
             async Task Action()
             {
-                await service.MailVaccineCardAsync(request).ConfigureAwait(true);
+                await service.MailVaccineCardAsync(request);
             }
 
             Exception? exception = await Record.ExceptionAsync(Action);
@@ -625,7 +625,7 @@ namespace HealthGateway.Admin.Tests.Services
                 GetImmunizationAdminApiMock(covidAssessmentResponse));
 
             // Act
-            ReportModel actual = await service.RetrieveVaccineRecordAsync(Phn).ConfigureAwait(true);
+            ReportModel actual = await service.RetrieveVaccineRecordAsync(Phn);
 
             // Verify
             Assert.Equal(expected.ResourcePayload, actual);
@@ -652,7 +652,7 @@ namespace HealthGateway.Admin.Tests.Services
             };
 
             // Act
-            CovidAssessmentResponse actual = await service.SubmitCovidAssessmentAsync(request).ConfigureAwait(true);
+            CovidAssessmentResponse actual = await service.SubmitCovidAssessmentAsync(request);
 
             // Verify
             Assert.Equal(expected, actual);

@@ -130,9 +130,9 @@ namespace HealthGateway.CommonTests.CacheProviders
             string key = $"key_{GenerateRandomString()}";
             string value = $"value_{GenerateRandomString()}";
 
-            await this.cacheProvider.AddItemAsync(key, value, TimeSpan.FromMilliseconds(5000)).ConfigureAwait(true);
+            await this.cacheProvider.AddItemAsync(key, value, TimeSpan.FromMilliseconds(5000));
 
-            Assert.NotNull(await this.cacheProvider.GetItemAsync<string>(key).ConfigureAwait(true));
+            Assert.NotNull(await this.cacheProvider.GetItemAsync<string>(key));
         }
 
         /// <summary>
@@ -147,10 +147,10 @@ namespace HealthGateway.CommonTests.CacheProviders
             string key = $"key_{GenerateRandomString()}";
             string value = $"value_{GenerateRandomString()}";
 
-            await this.cacheProvider.AddItemAsync(key, value, TimeSpan.FromMilliseconds(100)).ConfigureAwait(true);
+            await this.cacheProvider.AddItemAsync(key, value, TimeSpan.FromMilliseconds(100));
             Thread.Sleep(101);
 
-            Assert.Null(await this.cacheProvider.GetItemAsync<string>(key).ConfigureAwait(true));
+            Assert.Null(await this.cacheProvider.GetItemAsync<string>(key));
         }
 
         /// <summary>
@@ -165,8 +165,8 @@ namespace HealthGateway.CommonTests.CacheProviders
             string key = $"key_{GenerateRandomString()}";
             string value = $"value_{GenerateRandomString()}";
 
-            await this.cacheProvider.AddItemAsync(key, value).ConfigureAwait(true);
-            string? cacheItem = await this.cacheProvider.GetItemAsync<string>(key).ConfigureAwait(true);
+            await this.cacheProvider.AddItemAsync(key, value);
+            string? cacheItem = await this.cacheProvider.GetItemAsync<string>(key);
 
             Assert.Equal(value, cacheItem);
         }
@@ -183,12 +183,12 @@ namespace HealthGateway.CommonTests.CacheProviders
             string key = $"key_{GenerateRandomString()}";
             string value = $"value_{GenerateRandomString()}";
 
-            await this.cacheProvider.AddItemAsync(key, value).ConfigureAwait(true);
-            string? cacheItem = await this.cacheProvider.GetItemAsync<string>(key).ConfigureAwait(true);
+            await this.cacheProvider.AddItemAsync(key, value);
+            string? cacheItem = await this.cacheProvider.GetItemAsync<string>(key);
             Assert.NotNull(cacheItem);
 
-            await this.cacheProvider.RemoveItemAsync(key).ConfigureAwait(true);
-            cacheItem = await this.cacheProvider.GetItemAsync<string>(key).ConfigureAwait(true);
+            await this.cacheProvider.RemoveItemAsync(key);
+            cacheItem = await this.cacheProvider.GetItemAsync<string>(key);
             Assert.Null(cacheItem);
         }
 
@@ -204,9 +204,9 @@ namespace HealthGateway.CommonTests.CacheProviders
             string key = $"key_{GenerateRandomString()}";
             string value = $"value_{GenerateRandomString()}";
 
-            Assert.Null(await this.cacheProvider.GetItemAsync<string>(key).ConfigureAwait(true));
+            Assert.Null(await this.cacheProvider.GetItemAsync<string>(key));
 
-            string? cacheItem = await this.cacheProvider.GetOrSetAsync(key, () => Task.FromResult(value)).ConfigureAwait(true);
+            string? cacheItem = await this.cacheProvider.GetOrSetAsync(key, () => Task.FromResult(value));
 
             Assert.Equal(value, cacheItem);
         }

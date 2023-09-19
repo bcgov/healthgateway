@@ -97,28 +97,28 @@ namespace HealthGateway.MedicationTests.Services
                 MapperUtil.InitializeAutoMapper());
 
             // Run and Verify protective word too long
-            await this.VerifyProtectiveWordError("TOOLONG4U", ErrorMessages.ProtectiveWordTooLong, service).ConfigureAwait(true);
+            await this.VerifyProtectiveWordError("TOOLONG4U", ErrorMessages.ProtectiveWordTooLong, service);
 
             // Run and Verify invalid char
-            await this.VerifyProtectiveWordError("SHORT", ErrorMessages.ProtectiveWordTooShort, service).ConfigureAwait(true);
+            await this.VerifyProtectiveWordError("SHORT", ErrorMessages.ProtectiveWordTooShort, service);
 
             // Run and Verify invalid char
-            await this.VerifyProtectiveWordError("SHORT|", ErrorMessages.ProtectiveWordInvalidChars, service).ConfigureAwait(true);
+            await this.VerifyProtectiveWordError("SHORT|", ErrorMessages.ProtectiveWordInvalidChars, service);
 
             // Run and Verify invalid char
-            await this.VerifyProtectiveWordError("SHORT~", ErrorMessages.ProtectiveWordInvalidChars, service).ConfigureAwait(true);
+            await this.VerifyProtectiveWordError("SHORT~", ErrorMessages.ProtectiveWordInvalidChars, service);
 
             // Run and Verify invalid char
-            await this.VerifyProtectiveWordError("SHORT^", ErrorMessages.ProtectiveWordInvalidChars, service).ConfigureAwait(true);
+            await this.VerifyProtectiveWordError("SHORT^", ErrorMessages.ProtectiveWordInvalidChars, service);
 
             // Run and Verify invalid char
-            await this.VerifyProtectiveWordError("SHORT\\", ErrorMessages.ProtectiveWordInvalidChars, service).ConfigureAwait(true);
+            await this.VerifyProtectiveWordError("SHORT\\", ErrorMessages.ProtectiveWordInvalidChars, service);
 
             // Run and Verify invalid char
-            await this.VerifyProtectiveWordError("SHORT&", ErrorMessages.ProtectiveWordInvalidChars, service).ConfigureAwait(true);
+            await this.VerifyProtectiveWordError("SHORT&", ErrorMessages.ProtectiveWordInvalidChars, service);
 
             // Run and Verify invalid char
-            await this.VerifyProtectiveWordError("      ", ErrorMessages.ProtectiveWordInvalidChars, service).ConfigureAwait(true);
+            await this.VerifyProtectiveWordError("      ", ErrorMessages.ProtectiveWordInvalidChars, service);
         }
 
         /// <summary>
@@ -176,7 +176,7 @@ namespace HealthGateway.MedicationTests.Services
                 patientRepository.Object,
                 MapperUtil.InitializeAutoMapper());
 
-            RequestResult<IList<MedicationStatementHistory>> actual = await service.GetMedicationStatementsHistory(this.hdid, null).ConfigureAwait(true);
+            RequestResult<IList<MedicationStatementHistory>> actual = await service.GetMedicationStatementsHistory(this.hdid, null);
             Assert.Equal(ResultType.ActionRequired, actual.ResultStatus);
             Assert.Equal(ActionType.Protected, actual.ResultError?.ActionCode);
             Assert.Equal(string.Empty, actual.ResultError?.ResultMessage);
@@ -229,7 +229,7 @@ namespace HealthGateway.MedicationTests.Services
                 MapperUtil.InitializeAutoMapper());
 
             // Run and Verify
-            RequestResult<IList<MedicationStatementHistory>> actual = await service.GetMedicationStatementsHistory(this.hdid, this.protectiveWord).ConfigureAwait(true);
+            RequestResult<IList<MedicationStatementHistory>> actual = await service.GetMedicationStatementsHistory(this.hdid, this.protectiveWord);
             Assert.True(actual.ResultStatus == ResultType.Success);
         }
 
@@ -325,7 +325,7 @@ namespace HealthGateway.MedicationTests.Services
                 MapperUtil.InitializeAutoMapper());
 
             // Act
-            RequestResult<IList<MedicationStatementHistory>> actual = Task.Run(async () => await service.GetMedicationStatementsHistory(this.hdid, null).ConfigureAwait(true)).Result;
+            RequestResult<IList<MedicationStatementHistory>> actual = Task.Run(async () => await service.GetMedicationStatementsHistory(this.hdid, null)).Result;
 
             // Verify
             if (canAccessDataSource)
@@ -409,7 +409,7 @@ namespace HealthGateway.MedicationTests.Services
                 MapperUtil.InitializeAutoMapper());
 
             // Act
-            RequestResult<IList<MedicationStatementHistory>> actual = Task.Run(async () => await service.GetMedicationStatementsHistory(this.hdid, null).ConfigureAwait(true)).Result;
+            RequestResult<IList<MedicationStatementHistory>> actual = Task.Run(async () => await service.GetMedicationStatementsHistory(this.hdid, null)).Result;
 
             // Verify
             Assert.True(actual.ResultStatus == ResultType.Success && actual.ResourcePayload?.Count == 1);
@@ -487,7 +487,7 @@ namespace HealthGateway.MedicationTests.Services
                 MapperUtil.InitializeAutoMapper());
 
             // Act
-            RequestResult<IList<MedicationStatementHistory>> actual = Task.Run(async () => await service.GetMedicationStatementsHistory(this.hdid, null).ConfigureAwait(true)).Result;
+            RequestResult<IList<MedicationStatementHistory>> actual = Task.Run(async () => await service.GetMedicationStatementsHistory(this.hdid, null)).Result;
 
             // Verify
             Assert.True(actual.ResultStatus == ResultType.Success && actual.ResourcePayload?.Count == 1);
@@ -544,7 +544,7 @@ namespace HealthGateway.MedicationTests.Services
                 MapperUtil.InitializeAutoMapper());
 
             // Act
-            RequestResult<IList<MedicationStatementHistory>> actual = await service.GetMedicationStatementsHistory(this.hdid, null).ConfigureAwait(true);
+            RequestResult<IList<MedicationStatementHistory>> actual = await service.GetMedicationStatementsHistory(this.hdid, null);
 
             // Verify
             Assert.True(actual.ResourcePayload?.Count == 0);
@@ -595,7 +595,7 @@ namespace HealthGateway.MedicationTests.Services
                 MapperUtil.InitializeAutoMapper());
 
             // Act
-            RequestResult<IList<MedicationStatementHistory>> actual = await service.GetMedicationStatementsHistory(this.hdid, null).ConfigureAwait(true);
+            RequestResult<IList<MedicationStatementHistory>> actual = await service.GetMedicationStatementsHistory(this.hdid, null);
 
             // Verify
             Assert.True(actual.ResultStatus == ResultType.Error);
@@ -635,7 +635,7 @@ namespace HealthGateway.MedicationTests.Services
             IMedicationStatementService service)
         {
             // Run and Verify protective word too long
-            RequestResult<IList<MedicationStatementHistory>> actual = await service.GetMedicationStatementsHistory(this.hdid, keyword).ConfigureAwait(true);
+            RequestResult<IList<MedicationStatementHistory>> actual = await service.GetMedicationStatementsHistory(this.hdid, keyword);
             Assert.Equal(ResultType.ActionRequired, actual.ResultStatus);
             Assert.Equal(ActionType.Protected, actual.ResultError?.ActionCode);
             Assert.Equal(errorMessage, actual.ResultError?.ResultMessage);

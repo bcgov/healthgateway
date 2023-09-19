@@ -238,7 +238,7 @@ namespace AccountDataAccessTest
                 clientMock.Object);
 
             // Act
-            PatientModel? actual = await clientRegistryDelegate.GetDemographicsAsync(OidType.Hdid, expectedHdId).ConfigureAwait(true);
+            PatientModel? actual = await clientRegistryDelegate.GetDemographicsAsync(OidType.Hdid, expectedHdId);
 
             // Verify
             Assert.Equal(expectedHdId, actual?.Hdid);
@@ -364,7 +364,7 @@ namespace AccountDataAccessTest
                 clientMock.Object);
 
             // Act
-            PatientModel? actual = await clientRegistryDelegate.GetDemographicsAsync(OidType.Hdid, expectedHdId).ConfigureAwait(true);
+            PatientModel? actual = await clientRegistryDelegate.GetDemographicsAsync(OidType.Hdid, expectedHdId);
 
             // Verify
             Assert.Equal(expectedHdId, actual?.Hdid);
@@ -512,7 +512,7 @@ namespace AccountDataAccessTest
                 clientMock.Object);
 
             // Act
-            PatientModel? actual = await clientRegistryDelegate.GetDemographicsAsync(OidType.Hdid, expectedHdId).ConfigureAwait(true);
+            PatientModel? actual = await clientRegistryDelegate.GetDemographicsAsync(OidType.Hdid, expectedHdId);
 
             // Verify
             Assert.Equal(expectedHdId, actual?.Hdid);
@@ -619,7 +619,7 @@ namespace AccountDataAccessTest
                 clientMock.Object);
 
             // Act
-            PatientModel? actual = await clientRegistryDelegate.GetDemographicsAsync(OidType.Phn, expectedPhn).ConfigureAwait(true);
+            PatientModel? actual = await clientRegistryDelegate.GetDemographicsAsync(OidType.Phn, expectedPhn);
 
             // Verify
             Assert.Contains("BCHCIM.GD.0.0019", actual?.ResponseCode, StringComparison.InvariantCultureIgnoreCase);
@@ -721,7 +721,7 @@ namespace AccountDataAccessTest
                 clientMock.Object);
 
             // Act
-            PatientModel? actual = await clientRegistryDelegate.GetDemographicsAsync(OidType.Phn, expectedPhn).ConfigureAwait(true);
+            PatientModel? actual = await clientRegistryDelegate.GetDemographicsAsync(OidType.Phn, expectedPhn);
 
             // Verify
             Assert.Contains("BCHCIM.GD.0.0021", actual?.ResponseCode, StringComparison.InvariantCultureIgnoreCase);
@@ -823,7 +823,7 @@ namespace AccountDataAccessTest
                 clientMock.Object);
 
             // Act
-            PatientModel? actual = await clientRegistryDelegate.GetDemographicsAsync(OidType.Phn, expectedPhn).ConfigureAwait(true);
+            PatientModel? actual = await clientRegistryDelegate.GetDemographicsAsync(OidType.Phn, expectedPhn);
 
             // Verify
             Assert.Contains("BCHCIM.GD.0.0022", actual?.ResponseCode, StringComparison.InvariantCultureIgnoreCase);
@@ -925,7 +925,7 @@ namespace AccountDataAccessTest
                 clientMock.Object);
 
             // Act
-            PatientModel? actual = await clientRegistryDelegate.GetDemographicsAsync(OidType.Phn, expectedPhn).ConfigureAwait(true);
+            PatientModel? actual = await clientRegistryDelegate.GetDemographicsAsync(OidType.Phn, expectedPhn);
 
             // Verify
             Assert.Contains("BCHCIM.GD.0.0023", actual?.ResponseCode, StringComparison.InvariantCultureIgnoreCase);
@@ -943,7 +943,7 @@ namespace AccountDataAccessTest
             IClientRegistriesDelegate clientRegistryDelegate = GetClientRegistriesDelegate(false, false, true);
 
             // Act
-            PatientModel? actual = await clientRegistryDelegate.GetDemographicsAsync(OidType.Phn, Phn, true).ConfigureAwait(true);
+            PatientModel? actual = await clientRegistryDelegate.GetDemographicsAsync(OidType.Phn, Phn, true);
 
             // Verify
             Assert.NotNull(actual);
@@ -963,11 +963,11 @@ namespace AccountDataAccessTest
             // Act
             async Task Actual()
             {
-                await clientRegistryDelegate.GetDemographicsAsync(OidType.Phn, Phn).ConfigureAwait(true);
+                await clientRegistryDelegate.GetDemographicsAsync(OidType.Phn, Phn);
             }
 
             // Verify
-            ProblemDetailsException exception = await Assert.ThrowsAsync<ProblemDetailsException>(Actual).ConfigureAwait(true);
+            ProblemDetailsException exception = await Assert.ThrowsAsync<ProblemDetailsException>(Actual);
             Assert.Equal(ErrorMessages.ClientRegistryDoesNotReturnPerson, exception.ProblemDetails!.Detail);
         }
 
@@ -985,11 +985,11 @@ namespace AccountDataAccessTest
             // Act
             async Task Actual()
             {
-                await clientRegistryDelegate.GetDemographicsAsync(OidType.Phn, Phn).ConfigureAwait(true);
+                await clientRegistryDelegate.GetDemographicsAsync(OidType.Phn, Phn);
             }
 
             // Verify
-            ProblemDetailsException exception = await Assert.ThrowsAsync<ProblemDetailsException>(Actual).ConfigureAwait(true);
+            ProblemDetailsException exception = await Assert.ThrowsAsync<ProblemDetailsException>(Actual);
             Assert.Equal(ErrorMessages.PhnInvalid, exception.ProblemDetails!.Detail);
         }
 

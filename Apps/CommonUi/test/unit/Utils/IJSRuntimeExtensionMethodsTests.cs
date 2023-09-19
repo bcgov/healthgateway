@@ -38,7 +38,7 @@ namespace HealthGateway.CommonUi.Tests.Utils
         {
             Mock<IJSRuntime> jsRuntime = new();
             using DotNetObjectReference<IjsRuntimeExtensionMethodsTests> objectReference = DotNetObjectReference.Create(this);
-            await jsRuntime.Object.InitializeInactivityTimer(objectReference).ConfigureAwait(true);
+            await jsRuntime.Object.InitializeInactivityTimer(objectReference);
 
             jsRuntime.Verify(
                 a => a.InvokeAsync<IJSVoidResult>(

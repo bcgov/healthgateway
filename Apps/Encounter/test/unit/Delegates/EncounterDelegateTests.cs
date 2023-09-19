@@ -102,7 +102,7 @@ namespace HealthGateway.EncounterTests.Delegates
                 mockMspVisitApi.Object);
 
             // Act
-            RequestResult<MspVisitHistoryResponse> actualResult = Task.Run(async () => await mspVisitDelegate.GetMspVisitHistoryAsync(query, string.Empty, string.Empty).ConfigureAwait(true)).Result;
+            RequestResult<MspVisitHistoryResponse> actualResult = Task.Run(async () => await mspVisitDelegate.GetMspVisitHistoryAsync(query, string.Empty, string.Empty)).Result;
 
             // Verify
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
@@ -133,7 +133,7 @@ namespace HealthGateway.EncounterTests.Delegates
             // Act
             RequestResult<MspVisitHistoryResponse> actualResult = Task.Run(
                     async () =>
-                        await mspVisitDelegate.GetMspVisitHistoryAsync(query, string.Empty, string.Empty).ConfigureAwait(true))
+                        await mspVisitDelegate.GetMspVisitHistoryAsync(query, string.Empty, string.Empty))
                 .Result;
 
             // Verify
@@ -163,7 +163,7 @@ namespace HealthGateway.EncounterTests.Delegates
             // Act
             RequestResult<MspVisitHistoryResponse> actualResult = Task.Run(
                     async () =>
-                        await mspVisitDelegate.GetMspVisitHistoryAsync(query, string.Empty, string.Empty).ConfigureAwait(true))
+                        await mspVisitDelegate.GetMspVisitHistoryAsync(query, string.Empty, string.Empty))
                 .Result;
 
             // Verify

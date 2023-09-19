@@ -53,7 +53,7 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
         public async Task ShouldGetUserProfile()
         {
             RequestResult<UserProfileModel> expected = this.GetUserProfileExpectedRequestResultMock(ResultType.Success);
-            RequestResult<UserProfileModel> actualResult = await this.GetUserProfile(expected, new Dictionary<string, UserPreferenceModel>()).ConfigureAwait(true);
+            RequestResult<UserProfileModel> actualResult = await this.GetUserProfile(expected, new Dictionary<string, UserPreferenceModel>());
 
             expected.ShouldDeepEqual(actualResult);
         }
@@ -66,7 +66,7 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
         public async Task ShouldGetUserProfileWithoutUserPreference()
         {
             RequestResult<UserProfileModel> expected = this.GetUserProfileExpectedRequestResultMock(ResultType.Success);
-            RequestResult<UserProfileModel> actualResult = await this.GetUserProfile(expected, null).ConfigureAwait(true);
+            RequestResult<UserProfileModel> actualResult = await this.GetUserProfile(expected, null);
 
             Assert.NotNull(actualResult);
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
@@ -112,7 +112,7 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
                 smsServiceMock.Object,
                 new Mock<IAuthenticationDelegate>().Object);
 
-            ActionResult<RequestResult<UserProfileModel>> actualResult = await service.CreateUserProfile(this.hdid, createUserRequest).ConfigureAwait(true);
+            ActionResult<RequestResult<UserProfileModel>> actualResult = await service.CreateUserProfile(this.hdid, createUserRequest);
             expected.ShouldDeepEqual(actualResult.Value);
         }
 
@@ -154,7 +154,7 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
                 smsServiceMock.Object,
                 new Mock<IAuthenticationDelegate>().Object);
 
-            ActionResult<RequestResult<UserProfileModel>> actualResult = await service.CreateUserProfile(this.hdid, createUserRequest).ConfigureAwait(true);
+            ActionResult<RequestResult<UserProfileModel>> actualResult = await service.CreateUserProfile(this.hdid, createUserRequest);
             Assert.IsType<BadRequestResult>(actualResult.Result);
         }
 
@@ -178,7 +178,7 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
                 new Mock<IUserSmsService>().Object,
                 new Mock<IAuthenticationDelegate>().Object);
 
-            RequestResult<bool> actualResult = await controller.Validate(this.hdid).ConfigureAwait(true);
+            RequestResult<bool> actualResult = await controller.Validate(this.hdid);
 
             Assert.Equal(expected, actualResult);
         }
@@ -370,7 +370,7 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
                 new Mock<IUserSmsService>().Object,
                 new Mock<IAuthenticationDelegate>().Object);
 
-            ActionResult<RequestResult<bool>> actualResult = await controller.ValidateEmail(this.hdid, Guid.NewGuid()).ConfigureAwait(true);
+            ActionResult<RequestResult<bool>> actualResult = await controller.ValidateEmail(this.hdid, Guid.NewGuid());
             Assert.Equal(ResultType.Success, actualResult.Value?.ResultStatus);
         }
 
@@ -398,7 +398,7 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
                 new Mock<IUserSmsService>().Object,
                 new Mock<IAuthenticationDelegate>().Object);
 
-            ActionResult<RequestResult<bool>> actualResult = await controller.ValidateEmail(this.hdid, Guid.NewGuid()).ConfigureAwait(true);
+            ActionResult<RequestResult<bool>> actualResult = await controller.ValidateEmail(this.hdid, Guid.NewGuid());
             Assert.Equal(ResultType.Error, actualResult.Value?.ResultStatus);
         }
 
@@ -446,7 +446,7 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
                 smsServiceMock.Object,
                 new Mock<IAuthenticationDelegate>().Object);
 
-            ActionResult<RequestResult<bool>> actualResult = Task.Run(async () => await controller.ValidateSms(this.hdid, "205 123 4567").ConfigureAwait(true)).Result;
+            ActionResult<RequestResult<bool>> actualResult = Task.Run(async () => await controller.ValidateSms(this.hdid, "205 123 4567")).Result;
 
             RequestResult<bool>? result = actualResult.Value;
             Assert.Equal(ResultType.Success, result?.ResultStatus);
@@ -476,7 +476,7 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
                 smsServiceMock.Object,
                 new Mock<IAuthenticationDelegate>().Object);
 
-            ActionResult<RequestResult<bool>> actualResult = Task.Run(async () => await controller.ValidateSms(this.hdid, "205 123 4567").ConfigureAwait(true)).Result;
+            ActionResult<RequestResult<bool>> actualResult = Task.Run(async () => await controller.ValidateSms(this.hdid, "205 123 4567")).Result;
 
             RequestResult<bool>? result = actualResult.Value;
             Assert.Equal(ResultType.Success, result?.ResultStatus);
@@ -588,7 +588,7 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
                 emailServiceMock.Object,
                 smsServiceMock.Object,
                 new Mock<IAuthenticationDelegate>().Object);
-            return await service.GetUserProfile(this.hdid).ConfigureAwait(true);
+            return await service.GetUserProfile(this.hdid);
         }
 
         private ActionResult<RequestResult<UserPreferenceModel>> UpdateUserPreference(UserPreferenceModel? userPref)

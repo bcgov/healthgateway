@@ -126,7 +126,7 @@ namespace HealthGateway.Admin.Tests.Services
 
             // Act
             PatientSupportDetails actualResult =
-                await supportService.GetPatientSupportDetailsAsync(Hdid, includeMessagingVerifications, includeBlockedDataSources, includeAgentActions).ConfigureAwait(true);
+                await supportService.GetPatientSupportDetailsAsync(Hdid, includeMessagingVerifications, includeBlockedDataSources, includeAgentActions);
 
             // Assert
             Assert.Equal(expectedMessagingVerifications, actualResult.MessagingVerifications?.Count().ToString(CultureInfo.InvariantCulture));
@@ -157,11 +157,11 @@ namespace HealthGateway.Admin.Tests.Services
             // Act
             async Task Actual()
             {
-                await supportService.GetPatientSupportDetailsAsync(Hdid, true, true, true).ConfigureAwait(true);
+                await supportService.GetPatientSupportDetailsAsync(Hdid, true, true, true);
             }
 
             // Verify
-            ProblemDetailsException exception = await Assert.ThrowsAsync<ProblemDetailsException>(Actual).ConfigureAwait(true);
+            ProblemDetailsException exception = await Assert.ThrowsAsync<ProblemDetailsException>(Actual);
             Assert.Equal(ErrorMessages.ClientRegistryRecordsNotFound, exception.ProblemDetails!.Detail);
         }
 
@@ -190,11 +190,11 @@ namespace HealthGateway.Admin.Tests.Services
             // Act
             async Task Actual()
             {
-                await supportService.GetPatientSupportDetailsAsync(Hdid, true, true, true).ConfigureAwait(true);
+                await supportService.GetPatientSupportDetailsAsync(Hdid, true, true, true);
             }
 
             // Verify
-            ProblemDetailsException exception = await Assert.ThrowsAsync<ProblemDetailsException>(Actual).ConfigureAwait(true);
+            ProblemDetailsException exception = await Assert.ThrowsAsync<ProblemDetailsException>(Actual);
             Assert.Equal(ErrorMessages.PhnOrDateAndBirthInvalid, exception.ProblemDetails!.Detail);
         }
 
@@ -224,11 +224,11 @@ namespace HealthGateway.Admin.Tests.Services
             // Act
             async Task Actual()
             {
-                await supportService.GetPatientSupportDetailsAsync(Hdid, true, true, true).ConfigureAwait(true);
+                await supportService.GetPatientSupportDetailsAsync(Hdid, true, true, true);
             }
 
             // Verify
-            ProblemDetailsException exception = await Assert.ThrowsAsync<ProblemDetailsException>(Actual).ConfigureAwait(true);
+            ProblemDetailsException exception = await Assert.ThrowsAsync<ProblemDetailsException>(Actual);
             Assert.Equal(ErrorMessages.CannotFindAccessToken, exception.ProblemDetails!.Detail);
         }
 
@@ -259,7 +259,7 @@ namespace HealthGateway.Admin.Tests.Services
             };
 
             // Act
-            IEnumerable<PatientSupportResult> actualResult = await supportService.GetPatientsAsync(PatientQueryType.Hdid, Hdid).ConfigureAwait(true);
+            IEnumerable<PatientSupportResult> actualResult = await supportService.GetPatientsAsync(PatientQueryType.Hdid, Hdid);
 
             // Assert
             Assert.Single(actualResult);
@@ -285,7 +285,7 @@ namespace HealthGateway.Admin.Tests.Services
             ISupportService supportService = CreateSupportService(patientRepositoryMock: patientRepositoryMock, userProfileDelegateMock: userProfileDelegateMock);
 
             // Act
-            IEnumerable<PatientSupportResult> actualResult = await supportService.GetPatientsAsync(PatientQueryType.Hdid, Hdid).ConfigureAwait(true);
+            IEnumerable<PatientSupportResult> actualResult = await supportService.GetPatientsAsync(PatientQueryType.Hdid, Hdid);
 
             // Assert
             Assert.Single(actualResult);
@@ -316,7 +316,7 @@ namespace HealthGateway.Admin.Tests.Services
             };
 
             // Act
-            IEnumerable<PatientSupportResult> actualResult = await supportService.GetPatientsAsync(PatientQueryType.Hdid, Hdid).ConfigureAwait(true);
+            IEnumerable<PatientSupportResult> actualResult = await supportService.GetPatientsAsync(PatientQueryType.Hdid, Hdid);
 
             // Assert
             Assert.Single(actualResult);
@@ -351,7 +351,7 @@ namespace HealthGateway.Admin.Tests.Services
             };
 
             // Act
-            IEnumerable<PatientSupportResult> actualResult = await supportService.GetPatientsAsync(PatientQueryType.Hdid, Hdid).ConfigureAwait(true);
+            IEnumerable<PatientSupportResult> actualResult = await supportService.GetPatientsAsync(PatientQueryType.Hdid, Hdid);
 
             // Assert
             Assert.Single(actualResult);
@@ -386,7 +386,7 @@ namespace HealthGateway.Admin.Tests.Services
             };
 
             // Act
-            IEnumerable<PatientSupportResult> actualResult = await supportService.GetPatientsAsync(PatientQueryType.Hdid, Hdid).ConfigureAwait(true);
+            IEnumerable<PatientSupportResult> actualResult = await supportService.GetPatientsAsync(PatientQueryType.Hdid, Hdid);
 
             // Assert
             Assert.Single(actualResult);
@@ -409,7 +409,7 @@ namespace HealthGateway.Admin.Tests.Services
             ISupportService supportService = CreateSupportService(patientRepositoryMock: patientRepositoryMock, userProfileDelegateMock: userProfileDelegateMock);
 
             // Act
-            IEnumerable<PatientSupportResult> actualResult = await supportService.GetPatientsAsync(PatientQueryType.Hdid, Hdid).ConfigureAwait(true);
+            IEnumerable<PatientSupportResult> actualResult = await supportService.GetPatientsAsync(PatientQueryType.Hdid, Hdid);
 
             // Assert
             Assert.Empty(actualResult);
@@ -442,7 +442,7 @@ namespace HealthGateway.Admin.Tests.Services
             };
 
             // Act
-            IEnumerable<PatientSupportResult> actualResult = await supportService.GetPatientsAsync(PatientQueryType.Phn, Phn).ConfigureAwait(true);
+            IEnumerable<PatientSupportResult> actualResult = await supportService.GetPatientsAsync(PatientQueryType.Phn, Phn);
 
             // Assert
             Assert.Single(actualResult);
@@ -465,7 +465,7 @@ namespace HealthGateway.Admin.Tests.Services
             ISupportService supportService = CreateSupportService(patientRepositoryMock: patientRepositoryMock, userProfileDelegateMock: userProfileDelegateMock);
 
             // Act
-            IEnumerable<PatientSupportResult> actualResult = await supportService.GetPatientsAsync(PatientQueryType.Phn, Phn).ConfigureAwait(true);
+            IEnumerable<PatientSupportResult> actualResult = await supportService.GetPatientsAsync(PatientQueryType.Phn, Phn);
 
             // Assert
             Assert.Empty(actualResult);
@@ -482,8 +482,8 @@ namespace HealthGateway.Admin.Tests.Services
             ISupportService supportService = CreateSupportService();
 
             // Act
-            ProblemDetailsException exception = await Assert.ThrowsAsync<ProblemDetailsException>(async () => await supportService.GetPatientsAsync((PatientQueryType)99, Hdid).ConfigureAwait(true))
-                .ConfigureAwait(true);
+            ProblemDetailsException exception = await Assert.ThrowsAsync<ProblemDetailsException>(async () => await supportService.GetPatientsAsync((PatientQueryType)99, Hdid))
+                ;
 
             // Assert
             Assert.Equal(HttpStatusCode.BadRequest, exception.ProblemDetails?.StatusCode);
@@ -530,7 +530,7 @@ namespace HealthGateway.Admin.Tests.Services
             };
 
             // Act
-            IEnumerable<PatientSupportResult> actualResult = await supportService.GetPatientsAsync(PatientQueryType.Dependent, dependentPhn).ConfigureAwait(true);
+            IEnumerable<PatientSupportResult> actualResult = await supportService.GetPatientsAsync(PatientQueryType.Dependent, dependentPhn);
 
             // Assert
             Assert.Equal(resourceDelegates.Count, actualResult.Count());
@@ -572,7 +572,7 @@ namespace HealthGateway.Admin.Tests.Services
             };
 
             // Act
-            IEnumerable<PatientSupportResult> actualResult = await supportService.GetPatientsAsync(PatientQueryType.Email, "email").ConfigureAwait(true);
+            IEnumerable<PatientSupportResult> actualResult = await supportService.GetPatientsAsync(PatientQueryType.Email, "email");
 
             // Assert
             Assert.Equal(profiles.Count, actualResult.Count());
@@ -614,7 +614,7 @@ namespace HealthGateway.Admin.Tests.Services
             };
 
             // Act
-            IEnumerable<PatientSupportResult> actualResult = await supportService.GetPatientsAsync(PatientQueryType.Sms, "sms").ConfigureAwait(true);
+            IEnumerable<PatientSupportResult> actualResult = await supportService.GetPatientsAsync(PatientQueryType.Sms, "sms");
 
             // Assert
             Assert.Equal(profiles.Count, actualResult.Count());

@@ -320,7 +320,7 @@ namespace HealthGateway.ImmunizationTests.Services.Test
                 mockVaccineDelegate.Object,
                 mockHttpContextAccessor.Object);
 
-            RequestResult<VaccineProofDocument> actualResult = Task.Run(async () => await service.GetVaccineProof(hdid, VaccineProofTemplate.Provincial).ConfigureAwait(true)).Result;
+            RequestResult<VaccineProofDocument> actualResult = Task.Run(async () => await service.GetVaccineProof(hdid, VaccineProofTemplate.Provincial)).Result;
 
             Assert.True(actualResult.ResultStatus == ResultType.Success);
             Assert.True(actualResult.ResourcePayload != null && actualResult.ResourcePayload.Document.Data == assetResult.ResourcePayload.Data);
@@ -373,7 +373,7 @@ namespace HealthGateway.ImmunizationTests.Services.Test
                 mockVaccineDelegate.Object,
                 mockHttpContextAccessor.Object);
 
-            RequestResult<VaccineProofDocument> actualResult = Task.Run(async () => await service.GetVaccineProof(hdid, VaccineProofTemplate.Provincial).ConfigureAwait(true)).Result;
+            RequestResult<VaccineProofDocument> actualResult = Task.Run(async () => await service.GetVaccineProof(hdid, VaccineProofTemplate.Provincial)).Result;
 
             Assert.True(actualResult.ResultStatus == ResultType.ActionRequired && actualResult.ResultError != null);
         }
@@ -405,7 +405,7 @@ namespace HealthGateway.ImmunizationTests.Services.Test
                 mockVaccineDelegate.Object,
                 mockHttpContextAccessor.Object);
 
-            RequestResult<VaccineProofDocument> actualResult = Task.Run(async () => await service.GetVaccineProof(hdid, VaccineProofTemplate.Provincial).ConfigureAwait(true)).Result;
+            RequestResult<VaccineProofDocument> actualResult = Task.Run(async () => await service.GetVaccineProof(hdid, VaccineProofTemplate.Provincial)).Result;
 
             vaccineStatusResult.ShouldDeepEqual(actualResult);
         }
@@ -446,7 +446,7 @@ namespace HealthGateway.ImmunizationTests.Services.Test
                 mockVaccineDelegate.Object,
                 mockHttpContextAccessor.Object);
 
-            RequestResult<VaccineProofDocument> actualResult = Task.Run(async () => await service.GetVaccineProof(hdid, VaccineProofTemplate.Provincial).ConfigureAwait(true)).Result;
+            RequestResult<VaccineProofDocument> actualResult = Task.Run(async () => await service.GetVaccineProof(hdid, VaccineProofTemplate.Provincial)).Result;
 
             Assert.True(actualResult.ResultStatus == ResultType.Error);
         }
@@ -484,7 +484,7 @@ namespace HealthGateway.ImmunizationTests.Services.Test
                 mockVaccineDelegate.Object,
                 mockHttpContextAccessor.Object);
 
-            RequestResult<VaccineProofDocument> actualResult = Task.Run(async () => await service.GetVaccineProof(hdid, VaccineProofTemplate.Provincial).ConfigureAwait(true)).Result;
+            RequestResult<VaccineProofDocument> actualResult = Task.Run(async () => await service.GetVaccineProof(hdid, VaccineProofTemplate.Provincial)).Result;
 
             Assert.True(actualResult.ResultStatus == ResultType.Error);
         }
@@ -542,7 +542,7 @@ namespace HealthGateway.ImmunizationTests.Services.Test
                 mockVaccineDelegate.Object,
                 mockHttpContextAccessor.Object);
 
-            RequestResult<VaccineProofDocument> actualResult = Task.Run(async () => await service.GetVaccineProof(hdid, VaccineProofTemplate.Provincial).ConfigureAwait(true)).Result;
+            RequestResult<VaccineProofDocument> actualResult = Task.Run(async () => await service.GetVaccineProof(hdid, VaccineProofTemplate.Provincial)).Result;
 
             Assert.True(actualResult.ResultStatus == ResultType.Error);
         }
@@ -605,7 +605,7 @@ namespace HealthGateway.ImmunizationTests.Services.Test
               mockVaccineDelegate.Object,
               mockHttpContextAccessor.Object);
 
-            RequestResult<VaccineProofDocument> actualResult = Task.Run(async () => await service.GetVaccineProof(hdid, VaccineProofTemplate.Provincial).ConfigureAwait(true)).Result;
+            RequestResult<VaccineProofDocument> actualResult = Task.Run(async () => await service.GetVaccineProof(hdid, VaccineProofTemplate.Provincial)).Result;
 
             Assert.True(actualResult.ResultStatus == ResultType.ActionRequired && actualResult.ResultError != null);
         }

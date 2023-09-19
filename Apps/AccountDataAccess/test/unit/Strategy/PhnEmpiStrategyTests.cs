@@ -59,7 +59,7 @@ namespace AccountDataAccessTest.Strategy
             PatientRequest request = new(Phn, useCache);
 
             // Act
-            PatientModel? result = await phnEmpiStrategy.GetPatientAsync(request).ConfigureAwait(true);
+            PatientModel? result = await phnEmpiStrategy.GetPatientAsync(request);
 
             // Verify
             Assert.Equal(Hdid, result?.Hdid);
@@ -83,11 +83,11 @@ namespace AccountDataAccessTest.Strategy
             // Act
             async Task Actual()
             {
-                await phnEmpiStrategy.GetPatientAsync(request).ConfigureAwait(true);
+                await phnEmpiStrategy.GetPatientAsync(request);
             }
 
             // Verify
-            ProblemDetailsException exception = await Assert.ThrowsAsync<ProblemDetailsException>(Actual).ConfigureAwait(true);
+            ProblemDetailsException exception = await Assert.ThrowsAsync<ProblemDetailsException>(Actual);
             Assert.Equal(ErrorMessages.PhnInvalid, exception.ProblemDetails!.Detail);
         }
 

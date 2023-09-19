@@ -100,7 +100,7 @@ namespace HealthGateway.MedicationTests.Delegates
                 MapperUtil.InitializeAutoMapper());
 
             // Test
-            RequestResult<IList<MedicationRequest>> response = Task.Run(async () => await medDelegate.GetMedicationRequestsAsync(phn).ConfigureAwait(true)).Result;
+            RequestResult<IList<MedicationRequest>> response = Task.Run(async () => await medDelegate.GetMedicationRequestsAsync(phn)).Result;
 
             // Verify
             Assert.Equal(ResultType.Success, response.ResultStatus);
@@ -159,7 +159,7 @@ namespace HealthGateway.MedicationTests.Delegates
                 MapperUtil.InitializeAutoMapper());
 
             // Test
-            RequestResult<IList<MedicationRequest>> response = Task.Run(async () => await medDelegate.GetMedicationRequestsAsync(phn).ConfigureAwait(true)).Result;
+            RequestResult<IList<MedicationRequest>> response = Task.Run(async () => await medDelegate.GetMedicationRequestsAsync(phn)).Result;
 
             // Verify
             Assert.Equal(ResultType.Error, response.ResultStatus);
@@ -228,7 +228,7 @@ namespace HealthGateway.MedicationTests.Delegates
                 MapperUtil.InitializeAutoMapper());
 
             // Test
-            RequestResult<IList<MedicationRequest>> response = Task.Run(async () => await medDelegate.GetMedicationRequestsAsync(phn).ConfigureAwait(true)).Result;
+            RequestResult<IList<MedicationRequest>> response = Task.Run(async () => await medDelegate.GetMedicationRequestsAsync(phn)).Result;
 
             // Verify
             Assert.Equal(ResultType.Error, response.ResultStatus);

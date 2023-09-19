@@ -62,7 +62,7 @@ namespace HealthGateway.ClinicalDocumentTests.Services
 
             // Act
             RequestResult<IEnumerable<ClinicalDocumentRecord>> actualResult =
-                Task.Run(async () => await clinicalDocumentService.GetRecordsAsync(It.IsAny<string>()).ConfigureAwait(true)).Result;
+                Task.Run(async () => await clinicalDocumentService.GetRecordsAsync(It.IsAny<string>())).Result;
 
             // Assert
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
@@ -92,7 +92,7 @@ namespace HealthGateway.ClinicalDocumentTests.Services
 
             // Act
             RequestResult<IEnumerable<ClinicalDocumentRecord>> actualResult =
-                Task.Run(async () => await clinicalDocumentService.GetRecordsAsync(It.IsAny<string>()).ConfigureAwait(true)).Result;
+                Task.Run(async () => await clinicalDocumentService.GetRecordsAsync(It.IsAny<string>())).Result;
 
             // Assert
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
@@ -113,7 +113,7 @@ namespace HealthGateway.ClinicalDocumentTests.Services
 
             // Act
             RequestResult<EncodedMedia> actualResult =
-                Task.Run(async () => await clinicalDocumentService.GetFileAsync(It.IsAny<string>(), It.IsAny<string>()).ConfigureAwait(true)).Result;
+                Task.Run(async () => await clinicalDocumentService.GetFileAsync(It.IsAny<string>(), It.IsAny<string>())).Result;
 
             // Assert
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
@@ -134,7 +134,7 @@ namespace HealthGateway.ClinicalDocumentTests.Services
 
             // Act
             RequestResult<EncodedMedia> actualResult =
-                Task.Run(async () => await clinicalDocumentService.GetFileAsync(It.IsAny<string>(), It.IsAny<string>()).ConfigureAwait(true)).Result;
+                Task.Run(async () => await clinicalDocumentService.GetFileAsync(It.IsAny<string>(), It.IsAny<string>())).Result;
 
             // Assert
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);

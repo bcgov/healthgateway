@@ -67,7 +67,7 @@ namespace HealthGateway.AdminWebClientTests.Services.Test
             ISupportService supportService = CreateSupportService(GetPatient(ResultType.Success), GetUserProfile(DbStatusCode.Read));
 
             // Act
-            RequestResult<IEnumerable<PatientSupportDetails>> actualResult = await supportService.GetPatientsAsync(PatientQueryType.Hdid, Hdid).ConfigureAwait(true);
+            RequestResult<IEnumerable<PatientSupportDetails>> actualResult = await supportService.GetPatientsAsync(PatientQueryType.Hdid, Hdid);
 
             // Assert
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
@@ -87,7 +87,7 @@ namespace HealthGateway.AdminWebClientTests.Services.Test
             ISupportService supportService = CreateSupportService(GetPatient(ResultType.Success), GetUserProfile(DbStatusCode.Read));
 
             // Act
-            RequestResult<IEnumerable<PatientSupportDetails>> actualResult = await supportService.GetPatientsAsync(PatientQueryType.Phn, Phn).ConfigureAwait(true);
+            RequestResult<IEnumerable<PatientSupportDetails>> actualResult = await supportService.GetPatientsAsync(PatientQueryType.Phn, Phn);
 
             // Assert
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
@@ -105,7 +105,7 @@ namespace HealthGateway.AdminWebClientTests.Services.Test
             ISupportService supportService = CreateSupportService(GetPatient(ResultType.Success), GetUserProfile(DbStatusCode.Read), GetUserProfiles());
 
             // Act
-            RequestResult<IEnumerable<PatientSupportDetails>> actualResult = await supportService.GetPatientsAsync(PatientQueryType.Email, Email).ConfigureAwait(true);
+            RequestResult<IEnumerable<PatientSupportDetails>> actualResult = await supportService.GetPatientsAsync(PatientQueryType.Email, Email);
 
             // Assert
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
@@ -123,7 +123,7 @@ namespace HealthGateway.AdminWebClientTests.Services.Test
             ISupportService supportService = CreateSupportService(GetPatient(ResultType.Success), GetUserProfile(DbStatusCode.Read), GetUserProfiles());
 
             // Act
-            RequestResult<IEnumerable<PatientSupportDetails>> actualResult = await supportService.GetPatientsAsync(PatientQueryType.Sms, SmsNumber).ConfigureAwait(true);
+            RequestResult<IEnumerable<PatientSupportDetails>> actualResult = await supportService.GetPatientsAsync(PatientQueryType.Sms, SmsNumber);
 
             // Assert
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
@@ -141,7 +141,7 @@ namespace HealthGateway.AdminWebClientTests.Services.Test
             ISupportService supportService = CreateSupportService(GetPatient(ResultType.Success), GetUserProfile(DbStatusCode.NotFound));
 
             // Act
-            RequestResult<IEnumerable<PatientSupportDetails>> actualResult = await supportService.GetPatientsAsync(PatientQueryType.Hdid, Hdid).ConfigureAwait(true);
+            RequestResult<IEnumerable<PatientSupportDetails>> actualResult = await supportService.GetPatientsAsync(PatientQueryType.Hdid, Hdid);
 
             // Assert
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
@@ -160,7 +160,7 @@ namespace HealthGateway.AdminWebClientTests.Services.Test
             ISupportService supportService = CreateSupportService(GetPatient(ResultType.ActionRequired), GetUserProfile(DbStatusCode.Read));
 
             // Act
-            RequestResult<IEnumerable<PatientSupportDetails>> actualResult = await supportService.GetPatientsAsync(PatientQueryType.Hdid, Hdid).ConfigureAwait(true);
+            RequestResult<IEnumerable<PatientSupportDetails>> actualResult = await supportService.GetPatientsAsync(PatientQueryType.Hdid, Hdid);
 
             // Assert
             Assert.Equal(ResultType.ActionRequired, actualResult.ResultStatus);
@@ -179,7 +179,7 @@ namespace HealthGateway.AdminWebClientTests.Services.Test
             ISupportService supportService = CreateSupportService(GetPatient(ResultType.Error));
 
             // Act
-            RequestResult<IEnumerable<PatientSupportDetails>> actualResult = await supportService.GetPatientsAsync(PatientQueryType.Hdid, Hdid).ConfigureAwait(true);
+            RequestResult<IEnumerable<PatientSupportDetails>> actualResult = await supportService.GetPatientsAsync(PatientQueryType.Hdid, Hdid);
 
             // Assert
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
@@ -244,7 +244,7 @@ namespace HealthGateway.AdminWebClientTests.Services.Test
 
             ISupportService supportService = CreateSupportService(patientServiceMock: patientServiceMock, resourceDelegateDelegateMock: resourceDelegateDelegateMock);
 
-            RequestResult<IEnumerable<PatientSupportDetails>> result = await supportService.GetPatientsAsync(PatientQueryType.Dependent, dependentPhn).ConfigureAwait(true);
+            RequestResult<IEnumerable<PatientSupportDetails>> result = await supportService.GetPatientsAsync(PatientQueryType.Dependent, dependentPhn);
 
             Assert.Equal(ResultType.Success, result.ResultStatus);
             Assert.NotNull(result.ResourcePayload);

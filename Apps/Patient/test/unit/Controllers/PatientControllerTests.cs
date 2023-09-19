@@ -88,7 +88,7 @@ namespace HealthGateway.PatientTests.Controllers
             PatientController patientController = CreatePatientController();
 
             // Act
-            var actualResult = await patientController.GetPatientV2(MockedHdid).ConfigureAwait(false);
+            var actualResult = await patientController.GetPatientV2(MockedHdid);
 
             // Assert
             var ok = actualResult.Result.ShouldBeOfType<OkObjectResult>();

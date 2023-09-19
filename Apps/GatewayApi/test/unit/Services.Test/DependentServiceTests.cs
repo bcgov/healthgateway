@@ -69,7 +69,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         {
             IDependentService service = this.SetupMockForGetDependents();
 
-            RequestResult<IEnumerable<DependentModel>> actualResult = await service.GetDependentsAsync(this.mockParentHdid).ConfigureAwait(true);
+            RequestResult<IEnumerable<DependentModel>> actualResult = await service.GetDependentsAsync(this.mockParentHdid);
 
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             Assert.Equal(10, actualResult.TotalResultCount);
@@ -115,7 +115,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             RequestResult<PatientModel> patientResult = new();
             IDependentService service = this.SetupMockForGetDependents(patientResult);
 
-            RequestResult<IEnumerable<DependentModel>> actualResult = await service.GetDependentsAsync(this.mockParentHdid).ConfigureAwait(true);
+            RequestResult<IEnumerable<DependentModel>> actualResult = await service.GetDependentsAsync(this.mockParentHdid);
 
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
             Assert.True(actualResult.ResultError?.ErrorCode.EndsWith("-CE-PAT", StringComparison.InvariantCulture));
@@ -134,7 +134,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             AddDependentRequest addDependentRequest = this.SetupMockInput();
             IDependentService service = this.SetupMockDependentService(addDependentRequest);
 
-            RequestResult<DependentModel> actualResult = await service.AddDependentAsync(this.mockParentHdid, addDependentRequest).ConfigureAwait(true);
+            RequestResult<DependentModel> actualResult = await service.AddDependentAsync(this.mockParentHdid, addDependentRequest);
 
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             Dictionary<string, int> delegateCounts = this.GenerateMockDelegateCounts(true);
@@ -153,7 +153,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             addDependentRequest.LastName = "O’Neil"; // Last name with smart apostrophe
             IDependentService service = this.SetupMockDependentService(addDependentRequest);
 
-            RequestResult<DependentModel> actualResult = await service.AddDependentAsync(this.mockParentHdid, addDependentRequest).ConfigureAwait(true);
+            RequestResult<DependentModel> actualResult = await service.AddDependentAsync(this.mockParentHdid, addDependentRequest);
 
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             Dictionary<string, int> delegateCounts = this.GenerateMockDelegateCounts(true);
@@ -173,7 +173,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             // Test Scenario - Happy Path: Found HdId for the PHN, Found Patient.
             IDependentService service = this.SetupMockDependentService(addDependentRequest, null, patientResult);
 
-            RequestResult<DependentModel> actualResult = await service.AddDependentAsync(this.mockParentHdid, addDependentRequest).ConfigureAwait(true);
+            RequestResult<DependentModel> actualResult = await service.AddDependentAsync(this.mockParentHdid, addDependentRequest);
 
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
             Assert.True(actualResult.ResultError?.ErrorCode.EndsWith("-CE-PAT", StringComparison.InvariantCulture));
@@ -214,7 +214,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             addDependentRequest.FirstName = "wrong";
             IDependentService service = this.SetupMockDependentService(addDependentRequest);
 
-            RequestResult<DependentModel> actualResult = await service.AddDependentAsync(this.mockParentHdid, addDependentRequest).ConfigureAwait(true);
+            RequestResult<DependentModel> actualResult = await service.AddDependentAsync(this.mockParentHdid, addDependentRequest);
 
             RequestResultError userError = ErrorTranslator.ActionRequired(ErrorMessages.DataMismatch, ActionType.DataMismatch);
             Assert.Equal(ResultType.ActionRequired, actualResult.ResultStatus);
@@ -233,7 +233,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             addDependentRequest.LastName = "wrong";
             IDependentService service = this.SetupMockDependentService(addDependentRequest);
 
-            RequestResult<DependentModel> actualResult = await service.AddDependentAsync(this.mockParentHdid, addDependentRequest).ConfigureAwait(true);
+            RequestResult<DependentModel> actualResult = await service.AddDependentAsync(this.mockParentHdid, addDependentRequest);
 
             RequestResultError userError = ErrorTranslator.ActionRequired(ErrorMessages.DataMismatch, ActionType.DataMismatch);
             Assert.Equal(ResultType.ActionRequired, actualResult.ResultStatus);
@@ -252,7 +252,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             addDependentRequest.DateOfBirth = DateTime.Now;
             IDependentService service = this.SetupMockDependentService(addDependentRequest);
 
-            RequestResult<DependentModel> actualResult = await service.AddDependentAsync(this.mockParentHdid, addDependentRequest).ConfigureAwait(true);
+            RequestResult<DependentModel> actualResult = await service.AddDependentAsync(this.mockParentHdid, addDependentRequest);
 
             RequestResultError userError = ErrorTranslator.ActionRequired(ErrorMessages.DataMismatch, ActionType.DataMismatch);
             Assert.Equal(ResultType.ActionRequired, actualResult.ResultStatus);
@@ -283,7 +283,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             AddDependentRequest addDependentRequest = this.SetupMockInput();
             IDependentService service = this.SetupMockDependentService(addDependentRequest, patientResult: patientResult);
 
-            RequestResult<DependentModel> actualResult = await service.AddDependentAsync(this.mockParentHdid, addDependentRequest).ConfigureAwait(true);
+            RequestResult<DependentModel> actualResult = await service.AddDependentAsync(this.mockParentHdid, addDependentRequest);
 
             RequestResultError userError = ErrorTranslator.ActionRequired(ErrorMessages.InvalidServicesCard, ActionType.NoHdId);
             Assert.Equal(ResultType.ActionRequired, actualResult.ResultStatus);
@@ -310,7 +310,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             };
             IDependentService service = this.SetupMockDependentService(addDependentRequest, dependent: dependent);
 
-            RequestResult<DependentModel> actualResult = await service.AddDependentAsync(this.mockParentHdid, addDependentRequest).ConfigureAwait(true);
+            RequestResult<DependentModel> actualResult = await service.AddDependentAsync(this.mockParentHdid, addDependentRequest);
 
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
         }
@@ -330,7 +330,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             };
             IDependentService service = this.SetupMockDependentService(addDependentRequest, dependent: dependent);
 
-            RequestResult<DependentModel> actualResult = await service.AddDependentAsync(this.mockParentHdid, addDependentRequest).ConfigureAwait(true);
+            RequestResult<DependentModel> actualResult = await service.AddDependentAsync(this.mockParentHdid, addDependentRequest);
 
             Assert.Equal(ResultType.ActionRequired, actualResult.ResultStatus);
             Assert.Equal(ActionType.Protected, actualResult.ResultError!.ActionCode);

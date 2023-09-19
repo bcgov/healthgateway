@@ -144,7 +144,7 @@ namespace HealthGateway.MedicationTests.Delegates
                                 string.Empty,
                                 string.Empty,
                                 string.Empty)
-                            .ConfigureAwait(true))
+                            )
                 .Result;
 
             Assert.Equal(ResultType.Success, response.ResultStatus);
@@ -201,7 +201,7 @@ namespace HealthGateway.MedicationTests.Delegates
                                 string.Empty,
                                 string.Empty,
                                 string.Empty)
-                            .ConfigureAwait(true))
+                            )
                 .Result;
 
             Assert.Equal(ResultType.Success, response.ResultStatus);
@@ -242,7 +242,7 @@ namespace HealthGateway.MedicationTests.Delegates
                                 string.Empty,
                                 string.Empty,
                                 string.Empty)
-                            .ConfigureAwait(true))
+                            )
                 .Result;
 
             Assert.Equal(ResultType.ActionRequired, response.ResultStatus);
@@ -283,7 +283,7 @@ namespace HealthGateway.MedicationTests.Delegates
                                 string.Empty,
                                 string.Empty,
                                 string.Empty)
-                            .ConfigureAwait(true))
+                            )
                 .Result;
 
             Assert.True(response.ResultStatus == ResultType.Error);
@@ -323,7 +323,7 @@ namespace HealthGateway.MedicationTests.Delegates
                                 string.Empty,
                                 string.Empty,
                                 string.Empty)
-                            .ConfigureAwait(true))
+                            )
                 .Result;
 
             Assert.True(response.ResultStatus == ResultType.Error);
@@ -352,7 +352,7 @@ namespace HealthGateway.MedicationTests.Delegates
                             string.Empty,
                             string.Empty,
                             string.Empty)
-                        .ConfigureAwait(true));
+                        );
         }
 
         /// <summary>
@@ -377,7 +377,7 @@ namespace HealthGateway.MedicationTests.Delegates
                             string.Empty,
                             string.Empty,
                             string.Empty)
-                        .ConfigureAwait(true));
+                        );
         }
 
         private static IConfigurationRoot GetIConfigurationRoot()
