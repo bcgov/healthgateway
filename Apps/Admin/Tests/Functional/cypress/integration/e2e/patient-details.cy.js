@@ -117,12 +117,12 @@ function validateCovid19TreatmentAssessmentInfoMessageForRadioSelection() {
 
     cy.get("[data-testid=assessment-question-6]").within(() => {
         cy.get("[data-testid=assessment-option-yes]").click();
-        cy.get(" [data-testid=treatment-benefit-indicated]").should(
+        cy.get("[data-testid=treatment-benefit-indicated]").should(
             "be.visible"
         );
         cy.get("[data-testid=assessment-option-no]").click();
         cy.get(" [data-testid=treatment-benefit-indicated]").should(
-            "be.not.exist"
+            "not.exist"
         );
         cy.get("[data-testid=assessment-option-not-sure]").click();
         cy.get("[data-testid=treatment-benefit-indicated]").should("not.exist");
@@ -133,24 +133,20 @@ function validateCovid19TreatmentAssessmentInfoMessageForRadioSelection() {
         cy.get(" [data-testid=treatment-benefit-indicated]").should(
             "be.visible"
         );
-        cy.get(" [data-testid=assessment-option-no]").click();
-        cy.get(" [data-testid=treatment-benefit-indicated]").should(
-            "not.exist"
-        );
+        cy.get("[data-testid=assessment-option-no]").click();
+        cy.get("[data-testid=treatment-benefit-indicated]").should("not.exist");
         cy.get("[data-testid=assessment-option-not-sure]").click();
         cy.get("[data-testid=treatment-benefit-indicated]").should("not.exist");
     });
 
     cy.get("[data-testid=assessment-question-8]").within(() => {
-        cy.get(" [data-testid=assessment-option-yes]").click();
-        cy.get(" [data-testid=treatment-benefit-indicated]").should(
+        cy.get("[data-testid=assessment-option-yes]").click();
+        cy.get("[data-testid=treatment-benefit-indicated]").should(
             "be.visible"
         );
 
         cy.get("[data-testid=assessment-option-no]").click();
-        cy.get(" [data-testid=treatment-benefit-indicated]").should(
-            "not.exist"
-        );
+        cy.get("[data-testid=treatment-benefit-indicated]").should("not.exist");
     });
 
     cy.get("[data-testid=assessment-question-9]").within(() => {
@@ -161,9 +157,7 @@ function validateCovid19TreatmentAssessmentInfoMessageForRadioSelection() {
             "be.visible"
         );
         cy.get("[data-testid=assessment-option-not-sure]").click();
-        cy.get(" [data-testid=treatment-benefit-indicated]").should(
-            "not.exist"
-        );
+        cy.get("[data-testid=treatment-benefit-indicated]").should("not.exist");
     });
 
     cy.get("[data-testid=cancel-covid-19-treatment-assessment]").click();
