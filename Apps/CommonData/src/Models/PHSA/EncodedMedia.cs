@@ -13,25 +13,31 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Admin.Server.Models.CovidSupport;
-
-using System;
-using System.Text.Json.Serialization;
-
-/// <summary>
-/// Model object representing previous assessment details.
-/// </summary>
-public class PreviousAssessmentDetails
+namespace HealthGateway.Common.Data.Models.PHSA
 {
-    /// <summary>
-    /// Gets or sets the date time of assessment.
-    /// </summary>
-    [JsonPropertyName("dateTimeOfAssessment")]
-    public DateTime DateTimeOfAssessment { get; set; }
+    using System.Text.Json.Serialization;
 
     /// <summary>
-    /// Gets or sets the form id.
+    /// An object representing encoded data.
     /// </summary>
-    [JsonPropertyName("formId")]
-    public string? FormId { get; set; }
+    public class EncodedMedia
+    {
+        /// <summary>
+        /// Gets or sets the media type of the data attribute.
+        /// </summary>
+        [JsonPropertyName("mediaType")]
+        public string? Type { get; set; }
+
+        /// <summary>
+        /// Gets or sets the encoding of data attribute.
+        /// </summary>
+        [JsonPropertyName("encoding")]
+        public string? Encoding { get; set; }
+
+        /// <summary>
+        /// Gets or sets the raw data encoded and having a media type as specified.
+        /// </summary>
+        [JsonPropertyName("data")]
+        public string? Data { get; set; }
+    }
 }

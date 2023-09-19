@@ -17,8 +17,14 @@
             "surname": "Deceased"
         },
         "birthdate": "1942-08-09",
-        "physicalAddress": "818 FORT ST, Victoria, BC, V8W 1H8",
-        "postalAddress": "",
+        "physicalAddress": {
+            "streetLines": ["818 FORT ST"],
+            "city": "Victoria",
+            "state": "BC",
+            "postalCode": "V8W 1H8",
+            "country": ""
+        },
+        "postalAddress": null,
         "profileCreatedDateTime": null,
         "profileLastLoginDateTime": null
     }

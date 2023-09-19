@@ -26,7 +26,9 @@ namespace HealthGateway.Admin.Client.Pages
     using HealthGateway.Admin.Client.Store.PatientSupport;
     using HealthGateway.Admin.Common.Constants;
     using HealthGateway.Admin.Common.Models;
+    using HealthGateway.Admin.Common.Models.CovidSupport;
     using HealthGateway.Common.Data.Constants;
+    using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Data.Utils;
     using HealthGateway.Common.Data.ViewModels;
     using Microsoft.AspNetCore.Components;
@@ -53,9 +55,6 @@ namespace HealthGateway.Admin.Client.Pages
         private NavigationManager NavigationManager { get; set; } = default!;
 
         [Inject]
-        private IActionSubscriber ActionSubscriber { get; set; } = default!;
-
-        [Inject]
         private IConfiguration Configuration { get; set; } = default!;
 
         [Inject]
@@ -72,6 +71,16 @@ namespace HealthGateway.Admin.Client.Pages
         private IEnumerable<AgentAction> AgentAuditHistory =>
             this.PatientDetailsState.Value.AgentActions?.OrderByDescending(a => a.TransactionDateTime) ?? Enumerable.Empty<AgentAction>();
 
+        private IEnumerable<VaccineDose> VaccineDoses =>
+            this.PatientDetailsState.Value.VaccineDetails?.Doses
+                .Where(_ => this.PatientDetailsState.Value.VaccineDetails?.Blocked == false)
+                .OrderByDescending(dose => dose.Date) ?? Enumerable.Empty<VaccineDose>();
+
+        private CovidAssessmentDetailsResponse? AssessmentInfo => this.PatientDetailsState.Value.Result?.CovidAssessmentDetails;
+
+        private IEnumerable<PreviousAssessmentDetails> AssessmentDetails =>
+            this.AssessmentInfo?.PreviousAssessmentDetailsList.OrderByDescending(a => a.DateTimeOfAssessment) ?? Enumerable.Empty<PreviousAssessmentDetails>();
+
         private bool PatientsLoaded => this.PatientSupportState.Value.Loaded;
 
         private bool HasPatientsError => this.PatientSupportState.Value.Error is { Message.Length: > 0 };
@@ -85,21 +94,35 @@ namespace HealthGateway.Admin.Client.Pages
 
         private string? StatusWarning => this.Patient == null ? null : MapStatusToWarning(this.Patient.Status);
 
-        private string? Hdid { get; set; }
+        private Address? MailAddress => this.Patient?.PostalAddress ?? this.Patient?.PhysicalAddress;
 
-        private DateTime? ProfileCreatedDateTime { get; set; }
+        private DateTime? ProfileCreatedDateTime =>
+            this.Patient?.ProfileCreatedDateTime == null ? null : TimeZoneInfo.ConvertTimeFromUtc(this.Patient.ProfileCreatedDateTime.Value, this.GetTimeZone());
 
-        private DateTime? ProfileLastLoginDateTime { get; set; }
+        private DateTime? ProfileLastLoginDateTime =>
+            this.Patient?.ProfileLastLoginDateTime == null ? null : TimeZoneInfo.ConvertTimeFromUtc(this.Patient.ProfileLastLoginDateTime.Value, this.GetTimeZone());
 
-        private bool CanEditDatasetAccess { get; set; }
+        private bool CanViewAccountDetails => this.UserHasRole(Roles.Admin) || this.UserHasRole(Roles.Reviewer);
+
+        private bool CanViewMessagingVerifications => this.UserHasRole(Roles.Admin) || this.UserHasRole(Roles.Reviewer);
+
+        private bool CanViewDatasetAccess => this.UserHasRole(Roles.Admin) || this.UserHasRole(Roles.Reviewer);
+
+        private bool CanEditDatasetAccess => this.UserHasRole(Roles.Admin);
+
+        private bool CanViewAgentAuditHistory => this.UserHasRole(Roles.Admin) || this.UserHasRole(Roles.Reviewer);
+
+        private string Covid19TreatmentAssessmentPath => $"/covid-19-treatment-assessment?hdid={this.Hdid}";
+
+        private AuthenticationState? AuthenticationState { get; set; }
+
+        private string Hdid { get; set; } = string.Empty;
 
         /// <inheritdoc/>
         protected override async Task OnInitializedAsync()
         {
             await base.OnInitializedAsync();
-
-            AuthenticationState state = await this.AuthenticationStateProvider.GetAuthenticationStateAsync();
-            this.CanEditDatasetAccess = state.User.IsInRole(Roles.Admin);
+            this.AuthenticationState = await this.AuthenticationStateProvider.GetAuthenticationStateAsync();
         }
 
         /// <inheritdoc/>
@@ -108,11 +131,10 @@ namespace HealthGateway.Admin.Client.Pages
             base.OnInitialized();
 
             Uri uri = this.NavigationManager.ToAbsoluteUri(this.NavigationManager.Uri);
-            if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("hdid", out StringValues hdid))
+            if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("hdid", out StringValues hdid) && hdid != StringValues.Empty)
             {
-                this.Hdid = hdid;
-                this.RetrievePatientData();
-                this.ActionSubscriber.SubscribeToAction<PatientSupportActions.LoadSuccessAction>(this, _ => this.RetrieveMessagingVerifications());
+                this.Hdid = hdid.ToString();
+                this.RetrievePatientDetails();
             }
             else
             {
@@ -131,39 +153,24 @@ namespace HealthGateway.Admin.Client.Pages
             };
         }
 
-        private void RetrievePatientData()
+        private void RetrievePatientDetails()
         {
             if (this.Patient == null)
             {
                 this.Dispatcher.Dispatch(new PatientSupportActions.ResetStateAction());
+                this.Dispatcher.Dispatch(new PatientSupportActions.LoadAction { QueryType = PatientQueryType.Hdid, QueryString = this.Hdid });
+            }
+
+            if (this.AssessmentInfo == null)
+            {
                 this.Dispatcher.Dispatch(new PatientDetailsActions.ResetStateAction());
-                this.Dispatcher.Dispatch(new PatientSupportActions.LoadAction(PatientQueryType.Hdid, this.Hdid));
-            }
-            else
-            {
-                this.RetrieveMessagingVerifications();
-            }
-
-            DateTime? patientProfileCreatedDateTime = this.Patient?.ProfileCreatedDateTime;
-            if (patientProfileCreatedDateTime != null)
-            {
-                this.ProfileCreatedDateTime = TimeZoneInfo.ConvertTimeFromUtc(patientProfileCreatedDateTime.Value, this.GetTimeZone());
-            }
-
-            DateTime? profileLastLoginDateTime = this.Patient?.ProfileLastLoginDateTime;
-            if (profileLastLoginDateTime != null)
-            {
-                this.ProfileLastLoginDateTime = TimeZoneInfo.ConvertTimeFromUtc(profileLastLoginDateTime.Value, this.GetTimeZone());
+                this.Dispatcher.Dispatch(new PatientDetailsActions.LoadAction { Hdid = this.Hdid });
             }
         }
 
-        private void RetrieveMessagingVerifications()
+        private bool UserHasRole(string role)
         {
-            this.Dispatcher.Dispatch(new PatientDetailsActions.ResetStateAction());
-            if (this.Patient?.ProfileCreatedDateTime != null)
-            {
-                this.Dispatcher.Dispatch(new PatientDetailsActions.LoadAction(this.Hdid));
-            }
+            return this.AuthenticationState?.User.IsInRole(role) == true;
         }
 
         private TimeZoneInfo GetTimeZone()

@@ -135,7 +135,7 @@ namespace HealthGateway.Admin.Client.Components.Support
             };
             DialogParameters parameters = new()
             {
-                ["AuditableAction"] = new PatientDetailsActions.BlockAccessAction(this.Hdid, this.blockedDataSources),
+                ["AuditableAction"] = new PatientDetailsActions.BlockAccessAction { Hdid = this.Hdid, DataSources = this.blockedDataSources },
             };
 
             IDialogReference dialog = await this.Dialog

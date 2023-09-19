@@ -20,9 +20,9 @@ namespace HealthGateway.GatewayApi.Services
     using System.IO;
     using System.Reflection;
     using System.Threading.Tasks;
+    using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Delegates;
-    using HealthGateway.Common.Models;
     using HealthGateway.Common.Models.CDogs;
     using HealthGateway.GatewayApi.Models;
     using Microsoft.Extensions.Logging;

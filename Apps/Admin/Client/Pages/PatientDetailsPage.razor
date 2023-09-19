@@ -1,8 +1,9 @@
 @page "/patient-details"
 @layout MainLayout
-@attribute [Authorize(Roles = $"{Roles.Admin},{Roles.Reviewer}")]
+@attribute [Authorize(Roles = $"{Roles.Admin},{Roles.Reviewer},{Roles.Support}")]
 @using HealthGateway.Admin.Client.Store.PatientDetails
 @using HealthGateway.Admin.Client.Store.PatientSupport
+@using HealthGateway.Common.Data.Utils
 @using HealthGateway.Admin.Common.Constants
 @using HealthGateway.Admin.Client.Components.Support
 @using HealthGateway.Admin.Client.Components.AgentAudit
@@ -10,8 +11,10 @@
 
 <PageTitle>Health Gateway Admin Patient Details</PageTitle>
 
-<MudLink Href="/support?details">
-    <MudText Typo="Typo.h5"><MudIcon Icon="fas fa-arrow-left" /> Back</MudText>
+<MudLink Href="/support?details" data-testid="patient-details-back-button">
+    <MudText Typo="Typo.h5" class="mb-4">
+        <MudIcon Icon="fas fa-arrow-left" /><span class="ml-2">Back</span>
+    </MudText>
 </MudLink>
 
 <HgBannerFeedback
@@ -56,7 +59,7 @@
 @if (Patient != null)
 {
     <HgPageHeading Class="mt-3">User Details</HgPageHeading>
-    <MudGrid>
+    <MudGrid Spacing="2">
         <MudItem xs="12" lg="4">
             <HgField Label="Name" Value="@PatientName" data-testid="patient-name" />
         </MudItem>
@@ -70,31 +73,53 @@
             <HgField Label="HDID" Value="@Patient.Hdid" data-testid="patient-hdid" />
         </MudItem>
         <MudItem xs="12" lg="6">
-            <HgField Label="Physical Address" Value="@Patient.PhysicalAddress" data-testid="patient-physical-address" />
+            <HgField Label="Physical Address" Value="@AddressUtility.GetAddressAsSingleLine(Patient.PhysicalAddress)" data-testid="patient-physical-address" />
         </MudItem>
         <MudItem xs="12" lg="6">
-            <HgField Label="Mailing Address" Value="@Patient.PostalAddress" data-testid="patient-mailing-address" />
+            <HgField Label="Mailing Address" Value="@AddressUtility.GetAddressAsSingleLine(Patient.PostalAddress)" data-testid="patient-mailing-address" />
         </MudItem>
     </MudGrid>
-    <MudText Class="my-3" Typo="Typo.subtitle1">
-        Account Details
-    </MudText>
     @if (Patient.Status == PatientStatus.Default)
     {
-        <MudGrid>
-            <MudItem xs="12" lg="6">
-                <HgField Label="Account Created" Value="@ProfileCreatedDateTime.ToString()" data-testid="profile-created-datetime" />
-            </MudItem>
-            <MudItem xs="12" lg="6">
-                <HgField Label="Last Login" Value="@ProfileLastLoginDateTime.ToString()" data-testid="profile-last-login-datetime" />
-            </MudItem>
-        </MudGrid>
-        <MessageVerificationTable Data="@MessagingVerifications" IsLoading="@PatientSupportDetailsLoading" />
-        <DatasetAccessSection Data="@BlockedDataSources" IsLoading="@PatientSupportDetailsLoading" Hdid="@Hdid" CanEdit="@CanEditDatasetAccess" />
-        <AgentAuditHistory Title="Agent Reason History" AgentActions="@AgentAuditHistory" IsLoading="@PatientSupportDetailsLoading" />
+        if (CanViewAccountDetails)
+        {
+            <MudText Class="my-3" Typo="Typo.subtitle1">
+                Account Details
+            </MudText>
+            <MudGrid Spacing="2">
+                <MudItem xs="12" lg="6">
+                    <HgField Label="Account Created" Value="@ProfileCreatedDateTime.ToString()" data-testid="profile-created-datetime" />
+                </MudItem>
+                <MudItem xs="12" lg="6">
+                    <HgField Label="Last Login" Value="@ProfileLastLoginDateTime.ToString()" data-testid="profile-last-login-datetime" />
+                </MudItem>
+            </MudGrid>
+        }
+
+        if (CanViewMessagingVerifications)
+        {
+            <MessageVerificationTable Data="@MessagingVerifications" IsLoading="@PatientSupportDetailsLoading" />
+        }
+
+        if (CanViewDatasetAccess)
+        {
+            <DatasetAccessSection Data="@BlockedDataSources" IsLoading="@PatientSupportDetailsLoading" Hdid="@Hdid" CanEdit="@CanEditDatasetAccess" />
+        }
+
+        if (CanViewAgentAuditHistory)
+        {
+            <AgentAuditHistory Title="Agent Reason History" AgentActions="@AgentAuditHistory" IsLoading="@PatientSupportDetailsLoading" />
+        }
+
+        <Covid19ImmunizationSection Phn="@Patient.PersonalHealthNumber" Data="@VaccineDoses" IsLoading="@PatientSupportDetailsLoading" MailAddress="@MailAddress" />
+
+        <Covid19AssessmentSection Data="@AssessmentDetails" IsLoading="@PatientSupportDetailsLoading" AssessmentPagePath="@Covid19TreatmentAssessmentPath" />
     }
-    else
+    else if (CanViewAccountDetails)
     {
+        <MudText Class="my-3" Typo="Typo.subtitle1">
+            Account Details
+        </MudText>
         <MudText Class="my-3" data-testid="no-hg-profile">
             No Health Gateway Profile
         </MudText>

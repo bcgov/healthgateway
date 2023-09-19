@@ -216,6 +216,39 @@ VALUES (
 	'Web'
 );
 
+/* PHN: 9735352535 used for admin covid assessment */
+INSERT INTO gateway."UserProfile"(
+	"UserProfileId", 
+	"CreatedBy", 
+	"CreatedDateTime", 
+	"UpdatedBy", 
+	"UpdatedDateTime", 
+	"TermsOfServiceId", 
+	"Email", 
+	"ClosedDateTime", 
+	"IdentityManagementId", 
+	"LastLoginDateTime", 
+	"EncryptionKey", 
+	"SMSNumber",
+	"YearOfBirth",
+	"LastLoginClientCode")
+VALUES (
+	'GO4DOSMRJ7MFKPPADDZ3FK2MOJ45SFKONJWR67XNLMZQFNEHDKDA',	
+	'System', 
+	current_timestamp - INTERVAL '1000 day',  
+	'System', 
+	current_timestamp - INTERVAL '1000 day',   
+	'c99fd839-b4a2-40f9-b103-529efccd0dcd', 
+	null,
+	null,
+	null,
+	current_timestamp - INTERVAL '1000 day',  
+	'CwqU7+gCkL3jMWWcUpq80Oh42QejXOwI+Ov0tmsVWBI=',
+	null,
+	null,
+	'Web'
+);
+
 /* User (hthgtwy04) - last logged in 1 day ago */
 INSERT INTO gateway."UserProfileHistory"(
 	"UserProfileHistoryId", 

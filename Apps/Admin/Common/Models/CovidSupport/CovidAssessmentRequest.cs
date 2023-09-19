@@ -13,128 +13,111 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Admin.Server.Models.CovidSupport;
+namespace HealthGateway.Admin.Common.Models.CovidSupport;
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.Json.Serialization;
-using HealthGateway.Admin.Server.Constants;
+using HealthGateway.Admin.Common.Constants;
 
 /// <summary>
-/// Model object representing covid therapy assessment submission request.
+/// Model representing a request for COVID-19 therapy assessment.
 /// </summary>
 public class CovidAssessmentRequest
 {
     /// <summary>
-    /// Initializes a new instance of the <see cref="CovidAssessmentRequest"/> class.
-    /// </summary>
-    public CovidAssessmentRequest()
-    {
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="CovidAssessmentRequest"/> class.
-    /// </summary>
-    /// <param name="streetAddresses">The list of address street lines.</param>
-    [JsonConstructor]
-    public CovidAssessmentRequest(
-        IList<string> streetAddresses)
-    {
-        this.StreetAddresses = streetAddresses;
-    }
-
-    /// <summary>
-    /// Gets or sets the phn used.
+    /// Gets or sets the patient's PHN.
     /// </summary>
     [JsonPropertyName("phn")]
-    public string? Phn { get; set; }
+    public string Phn { get; set; } = string.Empty;
 
     /// <summary>
-    /// Gets or sets the first name.
+    /// Gets or sets the patient's first name.
     /// </summary>
     [JsonPropertyName("firstName")]
-    public string? FirstName { get; set; }
+    public string FirstName { get; set; } = string.Empty;
 
     /// <summary>
-    /// Gets or sets the last name.
+    /// Gets or sets the patient's last name.
     /// </summary>
     [JsonPropertyName("lastName")]
-    public string? LastName { get; set; }
+    public string LastName { get; set; } = string.Empty;
 
     /// <summary>
-    /// Gets or sets the patients date of birth.
+    /// Gets or sets the patient's date of birth.
     /// </summary>
     [JsonPropertyName("dob")]
     public DateTime? Birthdate { get; set; }
 
     /// <summary>
-    /// Gets or sets the phone number used.
+    /// Gets or sets the patient's phone number.
     /// </summary>
     [JsonPropertyName("phoneNumber")]
-    public string? PhoneNumber { get; set; }
+    public string PhoneNumber { get; set; } = string.Empty;
 
     /// <summary>
-    /// Gets or sets the identifies indigenous option.
+    /// Gets or sets the response to the identifies indigenous question.
     /// </summary>
     [JsonPropertyName("identifiesIndigenous")]
     public CovidTherapyAssessmentOption IdentifiesIndigenous { get; set; }
 
     /// <summary>
-    /// Gets or sets the identifies has a family doctor or np option.
+    /// Gets or sets the response to the family doctor or NP question.
     /// </summary>
     [JsonPropertyName("hasAFamilyDoctorOrNp")]
     public CovidTherapyAssessmentOption HasAFamilyDoctorOrNp { get; set; }
 
     /// <summary>
-    /// Gets or sets the identifies the confirms over 12 option.
+    /// Gets or sets the response to the over 12 confirmation question.
     /// </summary>
     [JsonPropertyName("confirmsOver12")]
     public CovidTherapyAssessmentOption ConfirmsOver12 { get; set; }
 
     /// <summary>
-    /// Gets or sets the tested positive in past 7 days.
+    /// Gets or sets the response to the tested positive in past 7 days question.
     /// </summary>
     [JsonPropertyName("testedPositiveInPast7Days")]
     public CovidTherapyAssessmentOption TestedPositiveInPast7Days { get; set; }
 
     /// <summary>
-    /// Gets or sets the has severe covid 19 symptoms option.
+    /// Gets or sets the response to the severe COVID-19 symptoms question.
     /// </summary>
     [JsonPropertyName("hasSevereCovid19Symptoms")]
     public CovidTherapyAssessmentOption HasSevereCovid19Symptoms { get; set; }
 
     /// <summary>
-    /// Gets or sets a value indicating whether there has been mild or moderate covid 19 symptoms.
+    /// Gets or sets the response to the mild or moderate COVID-19 symptoms question.
     /// </summary>
     [JsonPropertyName("hasMildOrModerateCovid19Symptoms")]
     public CovidTherapyAssessmentOption HasMildOrModerateCovid19Symptoms { get; set; }
 
     /// <summary>
-    /// Gets or sets the symptom on set date.
+    /// Gets or sets the symptom onset date.
     /// </summary>
     [JsonPropertyName("symptomOnSetDate")]
-    public DateTime? SymptomOnSetDate { get; set; }
+    public DateTime? SymptomOnsetDate { get; set; }
 
     /// <summary>
-    /// Gets or sets the has immunity compromising medical condition option.
+    /// Gets or sets the response to the immunity-compromising medical condition question.
     /// </summary>
     [JsonPropertyName("hasImmunityCompromisingMedicalCondition")]
     public CovidTherapyAssessmentOption HasImmunityCompromisingMedicalCondition { get; set; }
 
     /// <summary>
-    /// Gets or sets the reports 3 doses of covid 19 vaccine option.
+    /// Gets or sets the response to the 3 doses of COVID-19 vaccine question.
     /// </summary>
     [JsonPropertyName("reports3DosesC19Vaccine")]
     public CovidTherapyAssessmentOption Reports3DosesC19Vaccine { get; set; }
 
     /// <summary>
-    /// Gets or sets the has chronic condition diagnoses option.
+    /// Gets or sets the response to the chronic condition diagnoses question.
     /// </summary>
     [JsonPropertyName("hasChronicConditionDiagnoses")]
     public CovidTherapyAssessmentOption HasChronicConditionDiagnoses { get; set; }
 
     /// <summary>
-    /// Gets or sets the has consented to share information option.
+    /// Gets or sets the response to the consent to update CareConnect question.
     /// </summary>
     [JsonPropertyName("consentToSendCC")]
     public CovidTherapyAssessmentOption ConsentToSendCc { get; set; }
@@ -143,64 +126,64 @@ public class CovidAssessmentRequest
     /// Gets or sets the agent comments.
     /// </summary>
     [JsonPropertyName("agentComments")]
-    public string? AgentComments { get; set; }
+    public string AgentComments { get; set; } = string.Empty;
 
     /// <summary>
-    /// Gets street address.
+    /// Gets or sets the lines of the patient's street address.
     /// </summary>
     [JsonPropertyName("streetAddresses")]
-    public IList<string>? StreetAddresses { get; } = new List<string>();
+    public IEnumerable<string> StreetAddresses { get; set; } = Enumerable.Empty<string>();
 
     /// <summary>
-    /// Gets or sets the city.
+    /// Gets or sets the patient's city.
     /// </summary>
     [JsonPropertyName("city")]
-    public string? City { get; set; }
+    public string City { get; set; } = string.Empty;
 
     /// <summary>
-    /// Gets or sets the province or state.
+    /// Gets or sets the patient's province or state.
     /// </summary>
     [JsonPropertyName("provOrState")]
-    public string? ProvOrState { get; set; }
+    public string ProvOrState { get; set; } = string.Empty;
 
     /// <summary>
-    /// Gets or sets the postal code.
+    /// Gets or sets the patient's postal code.
     /// </summary>
     [JsonPropertyName("postalCode")]
-    public string? PostalCode { get; set; }
+    public string PostalCode { get; set; } = string.Empty;
 
     /// <summary>
-    /// Gets or sets the country.
+    /// Gets or sets the patient's country.
     /// </summary>
     [JsonPropertyName("country")]
-    public string? Country { get; set; }
+    public string Country { get; set; } = string.Empty;
 
     /// <summary>
-    /// Gets or sets a value indicating whether address flag has changed.
+    /// Gets or sets a value indicating whether a change of address has been flagged.
     /// </summary>
     [JsonPropertyName("changeAddressFlag")]
     public bool ChangeAddressFlag { get; set; }
 
     /// <summary>
-    /// Gets or sets a value indicating whether address flag has changed.
+    /// Gets or sets positive COVID-19 lab data.
     /// </summary>
     [JsonPropertyName("positiveCovidLabData")]
-    public string? PositiveCovidLabData { get; set; }
+    public string PositiveCovidLabData { get; set; } = string.Empty;
 
     /// <summary>
-    /// Gets or sets a value indicating the covid vaccination history.
+    /// Gets or sets the COVID-19 vaccination history.
     /// </summary>
     [JsonPropertyName("covidVaccinationHistory")]
-    public string? CovidVaccinationHistory { get; set; }
+    public string CovidVaccinationHistory { get; set; } = string.Empty;
 
     /// <summary>
-    /// Gets or sets a value indicating the CEV group details.
+    /// Gets or sets CEV group details.
     /// </summary>
     [JsonPropertyName("cevGroupDetails")]
-    public string? CevGroupDetails { get; set; }
+    public string CevGroupDetails { get; set; } = string.Empty;
 
     /// <summary>
-    /// Gets or sets a value indicating the submission date.
+    /// Gets or sets the submission date.
     /// </summary>
     [JsonPropertyName("submitted")]
     public DateTime? Submitted { get; set; }

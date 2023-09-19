@@ -17,8 +17,14 @@
             "surname": "ORPHANING"
         },
         "birthdate": "1964-06-04",
-        "physicalAddress": "2854 POYLE STREET, AXBRIDGE, BC, V0C6J8",
-        "postalAddress": "",
+        "physicalAddress": {
+            "streetLines": ["2854 POYLE STREET"],
+            "city": "AXBRIDGE",
+            "state": "BC",
+            "postalCode": "V0C6J8",
+            "country": ""
+        },
+        "postalAddress": null,
         "profileCreatedDateTime": "2023-01-01T16:47:24.674743Z",
         "profileLastLoginDateTime": "2023-05-01T16:47:24.674743Z"
     }

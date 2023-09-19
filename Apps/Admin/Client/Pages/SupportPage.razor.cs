@@ -22,6 +22,7 @@ namespace HealthGateway.Admin.Client.Pages
     using System.Threading.Tasks;
     using Fluxor;
     using Fluxor.Blazor.Web.Components;
+    using HealthGateway.Admin.Client.Authorization;
     using HealthGateway.Admin.Client.Store.PatientSupport;
     using HealthGateway.Admin.Common.Constants;
     using HealthGateway.Admin.Common.Models;
@@ -29,6 +30,7 @@ namespace HealthGateway.Admin.Client.Pages
     using HealthGateway.Common.Data.Utils;
     using HealthGateway.Common.Data.Validations;
     using Microsoft.AspNetCore.Components;
+    using Microsoft.AspNetCore.Components.Authorization;
     using Microsoft.AspNetCore.WebUtilities;
     using Microsoft.Extensions.Primitives;
     using MudBlazor;
@@ -40,16 +42,24 @@ namespace HealthGateway.Admin.Client.Pages
     {
         private static readonly PhnValidator PhnValidator = new();
 
-        private static List<PatientQueryType> QueryTypes => new() { PatientQueryType.Phn, PatientQueryType.Email, PatientQueryType.Sms, PatientQueryType.Hdid, PatientQueryType.Dependent };
-
         [Inject]
         private IDispatcher Dispatcher { get; set; } = default!;
+
+        [Inject]
+        private IActionSubscriber ActionSubscriber { get; set; } = default!;
 
         [Inject]
         private IState<PatientSupportState> PatientSupportState { get; set; } = default!;
 
         [Inject]
         private NavigationManager NavigationManager { get; set; } = default!;
+
+        [Inject]
+        private AuthenticationStateProvider AuthenticationStateProvider { get; set; } = default!;
+
+        private List<PatientQueryType> QueryTypes => this.UserHasRole(Roles.Admin) || this.UserHasRole(Roles.Reviewer)
+            ? new() { PatientQueryType.Phn, PatientQueryType.Email, PatientQueryType.Sms, PatientQueryType.Hdid, PatientQueryType.Dependent }
+            : new() { PatientQueryType.Phn };
 
         private PatientQueryType QueryType { get; set; } = PatientQueryType.Phn;
 
@@ -97,7 +107,7 @@ namespace HealthGateway.Admin.Client.Pages
 
             return this.SelectedQueryType switch
             {
-                PatientQueryType.Email or PatientQueryType.Sms when StringManipulator.StripWhitespace(parameter)?.Length < 5
+                PatientQueryType.Email or PatientQueryType.Sms when StringManipulator.StripWhitespace(parameter).Length < 5
                     => "Email/SMS must be minimum 5 characters",
                 PatientQueryType.Sms when !StringManipulator.IsPositiveNumeric(parameter)
                     => "SMS must contain digits only",
@@ -105,20 +115,30 @@ namespace HealthGateway.Admin.Client.Pages
             };
         };
 
+        private AuthenticationState? AuthenticationState { get; set; }
+
         /// <inheritdoc/>
-        protected override void OnInitialized()
+        protected override async Task OnInitializedAsync()
         {
-            base.OnInitialized();
+            await base.OnInitializedAsync();
             this.ResetPatientSupportState();
+            this.AuthenticationState = await this.AuthenticationStateProvider.GetAuthenticationStateAsync();
 
             Uri uri = this.NavigationManager.ToAbsoluteUri(this.NavigationManager.Uri);
-
             if (QueryHelpers.ParseQuery(uri.Query).TryGetValue(PatientQueryType.Hdid.ToString(), out StringValues hdid))
             {
-                this.Dispatcher.Dispatch(new PatientSupportActions.LoadAction(PatientQueryType.Hdid, StringManipulator.StripWhitespace(hdid)));
+                this.Dispatcher.Dispatch(
+                    new PatientSupportActions.LoadAction
+                    {
+                        QueryType = PatientQueryType.Hdid,
+                        QueryString = StringManipulator.StripWhitespace(hdid),
+                    });
+
                 this.QueryParameter = hdid!;
                 this.SelectedQueryType = PatientQueryType.Hdid;
             }
+
+            this.ActionSubscriber.SubscribeToAction<PatientSupportActions.LoadSuccessAction>(this, this.CheckForSingleResult);
         }
 
         private static string FormatQueryType(PatientQueryType queryType)
@@ -130,6 +150,11 @@ namespace HealthGateway.Admin.Client.Pages
                 PatientQueryType.Sms => "SMS",
                 _ => queryType.ToString(),
             };
+        }
+
+        private bool UserHasRole(string role)
+        {
+            return this.AuthenticationState?.User.IsInRole(role) == true;
         }
 
         private void Clear()
@@ -153,13 +178,31 @@ namespace HealthGateway.Admin.Client.Pages
             if (this.Form.IsValid)
             {
                 this.ResetPatientSupportState();
-                this.Dispatcher.Dispatch(new PatientSupportActions.LoadAction(this.SelectedQueryType, StringManipulator.StripWhitespace(this.QueryParameter)));
+                this.Dispatcher.Dispatch(
+                    new PatientSupportActions.LoadAction
+                    {
+                        QueryType = this.SelectedQueryType,
+                        QueryString = StringManipulator.StripWhitespace(this.QueryParameter),
+                    });
             }
+        }
+
+        private void CheckForSingleResult(PatientSupportActions.LoadSuccessAction action)
+        {
+            if (action.Data.Count == 1)
+            {
+                this.NavigateToPatientDetails(action.Data.Single().Hdid);
+            }
+        }
+
+        private void NavigateToPatientDetails(string hdid)
+        {
+            this.NavigationManager.NavigateTo($"patient-details?hdid={hdid}");
         }
 
         private void RowClickEvent(TableRowClickEventArgs<PatientRow> tableRowClickEventArgs)
         {
-            this.NavigationManager.NavigateTo($"patient-details?hdid={tableRowClickEventArgs.Item.Hdid}");
+            this.NavigateToPatientDetails(tableRowClickEventArgs.Item.Hdid);
         }
 
         private sealed record PatientRow

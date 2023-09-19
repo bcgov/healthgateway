@@ -17,6 +17,7 @@ namespace HealthGateway.Admin.Common.Models
 {
     using System;
     using HealthGateway.Admin.Common.Constants;
+    using HealthGateway.Common.Data.Models;
 
     /// <summary>
     /// Represents details associated with a patient retrieved by a support query.
@@ -66,12 +67,12 @@ namespace HealthGateway.Admin.Common.Models
         /// <summary>
         /// Gets or sets the physical address for the patient.
         /// </summary>
-        public string PhysicalAddress { get; set; } = string.Empty;
+        public Address? PhysicalAddress { get; set; }
 
         /// <summary>
         /// Gets or sets the postal address for the patient.
         /// </summary>
-        public string PostalAddress { get; set; } = string.Empty;
+        public Address? PostalAddress { get; set; }
 
         /// <summary>
         /// Gets or sets the user's created datetime.

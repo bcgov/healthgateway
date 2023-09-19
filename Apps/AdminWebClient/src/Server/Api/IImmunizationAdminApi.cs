@@ -18,6 +18,7 @@ namespace HealthGateway.Admin.Api;
 using System.Threading.Tasks;
 using HealthGateway.Admin.Models.CovidSupport;
 using HealthGateway.Admin.Models.Immunization;
+using HealthGateway.Common.Data.Models.PHSA;
 using HealthGateway.Common.Models.PHSA;
 using Refit;
 

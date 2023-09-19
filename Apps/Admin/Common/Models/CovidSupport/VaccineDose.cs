@@ -13,31 +13,38 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Common.Models.PHSA
+namespace HealthGateway.Admin.Common.Models.CovidSupport
 {
+    using System;
     using System.Text.Json.Serialization;
 
     /// <summary>
-    /// An object representing encoded data.
+    /// Represents a vaccine dose.
     /// </summary>
-    public class EncodedMedia
+    public class VaccineDose
     {
         /// <summary>
-        /// Gets or sets the media type of the data attribute.
+        /// Gets or sets the name of the product.
         /// </summary>
-        [JsonPropertyName("mediaType")]
-        public string? Type { get; set; }
+        [JsonPropertyName("product")]
+        public string? Product { get; set; }
 
         /// <summary>
-        /// Gets or sets the encoding of data attribute.
+        /// Gets or sets the lot identifier of the immunization.
         /// </summary>
-        [JsonPropertyName("encoding")]
-        public string? Encoding { get; set; }
+        [JsonPropertyName("lot")]
+        public string? Lot { get; set; }
 
         /// <summary>
-        /// Gets or sets the raw data encoded and having a media type as specified.
+        /// Gets or sets the location where the dose was administered.
         /// </summary>
-        [JsonPropertyName("data")]
-        public string? Data { get; set; }
+        [JsonPropertyName("location")]
+        public string? Location { get; set; }
+
+        /// <summary>
+        /// Gets or sets the date the dose was administered.
+        /// </summary>
+        [JsonPropertyName("date")]
+        public DateTime? Date { get; set; }
     }
 }

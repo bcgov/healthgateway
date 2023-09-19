@@ -13,19 +13,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Admin.Server.Models.CovidSupport;
+namespace HealthGateway.Admin.Common.Models.CovidSupport;
 
 using System;
 using System.Text.Json.Serialization;
 
 /// <summary>
-/// Model object representing an anti viral screener support submission response.
+/// Model object representing previous assessment details.
 /// </summary>
-public class CovidAssessmentResponse
+public class PreviousAssessmentDetails
 {
     /// <summary>
-    /// Gets or sets the id for covid therapy assessment response.
+    /// Gets or sets the date time of assessment.
     /// </summary>
-    [JsonPropertyName("id")]
-    public Guid Id { get; set; }
+    [JsonPropertyName("dateTimeOfAssessment")]
+    public DateTime DateTimeOfAssessment { get; set; }
+
+    /// <summary>
+    /// Gets or sets the form id.
+    /// </summary>
+    [JsonPropertyName("formId")]
+    public string? FormId { get; set; }
 }
