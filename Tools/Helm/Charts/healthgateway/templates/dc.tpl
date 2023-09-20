@@ -7,7 +7,7 @@
 {{- $labels := include "standard.labels" $top -}}
 {{- $port := ($context.port | default 8080) -}}
 {{- $protocol := ($context.protocol | default "tcp") -}}
-{{- $image := print $top.Values.defaultImageRepository "/" $top.Values.toolsNamespace "/" $context.name -}}
+{{- $image := print $top.Values.defaultImageRepository "/" $top.Values.toolsNamespace "/" ($context.image.imageStreamName | default $context.name) -}}
 {{- $tag := $context.image.tag | default $top.Values.defaultImageTag | default "latest" -}}
 {{- $replicas := (kindIs "float64" $context.replicas) | ternary $context.replicas (default $top.Values.defaultDcReplicas | default 1) -}}
 {{- $role := $context.role -}}
@@ -128,6 +128,6 @@ spec:
           - {{ $name }}
         from:
           kind: ImageStreamTag
-          name: {{ $context.name }}:{{ $tag }}
+          name: {{ $context.image.imageStreamName | default $context.name }}:{{ $tag }}
           namespace: {{ $top.Values.toolsNamespace }}
 {{- end }}

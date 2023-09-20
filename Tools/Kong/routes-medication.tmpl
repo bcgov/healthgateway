@@ -1,14 +1,14 @@
-      - name: medication-$KONG_NAMESPACE-public
+      - name: $HELM_APP_NAME-medication-$KONG_NAMESPACE-public
         methods:
           - GET
         hosts:
-          - $KONG_NAMESPACE.api.gov.bc.ca
+          - $SUBDOMAIN.api.gov.bc.ca
         paths:
           - /api/medicationservice/Medication/
         strip_path: false
         plugins:
           - name: rate-limiting
-            tags: [ns.$KONG_NAMESPACE]
+            tags: [ns.$KONG_NAMESPACE.$ENVIRONMENT]
             enabled: true
             config:
               fault_tolerant: true
@@ -19,7 +19,7 @@
               - http
               - https
           - name: rate-limiting_902
-            tags: [ns.$KONG_NAMESPACE]
+            tags: [ns.$KONG_NAMESPACE.$ENVIRONMENT]
             enabled: true
             config:
               fault_tolerant: true
@@ -31,4 +31,4 @@
               - https
         tags:
           - OAS3_import
-          - ns.$KONG_NAMESPACE
+          - ns.$KONG_NAMESPACE.$ENVIRONMENT
