@@ -135,6 +135,8 @@ function showDialog() {
                         ref="recommendationsReportComponent"
                         :hdid="hdid"
                         :filter="reportFilter"
+                        :is-dependent="isDependent"
+                        force-show
                         hide-immunizations
                         hide-recommendation-header
                         @on-is-empty-changed="hasRecords = !$event"

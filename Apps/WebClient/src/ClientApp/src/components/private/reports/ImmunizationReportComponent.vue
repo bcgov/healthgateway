@@ -24,12 +24,14 @@ interface Props {
     hideImmunizations?: boolean;
     hideRecommendations?: boolean;
     hideRecommendationHeader?: boolean;
+    forceShow?: boolean;
 }
 const props = withDefaults(defineProps<Props>(), {
     isDependent: false,
     hideImmunizations: false,
     hideRecommendations: false,
     hideRecommendationHeader: false,
+    forceShow: false,
 });
 
 const emit = defineEmits<{
@@ -206,7 +208,10 @@ immunizationStore
         <div v-if="isRecommendationEmpty && isEmpty && !isLoading">
             No records found.
         </div>
-        <section v-else-if="!isDependent" class="d-none d-md-block">
+        <section
+            v-else-if="!isDependent || forceShow"
+            class="d-none d-md-block"
+        >
             <template v-if="!hideImmunizations">
                 <h4 class="text-h6 font-weight-bold mb-2">
                     Immunization History
