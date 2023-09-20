@@ -99,7 +99,7 @@ namespace HealthGateway.CommonTests.Services
         }
 
         /// <summary>
-        ///  GetPatient - Valid ID.
+        /// GetPatient - Valid ID.
         /// </summary>
         /// <returns>
         /// A <see cref="Task"/> representing the asynchronous unit test.
