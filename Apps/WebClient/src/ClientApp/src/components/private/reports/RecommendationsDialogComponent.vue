@@ -7,6 +7,7 @@ import HgIconButtonComponent from "@/components/common/HgIconButtonComponent.vue
 import MessageModalComponent from "@/components/common/MessageModalComponent.vue";
 import TooManyRequestsComponent from "@/components/error/TooManyRequestsComponent.vue";
 import ImmunizationReportComponent from "@/components/private/reports/ImmunizationReportComponent.vue";
+import { EntryType, entryTypeMap } from "@/constants/entryType";
 import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import { container } from "@/ioc/container";
 import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
@@ -18,6 +19,7 @@ import RequestResult from "@/models/requestResult";
 import { ILogger } from "@/services/interfaces";
 import { useErrorStore } from "@/stores/error";
 import { useReportStore } from "@/stores/report";
+import EventTracker from "@/utility/eventTracker";
 
 interface Props {
     hdid: string;
@@ -50,8 +52,25 @@ function showConfirmationModal(type: ReportFormatType): void {
     messageModal.value?.showModal();
 }
 
+function trackDownload() {
+    let reportEventName =
+        entryTypeMap.get(EntryType.Immunization)?.reportEventName ?? "";
+
+    const formatTypeName = ReportFormatType[reportFormatType.value];
+    const eventName = `${reportEventName} (${formatTypeName})`;
+
+    if (!props.isDependent) {
+        EventTracker.downloadReport(eventName);
+    } else {
+        EventTracker.downloadReport(`Dependent_${eventName}`);
+    }
+}
+
 function downloadReport() {
     isGeneratingReport.value = true;
+
+    trackDownload();
+
     recommendationsReportComponent.value
         ?.generateReport(
             reportFormatType.value,
