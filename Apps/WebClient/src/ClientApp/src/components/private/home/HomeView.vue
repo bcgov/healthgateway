@@ -10,6 +10,7 @@ import PageTitleComponent from "@/components/common/PageTitleComponent.vue";
 import AddQuickLinkComponent from "@/components/private/home/AddQuickLinkComponent.vue";
 import RecommendationsDialogComponent from "@/components/private/reports/RecommendationsDialogComponent.vue";
 import {
+    EntryType,
     EntryTypeDetails,
     entryTypeMap,
     getEntryTypeByModule,
@@ -118,6 +119,7 @@ const showRecommendationsCardButton = computed(
     () =>
         configStore.webConfig.featureToggleConfiguration.homepage
             .showRecommendationsLink &&
+        ConfigUtil.isDatasetEnabled(EntryType.Immunization) &&
         !preferenceRecommendationsLinkHidden.value
 );
 const showVaccineCardButton = computed(
