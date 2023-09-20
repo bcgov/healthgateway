@@ -79,7 +79,7 @@ namespace HealthGateway.Admin.Client.Pages
         private CovidAssessmentDetailsResponse? AssessmentInfo => this.PatientDetailsState.Value.Result?.CovidAssessmentDetails;
 
         private IEnumerable<PreviousAssessmentDetails> AssessmentDetails =>
-            this.AssessmentInfo?.PreviousAssessmentDetailsList.OrderByDescending(a => a.DateTimeOfAssessment) ?? Enumerable.Empty<PreviousAssessmentDetails>();
+            this.AssessmentInfo?.PreviousAssessmentDetailsList?.OrderByDescending(a => a.DateTimeOfAssessment) ?? Enumerable.Empty<PreviousAssessmentDetails>();
 
         private bool PatientsLoaded => this.PatientSupportState.Value.Loaded;
 
