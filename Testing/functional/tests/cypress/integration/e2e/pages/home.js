@@ -144,3 +144,63 @@ describe("Home page - Recommendations", () => {
         cy.get("[data-testid=recommendations-dialog]").should("not.exist");
     });
 });
+
+describe("Home page - Recommendations Configurations", () => {
+    it("Recommendation Quick link should not exist when homepage showRecommendationsLink true and imms false ", () => {
+        cy.configureSettings({
+            homepage: {
+                showRecommendationsLink: true,
+            },
+            datasets: [
+                {
+                    name: "medication",
+                    enabled: true,
+                },
+                {
+                    name: "immunization",
+                    enabled: false,
+                },
+            ],
+        });
+
+        cy.login(
+            Cypress.env("keycloak.hthgtwy20.username"),
+            Cypress.env("keycloak.password"),
+            AuthMethod.KeyCloak,
+            homeUrl
+        );
+        cy.get("[data-testid=recommendations-card-button]").should("not.exist");
+        cy.get("[data-testid=add-quick-link-button]").should("be.disabled");
+
+        // Remove medication quick link to activate add quick link button
+        cy.get("[data-testid=quick-link-card]")
+            .first()
+            .within(() => {
+                cy.get("[data-testid=card-menu-button]")
+                    .should("be.visible")
+                    .click();
+                cy.document()
+                    .find("[data-testid=remove-quick-link-button")
+                    .should("be.visible")
+                    .click();
+            });
+
+        cy.get("[data-testid=add-quick-link-button]")
+            .should("be.enabled")
+            .click();
+
+        // Ensure recommendations dialog filter doesn't exist if add quick link dialog is shown
+        cy.get("[data-testid=recommendations-dialog-filter]").should(
+            "not.exist"
+        );
+
+        // Clean up test
+        cy.get("[data-testid=Medication-filter]")
+            .should("be.visible")
+            .find("input")
+            .should("not.to.be.checked")
+            .check({ force: true });
+
+        cy.get("[data-testid=add-quick-link-btn]").click();
+    });
+});
