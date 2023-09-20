@@ -15,6 +15,7 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Admin.Tests.Services
 {
+    // ReSharper disable ParameterOnlyUsedForPreconditionCheck.Local
     using System;
     using System.Collections.Generic;
     using System.Linq;

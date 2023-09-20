@@ -426,8 +426,11 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
         /// <summary>
         /// ValidateSms - Happy Path.
         /// </summary>
+        /// <returns>
+        /// A <see cref="Task"/> representing the asynchronous unit test.
+        /// </returns>
         [Fact]
-        public void ShouldValidateSms()
+        public async Task ShouldValidateSms()
         {
             RequestResult<bool> requestResult = new()
             {
@@ -446,7 +449,7 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
                 smsServiceMock.Object,
                 new Mock<IAuthenticationDelegate>().Object);
 
-            ActionResult<RequestResult<bool>> actualResult = Task.Run(async () => await controller.ValidateSms(this.hdid, "205 123 4567")).Result;
+            ActionResult<RequestResult<bool>> actualResult = await controller.ValidateSms(this.hdid, "205 123 4567");
 
             RequestResult<bool>? result = actualResult.Value;
             Assert.Equal(ResultType.Success, result?.ResultStatus);
@@ -456,8 +459,11 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
         /// <summary>
         /// ValidateSms - Sms not found error.
         /// </summary>
+        /// <returns>
+        /// A <see cref="Task"/> representing the asynchronous unit test.
+        /// </returns>
         [Fact]
-        public void ShouldValidateSmsNotFoundResult()
+        public async Task ShouldValidateSmsNotFoundResult()
         {
             RequestResult<bool> requestResult = new()
             {
@@ -476,7 +482,7 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
                 smsServiceMock.Object,
                 new Mock<IAuthenticationDelegate>().Object);
 
-            ActionResult<RequestResult<bool>> actualResult = Task.Run(async () => await controller.ValidateSms(this.hdid, "205 123 4567")).Result;
+            ActionResult<RequestResult<bool>> actualResult = await controller.ValidateSms(this.hdid, "205 123 4567");
 
             RequestResult<bool>? result = actualResult.Value;
             Assert.Equal(ResultType.Success, result?.ResultStatus);

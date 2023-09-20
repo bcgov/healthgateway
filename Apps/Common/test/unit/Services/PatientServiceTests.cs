@@ -99,10 +99,13 @@ namespace HealthGateway.CommonTests.Services
         }
 
         /// <summary>
-        /// GetPatient - Valid ID.
+        ///  GetPatient - Valid ID.
         /// </summary>
+        /// <returns>
+        /// A <see cref="Task"/> representing the asynchronous unit test.
+        /// </returns>
         [Fact]
-        public void ShouldSearchByValidIdentifier()
+        public async Task ShouldSearchByValidIdentifier()
         {
             RequestResult<PatientModel> requestResult = new()
             {
@@ -130,7 +133,7 @@ namespace HealthGateway.CommonTests.Services
                 new Mock<ICacheProvider>().Object);
 
             // Act
-            RequestResult<PatientModel> actual = Task.Run(async () => await service.GetPatient(Phn, PatientIdentifierType.Phn)).Result;
+            RequestResult<PatientModel> actual = await service.GetPatient(Phn, PatientIdentifierType.Phn);
 
             // Verify
             Assert.Equal(ResultType.Success, actual.ResultStatus);
@@ -140,8 +143,9 @@ namespace HealthGateway.CommonTests.Services
         /// <summary>
         /// GetPatient - Valid ID.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void ShouldFailModCheck()
+        public async Task ShouldFailModCheck()
         {
             RequestResult<PatientModel> requestResult = new()
             {
@@ -169,7 +173,7 @@ namespace HealthGateway.CommonTests.Services
                 new Mock<ICacheProvider>().Object);
 
             // Act
-            RequestResult<PatientModel> actual = Task.Run(async () => await service.GetPatient("abc123", PatientIdentifierType.Phn)).Result;
+            RequestResult<PatientModel> actual = await service.GetPatient("abc123", PatientIdentifierType.Phn);
 
             // Verify
             Assert.Equal(ResultType.ActionRequired, actual.ResultStatus);

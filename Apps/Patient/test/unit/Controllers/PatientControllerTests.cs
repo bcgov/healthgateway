@@ -48,8 +48,11 @@ namespace HealthGateway.PatientTests.Controllers
         /// <summary>
         /// GetPatients Test.
         /// </summary>
+        /// <returns>
+        /// A <see cref="Task"/> representing the asynchronous unit test.
+        /// </returns>
         [Fact]
-        public void ShouldGetPatientsV1()
+        public async Task ShouldGetPatientsV1()
         {
             // Arrange
             PatientController patientController = CreatePatientController();
@@ -71,7 +74,7 @@ namespace HealthGateway.PatientTests.Controllers
             };
 
             // Act
-            RequestResult<PatientModel> actualResult = patientController.GetPatient("123").Result;
+            RequestResult<PatientModel> actualResult = await patientController.GetPatient("123");
 
             // Assert
             expectedResult.ShouldDeepEqual(actualResult);
@@ -88,12 +91,12 @@ namespace HealthGateway.PatientTests.Controllers
             PatientController patientController = CreatePatientController();
 
             // Act
-            var actualResult = await patientController.GetPatientV2(MockedHdid);
+            ActionResult<PatientDetails> actualResult = await patientController.GetPatientV2(MockedHdid);
 
             // Assert
-            var ok = actualResult.Result.ShouldBeOfType<OkObjectResult>();
+            OkObjectResult ok = actualResult.Result.ShouldBeOfType<OkObjectResult>();
             ok.StatusCode.ShouldBe(StatusCodes.Status200OK);
-            var patientDetails = ok.Value.ShouldBeOfType<PatientDetails>();
+            PatientDetails patientDetails = ok.Value.ShouldBeOfType<PatientDetails>();
             patientDetails.HdId.ShouldBe(MockedHdid);
         }
 

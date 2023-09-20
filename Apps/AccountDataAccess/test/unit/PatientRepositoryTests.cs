@@ -15,6 +15,7 @@
 // -------------------------------------------------------------------------
 namespace AccountDataAccessTest
 {
+    // ReSharper disable ParameterOnlyUsedForPreconditionCheck.Local
     using System.Globalization;
     using System.Net;
     using System.ServiceModel;

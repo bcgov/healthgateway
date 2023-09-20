@@ -42,10 +42,11 @@ namespace HealthGateway.MedicationTests.Services
         /// The value indicates whether the special authority request data source can be accessed or
         /// not.
         /// </param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Theory]
         [InlineData(true)]
         [InlineData(false)]
-        public void ShouldGetMedications(bool canAccessDataSource)
+        public async Task ShouldGetMedications(bool canAccessDataSource)
         {
             // Setup
             string hdid = "123912390123012";
@@ -87,7 +88,7 @@ namespace HealthGateway.MedicationTests.Services
                 patientRepository.Object);
 
             // Test
-            RequestResult<IList<MedicationRequest>> response = Task.Run(async () => await service.GetMedicationRequests(hdid)).Result;
+            RequestResult<IList<MedicationRequest>> response = await service.GetMedicationRequests(hdid);
 
             // Verify
             Assert.Equal(ResultType.Success, response.ResultStatus);
@@ -107,8 +108,11 @@ namespace HealthGateway.MedicationTests.Services
         /// <summary>
         /// GetMedicationRequests - No Patient Error.
         /// </summary>
+        /// <returns>
+        /// A <see cref="Task"/> representing the asynchronous unit test.
+        /// </returns>
         [Fact]
-        public void ShouldErrorIfNoPatient()
+        public async Task ShouldErrorIfNoPatient()
         {
             // Setup
             string hdid = "123912390123012";
@@ -129,7 +133,7 @@ namespace HealthGateway.MedicationTests.Services
                 patientRepository.Object);
 
             // Test
-            RequestResult<IList<MedicationRequest>> response = Task.Run(async () => await service.GetMedicationRequests(hdid)).Result;
+            RequestResult<IList<MedicationRequest>> response = await service.GetMedicationRequests(hdid);
 
             // Verify
             Assert.Equal(ResultType.Error, response.ResultStatus);
@@ -138,8 +142,9 @@ namespace HealthGateway.MedicationTests.Services
         /// <summary>
         /// GetMedicationRequests - Delegate Error.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void ShouldErrorIfDelegateError()
+        public async Task ShouldErrorIfDelegateError()
         {
             // Setup
             string hdid = "123912390123012";
@@ -173,7 +178,7 @@ namespace HealthGateway.MedicationTests.Services
                 patientRepository.Object);
 
             // Test
-            RequestResult<IList<MedicationRequest>> response = Task.Run(async () => await service.GetMedicationRequests(hdid)).Result;
+            RequestResult<IList<MedicationRequest>> response = await service.GetMedicationRequests(hdid);
 
             // Verify
             Assert.Equal(ResultType.Error, response.ResultStatus);

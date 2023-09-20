@@ -19,7 +19,6 @@ namespace HealthGateway.LaboratoryTests.Services
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
-    using HealthGateway.AccountDataAccess.Patient;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Models.PHSA;
@@ -99,7 +98,7 @@ namespace HealthGateway.LaboratoryTests.Services
                     foreach (Covid19Order model in actualResult.ResourcePayload!.Covid19Orders)
                     {
                         count++;
-                        Assert.True(model.MessageId.Equals(MockedMessageId + count, StringComparison.Ordinal));
+                        Assert.Equal(model.MessageId, MockedMessageId + count);
                     }
 
                     Assert.Equal(2, count);

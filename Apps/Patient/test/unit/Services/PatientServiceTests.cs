@@ -42,15 +42,16 @@ namespace HealthGateway.PatientTests.Services
         /// <summary>
         /// GetPatient - Happy Path.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void ShouldGetPatient()
+        public async Task ShouldGetPatient()
         {
             // Arrange
             PatientModel patient = GetPatient();
             IPatientService patientService = GetPatientService(patient);
 
             // Act
-            PatientDetails actual = Task.Run(async () => await patientService.GetPatientAsync(patient.Hdid)).Result;
+            PatientDetails actual = await patientService.GetPatientAsync(patient.Hdid);
 
             // Verify
             Assert.Equal(patient.Hdid, actual.HdId);
@@ -59,15 +60,16 @@ namespace HealthGateway.PatientTests.Services
         /// <summary>
         /// GetPatient - Valid Phn.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void ShouldGetPatientByValidPhn()
+        public async Task ShouldGetPatientByValidPhn()
         {
             // Arrange
             PatientModel patient = GetPatient();
             IPatientService patientService = GetPatientService(patient);
 
             // Act
-            PatientDetails actual = Task.Run(async () => await patientService.GetPatientAsync(patient.Phn, PatientIdentifierType.Phn)).Result;
+            PatientDetails actual = await patientService.GetPatientAsync(patient.Phn, PatientIdentifierType.Phn);
 
             // Verify
             Assert.Equal(patient.Phn, actual.Phn);

@@ -42,8 +42,11 @@ namespace HealthGateway.EncounterTests.Delegates
         /// <summary>
         /// GetMSPVisits - Happy Path.
         /// </summary>
+        /// <returns>
+        /// A <see cref="Task"/> representing the asynchronous unit test.
+        /// </returns>
         [Fact]
-        public void ShouldGetMspVisits()
+        public async Task ShouldGetMspVisits()
         {
             Guid expectedMspHistoryResponseId = Guid.NewGuid();
             int expectedClaimId = 1005;
@@ -102,7 +105,7 @@ namespace HealthGateway.EncounterTests.Delegates
                 mockMspVisitApi.Object);
 
             // Act
-            RequestResult<MspVisitHistoryResponse> actualResult = Task.Run(async () => await mspVisitDelegate.GetMspVisitHistoryAsync(query, string.Empty, string.Empty)).Result;
+            RequestResult<MspVisitHistoryResponse> actualResult = await mspVisitDelegate.GetMspVisitHistoryAsync(query, string.Empty, string.Empty);
 
             // Verify
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
@@ -115,8 +118,11 @@ namespace HealthGateway.EncounterTests.Delegates
         /// <summary>
         /// GetMSPVisits - Handles api exception.
         /// </summary>
+        /// <returns>
+        /// A <see cref="Task"/> representing the asynchronous unit test.
+        /// </returns>
         [Fact]
-        public void ShouldGetMspVisitsHandleApiException()
+        public async Task ShouldGetMspVisitsHandleApiException()
         {
             string expectedMessage = $"Status: {HttpStatusCode.Unauthorized}. Error while retrieving Msp Visits";
             OdrHistoryQuery query = new()
@@ -131,10 +137,8 @@ namespace HealthGateway.EncounterTests.Delegates
             IMspVisitDelegate mspVisitDelegate = new RestMspVisitDelegate(new Mock<ILogger<RestMspVisitDelegate>>().Object, mockMspVisitApi.Object);
 
             // Act
-            RequestResult<MspVisitHistoryResponse> actualResult = Task.Run(
-                    async () =>
-                        await mspVisitDelegate.GetMspVisitHistoryAsync(query, string.Empty, string.Empty))
-                .Result;
+            RequestResult<MspVisitHistoryResponse> actualResult =
+                await mspVisitDelegate.GetMspVisitHistoryAsync(query, string.Empty, string.Empty);
 
             // Verify
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
@@ -144,8 +148,11 @@ namespace HealthGateway.EncounterTests.Delegates
         /// <summary>
         /// GetMSPVisits - Handles api exception.
         /// </summary>
+        /// <returns>
+        /// A <see cref="Task"/> representing the asynchronous unit test.
+        /// </returns>
         [Fact]
-        public void ShouldGetMspVisitsHandleHttpRequestException()
+        public async Task ShouldGetMspVisitsHandleHttpRequestException()
         {
             string expectedMessage = $"Status: {HttpStatusCode.InternalServerError}. Error while retrieving Msp Visits";
 
@@ -161,10 +168,8 @@ namespace HealthGateway.EncounterTests.Delegates
             IMspVisitDelegate mspVisitDelegate = new RestMspVisitDelegate(new Mock<ILogger<RestMspVisitDelegate>>().Object, mockMspVisitApi.Object);
 
             // Act
-            RequestResult<MspVisitHistoryResponse> actualResult = Task.Run(
-                    async () =>
-                        await mspVisitDelegate.GetMspVisitHistoryAsync(query, string.Empty, string.Empty))
-                .Result;
+            RequestResult<MspVisitHistoryResponse> actualResult =
+                await mspVisitDelegate.GetMspVisitHistoryAsync(query, string.Empty, string.Empty);
 
             // Verify
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);

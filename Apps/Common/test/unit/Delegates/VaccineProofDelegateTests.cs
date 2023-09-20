@@ -68,8 +68,9 @@ namespace HealthGateway.CommonTests.Delegates
         /// <summary>
         /// MailAsync - Happy Path.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void ValidateMailAsyncSuccess()
+        public async Task ValidateMailAsyncSuccess()
         {
             VaccineProofRequest request = new()
             {
@@ -111,8 +112,7 @@ namespace HealthGateway.CommonTests.Delegates
                 GetHttpClientFactoryMock(httpResponseMessage).Object,
                 this.configuration);
 
-            Task<RequestResult<VaccineProofResponse>> task = vaccineProofDelegate.MailAsync(VaccineProofTemplate.Provincial, request, this.address);
-            RequestResult<VaccineProofResponse> actualResult = Task.Run(async () => await task).Result;
+            RequestResult<VaccineProofResponse> actualResult = await vaccineProofDelegate.MailAsync(VaccineProofTemplate.Provincial, request, this.address);
 
             Assert.Equal(expectedRequestResult.ResultStatus, actualResult.ResultStatus);
             Assert.Equal(expectedRequestResult.ResultError, actualResult.ResultError);
@@ -123,8 +123,11 @@ namespace HealthGateway.CommonTests.Delegates
         /// <summary>
         /// MailAsync - Error Specified in Payload.
         /// </summary>
+        /// <returns>
+        /// A <see cref="Task"/> representing the asynchronous unit test.
+        /// </returns>
         [Fact]
-        public void ValidateMailAsyncPayloadError()
+        public async Task ValidateMailAsyncPayloadError()
         {
             VaccineProofRequest request = new()
             {
@@ -147,8 +150,7 @@ namespace HealthGateway.CommonTests.Delegates
                 GetHttpClientFactoryMock(httpResponseMessage).Object,
                 this.configuration);
 
-            Task<RequestResult<VaccineProofResponse>> task = vaccineProofDelegate.MailAsync(VaccineProofTemplate.Provincial, request, this.address);
-            RequestResult<VaccineProofResponse> actualResult = Task.Run(async () => await task).Result;
+            RequestResult<VaccineProofResponse> actualResult = await vaccineProofDelegate.MailAsync(VaccineProofTemplate.Provincial, request, this.address);
 
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
             Assert.NotNull(actualResult.ResultError);
@@ -158,8 +160,9 @@ namespace HealthGateway.CommonTests.Delegates
         /// <summary>
         /// MailAsync - HTTP Error.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void ValidateMailAsyncHttpError()
+        public async Task ValidateMailAsyncHttpError()
         {
             VaccineProofRequest request = new()
             {
@@ -180,8 +183,7 @@ namespace HealthGateway.CommonTests.Delegates
                 GetHttpClientFactoryMock(httpResponseMessage).Object,
                 this.configuration);
 
-            Task<RequestResult<VaccineProofResponse>> task = vaccineProofDelegate.MailAsync(VaccineProofTemplate.Provincial, request, this.address);
-            RequestResult<VaccineProofResponse> actualResult = Task.Run(async () => await task).Result;
+            RequestResult<VaccineProofResponse> actualResult = await vaccineProofDelegate.MailAsync(VaccineProofTemplate.Provincial, request, this.address);
 
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
             Assert.NotNull(actualResult.ResultError);
@@ -191,8 +193,9 @@ namespace HealthGateway.CommonTests.Delegates
         /// <summary>
         /// GenerateAsync - Happy Path.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void ValidateGenerateAsyncSuccess()
+        public async Task ValidateGenerateAsyncSuccess()
         {
             VaccineProofRequest request = new()
             {
@@ -234,8 +237,7 @@ namespace HealthGateway.CommonTests.Delegates
                 GetHttpClientFactoryMock(httpResponseMessage).Object,
                 this.configuration);
 
-            Task<RequestResult<VaccineProofResponse>> task = vaccineProofDelegate.GenerateAsync(VaccineProofTemplate.Provincial, request);
-            RequestResult<VaccineProofResponse> actualResult = Task.Run(async () => await task).Result;
+            RequestResult<VaccineProofResponse> actualResult = await vaccineProofDelegate.GenerateAsync(VaccineProofTemplate.Provincial, request);
 
             Assert.Equal(expectedRequestResult.ResultStatus, actualResult.ResultStatus);
             Assert.Equal(expectedRequestResult.ResultError, actualResult.ResultError);
@@ -246,8 +248,9 @@ namespace HealthGateway.CommonTests.Delegates
         /// <summary>
         /// GenerateAsync - Error Specified in Payload.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void ValidateGenerateAsyncPayloadError()
+        public async Task ValidateGenerateAsyncPayloadError()
         {
             VaccineProofRequest request = new()
             {
@@ -270,8 +273,7 @@ namespace HealthGateway.CommonTests.Delegates
                 GetHttpClientFactoryMock(httpResponseMessage).Object,
                 this.configuration);
 
-            Task<RequestResult<VaccineProofResponse>> task = vaccineProofDelegate.GenerateAsync(VaccineProofTemplate.Provincial, request);
-            RequestResult<VaccineProofResponse> actualResult = Task.Run(async () => await task).Result;
+            RequestResult<VaccineProofResponse> actualResult = await vaccineProofDelegate.GenerateAsync(VaccineProofTemplate.Provincial, request);
 
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
             Assert.NotNull(actualResult.ResultError);
@@ -281,8 +283,9 @@ namespace HealthGateway.CommonTests.Delegates
         /// <summary>
         /// GenerateAsync - HTTP Error.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void ValidateGenerateAsyncHttpError()
+        public async Task ValidateGenerateAsyncHttpError()
         {
             VaccineProofRequest request = new()
             {
@@ -303,8 +306,7 @@ namespace HealthGateway.CommonTests.Delegates
                 GetHttpClientFactoryMock(httpResponseMessage).Object,
                 this.configuration);
 
-            Task<RequestResult<VaccineProofResponse>> task = vaccineProofDelegate.GenerateAsync(VaccineProofTemplate.Provincial, request);
-            RequestResult<VaccineProofResponse> actualResult = Task.Run(async () => await task).Result;
+            RequestResult<VaccineProofResponse> actualResult = await vaccineProofDelegate.GenerateAsync(VaccineProofTemplate.Provincial, request);
 
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
             Assert.NotNull(actualResult.ResultError);
@@ -314,8 +316,9 @@ namespace HealthGateway.CommonTests.Delegates
         /// <summary>
         /// GetAssetAsync - Happy Path.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void ValidateGetAssetAsyncSuccess()
+        public async Task ValidateGetAssetAsyncSuccess()
         {
             Uri jobUri = new($"https://localhost/{JobId}");
             RequestResult<ReportModel> expectedRequestResult = new()
@@ -346,8 +349,7 @@ namespace HealthGateway.CommonTests.Delegates
                 GetHttpClientFactoryMock(httpResponseMessage).Object,
                 this.configuration);
 
-            Task<RequestResult<ReportModel>> task = vaccineProofDelegate.GetAssetAsync(jobUri);
-            RequestResult<ReportModel> actualResult = Task.Run(async () => await task).Result;
+            RequestResult<ReportModel> actualResult = await vaccineProofDelegate.GetAssetAsync(jobUri);
 
             Assert.Equal(expectedRequestResult.ResultStatus, actualResult.ResultStatus);
             Assert.Equal(expectedRequestResult.ResultError, actualResult.ResultError);
@@ -358,8 +360,9 @@ namespace HealthGateway.CommonTests.Delegates
         /// <summary>
         /// GetAssetAsync - NotFound.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void ValidateGetAssetAsyncNotFound()
+        public async Task ValidateGetAssetAsyncNotFound()
         {
             Uri jobUri = new($"https://localhost/{JobId}");
             using HttpResponseMessage httpResponseMessage = new()
@@ -375,8 +378,7 @@ namespace HealthGateway.CommonTests.Delegates
                 GetHttpClientFactoryMock(httpResponseMessage).Object,
                 this.configuration);
 
-            Task<RequestResult<ReportModel>> task = vaccineProofDelegate.GetAssetAsync(jobUri);
-            RequestResult<ReportModel> actualResult = Task.Run(async () => await task).Result;
+            RequestResult<ReportModel> actualResult = await vaccineProofDelegate.GetAssetAsync(jobUri);
 
             Assert.Equal(ResultType.ActionRequired, actualResult.ResultStatus);
             Assert.NotNull(actualResult.ResultError);
@@ -386,8 +388,9 @@ namespace HealthGateway.CommonTests.Delegates
         /// <summary>
         /// GetAssetAsync - Empty Payload.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void ValidateGetAssetAsyncEmptyPayload()
+        public async Task ValidateGetAssetAsyncEmptyPayload()
         {
             Uri jobUri = new($"https://localhost/{JobId}");
             byte[] fileContents = Array.Empty<byte>();
@@ -405,8 +408,7 @@ namespace HealthGateway.CommonTests.Delegates
                 GetHttpClientFactoryMock(httpResponseMessage).Object,
                 this.configuration);
 
-            Task<RequestResult<ReportModel>> task = vaccineProofDelegate.GetAssetAsync(jobUri);
-            RequestResult<ReportModel> actualResult = Task.Run(async () => await task).Result;
+            RequestResult<ReportModel> actualResult = await vaccineProofDelegate.GetAssetAsync(jobUri);
 
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
             Assert.NotNull(actualResult.ResultError);
@@ -416,8 +418,9 @@ namespace HealthGateway.CommonTests.Delegates
         /// <summary>
         /// GetAssetAsync - HTTP Error.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void ValidateGetAssetAsyncHttpError()
+        public async Task ValidateGetAssetAsyncHttpError()
         {
             Uri jobUri = new($"https://localhost/{JobId}");
             using HttpResponseMessage httpResponseMessage = new()
@@ -433,8 +436,7 @@ namespace HealthGateway.CommonTests.Delegates
                 GetHttpClientFactoryMock(httpResponseMessage).Object,
                 this.configuration);
 
-            Task<RequestResult<ReportModel>> task = vaccineProofDelegate.GetAssetAsync(jobUri);
-            RequestResult<ReportModel> actualResult = Task.Run(async () => await task).Result;
+            RequestResult<ReportModel> actualResult = await vaccineProofDelegate.GetAssetAsync(jobUri);
 
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
             Assert.NotNull(actualResult.ResultError);
