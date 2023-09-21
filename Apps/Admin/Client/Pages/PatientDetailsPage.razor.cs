@@ -118,6 +118,8 @@ namespace HealthGateway.Admin.Client.Pages
 
         private string Hdid { get; set; } = string.Empty;
 
+        private string PreviousSearchedHdid { get; set; } = string.Empty;
+
         /// <inheritdoc/>
         protected override async Task OnInitializedAsync()
         {
@@ -155,17 +157,15 @@ namespace HealthGateway.Admin.Client.Pages
 
         private void RetrievePatientDetails()
         {
-            if (this.Patient == null)
+            if (this.Patient?.Hdid != this.PreviousSearchedHdid)
             {
                 this.Dispatcher.Dispatch(new PatientSupportActions.ResetStateAction());
                 this.Dispatcher.Dispatch(new PatientSupportActions.LoadAction { QueryType = PatientQueryType.Hdid, QueryString = this.Hdid });
-            }
-
-            if (this.AssessmentInfo == null)
-            {
                 this.Dispatcher.Dispatch(new PatientDetailsActions.ResetStateAction());
                 this.Dispatcher.Dispatch(new PatientDetailsActions.LoadAction { Hdid = this.Hdid });
             }
+
+            this.PreviousSearchedHdid = this.Hdid;
         }
 
         private bool UserHasRole(string role)
