@@ -29,10 +29,9 @@ const datasetEntryTypes: EntryType[] = [
     EntryType.ClinicalDocument,
     EntryType.HospitalVisit,
     EntryType.DiagnosticImaging,
-    EntryType.BcCancerScreening,
 ];
 
-const serviceEntryTypes: EntryType[] = [];
+const serviceEntryTypes: EntryType[] = [EntryType.BcCancerScreening];
 
 const configStore = useConfigStore();
 const authStore = useAuthStore();
@@ -54,7 +53,7 @@ const offlineMessage = computed(
 const proofOfVaccinationTile = computed<InfoTile>(() => ({
     type: "ProofOfVaccination",
     icon: "check-circle",
-    logoUrl: new URL("@/assets/images/gov/canada-gov-logo.svg", import.meta.url)
+    logoUri: new URL("@/assets/images/gov/canada-gov-logo.svg", import.meta.url)
         .href,
     name: "Proof of Vaccination",
     description: "View and download your proof of vaccination.",
@@ -64,7 +63,7 @@ const proofOfVaccinationTile = computed<InfoTile>(() => ({
 const organDonorRegistrationTile = computed<InfoTile>(() => ({
     type: "OrganDonorRegistration",
     icon: "check-circle",
-    logoUrl: new URL("@/assets/images/services/odr-logo.svg", import.meta.url)
+    logoUri: new URL("@/assets/images/services/odr-logo.svg", import.meta.url)
         .href,
     name: "Organ Donor Registration",
     description:
@@ -93,6 +92,7 @@ function mapEntryTypeToTile(type: EntryType): InfoTile {
     const details = entryTypeMap.get(type);
     return {
         type,
+        logoUri: details?.logoUri,
         icon: details?.icon ?? "",
         name: details?.name ?? "",
         description: details?.description ?? "",

@@ -19,6 +19,7 @@ export class EntryTypeDetails {
     name!: string;
     description!: string;
     reportEventName!: string;
+    logoUri?: string;
     icon!: string;
     component!: string;
     commentType!: CommentEntryType;
@@ -166,6 +167,8 @@ entryTypeMap.set(EntryType.BcCancerScreening, {
     name: "BC Cancer Screening",
     description:
         "View and download your notices and results as soon as they are available.",
+    logoUri: new URL("@/assets/images/services/bc-cancer.png", import.meta.url)
+        .href,
     icon: "ribbon",
     component: "BcCancerScreeningTimelineComponent",
     eventName: "bc_cancer_screening",

@@ -3,6 +3,6 @@ export interface InfoTile {
     name: string;
     description: string;
     icon: string;
-    logoUrl?: string;
+    logoUri?: string;
     active: boolean;
 }
