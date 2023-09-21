@@ -72,9 +72,6 @@ else
         <MudItem xs="6" lg="3">
             <MudSkeleton data-testid="skeleton-selected-date-range" SkeletonType="SkeletonType.Rectangle" Height="48px" />
         </MudItem>
-        <MudItem xs="6" lg="3">
-            <MudSkeleton data-testid="skeleton-unique-days" SkeletonType="SkeletonType.Rectangle" Height="48px" />
-        </MudItem>
     </MudGrid>
 }
 else
@@ -89,15 +86,17 @@ else
                 </PickerActions>
             </MudDateRangePicker>
         </MudItem>
-        <MudItem xs="6" lg="3">
-            <MudNumericField data-testid="unique-days-input" T="int" Label="Unique Days" @bind-Value="UniqueDays" Required="@true" />
-        </MudItem>
     </MudGrid>
 }
 
 @if (RecurringUsersLoading)
 {
     <MudSkeleton Width="20%" />
+    <MudGrid Class="my-3">
+        <MudItem xs="6" lg="3">
+            <MudSkeleton data-testid="skeleton-unique-days" SkeletonType="SkeletonType.Rectangle" Height="48px" />
+        </MudItem>
+    </MudGrid>
     <MudGrid>
         <MudItem xs="12" lg="4">
             <MudPaper Class="my-2 pa-4" Outlined="true">
@@ -124,6 +123,11 @@ else
     <MudText Class="my-3" Typo="Typo.subtitle1">
         User Counts
     </MudText>
+    <MudGrid Class="my-3">
+        <MudItem xs="6" lg="3">
+            <MudNumericField data-testid="unique-days-input" T="int" Label="Unique Days" @bind-Value="UniqueDays" Required="@true" />
+        </MudItem>
+    </MudGrid>
     <MudGrid>
         <MudItem xs="12" lg="4">
             <MudPaper Class="my-2 pa-4" Outlined="true">
