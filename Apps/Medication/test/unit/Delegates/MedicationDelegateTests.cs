@@ -70,8 +70,11 @@ namespace HealthGateway.MedicationTests.Delegates
         /// <summary>
         /// GetMedicationStatements - Happy Path.
         /// </summary>
+        /// <returns>
+        /// A <see cref="Task"/> representing the asynchronous unit test.
+        /// </returns>
         [Fact]
-        public void ValidateGetMedicationStatement()
+        public async Task ValidateGetMedicationStatement()
         {
             MedicationHistory medicationHistory = new()
             {
@@ -109,7 +112,7 @@ namespace HealthGateway.MedicationTests.Delegates
                             },
                             GenericName = "Generic Name",
                             Id = 0,
-                            Practitioner = new Medication.Models.ODR.Name
+                            Practitioner = new Name
                             {
                                 GivenName = "Given",
                                 MiddleInitial = "I",
@@ -137,15 +140,12 @@ namespace HealthGateway.MedicationTests.Delegates
                 new Mock<ICacheProvider>().Object,
                 GetHashDelegate());
 
-            RequestResult<MedicationHistoryResponse> response = Task.Run(
-                    async () =>
-                        await medStatementDelegate.GetMedicationStatementsAsync(
-                                this.query,
-                                string.Empty,
-                                string.Empty,
-                                string.Empty)
-                            .ConfigureAwait(true))
-                .Result;
+            RequestResult<MedicationHistoryResponse> response =
+                await medStatementDelegate.GetMedicationStatementsAsync(
+                    this.query,
+                    string.Empty,
+                    string.Empty,
+                    string.Empty);
 
             Assert.Equal(ResultType.Success, response.ResultStatus);
             medicationHistory.Response.ShouldDeepEqual(response.ResourcePayload);
@@ -154,8 +154,11 @@ namespace HealthGateway.MedicationTests.Delegates
         /// <summary>
         /// GetMedicationStatements - Happy Path (Cached Keyword).
         /// </summary>
+        /// <returns>
+        /// A <see cref="Task"/> representing the asynchronous unit test.
+        /// </returns>
         [Fact]
-        public void ValidateGetMedicationStatementCachedKeyword()
+        public async Task ValidateGetMedicationStatementCachedKeyword()
         {
             MedicationHistory medicationHistory = new()
             {
@@ -194,15 +197,12 @@ namespace HealthGateway.MedicationTests.Delegates
                 mockCacheProvider.Object,
                 mockHashDelegate);
 
-            RequestResult<MedicationHistoryResponse> response = Task.Run(
-                    async () =>
-                        await medStatementDelegate.GetMedicationStatementsAsync(
-                                this.query,
-                                string.Empty,
-                                string.Empty,
-                                string.Empty)
-                            .ConfigureAwait(true))
-                .Result;
+            RequestResult<MedicationHistoryResponse> response =
+                await medStatementDelegate.GetMedicationStatementsAsync(
+                    this.query,
+                    string.Empty,
+                    string.Empty,
+                    string.Empty);
 
             Assert.Equal(ResultType.Success, response.ResultStatus);
             medicationHistory.Response.ShouldDeepEqual(response.ResourcePayload);
@@ -211,8 +211,11 @@ namespace HealthGateway.MedicationTests.Delegates
         /// <summary>
         /// GetMedicationStatements - Invalid Keyword.
         /// </summary>
+        /// <returns>
+        /// A <see cref="Task"/> representing the asynchronous unit test.
+        /// </returns>
         [Fact]
-        public void InvalidProtectiveWord()
+        public async Task InvalidProtectiveWord()
         {
             ProtectiveWord protectiveWord = this.GetProtectiveWord("ProtectiveWord");
 
@@ -235,15 +238,12 @@ namespace HealthGateway.MedicationTests.Delegates
                 mockCacheProvider.Object,
                 mockHashDelegate.Object);
 
-            RequestResult<MedicationHistoryResponse> response = Task.Run(
-                    async () =>
-                        await medStatementDelegate.GetMedicationStatementsAsync(
-                                this.query,
-                                string.Empty,
-                                string.Empty,
-                                string.Empty)
-                            .ConfigureAwait(true))
-                .Result;
+            RequestResult<MedicationHistoryResponse> response =
+                await medStatementDelegate.GetMedicationStatementsAsync(
+                    this.query,
+                    string.Empty,
+                    string.Empty,
+                    string.Empty);
 
             Assert.Equal(ResultType.ActionRequired, response.ResultStatus);
             Assert.Equal(ActionType.Protected, response.ResultError?.ActionCode);
@@ -253,8 +253,11 @@ namespace HealthGateway.MedicationTests.Delegates
         /// <summary>
         /// GetMedicationStatements - Http Error.
         /// </summary>
+        /// <returns>
+        /// A <see cref="Task"/> representing the asynchronous unit test.
+        /// </returns>
         [Fact]
-        public void ValidateGetMedicationStatementHttpError()
+        public async Task ValidateGetMedicationStatementHttpError()
         {
             Mock<ICacheProvider> mockCacheProvider = new();
             Mock<IHashDelegate> mockHashDelegate = new();
@@ -276,15 +279,11 @@ namespace HealthGateway.MedicationTests.Delegates
                 mockCacheProvider.Object,
                 mockHashDelegate.Object);
 
-            RequestResult<MedicationHistoryResponse> response = Task.Run(
-                    async () =>
-                        await medStatementDelegate.GetMedicationStatementsAsync(
-                                this.query,
-                                string.Empty,
-                                string.Empty,
-                                string.Empty)
-                            .ConfigureAwait(true))
-                .Result;
+            RequestResult<MedicationHistoryResponse> response = await medStatementDelegate.GetMedicationStatementsAsync(
+                this.query,
+                string.Empty,
+                string.Empty,
+                string.Empty);
 
             Assert.True(response.ResultStatus == ResultType.Error);
         }
@@ -292,8 +291,11 @@ namespace HealthGateway.MedicationTests.Delegates
         /// <summary>
         /// GetMedicationStatements - Http Exception.
         /// </summary>
+        /// <returns>
+        /// A <see cref="Task"/> representing the asynchronous unit test.
+        /// </returns>
         [Fact]
-        public void ValidateGetMedicationStatementHttpException()
+        public async Task ValidateGetMedicationStatementHttpException()
         {
             Mock<ICacheProvider> mockCacheProvider = new();
             Mock<IHashDelegate> mockHashDelegate = new();
@@ -316,15 +318,12 @@ namespace HealthGateway.MedicationTests.Delegates
                 mockCacheProvider.Object,
                 mockHashDelegate.Object);
 
-            RequestResult<MedicationHistoryResponse> response = Task.Run(
-                    async () =>
-                        await medStatementDelegate.GetMedicationStatementsAsync(
-                                this.query,
-                                string.Empty,
-                                string.Empty,
-                                string.Empty)
-                            .ConfigureAwait(true))
-                .Result;
+            RequestResult<MedicationHistoryResponse> response =
+                await medStatementDelegate.GetMedicationStatementsAsync(
+                    this.query,
+                    string.Empty,
+                    string.Empty,
+                    string.Empty);
 
             Assert.True(response.ResultStatus == ResultType.Error);
         }
@@ -347,12 +346,11 @@ namespace HealthGateway.MedicationTests.Delegates
             Assert.ThrowsAsync<NotImplementedException>(
                 async () => await
                     medStatementDelegate.SetProtectiveWordAsync(
-                            string.Empty,
-                            string.Empty,
-                            string.Empty,
-                            string.Empty,
-                            string.Empty)
-                        .ConfigureAwait(true));
+                        string.Empty,
+                        string.Empty,
+                        string.Empty,
+                        string.Empty,
+                        string.Empty));
         }
 
         /// <summary>
@@ -373,11 +371,10 @@ namespace HealthGateway.MedicationTests.Delegates
             Assert.ThrowsAsync<NotImplementedException>(
                 async () => await
                     medStatementDelegate.DeleteProtectiveWordAsync(
-                            string.Empty,
-                            string.Empty,
-                            string.Empty,
-                            string.Empty)
-                        .ConfigureAwait(true));
+                        string.Empty,
+                        string.Empty,
+                        string.Empty,
+                        string.Empty));
         }
 
         private static IConfigurationRoot GetIConfigurationRoot()

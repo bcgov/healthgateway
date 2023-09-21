@@ -21,6 +21,7 @@ namespace HealthGateway.ImmunizationTests.Delegates.Test
     using System.Linq;
     using System.Net;
     using System.Net.Http;
+    using System.Threading.Tasks;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ViewModels;
@@ -45,8 +46,9 @@ namespace HealthGateway.ImmunizationTests.Delegates.Test
         /// <summary>
         /// GetImmunizations - Happy Path.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void GetImmunization()
+        public async Task GetImmunization()
         {
             ImmunizationViewResponse expectedViewResponse = new()
             {
@@ -61,7 +63,7 @@ namespace HealthGateway.ImmunizationTests.Delegates.Test
                 Result = expectedViewResponse,
             };
 
-            RequestResult<PhsaResult<ImmunizationViewResponse>> actualResult = GetImmunizationDelegate(phsaResponse, HttpStatusCode.OK, false).GetImmunizationAsync(It.IsAny<string>()).Result;
+            RequestResult<PhsaResult<ImmunizationViewResponse>> actualResult = await GetImmunizationDelegate(phsaResponse, HttpStatusCode.OK, false).GetImmunizationAsync(It.IsAny<string>());
 
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             Assert.NotNull(actualResult.ResourcePayload);
@@ -71,8 +73,9 @@ namespace HealthGateway.ImmunizationTests.Delegates.Test
         /// <summary>
         /// GetImmunizations - Happy Path.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void GetImmunizations()
+        public async Task GetImmunizations()
         {
             ImmunizationViewResponse expectedViewResponse = new()
             {
@@ -90,7 +93,7 @@ namespace HealthGateway.ImmunizationTests.Delegates.Test
                     new List<ImmunizationRecommendationResponse>()),
             };
 
-            RequestResult<PhsaResult<ImmunizationResponse>> actualResult = GetImmunizationDelegate(phsaResponse, HttpStatusCode.OK, false).GetImmunizationsAsync(It.IsAny<string>()).Result;
+            RequestResult<PhsaResult<ImmunizationResponse>> actualResult = await GetImmunizationDelegate(phsaResponse, HttpStatusCode.OK, false).GetImmunizationsAsync(It.IsAny<string>());
 
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             Assert.NotNull(actualResult.ResourcePayload);
@@ -100,8 +103,9 @@ namespace HealthGateway.ImmunizationTests.Delegates.Test
         /// <summary>
         /// GetImmunization - HttpRequestException.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void GetImmunizationThrowsException()
+        public async Task GetImmunizationThrowsException()
         {
             ImmunizationViewResponse expectedViewResponse = new()
             {
@@ -116,7 +120,7 @@ namespace HealthGateway.ImmunizationTests.Delegates.Test
                 Result = expectedViewResponse,
             };
 
-            RequestResult<PhsaResult<ImmunizationViewResponse>> actualResult = GetImmunizationDelegate(phsaResponse, HttpStatusCode.OK, true).GetImmunizationAsync(It.IsAny<string>()).Result;
+            RequestResult<PhsaResult<ImmunizationViewResponse>> actualResult = await GetImmunizationDelegate(phsaResponse, HttpStatusCode.OK, true).GetImmunizationAsync(It.IsAny<string>());
 
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
             Assert.Equal(HttpExceptionMessage, actualResult.ResultError?.ResultMessage);
@@ -125,8 +129,9 @@ namespace HealthGateway.ImmunizationTests.Delegates.Test
         /// <summary>
         /// GetImmunizations - HttpRequestException.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void GetImmunizationsThrowsException()
+        public async Task GetImmunizationsThrowsException()
         {
             ImmunizationViewResponse expectedViewResponse = new()
             {
@@ -144,7 +149,7 @@ namespace HealthGateway.ImmunizationTests.Delegates.Test
                     new List<ImmunizationRecommendationResponse>()),
             };
 
-            RequestResult<PhsaResult<ImmunizationResponse>> actualResult = GetImmunizationDelegate(phsaResponse, HttpStatusCode.OK, true).GetImmunizationsAsync(It.IsAny<string>()).Result;
+            RequestResult<PhsaResult<ImmunizationResponse>> actualResult = await GetImmunizationDelegate(phsaResponse, HttpStatusCode.OK, true).GetImmunizationsAsync(It.IsAny<string>());
 
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
             Assert.Equal(HttpExceptionMessage, actualResult.ResultError?.ResultMessage);

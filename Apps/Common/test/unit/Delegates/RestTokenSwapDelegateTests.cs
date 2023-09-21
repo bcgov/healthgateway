@@ -18,6 +18,7 @@ namespace HealthGateway.CommonTests.Delegates
     using System.Collections.Generic;
     using System.Linq;
     using System.Net.Http;
+    using System.Threading.Tasks;
     using HealthGateway.Common.Api;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ViewModels;
@@ -39,8 +40,11 @@ namespace HealthGateway.CommonTests.Delegates
         /// <summary>
         /// Swap token - Happy Path.
         /// </summary>
+        /// <returns>
+        /// A <see cref="Task"/> representing the asynchronous unit test.
+        /// </returns>
         [Fact]
-        public void SwapToken()
+        public async Task SwapToken()
         {
             // Arrange
             TokenSwapResponse expectedTokenSwapResponse = new()
@@ -54,7 +58,7 @@ namespace HealthGateway.CommonTests.Delegates
             ITokenSwapDelegate tokenSwapDelegate = GetTokenSwapDelegate(expectedTokenSwapResponse, false);
 
             // Act
-            RequestResult<TokenSwapResponse> actualResult = tokenSwapDelegate.SwapToken(It.IsAny<string>()).Result;
+            RequestResult<TokenSwapResponse> actualResult = await tokenSwapDelegate.SwapToken(It.IsAny<string>());
 
             // Assert
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
@@ -65,8 +69,9 @@ namespace HealthGateway.CommonTests.Delegates
         /// <summary>
         /// Swap token - HttpRequestException.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void SwapTokenThrowsException()
+        public async Task SwapTokenThrowsException()
         {
             // Arrange
             TokenSwapResponse expectedTokenSwapResponse = new()
@@ -80,7 +85,7 @@ namespace HealthGateway.CommonTests.Delegates
             ITokenSwapDelegate tokenSwapDelegate = GetTokenSwapDelegate(expectedTokenSwapResponse, true);
 
             // Act
-            RequestResult<TokenSwapResponse> actualResult = tokenSwapDelegate.SwapToken(It.IsAny<string>()).Result;
+            RequestResult<TokenSwapResponse> actualResult = await tokenSwapDelegate.SwapToken(It.IsAny<string>());
 
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
             Assert.Equal(HttpExceptionMessage, actualResult.ResultError?.ResultMessage);

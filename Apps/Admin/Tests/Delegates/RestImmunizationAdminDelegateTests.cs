@@ -80,11 +80,11 @@ namespace HealthGateway.Admin.Tests.Delegates
             // Act
             async Task Actual()
             {
-                await adminDelegate.GetVaccineDetailsWithRetries(patient, AccessToken).ConfigureAwait(true);
+                await adminDelegate.GetVaccineDetailsWithRetries(patient, AccessToken);
             }
 
             // Verify
-            ProblemDetailsException exception = await Assert.ThrowsAsync<ProblemDetailsException>(Actual).ConfigureAwait(true);
+            ProblemDetailsException exception = await Assert.ThrowsAsync<ProblemDetailsException>(Actual);
             Assert.Equal(ErrorMessages.MaximumRetryAttemptsReached, exception.ProblemDetails!.Detail);
         }
 
@@ -118,7 +118,7 @@ namespace HealthGateway.Admin.Tests.Delegates
             IImmunizationAdminDelegate adminDelegate = CreateImmunizationAdminDelegate(immunizationAdminApiMock);
 
             // Act
-            VaccineDetails actual = await adminDelegate.GetVaccineDetailsWithRetries(patient, AccessToken).ConfigureAwait(true);
+            VaccineDetails actual = await adminDelegate.GetVaccineDetailsWithRetries(patient, AccessToken);
 
             // Assert
             Assert.NotNull(actual.VaccineStatusResult);

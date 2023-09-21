@@ -94,7 +94,7 @@ namespace HealthGateway.MedicationTests.Controllers
             MedicationStatementController controller = new(svcMock.Object);
 
             // Act
-            RequestResult<IList<MedicationStatementHistory>> actual = await controller.GetMedicationStatements(hdid).ConfigureAwait(true);
+            RequestResult<IList<MedicationStatementHistory>> actual = await controller.GetMedicationStatements(hdid);
 
             // Verify
             Assert.NotNull(actual);

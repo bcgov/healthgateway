@@ -93,10 +93,13 @@ namespace HealthGateway.EncounterTests.Services
         /// GetEncounters - Happy Path.
         /// </summary>
         /// <param name="canAccessDataSource">The value indicates whether the health visit data source can be accessed or not.</param>
+        /// <returns>
+        /// A <see cref="Task"/> representing the asynchronous unit test.
+        /// </returns>
         [Theory]
         [InlineData(true)]
         [InlineData(false)]
-        public void ValidateEncounters(bool canAccessDataSource)
+        public async Task ValidateEncounters(bool canAccessDataSource)
         {
             RequestResult<MspVisitHistoryResponse> delegateResult = new()
             {
@@ -137,7 +140,7 @@ namespace HealthGateway.EncounterTests.Services
                 GetIConfigurationRoot(),
                 MapperUtil.InitializeAutoMapper());
 
-            RequestResult<IEnumerable<EncounterModel>> actualResult = service.GetEncounters(hdid).Result;
+            RequestResult<IEnumerable<EncounterModel>> actualResult = await service.GetEncounters(hdid);
 
             Assert.True(actualResult.ResultStatus == ResultType.Success);
 
@@ -154,8 +157,11 @@ namespace HealthGateway.EncounterTests.Services
         /// <summary>
         /// GetEncounters - Empty Claims.
         /// </summary>
+        /// <returns>
+        /// A <see cref="Task"/> representing the asynchronous unit test.
+        /// </returns>
         [Fact]
-        public void NoClaims()
+        public async Task NoClaims()
         {
             RequestResult<MspVisitHistoryResponse> delegateResult = new()
             {
@@ -192,7 +198,7 @@ namespace HealthGateway.EncounterTests.Services
                 GetIConfigurationRoot(),
                 MapperUtil.InitializeAutoMapper());
 
-            RequestResult<IEnumerable<EncounterModel>> actualResult = service.GetEncounters(hdid).Result;
+            RequestResult<IEnumerable<EncounterModel>> actualResult = await service.GetEncounters(hdid);
 
             Assert.True(actualResult.ResultStatus == ResultType.Success);
             Assert.False(actualResult.ResourcePayload.Any());
@@ -201,8 +207,11 @@ namespace HealthGateway.EncounterTests.Services
         /// <summary>
         /// GetEncounters - Patient Error.
         /// </summary>
+        /// <returns>
+        /// A <see cref="Task"/> representing the asynchronous unit test.
+        /// </returns>
         [Fact]
-        public void PatientError()
+        public async Task PatientError()
         {
             RequestResult<MspVisitHistoryResponse> delegateResult = new();
 
@@ -241,7 +250,7 @@ namespace HealthGateway.EncounterTests.Services
                 GetIConfigurationRoot(),
                 MapperUtil.InitializeAutoMapper());
 
-            RequestResult<IEnumerable<EncounterModel>> actualResult = service.GetEncounters(hdid).Result;
+            RequestResult<IEnumerable<EncounterModel>> actualResult = await service.GetEncounters(hdid);
 
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
             errorPatientResult.ResultError.ShouldDeepEqual(actualResult.ResultError);
@@ -251,10 +260,13 @@ namespace HealthGateway.EncounterTests.Services
         /// GetHospitalVisits - returns a single row.
         /// </summary>
         /// <param name="canAccessDataSource">The value indicates whether the hospital visit data source can be accessed or not.</param>
+        /// <returns>
+        /// A <see cref="Task"/> representing the asynchronous unit test.
+        /// </returns>
         [Theory]
         [InlineData(true)]
         [InlineData(false)]
-        public void ShouldGetHospitalVisits(bool canAccessDataSource)
+        public async Task ShouldGetHospitalVisits(bool canAccessDataSource)
         {
             // Arrange
             RequestResult<PhsaResult<IEnumerable<HospitalVisit>>> hospitalVisitResults = new()
@@ -277,7 +289,7 @@ namespace HealthGateway.EncounterTests.Services
             IEncounterService service = GetEncounterService(hospitalVisitResults, canAccessDataSource);
 
             // Act
-            RequestResult<HospitalVisitResult> actualResult = service.GetHospitalVisits(Hdid).Result;
+            RequestResult<HospitalVisitResult> actualResult = await service.GetHospitalVisits(Hdid);
 
             // Assert
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
@@ -297,8 +309,11 @@ namespace HealthGateway.EncounterTests.Services
         /// <summary>
         /// GetHospitalVisits - returns no rows.
         /// </summary>
+        /// <returns>
+        /// A <see cref="Task"/> representing the asynchronous unit test.
+        /// </returns>
         [Fact]
-        public void GetHospitalVisitsShouldReturnNoRows()
+        public async Task GetHospitalVisitsShouldReturnNoRows()
         {
             // Arrange
             RequestResult<PhsaResult<IEnumerable<HospitalVisit>>> hospitalVisitResults = new()
@@ -313,7 +328,7 @@ namespace HealthGateway.EncounterTests.Services
             IEncounterService service = GetEncounterService(hospitalVisitResults);
 
             // Act
-            RequestResult<HospitalVisitResult> actualResult = service.GetHospitalVisits(Hdid).Result;
+            RequestResult<HospitalVisitResult> actualResult = await service.GetHospitalVisits(Hdid);
 
             // Assert
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
@@ -327,8 +342,11 @@ namespace HealthGateway.EncounterTests.Services
         /// <summary>
         /// GetHospitalVisits - returns refresh in progress.
         /// </summary>
+        /// <returns>
+        /// A <see cref="Task"/> representing the asynchronous unit test.
+        /// </returns>
         [Fact]
-        public void GetHospitalVisitsShouldReturnRefreshInProgress()
+        public async Task GetHospitalVisitsShouldReturnRefreshInProgress()
         {
             // Arrange
             RequestResult<PhsaResult<IEnumerable<HospitalVisit>>> hospitalVisitResults = new()
@@ -348,7 +366,7 @@ namespace HealthGateway.EncounterTests.Services
             IEncounterService service = GetEncounterService(hospitalVisitResults);
 
             // Act
-            RequestResult<HospitalVisitResult> actualResult = service.GetHospitalVisits(Hdid).Result;
+            RequestResult<HospitalVisitResult> actualResult = await service.GetHospitalVisits(Hdid);
 
             // Assert
             Assert.Equal(ResultType.ActionRequired, actualResult.ResultStatus);
@@ -363,8 +381,11 @@ namespace HealthGateway.EncounterTests.Services
         /// <summary>
         /// GetHospitalVisits - returns error caused by delegate.
         /// </summary>
+        /// <returns>
+        /// A <see cref="Task"/> representing the asynchronous unit test.
+        /// </returns>
         [Fact]
-        public void GetHospitalVisitsShouldReturnError()
+        public async Task GetHospitalVisitsShouldReturnError()
         {
             // Arrange
             RequestResult<PhsaResult<IEnumerable<HospitalVisit>>> hospitalVisitResults = new()
@@ -378,7 +399,7 @@ namespace HealthGateway.EncounterTests.Services
             IEncounterService service = GetEncounterService(hospitalVisitResults);
 
             // Act
-            RequestResult<HospitalVisitResult> actualResult = service.GetHospitalVisits(Hdid).Result;
+            RequestResult<HospitalVisitResult> actualResult = await service.GetHospitalVisits(Hdid);
 
             // Assert
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);

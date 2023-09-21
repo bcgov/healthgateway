@@ -129,7 +129,7 @@ namespace HealthGateway.CommonTests.Delegates
                 HttpContextAccessorMock.Object);
 
             // Act
-            RequestResult<PatientModel> actual = await patientDelegate.GetDemographicsByPhnAsync("9875023209").ConfigureAwait(true);
+            RequestResult<PatientModel> actual = await patientDelegate.GetDemographicsByPhnAsync("9875023209");
 
             // Verify
             Assert.Equal(ResultType.ActionRequired, actual.ResultStatus);
@@ -347,7 +347,7 @@ namespace HealthGateway.CommonTests.Delegates
                 HttpContextAccessorMock.Object);
 
             // Act
-            RequestResult<PatientModel> actual = await patientDelegate.GetDemographicsByHdidAsync(expectedHdId).ConfigureAwait(true);
+            RequestResult<PatientModel> actual = await patientDelegate.GetDemographicsByHdidAsync(expectedHdId);
 
             // Verify
             Assert.Equal(ResultType.Success, actual.ResultStatus);
@@ -457,7 +457,7 @@ namespace HealthGateway.CommonTests.Delegates
                 HttpContextAccessorMock.Object);
 
             // Act
-            RequestResult<PatientModel> actual = await patientDelegate.GetDemographicsByHdidAsync(hdid).ConfigureAwait(true);
+            RequestResult<PatientModel> actual = await patientDelegate.GetDemographicsByHdidAsync(hdid);
 
             // Verify
             Assert.Equal(ResultType.ActionRequired, actual.ResultStatus);
@@ -578,7 +578,7 @@ namespace HealthGateway.CommonTests.Delegates
                 HttpContextAccessorMock.Object);
 
             // Act
-            RequestResult<PatientModel> actual = await patientDelegate.GetDemographicsByHdidAsync(expectedHdId).ConfigureAwait(true);
+            RequestResult<PatientModel> actual = await patientDelegate.GetDemographicsByHdidAsync(expectedHdId);
 
             // Verify
             Assert.Equal(ResultType.Success, actual.ResultStatus);
@@ -728,7 +728,7 @@ namespace HealthGateway.CommonTests.Delegates
                 HttpContextAccessorMock.Object);
 
             // Act
-            RequestResult<PatientModel> actual = await patientDelegate.GetDemographicsByHdidAsync(expectedHdId).ConfigureAwait(true);
+            RequestResult<PatientModel> actual = await patientDelegate.GetDemographicsByHdidAsync(expectedHdId);
 
             // Verify
             Assert.Equal(ResultType.Success, actual.ResultStatus);
@@ -837,7 +837,7 @@ namespace HealthGateway.CommonTests.Delegates
                 HttpContextAccessorMock.Object);
 
             // Act
-            RequestResult<PatientModel> actual = await patientDelegate.GetDemographicsByPhnAsync(expectedPhn).ConfigureAwait(true);
+            RequestResult<PatientModel> actual = await patientDelegate.GetDemographicsByPhnAsync(expectedPhn);
 
             // Verify
             Assert.Equal(ResultType.Success, actual.ResultStatus);
@@ -941,7 +941,7 @@ namespace HealthGateway.CommonTests.Delegates
                 HttpContextAccessorMock.Object);
 
             // Act
-            RequestResult<PatientModel> actual = await patientDelegate.GetDemographicsByPhnAsync(expectedPhn).ConfigureAwait(true);
+            RequestResult<PatientModel> actual = await patientDelegate.GetDemographicsByPhnAsync(expectedPhn);
 
             // Verify
             Assert.Equal(ResultType.Success, actual.ResultStatus);
@@ -1045,7 +1045,7 @@ namespace HealthGateway.CommonTests.Delegates
                 HttpContextAccessorMock.Object);
 
             // Act
-            RequestResult<PatientModel> actual = await patientDelegate.GetDemographicsByPhnAsync(expectedPhn).ConfigureAwait(true);
+            RequestResult<PatientModel> actual = await patientDelegate.GetDemographicsByPhnAsync(expectedPhn);
 
             // Verify
             Assert.Equal(ResultType.Success, actual.ResultStatus);
@@ -1149,7 +1149,7 @@ namespace HealthGateway.CommonTests.Delegates
                 HttpContextAccessorMock.Object);
 
             // Act
-            RequestResult<PatientModel> actual = await patientDelegate.GetDemographicsByPhnAsync(expectedPhn).ConfigureAwait(true);
+            RequestResult<PatientModel> actual = await patientDelegate.GetDemographicsByPhnAsync(expectedPhn);
 
             // Verify
             Assert.Equal(ResultType.Success, actual.ResultStatus);

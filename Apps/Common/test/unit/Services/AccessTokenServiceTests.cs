@@ -17,6 +17,7 @@ namespace HealthGateway.CommonTests.Services
 {
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading.Tasks;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.CacheProviders;
     using HealthGateway.Common.Data.Constants;
@@ -43,8 +44,11 @@ namespace HealthGateway.CommonTests.Services
         /// <summary>
         /// Get PHSA access token.
         /// </summary>
+        /// <returns>
+        /// A <see cref="Task"/> representing the asynchronous unit test.
+        /// </returns>
         [Fact]
-        public void GetPhsaToken()
+        public async Task GetPhsaToken()
         {
             // Arrange
             TokenSwapResponse expectedTokenSwapResponse = new()
@@ -58,7 +62,7 @@ namespace HealthGateway.CommonTests.Services
             IAccessTokenService accessTokenService = GetAccessTokenService(expectedTokenSwapResponse, true, false);
 
             // Act
-            RequestResult<TokenSwapResponse> actualResult = accessTokenService.GetPhsaAccessToken().Result;
+            RequestResult<TokenSwapResponse> actualResult = await accessTokenService.GetPhsaAccessToken();
 
             // Assert
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
@@ -69,8 +73,9 @@ namespace HealthGateway.CommonTests.Services
         /// <summary>
         /// Get PHSA access token - use cache.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void GetPhsaTokenFromCache()
+        public async Task GetPhsaTokenFromCache()
         {
             // Arrange
             TokenSwapResponse expectedTokenSwapResponse = new()
@@ -84,7 +89,7 @@ namespace HealthGateway.CommonTests.Services
             IAccessTokenService accessTokenService = GetAccessTokenService(expectedTokenSwapResponse, true, true);
 
             // Act
-            RequestResult<TokenSwapResponse> actualResult = accessTokenService.GetPhsaAccessToken().Result;
+            RequestResult<TokenSwapResponse> actualResult = await accessTokenService.GetPhsaAccessToken();
 
             // Assert
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
@@ -95,8 +100,9 @@ namespace HealthGateway.CommonTests.Services
         /// <summary>
         /// Get PHSA access token - could not get access token from authentication delegate.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void GetPhsaTokenReturnsError()
+        public async Task GetPhsaTokenReturnsError()
         {
             // Arrange
             TokenSwapResponse expectedTokenSwapResponse = new()
@@ -110,7 +116,7 @@ namespace HealthGateway.CommonTests.Services
             IAccessTokenService accessTokenService = GetAccessTokenService(expectedTokenSwapResponse, false, true);
 
             // Act
-            RequestResult<TokenSwapResponse> actualResult = accessTokenService.GetPhsaAccessToken().Result;
+            RequestResult<TokenSwapResponse> actualResult = await accessTokenService.GetPhsaAccessToken();
 
             // Assert
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);

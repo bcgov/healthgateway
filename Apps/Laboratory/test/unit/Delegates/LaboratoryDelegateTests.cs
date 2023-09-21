@@ -89,7 +89,7 @@ namespace HealthGateway.LaboratoryTests.Delegates
                 this.configuration);
 
             // Act
-            RequestResult<PhsaResult<List<PhsaCovid19Order>>> actualResult = await labDelegate.GetCovid19Orders(Hdid, AccessToken).ConfigureAwait(true);
+            RequestResult<PhsaResult<List<PhsaCovid19Order>>> actualResult = await labDelegate.GetCovid19Orders(Hdid, AccessToken);
 
             // Assert
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
@@ -117,7 +117,7 @@ namespace HealthGateway.LaboratoryTests.Delegates
                 this.configuration);
 
             // Act
-            RequestResult<PhsaResult<List<PhsaCovid19Order>>> actualResult = await labDelegate.GetCovid19Orders(Hdid, AccessToken).ConfigureAwait(true);
+            RequestResult<PhsaResult<List<PhsaCovid19Order>>> actualResult = await labDelegate.GetCovid19Orders(Hdid, AccessToken);
 
             // Verify
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
@@ -146,7 +146,7 @@ namespace HealthGateway.LaboratoryTests.Delegates
                 this.configuration);
 
             // Act
-            RequestResult<PhsaResult<List<PhsaCovid19Order>>> actualResult = await labDelegate.GetCovid19Orders(Hdid, AccessToken).ConfigureAwait(true);
+            RequestResult<PhsaResult<List<PhsaCovid19Order>>> actualResult = await labDelegate.GetCovid19Orders(Hdid, AccessToken);
 
             // Verify
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
@@ -174,7 +174,7 @@ namespace HealthGateway.LaboratoryTests.Delegates
                 this.configuration);
 
             // Act
-            RequestResult<PhsaResult<List<PhsaCovid19Order>>> actualResult = await labDelegate.GetCovid19Orders(Hdid, AccessToken).ConfigureAwait(true);
+            RequestResult<PhsaResult<List<PhsaCovid19Order>>> actualResult = await labDelegate.GetCovid19Orders(Hdid, AccessToken);
 
             // Verify
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
@@ -206,7 +206,7 @@ namespace HealthGateway.LaboratoryTests.Delegates
                 this.configuration);
 
             // Act
-            RequestResult<LaboratoryReport> actualResult = await labDelegate.GetLabReport(ReportId, Hdid, AccessToken, true).ConfigureAwait(true);
+            RequestResult<LaboratoryReport> actualResult = await labDelegate.GetLabReport(ReportId, Hdid, AccessToken, true);
 
             // Verify
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
@@ -233,7 +233,7 @@ namespace HealthGateway.LaboratoryTests.Delegates
                 this.configuration);
 
             // Act
-            RequestResult<LaboratoryReport> actualResult = await labDelegate.GetLabReport(ReportId, Hdid, AccessToken, true).ConfigureAwait(true);
+            RequestResult<LaboratoryReport> actualResult = await labDelegate.GetLabReport(ReportId, Hdid, AccessToken, true);
 
             // Verify
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
@@ -261,7 +261,7 @@ namespace HealthGateway.LaboratoryTests.Delegates
                 this.configuration);
 
             // Act
-            RequestResult<LaboratoryReport> actualResult = await labDelegate.GetLabReport(ReportId, Hdid, AccessToken, true).ConfigureAwait(true);
+            RequestResult<LaboratoryReport> actualResult = await labDelegate.GetLabReport(ReportId, Hdid, AccessToken, true);
 
             // Verify
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
@@ -289,7 +289,7 @@ namespace HealthGateway.LaboratoryTests.Delegates
                 this.configuration);
 
             // Act
-            RequestResult<LaboratoryReport> actualResult = await labDelegate.GetLabReport(ReportId, Hdid, AccessToken, true).ConfigureAwait(true);
+            RequestResult<LaboratoryReport> actualResult = await labDelegate.GetLabReport(ReportId, Hdid, AccessToken, true);
 
             // Verify
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
@@ -322,7 +322,7 @@ namespace HealthGateway.LaboratoryTests.Delegates
                 this.configuration);
 
             // Act
-            RequestResult<LaboratoryReport> actualResult = await labDelegate.GetLabReport(ReportId, Hdid, AccessToken, false).ConfigureAwait(true);
+            RequestResult<LaboratoryReport> actualResult = await labDelegate.GetLabReport(ReportId, Hdid, AccessToken, false);
 
             // Verify
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
@@ -350,7 +350,7 @@ namespace HealthGateway.LaboratoryTests.Delegates
                 this.configuration);
 
             // Act
-            RequestResult<LaboratoryReport> actualResult = await labDelegate.GetLabReport(ReportId, Hdid, AccessToken, false).ConfigureAwait(true);
+            RequestResult<LaboratoryReport> actualResult = await labDelegate.GetLabReport(ReportId, Hdid, AccessToken, false);
 
             // Verify
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
@@ -378,7 +378,7 @@ namespace HealthGateway.LaboratoryTests.Delegates
                 this.configuration);
 
             // Act
-            RequestResult<LaboratoryReport> actualResult = await labDelegate.GetLabReport(ReportId, Hdid, AccessToken, false).ConfigureAwait(true);
+            RequestResult<LaboratoryReport> actualResult = await labDelegate.GetLabReport(ReportId, Hdid, AccessToken, false);
 
             // Verify
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
@@ -406,7 +406,7 @@ namespace HealthGateway.LaboratoryTests.Delegates
                 this.configuration);
 
             // Act
-            RequestResult<LaboratoryReport> actualResult = await labDelegate.GetLabReport(ReportId, Hdid, AccessToken, false).ConfigureAwait(true);
+            RequestResult<LaboratoryReport> actualResult = await labDelegate.GetLabReport(ReportId, Hdid, AccessToken, false);
 
             // Verify
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
@@ -441,7 +441,7 @@ namespace HealthGateway.LaboratoryTests.Delegates
                 this.configuration);
 
             // Act
-            RequestResult<PhsaResult<PhsaLaboratorySummary>> actualResult = await labDelegate.GetLaboratorySummary(Hdid, AccessToken).ConfigureAwait(true);
+            RequestResult<PhsaResult<PhsaLaboratorySummary>> actualResult = await labDelegate.GetLaboratorySummary(Hdid, AccessToken);
 
             // Verify
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
@@ -467,7 +467,7 @@ namespace HealthGateway.LaboratoryTests.Delegates
                 this.configuration);
 
             // Act
-            RequestResult<PhsaResult<PhsaLaboratorySummary>> actualResult = await labDelegate.GetLaboratorySummary(Hdid, AccessToken).ConfigureAwait(true);
+            RequestResult<PhsaResult<PhsaLaboratorySummary>> actualResult = await labDelegate.GetLaboratorySummary(Hdid, AccessToken);
 
             // Verify
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
@@ -496,7 +496,7 @@ namespace HealthGateway.LaboratoryTests.Delegates
                 this.configuration);
 
             // Act
-            RequestResult<PhsaResult<PhsaLaboratorySummary>> actualResult = await labDelegate.GetLaboratorySummary(Hdid, AccessToken).ConfigureAwait(true);
+            RequestResult<PhsaResult<PhsaLaboratorySummary>> actualResult = await labDelegate.GetLaboratorySummary(Hdid, AccessToken);
 
             // Verify
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
@@ -524,7 +524,7 @@ namespace HealthGateway.LaboratoryTests.Delegates
                 this.configuration);
 
             // Act
-            RequestResult<PhsaResult<PhsaLaboratorySummary>> actualResult = await labDelegate.GetLaboratorySummary(Hdid, AccessToken).ConfigureAwait(true);
+            RequestResult<PhsaResult<PhsaLaboratorySummary>> actualResult = await labDelegate.GetLaboratorySummary(Hdid, AccessToken);
 
             // Verify
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);

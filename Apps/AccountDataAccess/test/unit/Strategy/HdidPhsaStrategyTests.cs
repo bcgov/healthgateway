@@ -82,7 +82,7 @@ namespace AccountDataAccessTest.Strategy
             PatientRequest request = new(Hdid, useCache);
 
             // Act
-            PatientModel? actual = await hdidPhsaStrategy.GetPatientAsync(request).ConfigureAwait(true);
+            PatientModel? actual = await hdidPhsaStrategy.GetPatientAsync(request);
 
             // Verify
             expectedPatient.ShouldDeepEqual(actual);
