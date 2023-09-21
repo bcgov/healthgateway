@@ -71,7 +71,7 @@ namespace HealthGateway.Admin.Client.Store.PatientDetails
         /// <summary>
         /// The action representing the configuring of a patient's level of access.
         /// </summary>
-        public class BlockAccessAction : BaseAgentAuditAction
+        public class BlockAccessAction
         {
             /// <summary>
             /// Gets the patient's HDID to configure access for.
@@ -82,6 +82,11 @@ namespace HealthGateway.Admin.Client.Store.PatientDetails
             /// Gets the list of data sources to block.
             /// </summary>
             public required IEnumerable<DataSource> DataSources { get; init; }
+
+            /// <summary>
+            /// Gets the audit reason.
+            /// </summary>
+            public required string Reason { get; init; }
         }
 
         /// <summary>

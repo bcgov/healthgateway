@@ -19,6 +19,7 @@ namespace HealthGateway.Admin.Client.Components.Support
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
+    using Fluxor;
     using Fluxor.Blazor.Web.Components;
     using HealthGateway.Admin.Client.Components.AgentAudit;
     using HealthGateway.Admin.Client.Store.PatientDetails;
@@ -65,6 +66,9 @@ namespace HealthGateway.Admin.Client.Components.Support
         [Parameter]
         [EditorRequired]
         public string Hdid { get; set; } = string.Empty;
+
+        [Inject]
+        private IDispatcher Dispatcher { get; set; } = default!;
 
         [Inject]
         private IDialogService Dialog { get; set; } = default!;
@@ -114,6 +118,18 @@ namespace HealthGateway.Admin.Client.Components.Support
             this.SetBlockedDataSources();
         }
 
+        private void BlockAccess(string auditReason)
+        {
+            PatientDetailsActions.BlockAccessAction action = new()
+            {
+                Hdid = this.Hdid,
+                DataSources = this.blockedDataSources,
+                Reason = auditReason,
+            };
+
+            this.Dispatcher.Dispatch(action);
+        }
+
         private async Task SaveChanges()
         {
             const string title = "Confirm Update";
@@ -125,12 +141,11 @@ namespace HealthGateway.Admin.Client.Components.Support
             };
             DialogParameters parameters = new()
             {
-                ["AuditableAction"] = new PatientDetailsActions.BlockAccessAction { Hdid = this.Hdid, DataSources = this.blockedDataSources },
+                ["ActionOnConfirm"] = (Action<string>)this.BlockAccess,
             };
 
             IDialogReference dialog = await this.Dialog
                 .ShowAsync<AuditReasonDialog<
-                    PatientDetailsActions.BlockAccessAction,
                     PatientDetailsActions.BlockAccessFailureAction,
                     PatientDetailsActions.BlockAccessSuccessAction>>(
                     title,
