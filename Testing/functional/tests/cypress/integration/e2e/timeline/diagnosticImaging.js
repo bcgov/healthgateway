@@ -18,8 +18,9 @@ describe("Diagnostic Imaging", () => {
         cy.checkTimelineHasLoaded();
     });
 
-    it("Validate Card Details", () => {
+    it("Validate card details with a file", () => {
         cy.get("[data-testid=timelineCard")
+            .filter(":has([data-testid=attachmentIcon])")
             .first()
             .within(() => {
                 cy.get("[data-testid=diagnosticimagingTitle]")
@@ -37,8 +38,29 @@ describe("Diagnostic Imaging", () => {
             });
     });
 
+    it("Validate card details without a file", () => {
+        cy.get("[data-testid=timelineCard")
+            .not(":has([data-testid=attachmentIcon])")
+            .first()
+            .within(() => {
+                cy.get("[data-testid=diagnosticimagingTitle]")
+                    .should("be.visible")
+                    .click({ force: true });
+                cy.get(
+                    "[data-testid=diagnostic-imaging-procedure-description]"
+                ).should("be.visible");
+                cy.get(
+                    "[data-testid=diagnostic-imaging-health-authority]"
+                ).should("be.visible");
+                cy.get(
+                    "[data-testid=diagnostic-imaging-download-button]"
+                ).should("not.exist");
+            });
+    });
+
     it("Validate file download", () => {
         cy.get("[data-testid=timelineCard")
+            .filter(":has([data-testid=attachmentIcon])")
             .first()
             .within(() => {
                 cy.get("[data-testid=diagnosticimagingTitle]")

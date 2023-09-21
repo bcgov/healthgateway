@@ -39,7 +39,7 @@ entryTypeMap.set(EntryType.Immunization, {
     commentType: CommentEntryType.Immunization,
     name: "Immunizations",
     description:
-        "View immunizations you received from public health and community pharmacies.",
+        "View immunizations you received from public health and community pharmacies and recommended vaccines.",
     icon: "syringe",
     component: "ImmunizationTimelineComponent",
     eventName: "immunizations",
@@ -165,7 +165,7 @@ entryTypeMap.set(EntryType.BcCancerScreening, {
     commentType: CommentEntryType.BcCancerScreening,
     name: "BC Cancer Screening",
     description:
-        "View and download your results as soon as they are available.",
+        "View and download your notices and results as soon as they are available.",
     icon: "ribbon",
     component: "BcCancerScreeningTimelineComponent",
     eventName: "bc_cancer_screening",

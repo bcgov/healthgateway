@@ -20,6 +20,7 @@ namespace HealthGateway.Immunization.Delegates
     using System.Net.Http;
     using System.Threading.Tasks;
     using HealthGateway.Common.Data.Constants;
+    using HealthGateway.Common.Data.Models.PHSA;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Models.PHSA;

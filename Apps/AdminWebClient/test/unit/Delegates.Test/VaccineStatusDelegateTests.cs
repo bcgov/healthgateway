@@ -25,6 +25,7 @@ namespace HealthGateway.AdminWebClientTests.Delegates.Test
     using HealthGateway.Admin.Api;
     using HealthGateway.Admin.Delegates;
     using HealthGateway.Common.Data.Constants;
+    using HealthGateway.Common.Data.Models.PHSA;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Models.PHSA;

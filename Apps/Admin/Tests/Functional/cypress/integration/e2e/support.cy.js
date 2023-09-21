@@ -1,5 +1,6 @@
 import {
     performSearch,
+    verifySingleSupportResult,
     verifySupportTableResults,
 } from "../../utilities/supportUtilities";
 import { getTableRows } from "../../utilities/sharedUtilities";
@@ -26,16 +27,16 @@ describe("Support", () => {
 
     it("Verify support query.", () => {
         performSearch("PHN", phn);
-        verifySupportTableResults(hdid, phn);
+        verifySingleSupportResult(hdid, phn);
 
         performSearch("HDID", hdid);
-        verifySupportTableResults(hdid, phn);
+        verifySingleSupportResult(hdid, phn);
 
         performSearch("SMS", sms);
         verifySupportTableResults(hdid, phn, 2);
 
         performSearch("Email", email);
-        verifySupportTableResults(emailHdid, emailPhn);
+        verifySingleSupportResult(emailHdid, emailPhn);
     });
 
     it("Verify no results hdid query.", () => {
@@ -55,6 +56,6 @@ describe("Support", () => {
 
     it("Verify dependents query returns results.", () => {
         performSearch("Dependent", dependentPhn);
-        getTableRows("[data-testid=user-table]").should("have.length", 1);
+        cy.get("[data-testid=patient-name]").should("be.visible");
     });
 });

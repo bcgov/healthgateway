@@ -160,31 +160,6 @@ namespace HealthGateway.PatientTests.Services
             }
         }
 
-        [Fact]
-        public async Task CannotGetCancerScreeningData()
-        {
-            BcCancerScreening expected = new()
-            {
-                EventType = BcCancerScreeningType.Recall,
-            };
-
-            Mock<IPatientDataRepository> patientDataRepository = new();
-            patientDataRepository.AttachMockQuery<HealthQuery>(
-                q => q.Pid == this.pid && q.Categories.Any(c => c == HealthCategory.BcCancerScreening),
-                expected);
-            Mock<IPersonalAccountsService> personalAccountService = this.GetMockPersonalAccountService();
-
-            Mock<IPatientRepository> patientRepository = new();
-            patientRepository.Setup(p => p.CanAccessDataSourceAsync(It.IsAny<string>(), It.IsAny<DataSource>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
-
-            PatientDataService sut = new(patientDataRepository.Object, patientRepository.Object, personalAccountService.Object, this.mapper);
-
-            PatientDataResponse result = await sut.Query(new PatientDataQuery(this.hdid, new[] { PatientDataType.BcCancerScreening }), CancellationToken.None)
-                .ConfigureAwait(true);
-
-            result.Items.ShouldBeEmpty();
-        }
-
         [Theory]
         [InlineData(true)]
         [InlineData(false)]

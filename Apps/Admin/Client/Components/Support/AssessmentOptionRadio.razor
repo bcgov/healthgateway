@@ -1,0 +1,48 @@
+﻿@using HealthGateway.Admin.Common.Constants
+@inherits Fluxor.Blazor.Web.Components.FluxorComponent
+
+<MudRadioGroup
+    @bind-SelectedOption="@SelectedOption"
+    T="CovidTherapyAssessmentOption"
+    Class="mb-n1 mt-1"
+    @attributes="@UnmatchedAttributes"
+    data-testid="assessment-option-input">
+    <MudRadio
+        Option="@CovidTherapyAssessmentOption.Yes"
+        UnCheckedColor="@Color.Default"
+        Color="@Color.Success"
+        data-testid="assessment-option-yes">
+        Yes
+    </MudRadio>
+    <MudRadio
+        Option="@CovidTherapyAssessmentOption.No"
+        UnCheckedColor="@Color.Default"
+        Color="@Color.Error"
+        data-testid="assessment-option-no">
+        No
+    </MudRadio>
+    @if (IncludeNotSureOption)
+    {
+        <MudRadio
+            Option="@CovidTherapyAssessmentOption.NotSure"
+            UnCheckedColor="@Color.Default"
+            Color="@Color.Warning"
+            data-testid="assessment-option-not-sure">
+            Not Sure
+        </MudRadio>
+    }
+</MudRadioGroup>
+
+@if (SelectedOption == OptionThatIndicatesNoBenefit)
+{
+    <MudText Color="Color.Primary" Typo="@Typo.body1" Class="mt-3" data-testid="treatment-benefit-not-indicated">
+        Citizen would likely not benefit from COVID‑19 treatment.
+    </MudText>
+}
+
+@if (SelectedOption == OptionThatIndicatesBenefit)
+{
+    <MudText Color="Color.Primary" Typo="@Typo.body1" Class="mt-3" data-testid="treatment-benefit-indicated">
+        Citizen may benefit from COVID‑19 treatment.
+    </MudText>
+}

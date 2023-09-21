@@ -247,7 +247,12 @@ const isDownloadImmunizationReportButtonDisabled = computed(() => {
 function deleteDependent(): void {
     dependentStore
         .removeDependent(user.value.hdid, props.dependent)
-        .then(() => emit("needs-update"));
+        .catch((err: ResultError) => {
+            logger.error(err.resultMessage);
+        })
+        .finally(() => {
+            emit("needs-update");
+        });
 }
 
 function downloadCovid19Report(): void {

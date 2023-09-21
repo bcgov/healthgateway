@@ -34,11 +34,7 @@ namespace HealthGateway.Common.MapUtils
         /// <returns>The created UI model.</returns>
         public static MessagingVerificationModel ToUiModel(MessagingVerification messagingVerification, IMapper mapper, TimeZoneInfo timezone)
         {
-            MessagingVerificationModel supportUser = mapper.Map<MessagingVerification, MessagingVerificationModel>(
-                messagingVerification,
-                opts => opts.AfterMap(
-                    (_, dest) => dest.UpdatedDateTime = TimeZoneInfo.ConvertTimeFromUtc(dest.UpdatedDateTime, timezone)));
-            return supportUser;
+            return mapper.Map<MessagingVerification, MessagingVerificationModel>(messagingVerification);
         }
     }
 }

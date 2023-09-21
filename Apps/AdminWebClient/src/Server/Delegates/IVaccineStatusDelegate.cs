@@ -17,6 +17,7 @@ namespace HealthGateway.Admin.Delegates
 {
     using System;
     using System.Threading.Tasks;
+    using HealthGateway.Common.Data.Models.PHSA;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Models.PHSA;
 

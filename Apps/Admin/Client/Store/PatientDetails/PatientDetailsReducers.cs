@@ -38,9 +38,11 @@ namespace HealthGateway.Admin.Client.Store.PatientDetails
                 IsLoading = false,
                 Result = action.Data,
                 Error = null,
-                MessagingVerifications = action.Data.MessagingVerifications.ToImmutableList(),
-                BlockedDataSources = action.Data.BlockedDataSources.ToImmutableList(),
-                AgentActions = action.Data.AgentActions.ToImmutableList(),
+                MessagingVerifications = action.Data.MessagingVerifications?.ToImmutableList(),
+                BlockedDataSources = action.Data.BlockedDataSources?.ToImmutableList(),
+                AgentActions = action.Data.AgentActions?.ToImmutableList(),
+                VaccineDetails = action.Data.VaccineDetails,
+                CovidAssessmentDetails = action.Data.CovidAssessmentDetails,
             };
         }
 
@@ -65,6 +67,8 @@ namespace HealthGateway.Admin.Client.Store.PatientDetails
                 MessagingVerifications = null,
                 BlockedDataSources = null,
                 AgentActions = null,
+                VaccineDetails = null,
+                CovidAssessmentDetails = null,
             };
         }
 

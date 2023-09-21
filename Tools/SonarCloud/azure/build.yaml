@@ -18,12 +18,18 @@ jobs:
     timeoutInMinutes: 120
     steps:
       - task: UseDotNet@2
-        displayName: 'Install .NET SDK'
+        displayName: "Install .NET SDK"
         condition: eq(variables['EnableAzure'], True)
         inputs:
           packageType: sdk
           version: 7.x
           installationPath: $(Agent.ToolsDirectory)/dotnet
+
+      - task: DownloadSecureFile@1
+        name: testSecrets
+        displayName: "Download test secrets"
+        inputs:
+          secureFile: "integration_test_secrets.json"
 
       - script: |
           dotnet tool install --global JetBrains.dotCover.GlobalTool
@@ -39,7 +45,7 @@ jobs:
             /o:bcgov-sonarcloud \
             /k:bcgov_healthgateway \
             /n:"HealthGateway" \
-            /d:sonar.login="$(SonarToken)" \
+            /d:sonar.token="$(SonarToken)" \
             /d:sonar.dotnet.excludeTestProjects=true \
             /s:$(Build.SourcesDirectory)/Apps/sonar-config.xml
         displayName: "Begin Static Code Analysis"
@@ -48,8 +54,10 @@ jobs:
         enabled: "true"
 
       - script: |
+          set -e
+          export SECRETS_PATH=$(testSecrets.secureFilePath)
           dotnet build --no-incremental
-          dotnet dotcover test --dcReportType=HTML --dcAttributeFilters=System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverageAttribute;
+          dotnet dotcover test --filter "Category!=IntegrationTest" --dcReportType=HTML --dcAttributeFilters=System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverageAttribute;
         displayName: "Build and Test"
         continueOnError: true
         workingDirectory: $(Build.SourcesDirectory)/Apps/
@@ -57,7 +65,7 @@ jobs:
 
       - script: |
           export DOTNET_ROLL_FORWARD=Major
-          dotnet sonarscanner end /d:sonar.login="$(SonarToken)"
+          dotnet sonarscanner end /d:sonar.token="$(SonarToken)"
           echo "$@" >&2
         displayName: "End Static Code Analysis"
         continueOnError: true

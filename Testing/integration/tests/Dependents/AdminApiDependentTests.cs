@@ -16,12 +16,16 @@
 
 namespace HealthGateway.IntegrationTests.Dependents;
 
+using Alba;
 using HealthGateway.Admin.Common.Models;
 using HealthGateway.Admin.Server;
 using HealthGateway.Common.Models.Events;
+using HealthGateway.Database.Models;
 using Microsoft.EntityFrameworkCore;
 using Xunit.Abstractions;
+using Xunit.Categories;
 
+[IntegrationTest]
 public class AdminApiDependentTests : ScenarioContextBase<Program>
 {
     public AdminApiDependentTests(ITestOutputHelper output, WebAppFixture fixture) : base(output, TestConfiguration.AdminConfigSection, fixture)
@@ -31,10 +35,11 @@ public class AdminApiDependentTests : ScenarioContextBase<Program>
     [Fact]
     public async Task ProtectDependent()
     {
-        var dependentHdid = "9874307168";
-        var allowedDelegates = new[] { "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A" };
+        string dependentHdid = "9874307168";
+        string[] allowedDelegates = new[] { "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A" };
 
-        var scenarioResponse = await Host.Scenario(scenario =>
+        IScenarioResult scenarioResponse = await this.Host.Scenario(
+            scenario =>
             {
                 scenario
                     .Put
@@ -42,35 +47,38 @@ public class AdminApiDependentTests : ScenarioContextBase<Program>
                     .ToUrl($"/v1/api/delegation/{dependentHdid}/ProtectDependent");
             });
 
-        var response = (await scenarioResponse.ReadAsJsonAsync<AgentAction>()).ShouldNotBeNull();
+        AgentAction response = (await scenarioResponse.ReadAsJsonAsync<AgentAction>()).ShouldNotBeNull();
         response.Hdid.ShouldBe(dependentHdid);
 
-        await this.Assert(async ctx =>
-        {
-            var outboxItems = await ctx.Outbox.Where(i => i.Metadata.SessionId == dependentHdid && i.Metadata.Type == typeof(DependentProtectionAddedEvent).Name).ToListAsync();
-            outboxItems.Count.ShouldBe(1);
-        });
+        await this.Assert(
+            async ctx =>
+            {
+                List<OutboxItem> outboxItems = await ctx.Outbox.Where(i => i.Metadata.SessionId == dependentHdid && i.Metadata.Type == typeof(DependentProtectionAddedEvent).Name).ToListAsync();
+                outboxItems.Count.ShouldBe(1);
+            });
     }
 
     [Fact]
     public async Task UnprotectDependent()
     {
-        var dependentHdid = "35224807075386271";
-        var scenarioResponse = await Host.Scenario(scenario =>
-        {
-            scenario
-                .Put
-                .Json(new UnprotectDependentRequest("test"))
-                .ToUrl($"/v1/api/delegation/{dependentHdid}/UnprotectDependent");
-        });
+        string dependentHdid = "35224807075386271";
+        IScenarioResult scenarioResponse = await this.Host.Scenario(
+            scenario =>
+            {
+                scenario
+                    .Put
+                    .Json(new UnprotectDependentRequest("test"))
+                    .ToUrl($"/v1/api/delegation/{dependentHdid}/UnprotectDependent");
+            });
 
-        var response = (await scenarioResponse.ReadAsJsonAsync<AgentAction>()).ShouldNotBeNull();
+        AgentAction response = (await scenarioResponse.ReadAsJsonAsync<AgentAction>()).ShouldNotBeNull();
         response.Hdid.ShouldBe(dependentHdid);
 
-        await this.Assert(async ctx =>
-        {
-            var outboxItems = await ctx.Outbox.Where(i => i.Metadata.SessionId == dependentHdid && i.Metadata.Type == typeof(DependentProtectionRemovedEvent).Name).ToListAsync();
-            outboxItems.Count.ShouldBe(1);
-        });
+        await this.Assert(
+            async ctx =>
+            {
+                List<OutboxItem> outboxItems = await ctx.Outbox.Where(i => i.Metadata.SessionId == dependentHdid && i.Metadata.Type == typeof(DependentProtectionRemovedEvent).Name).ToListAsync();
+                outboxItems.Count.ShouldBe(1);
+            });
     }
 }

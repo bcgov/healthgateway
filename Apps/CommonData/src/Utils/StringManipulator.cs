@@ -16,6 +16,7 @@
 namespace HealthGateway.Common.Data.Utils
 {
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.Linq;
     using System.Text.RegularExpressions;
 
@@ -49,6 +50,7 @@ namespace HealthGateway.Common.Data.Utils
         /// </summary>
         /// <param name="target">A string that may contain whitespace.</param>
         /// <returns>The string with whitespace removed.</returns>
+        [return: NotNullIfNotNull(nameof(target))]
         public static string? StripWhitespace(string? target)
         {
             return target is null ? target : WhitespaceRegex.Replace(target, string.Empty);
@@ -70,8 +72,10 @@ namespace HealthGateway.Common.Data.Utils
         /// </summary>
         /// <param name="values">A collection that contains the strings to concatenate.</param>
         /// <param name="separator">The string to use as a separator.</param>
-        /// <returns>A string that consists of the elements of values delimited by the separator string
-        /// -or- <see cref="string.Empty"/> if values has zero non-blank elements.</returns>
+        /// <returns>
+        /// A string that consists of the elements of values delimited by the separator string
+        /// -or- <see cref="string.Empty"/> if values has zero non-blank elements.
+        /// </returns>
         public static string JoinWithoutBlanks(IEnumerable<string?> values, string separator = " ")
         {
             return string.Join(separator, ExcludeBlanks(values));

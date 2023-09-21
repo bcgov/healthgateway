@@ -1,0 +1,120 @@
+@typeparam TErrorAction
+@typeparam TSuccessAction
+@using HealthGateway.Common.Data.Constants
+@using HealthGateway.Common.Data.Utils
+@inherits Fluxor.Blazor.Web.Components.FluxorComponent
+
+<MudDialog>
+    <DialogContent>
+        <HgBannerFeedback
+            Severity="@Severity.Error"
+            IsEnabled="@HasError"
+            TResetAction="@TErrorAction">
+            @ErrorMessage
+        </HgBannerFeedback>
+        <MudForm @ref="Form" data-testid="address-confirmation-form">
+            <MudGrid Spacing="0">
+                <MudItem xs="12">
+                    <HgTextField
+                        Label="Address"
+                        @bind-Value="@AddressLines"
+                        T="@string"
+                        Required="@true"
+                        Lines="@(2)"
+                        data-testid="address-lines-input" />
+                </MudItem>
+                <MudItem xs="12" sm="6">
+                    <HgTextField
+                        Label="City"
+                        @bind-Value="@City"
+                        T="@string"
+                        Required="@true"
+                        RightMargin="@Breakpoint.Sm"
+                        data-testid="city-input" />
+                </MudItem>
+                <MudItem xs="12" sm="6">
+                    @switch (SelectedCountryCode)
+                    {
+                        case CountryCode.CA:
+                            <HgSelect
+                                Label="Province/State"
+                                @bind-Value="@CanadianProvince"
+                                T="@string"
+                                Required="@true"
+                                data-testid="province-input">
+                                <MudSelectItem T="@string" Value="string.Empty" data-testid="province" />
+                                @foreach (string province in AddressUtility.Provinces)
+                                {
+                                    <MudSelectItem T="string" Value="@province" data-testid="province" />
+                                }
+                            </HgSelect>
+                            break;
+                        case CountryCode.US:
+                            <HgSelect
+                                Label="Province/State"
+                                @bind-Value="@AmericanState"
+                                T="@string"
+                                Required="@true"
+                                data-testid="state-input">
+                                <MudSelectItem T="@string" Value="string.Empty" data-testid="state" />
+                                @foreach (string state in AddressUtility.States)
+                                {
+                                    <MudSelectItem T="string" Value="@state" data-testid="state" />
+                                }
+                            </HgSelect>
+                            break;
+                        default:
+                            <HgTextField
+                                Label="Province/State"
+                                @bind-Value="@OtherState"
+                                T="@string"
+                                Required="@true"
+                                data-testid="province-state-input" />
+                            break;
+                    }
+                </MudItem>
+                <MudItem xs="12">
+                    <HgTextField
+                        Label="Postal Code"
+                        @bind-Value="@PostalCode"
+                        T="@string"
+                        Validation="@ValidatePostalCode"
+                        Required="@true"
+                        Mask="@PostalCodeMask"
+                        data-testid="postal-code-input" />
+                </MudItem>
+                <MudItem xs="12">
+                    <HgAutocomplete
+                        Label="Country"
+                        Value="@Country"
+                        ValueChanged="HandleCountryChanged"
+                        OnClearButtonClick="@(() => HandleCountryChanged(string.Empty))"
+                        SearchFunc="@SearchCountriesAsync"
+                        T="@string"
+                        data-testid="country-input" />
+                </MudItem>
+            </MudGrid>
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <HgButton
+            RightMargin="Breakpoint.Always"
+            HorizontalMarginSize="@(HgButton.DefaultHorizontalMarginSize - 2)"
+            BottomMargin="Breakpoint.Always"
+            Color="@Color.Primary"
+            Variant="@Variant.Text"
+            OnClick="@HandleClickCancel"
+            data-testid="address-cancel-button">
+            Cancel
+        </HgButton>
+        <HgButton
+            RightMargin="Breakpoint.Always"
+            BottomMargin="Breakpoint.Always"
+            Color="@Color.Primary"
+            Loading="@IsLoading"
+            OnClick="@HandleClickConfirm"
+            data-testid="address-confirmation-button">
+            @ConfirmButtonLabel
+        </HgButton>
+    </DialogActions>
+</MudDialog>
