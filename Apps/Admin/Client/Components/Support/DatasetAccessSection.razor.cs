@@ -19,7 +19,6 @@ namespace HealthGateway.Admin.Client.Components.Support
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
-    using Fluxor;
     using Fluxor.Blazor.Web.Components;
     using HealthGateway.Admin.Client.Components.AgentAudit;
     using HealthGateway.Admin.Client.Store.PatientDetails;
@@ -66,15 +65,6 @@ namespace HealthGateway.Admin.Client.Components.Support
         [Parameter]
         [EditorRequired]
         public string Hdid { get; set; } = string.Empty;
-
-        [Inject]
-        private IDispatcher Dispatcher { get; set; } = default!;
-
-        [Inject]
-        private IState<PatientDetailsState> PatientDetailsState { get; set; } = default!;
-
-        [Inject]
-        private IActionSubscriber ActionSubscriber { get; set; } = default!;
 
         [Inject]
         private IDialogService Dialog { get; set; } = default!;

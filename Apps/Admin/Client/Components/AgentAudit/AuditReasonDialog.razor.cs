@@ -62,8 +62,6 @@ public partial class AuditReasonDialog<TAction, TErrorAction, TSuccessAction> : 
 
     private RequestError? Error { get; set; }
 
-    private MudTextField<string> AuditReasonTextField { get; set; } = default!;
-
     private bool SaveButtonDisabled => this.AuditReason.Length < 2;
 
     private string? ErrorMessage => this.Error?.Message;

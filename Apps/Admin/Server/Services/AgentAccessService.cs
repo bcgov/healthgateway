@@ -99,12 +99,12 @@ namespace HealthGateway.Admin.Server.Services
             }
 
             List<UserRepresentation> getUserResponse = await this.keycloakAdminApi.GetUsersByUsernameAsync(user.Username, jwtModel.AccessToken).ConfigureAwait(true);
-            UserRepresentation createdUser = getUserResponse.First();
+            UserRepresentation createdUser = getUserResponse[0];
             await this.keycloakAdminApi.AddUserRolesAsync(createdUser.UserId.GetValueOrDefault(), roles, jwtModel.AccessToken).ConfigureAwait(true);
 
             string[] splitString = createdUser.Username.Split('@');
-            string createdUserName = splitString.First();
-            string createdIdentityProviderName = splitString.Last();
+            string createdUserName = splitString[0];
+            string createdIdentityProviderName = splitString[^1];
             AdminAgent newAgent = new()
             {
                 Id = createdUser.UserId ?? Guid.Empty,
@@ -130,8 +130,8 @@ namespace HealthGateway.Admin.Server.Services
             {
                 List<RoleRepresentation> userRoles = await this.keycloakAdminApi.GetUserRolesAsync(user.UserId.GetValueOrDefault(), jwtModel.AccessToken).ConfigureAwait(true);
                 string[] splitString = user.Username.Split('@');
-                string userName = splitString.First();
-                string identityProviderName = splitString.Last();
+                string userName = splitString[0];
+                string identityProviderName = splitString[^1];
                 KeycloakIdentityProvider identityProvider = EnumUtility.ToEnumOrDefault<KeycloakIdentityProvider>(identityProviderName, true);
 
                 if (identityProvider != KeycloakIdentityProvider.Unknown && splitString.Length == 2)
@@ -167,7 +167,7 @@ namespace HealthGateway.Admin.Server.Services
 
             List<RoleRepresentation> rolesToAdd = realmRoles
                 .Where(r => agent.Roles.Contains(GetIdentityAccessRole(r)))
-                .Where(r => userRoles.All(userRole => userRole.Id != r.Id))
+                .Where(r => userRoles.TrueForAll(userRole => userRole.Id != r.Id))
                 .ToList();
 
             if (rolesToDelete.Any())

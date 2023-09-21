@@ -162,7 +162,7 @@ export default class CovidCardView extends Vue {
     private handleSearch() {
         this.clear(false);
 
-        const phnDigits = this.phn.replace(/[^0-9]/g, "");
+        const phnDigits = this.phn.replace(/\D/g, "");
         if (!PHNValidator.IsValid(phnDigits)) {
             this.showBannerFeedback({
                 type: FeedbackType.Error,
