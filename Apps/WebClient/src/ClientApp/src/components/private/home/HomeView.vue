@@ -38,6 +38,7 @@ interface QuickLinkCard {
     index: number;
     title: string;
     description: string;
+    logoUri?: string;
     icon: string;
 }
 
@@ -162,6 +163,7 @@ const quickLinkCards = computed(() =>
             if (details) {
                 card.description = details.description;
                 card.icon = details.icon;
+                card.logoUri = details.logoUri;
             }
         }
 
@@ -567,7 +569,14 @@ watch(vaccineRecordState, () => {
                 @click="handleClickQuickLink(card.index)"
             >
                 <template #icon>
+                    <img
+                        v-if="card.logoUri"
+                        class="quick-link-icon"
+                        :alt="`${card.title ?? 'dataset'} Logo`"
+                        :src="card.logoUri"
+                    />
                     <v-icon
+                        v-else
                         :icon="card.icon"
                         class="quick-link-icon"
                         color="primary"
