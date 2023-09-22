@@ -27,7 +27,7 @@ namespace HealthGateway.Admin.Client.Utils
         /// </summary>
         /// <param name="status">Status to be formatted</param>
         /// <returns>Friendly string value representing status value.</returns>
-        public static string formatCommunicationStatus(CommunicationStatus status)
+        public static string FormatCommunicationStatus(CommunicationStatus status)
         {
             return status switch
             {

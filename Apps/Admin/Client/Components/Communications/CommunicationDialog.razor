@@ -126,7 +126,7 @@
                     <HgSelect Label="Status" @bind-Value="@Communication.CommunicationStatusCode" T="@CommunicationStatus" Required="@true" data-testid="status-select">
                         @foreach (CommunicationStatus status in CommunicationStatuses)
                         {
-                            <MudSelectItem Value="@status" data-testid="status-type">@CommunicationUtility.formatCommunicationStatus(status)</MudSelectItem>
+                            <MudSelectItem Value="@status" data-testid="status-type">@CommunicationUtility.FormatCommunicationStatus(status)</MudSelectItem>
                         }
                     </HgSelect>
                 </MudItem>
