@@ -134,7 +134,7 @@ describe("Communications", () => {
             .contains(".mud-tab", "Public Banners")
             .click();
         cy.get("[data-testid=comm-table-subject]").contains("Test Banner");
-        cy.get("[data-testid=comm-table-status]").contains("New");
+        cy.get("[data-testid=comm-table-status]").contains("Publish");
         cy.get("[data-testid=comm-table-effective-date]").contains(
             getTodayPlusDaysDate(0)
         );
@@ -150,7 +150,7 @@ describe("Communications", () => {
             .contains(".mud-tab", "In-App Banners")
             .click();
         cy.get("[data-testid=comm-table-subject]").contains("In-App Banner");
-        cy.get("[data-testid=comm-table-status]").contains("New");
+        cy.get("[data-testid=comm-table-status]").contains("Publish");
         cy.get("[data-testid=comm-table-effective-date]").contains(
             getTodayPlusDaysDate(0)
         );
@@ -168,7 +168,7 @@ describe("Communications", () => {
         cy.get("[data-testid=comm-table-subject]").contains(
             "Seeded Mobile Comm"
         );
-        cy.get("[data-testid=comm-table-status]").contains("New");
+        cy.get("[data-testid=comm-table-status]").contains("Publish");
         cy.get("[data-testid=comm-table-effective-date]").contains(
             getTodayPlusDaysDate(0)
         );
@@ -225,7 +225,7 @@ describe("Communications", () => {
         });
         cy.get("[data-testid=status-select]").click({ force: true });
         cy.get("[data-testid=status-type]")
-            .contains("New")
+            .contains("Publish")
             .click({ force: true });
         cy.get("[data-testid=save-btn]").click({ force: true });
         cy.get("[data-testid=comm-table-subject]").contains("New Mobile Comm");
