@@ -173,34 +173,31 @@ namespace HealthGateway.Common.Delegates
 
         private static Address? MapAddress(AD? address)
         {
-            Address? retAddress = null;
-            if (address?.Items != null)
+            if (address?.Items == null)
             {
-                retAddress = new();
-                foreach (ADXP item in address.Items)
-                {
-                    switch (item)
-                    {
-                        case ADStreetAddressLine line when line.Text != null:
-                            foreach (string s in line.Text)
-                            {
-                                retAddress.StreetLines = retAddress.StreetLines.Append(s ?? string.Empty);
-                            }
+                return null;
+            }
 
-                            break;
-                        case ADCity city:
-                            retAddress.City = city.Text[0] ?? string.Empty;
-                            break;
-                        case ADState state:
-                            retAddress.State = state.Text[0] ?? string.Empty;
-                            break;
-                        case ADPostalCode postalCode:
-                            retAddress.PostalCode = postalCode.Text[0] ?? string.Empty;
-                            break;
-                        case ADCountry country:
-                            retAddress.Country = country.Text[0] ?? string.Empty;
-                            break;
-                    }
+            Address retAddress = new();
+            foreach (ADXP item in address.Items)
+            {
+                switch (item)
+                {
+                    case ADStreetAddressLine { Text: not null } line:
+                        retAddress.StreetLines = retAddress.StreetLines.Concat(line.Text.Select(l => l ?? string.Empty));
+                        break;
+                    case ADCity city:
+                        retAddress.City = city.Text[0] ?? string.Empty;
+                        break;
+                    case ADState state:
+                        retAddress.State = state.Text[0] ?? string.Empty;
+                        break;
+                    case ADPostalCode postalCode:
+                        retAddress.PostalCode = postalCode.Text[0] ?? string.Empty;
+                        break;
+                    case ADCountry country:
+                        retAddress.Country = country.Text[0] ?? string.Empty;
+                        break;
                 }
             }
 
@@ -386,11 +383,16 @@ namespace HealthGateway.Common.Delegates
             List<string> lastNameList = new();
             foreach (ENXP name in nameSection.Items)
             {
-                if (name.GetType() == typeof(engiven) && (name.qualifier == null || !name.qualifier.Contains(cs_EntityNamePartQualifier.CL)))
+                if (name.qualifier != null && name.qualifier.Contains(cs_EntityNamePartQualifier.CL))
+                {
+                    continue;
+                }
+
+                if (name.GetType() == typeof(engiven))
                 {
                     givenNameList.Add(name.Text[0]);
                 }
-                else if (name.GetType() == typeof(enfamily) && (name.qualifier == null || !name.qualifier.Contains(cs_EntityNamePartQualifier.CL)))
+                else if (name.GetType() == typeof(enfamily))
                 {
                     lastNameList.Add(name.Text[0]);
                 }

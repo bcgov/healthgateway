@@ -95,7 +95,8 @@ namespace HealthGateway.Database.Context
         {
             DateTime now = DateTime.UtcNow;
             IEnumerable<EntityEntry> entities = this.ChangeTracker.Entries()
-                .Where(x => (x.Entity is IAuditable || x.Entity is IConcurrencyGuard) && (x.State == EntityState.Added || x.State == EntityState.Modified));
+                .Where(x => x.Entity is IAuditable or IConcurrencyGuard && x.State is EntityState.Added or EntityState.Modified);
+
             foreach (EntityEntry entityEntry in entities)
             {
                 if (entityEntry.Entity is IAuditable)
@@ -116,8 +117,7 @@ namespace HealthGateway.Database.Context
                     entityEntry.Property(nameof(IAuditable.UpdatedDateTime)).CurrentValue = now;
                 }
 
-                if (entityEntry.Entity is IConcurrencyGuard &&
-                    entityEntry.State == EntityState.Modified &&
+                if (entityEntry is { Entity: IConcurrencyGuard, State: EntityState.Modified } &&
                     entityEntry.Property(nameof(IConcurrencyGuard.Version)).IsModified)
                 {
                     // xmin is the Postgres system column that we use for concurrency,

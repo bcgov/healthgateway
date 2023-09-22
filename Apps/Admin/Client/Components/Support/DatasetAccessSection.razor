@@ -29,7 +29,7 @@
                                 UnCheckedColor="Color.Tertiary"
                                 Color="Color.Success"
                                 Checked="@IsBlocked(dataSource)"
-                                CheckedChanged="@(e => ToggleDataSource(dataSource))"
+                                CheckedChanged="@(_ => ToggleDataSource(dataSource))"
                                 ReadOnly="@(!CanEdit)"
                                 data-testid="@("block-access-switch-" + dataSource)" />
                         </MudItem>
@@ -43,14 +43,14 @@
                         Variant="Variant.Outlined"
                         Color="Color.Default"
                         Class="mr-2"
-                        OnClick="@(e => CancelChanges())"
+                        OnClick="@(_ => CancelChanges())"
                         data-testid="block-access-cancel">
                         Cancel
                     </MudButton>
                     <MudButton
                         Variant="Variant.Filled"
                         Color="Color.Primary"
-                        OnClick="@(e => SaveChanges())"
+                        OnClick="@(_ => SaveChanges())"
                         data-testid="block-access-save">
                         Save
                     </MudButton>

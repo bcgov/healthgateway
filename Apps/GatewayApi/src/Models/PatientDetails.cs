@@ -69,12 +69,12 @@ namespace HealthGateway.GatewayApi.Models
         /// <summary>
         /// Gets or sets the physical address for the patient.
         /// </summary>
-        public AccountDataAccess.Patient.Address? PhysicalAddress { get; set; }
+        public Address? PhysicalAddress { get; set; }
 
         /// <summary>
         /// Gets or sets the postal address for the patient.
         /// </summary>
-        public AccountDataAccess.Patient.Address? PostalAddress { get; set; }
+        public Address? PostalAddress { get; set; }
 
         /// <summary>
         /// Gets or sets the response code for the patient.

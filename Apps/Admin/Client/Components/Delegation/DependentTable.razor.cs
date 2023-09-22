@@ -58,9 +58,9 @@ namespace HealthGateway.Admin.Client.Components.Delegation
             this.Dispatcher.Dispatch(new DelegationActions.SetEditModeAction { Enabled = enabled });
         }
 
-        private async Task ToggleProtectedSwitch(bool protect)
+        private async Task ToggleProtectedSwitch(bool? protect)
         {
-            if (protect)
+            if (protect == true)
             {
                 this.SetEditMode(true);
             }
