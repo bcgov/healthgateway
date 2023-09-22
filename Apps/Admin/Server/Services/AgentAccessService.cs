@@ -103,8 +103,14 @@ namespace HealthGateway.Admin.Server.Services
             await this.keycloakAdminApi.AddUserRolesAsync(createdUser.UserId.GetValueOrDefault(), roles, jwtModel.AccessToken).ConfigureAwait(true);
 
             string[] splitString = createdUser.Username.Split('@');
+            if (splitString.Length != 2)
+            {
+                string errorMessage = $"Agent username format is invalid: {createdUser.Username}";
+                throw new ProblemDetailsException(ExceptionUtility.CreateProblemDetails(errorMessage, HttpStatusCode.InternalServerError, nameof(AgentAccessService)));
+            }
+
             string createdUserName = splitString[0];
-            string createdIdentityProviderName = splitString[^1];
+            string createdIdentityProviderName = splitString[1];
             AdminAgent newAgent = new()
             {
                 Id = createdUser.UserId ?? Guid.Empty,
@@ -120,22 +126,28 @@ namespace HealthGateway.Admin.Server.Services
         public async Task<IEnumerable<AdminAgent>> GetAgentsAsync(string searchString, int? resultLimit = 25)
         {
             const int firstRecord = 0;
-
             JwtModel jwtModel = this.authDelegate.AuthenticateAsSystem(this.tokenUri, this.tokenRequest);
-
             List<UserRepresentation> users = await this.keycloakAdminApi.GetUsersSearchAsync(searchString, firstRecord, resultLimit.GetValueOrDefault(), jwtModel.AccessToken).ConfigureAwait(true);
 
             List<AdminAgent> adminAgents = new();
             foreach (UserRepresentation user in users)
             {
-                List<RoleRepresentation> userRoles = await this.keycloakAdminApi.GetUserRolesAsync(user.UserId.GetValueOrDefault(), jwtModel.AccessToken).ConfigureAwait(true);
                 string[] splitString = user.Username.Split('@');
-                string userName = splitString[0];
-                string identityProviderName = splitString[^1];
-                KeycloakIdentityProvider identityProvider = EnumUtility.ToEnumOrDefault<KeycloakIdentityProvider>(identityProviderName, true);
-
-                if (identityProvider != KeycloakIdentityProvider.Unknown && splitString.Length == 2)
+                if (splitString.Length != 2)
                 {
+                    continue;
+                }
+
+                string userName = splitString[0];
+                string identityProviderName = splitString[1];
+
+                KeycloakIdentityProvider identityProvider = EnumUtility.ToEnumOrDefault<KeycloakIdentityProvider>(identityProviderName, true);
+                if (identityProvider != KeycloakIdentityProvider.Unknown)
+                {
+                    List<RoleRepresentation> userRoles = await this.keycloakAdminApi
+                        .GetUserRolesAsync(user.UserId.GetValueOrDefault(), jwtModel.AccessToken)
+                        .ConfigureAwait(true);
+
                     adminAgents.Add(
                         new()
                         {
