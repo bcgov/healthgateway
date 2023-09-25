@@ -68,7 +68,7 @@ public partial class DashboardPage : FluxorComponent
 
     private MudDateRangePicker SelectedDateRangePicker { get; set; } = default!;
 
-    private DateTime MinimumDateTime { get; } = new(2019, 06, 1);
+    private DateTime MinimumDateTime { get; } = new(2019, 06, 1, 0, 0, 0, DateTimeKind.Local);
 
     private DateTime MaximumDateTime { get; } = DateTime.Now;
 

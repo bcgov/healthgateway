@@ -99,11 +99,9 @@ namespace HealthGateway.CommonTests.Delegates
                 JobStatus = BcmpJobStatus.Started,
             };
 
-            using HttpResponseMessage httpResponseMessage = new()
-            {
-                StatusCode = HttpStatusCode.OK,
-                Content = new StringContent(JsonSerializer.Serialize(response)),
-            };
+            using HttpResponseMessage httpResponseMessage = new();
+            httpResponseMessage.StatusCode = HttpStatusCode.OK;
+            httpResponseMessage.Content = new StringContent(JsonSerializer.Serialize(response));
 
             using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
 
@@ -137,11 +135,9 @@ namespace HealthGateway.CommonTests.Delegates
 
             string response = "ERROR: Undefined execution. \"handleCall_JSON\" exited unsuccessfully. Please alert the system administrator if this recurs.";
 
-            using HttpResponseMessage httpResponseMessage = new()
-            {
-                StatusCode = HttpStatusCode.OK,
-                Content = new StringContent(response),
-            };
+            using HttpResponseMessage httpResponseMessage = new();
+            httpResponseMessage.StatusCode = HttpStatusCode.OK;
+            httpResponseMessage.Content = new StringContent(response);
 
             using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
 
@@ -170,11 +166,9 @@ namespace HealthGateway.CommonTests.Delegates
                 Status = VaccinationStatus.Partially,
             };
 
-            using HttpResponseMessage httpResponseMessage = new()
-            {
-                StatusCode = HttpStatusCode.InternalServerError,
-                Content = null,
-            };
+            using HttpResponseMessage httpResponseMessage = new();
+            httpResponseMessage.StatusCode = HttpStatusCode.InternalServerError;
+            httpResponseMessage.Content = null;
 
             using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
 
@@ -224,11 +218,9 @@ namespace HealthGateway.CommonTests.Delegates
                 JobStatus = BcmpJobStatus.Started,
             };
 
-            using HttpResponseMessage httpResponseMessage = new()
-            {
-                StatusCode = HttpStatusCode.OK,
-                Content = new StringContent(JsonSerializer.Serialize(response)),
-            };
+            using HttpResponseMessage httpResponseMessage = new();
+            httpResponseMessage.StatusCode = HttpStatusCode.OK;
+            httpResponseMessage.Content = new StringContent(JsonSerializer.Serialize(response));
 
             using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
 
@@ -260,11 +252,9 @@ namespace HealthGateway.CommonTests.Delegates
 
             string response = "ERROR: Undefined execution. \"handleCall_JSON\" exited unsuccessfully. Please alert the system administrator if this recurs.";
 
-            using HttpResponseMessage httpResponseMessage = new()
-            {
-                StatusCode = HttpStatusCode.OK,
-                Content = new StringContent(response),
-            };
+            using HttpResponseMessage httpResponseMessage = new();
+            httpResponseMessage.StatusCode = HttpStatusCode.OK;
+            httpResponseMessage.Content = new StringContent(response);
 
             using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
 
@@ -293,11 +283,9 @@ namespace HealthGateway.CommonTests.Delegates
                 Status = VaccinationStatus.Partially,
             };
 
-            using HttpResponseMessage httpResponseMessage = new()
-            {
-                StatusCode = HttpStatusCode.InternalServerError,
-                Content = null,
-            };
+            using HttpResponseMessage httpResponseMessage = new();
+            httpResponseMessage.StatusCode = HttpStatusCode.InternalServerError;
+            httpResponseMessage.Content = null;
 
             using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
 
@@ -336,11 +324,9 @@ namespace HealthGateway.CommonTests.Delegates
 
             byte[] fileContents = { 1 };
             using MemoryStream memoryStream = new(fileContents);
-            using HttpResponseMessage httpResponseMessage = new()
-            {
-                StatusCode = HttpStatusCode.OK,
-                Content = new StreamContent(memoryStream),
-            };
+            using HttpResponseMessage httpResponseMessage = new();
+            httpResponseMessage.StatusCode = HttpStatusCode.OK;
+            httpResponseMessage.Content = new StreamContent(memoryStream);
 
             using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
 
@@ -365,11 +351,9 @@ namespace HealthGateway.CommonTests.Delegates
         public async Task ValidateGetAssetAsyncNotFound()
         {
             Uri jobUri = new($"https://localhost/{JobId}");
-            using HttpResponseMessage httpResponseMessage = new()
-            {
-                StatusCode = HttpStatusCode.NotFound,
-                Content = new StringContent(string.Empty),
-            };
+            using HttpResponseMessage httpResponseMessage = new();
+            httpResponseMessage.StatusCode = HttpStatusCode.NotFound;
+            httpResponseMessage.Content = new StringContent(string.Empty);
 
             using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
 
@@ -395,11 +379,9 @@ namespace HealthGateway.CommonTests.Delegates
             Uri jobUri = new($"https://localhost/{JobId}");
             byte[] fileContents = Array.Empty<byte>();
             using MemoryStream memoryStream = new(fileContents);
-            using HttpResponseMessage httpResponseMessage = new()
-            {
-                StatusCode = HttpStatusCode.OK,
-                Content = new StreamContent(memoryStream),
-            };
+            using HttpResponseMessage httpResponseMessage = new();
+            httpResponseMessage.StatusCode = HttpStatusCode.OK;
+            httpResponseMessage.Content = new StreamContent(memoryStream);
 
             using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
 
@@ -423,11 +405,9 @@ namespace HealthGateway.CommonTests.Delegates
         public async Task ValidateGetAssetAsyncHttpError()
         {
             Uri jobUri = new($"https://localhost/{JobId}");
-            using HttpResponseMessage httpResponseMessage = new()
-            {
-                StatusCode = HttpStatusCode.InternalServerError,
-                Content = null,
-            };
+            using HttpResponseMessage httpResponseMessage = new();
+            httpResponseMessage.StatusCode = HttpStatusCode.InternalServerError;
+            httpResponseMessage.Content = null;
 
             using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
 

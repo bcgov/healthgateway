@@ -113,12 +113,17 @@ namespace HealthGateway.Admin.Client.Pages
             this.Dispatcher.Dispatch(new DelegationActions.SetEditModeAction { Enabled = enabled });
         }
 
+        private void ProtectDependent(string auditReason)
+        {
+            this.Dispatcher.Dispatch(new DelegationActions.ProtectDependentAction { Reason = auditReason });
+        }
+
         private async Task OpenProtectConfirmationDialog()
         {
             const string title = "Confirm Update";
             DialogParameters parameters = new()
             {
-                ["AuditableAction"] = new DelegationActions.ProtectDependentAction(),
+                ["ActionOnConfirm"] = (Action<string>)this.ProtectDependent,
                 ["CancelAction"] = new DelegationActions.ClearProtectErrorAction(),
             };
             DialogOptions options = new()
@@ -130,7 +135,6 @@ namespace HealthGateway.Admin.Client.Pages
 
             IDialogReference dialog = await this.Dialog
                 .ShowAsync<AuditReasonDialog<
-                    DelegationActions.ProtectDependentAction,
                     DelegationActions.ProtectDependentFailAction,
                     DelegationActions.ProtectDependentSuccessAction>>(
                     title,

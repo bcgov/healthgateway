@@ -125,7 +125,7 @@ namespace HealthGateway.EncounterTests.Services
             mockPatientService.Setup(s => s.GetPatient(It.IsAny<string>(), It.IsAny<PatientIdentifierType>(), false)).ReturnsAsync(this.patientResult);
 
             Mock<IHttpContextAccessor> mockHttpContextAccessor = new();
-            mockHttpContextAccessor.Setup(_ => _.HttpContext).Returns(this.GetHttpContext());
+            mockHttpContextAccessor.Setup(x => x.HttpContext).Returns(this.GetHttpContext());
 
             Mock<IPatientRepository> patientRepository = new();
             patientRepository.Setup(p => p.CanAccessDataSourceAsync(It.IsAny<string>(), It.IsAny<DataSource>(), It.IsAny<CancellationToken>())).ReturnsAsync(canAccessDataSource);
@@ -183,7 +183,7 @@ namespace HealthGateway.EncounterTests.Services
             mockPatientService.Setup(s => s.GetPatient(It.IsAny<string>(), It.IsAny<PatientIdentifierType>(), false)).Returns(Task.FromResult(this.patientResult));
 
             Mock<IHttpContextAccessor> mockHttpContextAccessor = new();
-            mockHttpContextAccessor.Setup(_ => _.HttpContext).Returns(this.GetHttpContext());
+            mockHttpContextAccessor.Setup(x => x.HttpContext).Returns(this.GetHttpContext());
 
             Mock<IPatientRepository> patientRepository = new();
             patientRepository.Setup(p => p.CanAccessDataSourceAsync(It.IsAny<string>(), It.IsAny<DataSource>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
@@ -235,7 +235,7 @@ namespace HealthGateway.EncounterTests.Services
             mockPatientService.Setup(s => s.GetPatient(It.IsAny<string>(), It.IsAny<PatientIdentifierType>(), false)).Returns(Task.FromResult(errorPatientResult));
 
             Mock<IHttpContextAccessor> mockHttpContextAccessor = new();
-            mockHttpContextAccessor.Setup(_ => _.HttpContext).Returns(this.GetHttpContext());
+            mockHttpContextAccessor.Setup(x => x.HttpContext).Returns(this.GetHttpContext());
 
             Mock<IPatientRepository> patientRepository = new();
             patientRepository.Setup(p => p.CanAccessDataSourceAsync(It.IsAny<string>(), It.IsAny<DataSource>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);

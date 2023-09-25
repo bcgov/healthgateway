@@ -157,30 +157,31 @@ namespace HealthGateway.AccountDataAccess.Patient
 
         private static Address? MapAddress(AD? address)
         {
-            Address? retAddress = null;
-            if (address?.Items != null)
+            if (address?.Items == null)
             {
-                retAddress = new();
-                foreach (ADXP item in address.Items)
+                return null;
+            }
+
+            Address retAddress = new();
+            foreach (ADXP item in address.Items)
+            {
+                switch (item)
                 {
-                    switch (item)
-                    {
-                        case ADStreetAddressLine { Text: { } } line:
-                            retAddress.StreetLines = line.Text;
-                            break;
-                        case ADCity city:
-                            retAddress.City = city.Text[0] ?? string.Empty;
-                            break;
-                        case ADState state:
-                            retAddress.State = state.Text[0] ?? string.Empty;
-                            break;
-                        case ADPostalCode postalCode:
-                            retAddress.PostalCode = postalCode.Text[0] ?? string.Empty;
-                            break;
-                        case ADCountry country:
-                            retAddress.Country = country.Text[0] ?? string.Empty;
-                            break;
-                    }
+                    case ADStreetAddressLine { Text: { } } line:
+                        retAddress.StreetLines = line.Text;
+                        break;
+                    case ADCity city:
+                        retAddress.City = city.Text[0] ?? string.Empty;
+                        break;
+                    case ADState state:
+                        retAddress.State = state.Text[0] ?? string.Empty;
+                        break;
+                    case ADPostalCode postalCode:
+                        retAddress.PostalCode = postalCode.Text[0] ?? string.Empty;
+                        break;
+                    case ADCountry country:
+                        retAddress.Country = country.Text[0] ?? string.Empty;
+                        break;
                 }
             }
 

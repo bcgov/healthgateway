@@ -15,6 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Admin.Client.Components.AgentAudit;
 
+using System;
 using Fluxor;
 using Fluxor.Blazor.Web.Components;
 using HealthGateway.Admin.Client.Store;
@@ -27,19 +28,20 @@ using MudBlazor;
 /// the audit reason.
 /// If the Cancel button is pressed, the dialog's Result will have the Cancelled property set to true.
 /// </summary>
-/// <typeparam name="TAction">An action to dispatch when the confirmation button is pressed.</typeparam>
-/// <typeparam name="TErrorAction">An action that indicates <typeparamref name="TAction"/> encountered an error.</typeparam>
-/// <typeparam name="TSuccessAction">An action that indicates <typeparamref name="TAction"/> completed successfully.</typeparam>
-public partial class AuditReasonDialog<TAction, TErrorAction, TSuccessAction> : FluxorComponent
+/// <typeparam name="TErrorAction">
+/// An action that indicates an error was encountered while performing the action on
+/// confirmation.
+/// </typeparam>
+/// <typeparam name="TSuccessAction">An action that indicates the action on confirmation completed successfully.</typeparam>
+public partial class AuditReasonDialog<TErrorAction, TSuccessAction> : FluxorComponent
     where TErrorAction : BaseFailAction
-    where TAction : BaseAgentAuditAction
 {
     /// <summary>
-    /// Gets or sets the action to dispatch when an audit reason has been confirmed.
+    /// Gets or sets an Action to execute when an audit reason has been confirmed.
     /// </summary>
     [Parameter]
     [EditorRequired]
-    public TAction AuditableAction { get; set; } = default!;
+    public Action<string> ActionOnConfirm { get; set; } = _ => { };
 
     /// <summary>
     /// Gets or sets the action to dispatch when the dialog is cancelled.
@@ -61,8 +63,6 @@ public partial class AuditReasonDialog<TAction, TErrorAction, TSuccessAction> : 
     private bool IsLoading { get; set; }
 
     private RequestError? Error { get; set; }
-
-    private MudTextField<string> AuditReasonTextField { get; set; } = default!;
 
     private bool SaveButtonDisabled => this.AuditReason.Length < 2;
 
@@ -113,7 +113,6 @@ public partial class AuditReasonDialog<TAction, TErrorAction, TSuccessAction> : 
     private void HandleClickConfirm()
     {
         this.IsLoading = true;
-        this.AuditableAction.Reason = this.AuditReason;
-        this.Dispatcher.Dispatch(this.AuditableAction);
+        this.ActionOnConfirm(this.AuditReason);
     }
 }

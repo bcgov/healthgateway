@@ -31,7 +31,7 @@ namespace HealthGateway.GatewayApi.Services
     using Microsoft.Extensions.Logging;
 
     /// <inheritdoc/>
-    public class UserSmsService : IUserSmsService
+    public partial class UserSmsService : IUserSmsService
     {
         /// <summary>
         /// The maximum verification attempts.
@@ -42,7 +42,6 @@ namespace HealthGateway.GatewayApi.Services
         private readonly IMessagingVerificationDelegate messageVerificationDelegate;
         private readonly INotificationSettingsService notificationSettingsService;
         private readonly IUserProfileDelegate profileDelegate;
-        private readonly Regex validSmsRegex;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UserSmsService"/> class.
@@ -61,8 +60,6 @@ namespace HealthGateway.GatewayApi.Services
             this.messageVerificationDelegate = messageVerificationDelegate;
             this.profileDelegate = profileDelegate;
             this.notificationSettingsService = notificationSettingsService;
-
-            this.validSmsRegex = new Regex("[^0-9]");
         }
 
         /// <inheritdoc/>
@@ -73,11 +70,8 @@ namespace HealthGateway.GatewayApi.Services
             RequestResult<bool> retVal = new() { ResourcePayload = false, ResultStatus = ResultType.Success };
             MessagingVerification? smsVerification = this.messageVerificationDelegate.GetLastForUser(hdid, MessagingVerificationType.Sms);
 
-            if (smsVerification != null &&
+            if (smsVerification is { Validated: false, Deleted: false, VerificationAttempts: < MaxVerificationAttempts } &&
                 smsVerification.UserProfileId == hdid &&
-                !smsVerification.Validated &&
-                !smsVerification.Deleted &&
-                smsVerification.VerificationAttempts < MaxVerificationAttempts &&
                 smsVerification.SmsValidationCode == validationCode &&
                 smsVerification.ExpireDate >= DateTime.UtcNow)
             {
@@ -94,8 +88,7 @@ namespace HealthGateway.GatewayApi.Services
             else
             {
                 smsVerification = this.messageVerificationDelegate.GetLastForUser(hdid, MessagingVerificationType.Sms);
-                if (smsVerification != null &&
-                    !smsVerification.Validated)
+                if (smsVerification is { Validated: false })
                 {
                     smsVerification.VerificationAttempts++;
                     this.messageVerificationDelegate.Update(smsVerification);
@@ -110,7 +103,7 @@ namespace HealthGateway.GatewayApi.Services
         public MessagingVerification CreateUserSms(string hdid, string sms)
         {
             this.logger.LogInformation("Adding new sms verification for user {Hdid}", hdid);
-            string sanitizedSms = this.SanitizeSms(sms);
+            string sanitizedSms = SanitizeSms(sms);
             MessagingVerification messagingVerification = this.AddVerificationSms(hdid, sanitizedSms);
             this.logger.LogDebug("Finished updating user sms");
             return messagingVerification;
@@ -120,7 +113,7 @@ namespace HealthGateway.GatewayApi.Services
         public bool UpdateUserSms(string hdid, string sms)
         {
             this.logger.LogTrace("Removing user sms number {Hdid}", hdid);
-            string sanitizedSms = this.SanitizeSms(sms);
+            string sanitizedSms = SanitizeSms(sms);
             if (!UserProfileValidator.ValidateUserProfileSmsNumber(sanitizedSms))
             {
                 this.logger.LogWarning("Proposed sms number is not valid {SmsNumber}", sanitizedSms);
@@ -174,10 +167,13 @@ namespace HealthGateway.GatewayApi.Services
                     .Substring(0, 6);
         }
 
-        private string SanitizeSms(string smsNumber)
+        private static string SanitizeSms(string smsNumber)
         {
-            return this.validSmsRegex.Replace(smsNumber, string.Empty);
+            return NonDigitRegex().Replace(smsNumber, string.Empty);
         }
+
+        [GeneratedRegex("[^0-9]")]
+        private static partial Regex NonDigitRegex();
 
         private MessagingVerification AddVerificationSms(string hdid, string sms)
         {

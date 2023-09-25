@@ -284,7 +284,7 @@ export default class SupportView extends Vue {
     }
 
     public formatOptionalField(value: string | null | undefined) {
-        return value ? value : "-";
+        return value || "-";
     }
 
     public formatEmailOrSms(verification: MessagingVerification): string {
