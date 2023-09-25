@@ -18,7 +18,7 @@ namespace HealthGateway.Medication.Models
     using System;
 
     /// <summary>
-    /// Contains sumary information of a medication.
+    /// Contains information about a medication prescription or pharmacist assessment.
     /// </summary>
     public class MedicationSummary
     {
@@ -28,17 +28,17 @@ namespace HealthGateway.Medication.Models
         public string Din { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the brand name of the  medication.
+        /// Gets or sets the brand name of the medication.
         /// </summary>
         public string BrandName { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the common or generic name of the  medication.
+        /// Gets or sets the common or generic name of the medication.
         /// </summary>
         public string GenericName { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the quantity for the  medication prescribed.
+        /// Gets or sets the quantity of the medication prescribed.
         /// </summary>
         public float Quantity { get; set; }
 
@@ -48,7 +48,7 @@ namespace HealthGateway.Medication.Models
         public float MaxDailyDosage { get; set; }
 
         /// <summary>
-        /// Gets or sets the date the Drug was discontinued if applicable.
+        /// Gets or sets the date the drug was discontinued if applicable.
         /// </summary>
         public DateTime? DrugDiscontinuedDate { get; set; }
 
@@ -73,23 +73,38 @@ namespace HealthGateway.Medication.Models
         public string StrengthUnit { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets a value indicating whether it is a provincial drug.
+        /// Gets or sets a value indicating whether this is a provincial drug.
         /// </summary>
         public bool IsPin { get; set; }
 
         /// <summary>
-        /// Gets or sets the pharmacy assessment tile.
+        /// Gets or sets the pharmacy assessment title.
         /// </summary>
         public string PharmacyAssessmentTitle { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets a value indicating whether the prescription was provided or not.
+        /// Gets or sets a value indicating whether the pharmacist assessment resulted in providing a prescription.
         /// </summary>
         public bool? PrescriptionProvided { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether redirected to health care provider was set or not.
+        /// Gets or sets a value indicating whether the pharmacist assessment redirected the patient to another health care provider.
         /// </summary>
         public bool? RedirectedToHealthCareProvider { get; set; }
+
+        /// <summary>
+        /// Gets the title of the medication or assessment.
+        /// </summary>
+        public string Title => this.IsPharmacistAssessment ? "Pharmacist Assessment" : this.BrandName;
+
+        /// <summary>
+        /// Gets the subtitle of the medication or assessment.
+        /// </summary>
+        public string Subtitle => this.IsPharmacistAssessment ? this.PharmacyAssessmentTitle : this.GenericName;
+
+        /// <summary>
+        /// Gets a value indicating whether this is a pharmacist assessment.
+        /// </summary>
+        public bool IsPharmacistAssessment => !string.IsNullOrEmpty(this.PharmacyAssessmentTitle);
     }
 }

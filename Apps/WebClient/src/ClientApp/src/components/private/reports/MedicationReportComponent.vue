@@ -35,8 +35,8 @@ defineExpose({ generateReport });
 interface MedicationRow {
     date: string;
     din_pin: string;
-    brand: string;
-    generic: string;
+    title: string;
+    subtitle: string;
     practitioner: string;
     quantity: string;
     strength: string;
@@ -56,12 +56,12 @@ const fields: ReportField[] = [
         title: "DIN/PIN",
     },
     {
-        key: "brand",
+        key: "title",
         title: "Brand",
         tdAttr: { "data-testid": "medicationReportBrandNameItem" },
     },
     {
-        key: "generic",
+        key: "subtitle",
         title: "Generic",
     },
     {
@@ -114,8 +114,8 @@ const items = computed(() =>
     visibleRecords.value.map<MedicationRow>((x) => ({
         date: DateWrapper.format(x.dispensedDate),
         din_pin: x.medicationSummary.din,
-        brand: x.medicationSummary.brandName,
-        generic: x.medicationSummary.genericName || notFoundText,
+        title: x.medicationSummary.title,
+        subtitle: x.medicationSummary.subtitle || notFoundText,
         practitioner: x.practitionerSurname ?? "",
         quantity:
             x.medicationSummary.quantity === undefined

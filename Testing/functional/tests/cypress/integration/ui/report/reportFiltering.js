@@ -124,8 +124,9 @@ describe("Report Filtering", () => {
             "be.visible"
         );
         cy.get("[data-testid=medicationReportBrandNameItem]")
-            .should("be.visible")
+            .not(':contains("Pharmacist Assessment")')
             .first()
+            .should("be.visible")
             .then(($brandName) => {
                 const brandText = $brandName.text().trim();
                 cy.vSelect(
@@ -140,8 +141,9 @@ describe("Report Filtering", () => {
                 cy.get(excludedFilterId).contains(brandText);
 
                 cy.get("[data-testid=medicationReportBrandNameItem]")
-                    .should("be.visible")
+                    .not(':contains("Pharmacist Assessment")')
                     .first()
+                    .should("be.visible")
                     .then(($filteredBrandName) => {
                         const filteredBrandText = $filteredBrandName
                             .text()
@@ -158,8 +160,9 @@ describe("Report Filtering", () => {
                 cy.get(`${clearExcludedFilterId} .v-chip__close`).click();
 
                 cy.get("[data-testid=medicationReportBrandNameItem]")
-                    .should("be.visible")
+                    .not(':contains("Pharmacist Assessment")')
                     .first()
+                    .should("be.visible")
                     .then(($unfilteredBrandName) => {
                         const unfilteredBrandText = $unfilteredBrandName
                             .text()
