@@ -30,6 +30,7 @@ namespace HealthGateway.Common.Delegates
     using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Models;
     using Microsoft.AspNetCore.Http;
+    using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using ServiceReference;
 
@@ -41,6 +42,7 @@ namespace HealthGateway.Common.Delegates
         private readonly QUPA_AR101102_PortType clientRegistriesClient;
         private readonly IHttpContextAccessor httpContextAccessor;
         private readonly ILogger<ClientRegistriesDelegate> logger;
+        private readonly List<string> validWarningResponseCodes;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ClientRegistriesDelegate"/> class.
@@ -49,14 +51,17 @@ namespace HealthGateway.Common.Delegates
         /// <param name="logger">The injected logger provider.</param>
         /// <param name="clientRegistriesClient">The injected client registries soap client.</param>
         /// <param name="httpContextAccessor">The HttpContext accessor.</param>
+        /// <param name="configuration">The Configuration to use.</param>
         public ClientRegistriesDelegate(
             ILogger<ClientRegistriesDelegate> logger,
             QUPA_AR101102_PortType clientRegistriesClient,
-            IHttpContextAccessor httpContextAccessor)
+            IHttpContextAccessor httpContextAccessor,
+            IConfiguration configuration)
         {
             this.logger = logger;
             this.clientRegistriesClient = clientRegistriesClient;
             this.httpContextAccessor = httpContextAccessor;
+            this.validWarningResponseCodes = configuration.GetSection("ClientRegistry:ValidWarningResponseCodes").Get<List<string>>() ?? new List<string>();
         }
 
         private static ActivitySource Source { get; } = new(nameof(ClientRegistriesDelegate));
@@ -241,10 +246,7 @@ namespace HealthGateway.Common.Delegates
                 };
             }
 
-            if (responseCode.Contains("BCHCIM.GD.0.0019", StringComparison.InvariantCulture) ||
-                responseCode.Contains("BCHCIM.GD.0.0021", StringComparison.InvariantCulture) ||
-                responseCode.Contains("BCHCIM.GD.0.0022", StringComparison.InvariantCulture) ||
-                responseCode.Contains("BCHCIM.GD.0.0023", StringComparison.InvariantCulture))
+            if (this.validWarningResponseCodes.Any(code => responseCode.Contains(code, StringComparison.InvariantCulture)))
             {
                 return new RequestResult<PatientModel>
                 {
@@ -348,10 +350,7 @@ namespace HealthGateway.Common.Delegates
                     patient.PostalAddress = MapAddress(addresses.FirstOrDefault(a => a.use.Any(u => u == cs_PostalAddressUse.PST)));
                 }
 
-                if (responseCode.Contains("BCHCIM.GD.0.0019", StringComparison.InvariantCulture) ||
-                    responseCode.Contains("BCHCIM.GD.0.0021", StringComparison.InvariantCulture) ||
-                    responseCode.Contains("BCHCIM.GD.0.0022", StringComparison.InvariantCulture) ||
-                    responseCode.Contains("BCHCIM.GD.0.0023", StringComparison.InvariantCulture))
+                if (this.validWarningResponseCodes.Any(code => responseCode.Contains(code, StringComparison.InvariantCulture)))
                 {
                     patient.ResponseCode = responseCode;
                 }

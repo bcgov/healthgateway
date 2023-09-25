@@ -21,6 +21,7 @@ namespace AccountDataAccessTest
     using HealthGateway.AccountDataAccess.Patient;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.ErrorHandling;
+    using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using Moq;
     using ServiceReference;
@@ -35,7 +36,7 @@ namespace AccountDataAccessTest
         private const string Phn = "0009735353315";
         private const string FirstName = "John";
         private const string LastName = "Doe";
-        private const string ResponseCode = "BCHCIM.GD.0.0019";
+        private const string ResponseCode = "BCHCIM.GD.1.0019";
 
         /// <summary>
         /// Client registry get demographics by hdid - Happy Path.
@@ -235,7 +236,8 @@ namespace AccountDataAccessTest
             using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
             IClientRegistriesDelegate clientRegistryDelegate = new ClientRegistriesDelegate(
                 loggerFactory.CreateLogger<ClientRegistriesDelegate>(),
-                clientMock.Object);
+                clientMock.Object,
+                GetConfiguration());
 
             // Act
             PatientModel? actual = await clientRegistryDelegate.GetDemographicsAsync(OidType.Hdid, expectedHdId);
@@ -361,7 +363,8 @@ namespace AccountDataAccessTest
             using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
             IClientRegistriesDelegate clientRegistryDelegate = new ClientRegistriesDelegate(
                 loggerFactory.CreateLogger<ClientRegistriesDelegate>(),
-                clientMock.Object);
+                clientMock.Object,
+                GetConfiguration());
 
             // Act
             PatientModel? actual = await clientRegistryDelegate.GetDemographicsAsync(OidType.Hdid, expectedHdId);
@@ -509,7 +512,8 @@ namespace AccountDataAccessTest
             using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
             IClientRegistriesDelegate clientRegistryDelegate = new ClientRegistriesDelegate(
                 loggerFactory.CreateLogger<ClientRegistriesDelegate>(),
-                clientMock.Object);
+                clientMock.Object,
+                GetConfiguration());
 
             // Act
             PatientModel? actual = await clientRegistryDelegate.GetDemographicsAsync(OidType.Hdid, expectedHdId);
@@ -533,7 +537,7 @@ namespace AccountDataAccessTest
             // Setup
             string expectedHdId = "EXTRIOYFPNX35TWEBUAJ3DNFDFXSYTBC6J4M76GYE3HC5ER2NKWQ";
             string expectedPhn = "0009735353315";
-            string expectedResponseCode = "BCHCIM.GD.0.0019";
+            string expectedResponseCode = "BCHCIM.GD.1.0019";
             string expectedFirstName = "Jane";
             string expectedLastName = "Doe";
 
@@ -616,13 +620,14 @@ namespace AccountDataAccessTest
             using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
             IClientRegistriesDelegate clientRegistryDelegate = new ClientRegistriesDelegate(
                 loggerFactory.CreateLogger<ClientRegistriesDelegate>(),
-                clientMock.Object);
+                clientMock.Object,
+                GetConfiguration());
 
             // Act
             PatientModel? actual = await clientRegistryDelegate.GetDemographicsAsync(OidType.Phn, expectedPhn);
 
             // Verify
-            Assert.Contains("BCHCIM.GD.0.0019", actual?.ResponseCode, StringComparison.InvariantCultureIgnoreCase);
+            Assert.Contains("BCHCIM.GD.1.0019", actual?.ResponseCode, StringComparison.InvariantCultureIgnoreCase);
         }
 
         /// <summary>
@@ -635,7 +640,7 @@ namespace AccountDataAccessTest
             // Setup
             string expectedHdId = "EXTRIOYFPNX35TWEBUAJ3DNFDFXSYTBC6J4M76GYE3HC5ER2NKWQ";
             string expectedPhn = "0009735353315";
-            string expectedResponseCode = "BCHCIM.GD.0.0021";
+            string expectedResponseCode = "BCHCIM.GD.1.0021";
             string expectedFirstName = "Jane";
             string expectedLastName = "Doe";
 
@@ -718,13 +723,14 @@ namespace AccountDataAccessTest
             using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
             IClientRegistriesDelegate clientRegistryDelegate = new ClientRegistriesDelegate(
                 loggerFactory.CreateLogger<ClientRegistriesDelegate>(),
-                clientMock.Object);
+                clientMock.Object,
+                GetConfiguration());
 
             // Act
             PatientModel? actual = await clientRegistryDelegate.GetDemographicsAsync(OidType.Phn, expectedPhn);
 
             // Verify
-            Assert.Contains("BCHCIM.GD.0.0021", actual?.ResponseCode, StringComparison.InvariantCultureIgnoreCase);
+            Assert.Contains("BCHCIM.GD.1.0021", actual?.ResponseCode, StringComparison.InvariantCultureIgnoreCase);
         }
 
         /// <summary>
@@ -737,7 +743,7 @@ namespace AccountDataAccessTest
             // Setup
             string expectedHdId = "EXTRIOYFPNX35TWEBUAJ3DNFDFXSYTBC6J4M76GYE3HC5ER2NKWQ";
             string expectedPhn = "0009735353315";
-            string expectedResponseCode = "BCHCIM.GD.0.0022";
+            string expectedResponseCode = "BCHCIM.GD.1.0022";
             string expectedFirstName = "Jane";
             string expectedLastName = "Doe";
 
@@ -820,13 +826,14 @@ namespace AccountDataAccessTest
             using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
             IClientRegistriesDelegate clientRegistryDelegate = new ClientRegistriesDelegate(
                 loggerFactory.CreateLogger<ClientRegistriesDelegate>(),
-                clientMock.Object);
+                clientMock.Object,
+                GetConfiguration());
 
             // Act
             PatientModel? actual = await clientRegistryDelegate.GetDemographicsAsync(OidType.Phn, expectedPhn);
 
             // Verify
-            Assert.Contains("BCHCIM.GD.0.0022", actual?.ResponseCode, StringComparison.InvariantCultureIgnoreCase);
+            Assert.Contains("BCHCIM.GD.1.0022", actual?.ResponseCode, StringComparison.InvariantCultureIgnoreCase);
         }
 
         /// <summary>
@@ -839,7 +846,7 @@ namespace AccountDataAccessTest
             // Setup
             string expectedHdId = "EXTRIOYFPNX35TWEBUAJ3DNFDFXSYTBC6J4M76GYE3HC5ER2NKWQ";
             string expectedPhn = "0009735353315";
-            string expectedResponseCode = "BCHCIM.GD.0.0023";
+            string expectedResponseCode = "BCHCIM.GD.1.0023";
             string expectedFirstName = "Jane";
             string expectedLastName = "Doe";
 
@@ -922,13 +929,14 @@ namespace AccountDataAccessTest
             using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
             IClientRegistriesDelegate clientRegistryDelegate = new ClientRegistriesDelegate(
                 loggerFactory.CreateLogger<ClientRegistriesDelegate>(),
-                clientMock.Object);
+                clientMock.Object,
+                GetConfiguration());
 
             // Act
             PatientModel? actual = await clientRegistryDelegate.GetDemographicsAsync(OidType.Phn, expectedPhn);
 
             // Verify
-            Assert.Contains("BCHCIM.GD.0.0023", actual?.ResponseCode, StringComparison.InvariantCultureIgnoreCase);
+            Assert.Contains("BCHCIM.GD.1.0023", actual?.ResponseCode, StringComparison.InvariantCultureIgnoreCase);
         }
 
         /// <summary>
@@ -1031,7 +1039,8 @@ namespace AccountDataAccessTest
 
             return new ClientRegistriesDelegate(
                 new Mock<ILogger<ClientRegistriesDelegate>>().Object,
-                clientMock.Object);
+                clientMock.Object,
+                GetConfiguration());
         }
 
         private static HCIM_IN_GetDemographicsResponseIdentifiedPerson GetSubjectTarget(bool deceasedInd = false, bool noNames = false, bool noIds = false)
@@ -1135,6 +1144,21 @@ namespace AccountDataAccessTest
                     },
                 },
             };
+        }
+
+        private static IConfigurationRoot GetConfiguration()
+        {
+            ConfigurationBuilder configurationBuilder = new();
+            Dictionary<string, string> appSettingsData = new()
+            {
+                ["ClientRegistry:ValidWarningResponseCodes:1"] = "BCHCIM.GD.1.0019",
+                ["ClientRegistry:ValidWarningResponseCodes:3"] = "BCHCIM.GD.1.0021",
+                ["ClientRegistry:ValidWarningResponseCodes:5"] = "BCHCIM.GD.1.0022",
+                ["ClientRegistry:ValidWarningResponseCodes:7"] = "BCHCIM.GD.1.0023",
+            };
+            configurationBuilder.AddInMemoryCollection(appSettingsData!);
+
+            return configurationBuilder.Build();
         }
     }
 }
