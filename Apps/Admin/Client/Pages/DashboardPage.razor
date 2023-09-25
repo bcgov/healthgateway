@@ -93,7 +93,7 @@ else
 {
     <MudSkeleton Width="20%" />
     <MudGrid Class="my-3">
-        <MudItem xs="6" lg="3">
+        <MudItem xs="12" lg="4">
             <MudSkeleton data-testid="skeleton-unique-days" SkeletonType="SkeletonType.Rectangle" Height="48px" />
         </MudItem>
     </MudGrid>
@@ -124,7 +124,7 @@ else
         User Counts
     </MudText>
     <MudGrid Class="my-3">
-        <MudItem xs="6" lg="3">
+        <MudItem xs="12" lg="4">
             <MudNumericField data-testid="unique-days-input" T="int" Label="Unique Days" @bind-Value="UniqueDays" Required="@true" />
         </MudItem>
     </MudGrid>
