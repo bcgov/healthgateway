@@ -17,9 +17,11 @@ export function performSearch(queryType, queryString) {
 
 export function verifySingleSupportResult(expectedHdid, expectedPhn) {
     cy.get("[data-testid=user-table]").should("not.exist");
-    cy.get("[data-testid=patient-hdid]")
-        .should("be.visible")
-        .contains(expectedHdid);
+    if (expectedHdid) {
+        cy.get("[data-testid=patient-hdid]")
+            .should("be.visible")
+            .contains(expectedHdid);
+    }
     cy.get("[data-testid=patient-phn]")
         .should("be.visible")
         .contains(expectedPhn);
