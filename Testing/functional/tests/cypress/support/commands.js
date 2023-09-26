@@ -217,17 +217,14 @@ Cypress.Commands.add(
                 "contains",
                 "https://idtest.gov.bc.ca/login/entry#start"
             );
-            cy.get("#tile_btn_virtual_device_div_id > h2").click();
-            cy.get("#csn").click({ force: true });
-            cy.get("#csn").type(username);
-            cy.get("#continue").click();
-            cy.url().should(
-                "contains",
-                "https://idtest.gov.bc.ca/login/identify"
-            );
-            cy.get("#passcode").click({ force: true });
-            cy.get("#passcode").type(password);
-            cy.get("#btnSubmit").click();
+            cy.get(
+                "#tile_btn_test_with_username_password_device_div_id > h2"
+            ).click();
+            cy.get("#username").should("be.visible").type(username);
+            cy.get("#password")
+                .should("be.visible")
+                .type(password, { log: false });
+            cy.get("#submit-btn").click();
         } else {
             cy.log(`Authenticating as KeyCloak user ${username} using the UI`);
             cy.visit(path);
@@ -235,8 +232,10 @@ Cypress.Commands.add(
                 .should("be.visible")
                 .should("have.text", "KeyCloak")
                 .click();
-            cy.get("#username").type(username);
-            cy.get("#password").type(password);
+            cy.get("#username").should("be.visible").type(username);
+            cy.get("#password")
+                .should("be.visible")
+                .type(password, { log: false });
             cy.get("#kc-login").click();
         }
     }

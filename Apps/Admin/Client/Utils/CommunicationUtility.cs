@@ -13,16 +13,27 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Admin.Client.Store
+namespace HealthGateway.Admin.Client.Utils
 {
+    using HealthGateway.Common.Data.Constants;
+
     /// <summary>
-    /// The base class for an auditable action that requires a reason.
+    /// Utilities for interacting with communications.
     /// </summary>
-    public abstract class BaseAgentAuditAction
+    public static class CommunicationUtility
     {
         /// <summary>
-        /// Gets or sets the audit reason for the action performed.
+        /// Returns the formatted representation of a communication's status.
         /// </summary>
-        public string? Reason { get; set; }
+        /// <param name="status">Status to be formatted</param>
+        /// <returns>Friendly string value representing status value.</returns>
+        public static string FormatCommunicationStatus(CommunicationStatus status)
+        {
+            return status switch
+            {
+                CommunicationStatus.New => "Publish",
+                _ => status.ToString(),
+            };
+        }
     }
 }

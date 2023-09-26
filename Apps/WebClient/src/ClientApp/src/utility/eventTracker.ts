@@ -24,4 +24,11 @@ export default abstract class EventTracker {
             text: eventName,
         });
     }
+
+    public static click(clickText: string): void {
+        SnowPlow.trackEvent({
+            action: "click",
+            text: clickText,
+        });
+    }
 }

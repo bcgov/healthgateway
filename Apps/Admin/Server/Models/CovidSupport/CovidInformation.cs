@@ -15,6 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Admin.Server.Models.CovidSupport
 {
+    using HealthGateway.Admin.Common.Models.CovidSupport;
     using HealthGateway.Common.Models;
 
     /// <summary>

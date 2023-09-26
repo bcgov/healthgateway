@@ -80,7 +80,7 @@ namespace HealthGateway.EncounterTests.Controllers
             EncounterController controller = new(new Mock<ILogger<EncounterController>>().Object, svcMock.Object);
 
             // Act
-            RequestResult<IEnumerable<EncounterModel>> actual = await controller.GetEncounters(Hdid).ConfigureAwait(true);
+            RequestResult<IEnumerable<EncounterModel>> actual = await controller.GetEncounters(Hdid);
 
             // Verify
             Assert.True(actual != null && actual.ResultStatus == ResultType.Success);
@@ -120,7 +120,7 @@ namespace HealthGateway.EncounterTests.Controllers
             EncounterController controller = new(new Mock<ILogger<EncounterController>>().Object, svcMock.Object);
 
             // Act
-            RequestResult<HospitalVisitResult> actual = await controller.GetHospitalVisits(Hdid).ConfigureAwait(true);
+            RequestResult<HospitalVisitResult> actual = await controller.GetHospitalVisits(Hdid);
 
             // Verify
             Assert.True(actual != null && actual.ResultStatus == ResultType.Success);

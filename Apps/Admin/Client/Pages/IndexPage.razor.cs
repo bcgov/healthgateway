@@ -42,6 +42,10 @@ namespace HealthGateway.Admin.Client.Pages
             {
                 this.Navigation.NavigateTo("dashboard", replace: true);
             }
+            else if (user.IsInRole(Roles.Support))
+            {
+                this.Navigation.NavigateTo("support", replace: true);
+            }
         }
     }
 }

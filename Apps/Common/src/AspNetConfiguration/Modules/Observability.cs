@@ -120,7 +120,7 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
                             .SetResourceBuilder(
                                 ResourceBuilder
                                     .CreateDefault()
-                                    .AddService(serviceName: otlpConfig.ServiceName, serviceVersion: otlpConfig.ServiceVersion))
+                                    .AddService(otlpConfig.ServiceName, serviceVersion: otlpConfig.ServiceVersion))
                             .AddHttpClientInstrumentation()
                             .AddAspNetCoreInstrumentation(
                                 options =>
@@ -180,7 +180,7 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
         }
 #pragma warning restore CA1506
 
-        private static LoggerConfiguration ConfigureDefaultLogging(this LoggerConfiguration loggerConfiguration, IConfiguration configuration, string serviceName)
+        private static void ConfigureDefaultLogging(this LoggerConfiguration loggerConfiguration, IConfiguration configuration, string serviceName)
         {
             loggerConfiguration
                 .Enrich.WithMachineName()
@@ -193,12 +193,9 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
                 .Enrich.WithCorrelationIdHeader()
                 .Enrich.WithRequestHeader("User-Agent")
                 .Enrich.WithClientIp()
-                .Enrich.WithSpan(new SpanOptions() { IncludeBaggage = true, IncludeTags = true, IncludeOperationName = true, IncludeTraceFlags = true })
+                .Enrich.WithSpan(new SpanOptions { IncludeBaggage = true, IncludeTags = true, IncludeOperationName = true, IncludeTraceFlags = true })
                 .WriteTo.Console(outputTemplate: LogOutputTemplate, formatProvider: CultureInfo.InvariantCulture)
-                .ReadFrom.Configuration(configuration)
-                ;
-
-            return loggerConfiguration;
+                .ReadFrom.Configuration(configuration);
         }
 
         private static LogEventLevel ExcludePaths(HttpContext ctx, Exception? ex, string[] excludedPaths)
@@ -224,14 +221,13 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
             {
                 return requestPath.Value!.StartsWith(path.Replace("*", string.Empty, StringComparison.InvariantCultureIgnoreCase), StringComparison.InvariantCultureIgnoreCase);
             }
-            else if (path.StartsWith("*", StringComparison.InvariantCultureIgnoreCase))
+
+            if (path.StartsWith("*", StringComparison.InvariantCultureIgnoreCase))
             {
                 return requestPath.Value!.EndsWith(path.Replace("*", string.Empty, StringComparison.InvariantCultureIgnoreCase), StringComparison.InvariantCultureIgnoreCase);
             }
-            else
-            {
-                return requestPath.Equals(path, StringComparison.InvariantCultureIgnoreCase);
-            }
+
+            return requestPath.Equals(path, StringComparison.InvariantCultureIgnoreCase);
         }
     }
 }

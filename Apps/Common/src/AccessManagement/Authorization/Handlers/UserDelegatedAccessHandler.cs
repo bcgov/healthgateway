@@ -73,28 +73,25 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Handlers
             foreach (PersonalFhirRequirement requirement in pendingRequirements)
             {
                 string? resourceHdid = this.GetResourceHdid(requirement.SubjectLookupMethod);
-                if (resourceHdid != null)
-                {
-                    if (requirement.SupportsUserDelegation)
-                    {
-                        if (this.IsDelegated(context, resourceHdid, requirement))
-                        {
-                            context.Succeed(requirement);
-                        }
-                        else
-                        {
-                            this.logger.LogDebug("Non-owner access to {ResourceHdid} rejected", resourceHdid);
-                        }
-                    }
-                    else
-                    {
-                        this.logger.LogDebug("Non-owner access to {ResourceHdid} rejected as user delegation is disabled", resourceHdid);
-                    }
-                }
-                else
+                if (resourceHdid == null)
                 {
                     this.logger.LogWarning("UserDelegatedAccessHandler has been invoked without patient HDID specified in the request, ignoring");
+                    continue;
                 }
+
+                if (!requirement.SupportsUserDelegation)
+                {
+                    this.logger.LogDebug("Non-owner access to {ResourceHdid} rejected as user delegation is disabled", resourceHdid);
+                    continue;
+                }
+
+                if (!this.IsDelegated(context, resourceHdid, requirement))
+                {
+                    this.logger.LogDebug("Non-owner access to {ResourceHdid} rejected", resourceHdid);
+                    continue;
+                }
+
+                context.Succeed(requirement);
             }
 
             return Task.CompletedTask;

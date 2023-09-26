@@ -25,6 +25,7 @@ namespace HealthGateway.AdminWebClientTests.Delegates.Test
     using HealthGateway.Admin.Api;
     using HealthGateway.Admin.Delegates;
     using HealthGateway.Common.Data.Constants;
+    using HealthGateway.Common.Data.Models.PHSA;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Models.PHSA;
@@ -77,7 +78,7 @@ namespace HealthGateway.AdminWebClientTests.Delegates.Test
                 this.configuration);
 
             RequestResult<PhsaResult<VaccineStatusResult>> actualResult =
-                await vaccineStatusDelegate.GetVaccineStatusWithRetries(this.phn, this.dob, this.accessToken).ConfigureAwait(true);
+                await vaccineStatusDelegate.GetVaccineStatusWithRetries(this.phn, this.dob, this.accessToken);
 
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             expectedPayload.ShouldDeepEqual(actualResult.ResourcePayload);
@@ -103,7 +104,7 @@ namespace HealthGateway.AdminWebClientTests.Delegates.Test
                 this.configuration);
 
             RequestResult<PhsaResult<VaccineStatusResult>> actualResult =
-                await vaccineStatusDelegate.GetVaccineStatusWithRetries(this.phn, this.dob, this.accessToken).ConfigureAwait(true);
+                await vaccineStatusDelegate.GetVaccineStatusWithRetries(this.phn, this.dob, this.accessToken);
 
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
             expectedError.ShouldDeepEqual(actualResult.ResultError);
@@ -129,7 +130,7 @@ namespace HealthGateway.AdminWebClientTests.Delegates.Test
                 this.configuration);
 
             RequestResult<PhsaResult<VaccineStatusResult>> actualResult =
-                await vaccineStatusDelegate.GetVaccineStatusWithRetries(this.phn, this.dob, this.accessToken).ConfigureAwait(true);
+                await vaccineStatusDelegate.GetVaccineStatusWithRetries(this.phn, this.dob, this.accessToken);
 
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
             expectedError.ShouldDeepEqual(actualResult.ResultError);

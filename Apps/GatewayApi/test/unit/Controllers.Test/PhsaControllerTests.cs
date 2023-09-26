@@ -56,7 +56,7 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
             PhsaController phsaController = new(
                 dependentServiceMock.Object,
                 new Mock<IPatientDetailsService>().Object);
-            ActionResult<RequestResult<IEnumerable<DependentModel>>> actualResult = await phsaController.GetAll(this.hdid).ConfigureAwait(true);
+            ActionResult<RequestResult<IEnumerable<DependentModel>>> actualResult = await phsaController.GetAll(this.hdid);
 
             RequestResult<IEnumerable<DependentModel>>? actualRequestResult = actualResult.Value;
             expectedResult.ShouldDeepEqual(actualRequestResult);

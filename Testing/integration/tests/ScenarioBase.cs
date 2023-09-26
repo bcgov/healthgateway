@@ -65,7 +65,7 @@ public class WebAppFixture : IAsyncLifetime
                 };
                 // set or override configuration settings
                 builder.ConfigureAppConfiguration(
-                    (context, configBuilder) =>
+                    (_, configBuilder) =>
                     {
                         string? secretsPath = Environment.GetEnvironmentVariable("SECRETS_PATH");
                         configBuilder.AddInMemoryCollection(configOverrides);

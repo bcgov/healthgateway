@@ -13,21 +13,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Common.Models
+namespace HealthGateway.Admin.Common.Models.CovidSupport
 {
+    using HealthGateway.Common.Data.Models;
+
     /// <summary>
-    /// Object that defines a report.
+    /// Represents a request to mail document.
     /// </summary>
-    public class ReportModel
+    public class MailDocumentRequest
     {
         /// <summary>
-        /// Gets or sets the report type.
+        /// Gets or sets the personal health number to retrieve.
         /// </summary>
-        public string FileName { get; set; } = string.Empty;
+        public string PersonalHealthNumber { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the report data.
+        /// Gets or sets the address to mail the document.
         /// </summary>
-        public string Data { get; set; } = string.Empty;
+        public Address MailAddress { get; set; } = new();
     }
 }

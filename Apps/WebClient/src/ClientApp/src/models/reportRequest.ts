@@ -26,3 +26,9 @@ export enum ReportFormatType {
     CSV = "CSV",
     XLSX = "XLSX",
 }
+
+export const reportMimeTypeMap = new Map<ReportFormatType, string>([
+    [ReportFormatType.PDF, "application/pdf"],
+    [ReportFormatType.CSV, "text/csv"],
+    [ReportFormatType.XLSX, "application/vnd.openxmlformats"],
+]);

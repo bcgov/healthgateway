@@ -1,0 +1,73 @@
+@using HealthGateway.Common.Data.Utils
+@inherits Fluxor.Blazor.Web.Components.FluxorComponent
+
+<MudText Class="mt-4" Typo="Typo.subtitle1">
+    COVID‑19 Immunizations
+</MudText>
+
+<MudTable Class="mt-4"
+          Items="@Rows"
+          Loading="@IsLoading"
+          AllowUnsorted="false"
+          Breakpoint="@Breakpoint.Md"
+          HorizontalScrollbar="true"
+          Striped="true"
+          Dense="true"
+          data-testid="immunization-table">
+    <HeaderContent>
+        <MudTh>
+            <MudTableSortLabel SortBy="new Func<VaccineDoseRow, object>(x => x.Date?.Date ?? DateTime.MinValue)"
+                               InitialDirection="@SortDirection.Descending">
+                Date
+            </MudTableSortLabel>
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortBy="new Func<VaccineDoseRow, object>(x => x.Product ?? string.Empty)">
+                Product
+            </MudTableSortLabel>
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortBy="new Func<VaccineDoseRow, object>(x => x.Lot ?? string.Empty)">
+                Lot Number
+            </MudTableSortLabel>
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortBy="new Func<VaccineDoseRow, object>(x => x.Location ?? string.Empty)">
+                Clinic
+            </MudTableSortLabel>
+        </MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd data-testid="immunization-date" DataLabel="Date">@DateFormatter.ToShortDateAndTime(ConvertDateTime(context.Date))</MudTd>
+        <MudTd data-testid="immunization-product" DataLabel="Product">@context.Product</MudTd>
+        <MudTd data-testid="immunization-lot-number" DataLabel="Lot Number">@context.Lot</MudTd>
+        <MudTd data-testid="immunization-location" DataLabel="Clinic">@context.Location</MudTd>
+    </RowTemplate>
+    <PagerContent>
+        <MudTablePager />
+    </PagerContent>
+</MudTable>
+
+<div class="d-flex justify-end mt-4">
+    <HgButton
+        EndIcon="fas fa-paper-plane"
+        Variant="@Variant.Filled"
+        Color="@Color.Primary"
+        RightMargin="Breakpoint.Always"
+        Loading="@MailVaccineCardIsLoading"
+        Disabled="@(IsLoading || !Rows.Any())"
+        OnClick="@OpenMailVaccineCardAddressConfirmationDialog"
+        data-testid="mail-button">
+        Mail
+    </HgButton>
+    <HgButton
+        EndIcon="fas fa-print"
+        Variant="@Variant.Filled"
+        Color="@Color.Primary"
+        Loading="@PrintVaccineCardIsLoading"
+        Disabled="@(IsLoading || !Rows.Any())"
+        OnClick="@Print"
+        data-testid="print-button">
+        Print
+    </HgButton>
+</div>

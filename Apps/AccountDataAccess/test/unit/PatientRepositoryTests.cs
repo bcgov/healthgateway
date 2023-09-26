@@ -15,6 +15,7 @@
 // -------------------------------------------------------------------------
 namespace AccountDataAccessTest
 {
+    // ReSharper disable ParameterOnlyUsedForPreconditionCheck.Local
     using System.Globalization;
     using System.Net;
     using System.ServiceModel;
@@ -71,7 +72,7 @@ namespace AccountDataAccessTest
             PatientRepository patientRepository = GetPatientRepository(patient, patientDetailsQuery);
 
             // Act
-            PatientQueryResult result = await patientRepository.Query(patientDetailsQuery, CancellationToken.None).ConfigureAwait(true);
+            PatientQueryResult result = await patientRepository.Query(patientDetailsQuery, CancellationToken.None);
 
             // Verify
             Assert.Equal(Phn, result.Items.SingleOrDefault()?.Phn);
@@ -96,7 +97,7 @@ namespace AccountDataAccessTest
             PatientRepository patientRepository = GetPatientRepository(patient, patientDetailsQuery);
 
             // Act
-            PatientQueryResult result = await patientRepository.Query(patientDetailsQuery, CancellationToken.None).ConfigureAwait(true);
+            PatientQueryResult result = await patientRepository.Query(patientDetailsQuery, CancellationToken.None);
 
             // Verify
             Assert.Equal(Phn, result.Items.SingleOrDefault()?.Phn);
@@ -125,7 +126,7 @@ namespace AccountDataAccessTest
             PatientRepository patientRepository = GetPatientRepository(patient, patientDetailsQuery, patientResult, cachedPatient);
 
             // Act
-            PatientQueryResult result = await patientRepository.Query(patientDetailsQuery, CancellationToken.None).ConfigureAwait(true);
+            PatientQueryResult result = await patientRepository.Query(patientDetailsQuery, CancellationToken.None);
 
             // Verify
             Assert.Equal(Phn, result.Items.SingleOrDefault()?.Phn);
@@ -168,7 +169,7 @@ namespace AccountDataAccessTest
             PatientRepository patientRepository = GetPatientRepository(patient, patientDetailsQuery, patientIdentity, cachedPatient);
 
             // Act
-            PatientQueryResult actual = await patientRepository.Query(patientDetailsQuery, CancellationToken.None).ConfigureAwait(true);
+            PatientQueryResult actual = await patientRepository.Query(patientDetailsQuery, CancellationToken.None);
 
             // Verify
             expectedPatient.ShouldDeepEqual(actual.Items.SingleOrDefault());
@@ -191,7 +192,7 @@ namespace AccountDataAccessTest
             PatientRepository patientRepository = GetPatientRepository(patient, patientDetailsQuery, patientIdentity, cachedPatient);
 
             // Act
-            PatientQueryResult actual = await patientRepository.Query(patientDetailsQuery, CancellationToken.None).ConfigureAwait(true);
+            PatientQueryResult actual = await patientRepository.Query(patientDetailsQuery, CancellationToken.None);
 
             // Verify
             Assert.Null(actual.Items.SingleOrDefault());
@@ -219,11 +220,11 @@ namespace AccountDataAccessTest
             // Act
             async Task Actual()
             {
-                await patientRepository.Query(patientQuery, CancellationToken.None).ConfigureAwait(true);
+                await patientRepository.Query(patientQuery, CancellationToken.None);
             }
 
             // Verify
-            ProblemDetailsException exception = await Assert.ThrowsAsync<ProblemDetailsException>(Actual).ConfigureAwait(true);
+            ProblemDetailsException exception = await Assert.ThrowsAsync<ProblemDetailsException>(Actual);
             Assert.Equal(ErrorMessages.PhnInvalid, exception.ProblemDetails!.Detail);
         }
 
@@ -300,7 +301,7 @@ namespace AccountDataAccessTest
             PatientRepository patientRepository = GetPatientRepository(blockedAccess);
 
             // Act
-            bool actual = await patientRepository.CanAccessDataSourceAsync(hdid, dataSource).ConfigureAwait(true);
+            bool actual = await patientRepository.CanAccessDataSourceAsync(hdid, dataSource);
 
             // Verify
             Assert.Equal(canAccessDataSource, actual);
@@ -328,7 +329,7 @@ namespace AccountDataAccessTest
             PatientRepository patientRepository = GetPatientRepository(blockedAccess);
 
             // Act
-            BlockedAccess? actual = await patientRepository.GetBlockedAccessRecords(hdid).ConfigureAwait(true);
+            BlockedAccess? actual = await patientRepository.GetBlockedAccessRecords(hdid);
 
             // Verify
             blockedAccess.ShouldDeepEqual(actual);
@@ -359,7 +360,7 @@ namespace AccountDataAccessTest
             PatientRepository patientRepository = GetPatientRepository(blockedAccess);
 
             // Act
-            IEnumerable<DataSource> actual = await patientRepository.GetDataSources(hdid).ConfigureAwait(true);
+            IEnumerable<DataSource> actual = await patientRepository.GetDataSources(hdid);
 
             // Verify
             dataSources.ShouldDeepEqual(actual);
@@ -411,7 +412,7 @@ namespace AccountDataAccessTest
         {
             blockedAccessDelegate ??= blockedAccessDelegate ?? new();
             blockedAccessDelegate.Setup(p => p.GetBlockedAccessAsync(It.IsAny<string>())).ReturnsAsync(blockedAccess);
-            blockedAccessDelegate.Setup(p => p.GetDataSourcesAsync(It.IsAny<string>())).ReturnsAsync(blockedAccess.DataSources ?? Enumerable.Empty<DataSource>());
+            blockedAccessDelegate.Setup(p => p.GetDataSourcesAsync(It.IsAny<string>())).ReturnsAsync(blockedAccess.DataSources);
 
             string blockedAccessCacheKey = string.Format(CultureInfo.InvariantCulture, ICacheProvider.BlockedAccessCachePrefixKey, blockedAccess.Hdid);
             Mock<ICacheProvider> cacheProvider = new();

@@ -57,7 +57,7 @@ namespace AccountDataAccessTest.Strategy
             PatientRequest request = new(Hdid, useCache);
 
             // Act
-            PatientModel? result = await hdidEmpiStrategy.GetPatientAsync(request).ConfigureAwait(true);
+            PatientModel? result = await hdidEmpiStrategy.GetPatientAsync(request);
 
             // Verify
             Assert.Equal(Hdid, result?.Hdid);

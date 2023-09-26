@@ -16,6 +16,7 @@
 namespace HealthGateway.Immunization.Api;
 
 using System.Threading.Tasks;
+using HealthGateway.Common.Data.Models.PHSA;
 using HealthGateway.Common.Models.PHSA;
 using Refit;
 

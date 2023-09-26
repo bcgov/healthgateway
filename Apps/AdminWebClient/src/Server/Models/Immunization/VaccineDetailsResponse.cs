@@ -18,7 +18,7 @@ namespace HealthGateway.Admin.Models.Immunization
     using System;
     using System.Collections.Generic;
     using System.Text.Json.Serialization;
-    using HealthGateway.Common.Models.PHSA;
+    using HealthGateway.Common.Data.Models.PHSA;
 
     /// <summary>
     /// The PHSA vaccine details data model.

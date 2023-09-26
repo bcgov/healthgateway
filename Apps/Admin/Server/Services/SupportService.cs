@@ -27,12 +27,17 @@ namespace HealthGateway.Admin.Server.Services
     using HealthGateway.AccountDataAccess.Patient;
     using HealthGateway.Admin.Common.Constants;
     using HealthGateway.Admin.Common.Models;
+    using HealthGateway.Admin.Common.Models.CovidSupport;
+    using HealthGateway.Admin.Server.Api;
+    using HealthGateway.Admin.Server.Delegates;
+    using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.CacheProviders;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ErrorHandling;
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Data.Utils;
+    using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.MapUtils;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
@@ -49,6 +54,9 @@ namespace HealthGateway.Admin.Server.Services
         private readonly IPatientRepository patientRepository;
         private readonly IResourceDelegateDelegate resourceDelegateDelegate;
         private readonly IUserProfileDelegate userProfileDelegate;
+        private readonly IAuthenticationDelegate authenticationDelegate;
+        private readonly IImmunizationAdminDelegate immunizationAdminDelegate;
+        private readonly IImmunizationAdminApi immunizationAdminApi;
         private readonly IAuditRepository auditRepository;
         private readonly ICacheProvider cacheProvider;
         private readonly ILogger<SupportService> logger;
@@ -62,6 +70,9 @@ namespace HealthGateway.Admin.Server.Services
         /// <param name="patientRepository">The injected patient repository.</param>
         /// <param name="resourceDelegateDelegate">The resource delegate used to lookup delegates and owners.</param>
         /// <param name="userProfileDelegate">The user profile delegate to interact with the DB.</param>
+        /// <param name="authenticationDelegate">The auth delegate to fetch tokens.</param>
+        /// <param name="immunizationAdminDelegate">The injected immunization admin delegate.</param>
+        /// <param name="immunizationAdminApi">The injected immunization admin api.</param>
         /// <param name="auditRepository">The injected audit repository.</param>
         /// <param name="cacheProvider">The injected cache provider.</param>
         /// <param name="logger">The injected logger provider.</param>
@@ -72,6 +83,9 @@ namespace HealthGateway.Admin.Server.Services
             IPatientRepository patientRepository,
             IResourceDelegateDelegate resourceDelegateDelegate,
             IUserProfileDelegate userProfileDelegate,
+            IAuthenticationDelegate authenticationDelegate,
+            IImmunizationAdminDelegate immunizationAdminDelegate,
+            IImmunizationAdminApi immunizationAdminApi,
             IAuditRepository auditRepository,
             ICacheProvider cacheProvider,
             ILogger<SupportService> logger)
@@ -82,32 +96,64 @@ namespace HealthGateway.Admin.Server.Services
             this.patientRepository = patientRepository;
             this.resourceDelegateDelegate = resourceDelegateDelegate;
             this.userProfileDelegate = userProfileDelegate;
+            this.authenticationDelegate = authenticationDelegate;
+            this.immunizationAdminDelegate = immunizationAdminDelegate;
+            this.immunizationAdminApi = immunizationAdminApi;
             this.auditRepository = auditRepository;
             this.cacheProvider = cacheProvider;
             this.logger = logger;
         }
 
         /// <inheritdoc/>
-        public async Task<PatientSupportDetails> GetPatientSupportDetailsAsync(string hdid, CancellationToken ct = default)
+        public async Task<PatientSupportDetails> GetPatientSupportDetailsAsync(
+            string hdid,
+            bool includeMessagingVerifications,
+            bool includeBlockedDataSources,
+            bool includeAgentActions,
+            CancellationToken ct = default)
         {
-            IList<MessagingVerification> messagingVerifications = await this.messagingVerificationDelegate.GetUserMessageVerificationsAsync(hdid).ConfigureAwait(true);
-            AgentAuditQuery agentAuditQuery = new(hdid);
-            IEnumerable<AgentAudit> agentAudits = await this.auditRepository.Handle(agentAuditQuery, ct).ConfigureAwait(true);
+            IEnumerable<MessagingVerificationModel>? messagingVerifications = null;
+            IEnumerable<DataSource>? blockedDataSources = null;
+            IEnumerable<AgentAction>? agentActions = null;
 
-            // Invalidate blocked data source cache and then get newest value(s) from database.
-            string blockedAccessCacheKey = string.Format(CultureInfo.InvariantCulture, ICacheProvider.BlockedAccessCachePrefixKey, hdid);
-            string message = $"Removing item for key: {blockedAccessCacheKey} from cache";
-            this.logger.LogDebug("{Message}", message);
-            await this.cacheProvider.RemoveItemAsync(blockedAccessCacheKey).ConfigureAwait(true);
+            if (includeMessagingVerifications)
+            {
+                IList<MessagingVerification> verifications = await this.messagingVerificationDelegate.GetUserMessageVerificationsAsync(hdid).ConfigureAwait(true);
 
-            IEnumerable<DataSource> dataSources = await this.patientRepository.GetDataSources(hdid, ct).ConfigureAwait(true);
-            TimeZoneInfo localTimezone = DateFormatter.GetLocalTimeZone(this.configuration);
+                TimeZoneInfo localTimezone = DateFormatter.GetLocalTimeZone(this.configuration);
+                messagingVerifications = verifications.Select(m => MessagingVerificationMapUtils.ToUiModel(m, this.autoMapper, localTimezone));
+            }
+
+            if (includeAgentActions)
+            {
+                AgentAuditQuery agentAuditQuery = new(hdid);
+                IEnumerable<AgentAudit> audits = await this.auditRepository.Handle(agentAuditQuery, ct).ConfigureAwait(true);
+
+                agentActions = audits.Select(audit => this.autoMapper.Map<AgentAction>(audit));
+            }
+
+            if (includeBlockedDataSources)
+            {
+                // Invalidate blocked data source cache and then get newest value(s) from database.
+                string blockedAccessCacheKey = string.Format(CultureInfo.InvariantCulture, ICacheProvider.BlockedAccessCachePrefixKey, hdid);
+                string message = $"Removing item for key: {blockedAccessCacheKey} from cache";
+                this.logger.LogDebug("{Message}", message);
+                await this.cacheProvider.RemoveItemAsync(blockedAccessCacheKey).ConfigureAwait(true);
+
+                blockedDataSources = await this.patientRepository.GetDataSources(hdid, ct).ConfigureAwait(true);
+            }
+
+            PatientModel patient = await this.GetPatientAsync(hdid, ct).ConfigureAwait(true);
+            VaccineDetails vaccineDetails = await this.GetVaccineDetails(patient).ConfigureAwait(true);
+            CovidAssessmentDetailsResponse covidAssessmentDetails = await this.immunizationAdminApi.GetCovidAssessmentDetails(new() { Phn = patient.Phn }, this.GetAccessToken()).ConfigureAwait(true);
 
             PatientSupportDetails details = new()
             {
-                MessagingVerifications = messagingVerifications.Select(m => MessagingVerificationMapUtils.ToUiModel(m, this.autoMapper, localTimezone)),
-                AgentActions = agentAudits.Select(audit => this.autoMapper.Map<AgentAction>(audit)),
-                BlockedDataSources = dataSources,
+                MessagingVerifications = messagingVerifications,
+                AgentActions = agentActions,
+                BlockedDataSources = blockedDataSources,
+                VaccineDetails = vaccineDetails,
+                CovidAssessmentDetails = covidAssessmentDetails,
             };
 
             return details;
@@ -190,6 +236,17 @@ namespace HealthGateway.Admin.Server.Services
             return this.MapToPatientSupportResult(patient, profile);
         }
 
+        private string GetAccessToken()
+        {
+            string? accessToken = this.authenticationDelegate.FetchAuthenticatedUserToken();
+            if (accessToken == null)
+            {
+                throw new ProblemDetailsException(ExceptionUtility.CreateProblemDetails(ErrorMessages.CannotFindAccessToken, HttpStatusCode.Unauthorized, nameof(SupportService)));
+            }
+
+            return accessToken;
+        }
+
         private async Task<PatientModel?> GetPatientAsync(PatientIdentifierType identifierType, string queryString, CancellationToken ct)
         {
             PatientDetailsQuery query = identifierType == PatientIdentifierType.Hdid
@@ -205,6 +262,29 @@ namespace HealthGateway.Admin.Server.Services
             {
                 return null;
             }
+        }
+
+        private async Task<PatientModel> GetPatientAsync(string hdid, CancellationToken ct = default)
+        {
+            PatientDetailsQuery query = new(Hdid: hdid, Source: PatientDetailSource.All, UseCache: true);
+            PatientModel? patient = (await this.patientRepository.Query(query, ct).ConfigureAwait(true)).Items.SingleOrDefault();
+            if (patient == null)
+            {
+                throw new ProblemDetailsException(ExceptionUtility.CreateProblemDetails(ErrorMessages.ClientRegistryRecordsNotFound, HttpStatusCode.NotFound, nameof(SupportService)));
+            }
+
+            return patient;
+        }
+
+        private async Task<VaccineDetails> GetVaccineDetails(PatientModel patient)
+        {
+            if (!string.IsNullOrEmpty(patient.Phn) && patient.Birthdate != DateTime.MinValue)
+            {
+                return await this.immunizationAdminDelegate.GetVaccineDetailsWithRetries(patient, this.GetAccessToken()).ConfigureAwait(true);
+            }
+
+            this.logger.LogError("Patient PHN {PersonalHealthNumber} or DOB {Birthdate}) are invalid", patient.Phn, patient.Birthdate);
+            throw new ProblemDetailsException(ExceptionUtility.CreateProblemDetails(ErrorMessages.PhnOrDateAndBirthInvalid, HttpStatusCode.BadRequest, nameof(SupportService)));
         }
 
         private PatientSupportResult MapToPatientSupportResult(PatientModel? patient, UserProfile? userProfile)

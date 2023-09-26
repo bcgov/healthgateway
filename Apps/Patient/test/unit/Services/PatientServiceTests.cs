@@ -42,15 +42,16 @@ namespace HealthGateway.PatientTests.Services
         /// <summary>
         /// GetPatient - Happy Path.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void ShouldGetPatient()
+        public async Task ShouldGetPatient()
         {
             // Arrange
             PatientModel patient = GetPatient();
             IPatientService patientService = GetPatientService(patient);
 
             // Act
-            PatientDetails actual = Task.Run(async () => await patientService.GetPatientAsync(patient.Hdid).ConfigureAwait(true)).Result;
+            PatientDetails actual = await patientService.GetPatientAsync(patient.Hdid);
 
             // Verify
             Assert.Equal(patient.Hdid, actual.HdId);
@@ -59,15 +60,16 @@ namespace HealthGateway.PatientTests.Services
         /// <summary>
         /// GetPatient - Valid Phn.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void ShouldGetPatientByValidPhn()
+        public async Task ShouldGetPatientByValidPhn()
         {
             // Arrange
             PatientModel patient = GetPatient();
             IPatientService patientService = GetPatientService(patient);
 
             // Act
-            PatientDetails actual = Task.Run(async () => await patientService.GetPatientAsync(patient.Phn, PatientIdentifierType.Phn).ConfigureAwait(true)).Result;
+            PatientDetails actual = await patientService.GetPatientAsync(patient.Phn, PatientIdentifierType.Phn);
 
             // Verify
             Assert.Equal(patient.Phn, actual.Phn);
@@ -86,11 +88,11 @@ namespace HealthGateway.PatientTests.Services
             // Act
             async Task Actual()
             {
-                await patientService.GetPatientAsync(Phn, PatientIdentifierType.Phn).ConfigureAwait(true);
+                await patientService.GetPatientAsync(Phn, PatientIdentifierType.Phn);
             }
 
             // Verify
-            ProblemDetailsException exception = await Assert.ThrowsAsync<ProblemDetailsException>(Actual).ConfigureAwait(true);
+            ProblemDetailsException exception = await Assert.ThrowsAsync<ProblemDetailsException>(Actual);
             Assert.Equal(ErrorMessages.ClientRegistryRecordsNotFound, exception.ProblemDetails!.Detail);
         }
 
@@ -109,11 +111,11 @@ namespace HealthGateway.PatientTests.Services
             // Act
             async Task Actual()
             {
-                await patientService.GetPatientAsync(Phn, PatientIdentifierType.Phn).ConfigureAwait(true);
+                await patientService.GetPatientAsync(Phn, PatientIdentifierType.Phn);
             }
 
             // Verify
-            ProblemDetailsException exception = await Assert.ThrowsAsync<ProblemDetailsException>(Actual).ConfigureAwait(true);
+            ProblemDetailsException exception = await Assert.ThrowsAsync<ProblemDetailsException>(Actual);
             Assert.Equal(ErrorMessages.ClientRegistryReturnedDeceasedPerson, exception.ProblemDetails!.Detail);
         }
 
@@ -133,11 +135,11 @@ namespace HealthGateway.PatientTests.Services
             // Act
             async Task Actual()
             {
-                await patientService.GetPatientAsync(Phn, PatientIdentifierType.Phn).ConfigureAwait(true);
+                await patientService.GetPatientAsync(Phn, PatientIdentifierType.Phn);
             }
 
             // Verify
-            ProblemDetailsException exception = await Assert.ThrowsAsync<ProblemDetailsException>(Actual).ConfigureAwait(true);
+            ProblemDetailsException exception = await Assert.ThrowsAsync<ProblemDetailsException>(Actual);
             Assert.Equal(ErrorMessages.InvalidServicesCard, exception.ProblemDetails!.Detail);
         }
 
@@ -156,11 +158,11 @@ namespace HealthGateway.PatientTests.Services
             // Act
             async Task Actual()
             {
-                await patientService.GetPatientAsync(Phn, PatientIdentifierType.Phn).ConfigureAwait(true);
+                await patientService.GetPatientAsync(Phn, PatientIdentifierType.Phn);
             }
 
             // Verify
-            ProblemDetailsException exception = await Assert.ThrowsAsync<ProblemDetailsException>(Actual).ConfigureAwait(true);
+            ProblemDetailsException exception = await Assert.ThrowsAsync<ProblemDetailsException>(Actual);
             Assert.Equal(ErrorMessages.InvalidServicesCard, exception.ProblemDetails!.Detail);
         }
 
@@ -184,11 +186,11 @@ namespace HealthGateway.PatientTests.Services
             // Act
             async Task Actual()
             {
-                await patientService.GetPatientAsync(invalidPhn, PatientIdentifierType.Phn).ConfigureAwait(true);
+                await patientService.GetPatientAsync(invalidPhn, PatientIdentifierType.Phn);
             }
 
             // Verify
-            ProblemDetailsException exception = await Assert.ThrowsAsync<ProblemDetailsException>(Actual).ConfigureAwait(true);
+            ProblemDetailsException exception = await Assert.ThrowsAsync<ProblemDetailsException>(Actual);
             Assert.Equal(ErrorMessages.PhnInvalid, exception.ProblemDetails!.Detail);
         }
 

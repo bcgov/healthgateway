@@ -42,8 +42,11 @@ namespace HealthGateway.MedicationTests.Delegates
         /// <summary>
         /// GetMedicationRequests - Happy Path.
         /// </summary>
+        /// <returns>
+        /// A <see cref="Task"/> representing the asynchronous unit test.
+        /// </returns>
         [Fact]
-        public void ShouldRetrieveMedicationRequests()
+        public async Task ShouldRetrieveMedicationRequests()
         {
             // Input Parameters
             string phn = "9735361219";
@@ -100,7 +103,7 @@ namespace HealthGateway.MedicationTests.Delegates
                 MapperUtil.InitializeAutoMapper());
 
             // Test
-            RequestResult<IList<MedicationRequest>> response = Task.Run(async () => await medDelegate.GetMedicationRequestsAsync(phn).ConfigureAwait(true)).Result;
+            RequestResult<IList<MedicationRequest>> response = await medDelegate.GetMedicationRequestsAsync(phn);
 
             // Verify
             Assert.Equal(ResultType.Success, response.ResultStatus);
@@ -111,8 +114,11 @@ namespace HealthGateway.MedicationTests.Delegates
         /// <summary>
         /// GetMedicationRequests - Unauthorized.
         /// </summary>
+        /// <returns>
+        /// A <see cref="Task"/> representing the asynchronous unit test.
+        /// </returns>
         [Fact]
-        public void ShouldErrorIfNoAuthToken()
+        public async Task ShouldErrorIfNoAuthToken()
         {
             // Setup
 
@@ -159,7 +165,7 @@ namespace HealthGateway.MedicationTests.Delegates
                 MapperUtil.InitializeAutoMapper());
 
             // Test
-            RequestResult<IList<MedicationRequest>> response = Task.Run(async () => await medDelegate.GetMedicationRequestsAsync(phn).ConfigureAwait(true)).Result;
+            RequestResult<IList<MedicationRequest>> response = await medDelegate.GetMedicationRequestsAsync(phn);
 
             // Verify
             Assert.Equal(ResultType.Error, response.ResultStatus);
@@ -170,8 +176,11 @@ namespace HealthGateway.MedicationTests.Delegates
         /// <summary>
         /// GetMedicationRequests - Exception thrown.
         /// </summary>
+        /// <returns>
+        /// A <see cref="Task"/> representing the asynchronous unit test.
+        /// </returns>
         [Fact]
-        public void ShouldErrorIfException()
+        public async Task ShouldErrorIfException()
         {
             // Setup
 
@@ -228,7 +237,7 @@ namespace HealthGateway.MedicationTests.Delegates
                 MapperUtil.InitializeAutoMapper());
 
             // Test
-            RequestResult<IList<MedicationRequest>> response = Task.Run(async () => await medDelegate.GetMedicationRequestsAsync(phn).ConfigureAwait(true)).Result;
+            RequestResult<IList<MedicationRequest>> response = await medDelegate.GetMedicationRequestsAsync(phn);
 
             // Verify
             Assert.Equal(ResultType.Error, response.ResultStatus);

@@ -15,6 +15,7 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Admin.Tests.Services
 {
+    // ReSharper disable ParameterOnlyUsedForPreconditionCheck.Local
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -98,7 +99,7 @@ namespace HealthGateway.Admin.Tests.Services
             RequestResult<PatientModel> patientResult2 = GetPatientResult(patient2);
 
             IDelegationService delegationService = this.GetDelegationService(dependentResult, delegateResult, protectedDependent, patientResult1, patientResult2, agentAudits);
-            DelegationInfo actualResult = await delegationService.GetDelegationInformationAsync(DependentPhn).ConfigureAwait(true);
+            DelegationInfo actualResult = await delegationService.GetDelegationInformationAsync(DependentPhn);
 
             Assert.NotNull(actualResult);
             expectedDelegationInfo.ShouldDeepEqual(actualResult);
@@ -127,7 +128,7 @@ namespace HealthGateway.Admin.Tests.Services
             RequestResult<PatientModel> patientResult2 = GetPatientResult(patient2);
 
             IDelegationService delegationService = this.GetDelegationService(dependentResult, delegateResult, unprotectedDependent, patientResult1, patientResult2, agentAudits);
-            DelegationInfo actualResult = await delegationService.GetDelegationInformationAsync(DependentPhn).ConfigureAwait(true);
+            DelegationInfo actualResult = await delegationService.GetDelegationInformationAsync(DependentPhn);
 
             Assert.NotNull(actualResult);
             expectedDelegationInfo.ShouldDeepEqual(actualResult);
@@ -146,7 +147,7 @@ namespace HealthGateway.Admin.Tests.Services
             IDelegationService delegationService = this.GetDelegationService(patientResult);
 
             // Act
-            DelegateInfo actualResult = await delegationService.GetDelegateInformationAsync(DelegatePhn).ConfigureAwait(true);
+            DelegateInfo actualResult = await delegationService.GetDelegateInformationAsync(DelegatePhn);
 
             // Assert
             Assert.NotNull(actualResult);
@@ -168,7 +169,7 @@ namespace HealthGateway.Admin.Tests.Services
             IDelegationService delegationService = this.GetDelegationService(patientResult);
 
             // Act and Assert
-            await Assert.ThrowsAsync<ProblemDetailsException>(() => delegationService.GetDelegateInformationAsync(DelegatePhn)).ConfigureAwait(true);
+            await Assert.ThrowsAsync<ProblemDetailsException>(() => delegationService.GetDelegateInformationAsync(DelegatePhn));
         }
 
         /// <summary>
@@ -216,7 +217,7 @@ namespace HealthGateway.Admin.Tests.Services
             DelegationService delegationService = this.GetDelegationService(null, delegationDelegate, resourceDelegateQueryResult, NewDependentHdid, AuthenticatedUser, AuthenticatedPreferredUsername);
 
             // Act
-            await delegationService.ProtectDependentAsync(NewDependentHdid, delegateHdids, It.IsAny<string>()).ConfigureAwait(true);
+            await delegationService.ProtectDependentAsync(NewDependentHdid, delegateHdids, It.IsAny<string>());
 
             // Assert
             delegationDelegate.Verify(
@@ -259,7 +260,7 @@ namespace HealthGateway.Admin.Tests.Services
                 AuthenticatedPreferredUsername);
 
             // Act
-            await delegationService.UnprotectDependentAsync(DependentHdid, It.IsAny<string>()).ConfigureAwait(true);
+            await delegationService.UnprotectDependentAsync(DependentHdid, It.IsAny<string>());
 
             // Assert
             delegationDelegate.Verify(
@@ -322,7 +323,7 @@ namespace HealthGateway.Admin.Tests.Services
                 AuthenticatedPreferredUsername);
 
             // Act
-            await delegationService.ProtectDependentAsync(DependentHdid, delegateHdids, It.IsAny<string>()).ConfigureAwait(true);
+            await delegationService.ProtectDependentAsync(DependentHdid, delegateHdids, It.IsAny<string>());
 
             // Assert
             delegationDelegate.Verify(
@@ -354,7 +355,7 @@ namespace HealthGateway.Admin.Tests.Services
                 AuthenticatedPreferredUsername);
 
             // Act and Assert
-            await Assert.ThrowsAsync<ProblemDetailsException>(() => delegationService.UnprotectDependentAsync(invalidDependentHdid, It.IsAny<string>())).ConfigureAwait(true);
+            await Assert.ThrowsAsync<ProblemDetailsException>(() => delegationService.UnprotectDependentAsync(invalidDependentHdid, It.IsAny<string>()));
         }
 
         /// <summary>
@@ -374,7 +375,7 @@ namespace HealthGateway.Admin.Tests.Services
             RequestResult<PatientModel> patientResult2 = GetPatientResult(patient2);
 
             IDelegationService delegationService = this.GetDelegationService(dependentResult, delegateResult, protectedDependent, patientResult1, patientResult2, new List<AgentAudit>());
-            await Assert.ThrowsAsync<ProblemDetailsException>(() => delegationService.GetDelegationInformationAsync(DependentPhn)).ConfigureAwait(true);
+            await Assert.ThrowsAsync<ProblemDetailsException>(() => delegationService.GetDelegationInformationAsync(DependentPhn));
         }
 
         /// <summary>
@@ -404,7 +405,7 @@ namespace HealthGateway.Admin.Tests.Services
                 new Mock<IAuditRepository>().Object,
                 this.autoMapper);
 
-            await Assert.ThrowsAsync<ProblemDetailsException>(() => delegationService.GetDelegationInformationAsync(DependentPhn)).ConfigureAwait(true);
+            await Assert.ThrowsAsync<ProblemDetailsException>(() => delegationService.GetDelegationInformationAsync(DependentPhn));
         }
 
         /// <summary>

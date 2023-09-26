@@ -13,23 +13,27 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Admin.Server.Models.CovidSupport
+
+namespace HealthGateway.Admin.Client.Store.VaccineCard
 {
+    using Fluxor;
     using HealthGateway.Common.Data.Models;
 
     /// <summary>
-    /// Represents a request to mail document.
+    /// The state for the feature.
+    /// State should be decorated with [FeatureState] for automatic discovery when services.AddFluxor is called.
     /// </summary>
-    public class MailDocumentRequest
+    [FeatureState]
+    public record VaccineCardState
     {
         /// <summary>
-        /// Gets or sets the personal health number to retrieve.
+        /// Gets the request state for mail vaccine card requests.
         /// </summary>
-        public string PersonalHealthNumber { get; set; } = string.Empty;
+        public BaseRequestState MailVaccineCard { get; init; } = new();
 
         /// <summary>
-        /// Gets or sets the address to mail the document.
+        /// Gets the request state for print vaccine card requests.
         /// </summary>
-        public Address MailAddress { get; set; } = new();
+        public BaseRequestState<ReportModel> PrintVaccineCard { get; init; } = new();
     }
 }

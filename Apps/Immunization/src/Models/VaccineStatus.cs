@@ -18,7 +18,7 @@ namespace HealthGateway.Immunization.Models
     using System;
     using System.Text.Json.Serialization;
     using HealthGateway.Common.Constants.PHSA;
-    using HealthGateway.Common.Models.PHSA;
+    using HealthGateway.Common.Data.Models.PHSA;
 
     /// <summary>
     /// The Vaccine Status model.

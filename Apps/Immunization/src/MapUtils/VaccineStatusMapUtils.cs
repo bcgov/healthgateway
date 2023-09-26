@@ -17,7 +17,7 @@
 namespace HealthGateway.Immunization.MapUtils
 {
     using AutoMapper;
-    using HealthGateway.Common.Models.PHSA;
+    using HealthGateway.Common.Data.Models.PHSA;
     using HealthGateway.Immunization.Models;
 
     /// <summary>

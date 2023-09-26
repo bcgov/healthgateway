@@ -92,11 +92,9 @@ namespace HealthGateway.CommonTests.AccessManagement.Authentication
             using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
             ILogger<AuthenticationDelegate> logger = loggerFactory.CreateLogger<AuthenticationDelegate>();
             Mock<HttpMessageHandler> handlerMock = new();
-            using HttpResponseMessage httpResponseMessage = new()
-            {
-                StatusCode = HttpStatusCode.OK,
-                Content = new StringContent(json),
-            };
+            using HttpResponseMessage httpResponseMessage = new();
+            httpResponseMessage.StatusCode = HttpStatusCode.OK;
+            httpResponseMessage.Content = new StringContent(json);
             handlerMock
                 .Protected()
                 .Setup<Task<HttpResponseMessage>>(
@@ -147,11 +145,9 @@ namespace HealthGateway.CommonTests.AccessManagement.Authentication
             using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
             ILogger<AuthenticationDelegate> logger = loggerFactory.CreateLogger<AuthenticationDelegate>();
             Mock<HttpMessageHandler> handlerMock = new();
-            using HttpResponseMessage httpResponseMessage = new()
-            {
-                StatusCode = HttpStatusCode.OK,
-                Content = new StringContent(json),
-            };
+            using HttpResponseMessage httpResponseMessage = new();
+            httpResponseMessage.StatusCode = HttpStatusCode.OK;
+            httpResponseMessage.Content = new StringContent(json);
             handlerMock
                 .Protected()
                 .Setup<Task<HttpResponseMessage>>(
@@ -195,11 +191,9 @@ namespace HealthGateway.CommonTests.AccessManagement.Authentication
             using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
             ILogger<AuthenticationDelegate> logger = loggerFactory.CreateLogger<AuthenticationDelegate>();
             Mock<HttpMessageHandler> handlerMock = new();
-            using HttpResponseMessage httpResponseMessage = new()
-            {
-                StatusCode = HttpStatusCode.OK,
-                Content = new StringContent(json),
-            };
+            using HttpResponseMessage httpResponseMessage = new();
+            httpResponseMessage.StatusCode = HttpStatusCode.OK;
+            httpResponseMessage.Content = new StringContent(json);
 
             handlerMock
                 .Protected()

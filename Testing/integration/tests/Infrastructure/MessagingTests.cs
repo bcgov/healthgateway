@@ -118,8 +118,8 @@ public class MessagingTests : ScenarioContextBase<GatewayApi.Startup>, IDisposab
     {
         string s1 = GenerateSessionId();
         string s2 = GenerateSessionId();
-        TestMessage[] s1Messages = Enumerable.Range(0, 2).Select(_ => new TestMessage(_.ToString(), s1)).ToArray();
-        TestMessage[] s2Messages = Enumerable.Range(0, 2).Select(_ => new TestMessage(_.ToString(), s2)).ToArray();
+        TestMessage[] s1Messages = Enumerable.Range(0, 2).Select(n => new TestMessage(n.ToString(), s1)).ToArray();
+        TestMessage[] s2Messages = Enumerable.Range(0, 2).Select(n => new TestMessage(n.ToString(), s2)).ToArray();
 
         ConcurrentBag<MessageEnvelope> responses = await this.ReceiveMessages(this.cts.Token);
         await this.SendMessages(new[] { s1Messages, s2Messages }, this.cts.Token);
@@ -140,7 +140,7 @@ public class MessagingTests : ScenarioContextBase<GatewayApi.Startup>, IDisposab
             new("1", s1, true),
             new("2", s1),
         };
-        TestMessage[] s2Messages = Enumerable.Range(0, 2).Select(_ => new TestMessage(_.ToString(), s2)).ToArray();
+        TestMessage[] s2Messages = Enumerable.Range(0, 2).Select(n => new TestMessage(n.ToString(), s2)).ToArray();
 
         ConcurrentBag<MessageEnvelope> responses = await this.ReceiveMessages(this.cts.Token);
         await this.SendMessages(new[] { s1Messages, s2Messages }, this.cts.Token);
@@ -154,7 +154,7 @@ public class MessagingTests : ScenarioContextBase<GatewayApi.Startup>, IDisposab
     public async Task SendMessagesInTransaction_Rollback_ReceiveNoMessages()
     {
         string sessionId = GenerateSessionId();
-        TestMessage[] messages = Enumerable.Range(0, 2).Select(_ => new TestMessage(_.ToString(), sessionId)).ToArray();
+        TestMessage[] messages = Enumerable.Range(0, 2).Select(n => new TestMessage(n.ToString(), sessionId)).ToArray();
 
         ConcurrentBag<MessageEnvelope> responses = await this.ReceiveMessages(this.cts.Token);
 
@@ -172,7 +172,7 @@ public class MessagingTests : ScenarioContextBase<GatewayApi.Startup>, IDisposab
     public void CanSerializeMessageEnvelopeArray()
     {
         string sessionId = GenerateSessionId();
-        IEnumerable<TestMessage> messages = Enumerable.Range(0, 2).Select(_ => new TestMessage(_.ToString(), sessionId));
+        IEnumerable<TestMessage> messages = Enumerable.Range(0, 2).Select(n => new TestMessage(n.ToString(), sessionId));
         MessageEnvelope[] envelopes = messages.Select(m => new MessageEnvelope(m, m.SessionId)).ToArray();
         byte[] serialized = envelopes.Serialize();
 

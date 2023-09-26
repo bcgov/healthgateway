@@ -44,7 +44,7 @@ public partial class AgentAccessPage : FluxorComponent
             return "Search parameter is required";
         }
 
-        if (StringManipulator.StripWhitespace(parameter)?.Length < 3)
+        if (StringManipulator.StripWhitespace(parameter).Length < 3)
         {
             return "Query must contain at least 3 characters";
         }

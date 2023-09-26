@@ -88,63 +88,62 @@ namespace HealthGateway.Encounter.Services
         /// <inheritdoc/>
         public async Task<RequestResult<IEnumerable<EncounterModel>>> GetEncounters(string hdid)
         {
-            using (Source.StartActivity())
+            using Activity? activity = Source.StartActivity();
+
+            this.logger.LogDebug("Getting encounters");
+            this.logger.LogTrace("User hdid: {Hdid}", hdid);
+
+            RequestResult<IEnumerable<EncounterModel>> result = new();
+
+            if (!await this.patientRepository.CanAccessDataSourceAsync(hdid, DataSource.HealthVisit).ConfigureAwait(true))
             {
-                this.logger.LogDebug("Getting encounters");
-                this.logger.LogTrace("User hdid: {Hdid}", hdid);
-
-                RequestResult<IEnumerable<EncounterModel>> result = new();
-
-                if (!await this.patientRepository.CanAccessDataSourceAsync(hdid, DataSource.HealthVisit).ConfigureAwait(true))
-                {
-                    result.ResultStatus = ResultType.Success;
-                    result.ResourcePayload = Enumerable.Empty<EncounterModel>();
-                    result.TotalResultCount = 0;
-                    return result;
-                }
-
-                // Retrieve the phn
-                RequestResult<PatientModel> patientResult = await this.patientService.GetPatient(hdid).ConfigureAwait(true);
-                if (patientResult.ResultStatus == ResultType.Success && patientResult.ResourcePayload != null)
-                {
-                    PatientModel patient = patientResult.ResourcePayload;
-                    OdrHistoryQuery mspHistoryQuery = new()
-                    {
-                        StartDate = patient.Birthdate,
-                        EndDate = DateTime.Now,
-                        Phn = patient.PersonalHealthNumber,
-                        PageSize = 20000,
-                    };
-                    IPAddress address = this.httpContextAccessor.HttpContext!.Connection.RemoteIpAddress!;
-                    string ipv4Address = address.MapToIPv4().ToString();
-                    RequestResult<MspVisitHistoryResponse> response = await this.mspVisitDelegate.GetMspVisitHistoryAsync(mspHistoryQuery, hdid, ipv4Address).ConfigureAwait(true);
-                    result.ResultStatus = response.ResultStatus;
-                    result.ResultError = response.ResultError;
-                    if (response.ResultStatus == ResultType.Success)
-                    {
-                        result.PageSize = mspHistoryQuery.PageSize;
-                        result.PageIndex = mspHistoryQuery.PageNumber;
-                        if (response.ResourcePayload != null && response.ResourcePayload.Claims != null)
-                        {
-                            result.TotalResultCount = response.ResourcePayload.TotalRecords;
-                            result.ResourcePayload = this.autoMapper.Map<IEnumerable<Claim>, IEnumerable<EncounterModel>>(response.ResourcePayload.Claims)
-                                .GroupBy(e => e.Id)
-                                .Select(g => g.First());
-                        }
-                        else
-                        {
-                            result.ResourcePayload = new List<EncounterModel>();
-                        }
-                    }
-                }
-                else
-                {
-                    result.ResultError = patientResult.ResultError;
-                }
-
-                this.logger.LogDebug("Finished getting history of medication statements");
+                result.ResultStatus = ResultType.Success;
+                result.ResourcePayload = Enumerable.Empty<EncounterModel>();
+                result.TotalResultCount = 0;
                 return result;
             }
+
+            // Retrieve the phn
+            RequestResult<PatientModel> patientResult = await this.patientService.GetPatient(hdid).ConfigureAwait(true);
+            if (patientResult is { ResultStatus: ResultType.Success, ResourcePayload: not null })
+            {
+                PatientModel patient = patientResult.ResourcePayload;
+                OdrHistoryQuery mspHistoryQuery = new()
+                {
+                    StartDate = patient.Birthdate,
+                    EndDate = DateTime.Now,
+                    Phn = patient.PersonalHealthNumber,
+                    PageSize = 20000,
+                };
+                IPAddress address = this.httpContextAccessor.HttpContext!.Connection.RemoteIpAddress!;
+                string ipv4Address = address.MapToIPv4().ToString();
+                RequestResult<MspVisitHistoryResponse> response = await this.mspVisitDelegate.GetMspVisitHistoryAsync(mspHistoryQuery, hdid, ipv4Address).ConfigureAwait(true);
+                result.ResultStatus = response.ResultStatus;
+                result.ResultError = response.ResultError;
+                if (response.ResultStatus == ResultType.Success)
+                {
+                    result.PageSize = mspHistoryQuery.PageSize;
+                    result.PageIndex = mspHistoryQuery.PageNumber;
+                    if (response.ResourcePayload is { Claims: not null })
+                    {
+                        result.TotalResultCount = response.ResourcePayload.TotalRecords;
+                        result.ResourcePayload = this.autoMapper.Map<IEnumerable<Claim>, IEnumerable<EncounterModel>>(response.ResourcePayload.Claims)
+                            .GroupBy(e => e.Id)
+                            .Select(g => g.First());
+                    }
+                    else
+                    {
+                        result.ResourcePayload = new List<EncounterModel>();
+                    }
+                }
+            }
+            else
+            {
+                result.ResultError = patientResult.ResultError;
+            }
+
+            this.logger.LogDebug("Finished getting history of medication statements");
+            return result;
         }
 
         /// <inheritdoc/>

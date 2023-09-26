@@ -17,6 +17,7 @@ namespace HealthGateway.Admin.Common.Models
 {
     using System.Collections.Generic;
     using System.Linq;
+    using HealthGateway.Admin.Common.Models.CovidSupport;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ViewModels;
 
@@ -26,18 +27,28 @@ namespace HealthGateway.Admin.Common.Models
     public class PatientSupportDetails
     {
         /// <summary>
-        /// Gets or sets the patient's status.
+        /// Gets or sets the messaging verifications.
         /// </summary>
-        public IEnumerable<MessagingVerificationModel> MessagingVerifications { get; set; } = Enumerable.Empty<MessagingVerificationModel>();
+        public IEnumerable<MessagingVerificationModel>? MessagingVerifications { get; set; } = Enumerable.Empty<MessagingVerificationModel>();
 
         /// <summary>
-        /// Gets or sets a warning message associated with the patient.
+        /// Gets or sets the agent actions.
         /// </summary>
-        public IEnumerable<AgentAction> AgentActions { get; set; } = Enumerable.Empty<AgentAction>();
+        public IEnumerable<AgentAction>? AgentActions { get; set; } = Enumerable.Empty<AgentAction>();
 
         /// <summary>
-        /// Gets or sets the blocked access data sources.
+        /// Gets or sets the blocked data sources.
         /// </summary>
-        public IEnumerable<DataSource> BlockedDataSources { get; set; } = Enumerable.Empty<DataSource>();
+        public IEnumerable<DataSource>? BlockedDataSources { get; set; } = Enumerable.Empty<DataSource>();
+
+        /// <summary>
+        /// Gets the vaccine details.
+        /// </summary>
+        public required VaccineDetails VaccineDetails { get; init; }
+
+        /// <summary>
+        /// Gets the COVID-19 treatment assessment details.
+        /// </summary>
+        public required CovidAssessmentDetailsResponse CovidAssessmentDetails { get; init; }
     }
 }

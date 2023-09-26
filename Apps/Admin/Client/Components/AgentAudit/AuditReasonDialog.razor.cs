@@ -15,6 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Admin.Client.Components.AgentAudit;
 
+using System;
 using Fluxor;
 using Fluxor.Blazor.Web.Components;
 using HealthGateway.Admin.Client.Store;
@@ -22,26 +23,28 @@ using Microsoft.AspNetCore.Components;
 using MudBlazor;
 
 /// <summary>
-/// Backing logic for the DelegationConfirmationDialog component.
-/// If the Save button is pressed, the dialog's Result will have the Data property populated with a bool value of true.
+/// Backing logic for the AuditReasonDialog component.
+/// If the Confirm button is pressed, the dialog's Result will have the Data property populated with a string representing
+/// the audit reason.
 /// If the Cancel button is pressed, the dialog's Result will have the Cancelled property set to true.
 /// </summary>
-/// <typeparam name="TAction">An action to be performed when confirmation complete.</typeparam>
-/// <typeparam name="TErrorAction">An action to subscribe to when an error occurs dispatching TAction.</typeparam>
-/// <typeparam name="TSuccessAction">An action to subscribe to when TAction dispatch is successful.</typeparam>
-public partial class AuditReasonDialog<TAction, TErrorAction, TSuccessAction> : FluxorComponent
+/// <typeparam name="TErrorAction">
+/// An action that indicates an error was encountered while performing the action on
+/// confirmation.
+/// </typeparam>
+/// <typeparam name="TSuccessAction">An action that indicates the action on confirmation completed successfully.</typeparam>
+public partial class AuditReasonDialog<TErrorAction, TSuccessAction> : FluxorComponent
     where TErrorAction : BaseFailAction
-    where TAction : BaseAgentAuditAction
 {
     /// <summary>
-    /// Gets or sets the action to be performed when confirmation complete.
+    /// Gets or sets an Action to execute when an audit reason has been confirmed.
     /// </summary>
     [Parameter]
     [EditorRequired]
-    public TAction AuditableAction { get; set; } = default!;
+    public Action<string> ActionOnConfirm { get; set; } = _ => { };
 
     /// <summary>
-    /// Gets or sets the action to be performed when confirmation is cancelled.
+    /// Gets or sets the action to dispatch when the dialog is cancelled.
     /// </summary>
     [Parameter]
     public object? CancelAction { get; set; }
@@ -60,8 +63,6 @@ public partial class AuditReasonDialog<TAction, TErrorAction, TSuccessAction> : 
     private bool IsLoading { get; set; }
 
     private RequestError? Error { get; set; }
-
-    private MudTextField<string> AuditReasonTextField { get; set; } = default!;
 
     private bool SaveButtonDisabled => this.AuditReason.Length < 2;
 
@@ -112,7 +113,6 @@ public partial class AuditReasonDialog<TAction, TErrorAction, TSuccessAction> : 
     private void HandleClickConfirm()
     {
         this.IsLoading = true;
-        this.AuditableAction.Reason = this.AuditReason;
-        this.Dispatcher.Dispatch(this.AuditableAction);
+        this.ActionOnConfirm(this.AuditReason);
     }
 }
