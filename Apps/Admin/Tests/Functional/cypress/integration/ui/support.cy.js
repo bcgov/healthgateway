@@ -108,7 +108,7 @@ describe("Support", () => {
         cy.get("[data-testid=user-banner-feedback-warning-message]").should(
             "be.visible"
         );
-        verifySingleSupportResult(String(), phnDuplicate);
+        verifySingleSupportResult("", phnDuplicate);
         cy.get("[data-testid=user-banner-feedback-warning-message]").within(
             () => {
                 cy.get("button").parent(".mud-alert-close").click();
