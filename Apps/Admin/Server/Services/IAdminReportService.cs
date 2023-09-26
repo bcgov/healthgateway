@@ -18,6 +18,7 @@ namespace HealthGateway.Admin.Server.Services
     using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
+    using HealthGateway.Admin.Common.Models;
     using HealthGateway.Database.Models;
 
     /// <summary>
@@ -30,13 +31,13 @@ namespace HealthGateway.Admin.Server.Services
         /// </summary>
         /// <param name="ct">Cancellation token to manage async request.</param>
         /// <returns>A collection of HDID strings.</returns>
-        Task<IEnumerable<string>> GetProtectedDependentsReportAsync(CancellationToken ct);
+        Task<IList<string>> GetProtectedDependentsReportAsync(CancellationToken ct);
 
         /// <summary>
         /// Retrieves a collection of user HDIDs and their blocked data sources.
         /// </summary>
         /// <param name="ct">Cancellation token to manage async request.</param>
         /// <returns>A collection of <see cref="BlockedAccess"/></returns>
-        Task<IEnumerable<BlockedAccess>> GetBlockedAccessReportAsync(CancellationToken ct);
+        Task<IEnumerable<BlockedAccessRecord>> GetBlockedAccessReportAsync(CancellationToken ct);
     }
 }
