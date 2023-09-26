@@ -9,7 +9,7 @@
 {{- $protocol := ($context.protocol | default "tcp") -}}
 {{- $image := print $top.Values.defaultImageRepository "/" $top.Values.toolsNamespace "/" ($context.image.imageStreamName | default $context.name) -}}
 {{- $tag := $context.image.tag | default $top.Values.defaultImageTag | default "latest" -}}
-{{- $replicas := (kindIs "float64" $context.replicas) | ternary $context.replicas (default $top.Values.defaultDcReplicas | default 1) -}}
+{{- $replicas := (kindIs "float64" $context.replicas) | ternary $context.replicas (default ($top.Values.scaling).dcReplicas | default 1) -}}
 {{- $role := $context.role -}}
 apiVersion: apps.openshift.io/v1
 kind: DeploymentConfig

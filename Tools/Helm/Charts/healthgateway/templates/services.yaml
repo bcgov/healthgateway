@@ -2,6 +2,10 @@
 {{- range $key, $value := .Values.components -}}
     {{ include "dc.tpl" (list $ $value) | nindent 0 }}
     {{ "---" | nindent 0 }}
+    {{ include "hpa.tpl" (list $ $value) | nindent 0 }}
+    {{ "---" | nindent 0 }}
+    {{ include "pdb.tpl" (list $ $value) | nindent 0 }}
+    {{ "---" | nindent 0 }}
     {{ include "netpol.tpl" (list $ $value) | nindent 0 }}
     {{ "---" | nindent 0 }}
     {{ include "service.tpl" (list $ $value) | nindent 0 }}
