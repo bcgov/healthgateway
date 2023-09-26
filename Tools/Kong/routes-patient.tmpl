@@ -1,8 +1,8 @@
-      - name: patient-$KONG_NAMESPACE-phsa
+      - name: $HELM_APP_NAME-patient-$KONG_NAMESPACE-phsa
         methods:
           - GET
         hosts:
-          - $KONG_NAMESPACE.api.gov.bc.ca
+          - $SUBDOMAIN.api.gov.bc.ca
         headers:
           X-Api-User-Id:
             - phsa
@@ -11,7 +11,7 @@
         strip_path: false
         plugins:
           - name: jwt-keycloak
-            tags: [ns.$KONG_NAMESPACE]
+            tags: [ns.$KONG_NAMESPACE.$ENVIRONMENT]
             enabled: true
             config:
               client_roles: null
@@ -38,4 +38,4 @@
               consumer_match_claim: azp
         tags:
           - OAS3_import
-          - ns.$KONG_NAMESPACE
+          - ns.$KONG_NAMESPACE.$ENVIRONMENT

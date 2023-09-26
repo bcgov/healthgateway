@@ -1,9 +1,8 @@
+{{- $name := printf "%s-%s" $.Release.Name "redis" -}}
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: {{ include "redis.fullname" . }}
-  labels:
-    app: {{ include "redis.fullname" . }}
+  name: {{ $name }}
 spec:
   podManagementPolicy: Parallel
   replicas: {{ .Values.replicaCount }}
@@ -11,21 +10,17 @@ spec:
     type: RollingUpdate
   selector:
     matchLabels:
-      app: {{ include "redis.fullname" . }}
-  serviceName: {{ include "redis.fullname" . }}
+      name: {{ $name }}
+  serviceName: {{ printf "%s-%s-svc" $.Release.Name "redis" }}
   template:
     metadata:
-      {{- with .Values.podAnnotations }}
-      annotations:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
       labels:
-        app: {{ include "redis.fullname" . }}
+        name: {{ $name }}
     spec:
       containers:
-        - name: {{ .Chart.Name }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
+        - name:  {{ $name }}
+          image: {{ $.Values.image.repository }}:{{ .Values.image.tag | default $.Chart.AppVersion }}
+          imagePullPolicy: Always
           command:
             - /script/update-ip.sh
             - redis-server
@@ -39,7 +34,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   key: password
-                  name: {{ include "redis.fullname" . }}
+                  name: {{ $name }}-secret
           lifecycle:
             preStop:
               exec:
@@ -90,19 +85,20 @@ spec:
       volumes:
         - name: conf
           secret:
-            secretName: {{ include "redis.fullname" . }}
+            secretName: {{ $name }}-secret
         - name: script
           configMap:
-            name: {{ include "redis.fullname" . }}
+            name: {{ $name }}-config
             defaultMode: 0755
   volumeClaimTemplates:
     - kind: PersistentVolumeClaim
       metadata:
-        name: {{ include "redis.fullname" . }}-data
+        name: redis-data
         annotations:
-          volume.beta.kubernetes.io/storage-class: netapp-file-standard
+          volume.beta.kubernetes.io/storage-class: netapp-block-standard
+          # helm.sh/resource-policy: keep
       spec:
-        storageClassName: netapp-file-standard
+        storageClassName: netapp-block-standard
         accessModes:
           - ReadWriteOnce
         resources:

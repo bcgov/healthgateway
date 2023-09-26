@@ -1,14 +1,14 @@
-      - name: gatewayapi-$KONG_NAMESPACE-public
+      - name: $HELM_APP_NAME-gatewayapi-$KONG_NAMESPACE-public
         methods:
           - GET
         hosts:
-          - $KONG_NAMESPACE.api.gov.bc.ca
+          - $SUBDOMAIN.api.gov.bc.ca
         paths:
           - /api/gatewayapiservice/Communication
         strip_path: false
         plugins:
           - name: rate-limiting
-            tags: [ns.$KONG_NAMESPACE]
+            tags: [ns.$KONG_NAMESPACE.$ENVIRONMENT]
             enabled: true
             config:
               fault_tolerant: true
@@ -19,7 +19,7 @@
               - http
               - https
           - name: rate-limiting_902
-            tags: [ns.$KONG_NAMESPACE]
+            tags: [ns.$KONG_NAMESPACE.$ENVIRONMENT]
             enabled: true
             config:
               fault_tolerant: true
@@ -31,18 +31,18 @@
               - https
         tags:
           - OAS3_import
-          - ns.$KONG_NAMESPACE
-      - name: gatewayapi-$KONG_NAMESPACE-public-with-waitingqueue
+          - ns.$KONG_NAMESPACE.$ENVIRONMENT
+      - name: $HELM_APP_NAME-gatewayapi-$KONG_NAMESPACE-public-with-waitingqueue
         methods:
           - GET
         hosts:
-          - $KONG_NAMESPACE.api.gov.bc.ca
+          - $SUBDOMAIN.api.gov.bc.ca
         paths:
           - /api/gatewayapiservice/UserProfile/termsofservice
         strip_path: false
         plugins:
           - name: jwt-keycloak_1010
-            tags: [ns.$KONG_NAMESPACE]
+            tags: [ns.$KONG_NAMESPACE.$ENVIRONMENT]
             enabled: $ENABLE_WAITINGQUEUE_TOKEN_VALIDATION
             config:
                 allowed_iss:
@@ -54,7 +54,7 @@
                 realm: waitingqueue
                 disable_access_token_header: true
           - name: rate-limiting
-            tags: [ns.$KONG_NAMESPACE]
+            tags: [ns.$KONG_NAMESPACE.$ENVIRONMENT]
             enabled: true
             config:
               fault_tolerant: true
@@ -65,7 +65,7 @@
               - http
               - https
           - name: rate-limiting_902
-            tags: [ns.$KONG_NAMESPACE]
+            tags: [ns.$KONG_NAMESPACE.$ENVIRONMENT]
             enabled: true
             config:
               fault_tolerant: true
@@ -77,12 +77,12 @@
               - https
         tags:
           - OAS3_import
-          - ns.$KONG_NAMESPACE
-      - name: gatewayapi-$KONG_NAMESPACE-phsa
+          - ns.$KONG_NAMESPACE.$ENVIRONMENT
+      - name: $HELM_APP_NAME-gatewayapi-$KONG_NAMESPACE-phsa
         methods:
           - GET
         hosts:
-          - $KONG_NAMESPACE.api.gov.bc.ca
+          - $SUBDOMAIN.api.gov.bc.ca
         headers:
           X-Api-User-Id:
             - phsa
@@ -93,7 +93,7 @@
         strip_path: false
         plugins:
           - name: jwt-keycloak
-            tags: [ns.$KONG_NAMESPACE]
+            tags: [ns.$KONG_NAMESPACE.$ENVIRONMENT]
             enabled: true
             config:
               client_roles: null
@@ -120,4 +120,4 @@
               consumer_match_claim: azp
         tags:
           - OAS3_import
-          - ns.$KONG_NAMESPACE
+          - ns.$KONG_NAMESPACE.$ENVIRONMENT

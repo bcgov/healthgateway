@@ -1,0 +1,14 @@
+{{- $name := printf "%s-%s" $.Release.Name "redis" -}}
+apiVersion: v1
+kind: Pod
+metadata:
+  name: {{ $name }}-test-connection"
+  annotations:
+    "helm.sh/hook": test
+spec:
+  containers:
+    - name: wget
+      image: busybox
+      command: ['wget']
+      args: ['{{ $name }}-svc:{{ .Values.service.port }}']
+  restartPolicy: Never

@@ -1,0 +1,44 @@
+# network policy to allow pods to connect to postgres
+{{- $name := print $.Release.Name "-patroni" -}}
+{{- $namespace := $.Values.namespace | default $.Release.Namespace -}}
+{{- $labels := include "standard.labels" . }}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ $name }}-pods-netpol
+  namespace: {{ $namespace }}
+  labels: {{ $labels | nindent 4 }}
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: patroni
+      app.kubernetes.io/instance: {{ $.Release.Name }}
+  ingress:
+  - from:
+      - podSelector:
+          matchLabels: {}
+    ports:
+      - port: 5432
+        protocol: TCP
+  policyTypes:
+    - Ingress
+---
+# network policy to allow cross data center postgres connection
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ $name }}-ingress-netpol
+  namespace: {{ $namespace }}
+  labels: {{ $labels | nindent 4 }}
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: patroni
+      app.kubernetes.io/instance: {{ $.Release.Name }}
+  ingress:
+  - from:
+      - namespaceSelector:
+          matchLabels:
+            network.openshift.io/policy-group: ingress
+  policyTypes:
+    - Ingress

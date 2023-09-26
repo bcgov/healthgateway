@@ -2,10 +2,10 @@
     url: http://$SERVICE.$LICENCE_PLATE-$ENVIRONMENT.svc:8080
     tags:
       - OAS3_import
-      - ns.$KONG_NAMESPACE
+      - ns.$KONG_NAMESPACE.$ENVIRONMENT
     plugins:
       - name: cors
-        tags: [ns.$KONG_NAMESPACE]
+        tags: [ns.$KONG_NAMESPACE.$ENVIRONMENT]
         enabled: true
         config:
           preflight_continue: true
@@ -20,13 +20,13 @@
           - PUT
           - DELETE
         hosts:
-          - $KONG_NAMESPACE.api.gov.bc.ca
+          - $SUBDOMAIN.api.gov.bc.ca
         paths:
           - $BASE_PATH
         strip_path: false
         plugins:
           - name: jwt-keycloak_1010
-            tags: [ns.$KONG_NAMESPACE]
+            tags: [ns.$KONG_NAMESPACE.$ENVIRONMENT]
             enabled: $ENABLE_WAITINGQUEUE_TOKEN_VALIDATION
             config:
                 allowed_iss:
@@ -39,7 +39,7 @@
                 run_on_preflight: true
                 disable_access_token_header: true
           - name: jwt-keycloak
-            tags: [ns.$KONG_NAMESPACE]
+            tags: [ns.$KONG_NAMESPACE.$ENVIRONMENT]
             enabled: true
             config:
               client_roles: null
@@ -64,7 +64,7 @@
               realm_roles: null
               consumer_match_claim: azp
           - name: rate-limiting
-            tags: [ns.$KONG_NAMESPACE]
+            tags: [ns.$KONG_NAMESPACE.$ENVIRONMENT]
             enabled: true
             config:
               fault_tolerant: true
@@ -75,7 +75,7 @@
               - http
               - https
           - name: rate-limiting_902
-            tags: [ns.$KONG_NAMESPACE]
+            tags: [ns.$KONG_NAMESPACE.$ENVIRONMENT]
             enabled: true
             config:
               fault_tolerant: true
@@ -87,29 +87,29 @@
               - https
         tags:
           - OAS3_import
-          - ns.$KONG_NAMESPACE
+          - ns.$KONG_NAMESPACE.$ENVIRONMENT
       - name: $SERVICE-$KONG_NAMESPACE-options
         methods:
           - OPTIONS
         hosts:
-          - $KONG_NAMESPACE.api.gov.bc.ca
+          - $SUBDOMAIN.api.gov.bc.ca
         paths:
           - $BASE_PATH
         strip_path: false
         tags:
           - OAS3_import
-          - ns.$KONG_NAMESPACE
+          - ns.$KONG_NAMESPACE.$ENVIRONMENT
       - name: $SERVICE-$KONG_NAMESPACE-swagger
         methods:
           - GET
         hosts:
-          - $KONG_NAMESPACE.api.gov.bc.ca
+          - $SUBDOMAIN.api.gov.bc.ca
         paths:
           - $BASE_PATH/swagger
         strip_path: false
         plugins:
           - name: rate-limiting
-            tags: [ns.$KONG_NAMESPACE]
+            tags: [ns.$KONG_NAMESPACE.$ENVIRONMENT]
             enabled: true
             config:
               fault_tolerant: true
@@ -120,7 +120,7 @@
               - http
               - https
           - name: rate-limiting_902
-            tags: [ns.$KONG_NAMESPACE]
+            tags: [ns.$KONG_NAMESPACE.$ENVIRONMENT]
             enabled: true
             config:
               fault_tolerant: true
@@ -132,4 +132,4 @@
               - https
         tags:
           - OAS3_import
-          - ns.$KONG_NAMESPACE
+          - ns.$KONG_NAMESPACE.$ENVIRONMENT

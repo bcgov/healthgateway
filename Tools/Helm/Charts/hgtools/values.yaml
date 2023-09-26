@@ -1,0 +1,39 @@
+licensePlate: c8055e
+azureagent:
+  baseImage: image-registry.openshift-image-registry.svc:5000/c8055e-tools/azure-agent
+  poolPrefix: HGGold
+  devopsUrl: https://dev.azure.com/qslvic
+  envs:
+    tools:
+      replicas: 2
+    dev:
+    test:
+    prod:
+
+images:
+  webclient:
+    image: artifacts.developer.gov.bc.ca/docker-remote/healthopenshift/webclient
+  gatewayapi:
+    image: artifacts.developer.gov.bc.ca/docker-remote/healthopenshift/gatewayapi
+  patient:
+    image: artifacts.developer.gov.bc.ca/docker-remote/healthopenshift/patient
+  admin:
+    image: artifacts.developer.gov.bc.ca/docker-remote/healthopenshift/admin
+  webadmin:
+    image: artifacts.developer.gov.bc.ca/docker-remote/healthopenshift/adminwebclient
+  clinicaldoc:
+    image: artifacts.developer.gov.bc.ca/docker-remote/healthopenshift/clinicaldocument
+  encounter:
+    image: artifacts.developer.gov.bc.ca/docker-remote/healthopenshift/encounter
+  immunization:
+    image: artifacts.developer.gov.bc.ca/docker-remote/healthopenshift/immunization
+  laboratory:
+    image: artifacts.developer.gov.bc.ca/docker-remote/healthopenshift/laboratory
+  medication:
+    image: artifacts.developer.gov.bc.ca/docker-remote/healthopenshift/medication
+  hgcdogs:
+    image: artifacts.developer.gov.bc.ca/docker-remote/bcgovimages/common-document-generation-service
+  jobscheduler:
+    image: artifacts.developer.gov.bc.ca/docker-remote/healthopenshift/hangfire
+  azure-agent:
+    image: artifacts.developer.gov.bc.ca/docker-remote/healthopenshift/azure-agent
