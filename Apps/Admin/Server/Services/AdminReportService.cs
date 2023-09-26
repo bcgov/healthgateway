@@ -16,8 +16,10 @@
 namespace HealthGateway.Admin.Server.Services
 {
     using System.Collections.Generic;
+    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using HealthGateway.Admin.Common.Models;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
 
@@ -39,15 +41,16 @@ namespace HealthGateway.Admin.Server.Services
         }
 
         /// <inheritdoc/>
-        public Task<IEnumerable<string>> GetProtectedDependentsReportAsync(CancellationToken ct)
+        public Task<IList<string>> GetProtectedDependentsReportAsync(CancellationToken ct)
         {
             return this.delegationDelegate.GetProtectedDependentHdidsAsync(ct);
         }
 
         /// <inheritdoc/>
-        public Task<IEnumerable<BlockedAccess>> GetBlockedAccessReportAsync(CancellationToken ct)
+        public async Task<IEnumerable<BlockedAccessRecord>> GetBlockedAccessReportAsync(CancellationToken ct)
         {
-            return this.blockedAccessDelegate.GetAllAsync(ct);
+            IList<BlockedAccess> records = await this.blockedAccessDelegate.GetAllAsync(ct);
+            return records.Select(r => new BlockedAccessRecord(r.Hdid, r.DataSources.ToList()));
         }
     }
 }

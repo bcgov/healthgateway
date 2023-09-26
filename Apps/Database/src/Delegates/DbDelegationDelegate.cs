@@ -83,7 +83,7 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public async Task<IEnumerable<string>> GetProtectedDependentHdidsAsync(CancellationToken ct)
+        public async Task<IList<string>> GetProtectedDependentHdidsAsync(CancellationToken ct)
         {
             return await this.dbContext.Dependent.Where(d => d.Protected).Select(d => d.HdId).ToListAsync(ct);
         }

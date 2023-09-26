@@ -52,6 +52,6 @@ namespace HealthGateway.Database.Delegates
         /// </summary>
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A list of HDID strings.</returns>
-        Task<IEnumerable<string>> GetProtectedDependentHdidsAsync(CancellationToken ct);
+        Task<IList<string>> GetProtectedDependentHdidsAsync(CancellationToken ct);
     }
 }

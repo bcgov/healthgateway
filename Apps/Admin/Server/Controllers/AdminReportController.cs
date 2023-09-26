@@ -18,8 +18,8 @@ namespace HealthGateway.Admin.Server.Controllers
     using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
+    using HealthGateway.Admin.Common.Models;
     using HealthGateway.Admin.Server.Services;
-    using HealthGateway.Database.Models;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
 
@@ -62,12 +62,12 @@ namespace HealthGateway.Admin.Server.Controllers
         /// Retrieves a collection of user HDIDs and their blocked data sources.
         /// </summary>
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
-        /// <returns>A collection of <see cref="BlockedAccess"/> records.</returns>
+        /// <returns>A collection of <see cref="BlockedAccessRecord"/> records.</returns>
         /// <response code="200">Returns the collection of hdids with the blocked data sources.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
         /// <response code="403">The client does not have access rights to the content.</response>
         [HttpGet]
-        public async Task<IEnumerable<BlockedAccess>> GetBlockedAccessReport(CancellationToken ct)
+        public async Task<IEnumerable<BlockedAccessRecord>> GetBlockedAccessReport(CancellationToken ct)
         {
             return await this.adminReportService.GetBlockedAccessReportAsync(ct);
         }

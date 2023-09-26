@@ -95,7 +95,7 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public async Task<IEnumerable<BlockedAccess>> GetAllAsync(CancellationToken ct)
+        public async Task<IList<BlockedAccess>> GetAllAsync(CancellationToken ct)
         {
             return await this.dbContext.BlockedAccess
                 .Where(ba => ba.DataSources.Any())

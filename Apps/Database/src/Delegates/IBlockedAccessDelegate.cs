@@ -61,6 +61,6 @@ namespace HealthGateway.Database.Delegates
         /// </summary>
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A collection of records of user HDIDs with the data sources currently blocked.</returns>
-        Task<IEnumerable<BlockedAccess>> GetAllAsync(CancellationToken ct);
+        Task<IList<BlockedAccess>> GetAllAsync(CancellationToken ct);
     }
 }
