@@ -75,7 +75,7 @@
         </MudItem>
     </MudGrid>
 
-    @if (Patient.Status == PatientStatus.Default)
+    @if (Patient.Status is PatientStatus.Default or PatientStatus.NotUser)
     {
         <MudForm @ref="Form">
             <MudPaper Elevation="0" Class="mt-4 py-4 px-10">

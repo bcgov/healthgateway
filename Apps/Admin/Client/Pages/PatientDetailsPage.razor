@@ -110,10 +110,6 @@
         {
             <AgentAuditHistory Title="Agent Reason History" AgentActions="@AgentAuditHistory" IsLoading="@PatientSupportDetailsLoading" />
         }
-
-        <Covid19ImmunizationSection Phn="@Patient.PersonalHealthNumber" Data="@VaccineDoses" IsLoading="@PatientSupportDetailsLoading" MailAddress="@MailAddress" />
-
-        <Covid19AssessmentSection Data="@AssessmentDetails" IsLoading="@PatientSupportDetailsLoading" AssessmentPagePath="@Covid19TreatmentAssessmentPath" />
     }
     else if (CanViewAccountDetails)
     {
@@ -124,6 +120,10 @@
             No Health Gateway Profile
         </MudText>
     }
+
+    <Covid19ImmunizationSection Phn="@Patient.PersonalHealthNumber" Data="@VaccineDoses" IsLoading="@PatientSupportDetailsLoading" MailAddress="@MailAddress" />
+
+    <Covid19AssessmentSection Data="@AssessmentDetails" IsLoading="@PatientSupportDetailsLoading" AssessmentPagePath="@Covid19TreatmentAssessmentPath" />
 }
 else if (PatientsLoaded)
 {
