@@ -39,6 +39,9 @@ namespace HealthGateway.Common.Delegates
     /// </summary>
     public class ClientRegistriesDelegate : IClientRegistriesDelegate
     {
+        private static readonly List<string> DefaultValidWarningResponseCodes = new()
+            { "BCHCIM.GD.1.0019", "BCHCIM.GD.1.0021", "BCHCIM.GD.1.0022", "BCHCIM.GD.1.0023" };
+
         private readonly QUPA_AR101102_PortType clientRegistriesClient;
         private readonly IHttpContextAccessor httpContextAccessor;
         private readonly ILogger<ClientRegistriesDelegate> logger;
@@ -61,7 +64,7 @@ namespace HealthGateway.Common.Delegates
             this.logger = logger;
             this.clientRegistriesClient = clientRegistriesClient;
             this.httpContextAccessor = httpContextAccessor;
-            this.validWarningResponseCodes = configuration.GetSection("ClientRegistry:ValidWarningResponseCodes").Get<List<string>>() ?? new List<string>();
+            this.validWarningResponseCodes = configuration.GetSection("ClientRegistry:ValidWarningResponseCodes").Get<List<string>>() ?? DefaultValidWarningResponseCodes;
         }
 
         private static ActivitySource Source { get; } = new(nameof(ClientRegistriesDelegate));
