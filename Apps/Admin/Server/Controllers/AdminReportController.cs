@@ -38,7 +38,7 @@ namespace HealthGateway.Admin.Server.Controllers
         /// <summary>
         /// Initializes a new instance of the <see cref="AdminReportController"/> class.
         /// </summary>
-        /// <param name="adminReportService">then injected admin report service.</param>
+        /// <param name="adminReportService">The injected admin report service.</param>
         public AdminReportController(IAdminReportService adminReportService)
         {
             this.adminReportService = adminReportService;
