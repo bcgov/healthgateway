@@ -30,7 +30,7 @@ namespace HealthGateway.Admin.Server.Controllers
     [ApiVersion("1.0")]
     [Route("v{version:apiVersion}/api/[controller]")]
     [Produces("application/json")]
-    [Authorize(Roles = "AdminUser,AdminReviewer")]
+    [Authorize(Roles = "AdminUser")]
     public class AdminReportController : Controller
     {
         private readonly IAdminReportService adminReportService;
@@ -59,7 +59,7 @@ namespace HealthGateway.Admin.Server.Controllers
         }
 
         /// <summary>
-        /// Retrieves a collection of user HDIDs with a collection of blocked data sources.
+        /// Retrieves a collection of user HDIDs and their blocked data sources.
         /// </summary>
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A collection of <see cref="BlockedAccess"/> records.</returns>

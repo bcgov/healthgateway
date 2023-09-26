@@ -33,7 +33,7 @@ namespace HealthGateway.Admin.Server.Services
         Task<IEnumerable<string>> GetProtectedDependentsReportAsync(CancellationToken ct);
 
         /// <summary>
-        /// Retrieves a collection of user HDIDs with a collection of blocked data sources.
+        /// Retrieves a collection of user HDIDs and their blocked data sources.
         /// </summary>
         /// <param name="ct">Cancellation token to manage async request.</param>
         /// <returns>A collection of <see cref="BlockedAccess"/></returns>
