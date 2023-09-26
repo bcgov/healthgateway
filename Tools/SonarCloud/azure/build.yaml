@@ -65,7 +65,7 @@ jobs:
 
       - script: |
           export DOTNET_ROLL_FORWARD=Major
-          dotnet sonarscanner end /d:sonar.token="$(SonarToken)"
+          dotnet sonarscanner end
           echo "$@" >&2
         displayName: "End Static Code Analysis"
         continueOnError: true
