@@ -179,8 +179,7 @@ namespace HealthGateway.Medication.Services
                 foreach (MedicationSummary mdSummary in medSummaries)
                 {
                     string din = mdSummary.Din.PadLeft(8, '0');
-                    drugProductsDict.TryGetValue(din, out DrugProduct? drug);
-                    if (drug is not null)
+                    if (drugProductsDict.TryGetValue(din, out DrugProduct? drug))
                     {
                         mdSummary.BrandName = drug.BrandName;
                         mdSummary.Form = drug.Form?.PharmaceuticalForm ?? string.Empty;
@@ -188,23 +187,19 @@ namespace HealthGateway.Medication.Services
                         mdSummary.StrengthUnit = drug.ActiveIngredient?.StrengthUnit ?? string.Empty;
                         mdSummary.Manufacturer = drug.Company?.CompanyName ?? string.Empty;
                     }
-                    else
+                    else if (provincialDict.TryGetValue(din, out PharmaCareDrug? provincialDrug))
                     {
-                        provincialDict.TryGetValue(din, out PharmaCareDrug? provincialDrug);
-                        if (provincialDrug is not null)
-                        {
-                            mdSummary.IsPin = true;
-                            mdSummary.BrandName = provincialDrug.BrandName;
-                            mdSummary.Form = provincialDrug.DosageForm ?? string.Empty;
-                            mdSummary.PharmacyAssessmentTitle = provincialDrug.PharmacyAssessmentTitle ?? string.Empty;
-                            mdSummary.PrescriptionProvided = provincialDrug.PrescriptionProvided;
-                            mdSummary.RedirectedToHealthCareProvider = provincialDrug.RedirectedToHealthCareProvider;
-                        }
+                        mdSummary.IsPin = true;
+                        mdSummary.BrandName = provincialDrug.BrandName;
+                        mdSummary.Form = provincialDrug.DosageForm ?? string.Empty;
+                        mdSummary.PharmacyAssessmentTitle = provincialDrug.PharmacyAssessmentTitle ?? string.Empty;
+                        mdSummary.PrescriptionProvided = provincialDrug.PrescriptionProvided;
+                        mdSummary.RedirectedToHealthCareProvider = provincialDrug.RedirectedToHealthCareProvider;
                     }
                 }
-
-                this.logger.LogDebug("Finished populating medication summary. {Count} records", medSummaries.Count);
             }
+
+            this.logger.LogDebug("Finished populating medication summary. {Count} records", medSummaries.Count);
         }
     }
 }

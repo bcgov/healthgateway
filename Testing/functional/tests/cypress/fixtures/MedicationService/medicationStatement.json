@@ -22,7 +22,10 @@
                 "isPin": true,
                 "pharmacyAssessmentTitle": "Minor Ailment - Contraception",
                 "prescriptionProvided": false,
-                "redirectedToHealthCareProvider": true
+                "redirectedToHealthCareProvider": true,
+                "title": "Pharmacist Assessment",
+                "subtitle": "Minor Ailment - Contraception",
+                "isPharmacistAssessment": true
             },
             "dispensingPharmacy": {
                 "pharmacyId": "BC00000L31",
@@ -59,7 +62,10 @@
                 "isPin": true,
                 "pharmacyAssessmentTitle": "Minor Ailment - Acne",
                 "prescriptionProvided": true,
-                "redirectedToHealthCareProvider": false
+                "redirectedToHealthCareProvider": false,
+                "title": "Pharmacist Assessment",
+                "subtitle": "Minor Ailment - Acne",
+                "isPharmacistAssessment": true
             },
             "dispensingPharmacy": {
                 "pharmacyId": "BC00000A42",
@@ -96,7 +102,10 @@
                 "isPin": true,
                 "pharmacyAssessmentTitle": null,
                 "prescriptionProvided": null,
-                "redirectedToHealthCareProvider": null
+                "redirectedToHealthCareProvider": null,
+                "title": "Methadone (Maintenance) 1mg/Ml",
+                "subtitle": "",
+                "isPharmacistAssessment": false
             },
             "dispensingPharmacy": {
                 "pharmacyId": "BC00007912",
@@ -133,7 +142,10 @@
                 "isPin": false,
                 "pharmacyAssessmentTitle": null,
                 "prescriptionProvided": null,
-                "redirectedToHealthCareProvider": null
+                "redirectedToHealthCareProvider": null,
+                "title": "MINT-ZOPICLONE",
+                "subtitle": "ZOPICLONE",
+                "isPharmacistAssessment": false
             },
             "dispensingPharmacy": {
                 "pharmacyId": "BC00006638",
@@ -170,7 +182,10 @@
                 "isPin": false,
                 "pharmacyAssessmentTitle": null,
                 "prescriptionProvided": null,
-                "redirectedToHealthCareProvider": null
+                "redirectedToHealthCareProvider": null,
+                "title": "MINT-ZOPICLONE",
+                "subtitle": "ZOPICLONE",
+                "isPharmacistAssessment": false
             },
             "dispensingPharmacy": {
                 "pharmacyId": "BC00007912",
@@ -207,7 +222,10 @@
                 "isPin": true,
                 "pharmacyAssessmentTitle": null,
                 "prescriptionProvided": null,
-                "redirectedToHealthCareProvider": null
+                "redirectedToHealthCareProvider": null,
+                "title": "Methadone (Maintenance) 1mg/Ml",
+                "subtitle": "",
+                "isPharmacistAssessment": false
             },
             "dispensingPharmacy": {
                 "pharmacyId": "BC00007912",
@@ -244,7 +262,10 @@
                 "isPin": false,
                 "pharmacyAssessmentTitle": null,
                 "prescriptionProvided": null,
-                "redirectedToHealthCareProvider": null
+                "redirectedToHealthCareProvider": null,
+                "title": "MINT-ZOPICLONE",
+                "subtitle": "ZOPICLONE",
+                "isPharmacistAssessment": false
             }
         }
     ],
