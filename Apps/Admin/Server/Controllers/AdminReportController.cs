@@ -21,6 +21,7 @@ namespace HealthGateway.Admin.Server.Controllers
     using HealthGateway.Admin.Common.Models;
     using HealthGateway.Admin.Server.Services;
     using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
 
     /// <summary>
@@ -31,7 +32,7 @@ namespace HealthGateway.Admin.Server.Controllers
     [Route("v{version:apiVersion}/api/[controller]")]
     [Produces("application/json")]
     [Authorize(Roles = "AdminUser")]
-    public class AdminReportController : Controller
+    public class AdminReportController
     {
         private readonly IAdminReportService adminReportService;
 
@@ -45,20 +46,6 @@ namespace HealthGateway.Admin.Server.Controllers
         }
 
         /// <summary>
-        /// Retrieves a collection of user HDIDs that have dependents.
-        /// </summary>
-        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
-        /// <returns>List of user HDIDs that have dependents attached.</returns>
-        /// <response code="200">Returns the list of user HDIDs that have dependents attached.</response>
-        /// <response code="401">The client must authenticate itself to get the requested response.</response>
-        /// <response code="403">The client does not have access rights to the content.</response>
-        [HttpGet]
-        public async Task<IEnumerable<string>> GetProtectedDependentsReport(CancellationToken ct)
-        {
-            return await this.adminReportService.GetProtectedDependentsReportAsync(ct);
-        }
-
-        /// <summary>
         /// Retrieves a collection of user HDIDs and their blocked data sources.
         /// </summary>
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
@@ -67,9 +54,33 @@ namespace HealthGateway.Admin.Server.Controllers
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
         /// <response code="403">The client does not have access rights to the content.</response>
         [HttpGet]
-        public async Task<IEnumerable<BlockedAccessRecord>> GetBlockedAccessReport(CancellationToken ct)
+        [Route("BlockedAccess")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        public async Task<IEnumerable<BlockedAccessRecord>> BlockedAccessReport(CancellationToken ct)
         {
             return await this.adminReportService.GetBlockedAccessReportAsync(ct);
+        }
+
+        /// <summary>
+        /// Retrieves a collection of user HDIDs that have dependents.
+        /// </summary>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
+        /// <returns>List of user HDIDs that have dependents attached.</returns>
+        /// <response code="200">Returns the list of user HDIDs that have dependents attached.</response>
+        /// <response code="401">The client must authenticate itself to get the requested response.</response>
+        /// <response code="403">The client does not have access rights to the content.</response>
+        [HttpGet]
+        [Route("ProtectedDependents")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        public async Task<IEnumerable<string>> ProtectedDependentsReport(CancellationToken ct)
+        {
+            return await this.adminReportService.GetProtectedDependentsReportAsync(ct);
         }
     }
 }

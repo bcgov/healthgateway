@@ -50,7 +50,9 @@ namespace HealthGateway.Admin.Server.Services
         public async Task<IEnumerable<BlockedAccessRecord>> GetBlockedAccessReportAsync(CancellationToken ct)
         {
             IList<BlockedAccess> records = await this.blockedAccessDelegate.GetAllAsync(ct);
-            return records.Select(r => new BlockedAccessRecord(r.Hdid, r.DataSources.ToList()));
+            return records
+                .Where(r => r.DataSources.Count > 0)
+                .Select(r => new BlockedAccessRecord(r.Hdid, r.DataSources.ToList()));
         }
     }
 }
