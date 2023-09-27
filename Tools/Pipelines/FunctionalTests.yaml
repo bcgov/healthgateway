@@ -20,15 +20,15 @@ variables:
   - group: Admin - Dev
   - group: Phsa - Dev
   - name: WebClient
-    value: $[ or(eq(parameters.appType, 'WebClient'), eq(parameters.appType, 'Both')) ]    
+    value: or(eq(${{ parameters.appType }}, 'WebClient'), eq(${{ parameters.appType }}, 'Both'))
   - name: Admin
-    value: $[ or(eq(parameters.appType, 'Admin'), eq(parameters.appType, 'Both')) ]
+    value: or(eq(${{ parameters.appType }}, 'Admin'), eq(${{ parameters.appType }}, 'Both'))
 jobs:
   - job: "Admin_Seed"
+    displayName: "Re-seed DB and PHSA data for Admin"
     pool: 
       name: "HealthGatewayDev"    
-    condition: eq(variables['Admin'], true)
-    displayName: "Re-seed DB and PHSA data for Admin"
+    condition: eq(variables['Admin'], true)    
     steps:
     - task: Bash@3
       displayName: 'Re-seed DB and PHSA data for Admin'
@@ -41,11 +41,11 @@ jobs:
         ADMIN_KEYCLOAK_SECRET: $(admin.keycloak.secret)
         PHSA_KEYCLOAK_DEVTOOLS_SECRET: $(phsa.keycloak.devtools.secret)
   - job: "Admin_Tests"
+    displayName: "Admin Functional Tests"  
     pool: 
       vmImage: "ubuntu-latest"
     condition: eq(variables['Admin'], true)
-    dependsOn: "Admin_Seed"
-    displayName: "Admin Functional Tests"  
+    dependsOn: "Admin_Seed"    
     strategy:
       parallel: 9
     steps:
@@ -63,10 +63,10 @@ jobs:
         KEYCLOAK_ADMIN_SECRET: $(keycloak.admin.secret)
 
   - job: "HG_Seed"
+    displayName: "Re-seed DB and PHSA data for Functional Tests"
     pool: 
       name: "HealthGatewayDev"
-    condition: eq(variables['WebClient'], true)
-    displayName: "Re-seed DB and PHSA data for Functional Tests"
+    condition: eq(variables['WebClient'], true)    
     steps:
     - task: Bash@3
       displayName: 'Re-seed DB and PHSA data for Functional Tests'
@@ -79,11 +79,11 @@ jobs:
         ADMIN_KEYCLOAK_SECRET: $(admin.keycloak.secret)
         PHSA_KEYCLOAK_DEVTOOLS_SECRET: $(phsa.keycloak.devtools.secret)
   - job: "HG_Functional_Tests"
+    displayName: "HG Functional Tests"  
     pool: 
       vmImage: "ubuntu-latest"
     condition: eq(variables['WebClient'], true)
-    dependsOn: "HG_Seed"
-    displayName: "HG Functional Tests"  
+    dependsOn: "HG_Seed"    
     strategy:
       parallel: 9
     steps:
