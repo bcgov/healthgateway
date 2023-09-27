@@ -1,0 +1,103 @@
+name: $(date:yyyy).$(date:MM).$(date:dd).$(rev:r)
+
+pr: none
+trigger: none
+
+parameters:
+- name: Application
+  type: string
+  default: WebClient
+  values:
+  - WebClient
+  - Admin
+  - Both
+
+#Build variables
+variables:
+  - group: Cypress
+  - group: Azure DB - Dev
+  - group: Admin - Dev
+  - group: Phsa - Dev
+  - name: WebClient
+    value: $[or(eq(parameters.Application, 'WebClient'), eq(parameters.Application, 'Both'))]
+  - name: Admin
+    value: $[or(eq(parameters.Application, 'Admin'), eq(parameters.Application, 'Both'))]  
+jobs:
+  - job: "Admin_Seed"
+    pool: 
+      name: "HealthGatewayDev"    
+    condition: eq(variables['Admin'], true)
+    displayName: "Re-seed DB and PHSA data for Admin"
+    steps:
+    - task: Bash@3
+      displayName: 'Re-seed DB and PHSA data for Admin'
+      inputs:
+        targetType: filePath
+        filePath: './Tools/Pipelines/scripts/azp_seedDb.sh'
+        arguments: Testing/functional/tests
+      env: # Required secrets for seed db script
+        DB_PASSWORD: $(db.password)
+        ADMIN_KEYCLOAK_SECRET: $(admin.keycloak.secret)
+        PHSA_KEYCLOAK_DEVTOOLS_SECRET: $(phsa.keycloak.devtools.secret)
+  - job: "Admin_Tests"
+    pool: 
+      vmImage: "ubuntu-latest"
+    condition: eq(variables['Admin'], true)
+    dependsOn: "Admin_Seed"
+    displayName: "Admin Functional Tests"  
+    strategy:
+      parallel: 9
+    steps:
+    - task: Bash@3
+      displayName: 'Run Admin Functional Tests'
+      inputs:
+        targetType: filePath
+        filePath: './Tools/Pipelines/scripts/azp_runAdminFunctionalTests.sh'
+        arguments: Apps/Admin/Tests/Functional $(Build.BuildNumber)-$(System.JobAttempt) "dev,$(Build.Reason)"
+      env: # Required environment settings and secrets for admin tests
+        TERM: xterm
+        CYPRESS_ADMIN_KEY: $(cypress.admin.key)
+        KEYCLOAK_PASSWORD: $(keycloak.pw)
+        IDIR_PASSWORD: $(idir.password)
+        KEYCLOAK_ADMIN_SECRET: $(keycloak.admin.secret)
+
+  - job: "HG_Seed"
+    pool: 
+      name: "HealthGatewayDev"
+    condition: eq(variables['WebClient'], true)
+    displayName: "Re-seed DB and PHSA data for Functional Tests"
+    steps:
+    - task: Bash@3
+      displayName: 'Re-seed DB and PHSA data for Functional Tests'
+      inputs:
+        targetType: filePath
+        filePath: './Tools/Pipelines/scripts/azp_seedDb.sh'
+        arguments: Testing/functional/tests
+      env: # Required secrets for seed db script
+        DB_PASSWORD: $(db.password)
+        ADMIN_KEYCLOAK_SECRET: $(admin.keycloak.secret)
+        PHSA_KEYCLOAK_DEVTOOLS_SECRET: $(phsa.keycloak.devtools.secret)
+  - job: "HG_Functional_Tests"
+    pool: 
+      vmImage: "ubuntu-latest"
+    condition: eq(variables['WebClient'], true)
+    dependsOn: "HG_Seed"
+    displayName: "HG Functional Tests"  
+    strategy:
+      parallel: 9
+    steps:
+    - task: Bash@3
+      displayName: 'Run HG Functional Tests'
+      inputs:
+        targetType: filePath
+        filePath: './Tools/Pipelines/scripts/azp_runFunctionalTests.sh'
+        arguments: Testing/functional/tests $(Build.BuildNumber)-$(System.JobAttempt) "dev,$(Build.Reason)"
+      env: # Required environment settings and secrets for HG tests
+        TERM: xterm
+        CYPRESS_KEY: $(cypress.key)
+        BCSC_PASSWORD: $(bcsc.pw)
+        KEYCLOAK_PASSWORD: $(keycloak.pw)
+        IDIR_PASSWORD: $(idir.password)
+        PHONENUMBER: $(phoneNumber)
+        KEYCLOAK_PHSA_CLIENT: $(keycloak.phsa.client)
+        KEYCLOAK_PHSA_SECRET: $(keycloak.phsa.secret)

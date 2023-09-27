@@ -33,14 +33,9 @@ fi
 
 echo "Running Cypress Functional Tests"
 TZ=America/Vancouver npx cypress run \
-  --env "bcsc.password=$(bcsc.pw),\
-keycloak.password=$(keycloak.pw),\
-idir.password=$(idir.password),\
-phoneNumber=$(phoneNumber),\
-keycloak.phsa.client=$(keycloak.phsa.client),\
-keycloak.phsa.secret=$(keycloak.phsa.secret)" \
+  --env "bcsc.password=$BCSC_PW,keycloak.password=$KEYCLOAK_PW,idir.password=$IDIR_PASSWORD,phoneNumber=$PHONENUMBER,keycloak.phsa.client=$KEYCLOAK_PHSA_CLIENT,keycloak.phsa.secret=$KEYCLOAK_PHSA_SECRET" \
   --record \
-  --key $(cypress.key) \
+  --key $CYPRESS_KEY \
   --parallel \
   --ci-build-id "$buildId" \
   --group "$buildId" \
