@@ -4,13 +4,14 @@ pr: none
 trigger: none
 
 parameters:
-- name: Application
+- name: appType
+  displayName: 'Application'
   type: string
-  default: WebClient
   values:
   - WebClient
   - Admin
   - Both
+  default: WebClient
 
 #Build variables
 variables:
@@ -18,8 +19,10 @@ variables:
   - group: Azure DB - Dev
   - group: Admin - Dev
   - group: Phsa - Dev
-  WebClient: {{ or(eq(parameters.Application, 'WebClient'), eq(parameters.Application, 'Both')) }}    
-  Admin: {{or(eq(parameters.Application, 'Admin'), eq(parameters.Application, 'Both')) }}
+  - name: WebClient
+    value: $[ or(eq(parameters.appType, 'WebClient'), eq(parameters.appType, 'Both')) ]    
+  - name: Admin
+    value: $[ or(eq(parameters.appType, 'Admin'), eq(parameters.appType, 'Both')) ]
 jobs:
   - job: "Admin_Seed"
     pool: 
