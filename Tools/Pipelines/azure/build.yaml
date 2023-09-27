@@ -1,0 +1,29 @@
+name: 1.0.0$(Rev:.r) #Build number
+
+pr: none
+
+trigger:
+  batch: "true"
+  branches:
+    include:
+      - dev
+  paths:
+    include:
+      - Tools/Pipelines
+
+jobs:
+  - job: "Package_Scripts"
+    displayName: "Package Scripts"
+    pool: 
+      vmImage: "ubuntu-latest" 
+  steps:
+  - task: CopyFiles@2
+    displayName: "Copying Deployment Artifacts"
+  inputs:
+    SourceFolder: 'source'
+    Contents: 'scripts/** pipelines/**'
+    TargetFolder: 'target'
+  - task: PublishPipelineArtifact@0
+    displayName: "Publishing Deployment Artifacts"
+    inputs:
+      targetPath: "$(Build.ArtifactStagingDirectory)"
