@@ -20,9 +20,9 @@ jobs:
     - task: CopyFiles@2
       displayName: "Copying Deployment Artifacts"
       inputs:
-        SourceFolder: 'source'
+        SourceFolder: '$(Build.SourcesDirectory)/Tools/Pipelines'
         Contents: 'scripts/** pipelines/**'
-        TargetFolder: 'target'
+        TargetFolder: '$(Build.ArtifactStagingDirectory)'
     - task: PublishPipelineArtifact@0
       displayName: "Publishing Deployment Artifacts"
       inputs:
