@@ -801,7 +801,7 @@ dotnet_diagnostic.SA1629.severity = none
 # IDE0058: Remove unnecessary expression value
 dotnet_diagnostic.IDE0058.severity = none
 
-[**/test/unit/**/*Tests.cs]
+[**/{test/unit,Tests}/**/*Tests.cs]
 
 # CA1506: Avoid excessive class coupling
 dotnet_diagnostic.ca1506.severity = none

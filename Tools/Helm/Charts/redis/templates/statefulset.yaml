@@ -1,0 +1,106 @@
+{{- $name := printf "%s-%s" $.Release.Name "redis" -}}
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ $name }}
+spec:
+  podManagementPolicy: Parallel
+  replicas: {{ .Values.replicaCount }}
+  updateStrategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      name: {{ $name }}
+  serviceName: {{ printf "%s-%s-svc" $.Release.Name "redis" }}
+  template:
+    metadata:
+      labels:
+        name: {{ $name }}
+    spec:
+      containers:
+        - name:  {{ $name }}
+          image: {{ $.Values.image.repository }}:{{ .Values.image.tag | default $.Chart.AppVersion }}
+          imagePullPolicy: Always
+          command:
+            - /script/update-ip.sh
+            - redis-server
+            - /conf/redis.conf
+          env:
+            - name: POD_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+            - name: REDISCLI_AUTH
+              valueFrom:
+                secretKeyRef:
+                  key: password
+                  name: {{ $name }}-secret
+          lifecycle:
+            preStop:
+              exec:
+                command:
+                  - /bin/sh
+                  - -c
+                  - redis-cli -h $HOSTNAME shutdown save
+          livenessProbe:
+            exec:
+              command:
+                - /bin/sh
+                - -c
+                - test "$(redis-cli -h $HOSTNAME ping)" = "PONG"
+            initialDelaySeconds: 10
+            timeoutSeconds: 1
+            failureThreshold: 3
+          ports:
+            - containerPort: {{ .Values.service.redis.port }}
+              name: redis
+            - containerPort: {{ .Values.service.gossip.port }}
+              name: gossip
+          readinessProbe:
+            exec:
+              command:
+                - /bin/sh
+                - -c
+                - test "$(redis-cli -h $HOSTNAME ping)" = "PONG"
+            initialDelaySeconds: 15
+            timeoutSeconds: 1
+            failureThreshold: 3
+          resources:
+            requests:
+              cpu: {{ .Values.resources.requests.cpu }}
+              memory: {{ .Values.resources.requests.memory }}
+            limits:
+              cpu: {{ .Values.resources.limits.cpu }}
+              memory: {{ .Values.resources.limits.memory }}
+          volumeMounts:
+            - name: conf
+              mountPath: /conf
+              readOnly: false
+            - name: redis-data
+              mountPath: /data
+              readOnly: false
+            - name: script
+              mountPath: /script
+              readOnly: false
+      volumes:
+        - name: conf
+          secret:
+            secretName: {{ $name }}-secret
+        - name: script
+          configMap:
+            name: {{ $name }}-config
+            defaultMode: 0755
+  volumeClaimTemplates:
+    - kind: PersistentVolumeClaim
+      metadata:
+        name: redis-data
+        annotations:
+          volume.beta.kubernetes.io/storage-class: netapp-block-standard
+          # helm.sh/resource-policy: keep
+      spec:
+        storageClassName: netapp-block-standard
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: {{ .Values.resources.requests.storage }}

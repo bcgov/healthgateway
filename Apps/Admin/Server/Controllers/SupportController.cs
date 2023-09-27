@@ -16,11 +16,14 @@
 namespace HealthGateway.Admin.Server.Controllers
 {
     using System.Collections.Generic;
+    using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Admin.Common.Models;
+    using HealthGateway.Admin.Common.Models.CovidSupport;
     using HealthGateway.Admin.Server.Services;
     using HealthGateway.Common.Data.Constants;
+    using HealthGateway.Common.Data.Models;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
@@ -32,17 +35,20 @@ namespace HealthGateway.Admin.Server.Controllers
     [ApiVersion("1.0")]
     [Route("v{version:apiVersion}/api/[controller]")]
     [Produces("application/json")]
-    [Authorize(Roles = "AdminUser,AdminReviewer")]
-    public class SupportController
+    [Authorize(Roles = "AdminUser,AdminReviewer,SupportUser")]
+    public class SupportController : ControllerBase
     {
+        private readonly ICovidSupportService covidSupportService;
         private readonly ISupportService supportService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SupportController"/> class.
         /// </summary>
+        /// <param name="covidSupportService">The injected covid support service.</param>
         /// <param name="supportService">The injected support service.</param>
-        public SupportController(ISupportService supportService)
+        public SupportController(ICovidSupportService covidSupportService, ISupportService supportService)
         {
+            this.covidSupportService = covidSupportService;
             this.supportService = supportService;
         }
 
@@ -79,7 +85,7 @@ namespace HealthGateway.Admin.Server.Controllers
         /// </summary>
         /// <param name="hdid">The HDID associated with the patient support details.</param>
         /// <param name="ct">A cancellation token.</param>
-        /// <returns>A patient support details matching the query.</returns>
+        /// <returns>Patient support details matching the query.</returns>
         /// <response code="200">Returns the patient support details matching the query.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
         /// <response code="403">
@@ -90,7 +96,10 @@ namespace HealthGateway.Admin.Server.Controllers
         [Route("PatientSupportDetails")]
         public async Task<PatientSupportDetails> GetPatientSupportDetails([FromQuery] string hdid, CancellationToken ct)
         {
-            return await this.supportService.GetPatientSupportDetailsAsync(hdid, ct).ConfigureAwait(true);
+            ClaimsPrincipal user = this.HttpContext.User;
+            bool includeEverything = user.IsInRole("AdminUser") || user.IsInRole("AdminReviewer");
+
+            return await this.supportService.GetPatientSupportDetailsAsync(hdid, includeEverything, includeEverything, includeEverything, ct).ConfigureAwait(true);
         }
 
         /// <summary>
@@ -109,6 +118,65 @@ namespace HealthGateway.Admin.Server.Controllers
         public async Task BlockAccess(string hdid, BlockAccessRequest request)
         {
             await this.supportService.BlockAccessAsync(hdid, request.DataSources, request.Reason).ConfigureAwait(true);
+        }
+
+        /// <summary>
+        /// Triggers the process to physically mail the Vaccine Card document.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        /// <param name="request">The mail document request.</param>
+        /// <response code="200">The vaccine proof request could be submitted successfully.</response>
+        /// <response code="400">The vaccine proof request could not be submitted successfully.</response>
+        /// <response code="401">The client must authenticate itself to get the requested response.</response>
+        /// <response code="403">
+        /// The client does not have access rights to the content; that is, it is unauthorized, so the server
+        /// is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.
+        /// </response>
+        /// <response code="404">The patient could not be found for the personal health number..</response>
+        [HttpPost]
+        [Route("Patient/Document")]
+        public async Task MailVaccineCard([FromBody] MailDocumentRequest request)
+        {
+            await this.covidSupportService.MailVaccineCardAsync(request).ConfigureAwait(true);
+        }
+
+        /// <summary>
+        /// Gets the COVID-19 Vaccine Record document that includes the Vaccine Card and Vaccination History.
+        /// </summary>
+        /// <returns>The encoded immunization document.</returns>
+        /// <param name="phn">The personal health number that matches the document to retrieve.</param>
+        /// <response code="200">The request to retrieve the encoded immunization document was successful.</response>
+        /// <response code="400">The request could not be submitted successfully.</response>
+        /// <response code="401">the client must authenticate itself to get the requested response.</response>
+        /// <response code="403">
+        /// The client does not have access rights to the content; that is, it is unauthorized, so the server
+        /// is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.
+        /// </response>
+        [HttpGet]
+        [Route("Patient/Document")]
+        public async Task<ReportModel> RetrieveVaccineRecord([FromQuery] string phn)
+        {
+            return await this.covidSupportService.RetrieveVaccineRecordAsync(phn).ConfigureAwait(true);
+        }
+
+        /// <summary>
+        /// Submitting a completed anti viral screening form.
+        /// </summary>
+        /// <param name="request">The covid therapy assessment request to use for submission.</param>
+        /// <returns>A CovidAssessmentResponse object.</returns>
+        /// <response code="200">The covid assessment request was submitted.</response>
+        /// <response code="401">The client must authenticate itself to get the requested response.</response>
+        /// <response code="403">
+        /// The client does not have access rights to the content; that is, it is unauthorized, so the server
+        /// is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.
+        /// </response>
+        /// <response code="503">The service is unavailable for use.</response>
+        [HttpPost]
+        [Produces("application/json")]
+        [Route("CovidAssessment")]
+        public async Task<CovidAssessmentResponse> SubmitCovidAssessment([FromBody] CovidAssessmentRequest request)
+        {
+            return await this.covidSupportService.SubmitCovidAssessmentAsync(request).ConfigureAwait(true);
         }
     }
 }

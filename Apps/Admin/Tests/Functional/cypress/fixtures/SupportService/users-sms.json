@@ -17,8 +17,20 @@
             "surname": "PROTERVITY"
         },
         "birthdate": "1967-06-02",
-        "physicalAddress": "3815 HILLSPOINT STREET, CHATHAM, BC, V0G8B8",
-        "postalAddress": "3815 HILLSPOINT STREET, CHATHAM, BC, V0G8B8",
+        "physicalAddress": {
+            "streetLines": ["3815 HILLSPOINT STREET"],
+            "city": "CHATHAM",
+            "state": "BC",
+            "postalCode": "V0G8B8",
+            "country": ""
+        },
+        "postalAddress": {
+            "streetLines": ["3815 HILLSPOINT STREET"],
+            "city": "CHATHAM",
+            "state": "BC",
+            "postalCode": "V0G8B8",
+            "country": ""
+        },
         "profileCreatedDateTime": "2023-04-29T16:47:23.554687Z",
         "profileLastLoginDateTime": "2023-05-01T16:47:23.554687Z"
     },
@@ -40,8 +52,20 @@
             "surname": "E'PISTEMICS"
         },
         "birthdate": "1994-06-09",
-        "physicalAddress": "1234 LEE AVENUE, VICTORIA, BC, V9C6P1",
-        "postalAddress": "8128 WILD CREEK DR, HOLBORN, BC, V3A3P1",
+        "physicalAddress": {
+            "streetLines": ["1234 LEE AVENUE"],
+            "city": "VICTORIA",
+            "state": "BC",
+            "postalCode": "V9C6P1",
+            "country": ""
+        },
+        "postalAddress": {
+            "streetLines": ["8128 WILD CREEK DR"],
+            "city": "HOLBORN",
+            "state": "BC",
+            "postalCode": "V3A3P1",
+            "country": ""
+        },
         "profileCreatedDateTime": "2023-05-01T16:47:24.388611Z",
         "profileLastLoginDateTime": "2023-05-01T16:47:24.388611Z"
     }

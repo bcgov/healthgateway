@@ -37,16 +37,12 @@ namespace HealthGateway.Common.Utils
         {
             RefitSettings refitSettings = new();
 
-            using HttpRequestMessage requestMessage = new()
-            {
-                Method = method,
-            };
+            using HttpRequestMessage requestMessage = new();
+            requestMessage.Method = method;
 
-            using HttpResponseMessage responseMessage = new()
-            {
-                StatusCode = statusCode,
-                Content = response,
-            };
+            using HttpResponseMessage responseMessage = new();
+            responseMessage.StatusCode = statusCode;
+            responseMessage.Content = response;
 
             return ApiException.Create(
                     requestMessage,

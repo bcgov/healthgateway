@@ -1,0 +1,28 @@
+# a configmap that contains files that can be mounted into pods
+{{- $name := print .Release.Name "-files" -}}
+{{- $namespace := $.Values.namespace | default $.Release.Namespace -}}
+{{- $dataFiles := dict -}}
+{{- $binaryFiles := dict -}}
+{{- $labels := include "standard.labels" . -}}
+{{- range $fileKey, $fileValue := .Values.files -}}
+    {{- if eq $fileValue.type "ConfigMap" -}}
+        {{- if eq $fileValue.fileType "Binary" -}}
+            {{- $_ := set $binaryFiles (base $fileValue.file) ($.Files.Get $fileValue.file) -}}
+        {{- else -}}
+            {{- $_ := set $dataFiles (base $fileValue.file) ($.Files.Get $fileValue.file) -}}
+        {{- end -}}
+    {{- else if eq $fileValue.type "Secret" -}}
+    {{- end -}}
+{{- end }}
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: {{ $name }}
+  namespace: {{ $namespace }}
+  labels: {{ $labels | nindent 4 }}
+{{- if $dataFiles }}
+data: {{ include "all.data" $dataFiles | nindent 2 }}
+{{- end -}}
+{{- if $binaryFiles }}
+binaryData: {{ include "all.encoded" $binaryFiles | nindent 2 }}
+{{- end -}}

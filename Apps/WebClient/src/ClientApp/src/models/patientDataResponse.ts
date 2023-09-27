@@ -59,6 +59,7 @@ export class DiagnosticImagingExam extends PatientData {
 }
 
 export class BcCancerScreening extends PatientData {
+    public eventType!: BcCancerScreeningType;
     public programName!: string;
     public fileId!: string;
     public eventDateTime!: string;
@@ -68,4 +69,10 @@ export class BcCancerScreening extends PatientData {
 export class PatientDataFile {
     public content!: number[];
     public contentType!: string;
+}
+
+export enum BcCancerScreeningType {
+    Unknown = "Unknown",
+    Recall = "Recall",
+    Result = "Result",
 }

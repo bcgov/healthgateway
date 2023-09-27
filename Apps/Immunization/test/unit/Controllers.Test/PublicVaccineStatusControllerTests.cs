@@ -64,7 +64,7 @@ namespace HealthGateway.ImmunizationTests.Controllers.Test
             PublicVaccineStatusController controller = new(new Mock<ILogger<PublicVaccineStatusController>>().Object, svcMock.Object);
 
             // Act
-            RequestResult<VaccineStatus> actual = await controller.GetVaccineStatus(this.phn, this.dob, this.dov).ConfigureAwait(true);
+            RequestResult<VaccineStatus> actual = await controller.GetVaccineStatus(this.phn, this.dob, this.dov);
 
             // Verify
             Assert.Equal(ResultType.Success, actual.ResultStatus);

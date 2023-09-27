@@ -1246,7 +1246,7 @@ namespace HealthGateway.Database.Context
                         Application = TourApplicationSettings.Application,
                         Component = TourApplicationSettings.Component,
                         Key = TourApplicationSettings.LatestChangeDateTime,
-                        Value = new DateTime(2023, 5, 3, 15, 0, 0).ToUniversalTime().ToString("o"),
+                        Value = new DateTime(2023, 5, 3, 15, 0, 0, DateTimeKind.Utc).ToString("o"),
                         CreatedBy = UserId.DefaultUser,
                         CreatedDateTime = this.DefaultSeedDate.ToUniversalTime(),
                         UpdatedBy = UserId.DefaultUser,

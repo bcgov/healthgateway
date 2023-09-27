@@ -25,6 +25,7 @@ namespace HealthGateway.Immunization.Services
     using HealthGateway.Common.Constants.PHSA;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ErrorHandling;
+    using HealthGateway.Common.Data.Models.PHSA;
     using HealthGateway.Common.Data.Utils;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.ErrorHandling;
@@ -191,12 +192,12 @@ namespace HealthGateway.Immunization.Services
 
         private async Task<RequestResult<VaccineStatus>> GetPublicVaccineStatusWithOptionalProof(string phn, string dateOfBirth, string dateOfVaccine, bool includeVaccineProof)
         {
-            if (!DateFormatter.TryParse(dateOfBirth, "yyyy-MM-dd", out var dob))
+            if (!DateFormatter.TryParse(dateOfBirth, "yyyy-MM-dd", out DateTime dob))
             {
                 return RequestResultFactory.Error<VaccineStatus>(ErrorType.InvalidState, "Error parsing date of birth");
             }
 
-            if (!DateFormatter.TryParse(dateOfVaccine, "yyyy-MM-dd", out var dov))
+            if (!DateFormatter.TryParse(dateOfVaccine, "yyyy-MM-dd", out DateTime dov))
             {
                 return RequestResultFactory.Error<VaccineStatus>(ErrorType.InvalidState, "Error parsing date of vaccine");
             }
@@ -216,7 +217,7 @@ namespace HealthGateway.Immunization.Services
             }
 
             string? accessToken = this.authDelegate.AuthenticateAsSystem(this.tokenUri, this.tokenRequest).AccessToken;
-            var retVal = await this.GetVaccineStatusFromDelegate(query, accessToken, phn).ConfigureAwait(true);
+            RequestResult<VaccineStatus> retVal = await this.GetVaccineStatusFromDelegate(query, accessToken, phn).ConfigureAwait(true);
 
             return retVal;
         }

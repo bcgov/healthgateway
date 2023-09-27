@@ -19,7 +19,7 @@
             Label="PHN"
             Required="@true"
             Validation="@ValidateQueryParameter"
-            Mask="@(new PatternMask(Mask.PhnMaskTemplate))"
+            Mask="@Mask.PhnMask"
             TopMargin="Breakpoint.None"
             Class="flex-grow-1"
             @bind-Value="QueryParameter"

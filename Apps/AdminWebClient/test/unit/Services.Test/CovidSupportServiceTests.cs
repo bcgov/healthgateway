@@ -19,6 +19,7 @@ namespace HealthGateway.AdminWebClientTests.Services.Test
     using System.Collections.Generic;
     using System.Linq;
     using System.Net.Http;
+    using System.Threading.Tasks;
     using HealthGateway.Admin.Api;
     using HealthGateway.Admin.Delegates;
     using HealthGateway.Admin.Models.CovidSupport;
@@ -49,60 +50,65 @@ namespace HealthGateway.AdminWebClientTests.Services.Test
         /// <summary>
         /// Validates the processing when a bad PHN is used.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void GetCovidAssessmentDetailsBadPhn()
+        public async Task GetCovidAssessmentDetailsBadPhn()
         {
             CovidAssessmentDetailsResponse expectedResult = new();
-            RequestResult<CovidAssessmentDetailsResponse> actualResult = GetCovidSupportService(expectedResult, false).GetCovidAssessmentDetailsAsync("BADPHN").Result;
+            RequestResult<CovidAssessmentDetailsResponse> actualResult = await GetCovidSupportService(expectedResult, false).GetCovidAssessmentDetailsAsync("BADPHN");
             Assert.True(actualResult is { ResultStatus: ResultType.ActionRequired, ResultError: { } } && actualResult.ResultError.ActionCodeValue == ActionType.Validation.Value);
         }
 
         /// <summary>
         /// Confirms Exception handling.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void GetCovidAssessmentDetailsException()
+        public async Task GetCovidAssessmentDetailsException()
         {
             CovidAssessmentDetailsResponse expectedResult = new();
-            RequestResult<CovidAssessmentDetailsResponse> actualResult = GetCovidSupportService(expectedResult, true).GetCovidAssessmentDetailsAsync(Phn).Result;
+            RequestResult<CovidAssessmentDetailsResponse> actualResult = await GetCovidSupportService(expectedResult, true).GetCovidAssessmentDetailsAsync(Phn);
             Assert.True(actualResult.ResultStatus == ResultType.Error);
         }
 
         /// <summary>
         /// Performs a valid covid assessment submission.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void SubmitCovidAssessment()
+        public async Task SubmitCovidAssessment()
         {
             CovidAssessmentResponse expectedResult = new();
             CovidAssessmentRequest request = new()
             {
                 Phn = Phn,
             };
-            RequestResult<CovidAssessmentResponse> actualResult = GetCovidSupportService(expectedResult, false).SubmitCovidAssessmentAsync(request).Result;
+            RequestResult<CovidAssessmentResponse> actualResult = await GetCovidSupportService(expectedResult, false).SubmitCovidAssessmentAsync(request);
             Assert.True(actualResult.ResultStatus == ResultType.Success);
         }
 
         /// <summary>
         /// Confirms Exception handling.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void SubmitCovidAssessmentException()
+        public async Task SubmitCovidAssessmentException()
         {
             CovidAssessmentResponse expectedResult = new();
             CovidAssessmentRequest request = new()
             {
                 Phn = Phn,
             };
-            RequestResult<CovidAssessmentResponse> actualResult = GetCovidSupportService(expectedResult, true).SubmitCovidAssessmentAsync(request).Result;
+            RequestResult<CovidAssessmentResponse> actualResult = await GetCovidSupportService(expectedResult, true).SubmitCovidAssessmentAsync(request);
             Assert.True(actualResult.ResultStatus == ResultType.Error);
         }
 
         /// <summary>
         /// Confirms Error handling when bad data is returned.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void ConfirmErrorHandling()
+        public async Task ConfirmErrorHandling()
         {
             using MockHttpMessageHandler mockHttp = new();
             string baseEndpoint = "https://localhost";
@@ -111,7 +117,7 @@ namespace HealthGateway.AdminWebClientTests.Services.Test
             HttpClient httpClient = mockHttp.ToHttpClient();
             httpClient.BaseAddress = new Uri(baseEndpoint);
 
-            RequestResult<CovidAssessmentDetailsResponse> actualResult = GetCovidSupportService(httpClient).GetCovidAssessmentDetailsAsync(Phn).Result;
+            RequestResult<CovidAssessmentDetailsResponse> actualResult = await GetCovidSupportService(httpClient).GetCovidAssessmentDetailsAsync(Phn);
             Assert.True(actualResult.ResultStatus == ResultType.Error);
         }
 

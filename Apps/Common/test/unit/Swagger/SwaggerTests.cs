@@ -55,7 +55,7 @@ namespace HealthGateway.CommonTests.Swagger
 
             filter.Apply(openApiOperation, filterContext);
 
-            Assert.Equal(1, openApiOperation.Security.Count);
+            Assert.Single(openApiOperation.Security);
         }
 
         /// <summary>
@@ -71,7 +71,7 @@ namespace HealthGateway.CommonTests.Swagger
 
             filter.Apply(openApiOperation, filterContext);
 
-            Assert.Equal(0, openApiOperation.Security.Count);
+            Assert.Empty(openApiOperation.Security);
         }
     }
 }

@@ -10,8 +10,8 @@ defineProps<Props>();
 <template>
     <div class="ma-4" style="height: 60px">
         <v-img
-            v-if="tile.logoUrl"
-            :src="tile.logoUrl"
+            v-if="tile.logoUri"
+            :src="tile.logoUri"
             :alt="`logo for ${tile.name}`"
         />
         <v-icon v-else :icon="tile.icon" color="primary" :size="50" />

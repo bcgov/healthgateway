@@ -20,6 +20,7 @@ namespace HealthGateway.EncounterTests.Delegates
     using System.Linq;
     using System.Net;
     using System.Net.Http;
+    using System.Threading.Tasks;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ViewModels;
@@ -46,8 +47,11 @@ namespace HealthGateway.EncounterTests.Delegates
         /// <summary>
         /// GetHospitalVisits - api returns one row.
         /// </summary>
+        /// <returns>
+        /// A <see cref="Task"/> representing the asynchronous unit test.
+        /// </returns>
         [Fact]
-        public void ShouldGetHospitalVisits()
+        public async Task ShouldGetHospitalVisits()
         {
             // Arrange
             PhsaResult<IEnumerable<HospitalVisit>> phsaResponse = new()
@@ -80,7 +84,7 @@ namespace HealthGateway.EncounterTests.Delegates
                 GetIConfigurationRoot());
 
             // Act
-            RequestResult<PhsaResult<IEnumerable<HospitalVisit>>> actualResult = hospitalVisitDelegate.GetHospitalVisitsAsync(It.IsAny<string>()).Result;
+            RequestResult<PhsaResult<IEnumerable<HospitalVisit>>> actualResult = await hospitalVisitDelegate.GetHospitalVisitsAsync(It.IsAny<string>());
 
             // Assert
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
@@ -93,8 +97,11 @@ namespace HealthGateway.EncounterTests.Delegates
         /// <summary>
         /// GetHospitalVisits - api throws Http Request Exception.
         /// </summary>
+        /// <returns>
+        /// A <see cref="Task"/> representing the asynchronous unit test.
+        /// </returns>
         [Fact]
-        public void GetHospitalVisitShouldHandleApiException()
+        public async Task GetHospitalVisitShouldHandleApiException()
         {
             // Arrange
             ApiException mockException = MockRefitExceptionHelper.CreateApiException(HttpStatusCode.Unauthorized, HttpMethod.Post);
@@ -110,7 +117,7 @@ namespace HealthGateway.EncounterTests.Delegates
                 GetIConfigurationRoot());
 
             // Act
-            RequestResult<PhsaResult<IEnumerable<HospitalVisit>>> actualResult = hospitalVisitDelegate.GetHospitalVisitsAsync(It.IsAny<string>()).Result;
+            RequestResult<PhsaResult<IEnumerable<HospitalVisit>>> actualResult = await hospitalVisitDelegate.GetHospitalVisitsAsync(It.IsAny<string>());
 
             // Assert
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
@@ -122,8 +129,11 @@ namespace HealthGateway.EncounterTests.Delegates
         /// <summary>
         /// GetHospitalVisits - api throws Http Request Exception.
         /// </summary>
+        /// <returns>
+        /// A <see cref="Task"/> representing the asynchronous unit test.
+        /// </returns>
         [Fact]
-        public void GetHospitalVisitShouldHandleHttpRequestException()
+        public async Task GetHospitalVisitShouldHandleHttpRequestException()
         {
             // Arrange
             HttpRequestException mockException = MockRefitExceptionHelper.CreateHttpRequestException("Internal Server Error", HttpStatusCode.InternalServerError);
@@ -139,7 +149,7 @@ namespace HealthGateway.EncounterTests.Delegates
                 GetIConfigurationRoot());
 
             // Act
-            RequestResult<PhsaResult<IEnumerable<HospitalVisit>>> actualResult = hospitalVisitDelegate.GetHospitalVisitsAsync(It.IsAny<string>()).Result;
+            RequestResult<PhsaResult<IEnumerable<HospitalVisit>>> actualResult = await hospitalVisitDelegate.GetHospitalVisitsAsync(It.IsAny<string>());
 
             // Assert
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);

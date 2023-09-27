@@ -9,7 +9,7 @@ describe("Dashboard", () => {
 
     it("Verify dashboard counts from seeded data.", () => {
         cy.log("Dashboard test started.");
-        cy.get("[data-testid=total-registered-users]").contains(6);
+        cy.get("[data-testid=total-registered-users]").contains(8);
         cy.get("[data-testid=total-dependents]").contains(6);
         cy.get("[data-testid=total-unique-users]").contains(2);
         cy.get("[data-testid=total-mobile-users]").contains(3);

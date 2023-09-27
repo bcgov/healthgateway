@@ -53,7 +53,7 @@ namespace PatientDataAccessTests
 
             IPatientDataRepository sut = CreateSut(patientApi.Object);
 
-            PatientDataQueryResult result = await sut.Query(new HealthQuery(this.pid, new[] { HealthCategory.OrganDonorRegistrationStatus }), CancellationToken.None).ConfigureAwait(true);
+            PatientDataQueryResult result = await sut.Query(new HealthQuery(this.pid, new[] { HealthCategory.OrganDonorRegistrationStatus }), CancellationToken.None);
 
             result.ShouldNotBeNull();
             HealthGateway.PatientDataAccess.OrganDonorRegistration
@@ -90,7 +90,7 @@ namespace PatientDataAccessTests
 
             IPatientDataRepository sut = CreateSut(patientApi.Object);
 
-            PatientDataQueryResult result = await sut.Query(new HealthQuery(this.pid, new[] { HealthCategory.BcCancerScreening }), CancellationToken.None).ConfigureAwait(true);
+            PatientDataQueryResult result = await sut.Query(new HealthQuery(this.pid, new[] { HealthCategory.BcCancerScreening }), CancellationToken.None);
 
             result.ShouldNotBeNull();
             HealthGateway.PatientDataAccess.BcCancerScreening exam = result.Items.ShouldHaveSingleItem().ShouldBeOfType<HealthGateway.PatientDataAccess.BcCancerScreening>();
@@ -130,7 +130,7 @@ namespace PatientDataAccessTests
 
             IPatientDataRepository sut = CreateSut(patientApi.Object);
 
-            PatientDataQueryResult result = await sut.Query(new HealthQuery(this.pid, new[] { HealthCategory.DiagnosticImaging }), CancellationToken.None).ConfigureAwait(true);
+            PatientDataQueryResult result = await sut.Query(new HealthQuery(this.pid, new[] { HealthCategory.DiagnosticImaging }), CancellationToken.None);
 
             result.ShouldNotBeNull();
             HealthGateway.PatientDataAccess.DiagnosticImagingExam exam = result.Items.ShouldHaveSingleItem().ShouldBeOfType<HealthGateway.PatientDataAccess.DiagnosticImagingExam>();
@@ -166,7 +166,7 @@ namespace PatientDataAccessTests
             IPatientDataRepository sut = CreateSut(patientApi.Object);
 
             PatientDataQueryResult result = await sut.Query(new HealthQuery(this.pid, new[] { HealthCategory.DiagnosticImaging, HealthCategory.BcCancerScreening }), CancellationToken.None)
-                .ConfigureAwait(true);
+                ;
 
             result.ShouldNotBeNull();
             HealthGateway.PatientDataAccess.DiagnosticImagingExam diExam = result.Items.First().ShouldBeOfType<HealthGateway.PatientDataAccess.DiagnosticImagingExam>();
@@ -189,7 +189,7 @@ namespace PatientDataAccessTests
 
             IPatientDataRepository sut = CreateSut(patientApi.Object);
 
-            PatientDataQueryResult result = await sut.Query(new PatientFileQuery(this.pid, fileId), CancellationToken.None).ConfigureAwait(true);
+            PatientDataQueryResult result = await sut.Query(new PatientFileQuery(this.pid, fileId), CancellationToken.None);
 
             result.ShouldNotBeNull();
             PatientFile actualFile = result.Items.ShouldHaveSingleItem().ShouldBeOfType<PatientFile>();
@@ -211,7 +211,7 @@ namespace PatientDataAccessTests
 
             IPatientDataRepository sut = CreateSut(patientApi.Object);
 
-            PatientDataQueryResult result = await sut.Query(new PatientFileQuery(this.pid, fileId), CancellationToken.None).ConfigureAwait(true);
+            PatientDataQueryResult result = await sut.Query(new PatientFileQuery(this.pid, fileId), CancellationToken.None);
 
             result.ShouldNotBeNull().Items.ShouldBeEmpty();
         }
@@ -225,12 +225,12 @@ namespace PatientDataAccessTests
 #pragma warning disable CA2000 // Dispose objects before losing scope
             patientApi
                 .Setup(api => api.GetFile(this.pid, fileId, It.IsAny<CancellationToken>()))
-                .ThrowsAsync(await ApiException.Create(new HttpRequestMessage(), HttpMethod.Get, new HttpResponseMessage(HttpStatusCode.NotFound), new RefitSettings()).ConfigureAwait(true));
+                .ThrowsAsync(await ApiException.Create(new HttpRequestMessage(), HttpMethod.Get, new HttpResponseMessage(HttpStatusCode.NotFound), new RefitSettings()));
 #pragma warning restore CA2000 // Dispose objects before losing scope
 
             IPatientDataRepository sut = CreateSut(patientApi.Object);
 
-            PatientDataQueryResult result = await sut.Query(new PatientFileQuery(this.pid, fileId), CancellationToken.None).ConfigureAwait(true);
+            PatientDataQueryResult result = await sut.Query(new PatientFileQuery(this.pid, fileId), CancellationToken.None);
 
             result.ShouldNotBeNull().Items.ShouldBeEmpty();
         }
@@ -248,7 +248,7 @@ namespace PatientDataAccessTests
 
             IPatientDataRepository sut = CreateSut(patientApi.Object);
 
-            PatientDataQueryResult result = await sut.Query(new PatientFileQuery(this.pid, fileId), CancellationToken.None).ConfigureAwait(true);
+            PatientDataQueryResult result = await sut.Query(new PatientFileQuery(this.pid, fileId), CancellationToken.None);
 
             result.ShouldNotBeNull().Items.ShouldBeEmpty();
         }

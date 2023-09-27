@@ -105,7 +105,7 @@ internal class AzureServiceBus : IMessageSender, IMessageReceiver, IAsyncDisposa
             try
             {
                 SessionState? sessionState = (await args.GetSessionStateAsync(ct))?.ToObjectFromJson<SessionState>();
-                if (sessionState != null && sessionState.IsFaulted && args.Message.Subject != "unlock")
+                if (sessionState is { IsFaulted: true } && args.Message.Subject != "unlock")
                 {
                     // session is blocked, do not process this message and this message is not marked to unblock the session
                     throw new InvalidOperationException($"Session {args.SessionId} is in error mode");
@@ -119,11 +119,8 @@ internal class AzureServiceBus : IMessageSender, IMessageReceiver, IAsyncDisposa
 
                 Type? type = Type.GetType(typeName, true);
 
-                MessageBase? message = (MessageBase?)args.Message.Body.ToArray().Deserialize(type);
-                if (message == null)
-                {
-                    throw new InvalidOperationException($"message {args.Message.SessionId}:{args.Message.SequenceNumber} failed to deserialize to type {typeName}");
-                }
+                MessageBase message = (MessageBase?)args.Message.Body.ToArray().Deserialize(type)
+                                      ?? throw new InvalidOperationException($"message {args.Message.SessionId}:{args.Message.SequenceNumber} failed to deserialize to type {typeName}");
 
                 bool receiveResult = await receiveHandler(args.SessionId, new[] { new MessageEnvelope(message, args.Message.SessionId) });
                 if (!receiveResult)

@@ -15,10 +15,25 @@ export function performSearch(queryType, queryString) {
     cy.get("[data-testid=search-btn]").click();
 }
 
+export function verifySingleSupportResult(expectedHdid, expectedPhn) {
+    cy.get("[data-testid=user-table]").should("not.exist");
+    if (expectedHdid) {
+        cy.get("[data-testid=patient-hdid]")
+            .should("be.visible")
+            .contains(expectedHdid);
+    }
+    cy.get("[data-testid=patient-phn]")
+        .should("be.visible")
+        .contains(expectedPhn);
+    cy.get("[data-testid=patient-details-back-button]")
+        .should("be.visible")
+        .click();
+}
+
 export function verifySupportTableResults(
     expectedHdid,
     expectedPhn,
-    expectedRowCount = 1
+    expectedRowCount
 ) {
     getTableRows("[data-testid=user-table]")
         .should("have.length", expectedRowCount)

@@ -69,7 +69,7 @@ namespace AccountDataAccessTest.Strategy
             PatientRequest request = new(Hdid, useCache);
 
             // Act
-            PatientModel? result = await hdidAllStrategy.GetPatientAsync(request).ConfigureAwait(true);
+            PatientModel? result = await hdidAllStrategy.GetPatientAsync(request);
 
             // Verify
             Assert.Equal(Hdid, result?.Hdid);
@@ -113,7 +113,7 @@ namespace AccountDataAccessTest.Strategy
             HdidAllStrategy hdidAllStrategy = GetHdidAllStrategy(patient, patientIdentity, cachedPatient);
 
             // Act
-            PatientModel? actual = await hdidAllStrategy.GetPatientAsync(request).ConfigureAwait(true);
+            PatientModel? actual = await hdidAllStrategy.GetPatientAsync(request);
 
             // Verify
             expectedPatient.ShouldDeepEqual(actual);
@@ -136,7 +136,7 @@ namespace AccountDataAccessTest.Strategy
             HdidAllStrategy hdidAllStrategy = GetHdidAllStrategy(patient, patientIdentity, cachedPatient);
 
             // Act
-            PatientModel? actual = await hdidAllStrategy.GetPatientAsync(request).ConfigureAwait(true);
+            PatientModel? actual = await hdidAllStrategy.GetPatientAsync(request);
 
             // Verify
             Assert.Null(actual);

@@ -62,7 +62,7 @@ namespace HealthGateway.CommonTests.Delegates
             RestNotificationSettingsDelegate notificationSettingsDelegate = new(mockLogger.Object, mockNotificationSettingsApi.Object);
 
             RequestResult<NotificationSettingsResponse> actualResult =
-                await notificationSettingsDelegate.SetNotificationSettingsAsync(request, string.Empty).ConfigureAwait(true);
+                await notificationSettingsDelegate.SetNotificationSettingsAsync(request, string.Empty);
 
             expectedResult.ShouldDeepEqual(actualResult);
         }
@@ -93,7 +93,7 @@ namespace HealthGateway.CommonTests.Delegates
             RestNotificationSettingsDelegate notificationSettingsDelegate = new(mockLogger.Object, mockNotificationSettingsApi.Object);
 
             RequestResult<NotificationSettingsResponse> actualResult =
-                await notificationSettingsDelegate.SetNotificationSettingsAsync(request, string.Empty).ConfigureAwait(true);
+                await notificationSettingsDelegate.SetNotificationSettingsAsync(request, string.Empty);
 
             expectedResult.ShouldDeepEqual(actualResult);
         }
@@ -121,7 +121,7 @@ namespace HealthGateway.CommonTests.Delegates
 
             using HttpRequestMessage requestMessage = new();
             using HttpResponseMessage responseMessage = new(HttpStatusCode.NotFound);
-            ApiException apiException = await ApiException.Create(requestMessage, HttpMethod.Put, responseMessage, new()).ConfigureAwait(true);
+            ApiException apiException = await ApiException.Create(requestMessage, HttpMethod.Put, responseMessage, new());
 
             mockNotificationSettingsApi.Setup(s => s.SetNotificationSettingsAsync(It.IsAny<NotificationSettingsRequest>(), It.IsAny<string>(), It.IsAny<string>()))
                 .ThrowsAsync(apiException);
@@ -129,7 +129,7 @@ namespace HealthGateway.CommonTests.Delegates
             RestNotificationSettingsDelegate notificationSettingsDelegate = new(mockLogger.Object, mockNotificationSettingsApi.Object);
 
             RequestResult<NotificationSettingsResponse> actualResult =
-                await notificationSettingsDelegate.SetNotificationSettingsAsync(request, string.Empty).ConfigureAwait(true);
+                await notificationSettingsDelegate.SetNotificationSettingsAsync(request, string.Empty);
 
             expectedResult.ShouldDeepEqual(actualResult);
         }

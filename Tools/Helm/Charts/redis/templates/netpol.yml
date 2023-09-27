@@ -1,0 +1,23 @@
+{{- $name := printf "%s-%s" $.Release.Name "redis" -}}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ $name }}-netpol
+spec:
+  podSelector:
+    matchLabels:
+      name: {{ $name }}
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          name: {{ $name }}
+    ports:
+      - port: 16379
+        protocol: TCP
+  - from:
+      - podSelector:
+          matchLabels: {}
+    ports:
+      - port: 6379
+        protocol: TCP

@@ -145,7 +145,7 @@ namespace HealthGateway.PatientTests.Services
             PatientDataService sut = new(patientDataRepository.Object, patientRepository.Object, personalAccountService.Object, this.mapper);
 
             PatientDataResponse result = await sut.Query(new PatientDataQuery(this.hdid, new[] { PatientDataType.OrganDonorRegistrationStatus }), CancellationToken.None)
-                .ConfigureAwait(true);
+                ;
 
             if (canAccessDataSource)
             {
@@ -158,31 +158,6 @@ namespace HealthGateway.PatientTests.Services
             {
                 result.Items.ShouldBeEmpty();
             }
-        }
-
-        [Fact]
-        public async Task CannotGetCancerScreeningData()
-        {
-            BcCancerScreening expected = new()
-            {
-                EventType = BcCancerScreeningType.Recall,
-            };
-
-            Mock<IPatientDataRepository> patientDataRepository = new();
-            patientDataRepository.AttachMockQuery<HealthQuery>(
-                q => q.Pid == this.pid && q.Categories.Any(c => c == HealthCategory.BcCancerScreening),
-                expected);
-            Mock<IPersonalAccountsService> personalAccountService = this.GetMockPersonalAccountService();
-
-            Mock<IPatientRepository> patientRepository = new();
-            patientRepository.Setup(p => p.CanAccessDataSourceAsync(It.IsAny<string>(), It.IsAny<DataSource>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
-
-            PatientDataService sut = new(patientDataRepository.Object, patientRepository.Object, personalAccountService.Object, this.mapper);
-
-            PatientDataResponse result = await sut.Query(new PatientDataQuery(this.hdid, new[] { PatientDataType.BcCancerScreening }), CancellationToken.None)
-                .ConfigureAwait(true);
-
-            result.Items.ShouldBeEmpty();
         }
 
         [Theory]
@@ -212,7 +187,7 @@ namespace HealthGateway.PatientTests.Services
             PatientDataService sut = new(patientDataRepository.Object, patientRepository.Object, personalAccountService.Object, this.mapper);
 
             PatientDataResponse result = await sut.Query(new PatientDataQuery(this.hdid, new[] { PatientDataType.BcCancerScreening }), CancellationToken.None)
-                .ConfigureAwait(true);
+                ;
 
             if (canAccessDataSource)
             {
@@ -258,7 +233,7 @@ namespace HealthGateway.PatientTests.Services
             PatientDataService sut = new(patientDataRepository.Object, patientRepository.Object, personalAccountService.Object, this.mapper);
 
             PatientDataResponse result = await sut.Query(new PatientDataQuery(this.hdid, new[] { PatientDataType.DiagnosticImaging }), CancellationToken.None)
-                .ConfigureAwait(true);
+                ;
 
             if (canAccessDataSource)
             {
@@ -295,7 +270,7 @@ namespace HealthGateway.PatientTests.Services
 
             PatientDataService sut = new(patientDataRepository.Object, patientRepository.Object, personalAccountService.Object, this.mapper);
 
-            PatientFileResponse? result = await sut.Query(new Patient.Services.PatientFileQuery(this.hdid, expected.FileId), CancellationToken.None).ConfigureAwait(true);
+            PatientFileResponse? result = await sut.Query(new Patient.Services.PatientFileQuery(this.hdid, expected.FileId), CancellationToken.None);
 
             PatientFileResponse actual = result.ShouldBeOfType<PatientFileResponse>();
             actual.Content.ShouldBe(expected.Content);
@@ -317,7 +292,7 @@ namespace HealthGateway.PatientTests.Services
 
             PatientDataService sut = new(patientDataRepository.Object, patientRepository.Object, personalAccountService.Object, this.mapper);
 
-            PatientFileResponse? result = await sut.Query(new Patient.Services.PatientFileQuery(this.hdid, fileId), CancellationToken.None).ConfigureAwait(true);
+            PatientFileResponse? result = await sut.Query(new Patient.Services.PatientFileQuery(this.hdid, fileId), CancellationToken.None);
 
             result.ShouldBeNull();
         }

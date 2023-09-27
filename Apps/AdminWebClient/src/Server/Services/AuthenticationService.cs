@@ -123,35 +123,37 @@ namespace HealthGateway.Admin.Services
         {
             ClaimsPrincipal? user = this.httpContextAccessor.HttpContext?.User;
             AuthenticationData authData = this.GetAuthenticationData();
-            if (authData.IsAuthenticated && authData.User != null && user != null)
+            if (authData is not { IsAuthenticated: true, User: not null } || user == null)
             {
-                DateTime jwtAuthTime = ClaimsPrincipalReader.GetAuthDateTime(user);
+                return;
+            }
 
-                DbResult<AdminUserProfile> result = this.profileDelegate.GetAdminUserProfile(username: authData.User.Id);
-                if (result.Status == DbStatusCode.NotFound)
+            DateTime jwtAuthTime = ClaimsPrincipalReader.GetAuthDateTime(user);
+
+            DbResult<AdminUserProfile> result = this.profileDelegate.GetAdminUserProfile(username: authData.User.Id);
+            if (result.Status == DbStatusCode.NotFound)
+            {
+                // Create profile
+                AdminUserProfile newProfile = new()
                 {
-                    // Create profile
-                    AdminUserProfile newProfile = new()
-                    {
-                        // Keycloak always creates username in lowercase
-                        Username = authData.User.Id,
-                        LastLoginDateTime = jwtAuthTime,
-                    };
-                    DbResult<AdminUserProfile> insertResult = this.profileDelegate.Add(newProfile);
-                    if (insertResult.Status == DbStatusCode.Error)
-                    {
-                        this.logger.LogError("Unable to add admin user profile to DB.... {Result}", JsonSerializer.Serialize(insertResult));
-                    }
+                    // Keycloak always creates username in lowercase
+                    Username = authData.User.Id,
+                    LastLoginDateTime = jwtAuthTime,
+                };
+                DbResult<AdminUserProfile> insertResult = this.profileDelegate.Add(newProfile);
+                if (insertResult.Status == DbStatusCode.Error)
+                {
+                    this.logger.LogError("Unable to add admin user profile to DB.... {Result}", JsonSerializer.Serialize(insertResult));
                 }
-                else
+            }
+            else
+            {
+                // Update profile
+                result.Payload.LastLoginDateTime = jwtAuthTime;
+                DbResult<AdminUserProfile> updateResult = this.profileDelegate.Update(result.Payload);
+                if (updateResult.Status == DbStatusCode.Error)
                 {
-                    // Update profile
-                    result.Payload.LastLoginDateTime = jwtAuthTime;
-                    DbResult<AdminUserProfile> updateResult = this.profileDelegate.Update(result.Payload);
-                    if (updateResult.Status == DbStatusCode.Error)
-                    {
-                        this.logger.LogError("Unable to update admin user profile to DB... {Result}", JsonSerializer.Serialize(updateResult));
-                    }
+                    this.logger.LogError("Unable to update admin user profile to DB... {Result}", JsonSerializer.Serialize(updateResult));
                 }
             }
         }

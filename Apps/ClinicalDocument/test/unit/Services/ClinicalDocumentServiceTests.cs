@@ -29,6 +29,7 @@ namespace HealthGateway.ClinicalDocumentTests.Services
     using HealthGateway.ClinicalDocument.Models.PHSA;
     using HealthGateway.ClinicalDocument.Services;
     using HealthGateway.Common.Data.Constants;
+    using HealthGateway.Common.Data.Models.PHSA;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Common.Services;
@@ -48,10 +49,11 @@ namespace HealthGateway.ClinicalDocumentTests.Services
         ///  Get clinical document records - happy path.
         /// </summary>
         /// <param name="canAccessDataSource">The value indicates whether the clinical document data source can be accessed or not.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Theory]
         [InlineData(true)]
         [InlineData(false)]
-        public void ShouldGetClinicalDocumentRecords(bool canAccessDataSource)
+        public async Task ShouldGetClinicalDocumentRecords(bool canAccessDataSource)
         {
             // Arrange
             Guid id = Guid.NewGuid();
@@ -60,8 +62,7 @@ namespace HealthGateway.ClinicalDocumentTests.Services
             IClinicalDocumentService clinicalDocumentService = GetClinicalDocumentService(expectedPhsaHealthDataResponse, false, canAccessDataSource);
 
             // Act
-            RequestResult<IEnumerable<ClinicalDocumentRecord>> actualResult =
-                Task.Run(async () => await clinicalDocumentService.GetRecordsAsync(It.IsAny<string>()).ConfigureAwait(true)).Result;
+            RequestResult<IEnumerable<ClinicalDocumentRecord>> actualResult = await clinicalDocumentService.GetRecordsAsync(It.IsAny<string>());
 
             // Assert
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
@@ -80,8 +81,9 @@ namespace HealthGateway.ClinicalDocumentTests.Services
         /// <summary>
         ///  Get clinical document records throws exception.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void ShouldGetClinicalDocumentRecordsThrowsException()
+        public async Task ShouldGetClinicalDocumentRecordsThrowsException()
         {
             // Arrange
             Guid id = Guid.NewGuid();
@@ -90,8 +92,7 @@ namespace HealthGateway.ClinicalDocumentTests.Services
             IClinicalDocumentService clinicalDocumentService = GetClinicalDocumentService(expectedPhsaHealthDataResponse, true);
 
             // Act
-            RequestResult<IEnumerable<ClinicalDocumentRecord>> actualResult =
-                Task.Run(async () => await clinicalDocumentService.GetRecordsAsync(It.IsAny<string>()).ConfigureAwait(true)).Result;
+            RequestResult<IEnumerable<ClinicalDocumentRecord>> actualResult = await clinicalDocumentService.GetRecordsAsync(It.IsAny<string>());
 
             // Assert
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
@@ -101,8 +102,9 @@ namespace HealthGateway.ClinicalDocumentTests.Services
         /// <summary>
         ///  Get clinical document file - happy path.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void ShouldGetClinicalDocumentFile()
+        public async Task ShouldGetClinicalDocumentFile()
         {
             // Arrange
             Guid id = Guid.NewGuid();
@@ -111,8 +113,7 @@ namespace HealthGateway.ClinicalDocumentTests.Services
             IClinicalDocumentService clinicalDocumentService = GetClinicalDocumentService(expectedPhsaHealthDataResponse, false);
 
             // Act
-            RequestResult<EncodedMedia> actualResult =
-                Task.Run(async () => await clinicalDocumentService.GetFileAsync(It.IsAny<string>(), It.IsAny<string>()).ConfigureAwait(true)).Result;
+            RequestResult<EncodedMedia> actualResult = await clinicalDocumentService.GetFileAsync(It.IsAny<string>(), It.IsAny<string>());
 
             // Assert
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
@@ -122,8 +123,9 @@ namespace HealthGateway.ClinicalDocumentTests.Services
         /// <summary>
         ///  Get clinical document records throws exception.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void ShouldGetClinicalDocumentFileThrowsException()
+        public async Task ShouldGetClinicalDocumentFileThrowsException()
         {
             // Arrange
             Guid id = Guid.NewGuid();
@@ -132,8 +134,7 @@ namespace HealthGateway.ClinicalDocumentTests.Services
             IClinicalDocumentService clinicalDocumentService = GetClinicalDocumentService(expectedPhsaHealthDataResponse, true);
 
             // Act
-            RequestResult<EncodedMedia> actualResult =
-                Task.Run(async () => await clinicalDocumentService.GetFileAsync(It.IsAny<string>(), It.IsAny<string>()).ConfigureAwait(true)).Result;
+            RequestResult<EncodedMedia> actualResult = await clinicalDocumentService.GetFileAsync(It.IsAny<string>(), It.IsAny<string>());
 
             // Assert
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);

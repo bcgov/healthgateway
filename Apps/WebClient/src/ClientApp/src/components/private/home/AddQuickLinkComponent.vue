@@ -4,7 +4,11 @@ import { computed, nextTick, ref } from "vue";
 import HgButtonComponent from "@/components/common/HgButtonComponent.vue";
 import HgIconButtonComponent from "@/components/common/HgIconButtonComponent.vue";
 import TooManyRequestsComponent from "@/components/error/TooManyRequestsComponent.vue";
-import { entryTypeMap, getEntryTypeByModule } from "@/constants/entryType";
+import {
+    EntryType,
+    entryTypeMap,
+    getEntryTypeByModule,
+} from "@/constants/entryType";
 import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import { ServiceName } from "@/constants/serviceName";
 import UserPreferenceType from "@/constants/userPreferenceType";
@@ -13,6 +17,7 @@ import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
 import { BannerError, isTooManyRequestsError } from "@/models/errors";
 import { QuickLink } from "@/models/quickLink";
 import { ILogger } from "@/services/interfaces";
+import { useConfigStore } from "@/stores/config";
 import { useErrorStore } from "@/stores/error";
 import { useUserStore } from "@/stores/user";
 import ConfigUtil from "@/utility/configUtil";
@@ -37,6 +42,7 @@ interface QuickLinkFilter {
 const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
 const errorStore = useErrorStore();
 const userStore = useUserStore();
+const configStore = useConfigStore();
 
 const isVisible = ref(false);
 const isLoading = ref(false);
@@ -70,6 +76,14 @@ const isAddButtonEnabled = computed(
 const showVaccineCard = computed(
     () =>
         user.value.preferences[UserPreferenceType.HideVaccineCardQuickLink]
+            ?.value === "true"
+);
+const showRecommendationsDialog = computed(
+    () =>
+        ConfigUtil.isDatasetEnabled(EntryType.Immunization) &&
+        configStore.webConfig.featureToggleConfiguration.homepage
+            .showRecommendationsLink &&
+        user.value.preferences[UserPreferenceType.HideRecommendationsQuickLink]
             ?.value === "true"
 );
 const showOrganDonorRegistration = computed(
@@ -169,6 +183,10 @@ async function handleSubmit(): Promise<void> {
             updateSelectedUserPreference(
                 "immunization-record",
                 UserPreferenceType.HideImmunizationRecordQuickLink
+            ),
+            updateSelectedUserPreference(
+                "recommendations-dialog",
+                UserPreferenceType.HideRecommendationsQuickLink
             ),
         ].filter((p) => p !== undefined);
 
@@ -315,6 +333,18 @@ function hideModal(): void {
                         name="immunization-record-filter"
                         value="immunization-record"
                         label="Add Vaccines"
+                        density="compact"
+                        hide-details
+                        color="primary"
+                    />
+                    <v-checkbox
+                        v-if="showRecommendationsDialog"
+                        id="recommendations-dialog-filter"
+                        v-model="selectedQuickLinks"
+                        data-testid="recommendations-dialog-filter"
+                        name="recommendations-dialog-filter"
+                        value="recommendations-dialog"
+                        label="Vaccine Recommendations"
                         density="compact"
                         hide-details
                         color="primary"

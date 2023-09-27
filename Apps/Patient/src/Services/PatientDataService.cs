@@ -55,7 +55,7 @@ namespace HealthGateway.Patient.Services
             HealthQuery healthQuery = new(pid, unblockedPatientDataTypes.Select(t => this.mapper.Map<HealthCategory>(t)));
             PatientDataQueryResult result = await this.patientDataRepository.Query(healthQuery, ct)
                 .ConfigureAwait(true);
-            return new PatientDataResponse(result.Items.Where(Filter).Select(i => this.mapper.Map<PatientData>(i)));
+            return new PatientDataResponse(result.Items.Select(i => this.mapper.Map<PatientData>(i)));
         }
 
         public async Task<PatientFileResponse?> Query(PatientFileQuery query, CancellationToken ct)
@@ -67,16 +67,6 @@ namespace HealthGateway.Patient.Services
             return file != null
                 ? new PatientFileResponse(file.Content, file.ContentType)
                 : null;
-        }
-
-        private static bool Filter(HealthData healthData)
-        {
-            if (healthData is PatientDataAccess.BcCancerScreening cse)
-            {
-                return cse.EventType == BcCancerScreeningType.Result;
-            }
-
-            return true;
         }
 
         private async Task<IList<PatientDataType>> GetUnblockedPatientDataTypesAsync(string hdid, IEnumerable<PatientDataType> patientDataTypes)

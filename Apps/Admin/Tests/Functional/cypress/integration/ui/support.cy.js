@@ -1,5 +1,6 @@
 import {
     performSearch,
+    verifySingleSupportResult,
     verifySupportTableResults,
 } from "../../utilities/supportUtilities";
 
@@ -90,16 +91,16 @@ describe("Support", () => {
 
     it("Verify support queries", () => {
         performSearch("PHN", phn);
-        verifySupportTableResults(hdid, phn);
+        verifySingleSupportResult(hdid, phn);
 
         performSearch("HDID", hdid);
-        verifySupportTableResults(hdid, phn);
+        verifySingleSupportResult(hdid, phn);
 
         performSearch("SMS", sms);
         verifySupportTableResults(hdid, phn, 2);
 
         performSearch("Email", email);
-        verifySupportTableResults(emailHdid, emailPhn);
+        verifySingleSupportResult(emailHdid, emailPhn);
     });
 
     it("Verify support query warnings", () => {
@@ -107,7 +108,7 @@ describe("Support", () => {
         cy.get("[data-testid=user-banner-feedback-warning-message]").should(
             "be.visible"
         );
-        verifySupportTableResults(hdid, phnDuplicate);
+        verifySingleSupportResult("", phnDuplicate);
         cy.get("[data-testid=user-banner-feedback-warning-message]").within(
             () => {
                 cy.get("button").parent(".mud-alert-close").click();
@@ -143,10 +144,10 @@ describe("Support", () => {
     });
 
     it("Verify clear button", () => {
-        performSearch("HDID", hdid);
-        verifySupportTableResults(hdid, phn);
+        performSearch("SMS", sms);
+        verifySupportTableResults(hdid, phn, 2);
         cy.get("[data-testid=clear-btn]").click();
-        cy.get("[data-testid=query-type-select]").should("have.value", "Hdid");
+        cy.get("[data-testid=query-type-select]").should("have.value", "Sms");
         cy.get("[data-testid=query-input]").should("be.empty");
         cy.get("[data-testid=user-table]").should("not.exist");
     });

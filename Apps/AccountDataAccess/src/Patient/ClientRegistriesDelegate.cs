@@ -25,6 +25,7 @@ namespace HealthGateway.AccountDataAccess.Patient
     using System.Threading.Tasks;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.ErrorHandling;
+    using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using ServiceReference;
 
@@ -33,8 +34,12 @@ namespace HealthGateway.AccountDataAccess.Patient
     /// </summary>
     internal class ClientRegistriesDelegate : IClientRegistriesDelegate
     {
+        private static readonly List<string> DefaultValidWarningResponseCodes = new()
+            { "BCHCIM.GD.1.0019", "BCHCIM.GD.1.0021", "BCHCIM.GD.1.0022", "BCHCIM.GD.1.0023" };
+
         private readonly QUPA_AR101102_PortType clientRegistriesClient;
         private readonly ILogger<ClientRegistriesDelegate> logger;
+        private readonly List<string> validWarningResponseCodes;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ClientRegistriesDelegate"/> class.
@@ -42,12 +47,15 @@ namespace HealthGateway.AccountDataAccess.Patient
         /// </summary>
         /// <param name="logger">The injected logger provider.</param>
         /// <param name="clientRegistriesClient">The injected client registries soap client.</param>
+        /// <param name="configuration">The Configuration to use.</param>
         public ClientRegistriesDelegate(
             ILogger<ClientRegistriesDelegate> logger,
-            QUPA_AR101102_PortType clientRegistriesClient)
+            QUPA_AR101102_PortType clientRegistriesClient,
+            IConfiguration configuration)
         {
             this.logger = logger;
             this.clientRegistriesClient = clientRegistriesClient;
+            this.validWarningResponseCodes = configuration.GetSection("ClientRegistry:ValidWarningResponseCodes").Get<List<string>>() ?? DefaultValidWarningResponseCodes;
         }
 
         private static ActivitySource Source { get; } = new(nameof(ClientRegistriesDelegate));
@@ -157,30 +165,31 @@ namespace HealthGateway.AccountDataAccess.Patient
 
         private static Address? MapAddress(AD? address)
         {
-            Address? retAddress = null;
-            if (address?.Items != null)
+            if (address?.Items == null)
             {
-                retAddress = new();
-                foreach (ADXP item in address.Items)
+                return null;
+            }
+
+            Address retAddress = new();
+            foreach (ADXP item in address.Items)
+            {
+                switch (item)
                 {
-                    switch (item)
-                    {
-                        case ADStreetAddressLine { Text: { } } line:
-                            retAddress.StreetLines = line.Text;
-                            break;
-                        case ADCity city:
-                            retAddress.City = city.Text[0] ?? string.Empty;
-                            break;
-                        case ADState state:
-                            retAddress.State = state.Text[0] ?? string.Empty;
-                            break;
-                        case ADPostalCode postalCode:
-                            retAddress.PostalCode = postalCode.Text[0] ?? string.Empty;
-                            break;
-                        case ADCountry country:
-                            retAddress.Country = country.Text[0] ?? string.Empty;
-                            break;
-                    }
+                    case ADStreetAddressLine { Text: { } } line:
+                        retAddress.StreetLines = line.Text;
+                        break;
+                    case ADCity city:
+                        retAddress.City = city.Text[0] ?? string.Empty;
+                        break;
+                    case ADState state:
+                        retAddress.State = state.Text[0] ?? string.Empty;
+                        break;
+                    case ADPostalCode postalCode:
+                        retAddress.PostalCode = postalCode.Text[0] ?? string.Empty;
+                        break;
+                    case ADCountry country:
+                        retAddress.Country = country.Text[0] ?? string.Empty;
+                        break;
                 }
             }
 
@@ -221,10 +230,7 @@ namespace HealthGateway.AccountDataAccess.Patient
                 throw new ProblemDetailsException(ExceptionUtility.CreateProblemDetails(ErrorMessages.PhnInvalid, HttpStatusCode.NotFound, nameof(ClientRegistriesDelegate)));
             }
 
-            if (responseCode.Contains("BCHCIM.GD.0.0019", StringComparison.InvariantCulture) ||
-                responseCode.Contains("BCHCIM.GD.0.0021", StringComparison.InvariantCulture) ||
-                responseCode.Contains("BCHCIM.GD.0.0022", StringComparison.InvariantCulture) ||
-                responseCode.Contains("BCHCIM.GD.0.0023", StringComparison.InvariantCulture))
+            if (this.validWarningResponseCodes.Any(code => responseCode.Contains(code, StringComparison.InvariantCulture)))
             {
                 return;
             }
@@ -286,10 +292,7 @@ namespace HealthGateway.AccountDataAccess.Patient
                     patientModel.PostalAddress = MapAddress(addresses.FirstOrDefault(a => a.use.Any(u => u == cs_PostalAddressUse.PST)));
                 }
 
-                if (responseCode.Contains("BCHCIM.GD.0.0019", StringComparison.InvariantCulture) ||
-                    responseCode.Contains("BCHCIM.GD.0.0021", StringComparison.InvariantCulture) ||
-                    responseCode.Contains("BCHCIM.GD.0.0022", StringComparison.InvariantCulture) ||
-                    responseCode.Contains("BCHCIM.GD.0.0023", StringComparison.InvariantCulture))
+                if (this.validWarningResponseCodes.Any(code => responseCode.Contains(code, StringComparison.InvariantCulture)))
                 {
                     patientModel.ResponseCode = responseCode;
                 }

@@ -1,0 +1,18 @@
+{{- range $key, $value := .Values.images -}}
+kind: ImageStream
+apiVersion: image.openshift.io/v1
+metadata:
+  name: {{ $key }}
+  namespace: {{ $.Values.namespace }}
+spec:
+  lookupPolicy:
+    local: true
+  tags:
+    {{- range $name, $tag := $value.tags }}
+    - name: {{ $name | quote }}
+      from:
+        kind: DockerImage
+        name: {{ $value.image }}:{{ $tag | default  }}
+    {{ end }}
+---
+{{ end -}}

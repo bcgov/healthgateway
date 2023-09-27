@@ -1,0 +1,17 @@
+{{- $name := printf "%s-%s" $.Release.Name "redis" -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $name }}-svc
+spec:
+  ports:
+    - name:  redis
+      port: {{ .Values.service.redis.port }}
+      targetPort: {{ .Values.service.redis.port }}
+      protocol: TCP
+    - name: gossip
+      port: {{ .Values.service.gossip.port }}
+      targetPort: {{ .Values.service.gossip.port }}
+      protocol: TCP
+  selector:
+    name: {{ $name }}

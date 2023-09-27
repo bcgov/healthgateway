@@ -1,25 +1,28 @@
 [
     {
-        "status": "Default",
+        "status": "NotUser",
         "warningMessage": "Warning: The person returned is the subject of an potential duplicate",
-        "hdid": "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A",
+        "hdid": "",
         "personalHealthNumber": "9873967163",
-        "commonName": {
-            "givenName": "BONNET",
-            "surname": "PROTERVITY"
-        },
+        "commonName": null,
         "legalName": {
-            "givenName": "BONNET",
-            "surname": "PROTERVITY"
+            "givenName": "Admission Rule",
+            "surname": "TestpatientCRTIH"
         },
         "preferredName": {
-            "givenName": "BONNET",
-            "surname": "PROTERVITY"
+            "givenName": "Admission Rule",
+            "surname": "TestpatientCRTIH"
         },
-        "birthdate": "1967-06-02",
-        "physicalAddress": "3815 HILLSPOINT STREET, CHATHAM, BC, V0G8B8",
-        "postalAddress": "3815 HILLSPOINT STREET, CHATHAM, BC, V0G8B8",
-        "profileCreatedDateTime": "2023-04-29T16:47:23.554687Z",
-        "profileLastLoginDateTime": "2023-05-01T16:47:23.554687Z"
+        "birthdate": "1990-07-04",
+        "physicalAddress": {
+            "streetLines": ["1357 Oak Street"],
+            "city": "Victoria",
+            "state": "BC",
+            "postalCode": "V9A2T6",
+            "country": "CA"
+        },
+        "postalAddress": null,
+        "profileCreatedDateTime": null,
+        "profileLastLoginDateTime": null
     }
 ]

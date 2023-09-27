@@ -127,7 +127,6 @@ describe("Feedback Review", () => {
                     .click();
             });
         cy.location("pathname").should("eq", "/support");
-        //cy.validateTableLoad("[data-testid=user-table]");
-        validateTableRowCount("[data-testid=user-table]", 1);
+        cy.location("pathname").should("eq", "/patient-details");
     });
 });

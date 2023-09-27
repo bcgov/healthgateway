@@ -18,6 +18,7 @@ namespace HealthGateway.Admin.Client.Store.PatientDetails
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using HealthGateway.Admin.Common.Models;
+    using HealthGateway.Admin.Common.Models.CovidSupport;
     using HealthGateway.Common.Data.Constants;
 
     /// <summary>
@@ -32,18 +33,9 @@ namespace HealthGateway.Admin.Client.Store.PatientDetails
         public class LoadAction
         {
             /// <summary>
-            /// Initializes a new instance of the <see cref="LoadAction"/> class.
-            /// </summary>
-            /// <param name="hdid">Represents the query string being performed.</param>
-            public LoadAction(string hdid)
-            {
-                this.Hdid = hdid;
-            }
-
-            /// <summary>
             /// Gets or sets query string.
             /// </summary>
-            public string Hdid { get; set; }
+            public required string Hdid { get; set; }
         }
 
         /// <summary>
@@ -70,51 +62,31 @@ namespace HealthGateway.Admin.Client.Store.PatientDetails
             /// Initializes a new instance of the <see cref="LoadSuccessAction"/> class.
             /// </summary>
             /// <param name="data">Result data.</param>
-            /// <param name="hdid">hdid associated with the data.</param>
-            public LoadSuccessAction(PatientSupportDetails data, string hdid)
+            public LoadSuccessAction(PatientSupportDetails data)
                 : base(data)
             {
-                this.Hdid = hdid;
             }
-
-            /// <summary>
-            /// Gets or sets query string.
-            /// </summary>
-            public string Hdid { get; set; }
-        }
-
-        /// <summary>
-        /// The action that clears the state.
-        /// </summary>
-        public class ResetStateAction
-        {
         }
 
         /// <summary>
         /// The action representing the configuring of a patient's level of access.
         /// </summary>
-        public class BlockAccessAction : BaseAgentAuditAction
+        public class BlockAccessAction
         {
-            /// <summary>
-            /// Initializes a new instance of the <see cref="BlockAccessAction"/> class.
-            /// </summary>
-            /// <param name="hdid">The patient's HDID to configure access for.</param>
-            /// <param name="dataSources">The list of Dataset names that will be affected, empty will grant full access.</param>
-            public BlockAccessAction(string hdid, IEnumerable<DataSource> dataSources)
-            {
-                this.DataSources = dataSources;
-                this.Hdid = hdid;
-            }
-
             /// <summary>
             /// Gets the patient's HDID to configure access for.
             /// </summary>
-            public string Hdid { get; init; }
+            public required string Hdid { get; init; }
 
             /// <summary>
             /// Gets the list of data sources to block.
             /// </summary>
-            public IEnumerable<DataSource> DataSources { get; init; }
+            public required IEnumerable<DataSource> DataSources { get; init; }
+
+            /// <summary>
+            /// Gets the audit reason.
+            /// </summary>
+            public required string Reason { get; init; }
         }
 
         /// <summary>
@@ -123,18 +95,9 @@ namespace HealthGateway.Admin.Client.Store.PatientDetails
         public class BlockAccessSuccessAction
         {
             /// <summary>
-            /// Initializes a new instance of the <see cref="BlockAccessSuccessAction"/> class.
-            /// </summary>
-            /// <param name="hdid">Patient's HDID.</param>
-            public BlockAccessSuccessAction(string hdid)
-            {
-                this.Hdid = hdid;
-            }
-
-            /// <summary>
             /// Gets the patient's HDID which had access configured.
             /// </summary>
-            public string Hdid { get; init; }
+            public required string Hdid { get; init; }
         }
 
         /// <summary>
@@ -150,6 +113,55 @@ namespace HealthGateway.Admin.Client.Store.PatientDetails
                 : base(error)
             {
             }
+        }
+
+        /// <summary>
+        /// The action representing the initiation of a COVID-19 treatment assessment submission.
+        /// </summary>
+        public class SubmitCovid19TreatmentAssessmentAction
+        {
+            /// <summary>
+            /// Gets the COVID-19 therapy assessment request.
+            /// </summary>
+            public required CovidAssessmentRequest Request { get; init; }
+
+            /// <summary>
+            /// Gets the HDID associated with the patient.
+            /// </summary>
+            public required string Hdid { get; init; }
+        }
+
+        /// <summary>
+        /// The action representing a successful COVID-19 treatment assessment submission.
+        /// </summary>
+        public class SubmitCovid19TreatmentAssessmentSuccessAction
+        {
+            /// <summary>
+            /// Gets the HDID associated with the patient.
+            /// </summary>
+            public required string Hdid { get; init; }
+        }
+
+        /// <summary>
+        /// The action representing a failed COVID-19 treatment assessment submission.
+        /// </summary>
+        public class SubmitCovid19TreatmentAssessmentFailAction : BaseFailAction
+        {
+            /// <summary>
+            /// Initializes a new instance of the <see cref="SubmitCovid19TreatmentAssessmentFailAction"/> class.
+            /// </summary>
+            /// <param name="error">The request error.</param>
+            public SubmitCovid19TreatmentAssessmentFailAction(RequestError error)
+                : base(error)
+            {
+            }
+        }
+
+        /// <summary>
+        /// The action that clears the state.
+        /// </summary>
+        public class ResetStateAction
+        {
         }
     }
 }

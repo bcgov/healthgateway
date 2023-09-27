@@ -1,0 +1,22 @@
+replicaCount: 6
+
+image:
+  repository: artifacts.developer.gov.bc.ca/docker-remote/redis
+  tag: ""
+
+service:
+  redis:
+    port: 6379
+  gossip:
+    port: 16379
+
+resources:
+  limits:
+    cpu: 50m
+    memory: 64Mi
+  requests:
+    cpu: 25m
+    memory: 32Mi
+    storage: 2Gi
+
+password: ~

@@ -21,6 +21,7 @@ namespace HealthGateway.ImmunizationTests.Delegates.Test
     using System.Threading.Tasks;
     using DeepEqual.Syntax;
     using HealthGateway.Common.Data.Constants;
+    using HealthGateway.Common.Data.Models.PHSA;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Models.PHSA;
@@ -73,7 +74,7 @@ namespace HealthGateway.ImmunizationTests.Delegates.Test
             };
 
             RequestResult<PhsaResult<VaccineStatusResult>> actualResult =
-                await vaccineStatusDelegate.GetVaccineStatusPublic(query, this.accessToken, string.Empty).ConfigureAwait(true);
+                await vaccineStatusDelegate.GetVaccineStatusPublic(query, this.accessToken, string.Empty);
 
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             expectedPayload.ShouldDeepEqual(actualResult.ResourcePayload);
@@ -106,7 +107,7 @@ namespace HealthGateway.ImmunizationTests.Delegates.Test
             };
 
             RequestResult<PhsaResult<VaccineStatusResult>> actualResult =
-                await vaccineStatusDelegate.GetVaccineStatusPublic(query, this.accessToken, string.Empty).ConfigureAwait(true);
+                await vaccineStatusDelegate.GetVaccineStatusPublic(query, this.accessToken, string.Empty);
 
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
             expectedError.ShouldDeepEqual(actualResult.ResultError);
@@ -139,7 +140,7 @@ namespace HealthGateway.ImmunizationTests.Delegates.Test
             };
 
             RequestResult<PhsaResult<VaccineStatusResult>> actualResult =
-                await vaccineStatusDelegate.GetVaccineStatusPublic(query, this.accessToken, string.Empty).ConfigureAwait(true);
+                await vaccineStatusDelegate.GetVaccineStatusPublic(query, this.accessToken, string.Empty);
 
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
             expectedError.ShouldDeepEqual(actualResult.ResultError);
@@ -172,7 +173,7 @@ namespace HealthGateway.ImmunizationTests.Delegates.Test
                 mockImmunizationPublicApi.Object);
 
             RequestResult<PhsaResult<VaccineStatusResult>> actualResult =
-                await vaccineStatusDelegate.GetVaccineStatus(this.hdId, true, this.accessToken).ConfigureAwait(true);
+                await vaccineStatusDelegate.GetVaccineStatus(this.hdId, true, this.accessToken);
 
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             expectedPayload.ShouldDeepEqual(actualResult.ResourcePayload);
@@ -199,7 +200,7 @@ namespace HealthGateway.ImmunizationTests.Delegates.Test
                 mockImmunizationPublicApi.Object);
 
             RequestResult<PhsaResult<VaccineStatusResult>> actualResult =
-                await vaccineStatusDelegate.GetVaccineStatus(this.hdId, true, this.accessToken).ConfigureAwait(true);
+                await vaccineStatusDelegate.GetVaccineStatus(this.hdId, true, this.accessToken);
 
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
             expectedError.ShouldDeepEqual(actualResult.ResultError);
@@ -226,7 +227,7 @@ namespace HealthGateway.ImmunizationTests.Delegates.Test
                 mockImmunizationPublicApi.Object);
 
             RequestResult<PhsaResult<VaccineStatusResult>> actualResult =
-                await vaccineStatusDelegate.GetVaccineStatus(this.hdId, true, this.accessToken).ConfigureAwait(true);
+                await vaccineStatusDelegate.GetVaccineStatus(this.hdId, true, this.accessToken);
 
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
             expectedError.ShouldDeepEqual(actualResult.ResultError);

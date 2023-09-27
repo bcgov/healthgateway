@@ -150,7 +150,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             IUserProfileService service = mockService.UserProfileServiceMockInstance();
 
             // Act
-            RequestResult<UserProfileModel> actualResult = await service.GetUserProfile(this.hdid, newLoginDateTime).ConfigureAwait(true);
+            RequestResult<UserProfileModel> actualResult = await service.GetUserProfile(this.hdid, newLoginDateTime);
 
             // Assert
             if (dBStatus == DbStatusCode.Read)
@@ -289,7 +289,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                     new CreateUserRequest { Profile = userProfile },
                     DateTime.Today,
                     It.IsAny<string>())
-                .ConfigureAwait(true);
+                ;
 
             // Assert
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
@@ -339,7 +339,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                     new CreateUserRequest { Profile = userProfile },
                     DateTime.Today,
                     It.IsAny<string>())
-                .ConfigureAwait(true);
+                ;
 
             // Assert
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
@@ -371,7 +371,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             RequestResult<bool> expected = new() { ResultStatus = ResultType.Success, ResourcePayload = false };
 
             // Act
-            RequestResult<bool> actualResult = await service.ValidateMinimumAge(this.hdid).ConfigureAwait(true);
+            RequestResult<bool> actualResult = await service.ValidateMinimumAge(this.hdid);
 
             // Assert
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);

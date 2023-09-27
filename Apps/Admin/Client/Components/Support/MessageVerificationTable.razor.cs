@@ -20,8 +20,10 @@ namespace HealthGateway.Admin.Client.Components.Support
     using System.Linq;
     using Fluxor.Blazor.Web.Components;
     using HealthGateway.Common.Data.Constants;
+    using HealthGateway.Common.Data.Utils;
     using HealthGateway.Common.Data.ViewModels;
     using Microsoft.AspNetCore.Components;
+    using Microsoft.Extensions.Configuration;
 
     /// <summary>
     /// Backing logic for the messaging verification table page.
@@ -42,7 +44,23 @@ namespace HealthGateway.Admin.Client.Components.Support
         [EditorRequired]
         public bool IsLoading { get; set; } = true;
 
+        /// <summary>
+        /// Gets or sets the application's configuration.
+        /// </summary>
+        [Inject]
+        private IConfiguration Configuration { get; set; } = default!;
+
         private IEnumerable<MessagingVerificationRow> Rows => this.Data.Select(mv => new MessagingVerificationRow(mv));
+
+        private DateTime ConvertDateTime(DateTime utcDateTime)
+        {
+            return TimeZoneInfo.ConvertTimeFromUtc(utcDateTime, this.GetTimeZone());
+        }
+
+        private TimeZoneInfo GetTimeZone()
+        {
+            return DateFormatter.GetLocalTimeZone(this.Configuration);
+        }
 
         private sealed record MessagingVerificationRow
         {

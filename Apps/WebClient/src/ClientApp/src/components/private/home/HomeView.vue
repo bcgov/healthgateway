@@ -8,7 +8,9 @@ import LoadingComponent from "@/components/common/LoadingComponent.vue";
 import MessageModalComponent from "@/components/common/MessageModalComponent.vue";
 import PageTitleComponent from "@/components/common/PageTitleComponent.vue";
 import AddQuickLinkComponent from "@/components/private/home/AddQuickLinkComponent.vue";
+import RecommendationsDialogComponent from "@/components/private/reports/RecommendationsDialogComponent.vue";
 import {
+    EntryType,
     EntryTypeDetails,
     entryTypeMap,
     getEntryTypeByModule,
@@ -36,6 +38,7 @@ interface QuickLinkCard {
     index: number;
     title: string;
     description: string;
+    logoUri?: string;
     icon: string;
 }
 
@@ -52,6 +55,8 @@ const sensitiveDocumentDownloadModal =
     ref<InstanceType<typeof MessageModalComponent>>();
 const vaccineRecordResultModal =
     ref<InstanceType<typeof MessageModalComponent>>();
+const recommendationsDialogComponent =
+    ref<InstanceType<typeof RecommendationsDialogComponent>>();
 
 const user = computed(() => userStore.user);
 const quickLinks = computed(() => userStore.quickLinks);
@@ -100,11 +105,23 @@ const preferenceImmunizationRecordHidden = computed(
             UserPreferenceType.HideImmunizationRecordQuickLink
         ]?.value === "true"
 );
+const preferenceRecommendationsLinkHidden = computed(
+    () =>
+        user.value.preferences[UserPreferenceType.HideRecommendationsQuickLink]
+            ?.value === "true"
+);
 const preferenceHealthConnectHidden = computed(
     () =>
         user.value.preferences[
             UserPreferenceType.HideHealthConnectRegistryQuickLink
         ]?.value === "true"
+);
+const showRecommendationsCardButton = computed(
+    () =>
+        configStore.webConfig.featureToggleConfiguration.homepage
+            .showRecommendationsLink &&
+        ConfigUtil.isDatasetEnabled(EntryType.Immunization) &&
+        !preferenceRecommendationsLinkHidden.value
 );
 const showVaccineCardButton = computed(
     () => !preferenceVaccineCardHidden.value
@@ -146,6 +163,7 @@ const quickLinkCards = computed(() =>
             if (details) {
                 card.description = details.description;
                 card.icon = details.icon;
+                card.logoUri = details.logoUri;
             }
         }
 
@@ -167,7 +185,8 @@ const isAddQuickLinkButtonDisabled = computed(
         !preferenceImmunizationRecordHidden.value &&
         !preferenceVaccineCardHidden.value &&
         !preferenceOrganDonorHidden.value &&
-        !preferenceHealthConnectHidden.value
+        !preferenceHealthConnectHidden.value &&
+        !preferenceRecommendationsLinkHidden.value
 );
 
 function retrieveAuthenticatedVaccineRecord(hdid: string): Promise<void> {
@@ -229,6 +248,11 @@ function handleClickOrganDonorCard(): void {
     router.push({ path: "/services" });
 }
 
+function showRecommendationsDialog(): void {
+    trackClickLink("recommendations");
+    recommendationsDialogComponent.value?.showDialog();
+}
+
 function handleClickHealthConnectCard(): void {
     trackClickLink("primarycare");
     window.open(
@@ -260,6 +284,11 @@ function handleClickRemoveHealthConnectCard(): void {
         UserPreferenceType.HideHealthConnectRegistryQuickLink,
         "true"
     );
+}
+
+function handleClickRemoveRecommendations(): void {
+    logger.debug("Removing Immunize BC card");
+    setPreferenceValue(UserPreferenceType.HideRecommendationsQuickLink, "true");
 }
 
 function setPreferenceValue(preferenceType: string, value: string) {
@@ -474,6 +503,35 @@ watch(vaccineRecordState, () => {
                 </p>
             </HgCardComponent>
         </v-col>
+        <v-col
+            v-if="showRecommendationsCardButton"
+            :cols="getGridCols"
+            class="d-flex"
+        >
+            <HgCardComponent
+                data-testid="recommendations-card-button"
+                class="flex-grow-1"
+                @click="showRecommendationsDialog()"
+            >
+                <template #icon>
+                    <img
+                        class="quick-link-icon-large"
+                        src="@/assets/images/services/immunize-bc-logo.svg"
+                        alt="Immunize BC Logo"
+                    />
+                </template>
+                <template #menu-items>
+                    <v-list-item
+                        data-testid="remove-quick-link-button"
+                        title="Remove"
+                        @click.stop="handleClickRemoveRecommendations()"
+                    />
+                </template>
+                <p class="text-body-1">
+                    View recommendations for vaccines you are eligible for.
+                </p>
+            </HgCardComponent>
+        </v-col>
         <v-col v-if="showVaccineCardButton" :cols="getGridCols" class="d-flex">
             <HgCardComponent
                 title="BC Vaccine Card"
@@ -511,7 +569,14 @@ watch(vaccineRecordState, () => {
                 @click="handleClickQuickLink(card.index)"
             >
                 <template #icon>
+                    <img
+                        v-if="card.logoUri"
+                        class="quick-link-icon"
+                        :alt="`${card.title ?? 'dataset'} Logo`"
+                        :src="card.logoUri"
+                    />
                     <v-icon
+                        v-else
                         :icon="card.icon"
                         class="quick-link-icon"
                         color="primary"
@@ -529,6 +594,10 @@ watch(vaccineRecordState, () => {
             </HgCardComponent>
         </v-col>
     </v-row>
+    <RecommendationsDialogComponent
+        ref="recommendationsDialogComponent"
+        :hdid="user.hdid"
+    />
     <MessageModalComponent
         ref="sensitiveDocumentDownloadModal"
         title="Sensitive Document"

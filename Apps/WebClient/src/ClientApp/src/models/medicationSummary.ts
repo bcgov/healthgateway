@@ -28,4 +28,10 @@ export default interface MedicationSummary {
     prescriptionProvided?: boolean;
     // Redirected to Health Care Provider
     redirectedToHealthCareProvider?: boolean;
+    // Title of the medication.
+    title: string;
+    // Subtitle of the medication.
+    subtitle: string;
+    // Is Pharmacist Assessment
+    isPharmacistAssessment: boolean;
 }

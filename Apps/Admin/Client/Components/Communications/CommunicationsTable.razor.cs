@@ -22,6 +22,7 @@ namespace HealthGateway.Admin.Client.Components.Communications
     using Fluxor;
     using HealthGateway.Admin.Client.Models;
     using HealthGateway.Admin.Client.Store.Communications;
+    using HealthGateway.Admin.Client.Utils;
     using Microsoft.AspNetCore.Components;
     using MudBlazor;
 
@@ -91,7 +92,7 @@ namespace HealthGateway.Admin.Client.Components.Communications
             {
                 this.Id = model.Id;
                 this.Subject = model.Subject;
-                this.Status = model.CommunicationStatusCode.ToString();
+                this.Status = CommunicationUtility.FormatCommunicationStatus(model.CommunicationStatusCode);
                 this.EffectiveDate = model.EffectiveDateTime;
                 this.ExpiryDate = model.ExpiryDateTime;
                 this.Text = (MarkupString)model.Text;

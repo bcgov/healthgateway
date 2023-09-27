@@ -30,6 +30,7 @@ namespace HealthGateway.Common.Delegates
     using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Models;
     using Microsoft.AspNetCore.Http;
+    using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using ServiceReference;
 
@@ -38,9 +39,13 @@ namespace HealthGateway.Common.Delegates
     /// </summary>
     public class ClientRegistriesDelegate : IClientRegistriesDelegate
     {
+        private static readonly List<string> DefaultValidWarningResponseCodes = new()
+            { "BCHCIM.GD.1.0019", "BCHCIM.GD.1.0021", "BCHCIM.GD.1.0022", "BCHCIM.GD.1.0023" };
+
         private readonly QUPA_AR101102_PortType clientRegistriesClient;
         private readonly IHttpContextAccessor httpContextAccessor;
         private readonly ILogger<ClientRegistriesDelegate> logger;
+        private readonly List<string> validWarningResponseCodes;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ClientRegistriesDelegate"/> class.
@@ -49,14 +54,17 @@ namespace HealthGateway.Common.Delegates
         /// <param name="logger">The injected logger provider.</param>
         /// <param name="clientRegistriesClient">The injected client registries soap client.</param>
         /// <param name="httpContextAccessor">The HttpContext accessor.</param>
+        /// <param name="configuration">The Configuration to use.</param>
         public ClientRegistriesDelegate(
             ILogger<ClientRegistriesDelegate> logger,
             QUPA_AR101102_PortType clientRegistriesClient,
-            IHttpContextAccessor httpContextAccessor)
+            IHttpContextAccessor httpContextAccessor,
+            IConfiguration configuration)
         {
             this.logger = logger;
             this.clientRegistriesClient = clientRegistriesClient;
             this.httpContextAccessor = httpContextAccessor;
+            this.validWarningResponseCodes = configuration.GetSection("ClientRegistry:ValidWarningResponseCodes").Get<List<string>>() ?? DefaultValidWarningResponseCodes;
         }
 
         private static ActivitySource Source { get; } = new(nameof(ClientRegistriesDelegate));
@@ -173,34 +181,31 @@ namespace HealthGateway.Common.Delegates
 
         private static Address? MapAddress(AD? address)
         {
-            Address? retAddress = null;
-            if (address?.Items != null)
+            if (address?.Items == null)
             {
-                retAddress = new();
-                foreach (ADXP item in address.Items)
-                {
-                    switch (item)
-                    {
-                        case ADStreetAddressLine line when line.Text != null:
-                            foreach (string s in line.Text)
-                            {
-                                retAddress.StreetLines = retAddress.StreetLines.Append(s ?? string.Empty);
-                            }
+                return null;
+            }
 
-                            break;
-                        case ADCity city:
-                            retAddress.City = city.Text[0] ?? string.Empty;
-                            break;
-                        case ADState state:
-                            retAddress.State = state.Text[0] ?? string.Empty;
-                            break;
-                        case ADPostalCode postalCode:
-                            retAddress.PostalCode = postalCode.Text[0] ?? string.Empty;
-                            break;
-                        case ADCountry country:
-                            retAddress.Country = country.Text[0] ?? string.Empty;
-                            break;
-                    }
+            Address retAddress = new();
+            foreach (ADXP item in address.Items)
+            {
+                switch (item)
+                {
+                    case ADStreetAddressLine { Text: not null } line:
+                        retAddress.StreetLines = retAddress.StreetLines.Concat(line.Text.Select(l => l ?? string.Empty));
+                        break;
+                    case ADCity city:
+                        retAddress.City = city.Text[0] ?? string.Empty;
+                        break;
+                    case ADState state:
+                        retAddress.State = state.Text[0] ?? string.Empty;
+                        break;
+                    case ADPostalCode postalCode:
+                        retAddress.PostalCode = postalCode.Text[0] ?? string.Empty;
+                        break;
+                    case ADCountry country:
+                        retAddress.Country = country.Text[0] ?? string.Empty;
+                        break;
                 }
             }
 
@@ -241,10 +246,7 @@ namespace HealthGateway.Common.Delegates
                 };
             }
 
-            if (responseCode.Contains("BCHCIM.GD.0.0019", StringComparison.InvariantCulture) ||
-                responseCode.Contains("BCHCIM.GD.0.0021", StringComparison.InvariantCulture) ||
-                responseCode.Contains("BCHCIM.GD.0.0022", StringComparison.InvariantCulture) ||
-                responseCode.Contains("BCHCIM.GD.0.0023", StringComparison.InvariantCulture))
+            if (this.validWarningResponseCodes.Any(code => responseCode.Contains(code, StringComparison.InvariantCulture)))
             {
                 return new RequestResult<PatientModel>
                 {
@@ -344,14 +346,11 @@ namespace HealthGateway.Common.Delegates
                 AD[] addresses = retrievedPerson.addr;
                 if (addresses != null)
                 {
-                    patient.PhysicalAddress = MapAddress(addresses.FirstOrDefault(a => a.use.Any(u => u == cs_PostalAddressUse.PHYS)));
-                    patient.PostalAddress = MapAddress(addresses.FirstOrDefault(a => a.use.Any(u => u == cs_PostalAddressUse.PST)));
+                    patient.PhysicalAddress = MapAddress(Array.Find(addresses, a => Array.Exists(a.use, u => u == cs_PostalAddressUse.PHYS)));
+                    patient.PostalAddress = MapAddress(Array.Find(addresses, a => Array.Exists(a.use, u => u == cs_PostalAddressUse.PST)));
                 }
 
-                if (responseCode.Contains("BCHCIM.GD.0.0019", StringComparison.InvariantCulture) ||
-                    responseCode.Contains("BCHCIM.GD.0.0021", StringComparison.InvariantCulture) ||
-                    responseCode.Contains("BCHCIM.GD.0.0022", StringComparison.InvariantCulture) ||
-                    responseCode.Contains("BCHCIM.GD.0.0023", StringComparison.InvariantCulture))
+                if (this.validWarningResponseCodes.Any(code => responseCode.Contains(code, StringComparison.InvariantCulture)))
                 {
                     patient.ResponseCode = responseCode;
                 }
@@ -366,8 +365,8 @@ namespace HealthGateway.Common.Delegates
 
         private bool PopulateNames(HCIM_IN_GetDemographicsResponseIdentifiedPerson retrievedPerson, PatientModel patient)
         {
-            PN? documentedName = retrievedPerson.identifiedPerson.name.FirstOrDefault(x => x.use.Any(u => u == cs_EntityNameUse.C));
-            PN? legalName = retrievedPerson.identifiedPerson.name.FirstOrDefault(x => x.use.Any(u => u == cs_EntityNameUse.L));
+            PN? documentedName = Array.Find(retrievedPerson.identifiedPerson.name, x => Array.Exists(x.use, u => u == cs_EntityNameUse.C));
+            PN? legalName = Array.Find(retrievedPerson.identifiedPerson.name, x => Array.Exists(x.use, u => u == cs_EntityNameUse.L));
 
             if (documentedName == null)
             {
@@ -386,11 +385,16 @@ namespace HealthGateway.Common.Delegates
             List<string> lastNameList = new();
             foreach (ENXP name in nameSection.Items)
             {
-                if (name.GetType() == typeof(engiven) && (name.qualifier == null || !name.qualifier.Contains(cs_EntityNamePartQualifier.CL)))
+                if (name.qualifier != null && name.qualifier.Contains(cs_EntityNamePartQualifier.CL))
+                {
+                    continue;
+                }
+
+                if (name.GetType() == typeof(engiven))
                 {
                     givenNameList.Add(name.Text[0]);
                 }
-                else if (name.GetType() == typeof(enfamily) && (name.qualifier == null || !name.qualifier.Contains(cs_EntityNamePartQualifier.CL)))
+                else if (name.GetType() == typeof(enfamily))
                 {
                     lastNameList.Add(name.Text[0]);
                 }
