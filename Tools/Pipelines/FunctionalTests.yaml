@@ -18,10 +18,8 @@ variables:
   - group: Azure DB - Dev
   - group: Admin - Dev
   - group: Phsa - Dev
-  - name: WebClient
-    value: {{ or(eq(parameters.Application, 'WebClient'), eq(parameters.Application, 'Both')) }}    
-  - name: Admin
-    value: {{or(eq(parameters.Application, 'Admin'), eq(parameters.Application, 'Both')) }}
+  WebClient: {{ or(eq(parameters.Application, 'WebClient'), eq(parameters.Application, 'Both')) }}    
+  Admin: {{or(eq(parameters.Application, 'Admin'), eq(parameters.Application, 'Both')) }}
 jobs:
   - job: "Admin_Seed"
     pool: 
