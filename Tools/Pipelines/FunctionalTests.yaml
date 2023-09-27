@@ -19,9 +19,9 @@ variables:
   - group: Admin - Dev
   - group: Phsa - Dev
   - name: WebClient
-    value: $[or(eq(parameters.Application, 'WebClient'), eq(parameters.Application, 'Both'))]
+    value: {{ or(eq(parameters.Application, 'WebClient'), eq(parameters.Application, 'Both')) }}    
   - name: Admin
-    value: $[or(eq(parameters.Application, 'Admin'), eq(parameters.Application, 'Both'))]
+    value: {{or(eq(parameters.Application, 'Admin'), eq(parameters.Application, 'Both')) }}
 jobs:
   - job: "Admin_Seed"
     pool: 
