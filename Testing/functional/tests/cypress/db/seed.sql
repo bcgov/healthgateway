@@ -1559,3 +1559,36 @@ VALUES (
 	'System',
 	current_timestamp - INTERVAL '2 day'
 );
+
+
+INSERT INTO gateway."BlockedAccess"(
+	"Hdid", 
+	"DataSources", 
+	"CreatedBy", 
+	"CreatedDateTime", 
+	"UpdatedBy", 
+	"UpdatedDateTime")
+VALUES (
+		'EXTRIOYFPNX35TWEBUAJ3DNFDFXSYTBC6J4M76GYE3HC5ER2NKWQ', 
+		'["ClinicalDocument","Covid19TestResult"]', 
+		'System', 
+		current_timestamp - INTERVAL '2 day', 
+		'System', 
+		current_timestamp - INTERVAL '2 day'
+);
+
+INSERT INTO gateway."BlockedAccess"(
+	"Hdid", 
+	"DataSources", 
+	"CreatedBy", 
+	"CreatedDateTime", 
+	"UpdatedBy", 
+	"UpdatedDateTime")
+VALUES (
+		'S22BPV6WHS5TRLBL4XKGQDBVDUKLPIRSBGYSEJAHYMYRP22SP2TA', 
+		'[]', 
+		'System', 
+		current_timestamp - INTERVAL '2 day', 
+		'System', 
+		current_timestamp - INTERVAL '2 day'
+);
