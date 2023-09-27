@@ -35,7 +35,7 @@ namespace HealthGateway.AccountDataAccess.Patient
     internal class ClientRegistriesDelegate : IClientRegistriesDelegate
     {
         private static readonly List<string> DefaultValidWarningResponseCodes = new()
-            { "BCHCIM.GD.1.0019", "BCHCIM.GD.1.0021", "BCHCIM.GD.1.0022", "BCHCIM.GD.1.0023" };
+            { "BCHCIM.GD.1.0015", "BCHCIM.GD.1.0019", "BCHCIM.GD.1.0020", "BCHCIM.GD.1.0021", "BCHCIM.GD.1.0022", "BCHCIM.GD.1.0023", "BCHCIM.GD.1.0578" };
 
         private readonly QUPA_AR101102_PortType clientRegistriesClient;
         private readonly ILogger<ClientRegistriesDelegate> logger;
