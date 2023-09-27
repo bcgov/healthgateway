@@ -20,9 +20,9 @@ variables:
   - group: Admin - Dev
   - group: Phsa - Dev
   - name: WebClient
-    value: or(eq('${{ parameters.appType }}', 'WebClient'), eq('${{ parameters.appType }}', 'Both'))
+    value: ${{ or(eq(parameters.appType, 'WebClient'), eq(parameters.appType, 'Both')) }}
   - name: Admin
-    value: or(eq('${{ parameters.appType }}', 'Admin'), eq('${{ parameters.appType }}', 'Both'))
+    value: ${{ or(eq(parameters.appType, 'Admin'), eq(parameters.appType, 'Both')) }}
 jobs:
   - job: "Admin_Seed"
     displayName: "Re-seed DB and PHSA data for Admin"
