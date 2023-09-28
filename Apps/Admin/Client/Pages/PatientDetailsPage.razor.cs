@@ -112,7 +112,7 @@ namespace HealthGateway.Admin.Client.Pages
 
         private bool CanViewAgentAuditHistory => this.UserHasRole(Roles.Admin) || this.UserHasRole(Roles.Reviewer);
 
-        private bool CanViewHdid => !this.UserHasRole(Roles.Support);
+        private bool CanViewHdid => this.UserHasRole(Roles.Admin) || this.UserHasRole(Roles.Reviewer);
 
         private bool CanViewCovidDetails => this.UserHasRole(Roles.Support);
 
