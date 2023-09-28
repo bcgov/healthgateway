@@ -143,11 +143,11 @@ public partial class CommunicationDialog : FluxorComponent
 
             if (this.IsNewCommunication)
             {
-                this.Dispatcher.Dispatch(new CommunicationsActions.AddAction(this.Communication));
+                this.Dispatcher.Dispatch(new CommunicationsActions.AddAction { Communication = this.Communication });
             }
             else
             {
-                this.Dispatcher.Dispatch(new CommunicationsActions.UpdateAction(this.Communication));
+                this.Dispatcher.Dispatch(new CommunicationsActions.UpdateAction { Communication = this.Communication });
             }
         }
     }

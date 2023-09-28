@@ -59,7 +59,7 @@ namespace HealthGateway.Admin.Client.Store.VaccineCard
             {
                 this.Logger.LogError("Error requesting to mail vaccine card: {Exception}", e.ToString());
                 RequestError error = StoreUtility.FormatRequestError(e);
-                dispatcher.Dispatch(new VaccineCardActions.MailVaccineCardFailureAction(error));
+                dispatcher.Dispatch(new VaccineCardActions.MailVaccineCardFailureAction { Error = error });
             }
         }
 
@@ -70,13 +70,13 @@ namespace HealthGateway.Admin.Client.Store.VaccineCard
             try
             {
                 ReportModel report = await this.SupportApi.RetrieveVaccineRecord(action.Phn).ConfigureAwait(true);
-                dispatcher.Dispatch(new VaccineCardActions.PrintVaccineCardSuccessAction(report));
+                dispatcher.Dispatch(new VaccineCardActions.PrintVaccineCardSuccessAction { Data = report });
             }
             catch (Exception e) when (e is ApiException or HttpRequestException)
             {
                 this.Logger.LogError("Error retrieving vaccine card record: {Exception}", e.ToString());
                 RequestError error = StoreUtility.FormatRequestError(e);
-                dispatcher.Dispatch(new VaccineCardActions.PrintVaccineCardFailureAction(error));
+                dispatcher.Dispatch(new VaccineCardActions.PrintVaccineCardFailureAction { Error = error });
             }
         }
     }

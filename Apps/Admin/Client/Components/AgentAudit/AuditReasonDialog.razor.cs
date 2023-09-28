@@ -34,7 +34,7 @@ using MudBlazor;
 /// </typeparam>
 /// <typeparam name="TSuccessAction">An action that indicates the action on confirmation completed successfully.</typeparam>
 public partial class AuditReasonDialog<TErrorAction, TSuccessAction> : FluxorComponent
-    where TErrorAction : BaseFailAction
+    where TErrorAction : BaseFailureAction
 {
     /// <summary>
     /// Gets or sets an Action to execute when an audit reason has been confirmed.
@@ -94,10 +94,10 @@ public partial class AuditReasonDialog<TErrorAction, TSuccessAction> : FluxorCom
         this.MudDialog.Close(DialogResult.Ok(this.AuditReason));
     }
 
-    private void HandleActionFailed(BaseFailAction failAction)
+    private void HandleActionFailed(BaseFailureAction failureAction)
     {
         this.IsLoading = false;
-        this.Error = failAction.Error;
+        this.Error = failureAction.Error;
     }
 
     private void HandleClickCancel()

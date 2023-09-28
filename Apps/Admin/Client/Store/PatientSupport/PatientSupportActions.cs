@@ -29,7 +29,7 @@ namespace HealthGateway.Admin.Client.Store.PatientSupport
         /// <summary>
         /// The action representing the initiation of a load.
         /// </summary>
-        public class LoadAction
+        public record LoadAction
         {
             /// <summary>
             /// Gets the query type.
@@ -45,38 +45,16 @@ namespace HealthGateway.Admin.Client.Store.PatientSupport
         /// <summary>
         /// The action representing a failed load.
         /// </summary>
-        public class LoadFailAction : BaseFailAction
-        {
-            /// <summary>
-            /// Initializes a new instance of the <see cref="LoadFailAction"/> class.
-            /// </summary>
-            /// <param name="error">The request error.</param>
-            public LoadFailAction(RequestError error)
-                : base(error)
-            {
-            }
-        }
+        public record LoadFailureAction : BaseFailureAction;
 
         /// <summary>
         /// The action representing a successful load.
         /// </summary>
-        public class LoadSuccessAction : BaseSuccessAction<IList<PatientSupportResult>>
-        {
-            /// <summary>
-            /// Initializes a new instance of the <see cref="LoadSuccessAction"/> class.
-            /// </summary>
-            /// <param name="data">Result data.</param>
-            public LoadSuccessAction(IList<PatientSupportResult> data)
-                : base(data)
-            {
-            }
-        }
+        public record LoadSuccessAction : BaseSuccessAction<IList<PatientSupportResult>>;
 
         /// <summary>
         /// The action that clears the state.
         /// </summary>
-        public class ResetStateAction
-        {
-        }
+        public record ResetStateAction;
     }
 }

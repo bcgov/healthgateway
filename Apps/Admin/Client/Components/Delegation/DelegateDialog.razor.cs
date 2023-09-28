@@ -73,13 +73,13 @@ public partial class DelegateDialog : FluxorComponent
         await this.Form.Validate().ConfigureAwait(true);
         if (this.Form.IsValid)
         {
-            this.Dispatcher.Dispatch(new DelegationActions.DelegateSearchAction(this.Phn));
+            this.Dispatcher.Dispatch(new DelegationActions.DelegateSearchAction { Phn = this.Phn });
         }
     }
 
     private void HandleClickSave()
     {
-        this.Dispatcher.Dispatch(new DelegationActions.AddDelegateAction(DelegationStatus.Allowed));
+        this.Dispatcher.Dispatch(new DelegationActions.AddDelegateAction { StagedDelegationStatus = DelegationStatus.Allowed });
         this.Dispatcher.Dispatch(new DelegationActions.SetEditModeAction { Enabled = true });
         this.MudDialog.Close();
     }

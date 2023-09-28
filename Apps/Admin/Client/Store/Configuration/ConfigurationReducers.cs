@@ -41,7 +41,7 @@ namespace HealthGateway.Admin.Client.Store.Configuration
         }
 
         [ReducerMethod]
-        public static ConfigurationState ReduceLoadFailAction(ConfigurationState state, ConfigurationActions.LoadFailAction action)
+        public static ConfigurationState ReduceLoadFailureAction(ConfigurationState state, ConfigurationActions.LoadFailureAction action)
         {
             return state with
             {

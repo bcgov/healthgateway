@@ -161,7 +161,7 @@ public partial class FeedbackPage : FluxorComponent
             return;
         }
 
-        this.Dispatcher.Dispatch(new TagActions.AddAction(tagName));
+        this.Dispatcher.Dispatch(new TagActions.AddAction { TagName = tagName });
     }
 
     private void RemoveTag(MudChip chip)
@@ -182,7 +182,7 @@ public partial class FeedbackPage : FluxorComponent
         AdminTagView? tag = this.Tags.SingleOrDefault(t => t.Id == tagId);
         if (tag != null)
         {
-            this.Dispatcher.Dispatch(new TagActions.DeleteAction(tag));
+            this.Dispatcher.Dispatch(new TagActions.DeleteAction { AdminTagView = tag });
         }
     }
 
@@ -199,7 +199,7 @@ public partial class FeedbackPage : FluxorComponent
 
     private void AssociateTags(IEnumerable<Guid> tagIds, Guid feedbackId)
     {
-        this.Dispatcher.Dispatch(new UserFeedbackActions.AssociateTagsAction(tagIds, feedbackId));
+        this.Dispatcher.Dispatch(new UserFeedbackActions.AssociateTagsAction { TagIds = tagIds, FeedbackId = feedbackId });
     }
 
     private void ToggleIsReviewed(Guid feedbackId)
@@ -209,7 +209,7 @@ public partial class FeedbackPage : FluxorComponent
         {
             UserFeedbackView updatedFeedback = currentFeedback.ShallowCopy();
             updatedFeedback.IsReviewed = !updatedFeedback.IsReviewed;
-            this.Dispatcher.Dispatch(new UserFeedbackActions.UpdateAction(updatedFeedback));
+            this.Dispatcher.Dispatch(new UserFeedbackActions.UpdateAction { UserFeedbackView = updatedFeedback });
         }
     }
 

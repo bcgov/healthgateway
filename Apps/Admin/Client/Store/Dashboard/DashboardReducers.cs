@@ -44,7 +44,7 @@ public static class DashboardReducers
     }
 
     [ReducerMethod]
-    public static DashboardState ReduceRegisteredUserFailAction(DashboardState state, DashboardActions.RegisteredUsersFailAction action)
+    public static DashboardState ReduceRegisteredUserFailureAction(DashboardState state, DashboardActions.RegisteredUsersFailureAction action)
     {
         return state with
         {
@@ -81,7 +81,7 @@ public static class DashboardReducers
     }
 
     [ReducerMethod]
-    public static DashboardState ReduceLoggedInUserFailAction(DashboardState state, DashboardActions.LoggedInUsersFailAction action)
+    public static DashboardState ReduceLoggedInUserFailureAction(DashboardState state, DashboardActions.LoggedInUsersFailureAction action)
     {
         return state with
         {
@@ -118,7 +118,7 @@ public static class DashboardReducers
     }
 
     [ReducerMethod]
-    public static DashboardState ReduceDependentsFailAction(DashboardState state, DashboardActions.DependentsFailAction action)
+    public static DashboardState ReduceDependentsFailureAction(DashboardState state, DashboardActions.DependentsFailureAction action)
     {
         return state with
         {
@@ -155,7 +155,7 @@ public static class DashboardReducers
     }
 
     [ReducerMethod]
-    public static DashboardState ReduceRecurringUsersFailAction(DashboardState state, DashboardActions.RecurringUsersFailAction action)
+    public static DashboardState ReduceRecurringUsersFailureAction(DashboardState state, DashboardActions.RecurringUsersFailureAction action)
     {
         return state with
         {
@@ -192,7 +192,7 @@ public static class DashboardReducers
     }
 
     [ReducerMethod]
-    public static DashboardState ReduceRatingSummaryFailAction(DashboardState state, DashboardActions.RatingSummaryFailAction action)
+    public static DashboardState ReduceRatingSummaryFailureAction(DashboardState state, DashboardActions.RatingSummaryFailureAction action)
     {
         return state with
         {

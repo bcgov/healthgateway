@@ -47,13 +47,13 @@ namespace HealthGateway.Admin.Client.Store.AdminReport
             try
             {
                 IEnumerable<BlockedAccessRecord> report = await this.AdminReportApi.GetBlockedAccessReport().ConfigureAwait(true);
-                dispatcher.Dispatch(new AdminReportActions.GetBlockedAccessSuccessAction(report));
+                dispatcher.Dispatch(new AdminReportActions.GetBlockedAccessSuccessAction { Data = report });
             }
             catch (Exception e) when (e is ApiException or HttpRequestException)
             {
                 this.Logger.LogError("Error retrieving users with blocked data sources: {Exception}", e.ToString());
                 RequestError error = StoreUtility.FormatRequestError(e);
-                dispatcher.Dispatch(new AdminReportActions.GetProtectedDependentsFailureAction(error));
+                dispatcher.Dispatch(new AdminReportActions.GetProtectedDependentsFailureAction { Error = error });
             }
         }
 
@@ -64,13 +64,13 @@ namespace HealthGateway.Admin.Client.Store.AdminReport
             try
             {
                 IEnumerable<string> report = await this.AdminReportApi.GetProtectedDependentsReport().ConfigureAwait(true);
-                dispatcher.Dispatch(new AdminReportActions.GetProtectedDependentsSuccessAction(report));
+                dispatcher.Dispatch(new AdminReportActions.GetProtectedDependentsSuccessAction { Data = report });
             }
             catch (Exception e) when (e is ApiException or HttpRequestException)
             {
                 this.Logger.LogError("Error retrieving protected dependents: {Exception}", e.ToString());
                 RequestError error = StoreUtility.FormatRequestError(e);
-                dispatcher.Dispatch(new AdminReportActions.GetProtectedDependentsFailureAction(error));
+                dispatcher.Dispatch(new AdminReportActions.GetProtectedDependentsFailureAction { Error = error });
             }
         }
     }

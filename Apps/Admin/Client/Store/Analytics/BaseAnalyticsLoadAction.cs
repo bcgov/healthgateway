@@ -18,28 +18,17 @@ namespace HealthGateway.Admin.Client.Store.Analytics;
 using System;
 
 /// <summary>
-/// The base class for a analytics export load action.
+/// The base record for an analytics load action.
 /// </summary>
-public abstract class AnalyticsBaseAction
+public abstract record BaseAnalyticsLoadAction
 {
     /// <summary>
-    /// Initializes a new instance of the <see cref="AnalyticsBaseAction"/> class.
+    /// Gets the optional start date to include in the query.
     /// </summary>
-    /// <param name="startDate">Optional start date to include in the query.</param>
-    /// <param name="endDate">Optional end date to include in the query.</param>
-    protected AnalyticsBaseAction(DateTime? startDate, DateTime? endDate)
-    {
-        this.StartDate = startDate;
-        this.EndDate = endDate;
-    }
+    public DateTime? StartDate { get; init; }
 
     /// <summary>
-    /// Gets or sets start date.
+    /// Gets the optional end date to include in the query.
     /// </summary>
-    public DateTime? StartDate { get; set; }
-
-    /// <summary>
-    /// Gets or sets end date.
-    /// </summary>
-    public DateTime? EndDate { get; set; }
+    public DateTime? EndDate { get; init; }
 }

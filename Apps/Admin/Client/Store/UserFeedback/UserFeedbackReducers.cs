@@ -52,7 +52,7 @@ public static class UserFeedbackReducers
     }
 
     [ReducerMethod]
-    public static UserFeedbackState ReduceLoadFailAction(UserFeedbackState state, UserFeedbackActions.LoadFailAction action)
+    public static UserFeedbackState ReduceLoadFailureAction(UserFeedbackState state, UserFeedbackActions.LoadFailureAction action)
     {
         return state with
         {
@@ -100,7 +100,7 @@ public static class UserFeedbackReducers
     }
 
     [ReducerMethod]
-    public static UserFeedbackState ReduceUpdateFailAction(UserFeedbackState state, UserFeedbackActions.UpdateFailAction action)
+    public static UserFeedbackState ReduceUpdateFailureAction(UserFeedbackState state, UserFeedbackActions.UpdateFailureAction action)
     {
         return state with
         {
@@ -148,7 +148,7 @@ public static class UserFeedbackReducers
     }
 
     [ReducerMethod]
-    public static UserFeedbackState ReduceAssociateTagsFailAction(UserFeedbackState state, UserFeedbackActions.AssociateTagsFailAction action)
+    public static UserFeedbackState ReduceAssociateTagsFailureAction(UserFeedbackState state, UserFeedbackActions.AssociateTagsFailureAction action)
     {
         return state with
         {

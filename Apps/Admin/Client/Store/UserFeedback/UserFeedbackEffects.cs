@@ -55,19 +55,19 @@ public class UserFeedbackEffects
             if (response is { ResourcePayload: { }, ResultStatus: ResultType.Success })
             {
                 this.Logger.LogInformation("User feedback loaded successfully!");
-                dispatcher.Dispatch(new UserFeedbackActions.LoadSuccessAction(response));
+                dispatcher.Dispatch(new UserFeedbackActions.LoadSuccessAction { Data = response });
                 return;
             }
 
             RequestError error = StoreUtility.FormatRequestError(null, response.ResultError);
             this.Logger.LogError("Error loading user feedback, reason: {ErrorMessage}", error.Message);
-            dispatcher.Dispatch(new UserFeedbackActions.LoadFailAction(error));
+            dispatcher.Dispatch(new UserFeedbackActions.LoadFailureAction { Error = error });
         }
         catch (Exception e) when (e is ApiException or HttpRequestException)
         {
             RequestError error = StoreUtility.FormatRequestError(e);
             this.Logger.LogError("Error loading user feedback, reason: {Exception}", e.ToString());
-            dispatcher.Dispatch(new UserFeedbackActions.LoadFailAction(error));
+            dispatcher.Dispatch(new UserFeedbackActions.LoadFailureAction { Error = error });
         }
     }
 
@@ -82,19 +82,19 @@ public class UserFeedbackEffects
             if (response is { ResourcePayload: { }, ResultStatus: ResultType.Success })
             {
                 this.Logger.LogInformation("User feedback updated successfully!");
-                dispatcher.Dispatch(new UserFeedbackActions.UpdateSuccessAction(response));
+                dispatcher.Dispatch(new UserFeedbackActions.UpdateSuccessAction { Data = response });
                 return;
             }
 
             RequestError error = StoreUtility.FormatRequestError(null, response.ResultError);
             this.Logger.LogError("Error updating user feedback, reason: {ErrorMessage}", error.Message);
-            dispatcher.Dispatch(new UserFeedbackActions.UpdateFailAction(error));
+            dispatcher.Dispatch(new UserFeedbackActions.UpdateFailureAction { Error = error });
         }
         catch (Exception e) when (e is ApiException or HttpRequestException)
         {
             RequestError error = StoreUtility.FormatRequestError(e);
             this.Logger.LogError("Error updating user feedback, reason: {Exception}", e.ToString());
-            dispatcher.Dispatch(new UserFeedbackActions.UpdateFailAction(error));
+            dispatcher.Dispatch(new UserFeedbackActions.UpdateFailureAction { Error = error });
         }
     }
 
@@ -109,19 +109,19 @@ public class UserFeedbackEffects
             if (response is { ResourcePayload: { }, ResultStatus: ResultType.Success })
             {
                 this.Logger.LogInformation("Tags associated to user feedback successfully!");
-                dispatcher.Dispatch(new UserFeedbackActions.AssociateTagsSuccessAction(response));
+                dispatcher.Dispatch(new UserFeedbackActions.AssociateTagsSuccessAction { Data = response });
                 return;
             }
 
             RequestError error = StoreUtility.FormatRequestError(null, response.ResultError);
             this.Logger.LogError("Error associating tags to user feedback, reason: {ErrorMessage}", error.Message);
-            dispatcher.Dispatch(new UserFeedbackActions.AssociateTagsFailAction(error));
+            dispatcher.Dispatch(new UserFeedbackActions.AssociateTagsFailureAction { Error = error });
         }
         catch (Exception e) when (e is ApiException or HttpRequestException)
         {
             RequestError error = StoreUtility.FormatRequestError(e);
             this.Logger.LogError("Error associating tags to user feedback, reason: {Exception}", e.ToString());
-            dispatcher.Dispatch(new UserFeedbackActions.AssociateTagsFailAction(error));
+            dispatcher.Dispatch(new UserFeedbackActions.AssociateTagsFailureAction { Error = error });
         }
     }
 }

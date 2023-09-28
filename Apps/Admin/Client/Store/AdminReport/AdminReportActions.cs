@@ -28,82 +28,36 @@ namespace HealthGateway.Admin.Client.Store.AdminReport
         /// <summary>
         /// The action representing the request to retrieve users with blocked data sources.
         /// </summary>
-        public class GetBlockedAccessAction
-        {
-        }
+        public record GetBlockedAccessAction;
 
         /// <summary>
         /// The action representing a successful request to retrieve users with blocked data sources.
         /// </summary>
-        public class GetBlockedAccessSuccessAction : BaseSuccessAction<IEnumerable<BlockedAccessRecord>>
-        {
-            /// <summary>
-            /// Initializes a new instance of the <see cref="GetBlockedAccessSuccessAction"/> class.
-            /// </summary>
-            /// <param name="data">Result data.</param>
-            public GetBlockedAccessSuccessAction(IEnumerable<BlockedAccessRecord> data)
-                : base(data)
-            {
-            }
-        }
+        public record GetBlockedAccessSuccessAction : BaseSuccessAction<IEnumerable<BlockedAccessRecord>>;
 
         /// <summary>
         /// The action representing a failed request to retrieve users with blocked data sources.
         /// </summary>
-        public class GetBlockedAccessFailureAction : BaseFailAction
-        {
-            /// <summary>
-            /// Initializes a new instance of the <see cref="GetBlockedAccessFailureAction"/> class.
-            /// </summary>
-            /// <param name="error">The request error.</param>
-            public GetBlockedAccessFailureAction(RequestError error)
-                : base(error)
-            {
-            }
-        }
+        public record GetBlockedAccessFailureAction : BaseFailureAction;
 
         /// <summary>
         /// The action representing the request to retrieve protected dependents.
         /// </summary>
-        public class GetProtectedDependentsAction
-        {
-        }
+        public record GetProtectedDependentsAction;
 
         /// <summary>
         /// The action representing a successful request to retrieve protected dependents.
         /// </summary>
-        public class GetProtectedDependentsSuccessAction : BaseSuccessAction<IEnumerable<string>>
-        {
-            /// <summary>
-            /// Initializes a new instance of the <see cref="GetProtectedDependentsSuccessAction"/> class.
-            /// </summary>
-            /// <param name="data">Result data.</param>
-            public GetProtectedDependentsSuccessAction(IEnumerable<string> data)
-                : base(data)
-            {
-            }
-        }
+        public record GetProtectedDependentsSuccessAction : BaseSuccessAction<IEnumerable<string>>;
 
         /// <summary>
         /// The action representing a failed request to retrieve protected dependents.
         /// </summary>
-        public class GetProtectedDependentsFailureAction : BaseFailAction
-        {
-            /// <summary>
-            /// Initializes a new instance of the <see cref="GetProtectedDependentsFailureAction"/> class.
-            /// </summary>
-            /// <param name="error">The request error.</param>
-            public GetProtectedDependentsFailureAction(RequestError error)
-                : base(error)
-            {
-            }
-        }
+        public record GetProtectedDependentsFailureAction : BaseFailureAction;
 
         /// <summary>
         /// The action that clears the state.
         /// </summary>
-        public class ResetStateAction
-        {
-        }
+        public record ResetStateAction;
     }
 }

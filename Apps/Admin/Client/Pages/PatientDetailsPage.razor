@@ -49,7 +49,7 @@
 
 <HgBannerFeedback
     Severity="@Severity.Info"
-    IsEnabled="@(StatusWarning != null)"
+    IsEnabled="@(!string.IsNullOrEmpty(StatusWarning))"
     TResetAction="PatientSupportActions.ResetStateAction"
     Class="mt-4"
     DataTestId="user-banner-feedback-status-warning-message">

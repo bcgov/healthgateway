@@ -17,23 +17,14 @@
 namespace HealthGateway.Admin.Client.Store
 {
     /// <summary>
-    /// The base class for a successful action.
+    /// The base record for a successful action.
     /// </summary>
     /// <typeparam name="TData">The type of data associated with the action.</typeparam>
-    public abstract class BaseSuccessAction<TData>
+    public abstract record BaseSuccessAction<TData>
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="BaseSuccessAction{TCollection}"/> class.
-        /// </summary>
-        /// <param name="data">The associated data.</param>
-        protected BaseSuccessAction(TData data)
-        {
-            this.Data = data;
-        }
-
         /// <summary>
         /// Gets the associated data.
         /// </summary>
-        public TData Data { get; }
+        public required TData Data { get; init; }
     }
 }

@@ -46,7 +46,7 @@ public class AnalyticsEffects
         this.Logger.LogInformation("User profiles report exported successfully!");
         if (response.IsSuccessStatusCode)
         {
-            dispatcher.Dispatch(new AnalyticsActions.LoadSuccessAction(response.Content));
+            dispatcher.Dispatch(new AnalyticsActions.LoadSuccessAction { Data = response.Content });
             return;
         }
 
@@ -56,7 +56,7 @@ public class AnalyticsEffects
         };
 
         this.Logger.LogError("{ErrorMessage}", error.Message);
-        dispatcher.Dispatch(new AnalyticsActions.LoadFailAction(error));
+        dispatcher.Dispatch(new AnalyticsActions.LoadFailureAction { Error = error });
     }
 
     [EffectMethod]
@@ -68,7 +68,7 @@ public class AnalyticsEffects
         this.Logger.LogInformation("Comments report exported successfully!");
         if (response.IsSuccessStatusCode)
         {
-            dispatcher.Dispatch(new AnalyticsActions.LoadSuccessAction(response.Content));
+            dispatcher.Dispatch(new AnalyticsActions.LoadSuccessAction { Data = response.Content });
             return;
         }
 
@@ -78,7 +78,7 @@ public class AnalyticsEffects
         };
 
         this.Logger.LogError("{ErrorMessage}", error.Message);
-        dispatcher.Dispatch(new AnalyticsActions.LoadFailAction(error));
+        dispatcher.Dispatch(new AnalyticsActions.LoadFailureAction { Error = error });
     }
 
     [EffectMethod]
@@ -90,7 +90,7 @@ public class AnalyticsEffects
         this.Logger.LogInformation("Notes report exported successfully!");
         if (response.IsSuccessStatusCode)
         {
-            dispatcher.Dispatch(new AnalyticsActions.LoadSuccessAction(response.Content));
+            dispatcher.Dispatch(new AnalyticsActions.LoadSuccessAction { Data = response.Content });
             return;
         }
 
@@ -100,7 +100,7 @@ public class AnalyticsEffects
         };
 
         this.Logger.LogError("{ErrorMessage}", error.Message);
-        dispatcher.Dispatch(new AnalyticsActions.LoadFailAction(error));
+        dispatcher.Dispatch(new AnalyticsActions.LoadFailureAction { Error = error });
     }
 
     [EffectMethod]
@@ -112,7 +112,7 @@ public class AnalyticsEffects
         this.Logger.LogInformation("Ratings report exported successfully!");
         if (response.IsSuccessStatusCode)
         {
-            dispatcher.Dispatch(new AnalyticsActions.LoadSuccessAction(response.Content));
+            dispatcher.Dispatch(new AnalyticsActions.LoadSuccessAction { Data = response.Content });
             return;
         }
 
@@ -122,7 +122,7 @@ public class AnalyticsEffects
         };
 
         this.Logger.LogError("{ErrorMessage}", error.Message);
-        dispatcher.Dispatch(new AnalyticsActions.LoadFailAction(error));
+        dispatcher.Dispatch(new AnalyticsActions.LoadFailureAction { Error = error });
     }
 
     [EffectMethod]
@@ -134,7 +134,7 @@ public class AnalyticsEffects
         this.Logger.LogInformation("Inactive users report exported successfully!");
         if (response.IsSuccessStatusCode)
         {
-            dispatcher.Dispatch(new AnalyticsActions.LoadSuccessAction(response.Content));
+            dispatcher.Dispatch(new AnalyticsActions.LoadSuccessAction { Data = response.Content });
             return;
         }
 
@@ -144,7 +144,7 @@ public class AnalyticsEffects
         };
 
         this.Logger.LogError("{ErrorMessage}", error.Message);
-        dispatcher.Dispatch(new AnalyticsActions.LoadFailAction(error));
+        dispatcher.Dispatch(new AnalyticsActions.LoadFailureAction { Error = error });
     }
 
     [EffectMethod]
@@ -156,7 +156,7 @@ public class AnalyticsEffects
         this.Logger.LogInformation("User Feedback report exported successfully!");
         if (response.IsSuccessStatusCode)
         {
-            dispatcher.Dispatch(new AnalyticsActions.LoadSuccessAction(response.Content));
+            dispatcher.Dispatch(new AnalyticsActions.LoadSuccessAction { Data = response.Content });
             return;
         }
 
@@ -166,7 +166,7 @@ public class AnalyticsEffects
         };
 
         this.Logger.LogError("{ErrorMessage}", error.Message);
-        dispatcher.Dispatch(new AnalyticsActions.LoadFailAction(error));
+        dispatcher.Dispatch(new AnalyticsActions.LoadFailureAction { Error = error });
     }
 
     [EffectMethod]
@@ -178,7 +178,7 @@ public class AnalyticsEffects
         this.Logger.LogInformation("Year of birth counts report exported successfully!");
         if (response.IsSuccessStatusCode)
         {
-            dispatcher.Dispatch(new AnalyticsActions.LoadSuccessAction(response.Content));
+            dispatcher.Dispatch(new AnalyticsActions.LoadSuccessAction { Data = response.Content });
             return;
         }
 
@@ -188,6 +188,6 @@ public class AnalyticsEffects
         };
 
         this.Logger.LogError("{ErrorMessage}", error.Message);
-        dispatcher.Dispatch(new AnalyticsActions.LoadFailAction(error));
+        dispatcher.Dispatch(new AnalyticsActions.LoadFailureAction { Error = error });
     }
 }
