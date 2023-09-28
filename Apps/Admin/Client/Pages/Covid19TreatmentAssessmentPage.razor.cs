@@ -22,6 +22,7 @@ namespace HealthGateway.Admin.Client.Pages
     using Fluxor.Blazor.Web.Components;
     using HealthGateway.Admin.Client.Store.PatientDetails;
     using HealthGateway.Admin.Client.Store.PatientSupport;
+    using HealthGateway.Admin.Client.Utils;
     using HealthGateway.Admin.Common.Constants;
     using HealthGateway.Admin.Common.Models;
     using HealthGateway.Admin.Common.Models.CovidSupport;
@@ -76,7 +77,7 @@ namespace HealthGateway.Admin.Client.Pages
 
         private int Age => AgeRangeValidator.CalculateAge(DateTime.UtcNow, this.Patient?.Birthdate?.ToDateTime(TimeOnly.MinValue) ?? DateTime.UtcNow);
 
-        private string? StatusWarning => this.Patient == null ? null : MapStatusToWarning(this.Patient.Status);
+        private string? StatusWarning => this.Patient == null ? null : FormattingUtility.FormatPatientStatus(this.Patient.Status);
 
         private string PatientDetailsUrl => $"/patient-details?hdid={this.Hdid}";
 
@@ -117,17 +118,6 @@ namespace HealthGateway.Admin.Client.Pages
             {
                 this.NavigationManager.NavigateTo("/support");
             }
-        }
-
-        private static string? MapStatusToWarning(PatientStatus status)
-        {
-            return status switch
-            {
-                PatientStatus.NotFound => "Patient not found",
-                PatientStatus.Deceased => "Patient is deceased",
-                PatientStatus.NotUser => "Patient is not a user",
-                _ => null,
-            };
         }
 
         private static string? ValidatePhoneNumber(string number)

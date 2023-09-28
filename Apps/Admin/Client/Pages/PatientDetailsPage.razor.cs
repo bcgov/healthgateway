@@ -24,7 +24,7 @@ namespace HealthGateway.Admin.Client.Pages
     using HealthGateway.Admin.Client.Authorization;
     using HealthGateway.Admin.Client.Store.PatientDetails;
     using HealthGateway.Admin.Client.Store.PatientSupport;
-    using HealthGateway.Admin.Common.Constants;
+    using HealthGateway.Admin.Client.Utils;
     using HealthGateway.Admin.Common.Models;
     using HealthGateway.Admin.Common.Models.CovidSupport;
     using HealthGateway.Common.Data.Constants;
@@ -92,7 +92,7 @@ namespace HealthGateway.Admin.Client.Pages
 
         private string PatientName => StringManipulator.JoinWithoutBlanks(new[] { this.Patient?.PreferredName?.GivenName, this.Patient?.PreferredName?.Surname });
 
-        private string? StatusWarning => this.Patient == null ? null : MapStatusToWarning(this.Patient.Status);
+        private string? StatusWarning => this.Patient == null ? null : FormattingUtility.FormatPatientStatus(this.Patient.Status);
 
         private Address? MailAddress => this.Patient?.PostalAddress ?? this.Patient?.PhysicalAddress;
 
@@ -142,17 +142,6 @@ namespace HealthGateway.Admin.Client.Pages
             {
                 this.NavigationManager.NavigateTo("/support");
             }
-        }
-
-        private static string? MapStatusToWarning(PatientStatus status)
-        {
-            return status switch
-            {
-                PatientStatus.NotFound => "Patient not found",
-                PatientStatus.Deceased => "Patient is deceased",
-                PatientStatus.NotUser => "Patient is not a user",
-                _ => null,
-            };
         }
 
         private void RetrievePatientDetails()

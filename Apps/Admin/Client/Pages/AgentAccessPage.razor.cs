@@ -184,7 +184,7 @@ public partial class AgentAccessPage : FluxorComponent
         {
             this.Id = model.Id;
             this.Username = model.Username;
-            this.IdentityProvider = AgentUtility.FormatKeycloakIdentityProvider(model.IdentityProvider);
+            this.IdentityProvider = FormattingUtility.FormatKeycloakIdentityProvider(model.IdentityProvider);
             this.Roles = string.Join(", ", model.Roles.Select(r => r.ToString()).OrderBy(r => r));
         }
 

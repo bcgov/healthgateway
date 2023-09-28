@@ -20,7 +20,6 @@ namespace HealthGateway.Admin.Client.Components.Communications
     using System.Linq;
     using System.Threading.Tasks;
     using Fluxor;
-    using Fluxor.Blazor.Web.Components;
     using HealthGateway.Admin.Client.Models;
     using HealthGateway.Admin.Client.Store.Broadcasts;
     using HealthGateway.Admin.Client.Utils;
@@ -95,7 +94,7 @@ namespace HealthGateway.Admin.Client.Components.Communications
                 this.Subject = model.CategoryName;
                 this.EffectiveDate = model.ScheduledDateUtc;
                 this.ExpiryDate = model.ExpirationDateUtc;
-                this.ActionType = BroadcastUtility.FormatActionType(model.ActionType);
+                this.ActionType = FormattingUtility.FormatBroadcastActionType(model.ActionType);
                 this.Text = model.DisplayText;
                 this.IsExpanded = model.IsExpanded;
             }

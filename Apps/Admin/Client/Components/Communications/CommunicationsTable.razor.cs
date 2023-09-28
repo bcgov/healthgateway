@@ -92,7 +92,7 @@ namespace HealthGateway.Admin.Client.Components.Communications
             {
                 this.Id = model.Id;
                 this.Subject = model.Subject;
-                this.Status = CommunicationUtility.FormatCommunicationStatus(model.CommunicationStatusCode);
+                this.Status = FormattingUtility.FormatCommunicationStatus(model.CommunicationStatusCode);
                 this.EffectiveDate = model.EffectiveDateTime;
                 this.ExpiryDate = model.ExpiryDateTime;
                 this.Text = (MarkupString)model.Text;
