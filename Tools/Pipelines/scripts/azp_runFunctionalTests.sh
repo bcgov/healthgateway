@@ -33,7 +33,7 @@ fi
 
 echo "Running Cypress Functional Tests"
 TZ=America/Vancouver npx cypress run \
-  --env "bcsc.password=$BCSC_PW,keycloak.password=$KEYCLOAK_PW,idir.password=$IDIR_PASSWORD,phoneNumber=$PHONENUMBER,keycloak.phsa.client=$KEYCLOAK_PHSA_CLIENT,keycloak.phsa.secret=$KEYCLOAK_PHSA_SECRET" \
+  --env "bcsc.password=$BCSC_PASSWORD,keycloak.password=$KEYCLOAK_PASSORD,idir.password=$IDIR_PASSWORD,phoneNumber=$PHONENUMBER,keycloak.phsa.client=$KEYCLOAK_PHSA_CLIENT,keycloak.phsa.secret=$KEYCLOAK_PHSA_SECRET" \
   --record \
   --key $CYPRESS_KEY \
   --parallel \
