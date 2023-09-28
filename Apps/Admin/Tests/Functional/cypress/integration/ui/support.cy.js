@@ -100,7 +100,7 @@ describe("Support", () => {
         verifySupportTableResults(hdid, phn, 2);
 
         performSearch("Email", email);
-        verifySupportTableResults(hdid, phn, 2);
+        verifySingleSupportResult(emailHdid, emailPhn);
     });
 
     it("Verify support query warnings", () => {
