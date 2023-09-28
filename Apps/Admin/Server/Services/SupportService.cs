@@ -110,11 +110,14 @@ namespace HealthGateway.Admin.Server.Services
             bool includeMessagingVerifications,
             bool includeBlockedDataSources,
             bool includeAgentActions,
+            bool includeCovidDetails,
             CancellationToken ct = default)
         {
             IEnumerable<MessagingVerificationModel>? messagingVerifications = null;
             IEnumerable<DataSource>? blockedDataSources = null;
             IEnumerable<AgentAction>? agentActions = null;
+            VaccineDetails? vaccineDetails = null;
+            CovidAssessmentDetailsResponse? covidAssessmentDetails = null;
 
             if (includeMessagingVerifications)
             {
@@ -143,9 +146,12 @@ namespace HealthGateway.Admin.Server.Services
                 blockedDataSources = await this.patientRepository.GetDataSources(hdid, ct).ConfigureAwait(true);
             }
 
-            PatientModel patient = await this.GetPatientAsync(hdid, ct).ConfigureAwait(true);
-            VaccineDetails vaccineDetails = await this.GetVaccineDetails(patient).ConfigureAwait(true);
-            CovidAssessmentDetailsResponse covidAssessmentDetails = await this.immunizationAdminApi.GetCovidAssessmentDetails(new() { Phn = patient.Phn }, this.GetAccessToken()).ConfigureAwait(true);
+            if (includeCovidDetails)
+            {
+                PatientModel patient = await this.GetPatientAsync(hdid, ct).ConfigureAwait(true);
+                vaccineDetails = await this.GetVaccineDetails(patient).ConfigureAwait(true);
+                covidAssessmentDetails = await this.immunizationAdminApi.GetCovidAssessmentDetails(new() { Phn = patient.Phn }, this.GetAccessToken()).ConfigureAwait(true);
+            }
 
             PatientSupportDetails details = new()
             {

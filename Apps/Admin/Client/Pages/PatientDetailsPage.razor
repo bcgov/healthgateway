@@ -69,9 +69,12 @@
         <MudItem xs="12" lg="4">
             <HgField Label="PHN" Value="@Patient.PersonalHealthNumber" data-testid="patient-phn" />
         </MudItem>
-        <MudItem xs="12">
-            <HgField Label="HDID" Value="@Patient.Hdid" data-testid="patient-hdid" />
-        </MudItem>
+        @if (CanViewHdid)
+        {
+            <MudItem xs="12">
+                <HgField Label="HDID" Value="@Patient.Hdid" data-testid="patient-hdid" />
+            </MudItem>
+        }
         <MudItem xs="12" lg="6">
             <HgField Label="Physical Address" Value="@AddressUtility.GetAddressAsSingleLine(Patient.PhysicalAddress)" data-testid="patient-physical-address" />
         </MudItem>
@@ -121,9 +124,12 @@
         </MudText>
     }
 
-    <Covid19ImmunizationSection Phn="@Patient.PersonalHealthNumber" Data="@VaccineDoses" IsLoading="@PatientSupportDetailsLoading" MailAddress="@MailAddress" />
+    if (CanViewCovidDetails)
+    {
+        <Covid19ImmunizationSection Phn="@Patient.PersonalHealthNumber" Data="@VaccineDoses" IsLoading="@PatientSupportDetailsLoading" MailAddress="@MailAddress" />
 
-    <Covid19AssessmentSection Data="@AssessmentDetails" IsLoading="@PatientSupportDetailsLoading" AssessmentPagePath="@Covid19TreatmentAssessmentPath" />
+        <Covid19AssessmentSection Data="@AssessmentDetails" IsLoading="@PatientSupportDetailsLoading" AssessmentPagePath="@Covid19TreatmentAssessmentPath" />
+    }
 }
 else if (PatientsLoaded)
 {

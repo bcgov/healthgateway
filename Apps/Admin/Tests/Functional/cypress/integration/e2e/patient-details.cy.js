@@ -2,8 +2,7 @@ import { performSearch } from "../../utilities/supportUtilities";
 import { getTableRows } from "../../utilities/sharedUtilities";
 
 const hdid = "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A";
-const hdidWithCovidDetails =
-    "GO4DOSMRJ7MFKPPADDZ3FK2MOJ45SFKONJWR67XNLMZQFNEHDKDA";
+const phn = "9735352535";
 const switchName = "Immunization";
 const auditBlockReason = "Test block reason";
 const auditUnblockReason = "Test unblock reason";
@@ -329,35 +328,11 @@ describe("Patient details page as admin", () => {
     });
 
     it("Verify covid immunization and assessment sections", () => {
-        performSearch("HDID", hdidWithCovidDetails);
-
-        cy.get("[data-testid=patient-hdid]")
-            .should("be.visible")
-            .contains(hdidWithCovidDetails);
-
+        performSearch("PHN", phn);
+        cy.get("[data-testid=patient-phn]").should("be.visible").contains(phn);
         cy.scrollTo("bottom");
-        getTableRows("[data-testid=immunization-table]").should(
-            "have.length.greaterThan",
-            0
-        );
-        getTableRows("[data-testid=assessment-history-table]").should(
-            "have.length.greaterThan",
-            0
-        );
-        cy.get("[data-testid=mail-button]").should("be.visible", "be.enabled");
-        cy.get("[data-testid=print-button]").should("be.visible", "be.enabled");
-        cy.get(
-            "[data-testid=start-covid-19-treatment-assessment-button]"
-        ).should("be.visible", "be.enabled");
-
-        validateMailAddressFormCancel();
-        validateMailAddressFormRequiredInputs();
-        validateCovid19TreatmentAssessmentFormBackCancel();
-        validateCovid19TreatmentAssessmentFormRequiredInputs();
-        validateCovid19TreatmentAssessmentInfoMessageForRadioSelection();
-        validateMailAddressFormSubmission();
-        validateCovid19TreatmentAssessmentFormSubmission();
-        validatePrintVaccineCardSubmission();
+        cy.get("[data-testid=immunization-table]").should("not.exist");
+        cy.get("[data-testid=assessment-history-table]").should("not.exist");
     });
 
     it("Verify block access initial", () => {
@@ -511,5 +486,45 @@ describe("Patient details page as reviewer", () => {
 
         cy.get("[data-testid=block-access-cancel]").should("not.exist");
         cy.get("[data-testid=block-access-save]").should("not.exist");
+    });
+});
+
+describe("Patient Details as Support", () => {
+    beforeEach(() => {
+        cy.login(
+            Cypress.env("keycloak_support_username"),
+            Cypress.env("keycloak_password"),
+            "/support"
+        );
+    });
+
+    it("Verify covid immunization and assessment sections", () => {
+        performSearch("PHN", phn);
+        cy.get("[data-testid=patient-phn]").should("be.visible").contains(phn);
+        cy.get("[data-testid=patient-hdid]").should("not.exist");
+
+        cy.scrollTo("bottom");
+        getTableRows("[data-testid=immunization-table]").should(
+            "have.length.greaterThan",
+            0
+        );
+        getTableRows("[data-testid=assessment-history-table]").should(
+            "have.length.greaterThan",
+            0
+        );
+        cy.get("[data-testid=mail-button]").should("be.visible", "be.enabled");
+        cy.get("[data-testid=print-button]").should("be.visible", "be.enabled");
+        cy.get(
+            "[data-testid=start-covid-19-treatment-assessment-button]"
+        ).should("be.visible", "be.enabled");
+
+        validateMailAddressFormCancel();
+        validateMailAddressFormRequiredInputs();
+        validateCovid19TreatmentAssessmentFormBackCancel();
+        validateCovid19TreatmentAssessmentFormRequiredInputs();
+        validateCovid19TreatmentAssessmentInfoMessageForRadioSelection();
+        validateMailAddressFormSubmission();
+        validateCovid19TreatmentAssessmentFormSubmission();
+        validatePrintVaccineCardSubmission();
     });
 });
