@@ -31,7 +31,6 @@ namespace HealthGateway.CommonTests.Delegates
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.Models;
     using Microsoft.AspNetCore.Http;
-    using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using Moq;
     using ServiceReference;
@@ -127,8 +126,7 @@ namespace HealthGateway.CommonTests.Delegates
             IClientRegistriesDelegate patientDelegate = new ClientRegistriesDelegate(
                 loggerFactory.CreateLogger<ClientRegistriesDelegate>(),
                 clientMock.Object,
-                HttpContextAccessorMock.Object,
-                GetConfiguration());
+                HttpContextAccessorMock.Object);
 
             // Act
             RequestResult<PatientModel> actual = await patientDelegate.GetDemographicsByPhnAsync("9875023209");
@@ -346,8 +344,7 @@ namespace HealthGateway.CommonTests.Delegates
             IClientRegistriesDelegate patientDelegate = new ClientRegistriesDelegate(
                 loggerFactory.CreateLogger<ClientRegistriesDelegate>(),
                 clientMock.Object,
-                HttpContextAccessorMock.Object,
-                GetConfiguration());
+                HttpContextAccessorMock.Object);
 
             // Act
             RequestResult<PatientModel> actual = await patientDelegate.GetDemographicsByHdidAsync(expectedHdId);
@@ -457,8 +454,7 @@ namespace HealthGateway.CommonTests.Delegates
             IClientRegistriesDelegate patientDelegate = new ClientRegistriesDelegate(
                 loggerFactory.CreateLogger<ClientRegistriesDelegate>(),
                 clientMock.Object,
-                HttpContextAccessorMock.Object,
-                GetConfiguration());
+                HttpContextAccessorMock.Object);
 
             // Act
             RequestResult<PatientModel> actual = await patientDelegate.GetDemographicsByHdidAsync(hdid);
@@ -579,8 +575,7 @@ namespace HealthGateway.CommonTests.Delegates
             IClientRegistriesDelegate patientDelegate = new ClientRegistriesDelegate(
                 loggerFactory.CreateLogger<ClientRegistriesDelegate>(),
                 clientMock.Object,
-                HttpContextAccessorMock.Object,
-                GetConfiguration());
+                HttpContextAccessorMock.Object);
 
             // Act
             RequestResult<PatientModel> actual = await patientDelegate.GetDemographicsByHdidAsync(expectedHdId);
@@ -730,8 +725,7 @@ namespace HealthGateway.CommonTests.Delegates
             IClientRegistriesDelegate patientDelegate = new ClientRegistriesDelegate(
                 loggerFactory.CreateLogger<ClientRegistriesDelegate>(),
                 clientMock.Object,
-                HttpContextAccessorMock.Object,
-                GetConfiguration());
+                HttpContextAccessorMock.Object);
 
             // Act
             RequestResult<PatientModel> actual = await patientDelegate.GetDemographicsByHdidAsync(expectedHdId);
@@ -840,8 +834,7 @@ namespace HealthGateway.CommonTests.Delegates
             IClientRegistriesDelegate patientDelegate = new ClientRegistriesDelegate(
                 loggerFactory.CreateLogger<ClientRegistriesDelegate>(),
                 clientMock.Object,
-                HttpContextAccessorMock.Object,
-                GetConfiguration());
+                HttpContextAccessorMock.Object);
 
             // Act
             RequestResult<PatientModel> actual = await patientDelegate.GetDemographicsByPhnAsync(expectedPhn);
@@ -945,8 +938,7 @@ namespace HealthGateway.CommonTests.Delegates
             IClientRegistriesDelegate patientDelegate = new ClientRegistriesDelegate(
                 loggerFactory.CreateLogger<ClientRegistriesDelegate>(),
                 clientMock.Object,
-                HttpContextAccessorMock.Object,
-                GetConfiguration());
+                HttpContextAccessorMock.Object);
 
             // Act
             RequestResult<PatientModel> actual = await patientDelegate.GetDemographicsByPhnAsync(expectedPhn);
@@ -1050,8 +1042,7 @@ namespace HealthGateway.CommonTests.Delegates
             IClientRegistriesDelegate patientDelegate = new ClientRegistriesDelegate(
                 loggerFactory.CreateLogger<ClientRegistriesDelegate>(),
                 clientMock.Object,
-                HttpContextAccessorMock.Object,
-                GetConfiguration());
+                HttpContextAccessorMock.Object);
 
             // Act
             RequestResult<PatientModel> actual = await patientDelegate.GetDemographicsByPhnAsync(expectedPhn);
@@ -1155,8 +1146,7 @@ namespace HealthGateway.CommonTests.Delegates
             IClientRegistriesDelegate patientDelegate = new ClientRegistriesDelegate(
                 loggerFactory.CreateLogger<ClientRegistriesDelegate>(),
                 clientMock.Object,
-                HttpContextAccessorMock.Object,
-                GetConfiguration());
+                HttpContextAccessorMock.Object);
 
             // Act
             RequestResult<PatientModel> actual = await patientDelegate.GetDemographicsByPhnAsync(expectedPhn);
@@ -1192,21 +1182,6 @@ namespace HealthGateway.CommonTests.Delegates
             Mock<IHttpContextAccessor> httpContextAccessorMock = new();
             httpContextAccessorMock.Setup(s => s.HttpContext).Returns(httpContextMock.Object);
             return httpContextAccessorMock;
-        }
-
-        private static IConfigurationRoot GetConfiguration()
-        {
-            ConfigurationBuilder configurationBuilder = new();
-            Dictionary<string, string> appSettingsData = new()
-            {
-                ["ClientRegistry:ValidWarningResponseCodes:1"] = "BCHCIM.GD.1.0019",
-                ["ClientRegistry:ValidWarningResponseCodes:3"] = "BCHCIM.GD.1.0021",
-                ["ClientRegistry:ValidWarningResponseCodes:5"] = "BCHCIM.GD.1.0022",
-                ["ClientRegistry:ValidWarningResponseCodes:7"] = "BCHCIM.GD.1.0023",
-            };
-            configurationBuilder.AddInMemoryCollection(appSettingsData!);
-
-            return configurationBuilder.Build();
         }
     }
 }

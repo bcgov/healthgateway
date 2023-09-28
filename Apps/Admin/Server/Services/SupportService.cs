@@ -266,7 +266,7 @@ namespace HealthGateway.Admin.Server.Services
 
         private async Task<PatientModel> GetPatientAsync(string hdid, CancellationToken ct = default)
         {
-            PatientDetailsQuery query = new(Hdid: hdid, Source: PatientDetailSource.All, UseCache: true);
+            PatientDetailsQuery query = new(Hdid: hdid, Source: PatientDetailSource.All, UseCache: false);
             PatientModel? patient = (await this.patientRepository.Query(query, ct).ConfigureAwait(true)).Items.SingleOrDefault();
             if (patient == null)
             {

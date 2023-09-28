@@ -2,9 +2,12 @@ const { AuthMethod } = require("../../../support/constants");
 const covid19Url = "/covid19";
 
 describe("Authenticated Vaccine Card", () => {
-    it("Partially Vaccinated with 1 Valid Dose", () => {
+    it("Validate Partially Vaccinated and PDF download", () => {
         cy.intercept("GET", "**/AuthenticatedVaccineStatus?hdid=*").as(
             "getVaccinationStatus"
+        );
+        cy.intercept("GET", "**/AuthenticatedVaccineStatus/pdf?hdid=*").as(
+            "getVaccineProof"
         );
 
         cy.configureSettings({
@@ -29,52 +32,83 @@ describe("Authenticated Vaccine Card", () => {
         );
 
         // Wait for request to complete
-        cy.wait("@getVaccinationStatus");
+        cy.wait("@getVaccinationStatus").then(() => {
+            // Vaccine Card
+            cy.get("[data-testid=formTitleVaccineCard]", {}).should(
+                "be.visible"
+            );
+            cy.get("[data-testid=statusPartiallyVaccinated]").should(
+                "be.visible"
+            );
 
-        // Vaccine Card
-        cy.get("[data-testid=formTitleVaccineCard]", { timeout: 60000 }).should(
-            "be.visible"
-        );
-        cy.get("[data-testid=statusPartiallyVaccinated]").should("be.visible");
+            cy.intercept("GET", "**/Immunization?hdid=*").as("getImmunization");
 
-        cy.intercept("GET", "**/Immunization?hdid=*").as("getImmunization");
+            // Navigate Left
+            cy.get("[data-testid=vc-chevron-left-btn]")
+                .should("be.enabled", "be.visible")
+                .click();
 
-        // Navigate Left
-        cy.get("[data-testid=vc-chevron-left-btn]")
-            .should("be.enabled", "be.visible")
-            .click();
+            // Wait for request to complete
+            cy.wait("@getImmunization").then(() => {
+                // Vaccination Record
+                cy.get("[data-testid=dose-1]").should("be.visible");
 
-        // Wait for request to complete
-        cy.wait("@getImmunization");
+                // Navigate Left
+                cy.get("[data-testid=vr-chevron-left-btn]")
+                    .should("be.enabled", "be.visible")
+                    .click();
 
-        // Vaccination Record
-        cy.get("[data-testid=dose-1]", { timeout: 60000 }).should("be.visible");
+                // Vaccine Card
+                cy.get("[data-testid=formTitleVaccineCard]").should(
+                    "be.visible"
+                );
+                cy.get("[data-testid=statusPartiallyVaccinated]").should(
+                    "be.visible"
+                );
 
-        // Navigate Left
-        cy.get("[data-testid=vr-chevron-left-btn]")
-            .should("be.enabled", "be.visible")
-            .click();
+                // Navigate Right
+                cy.get("[data-testid=vc-chevron-right-btn]")
+                    .should("be.enabled", "be.visible")
+                    .click();
 
-        // Vaccine Card
-        cy.get("[data-testid=formTitleVaccineCard]").should("be.visible");
-        cy.get("[data-testid=statusPartiallyVaccinated]").should("be.visible");
+                // Vaccination Record
+                cy.get("[data-testid=dose-1]").should("be.visible");
 
-        // Navigate Right
-        cy.get("[data-testid=vc-chevron-right-btn]")
-            .should("be.enabled", "be.visible")
-            .click();
+                // Navigate Right
+                cy.get("[data-testid=vr-chevron-right-btn]")
+                    .should("be.enabled", "be.visible")
+                    .click();
 
-        // Vaccination Record
-        cy.get("[data-testid=dose-1]").should("be.visible");
+                // Vaccine Card
+                cy.get("[data-testid=formTitleVaccineCard]").should(
+                    "be.visible"
+                );
+                cy.get("[data-testid=statusPartiallyVaccinated]").should(
+                    "be.visible"
+                );
 
-        // Navigate Right
-        cy.get("[data-testid=vr-chevron-right-btn]")
-            .should("be.enabled", "be.visible")
-            .click();
+                // Click on Save button
+                cy.get("[data-testid=save-dropdown-btn]")
+                    .should("be.enabled", "be.visible")
+                    .click();
 
-        // Vaccine Card
-        cy.get("[data-testid=formTitleVaccineCard]").should("be.visible");
-        cy.get("[data-testid=statusPartiallyVaccinated]").should("be.visible");
+                // Click on PDF option
+                cy.get("[data-testid=save-as-pdf-dropdown-item]")
+                    .should("be.visible")
+                    .click();
+
+                cy.get("[data-testid=generic-message-modal]").should(
+                    "be.visible"
+                );
+                cy.get("[data-testid=generic-message-submit-btn]").click();
+
+                cy.wait("@getVaccineProof");
+                cy.verifyDownload("ProvincialVaccineProof.pdf", {
+                    timeout: 60000,
+                    interval: 5000,
+                });
+            });
+        });
     });
 
     it("Save Button Absent When Status Is Not Found", () => {
@@ -88,6 +122,12 @@ describe("Authenticated Vaccine Card", () => {
                     exportPdf: true,
                 },
             },
+            datasets: [
+                {
+                    name: "immunization",
+                    enabled: true,
+                },
+            ],
         });
 
         cy.login(
@@ -97,55 +137,9 @@ describe("Authenticated Vaccine Card", () => {
             covid19Url
         );
 
-        cy.wait("@getVaccinationStatus");
-
-        cy.get("[data-testid=statusNotFound]", { timeout: 60000 }).should(
-            "be.visible"
-        );
-        cy.get("[data-testid=save-dropdown-btn]").should("not.exist");
-    });
-
-    it("Save As PDF", () => {
-        cy.intercept("GET", "**/AuthenticatedVaccineStatus?hdid=*").as(
-            "getVaccinationStatus"
-        );
-        cy.intercept("GET", "**/AuthenticatedVaccineStatus/pdf?hdid=*").as(
-            "getVaccineProof"
-        );
-
-        cy.configureSettings({
-            covid19: {
-                proofOfVaccination: {
-                    exportPdf: true,
-                },
-            },
-        });
-
-        cy.login(
-            Cypress.env("keycloak.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak,
-            covid19Url
-        );
-
-        cy.wait("@getVaccinationStatus");
-
-        cy.get("[data-testid=save-dropdown-btn]", {
-            timeout: 60000,
-        })
-            .should("be.enabled", "be.visible")
-            .click();
-        cy.get("[data-testid=save-as-pdf-dropdown-item]")
-            .should("be.visible")
-            .click();
-
-        cy.get("[data-testid=generic-message-modal]").should("be.visible");
-        cy.get("[data-testid=generic-message-submit-btn]").click();
-
-        cy.wait("@getVaccineProof");
-        cy.verifyDownload("ProvincialVaccineProof.pdf", {
-            timeout: 60000,
-            interval: 5000,
+        cy.wait("@getVaccinationStatus").then(() => {
+            cy.get("[data-testid=statusNotFound]").should("be.visible");
+            cy.get("[data-testid=save-dropdown-btn]").should("not.exist");
         });
     });
 });
