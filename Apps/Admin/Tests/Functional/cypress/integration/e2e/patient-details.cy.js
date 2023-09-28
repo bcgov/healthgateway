@@ -327,7 +327,7 @@ describe("Patient details page as admin", () => {
         );
     });
 
-    it("Verify covid immunization and assessment sections", () => {
+    it("Verify covid immunization and assessment sections require Support role", () => {
         performSearch("PHN", phn);
         cy.get("[data-testid=patient-phn]").should("be.visible").contains(phn);
         cy.scrollTo("bottom");
