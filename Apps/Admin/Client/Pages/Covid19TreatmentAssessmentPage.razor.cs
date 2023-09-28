@@ -35,7 +35,7 @@ namespace HealthGateway.Admin.Client.Pages
     using Microsoft.Extensions.Primitives;
     using MudBlazor;
     using AssessmentAddressConfirmationDialog = HealthGateway.Admin.Client.Components.Support.AddressConfirmationDialog<
-        HealthGateway.Admin.Client.Store.PatientDetails.PatientDetailsActions.SubmitCovid19TreatmentAssessmentFailAction,
+        HealthGateway.Admin.Client.Store.PatientDetails.PatientDetailsActions.SubmitCovid19TreatmentAssessmentFailureAction,
         HealthGateway.Admin.Client.Store.PatientDetails.PatientDetailsActions.SubmitCovid19TreatmentAssessmentSuccessAction>;
 
     /// <summary>

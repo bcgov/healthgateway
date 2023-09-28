@@ -48,14 +48,14 @@ namespace HealthGateway.Admin.Client.Store.PatientDetails
             {
                 PatientSupportDetails response = await this.SupportApi.GetPatientSupportDetailsAsync(action.Hdid).ConfigureAwait(true);
                 this.Logger.LogInformation("Patient details loaded successfully!");
-                dispatcher.Dispatch(new PatientDetailsActions.LoadSuccessAction(response));
+                dispatcher.Dispatch(new PatientDetailsActions.LoadSuccessAction { Data = response });
             }
             catch (Exception e) when (e is ApiException or HttpRequestException)
             {
                 this.Logger.LogError("Error loading patient details...{Error}", e);
                 RequestError error = StoreUtility.FormatRequestError(e);
                 this.Logger.LogError("Error loading patient details, reason: {ErrorMessage}", error.Message);
-                dispatcher.Dispatch(new PatientDetailsActions.LoadFailAction(error));
+                dispatcher.Dispatch(new PatientDetailsActions.LoadFailureAction { Error = error });
             }
         }
 
@@ -73,7 +73,7 @@ namespace HealthGateway.Admin.Client.Store.PatientDetails
             {
                 this.Logger.LogError("Error blocking access: {Exception}", e.ToString());
                 RequestError error = StoreUtility.FormatRequestError(e);
-                dispatcher.Dispatch(new PatientDetailsActions.BlockAccessFailureAction(error));
+                dispatcher.Dispatch(new PatientDetailsActions.BlockAccessFailureAction { Error = error });
             }
         }
 
@@ -98,7 +98,7 @@ namespace HealthGateway.Admin.Client.Store.PatientDetails
             {
                 this.Logger.LogError("Error submitting COVID-19 treatment assessment: {Exception}", e.ToString());
                 RequestError error = StoreUtility.FormatRequestError(e);
-                dispatcher.Dispatch(new PatientDetailsActions.SubmitCovid19TreatmentAssessmentFailAction(error));
+                dispatcher.Dispatch(new PatientDetailsActions.SubmitCovid19TreatmentAssessmentFailureAction { Error = error });
             }
         }
 

@@ -112,7 +112,7 @@ public partial class AgentAccessPage : FluxorComponent
         if (this.Form.IsValid)
         {
             this.ResetState();
-            this.Dispatcher.Dispatch(new AgentAccessActions.SearchAction(StringManipulator.StripWhitespace(this.Query)));
+            this.Dispatcher.Dispatch(new AgentAccessActions.SearchAction { Query = StringManipulator.StripWhitespace(this.Query) });
         }
     }
 
@@ -141,7 +141,7 @@ public partial class AgentAccessPage : FluxorComponent
         bool? delete = await this.DeleteConfirmation.Show().ConfigureAwait(true);
         if (delete is true)
         {
-            this.Dispatcher.Dispatch(new AgentAccessActions.DeleteAction(id));
+            this.Dispatcher.Dispatch(new AgentAccessActions.DeleteAction { Id = id });
         }
     }
 

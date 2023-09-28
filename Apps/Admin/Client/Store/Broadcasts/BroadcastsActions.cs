@@ -30,234 +30,104 @@ public static class BroadcastsActions
     /// <summary>
     /// The action representing the initiation of an add.
     /// </summary>
-    public class AddAction
+    public record AddAction
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="AddAction"/> class.
+        /// Gets the broadcast.
         /// </summary>
-        /// <param name="broadcast">Represents the broadcast model.</param>
-        public AddAction(Broadcast broadcast)
-        {
-            this.Broadcast = broadcast;
-        }
-
-        /// <summary>
-        /// Gets or sets the broadcast.
-        /// </summary>
-        public Broadcast Broadcast { get; set; }
+        public required Broadcast Broadcast { get; init; }
     }
 
     /// <summary>
     /// The action representing a failed add.
     /// </summary>
-    public class AddFailAction : BaseFailAction
-    {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="AddFailAction"/> class.
-        /// </summary>
-        /// <param name="error">The request error.</param>
-        public AddFailAction(RequestError error)
-            : base(error)
-        {
-        }
-    }
+    public record AddFailureAction : BaseFailureAction;
 
     /// <summary>
     /// The action representing a successful add.
     /// </summary>
-    public class AddSuccessAction : BaseSuccessAction<RequestResult<Broadcast>>
-    {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="AddSuccessAction"/> class.
-        /// </summary>
-        /// <param name="data">Broadcast data.</param>
-        public AddSuccessAction(RequestResult<Broadcast> data)
-            : base(data)
-        {
-        }
-    }
+    public record AddSuccessAction : BaseSuccessAction<RequestResult<Broadcast>>;
 
     /// <summary>
     /// The action representing the initiation of a load.
     /// </summary>
-    public class LoadAction
-    {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="LoadAction"/> class.
-        /// </summary>
-        public LoadAction()
-        {
-        }
-    }
+    public record LoadAction;
 
     /// <summary>
     /// The action representing a failed load.
     /// </summary>
-    public class LoadFailAction : BaseFailAction
-    {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="LoadFailAction"/> class.
-        /// </summary>
-        /// <param name="error">The request error.</param>
-        public LoadFailAction(RequestError error)
-            : base(error)
-        {
-        }
-    }
+    public record LoadFailureAction : BaseFailureAction;
 
     /// <summary>
     /// The action representing a successful load.
     /// </summary>
-    public class LoadSuccessAction : BaseSuccessAction<RequestResult<IEnumerable<Broadcast>>>
-    {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="LoadSuccessAction"/> class.
-        /// </summary>
-        /// <param name="requestResultModel">Broadcasts data.</param>
-        public LoadSuccessAction(RequestResult<IEnumerable<Broadcast>> requestResultModel)
-            : base(requestResultModel)
-        {
-        }
-    }
+    public record LoadSuccessAction : BaseSuccessAction<RequestResult<IEnumerable<Broadcast>>>;
 
     /// <summary>
     /// The action representing the initiation of an update.
     /// </summary>
-    public class UpdateAction
+    public record UpdateAction
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="UpdateAction"/> class.
+        /// Gets the broadcast.
         /// </summary>
-        /// <param name="broadcast">Represents the broadcast model.</param>
-        public UpdateAction(Broadcast broadcast)
-        {
-            this.Broadcast = broadcast;
-        }
-
-        /// <summary>
-        /// Gets or sets the broadcast.
-        /// </summary>
-        public Broadcast Broadcast { get; set; }
+        public required Broadcast Broadcast { get; init; }
     }
 
     /// <summary>
     /// The action representing a failed update.
     /// </summary>
-    public class UpdateFailAction : BaseFailAction
-    {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="UpdateFailAction"/> class.
-        /// </summary>
-        /// <param name="error">The request error.</param>
-        public UpdateFailAction(RequestError error)
-            : base(error)
-        {
-        }
-    }
+    public record UpdateFailureAction : BaseFailureAction;
 
     /// <summary>
     /// The action representing a successful update.
     /// </summary>
-    public class UpdateSuccessAction : BaseSuccessAction<RequestResult<Broadcast>>
-    {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="UpdateSuccessAction"/> class.
-        /// </summary>
-        /// <param name="data">Broadcast data.</param>
-        public UpdateSuccessAction(RequestResult<Broadcast> data)
-            : base(data)
-        {
-        }
-    }
+    public record UpdateSuccessAction : BaseSuccessAction<RequestResult<Broadcast>>;
 
     /// <summary>
     /// The action representing the initiation of a deletion.
     /// </summary>
-    public class DeleteAction
+    public record DeleteAction
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="DeleteAction"/> class.
+        /// Gets the broadcast.
         /// </summary>
-        /// <param name="broadcast">Represents the broadcast model.</param>
-        public DeleteAction(Broadcast broadcast)
-        {
-            this.Broadcast = broadcast;
-        }
-
-        /// <summary>
-        /// Gets or sets the broadcast.
-        /// </summary>
-        public Broadcast Broadcast { get; set; }
+        public required Broadcast Broadcast { get; init; }
     }
 
     /// <summary>
     /// The action representing a failed deletion.
     /// </summary>
-    public class DeleteFailAction : BaseFailAction
-    {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DeleteFailAction"/> class.
-        /// </summary>
-        /// <param name="error">The request error.</param>
-        public DeleteFailAction(RequestError error)
-            : base(error)
-        {
-        }
-    }
+    public record DeleteFailureAction : BaseFailureAction;
 
     /// <summary>
     /// The action representing a successful deletion.
     /// </summary>
-    public class DeleteSuccessAction : BaseSuccessAction<RequestResult<Broadcast>>
-    {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DeleteSuccessAction"/> class.
-        /// </summary>
-        /// <param name="data">Broadcast data.</param>
-        public DeleteSuccessAction(RequestResult<Broadcast> data)
-            : base(data)
-        {
-        }
-    }
+    public record DeleteSuccessAction : BaseSuccessAction<RequestResult<Broadcast>>;
 
     /// <summary>
     /// The action that clears any error encountered during an add.
     /// </summary>
-    public class ClearAddErrorAction
-    {
-    }
+    public record ClearAddErrorAction;
 
     /// <summary>
     /// The action that clears any error encountered during an update.
     /// </summary>
-    public class ClearUpdateErrorAction
-    {
-    }
+    public record ClearUpdateErrorAction;
 
     /// <summary>
     /// The action that clears the state.
     /// </summary>
-    public class ResetStateAction
-    {
-    }
+    public record ResetStateAction;
 
     /// <summary>
     /// The action that toggles whether a particular broadcast is expanded.
     /// </summary>
-    public class ToggleIsExpandedAction
+    public record ToggleIsExpandedAction
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="ToggleIsExpandedAction"/> class.
+        /// Gets the ID of the broadcast.
         /// </summary>
-        /// <param name="id">Represents the ID of the broadcast.</param>
-        public ToggleIsExpandedAction(Guid id)
-        {
-            this.Id = id;
-        }
-
-        /// <summary>
-        /// Gets or sets the ID of the broadcast.
-        /// </summary>
-        public Guid Id { get; set; }
+        public required Guid Id { get; init; }
     }
 }

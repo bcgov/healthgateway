@@ -61,7 +61,7 @@ namespace HealthGateway.Admin.Client.Components.Communications
 
         private void ToggleExpandRow(Guid id)
         {
-            this.Dispatcher.Dispatch(new BroadcastsActions.ToggleIsExpandedAction(id));
+            this.Dispatcher.Dispatch(new BroadcastsActions.ToggleIsExpandedAction { Id = id });
         }
 
         private async Task EditBroadcastAsync(Guid id)
@@ -81,7 +81,7 @@ namespace HealthGateway.Admin.Client.Components.Communications
                 ExtendedBroadcast? broadcast = this.Data.FirstOrDefault(c => c.Id == id);
                 if (broadcast != null)
                 {
-                    this.Dispatcher.Dispatch(new BroadcastsActions.DeleteAction(broadcast));
+                    this.Dispatcher.Dispatch(new BroadcastsActions.DeleteAction { Broadcast = broadcast });
                 }
             }
         }

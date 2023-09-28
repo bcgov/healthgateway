@@ -27,7 +27,7 @@ namespace HealthGateway.Admin.Client.Store.VaccineCard
         /// <summary>
         /// The action representing the request to trigger the process to physically mail the vaccine card document.
         /// </summary>
-        public class MailVaccineCardAction
+        public record MailVaccineCardAction
         {
             /// <summary>
             /// Gets the personal health number that matches the document that was requested to mail.
@@ -43,30 +43,18 @@ namespace HealthGateway.Admin.Client.Store.VaccineCard
         /// <summary>
         /// The action representing a successful request to trigger the process to physically mail the vaccine card document.
         /// </summary>
-        public class MailVaccineCardSuccessAction
-        {
-        }
+        public record MailVaccineCardSuccessAction;
 
         /// <summary>
         /// The action representing a failed request to trigger the process to physically mail the vaccine card document.
         /// </summary>
-        public class MailVaccineCardFailureAction : BaseFailAction
-        {
-            /// <summary>
-            /// Initializes a new instance of the <see cref="MailVaccineCardFailureAction"/> class.
-            /// </summary>
-            /// <param name="error">The request error.</param>
-            public MailVaccineCardFailureAction(RequestError error)
-                : base(error)
-            {
-            }
-        }
+        public record MailVaccineCardFailureAction : BaseFailureAction;
 
         /// <summary>
         /// The action representing the request to get the COVID-19 Vaccine Record document that includes the Vaccine Card and
         /// Vaccination History.
         /// </summary>
-        public class PrintVaccineCardAction
+        public record PrintVaccineCardAction
         {
             /// <summary>
             /// Gets the personal health number that matches the document to retrieve.
@@ -78,39 +66,17 @@ namespace HealthGateway.Admin.Client.Store.VaccineCard
         /// The action representing a successful request to get the COVID-19 Vaccine Record document that includes the Vaccine Card
         /// and Vaccination History.
         /// </summary>
-        public class PrintVaccineCardSuccessAction : BaseSuccessAction<ReportModel>
-        {
-            /// <summary>
-            /// Initializes a new instance of the <see cref="PrintVaccineCardSuccessAction"/> class.
-            /// </summary>
-            /// <param name="data">Result data.</param>
-            public PrintVaccineCardSuccessAction(ReportModel data)
-                : base(data)
-            {
-            }
-        }
+        public record PrintVaccineCardSuccessAction : BaseSuccessAction<ReportModel>;
 
         /// <summary>
         /// The action representing a failed request to get the COVID-19 Vaccine Record document that includes the Vaccine Card and
         /// Vaccination History.
         /// </summary>
-        public class PrintVaccineCardFailureAction : BaseFailAction
-        {
-            /// <summary>
-            /// Initializes a new instance of the <see cref="PrintVaccineCardFailureAction"/> class.
-            /// </summary>
-            /// <param name="error">The request error.</param>
-            public PrintVaccineCardFailureAction(RequestError error)
-                : base(error)
-            {
-            }
-        }
+        public record PrintVaccineCardFailureAction : BaseFailureAction;
 
         /// <summary>
         /// The action that clears the state.
         /// </summary>
-        public class ResetStateAction
-        {
-        }
+        public record ResetStateAction;
     }
 }

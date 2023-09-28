@@ -29,150 +29,62 @@ public static class TagActions
     /// <summary>
     /// The action representing the initiation of an add.
     /// </summary>
-    public class AddAction
+    public record AddAction
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="AddAction"/> class.
+        /// Gets the name of the tag to add.
         /// </summary>
-        /// <param name="tagName">Represents the name of the tag to add.</param>
-        public AddAction(string tagName)
-        {
-            this.TagName = tagName;
-        }
-
-        /// <summary>
-        /// Gets or sets the tag name.
-        /// </summary>
-        public string TagName { get; set; }
+        public required string TagName { get; init; }
     }
 
     /// <summary>
     /// The action representing a failed add.
     /// </summary>
-    public class AddFailAction : BaseFailAction
-    {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="AddFailAction"/> class.
-        /// </summary>
-        /// <param name="error">The request error.</param>
-        public AddFailAction(RequestError error)
-            : base(error)
-        {
-        }
-    }
+    public record AddFailureAction : BaseFailureAction;
 
     /// <summary>
     /// The action representing a successful add.
     /// </summary>
-    public class AddSuccessAction : BaseSuccessAction<RequestResult<AdminTagView>>
-    {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="AddSuccessAction"/> class.
-        /// </summary>
-        /// <param name="data">AdminTagView data.</param>
-        public AddSuccessAction(RequestResult<AdminTagView> data)
-            : base(data)
-        {
-        }
-    }
+    public record AddSuccessAction : BaseSuccessAction<RequestResult<AdminTagView>>;
 
     /// <summary>
     /// The action representing the initiation of a load.
     /// </summary>
-    public class LoadAction
-    {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="LoadAction"/> class.
-        /// </summary>
-        public LoadAction()
-        {
-        }
-    }
+    public record LoadAction;
 
     /// <summary>
     /// The action representing a failed load.
     /// </summary>
-    public class LoadFailAction : BaseFailAction
-    {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="LoadFailAction"/> class.
-        /// </summary>
-        /// <param name="error">The request error.</param>
-        public LoadFailAction(RequestError error)
-            : base(error)
-        {
-        }
-    }
+    public record LoadFailureAction : BaseFailureAction;
 
     /// <summary>
     /// The action representing a successful load.
     /// </summary>
-    public class LoadSuccessAction : BaseSuccessAction<RequestResult<IEnumerable<AdminTagView>>>
-    {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="LoadSuccessAction"/> class.
-        /// </summary>
-        /// <param name="requestResultModel">Tag data.</param>
-        public LoadSuccessAction(RequestResult<IEnumerable<AdminTagView>> requestResultModel)
-            : base(requestResultModel)
-        {
-        }
-    }
+    public record LoadSuccessAction : BaseSuccessAction<RequestResult<IEnumerable<AdminTagView>>>;
 
     /// <summary>
     /// The action representing the initiation of a deletion.
     /// </summary>
-    public class DeleteAction
+    public record DeleteAction
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="DeleteAction"/> class.
+        /// Gets the tag.
         /// </summary>
-        /// <param name="tag">Represents the tag model.</param>
-        public DeleteAction(AdminTagView tag)
-        {
-            this.AdminTagView = tag;
-        }
-
-        /// <summary>
-        /// Gets or sets the tag.
-        /// </summary>
-        public AdminTagView AdminTagView { get; set; }
+        public required AdminTagView AdminTagView { get; init; }
     }
 
     /// <summary>
     /// The action representing a failed deletion.
     /// </summary>
-    public class DeleteFailAction : BaseFailAction
-    {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DeleteFailAction"/> class.
-        /// </summary>
-        /// <param name="error">The request error.</param>
-        public DeleteFailAction(RequestError error)
-            : base(error)
-        {
-        }
-    }
+    public record DeleteFailureAction : BaseFailureAction;
 
     /// <summary>
     /// The action representing a successful deletion.
     /// </summary>
-    public class DeleteSuccessAction : BaseSuccessAction<RequestResult<AdminTagView>>
-    {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DeleteSuccessAction"/> class.
-        /// </summary>
-        /// <param name="data">AdminTagView data.</param>
-        public DeleteSuccessAction(RequestResult<AdminTagView> data)
-            : base(data)
-        {
-        }
-    }
+    public record DeleteSuccessAction : BaseSuccessAction<RequestResult<AdminTagView>>;
 
     /// <summary>
     /// The action that clears the state.
     /// </summary>
-    public class ResetStateAction
-    {
-    }
+    public record ResetStateAction;
 }

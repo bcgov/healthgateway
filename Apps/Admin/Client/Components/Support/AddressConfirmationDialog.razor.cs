@@ -40,7 +40,7 @@ using MudBlazor;
 /// </typeparam>
 /// <typeparam name="TSuccessAction">An action that indicates the action on confirmation completed successfully.</typeparam>
 public partial class AddressConfirmationDialog<TErrorAction, TSuccessAction> : FluxorComponent
-    where TErrorAction : BaseFailAction
+    where TErrorAction : BaseFailureAction
 {
     private string country = string.Empty;
 
@@ -262,10 +262,10 @@ public partial class AddressConfirmationDialog<TErrorAction, TSuccessAction> : F
         this.MudDialog.Close(DialogResult.Ok(this.GetAddressModel()));
     }
 
-    private void HandleActionFailed(BaseFailAction failAction)
+    private void HandleActionFailed(BaseFailureAction failureAction)
     {
         this.IsLoading = false;
-        this.Error = failAction.Error;
+        this.Error = failureAction.Error;
         this.StateHasChanged();
     }
 

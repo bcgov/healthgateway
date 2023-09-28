@@ -52,7 +52,7 @@ public static class CommunicationsReducers
     }
 
     [ReducerMethod]
-    public static CommunicationsState ReduceLoadFailAction(CommunicationsState state, CommunicationsActions.LoadFailAction action)
+    public static CommunicationsState ReduceLoadFailureAction(CommunicationsState state, CommunicationsActions.LoadFailureAction action)
     {
         return state with
         {
@@ -109,7 +109,7 @@ public static class CommunicationsReducers
     /// <param name="action">The add fail action.</param>
     /// <returns>The new state.</returns>
     [ReducerMethod]
-    public static CommunicationsState ReduceAddFailAction(CommunicationsState state, CommunicationsActions.AddFailAction action)
+    public static CommunicationsState ReduceAddFailureAction(CommunicationsState state, CommunicationsActions.AddFailureAction action)
     {
         return state with
         {
@@ -182,7 +182,7 @@ public static class CommunicationsReducers
     /// <param name="action">The update fail action.</param>
     /// <returns>The new state.</returns>
     [ReducerMethod]
-    public static CommunicationsState ReduceUpdateFailAction(CommunicationsState state, CommunicationsActions.UpdateFailAction action)
+    public static CommunicationsState ReduceUpdateFailureAction(CommunicationsState state, CommunicationsActions.UpdateFailureAction action)
     {
         return state with
         {
@@ -247,7 +247,7 @@ public static class CommunicationsReducers
     /// <param name="action">The delete fail action.</param>
     /// <returns>The new state.</returns>
     [ReducerMethod]
-    public static CommunicationsState ReduceDeleteFailAction(CommunicationsState state, CommunicationsActions.DeleteFailAction action)
+    public static CommunicationsState ReduceDeleteFailureAction(CommunicationsState state, CommunicationsActions.DeleteFailureAction action)
     {
         return state with
         {

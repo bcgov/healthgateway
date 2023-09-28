@@ -56,13 +56,13 @@ public class CommunicationsEffects
             if (response.ResultStatus == ResultType.Success)
             {
                 this.Logger.LogInformation("Communication added successfully!");
-                dispatcher.Dispatch(new CommunicationsActions.AddSuccessAction(response));
+                dispatcher.Dispatch(new CommunicationsActions.AddSuccessAction { Data = response });
             }
             else
             {
                 RequestError error = StoreUtility.FormatRequestError(response.ResultError);
                 this.Logger.LogError("Error adding communication, reason: {ErrorMessage}", error.Message);
-                dispatcher.Dispatch(new CommunicationsActions.AddFailAction(error));
+                dispatcher.Dispatch(new CommunicationsActions.AddFailureAction { Error = error });
             }
         }
         catch (Exception e) when (e is ApiException or HttpRequestException)
@@ -70,7 +70,7 @@ public class CommunicationsEffects
             this.Logger.LogError("Error adding communication...{Error}", e);
             RequestError error = StoreUtility.FormatRequestError(e);
             this.Logger.LogError("Error adding communication, reason: {ErrorMessage}", error.Message);
-            dispatcher.Dispatch(new CommunicationsActions.AddFailAction(error));
+            dispatcher.Dispatch(new CommunicationsActions.AddFailureAction { Error = error });
         }
     }
 
@@ -85,13 +85,13 @@ public class CommunicationsEffects
             if (response.ResultStatus == ResultType.Success)
             {
                 this.Logger.LogInformation("Communications loaded successfully!");
-                dispatcher.Dispatch(new CommunicationsActions.LoadSuccessAction(response));
+                dispatcher.Dispatch(new CommunicationsActions.LoadSuccessAction { Data = response });
             }
             else
             {
                 RequestError error = StoreUtility.FormatRequestError(response.ResultError);
                 this.Logger.LogError("Error loading communication, reason: {ErrorMessage}", error.Message);
-                dispatcher.Dispatch(new CommunicationsActions.LoadFailAction(error));
+                dispatcher.Dispatch(new CommunicationsActions.LoadFailureAction { Error = error });
             }
         }
         catch (Exception e) when (e is ApiException or HttpRequestException)
@@ -99,7 +99,7 @@ public class CommunicationsEffects
             this.Logger.LogError("Error loading communications...{Error}", e);
             RequestError error = StoreUtility.FormatRequestError(e);
             this.Logger.LogError("Error loading communications, reason: {ErrorMessage}", error.Message);
-            dispatcher.Dispatch(new CommunicationsActions.LoadFailAction(error));
+            dispatcher.Dispatch(new CommunicationsActions.LoadFailureAction { Error = error });
         }
     }
 
@@ -114,13 +114,13 @@ public class CommunicationsEffects
             if (response.ResultStatus == ResultType.Success)
             {
                 this.Logger.LogInformation("Communication updated successfully!");
-                dispatcher.Dispatch(new CommunicationsActions.UpdateSuccessAction(response));
+                dispatcher.Dispatch(new CommunicationsActions.UpdateSuccessAction { Data = response });
             }
             else
             {
                 RequestError error = StoreUtility.FormatRequestError(response.ResultError);
                 this.Logger.LogError("Error updating communication, reason: {ErrorMessage}", error.Message);
-                dispatcher.Dispatch(new CommunicationsActions.UpdateFailAction(error));
+                dispatcher.Dispatch(new CommunicationsActions.UpdateFailureAction { Error = error });
             }
         }
         catch (Exception e) when (e is ApiException or HttpRequestException)
@@ -128,7 +128,7 @@ public class CommunicationsEffects
             this.Logger.LogError("Error updating communication...{Error}", e);
             RequestError error = StoreUtility.FormatRequestError(e);
             this.Logger.LogError("Error updating communication, reason: {ErrorMessage}", error.Message);
-            dispatcher.Dispatch(new CommunicationsActions.UpdateFailAction(error));
+            dispatcher.Dispatch(new CommunicationsActions.UpdateFailureAction { Error = error });
         }
     }
 
@@ -143,13 +143,13 @@ public class CommunicationsEffects
             if (response.ResultStatus == ResultType.Success)
             {
                 this.Logger.LogInformation("Communication deleted successfully!");
-                dispatcher.Dispatch(new CommunicationsActions.DeleteSuccessAction(response));
+                dispatcher.Dispatch(new CommunicationsActions.DeleteSuccessAction { Data = response });
             }
             else
             {
                 RequestError error = StoreUtility.FormatRequestError(response.ResultError);
                 this.Logger.LogError("Error deleting communication, reason: {ErrorMessage}", error.Message);
-                dispatcher.Dispatch(new CommunicationsActions.DeleteFailAction(error));
+                dispatcher.Dispatch(new CommunicationsActions.DeleteFailureAction { Error = error });
             }
         }
         catch (Exception e) when (e is ApiException or HttpRequestException)
@@ -157,7 +157,7 @@ public class CommunicationsEffects
             this.Logger.LogError("Error deleting communication...{Error}", e);
             RequestError error = StoreUtility.FormatRequestError(e);
             this.Logger.LogError("Error deleting communication, reason: {ErrorMessage}", error.Message);
-            dispatcher.Dispatch(new CommunicationsActions.DeleteFailAction(error));
+            dispatcher.Dispatch(new CommunicationsActions.DeleteFailureAction { Error = error });
         }
     }
 }

@@ -27,294 +27,137 @@ using System.Diagnostics.CodeAnalysis;
 public static class DashboardActions
 {
     /// <summary>
-    /// The action representing the initiation of registered users load action.
+    /// The action representing the initiation of a registered users load.
     /// </summary>
-    public class LoadRegisteredUsersAction
+    public record LoadRegisteredUsersAction
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="LoadRegisteredUsersAction"/> class.
+        /// Gets the offset from the client browser to UTC.
         /// </summary>
-        /// <param name="timeOffset">The offset from the client browser to UTC.</param>
-        public LoadRegisteredUsersAction(int timeOffset)
-        {
-            this.TimeOffset = timeOffset;
-        }
-
-        /// <summary>
-        /// Gets or sets time offset.
-        /// </summary>
-        public int TimeOffset { get; set; }
+        public required int TimeOffset { get; init; }
     }
 
     /// <summary>
-    /// The action representing a successful registered user action.
+    /// The action representing a successful registered users load.
     /// </summary>
-    public class RegisteredUsersSuccessAction : BaseSuccessAction<IDictionary<DateTime, int>>
+    public record RegisteredUsersSuccessAction : BaseSuccessAction<IDictionary<DateTime, int>>;
+
+    /// <summary>
+    /// The action representing a failed registered users load.
+    /// </summary>
+    public record RegisteredUsersFailureAction : BaseFailureAction;
+
+    /// <summary>
+    /// The action representing the initiation of a logged in users load.
+    /// </summary>
+    public record LoadLoggedInUsersAction
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="RegisteredUsersSuccessAction"/> class.
+        /// Gets the offset from the client browser to UTC.
         /// </summary>
-        /// <param name="data">user data.</param>
-        public RegisteredUsersSuccessAction(IDictionary<DateTime, int> data)
-            : base(data)
-        {
-        }
+        public required int TimeOffset { get; init; }
     }
 
     /// <summary>
-    /// The action representing a failed registered user action.
+    /// The action representing a successful logged in users load.
     /// </summary>
-    public class RegisteredUsersFailAction : BaseFailAction
+    public record LoggedInUsersSuccessAction : BaseSuccessAction<IDictionary<DateTime, int>>;
+
+    /// <summary>
+    /// The action representing a failed logged in users load.
+    /// </summary>
+    public record LoggedInUsersFailureAction : BaseFailureAction;
+
+    /// <summary>
+    /// The action representing the initiation of a dependents load.
+    /// </summary>
+    public record LoadDependentsAction
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="RegisteredUsersFailAction"/> class.
+        /// Gets the offset from the client browser to UTC.
         /// </summary>
-        /// <param name="error">The request error.</param>
-        public RegisteredUsersFailAction(RequestError error)
-            : base(error)
-        {
-        }
+        public required int TimeOffset { get; init; }
     }
 
     /// <summary>
-    /// The action representing the initiation of logged in users load action.
+    /// The action representing a successful dependents load.
     /// </summary>
-    public class LoadLoggedInUsersAction
+    public record DependentsSuccessAction : BaseSuccessAction<IDictionary<DateTime, int>>;
+
+    /// <summary>
+    /// The action representing a failed dependents load.
+    /// </summary>
+    public record DependentsFailureAction : BaseFailureAction;
+
+    /// <summary>
+    /// The action representing the initiation of a recurring users load.
+    /// </summary>
+    public record LoadRecurringUsersAction
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="LoadLoggedInUsersAction"/> class.
+        /// Gets the minimum number of unique days logged in required to qualify as a recurring user.
         /// </summary>
-        /// <param name="timeOffset">The offset from the client browser to UTC.</param>
-        public LoadLoggedInUsersAction(int timeOffset)
-        {
-            this.TimeOffset = timeOffset;
-        }
+        public required int Days { get; init; }
 
         /// <summary>
-        /// Gets or sets time offset.
+        /// Gets the start of the period to evaluate.
         /// </summary>
-        public int TimeOffset { get; set; }
+        public required string StartPeriod { get; init; }
+
+        /// <summary>
+        /// Gets the end of the period to evaluate.
+        /// </summary>
+        public required string EndPeriod { get; init; }
+
+        /// <summary>
+        /// Gets the offset from the client browser to UTC.
+        /// </summary>
+        public required int TimeOffset { get; init; }
     }
 
     /// <summary>
-    /// The action representing a successful logged in user action.
+    /// The action representing a successful recurring users load.
     /// </summary>
-    public class LoggedInUsersSuccessAction : BaseSuccessAction<IDictionary<DateTime, int>>
+    public record RecurringUsersSuccessAction : BaseSuccessAction<IDictionary<string, int>>;
+
+    /// <summary>
+    /// The action representing a failed recurring users load.
+    /// </summary>
+    public record RecurringUsersFailureAction : BaseFailureAction;
+
+    /// <summary>
+    /// The action representing the initiation of a rating summary load.
+    /// </summary>
+    public record LoadRatingSummaryAction
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="LoggedInUsersSuccessAction"/> class.
+        /// Gets the start of the period to evaluate.
         /// </summary>
-        /// <param name="data">user data.</param>
-        public LoggedInUsersSuccessAction(IDictionary<DateTime, int> data)
-            : base(data)
-        {
-        }
+        public required string StartPeriod { get; init; }
+
+        /// <summary>
+        /// Gets the end of the period to evaluate.
+        /// </summary>
+        public required string EndPeriod { get; init; }
+
+        /// <summary>
+        /// Gets the offset from the client browser to UTC.
+        /// </summary>
+        public required int TimeOffset { get; init; }
     }
 
     /// <summary>
-    /// The action representing a failed logged in user action.
+    /// The action representing a successful rating summary load.
     /// </summary>
-    public class LoggedInUsersFailAction : BaseFailAction
-    {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="LoggedInUsersFailAction"/> class.
-        /// </summary>
-        /// <param name="error">The request error.</param>
-        public LoggedInUsersFailAction(RequestError error)
-            : base(error)
-        {
-        }
-    }
+    public record RatingSummarySuccessAction : BaseSuccessAction<IDictionary<string, int>>;
 
     /// <summary>
-    /// The action representing the initiation of dependents load action.
+    /// The action representing a failed rating summary load.
     /// </summary>
-    public class LoadDependentsAction
-    {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="LoadDependentsAction"/> class.
-        /// </summary>
-        /// <param name="timeOffset">The offset from the client browser to UTC.</param>
-        public LoadDependentsAction(int timeOffset)
-        {
-            this.TimeOffset = timeOffset;
-        }
-
-        /// <summary>
-        /// Gets or sets time offset.
-        /// </summary>
-        public int TimeOffset { get; set; }
-    }
-
-    /// <summary>
-    /// The action representing a successful dependents action.
-    /// </summary>
-    public class DependentsSuccessAction : BaseSuccessAction<IDictionary<DateTime, int>>
-    {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DependentsSuccessAction"/> class.
-        /// </summary>
-        /// <param name="data">user data.</param>
-        public DependentsSuccessAction(IDictionary<DateTime, int> data)
-            : base(data)
-        {
-        }
-    }
-
-    /// <summary>
-    /// The action representing a failed dependent action.
-    /// </summary>
-    public class DependentsFailAction : BaseFailAction
-    {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DependentsFailAction"/> class.
-        /// </summary>
-        /// <param name="error">The request error.</param>
-        public DependentsFailAction(RequestError error)
-            : base(error)
-        {
-        }
-    }
-
-    /// <summary>
-    /// The action representing the initiation of recurring users load action.
-    /// </summary>
-    public class LoadRecurringUsersAction
-    {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="LoadRecurringUsersAction"/> class.
-        /// </summary>
-        /// <param name="days">The number of unique days for evaluating a user.</param>
-        /// <param name="startPeriod">The period start over which to evaluate the user.</param>
-        /// <param name="endPeriod">The period end over which to evaluate the user.</param>
-        /// <param name="timeOffset">The offset from the client browser to UTC.</param>
-        public LoadRecurringUsersAction(int days, string startPeriod, string endPeriod, int timeOffset)
-        {
-            this.Days = days;
-            this.StartPeriod = startPeriod;
-            this.EndPeriod = endPeriod;
-            this.TimeOffset = timeOffset;
-        }
-
-        /// <summary>
-        /// Gets or sets days.
-        /// </summary>
-        public int Days { get; set; }
-
-        /// <summary>
-        /// Gets or sets start period.
-        /// </summary>
-        public string StartPeriod { get; set; }
-
-        /// <summary>
-        /// Gets or sets end period.
-        /// </summary>
-        public string EndPeriod { get; set; }
-
-        /// <summary>
-        /// Gets or sets time offset.
-        /// </summary>
-        public int TimeOffset { get; set; }
-    }
-
-    /// <summary>
-    /// The action representing a successful recurring user counts action.
-    /// </summary>
-    public class RecurringUsersSuccessAction : BaseSuccessAction<IDictionary<string, int>>
-    {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="RecurringUsersSuccessAction"/> class.
-        /// </summary>
-        /// <param name="data">user data.</param>
-        public RecurringUsersSuccessAction(IDictionary<string, int> data)
-            : base(data)
-        {
-        }
-    }
-
-    /// <summary>
-    /// The action representing a failed recurring users action.
-    /// </summary>
-    public class RecurringUsersFailAction : BaseFailAction
-    {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="RecurringUsersFailAction"/> class.
-        /// </summary>
-        /// <param name="error">The request error.</param>
-        public RecurringUsersFailAction(RequestError error)
-            : base(error)
-        {
-        }
-    }
-
-    /// <summary>
-    /// The action representing the initiation of rating summary load action.
-    /// </summary>
-    public class LoadRatingSummaryAction
-    {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="LoadRatingSummaryAction"/> class.
-        /// </summary>
-        /// <param name="startPeriod">The period start over which to evaluate the user.</param>
-        /// <param name="endPeriod">The period end over which to evaluate the user.</param>
-        /// <param name="timeOffset">The offset from the client browser to UTC.</param>
-        public LoadRatingSummaryAction(string startPeriod, string endPeriod, int timeOffset)
-        {
-            this.StartPeriod = startPeriod;
-            this.EndPeriod = endPeriod;
-            this.TimeOffset = timeOffset;
-        }
-
-        /// <summary>
-        /// Gets or sets start period.
-        /// </summary>
-        public string StartPeriod { get; set; }
-
-        /// <summary>
-        /// Gets or sets end period.
-        /// </summary>
-        public string EndPeriod { get; set; }
-
-        /// <summary>
-        /// Gets or sets time offset.
-        /// </summary>
-        public int TimeOffset { get; set; }
-    }
-
-    /// <summary>
-    /// The action representing a successful rating summary action.
-    /// </summary>
-    public class RatingSummarySuccessAction : BaseSuccessAction<IDictionary<string, int>>
-    {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="RatingSummarySuccessAction"/> class.
-        /// </summary>
-        /// <param name="data">rating summary data.</param>
-        public RatingSummarySuccessAction(IDictionary<string, int> data)
-            : base(data)
-        {
-        }
-    }
-
-    /// <summary>
-    /// The action representing a failed load action.
-    /// </summary>
-    public class RatingSummaryFailAction : BaseFailAction
-    {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="RatingSummaryFailAction"/> class.
-        /// </summary>
-        /// <param name="error">The request error.</param>
-        public RatingSummaryFailAction(RequestError error)
-            : base(error)
-        {
-        }
-    }
+    public record RatingSummaryFailureAction : BaseFailureAction;
 
     /// <summary>
     /// The action that clears the state.
     /// </summary>
-    public class ResetStateAction
-    {
-    }
+    public record ResetStateAction;
 }
