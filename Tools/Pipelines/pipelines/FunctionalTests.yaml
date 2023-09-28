@@ -58,7 +58,7 @@ jobs:
       env: # Required environment settings and secrets for admin tests
         TERM: xterm
         CYPRESS_ADMIN_KEY: $(cypress.admin.key)
-        KEYCLOAK_PASSWORD: $(keycloak.pw)
+        KEYCLOAK_PW: $(keycloak.pw)
         IDIR_PASSWORD: $(idir.password)
         KEYCLOAK_ADMIN_SECRET: $(keycloak.admin.secret)
 
@@ -96,8 +96,8 @@ jobs:
       env: # Required environment settings and secrets for HG tests
         TERM: xterm
         CYPRESS_KEY: $(cypress.key)
-        BCSC_PASSWORD: $(bcsc.pw)
-        KEYCLOAK_PASSWORD: $(keycloak.pw)
+        BCSC_PW: $(bcsc.pw)
+        KEYCLOAK_PW: $(keycloak.pw)
         IDIR_PASSWORD: $(idir.password)
         PHONENUMBER: $(phoneNumber)
         KEYCLOAK_PHSA_CLIENT: $(keycloak.phsa.client)
