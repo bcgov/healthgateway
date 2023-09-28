@@ -36,7 +36,7 @@ describe("Support", () => {
         verifySupportTableResults(hdid, phn, 2);
 
         performSearch("Email", email);
-        verifySupportTableResults(hdid, phn, 2);
+        verifySingleSupportResult(emailHdid, emailPhn);
     });
 
     it("Verify no results hdid query.", () => {
