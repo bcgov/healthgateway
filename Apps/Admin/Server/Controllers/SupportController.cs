@@ -98,8 +98,9 @@ namespace HealthGateway.Admin.Server.Controllers
         {
             ClaimsPrincipal user = this.HttpContext.User;
             bool includeEverything = user.IsInRole("AdminUser") || user.IsInRole("AdminReviewer");
+            bool includeCovidDetails = user.IsInRole("SupportUser");
 
-            return await this.supportService.GetPatientSupportDetailsAsync(hdid, includeEverything, includeEverything, includeEverything, ct).ConfigureAwait(true);
+            return await this.supportService.GetPatientSupportDetailsAsync(hdid, includeEverything, includeEverything, includeEverything, includeCovidDetails, ct).ConfigureAwait(true);
         }
 
         /// <summary>
@@ -174,6 +175,7 @@ namespace HealthGateway.Admin.Server.Controllers
         [HttpPost]
         [Produces("application/json")]
         [Route("CovidAssessment")]
+        [Authorize(Roles = "SupportUser")]
         public async Task<CovidAssessmentResponse> SubmitCovidAssessment([FromBody] CovidAssessmentRequest request)
         {
             return await this.covidSupportService.SubmitCovidAssessmentAsync(request).ConfigureAwait(true);
