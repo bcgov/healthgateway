@@ -44,11 +44,11 @@ namespace HealthGateway.Admin.Common.Models
         /// <summary>
         /// Gets the vaccine details.
         /// </summary>
-        public required VaccineDetails VaccineDetails { get; init; }
+        public VaccineDetails? VaccineDetails { get; init; }
 
         /// <summary>
         /// Gets the COVID-19 treatment assessment details.
         /// </summary>
-        public required CovidAssessmentDetailsResponse CovidAssessmentDetails { get; init; }
+        public CovidAssessmentDetailsResponse? CovidAssessmentDetails { get; init; }
     }
 }

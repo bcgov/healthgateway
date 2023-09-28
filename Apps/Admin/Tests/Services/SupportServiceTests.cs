@@ -84,20 +84,24 @@ namespace HealthGateway.Admin.Tests.Services
         /// <param name="expectedAgentActions">Expected number of agent actions returned.</param>
         /// <param name="includeBlockedDataSources">Value indicating whether blocked data sources are included.</param>
         /// <param name="expectedBlockedDataSources">Expected number of blocked data sources returned.</param>
+        /// <param name="includeCovidDetails">Value indicating whether covid details are included.</param>
+        /// <param name="expectedCovidDetails">Value indicating if expected covid details are returned.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Theory]
-        [InlineData(true, "2", true, "1", true, "1")]
-        [InlineData(false, null, false, null, false, null)]
+        [InlineData(true, "2", true, "1", true, "1", true, false)]
+        [InlineData(false, null, false, null, false, null, false, true)]
         public async Task ShouldGetPatientSupportDetailsAsync(
             bool includeMessagingVerifications,
             string? expectedMessagingVerifications,
             bool includeAgentActions,
             string? expectedAgentActions,
             bool includeBlockedDataSources,
-            string? expectedBlockedDataSources)
+            string? expectedBlockedDataSources,
+            bool includeCovidDetails,
+            bool expectedCovidDetails)
         {
             // Arrange
-            PatientDetailsQuery patientQuery = new() { Hdid = Hdid, Source = PatientDetailSource.All, UseCache = true };
+            PatientDetailsQuery patientQuery = new() { Hdid = Hdid, Source = PatientDetailSource.All, UseCache = false };
             AccountDataAccess.Patient.Name commonName = GenerateName();
             AccountDataAccess.Patient.Name legalName = GenerateName("Jim", "Bo");
             Address physicalAddress = GenerateAddress(GenerateStreetLines());
@@ -126,14 +130,14 @@ namespace HealthGateway.Admin.Tests.Services
 
             // Act
             PatientSupportDetails actualResult =
-                await supportService.GetPatientSupportDetailsAsync(Hdid, includeMessagingVerifications, includeBlockedDataSources, includeAgentActions);
+                await supportService.GetPatientSupportDetailsAsync(Hdid, includeMessagingVerifications, includeBlockedDataSources, includeAgentActions, includeCovidDetails);
 
             // Assert
             Assert.Equal(expectedMessagingVerifications, actualResult.MessagingVerifications?.Count().ToString(CultureInfo.InvariantCulture));
             Assert.Equal(expectedAgentActions, actualResult.AgentActions?.Count().ToString(CultureInfo.InvariantCulture));
             Assert.Equal(expectedBlockedDataSources, actualResult.BlockedDataSources?.Count().ToString(CultureInfo.InvariantCulture));
-            Assert.Equal(vaccineDetails, actualResult.VaccineDetails);
-            Assert.Equal(covidAssessmentDetailsResponse, actualResult.CovidAssessmentDetails);
+            Assert.Equal(expectedCovidDetails, actualResult.VaccineDetails == null);
+            Assert.Equal(expectedCovidDetails, actualResult.CovidAssessmentDetails == null);
         }
 
         /// <summary>
@@ -144,7 +148,7 @@ namespace HealthGateway.Admin.Tests.Services
         public async Task GetPatientSupportDetailsAsyncThrowsClientRegistryRecordsNotFound()
         {
             // Arrange
-            PatientDetailsQuery query = new() { Hdid = Hdid, Source = PatientDetailSource.All, UseCache = true };
+            PatientDetailsQuery query = new() { Hdid = Hdid, Source = PatientDetailSource.All, UseCache = false };
             PatientModel? patient = null;
             IList<MessagingVerification> messagingVerifications = GenerateMessagingVerifications(SmsNumber, Email);
             ISupportService supportService = CreateSupportService(
@@ -157,7 +161,7 @@ namespace HealthGateway.Admin.Tests.Services
             // Act
             async Task Actual()
             {
-                await supportService.GetPatientSupportDetailsAsync(Hdid, true, true, true);
+                await supportService.GetPatientSupportDetailsAsync(Hdid, true, true, true, true);
             }
 
             // Verify
@@ -173,7 +177,7 @@ namespace HealthGateway.Admin.Tests.Services
         public async Task GetPatientSupportDetailsAsyncThrowsInvalidPhnDob()
         {
             // Arrange
-            PatientDetailsQuery query = new() { Hdid = Hdid, Source = PatientDetailSource.All, UseCache = true };
+            PatientDetailsQuery query = new() { Hdid = Hdid, Source = PatientDetailSource.All, UseCache = false };
             AccountDataAccess.Patient.Name commonName = GenerateName();
             AccountDataAccess.Patient.Name legalName = GenerateName("Jim", "Bo");
             Address physicalAddress = GenerateAddress(GenerateStreetLines());
@@ -190,7 +194,7 @@ namespace HealthGateway.Admin.Tests.Services
             // Act
             async Task Actual()
             {
-                await supportService.GetPatientSupportDetailsAsync(Hdid, true, true, true);
+                await supportService.GetPatientSupportDetailsAsync(Hdid, true, true, true, true);
             }
 
             // Verify
@@ -206,7 +210,7 @@ namespace HealthGateway.Admin.Tests.Services
         public async Task GetPatientSupportDetailsAsyncThrowsCannotFindAccessToken()
         {
             // Arrange
-            PatientDetailsQuery query = new() { Hdid = Hdid, Source = PatientDetailSource.All, UseCache = true };
+            PatientDetailsQuery query = new() { Hdid = Hdid, Source = PatientDetailSource.All, UseCache = false };
             AccountDataAccess.Patient.Name commonName = GenerateName();
             AccountDataAccess.Patient.Name legalName = GenerateName("Jim", "Bo");
             Address physicalAddress = GenerateAddress(GenerateStreetLines());
@@ -224,7 +228,7 @@ namespace HealthGateway.Admin.Tests.Services
             // Act
             async Task Actual()
             {
-                await supportService.GetPatientSupportDetailsAsync(Hdid, true, true, true);
+                await supportService.GetPatientSupportDetailsAsync(Hdid, true, true, true, true);
             }
 
             // Verify

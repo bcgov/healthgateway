@@ -20,6 +20,7 @@ module.exports = defineConfig({
             keycloak_username: "blazoradmin",
             keycloak_password: "",
             keycloak_reviewer_username: "blazorreviewer",
+            keycloak_support_username: "blazorsupport",
             keycloak_unauthorized_username: "healthgateway",
             keycloak_admin_client: "hg-keycloak",
         },
