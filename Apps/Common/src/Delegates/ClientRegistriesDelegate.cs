@@ -30,7 +30,6 @@ namespace HealthGateway.Common.Delegates
     using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Models;
     using Microsoft.AspNetCore.Http;
-    using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using ServiceReference;
 
@@ -39,13 +38,15 @@ namespace HealthGateway.Common.Delegates
     /// </summary>
     public class ClientRegistriesDelegate : IClientRegistriesDelegate
     {
-        private static readonly List<string> DefaultValidWarningResponseCodes = new()
-            { "BCHCIM.GD.1.0015", "BCHCIM.GD.1.0019", "BCHCIM.GD.1.0020", "BCHCIM.GD.1.0021", "BCHCIM.GD.1.0022", "BCHCIM.GD.1.0023", "BCHCIM.GD.1.0578" };
+        private static readonly List<string> WarningResponseCodes = new()
+        {
+            "BCHCIM.GD.0.0015", "BCHCIM.GD.1.0015", "BCHCIM.GD.0.0019", "BCHCIM.GD.1.0019", "BCHCIM.GD.0.0020", "BCHCIM.GD.1.0020", "BCHCIM.GD.0.0021", "BCHCIM.GD.1.0021", "BCHCIM.GD.0.0022",
+            "BCHCIM.GD.1.0022", "BCHCIM.GD.0.0023", "BCHCIM.GD.1.0023", "BCHCIM.GD.0.0578", "BCHCIM.GD.1.0578",
+        };
 
         private readonly QUPA_AR101102_PortType clientRegistriesClient;
         private readonly IHttpContextAccessor httpContextAccessor;
         private readonly ILogger<ClientRegistriesDelegate> logger;
-        private readonly List<string> validWarningResponseCodes;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ClientRegistriesDelegate"/> class.
@@ -54,17 +55,14 @@ namespace HealthGateway.Common.Delegates
         /// <param name="logger">The injected logger provider.</param>
         /// <param name="clientRegistriesClient">The injected client registries soap client.</param>
         /// <param name="httpContextAccessor">The HttpContext accessor.</param>
-        /// <param name="configuration">The Configuration to use.</param>
         public ClientRegistriesDelegate(
             ILogger<ClientRegistriesDelegate> logger,
             QUPA_AR101102_PortType clientRegistriesClient,
-            IHttpContextAccessor httpContextAccessor,
-            IConfiguration configuration)
+            IHttpContextAccessor httpContextAccessor)
         {
             this.logger = logger;
             this.clientRegistriesClient = clientRegistriesClient;
             this.httpContextAccessor = httpContextAccessor;
-            this.validWarningResponseCodes = configuration.GetSection("ClientRegistry:ValidWarningResponseCodes").Get<List<string>>() ?? DefaultValidWarningResponseCodes;
         }
 
         private static ActivitySource Source { get; } = new(nameof(ClientRegistriesDelegate));
@@ -246,7 +244,7 @@ namespace HealthGateway.Common.Delegates
                 };
             }
 
-            if (this.validWarningResponseCodes.Any(code => responseCode.Contains(code, StringComparison.InvariantCulture)))
+            if (WarningResponseCodes.Any(code => responseCode.Contains(code, StringComparison.InvariantCulture)))
             {
                 return new RequestResult<PatientModel>
                 {
@@ -350,7 +348,7 @@ namespace HealthGateway.Common.Delegates
                     patient.PostalAddress = MapAddress(Array.Find(addresses, a => Array.Exists(a.use, u => u == cs_PostalAddressUse.PST)));
                 }
 
-                if (this.validWarningResponseCodes.Any(code => responseCode.Contains(code, StringComparison.InvariantCulture)))
+                if (WarningResponseCodes.Any(code => responseCode.Contains(code, StringComparison.InvariantCulture)))
                 {
                     patient.ResponseCode = responseCode;
                 }

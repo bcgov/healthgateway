@@ -97,7 +97,7 @@ namespace HealthGateway.Admin.Tests.Services
             string? expectedBlockedDataSources)
         {
             // Arrange
-            PatientDetailsQuery patientQuery = new() { Hdid = Hdid, Source = PatientDetailSource.All, UseCache = true };
+            PatientDetailsQuery patientQuery = new() { Hdid = Hdid, Source = PatientDetailSource.All, UseCache = false };
             AccountDataAccess.Patient.Name commonName = GenerateName();
             AccountDataAccess.Patient.Name legalName = GenerateName("Jim", "Bo");
             Address physicalAddress = GenerateAddress(GenerateStreetLines());
@@ -144,7 +144,7 @@ namespace HealthGateway.Admin.Tests.Services
         public async Task GetPatientSupportDetailsAsyncThrowsClientRegistryRecordsNotFound()
         {
             // Arrange
-            PatientDetailsQuery query = new() { Hdid = Hdid, Source = PatientDetailSource.All, UseCache = true };
+            PatientDetailsQuery query = new() { Hdid = Hdid, Source = PatientDetailSource.All, UseCache = false };
             PatientModel? patient = null;
             IList<MessagingVerification> messagingVerifications = GenerateMessagingVerifications(SmsNumber, Email);
             ISupportService supportService = CreateSupportService(
@@ -173,7 +173,7 @@ namespace HealthGateway.Admin.Tests.Services
         public async Task GetPatientSupportDetailsAsyncThrowsInvalidPhnDob()
         {
             // Arrange
-            PatientDetailsQuery query = new() { Hdid = Hdid, Source = PatientDetailSource.All, UseCache = true };
+            PatientDetailsQuery query = new() { Hdid = Hdid, Source = PatientDetailSource.All, UseCache = false };
             AccountDataAccess.Patient.Name commonName = GenerateName();
             AccountDataAccess.Patient.Name legalName = GenerateName("Jim", "Bo");
             Address physicalAddress = GenerateAddress(GenerateStreetLines());
@@ -206,7 +206,7 @@ namespace HealthGateway.Admin.Tests.Services
         public async Task GetPatientSupportDetailsAsyncThrowsCannotFindAccessToken()
         {
             // Arrange
-            PatientDetailsQuery query = new() { Hdid = Hdid, Source = PatientDetailSource.All, UseCache = true };
+            PatientDetailsQuery query = new() { Hdid = Hdid, Source = PatientDetailSource.All, UseCache = false };
             AccountDataAccess.Patient.Name commonName = GenerateName();
             AccountDataAccess.Patient.Name legalName = GenerateName("Jim", "Bo");
             Address physicalAddress = GenerateAddress(GenerateStreetLines());
