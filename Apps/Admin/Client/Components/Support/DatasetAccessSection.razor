@@ -26,7 +26,7 @@
                         <MudItem xs="6" sm="4" md="3">
                             <MudSwitch
                                 T="bool"
-                                Label="@MapDataSourceToFriendlyText(dataSource)"
+                                Label="@FormattingUtility.FormatDataSource(dataSource)"
                                 UnCheckedColor="Color.Tertiary"
                                 Color="Color.Success"
                                 Checked="@IsBlocked(dataSource)"
