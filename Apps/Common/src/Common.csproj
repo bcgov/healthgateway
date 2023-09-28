@@ -48,7 +48,7 @@
         <PackageReference Include="OpenTelemetry.Extensions.Hosting" Version="1.6.0" />
         <PackageReference Include="OpenTelemetry.Instrumentation.Http" Version="1.0.0-rc8" />
         <PackageReference Include="System.Diagnostics.DiagnosticSource" Version="7.0.2" />
-        <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.32.3" />
+        <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.0.1" />
         <PackageReference Include="System.ServiceModel.Duplex" Version="6.0.0" />
         <PackageReference Include="System.ServiceModel.Http" Version="6.0.0" />
         <PackageReference Include="System.ServiceModel.NetTcp" Version="6.0.0" />
