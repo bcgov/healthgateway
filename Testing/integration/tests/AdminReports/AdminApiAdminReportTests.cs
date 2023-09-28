@@ -35,7 +35,7 @@ public class AdminApiAdminReportsTests : ScenarioContextBase<Program>
         IList<BlockedAccessRecord> expectedRecords = new List<BlockedAccessRecord>
         {
             new(
-                "EXTRIOYFPNX35TWEBUAJ3DNFDFXSYTBC6J4M76GYE3HC5ER2NKWQ",
+                "GO4DOSMRJ7MFKPPADDZ3FK2MOJ45SFKONJWR67XNLMZQFNEHDKDA",
                 new List<DataSource> { DataSource.ClinicalDocument, DataSource.Covid19TestResult }),
         };
 
