@@ -63,8 +63,15 @@ function handleClickNotificationAction(notification: Notification): void {
         router.push({ path: "/timeline" });
     } else if (notification.categoryName === AlertCategory.BctOdr) {
         router.push({ path: "/services" });
+    } else if (
+        notification.actionType === NotificationActionType.InternalLink
+    ) {
+        const fullInternalUrl = new URL(notification.actionUrl);
+        router.push({
+            path: fullInternalUrl.href.replace(fullInternalUrl.origin, ""),
+        });
     } else {
-        router.push({ path: notification.actionUrl });
+        window.open(notification.actionUrl, "_blank", "noopener");
     }
     notificationStore.isNotificationCenterOpen = false;
 }

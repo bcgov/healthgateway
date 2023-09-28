@@ -21,7 +21,6 @@ namespace AccountDataAccessTest
     using HealthGateway.AccountDataAccess.Patient;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.ErrorHandling;
-    using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using Moq;
     using ServiceReference;
@@ -236,8 +235,7 @@ namespace AccountDataAccessTest
             using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
             IClientRegistriesDelegate clientRegistryDelegate = new ClientRegistriesDelegate(
                 loggerFactory.CreateLogger<ClientRegistriesDelegate>(),
-                clientMock.Object,
-                GetConfiguration());
+                clientMock.Object);
 
             // Act
             PatientModel? actual = await clientRegistryDelegate.GetDemographicsAsync(OidType.Hdid, expectedHdId);
@@ -363,8 +361,7 @@ namespace AccountDataAccessTest
             using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
             IClientRegistriesDelegate clientRegistryDelegate = new ClientRegistriesDelegate(
                 loggerFactory.CreateLogger<ClientRegistriesDelegate>(),
-                clientMock.Object,
-                GetConfiguration());
+                clientMock.Object);
 
             // Act
             PatientModel? actual = await clientRegistryDelegate.GetDemographicsAsync(OidType.Hdid, expectedHdId);
@@ -512,8 +509,7 @@ namespace AccountDataAccessTest
             using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
             IClientRegistriesDelegate clientRegistryDelegate = new ClientRegistriesDelegate(
                 loggerFactory.CreateLogger<ClientRegistriesDelegate>(),
-                clientMock.Object,
-                GetConfiguration());
+                clientMock.Object);
 
             // Act
             PatientModel? actual = await clientRegistryDelegate.GetDemographicsAsync(OidType.Hdid, expectedHdId);
@@ -620,8 +616,7 @@ namespace AccountDataAccessTest
             using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
             IClientRegistriesDelegate clientRegistryDelegate = new ClientRegistriesDelegate(
                 loggerFactory.CreateLogger<ClientRegistriesDelegate>(),
-                clientMock.Object,
-                GetConfiguration());
+                clientMock.Object);
 
             // Act
             PatientModel? actual = await clientRegistryDelegate.GetDemographicsAsync(OidType.Phn, expectedPhn);
@@ -723,8 +718,7 @@ namespace AccountDataAccessTest
             using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
             IClientRegistriesDelegate clientRegistryDelegate = new ClientRegistriesDelegate(
                 loggerFactory.CreateLogger<ClientRegistriesDelegate>(),
-                clientMock.Object,
-                GetConfiguration());
+                clientMock.Object);
 
             // Act
             PatientModel? actual = await clientRegistryDelegate.GetDemographicsAsync(OidType.Phn, expectedPhn);
@@ -826,8 +820,7 @@ namespace AccountDataAccessTest
             using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
             IClientRegistriesDelegate clientRegistryDelegate = new ClientRegistriesDelegate(
                 loggerFactory.CreateLogger<ClientRegistriesDelegate>(),
-                clientMock.Object,
-                GetConfiguration());
+                clientMock.Object);
 
             // Act
             PatientModel? actual = await clientRegistryDelegate.GetDemographicsAsync(OidType.Phn, expectedPhn);
@@ -929,8 +922,7 @@ namespace AccountDataAccessTest
             using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
             IClientRegistriesDelegate clientRegistryDelegate = new ClientRegistriesDelegate(
                 loggerFactory.CreateLogger<ClientRegistriesDelegate>(),
-                clientMock.Object,
-                GetConfiguration());
+                clientMock.Object);
 
             // Act
             PatientModel? actual = await clientRegistryDelegate.GetDemographicsAsync(OidType.Phn, expectedPhn);
@@ -1039,8 +1031,7 @@ namespace AccountDataAccessTest
 
             return new ClientRegistriesDelegate(
                 new Mock<ILogger<ClientRegistriesDelegate>>().Object,
-                clientMock.Object,
-                GetConfiguration());
+                clientMock.Object);
         }
 
         private static HCIM_IN_GetDemographicsResponseIdentifiedPerson GetSubjectTarget(bool deceasedInd = false, bool noNames = false, bool noIds = false)
@@ -1144,21 +1135,6 @@ namespace AccountDataAccessTest
                     },
                 },
             };
-        }
-
-        private static IConfigurationRoot GetConfiguration()
-        {
-            ConfigurationBuilder configurationBuilder = new();
-            Dictionary<string, string> appSettingsData = new()
-            {
-                ["ClientRegistry:ValidWarningResponseCodes:1"] = "BCHCIM.GD.1.0019",
-                ["ClientRegistry:ValidWarningResponseCodes:3"] = "BCHCIM.GD.1.0021",
-                ["ClientRegistry:ValidWarningResponseCodes:5"] = "BCHCIM.GD.1.0022",
-                ["ClientRegistry:ValidWarningResponseCodes:7"] = "BCHCIM.GD.1.0023",
-            };
-            configurationBuilder.AddInMemoryCollection(appSettingsData!);
-
-            return configurationBuilder.Build();
         }
     }
 }

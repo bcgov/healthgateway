@@ -1,6 +1,6 @@
 @page "/covid-19-treatment-assessment"
 @layout MainLayout
-@attribute [Authorize(Roles = $"{Roles.Admin},{Roles.Reviewer},{Roles.Support}")]
+@attribute [Authorize(Roles = $"{Roles.Support}")]
 @using HealthGateway.Admin.Client.Store.PatientDetails
 @using HealthGateway.Admin.Client.Store.PatientSupport
 @using HealthGateway.Admin.Common.Constants

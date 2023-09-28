@@ -51,6 +51,9 @@ describe("Quick Links", () => {
             homePath
         );
 
+        // Validate home page has displayed before clicking on quick link.
+        cy.get("[data-testid=health-records-card]").should("be.visible");
+
         cy.log("Adding a quick link");
         cy.get(addQuickLinkButtonSelector)
             .should("be.visible")
@@ -131,6 +134,9 @@ describe("Quick Links", () => {
             AuthMethod.KeyCloak,
             homePath
         );
+
+        // Validate home page has displayed before clicking on quick link.
+        cy.get("[data-testid=health-records-card]").should("be.visible");
 
         cy.log("Opening add quick link modal");
         cy.get(addQuickLinkButtonSelector)
@@ -255,6 +261,9 @@ describe("Add Quick Link Modal", () => {
             AuthMethod.KeyCloak,
             homePath
         );
+
+        // Validate home page has displayed before clicking on quick link.
+        cy.get("[data-testid=health-records-card]").should("be.visible");
     });
 
     it("Add Quick Link  - Cancel when all selected", () => {
