@@ -175,6 +175,7 @@ namespace HealthGateway.Admin.Server.Controllers
         [HttpPost]
         [Produces("application/json")]
         [Route("CovidAssessment")]
+        [Authorize(Roles = "SupportUser")]
         public async Task<CovidAssessmentResponse> SubmitCovidAssessment([FromBody] CovidAssessmentRequest request)
         {
             return await this.covidSupportService.SubmitCovidAssessmentAsync(request).ConfigureAwait(true);
