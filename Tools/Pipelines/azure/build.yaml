@@ -18,12 +18,15 @@ jobs:
       vmImage: "ubuntu-latest" 
     steps:
     - task: CopyFiles@2
-      displayName: "Copying Deployment Artifacts"
+      displayName: 'Package Deployment Scripts'
       inputs:
-        SourceFolder: '$(Build.SourcesDirectory)/Tools/Pipelines'
-        Contents: 'scripts/** pipelines/**'
+        SourceFolder: Tools/Pipelines
+        Contents: |
+          pipelines/**
+          scripts/**
         TargetFolder: '$(Build.ArtifactStagingDirectory)'
-    - task: PublishPipelineArtifact@0
-      displayName: "Publishing Deployment Artifacts"
+    - task: PublishPipelineArtifact@1
+      displayName: 'Publish Deployment Artifacts'
       inputs:
-        targetPath: "$(Build.ArtifactStagingDirectory)"
+        targetPath: '$(Build.ArtifactStagingDirectory)'
+        artifact: drop
