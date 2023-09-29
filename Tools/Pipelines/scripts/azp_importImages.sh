@@ -21,5 +21,5 @@ for app in "${apps[@]}"; do
     variableName="RELEASE_ARTIFACTS_${artifactName^^}_BUILDNUMBER"
     build=$(eval echo \$$variableName)
     echo "Importing image for ${app} with build number: ${build}"
-    echo oc import-image "${app}:${build}" --from="${IMAGEREPO}/${app}:${build}" --confirm --reference-policy=local --output=name
+    oc import-image "${app}:${build}" --from="${IMAGEREPO}/${app}:${build}" --confirm --reference-policy=local --output=name
 done
