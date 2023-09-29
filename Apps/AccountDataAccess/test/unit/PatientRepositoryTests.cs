@@ -410,7 +410,7 @@ namespace AccountDataAccessTest
             BlockedAccess blockedAccess,
             Mock<IBlockedAccessDelegate>? blockedAccessDelegate = null)
         {
-            blockedAccessDelegate ??= blockedAccessDelegate ?? new();
+            blockedAccessDelegate = blockedAccessDelegate ?? new();
             blockedAccessDelegate.Setup(p => p.GetBlockedAccessAsync(It.IsAny<string>())).ReturnsAsync(blockedAccess);
             blockedAccessDelegate.Setup(p => p.GetDataSourcesAsync(It.IsAny<string>())).ReturnsAsync(blockedAccess.DataSources);
 
