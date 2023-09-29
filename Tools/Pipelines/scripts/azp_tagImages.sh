@@ -24,7 +24,7 @@ oc tag ${ImageRepo}gatewayapi:${RELEASE_ARTIFACTS_GATEWAYAPIIMAGE_BUILDNUMBER} g
 oc tag ${ImageRepo}hangfire:${RELEASE_ARTIFACTS_HANGFIREIMAGE_BUILDNUMBER} hangfire:$tag
 oc tag ${ImageRepo}hgcdogs:${RELEASE_ARTIFACTS_HGCDOGSIMAGE_BUILDNUMBER} hgcdogs:$tag
 oc tag ${ImageRepo}immunization:${RELEASE_ARTIFACTS_IMMSSERVICEIMAGE_BUILDNUMBER} immunization:$tag
-oc tag ${ImageRepo}laboratory:${RELEASE_ARTIFACTS_LABORATORYSERVICEIMAGE_BUILDNUMBER} laboratory:$tag
+oc tag ${ImageRepo}laboratory:${RELEASE_ARTIFACTS_LABORATORYIMAGE_BUILDNUMBER} laboratory:$tag
 oc tag ${ImageRepo}medication:${RELEASE_ARTIFACTS_MEDICATIONSERVICEIMAGE_BUILDNUMBER} medication:$tag
 oc tag ${ImageRepo}offline:${RELEASE_ARTIFACTS_OFFLINEIMAGE_BUILDNUMBER} offline:$tag
 oc tag ${ImageRepo}patient:${RELEASE_ARTIFACTS_PATIENTSERVICEIMAGE_BUILDNUMBER} patient:$tag
