@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-apps=("offline" "webclient" "admin" "adminwebclient" "encounter" "hangfire" "immunization" "laboratory" "medication" "mock" "patient" "gatewayapi" "clinicaldocument")
+apps=("offline" "webclient" "admin" "adminwebclient" "encounter" "hangfire" "immunization" "laboratory" "medication" "mock" "patient" "gatewayapi" "clinicaldocument" "hgcdogs")
 declare -A artifacts # associative array
 artifacts["offline"]="OfflineImage"
 artifacts["webclient"]="WebClientImage"
@@ -15,6 +15,7 @@ artifacts["mock"]="MockServiceImage"
 artifacts["patient"]="PatientServiceImage"
 artifacts["gatewayapi"]="GatewayApiImage"
 artifacts["clinicaldocument"]="ClinicalDocumentImage"
+artifacts["hgcdogs"]="HGCDogsImage"
 
 for app in "${apps[@]}"; do
     artifactName=${artifacts[$app]}
