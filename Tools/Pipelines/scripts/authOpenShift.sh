@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-OpenShiftToken=$1
-OpenShiftUri=$2
-OpenShiftLicense=$3
+OpenShiftToken=$OPENSHIFT_TOKEN
+OpenShiftUri=$OPENSHIFT_URI
+OpenShiftLicense=$OPENSHIFT_LICENSE
 
 if [ -z "$OpenShiftToken" ]; then
     echo "Error: OpenShift Token is not provided."

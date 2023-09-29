@@ -18,8 +18,8 @@ artifacts["clinicaldocument"]="ClinicalDocumentImage"
 
 for app in "${apps[@]}"; do
     artifactName=${artifacts[$app]}
-    variableName="Release.Artifacts.${artifactName}.BuildNumber"
+    variableName="RELEASE_ARTIFACTS_${artifactName^^}_BUILDNUMBER"
     build=$(eval echo \$$variableName)
-    echo "Importing image for $app with build number: $build"
-    oc import-image "$app:$build" --from="$(ImageRepo)/$app:$build" --confirm --reference-policy=local --output=name
+    echo "Importing image for ${app} with build number: ${build}"
+    echo oc import-image "${app}:${build}" --from="${IMAGEREPO}/${app}:${build}" --confirm --reference-policy=local --output=name
 done
