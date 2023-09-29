@@ -57,7 +57,7 @@ public static class AgentAccessReducers
     }
 
     [ReducerMethod]
-    public static AgentAccessState ReduceSearchFailAction(AgentAccessState state, AgentAccessActions.SearchFailAction action)
+    public static AgentAccessState ReduceSearchFailureAction(AgentAccessState state, AgentAccessActions.SearchFailureAction action)
     {
         return state with
         {
@@ -102,7 +102,7 @@ public static class AgentAccessReducers
     }
 
     [ReducerMethod]
-    public static AgentAccessState ReduceAddFailAction(AgentAccessState state, AgentAccessActions.AddFailAction action)
+    public static AgentAccessState ReduceAddFailureAction(AgentAccessState state, AgentAccessActions.AddFailureAction action)
     {
         return state with
         {
@@ -147,7 +147,7 @@ public static class AgentAccessReducers
     }
 
     [ReducerMethod]
-    public static AgentAccessState ReduceUpdateFailAction(AgentAccessState state, AgentAccessActions.UpdateFailAction action)
+    public static AgentAccessState ReduceUpdateFailureAction(AgentAccessState state, AgentAccessActions.UpdateFailureAction action)
     {
         return state with
         {
@@ -191,7 +191,7 @@ public static class AgentAccessReducers
     }
 
     [ReducerMethod]
-    public static AgentAccessState ReduceDeleteFailAction(AgentAccessState state, AgentAccessActions.DeleteFailAction action)
+    public static AgentAccessState ReduceDeleteFailureAction(AgentAccessState state, AgentAccessActions.DeleteFailureAction action)
     {
         return state with
         {

@@ -29,221 +29,99 @@ public static class AgentAccessActions
     /// <summary>
     /// The action representing the initiation of an add.
     /// </summary>
-    public class AddAction
+    public record AddAction
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="AddAction"/> class.
+        /// Gets the agent.
         /// </summary>
-        /// <param name="agent">The agent model.</param>
-        public AddAction(AdminAgent agent)
-        {
-            this.Agent = agent;
-        }
-
-        /// <summary>
-        /// Gets or sets the agent.
-        /// </summary>
-        public AdminAgent Agent { get; set; }
+        public required AdminAgent Agent { get; init; }
     }
 
     /// <summary>
     /// The action representing a failed add.
     /// </summary>
-    public class AddFailAction : BaseFailAction
-    {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="AddFailAction"/> class.
-        /// </summary>
-        /// <param name="error">The request error.</param>
-        public AddFailAction(RequestError error)
-            : base(error)
-        {
-        }
-    }
+    public record AddFailureAction : BaseFailureAction;
 
     /// <summary>
     /// The action representing a successful add.
     /// </summary>
-    public class AddSuccessAction : BaseSuccessAction<AdminAgent>
-    {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="AddSuccessAction"/> class.
-        /// </summary>
-        /// <param name="data">Agent data.</param>
-        public AddSuccessAction(AdminAgent data)
-            : base(data)
-        {
-        }
-    }
+    public record AddSuccessAction : BaseSuccessAction<AdminAgent>;
 
     /// <summary>
     /// The action representing the initiation of a search.
     /// </summary>
-    public class SearchAction
+    public record SearchAction
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="SearchAction"/> class.
+        /// Gets the query string to match agents against.
         /// </summary>
-        /// <param name="query">The query string to match agents against.</param>
-        public SearchAction(string query)
-        {
-            this.Query = query;
-        }
-
-        /// <summary>
-        /// Gets or sets the query string.
-        /// </summary>
-        public string Query { get; set; }
+        public required string Query { get; init; }
     }
 
     /// <summary>
     /// The action representing a failed search.
     /// </summary>
-    public class SearchFailAction : BaseFailAction
-    {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SearchFailAction"/> class.
-        /// </summary>
-        /// <param name="error">The request error.</param>
-        public SearchFailAction(RequestError error)
-            : base(error)
-        {
-        }
-    }
+    public record SearchFailureAction : BaseFailureAction;
 
     /// <summary>
     /// The action representing a successful search.
     /// </summary>
-    public class SearchSuccessAction : BaseSuccessAction<IEnumerable<AdminAgent>>
-    {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SearchSuccessAction"/> class.
-        /// </summary>
-        /// <param name="data">Agent data.</param>
-        public SearchSuccessAction(IEnumerable<AdminAgent> data)
-            : base(data)
-        {
-        }
-    }
+    public record SearchSuccessAction : BaseSuccessAction<IEnumerable<AdminAgent>>;
 
     /// <summary>
     /// The action representing the initiation of an update.
     /// </summary>
-    public class UpdateAction
+    public record UpdateAction
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="UpdateAction"/> class.
+        /// Gets the agent.
         /// </summary>
-        /// <param name="agent">The agent model.</param>
-        public UpdateAction(AdminAgent agent)
-        {
-            this.Agent = agent;
-        }
-
-        /// <summary>
-        /// Gets or sets the agent.
-        /// </summary>
-        public AdminAgent Agent { get; set; }
+        public required AdminAgent Agent { get; init; }
     }
 
     /// <summary>
     /// The action representing a failed update.
     /// </summary>
-    public class UpdateFailAction : BaseFailAction
-    {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="UpdateFailAction"/> class.
-        /// </summary>
-        /// <param name="error">The request error.</param>
-        public UpdateFailAction(RequestError error)
-            : base(error)
-        {
-        }
-    }
+    public record UpdateFailureAction : BaseFailureAction;
 
     /// <summary>
     /// The action representing a successful update.
     /// </summary>
-    public class UpdateSuccessAction : BaseSuccessAction<AdminAgent>
-    {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="UpdateSuccessAction"/> class.
-        /// </summary>
-        /// <param name="data">Agent data.</param>
-        public UpdateSuccessAction(AdminAgent data)
-            : base(data)
-        {
-        }
-    }
+    public record UpdateSuccessAction : BaseSuccessAction<AdminAgent>;
 
     /// <summary>
     /// The action representing the initiation of a deletion.
     /// </summary>
-    public class DeleteAction
+    public record DeleteAction
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="DeleteAction"/> class.
+        /// Gets the unique identifier for the agent.
         /// </summary>
-        /// <param name="id">The unique identifier for the agent.</param>
-        public DeleteAction(Guid id)
-        {
-            this.Id = id;
-        }
-
-        /// <summary>
-        /// Gets or sets the agent.
-        /// </summary>
-        public Guid Id { get; set; }
+        public required Guid Id { get; init; }
     }
 
     /// <summary>
     /// The action representing a failed deletion.
     /// </summary>
-    public class DeleteFailAction : BaseFailAction
-    {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DeleteFailAction"/> class.
-        /// </summary>
-        /// <param name="error">The request error.</param>
-        public DeleteFailAction(RequestError error)
-            : base(error)
-        {
-        }
-    }
+    public record DeleteFailureAction : BaseFailureAction;
 
     /// <summary>
     /// The action representing a successful deletion.
     /// </summary>
-    public class DeleteSuccessAction : BaseSuccessAction<Guid>
-    {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DeleteSuccessAction"/> class.
-        /// </summary>
-        /// <param name="id">The unique identifier for the agent.</param>
-        public DeleteSuccessAction(Guid id)
-            : base(id)
-        {
-        }
-    }
+    public record DeleteSuccessAction : BaseSuccessAction<Guid>;
 
     /// <summary>
     /// The action that clears any error encountered during an add.
     /// </summary>
-    public class ClearAddErrorAction
-    {
-    }
+    public record ClearAddErrorAction;
 
     /// <summary>
     /// The action that clears any error encountered during an update.
     /// </summary>
-    public class ClearUpdateErrorAction
-    {
-    }
+    public record ClearUpdateErrorAction;
 
     /// <summary>
     /// The action that clears the state.
     /// </summary>
-    public class ResetStateAction
-    {
-    }
+    public record ResetStateAction;
 }

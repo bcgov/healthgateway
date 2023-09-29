@@ -13,25 +13,30 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Admin.Client.Store
+namespace HealthGateway.Admin.Client.Api
 {
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
+    using HealthGateway.Admin.Common.Models;
+    using Refit;
+
     /// <summary>
-    /// The base class for a failed action.
+    /// API for retrieving reports.
     /// </summary>
-    public abstract class BaseFailAction
+    public interface IAdminReportApi
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="BaseFailAction"/> class.
+        /// Retrieves a collection of user HDIDs and their blocked data sources.
         /// </summary>
-        /// <param name="error">The request error.</param>
-        protected BaseFailAction(RequestError error)
-        {
-            this.Error = error;
-        }
+        /// <returns>A collection of <see cref="BlockedAccessRecord"/> records.</returns>
+        [Get("/BlockedAccess")]
+        Task<IEnumerable<BlockedAccessRecord>> GetBlockedAccessReport();
 
         /// <summary>
-        /// Gets the error associated with the failed action.
+        /// Retrieves a collection of user HDIDs that have dependents.
         /// </summary>
-        public RequestError Error { get; }
+        /// <returns>Collection of user HDIDs that have dependents attached.</returns>
+        [Get("/ProtectedDependents")]
+        Task<IEnumerable<string>> GetProtectedDependentsReport();
     }
 }

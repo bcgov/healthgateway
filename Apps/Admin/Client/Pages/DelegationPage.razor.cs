@@ -104,7 +104,7 @@ namespace HealthGateway.Admin.Client.Pages
             if (this.Form.IsValid)
             {
                 this.ResetDelegationState();
-                this.Dispatcher.Dispatch(new DelegationActions.SearchAction(StringManipulator.StripWhitespace(this.QueryParameter)));
+                this.Dispatcher.Dispatch(new DelegationActions.SearchAction { Phn = StringManipulator.StripWhitespace(this.QueryParameter) });
             }
         }
 
@@ -135,7 +135,7 @@ namespace HealthGateway.Admin.Client.Pages
 
             IDialogReference dialog = await this.Dialog
                 .ShowAsync<AuditReasonDialog<
-                    DelegationActions.ProtectDependentFailAction,
+                    DelegationActions.ProtectDependentFailureAction,
                     DelegationActions.ProtectDependentSuccessAction>>(
                     title,
                     parameters,

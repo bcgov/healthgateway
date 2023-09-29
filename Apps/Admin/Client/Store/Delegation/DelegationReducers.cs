@@ -55,7 +55,7 @@ namespace HealthGateway.Admin.Client.Store.Delegation
         }
 
         [ReducerMethod]
-        public static DelegationState ReduceSearchFailAction(DelegationState state, DelegationActions.SearchFailAction action)
+        public static DelegationState ReduceSearchFailureAction(DelegationState state, DelegationActions.SearchFailureAction action)
         {
             return state with
             {
@@ -95,7 +95,7 @@ namespace HealthGateway.Admin.Client.Store.Delegation
         }
 
         [ReducerMethod]
-        public static DelegationState ReduceDelegateSearchFailAction(DelegationState state, DelegationActions.DelegateSearchFailAction action)
+        public static DelegationState ReduceDelegateSearchFailureAction(DelegationState state, DelegationActions.DelegateSearchFailureAction action)
         {
             return state with
             {
@@ -196,7 +196,7 @@ namespace HealthGateway.Admin.Client.Store.Delegation
         }
 
         [ReducerMethod]
-        public static DelegationState ReduceProtectDependentFailAction(DelegationState state, DelegationActions.ProtectDependentFailAction action)
+        public static DelegationState ReduceProtectDependentFailureAction(DelegationState state, DelegationActions.ProtectDependentFailureAction action)
         {
             return state with
             {
@@ -245,7 +245,7 @@ namespace HealthGateway.Admin.Client.Store.Delegation
         }
 
         [ReducerMethod]
-        public static DelegationState ReduceUnprotectDependentFailAction(DelegationState state, DelegationActions.UnprotectDependentFailAction action)
+        public static DelegationState ReduceUnprotectDependentFailureAction(DelegationState state, DelegationActions.UnprotectDependentFailureAction action)
         {
             return state with
             {

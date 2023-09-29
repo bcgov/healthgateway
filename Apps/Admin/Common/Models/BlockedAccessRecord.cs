@@ -13,27 +13,15 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Admin.Client.Utils
+namespace HealthGateway.Admin.Common.Models
 {
+    using System.Collections.Generic;
     using HealthGateway.Common.Data.Constants;
 
     /// <summary>
-    /// Utilities for interacting with communications.
+    /// Represents a patient with blocked access to data sources.
     /// </summary>
-    public static class CommunicationUtility
-    {
-        /// <summary>
-        /// Returns the formatted representation of a communication's status.
-        /// </summary>
-        /// <param name="status">Status to be formatted</param>
-        /// <returns>Friendly string value representing status value.</returns>
-        public static string FormatCommunicationStatus(CommunicationStatus status)
-        {
-            return status switch
-            {
-                CommunicationStatus.New => "Publish",
-                _ => status.ToString(),
-            };
-        }
-    }
+    /// <param name="Hdid">Patient's HDID.</param>
+    /// <param name="BlockedSources">List of <see cref="DataSource"/> that are blocked</param>
+    public record BlockedAccessRecord(string Hdid, IList<DataSource> BlockedSources);
 }

@@ -216,7 +216,7 @@ VALUES (
 	'Web'
 );
 
-/* PHN: 9735352535 used for admin covid assessment */
+/* PHN: 9735352535 used for admin covid assessment and blocked dataset tests */
 INSERT INTO gateway."UserProfile"(
 	"UserProfileId", 
 	"CreatedBy", 
@@ -1558,4 +1558,37 @@ VALUES (
 	current_timestamp - INTERVAL '2 day', 
 	'System',
 	current_timestamp - INTERVAL '2 day'
+);
+
+
+INSERT INTO gateway."BlockedAccess"(
+	"Hdid", 
+	"DataSources", 
+	"CreatedBy", 
+	"CreatedDateTime", 
+	"UpdatedBy", 
+	"UpdatedDateTime")
+VALUES (
+		'GO4DOSMRJ7MFKPPADDZ3FK2MOJ45SFKONJWR67XNLMZQFNEHDKDA', 
+		'["ClinicalDocument","Covid19TestResult"]', 
+		'System', 
+		current_timestamp - INTERVAL '2 day', 
+		'System', 
+		current_timestamp - INTERVAL '2 day'
+);
+
+INSERT INTO gateway."BlockedAccess"(
+	"Hdid", 
+	"DataSources", 
+	"CreatedBy", 
+	"CreatedDateTime", 
+	"UpdatedBy", 
+	"UpdatedDateTime")
+VALUES (
+		'S22BPV6WHS5TRLBL4XKGQDBVDUKLPIRSBGYSEJAHYMYRP22SP2TA', 
+		'[]', 
+		'System', 
+		current_timestamp - INTERVAL '2 day', 
+		'System', 
+		current_timestamp - INTERVAL '2 day'
 );

@@ -27,38 +27,16 @@ namespace HealthGateway.Admin.Client.Store.Configuration
         /// <summary>
         /// The action representing the initiation of a load.
         /// </summary>
-        public class LoadAction
-        {
-        }
+        public record LoadAction;
 
         /// <summary>
         /// The action representing a failed load.
         /// </summary>
-        public class LoadFailAction : BaseFailAction
-        {
-            /// <summary>
-            /// Initializes a new instance of the <see cref="LoadFailAction"/> class.
-            /// </summary>
-            /// <param name="error">The request error.</param>
-            public LoadFailAction(RequestError error)
-                : base(error)
-            {
-            }
-        }
+        public record LoadFailureAction : BaseFailureAction;
 
         /// <summary>
         /// The action representing a successful load.
         /// </summary>
-        public class LoadSuccessAction : BaseSuccessAction<ExternalConfiguration>
-        {
-            /// <summary>
-            /// Initializes a new instance of the <see cref="LoadSuccessAction"/> class.
-            /// </summary>
-            /// <param name="data">ExternalConfiguration data.</param>
-            public LoadSuccessAction(ExternalConfiguration data)
-                : base(data)
-            {
-            }
-        }
+        public record LoadSuccessAction : BaseSuccessAction<ExternalConfiguration>;
     }
 }

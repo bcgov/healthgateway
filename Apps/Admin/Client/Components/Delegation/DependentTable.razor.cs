@@ -92,7 +92,7 @@ namespace HealthGateway.Admin.Client.Components.Delegation
 
             IDialogReference dialog = await this.Dialog
                 .ShowAsync<AuditReasonDialog<
-                    DelegationActions.UnprotectDependentFailAction,
+                    DelegationActions.UnprotectDependentFailureAction,
                     DelegationActions.UnprotectDependentSuccessAction>>(
                     title,
                     parameters,

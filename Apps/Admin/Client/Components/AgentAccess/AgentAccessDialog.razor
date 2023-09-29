@@ -45,7 +45,7 @@
                         @foreach (KeycloakIdentityProvider identityProvider in IdentityProviders)
                         {
                             <MudSelectItem T="KeycloakIdentityProvider" Value="@identityProvider" data-testid="identity-provider">
-                                @AgentUtility.FormatKeycloakIdentityProvider(identityProvider)
+                                @FormattingUtility.FormatKeycloakIdentityProvider(identityProvider)
                             </MudSelectItem>
                         }
                     </HgSelect>

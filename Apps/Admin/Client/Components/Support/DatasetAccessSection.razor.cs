@@ -88,26 +88,6 @@ namespace HealthGateway.Admin.Client.Components.Support
             this.SetBlockedDataSources();
         }
 
-        private static string MapDataSourceToFriendlyText(DataSource dataSource)
-        {
-            return dataSource switch
-            {
-                DataSource.ClinicalDocument => "Clinical Documents",
-                DataSource.Immunization => "Immunizations",
-                DataSource.LabResult => "Laboratory Results",
-                DataSource.DiagnosticImaging => "Diagnostic Imaging",
-                DataSource.Medication => "Medications",
-                DataSource.Note => "Notes",
-                DataSource.HealthVisit => "Health Visits",
-                DataSource.HospitalVisit => "Hospital Visits",
-                DataSource.Covid19TestResult => "COVID-19 Test Results",
-                DataSource.OrganDonorRegistration => "Organ Donor Registration",
-                DataSource.SpecialAuthorityRequest => "Special Authority Requests",
-                DataSource.BcCancerScreening => "BC Cancer Screening",
-                _ => dataSource.ToString(),
-            };
-        }
-
         private void SetBlockedDataSources()
         {
             this.blockedDataSources = this.Data.ToList();

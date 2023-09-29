@@ -48,13 +48,13 @@ namespace HealthGateway.Admin.Client.Store.Configuration
             {
                 ExternalConfiguration response = await this.ConfigApi.GetConfigurationAsync().ConfigureAwait(true);
                 this.Logger.LogInformation("External configuration loaded successfully!");
-                dispatcher.Dispatch(new ConfigurationActions.LoadSuccessAction(response));
+                dispatcher.Dispatch(new ConfigurationActions.LoadSuccessAction { Data = response });
             }
             catch (ApiException ex)
             {
                 RequestError error = StoreUtility.FormatRequestError(ex);
                 this.Logger.LogError("Error loading external configuration, reason: {ErrorMessage}", error.Message);
-                dispatcher.Dispatch(new ConfigurationActions.LoadFailAction(error));
+                dispatcher.Dispatch(new ConfigurationActions.LoadFailureAction { Error = error });
             }
         }
     }

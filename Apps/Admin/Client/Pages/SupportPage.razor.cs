@@ -141,17 +141,6 @@ namespace HealthGateway.Admin.Client.Pages
             this.ActionSubscriber.SubscribeToAction<PatientSupportActions.LoadSuccessAction>(this, this.CheckForSingleResult);
         }
 
-        private static string FormatQueryType(PatientQueryType queryType)
-        {
-            return queryType switch
-            {
-                PatientQueryType.Hdid => "HDID",
-                PatientQueryType.Phn => "PHN",
-                PatientQueryType.Sms => "SMS",
-                _ => queryType.ToString(),
-            };
-        }
-
         private bool UserHasRole(string role)
         {
             return this.AuthenticationState?.User.IsInRole(role) == true;

@@ -54,19 +54,19 @@ public class AgentAccessEffects
         {
             AdminAgent response = await this.Api.ProvisionAgentAccessAsync(action.Agent).ConfigureAwait(true);
             this.Logger.LogInformation("Agent added successfully");
-            dispatcher.Dispatch(new AgentAccessActions.AddSuccessAction(response));
+            dispatcher.Dispatch(new AgentAccessActions.AddSuccessAction { Data = response });
         }
         catch (ApiException e) when (e.StatusCode == HttpStatusCode.Conflict)
         {
             RequestError error = new() { Message = "User already exists" };
             this.Logger.LogInformation("Agent already exists");
-            dispatcher.Dispatch(new AgentAccessActions.AddFailAction(error));
+            dispatcher.Dispatch(new AgentAccessActions.AddFailureAction { Error = error });
         }
         catch (Exception e) when (e is ApiException or HttpRequestException)
         {
             RequestError error = StoreUtility.FormatRequestError(e);
             this.Logger.LogError("Error adding agent, reason: {Exception}", e.ToString());
-            dispatcher.Dispatch(new AgentAccessActions.AddFailAction(error));
+            dispatcher.Dispatch(new AgentAccessActions.AddFailureAction { Error = error });
         }
     }
 
@@ -78,13 +78,13 @@ public class AgentAccessEffects
         {
             IEnumerable<AdminAgent> response = await this.Api.GetAgentsAsync(action.Query).ConfigureAwait(true);
             this.Logger.LogInformation("Agents retrieved successfully");
-            dispatcher.Dispatch(new AgentAccessActions.SearchSuccessAction(response));
+            dispatcher.Dispatch(new AgentAccessActions.SearchSuccessAction { Data = response });
         }
         catch (Exception e) when (e is ApiException or HttpRequestException)
         {
             RequestError error = StoreUtility.FormatRequestError(e);
             this.Logger.LogError(e, "Error retrieving agents, reason: {Exception}", e.ToString());
-            dispatcher.Dispatch(new AgentAccessActions.SearchFailAction(error));
+            dispatcher.Dispatch(new AgentAccessActions.SearchFailureAction { Error = error });
         }
     }
 
@@ -96,13 +96,13 @@ public class AgentAccessEffects
         {
             AdminAgent agent = await this.Api.UpdateAgentAccessAsync(action.Agent).ConfigureAwait(true);
             this.Logger.LogInformation("Agent access updated successfully");
-            dispatcher.Dispatch(new AgentAccessActions.UpdateSuccessAction(agent));
+            dispatcher.Dispatch(new AgentAccessActions.UpdateSuccessAction { Data = agent });
         }
         catch (Exception e) when (e is ApiException or HttpRequestException)
         {
             RequestError error = StoreUtility.FormatRequestError(e);
             this.Logger.LogError("Error updating agent access, reason: {Exception}", e.ToString());
-            dispatcher.Dispatch(new AgentAccessActions.UpdateFailAction(error));
+            dispatcher.Dispatch(new AgentAccessActions.UpdateFailureAction { Error = error });
         }
     }
 
@@ -114,13 +114,13 @@ public class AgentAccessEffects
         {
             await this.Api.RemoveAgentAccessAsync(action.Id).ConfigureAwait(true);
             this.Logger.LogInformation("Agent access removed successfully");
-            dispatcher.Dispatch(new AgentAccessActions.DeleteSuccessAction(action.Id));
+            dispatcher.Dispatch(new AgentAccessActions.DeleteSuccessAction { Data = action.Id });
         }
         catch (Exception e) when (e is ApiException or HttpRequestException)
         {
             RequestError error = StoreUtility.FormatRequestError(e);
             this.Logger.LogError("Error removing agent access, reason: {Exception}", e.ToString());
-            dispatcher.Dispatch(new AgentAccessActions.DeleteFailAction(error));
+            dispatcher.Dispatch(new AgentAccessActions.DeleteFailureAction { Error = error });
         }
     }
 }

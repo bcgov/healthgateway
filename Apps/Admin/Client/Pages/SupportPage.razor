@@ -32,7 +32,9 @@
                 data-testid="query-type-select">
                 @foreach (PatientQueryType queryType in QueryTypes)
                 {
-                    <MudSelectItem Value="@queryType" data-testid="query-type">@FormatQueryType(queryType)</MudSelectItem>
+                    <MudSelectItem Value="@queryType" data-testid="query-type">
+                        @FormattingUtility.FormatPatientQueryType(queryType)
+                    </MudSelectItem>
                 }
             </HgSelect>
         </MudItem>
@@ -42,7 +44,7 @@
                 {
                     <HgTextField
                         T="string"
-                        Label="@FormatQueryType(PatientQueryType.Phn)"
+                        Label="@FormattingUtility.FormatPatientQueryType(PatientQueryType.Phn)"
                         Required="@true"
                         Validation="@ValidateQueryParameter"
                         Mask="@Mask.PhnMask"
@@ -56,7 +58,7 @@
                 {
                     <HgTextField
                         T="string"
-                        Label="@FormatQueryType(SelectedQueryType)"
+                        Label="@FormattingUtility.FormatPatientQueryType(SelectedQueryType)"
                         Required="@true"
                         Validation="@ValidateQueryParameter"
                         @bind-Value="QueryParameter"
@@ -109,7 +111,7 @@
     <MudGrid>
         <MudItem xs="12" lg="12">
             <MudText Class="mt-3" Typo="Typo.subtitle1">
-                @FormatQueryType(SelectedQueryType) Query Results
+                @FormattingUtility.FormatPatientQueryType(SelectedQueryType) Query Results
             </MudText>
             <MudTable Class="mt-3"
                       Items="PatientRows"

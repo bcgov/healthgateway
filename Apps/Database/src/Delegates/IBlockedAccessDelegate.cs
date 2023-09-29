@@ -16,6 +16,7 @@
 namespace HealthGateway.Database.Delegates
 {
     using System.Collections.Generic;
+    using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Database.Models;
@@ -54,5 +55,12 @@ namespace HealthGateway.Database.Delegates
         /// <param name="agentAudit">The agent audit to create.</param>
         /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
         Task UpdateBlockedAccessAsync(BlockedAccess blockedAccess, AgentAudit agentAudit);
+
+        /// <summary>
+        /// Retrieves all blocked access records.
+        /// </summary>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
+        /// <returns>A collection of records of user HDIDs with the data sources currently blocked.</returns>
+        Task<IList<BlockedAccess>> GetAllAsync(CancellationToken ct);
     }
 }

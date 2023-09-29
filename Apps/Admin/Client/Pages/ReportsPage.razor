@@ -1,0 +1,102 @@
+@page "/reports"
+@layout MainLayout
+@attribute [Authorize(Roles = $"{Roles.Admin}")]
+@using HealthGateway.Admin.Client.Store.AdminReport
+@using HealthGateway.Admin.Common.Models
+@inherits Fluxor.Blazor.Web.Components.FluxorComponent
+
+<PageTitle>Health Gateway Admin Reports</PageTitle>
+<HgPageHeading>Reports</HgPageHeading>
+
+<HgBannerFeedback
+    Severity="@Severity.Error"
+    IsEnabled="@(HasBlockedAccessError)"
+    TResetAction="@AdminReportActions.ResetStateAction"
+    Class="mt-4">
+    @BlockedAccessErrorMessage
+</HgBannerFeedback>
+
+<HgBannerFeedback
+    Severity="@Severity.Error"
+    IsEnabled="@(HasProtectedDependentsError)"
+    TResetAction="@AdminReportActions.ResetStateAction"
+    Class="mt-4">
+    @ProtectedDependentsErrorMessage
+</HgBannerFeedback>
+
+<MudText Class="mt-4" Typo="Typo.subtitle1">
+    Protected Dependents
+</MudText>
+<MudTable
+    Class="mt-4"
+    Loading="@(ProtectedDependentsState.IsLoading)"
+    Items="@ProtectedDependentHdids"
+    AllowUnsorted="@false"
+    Striped="@true"
+    Dense="@true"
+    RowsPerPage="20"
+    data-testid="protected-dependents-table">
+    <HeaderContent>
+        <MudTh>
+            <MudTableSortLabel
+                SortBy="new Func<string, object>(x => x)"
+                InitialDirection="@SortDirection.Ascending">
+                HDID
+            </MudTableSortLabel>
+        </MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd data-testid="protected-dependent-hdid" DataLabel="HDID">@context</MudTd>
+    </RowTemplate>
+    <PagerContent>
+        <MudTablePager PageSizeOptions="new[]{20, 50, 100}" />
+    </PagerContent>
+</MudTable>
+
+<MudText Class="mt-4" Typo="Typo.subtitle1">
+    Blocked Datasets
+</MudText>
+<MudTable
+    Class="mt-4"
+    T="BlockedAccessRecord"
+    Loading="@(BlockedAccessState.IsLoading)"
+    Items="@BlockedAccessRecords"
+    AllowUnsorted="@false"
+    Breakpoint="@Breakpoint.Md"
+    Striped="@true"
+    Dense="@true"
+    RowsPerPage="20"
+    OnRowClick="@HandleBlockedAccessRowClick"
+    RowClass="cursor-pointer"
+    data-testid="blocked-access-table">
+    <ColGroup>
+        <MudHidden Breakpoint="@Breakpoint.MdAndDown">
+            <col style="width: 600px;" />
+            <col />
+        </MudHidden>
+    </ColGroup>
+    <HeaderContent>
+        <MudTh>
+            <MudTableSortLabel
+                SortBy="new Func<BlockedAccessRecord, object>(x => x.Hdid)"
+                InitialDirection="@SortDirection.Ascending">
+                HDID
+            </MudTableSortLabel>
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel
+                SortBy="new Func<BlockedAccessRecord, object>(x => x.BlockedSources.Count)">
+                Datasets
+            </MudTableSortLabel>
+        </MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd data-testid="blocked-access-hdid" DataLabel="HDID">@context.Hdid</MudTd>
+        <MudTd data-testid="blocked-access-datasets" DataLabel="Datasets">
+            @string.Join(", ", context.BlockedSources.Select(FormattingUtility.FormatDataSource).OrderBy(d => d))
+        </MudTd>
+    </RowTemplate>
+    <PagerContent>
+        <MudTablePager PageSizeOptions="new[]{20, 50, 100}" />
+    </PagerContent>
+</MudTable>

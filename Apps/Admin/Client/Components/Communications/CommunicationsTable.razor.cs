@@ -61,7 +61,7 @@ namespace HealthGateway.Admin.Client.Components.Communications
 
         private void ToggleExpandRow(Guid id)
         {
-            this.Dispatcher.Dispatch(new CommunicationsActions.ToggleIsExpandedAction(id));
+            this.Dispatcher.Dispatch(new CommunicationsActions.ToggleIsExpandedAction { Id = id });
         }
 
         private async Task EditCommunicationAsync(Guid id)
@@ -81,7 +81,7 @@ namespace HealthGateway.Admin.Client.Components.Communications
                 ExtendedCommunication? communication = this.Data.FirstOrDefault(c => c.Id == id);
                 if (communication != null)
                 {
-                    this.Dispatcher.Dispatch(new CommunicationsActions.DeleteAction(communication));
+                    this.Dispatcher.Dispatch(new CommunicationsActions.DeleteAction { Communication = communication });
                 }
             }
         }
@@ -92,7 +92,7 @@ namespace HealthGateway.Admin.Client.Components.Communications
             {
                 this.Id = model.Id;
                 this.Subject = model.Subject;
-                this.Status = CommunicationUtility.FormatCommunicationStatus(model.CommunicationStatusCode);
+                this.Status = FormattingUtility.FormatCommunicationStatus(model.CommunicationStatusCode);
                 this.EffectiveDate = model.EffectiveDateTime;
                 this.ExpiryDate = model.ExpiryDateTime;
                 this.Text = (MarkupString)model.Text;

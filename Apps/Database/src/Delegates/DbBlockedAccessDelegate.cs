@@ -17,6 +17,7 @@ namespace HealthGateway.Database.Delegates
 {
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Database.Context;
@@ -91,6 +92,13 @@ namespace HealthGateway.Database.Delegates
             this.dbContext.AgentAudit.Add(agentAudit);
 
             await this.dbContext.SaveChangesAsync().ConfigureAwait(true);
+        }
+
+        /// <inheritdoc/>
+        public async Task<IList<BlockedAccess>> GetAllAsync(CancellationToken ct)
+        {
+            return await this.dbContext.BlockedAccess
+                .ToListAsync(ct);
         }
     }
 }

@@ -105,11 +105,11 @@ public partial class AgentAccessDialog : FluxorComponent
         {
             if (this.IsEdit)
             {
-                this.Dispatcher.Dispatch(new AgentAccessActions.UpdateAction(this.Agent));
+                this.Dispatcher.Dispatch(new AgentAccessActions.UpdateAction { Agent = this.Agent });
             }
             else
             {
-                this.Dispatcher.Dispatch(new AgentAccessActions.AddAction(this.Agent));
+                this.Dispatcher.Dispatch(new AgentAccessActions.AddAction { Agent = this.Agent });
             }
         }
     }

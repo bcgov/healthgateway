@@ -95,7 +95,7 @@ public static class AnalyticsReducers
     }
 
     [ReducerMethod]
-    public static AnalyticsState ReduceLoadFailAction(AnalyticsState state, AnalyticsActions.LoadFailAction action)
+    public static AnalyticsState ReduceLoadFailureAction(AnalyticsState state, AnalyticsActions.LoadFailureAction action)
     {
         return state with
         {

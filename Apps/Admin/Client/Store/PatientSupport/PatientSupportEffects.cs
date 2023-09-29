@@ -52,13 +52,13 @@ namespace HealthGateway.Admin.Client.Store.PatientSupport
             {
                 IList<PatientSupportResult> response = await this.SupportApi.GetPatientsAsync(action.QueryType, action.QueryString).ConfigureAwait(true);
                 this.Logger.LogInformation("Patients loaded successfully!");
-                dispatcher.Dispatch(new PatientSupportActions.LoadSuccessAction(response));
+                dispatcher.Dispatch(new PatientSupportActions.LoadSuccessAction { Data = response });
             }
             catch (Exception e) when (e is ApiException or HttpRequestException)
             {
                 RequestError error = StoreUtility.FormatRequestError(e);
                 this.Logger.LogError("Error loading patients, reason: {ErrorMessage}", error.Message);
-                dispatcher.Dispatch(new PatientSupportActions.LoadFailAction(error));
+                dispatcher.Dispatch(new PatientSupportActions.LoadFailureAction { Error = error });
             }
         }
     }
