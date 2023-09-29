@@ -18,11 +18,15 @@ namespace HealthGateway.JobScheduler.Jobs
     using System;
     using System.Collections.Generic;
     using System.Net.Http;
+    using System.Threading;
     using Hangfire;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.AccessManagement.Authentication.Models;
     using HealthGateway.Common.Api;
+    using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.Models;
+    using HealthGateway.Common.Messaging;
+    using HealthGateway.Common.Models.Events;
     using HealthGateway.Common.Services;
     using HealthGateway.Database.Context;
     using HealthGateway.Database.Delegates;
@@ -57,6 +61,8 @@ namespace HealthGateway.JobScheduler.Jobs
         private readonly ClientCredentialsTokenRequest tokenRequest;
         private readonly Uri tokenUri;
         private readonly IKeycloakAdminApi keycloakAdminApi;
+        private readonly IMessageSender messageSender;
+        private readonly bool changeFeedEnabled;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CloseAccountJob"/> class.
@@ -68,6 +74,7 @@ namespace HealthGateway.JobScheduler.Jobs
         /// <param name="authDelegate">The OAuth2 authentication service.</param>
         /// <param name="keycloakAdminApi">The Keycloak admin API.</param>
         /// <param name="dbContext">The db context to use.</param>
+        /// <param name="messageSender">The message sender.</param>
         public CloseAccountJob(
             IConfiguration configuration,
             ILogger<CloseAccountJob> logger,
@@ -75,7 +82,8 @@ namespace HealthGateway.JobScheduler.Jobs
             IEmailQueueService emailService,
             IAuthenticationDelegate authDelegate,
             IKeycloakAdminApi keycloakAdminApi,
-            GatewayDbContext dbContext)
+            GatewayDbContext dbContext,
+            IMessageSender messageSender)
         {
             this.logger = logger;
             this.profileDelegate = profileDelegate;
@@ -83,11 +91,13 @@ namespace HealthGateway.JobScheduler.Jobs
             this.authDelegate = authDelegate;
             this.keycloakAdminApi = keycloakAdminApi;
             this.dbContext = dbContext;
+            this.messageSender = messageSender;
             this.profilesPageSize = configuration.GetValue<int>($"{JobKey}:{ProfilesPageSizeKey}");
             this.hoursBeforeDeletion = configuration.GetValue<int>($"{JobKey}:{HoursDeletionKey}") * -1;
             this.emailTemplate = configuration.GetValue<string>($"{JobKey}:{EmailTemplateKey}") ??
-                throw new ArgumentNullException(nameof(configuration), $"{JobKey}:{EmailTemplateKey} is null");
+                                 throw new ArgumentNullException(nameof(configuration), $"{JobKey}:{EmailTemplateKey} is null");
             (this.tokenUri, this.tokenRequest) = this.authDelegate.GetClientCredentialsAuth(AuthConfigSectionName);
+            this.changeFeedEnabled = configuration.GetSection(ChangeFeedConfiguration.ConfigurationSectionKey).GetValue($"{ChangeFeedConfiguration.AccountsKey}:Enabled", false);
         }
 
         /// <summary>
@@ -106,6 +116,15 @@ namespace HealthGateway.JobScheduler.Jobs
                 foreach (UserProfile profile in profileResult.Payload)
                 {
                     this.dbContext.UserProfile.Remove(profile);
+                    if (this.changeFeedEnabled)
+                    {
+                        this.messageSender.SendAsync(
+                                new[] { new MessageEnvelope(new AccountClosedEvent(profile.HdId, DateTime.Now)) },
+                                CancellationToken.None)
+                            .GetAwaiter()
+                            .GetResult();
+                    }
+
                     if (!string.IsNullOrWhiteSpace(profile.Email))
                     {
                         this.emailService.QueueNewEmail(profile.Email!, this.emailTemplate, false);
