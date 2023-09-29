@@ -24,6 +24,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test.Mock
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Delegates;
+    using HealthGateway.Common.Messaging;
     using HealthGateway.Common.Services;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
@@ -53,6 +54,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test.Mock
         private readonly Mock<ICacheProvider> cacheProviderMock = new();
         private readonly IMapper autoMapper = MapperUtil.InitializeAutoMapper();
         private readonly Mock<INotificationSettingsService> notificationSettingsServiceMock = new NotificationSettingsServiceMock();
+        private readonly Mock<IMessageSender> messageSenderMock = new();
 
         private Mock<IPatientService> patientServiceMock = new();
         private Mock<IMessagingVerificationDelegate> messageVerificationDelegateMock = new MessagingVerificationDelegateMock();
@@ -108,7 +110,8 @@ namespace HealthGateway.GatewayApiTests.Services.Test.Mock
                 this.authenticationDelegateMock.Object,
                 this.applicationSettingsDelegateMock.Object,
                 this.cacheProviderMock.Object,
-                this.patientRepositoryMock.Object);
+                this.patientRepositoryMock.Object,
+                this.messageSenderMock.Object);
         }
 
         /// <summary>

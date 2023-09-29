@@ -50,8 +50,6 @@ namespace HealthGateway.GatewayApi.Services
     {
         private const string WebClientConfigSection = "WebClient";
         private const string MaxDependentAgeKey = "MaxDependentAge";
-        private const string ChangeFeedConfigSection = "ChangeFeed";
-        private const string DependentChangeFeedKey = "Dependents";
         private const string SmartApostrophe = "’";
         private const string RegularApostrophe = "'";
         private readonly IMapper autoMapper;
@@ -96,7 +94,8 @@ namespace HealthGateway.GatewayApi.Services
             this.userProfileDelegate = userProfileDelegate;
             this.messageSender = messageSender;
             this.maxDependentAge = configuration.GetSection(WebClientConfigSection).GetValue(MaxDependentAgeKey, 12);
-            this.changeFeedEnabled = configuration.GetSection(ChangeFeedConfigSection).GetValue($"{DependentChangeFeedKey}:Enabled", false);
+            this.changeFeedEnabled = configuration.GetSection(ChangeFeedConfiguration.ConfigurationSectionKey)
+                .GetValue($"{ChangeFeedConfiguration.DependentsKey}:Enabled", false);
             this.autoMapper = autoMapper;
         }
 
@@ -110,14 +109,14 @@ namespace HealthGateway.GatewayApi.Services
                 return RequestResultFactory.Error<DependentModel>(ErrorType.InvalidState, validationResults.Errors);
             }
 
-            var dependentResult = await this.GetDependentAsPatient(addDependentRequest.Phn);
-            var validationResult = await this.ValidateDependent(addDependentRequest, delegateHdid, dependentResult);
+            RequestResult<PatientModel> dependentResult = await this.GetDependentAsPatient(addDependentRequest.Phn);
+            RequestResult<DependentModel>? validationResult = await this.ValidateDependent(addDependentRequest, delegateHdid, dependentResult);
             if (validationResult != null)
             {
                 return validationResult;
             }
 
-            var dependentHdid = dependentResult.ResourcePayload!.HdId;
+            string dependentHdid = dependentResult.ResourcePayload!.HdId;
             ResourceDelegate resourceDelegate = new()
             {
                 ResourceOwnerHdid = dependentHdid,
@@ -237,7 +236,7 @@ namespace HealthGateway.GatewayApi.Services
         /// <inheritdoc/>
         public async Task<RequestResult<DependentModel>> RemoveAsync(DependentModel dependent, CancellationToken ct = default)
         {
-            var resourceDelegate = this.resourceDelegateDelegate.Get(dependent.DelegateId).Payload.FirstOrDefault(d => d.ResourceOwnerHdid == dependent.OwnerId);
+            ResourceDelegate? resourceDelegate = this.resourceDelegateDelegate.Get(dependent.DelegateId).Payload.FirstOrDefault(d => d.ResourceOwnerHdid == dependent.OwnerId);
             if (resourceDelegate == null)
             {
                 throw new ProblemDetailsException(ExceptionUtility.CreateNotFoundError($"Dependent {dependent.OwnerId} not found for delegate {dependent.DelegateId}"));

@@ -47,7 +47,7 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public Guid Insert(MessagingVerification messageVerification)
+        public Guid Insert(MessagingVerification messageVerification, bool commit = true)
         {
             this.logger.LogTrace("Inserting message verification to DB...");
             if (messageVerification.VerificationType == MessagingVerificationType.Email && messageVerification.Email == null)
@@ -62,7 +62,11 @@ namespace HealthGateway.Database.Delegates
             }
 
             this.dbContext.Add(messageVerification);
-            this.dbContext.SaveChanges();
+            if (commit)
+            {
+                this.dbContext.SaveChanges();
+            }
+
             this.logger.LogDebug("Finished inserting message verification to DB");
             return messageVerification.Id;
         }
@@ -96,11 +100,15 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public void Update(MessagingVerification messageVerification)
+        public void Update(MessagingVerification messageVerification, bool commit = true)
         {
             this.logger.LogTrace("Updating email message verification in DB...");
             this.dbContext.Update(messageVerification);
-            this.dbContext.SaveChanges();
+            if (commit)
+            {
+                this.dbContext.SaveChanges();
+            }
+
             this.logger.LogDebug("Finished updating email message verification {Id} in DB", messageVerification.Id);
         }
 

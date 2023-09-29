@@ -32,8 +32,9 @@ namespace HealthGateway.Database.Delegates
         /// Creates a UserProfile object in the database.
         /// </summary>
         /// <param name="profile">The profile to create.</param>
+        /// <param name="commit">if true the transaction is persisted immediately.</param>
         /// <returns>A DB result which encapsulates the return object and status.</returns>
-        DbResult<UserProfile> InsertUserProfile(UserProfile profile);
+        DbResult<UserProfile> InsertUserProfile(UserProfile profile, bool commit = true);
 
         /// <summary>
         /// Updates select attributes of the UserProfile object in the DB.

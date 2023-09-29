@@ -29,8 +29,9 @@ namespace HealthGateway.Database.Delegates
         /// Inserts a Message Verification and any associated records.
         /// </summary>
         /// <param name="messageVerification">The message verification to insert.</param>
+        /// <param name="commit">If set to true the database changes will be persisted immediately.</param>
         /// <returns>Returns the guid of the saved message verification.</returns>
-        Guid Insert(MessagingVerification messageVerification);
+        Guid Insert(MessagingVerification messageVerification, bool commit = true);
 
         /// <summary>
         /// Gets the last Email Message Verification by the Invite key.
@@ -52,7 +53,8 @@ namespace HealthGateway.Database.Delegates
         /// Updates a MessagingVerification using a populated model object.
         /// </summary>
         /// <param name="messageVerification">The populated email to save.</param>
-        void Update(MessagingVerification messageVerification);
+        /// <param name="commit">If commit is set to true the change will be persisted immediately.</param>
+        void Update(MessagingVerification messageVerification, bool commit = true);
 
         /// <summary>
         /// Gets all email message verifications from the database.

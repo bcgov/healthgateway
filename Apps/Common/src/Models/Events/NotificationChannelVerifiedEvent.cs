@@ -15,10 +15,12 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Common.Models.Events;
 
+using HealthGateway.Common.Messaging;
+
 /// <summary>
 /// Represents an event when a notification channel is verified.
 /// </summary>
 /// <param name="Hdid">The user's profile Id and HDID.</param>
 /// <param name="Type">The channel in which the user has verified their notification settings.</param>
 /// <param name="Value">The email or phone number for the channel selected.</param>
-public record NotificationChannelVerifiedEvent(string Hdid, NotificationChannel Type, string Value);
+public record NotificationChannelVerifiedEvent(string Hdid, NotificationChannel Type, string Value) : MessageBase;

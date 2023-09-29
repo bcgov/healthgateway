@@ -49,21 +49,24 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public DbResult<UserProfile> InsertUserProfile(UserProfile profile)
+        public DbResult<UserProfile> InsertUserProfile(UserProfile profile, bool commit = true)
         {
             this.logger.LogTrace("Inserting user profile to DB...");
             DbResult<UserProfile> result = new();
             this.dbContext.Add(profile);
-            try
+            if (commit)
             {
-                this.dbContext.SaveChanges();
-                result.Payload = profile;
-                result.Status = DbStatusCode.Created;
-            }
-            catch (DbUpdateException e)
-            {
-                result.Status = DbStatusCode.Error;
-                result.Message = e.Message;
+                try
+                {
+                    this.dbContext.SaveChanges();
+                    result.Payload = profile;
+                    result.Status = DbStatusCode.Created;
+                }
+                catch (DbUpdateException e)
+                {
+                    result.Status = DbStatusCode.Error;
+                    result.Message = e.Message;
+                }
             }
 
             this.logger.LogDebug("Finished inserting user profile to DB");

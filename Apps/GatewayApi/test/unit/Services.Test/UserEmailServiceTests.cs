@@ -18,9 +18,12 @@ namespace HealthGateway.GatewayApiTests.Services.Test
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading;
+    using System.Threading.Tasks;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Data.ViewModels;
+    using HealthGateway.Common.Messaging;
     using HealthGateway.Common.Services;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
@@ -42,8 +45,9 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         /// <summary>
         /// ValidateEmail - Happy path scenario.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void ValidateEmail()
+        public async Task ValidateEmail()
         {
             Guid inviteKey = Guid.NewGuid();
             MessagingVerification expectedResult = new()
@@ -64,12 +68,8 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             messagingVerificationDelegate.Setup(s => s.GetLastByInviteKey(It.IsAny<Guid>())).Returns(expectedResult);
 
             Mock<IUserProfileDelegate> userProfileDelegate = new();
-            DbResult<UserProfile> userProfileMock = new()
-            {
-                Payload = new UserProfile(),
-                Status = DbStatusCode.Read,
-            };
-            userProfileDelegate.Setup(s => s.GetUserProfile(It.IsAny<string>())).Returns(userProfileMock);
+            UserProfile userProfileMock = new();
+            userProfileDelegate.Setup(s => s.GetUserProfileAsync(It.IsAny<string>())).ReturnsAsync(userProfileMock);
             userProfileDelegate.Setup(s => s.Update(It.IsAny<UserProfile>(), It.IsAny<bool>()))
                 .Returns(new DbResult<UserProfile>());
 
@@ -80,17 +80,19 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 new Mock<IEmailQueueService>().Object,
                 new Mock<INotificationSettingsService>().Object,
                 GetIConfigurationRoot(),
-                new Mock<IHttpContextAccessor>().Object);
+                new Mock<IHttpContextAccessor>().Object,
+                new Mock<IMessageSender>().Object);
 
-            RequestResult<bool> actual = service.ValidateEmail(HdIdMock, inviteKey);
+            RequestResult<bool> actual = await service.ValidateEmail(HdIdMock, inviteKey, CancellationToken.None);
             Assert.True(actual.ResultStatus == ResultType.Success);
         }
 
         /// <summary>
         /// ValidateEmail - Too many attempts.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void ValidateEmailTooManyAttempts()
+        public async Task ValidateEmailTooManyAttempts()
         {
             Guid inviteKey = Guid.NewGuid();
             MessagingVerification expectedResult = new()
@@ -107,12 +109,8 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             messagingVerificationDelegate.Setup(s => s.GetLastByInviteKey(It.IsAny<Guid>())).Returns(expectedResult);
 
             Mock<IUserProfileDelegate> userProfileDelegate = new();
-            DbResult<UserProfile> userProfileMock = new()
-            {
-                Payload = new UserProfile(),
-                Status = DbStatusCode.Read,
-            };
-            userProfileDelegate.Setup(s => s.GetUserProfile(It.IsAny<string>())).Returns(userProfileMock);
+            UserProfile userProfileMock = new();
+            userProfileDelegate.Setup(s => s.GetUserProfileAsync(It.IsAny<string>())).ReturnsAsync(userProfileMock);
             userProfileDelegate.Setup(s => s.Update(It.IsAny<UserProfile>(), It.IsAny<bool>()))
                 .Returns(new DbResult<UserProfile>());
 
@@ -123,17 +121,19 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 new Mock<IEmailQueueService>().Object,
                 new Mock<INotificationSettingsService>().Object,
                 GetIConfigurationRoot(),
-                new Mock<IHttpContextAccessor>().Object);
+                new Mock<IHttpContextAccessor>().Object,
+                new Mock<IMessageSender>().Object);
 
-            RequestResult<bool> actual = service.ValidateEmail(HdIdMock, inviteKey);
+            RequestResult<bool> actual = await service.ValidateEmail(HdIdMock, inviteKey, CancellationToken.None);
             Assert.True(actual.ResultStatus == ResultType.ActionRequired);
         }
 
         /// <summary>
         /// ValidateEmail - Already validated.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void ValidateEmailAlreadyValidated()
+        public async Task ValidateEmailAlreadyValidated()
         {
             Guid inviteKey = Guid.NewGuid();
             MessagingVerification expectedResult = new()
@@ -167,17 +167,19 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 new Mock<IEmailQueueService>().Object,
                 new Mock<INotificationSettingsService>().Object,
                 GetIConfigurationRoot(),
-                new Mock<IHttpContextAccessor>().Object);
+                new Mock<IHttpContextAccessor>().Object,
+                new Mock<IMessageSender>().Object);
 
-            RequestResult<bool> actual = service.ValidateEmail(HdIdMock, inviteKey);
+            RequestResult<bool> actual = await service.ValidateEmail(HdIdMock, inviteKey);
             Assert.True(actual.ResultStatus == ResultType.Error);
         }
 
         /// <summary>
         /// ValidateEmail - Happy path scenario.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void InvalidInvite()
+        public async Task InvalidInvite()
         {
             Guid inviteKey = Guid.NewGuid();
             MessagingVerification expectedResult = new()
@@ -197,17 +199,19 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 new Mock<IEmailQueueService>().Object,
                 new Mock<INotificationSettingsService>().Object,
                 GetIConfigurationRoot(),
-                new Mock<IHttpContextAccessor>().Object);
+                new Mock<IHttpContextAccessor>().Object,
+                new Mock<IMessageSender>().Object);
 
-            RequestResult<bool> actual = service.ValidateEmail(HdIdMock, inviteKey);
+            RequestResult<bool> actual = await service.ValidateEmail(HdIdMock, inviteKey);
             Assert.True(actual.ResultStatus == ResultType.Error);
         }
 
         /// <summary>
         /// ValidateEmail - Happy path scenario.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void InvalidInviteLastSent()
+        public async Task InvalidInviteLastSent()
         {
             Guid inviteKey = Guid.NewGuid();
             MessagingVerification expectedResult = new()
@@ -228,9 +232,10 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 new Mock<IEmailQueueService>().Object,
                 new Mock<INotificationSettingsService>().Object,
                 GetIConfigurationRoot(),
-                new Mock<IHttpContextAccessor>().Object);
+                new Mock<IHttpContextAccessor>().Object,
+                new Mock<IMessageSender>().Object);
 
-            RequestResult<bool> actual = service.ValidateEmail(HdIdMock, inviteKey);
+            RequestResult<bool> actual = await service.ValidateEmail(HdIdMock, inviteKey);
             Assert.True(actual.ResultStatus == ResultType.Error);
         }
 

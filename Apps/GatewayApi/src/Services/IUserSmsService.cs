@@ -15,6 +15,8 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.GatewayApi.Services
 {
+    using System.Threading;
+    using System.Threading.Tasks;
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Data.ViewModels;
 
@@ -28,15 +30,16 @@ namespace HealthGateway.GatewayApi.Services
         /// </summary>
         /// <param name="hdid">The requested user hdid.</param>
         /// <param name="validationCode">The SMS validation code.</param>
+        /// <param name="ct">A cancellation token.</param>
         /// <returns>Returns a request result containing true if the SMS verification was found and validated.</returns>
-        RequestResult<bool> ValidateSms(string hdid, string validationCode);
+        Task<RequestResult<bool>> ValidateSms(string hdid, string validationCode, CancellationToken ct = default);
 
         /// <summary>
         /// Create the user SMS number.
         /// </summary>
         /// <param name="hdid">The user hdid.</param>
         /// <param name="sms">SMS number to be set for the user.</param>
-        /// <returns>returns true if the sms number was sucessfully created.</returns>
+        /// <returns>returns true if the sms number was successfully created.</returns>
         MessagingVerification CreateUserSms(string hdid, string sms);
 
         /// <summary>
@@ -44,7 +47,7 @@ namespace HealthGateway.GatewayApi.Services
         /// </summary>
         /// <param name="hdid">The user hdid.</param>
         /// <param name="sms">SMS number to be set for the user.</param>
-        /// <returns>returns true if the sms number was sucessfully updated.</returns>
+        /// <returns>returns true if the sms number was successfully updated.</returns>
         bool UpdateUserSms(string hdid, string sms);
     }
 }

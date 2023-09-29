@@ -19,6 +19,7 @@ namespace HealthGateway.GatewayApi.Controllers
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using System.Security.Claims;
+    using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.AccessManagement.Authorization.Policy;
@@ -74,6 +75,7 @@ namespace HealthGateway.GatewayApi.Controllers
         /// <returns>The http status.</returns>
         /// <param name="hdid">The resource hdid.</param>
         /// <param name="createUserRequest">The user profile request model.</param>
+        /// <param name="ct">A cancellation token.</param>
         /// <response code="200">The user profile record was saved.</response>
         /// <response code="400">The user profile was already inserted.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
@@ -84,7 +86,7 @@ namespace HealthGateway.GatewayApi.Controllers
         [HttpPost]
         [Route("{hdid}")]
         [Authorize(Policy = UserProfilePolicy.Write)]
-        public async Task<ActionResult<RequestResult<UserProfileModel>>> CreateUserProfile(string hdid, [FromBody] CreateUserRequest createUserRequest)
+        public async Task<ActionResult<RequestResult<UserProfileModel>>> CreateUserProfile(string hdid, [FromBody] CreateUserRequest createUserRequest, CancellationToken ct)
         {
             // Validate that the query parameter matches the post body
             if (!hdid.Equals(createUserRequest.Profile.HdId, StringComparison.OrdinalIgnoreCase))
@@ -98,7 +100,7 @@ namespace HealthGateway.GatewayApi.Controllers
                 ClaimsPrincipal user = httpContext.User;
                 DateTime jwtAuthTime = ClaimsPrincipalReader.GetAuthDateTime(user);
                 string? jwtEmailAddress = user.FindFirstValue(ClaimTypes.Email);
-                return await this.userProfileService.CreateUserProfile(createUserRequest, jwtAuthTime, jwtEmailAddress).ConfigureAwait(true);
+                return await this.userProfileService.CreateUserProfile(createUserRequest, jwtAuthTime, jwtEmailAddress, ct);
             }
 
             return this.Unauthorized();
@@ -216,13 +218,14 @@ namespace HealthGateway.GatewayApi.Controllers
         /// <returns>The an empty response.</returns>
         /// <param name="hdid">The user hdid.</param>
         /// <param name="verificationKey">The email verification key.</param>
+        /// <param name="ct">A cancellation token.</param>
         /// <response code="200">The email was validated.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
         /// <response code="404">The verification key was not found.</response>
         [HttpGet]
         [Route("{hdid}/email/validate/{verificationKey}")]
         [Authorize(Policy = UserProfilePolicy.Write)]
-        public async Task<ActionResult<RequestResult<bool>>> ValidateEmail(string hdid, Guid verificationKey)
+        public async Task<ActionResult<RequestResult<bool>>> ValidateEmail(string hdid, Guid verificationKey, CancellationToken ct)
         {
             HttpContext? httpContext = this.httpContextAccessor.HttpContext;
             if (httpContext != null)
@@ -231,7 +234,7 @@ namespace HealthGateway.GatewayApi.Controllers
 
                 if (accessToken != null)
                 {
-                    return this.userEmailService.ValidateEmail(hdid, verificationKey);
+                    return await this.userEmailService.ValidateEmail(hdid, verificationKey, ct);
                 }
             }
 
@@ -244,21 +247,22 @@ namespace HealthGateway.GatewayApi.Controllers
         /// <returns>An empty response.</returns>
         /// <param name="hdid">The user hdid.</param>
         /// <param name="validationCode">The sms validation code.</param>
+        /// <param name="ct">A cancellation token.</param>
         /// <response code="200">The sms was validated.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
         /// <response code="404">The validation code was not found.</response>
         [HttpGet]
         [Route("{hdid}/sms/validate/{validationCode}")]
         [Authorize(Policy = UserProfilePolicy.Write)]
-        public async Task<ActionResult<RequestResult<bool>>> ValidateSms(string hdid, string validationCode)
+        public async Task<ActionResult<RequestResult<bool>>> ValidateSms(string hdid, string validationCode, CancellationToken ct)
         {
             HttpContext? httpContext = this.httpContextAccessor.HttpContext;
             if (httpContext != null)
             {
-                RequestResult<bool> result = this.userSmsService.ValidateSms(hdid, validationCode);
+                RequestResult<bool> result = await this.userSmsService.ValidateSms(hdid, validationCode, ct);
                 if (!result.ResourcePayload)
                 {
-                    await Task.Delay(5000).ConfigureAwait(true);
+                    await Task.Delay(5000, ct).ConfigureAwait(true);
                 }
 
                 return result;

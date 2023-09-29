@@ -47,9 +47,10 @@ namespace HealthGateway.GatewayApiTests.Services.Test.Mock
         /// </summary>
         /// <param name="userProfile">user profile.</param>
         /// <param name="insertResult">insert result.</param>
-        public UserProfileDelegateMock(UserProfile userProfile, DbResult<UserProfile> insertResult)
+        /// <param name="commit">commit.</param>
+        public UserProfileDelegateMock(UserProfile userProfile, DbResult<UserProfile> insertResult, bool commit = true)
         {
-            this.Setup(s => s.InsertUserProfile(It.Is<UserProfile>(x => x.HdId == userProfile.HdId))).Returns(insertResult);
+            this.Setup(s => s.InsertUserProfile(It.Is<UserProfile>(x => x.HdId == userProfile.HdId), commit)).Returns(insertResult);
         }
 
         /// <summary>
