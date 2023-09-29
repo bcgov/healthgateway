@@ -31,6 +31,7 @@ namespace PatientDataAccessTests
 
     // Disable documentation for tests.
 #pragma warning disable SA1600
+
     public class PatientDataRepositoryTests
     {
         private readonly Guid pid = Guid.NewGuid();
@@ -109,7 +110,7 @@ namespace PatientDataAccessTests
             DiagnosticImagingExam phsaDiagnosticImageExam = new()
             {
                 BodyPart = "Some BodyPart",
-                ExamDate = new DateTime(2020, 1, 1),
+                ExamDate = DateTime.Parse("2020-01-15", CultureInfo.InvariantCulture),
                 HealthDataFileId = "Some FileId",
                 HealthAuthority = "Some HealthAuthority",
                 Modality = "Some Modality",
@@ -255,10 +256,11 @@ namespace PatientDataAccessTests
 
         private static IPatientDataRepository CreateSut(IPatientApi api)
         {
-            IMapper? mapper = new MapperConfiguration(cfg => { cfg.AddMaps(typeof(Mappings)); }).CreateMapper();
+            IMapper? mapper = new MapperConfiguration(cfg => cfg.AddMaps(typeof(Mappings))).CreateMapper();
 
             return new PatientDataRepository(api, mapper);
         }
     }
+
 #pragma warning restore SA1600
 }

@@ -174,7 +174,7 @@ namespace HealthGateway.CommonTests.Services
         /// Validates Insert and Update operations when cache is empty.
         /// </summary>
         /// <param name="action">The action to perform for the test.</param>
-        /// <param name="scenario">The scenario to to initialize data.</param>
+        /// <param name="scenario">The scenario to initialize data.</param>
         /// <param name="cached">Put the initial communication into the cache.</param>
         /// <param name="communicationType">The optional communication type to use.</param>
         /// <param name="cacheMiss">If true, the cached item will be an empty communication with a unique guid.</param>
@@ -253,7 +253,7 @@ namespace HealthGateway.CommonTests.Services
             switch (scenario)
             {
                 case Scenario.Active:
-                    if (!cached || (cached && !cacheMiss))
+                    if (!cached || !cacheMiss)
                     {
                         Assert.Equal(communication.Id, cacheResult!.ResourcePayload!.Id);
                     }

@@ -44,6 +44,7 @@ namespace HealthGateway.PatientTests.Services
 
     // Disable documentation for tests.
 #pragma warning disable SA1600
+
     public class PatientDataServiceTests
     {
         private readonly Guid pid = Guid.NewGuid();
@@ -87,7 +88,7 @@ namespace HealthGateway.PatientTests.Services
             DiagnosticImagingExam diagnosticImagingExam = new()
             {
                 BodyPart = "Some BodyPart",
-                ExamDate = new DateTime(2020, 1, 1),
+                ExamDate = DateTime.Parse("2020-01-01", CultureInfo.InvariantCulture),
                 FileId = "Some FileId",
                 HealthAuthority = "Some HealthAuthority",
                 Modality = "Some Modality",
@@ -212,7 +213,7 @@ namespace HealthGateway.PatientTests.Services
             PatientDataAccess.DiagnosticImagingExam expected = new()
             {
                 BodyPart = "Some BodyPart",
-                ExamDate = new DateTime(2020, 1, 1),
+                ExamDate = DateTime.Parse("2020-01-01", CultureInfo.InvariantCulture),
                 FileId = "Some FileId",
                 HealthAuthority = "Some HealthAuthority",
                 Modality = "Some Modality",
@@ -311,5 +312,6 @@ namespace HealthGateway.PatientTests.Services
             return personalAccountService;
         }
     }
+
 #pragma warning restore SA1600
 }

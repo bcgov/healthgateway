@@ -25,6 +25,8 @@ namespace HealthGateway.CommonTests.CacheProviders
     using Microsoft.Extensions.Options;
     using Xunit;
 
+#pragma warning disable S2925 // "Thread.Sleep" should not be used in tests
+
     /// <summary>
     /// Integration Tests for the RedisCacheProvider.
     /// </summary>
