@@ -228,7 +228,7 @@ namespace HealthGateway.AccountDataAccess.Patient
                 throw new ProblemDetailsException(ExceptionUtility.CreateProblemDetails(ErrorMessages.PhnInvalid, HttpStatusCode.NotFound, nameof(ClientRegistriesDelegate)));
             }
 
-            if (WarningResponseCodes.Any(code => responseCode.Contains(code, StringComparison.InvariantCulture)))
+            if (WarningResponseCodes.Exists(code => responseCode.Contains(code, StringComparison.InvariantCulture)))
             {
                 return;
             }

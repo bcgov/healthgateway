@@ -69,8 +69,8 @@ namespace HealthGateway.Admin.Tests.Services
         private const string ConfigUnixTimeZoneId = "America/Vancouver";
         private const string ConfigWindowsTimeZoneId = "Pacific Standard Time";
 
-        private static readonly DateTime Birthdate = new(2000, 1, 1);
-        private static readonly DateTime Birthdate2 = new(1999, 12, 31);
+        private static readonly DateTime Birthdate = DateTime.Parse("2000-01-01", CultureInfo.InvariantCulture);
+        private static readonly DateTime Birthdate2 = DateTime.Parse("1999-12-31", CultureInfo.InvariantCulture);
 
         private static readonly IMapper AutoMapper = MapperUtil.InitializeAutoMapper();
         private static readonly IConfiguration Configuration = GetIConfigurationRoot();
@@ -529,8 +529,8 @@ namespace HealthGateway.Admin.Tests.Services
 
             IEnumerable<PatientSupportResult> expectedResult = new List<PatientSupportResult>
             {
-                GetExpectedPatientSupportDetails(firstDelegatePatient, resourceDelegates.ElementAt(0).UserProfile),
-                GetExpectedPatientSupportDetails(secondDelegatePatient, resourceDelegates.ElementAt(1).UserProfile),
+                GetExpectedPatientSupportDetails(firstDelegatePatient, resourceDelegates[0].UserProfile),
+                GetExpectedPatientSupportDetails(secondDelegatePatient, resourceDelegates[1].UserProfile),
             };
 
             // Act

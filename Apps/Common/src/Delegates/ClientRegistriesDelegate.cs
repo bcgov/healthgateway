@@ -244,7 +244,7 @@ namespace HealthGateway.Common.Delegates
                 };
             }
 
-            if (WarningResponseCodes.Any(code => responseCode.Contains(code, StringComparison.InvariantCulture)))
+            if (WarningResponseCodes.Exists(code => responseCode.Contains(code, StringComparison.InvariantCulture)))
             {
                 return new RequestResult<PatientModel>
                 {
@@ -348,7 +348,7 @@ namespace HealthGateway.Common.Delegates
                     patient.PostalAddress = MapAddress(Array.Find(addresses, a => Array.Exists(a.use, u => u == cs_PostalAddressUse.PST)));
                 }
 
-                if (WarningResponseCodes.Any(code => responseCode.Contains(code, StringComparison.InvariantCulture)))
+                if (WarningResponseCodes.Exists(code => responseCode.Contains(code, StringComparison.InvariantCulture)))
                 {
                     patient.ResponseCode = responseCode;
                 }
@@ -407,7 +407,7 @@ namespace HealthGateway.Common.Delegates
 
         private bool PopulateIdentifiers(HCIM_IN_GetDemographicsResponseIdentifiedPerson retrievedPerson, PatientModel patient)
         {
-            II? identifiedPersonId = retrievedPerson.identifiedPerson?.id?.FirstOrDefault(x => x.root == OidType.Phn.ToString());
+            II? identifiedPersonId = Array.Find(retrievedPerson.identifiedPerson.id, x => x.root == OidType.Phn.ToString());
             if (identifiedPersonId == null)
             {
                 this.logger.LogWarning("Client Registry returned a person without a PHN");
@@ -417,7 +417,7 @@ namespace HealthGateway.Common.Delegates
                 patient.PersonalHealthNumber = identifiedPersonId.extension;
             }
 
-            II? subjectId = retrievedPerson.id?.FirstOrDefault(x => x.displayable && x.root == OidType.Hdid.ToString());
+            II? subjectId = Array.Find(retrievedPerson.id, x => x.displayable && x.root == OidType.Hdid.ToString());
             if (subjectId == null)
             {
                 this.logger.LogWarning("Client Registry returned a person without an HDID");

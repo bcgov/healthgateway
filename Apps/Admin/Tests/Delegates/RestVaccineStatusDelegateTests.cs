@@ -17,6 +17,7 @@ namespace HealthGateway.Admin.Tests.Delegates
 {
     using System;
     using System.Collections.Generic;
+    using System.Globalization;
     using System.Linq;
     using System.Threading.Tasks;
     using HealthGateway.Admin.Server.Api;
@@ -37,7 +38,7 @@ namespace HealthGateway.Admin.Tests.Delegates
     {
         private const string AccessToken = "access_token";
         private const string Phn = "9735361219";
-        private static readonly DateTime Birthdate = new(2000, 1, 1);
+        private static readonly DateTime Birthdate = DateTime.Parse("2000-01-01", CultureInfo.InvariantCulture);
 
         private static readonly IConfiguration Configuration = GetIConfigurationRoot();
 

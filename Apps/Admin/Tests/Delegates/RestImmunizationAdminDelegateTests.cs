@@ -17,6 +17,7 @@ namespace HealthGateway.Admin.Tests.Delegates
 {
     using System;
     using System.Collections.Generic;
+    using System.Globalization;
     using System.Linq;
     using System.Threading.Tasks;
     using AutoMapper;
@@ -46,7 +47,7 @@ namespace HealthGateway.Admin.Tests.Delegates
         private const string Product = "Moderna mRNA-1273";
         private const string Lot = "300042698";
         private const string Location = "BC Canada";
-        private static readonly DateTime Birthdate = new(2000, 1, 1);
+        private static readonly DateTime Birthdate = DateTime.Parse("2000-01-01", CultureInfo.InvariantCulture);
 
         private static readonly IMapper AutoMapper = MapperUtil.InitializeAutoMapper();
         private static readonly IConfiguration Configuration = GetIConfigurationRoot();
