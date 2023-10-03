@@ -17,12 +17,16 @@ namespace HealthGateway.GatewayApiTests.Services.Test.Mock
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading;
     using AutoMapper;
     using HealthGateway.AccountDataAccess.Patient;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.CacheProviders;
+    using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.Models;
+    using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.Messaging;
     using HealthGateway.Common.Services;
@@ -56,7 +60,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test.Mock
         private readonly Mock<INotificationSettingsService> notificationSettingsServiceMock = new NotificationSettingsServiceMock();
         private readonly Mock<IMessageSender> messageSenderMock = new();
 
-        private Mock<IPatientService> patientServiceMock = new();
+        private readonly Mock<IPatientService> patientServiceMock = new();
         private Mock<IMessagingVerificationDelegate> messageVerificationDelegateMock = new MessagingVerificationDelegateMock();
         private Mock<IUserPreferenceDelegate> userPreferenceDelegateMock = new();
         private Mock<IEmailQueueService> emailQueueServiceMock = new();
@@ -170,10 +174,11 @@ namespace HealthGateway.GatewayApiTests.Services.Test.Mock
         /// </summary>
         /// <param name="userProfileData">The mocked user profile linked with the hdid.</param>
         /// <param name="userProfileDbResult">the mocked result from the database.</param>
+        /// <param name="commitInsert">Set if the mock should expect to persist the changes immediately.</param>
         /// <returns>UserProfileServiceMock.</returns>
-        public UserProfileServiceMock SetupUserProfileDelegateMockInsert(UserProfile userProfileData, DbResult<UserProfile> userProfileDbResult)
+        public UserProfileServiceMock SetupUserProfileDelegateMockInsert(UserProfile userProfileData, DbResult<UserProfile> userProfileDbResult, bool commitInsert)
         {
-            this.userProfileDelegateMock = new UserProfileDelegateMock(userProfileData, userProfileDbResult);
+            this.userProfileDelegateMock = new UserProfileDelegateMock(userProfileData, userProfileDbResult, commitInsert);
             return this;
         }
 
@@ -285,7 +290,29 @@ namespace HealthGateway.GatewayApiTests.Services.Test.Mock
         /// <returns>UserProfileServiceMock.</returns>
         public UserProfileServiceMock SetupPatientServiceMockCustomPatient(string hdid, PatientModel patient)
         {
-            this.patientServiceMock = new PatientServiceMock(hdid, patient);
+            this.patientServiceMock
+                .Setup(s => s.GetPatient(hdid, PatientIdentifierType.Hdid, false))
+                .ReturnsAsync(
+                    new RequestResult<PatientModel>
+                    {
+                        ResultStatus = ResultType.Success,
+                        ResourcePayload = patient,
+                    });
+            return this;
+        }
+
+        /// <summary>
+        /// Setup the mock <see cref="IMessageSender"/> verification setup.
+        /// </summary>
+        /// <typeparam name="T">The event type sent within the MessageEnvelope</typeparam>
+        /// <returns>UserProfileServiceMock</returns>
+        public UserProfileServiceMock VerifyMessageSenderSendAsync<T>()
+        {
+            this.messageSenderMock.Verify(
+                m => m.SendAsync(
+                    It.Is<IEnumerable<MessageEnvelope>>(
+                        envelopes => envelopes.First().Content is T),
+                    CancellationToken.None));
             return this;
         }
     }

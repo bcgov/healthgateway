@@ -20,10 +20,12 @@ namespace HealthGateway.GatewayApiTests.Services.Test
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Messaging;
+    using HealthGateway.Common.Models.Events;
     using HealthGateway.Common.Services;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
@@ -84,6 +86,65 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 new Mock<IMessageSender>().Object);
 
             RequestResult<bool> actual = await service.ValidateEmail(HdIdMock, inviteKey, CancellationToken.None);
+            Assert.True(actual.ResultStatus == ResultType.Success);
+        }
+
+        /// <summary>
+        /// Validate that email validation with change feed enabled sends notification through message bus.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+        [Fact]
+        public async Task ValidateEmailWithChangeFeed()
+        {
+            Guid inviteKey = Guid.NewGuid();
+            MessagingVerification expectedResult = new()
+            {
+                UserProfileId = HdIdMock,
+                VerificationAttempts = 0,
+                InviteKey = inviteKey,
+                ExpireDate = DateTime.Now.AddDays(1),
+                Email = new Email
+                {
+                    To = "fakeemail@healthgateway.gov.bc.ca",
+                },
+            };
+
+            Mock<IMessagingVerificationDelegate> messagingVerificationDelegate = new();
+            messagingVerificationDelegate.Setup(s => s.GetLastForUser(It.IsAny<string>(), It.IsAny<string>()))
+                .Returns(expectedResult);
+            messagingVerificationDelegate.Setup(s => s.GetLastByInviteKey(It.IsAny<Guid>())).Returns(expectedResult);
+
+            Mock<IUserProfileDelegate> userProfileDelegate = new();
+            UserProfile userProfileMock = new();
+            userProfileDelegate.Setup(s => s.GetUserProfileAsync(It.IsAny<string>())).ReturnsAsync(userProfileMock);
+            userProfileDelegate.Setup(s => s.Update(It.IsAny<UserProfile>(), It.IsAny<bool>()))
+                .Returns(new DbResult<UserProfile>());
+            Mock<IMessageSender> mockMessageSender = new();
+
+            string changeFeedKey = $"{ChangeFeedConfiguration.ConfigurationSectionKey}:{ChangeFeedConfiguration.NotificationChannelVerifiedKey}:Enabled";
+            Dictionary<string, string?> configDict = new()
+            {
+                { changeFeedKey, "true" },
+            };
+
+            IUserEmailService service = new UserEmailService(
+                new Mock<ILogger<UserEmailService>>().Object,
+                messagingVerificationDelegate.Object,
+                userProfileDelegate.Object,
+                new Mock<IEmailQueueService>().Object,
+                new Mock<INotificationSettingsService>().Object,
+                GetIConfigurationRoot(configDict),
+                new Mock<IHttpContextAccessor>().Object,
+                mockMessageSender.Object);
+
+            RequestResult<bool> actual = await service.ValidateEmail(HdIdMock, inviteKey, CancellationToken.None);
+
+            mockMessageSender.Verify(
+                m => m.SendAsync(
+                    It.Is<IEnumerable<MessageEnvelope>>(
+                        envelopes => envelopes.First().Content is NotificationChannelVerifiedEvent),
+                    CancellationToken.None));
+
             Assert.True(actual.ResultStatus == ResultType.Success);
         }
 
@@ -239,13 +300,15 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             Assert.True(actual.ResultStatus == ResultType.Error);
         }
 
-        private static IConfigurationRoot GetIConfigurationRoot()
+        private static IConfigurationRoot GetIConfigurationRoot(Dictionary<string, string?>? testConfigExtension = null)
         {
+            testConfigExtension ??= new Dictionary<string, string?>();
+
             return new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json", true)
                 .AddJsonFile("appsettings.Development.json", true)
                 .AddJsonFile("appsettings.local.json", true)
-                .AddInMemoryCollection(new Dictionary<string, string?>().ToList())
+                .AddInMemoryCollection(testConfigExtension.ToList())
                 .Build();
         }
     }

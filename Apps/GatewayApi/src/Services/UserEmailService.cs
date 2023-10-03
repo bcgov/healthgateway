@@ -258,7 +258,7 @@ namespace HealthGateway.GatewayApi.Services
             {
                 messageVerification.Email.EmailStatusCode = EmailStatus.Processed;
                 this.messageVerificationDelegate.Insert(messageVerification, commit);
-                this.ValidateEmail(hdid, inviteKey);
+                this.ValidateEmail(hdid, inviteKey).GetAwaiter();
             }
             else
             {

@@ -54,19 +54,20 @@ namespace HealthGateway.Database.Delegates
             this.logger.LogTrace("Inserting user profile to DB...");
             DbResult<UserProfile> result = new();
             this.dbContext.Add(profile);
-            if (commit)
+            try
             {
-                try
+                if (commit)
                 {
                     this.dbContext.SaveChanges();
-                    result.Payload = profile;
-                    result.Status = DbStatusCode.Created;
                 }
-                catch (DbUpdateException e)
-                {
-                    result.Status = DbStatusCode.Error;
-                    result.Message = e.Message;
-                }
+
+                result.Payload = profile;
+                result.Status = DbStatusCode.Created;
+            }
+            catch (DbUpdateException e)
+            {
+                result.Status = DbStatusCode.Error;
+                result.Message = e.Message;
             }
 
             this.logger.LogDebug("Finished inserting user profile to DB");
