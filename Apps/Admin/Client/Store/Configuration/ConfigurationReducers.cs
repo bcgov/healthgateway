@@ -18,6 +18,7 @@ namespace HealthGateway.Admin.Client.Store.Configuration
     using Fluxor;
 
 #pragma warning disable CS1591, SA1600
+
     public static class ConfigurationReducers
     {
         [ReducerMethod(typeof(ConfigurationActions.LoadAction))]
@@ -32,7 +33,12 @@ namespace HealthGateway.Admin.Client.Store.Configuration
         [ReducerMethod]
         public static ConfigurationState ReduceLoadSuccessAction(ConfigurationState state, ConfigurationActions.LoadSuccessAction action)
         {
-            return new ConfigurationState { IsLoading = false, Result = action.Data, Error = null };
+            return state with
+            {
+                IsLoading = false,
+                Result = action.Data,
+                Error = null,
+            };
         }
 
         [ReducerMethod]

@@ -19,6 +19,7 @@ namespace HealthGateway.Admin.Client.Store.PatientSupport
     using Fluxor;
 
 #pragma warning disable CS1591, SA1600
+
     public static class PatientSupportReducers
     {
         [ReducerMethod(typeof(PatientSupportActions.LoadAction))]
@@ -49,7 +50,12 @@ namespace HealthGateway.Admin.Client.Store.PatientSupport
         [ReducerMethod(typeof(PatientSupportActions.ResetStateAction))]
         public static PatientSupportState ReduceResetStateAction(PatientSupportState state)
         {
-            return new PatientSupportState { IsLoading = false, Result = null, Error = null };
+            return state with
+            {
+                IsLoading = false,
+                Result = null,
+                Error = null,
+            };
         }
     }
 }

@@ -18,6 +18,7 @@ namespace HealthGateway.Admin.Client.Store.Analytics;
 using Fluxor;
 
 #pragma warning disable CS1591, SA1600
+
 public static class AnalyticsReducers
 {
     [ReducerMethod(typeof(AnalyticsActions.LoadUserProfilesAction))]
@@ -86,18 +87,33 @@ public static class AnalyticsReducers
     [ReducerMethod]
     public static AnalyticsState ReduceLoadSuccessAction(AnalyticsState state, AnalyticsActions.LoadSuccessAction action)
     {
-        return new AnalyticsState { Result = action.Data, IsLoading = false, Error = null };
+        return state with
+        {
+            Result = action.Data,
+            IsLoading = false,
+            Error = null,
+        };
     }
 
     [ReducerMethod]
     public static AnalyticsState ReduceLoadFailureAction(AnalyticsState state, AnalyticsActions.LoadFailureAction action)
     {
-        return new AnalyticsState { Result = null, IsLoading = false, Error = action.Error };
+        return state with
+        {
+            Result = null,
+            IsLoading = false,
+            Error = action.Error,
+        };
     }
 
     [ReducerMethod(typeof(AnalyticsActions.ResetStateAction))]
     public static AnalyticsState ReduceResetAction(AnalyticsState state)
     {
-        return new AnalyticsState { Result = null, IsLoading = false, Error = null };
+        return state with
+        {
+            Result = null,
+            IsLoading = false,
+            Error = null,
+        };
     }
 }
