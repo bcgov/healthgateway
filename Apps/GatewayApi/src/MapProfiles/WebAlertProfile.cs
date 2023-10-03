@@ -15,8 +15,8 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.GatewayApi.MapProfiles
 {
-    using System;
     using AutoMapper;
+    using HealthGateway.Common.Data.Utils;
     using HealthGateway.GatewayApi.Models;
     using HealthGateway.GatewayApi.Models.Phsa;
 
@@ -30,8 +30,8 @@ namespace HealthGateway.GatewayApi.MapProfiles
         /// </summary>
         public WebAlertProfile()
         {
-            _ = this.CreateMap<PhsaWebAlert, WebAlert>()
-              .ForMember(d => d.ScheduledDateTimeUtc, opts => opts.MapFrom(s => s.ScheduledDateTimeUtc.Kind != DateTimeKind.Unspecified ? s.ScheduledDateTimeUtc : DateTime.SpecifyKind(s.ScheduledDateTimeUtc, DateTimeKind.Utc)));
+            this.CreateMap<PhsaWebAlert, WebAlert>()
+                .ForMember(d => d.ScheduledDateTimeUtc, opts => opts.MapFrom(s => DateFormatter.SpecifyUtc(s.ScheduledDateTimeUtc)));
         }
     }
 }

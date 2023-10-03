@@ -16,6 +16,7 @@
 namespace HealthGateway.Common.Data.Utils;
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Runtime.InteropServices;
 using Microsoft.Extensions.Configuration;
@@ -115,9 +116,10 @@ public static class DateFormatter
     /// </summary>
     /// <param name="dateTime">The DateTime to modify.</param>
     /// <returns>The supplied DateTime, no longer with an unspecified kind.</returns>
-    public static DateTime SpecifyUtc(DateTime dateTime)
+    [return: NotNullIfNotNull(nameof(dateTime))]
+    public static DateTime? SpecifyUtc(DateTime? dateTime)
     {
-        return dateTime.Kind != DateTimeKind.Unspecified ? dateTime : DateTime.SpecifyKind(dateTime, DateTimeKind.Utc);
+        return dateTime?.Kind != DateTimeKind.Unspecified ? dateTime : DateTime.SpecifyKind(dateTime.Value, DateTimeKind.Utc);
     }
 
     /// <summary>
