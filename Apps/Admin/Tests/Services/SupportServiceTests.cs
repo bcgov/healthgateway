@@ -782,11 +782,11 @@ namespace HealthGateway.Admin.Tests.Services
             };
         }
 
-        private static VaccineDose GenerateVaccineDose(DateTime dateTime = default, string location = "BC Canada", string lot = "300042698", string product = "Moderna mRNA-1273")
+        private static VaccineDose GenerateVaccineDose(DateOnly date = default, string location = "BC Canada", string lot = "300042698", string product = "Moderna mRNA-1273")
         {
             return new()
             {
-                Date = dateTime,
+                Date = date,
                 Location = location,
                 Lot = lot,
                 Product = product,
