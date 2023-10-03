@@ -1,14 +1,12 @@
 #!/usr/bin/env bash
 
-
-
 if [ -z "$$1" ]; then
   echo "No Additional Parameters supplied for DB Connection"
   echo "If you're connecting to an Azure DB you'll want to add: sslmode=VerifyFull"
   xtraParms=""
 else
-  echo "Additional Parameters supplied for DB Connection ${$1}"
   xtraParms=$1
+  echo "Additional Parameters supplied for DB Connection ${xtraParms}"
 fi
 
 pushd _Database/drop
