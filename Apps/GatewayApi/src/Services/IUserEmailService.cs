@@ -32,7 +32,7 @@ namespace HealthGateway.GatewayApi.Services
         /// <param name="inviteKey">The email invite key.</param>
         /// <param name="ct">A cancellation token.</param>
         /// <returns>Returns a request result with appropriate result status..</returns>
-        Task<RequestResult<bool>> ValidateEmail(string hdid, Guid inviteKey, CancellationToken ct = default);
+        Task<RequestResult<bool>> ValidateEmailAsync(string hdid, Guid inviteKey, CancellationToken ct = default);
 
         /// <summary>
         /// Creates the a non-validated email.

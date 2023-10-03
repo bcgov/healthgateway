@@ -234,7 +234,7 @@ namespace HealthGateway.GatewayApi.Controllers
 
                 if (accessToken != null)
                 {
-                    return await this.userEmailService.ValidateEmail(hdid, verificationKey, ct);
+                    return await this.userEmailService.ValidateEmailAsync(hdid, verificationKey, ct);
                 }
             }
 
@@ -259,7 +259,7 @@ namespace HealthGateway.GatewayApi.Controllers
             HttpContext? httpContext = this.httpContextAccessor.HttpContext;
             if (httpContext != null)
             {
-                RequestResult<bool> result = await this.userSmsService.ValidateSms(hdid, validationCode, ct);
+                RequestResult<bool> result = await this.userSmsService.ValidateSmsAsync(hdid, validationCode, ct);
                 if (!result.ResourcePayload)
                 {
                     await Task.Delay(5000, ct).ConfigureAwait(true);

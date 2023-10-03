@@ -87,7 +87,7 @@ namespace HealthGateway.GatewayApi.Services
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResult<bool>> ValidateEmail(string hdid, Guid inviteKey, CancellationToken ct = default)
+        public async Task<RequestResult<bool>> ValidateEmailAsync(string hdid, Guid inviteKey, CancellationToken ct = default)
         {
             this.logger.LogTrace("Validating email... {InviteKey}", inviteKey);
             MessagingVerification? matchingVerification = this.messageVerificationDelegate.GetLastByInviteKey(inviteKey);
@@ -258,7 +258,7 @@ namespace HealthGateway.GatewayApi.Services
             {
                 messageVerification.Email.EmailStatusCode = EmailStatus.Processed;
                 this.messageVerificationDelegate.Insert(messageVerification, commit);
-                this.ValidateEmail(hdid, inviteKey).GetAwaiter();
+                this.ValidateEmailAsync(hdid, inviteKey).GetAwaiter();
             }
             else
             {

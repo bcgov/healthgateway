@@ -48,7 +48,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             .Build();
 
         /// <summary>
-        /// ValidateSms - Happy path scenario.
+        /// ValidateSmsAsync - Happy path scenario.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
@@ -79,7 +79,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 new Mock<IMessageSender>().Object,
                 this.testConfiguration);
 
-            RequestResult<bool> actualResult = await service.ValidateSms(HdIdMock, smsValidationCode, CancellationToken.None);
+            RequestResult<bool> actualResult = await service.ValidateSmsAsync(HdIdMock, smsValidationCode, CancellationToken.None);
 
             Assert.True(actualResult.ResourcePayload);
         }
@@ -126,7 +126,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 mockMessageSender.Object,
                 changeFeedConfig);
 
-            RequestResult<bool> actualResult = await service.ValidateSms(HdIdMock, smsValidationCode, CancellationToken.None);
+            RequestResult<bool> actualResult = await service.ValidateSmsAsync(HdIdMock, smsValidationCode, CancellationToken.None);
 
             mockMessageSender.Verify(
                 m => m.SendAsync(
@@ -138,7 +138,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         }
 
         /// <summary>
-        /// ValidateSms - Happy path scenario.
+        /// ValidateSmsAsync - Happy path scenario.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
@@ -170,13 +170,13 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 new Mock<IMessageSender>().Object,
                 this.testConfiguration);
 
-            RequestResult<bool> actualResult = await service.ValidateSms(HdIdMock, smsValidationCode, CancellationToken.None);
+            RequestResult<bool> actualResult = await service.ValidateSmsAsync(HdIdMock, smsValidationCode, CancellationToken.None);
 
             Assert.False(actualResult.ResourcePayload);
         }
 
         /// <summary>
-        /// ValidateSms - Update SMS Happy Path.
+        /// ValidateSmsAsync - Update SMS Happy Path.
         /// </summary>
         [Fact]
         public void ShouldValidateUpdate()
@@ -214,7 +214,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         }
 
         /// <summary>
-        /// ValidateSms - Happy path scenario.
+        /// ValidateSmsAsync - Happy path scenario.
         /// </summary>
         [Fact]
         public void ShouldSanitizeSms()

@@ -45,7 +45,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         private const string HdIdMock = "hdIdMock";
 
         /// <summary>
-        /// ValidateEmail - Happy path scenario.
+        /// ValidateEmailAsync - Happy path scenario.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
@@ -85,7 +85,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 new Mock<IHttpContextAccessor>().Object,
                 new Mock<IMessageSender>().Object);
 
-            RequestResult<bool> actual = await service.ValidateEmail(HdIdMock, inviteKey, CancellationToken.None);
+            RequestResult<bool> actual = await service.ValidateEmailAsync(HdIdMock, inviteKey, CancellationToken.None);
             Assert.True(actual.ResultStatus == ResultType.Success);
         }
 
@@ -137,7 +137,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 new Mock<IHttpContextAccessor>().Object,
                 mockMessageSender.Object);
 
-            RequestResult<bool> actual = await service.ValidateEmail(HdIdMock, inviteKey, CancellationToken.None);
+            RequestResult<bool> actual = await service.ValidateEmailAsync(HdIdMock, inviteKey, CancellationToken.None);
 
             mockMessageSender.Verify(
                 m => m.SendAsync(
@@ -149,7 +149,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         }
 
         /// <summary>
-        /// ValidateEmail - Too many attempts.
+        /// ValidateEmailAsync - Too many attempts.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
@@ -185,12 +185,12 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 new Mock<IHttpContextAccessor>().Object,
                 new Mock<IMessageSender>().Object);
 
-            RequestResult<bool> actual = await service.ValidateEmail(HdIdMock, inviteKey, CancellationToken.None);
+            RequestResult<bool> actual = await service.ValidateEmailAsync(HdIdMock, inviteKey, CancellationToken.None);
             Assert.True(actual.ResultStatus == ResultType.ActionRequired);
         }
 
         /// <summary>
-        /// ValidateEmail - Already validated.
+        /// ValidateEmailAsync - Already validated.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
@@ -231,12 +231,12 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 new Mock<IHttpContextAccessor>().Object,
                 new Mock<IMessageSender>().Object);
 
-            RequestResult<bool> actual = await service.ValidateEmail(HdIdMock, inviteKey);
+            RequestResult<bool> actual = await service.ValidateEmailAsync(HdIdMock, inviteKey);
             Assert.True(actual.ResultStatus == ResultType.Error);
         }
 
         /// <summary>
-        /// ValidateEmail - Happy path scenario.
+        /// ValidateEmailAsync - Happy path scenario.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
@@ -263,12 +263,12 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 new Mock<IHttpContextAccessor>().Object,
                 new Mock<IMessageSender>().Object);
 
-            RequestResult<bool> actual = await service.ValidateEmail(HdIdMock, inviteKey);
+            RequestResult<bool> actual = await service.ValidateEmailAsync(HdIdMock, inviteKey);
             Assert.True(actual.ResultStatus == ResultType.Error);
         }
 
         /// <summary>
-        /// ValidateEmail - Happy path scenario.
+        /// ValidateEmailAsync - Happy path scenario.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
@@ -296,7 +296,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 new Mock<IHttpContextAccessor>().Object,
                 new Mock<IMessageSender>().Object);
 
-            RequestResult<bool> actual = await service.ValidateEmail(HdIdMock, inviteKey);
+            RequestResult<bool> actual = await service.ValidateEmailAsync(HdIdMock, inviteKey);
             Assert.True(actual.ResultStatus == ResultType.Error);
         }
 

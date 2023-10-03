@@ -78,7 +78,7 @@ namespace HealthGateway.GatewayApi.Services
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResult<bool>> ValidateSms(string hdid, string validationCode, CancellationToken ct = default)
+        public async Task<RequestResult<bool>> ValidateSmsAsync(string hdid, string validationCode, CancellationToken ct = default)
         {
             this.logger.LogTrace("Validating sms... {ValidationCode}", validationCode);
 

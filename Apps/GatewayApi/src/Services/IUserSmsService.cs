@@ -32,7 +32,7 @@ namespace HealthGateway.GatewayApi.Services
         /// <param name="validationCode">The SMS validation code.</param>
         /// <param name="ct">A cancellation token.</param>
         /// <returns>Returns a request result containing true if the SMS verification was found and validated.</returns>
-        Task<RequestResult<bool>> ValidateSms(string hdid, string validationCode, CancellationToken ct = default);
+        Task<RequestResult<bool>> ValidateSmsAsync(string hdid, string validationCode, CancellationToken ct = default);
 
         /// <summary>
         /// Create the user SMS number.
