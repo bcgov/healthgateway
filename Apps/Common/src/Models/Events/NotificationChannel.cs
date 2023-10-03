@@ -15,9 +15,12 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Common.Models.Events;
 
+using System.Text.Json.Serialization;
+
 /// <summary>
 /// The notification channel used by the user.
 /// </summary>
+[JsonConverter(typeof(JsonStringEnumMemberConverter))]
 public enum NotificationChannel
 {
     /// <summary>
