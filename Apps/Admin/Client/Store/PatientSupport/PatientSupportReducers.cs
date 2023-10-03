@@ -34,7 +34,12 @@ namespace HealthGateway.Admin.Client.Store.PatientSupport
         [ReducerMethod]
         public static PatientSupportState ReduceLoadSuccessAction(PatientSupportState state, PatientSupportActions.LoadSuccessAction action)
         {
-            return new PatientSupportState { IsLoading = false, Result = action.Data.ToImmutableList(), Error = null };
+            return state with
+            {
+                IsLoading = false,
+                Result = action.Data.ToImmutableList(),
+                Error = null,
+            };
         }
 
         [ReducerMethod]
