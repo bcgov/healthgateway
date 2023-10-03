@@ -24,14 +24,12 @@ namespace HealthGateway.Admin.Client.Components.Support
     using HealthGateway.Admin.Client.Store.VaccineCard;
     using HealthGateway.Admin.Common.Models.CovidSupport;
     using HealthGateway.Common.Data.Models;
-    using HealthGateway.Common.Data.Utils;
     using Microsoft.AspNetCore.Components;
-    using Microsoft.Extensions.Configuration;
     using Microsoft.JSInterop;
     using MudBlazor;
     using MailVaccineCardAddressConfirmationDialog = AddressConfirmationDialog<
-        Store.VaccineCard.VaccineCardActions.MailVaccineCardFailureAction,
-        Store.VaccineCard.VaccineCardActions.MailVaccineCardSuccessAction>;
+        HealthGateway.Admin.Client.Store.VaccineCard.VaccineCardActions.MailVaccineCardFailureAction,
+        HealthGateway.Admin.Client.Store.VaccineCard.VaccineCardActions.MailVaccineCardSuccessAction>;
 
     /// <summary>
     /// Backing logic for the COVID-19 immunization section.
@@ -68,9 +66,6 @@ namespace HealthGateway.Admin.Client.Components.Support
 
         [Inject]
         private IActionSubscriber ActionSubscriber { get; set; } = default!;
-
-        [Inject]
-        private IConfiguration Configuration { get; set; } = default!;
 
         [Inject]
         private IDialogService Dialog { get; set; } = default!;
@@ -144,16 +139,6 @@ namespace HealthGateway.Admin.Client.Components.Support
             await dialog.Result.ConfigureAwait(true);
         }
 
-        private DateTime? ConvertDateTime(DateTime? utcDateTime)
-        {
-            if (utcDateTime != null)
-            {
-                return TimeZoneInfo.ConvertTimeFromUtc((DateTime)utcDateTime, this.GetTimeZone());
-            }
-
-            return null;
-        }
-
         private void DisplayMailVaccineCardSuccessful(VaccineCardActions.MailVaccineCardSuccessAction action)
         {
             this.Snackbar.Add("BC Vaccine Card mailed successfully.", Severity.Success);
@@ -167,11 +152,6 @@ namespace HealthGateway.Admin.Client.Components.Support
         private void ResetVaccineCardState()
         {
             this.Dispatcher.Dispatch(new VaccineCardActions.ResetStateAction());
-        }
-
-        private TimeZoneInfo GetTimeZone()
-        {
-            return DateFormatter.GetLocalTimeZone(this.Configuration);
         }
 
         private void MailVaccineCard(Address address)
@@ -194,7 +174,7 @@ namespace HealthGateway.Admin.Client.Components.Support
                 this.Location = model.Location;
             }
 
-            public DateTime? Date { get; }
+            public DateOnly? Date { get; }
 
             public string? Product { get; }
 

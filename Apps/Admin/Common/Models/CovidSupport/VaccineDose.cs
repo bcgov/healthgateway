@@ -45,6 +45,6 @@ namespace HealthGateway.Admin.Common.Models.CovidSupport
         /// Gets or sets the date the dose was administered.
         /// </summary>
         [JsonPropertyName("date")]
-        public DateTime? Date { get; set; }
+        public DateOnly? Date { get; set; }
     }
 }
