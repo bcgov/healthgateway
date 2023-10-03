@@ -33,12 +33,7 @@ namespace HealthGateway.Admin.Client.Store.PatientSupport
         [ReducerMethod]
         public static PatientSupportState ReduceLoadSuccessAction(PatientSupportState state, PatientSupportActions.LoadSuccessAction action)
         {
-            return state with
-            {
-                IsLoading = false,
-                Result = action.Data.ToImmutableList(),
-                Error = null,
-            };
+            return new PatientSupportState { IsLoading = false, Result = action.Data.ToImmutableList(), Error = null };
         }
 
         [ReducerMethod]
@@ -54,12 +49,7 @@ namespace HealthGateway.Admin.Client.Store.PatientSupport
         [ReducerMethod(typeof(PatientSupportActions.ResetStateAction))]
         public static PatientSupportState ReduceResetStateAction(PatientSupportState state)
         {
-            return state with
-            {
-                IsLoading = false,
-                Result = null,
-                Error = null,
-            };
+            return new PatientSupportState { IsLoading = false, Result = null, Error = null };
         }
     }
 }

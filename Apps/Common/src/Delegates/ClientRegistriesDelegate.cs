@@ -216,7 +216,7 @@ namespace HealthGateway.Common.Delegates
             {
                 // BCHCIM.GD.2.0018 Not found
                 this.logger.LogWarning("Client Registry did not find any records. Returned message code: {ResponseCode}", responseCode);
-                this.logger.LogDebug("Finished getting patient.");
+                this.logger.LogDebug("Finished getting patient");
                 return new RequestResult<PatientModel>
                 {
                     ResultStatus = ResultType.ActionRequired,
@@ -232,7 +232,7 @@ namespace HealthGateway.Common.Delegates
             {
                 // Returned BCHCIM.GD.2.0006 Invalid PHN
                 this.logger.LogWarning("Personal Health Number is invalid. Returned message code: {ResponseCode}", responseCode);
-                this.logger.LogDebug("Finished getting patient.");
+                this.logger.LogDebug("Finished getting patient");
                 return new RequestResult<PatientModel>
                 {
                     ResultStatus = ResultType.ActionRequired,
@@ -256,7 +256,7 @@ namespace HealthGateway.Common.Delegates
             if (!responseCode.Contains("BCHCIM.GD.0.0013", StringComparison.InvariantCulture))
             {
                 this.logger.LogWarning("Client Registry did not return a person. Returned message code: {ResponseCode}", responseCode);
-                this.logger.LogDebug("Finished getting patient.");
+                this.logger.LogDebug("Finished getting patient");
                 return new RequestResult<PatientModel>
                 {
                     ResultStatus = ResultType.Error,
@@ -278,7 +278,7 @@ namespace HealthGateway.Common.Delegates
         {
             using (Source.StartActivity())
             {
-                this.logger.LogDebug("Parsing patient response.");
+                this.logger.LogDebug("Parsing patient response");
 
                 string responseCode = reply.HCIM_IN_GetDemographicsResponse.controlActProcess.queryAck.queryResponseCode.code;
                 RequestResult<PatientModel> requestResult = this.CheckResponseCode(responseCode);
@@ -293,7 +293,7 @@ namespace HealthGateway.Common.Delegates
                 bool deceasedInd = retrievedPerson.identifiedPerson.deceasedInd?.value ?? false;
                 if (deceasedInd)
                 {
-                    this.logger.LogWarning("Client Registry returned a person with the deceased indicator set to true. No PHN was populated.");
+                    this.logger.LogWarning("Client Registry returned a person with the deceased indicator set to true. No PHN was populated");
                     return new RequestResult<PatientModel>
                     {
                         ResultStatus = ResultType.Error,
@@ -371,7 +371,7 @@ namespace HealthGateway.Common.Delegates
                 this.logger.LogWarning("Client Registry returned a person without a Documented Name, attempting Legal Name...");
                 if (legalName == null)
                 {
-                    this.logger.LogWarning("Client Registry returned a person without a Legal Name.");
+                    this.logger.LogWarning("Client Registry returned a person without a Legal Name");
                     return false;
                 }
             }

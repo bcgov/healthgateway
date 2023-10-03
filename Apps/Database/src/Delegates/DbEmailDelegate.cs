@@ -53,7 +53,7 @@ namespace HealthGateway.Database.Delegates
         {
             this.logger.LogTrace("Getting email from DB... {EmailId}", emailId);
             Email? retVal = this.dbContext.Find<Email>(emailId);
-            this.logger.LogDebug("Finished getting email {EmailId} from DB.", emailId);
+            this.logger.LogDebug("Finished getting email {EmailId} from DB", emailId);
             return retVal;
         }
 
@@ -75,7 +75,7 @@ namespace HealthGateway.Database.Delegates
                 .ThenBy(o => o.CreatedDateTime)
                 .Take(maxRows)
                 .ToList();
-            this.logger.LogDebug("Finished getting list of low priority emails from DB.");
+            this.logger.LogDebug("Finished getting list of low priority emails from DB");
             return retVal;
         }
 

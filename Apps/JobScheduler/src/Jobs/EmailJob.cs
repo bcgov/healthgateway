@@ -94,7 +94,7 @@ namespace HealthGateway.JobScheduler.Jobs
                 this.logger.LogInformation("Email {EmailId} was not returned from DB, skipping", emailId.ToString());
             }
 
-            this.logger.LogDebug("Finished sending email.");
+            this.logger.LogDebug("Finished sending email");
         }
 
         /// <inheritdoc/>

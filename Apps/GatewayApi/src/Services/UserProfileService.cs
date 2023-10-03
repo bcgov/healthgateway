@@ -329,7 +329,7 @@ namespace HealthGateway.GatewayApi.Services
             UserProfile profile = retrieveResult.Payload;
             if (profile.ClosedDateTime == null)
             {
-                this.logger.LogTrace("Finished. Profile already is active, recover not needed.");
+                this.logger.LogTrace("Finished. Profile already is active, recover not needed");
                 return RequestResultFactory.Success(this.BuildUserProfileModel(profile));
             }
 

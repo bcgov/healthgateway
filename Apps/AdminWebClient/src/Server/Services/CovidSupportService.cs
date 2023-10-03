@@ -108,7 +108,7 @@ namespace HealthGateway.Admin.Services
 
             if (patientResult.ResultStatus != ResultType.Success)
             {
-                this.logger.LogError("Error retrieving patient information.");
+                this.logger.LogError("Error retrieving patient information");
                 return RequestResultFactory.Error<CovidInformation>(patientResult.ResultError);
             }
 
@@ -116,7 +116,7 @@ namespace HealthGateway.Admin.Services
 
             if (vaccineDetailsResult.ResultStatus != ResultType.Success || vaccineDetailsResult.ResourcePayload == null)
             {
-                this.logger.LogError("Error retrieving vaccine details.");
+                this.logger.LogError("Error retrieving vaccine details");
                 return RequestResultFactory.Error<CovidInformation>(patientResult.ResultError);
             }
 
@@ -137,7 +137,7 @@ namespace HealthGateway.Admin.Services
 
             if (patientResult.ResultStatus != ResultType.Success)
             {
-                this.logger.LogError("Error retrieving patient information.");
+                this.logger.LogError("Error retrieving patient information");
                 return RequestResultFactory.Error<bool>(patientResult.ResultError);
             }
 
@@ -146,7 +146,7 @@ namespace HealthGateway.Admin.Services
 
             if (bearerToken == null)
             {
-                this.logger.LogError("Error getting access token.");
+                this.logger.LogError("Error getting access token");
                 return RequestResultFactory.ServiceError<bool>(ErrorType.InvalidState, ServiceType.Immunization, "Error getting access token.");
             }
 
@@ -213,7 +213,7 @@ namespace HealthGateway.Admin.Services
 
             if (patientResult.ResultStatus != ResultType.Success)
             {
-                this.logger.LogError("Error retrieving patient information.");
+                this.logger.LogError("Error retrieving patient information");
                 return RequestResultFactory.Error<ReportModel>(patientResult.ResultError);
             }
 
@@ -222,7 +222,7 @@ namespace HealthGateway.Admin.Services
 
             if (bearerToken == null)
             {
-                this.logger.LogError("Error getting access token.");
+                this.logger.LogError("Error getting access token");
                 return RequestResultFactory.ServiceError<ReportModel>(ErrorType.InvalidState, ServiceType.Immunization, "Error getting access token.");
             }
 
@@ -283,14 +283,14 @@ namespace HealthGateway.Admin.Services
 
             if (statusResult.ResultStatus != ResultType.Success)
             {
-                this.logger.LogError("Error getting vaccine status.");
+                this.logger.LogError("Error getting vaccine status");
                 return RequestResultFactory.Error<ReportModel>(statusResult.ResultError);
             }
 
             VaccineStatusResult? vaccineStatusResult = statusResult.ResourcePayload?.Result;
             if (vaccineStatusResult == null)
             {
-                this.logger.LogError("Error retrieving vaccine status information.");
+                this.logger.LogError("Error retrieving vaccine status information");
                 return RequestResultFactory.ServiceError<ReportModel>(ErrorType.InvalidState, ServiceType.Immunization, "Error retrieving vaccine status information.");
             }
 

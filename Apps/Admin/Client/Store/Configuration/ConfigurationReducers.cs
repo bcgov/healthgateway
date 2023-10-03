@@ -32,12 +32,7 @@ namespace HealthGateway.Admin.Client.Store.Configuration
         [ReducerMethod]
         public static ConfigurationState ReduceLoadSuccessAction(ConfigurationState state, ConfigurationActions.LoadSuccessAction action)
         {
-            return state with
-            {
-                IsLoading = false,
-                Result = action.Data,
-                Error = null,
-            };
+            return new ConfigurationState { IsLoading = false, Result = action.Data, Error = null };
         }
 
         [ReducerMethod]

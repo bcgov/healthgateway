@@ -144,7 +144,7 @@ namespace HealthGateway.Common.Services
             {
                 string cacheKey = $"{CacheDomain}:HDID:{hdid}";
                 cacheItem = this.cacheProvider.GetItem<PersonalAccount>(cacheKey);
-                this.logger.LogDebug("Cache key: {CacheKey} was {Found} found in cache.", cacheKey, cacheItem == null ? "not" : string.Empty);
+                this.logger.LogDebug("Cache key: {CacheKey} was {Found} found in cache", cacheKey, cacheItem == null ? "not" : string.Empty);
             }
 
             activity?.Stop();

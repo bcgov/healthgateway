@@ -129,7 +129,7 @@ namespace HealthGateway.GatewayApi.Controllers
         {
             if (dependent.OwnerId != dependentHdid || dependent.DelegateId != hdid)
             {
-                this.logger.LogError("Parameters do not match body of delete.");
+                this.logger.LogError("Parameters do not match body of delete");
                 return new BadRequestResult();
             }
 

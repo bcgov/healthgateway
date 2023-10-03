@@ -80,7 +80,7 @@ namespace HealthGateway.GatewayApi.Services
                 }
             }
 
-            this.logger.LogDebug("Finished creating user feedback.");
+            this.logger.LogDebug("Finished creating user feedback");
             return retVal;
         }
 
@@ -89,7 +89,7 @@ namespace HealthGateway.GatewayApi.Services
         {
             this.logger.LogTrace("Creating rating...");
             DbResult<Rating> dbRating = this.ratingDelegate.InsertRating(rating);
-            this.logger.LogDebug("Finished creating user feedback.");
+            this.logger.LogDebug("Finished creating user feedback");
 
             RequestResult<Rating> result = new()
             {

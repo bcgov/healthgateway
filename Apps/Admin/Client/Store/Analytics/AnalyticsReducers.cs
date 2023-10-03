@@ -86,33 +86,18 @@ public static class AnalyticsReducers
     [ReducerMethod]
     public static AnalyticsState ReduceLoadSuccessAction(AnalyticsState state, AnalyticsActions.LoadSuccessAction action)
     {
-        return state with
-        {
-            Result = action.Data,
-            IsLoading = false,
-            Error = null,
-        };
+        return new AnalyticsState { Result = action.Data, IsLoading = false, Error = null };
     }
 
     [ReducerMethod]
     public static AnalyticsState ReduceLoadFailureAction(AnalyticsState state, AnalyticsActions.LoadFailureAction action)
     {
-        return state with
-        {
-            Result = null,
-            IsLoading = false,
-            Error = action.Error,
-        };
+        return new AnalyticsState { Result = null, IsLoading = false, Error = action.Error };
     }
 
     [ReducerMethod(typeof(AnalyticsActions.ResetStateAction))]
     public static AnalyticsState ReduceResetAction(AnalyticsState state)
     {
-        return state with
-        {
-            Result = null,
-            IsLoading = false,
-            Error = null,
-        };
+        return new AnalyticsState { Result = null, IsLoading = false, Error = null };
     }
 }

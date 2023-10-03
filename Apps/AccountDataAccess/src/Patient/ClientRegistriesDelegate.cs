@@ -247,7 +247,7 @@ namespace HealthGateway.AccountDataAccess.Patient
         {
             using (Source.StartActivity())
             {
-                this.logger.LogDebug("Parsing patient response.");
+                this.logger.LogDebug("Parsing patient response");
 
                 string responseCode = reply.HCIM_IN_GetDemographicsResponse.controlActProcess.queryAck.queryResponseCode.code;
                 this.CheckResponseCode(responseCode);
@@ -314,10 +314,10 @@ namespace HealthGateway.AccountDataAccess.Patient
 
             if (documentedName == null)
             {
-                this.logger.LogWarning("Client Registry returned a person without a Documented Name, attempting Legal Name.");
+                this.logger.LogWarning("Client Registry returned a person without a Documented Name, attempting Legal Name");
                 if (legalName == null)
                 {
-                    this.logger.LogWarning("Client Registry returned a person without a Legal Name.");
+                    this.logger.LogWarning("Client Registry returned a person without a Legal Name");
                 }
             }
 
