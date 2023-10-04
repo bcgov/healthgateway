@@ -121,17 +121,17 @@ namespace HealthGateway.GatewayApi.Services
         }
 
         /// <inheritdoc/>
-        public MessagingVerification CreateUserSms(string hdid, string sms)
+        public async Task<MessagingVerification> CreateUserSmsAsync(string hdid, string sms, CancellationToken ct = default)
         {
             this.logger.LogInformation("Adding new sms verification for user {Hdid}", hdid);
             string sanitizedSms = SanitizeSms(sms);
-            MessagingVerification messagingVerification = this.AddVerificationSms(hdid, sanitizedSms);
+            MessagingVerification messagingVerification = await this.AddVerificationSmsAsync(hdid, sanitizedSms, ct);
             this.logger.LogDebug("Finished updating user sms");
             return messagingVerification;
         }
 
         /// <inheritdoc/>
-        public bool UpdateUserSms(string hdid, string sms)
+        public async Task<bool> UpdateUserSmsAsync(string hdid, string sms, CancellationToken ct = default)
         {
             this.logger.LogTrace("Removing user sms number {Hdid}", hdid);
             string sanitizedSms = SanitizeSms(sms);
@@ -145,7 +145,16 @@ namespace HealthGateway.GatewayApi.Services
                         nameof(UserSmsService)));
             }
 
-            UserProfile userProfile = this.profileDelegate.GetUserProfile(hdid).Payload;
+            UserProfile? userProfile = await this.profileDelegate.GetUserProfileAsync(hdid);
+            if (userProfile == null)
+            {
+                throw new ProblemDetailsException(
+                    ExceptionUtility.CreateProblemDetails(
+                        $"User profile not found for hdid {hdid}",
+                        HttpStatusCode.BadRequest,
+                        nameof(UserSmsService)));
+            }
+
             userProfile.SmsNumber = null;
             this.profileDelegate.Update(userProfile);
 
@@ -161,7 +170,7 @@ namespace HealthGateway.GatewayApi.Services
             if (!isDeleted)
             {
                 this.logger.LogInformation("Adding new sms verification for user {Hdid}", hdid);
-                MessagingVerification messagingVerification = this.AddVerificationSms(hdid, sanitizedSms);
+                MessagingVerification messagingVerification = await this.AddVerificationSmsAsync(hdid, sanitizedSms, ct);
                 notificationRequest.SmsVerificationCode = messagingVerification.SmsValidationCode;
             }
 
@@ -196,7 +205,7 @@ namespace HealthGateway.GatewayApi.Services
         [GeneratedRegex("[^0-9]")]
         private static partial Regex NonDigitRegex();
 
-        private MessagingVerification AddVerificationSms(string hdid, string sms)
+        private async Task<MessagingVerification> AddVerificationSmsAsync(string hdid, string sms, CancellationToken ct = default)
         {
             this.logger.LogInformation("Sending new sms verification for user {Hdid}", hdid);
             MessagingVerification messagingVerification = new()
@@ -208,7 +217,7 @@ namespace HealthGateway.GatewayApi.Services
                 ExpireDate = DateTime.UtcNow.AddDays(VerificationExpiryDays),
             };
 
-            this.messageVerificationDelegate.Insert(messagingVerification);
+            await this.messageVerificationDelegate.InsertAsync(messagingVerification, ct: ct);
             return messagingVerification;
         }
     }

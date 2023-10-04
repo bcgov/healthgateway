@@ -19,6 +19,7 @@ namespace HealthGateway.Database.Delegates
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using System.Linq;
+    using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.Models;
@@ -47,7 +48,7 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public Guid Insert(MessagingVerification messageVerification, bool commit = true)
+        public async Task<Guid> InsertAsync(MessagingVerification messageVerification, bool commit = true, CancellationToken ct = default)
         {
             this.logger.LogTrace("Inserting message verification to DB...");
             if (messageVerification.VerificationType == MessagingVerificationType.Email && messageVerification.Email == null)
@@ -61,10 +62,10 @@ namespace HealthGateway.Database.Delegates
                 throw new ArgumentException("SMSNumber/SMSValidationCode cannot be null or empty when verification type is SMS");
             }
 
-            this.dbContext.Add(messageVerification);
+            await this.dbContext.AddAsync(messageVerification, ct);
             if (commit)
             {
-                this.dbContext.SaveChanges();
+                await this.dbContext.SaveChangesAsync(ct);
             }
 
             this.logger.LogDebug("Finished inserting message verification to DB");

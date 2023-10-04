@@ -178,8 +178,9 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         /// <summary>
         /// ValidateSmsAsync - Update SMS Happy Path.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void ShouldValidateUpdate()
+        public async Task ShouldValidateUpdate()
         {
             string sms = "2508801234";
             MessagingVerification expectedResult = new()
@@ -210,7 +211,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 new Mock<IMessageSender>().Object,
                 this.testConfiguration);
 
-            Assert.True(service.UpdateUserSms(HdIdMock, sms));
+            Assert.True(await service.UpdateUserSmsAsync(HdIdMock, sms));
         }
 
         /// <summary>
@@ -224,8 +225,8 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             Mock<IMessagingVerificationDelegate> messagingVerificationDelegateMock = new();
             messagingVerificationDelegateMock
                 .Setup(
-                    s => s.Insert(It.IsAny<MessagingVerification>(), !ChangeFeedEnabled))
-                .Returns(Guid.Empty);
+                    s => s.InsertAsync(It.IsAny<MessagingVerification>(), !ChangeFeedEnabled, CancellationToken.None))
+                .ReturnsAsync(Guid.Empty);
 
             IUserSmsService service = new UserSmsService(
                 new Mock<ILogger<UserSmsService>>().Object,
@@ -235,28 +236,28 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 new Mock<IMessageSender>().Object,
                 this.testConfiguration);
 
-            service.CreateUserSms(HdIdMock, smsNumber);
+            service.CreateUserSmsAsync(HdIdMock, smsNumber);
             messagingVerificationDelegateMock
                 .Verify(
-                    s => s.Insert(It.Is<MessagingVerification>(x => x.UserProfileId == HdIdMock && x.SmsNumber.All(char.IsDigit)), !ChangeFeedEnabled));
+                    s => s.InsertAsync(It.Is<MessagingVerification>(x => x.UserProfileId == HdIdMock && x.SmsNumber.All(char.IsDigit)), !ChangeFeedEnabled, CancellationToken.None));
 
             smsNumber = "(123)4561234";
-            service.CreateUserSms(HdIdMock, smsNumber);
+            service.CreateUserSmsAsync(HdIdMock, smsNumber);
             messagingVerificationDelegateMock
                 .Verify(
-                    s => s.Insert(It.Is<MessagingVerification>(x => x.UserProfileId == HdIdMock && x.SmsNumber.All(char.IsDigit)), !ChangeFeedEnabled));
+                    s => s.InsertAsync(It.Is<MessagingVerification>(x => x.UserProfileId == HdIdMock && x.SmsNumber.All(char.IsDigit)), !ChangeFeedEnabled, CancellationToken.None));
 
             smsNumber = "123 456 1234";
-            service.CreateUserSms(HdIdMock, smsNumber);
+            service.CreateUserSmsAsync(HdIdMock, smsNumber);
             messagingVerificationDelegateMock
                 .Verify(
-                    s => s.Insert(It.Is<MessagingVerification>(x => x.UserProfileId == HdIdMock && x.SmsNumber.All(char.IsDigit)), !ChangeFeedEnabled));
+                    s => s.InsertAsync(It.Is<MessagingVerification>(x => x.UserProfileId == HdIdMock && x.SmsNumber.All(char.IsDigit)), !ChangeFeedEnabled, CancellationToken.None));
 
             smsNumber = "+1 123-456-1234";
-            service.CreateUserSms(HdIdMock, smsNumber);
+            service.CreateUserSmsAsync(HdIdMock, smsNumber);
             messagingVerificationDelegateMock
                 .Verify(
-                    s => s.Insert(It.Is<MessagingVerification>(x => x.UserProfileId == HdIdMock && x.SmsNumber.All(char.IsDigit)), !ChangeFeedEnabled));
+                    s => s.InsertAsync(It.Is<MessagingVerification>(x => x.UserProfileId == HdIdMock && x.SmsNumber.All(char.IsDigit)), !ChangeFeedEnabled, CancellationToken.None));
         }
     }
 }

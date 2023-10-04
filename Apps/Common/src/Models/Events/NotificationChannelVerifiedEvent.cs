@@ -15,7 +15,25 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Common.Models.Events;
 
+using System.Text.Json.Serialization;
 using HealthGateway.Common.Messaging;
+
+/// <summary>
+/// The notification channel used by the user.
+/// </summary>
+[JsonConverter(typeof(JsonStringEnumMemberConverter))]
+public enum NotificationChannel
+{
+    /// <summary>
+    /// Notification channel that receives SMS messages.
+    /// </summary>
+    Sms,
+
+    /// <summary>
+    /// Notification channel that receives emails.
+    /// </summary>
+    Email,
+}
 
 /// <summary>
 /// Represents an event when a notification channel is verified.

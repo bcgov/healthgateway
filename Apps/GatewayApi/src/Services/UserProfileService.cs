@@ -284,7 +284,7 @@ namespace HealthGateway.GatewayApi.Services
             if (!string.IsNullOrWhiteSpace(requestedEmail))
             {
                 bool isEmailVerified = requestedEmail.Equals(jwtEmailAddress, StringComparison.OrdinalIgnoreCase);
-                this.userEmailService.CreateUserEmail(hdid, requestedEmail, isEmailVerified, !this.changeFeedEnabled);
+                await this.userEmailService.CreateUserEmailAsync(hdid, requestedEmail, isEmailVerified, !this.changeFeedEnabled, ct);
                 userProfileModel.Email = requestedEmail;
                 userProfileModel.IsEmailVerified = isEmailVerified;
                 if (isEmailVerified)
@@ -296,7 +296,7 @@ namespace HealthGateway.GatewayApi.Services
             // Add SMS verification
             if (!string.IsNullOrWhiteSpace(requestedSmsNumber))
             {
-                MessagingVerification smsVerification = this.userSmsService.CreateUserSms(hdid, requestedSmsNumber);
+                MessagingVerification smsVerification = await this.userSmsService.CreateUserSmsAsync(hdid, requestedSmsNumber, ct);
                 notificationRequest.SmsVerificationCode = smsVerification.SmsValidationCode;
                 userProfileModel.SmsNumber = requestedSmsNumber;
             }

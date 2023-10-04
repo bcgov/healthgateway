@@ -17,6 +17,7 @@ namespace HealthGateway.Database.Delegates
 {
     using System;
     using System.Collections.Generic;
+    using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.Data.Models;
 
@@ -30,8 +31,9 @@ namespace HealthGateway.Database.Delegates
         /// </summary>
         /// <param name="messageVerification">The message verification to insert.</param>
         /// <param name="commit">If set to true the database changes will be persisted immediately.</param>
+        /// <param name="ct">A Cancellation token.</param>
         /// <returns>Returns the guid of the saved message verification.</returns>
-        Guid Insert(MessagingVerification messageVerification, bool commit = true);
+        Task<Guid> InsertAsync(MessagingVerification messageVerification, bool commit = true, CancellationToken ct = default);
 
         /// <summary>
         /// Gets the last Email Message Verification by the Invite key.

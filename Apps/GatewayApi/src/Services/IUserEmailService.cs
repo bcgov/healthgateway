@@ -41,15 +41,17 @@ namespace HealthGateway.GatewayApi.Services
         /// <param name="emailAddress">Email address to be set for the user.</param>
         /// <param name="isVerified">Indicates whether the email address is verified.</param>
         /// <param name="commit">If set to true the changes to database are persisted immediately.</param>
+        /// <param name="ct">A cancellation token.</param>
         /// <returns>returns true if the email was successfully created.</returns>
-        bool CreateUserEmail(string hdid, string emailAddress, bool isVerified, bool commit = true);
+        Task<bool> CreateUserEmailAsync(string hdid, string emailAddress, bool isVerified, bool commit = true, CancellationToken ct = default);
 
         /// <summary>
         /// Updates the user email.
         /// </summary>
         /// <param name="hdid">The user hdid.</param>
         /// <param name="emailAddress">Email address to be set for the user.</param>
+        /// <param name="ct">A cancellation token.</param>
         /// <returns>returns true if the email was successfully created.</returns>
-        bool UpdateUserEmail(string hdid, string emailAddress);
+        Task<bool> UpdateUserEmailAsync(string hdid, string emailAddress, CancellationToken ct = default);
     }
 }

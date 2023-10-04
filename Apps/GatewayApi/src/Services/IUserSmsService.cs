@@ -39,15 +39,17 @@ namespace HealthGateway.GatewayApi.Services
         /// </summary>
         /// <param name="hdid">The user hdid.</param>
         /// <param name="sms">SMS number to be set for the user.</param>
+        /// <param name="ct">A cancellation token.</param>
         /// <returns>returns true if the sms number was successfully created.</returns>
-        MessagingVerification CreateUserSms(string hdid, string sms);
+        Task<MessagingVerification> CreateUserSmsAsync(string hdid, string sms, CancellationToken ct = default);
 
         /// <summary>
         /// Updates the user SMS number.
         /// </summary>
         /// <param name="hdid">The user hdid.</param>
         /// <param name="sms">SMS number to be set for the user.</param>
+        /// <param name="ct">A cancellation token.</param>
         /// <returns>returns true if the sms number was successfully updated.</returns>
-        bool UpdateUserSms(string hdid, string sms);
+        Task<bool> UpdateUserSmsAsync(string hdid, string sms, CancellationToken ct = default);
     }
 }

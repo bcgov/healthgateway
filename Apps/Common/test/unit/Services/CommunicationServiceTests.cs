@@ -171,7 +171,7 @@ namespace HealthGateway.CommonTests.Services
         }
 
         /// <summary>
-        /// Validates Insert and Update operations when cache is empty.
+        /// Validates InsertAsync and Update operations when cache is empty.
         /// </summary>
         /// <param name="action">The action to perform for the test.</param>
         /// <param name="scenario">The scenario to to initialize data.</param>

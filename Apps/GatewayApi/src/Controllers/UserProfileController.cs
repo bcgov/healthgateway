@@ -276,6 +276,7 @@ namespace HealthGateway.GatewayApi.Controllers
         /// </summary>
         /// <param name="hdid">The user hdid.</param>
         /// <param name="emailAddress">The new email.</param>
+        /// <param name="ct">A cancellation token.</param>
         /// <returns>True if the action was successful.</returns>
         /// <response code="200">Returns true if the call was successful.</response>
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
@@ -286,9 +287,9 @@ namespace HealthGateway.GatewayApi.Controllers
         [HttpPut]
         [Route("{hdid}/email")]
         [Authorize(Policy = UserProfilePolicy.Write)]
-        public bool UpdateUserEmail(string hdid, [FromBody] string emailAddress)
+        public async Task<bool> UpdateUserEmail(string hdid, [FromBody] string emailAddress, CancellationToken ct = default)
         {
-            return this.userEmailService.UpdateUserEmail(hdid, emailAddress);
+            return await this.userEmailService.UpdateUserEmailAsync(hdid, emailAddress, ct);
         }
 
         /// <summary>
@@ -296,6 +297,7 @@ namespace HealthGateway.GatewayApi.Controllers
         /// </summary>
         /// <param name="hdid">The user hdid.</param>
         /// <param name="smsNumber">The new sms number.</param>
+        /// <param name="ct">A cancellation token.</param>
         /// <returns>True if the action was successful.</returns>
         /// <response code="200">Returns true if the call was successful.</response>
         /// <response code="400">the client must ensure sms number is valid.</response>
@@ -307,9 +309,9 @@ namespace HealthGateway.GatewayApi.Controllers
         [HttpPut]
         [Route("{hdid}/sms")]
         [Authorize(Policy = UserProfilePolicy.Write)]
-        public bool UpdateUserSmsNumber(string hdid, [FromBody] string smsNumber)
+        public async Task<bool> UpdateUserSmsNumberAsync(string hdid, [FromBody] string smsNumber, CancellationToken ct = default)
         {
-            return this.userSmsService.UpdateUserSms(hdid, smsNumber);
+            return await this.userSmsService.UpdateUserSmsAsync(hdid, smsNumber, ct);
         }
 
         /// <summary>

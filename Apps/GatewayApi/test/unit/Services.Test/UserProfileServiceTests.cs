@@ -347,7 +347,6 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 .SetupPatientServiceMockCustomPatient(this.hdid, patientModel)
                 .SetupPatientRepository(this.hdid, dataSources);
 
-
             IUserProfileService service = mockService.UserProfileServiceMockInstance();
 
             // Act
