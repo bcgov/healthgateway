@@ -195,17 +195,15 @@ describe("Quick Links", () => {
                 .click();
         });
         cy.get(quickLinkRemoveButtonSelector).should("be.visible").click();
+        cy.contains(cardButtonTitleSelector, encounterTitle).should(
+            "not.exist"
+        );
         getQuickLinkCard(immunizationTitle).within(() => {
             cy.get(quickLinkMenuButtonSelector)
                 .should("be.visible", "be.enabled")
                 .click();
         });
         cy.get(quickLinkRemoveButtonSelector).should("be.visible").click();
-
-        cy.log("Verifying quick link cards no longer exists");
-        cy.contains(cardButtonTitleSelector, encounterTitle).should(
-            "not.exist"
-        );
         cy.contains(cardButtonTitleSelector, immunizationTitle).should(
             "not.exist"
         );
