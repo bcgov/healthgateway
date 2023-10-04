@@ -11,7 +11,7 @@ fi
 
 pushd _Database/drop
 migrations=${RELEASE_ARTIFACTS__DATABASE_BUILDNUMBER}.efbundle
-echo "Running migrations from ${migrations}"
+echo "Running migrations ${migrations} against ${DB_HOST}"
 chmod u+x $migrations
-./$migrations --connection "Host=${dbHost};Database=${DB_NAME};User ID=${DB_USER};Password=${DB_PASSWORD};Command Timeout=300;$xtraParms"
+./$migrations --connection "Host=${DB_HOST};Database=${DB_NAME};User ID=${DB_USER};Password=${DB_PASSWORD};Command Timeout=300;$xtraParms"
 popd
