@@ -83,7 +83,7 @@ jobs:
     displayName: "HG Functional Tests"  
     pool: 
       vmImage: "ubuntu-latest"
-    condition: and(succeded('HG_Seed'), eq(variables['WebClient'], true))
+    condition: and(succeeded('HG_Seed'), eq(variables['WebClient'], true))
     dependsOn: "HG_Seed"    
     strategy:
       parallel: 9
