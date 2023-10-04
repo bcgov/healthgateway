@@ -26,7 +26,6 @@ namespace HealthGateway.GatewayApiTests.Services.Test
     using HealthGateway.Common.Messaging;
     using HealthGateway.Common.Models.Events;
     using HealthGateway.Common.Services;
-    using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Wrapper;
     using HealthGateway.GatewayApi.Services;
@@ -195,12 +194,8 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             messagingVerificationDelegate.Setup(s => s.GetLastForUser(It.IsAny<string>(), It.IsAny<string>())).Returns(expectedResult);
 
             Mock<IUserProfileDelegate> userProfileDelegate = new();
-            DbResult<UserProfile> userProfileMock = new()
-            {
-                Payload = new UserProfile(),
-                Status = DbStatusCode.Read,
-            };
-            userProfileDelegate.Setup(s => s.GetUserProfile(It.IsAny<string>())).Returns(userProfileMock);
+            UserProfile userProfileMock = new();
+            userProfileDelegate.Setup(s => s.GetUserProfileAsync(It.IsAny<string>())).ReturnsAsync(userProfileMock);
             userProfileDelegate.Setup(s => s.Update(It.IsAny<UserProfile>(), It.IsAny<bool>())).Returns(new DbResult<UserProfile>());
 
             IUserSmsService service = new UserSmsService(
