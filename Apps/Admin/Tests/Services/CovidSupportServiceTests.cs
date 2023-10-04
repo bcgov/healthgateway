@@ -17,6 +17,7 @@ namespace HealthGateway.Admin.Tests.Services
 {
     using System;
     using System.Collections.Generic;
+    using System.Globalization;
     using System.Linq;
     using System.Net;
     using System.Threading;
@@ -51,7 +52,7 @@ namespace HealthGateway.Admin.Tests.Services
         private const string AccessToken = "access_token";
         private const string Hdid = "DEV4FPEGCXG2NB5K2USBL52S66SC3GOUHWRP3GTXR2BTY5HEC4YA";
         private const string Phn = "9735361219";
-        private static readonly DateTime Birthdate = new(2000, 1, 1);
+        private static readonly DateTime Birthdate = DateTime.Parse("2000-01-01", CultureInfo.InvariantCulture);
 
         private static readonly IConfiguration Configuration = GetIConfigurationRoot();
 

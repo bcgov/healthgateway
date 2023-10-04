@@ -18,6 +18,7 @@ namespace HealthGateway.Admin.Tests.Services
     // ReSharper disable ParameterOnlyUsedForPreconditionCheck.Local
     using System;
     using System.Collections.Generic;
+    using System.Globalization;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
@@ -62,8 +63,8 @@ namespace HealthGateway.Admin.Tests.Services
         private const string AuthenticatedUser = "91ca9e2c-03b4-43f7-a806-8f6e15972c0f";
         private const string AuthenticatedPreferredUsername = "agent@idir";
 
-        private static readonly DateTime BirthDate = new(1990, 1, 1);
-        private static readonly DateTime TransactionDateTime = new(2023, 1, 1);
+        private static readonly DateTime BirthDate = DateTime.Parse("1990-01-01", CultureInfo.InvariantCulture);
+        private static readonly DateTime TransactionDateTime = DateTime.Parse("2023-01-01", CultureInfo.InvariantCulture);
 
         private readonly IMapper autoMapper = MapperUtil.InitializeAutoMapper();
         private readonly IConfiguration configuration;
@@ -480,18 +481,18 @@ namespace HealthGateway.Admin.Tests.Services
             Assert.Equal(expected.Protected, actual.Protected);
             Assert.Equal(expected.AllowedDelegations.Count, actual.AllowedDelegations.Count);
             Assert.Equal(
-                expected.AllowedDelegations.Count == 0 ? null : expected.AllowedDelegations.First().DelegateHdId,
-                actual.AllowedDelegations.Count == 0 ? null : actual.AllowedDelegations.First().DelegateHdId);
+                expected.AllowedDelegations.Count == 0 ? null : expected.AllowedDelegations[0].DelegateHdId,
+                actual.AllowedDelegations.Count == 0 ? null : actual.AllowedDelegations[0].DelegateHdId);
             Assert.Equal(
-                expected.AllowedDelegations.Count == 0 ? null : expected.AllowedDelegations.Last().DelegateHdId,
-                actual.AllowedDelegations.Count == 0 ? null : actual.AllowedDelegations.Last().DelegateHdId);
+                expected.AllowedDelegations.Count == 0 ? null : expected.AllowedDelegations[expected.AllowedDelegations.Count - 1].DelegateHdId,
+                actual.AllowedDelegations.Count == 0 ? null : actual.AllowedDelegations[expected.AllowedDelegations.Count - 1].DelegateHdId);
             return true;
         }
 
         private static bool AssertProtectedDependentResourceDelegates(List<ResourceDelegate> expected, List<ResourceDelegate> actual)
         {
             Assert.Equal(expected.Count, actual.Count);
-            Assert.Equal(expected.Count == 0 ? null : expected.First().ProfileHdid, actual.Count == 0 ? null : actual.First().ProfileHdid);
+            Assert.Equal(expected.Count == 0 ? null : expected[0].ProfileHdid, actual.Count == 0 ? null : actual[0].ProfileHdid);
             return true;
         }
 

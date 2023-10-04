@@ -17,7 +17,6 @@ namespace HealthGateway.LaboratoryTests.Delegates
 {
     using System;
     using System.Collections.Generic;
-    using System.Linq;
     using System.Net;
     using System.Net.Http;
     using System.Threading.Tasks;
@@ -95,7 +94,7 @@ namespace HealthGateway.LaboratoryTests.Delegates
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             Assert.NotEmpty(actualResult.ResourcePayload!.Result);
             Assert.Single(actualResult.ResourcePayload!.Result);
-            Assert.Equal(expectedPhn, actualResult.ResourcePayload!.Result.First().Phn);
+            Assert.Equal(expectedPhn, actualResult.ResourcePayload!.Result[0].Phn);
         }
 
         /// <summary>

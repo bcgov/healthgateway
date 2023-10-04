@@ -53,7 +53,7 @@ namespace HealthGateway.JobScheduler.Tasks
         /// <inheritdoc/>
         public void Run()
         {
-            this.logger.LogInformation("Performing Task {Name} started.", this.GetType().Name);
+            this.logger.LogInformation("Performing Task {Name} started", this.GetType().Name);
 
             IQueryable<Email> query = this.dbContext.Email.Where(
                 email => this.dbContext.MessagingVerification.Any(msgVerification => msgVerification.EmailId == email.Id && msgVerification.EmailAddress == null));

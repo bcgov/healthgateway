@@ -56,7 +56,7 @@ namespace HealthGateway.Immunization.Delegates
         public async Task<RequestResult<PhsaResult<VaccineStatusResult>>> GetVaccineStatus(string hdid, bool includeFederalPvc, string accessToken)
         {
             using Activity? activity = Source.StartActivity();
-            this.logger.LogDebug("Getting vaccine status for HDID {Hdid} with includeFederalPvc = {IncludeFederalPvc}.", hdid, includeFederalPvc);
+            this.logger.LogDebug("Getting vaccine status for HDID {Hdid} with includeFederalPvc = {IncludeFederalPvc}", hdid, includeFederalPvc);
 
             RequestResult<PhsaResult<VaccineStatusResult>> retVal = new()
             {
@@ -98,7 +98,7 @@ namespace HealthGateway.Immunization.Delegates
         {
             using Activity? activity = Source.StartActivity();
             this.logger.LogDebug(
-                "Getting vaccine status for PHN {PersonalHealthNumber}, DoB {DateOfBirth}, DoV {DateOfVaccine} with IncludeFederalVaccineProof = {IncludeFederalVaccineProof}.",
+                "Getting vaccine status for PHN {PersonalHealthNumber}, DoB {DateOfBirth}, DoV {DateOfVaccine} with IncludeFederalVaccineProof = {IncludeFederalVaccineProof}",
                 query.PersonalHealthNumber,
                 query.DateOfBirth,
                 query.DateOfVaccine,

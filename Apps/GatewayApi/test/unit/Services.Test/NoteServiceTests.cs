@@ -17,6 +17,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
 {
     using System;
     using System.Collections.Generic;
+    using System.Globalization;
     using System.Linq;
     using System.Threading;
     using AutoMapper;
@@ -179,7 +180,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             DbResult<UserProfile> profileDbResult = new()
             {
                 Payload = new UserProfile
-                    { EncryptionKey = encryptionKey },
+                { EncryptionKey = encryptionKey },
             };
 
             Mock<IUserProfileDelegate> profileDelegateMock = new();
@@ -190,7 +191,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 HdId = this.hdid,
                 Title = "Deleted Note",
                 Text = "Deleted Note text",
-                CreatedDateTime = new DateTime(2020, 1, 1),
+                CreatedDateTime = DateTime.Parse("2020-01-01", CultureInfo.InvariantCulture),
             };
 
             INoteService service = new NoteService(
@@ -216,7 +217,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             DbResult<UserProfile> profileDbResult = new()
             {
                 Payload = new UserProfile
-                    { EncryptionKey = encryptionKey },
+                { EncryptionKey = encryptionKey },
             };
 
             Mock<IUserProfileDelegate> profileDelegateMock = new();
@@ -227,7 +228,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 HdId = this.hdid,
                 Title = "Deleted Note",
                 Text = "Deleted Note text",
-                CreatedDateTime = new DateTime(2020, 1, 1),
+                CreatedDateTime = DateTime.Parse("2020-01-01", CultureInfo.InvariantCulture),
             };
 
             INoteService service = new NoteService(
@@ -253,7 +254,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             DbResult<UserProfile> profileDbResult = new()
             {
                 Payload = new UserProfile
-                    { EncryptionKey = encryptionKey },
+                { EncryptionKey = encryptionKey },
             };
 
             Mock<IUserProfileDelegate> profileDelegateMock = new();
@@ -264,7 +265,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 HdId = this.hdid,
                 Title = "Deleted Note",
                 Text = "Deleted Note text",
-                CreatedDateTime = new DateTime(2020, 1, 1),
+                CreatedDateTime = DateTime.Parse("2020-01-01", CultureInfo.InvariantCulture),
             };
 
             INoteService service = new NoteService(
@@ -310,14 +311,14 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                     HdId = this.hdid,
                     Title = "First Note",
                     Text = "First Note text",
-                    CreatedDateTime = new DateTime(2020, 1, 1),
+                    CreatedDateTime = DateTime.Parse("2020-01-01", CultureInfo.InvariantCulture),
                 },
                 new UserNote
                 {
                     HdId = this.hdid,
                     Title = "Second Note",
                     Text = "Second Note text",
-                    CreatedDateTime = new DateTime(2020, 2, 2),
+                    CreatedDateTime = DateTime.Parse("2020-02-02", CultureInfo.InvariantCulture),
                 },
             };
 
@@ -362,7 +363,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             DbResult<UserProfile> profileDbResult = new()
             {
                 Payload = new UserProfile
-                    { EncryptionKey = encryptionKey },
+                { EncryptionKey = encryptionKey },
             };
 
             Mock<IUserProfileDelegate> profileDelegateMock = new();
@@ -377,7 +378,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 HdId = this.hdid,
                 Title = "Inserted Note",
                 Text = "Inserted Note text",
-                CreatedDateTime = new DateTime(2020, 1, 1),
+                CreatedDateTime = DateTime.Parse("2020-01-01", CultureInfo.InvariantCulture),
             };
 
             Note note = NoteMapUtils.ToDbModel(userNote, cryptoDelegateMock.Object, encryptionKey, this.autoMapper);
@@ -409,7 +410,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             DbResult<UserProfile> profileDbResult = new()
             {
                 Payload = new UserProfile
-                    { EncryptionKey = encryptionKey },
+                { EncryptionKey = encryptionKey },
             };
 
             Mock<IUserProfileDelegate> profileDelegateMock = new();
@@ -424,7 +425,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 HdId = this.hdid,
                 Title = "Updated Note",
                 Text = "Updated Note text",
-                CreatedDateTime = new DateTime(2020, 1, 1),
+                CreatedDateTime = DateTime.Parse("2020-01-01", CultureInfo.InvariantCulture),
             };
 
             Note note = NoteMapUtils.ToDbModel(userNote, cryptoDelegateMock.Object, encryptionKey, this.autoMapper);
@@ -456,7 +457,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             DbResult<UserProfile> profileDbResult = new()
             {
                 Payload = new UserProfile
-                    { EncryptionKey = encryptionKey },
+                { EncryptionKey = encryptionKey },
             };
 
             Mock<IUserProfileDelegate> profileDelegateMock = new();
@@ -471,7 +472,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 HdId = this.hdid,
                 Title = "Deleted Note",
                 Text = "Deleted Note text",
-                CreatedDateTime = new DateTime(2020, 1, 1),
+                CreatedDateTime = DateTime.Parse("2020-01-01", CultureInfo.InvariantCulture),
             };
 
             Note note = NoteMapUtils.ToDbModel(userNote, cryptoDelegateMock.Object, encryptionKey, this.autoMapper);

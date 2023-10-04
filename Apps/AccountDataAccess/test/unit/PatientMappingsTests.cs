@@ -15,6 +15,7 @@
 // -------------------------------------------------------------------------
 namespace AccountDataAccessTest
 {
+    using System.Globalization;
     using AccountDataAccessTest.Utils;
     using AutoMapper;
     using DeepEqual.Syntax;
@@ -33,6 +34,7 @@ namespace AccountDataAccessTest
 
         // PHSA Preferred Names
         private const string PhsaPreferredFirstName = "Ted";
+
         private const string? PhsaPreferredSecondName = null;
         private const string PhsaPreferredThirdName = "Shaw";
         private const string PhsaPreferredLastName = "Rogers";
@@ -60,7 +62,7 @@ namespace AccountDataAccessTest
         private const string PhsaMailAddressCountry = "Canada";
 
         private static readonly IMapper Mapper = MapperUtil.InitializeAutoMapper();
-        private static readonly DateTime BirthDate = new(1990, 1, 1);
+        private static readonly DateTime BirthDate = DateTime.Parse("1990-01-01", CultureInfo.InvariantCulture);
 
         /// <summary>
         /// Should map patient identity to patient model.
@@ -86,9 +88,9 @@ namespace AccountDataAccessTest
                 ResponseCode = string.Empty,
                 IsDeceased = true,
                 CommonName = new Name
-                    { GivenName = expectedCommonGivenName, Surname = expectedCommonSurname },
+                { GivenName = expectedCommonGivenName, Surname = expectedCommonSurname },
                 LegalName = new Name
-                    { GivenName = expectedLegalGivenName, Surname = expectedLegalSurname },
+                { GivenName = expectedLegalGivenName, Surname = expectedLegalSurname },
                 PhysicalAddress = new Address
                 {
                     StreetLines = new List<string>
@@ -173,9 +175,9 @@ namespace AccountDataAccessTest
                 ResponseCode = string.Empty,
                 IsDeceased = true,
                 CommonName = new Name
-                    { GivenName = expectedCommonGivenName, Surname = expectedCommonSurname },
+                { GivenName = expectedCommonGivenName, Surname = expectedCommonSurname },
                 LegalName = new Name
-                    { GivenName = expectedLegalGivenName, Surname = expectedLegalSurname },
+                { GivenName = expectedLegalGivenName, Surname = expectedLegalSurname },
                 PhysicalAddress = null,
                 PostalAddress = null,
             };

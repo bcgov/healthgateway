@@ -16,6 +16,7 @@
 namespace HealthGateway.CommonTests.Utils
 {
     using System;
+    using System.Globalization;
     using System.Text.Json;
     using HealthGateway.Common.Utils;
     using Xunit;
@@ -32,7 +33,7 @@ namespace HealthGateway.CommonTests.Utils
         public void ShouldSerialize()
         {
             string dateStr = @"2022-05-25";
-            DateOnly date = DateOnly.ParseExact(dateStr, "yyyy-MM-dd");
+            DateOnly date = DateOnly.ParseExact(dateStr, "yyyy-MM-dd", CultureInfo.InvariantCulture);
             JsonSerializerOptions options = new()
             {
                 Converters = { new DateOnlyJsonConverter() },
@@ -48,7 +49,7 @@ namespace HealthGateway.CommonTests.Utils
         public void ShouldDeserialize()
         {
             string dateStr = "2022-05-25";
-            DateOnly date = DateOnly.ParseExact(dateStr, "yyyy-MM-dd");
+            DateOnly date = DateOnly.ParseExact(dateStr, "yyyy-MM-dd", CultureInfo.InvariantCulture);
             JsonSerializerOptions options = new()
             {
                 Converters = { new DateOnlyJsonConverter() },

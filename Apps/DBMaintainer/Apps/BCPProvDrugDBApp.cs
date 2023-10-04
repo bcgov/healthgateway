@@ -201,7 +201,7 @@ namespace HealthGateway.DBMaintainer.Apps
             pharmacyAssessments.ToList().ForEach(pa => ModifyPharmaCareDrug(pa, pharmaCareDrugs));
 
             this.DrugDbContext.AddRange(pharmaCareDrugs);
-            this.Logger.LogInformation("Saving pharma care drugs to database.");
+            this.Logger.LogInformation("Saving pharma care drugs to database");
             this.DrugDbContext.SaveChanges();
         }
     }

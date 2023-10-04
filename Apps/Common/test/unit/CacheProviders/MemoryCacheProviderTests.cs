@@ -23,6 +23,9 @@ namespace HealthGateway.CommonTests.CacheProviders
     using Microsoft.Extensions.Caching.Memory;
     using Xunit;
 
+#pragma warning disable S2925 // "Thread.Sleep" should not be used in tests
+#pragma warning disable CA2000 // Dispose objects before losing scope
+
     /// <summary>
     /// Integration Tests for the MemoryCacheProvider.
     /// </summary>
@@ -35,9 +38,7 @@ namespace HealthGateway.CommonTests.CacheProviders
         /// </summary>
         public MemoryCacheProviderTests()
         {
-#pragma warning disable CA2000
             this.cacheProvider = new MemoryCacheProvider(new MemoryCache(new MemoryCacheOptions()));
-#pragma warning restore CA2000
         }
 
         /// <summary>

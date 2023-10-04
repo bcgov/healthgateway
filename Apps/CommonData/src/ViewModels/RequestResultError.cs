@@ -53,7 +53,7 @@ namespace HealthGateway.Common.Data.ViewModels
         /// Gets or sets the trace id associated with the request.
         /// </summary>
         [JsonPropertyName("traceId")]
-        public string TraceId { get; set; } = string.Empty;
+        public string TraceId { get; set; }
 
         /// <summary>
         /// Gets or sets the action code.

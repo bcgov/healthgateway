@@ -67,7 +67,7 @@ namespace HealthGateway.Common.Services
             DbResult<IEnumerable<ResourceDelegate>> dbResult = this.resourceDelegateDelegate.Get(notificationSettings.SubjectHdid);
             foreach (ResourceDelegate resourceDelegate in dbResult.Payload)
             {
-                this.logger.LogDebug("Queueing Dependent Notification Settings.");
+                this.logger.LogDebug("Queueing Dependent Notification Settings");
                 NotificationSettingsRequest dependentNotificationSettings = new()
                 {
                     SubjectHdid = resourceDelegate.ResourceOwnerHdid,
@@ -89,7 +89,7 @@ namespace HealthGateway.Common.Services
                 this.jobClient.Enqueue<INotificationSettingsJob>(j => j.PushNotificationSettings(delegateJson));
             }
 
-            this.logger.LogDebug("Finished queueing Notification Settings push.");
+            this.logger.LogDebug("Finished queueing Notification Settings push");
         }
     }
 }

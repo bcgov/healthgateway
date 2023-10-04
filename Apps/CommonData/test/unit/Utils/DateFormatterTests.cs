@@ -24,7 +24,7 @@ namespace HealthGateway.Common.Data.Tests.Utils
     /// </summary>
     public class DateFormatterTests
     {
-        private static readonly DateTime DefaultDateTime = new(2022, 12, 31, 17, 00, 00);
+        private static readonly DateTime DefaultDateTime = new(2022, 12, 31, 17, 00, 00, DateTimeKind.Local);
 
         /// <summary>
         /// Should short date given date only.
