@@ -37,7 +37,7 @@
         <PackageReference Include="Serilog.Enrichers.Span" Version="3.1.0" />
         <PackageReference Include="Serilog.Exceptions" Version="8.4.0" />
         <PackageReference Include="Serilog.Sinks.Console" Version="4.1.0" />
-        <PackageReference Include="Serilog.Sinks.Seq" Version="5.2.2" />
+        <PackageReference Include="Serilog.Sinks.Seq" Version="5.2.3" />
         <PackageReference Include="SerilogTraceListener" Version="3.2.0" />
         <PackageReference Include="StackExchange.Redis" Version="2.6.122" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
