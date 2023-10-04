@@ -198,13 +198,9 @@ function getFormattedFilterCount(entryType: EntryType): string {
                                 color="primary"
                             >
                                 <template #label>
-                                    <v-row no-gutters>
-                                        <v-col class="ml-1" cols="auto">
-                                            {{ entryType.display }}
-                                        </v-col>
-                                        <v-spacer />
-                                        <v-col
-                                            cols="auto"
+                                    <p class="ml-1">
+                                        {{ entryType.display }}
+                                        <span
                                             :data-testid="`${entryType.type}Count`"
                                         >
                                             ({{
@@ -212,8 +208,8 @@ function getFormattedFilterCount(entryType: EntryType): string {
                                                     entryType.type
                                                 )
                                             }})
-                                        </v-col>
-                                    </v-row>
+                                        </span>
+                                    </p>
                                 </template>
                             </v-checkbox>
                         </v-col>
