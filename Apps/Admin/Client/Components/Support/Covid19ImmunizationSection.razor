@@ -16,7 +16,7 @@
           data-testid="immunization-table">
     <HeaderContent>
         <MudTh>
-            <MudTableSortLabel SortBy="new Func<VaccineDoseRow, object>(x => x.Date?.Date ?? DateTime.MinValue)"
+            <MudTableSortLabel SortBy="new Func<VaccineDoseRow, object>(x => x.Date ?? DateOnly.MinValue)"
                                InitialDirection="@SortDirection.Descending">
                 Date
             </MudTableSortLabel>
@@ -38,7 +38,12 @@
         </MudTh>
     </HeaderContent>
     <RowTemplate>
-        <MudTd data-testid="immunization-date" DataLabel="Date">@DateFormatter.ToShortDateAndTime(ConvertDateTime(context.Date))</MudTd>
+        <MudTd data-testid="immunization-date" DataLabel="Date">
+            @if (context.Date != null)
+            {
+                @(DateFormatter.ToShortDate(context.Date.Value))
+            }
+        </MudTd>
         <MudTd data-testid="immunization-product" DataLabel="Product">@context.Product</MudTd>
         <MudTd data-testid="immunization-lot-number" DataLabel="Lot Number">@context.Lot</MudTd>
         <MudTd data-testid="immunization-location" DataLabel="Clinic">@context.Location</MudTd>
