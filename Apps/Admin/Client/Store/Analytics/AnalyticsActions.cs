@@ -15,7 +15,6 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Admin.Client.Store.Analytics;
 
-using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Net.Http;
 
@@ -26,177 +25,79 @@ using System.Net.Http;
 public static class AnalyticsActions
 {
     /// <summary>
-    /// The action representing the initiation of user profiles load action.
+    /// The action representing the initiation of a user profiles load.
     /// </summary>
-    public class LoadUserProfilesAction : AnalyticsBaseAction
+    public record LoadUserProfilesAction : BaseAnalyticsLoadAction;
+
+    /// <summary>
+    /// The action representing the initiation of a comments load.
+    /// </summary>
+    public record LoadCommentsAction : BaseAnalyticsLoadAction;
+
+    /// <summary>
+    /// The action representing the initiation of a notes load.
+    /// </summary>
+    public record LoadNotesAction : BaseAnalyticsLoadAction;
+
+    /// <summary>
+    /// The action representing the initiation of a ratings load.
+    /// </summary>
+    public record LoadRatingsAction : BaseAnalyticsLoadAction;
+
+    /// <summary>
+    /// The action representing the initiation of an inactive users load.
+    /// </summary>
+    public record LoadInactiveUsersAction
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="LoadUserProfilesAction"/> class.
+        /// Gets the minimum number of days since the user's last login that would qualify the user as inactive.
         /// </summary>
-        /// <param name="startDate">Optional start date to include in the query.</param>
-        /// <param name="endDate">Optional end date to include in the query.</param>
-        public LoadUserProfilesAction(DateTime? startDate, DateTime? endDate)
-            : base(startDate, endDate)
-        {
-        }
+        public required int InactiveDays { get; init; }
+
+        /// <summary>
+        /// Gets the offset from the client browser to UTC.
+        /// </summary>
+        public required int TimeOffset { get; init; }
     }
 
     /// <summary>
-    /// The action representing the initiation of comments load action.
+    /// The action representing the initiation of a user feedback load.
     /// </summary>
-    public class LoadCommentsAction : AnalyticsBaseAction
-    {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="LoadCommentsAction"/> class.
-        /// </summary>
-        /// <param name="startDate">Optional start date to include in the query.</param>
-        /// <param name="endDate">Optional end date to include in the query.</param>
-        public LoadCommentsAction(DateTime? startDate, DateTime? endDate)
-            : base(startDate, endDate)
-        {
-        }
-    }
+    public record LoadUserFeedbackAction;
 
     /// <summary>
-    /// The action representing the initiation of notes load action.
+    /// The action representing the initiation of a year of birth counts load.
     /// </summary>
-    public class LoadNotesAction : AnalyticsBaseAction
+    public record LoadYearOfBirthCountsAction
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="LoadNotesAction"/> class.
+        /// Gets the start period.
         /// </summary>
-        /// <param name="startDate">Optional start date to include in the query.</param>
-        /// <param name="endDate">Optional end date to include in the query.</param>
-        public LoadNotesAction(DateTime? startDate, DateTime? endDate)
-            : base(startDate, endDate)
-        {
-        }
-    }
-
-    /// <summary>
-    /// The action representing the initiation of ratings load action.
-    /// </summary>
-    public class LoadRatingsAction : AnalyticsBaseAction
-    {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="LoadRatingsAction"/> class.
-        /// </summary>
-        /// <param name="startDate">Optional start date to include in the query.</param>
-        /// <param name="endDate">Optional end date to include in the query.</param>
-        public LoadRatingsAction(DateTime? startDate, DateTime? endDate)
-            : base(startDate, endDate)
-        {
-        }
-    }
-
-    /// <summary>
-    /// The action representing the initiation of inactive users load action.
-    /// </summary>
-    public class LoadInactiveUsersAction
-    {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="LoadInactiveUsersAction"/> class.
-        /// </summary>
-        /// <param name="inactiveDays">The days inactive to filter the users last login.</param>
-        /// <param name="timeOffset">The offset from the client browser to UTC.</param>
-        public LoadInactiveUsersAction(int inactiveDays, int timeOffset)
-        {
-            this.InactiveDays = inactiveDays;
-            this.TimeOffset = timeOffset;
-        }
+        public required string StartPeriod { get; init; }
 
         /// <summary>
-        /// Gets or sets inactive days.
+        /// Gets the end period.
         /// </summary>
-        public int InactiveDays { get; set; }
+        public required string EndPeriod { get; init; }
 
         /// <summary>
-        /// Gets or sets time offset.
+        /// Gets the offset from the client browser to UTC.
         /// </summary>
-        public int TimeOffset { get; set; }
-    }
-
-    /// <summary>
-    /// The action representing the initiation of the user feedback load action.
-    /// </summary>
-    public class LoadUserFeedbackAction
-    {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="LoadUserFeedbackAction"/> class.
-        /// </summary>
-        public LoadUserFeedbackAction()
-        {
-        }
-    }
-
-    /// <summary>
-    /// The action representing the initiation of year of birth counts load action.
-    /// </summary>
-    public class LoadYearOfBirthCountsAction
-    {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="LoadYearOfBirthCountsAction"/> class.
-        /// </summary>
-        /// <param name="startPeriod">The start period of the year of birth counts.</param>
-        /// <param name="endPeriod">The end period of the year of birth counts.</param>
-        /// <param name="timeOffset">The offset from the client browser to UTC.</param>
-        public LoadYearOfBirthCountsAction(string startPeriod, string endPeriod, int timeOffset)
-        {
-            this.StartPeriod = startPeriod;
-            this.EndPeriod = endPeriod;
-            this.TimeOffset = timeOffset;
-        }
-
-        /// <summary>
-        /// Gets or sets start period.
-        /// </summary>
-        public string StartPeriod { get; set; }
-
-        /// <summary>
-        /// Gets or sets end period.
-        /// </summary>
-        public string EndPeriod { get; set; }
-
-        /// <summary>
-        /// Gets or sets time offset.
-        /// </summary>
-        public int TimeOffset { get; set; }
+        public required int TimeOffset { get; init; }
     }
 
     /// <summary>
     /// The action representing a successful load action.
     /// </summary>
-    public class LoadSuccessAction : BaseSuccessAction<HttpContent>
-    {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="LoadSuccessAction"/> class.
-        /// </summary>
-        /// <param name="data">Analytics data.</param>
-        public LoadSuccessAction(HttpContent data)
-            : base(data)
-        {
-        }
-    }
+    public record LoadSuccessAction : BaseSuccessAction<HttpContent>;
 
     /// <summary>
     /// The action representing a failed load action.
     /// </summary>
-    public class LoadFailAction : BaseFailAction
-    {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="LoadFailAction"/> class.
-        /// </summary>
-        /// <param name="error">The request error.</param>
-        public LoadFailAction(RequestError error)
-            : base(error)
-        {
-        }
-    }
+    public record LoadFailureAction : BaseFailureAction;
 
     /// <summary>
-    /// The action that clears the generic report state.
+    /// The action that clears the state.
     /// </summary>
-    public class ResetStateAction
-    {
-    }
+    public record ResetStateAction;
 }

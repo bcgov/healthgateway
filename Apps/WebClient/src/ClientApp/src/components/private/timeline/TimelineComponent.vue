@@ -21,7 +21,6 @@ import {
     BcCancerScreening,
     DiagnosticImagingExam,
     HealthDataType,
-    PatientData,
     PatientDataType,
 } from "@/models/patientDataResponse";
 import BcCancerScreeningTimelineEntry from "@/models/timeline/bcCancerScreeningTimelineEntry";
@@ -55,6 +54,7 @@ import { useSpecialAuthorityRequestStore } from "@/stores/specialAuthorityReques
 import { useTimelineStore } from "@/stores/timeline";
 import { useUserStore } from "@/stores/user";
 import dataSourceUtil from "@/utility/dataSourceUtil";
+import DateSortUtility from "@/utility/dateSortUtility";
 
 interface Props {
     hdid: string;
@@ -247,7 +247,7 @@ const unfilteredTimelineEntries = computed(() => {
     for (const exam of patientData.value(props.hdid, [
         PatientDataType.DiagnosticImaging,
         PatientDataType.BcCancerScreening,
-    ]) as PatientData[]) {
+    ])) {
         switch (exam.type) {
             case HealthDataType.DiagnosticImagingExam:
                 entries.push(
@@ -269,15 +269,7 @@ const unfilteredTimelineEntries = computed(() => {
     }
 
     // Sort entries with newest first
-    entries.sort((a, b) => {
-        if (a.date.isBefore(b.date)) {
-            return 1;
-        }
-        if (a.date.isAfter(b.date)) {
-            return -1;
-        }
-        return 0;
-    });
+    entries.sort((a, b) => DateSortUtility.descending(a.date, b.date));
 
     return entries;
 });
@@ -448,7 +440,7 @@ function fetchDataset(entryType: EntryType): Promise<any> {
                 props.hdid
             );
         default:
-            return Promise.reject(`Unknown dataset "${entryType}"`);
+            return Promise.reject(new Error(`Unknown dataset "${entryType}"`));
     }
 }
 

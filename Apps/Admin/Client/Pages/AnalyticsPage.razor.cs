@@ -47,9 +47,9 @@ public partial class AnalyticsPage : FluxorComponent
 
     private int InactiveDays { get; set; } = 90;
 
-    private string? StartDate { get; set; } = DateTime.Now.AddDays(-30).ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
+    private string StartDate { get; set; } = DateTime.Now.AddDays(-30).ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
 
-    private string? EndDate { get; set; } = DateTime.Now.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
+    private string EndDate { get; set; } = DateTime.Now.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
 
     private int TimeOffset { get; } = (int)TimeZoneInfo.Local.GetUtcOffset(DateTime.UtcNow).TotalMinutes * -1;
 
@@ -61,15 +61,15 @@ public partial class AnalyticsPage : FluxorComponent
 
         set
         {
-            this.StartDate = value.Start?.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
-            this.EndDate = value.End?.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
+            this.StartDate = value.Start?.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture) ?? string.Empty;
+            this.EndDate = value.End?.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture) ?? string.Empty;
             this.DateRange = value;
         }
     }
 
     private MudDateRangePicker SelectedDateRangePicker { get; set; } = default!;
 
-    private DateTime MinimumDateTime { get; } = new(2019, 06, 1);
+    private DateTime MinimumDateTime { get; } = new(2019, 06, 1, 0, 0, 0, DateTimeKind.Local);
 
     private DateTime MaximumDateTime { get; } = DateTime.Now;
 
@@ -98,35 +98,35 @@ public partial class AnalyticsPage : FluxorComponent
     {
         this.ResetAnalyticsState();
         this.ReportName = "UserProfile";
-        this.Dispatcher.Dispatch(new AnalyticsActions.LoadUserProfilesAction(null, null));
+        this.Dispatcher.Dispatch(new AnalyticsActions.LoadUserProfilesAction());
     }
 
     private void GetCommentsData()
     {
         this.ResetAnalyticsState();
         this.ReportName = "Comments";
-        this.Dispatcher.Dispatch(new AnalyticsActions.LoadCommentsAction(null, null));
+        this.Dispatcher.Dispatch(new AnalyticsActions.LoadCommentsAction());
     }
 
     private void GetNotesData()
     {
         this.ResetAnalyticsState();
         this.ReportName = "Notes";
-        this.Dispatcher.Dispatch(new AnalyticsActions.LoadNotesAction(null, null));
+        this.Dispatcher.Dispatch(new AnalyticsActions.LoadNotesAction());
     }
 
     private void GetRatingsData()
     {
         this.ResetAnalyticsState();
         this.ReportName = "Ratings";
-        this.Dispatcher.Dispatch(new AnalyticsActions.LoadRatingsAction(null, null));
+        this.Dispatcher.Dispatch(new AnalyticsActions.LoadRatingsAction());
     }
 
     private void GetInactiveUsersData()
     {
         this.ResetAnalyticsState();
         this.ReportName = "InactiveUsers";
-        this.Dispatcher.Dispatch(new AnalyticsActions.LoadInactiveUsersAction(this.InactiveDays, this.TimeOffset));
+        this.Dispatcher.Dispatch(new AnalyticsActions.LoadInactiveUsersAction { InactiveDays = this.InactiveDays, TimeOffset = this.TimeOffset });
     }
 
     private void GetUserFeedbackData()
@@ -140,7 +140,7 @@ public partial class AnalyticsPage : FluxorComponent
     {
         this.ResetAnalyticsState();
         this.ReportName = YearOfBirthReportName;
-        this.Dispatcher.Dispatch(new AnalyticsActions.LoadYearOfBirthCountsAction(this.StartDate, this.EndDate, this.TimeOffset));
+        this.Dispatcher.Dispatch(new AnalyticsActions.LoadYearOfBirthCountsAction { StartPeriod = this.StartDate, EndPeriod = this.EndDate, TimeOffset = this.TimeOffset });
     }
 
     private void DownloadAnalyticsReport(AnalyticsActions.LoadSuccessAction action)

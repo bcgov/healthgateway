@@ -56,10 +56,13 @@ namespace HealthGateway.ImmunizationTests.Services.Test
         /// GetImmunizations - Happy Path.
         /// </summary>
         /// <param name="canAccessDataSource">The value indicates whether the immunization data source can be accessed or not.</param>
+        /// <returns>
+        /// A <see cref="Task"/> representing the asynchronous unit test.
+        /// </returns>
         [Theory]
         [InlineData(true)]
         [InlineData(false)]
-        public void ShouldGetImmunizations(bool canAccessDataSource)
+        public async Task ShouldGetImmunizations(bool canAccessDataSource)
         {
             Mock<IImmunizationDelegate> mockDelegate = new();
             RequestResult<PhsaResult<ImmunizationResponse>> delegateResult = new()
@@ -105,24 +108,27 @@ namespace HealthGateway.ImmunizationTests.Services.Test
 
             IImmunizationService service = new ImmunizationService(mockDelegate.Object, patientRepository.Object, this.autoMapper);
 
-            Task<RequestResult<ImmunizationResult>> actualResult = service.GetImmunizations(It.IsAny<string>());
+            RequestResult<ImmunizationResult> actualResult = await service.GetImmunizations(It.IsAny<string>());
 
             if (canAccessDataSource)
             {
-                expectedResult.ShouldDeepEqual(actualResult.Result);
+                expectedResult.ShouldDeepEqual(actualResult);
             }
             else
             {
-                Assert.Equal(0, actualResult.Result.ResourcePayload?.Immunizations.Count);
-                Assert.Equal(0, actualResult.Result.ResourcePayload?.Recommendations.Count);
+                Assert.Equal(0, actualResult.ResourcePayload?.Immunizations.Count);
+                Assert.Equal(0, actualResult.ResourcePayload?.Recommendations.Count);
             }
         }
 
         /// <summary>
         /// GetImmunization - Happy Path.
         /// </summary>
+        /// <returns>
+        /// A <see cref="Task"/> representing the asynchronous unit test.
+        /// </returns>
         [Fact]
-        public void ShouldGetImmunization()
+        public async Task ShouldGetImmunization()
         {
             Mock<IImmunizationDelegate> mockDelegate = new();
             RequestResult<PhsaResult<ImmunizationViewResponse>> delegateResult = new()
@@ -161,17 +167,18 @@ namespace HealthGateway.ImmunizationTests.Services.Test
 
             IImmunizationService service = new ImmunizationService(mockDelegate.Object, patientRepository.Object, this.autoMapper);
 
-            Task<RequestResult<ImmunizationEvent>> actualResult = service.GetImmunization("immz_id");
+            RequestResult<ImmunizationEvent> actualResult = await service.GetImmunization("immz_id");
 
-            expectedResult.ShouldDeepEqual(actualResult.Result);
+            expectedResult.ShouldDeepEqual(actualResult);
         }
 
         /// <summary>
         /// GetImmunizations - Happy Path (With Recommendations).
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
         [SuppressMessage("Maintainability", "CA1506:Avoid excessive class coupling", Justification = "Team decision")]
-        public void ShouldGetRecommendation()
+        public async Task ShouldGetRecommendation()
         {
             ImmunizationRecommendationResponse immzRecommendationResponse = this.GetImmzRecommendationResponse();
             Mock<IImmunizationDelegate> mockDelegate = new();
@@ -195,32 +202,33 @@ namespace HealthGateway.ImmunizationTests.Services.Test
 
             IImmunizationService service = new ImmunizationService(mockDelegate.Object, patientRepository.Object, this.autoMapper);
 
-            Task<RequestResult<ImmunizationResult>> actualResult = service.GetImmunizations(It.IsAny<string>());
+            RequestResult<ImmunizationResult> actualResult = await service.GetImmunizations(It.IsAny<string>());
 
-            expectedResult.ShouldDeepEqual(actualResult.Result);
-            Assert.Equal(1, expectedResult.ResourcePayload.Recommendations.Count);
-            ImmunizationRecommendation recomendationResult = expectedResult.ResourcePayload.Recommendations[0];
-            Assert.Equal(this.recomendationSetId, recomendationResult.RecommendationSetId);
-            Assert.Equal(this.vaccineName, recomendationResult.Immunization.Name);
+            expectedResult.ShouldDeepEqual(actualResult);
+            Assert.Single(expectedResult.ResourcePayload.Recommendations);
+            ImmunizationRecommendation recommendationResult = expectedResult.ResourcePayload.Recommendations[0];
+            Assert.Equal(this.recomendationSetId, recommendationResult.RecommendationSetId);
+            Assert.Equal(this.vaccineName, recommendationResult.Immunization.Name);
             Assert.Collection(
-                recomendationResult.Immunization.ImmunizationAgents,
+                recommendationResult.Immunization.ImmunizationAgents,
                 item => Assert.Equal(this.antigenName, item.Name));
-            Assert.Equal(this.antigenName, recomendationResult.Immunization.ImmunizationAgents.First().Name);
+            Assert.Equal(this.antigenName, recommendationResult.Immunization.ImmunizationAgents.First().Name);
             Assert.Collection(
-                recomendationResult.TargetDiseases,
+                recommendationResult.TargetDiseases,
                 item => Assert.Equal(immzRecommendationResponse.Recommendations.First().TargetDisease?.TargetDiseaseCodes.FirstOrDefault()?.Code, item.Code));
-            Assert.Equal(this.diseaseName, recomendationResult.TargetDiseases.First().Name);
-            Assert.Equal(DateTime.Parse(this.diseaseEligibleDateString, CultureInfo.CurrentCulture), recomendationResult.DiseaseEligibleDate);
-            Assert.Null(recomendationResult.DiseaseDueDate);
-            Assert.Null(recomendationResult.AgentDueDate);
-            Assert.Null(recomendationResult.AgentEligibleDate);
+            Assert.Equal(this.diseaseName, recommendationResult.TargetDiseases.First().Name);
+            Assert.Equal(DateTime.Parse(this.diseaseEligibleDateString, CultureInfo.CurrentCulture), recommendationResult.DiseaseEligibleDate);
+            Assert.Null(recommendationResult.DiseaseDueDate);
+            Assert.Null(recommendationResult.AgentDueDate);
+            Assert.Null(recommendationResult.AgentEligibleDate);
         }
 
         /// <summary>
         /// GetImmunizations - Request Error.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void ValidateImmunizationError()
+        public async Task ValidateImmunizationError()
         {
             Mock<IImmunizationDelegate> mockDelegate = new();
             RequestResult<PhsaResult<ImmunizationResponse>> delegateResult = new()
@@ -245,9 +253,9 @@ namespace HealthGateway.ImmunizationTests.Services.Test
 
             IImmunizationService service = new ImmunizationService(mockDelegate.Object, patientRepository.Object, this.autoMapper);
 
-            Task<RequestResult<ImmunizationResult>> actualResult = service.GetImmunizations(It.IsAny<string>());
+            RequestResult<ImmunizationResult> actualResult = await service.GetImmunizations(It.IsAny<string>());
 
-            expectedResult.ShouldDeepEqual(actualResult.Result);
+            expectedResult.ShouldDeepEqual(actualResult);
         }
 
         /*
@@ -320,7 +328,7 @@ namespace HealthGateway.ImmunizationTests.Services.Test
                 mockVaccineDelegate.Object,
                 mockHttpContextAccessor.Object);
 
-            RequestResult<VaccineProofDocument> actualResult = Task.Run(async () => await service.GetVaccineProof(hdid, VaccineProofTemplate.Provincial).ConfigureAwait(true)).Result;
+            RequestResult<VaccineProofDocument> actualResult = Task.Run(async () => await service.GetVaccineProof(hdid, VaccineProofTemplate.Provincial)).Result;
 
             Assert.True(actualResult.ResultStatus == ResultType.Success);
             Assert.True(actualResult.ResourcePayload != null && actualResult.ResourcePayload.Document.Data == assetResult.ResourcePayload.Data);
@@ -373,7 +381,7 @@ namespace HealthGateway.ImmunizationTests.Services.Test
                 mockVaccineDelegate.Object,
                 mockHttpContextAccessor.Object);
 
-            RequestResult<VaccineProofDocument> actualResult = Task.Run(async () => await service.GetVaccineProof(hdid, VaccineProofTemplate.Provincial).ConfigureAwait(true)).Result;
+            RequestResult<VaccineProofDocument> actualResult = Task.Run(async () => await service.GetVaccineProof(hdid, VaccineProofTemplate.Provincial)).Result;
 
             Assert.True(actualResult.ResultStatus == ResultType.ActionRequired && actualResult.ResultError != null);
         }
@@ -405,7 +413,7 @@ namespace HealthGateway.ImmunizationTests.Services.Test
                 mockVaccineDelegate.Object,
                 mockHttpContextAccessor.Object);
 
-            RequestResult<VaccineProofDocument> actualResult = Task.Run(async () => await service.GetVaccineProof(hdid, VaccineProofTemplate.Provincial).ConfigureAwait(true)).Result;
+            RequestResult<VaccineProofDocument> actualResult = Task.Run(async () => await service.GetVaccineProof(hdid, VaccineProofTemplate.Provincial)).Result;
 
             vaccineStatusResult.ShouldDeepEqual(actualResult);
         }
@@ -446,7 +454,7 @@ namespace HealthGateway.ImmunizationTests.Services.Test
                 mockVaccineDelegate.Object,
                 mockHttpContextAccessor.Object);
 
-            RequestResult<VaccineProofDocument> actualResult = Task.Run(async () => await service.GetVaccineProof(hdid, VaccineProofTemplate.Provincial).ConfigureAwait(true)).Result;
+            RequestResult<VaccineProofDocument> actualResult = Task.Run(async () => await service.GetVaccineProof(hdid, VaccineProofTemplate.Provincial)).Result;
 
             Assert.True(actualResult.ResultStatus == ResultType.Error);
         }
@@ -484,7 +492,7 @@ namespace HealthGateway.ImmunizationTests.Services.Test
                 mockVaccineDelegate.Object,
                 mockHttpContextAccessor.Object);
 
-            RequestResult<VaccineProofDocument> actualResult = Task.Run(async () => await service.GetVaccineProof(hdid, VaccineProofTemplate.Provincial).ConfigureAwait(true)).Result;
+            RequestResult<VaccineProofDocument> actualResult = Task.Run(async () => await service.GetVaccineProof(hdid, VaccineProofTemplate.Provincial)).Result;
 
             Assert.True(actualResult.ResultStatus == ResultType.Error);
         }
@@ -542,7 +550,7 @@ namespace HealthGateway.ImmunizationTests.Services.Test
                 mockVaccineDelegate.Object,
                 mockHttpContextAccessor.Object);
 
-            RequestResult<VaccineProofDocument> actualResult = Task.Run(async () => await service.GetVaccineProof(hdid, VaccineProofTemplate.Provincial).ConfigureAwait(true)).Result;
+            RequestResult<VaccineProofDocument> actualResult = Task.Run(async () => await service.GetVaccineProof(hdid, VaccineProofTemplate.Provincial)).Result;
 
             Assert.True(actualResult.ResultStatus == ResultType.Error);
         }
@@ -605,7 +613,7 @@ namespace HealthGateway.ImmunizationTests.Services.Test
               mockVaccineDelegate.Object,
               mockHttpContextAccessor.Object);
 
-            RequestResult<VaccineProofDocument> actualResult = Task.Run(async () => await service.GetVaccineProof(hdid, VaccineProofTemplate.Provincial).ConfigureAwait(true)).Result;
+            RequestResult<VaccineProofDocument> actualResult = Task.Run(async () => await service.GetVaccineProof(hdid, VaccineProofTemplate.Provincial)).Result;
 
             Assert.True(actualResult.ResultStatus == ResultType.ActionRequired && actualResult.ResultError != null);
         }

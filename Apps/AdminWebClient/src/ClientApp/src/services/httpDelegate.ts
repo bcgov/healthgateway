@@ -110,7 +110,7 @@ export default class HttpDelegate implements IHttpDelegate {
 
     public delete<T>(
         url: string,
-        payload: unknown | undefined = undefined,
+        payload: unknown = undefined,
         headers: Dictionary<string> | undefined = undefined
     ): Promise<T> {
         return new Promise<T>((resolve, reject) => {

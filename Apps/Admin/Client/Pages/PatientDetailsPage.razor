@@ -37,7 +37,7 @@
     Severity="@Severity.Info"
     IsEnabled="HasPatientsWarning"
     TResetAction="PatientSupportActions.ResetStateAction"
-    Class="mt-3"
+    Class="mt-4"
     DataTestId="user-banner-feedback-warning-message">
     <ul>
         @foreach (string warning in PatientSupportState.Value.WarningMessages)
@@ -49,16 +49,16 @@
 
 <HgBannerFeedback
     Severity="@Severity.Info"
-    IsEnabled="@(StatusWarning != null)"
+    IsEnabled="@(!string.IsNullOrEmpty(StatusWarning))"
     TResetAction="PatientSupportActions.ResetStateAction"
-    Class="mt-3"
+    Class="mt-4"
     DataTestId="user-banner-feedback-status-warning-message">
     @StatusWarning
 </HgBannerFeedback>
 
 @if (Patient != null)
 {
-    <HgPageHeading Class="mt-3">User Details</HgPageHeading>
+    <HgPageHeading TopMargin="Breakpoint.Always">User Details</HgPageHeading>
     <MudGrid Spacing="2">
         <MudItem xs="12" lg="4">
             <HgField Label="Name" Value="@PatientName" data-testid="patient-name" />
@@ -69,9 +69,12 @@
         <MudItem xs="12" lg="4">
             <HgField Label="PHN" Value="@Patient.PersonalHealthNumber" data-testid="patient-phn" />
         </MudItem>
-        <MudItem xs="12">
-            <HgField Label="HDID" Value="@Patient.Hdid" data-testid="patient-hdid" />
-        </MudItem>
+        @if (CanViewHdid)
+        {
+            <MudItem xs="12">
+                <HgField Label="HDID" Value="@Patient.Hdid" data-testid="patient-hdid" />
+            </MudItem>
+        }
         <MudItem xs="12" lg="6">
             <HgField Label="Physical Address" Value="@AddressUtility.GetAddressAsSingleLine(Patient.PhysicalAddress)" data-testid="patient-physical-address" />
         </MudItem>
@@ -83,10 +86,10 @@
     {
         if (CanViewAccountDetails)
         {
-            <MudText Class="my-3" Typo="Typo.subtitle1">
+            <MudText Class="mt-4" Typo="Typo.subtitle1">
                 Account Details
             </MudText>
-            <MudGrid Spacing="2">
+            <MudGrid Spacing="2" Class="mt-2">
                 <MudItem xs="12" lg="6">
                     <HgField Label="Account Created" Value="@ProfileCreatedDateTime.ToString()" data-testid="profile-created-datetime" />
                 </MudItem>
@@ -110,28 +113,31 @@
         {
             <AgentAuditHistory Title="Agent Reason History" AgentActions="@AgentAuditHistory" IsLoading="@PatientSupportDetailsLoading" />
         }
+    }
+    else if (CanViewAccountDetails)
+    {
+        <MudText Class="mt-4" Typo="Typo.subtitle1">
+            Account Details
+        </MudText>
+        <MudText Class="mt-4" data-testid="no-hg-profile">
+            No Health Gateway Profile
+        </MudText>
+    }
 
+    if (CanViewCovidDetails)
+    {
         <Covid19ImmunizationSection Phn="@Patient.PersonalHealthNumber" Data="@VaccineDoses" IsLoading="@PatientSupportDetailsLoading" MailAddress="@MailAddress" />
 
         <Covid19AssessmentSection Data="@AssessmentDetails" IsLoading="@PatientSupportDetailsLoading" AssessmentPagePath="@Covid19TreatmentAssessmentPath" />
     }
-    else if (CanViewAccountDetails)
-    {
-        <MudText Class="my-3" Typo="Typo.subtitle1">
-            Account Details
-        </MudText>
-        <MudText Class="my-3" data-testid="no-hg-profile">
-            No Health Gateway Profile
-        </MudText>
-    }
 }
 else if (PatientsLoaded)
 {
-    <MudText Class="my-3" Typo="Typo.subtitle1">
+    <MudText Class="mt-4" Typo="Typo.subtitle1">
         No user found with the specified HDID.
     </MudText>
 }
 else
 {
-    <MudProgressCircular Indeterminate="true" Size="Size.Large" Class="mt-3" />
+    <MudProgressCircular Indeterminate="true" Size="Size.Large" Class="mt-4" />
 }

@@ -30,7 +30,6 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
     using Microsoft.Net.Http.Headers;
-    using ILogger = Microsoft.Extensions.Logging.ILogger;
 
     /// <summary>
     /// Provides ASP.Net Services related to Http.
@@ -88,28 +87,7 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
             }
             else
             {
-                app.UseStaticFiles(
-                    new StaticFileOptions
-                    {
-                        OnPrepareResponse = context =>
-                        {
-                            if (context.File.Name == "service-worker-assets.js")
-                            {
-                                context.Context.Response.Headers.Add("Cache-Control", "no-cache, no-store");
-                                context.Context.Response.Headers.Add("Expires", "-1");
-                            }
-
-                            if (context.File.Name == "blazor.boot.json")
-                            {
-                                if (context.Context.Response.Headers.ContainsKey("blazor-environment"))
-                                {
-                                    context.Context.Response.Headers.Remove("blazor-environment");
-                                }
-
-                                context.Context.Response.Headers.Add("blazor-environment", environment.EnvironmentName);
-                            }
-                        },
-                    });
+                app.UseStaticFiles(GetBlazorStaticFileOptions(environment));
             }
 
             RequestLoggingSettings requestLoggingSettings = new();
@@ -298,6 +276,31 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
                     context.Response.Headers[HeaderNames.Pragma] = new[] { "no-cache" };
                     await next().ConfigureAwait(true);
                 });
+        }
+
+        private static StaticFileOptions GetBlazorStaticFileOptions(IWebHostEnvironment environment)
+        {
+            return new StaticFileOptions
+            {
+                OnPrepareResponse = context =>
+                {
+                    if (context.File.Name == "service-worker-assets.js")
+                    {
+                        context.Context.Response.Headers.Add("Cache-Control", "no-cache, no-store");
+                        context.Context.Response.Headers.Add("Expires", "-1");
+                    }
+
+                    if (context.File.Name == "blazor.boot.json")
+                    {
+                        if (context.Context.Response.Headers.ContainsKey("blazor-environment"))
+                        {
+                            context.Context.Response.Headers.Remove("blazor-environment");
+                        }
+
+                        context.Context.Response.Headers.Add("blazor-environment", environment.EnvironmentName);
+                    }
+                },
+            };
         }
     }
 

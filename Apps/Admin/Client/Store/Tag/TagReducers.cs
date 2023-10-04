@@ -52,7 +52,7 @@ public static class TagReducers
     }
 
     [ReducerMethod]
-    public static TagState ReduceLoadFailAction(TagState state, TagActions.LoadFailAction action)
+    public static TagState ReduceLoadFailureAction(TagState state, TagActions.LoadFailureAction action)
     {
         return state with
         {
@@ -100,7 +100,7 @@ public static class TagReducers
     }
 
     [ReducerMethod]
-    public static TagState ReduceAddFailAction(TagState state, TagActions.AddFailAction action)
+    public static TagState ReduceAddFailureAction(TagState state, TagActions.AddFailureAction action)
     {
         return state with
         {
@@ -148,7 +148,7 @@ public static class TagReducers
     }
 
     [ReducerMethod]
-    public static TagState ReduceDeleteFailAction(TagState state, TagActions.DeleteFailAction action)
+    public static TagState ReduceDeleteFailureAction(TagState state, TagActions.DeleteFailureAction action)
     {
         return state with
         {

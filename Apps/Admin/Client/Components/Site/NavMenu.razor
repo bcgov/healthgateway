@@ -35,6 +35,9 @@
     <AuthorizeView Roles="@($"{Roles.Admin},{Roles.Reviewer}")">
         <MudNavLink Href="feedback" Icon="fas fa-star">Feedback Review</MudNavLink>
     </AuthorizeView>
+    <AuthorizeView Roles="@($"{Roles.Admin}")">
+        <MudNavLink Href="reports" Icon="fas fa-table">Reports</MudNavLink>
+    </AuthorizeView>
     <AuthorizeView Roles="@($"{Roles.Admin},{Roles.Reviewer}")">
         <MudNavLink Href="analytics" Icon="fas fa-chart-line">System Analytics</MudNavLink>
     </AuthorizeView>

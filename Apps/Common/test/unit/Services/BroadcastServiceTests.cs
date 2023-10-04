@@ -44,8 +44,11 @@ namespace HealthGateway.CommonTests.Services
         /// <summary>
         /// CreateBroadcastAsync.
         /// </summary>
+        /// <returns>
+        /// A <see cref="Task"/> representing the asynchronous unit test.
+        /// </returns>
         [Fact]
-        public void ShouldCreateBroadcast()
+        public async Task ShouldCreateBroadcast()
         {
             // Arrange
             IBroadcastService service = GetBroadcastService(null, false);
@@ -56,7 +59,7 @@ namespace HealthGateway.CommonTests.Services
             };
 
             // Act
-            RequestResult<Broadcast> actualResult = service.CreateBroadcastAsync(broadcast).Result;
+            RequestResult<Broadcast> actualResult = await service.CreateBroadcastAsync(broadcast);
 
             // Assert
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
@@ -68,8 +71,11 @@ namespace HealthGateway.CommonTests.Services
         /// <summary>
         /// CreateBroadcastAsync fails effective expiry date validation.
         /// </summary>
+        /// <returns>
+        /// A <see cref="Task"/> representing the asynchronous unit test.
+        /// </returns>
         [Fact]
-        public void CreateBroadcastFailDateValidation()
+        public async Task CreateBroadcastFailDateValidation()
         {
             // Arrange
             IBroadcastService service = GetBroadcastService(null, false);
@@ -80,7 +86,7 @@ namespace HealthGateway.CommonTests.Services
             };
 
             // Act
-            RequestResult<Broadcast> actualResult = service.CreateBroadcastAsync(broadcast).Result;
+            RequestResult<Broadcast> actualResult = await service.CreateBroadcastAsync(broadcast);
 
             // Assert
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
@@ -91,8 +97,11 @@ namespace HealthGateway.CommonTests.Services
         /// <summary>
         /// CreateBroadcastAsync - api throws exception.
         /// </summary>
+        /// <returns>
+        /// A <see cref="Task"/> representing the asynchronous unit test.
+        /// </returns>
         [Fact]
-        public void CreateBroadcastShouldThrowsException()
+        public async Task CreateBroadcastShouldThrowsException()
         {
             // Arrange
             IBroadcastService service = GetBroadcastService(null, true);
@@ -103,7 +112,7 @@ namespace HealthGateway.CommonTests.Services
             };
 
             // Act
-            RequestResult<Broadcast> actualResult = service.CreateBroadcastAsync(broadcast).Result;
+            RequestResult<Broadcast> actualResult = await service.CreateBroadcastAsync(broadcast);
 
             // Assert
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
@@ -115,15 +124,16 @@ namespace HealthGateway.CommonTests.Services
         /// <summary>
         /// GetBroadcastsAsync - api returns one row.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void ShouldGetBroadcasts()
+        public async Task ShouldGetBroadcasts()
         {
             // Arrange
             Guid expectedId = Guid.NewGuid();
             IBroadcastService service = GetBroadcastService(expectedId, false);
 
             // Act
-            RequestResult<IEnumerable<Broadcast>> actualResult = service.GetBroadcastsAsync().Result;
+            RequestResult<IEnumerable<Broadcast>> actualResult = await service.GetBroadcastsAsync();
 
             // Assert
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
@@ -136,14 +146,17 @@ namespace HealthGateway.CommonTests.Services
         /// <summary>
         /// GetBroadcastsAsync - returns no rows.
         /// </summary>
+        /// <returns>
+        /// A <see cref="Task"/> representing the asynchronous unit test.
+        /// </returns>
         [Fact]
-        public void ShouldGetBroadcastsNoRowsReturned()
+        public async Task ShouldGetBroadcastsNoRowsReturned()
         {
             // Arrange
             IBroadcastService service = GetBroadcastService(null, false);
 
             // Act
-            RequestResult<IEnumerable<Broadcast>> actualResult = service.GetBroadcastsAsync().Result;
+            RequestResult<IEnumerable<Broadcast>> actualResult = await service.GetBroadcastsAsync();
 
             // Assert
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
@@ -155,14 +168,15 @@ namespace HealthGateway.CommonTests.Services
         /// <summary>
         /// GetBroadcastsAsync - api throws exception.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void GetBroadcastsShouldThrowsException()
+        public async Task GetBroadcastsShouldThrowsException()
         {
             // Arrange
             IBroadcastService service = GetBroadcastService(null, true);
 
             // Act
-            RequestResult<IEnumerable<Broadcast>> actualResult = service.GetBroadcastsAsync().Result;
+            RequestResult<IEnumerable<Broadcast>> actualResult = await service.GetBroadcastsAsync();
 
             // Assert
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
@@ -174,8 +188,9 @@ namespace HealthGateway.CommonTests.Services
         /// <summary>
         /// UpdateBroadcastAsync.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void ShouldUpdateBroadcast()
+        public async Task ShouldUpdateBroadcast()
         {
             Guid expectedId = Guid.NewGuid();
 
@@ -189,7 +204,7 @@ namespace HealthGateway.CommonTests.Services
             IBroadcastService service = GetBroadcastService(expectedId, false);
 
             // Act
-            RequestResult<Broadcast> actualResult = service.UpdateBroadcastAsync(broadcast).Result;
+            RequestResult<Broadcast> actualResult = await service.UpdateBroadcastAsync(broadcast);
 
             // Assert
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
@@ -201,8 +216,9 @@ namespace HealthGateway.CommonTests.Services
         /// <summary>
         /// UpdateBroadcastAsync fails effective expiry date validation.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void UpdateBroadcastFailsDateValidation()
+        public async Task UpdateBroadcastFailsDateValidation()
         {
             Guid expectedId = Guid.NewGuid();
 
@@ -216,7 +232,7 @@ namespace HealthGateway.CommonTests.Services
             IBroadcastService service = GetBroadcastService(expectedId, false);
 
             // Act
-            RequestResult<Broadcast> actualResult = service.UpdateBroadcastAsync(broadcast).Result;
+            RequestResult<Broadcast> actualResult = await service.UpdateBroadcastAsync(broadcast);
 
             // Assert
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
@@ -227,8 +243,9 @@ namespace HealthGateway.CommonTests.Services
         /// <summary>
         /// CreateBroadcastAsync - api throws exception.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void UpdateBroadcastShouldThrowsException()
+        public async Task UpdateBroadcastShouldThrowsException()
         {
             Guid expectedId = Guid.NewGuid();
 
@@ -242,7 +259,7 @@ namespace HealthGateway.CommonTests.Services
             IBroadcastService service = GetBroadcastService(null, true);
 
             // Act
-            RequestResult<Broadcast> actualResult = service.UpdateBroadcastAsync(broadcast).Result;
+            RequestResult<Broadcast> actualResult = await service.UpdateBroadcastAsync(broadcast);
 
             // Assert
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
@@ -254,8 +271,9 @@ namespace HealthGateway.CommonTests.Services
         /// <summary>
         /// DeleteBroadcastAsync.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void ShouldDeleteBroadcast()
+        public async Task ShouldDeleteBroadcast()
         {
             Guid expectedId = Guid.NewGuid();
 
@@ -267,7 +285,7 @@ namespace HealthGateway.CommonTests.Services
             IBroadcastService service = GetBroadcastService(expectedId, false);
 
             // Act
-            RequestResult<Broadcast> actualResult = service.DeleteBroadcastAsync(broadcast).Result;
+            RequestResult<Broadcast> actualResult = await service.DeleteBroadcastAsync(broadcast);
 
             // Assert
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
@@ -279,8 +297,9 @@ namespace HealthGateway.CommonTests.Services
         /// <summary>
         /// DeleteBroadcastAsync - api throws exception.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void DeleteBroadcastShouldThrowException()
+        public async Task DeleteBroadcastShouldThrowException()
         {
             Guid expectedId = Guid.NewGuid();
 
@@ -292,7 +311,7 @@ namespace HealthGateway.CommonTests.Services
             IBroadcastService service = GetBroadcastService(null, true);
 
             // Act
-            RequestResult<Broadcast> actualResult = service.DeleteBroadcastAsync(broadcast).Result;
+            RequestResult<Broadcast> actualResult = await service.DeleteBroadcastAsync(broadcast);
 
             // Assert
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);

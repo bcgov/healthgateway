@@ -23,11 +23,8 @@ namespace HealthGateway.Common.Data.Utils
     /// <summary>
     /// Utilities for performing manipulations on strings.
     /// </summary>
-    public static class StringManipulator
+    public static partial class StringManipulator
     {
-        private static readonly Regex PlaceholderRegex = new(@"\$\{(.*?)\}");
-        private static readonly Regex WhitespaceRegex = new(@"\s");
-
         /// <summary>
         /// Replaces any occurrences of ${key} in the string with the value.
         /// The dictionary should only have the name of the key as in KEY and NOT ${KEY}.
@@ -40,9 +37,10 @@ namespace HealthGateway.Common.Data.Utils
             // The regex will find all instances of ${ANYTHING} and will evaluate if the keys between
             // the mustaches match one of those in the dictionary.  If so it then replaces the match
             // with the value in the dictionary.
-            return PlaceholderRegex.Replace(
-                inStr,
-                m => m.Groups.Count > 1 && data.TryGetValue(m.Groups[1].Value, out string? replacement) ? replacement : m.Value);
+            return PlaceholderRegex()
+                .Replace(
+                    inStr,
+                    m => m.Groups.Count > 1 && data.TryGetValue(m.Groups[1].Value, out string? replacement) ? replacement : m.Value);
         }
 
         /// <summary>
@@ -53,7 +51,7 @@ namespace HealthGateway.Common.Data.Utils
         [return: NotNullIfNotNull(nameof(target))]
         public static string? StripWhitespace(string? target)
         {
-            return target is null ? target : WhitespaceRegex.Replace(target, string.Empty);
+            return target is null ? target : WhitespaceRegex().Replace(target, string.Empty);
         }
 
         /// <summary>
@@ -63,7 +61,7 @@ namespace HealthGateway.Common.Data.Utils
         /// <returns>The bool indicating if string is all positive numeric.</returns>
         public static bool IsPositiveNumeric(string target)
         {
-            return Regex.IsMatch(target, @"^\d+$");
+            return OnlyDigitsRegex().IsMatch(target);
         }
 
         /// <summary>
@@ -90,5 +88,14 @@ namespace HealthGateway.Common.Data.Utils
         {
             return strings.Where(s => !string.IsNullOrWhiteSpace(s)).OfType<string>();
         }
+
+        [GeneratedRegex(@"\$\{(.*?)\}")]
+        private static partial Regex PlaceholderRegex();
+
+        [GeneratedRegex(@"\s")]
+        private static partial Regex WhitespaceRegex();
+
+        [GeneratedRegex(@"^\d+$")]
+        private static partial Regex OnlyDigitsRegex();
     }
 }

@@ -58,9 +58,9 @@ namespace HealthGateway.Admin.Client.Components.Delegation
             this.Dispatcher.Dispatch(new DelegationActions.SetEditModeAction { Enabled = enabled });
         }
 
-        private async Task ToggleProtectedSwitch(bool protect)
+        private async Task ToggleProtectedSwitch(bool? protect)
         {
-            if (protect)
+            if (protect == true)
             {
                 this.SetEditMode(true);
             }
@@ -70,12 +70,17 @@ namespace HealthGateway.Admin.Client.Components.Delegation
             }
         }
 
+        private void UnprotectDependent(string auditReason)
+        {
+            this.Dispatcher.Dispatch(new DelegationActions.UnprotectDependentAction { Reason = auditReason });
+        }
+
         private async Task OpenUnprotectConfirmationDialog()
         {
             const string title = "Confirm Update";
             DialogParameters parameters = new()
             {
-                ["AuditableAction"] = new DelegationActions.UnprotectDependentAction(),
+                ["ActionOnConfirm"] = (Action<string>)this.UnprotectDependent,
                 ["CancelAction"] = new DelegationActions.ClearUnprotectErrorAction(),
             };
             DialogOptions options = new()
@@ -87,8 +92,7 @@ namespace HealthGateway.Admin.Client.Components.Delegation
 
             IDialogReference dialog = await this.Dialog
                 .ShowAsync<AuditReasonDialog<
-                    DelegationActions.UnprotectDependentAction,
-                    DelegationActions.UnprotectDependentFailAction,
+                    DelegationActions.UnprotectDependentFailureAction,
                     DelegationActions.UnprotectDependentSuccessAction>>(
                     title,
                     parameters,

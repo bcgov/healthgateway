@@ -38,6 +38,12 @@ namespace HealthGateway.Common.Delegates
     /// </summary>
     public class ClientRegistriesDelegate : IClientRegistriesDelegate
     {
+        private static readonly List<string> WarningResponseCodes = new()
+        {
+            "BCHCIM.GD.0.0015", "BCHCIM.GD.1.0015", "BCHCIM.GD.0.0019", "BCHCIM.GD.1.0019", "BCHCIM.GD.0.0020", "BCHCIM.GD.1.0020", "BCHCIM.GD.0.0021", "BCHCIM.GD.1.0021", "BCHCIM.GD.0.0022",
+            "BCHCIM.GD.1.0022", "BCHCIM.GD.0.0023", "BCHCIM.GD.1.0023", "BCHCIM.GD.0.0578", "BCHCIM.GD.1.0578",
+        };
+
         private readonly QUPA_AR101102_PortType clientRegistriesClient;
         private readonly IHttpContextAccessor httpContextAccessor;
         private readonly ILogger<ClientRegistriesDelegate> logger;
@@ -173,34 +179,31 @@ namespace HealthGateway.Common.Delegates
 
         private static Address? MapAddress(AD? address)
         {
-            Address? retAddress = null;
-            if (address?.Items != null)
+            if (address?.Items == null)
             {
-                retAddress = new();
-                foreach (ADXP item in address.Items)
-                {
-                    switch (item)
-                    {
-                        case ADStreetAddressLine line when line.Text != null:
-                            foreach (string s in line.Text)
-                            {
-                                retAddress.StreetLines = retAddress.StreetLines.Append(s ?? string.Empty);
-                            }
+                return null;
+            }
 
-                            break;
-                        case ADCity city:
-                            retAddress.City = city.Text[0] ?? string.Empty;
-                            break;
-                        case ADState state:
-                            retAddress.State = state.Text[0] ?? string.Empty;
-                            break;
-                        case ADPostalCode postalCode:
-                            retAddress.PostalCode = postalCode.Text[0] ?? string.Empty;
-                            break;
-                        case ADCountry country:
-                            retAddress.Country = country.Text[0] ?? string.Empty;
-                            break;
-                    }
+            Address retAddress = new();
+            foreach (ADXP item in address.Items)
+            {
+                switch (item)
+                {
+                    case ADStreetAddressLine { Text: not null } line:
+                        retAddress.StreetLines = retAddress.StreetLines.Concat(line.Text.Select(l => l ?? string.Empty));
+                        break;
+                    case ADCity city:
+                        retAddress.City = city.Text[0] ?? string.Empty;
+                        break;
+                    case ADState state:
+                        retAddress.State = state.Text[0] ?? string.Empty;
+                        break;
+                    case ADPostalCode postalCode:
+                        retAddress.PostalCode = postalCode.Text[0] ?? string.Empty;
+                        break;
+                    case ADCountry country:
+                        retAddress.Country = country.Text[0] ?? string.Empty;
+                        break;
                 }
             }
 
@@ -241,10 +244,7 @@ namespace HealthGateway.Common.Delegates
                 };
             }
 
-            if (responseCode.Contains("BCHCIM.GD.0.0019", StringComparison.InvariantCulture) ||
-                responseCode.Contains("BCHCIM.GD.0.0021", StringComparison.InvariantCulture) ||
-                responseCode.Contains("BCHCIM.GD.0.0022", StringComparison.InvariantCulture) ||
-                responseCode.Contains("BCHCIM.GD.0.0023", StringComparison.InvariantCulture))
+            if (WarningResponseCodes.Any(code => responseCode.Contains(code, StringComparison.InvariantCulture)))
             {
                 return new RequestResult<PatientModel>
                 {
@@ -344,14 +344,11 @@ namespace HealthGateway.Common.Delegates
                 AD[] addresses = retrievedPerson.addr;
                 if (addresses != null)
                 {
-                    patient.PhysicalAddress = MapAddress(addresses.FirstOrDefault(a => a.use.Any(u => u == cs_PostalAddressUse.PHYS)));
-                    patient.PostalAddress = MapAddress(addresses.FirstOrDefault(a => a.use.Any(u => u == cs_PostalAddressUse.PST)));
+                    patient.PhysicalAddress = MapAddress(Array.Find(addresses, a => Array.Exists(a.use, u => u == cs_PostalAddressUse.PHYS)));
+                    patient.PostalAddress = MapAddress(Array.Find(addresses, a => Array.Exists(a.use, u => u == cs_PostalAddressUse.PST)));
                 }
 
-                if (responseCode.Contains("BCHCIM.GD.0.0019", StringComparison.InvariantCulture) ||
-                    responseCode.Contains("BCHCIM.GD.0.0021", StringComparison.InvariantCulture) ||
-                    responseCode.Contains("BCHCIM.GD.0.0022", StringComparison.InvariantCulture) ||
-                    responseCode.Contains("BCHCIM.GD.0.0023", StringComparison.InvariantCulture))
+                if (WarningResponseCodes.Any(code => responseCode.Contains(code, StringComparison.InvariantCulture)))
                 {
                     patient.ResponseCode = responseCode;
                 }
@@ -366,8 +363,8 @@ namespace HealthGateway.Common.Delegates
 
         private bool PopulateNames(HCIM_IN_GetDemographicsResponseIdentifiedPerson retrievedPerson, PatientModel patient)
         {
-            PN? documentedName = retrievedPerson.identifiedPerson.name.FirstOrDefault(x => x.use.Any(u => u == cs_EntityNameUse.C));
-            PN? legalName = retrievedPerson.identifiedPerson.name.FirstOrDefault(x => x.use.Any(u => u == cs_EntityNameUse.L));
+            PN? documentedName = Array.Find(retrievedPerson.identifiedPerson.name, x => Array.Exists(x.use, u => u == cs_EntityNameUse.C));
+            PN? legalName = Array.Find(retrievedPerson.identifiedPerson.name, x => Array.Exists(x.use, u => u == cs_EntityNameUse.L));
 
             if (documentedName == null)
             {
@@ -386,11 +383,16 @@ namespace HealthGateway.Common.Delegates
             List<string> lastNameList = new();
             foreach (ENXP name in nameSection.Items)
             {
-                if (name.GetType() == typeof(engiven) && (name.qualifier == null || !name.qualifier.Contains(cs_EntityNamePartQualifier.CL)))
+                if (name.qualifier != null && name.qualifier.Contains(cs_EntityNamePartQualifier.CL))
+                {
+                    continue;
+                }
+
+                if (name.GetType() == typeof(engiven))
                 {
                     givenNameList.Add(name.Text[0]);
                 }
-                else if (name.GetType() == typeof(enfamily) && (name.qualifier == null || !name.qualifier.Contains(cs_EntityNamePartQualifier.CL)))
+                else if (name.GetType() == typeof(enfamily))
                 {
                     lastNameList.Add(name.Text[0]);
                 }

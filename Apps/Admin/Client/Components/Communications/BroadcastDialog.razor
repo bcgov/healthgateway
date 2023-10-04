@@ -136,7 +136,7 @@
                         @bind-Value="@Broadcast.Enabled"
                         T="@bool"
                         Required="@true"
-                        ToStringFunc="@BroadcastUtility.FormatEnabled"
+                        ToStringFunc="@FormattingUtility.FormatBroadcastEnabled"
                         data-testid="publish-select">
                         <MudSelectItem Value="false" data-testid="publish-value" />
                         <MudSelectItem Value="true" data-testid="publish-value" />
@@ -154,7 +154,7 @@
                         @foreach (BroadcastActionType actionType in ActionTypes)
                         {
                             <MudSelectItem Value="@actionType" data-testid="action-type">
-                                @BroadcastUtility.FormatActionType(actionType)
+                                @FormattingUtility.FormatBroadcastActionType(actionType)
                             </MudSelectItem>
                         }
                     </HgSelect>

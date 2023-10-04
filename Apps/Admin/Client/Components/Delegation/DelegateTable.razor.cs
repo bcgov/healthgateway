@@ -59,9 +59,9 @@ namespace HealthGateway.Admin.Client.Components.Delegation
             };
         }
 
-        private void ToggleRemoveDelegate(string hdid, bool value)
+        private void ToggleRemoveDelegate(string hdid, bool? value)
         {
-            this.Dispatcher.Dispatch(new DelegationActions.SetDisallowedDelegationStatusAction { Hdid = hdid, Disallow = value });
+            this.Dispatcher.Dispatch(new DelegationActions.SetDisallowedDelegationStatusAction { Hdid = hdid, Disallow = value == true });
         }
 
         private sealed record DelegateRow

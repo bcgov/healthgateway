@@ -175,11 +175,11 @@ public partial class BroadcastDialog : FluxorComponent
 
             if (this.IsNewBroadcast)
             {
-                this.Dispatcher.Dispatch(new BroadcastsActions.AddAction(this.Broadcast));
+                this.Dispatcher.Dispatch(new BroadcastsActions.AddAction { Broadcast = this.Broadcast });
             }
             else
             {
-                this.Dispatcher.Dispatch(new BroadcastsActions.UpdateAction(this.Broadcast));
+                this.Dispatcher.Dispatch(new BroadcastsActions.UpdateAction { Broadcast = this.Broadcast });
             }
         }
     }

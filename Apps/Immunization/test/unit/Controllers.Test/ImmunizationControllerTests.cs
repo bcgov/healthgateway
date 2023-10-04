@@ -91,7 +91,7 @@ namespace HealthGateway.ImmunizationTests.Controllers.Test
             ImmunizationController controller = new(new Mock<ILogger<ImmunizationController>>().Object, svcMock.Object);
 
             // Act
-            RequestResult<ImmunizationResult> actual = await controller.GetImmunizations(this.hdid).ConfigureAwait(true);
+            RequestResult<ImmunizationResult> actual = await controller.GetImmunizations(this.hdid);
 
             // Verify
             Assert.True(actual.ResultStatus == ResultType.Success);
@@ -138,7 +138,7 @@ namespace HealthGateway.ImmunizationTests.Controllers.Test
             ImmunizationController controller = new(new Mock<ILogger<ImmunizationController>>().Object, svcMock.Object);
 
             // Act
-            RequestResult<ImmunizationEvent> actual = await controller.GetImmunization(this.hdid, immunizationId).ConfigureAwait(true);
+            RequestResult<ImmunizationEvent> actual = await controller.GetImmunization(this.hdid, immunizationId);
 
             // Verify
             Assert.True(actual != null && actual.ResultStatus == ResultType.Success);

@@ -30,42 +30,23 @@ namespace HealthGateway.Admin.Client.Store.Delegation
         /// <summary>
         /// The action representing the initiation of a search.
         /// </summary>
-        public class SearchAction
+        public record SearchAction
         {
             /// <summary>
-            /// Initializes a new instance of the <see cref="SearchAction"/> class.
+            /// Gets the PHN to query on.
             /// </summary>
-            /// <param name="phn">The PHN to query on.</param>
-            public SearchAction(string phn)
-            {
-                this.Phn = phn;
-            }
-
-            /// <summary>
-            /// Gets the PHN.
-            /// </summary>
-            public string Phn { get; }
+            public required string Phn { get; init; }
         }
 
         /// <summary>
         /// The action representing a failed search.
         /// </summary>
-        public class SearchFailAction : BaseFailAction
-        {
-            /// <summary>
-            /// Initializes a new instance of the <see cref="SearchFailAction"/> class.
-            /// </summary>
-            /// <param name="error">The request error.</param>
-            public SearchFailAction(RequestError error)
-                : base(error)
-            {
-            }
-        }
+        public record SearchFailureAction : BaseFailureAction;
 
         /// <summary>
         /// The action representing a successful search.
         /// </summary>
-        public class SearchSuccessAction
+        public record SearchSuccessAction
         {
             /// <summary>
             /// Gets the dependent info.
@@ -86,77 +67,39 @@ namespace HealthGateway.Admin.Client.Store.Delegation
         /// <summary>
         /// The action representing the initiation of a delegate search.
         /// </summary>
-        public class DelegateSearchAction
+        public record DelegateSearchAction
         {
             /// <summary>
-            /// Initializes a new instance of the <see cref="DelegateSearchAction"/> class.
+            /// Gets the PHN to query on.
             /// </summary>
-            /// <param name="phn">The PHN to query on.</param>
-            public DelegateSearchAction(string phn)
-            {
-                this.Phn = phn;
-            }
-
-            /// <summary>
-            /// Gets the PHN.
-            /// </summary>
-            public string Phn { get; }
+            public required string Phn { get; init; }
         }
 
         /// <summary>
         /// The action representing a failed delegate search.
         /// </summary>
-        public class DelegateSearchFailAction : BaseFailAction
-        {
-            /// <summary>
-            /// Initializes a new instance of the <see cref="DelegateSearchFailAction"/> class.
-            /// </summary>
-            /// <param name="error">The request error.</param>
-            public DelegateSearchFailAction(RequestError error)
-                : base(error)
-            {
-            }
-        }
+        public record DelegateSearchFailureAction : BaseFailureAction;
 
         /// <summary>
         /// The action representing a successful delegate search.
         /// </summary>
-        public class DelegateSearchSuccessAction : BaseSuccessAction<ExtendedDelegateInfo>
-        {
-            /// <summary>
-            /// Initializes a new instance of the <see cref="DelegateSearchSuccessAction"/> class.
-            /// </summary>
-            /// <param name="data">Delegate data.</param>
-            public DelegateSearchSuccessAction(ExtendedDelegateInfo data)
-                : base(data)
-            {
-            }
-        }
+        public record DelegateSearchSuccessAction : BaseSuccessAction<ExtendedDelegateInfo>;
 
         /// <summary>
         /// The action that adds a retrieved delegate in a staged state.
         /// </summary>
-        public class AddDelegateAction
+        public record AddDelegateAction
         {
             /// <summary>
-            /// Initializes a new instance of the <see cref="AddDelegateAction"/> class.
+            /// Gets the staged delegation status the delegate should have.
             /// </summary>
-            /// <param name="stagedDelegationStatus">The staged delegation status the delegate should have.</param>
-            public AddDelegateAction(DelegationStatus stagedDelegationStatus)
-            {
-                this.StagedDelegationStatus = stagedDelegationStatus;
-            }
-
-            /// <summary>
-            /// Gets the staged delegation status.
-            /// </summary>
-            public DelegationStatus StagedDelegationStatus { get; }
+            public required DelegationStatus StagedDelegationStatus { get; init; }
         }
 
         /// <summary>
         /// The action that sets whether a delegation should be staged to be removed.
         /// </summary>
-        public class SetDisallowedDelegationStatusAction
+        public record SetDisallowedDelegationStatusAction
         {
             /// <summary>
             /// Gets the HDID associated with the delegate.
@@ -172,29 +115,23 @@ namespace HealthGateway.Admin.Client.Store.Delegation
         /// <summary>
         /// The action representing the initiation of a protect dependent.
         /// </summary>
-        public class ProtectDependentAction : BaseAgentAuditAction
+        public record ProtectDependentAction
         {
+            /// <summary>
+            /// Gets the audit reason.
+            /// </summary>
+            public required string Reason { get; init; }
         }
 
         /// <summary>
         /// The action representing a protect dependent failure.
         /// </summary>
-        public class ProtectDependentFailAction : BaseFailAction
-        {
-            /// <summary>
-            /// Initializes a new instance of the <see cref="ProtectDependentFailAction"/> class.
-            /// </summary>
-            /// <param name="error">The request error.</param>
-            public ProtectDependentFailAction(RequestError error)
-                : base(error)
-            {
-            }
-        }
+        public record ProtectDependentFailureAction : BaseFailureAction;
 
         /// <summary>
         /// The action representing a protect dependent success.
         /// </summary>
-        public class ProtectDependentSuccessAction
+        public record ProtectDependentSuccessAction
         {
             /// <summary>
             /// Gets the agent action entry created from the operation.
@@ -205,29 +142,23 @@ namespace HealthGateway.Admin.Client.Store.Delegation
         /// <summary>
         /// The action representing the initiation of an unprotect dependent.
         /// </summary>
-        public class UnprotectDependentAction : BaseAgentAuditAction
+        public record UnprotectDependentAction
         {
+            /// <summary>
+            /// Gets the audit reason.
+            /// </summary>
+            public required string Reason { get; init; }
         }
 
         /// <summary>
         /// The action representing a failed unprotect dependent.
         /// </summary>
-        public class UnprotectDependentFailAction : BaseFailAction
-        {
-            /// <summary>
-            /// Initializes a new instance of the <see cref="UnprotectDependentFailAction"/> class.
-            /// </summary>
-            /// <param name="error">The request error.</param>
-            public UnprotectDependentFailAction(RequestError error)
-                : base(error)
-            {
-            }
-        }
+        public record UnprotectDependentFailureAction : BaseFailureAction;
 
         /// <summary>
         /// The action representing a successful unprotect dependent.
         /// </summary>
-        public class UnprotectDependentSuccessAction
+        public record UnprotectDependentSuccessAction
         {
             /// <summary>
             /// Gets the agent action entry created from the operation.
@@ -238,7 +169,7 @@ namespace HealthGateway.Admin.Client.Store.Delegation
         /// <summary>
         /// The action that changes whether the delegation page is in edit mode.
         /// </summary>
-        public class SetEditModeAction
+        public record SetEditModeAction
         {
             /// <summary>
             /// Gets a value indicating whether edit mode should be enabled.
@@ -249,29 +180,21 @@ namespace HealthGateway.Admin.Client.Store.Delegation
         /// <summary>
         /// The action that clears the delegate search.
         /// </summary>
-        public class ClearDelegateSearchAction
-        {
-        }
+        public record ClearDelegateSearchAction;
 
         /// <summary>
         /// The action that clears any error encountered during a protect.
         /// </summary>
-        public class ClearProtectErrorAction
-        {
-        }
+        public record ClearProtectErrorAction;
 
         /// <summary>
         /// The action that clears any error encountered during an unprotect.
         /// </summary>
-        public class ClearUnprotectErrorAction
-        {
-        }
+        public record ClearUnprotectErrorAction;
 
         /// <summary>
         /// The action that clears the state.
         /// </summary>
-        public class ResetStateAction
-        {
-        }
+        public record ResetStateAction;
     }
 }

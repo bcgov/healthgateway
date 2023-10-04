@@ -56,6 +56,9 @@ namespace HealthGateway.ImmunizationTests.Services.Test
         /// <param name="statusIndicator"> status indicator from delegate.</param>
         /// <param name="state">final state.</param>
         /// <param name="isPublicEndpoint">check to determine if the test is for public or authenticated page.</param>
+        /// <returns>
+        /// A <see cref="Task"/> representing the asynchronous unit test.
+        /// </returns>
         [Theory]
         [InlineData("Exempt", VaccineState.Exempt, true)]
         [InlineData("PartialDosesReceived", VaccineState.PartialDosesReceived, true)]
@@ -63,7 +66,7 @@ namespace HealthGateway.ImmunizationTests.Services.Test
         [InlineData("Exempt", VaccineState.Exempt, false)]
         [InlineData("PartialDosesReceived", VaccineState.PartialDosesReceived, false)]
         [InlineData("AllDosesReceived", VaccineState.AllDosesReceived, false)]
-        public void ShouldGetVaccineStatus(string statusIndicator, VaccineState state, bool isPublicEndpoint)
+        public async Task ShouldGetVaccineStatus(string statusIndicator, VaccineState state, bool isPublicEndpoint)
         {
             RequestResult<PhsaResult<VaccineStatusResult>> delegateResult = new()
             {
@@ -123,13 +126,13 @@ namespace HealthGateway.ImmunizationTests.Services.Test
             {
                 string dobString = this.dob.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
                 string dovString = this.dov.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
-                RequestResult<VaccineStatus> actualResultPublic = service.GetPublicVaccineStatus(this.phn, dobString, dovString).GetAwaiter().GetResult();
+                RequestResult<VaccineStatus> actualResultPublic = await service.GetPublicVaccineStatus(this.phn, dobString, dovString);
 
                 expectedResult.ShouldDeepEqual(actualResultPublic);
             }
             else
             {
-                RequestResult<VaccineStatus> actualResultAuthenticated = service.GetAuthenticatedVaccineStatus(this.hdid).GetAwaiter().GetResult();
+                RequestResult<VaccineStatus> actualResultAuthenticated = await service.GetAuthenticatedVaccineStatus(this.hdid);
 
                 expectedResult.ShouldDeepEqual(actualResultAuthenticated);
             }
@@ -140,10 +143,13 @@ namespace HealthGateway.ImmunizationTests.Services.Test
         /// DataMismatch.
         /// </summary>
         /// <param name="isPublicEndpoint">check to determine if the test is for public or authenticated page.</param>
+        /// <returns>
+        /// A <see cref="Task"/> representing the asynchronous unit test.
+        /// </returns>
         [Theory]
         [InlineData(true)]
         [InlineData(false)]
-        public void ShouldGetErrorDataMismatchVaccineStatus(bool isPublicEndpoint)
+        public async Task ShouldGetErrorDataMismatchVaccineStatus(bool isPublicEndpoint)
         {
             RequestResult<PhsaResult<VaccineStatusResult>> delegateResult = new()
             {
@@ -205,14 +211,14 @@ namespace HealthGateway.ImmunizationTests.Services.Test
                 string dobString = this.dob.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
                 string dovString = this.dov.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
 
-                RequestResult<VaccineStatus> actualResultPublic = service.GetPublicVaccineStatus(this.phn, dobString, dovString).GetAwaiter().GetResult();
+                RequestResult<VaccineStatus> actualResultPublic = await service.GetPublicVaccineStatus(this.phn, dobString, dovString);
 
                 Assert.Equal(ResultType.ActionRequired, actualResultPublic.ResultStatus);
                 Assert.Equal(expectedResult.ResultError.ActionCode, actualResultPublic.ResultError?.ActionCode);
             }
             else
             {
-                RequestResult<VaccineStatus> actualResultAuthenticated = service.GetAuthenticatedVaccineStatus(this.hdid).GetAwaiter().GetResult();
+                RequestResult<VaccineStatus> actualResultAuthenticated = await service.GetAuthenticatedVaccineStatus(this.hdid);
 
                 Assert.Equal(ResultType.ActionRequired, actualResultAuthenticated.ResultStatus);
                 Assert.Equal(expectedResult.ResultError.ActionCode, actualResultAuthenticated.ResultError?.ActionCode);
@@ -223,10 +229,13 @@ namespace HealthGateway.ImmunizationTests.Services.Test
         /// GetPublicVaccineStatus and GetAuthenticatedVaccineStatus - get the error result when the refresh in progress is enable.
         /// </summary>
         /// <param name="isPublicEndpoint">check to determine if the test is for public or authenticated page.</param>
+        /// <returns>
+        /// A <see cref="Task"/> representing the asynchronous unit test.
+        /// </returns>
         [Theory]
         [InlineData(false)]
         [InlineData(true)]
-        public void ShouldGetErrorRefreshInProgressVaccineStatus(bool isPublicEndpoint)
+        public async Task ShouldGetErrorRefreshInProgressVaccineStatus(bool isPublicEndpoint)
         {
             RequestResult<PhsaResult<VaccineStatusResult>> delegateResult = new()
             {
@@ -293,7 +302,7 @@ namespace HealthGateway.ImmunizationTests.Services.Test
                 string dobString = this.dob.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
                 string dovString = this.dov.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
 
-                RequestResult<VaccineStatus> actualResultPublic = service.GetPublicVaccineStatus(this.phn, dobString, dovString).GetAwaiter().GetResult();
+                RequestResult<VaccineStatus> actualResultPublic = await service.GetPublicVaccineStatus(this.phn, dobString, dovString);
 
                 Assert.Equal(ResultType.ActionRequired, actualResultPublic.ResultStatus);
                 Assert.Equal(expectedResult.ResultError.ActionCode, actualResultPublic.ResultError?.ActionCode);
@@ -301,7 +310,7 @@ namespace HealthGateway.ImmunizationTests.Services.Test
             }
             else
             {
-                RequestResult<VaccineStatus> actualResultAuthenticated = service.GetAuthenticatedVaccineStatus(this.hdid).GetAwaiter().GetResult();
+                RequestResult<VaccineStatus> actualResultAuthenticated = await service.GetAuthenticatedVaccineStatus(this.hdid);
                 Assert.Equal(ResultType.ActionRequired, actualResultAuthenticated.ResultStatus);
                 Assert.Equal(expectedResult.ResultError.ActionCode, actualResultAuthenticated.ResultError?.ActionCode);
                 Assert.Equal(expectedResult.ResourcePayload.RetryIn, actualResultAuthenticated.ResourcePayload?.RetryIn);
@@ -312,10 +321,13 @@ namespace HealthGateway.ImmunizationTests.Services.Test
         /// GetPublicVaccineStatus and GetAuthenticatedVaccineStatus - get the error result when the status indicator is NotFound.
         /// </summary>
         /// <param name="isPublicEndpoint">check to determine if the test is for public (true) or authenticated (false) page.</param>
+        /// <returns>
+        /// A <see cref="Task"/> representing the asynchronous unit test.
+        /// </returns>
         [Theory]
         [InlineData(false)]
         [InlineData(true)]
-        public void ShouldGetErrorNotFoundVaccineStatus(bool isPublicEndpoint)
+        public async Task ShouldGetErrorNotFoundVaccineStatus(bool isPublicEndpoint)
         {
             RequestResult<PhsaResult<VaccineStatusResult>> delegateResult = new()
             {
@@ -382,14 +394,14 @@ namespace HealthGateway.ImmunizationTests.Services.Test
                 string dobString = this.dob.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
                 string dovString = this.dov.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
 
-                RequestResult<VaccineStatus> actualResultPublic = service.GetPublicVaccineStatus(this.phn, dobString, dovString).GetAwaiter().GetResult();
+                RequestResult<VaccineStatus> actualResultPublic = await service.GetPublicVaccineStatus(this.phn, dobString, dovString);
 
                 Assert.Equal(ResultType.ActionRequired, actualResultPublic.ResultStatus);
                 Assert.Equal(expectedResult.ResultError.ActionCode, actualResultPublic.ResultError?.ActionCode);
             }
             else
             {
-                RequestResult<VaccineStatus> actualResultAuthenticated = service.GetAuthenticatedVaccineStatus(this.hdid).GetAwaiter().GetResult();
+                RequestResult<VaccineStatus> actualResultAuthenticated = await service.GetAuthenticatedVaccineStatus(this.hdid);
 
                 Assert.Equal(ResultType.ActionRequired, actualResultAuthenticated.ResultStatus);
                 Assert.Equal(expectedResult.ResultError.ActionCode, actualResultAuthenticated.ResultError?.ActionCode);
@@ -401,10 +413,13 @@ namespace HealthGateway.ImmunizationTests.Services.Test
         /// path).
         /// </summary>
         /// <param name="isPublicEndpoint">check to determine if the test is for public (true) or authenticated (false) page.</param>
+        /// <returns>
+        /// A <see cref="Task"/> representing the asynchronous unit test.
+        /// </returns>
         [Theory]
         [InlineData(false)]
         [InlineData(true)]
-        public void ShouldGetVaccineProof(bool isPublicEndpoint)
+        public async Task ShouldGetVaccineProof(bool isPublicEndpoint)
         {
             RequestResult<PhsaResult<VaccineStatusResult>> delegateResult = new()
             {
@@ -475,7 +490,7 @@ namespace HealthGateway.ImmunizationTests.Services.Test
                 string dobString = this.dob.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
                 string dovString = this.dov.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
 
-                RequestResult<VaccineProofDocument> actualResultPublic = service.GetPublicVaccineProof(this.phn, dobString, dovString).GetAwaiter().GetResult();
+                RequestResult<VaccineProofDocument> actualResultPublic = await service.GetPublicVaccineProof(this.phn, dobString, dovString);
 
                 Assert.Equal(expectedResult.ResourcePayload.FederalVaccineProof.Data, actualResultPublic.ResourcePayload?.Document.Data);
                 Assert.NotNull(actualResultPublic.ResourcePayload?.Document.Data);
@@ -483,7 +498,7 @@ namespace HealthGateway.ImmunizationTests.Services.Test
             }
             else
             {
-                RequestResult<VaccineProofDocument> actualResultAuthenticated = service.GetAuthenticatedVaccineProof(this.hdid).GetAwaiter().GetResult();
+                RequestResult<VaccineProofDocument> actualResultAuthenticated = await service.GetAuthenticatedVaccineProof(this.hdid);
 
                 Assert.Equal(expectedResult.ResourcePayload.FederalVaccineProof.Data, actualResultAuthenticated.ResourcePayload?.Document.Data);
                 Assert.NotNull(actualResultAuthenticated.ResourcePayload?.Document.Data);
@@ -494,8 +509,11 @@ namespace HealthGateway.ImmunizationTests.Services.Test
         /// <summary>
         /// GetVaccineStatusAsync - Invalid PHN.
         /// </summary>
+        /// <returns>
+        /// A <see cref="Task"/> representing the asynchronous unit test.
+        /// </returns>
         [Fact]
-        public void ShouldErrorOnPHN()
+        public async Task ShouldErrorOnPHN()
         {
             IVaccineStatusService service = new VaccineStatusService(
                 this.configuration,
@@ -508,7 +526,7 @@ namespace HealthGateway.ImmunizationTests.Services.Test
             string dobString = this.dob.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
             string dovString = this.dov.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
 
-            RequestResult<VaccineStatus> actualResult = service.GetPublicVaccineStatus("123", dobString, dovString).GetAwaiter().GetResult();
+            RequestResult<VaccineStatus> actualResult = await service.GetPublicVaccineStatus("123", dobString, dovString);
 
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
         }
@@ -516,8 +534,11 @@ namespace HealthGateway.ImmunizationTests.Services.Test
         /// <summary>
         /// GetVaccineStatusAsync - Invalid DOB.
         /// </summary>
+        /// <returns>
+        /// A <see cref="Task"/> representing the asynchronous unit test.
+        /// </returns>
         [Fact]
-        public void ShouldErrorOnDOB()
+        public async Task ShouldErrorOnDOB()
         {
             IVaccineStatusService service = new VaccineStatusService(
                 this.configuration,
@@ -529,7 +550,7 @@ namespace HealthGateway.ImmunizationTests.Services.Test
 
             string dovString = this.dov.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
 
-            RequestResult<VaccineStatus> actualResult = service.GetPublicVaccineStatus(this.phn, "yyyyMMddx", dovString).GetAwaiter().GetResult();
+            RequestResult<VaccineStatus> actualResult = await service.GetPublicVaccineStatus(this.phn, "yyyyMMddx", dovString);
 
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
         }
@@ -537,8 +558,9 @@ namespace HealthGateway.ImmunizationTests.Services.Test
         /// <summary>
         /// GetVaccineStatusAsync - Invalid DOV.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void ShouldErrorOnDOV()
+        public async Task ShouldErrorOnDOV()
         {
             IVaccineStatusService service = new VaccineStatusService(
                 this.configuration,
@@ -550,7 +572,7 @@ namespace HealthGateway.ImmunizationTests.Services.Test
 
             string dobString = this.dob.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture);
 
-            RequestResult<VaccineStatus> actualResult = service.GetPublicVaccineStatus(this.phn, dobString, "yyyyMMddx").GetAwaiter().GetResult();
+            RequestResult<VaccineStatus> actualResult = await service.GetPublicVaccineStatus(this.phn, dobString, "yyyyMMddx");
 
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
         }

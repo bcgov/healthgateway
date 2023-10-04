@@ -54,7 +54,7 @@ public static class BroadcastsReducers
     }
 
     [ReducerMethod]
-    public static BroadcastsState ReduceLoadFailAction(BroadcastsState state, BroadcastsActions.LoadFailAction action)
+    public static BroadcastsState ReduceLoadFailureAction(BroadcastsState state, BroadcastsActions.LoadFailureAction action)
     {
         return state with
         {
@@ -102,7 +102,7 @@ public static class BroadcastsReducers
     }
 
     [ReducerMethod]
-    public static BroadcastsState ReduceAddFailAction(BroadcastsState state, BroadcastsActions.AddFailAction action)
+    public static BroadcastsState ReduceAddFailureAction(BroadcastsState state, BroadcastsActions.AddFailureAction action)
     {
         return state with
         {
@@ -150,7 +150,7 @@ public static class BroadcastsReducers
     }
 
     [ReducerMethod]
-    public static BroadcastsState ReduceUpdateFailAction(BroadcastsState state, BroadcastsActions.UpdateFailAction action)
+    public static BroadcastsState ReduceUpdateFailureAction(BroadcastsState state, BroadcastsActions.UpdateFailureAction action)
     {
         return state with
         {
@@ -234,7 +234,7 @@ public static class BroadcastsReducers
     /// <param name="action">The delete fail action.</param>
     /// <returns>The new state.</returns>
     [ReducerMethod]
-    public static BroadcastsState ReduceDeleteFailAction(BroadcastsState state, BroadcastsActions.DeleteFailAction action)
+    public static BroadcastsState ReduceDeleteFailureAction(BroadcastsState state, BroadcastsActions.DeleteFailureAction action)
     {
         return state with
         {

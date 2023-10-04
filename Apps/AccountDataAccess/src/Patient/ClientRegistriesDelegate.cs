@@ -33,6 +33,12 @@ namespace HealthGateway.AccountDataAccess.Patient
     /// </summary>
     internal class ClientRegistriesDelegate : IClientRegistriesDelegate
     {
+        private static readonly List<string> WarningResponseCodes = new()
+        {
+            "BCHCIM.GD.0.0015", "BCHCIM.GD.1.0015", "BCHCIM.GD.0.0019", "BCHCIM.GD.1.0019", "BCHCIM.GD.0.0020", "BCHCIM.GD.1.0020", "BCHCIM.GD.0.0021", "BCHCIM.GD.1.0021", "BCHCIM.GD.0.0022",
+            "BCHCIM.GD.1.0022", "BCHCIM.GD.0.0023", "BCHCIM.GD.1.0023", "BCHCIM.GD.0.0578", "BCHCIM.GD.1.0578",
+        };
+
         private readonly QUPA_AR101102_PortType clientRegistriesClient;
         private readonly ILogger<ClientRegistriesDelegate> logger;
 
@@ -157,30 +163,31 @@ namespace HealthGateway.AccountDataAccess.Patient
 
         private static Address? MapAddress(AD? address)
         {
-            Address? retAddress = null;
-            if (address?.Items != null)
+            if (address?.Items == null)
             {
-                retAddress = new();
-                foreach (ADXP item in address.Items)
+                return null;
+            }
+
+            Address retAddress = new();
+            foreach (ADXP item in address.Items)
+            {
+                switch (item)
                 {
-                    switch (item)
-                    {
-                        case ADStreetAddressLine { Text: { } } line:
-                            retAddress.StreetLines = line.Text;
-                            break;
-                        case ADCity city:
-                            retAddress.City = city.Text[0] ?? string.Empty;
-                            break;
-                        case ADState state:
-                            retAddress.State = state.Text[0] ?? string.Empty;
-                            break;
-                        case ADPostalCode postalCode:
-                            retAddress.PostalCode = postalCode.Text[0] ?? string.Empty;
-                            break;
-                        case ADCountry country:
-                            retAddress.Country = country.Text[0] ?? string.Empty;
-                            break;
-                    }
+                    case ADStreetAddressLine { Text: { } } line:
+                        retAddress.StreetLines = line.Text;
+                        break;
+                    case ADCity city:
+                        retAddress.City = city.Text[0] ?? string.Empty;
+                        break;
+                    case ADState state:
+                        retAddress.State = state.Text[0] ?? string.Empty;
+                        break;
+                    case ADPostalCode postalCode:
+                        retAddress.PostalCode = postalCode.Text[0] ?? string.Empty;
+                        break;
+                    case ADCountry country:
+                        retAddress.Country = country.Text[0] ?? string.Empty;
+                        break;
                 }
             }
 
@@ -221,10 +228,7 @@ namespace HealthGateway.AccountDataAccess.Patient
                 throw new ProblemDetailsException(ExceptionUtility.CreateProblemDetails(ErrorMessages.PhnInvalid, HttpStatusCode.NotFound, nameof(ClientRegistriesDelegate)));
             }
 
-            if (responseCode.Contains("BCHCIM.GD.0.0019", StringComparison.InvariantCulture) ||
-                responseCode.Contains("BCHCIM.GD.0.0021", StringComparison.InvariantCulture) ||
-                responseCode.Contains("BCHCIM.GD.0.0022", StringComparison.InvariantCulture) ||
-                responseCode.Contains("BCHCIM.GD.0.0023", StringComparison.InvariantCulture))
+            if (WarningResponseCodes.Any(code => responseCode.Contains(code, StringComparison.InvariantCulture)))
             {
                 return;
             }
@@ -286,10 +290,7 @@ namespace HealthGateway.AccountDataAccess.Patient
                     patientModel.PostalAddress = MapAddress(addresses.FirstOrDefault(a => a.use.Any(u => u == cs_PostalAddressUse.PST)));
                 }
 
-                if (responseCode.Contains("BCHCIM.GD.0.0019", StringComparison.InvariantCulture) ||
-                    responseCode.Contains("BCHCIM.GD.0.0021", StringComparison.InvariantCulture) ||
-                    responseCode.Contains("BCHCIM.GD.0.0022", StringComparison.InvariantCulture) ||
-                    responseCode.Contains("BCHCIM.GD.0.0023", StringComparison.InvariantCulture))
+                if (WarningResponseCodes.Any(code => responseCode.Contains(code, StringComparison.InvariantCulture)))
                 {
                     patientModel.ResponseCode = responseCode;
                 }

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-environments=('dev' 'test' 'prod')
+environments=('gold-dev' 'gold-test' 'gold-prod')
 
 for environment in "${environments[@]}"; do
   source "hg-$environment.env"

@@ -55,19 +55,19 @@ public class BroadcastsEffects
             if (response is { ResourcePayload: { }, ResultStatus: ResultType.Success })
             {
                 this.Logger.LogInformation("Broadcast added successfully!");
-                dispatcher.Dispatch(new BroadcastsActions.AddSuccessAction(response));
+                dispatcher.Dispatch(new BroadcastsActions.AddSuccessAction { Data = response });
                 return;
             }
 
             RequestError error = StoreUtility.FormatRequestError(null, response.ResultError);
             this.Logger.LogError("Error adding broadcast, reason: {ErrorMessage}", error.Message);
-            dispatcher.Dispatch(new BroadcastsActions.AddFailAction(error));
+            dispatcher.Dispatch(new BroadcastsActions.AddFailureAction { Error = error });
         }
         catch (Exception e) when (e is ApiException or HttpRequestException)
         {
             RequestError error = StoreUtility.FormatRequestError(e);
             this.Logger.LogError("Error adding broadcast, reason: {Exception}", e.ToString());
-            dispatcher.Dispatch(new BroadcastsActions.AddFailAction(error));
+            dispatcher.Dispatch(new BroadcastsActions.AddFailureAction { Error = error });
         }
     }
 
@@ -81,19 +81,19 @@ public class BroadcastsEffects
             if (response is { ResourcePayload: { }, ResultStatus: ResultType.Success })
             {
                 this.Logger.LogInformation("Broadcasts loaded successfully!");
-                dispatcher.Dispatch(new BroadcastsActions.LoadSuccessAction(response));
+                dispatcher.Dispatch(new BroadcastsActions.LoadSuccessAction { Data = response });
                 return;
             }
 
             RequestError error = StoreUtility.FormatRequestError(null, response.ResultError);
             this.Logger.LogError("Error loading broadcasts, reason: {ErrorMessage}", error.Message);
-            dispatcher.Dispatch(new BroadcastsActions.LoadFailAction(error));
+            dispatcher.Dispatch(new BroadcastsActions.LoadFailureAction { Error = error });
         }
         catch (Exception e) when (e is ApiException or HttpRequestException)
         {
             RequestError error = StoreUtility.FormatRequestError(e);
             this.Logger.LogError("Error loading broadcasts, reason: {Exception}", e.ToString());
-            dispatcher.Dispatch(new BroadcastsActions.LoadFailAction(error));
+            dispatcher.Dispatch(new BroadcastsActions.LoadFailureAction { Error = error });
         }
     }
 
@@ -107,19 +107,19 @@ public class BroadcastsEffects
             if (response is { ResourcePayload: { }, ResultStatus: ResultType.Success })
             {
                 this.Logger.LogInformation("Broadcast updated successfully!");
-                dispatcher.Dispatch(new BroadcastsActions.UpdateSuccessAction(response));
+                dispatcher.Dispatch(new BroadcastsActions.UpdateSuccessAction { Data = response });
                 return;
             }
 
             RequestError error = StoreUtility.FormatRequestError(null, response.ResultError);
             this.Logger.LogError("Error updating broadcast, reason: {ErrorMessage}", error.Message);
-            dispatcher.Dispatch(new BroadcastsActions.UpdateFailAction(error));
+            dispatcher.Dispatch(new BroadcastsActions.UpdateFailureAction { Error = error });
         }
         catch (Exception e) when (e is ApiException or HttpRequestException)
         {
             RequestError error = StoreUtility.FormatRequestError(e);
             this.Logger.LogError("Error updating broadcasts, reason: {Exception}", e.ToString());
-            dispatcher.Dispatch(new BroadcastsActions.UpdateFailAction(error));
+            dispatcher.Dispatch(new BroadcastsActions.UpdateFailureAction { Error = error });
         }
     }
 
@@ -133,19 +133,19 @@ public class BroadcastsEffects
             if (response is { ResourcePayload: { }, ResultStatus: ResultType.Success })
             {
                 this.Logger.LogInformation("Broadcast deleted successfully!");
-                dispatcher.Dispatch(new BroadcastsActions.DeleteSuccessAction(response));
+                dispatcher.Dispatch(new BroadcastsActions.DeleteSuccessAction { Data = response });
                 return;
             }
 
             RequestError error = StoreUtility.FormatRequestError(null, response.ResultError);
             this.Logger.LogError("Error deleting broadcast, reason: {ErrorMessage}", error.Message);
-            dispatcher.Dispatch(new BroadcastsActions.DeleteFailAction(error));
+            dispatcher.Dispatch(new BroadcastsActions.DeleteFailureAction { Error = error });
         }
         catch (Exception e) when (e is ApiException or HttpRequestException)
         {
             RequestError error = StoreUtility.FormatRequestError(e);
             this.Logger.LogError("Error deleting broadcast, reason: {Exception}", e.ToString());
-            dispatcher.Dispatch(new BroadcastsActions.DeleteFailAction(error));
+            dispatcher.Dispatch(new BroadcastsActions.DeleteFailureAction { Error = error });
         }
     }
 }

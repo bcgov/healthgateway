@@ -42,7 +42,7 @@ namespace HealthGateway.Admin.Client.Store.PatientSupport
         }
 
         [ReducerMethod]
-        public static PatientSupportState ReduceLoadFailAction(PatientSupportState state, PatientSupportActions.LoadFailAction action)
+        public static PatientSupportState ReduceLoadFailureAction(PatientSupportState state, PatientSupportActions.LoadFailureAction action)
         {
             return state with
             {

@@ -76,7 +76,7 @@ namespace HealthGateway.Admin.Client.Store.Delegation
                 };
 
                 this.Logger.LogError(e, "Error retrieving delegation info, reason: {Exception}", e.ToString());
-                dispatcher.Dispatch(new DelegationActions.SearchFailAction(error));
+                dispatcher.Dispatch(new DelegationActions.SearchFailureAction { Error = error });
             }
         }
 
@@ -88,7 +88,7 @@ namespace HealthGateway.Admin.Client.Store.Delegation
             {
                 DelegateInfo response = await this.Api.GetDelegateInformationAsync(action.Phn).ConfigureAwait(true);
                 this.Logger.LogInformation("Delegate info retrieved successfully");
-                dispatcher.Dispatch(new DelegationActions.DelegateSearchSuccessAction(this.AutoMapper.Map<DelegateInfo, ExtendedDelegateInfo>(response)));
+                dispatcher.Dispatch(new DelegationActions.DelegateSearchSuccessAction { Data = this.AutoMapper.Map<DelegateInfo, ExtendedDelegateInfo>(response) });
             }
             catch (Exception e) when (e is ApiException or HttpRequestException)
             {
@@ -99,7 +99,7 @@ namespace HealthGateway.Admin.Client.Store.Delegation
                 };
 
                 this.Logger.LogError(e, "Error retrieving delegate info, reason: {Exception}", e.ToString());
-                dispatcher.Dispatch(new DelegationActions.DelegateSearchFailAction(error));
+                dispatcher.Dispatch(new DelegationActions.DelegateSearchFailureAction { Error = error });
             }
         }
 
@@ -113,7 +113,7 @@ namespace HealthGateway.Admin.Client.Store.Delegation
                 if (dependentHdid == null)
                 {
                     RequestError error = new() { Message = "Dependent HDID is null" };
-                    dispatcher.Dispatch(new DelegationActions.ProtectDependentFailAction(error));
+                    dispatcher.Dispatch(new DelegationActions.ProtectDependentFailureAction { Error = error });
                     return;
                 }
 
@@ -131,7 +131,7 @@ namespace HealthGateway.Admin.Client.Store.Delegation
             {
                 RequestError error = StoreUtility.FormatRequestError(e);
                 this.Logger.LogError("Error protecting dependent, reason: {Exception}", e.ToString());
-                dispatcher.Dispatch(new DelegationActions.ProtectDependentFailAction(error));
+                dispatcher.Dispatch(new DelegationActions.ProtectDependentFailureAction { Error = error });
             }
         }
 
@@ -145,7 +145,7 @@ namespace HealthGateway.Admin.Client.Store.Delegation
                 if (dependentHdid == null)
                 {
                     RequestError error = new() { Message = "Dependent HDID is null" };
-                    dispatcher.Dispatch(new DelegationActions.UnprotectDependentFailAction(error));
+                    dispatcher.Dispatch(new DelegationActions.UnprotectDependentFailureAction { Error = error });
                     return;
                 }
 
@@ -159,7 +159,7 @@ namespace HealthGateway.Admin.Client.Store.Delegation
             {
                 RequestError error = StoreUtility.FormatRequestError(e);
                 this.Logger.LogError("Error unprotecting dependent, reason: {Exception}", e.ToString());
-                dispatcher.Dispatch(new DelegationActions.UnprotectDependentFailAction(error));
+                dispatcher.Dispatch(new DelegationActions.UnprotectDependentFailureAction { Error = error });
             }
         }
     }

@@ -16,6 +16,7 @@
 namespace HealthGateway.Database.Delegates
 {
     using System.Collections.Generic;
+    using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Database.Models;
 
@@ -45,5 +46,12 @@ namespace HealthGateway.Database.Delegates
         /// <param name="commit">Should commit, default to true.</param>
         /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
         Task UpdateDelegationAsync(Dependent dependent, IEnumerable<ResourceDelegate> resourceDelegatesToRemove, AgentAudit agentAudit, bool commit = true);
+
+        /// <summary>
+        /// Retrieve all user HDIDs of protected dependents from the database.
+        /// </summary>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
+        /// <returns>A list of HDID strings.</returns>
+        Task<IList<string>> GetProtectedDependentHdidsAsync(CancellationToken ct);
     }
 }

@@ -216,7 +216,7 @@ VALUES (
 	'Web'
 );
 
-/* PHN: 9735352535 used for admin covid assessment */
+/* PHN: 9735352535 used for admin covid assessment and blocked dataset tests */
 INSERT INTO gateway."UserProfile"(
 	"UserProfileId", 
 	"CreatedBy", 
@@ -248,6 +248,40 @@ VALUES (
 	null,
 	'Web'
 );
+
+/* PHN:  9874359198 used for Warning: The person returned is the subject of an potential duplicate */
+INSERT INTO gateway."UserProfile"(
+	"UserProfileId", 
+	"CreatedBy", 
+	"CreatedDateTime", 
+	"UpdatedBy", 
+	"UpdatedDateTime", 
+	"TermsOfServiceId", 
+	"Email", 
+	"ClosedDateTime", 
+	"IdentityManagementId", 
+	"LastLoginDateTime", 
+	"EncryptionKey", 
+	"SMSNumber",
+	"YearOfBirth",
+	"LastLoginClientCode")
+VALUES (
+	'NW55426',	
+	'System', 
+	current_timestamp - INTERVAL '1000 day',  
+	'System', 
+	current_timestamp - INTERVAL '1000 day',   
+	'c99fd839-b4a2-40f9-b103-529efccd0dcd', 
+	null,
+	null,
+	null,
+	current_timestamp - INTERVAL '1000 day',  
+	'CwqU7+gCkL3jMWWcUpq80Oh42QejXOwI+Ov0tmsVWBI=',
+	null,
+	null,
+	'Web'
+);
+
 
 /* User (hthgtwy04) - last logged in 1 day ago */
 INSERT INTO gateway."UserProfileHistory"(
@@ -839,7 +873,7 @@ VALUES (
 	'System.DateTime, System.Private.CoreLib, Version=5.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e', 
 	'"2021-01-20T00:00:00"'
 );
-/* Dependent PHN:9872868095 (727302800477298080), Guardian PHN: 9735353315 (P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A) */
+/* Dependent PHN:9874307208 (BNV554213556), Guardian PHN: 9735353315 (P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A) */
 INSERT INTO gateway."ResourceDelegate"(
 	"ResourceOwnerHdid", 
 	"ProfileHdid", 
@@ -861,6 +895,7 @@ VALUES (
 	'System.DateTime, System.Private.CoreLib, Version=5.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e', 
 	'"2023-03-27T00:00:00"'
 );
+/* Dependent PHN:9872868095 (727302800477298080), Guardian PHN: 9735353315 (P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A) */
 INSERT INTO gateway."ResourceDelegate"(
 	"ResourceOwnerHdid", 
 	"ProfileHdid", 
@@ -1523,4 +1558,37 @@ VALUES (
 	current_timestamp - INTERVAL '2 day', 
 	'System',
 	current_timestamp - INTERVAL '2 day'
+);
+
+
+INSERT INTO gateway."BlockedAccess"(
+	"Hdid", 
+	"DataSources", 
+	"CreatedBy", 
+	"CreatedDateTime", 
+	"UpdatedBy", 
+	"UpdatedDateTime")
+VALUES (
+		'GO4DOSMRJ7MFKPPADDZ3FK2MOJ45SFKONJWR67XNLMZQFNEHDKDA', 
+		'["ClinicalDocument","Covid19TestResult"]', 
+		'System', 
+		current_timestamp - INTERVAL '2 day', 
+		'System', 
+		current_timestamp - INTERVAL '2 day'
+);
+
+INSERT INTO gateway."BlockedAccess"(
+	"Hdid", 
+	"DataSources", 
+	"CreatedBy", 
+	"CreatedDateTime", 
+	"UpdatedBy", 
+	"UpdatedDateTime")
+VALUES (
+		'S22BPV6WHS5TRLBL4XKGQDBVDUKLPIRSBGYSEJAHYMYRP22SP2TA', 
+		'[]', 
+		'System', 
+		current_timestamp - INTERVAL '2 day', 
+		'System', 
+		current_timestamp - INTERVAL '2 day'
 );

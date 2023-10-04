@@ -44,7 +44,7 @@ public partial class AgentAccessPage : FluxorComponent
             return "Search parameter is required";
         }
 
-        if (StringManipulator.StripWhitespace(parameter)?.Length < 3)
+        if (StringManipulator.StripWhitespace(parameter).Length < 3)
         {
             return "Query must contain at least 3 characters";
         }
@@ -112,7 +112,7 @@ public partial class AgentAccessPage : FluxorComponent
         if (this.Form.IsValid)
         {
             this.ResetState();
-            this.Dispatcher.Dispatch(new AgentAccessActions.SearchAction(StringManipulator.StripWhitespace(this.Query)));
+            this.Dispatcher.Dispatch(new AgentAccessActions.SearchAction { Query = StringManipulator.StripWhitespace(this.Query) });
         }
     }
 
@@ -141,7 +141,7 @@ public partial class AgentAccessPage : FluxorComponent
         bool? delete = await this.DeleteConfirmation.Show().ConfigureAwait(true);
         if (delete is true)
         {
-            this.Dispatcher.Dispatch(new AgentAccessActions.DeleteAction(id));
+            this.Dispatcher.Dispatch(new AgentAccessActions.DeleteAction { Id = id });
         }
     }
 
@@ -184,7 +184,7 @@ public partial class AgentAccessPage : FluxorComponent
         {
             this.Id = model.Id;
             this.Username = model.Username;
-            this.IdentityProvider = AgentUtility.FormatKeycloakIdentityProvider(model.IdentityProvider);
+            this.IdentityProvider = FormattingUtility.FormatKeycloakIdentityProvider(model.IdentityProvider);
             this.Roles = string.Join(", ", model.Roles.Select(r => r.ToString()).OrderBy(r => r));
         }
 

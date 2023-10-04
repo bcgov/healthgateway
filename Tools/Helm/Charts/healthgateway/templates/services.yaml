@@ -1,0 +1,18 @@
+# creates each defined component using the templates
+{{- range $key, $value := .Values.components -}}
+    {{ include "dc.tpl" (list $ $value) | nindent 0 }}
+    {{ "---" | nindent 0 }}
+    {{ include "hpa.tpl" (list $ $value) | nindent 0 }}
+    {{ "---" | nindent 0 }}
+    {{ include "pdb.tpl" (list $ $value) | nindent 0 }}
+    {{ "---" | nindent 0 }}
+    {{ include "netpol.tpl" (list $ $value) | nindent 0 }}
+    {{ "---" | nindent 0 }}
+    {{ include "service.tpl" (list $ $value) | nindent 0 }}
+    {{ "---" | nindent 0 }}
+    {{ include "route.tpl" (list $ $value) | nindent 0 }}
+    {{- range $secretValue := $value.secrets -}}
+        {{ include "secret.tpl" (list $ (dict "name" (printf "%s-%s" $value.name $secretValue.name) "values" ($.Files.Get $secretValue.file | fromYaml))) | nindent 0 }}
+        {{ "---" | nindent 0 }}
+    {{- end -}}
+{{- end -}}

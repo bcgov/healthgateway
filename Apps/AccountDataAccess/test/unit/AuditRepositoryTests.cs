@@ -54,7 +54,7 @@ namespace AccountDataAccessTest
             AuditRepository auditRepository = GetAuditRepository(agentAudits);
 
             // Act
-            IEnumerable<AgentAudit> actual = await auditRepository.Handle(query).ConfigureAwait(true);
+            IEnumerable<AgentAudit> actual = await auditRepository.Handle(query);
 
             // Verify
             IEnumerable<AgentAudit> collection = actual.ToList();

@@ -26,6 +26,7 @@ using HealthGateway.Admin.Client.Components.Communications;
 using HealthGateway.Admin.Client.Models;
 using HealthGateway.Admin.Client.Store.Broadcasts;
 using HealthGateway.Admin.Client.Store.Communications;
+using HealthGateway.Admin.Client.Utils;
 using HealthGateway.Admin.Common.Models;
 using HealthGateway.Common.Data.Constants;
 using HealthGateway.Common.Data.Models;
@@ -109,14 +110,7 @@ public partial class CommunicationsPage : FluxorComponent
             _ => null,
         };
 
-    private string? SelectedCommunicationName =>
-        this.SelectedCommunicationType switch
-        {
-            CommunicationType.Banner => "Public Banner",
-            CommunicationType.InApp => "In-App Banner",
-            CommunicationType.Mobile => "Mobile Communication",
-            _ => null,
-        };
+    private string SelectedCommunicationName => FormattingUtility.FormatCommunicationType(this.SelectedCommunicationType);
 
     /// <inheritdoc/>
     protected override void OnInitialized()

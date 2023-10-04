@@ -17,6 +17,7 @@ namespace HealthGateway.Database.Delegates
 {
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Database.Context;
     using HealthGateway.Database.Models;
@@ -79,6 +80,12 @@ namespace HealthGateway.Database.Delegates
             {
                 await this.dbContext.SaveChangesAsync();
             }
+        }
+
+        /// <inheritdoc/>
+        public async Task<IList<string>> GetProtectedDependentHdidsAsync(CancellationToken ct)
+        {
+            return await this.dbContext.Dependent.Where(d => d.Protected).Select(d => d.HdId).ToListAsync(ct);
         }
     }
 }

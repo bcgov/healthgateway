@@ -15,7 +15,7 @@ export default class MedicationTimelineEntry extends TimelineEntry {
     public directions: string;
     public practitionerSurname: string;
     public prescriptionIdentifier: string;
-    public isPharmacistAssessment: boolean;
+    public isPharmacistAssessment = false;
     public prescriptionProvided?: boolean;
     public redirectedToHealthCareProvider?: boolean;
 
@@ -34,20 +34,17 @@ export default class MedicationTimelineEntry extends TimelineEntry {
         const summary = model.medicationSummary;
 
         this.medication = new MedicationViewModel(summary);
+        this.title = this.medication.title;
+        this.subtitle = this.medication.subtitle;
         this.pharmacy = new PharmacyViewModel(
             model.dispensingPharmacy?.pharmacyId
         );
 
-        this.isPharmacistAssessment = Boolean(summary.pharmacyAssessmentTitle);
-        if (this.isPharmacistAssessment) {
-            this.title = "Pharmacist Assessment";
-            this.subtitle = summary.pharmacyAssessmentTitle;
+        if (summary.isPharmacistAssessment) {
+            this.isPharmacistAssessment = true;
             this.prescriptionProvided = summary.prescriptionProvided;
             this.redirectedToHealthCareProvider =
                 summary.redirectedToHealthCareProvider;
-        } else {
-            this.title = this.medication.brandName;
-            this.subtitle = this.medication.genericName;
         }
 
         if (model.dispensingPharmacy) {
@@ -67,8 +64,8 @@ export default class MedicationTimelineEntry extends TimelineEntry {
     public containsText(keyword: string): boolean {
         let text =
             (this.practitionerSurname ?? "") +
-            (this.medication.brandName ?? "") +
-            (this.medication.genericName ?? "");
+            (this.title ?? "") +
+            (this.subtitle ?? "");
         text = text.toUpperCase();
         return text.includes(keyword.toUpperCase());
     }
@@ -111,6 +108,9 @@ class MedicationViewModel {
     public strengthUnit?: string;
     public manufacturer?: string;
     public isPin!: boolean;
+    public title: string;
+    public subtitle: string;
+    public isPharmacistAssessment!: boolean;
 
     constructor(model: MedicationSummary) {
         this.din = model.din ?? "";
@@ -122,5 +122,8 @@ class MedicationViewModel {
         this.strengthUnit = model.strengthUnit;
         this.manufacturer = model.manufacturer;
         this.isPin = model.isPin;
+        this.title = model.title;
+        this.subtitle = model.subtitle;
+        this.isPharmacistAssessment = model.isPharmacistAssessment;
     }
 }

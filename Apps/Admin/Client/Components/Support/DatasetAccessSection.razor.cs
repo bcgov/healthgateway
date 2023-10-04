@@ -71,12 +71,6 @@ namespace HealthGateway.Admin.Client.Components.Support
         private IDispatcher Dispatcher { get; set; } = default!;
 
         [Inject]
-        private IState<PatientDetailsState> PatientDetailsState { get; set; } = default!;
-
-        [Inject]
-        private IActionSubscriber ActionSubscriber { get; set; } = default!;
-
-        [Inject]
         private IDialogService Dialog { get; set; } = default!;
 
         [Inject]
@@ -94,26 +88,6 @@ namespace HealthGateway.Admin.Client.Components.Support
             this.SetBlockedDataSources();
         }
 
-        private static string MapDataSourceToFriendlyText(DataSource dataSource)
-        {
-            return dataSource switch
-            {
-                DataSource.ClinicalDocument => "Clinical Documents",
-                DataSource.Immunization => "Immunizations",
-                DataSource.LabResult => "Laboratory Results",
-                DataSource.DiagnosticImaging => "Diagnostic Imaging",
-                DataSource.Medication => "Medications",
-                DataSource.Note => "Notes",
-                DataSource.HealthVisit => "Health Visits",
-                DataSource.HospitalVisit => "Hospital Visits",
-                DataSource.Covid19TestResult => "COVID-19 Test Results",
-                DataSource.OrganDonorRegistration => "Organ Donor Registration",
-                DataSource.SpecialAuthorityRequest => "Special Authority Requests",
-                DataSource.BcCancerScreening => "BC Cancer Screening",
-                _ => dataSource.ToString(),
-            };
-        }
-
         private void SetBlockedDataSources()
         {
             this.blockedDataSources = this.Data.ToList();
@@ -122,6 +96,18 @@ namespace HealthGateway.Admin.Client.Components.Support
         private void CancelChanges()
         {
             this.SetBlockedDataSources();
+        }
+
+        private void BlockAccess(string auditReason)
+        {
+            PatientDetailsActions.BlockAccessAction action = new()
+            {
+                Hdid = this.Hdid,
+                DataSources = this.blockedDataSources,
+                Reason = auditReason,
+            };
+
+            this.Dispatcher.Dispatch(action);
         }
 
         private async Task SaveChanges()
@@ -135,12 +121,11 @@ namespace HealthGateway.Admin.Client.Components.Support
             };
             DialogParameters parameters = new()
             {
-                ["AuditableAction"] = new PatientDetailsActions.BlockAccessAction { Hdid = this.Hdid, DataSources = this.blockedDataSources },
+                ["ActionOnConfirm"] = (Action<string>)this.BlockAccess,
             };
 
             IDialogReference dialog = await this.Dialog
                 .ShowAsync<AuditReasonDialog<
-                    PatientDetailsActions.BlockAccessAction,
                     PatientDetailsActions.BlockAccessFailureAction,
                     PatientDetailsActions.BlockAccessSuccessAction>>(
                     title,

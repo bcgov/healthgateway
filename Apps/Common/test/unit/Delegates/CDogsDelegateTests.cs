@@ -61,11 +61,9 @@ namespace HealthGateway.CommonTests.Delegates
                 TotalResultCount = 1,
             };
 
-            using HttpResponseMessage httpResponseMessage = new()
-            {
-                StatusCode = HttpStatusCode.OK,
-                Content = new ByteArrayContent(encodedFileContent),
-            };
+            using HttpResponseMessage httpResponseMessage = new();
+            httpResponseMessage.StatusCode = HttpStatusCode.OK;
+            httpResponseMessage.Content = new ByteArrayContent(encodedFileContent);
 
             Mock<ILogger<CDogsDelegate>> mockLogger = new();
             Mock<ICDogsApi> mockCdogsApi = new();
@@ -74,7 +72,7 @@ namespace HealthGateway.CommonTests.Delegates
             ICDogsDelegate cdogsDelegate = new CDogsDelegate(mockLogger.Object, mockCdogsApi.Object);
 
             CDogsRequestModel request = GetRequestModel();
-            RequestResult<ReportModel> actualResult = await cdogsDelegate.GenerateReportAsync(request).ConfigureAwait(true);
+            RequestResult<ReportModel> actualResult = await cdogsDelegate.GenerateReportAsync(request);
 
             expectedResult.ShouldDeepEqual(actualResult);
         }
@@ -97,11 +95,9 @@ namespace HealthGateway.CommonTests.Delegates
                 },
             };
 
-            using HttpResponseMessage httpResponseMessage = new()
-            {
-                StatusCode = statusCode,
-                Content = new ByteArrayContent(Array.Empty<byte>()),
-            };
+            using HttpResponseMessage httpResponseMessage = new();
+            httpResponseMessage.StatusCode = statusCode;
+            httpResponseMessage.Content = new ByteArrayContent(Array.Empty<byte>());
 
             Mock<ILogger<CDogsDelegate>> mockLogger = new();
             Mock<ICDogsApi> mockCdogsApi = new();
@@ -110,7 +106,7 @@ namespace HealthGateway.CommonTests.Delegates
             ICDogsDelegate cdogsDelegate = new CDogsDelegate(mockLogger.Object, mockCdogsApi.Object);
 
             CDogsRequestModel request = GetRequestModel();
-            RequestResult<ReportModel> actualResult = await cdogsDelegate.GenerateReportAsync(request).ConfigureAwait(true);
+            RequestResult<ReportModel> actualResult = await cdogsDelegate.GenerateReportAsync(request);
 
             expectedResult.ShouldDeepEqual(actualResult);
         }
@@ -137,7 +133,7 @@ namespace HealthGateway.CommonTests.Delegates
             ICDogsDelegate cdogsDelegate = new CDogsDelegate(mockLogger.Object, mockCdogsApi.Object);
 
             CDogsRequestModel request = GetRequestModel();
-            RequestResult<ReportModel> actualResult = await cdogsDelegate.GenerateReportAsync(request).ConfigureAwait(true);
+            RequestResult<ReportModel> actualResult = await cdogsDelegate.GenerateReportAsync(request);
 
             Assert.NotNull(actualResult.ResultError);
             Assert.Equal(expectedResult.ResultError.ErrorCode, actualResult.ResultError?.ErrorCode);

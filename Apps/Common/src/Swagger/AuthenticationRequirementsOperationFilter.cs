@@ -18,7 +18,6 @@ namespace HealthGateway.Common.Swagger
     using System;
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
-    using System.Linq;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc.Controllers;
     using Microsoft.OpenApi.Models;
@@ -41,9 +40,9 @@ namespace HealthGateway.Common.Swagger
 
             if (context.ApiDescription.ActionDescriptor is ControllerActionDescriptor cad)
             {
-                bool controllerAuth = cad.ControllerTypeInfo.GetCustomAttributes(true).Any(t => t is AuthorizeAttribute);
-                bool methodAuth = cad.MethodInfo.GetCustomAttributes(false).Any(t => t is AuthorizeAttribute);
-                bool methodAnonymous = cad.MethodInfo.GetCustomAttributes(false).Any(t => t is AllowAnonymousAttribute);
+                bool controllerAuth = Array.Exists(cad.ControllerTypeInfo.GetCustomAttributes(true), t => t is AuthorizeAttribute);
+                bool methodAuth = Array.Exists(cad.MethodInfo.GetCustomAttributes(false), t => t is AuthorizeAttribute);
+                bool methodAnonymous = Array.Exists(cad.MethodInfo.GetCustomAttributes(false), t => t is AllowAnonymousAttribute);
 
                 if ((controllerAuth && !methodAnonymous) || (!controllerAuth && methodAuth))
                 {

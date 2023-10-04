@@ -220,9 +220,9 @@ function getReport(): void {
             v-if="entry.reportAvailable"
             class="mt-2 mb-6"
             data-testid="laboratory-report-download-btn"
-            variant="secondary"
-            text="Download Full Report"
-            prepend-icon="download"
+            variant="primary"
+            text="View Test Results"
+            prepend-icon="eye"
             :loading="isLoadingDocument"
             @click="showConfirmationModal"
         />

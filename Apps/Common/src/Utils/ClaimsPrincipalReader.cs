@@ -38,7 +38,7 @@ public static class ClaimsPrincipalReader
         rowAuthTime ??= claimsPrincipal.FindFirstValue("iat");
 
         // Auth time comes in the JWT as seconds after 1970-01-01
-        DateTime jwtAuthTime = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
+        DateTime jwtAuthTime = DateTime.UnixEpoch
             .AddSeconds(int.Parse(rowAuthTime, CultureInfo.CurrentCulture));
 
         return jwtAuthTime;

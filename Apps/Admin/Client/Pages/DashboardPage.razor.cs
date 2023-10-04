@@ -68,7 +68,7 @@ public partial class DashboardPage : FluxorComponent
 
     private MudDateRangePicker SelectedDateRangePicker { get; set; } = default!;
 
-    private DateTime MinimumDateTime { get; } = new(2019, 06, 1);
+    private DateTime MinimumDateTime { get; } = new(2019, 06, 1, 0, 0, 0, DateTimeKind.Local);
 
     private DateTime MaximumDateTime { get; } = DateTime.Now;
 
@@ -167,11 +167,13 @@ public partial class DashboardPage : FluxorComponent
         set
         {
             this.Dispatcher.Dispatch(
-                new DashboardActions.LoadRecurringUsersAction(
-                    value,
-                    this.SelectedDateRange.Start?.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture),
-                    this.SelectedDateRange.End?.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture),
-                    this.TimeOffset));
+                new DashboardActions.LoadRecurringUsersAction
+                {
+                    Days = value,
+                    StartPeriod = this.SelectedDateRange.Start?.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture) ?? string.Empty,
+                    EndPeriod = this.SelectedDateRange.End?.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture) ?? string.Empty,
+                    TimeOffset = this.TimeOffset,
+                });
             this.CurrentUniqueDays = value;
         }
     }
@@ -249,10 +251,10 @@ public partial class DashboardPage : FluxorComponent
     private void LoadDispatchActions(int days, string startPeriod, string endPeriod, int timeOffset, bool initialLoad)
     {
         string endDate = initialLoad ? DateTime.Now.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture) : endPeriod;
-        this.Dispatcher.Dispatch(new DashboardActions.LoadRegisteredUsersAction(timeOffset));
-        this.Dispatcher.Dispatch(new DashboardActions.LoadLoggedInUsersAction(timeOffset));
-        this.Dispatcher.Dispatch(new DashboardActions.LoadDependentsAction(timeOffset));
-        this.Dispatcher.Dispatch(new DashboardActions.LoadRecurringUsersAction(days, startPeriod, endPeriod, timeOffset));
+        this.Dispatcher.Dispatch(new DashboardActions.LoadRegisteredUsersAction { TimeOffset = timeOffset });
+        this.Dispatcher.Dispatch(new DashboardActions.LoadLoggedInUsersAction { TimeOffset = timeOffset });
+        this.Dispatcher.Dispatch(new DashboardActions.LoadDependentsAction { TimeOffset = timeOffset });
+        this.Dispatcher.Dispatch(new DashboardActions.LoadRecurringUsersAction { Days = days, StartPeriod = startPeriod, EndPeriod = endPeriod, TimeOffset = timeOffset });
         this.DispatchRatingSummaryAction(startPeriod, endDate, timeOffset);
     }
 
@@ -268,7 +270,7 @@ public partial class DashboardPage : FluxorComponent
 
     private void DispatchRatingSummaryAction(string startPeriod, string endPeriod, int timeOffset)
     {
-        this.Dispatcher.Dispatch(new DashboardActions.LoadRatingSummaryAction(startPeriod, endPeriod, timeOffset));
+        this.Dispatcher.Dispatch(new DashboardActions.LoadRatingSummaryAction { StartPeriod = startPeriod, EndPeriod = endPeriod, TimeOffset = timeOffset });
     }
 
     private void ResetDashboardState()
@@ -284,18 +286,18 @@ public partial class DashboardPage : FluxorComponent
         public DateTime DailyDateTime { get; init; }
 
         /// <summary>
-        /// Gets or sets the total registered users.
+        /// Gets the total registered users.
         /// </summary>
-        public int TotalRegisteredUsers { get; set; }
+        public int TotalRegisteredUsers { get; init; }
 
         /// <summary>
-        /// Gets or sets the total logged in users.
+        /// Gets the total logged in users.
         /// </summary>
-        public int TotalLoggedInUsers { get; set; }
+        public int TotalLoggedInUsers { get; init; }
 
         /// <summary>
-        /// Gets or sets the total dependents.
+        /// Gets the total dependents.
         /// </summary>
-        public int TotalDependents { get; set; }
+        public int TotalDependents { get; init; }
     }
 }

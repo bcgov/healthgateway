@@ -129,7 +129,7 @@ namespace HealthGateway.CommonTests.Delegates
                 HttpContextAccessorMock.Object);
 
             // Act
-            RequestResult<PatientModel> actual = await patientDelegate.GetDemographicsByPhnAsync("9875023209").ConfigureAwait(true);
+            RequestResult<PatientModel> actual = await patientDelegate.GetDemographicsByPhnAsync("9875023209");
 
             // Verify
             Assert.Equal(ResultType.ActionRequired, actual.ResultStatus);
@@ -347,7 +347,7 @@ namespace HealthGateway.CommonTests.Delegates
                 HttpContextAccessorMock.Object);
 
             // Act
-            RequestResult<PatientModel> actual = await patientDelegate.GetDemographicsByHdidAsync(expectedHdId).ConfigureAwait(true);
+            RequestResult<PatientModel> actual = await patientDelegate.GetDemographicsByHdidAsync(expectedHdId);
 
             // Verify
             Assert.Equal(ResultType.Success, actual.ResultStatus);
@@ -457,7 +457,7 @@ namespace HealthGateway.CommonTests.Delegates
                 HttpContextAccessorMock.Object);
 
             // Act
-            RequestResult<PatientModel> actual = await patientDelegate.GetDemographicsByHdidAsync(hdid).ConfigureAwait(true);
+            RequestResult<PatientModel> actual = await patientDelegate.GetDemographicsByHdidAsync(hdid);
 
             // Verify
             Assert.Equal(ResultType.ActionRequired, actual.ResultStatus);
@@ -578,7 +578,7 @@ namespace HealthGateway.CommonTests.Delegates
                 HttpContextAccessorMock.Object);
 
             // Act
-            RequestResult<PatientModel> actual = await patientDelegate.GetDemographicsByHdidAsync(expectedHdId).ConfigureAwait(true);
+            RequestResult<PatientModel> actual = await patientDelegate.GetDemographicsByHdidAsync(expectedHdId);
 
             // Verify
             Assert.Equal(ResultType.Success, actual.ResultStatus);
@@ -728,7 +728,7 @@ namespace HealthGateway.CommonTests.Delegates
                 HttpContextAccessorMock.Object);
 
             // Act
-            RequestResult<PatientModel> actual = await patientDelegate.GetDemographicsByHdidAsync(expectedHdId).ConfigureAwait(true);
+            RequestResult<PatientModel> actual = await patientDelegate.GetDemographicsByHdidAsync(expectedHdId);
 
             // Verify
             Assert.Equal(ResultType.Success, actual.ResultStatus);
@@ -750,7 +750,7 @@ namespace HealthGateway.CommonTests.Delegates
             // Setup
             string expectedHdId = "EXTRIOYFPNX35TWEBUAJ3DNFDFXSYTBC6J4M76GYE3HC5ER2NKWQ";
             string expectedPhn = "0009735353315";
-            string expectedResponseCode = "BCHCIM.GD.0.0019";
+            string expectedResponseCode = "BCHCIM.GD.1.0019";
             string expectedFirstName = "Jane";
             string expectedLastName = "Doe";
 
@@ -837,11 +837,11 @@ namespace HealthGateway.CommonTests.Delegates
                 HttpContextAccessorMock.Object);
 
             // Act
-            RequestResult<PatientModel> actual = await patientDelegate.GetDemographicsByPhnAsync(expectedPhn).ConfigureAwait(true);
+            RequestResult<PatientModel> actual = await patientDelegate.GetDemographicsByPhnAsync(expectedPhn);
 
             // Verify
             Assert.Equal(ResultType.Success, actual.ResultStatus);
-            Assert.Contains("BCHCIM.GD.0.0019", actual.ResourcePayload?.ResponseCode, StringComparison.InvariantCultureIgnoreCase);
+            Assert.Contains("BCHCIM.GD.1.0019", actual.ResourcePayload?.ResponseCode, StringComparison.InvariantCultureIgnoreCase);
         }
 
         /// <summary>
@@ -854,7 +854,7 @@ namespace HealthGateway.CommonTests.Delegates
             // Setup
             string expectedHdId = "EXTRIOYFPNX35TWEBUAJ3DNFDFXSYTBC6J4M76GYE3HC5ER2NKWQ";
             string expectedPhn = "0009735353315";
-            string expectedResponseCode = "BCHCIM.GD.0.0021";
+            string expectedResponseCode = "BCHCIM.GD.1.0021";
             string expectedFirstName = "Jane";
             string expectedLastName = "Doe";
 
@@ -941,11 +941,11 @@ namespace HealthGateway.CommonTests.Delegates
                 HttpContextAccessorMock.Object);
 
             // Act
-            RequestResult<PatientModel> actual = await patientDelegate.GetDemographicsByPhnAsync(expectedPhn).ConfigureAwait(true);
+            RequestResult<PatientModel> actual = await patientDelegate.GetDemographicsByPhnAsync(expectedPhn);
 
             // Verify
             Assert.Equal(ResultType.Success, actual.ResultStatus);
-            Assert.Contains("BCHCIM.GD.0.0021", actual.ResourcePayload?.ResponseCode, StringComparison.InvariantCultureIgnoreCase);
+            Assert.Contains("BCHCIM.GD.1.0021", actual.ResourcePayload?.ResponseCode, StringComparison.InvariantCultureIgnoreCase);
         }
 
         /// <summary>
@@ -958,7 +958,7 @@ namespace HealthGateway.CommonTests.Delegates
             // Setup
             string expectedHdId = "EXTRIOYFPNX35TWEBUAJ3DNFDFXSYTBC6J4M76GYE3HC5ER2NKWQ";
             string expectedPhn = "0009735353315";
-            string expectedResponseCode = "BCHCIM.GD.0.0022";
+            string expectedResponseCode = "BCHCIM.GD.1.0022";
             string expectedFirstName = "Jane";
             string expectedLastName = "Doe";
 
@@ -1045,11 +1045,11 @@ namespace HealthGateway.CommonTests.Delegates
                 HttpContextAccessorMock.Object);
 
             // Act
-            RequestResult<PatientModel> actual = await patientDelegate.GetDemographicsByPhnAsync(expectedPhn).ConfigureAwait(true);
+            RequestResult<PatientModel> actual = await patientDelegate.GetDemographicsByPhnAsync(expectedPhn);
 
             // Verify
             Assert.Equal(ResultType.Success, actual.ResultStatus);
-            Assert.Contains("BCHCIM.GD.0.0022", actual.ResourcePayload?.ResponseCode, StringComparison.InvariantCultureIgnoreCase);
+            Assert.Contains("BCHCIM.GD.1.0022", actual.ResourcePayload?.ResponseCode, StringComparison.InvariantCultureIgnoreCase);
         }
 
         /// <summary>
@@ -1062,7 +1062,7 @@ namespace HealthGateway.CommonTests.Delegates
             // Setup
             string expectedHdId = "EXTRIOYFPNX35TWEBUAJ3DNFDFXSYTBC6J4M76GYE3HC5ER2NKWQ";
             string expectedPhn = "0009735353315";
-            string expectedResponseCode = "BCHCIM.GD.0.0023";
+            string expectedResponseCode = "BCHCIM.GD.1.0023";
             string expectedFirstName = "Jane";
             string expectedLastName = "Doe";
 
@@ -1149,11 +1149,11 @@ namespace HealthGateway.CommonTests.Delegates
                 HttpContextAccessorMock.Object);
 
             // Act
-            RequestResult<PatientModel> actual = await patientDelegate.GetDemographicsByPhnAsync(expectedPhn).ConfigureAwait(true);
+            RequestResult<PatientModel> actual = await patientDelegate.GetDemographicsByPhnAsync(expectedPhn);
 
             // Verify
             Assert.Equal(ResultType.Success, actual.ResultStatus);
-            Assert.Contains("BCHCIM.GD.0.0023", actual.ResourcePayload?.ResponseCode, StringComparison.InvariantCultureIgnoreCase);
+            Assert.Contains("BCHCIM.GD.1.0023", actual.ResourcePayload?.ResponseCode, StringComparison.InvariantCultureIgnoreCase);
         }
 
         private static Mock<IHttpContextAccessor> GetHttpContextAccessorMock(string userId, string ipAddress)

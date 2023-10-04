@@ -10,6 +10,7 @@ import PageTitleComponent from "@/components/common/PageTitleComponent.vue";
 import AddQuickLinkComponent from "@/components/private/home/AddQuickLinkComponent.vue";
 import RecommendationsDialogComponent from "@/components/private/reports/RecommendationsDialogComponent.vue";
 import {
+    EntryType,
     EntryTypeDetails,
     entryTypeMap,
     getEntryTypeByModule,
@@ -37,6 +38,7 @@ interface QuickLinkCard {
     index: number;
     title: string;
     description: string;
+    logoUri?: string;
     icon: string;
 }
 
@@ -118,6 +120,7 @@ const showRecommendationsCardButton = computed(
     () =>
         configStore.webConfig.featureToggleConfiguration.homepage
             .showRecommendationsLink &&
+        ConfigUtil.isDatasetEnabled(EntryType.Immunization) &&
         !preferenceRecommendationsLinkHidden.value
 );
 const showVaccineCardButton = computed(
@@ -160,6 +163,7 @@ const quickLinkCards = computed(() =>
             if (details) {
                 card.description = details.description;
                 card.icon = details.icon;
+                card.logoUri = details.logoUri;
             }
         }
 
@@ -565,7 +569,14 @@ watch(vaccineRecordState, () => {
                 @click="handleClickQuickLink(card.index)"
             >
                 <template #icon>
+                    <img
+                        v-if="card.logoUri"
+                        class="quick-link-icon"
+                        :alt="`${card.title ?? 'dataset'} Logo`"
+                        :src="card.logoUri"
+                    />
                     <v-icon
+                        v-else
                         :icon="card.icon"
                         class="quick-link-icon"
                         color="primary"

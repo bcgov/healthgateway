@@ -37,7 +37,7 @@ namespace HealthGateway.Patient.Mappings
         {
             this.CreateMap<PatientDataType, HealthCategory>()
                 .ConvertUsing(
-                    (source, destination, context) =>
+                    (source, _, _) =>
                     {
                         return source switch
                         {
@@ -51,7 +51,7 @@ namespace HealthGateway.Patient.Mappings
                 .ConvertUsing<PatientDataConverter>();
             this.CreateMap<PatientDataType, DataSource>()
                 .ConvertUsing(
-                    (source, destination, context) =>
+                    (source, _, _) =>
                     {
                         return source switch
                         {

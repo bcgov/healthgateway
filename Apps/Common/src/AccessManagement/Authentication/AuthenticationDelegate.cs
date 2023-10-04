@@ -114,34 +114,33 @@ namespace HealthGateway.Common.AccessManagement.Authentication
                 jwtModel = this.cacheProvider.GetItem<JwtModel>(cacheKey);
             }
 
-            if (jwtModel != null)
-            {
-                this.logger.LogDebug("Auth token found in cache");
-                cached = true;
-            }
-            else
+            if (jwtModel == null)
             {
                 this.logger.LogInformation("JWT Model not found in cache - Authenticating Direct Grant as User: {Username}", tokenRequest.Username);
                 jwtModel = this.ResourceOwnerPasswordGrant(tokenUri, tokenRequest);
-                if (jwtModel != null)
-                {
-                    if (cacheEnabled && this.tokenCacheMinutes > 0)
-                    {
-                        this.logger.LogDebug("Attempting to store Access token in cache");
-                        this.cacheProvider.AddItem(cacheKey, jwtModel, TimeSpan.FromMinutes(this.tokenCacheMinutes));
-                    }
-                    else
-                    {
-                        this.logger.LogDebug("Caching is not configured or has been disabled");
-                    }
-                }
-                else
+
+                if (jwtModel == null)
                 {
                     this.logger.LogCritical("Unable to authenticate to as {Username} to {TokenUri}", tokenRequest.Username, tokenUri);
                     throw new InvalidOperationException("Auth failure - JwtModel cannot be null");
                 }
 
+                if (cacheEnabled && this.tokenCacheMinutes > 0)
+                {
+                    this.logger.LogDebug("Attempting to store Access token in cache");
+                    this.cacheProvider.AddItem(cacheKey, jwtModel, TimeSpan.FromMinutes(this.tokenCacheMinutes));
+                }
+                else
+                {
+                    this.logger.LogDebug("Caching is not configured or has been disabled");
+                }
+
                 this.logger.LogInformation("Finished authenticating User: {Username}", tokenRequest.Username);
+            }
+            else
+            {
+                this.logger.LogDebug("Auth token found in cache");
+                cached = true;
             }
 
             return (jwtModel, cached);

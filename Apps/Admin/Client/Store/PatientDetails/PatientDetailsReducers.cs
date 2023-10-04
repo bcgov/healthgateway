@@ -47,7 +47,7 @@ namespace HealthGateway.Admin.Client.Store.PatientDetails
         }
 
         [ReducerMethod]
-        public static PatientDetailsState ReduceLoadFailAction(PatientDetailsState state, PatientDetailsActions.LoadFailAction action)
+        public static PatientDetailsState ReduceLoadFailureAction(PatientDetailsState state, PatientDetailsActions.LoadFailureAction action)
         {
             return state with
             {
