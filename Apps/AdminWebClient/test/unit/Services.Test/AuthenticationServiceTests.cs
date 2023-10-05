@@ -89,7 +89,7 @@ public class AuthenticationServiceTests
     }
 
     /// <summary>
-    /// UpdateAsync last login date time when admin user profile record exists in DB.
+    /// Update last login date time when admin user profile record exists in DB.
     /// </summary>
     [Fact]
     public void ShouldUpdateLastLoginDateTimeWhenAdminUserProfileExists()
