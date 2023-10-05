@@ -142,6 +142,7 @@ watch(vaccineRecordState, () => {
         <v-col v-if="showRecommendations" :cols="getGridCols" class="d-flex">
             <HgCardComponent
                 title="Vaccine Recommendations"
+                density="compact"
                 class="flex-grow-1 ma-1"
                 :data-testid="`recommendations-card-${dependent.ownerId}`"
                 @click="showRecommendationsDialog()"
@@ -162,6 +163,7 @@ watch(vaccineRecordState, () => {
         >
             <HgCardComponent
                 title="Proof of Vaccination"
+                density="compact"
                 class="flex-grow-1 ma-1"
                 :data-testid="`proof-vaccination-card-btn-${dependent.ownerId}`"
                 @click="showSensitiveDocumentDownloadModal()"
