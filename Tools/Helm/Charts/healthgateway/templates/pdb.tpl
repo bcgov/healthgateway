@@ -5,6 +5,7 @@
 {{- $namespace := $top.Values.namespace | default $top.Release.Namespace -}}
 {{- $labels := include "standard.labels" $top -}}
 {{- $minAvailable := ($context.scaling).pdbMinAvailable | default ($top.Values.scaling).pdbMinAvailable | required "pdbMinAvailable required" -}}
+{{- if ne 0.0 $minAvailable -}}
 kind: PodDisruptionBudget
 apiVersion: policy/v1
 metadata:
@@ -16,4 +17,5 @@ spec:
   selector:
     matchLabels:
       deploymentconfig: {{ $name }}-dc
+{{- end -}}
 {{- end -}}
