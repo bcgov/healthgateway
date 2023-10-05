@@ -5,9 +5,11 @@ import HgIconButtonComponent from "@/components/common/HgIconButtonComponent.vue
 
 interface Props {
     title?: string;
+    density?: "compact" | "normal";
 }
-withDefaults(defineProps<Props>(), {
+const props = withDefaults(defineProps<Props>(), {
     title: undefined,
+    density: "normal",
 });
 
 const slots = useSlots();
@@ -27,31 +29,47 @@ const hasMenuItemsSlot = computed<boolean>(() => {
 const hasDefaultSlot = computed<boolean>(() => {
     return slots.default !== undefined;
 });
+
+const isNormalDensity = computed<boolean>(() => {
+    return props.density === "normal";
+});
 </script>
 
 <template>
     <v-card>
         <template #title>
             <v-row align="center" class="text-wrap">
-                <v-col v-if="hasIconSlot" class="flex-grow-0 d-flex py-5">
+                <v-col
+                    v-if="hasIconSlot"
+                    class="flex-grow-0 d-flex"
+                    :class="{ 'py-5': isNormalDensity }"
+                >
                     <slot name="icon" />
                 </v-col>
                 <v-col
                     v-if="title"
                     data-testid="card-button-title"
-                    class="py-5"
+                    :class="{ 'py-5': isNormalDensity }"
                 >
                     {{ title }}
                 </v-col>
                 <v-spacer v-else />
-                <v-col v-if="hasActionIconSlot" class="flex-grow-0 d-flex pa-5">
+                <v-col
+                    v-if="hasActionIconSlot"
+                    class="flex-grow-0 d-flex"
+                    :class="{ 'pa-5': isNormalDensity }"
+                >
                     <slot name="action-icon" />
                 </v-col>
-                <v-col v-if="hasMenuItemsSlot" class="flex-grow-0 py-3">
+                <v-col
+                    v-if="hasMenuItemsSlot"
+                    class="flex-grow-0"
+                    :class="{ 'py-3': isNormalDensity }"
+                >
                     <v-menu location="bottom end">
-                        <template #activator="{ props }">
+                        <template #activator="{ props: activatorProps }">
                             <HgIconButtonComponent
-                                v-bind="props"
+                                v-bind="activatorProps"
                                 icon="fas fa-ellipsis-vertical"
                                 aria-label="Menu"
                                 data-testid="card-menu-button"
