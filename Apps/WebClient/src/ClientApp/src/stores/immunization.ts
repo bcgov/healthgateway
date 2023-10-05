@@ -133,7 +133,7 @@ export const useImmunizationStore = defineStore("immunization", () => {
 
     function retrieveImmunizations(hdid: string): Promise<void> {
         if (getImmunizationDatasetState(hdid).status === LoadStatus.LOADED) {
-            logger.debug(`Immunizations found sored, not querying!`);
+            logger.debug(`Immunizations found stored, not querying!`);
             return Promise.resolve();
         }
         logger.debug(`Retrieving immunizations`);

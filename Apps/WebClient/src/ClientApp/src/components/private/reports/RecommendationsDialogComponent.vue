@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import saveAs from "file-saver";
-import { ref } from "vue";
+import { computed, ref } from "vue";
 
 import HgButtonComponent from "@/components/common/HgButtonComponent.vue";
 import HgIconButtonComponent from "@/components/common/HgIconButtonComponent.vue";
@@ -14,7 +14,11 @@ import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
 import { ResultError } from "@/models/errors";
 import Report from "@/models/report";
 import { ReportFilterBuilder } from "@/models/reportFilter";
-import { ReportFormatType, reportMimeTypeMap } from "@/models/reportRequest";
+import {
+    ReportFormatType,
+    reportMimeTypeMap,
+    TemplateType,
+} from "@/models/reportRequest";
 import RequestResult from "@/models/requestResult";
 import { ILogger } from "@/services/interfaces";
 import { useErrorStore } from "@/stores/error";
@@ -46,6 +50,12 @@ const isVisible = ref(false);
 const isGeneratingReport = ref(false);
 const hasRecords = ref(false);
 const reportFormatType = ref<ReportFormatType>(ReportFormatType.PDF);
+
+const template = computed(() =>
+    props.isDependent
+        ? TemplateType.DependentImmunizationRecommendation
+        : TemplateType.ImmunizationRecommendation
+);
 
 function showConfirmationModal(type: ReportFormatType): void {
     reportFormatType.value = type;
@@ -105,6 +115,11 @@ function downloadReport() {
         });
 }
 
+function visitVaccinationBooking() {
+    EventTracker.click("bookvaccine");
+    window.open("https://www.getvaccinated.gov.bc.ca/s/", "_blank", "noopener");
+}
+
 function showDialog() {
     isVisible.value = true;
 }
@@ -136,16 +151,14 @@ function showDialog() {
                         :hdid="hdid"
                         :filter="reportFilter"
                         :is-dependent="isDependent"
+                        :template="template"
                         force-show
                         hide-immunizations
                         hide-recommendation-header
                         @on-is-empty-changed="hasRecords = !$event"
                     >
-                        <template
-                            v-if="isDependent"
-                            #recommendations-description
-                        >
-                            <p>
+                        <template #recommendations-description>
+                            <p v-if="isDependent">
                                 School-aged children are offered most
                                 immunizations in their school, particularly in
                                 grades 6 and 9. The school can let you know
@@ -160,6 +173,33 @@ function showDialog() {
                                     >Find out how.</a
                                 >
                             </p>
+                            <template v-else>
+                                <p>
+                                    Vaccine recommendations are based on the
+                                    <a
+                                        href="https://immunizebc.ca/tools-resources/immunization-schedules"
+                                        target="_blank"
+                                        rel="noopener"
+                                        class="text-link"
+                                        >BC Immunization Schedule</a
+                                    >. For information on booking COVID or Flu
+                                    vaccinations, please visit the
+                                    <a
+                                        href="https://www2.gov.bc.ca/gov/content/covid-19/info/response"
+                                        target="_blank"
+                                        rel="noopener"
+                                        class="text-link"
+                                        >BC respiratory illness page</a
+                                    >.
+                                </p>
+                                <HgButtonComponent
+                                    class="mb-4"
+                                    variant="primary"
+                                    text="Book a COVID or Flu Vaccination"
+                                    data-testid="book-vaccination-button"
+                                    @click="visitVaccinationBooking"
+                                />
+                            </template>
                         </template>
                     </ImmunizationReportComponent>
                 </v-card-text>
@@ -174,7 +214,7 @@ function showDialog() {
                         <template #activator="{ props: slotProps }">
                             <HgButtonComponent
                                 id="export-recommendations-record-button"
-                                text="Download"
+                                text="Download Immunization Record"
                                 variant="primary"
                                 data-testid="export-recommendations-record-button"
                                 v-bind="slotProps"

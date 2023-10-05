@@ -61,9 +61,19 @@ namespace HealthGateway.GatewayApi.Models
         DependentImmunization,
 
         /// <summary>
+        /// Indicates a Dependent Immunization Recommendation template type.
+        /// </summary>
+        DependentImmunizationRecommendation,
+
+        /// <summary>
         /// Indicates an Immunization template type.
         /// </summary>
         Immunization,
+
+        /// <summary>
+        /// Indicates an Immunization Recommendation template type.
+        /// </summary>
+        ImmunizationRecommendation,
 
         /// <summary>
         /// Indicates a Medication template type.

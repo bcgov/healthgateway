@@ -43,5 +43,9 @@
         <EmbeddedResource Include="Assets\Templates\DependentImmunizationReport.xlsx" />
         <EmbeddedResource Include="Assets\Templates\HospitalVisitReport.docx" />
         <EmbeddedResource Include="Assets\Templates\HospitalVisitReport.xlsx" />
+        <EmbeddedResource Include="Assets\Templates\ImmunizationRecommendationReport.docx" />
+        <EmbeddedResource Include="Assets\Templates\ImmunizationRecommendationReport.xlsx" />
+        <EmbeddedResource Include="Assets\Templates\DependentImmunizationRecommendationReport.xlsx" />
+        <EmbeddedResource Include="Assets\Templates\DependentImmunizationRecommendationReport.docx" />
     </ItemGroup>
 </Project>
