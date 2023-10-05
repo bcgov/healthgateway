@@ -19,6 +19,7 @@ namespace HealthGateway.Admin.Server.Controllers
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
+    using HealthGateway.Admin.Common.Constants;
     using HealthGateway.Admin.Common.Models;
     using HealthGateway.Admin.Common.Models.CovidSupport;
     using HealthGateway.Admin.Server.Services;
@@ -83,7 +84,8 @@ namespace HealthGateway.Admin.Server.Controllers
         /// Retrieves patient support details, which includes messaging verifications, agent changes and blocked data sources
         /// matching the query.
         /// </summary>
-        /// <param name="hdid">The HDID associated with the patient support details.</param>
+        /// <param name="queryType">The type of query to be performed when searching for patient support details.</param>
+        /// <param name="queryString">The string value associated with the query type when searching for patient support details.</param>
         /// <param name="ct">A cancellation token.</param>
         /// <returns>Patient support details matching the query.</returns>
         /// <response code="200">Returns the patient support details matching the query.</response>
@@ -94,13 +96,14 @@ namespace HealthGateway.Admin.Server.Controllers
         /// </response>
         [HttpGet]
         [Route("PatientSupportDetails")]
-        public async Task<PatientSupportDetails> GetPatientSupportDetails([FromQuery] string hdid, CancellationToken ct)
+        public async Task<PatientSupportDetails> GetPatientSupportDetails([FromQuery] ClientRegistryType queryType, [FromQuery] string queryString, CancellationToken ct)
         {
             ClaimsPrincipal user = this.HttpContext.User;
             bool includeEverything = user.IsInRole("AdminUser") || user.IsInRole("AdminReviewer");
             bool includeCovidDetails = user.IsInRole("SupportUser");
 
-            return await this.supportService.GetPatientSupportDetailsAsync(hdid, includeEverything, includeEverything, includeEverything, includeCovidDetails, ct).ConfigureAwait(true);
+            return await this.supportService.GetPatientSupportDetailsAsync(queryType, queryString, includeEverything, includeEverything, includeEverything, includeCovidDetails, ct)
+                .ConfigureAwait(true);
         }
 
         /// <summary>

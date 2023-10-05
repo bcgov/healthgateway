@@ -124,11 +124,18 @@
         </MudText>
     }
 
-    if (CanViewCovidDetails)
+    if (CanViewCovidDetails && !ImmunizationsAreBlaocked)
     {
-        <Covid19ImmunizationSection Phn="@Patient.PersonalHealthNumber" Data="@VaccineDoses" IsLoading="@PatientSupportDetailsLoading" MailAddress="@MailAddress" />
+        <Covid19ImmunizationSection Phn="@Patient.PersonalHealthNumber" Data="@VaccineDetails" IsLoading="@PatientSupportDetailsLoading" MailAddress="@MailAddress" />
 
         <Covid19AssessmentSection Data="@AssessmentDetails" IsLoading="@PatientSupportDetailsLoading" AssessmentPagePath="@Covid19TreatmentAssessmentPath" />
+    }
+
+    if (ImmunizationsAreBlaocked)
+    {
+        <MudAlert data-testid="blocked-immunization-alert" Severity="Severity.Error" Dense="true" Outlined="true" Class="alert-background-color">
+            Unable to retrieve vaccine records for this individual.
+        </MudAlert>
     }
 }
 else if (PatientsLoaded)

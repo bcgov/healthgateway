@@ -16,7 +16,6 @@
 namespace HealthGateway.Admin.Server.Delegates
 {
     using System.Threading.Tasks;
-    using HealthGateway.AccountDataAccess.Patient;
     using HealthGateway.Admin.Common.Models.CovidSupport;
 
     /// <summary>
@@ -28,10 +27,10 @@ namespace HealthGateway.Admin.Server.Delegates
         /// Gets the vaccine details for the provided patient, retrying multiple times if there is a refresh in progress.
         /// The patient must have the PHN and DOB provided.
         /// </summary>
-        /// <param name="patient">The patient to query for vaccine details.</param>
+        /// <param name="phn">The phn to query for vaccine details.</param>
         /// <param name="accessToken">The connection access token.</param>
         /// <param name="refresh">Whether the call should force cached data to be refreshed.</param>
         /// <returns>The wrapped vaccine details.</returns>
-        Task<VaccineDetails> GetVaccineDetailsWithRetries(PatientModel patient, string accessToken, bool refresh = false);
+        Task<VaccineDetails> GetVaccineDetailsWithRetries(string phn, string accessToken, bool refresh = false);
     }
 }

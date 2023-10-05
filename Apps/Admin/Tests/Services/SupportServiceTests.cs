@@ -86,10 +86,13 @@ namespace HealthGateway.Admin.Tests.Services
         /// <param name="expectedBlockedDataSources">Expected number of blocked data sources returned.</param>
         /// <param name="includeCovidDetails">Value indicating whether covid details are included.</param>
         /// <param name="expectedCovidDetails">Value indicating if expected covid details are returned.</param>
+        /// <param name="queryType">Value indicating the type of query to execute.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Theory]
-        [InlineData(true, "2", true, "1", true, "1", true, false)]
-        [InlineData(false, null, false, null, false, null, false, true)]
+        [InlineData(true, "2", true, "1", true, "1", true, false, ClientRegistryType.Hdid)]
+        [InlineData(false, null, false, null, false, null, false, true, ClientRegistryType.Hdid)]
+        [InlineData(false, null, false, null, false, null, true, false, ClientRegistryType.Phn)]
+        [InlineData(false, null, false, null, false, null, false, true, ClientRegistryType.Phn)]
         public async Task ShouldGetPatientSupportDetailsAsync(
             bool includeMessagingVerifications,
             string? expectedMessagingVerifications,
@@ -98,10 +101,15 @@ namespace HealthGateway.Admin.Tests.Services
             bool includeBlockedDataSources,
             string? expectedBlockedDataSources,
             bool includeCovidDetails,
-            bool expectedCovidDetails)
+            bool expectedCovidDetails,
+            ClientRegistryType queryType)
         {
             // Arrange
-            PatientDetailsQuery patientQuery = new() { Hdid = Hdid, Source = PatientDetailSource.All, UseCache = false };
+            PatientDetailsQuery patientQuery = new()
+            {
+                Hdid = queryType == ClientRegistryType.Hdid ? Hdid : null, Phn = queryType == ClientRegistryType.Phn ? Phn : null,
+                Source = queryType == ClientRegistryType.Hdid ? PatientDetailSource.All : PatientDetailSource.Empi, UseCache = false,
+            };
             AccountDataAccess.Patient.Name commonName = GenerateName();
             AccountDataAccess.Patient.Name legalName = GenerateName("Jim", "Bo");
             Address physicalAddress = GenerateAddress(GenerateStreetLines());
@@ -130,7 +138,13 @@ namespace HealthGateway.Admin.Tests.Services
 
             // Act
             PatientSupportDetails actualResult =
-                await supportService.GetPatientSupportDetailsAsync(Hdid, includeMessagingVerifications, includeBlockedDataSources, includeAgentActions, includeCovidDetails);
+                await supportService.GetPatientSupportDetailsAsync(
+                    queryType,
+                    queryType == ClientRegistryType.Hdid ? Hdid : Phn,
+                    includeMessagingVerifications,
+                    includeBlockedDataSources,
+                    includeAgentActions,
+                    includeCovidDetails);
 
             // Assert
             Assert.Equal(expectedMessagingVerifications, actualResult.MessagingVerifications?.Count().ToString(CultureInfo.InvariantCulture));
@@ -143,17 +157,26 @@ namespace HealthGateway.Admin.Tests.Services
         /// <summary>
         /// Get patient support details async throws problem details exception given client registry records not found.
         /// </summary>
+        /// <param name="queryType">Value indicating the type of query to execute.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
-        public async Task GetPatientSupportDetailsAsyncThrowsClientRegistryRecordsNotFound()
+        [Theory]
+        [InlineData(ClientRegistryType.Hdid)]
+        [InlineData(ClientRegistryType.Phn)]
+        public async Task GetPatientSupportDetailsAsyncThrowsClientRegistryRecordsNotFound(ClientRegistryType queryType)
         {
             // Arrange
-            PatientDetailsQuery query = new() { Hdid = Hdid, Source = PatientDetailSource.All, UseCache = false };
+            PatientDetailsQuery patientQuery = new()
+            {
+                Hdid = queryType == ClientRegistryType.Hdid ? Hdid : null, Phn = queryType == ClientRegistryType.Phn ? Phn : null,
+                Source = queryType == ClientRegistryType.Hdid ? PatientDetailSource.All : PatientDetailSource.Empi, UseCache = false,
+            };
+
+            // Patient null should cause exception to be thrown
             PatientModel? patient = null;
             IList<MessagingVerification> messagingVerifications = GenerateMessagingVerifications(SmsNumber, Email);
             ISupportService supportService = CreateSupportService(
                 GetMessagingVerificationDelegateMock(messagingVerifications),
-                GetPatientRepositoryMock((query, patient)),
+                GetPatientRepositoryMock((patientQuery, patient)),
                 null,
                 null,
                 GetAuthenticationDelegateMock(AccessToken));
@@ -161,7 +184,13 @@ namespace HealthGateway.Admin.Tests.Services
             // Act
             async Task Actual()
             {
-                await supportService.GetPatientSupportDetailsAsync(Hdid, true, true, true, true);
+                await supportService.GetPatientSupportDetailsAsync(
+                    queryType,
+                    queryType == ClientRegistryType.Hdid ? Hdid : Phn,
+                    true,
+                    true,
+                    true,
+                    true);
             }
 
             // Verify
@@ -177,12 +206,15 @@ namespace HealthGateway.Admin.Tests.Services
         public async Task GetPatientSupportDetailsAsyncThrowsInvalidPhnDob()
         {
             // Arrange
-            PatientDetailsQuery query = new() { Hdid = Hdid, Source = PatientDetailSource.All, UseCache = false };
+            PatientDetailsQuery query = new() { Phn = Phn, Source = PatientDetailSource.Empi, UseCache = false };
             AccountDataAccess.Patient.Name commonName = GenerateName();
             AccountDataAccess.Patient.Name legalName = GenerateName("Jim", "Bo");
             Address physicalAddress = GenerateAddress(GenerateStreetLines());
             Address postalAddress = GenerateAddress(new List<string> { "PO BOX 1234" });
+
+            // Invalid date causes problem details exception
             PatientModel patient = GeneratePatientModel(string.Empty, Hdid, DateTime.MinValue, commonName, legalName, physicalAddress, postalAddress);
+
             IList<MessagingVerification> messagingVerifications = GenerateMessagingVerifications(SmsNumber, Email);
             ISupportService supportService = CreateSupportService(
                 GetMessagingVerificationDelegateMock(messagingVerifications),
@@ -194,7 +226,7 @@ namespace HealthGateway.Admin.Tests.Services
             // Act
             async Task Actual()
             {
-                await supportService.GetPatientSupportDetailsAsync(Hdid, true, true, true, true);
+                await supportService.GetPatientSupportDetailsAsync(ClientRegistryType.Phn, Phn, false, false, false, true);
             }
 
             // Verify
@@ -228,7 +260,7 @@ namespace HealthGateway.Admin.Tests.Services
             // Act
             async Task Actual()
             {
-                await supportService.GetPatientSupportDetailsAsync(Hdid, true, true, true, true);
+                await supportService.GetPatientSupportDetailsAsync(ClientRegistryType.Hdid, Hdid, true, true, true, true);
             }
 
             // Verify
@@ -859,7 +891,7 @@ namespace HealthGateway.Admin.Tests.Services
         private static Mock<IImmunizationAdminDelegate> GetImmunizationAdminDelegateMock(VaccineDetails details)
         {
             Mock<IImmunizationAdminDelegate> mock = new();
-            mock.Setup(d => d.GetVaccineDetailsWithRetries(It.IsAny<PatientModel>(), It.IsAny<string>(), It.IsAny<bool>())).ReturnsAsync(details);
+            mock.Setup(d => d.GetVaccineDetailsWithRetries(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>())).ReturnsAsync(details);
             return mock;
         }
 

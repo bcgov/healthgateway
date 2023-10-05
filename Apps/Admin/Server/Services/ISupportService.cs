@@ -18,6 +18,7 @@ namespace HealthGateway.Admin.Server.Services
     using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
+    using HealthGateway.Admin.Common.Constants;
     using HealthGateway.Admin.Common.Models;
     using HealthGateway.Common.Data.Constants;
 
@@ -27,10 +28,12 @@ namespace HealthGateway.Admin.Server.Services
     public interface ISupportService
     {
         /// <summary>
-        /// Retrieves patient support details, which includes messaging verifications, agent changes and blocked data sources
+        /// Retrieves patient support details, which includes messaging verifications, agent changes, blocked data sources and
+        /// covid details
         /// matching the query.
         /// </summary>
-        /// <param name="hdid">The HDID associated with the patient support details.</param>
+        /// <param name="queryType">The type of query to be performed when searching for patient support details.</param>
+        /// <param name="queryString">The string value associated with the query type when searching for patient support details.</param>
         /// <param name="includeMessagingVerifications">A value indicating whether messaging verifications should be returned.</param>
         /// <param name="includeBlockedDataSources">A value indicating whether blocked data sources should be returned.</param>
         /// <param name="includeAgentActions">A value indicating whether agent actions should be returned.</param>
@@ -38,7 +41,8 @@ namespace HealthGateway.Admin.Server.Services
         /// <param name="ct">A cancellation token.</param>
         /// <returns>A patient support details matching the query.</returns>
         Task<PatientSupportDetails> GetPatientSupportDetailsAsync(
-            string hdid,
+            ClientRegistryType queryType,
+            string queryString,
             bool includeMessagingVerifications,
             bool includeBlockedDataSources,
             bool includeAgentActions,

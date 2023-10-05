@@ -1,5 +1,7 @@
 import {
+    formatPhn,
     performSearch,
+    verifySearchInput,
     verifySingleSupportResult,
     verifySupportTableResults,
 } from "../../utilities/supportUtilities";
@@ -28,15 +30,20 @@ describe("Support", () => {
     it("Verify support query.", () => {
         performSearch("PHN", phn);
         verifySingleSupportResult(hdid, phn);
+        const formattedPhn = formatPhn(phn);
+        verifySearchInput("Phn", formattedPhn);
 
         performSearch("HDID", hdid);
         verifySingleSupportResult(hdid, phn);
+        verifySearchInput("Hdid", hdid);
 
         performSearch("SMS", sms);
         verifySupportTableResults(hdid, phn, 2);
+        verifySearchInput("Sms", sms);
 
         performSearch("Email", email);
         verifySingleSupportResult(emailHdid, emailPhn);
+        verifySearchInput("Email", email);
     });
 
     it("Verify no results hdid query.", () => {
@@ -56,6 +63,6 @@ describe("Support", () => {
 
     it("Verify dependents query returns results.", () => {
         performSearch("Dependent", dependentPhn);
-        cy.get("[data-testid=patient-name]").should("be.visible");
+        verifySingleSupportResult(hdid, phn);
     });
 });

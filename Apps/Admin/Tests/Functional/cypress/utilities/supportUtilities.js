@@ -15,6 +15,12 @@ export function performSearch(queryType, queryString) {
     cy.get("[data-testid=search-btn]").click();
 }
 
+export function verifySearchInput(queryType, queryString) {
+    cy.url().should("include", "/support");
+    cy.get('[data-testid="query-type-select"]').should("have.value", queryType);
+    cy.get('[data-testid="query-input"]').should("have.value", queryString);
+}
+
 export function verifySingleSupportResult(expectedHdid, expectedPhn) {
     cy.get("[data-testid=user-table]").should("not.exist");
     if (expectedHdid) {
@@ -46,4 +52,10 @@ export function verifySupportTableResults(
                 expectedPhn
             );
         });
+}
+
+export function formatPhn(phnNumber) {
+    const phnString = phnNumber.toString();
+    const formattedPhn = phnString.replace(/(\d{4})(\d{3})(\d{3})/, "$1 $2 $3");
+    return formattedPhn;
 }

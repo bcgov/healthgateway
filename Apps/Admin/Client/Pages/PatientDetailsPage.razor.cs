@@ -25,6 +25,7 @@ namespace HealthGateway.Admin.Client.Pages
     using HealthGateway.Admin.Client.Store.PatientDetails;
     using HealthGateway.Admin.Client.Store.PatientSupport;
     using HealthGateway.Admin.Client.Utils;
+    using HealthGateway.Admin.Common.Constants;
     using HealthGateway.Admin.Common.Models;
     using HealthGateway.Admin.Common.Models.CovidSupport;
     using HealthGateway.Common.Data.Constants;
@@ -71,10 +72,7 @@ namespace HealthGateway.Admin.Client.Pages
         private IEnumerable<AgentAction> AgentAuditHistory =>
             this.PatientDetailsState.Value.AgentActions?.OrderByDescending(a => a.TransactionDateTime) ?? Enumerable.Empty<AgentAction>();
 
-        private IEnumerable<VaccineDose> VaccineDoses =>
-            this.PatientDetailsState.Value.VaccineDetails?.Doses
-                .Where(_ => this.PatientDetailsState.Value.VaccineDetails?.Blocked == false)
-                .OrderByDescending(dose => dose.Date) ?? Enumerable.Empty<VaccineDose>();
+        private VaccineDetails? VaccineDetails => this.PatientDetailsState.Value.VaccineDetails;
 
         private CovidAssessmentDetailsResponse? AssessmentInfo => this.PatientDetailsState.Value.Result?.CovidAssessmentDetails;
 
@@ -88,7 +86,7 @@ namespace HealthGateway.Admin.Client.Pages
         private bool HasPatientsWarning => this.PatientSupportState.Value.WarningMessages.Any();
 
         private PatientSupportResult? Patient =>
-            this.PatientSupportState.Value.Result?.SingleOrDefault(x => x.Hdid == this.Hdid);
+            this.PatientSupportState.Value.Result?.SingleOrDefault(x => x.PersonalHealthNumber == this.Phn);
 
         private string PatientName => StringManipulator.JoinWithoutBlanks(new[] { this.Patient?.PreferredName?.GivenName, this.Patient?.PreferredName?.Surname });
 
@@ -116,13 +114,17 @@ namespace HealthGateway.Admin.Client.Pages
 
         private bool CanViewCovidDetails => this.UserHasRole(Roles.Support);
 
-        private string Covid19TreatmentAssessmentPath => $"/covid-19-treatment-assessment?hdid={this.Hdid}";
+        private string Covid19TreatmentAssessmentPath => $"/covid-19-treatment-assessment?phn={this.Phn}";
+
+        private bool ImmunizationsAreBlaocked => this.VaccineDetails?.Blocked ?? false;
 
         private AuthenticationState? AuthenticationState { get; set; }
 
-        private string Hdid { get; set; } = string.Empty;
+        private string Hdid => this.Patient?.Hdid ?? string.Empty;
 
-        private string PreviousSearchedHdid { get; set; } = string.Empty;
+        private string Phn { get; set; } = string.Empty;
+
+        private string PreviousSearchedPhn { get; set; } = string.Empty;
 
         /// <inheritdoc/>
         protected override async Task OnInitializedAsync()
@@ -137,9 +139,9 @@ namespace HealthGateway.Admin.Client.Pages
             base.OnInitialized();
 
             Uri uri = this.NavigationManager.ToAbsoluteUri(this.NavigationManager.Uri);
-            if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("hdid", out StringValues hdid) && hdid != StringValues.Empty)
+            if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("phn", out StringValues phn) && phn != StringValues.Empty)
             {
-                this.Hdid = hdid.ToString();
+                this.Phn = phn.ToString();
                 this.RetrievePatientDetails();
             }
             else
@@ -150,15 +152,15 @@ namespace HealthGateway.Admin.Client.Pages
 
         private void RetrievePatientDetails()
         {
-            if (this.Patient?.Hdid != this.PreviousSearchedHdid)
+            if (this.Patient?.PersonalHealthNumber != this.PreviousSearchedPhn)
             {
                 this.Dispatcher.Dispatch(new PatientSupportActions.ResetStateAction());
-                this.Dispatcher.Dispatch(new PatientSupportActions.LoadAction { QueryType = PatientQueryType.Hdid, QueryString = this.Hdid });
+                this.Dispatcher.Dispatch(new PatientSupportActions.LoadAction { QueryType = PatientQueryType.Phn, QueryString = this.Phn });
                 this.Dispatcher.Dispatch(new PatientDetailsActions.ResetStateAction());
-                this.Dispatcher.Dispatch(new PatientDetailsActions.LoadAction { Hdid = this.Hdid });
+                this.Dispatcher.Dispatch(new PatientDetailsActions.LoadAction { QueryType = ClientRegistryType.Phn, QueryString = this.Phn });
             }
 
-            this.PreviousSearchedHdid = this.Hdid;
+            this.PreviousSearchedPhn = this.Phn;
         }
 
         private bool UserHasRole(string role)
