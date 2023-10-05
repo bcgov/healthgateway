@@ -171,7 +171,7 @@ namespace HealthGateway.GatewayApi.Services
                 userProfileDbResult.Payload.LastLoginDateTime = jwtAuthTime;
                 userProfileDbResult.Payload.LastLoginClientCode = this.authenticationDelegate.FetchAuthenticatedUserClientType();
 
-                // UpdateAsync user year of birth.
+                // Update user year of birth.
                 RequestResult<PatientModel> patientResult = await this.patientService.GetPatient(hdid).ConfigureAwait(true);
                 DateTime? birthDate = patientResult.ResourcePayload?.Birthdate;
                 userProfileDbResult.Payload.YearOfBirth = birthDate?.Year.ToString(CultureInfo.InvariantCulture);

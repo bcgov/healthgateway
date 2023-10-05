@@ -81,7 +81,7 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
         }
 
         /// <summary>
-        /// UpdateAsync Comment - Happy path scenario.
+        /// Update Comment - Happy path scenario.
         /// </summary>
         [Fact]
         public void ShouldUpdateComment()
@@ -109,7 +109,7 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
         }
 
         /// <summary>
-        /// UpdateAsync Comment - ForbidResult Error scenario.
+        /// Update Comment - ForbidResult Error scenario.
         /// </summary>
         [Fact]
         public void ShouldUpdateCommentWithForbidResultError()
@@ -134,7 +134,7 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
         }
 
         /// <summary>
-        /// UpdateAsync Comment - BadRequest Error scenario.
+        /// Update Comment - BadRequest Error scenario.
         /// </summary>
         [Fact]
         public void ShouldUpdateCommentWithBadRequestError()

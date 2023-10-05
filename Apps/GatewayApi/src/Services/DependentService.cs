@@ -339,7 +339,7 @@ namespace HealthGateway.GatewayApi.Services
             DbResult<UserProfile> dbResult = this.userProfileDelegate.GetUserProfile(delegateHdid);
             UserProfile delegateUserProfile = dbResult.Payload;
 
-            // UpdateAsync the notification settings
+            // Update the notification settings
             NotificationSettingsRequest request = new(delegateUserProfile, delegateUserProfile.Email, delegateUserProfile.SmsNumber)
             {
                 SubjectHdid = dependentHdid,

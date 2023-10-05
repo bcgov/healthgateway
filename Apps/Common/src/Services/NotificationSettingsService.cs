@@ -63,7 +63,7 @@ namespace HealthGateway.Common.Services
             string json = JsonSerializer.Serialize(notificationSettings);
             this.jobClient.Enqueue<INotificationSettingsJob>(j => j.PushNotificationSettings(json));
 
-            // UpdateAsync the notification settings for any dependents
+            // Update the notification settings for any dependents
             DbResult<IEnumerable<ResourceDelegate>> dbResult = this.resourceDelegateDelegate.Get(notificationSettings.SubjectHdid);
             foreach (ResourceDelegate resourceDelegate in dbResult.Payload)
             {

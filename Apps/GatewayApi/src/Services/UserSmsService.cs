@@ -103,7 +103,7 @@ namespace HealthGateway.GatewayApi.Services
 
                 retVal.ResourcePayload = true;
 
-                // UpdateAsync the notification settings
+                // Update the notification settings
                 this.notificationSettingsService.QueueNotificationSettings(new NotificationSettingsRequest(userProfile, userProfile.Email, userProfile.SmsNumber));
             }
             else
@@ -174,7 +174,7 @@ namespace HealthGateway.GatewayApi.Services
                 notificationRequest.SmsVerificationCode = messagingVerification.SmsValidationCode;
             }
 
-            // UpdateAsync the notification settings
+            // Update the notification settings
             this.notificationSettingsService.QueueNotificationSettings(notificationRequest);
 
             this.logger.LogDebug("Finished updating user sms");

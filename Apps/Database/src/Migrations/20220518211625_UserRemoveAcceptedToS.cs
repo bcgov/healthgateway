@@ -108,7 +108,7 @@ BEGIN
 END;$BODY$;";
             migrationBuilder.Sql(triggerFunction);
 
-            string sql = @$"UpdateAsync {schema}.""UserProfileHistory"" SET ""AcceptedTermsOfService"" = true WHERE ""AcceptedTermsOfService"" is null;";
+            string sql = @$"Update {schema}.""UserProfileHistory"" SET ""AcceptedTermsOfService"" = true WHERE ""AcceptedTermsOfService"" is null;";
             migrationBuilder.Sql(sql);
 
             migrationBuilder.AlterColumn<bool>(

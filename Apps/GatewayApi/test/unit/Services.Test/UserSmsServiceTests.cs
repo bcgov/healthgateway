@@ -175,7 +175,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         }
 
         /// <summary>
-        /// ValidateSmsAsync - UpdateAsync SMS Happy Path.
+        /// ValidateSmsAsync - Update SMS Happy Path.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]

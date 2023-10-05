@@ -843,7 +843,7 @@ namespace HealthGateway.Database.Context
                         UpdatedBy = UserId.DefaultUser,
                         UpdatedDateTime = DateTime.ParseExact("03/18/2020", "MM/dd/yyyy", CultureInfo.InvariantCulture),
                     },
-                    new LegalAgreement // Updated Terms of Service for Lab/Covid UpdateAsync
+                    new LegalAgreement // Updated Terms of Service for Lab/Covid Update
                     {
                         Id = Guid.Parse("1d94c170-5118-4aa6-ba31-e3e07274ccbd"),
                         LegalAgreementCode = LegalAgreementType.TermsOfService,

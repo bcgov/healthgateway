@@ -161,7 +161,7 @@ namespace HealthGateway.GatewayApi.Services
                 await this.messageSender.SendAsync(new[] { new MessageEnvelope(new NotificationChannelVerifiedEvent(hdid, NotificationChannel.Email, matchingVerification.Email!.To)) }, ct);
             }
 
-            // UpdateAsync the notification settings
+            // Update the notification settings
             this.notificationSettingsService.QueueNotificationSettings(new NotificationSettingsRequest(userProfile, userProfile.Email, userProfile.SmsNumber));
 
             this.logger.LogDebug("Email validated");
@@ -204,7 +204,7 @@ namespace HealthGateway.GatewayApi.Services
             this.profileDelegate.Update(userProfile);
             userProfile.Email = null;
 
-            // UpdateAsync the notification settings
+            // Update the notification settings
             this.notificationSettingsService.QueueNotificationSettings(new NotificationSettingsRequest(userProfile, userProfile.Email, userProfile.SmsNumber));
 
             MessagingVerification? lastEmailVerification = this.messageVerificationDelegate.GetLastForUser(hdid, MessagingVerificationType.Email);

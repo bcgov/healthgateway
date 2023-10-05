@@ -51,7 +51,7 @@ namespace HealthGateway.Database.Delegates
         DbResult<Note> AddNote(Note note, bool commit = true);
 
         /// <summary>
-        /// UpdateAsync the supplied note.
+        /// Update the supplied note.
         /// </summary>
         /// <param name="note">The note to be updated in the backend.</param>
         /// <param name="commit">if true the transaction is persisted immediately.</param>
@@ -59,7 +59,7 @@ namespace HealthGateway.Database.Delegates
         DbResult<Note> UpdateNote(Note note, bool commit = true);
 
         /// <summary>
-        /// UpdateAsync the list of suplied notes.
+        /// Update the list of suplied notes.
         /// </summary>
         /// <param name="notes">The notes to be updated in the backend.</param>
         /// <param name="commit">if true the transaction is persisted immediately.</param>

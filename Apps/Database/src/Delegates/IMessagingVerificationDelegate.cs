@@ -67,7 +67,7 @@ namespace HealthGateway.Database.Delegates
         IEnumerable<MessagingVerification> GetAllEmail();
 
         /// <summary>
-        /// ExpireAsync a MessagingVerification.
+        /// Expire a MessagingVerification.
         /// </summary>
         /// <param name="messageVerification">The message verification to expire.</param>
         /// <param name="markDeleted">Mark the verification as deleted.</param>

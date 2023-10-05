@@ -182,7 +182,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         }
 
         /// <summary>
-        /// Validates the UpdateAsync Accepted Terms of Service.
+        /// Validates the Update Accepted Terms of Service.
         /// </summary>
         /// <param name="readStatus"> the status to return from the mock db delegate on get user.</param>
         /// <param name="updatedStatus"> the status to return from the mock db delegate after the update.</param>
@@ -657,7 +657,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         }
 
         /// <summary>
-        /// CloseUserProfile - Happy Path (UpdateAsync Closed DateTime).
+        /// CloseUserProfile - Happy Path (Update Closed DateTime).
         /// </summary>
         [Fact]
         public void PreviouslyClosedUserProfile()
