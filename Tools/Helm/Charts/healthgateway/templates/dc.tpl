@@ -9,7 +9,7 @@
 {{- $protocol := ($context.protocol | default "tcp") -}}
 {{- $image := print $top.Values.defaultImageRepository "/" $top.Values.toolsNamespace "/" ($context.image.imageStreamName | default $context.name) -}}
 {{- $tag := $context.image.tag | default $top.Values.defaultImageTag | default "latest" -}}
-{{- $replicas := (kindIs "float64" $context.replicas) | ternary $context.replicas (default ($top.Values.scaling).dcReplicas | default 1) -}}
+{{- $replicas := (kindIs "float64" $context.replicas) | ternary $context.replicas (default ($top.Values.scaling).dcReplicas | required "dcReplicas required") -}}
 {{- $role := $context.role -}}
 apiVersion: apps.openshift.io/v1
 kind: DeploymentConfig
@@ -90,20 +90,28 @@ spec:
           livenessProbe:
             httpGet:
               path: {{ $context.livenessProbePath | default "/health" }}
-              port: {{ $port }}
+              port: {{ $context.livenessProbePort | default $port }}
               scheme: HTTP
-            timeoutSeconds: 5
-            periodSeconds: 10
-            failureThreshold: 5
+            timeoutSeconds: {{ $context.livenessProbeTimeout | default 5 }}
+            periodSeconds: {{ $context.livenessProbePeriod | default 10 }}
+            failureThreshold: {{ $context.livenessProbeFailureThreshold | default 5 }}
+          readinessProbe:
+            httpGet:
+              path: {{ $context.readinessProbePath | default "/health" }}
+              port: {{ $context.readinessProbePort | default $port }}
+              scheme: HTTP
+            timeoutSeconds: {{ $context.readinessProbeTimeout | default 10 }}
+            periodSeconds: {{ $context.readinessProbePeriod | default 15 }}
+            failureThreshold: {{ $context.readinessProbeFailureThreshold | default 5 }}
           startupProbe:
-            initialDelaySeconds: 15
-            timeoutSeconds: 5
-            periodSeconds: 10
-            failureThreshold: 5
             httpGet:
               path: {{ $context.startupProbePath | default "/health" }}
-              port: {{ $port }}
+              port: {{ $context.startupProbePort | default $port }}
               scheme: HTTP
+            initialDelaySeconds: {{ $context.startupProbeInitialDelay | default 15 }}
+            timeoutSeconds: {{ $context.startupProbeTimeout | default 5 }}
+            periodSeconds: {{ $context.startupProbePeriod | default 10 }}
+            failureThreshold: {{ $context.startupProbeFailureThreshold | default 5 }}
       dnsPolicy: ClusterFirst
       restartPolicy: Always
       terminationGracePeriodSeconds: 30
