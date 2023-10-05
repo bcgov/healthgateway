@@ -23,7 +23,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test.Constants
         /// <summary>
         /// Constants to use when action is update.
         /// </summary>
-        public const string UpdateAction = "Update";
+        public const string UpdateAction = "UpdateAsync";
 
         /// <summary>
         /// Constants to use when action is create.

@@ -103,7 +103,7 @@ namespace HealthGateway.GatewayApi.Services
                 if (lastEmailVerification is { Validated: false })
                 {
                     lastEmailVerification.VerificationAttempts++;
-                    this.messageVerificationDelegate.Update(lastEmailVerification);
+                    await this.messageVerificationDelegate.UpdateAsync(lastEmailVerification, ct: ct);
                 }
 
                 this.logger.LogDebug("Invalid email verification");
@@ -152,7 +152,7 @@ namespace HealthGateway.GatewayApi.Services
             }
 
             matchingVerification.Validated = true;
-            this.messageVerificationDelegate.Update(matchingVerification, !this.changeFeedEnabled);
+            await this.messageVerificationDelegate.UpdateAsync(matchingVerification, !this.changeFeedEnabled, ct);
             userProfile.Email = matchingVerification.Email!.To; // Gets the user email from the email sent.
             this.profileDelegate.Update(userProfile, !this.changeFeedEnabled);
 
@@ -161,7 +161,7 @@ namespace HealthGateway.GatewayApi.Services
                 await this.messageSender.SendAsync(new[] { new MessageEnvelope(new NotificationChannelVerifiedEvent(hdid, NotificationChannel.Email, matchingVerification.Email!.To)) }, ct);
             }
 
-            // Update the notification settings
+            // UpdateAsync the notification settings
             this.notificationSettingsService.QueueNotificationSettings(new NotificationSettingsRequest(userProfile, userProfile.Email, userProfile.SmsNumber));
 
             this.logger.LogDebug("Email validated");
@@ -204,7 +204,7 @@ namespace HealthGateway.GatewayApi.Services
             this.profileDelegate.Update(userProfile);
             userProfile.Email = null;
 
-            // Update the notification settings
+            // UpdateAsync the notification settings
             this.notificationSettingsService.QueueNotificationSettings(new NotificationSettingsRequest(userProfile, userProfile.Email, userProfile.SmsNumber));
 
             MessagingVerification? lastEmailVerification = this.messageVerificationDelegate.GetLastForUser(hdid, MessagingVerificationType.Email);
@@ -212,7 +212,7 @@ namespace HealthGateway.GatewayApi.Services
             {
                 this.logger.LogInformation("Expiring old email validation for user {Hdid}", hdid);
                 bool isDeleted = string.IsNullOrEmpty(emailAddress);
-                this.messageVerificationDelegate.Expire(lastEmailVerification, isDeleted);
+                await this.messageVerificationDelegate.ExpireAsync(lastEmailVerification, isDeleted, ct);
                 if (!isDeleted)
                 {
                     this.logger.LogInformation("Sending new email verification for user {Hdid}", hdid);

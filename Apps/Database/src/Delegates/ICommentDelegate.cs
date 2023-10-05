@@ -41,7 +41,7 @@ namespace HealthGateway.Database.Delegates
         DbResult<Comment> Add(Comment comment, bool commit = true);
 
         /// <summary>
-        /// Update the supplied note.
+        /// UpdateAsync the supplied note.
         /// </summary>
         /// <param name="comment">The comment to be updated in the database.</param>
         /// <param name="commit">if true the transaction is persisted immediately.</param>

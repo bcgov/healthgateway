@@ -225,7 +225,7 @@ namespace HealthGateway.Admin.Server.Services
             // Compare resource delegates with passed in delegate hdids to determine which resource delegates to remove
             IEnumerable<ResourceDelegate> resourceDelegatesToDelete = resourceDelegates.Where(r => delegateHdidList.All(a => a != r.ProfileHdid)).ToList();
 
-            // Update dependent, allow delegation and resource delegate in database
+            // UpdateAsync dependent, allow delegation and resource delegate in database
             if (this.changeFeedEnabled)
             {
                 await this.delegationDelegate.UpdateDelegationAsync(dependent, resourceDelegatesToDelete, agentAudit, false);

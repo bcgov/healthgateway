@@ -47,7 +47,7 @@ namespace HealthGateway.Database.Delegates
         DbResult<IEnumerable<Communication>> GetAll();
 
         /// <summary>
-        /// Update the given communication.
+        /// UpdateAsync the given communication.
         /// </summary>
         /// <param name="communication">The communication to be updated in the database.</param>
         /// <param name="commit">if true the transaction is persisted immediately.</param>

@@ -107,7 +107,7 @@ namespace HealthGateway.Database.Models
         public string? NumberOfAis { get; set; }
 
         /// <summary>
-        /// Gets or sets the Last Update from the Fed DB.
+        /// Gets or sets the Last UpdateAsync from the Fed DB.
         /// </summary>
         public DateTime LastUpdate { get; set; }
 

@@ -93,7 +93,7 @@ namespace HealthGateway.GatewayApi.Services
                 smsVerification.ExpireDate >= DateTime.UtcNow)
             {
                 smsVerification.Validated = true;
-                this.messageVerificationDelegate.Update(smsVerification, !this.changeFeedEnabled);
+                await this.messageVerificationDelegate.UpdateAsync(smsVerification, !this.changeFeedEnabled, ct);
                 userProfile.SmsNumber = smsVerification.SmsNumber; // Gets the user sms number from the message sent.
                 this.profileDelegate.Update(userProfile, !this.changeFeedEnabled);
                 if (this.changeFeedEnabled)
@@ -103,7 +103,7 @@ namespace HealthGateway.GatewayApi.Services
 
                 retVal.ResourcePayload = true;
 
-                // Update the notification settings
+                // UpdateAsync the notification settings
                 this.notificationSettingsService.QueueNotificationSettings(new NotificationSettingsRequest(userProfile, userProfile.Email, userProfile.SmsNumber));
             }
             else
@@ -112,7 +112,7 @@ namespace HealthGateway.GatewayApi.Services
                 if (smsVerification is { Validated: false })
                 {
                     smsVerification.VerificationAttempts++;
-                    this.messageVerificationDelegate.Update(smsVerification);
+                    await this.messageVerificationDelegate.UpdateAsync(smsVerification, ct: ct);
                 }
             }
 
@@ -163,7 +163,7 @@ namespace HealthGateway.GatewayApi.Services
             if (lastSmsVerification != null)
             {
                 this.logger.LogInformation("Expiring old sms validation for user {Hdid}", hdid);
-                this.messageVerificationDelegate.Expire(lastSmsVerification, isDeleted);
+                await this.messageVerificationDelegate.ExpireAsync(lastSmsVerification, isDeleted, ct);
             }
 
             NotificationSettingsRequest notificationRequest = new(userProfile, userProfile.Email, sanitizedSms);
@@ -174,7 +174,7 @@ namespace HealthGateway.GatewayApi.Services
                 notificationRequest.SmsVerificationCode = messagingVerification.SmsValidationCode;
             }
 
-            // Update the notification settings
+            // UpdateAsync the notification settings
             this.notificationSettingsService.QueueNotificationSettings(notificationRequest);
 
             this.logger.LogDebug("Finished updating user sms");

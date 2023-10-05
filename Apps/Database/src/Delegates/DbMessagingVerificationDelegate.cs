@@ -101,13 +101,13 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public void Update(MessagingVerification messageVerification, bool commit = true)
+        public async Task UpdateAsync(MessagingVerification messageVerification, bool commit = true, CancellationToken ct = default)
         {
             this.logger.LogTrace("Updating email message verification in DB...");
             this.dbContext.Update(messageVerification);
             if (commit)
             {
-                this.dbContext.SaveChanges();
+                await this.dbContext.SaveChangesAsync(ct);
             }
 
             this.logger.LogDebug("Finished updating email message verification {Id} in DB", messageVerification.Id);
@@ -134,11 +134,11 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public void Expire(MessagingVerification messageVerification, bool markDeleted)
+        public async Task ExpireAsync(MessagingVerification messageVerification, bool markDeleted, CancellationToken ct = default)
         {
             messageVerification.ExpireDate = DateTime.UtcNow;
             messageVerification.Deleted = markDeleted;
-            this.Update(messageVerification);
+            await this.UpdateAsync(messageVerification, ct: ct);
 
             this.logger.LogDebug("Finished Expiring messaging verification from DB");
         }

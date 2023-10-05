@@ -19,6 +19,7 @@ namespace HealthGateway.Database.Delegates
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using System.Linq;
+    using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Database.Constants;
@@ -49,16 +50,16 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public DbResult<UserProfile> InsertUserProfile(UserProfile profile, bool commit = true)
+        public async Task<DbResult<UserProfile>> InsertUserProfileAsync(UserProfile profile, bool commit = true, CancellationToken ct = default)
         {
             this.logger.LogTrace("Inserting user profile to DB...");
             DbResult<UserProfile> result = new();
-            this.dbContext.Add(profile);
+            await this.dbContext.AddAsync(profile, ct);
             try
             {
                 if (commit)
                 {
-                    this.dbContext.SaveChanges();
+                    await this.dbContext.SaveChangesAsync(ct);
                 }
 
                 result.Payload = profile;

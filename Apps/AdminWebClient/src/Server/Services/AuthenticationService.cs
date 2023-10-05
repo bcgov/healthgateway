@@ -148,7 +148,7 @@ namespace HealthGateway.Admin.Services
             }
             else
             {
-                // Update profile
+                // UpdateAsync profile
                 result.Payload.LastLoginDateTime = jwtAuthTime;
                 DbResult<AdminUserProfile> updateResult = this.profileDelegate.Update(result.Payload);
                 if (updateResult.Status == DbStatusCode.Error)

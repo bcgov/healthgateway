@@ -16,6 +16,7 @@
 namespace HealthGateway.GatewayApiTests.Services.Test.Mock
 {
     using System.Collections.Generic;
+    using System.Threading;
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
@@ -50,7 +51,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test.Mock
         /// <param name="commit">commit.</param>
         public UserProfileDelegateMock(UserProfile userProfile, DbResult<UserProfile> insertResult, bool commit = true)
         {
-            this.Setup(s => s.InsertUserProfile(It.Is<UserProfile>(x => x.HdId == userProfile.HdId), commit)).Returns(insertResult);
+            this.Setup(s => s.InsertUserProfileAsync(It.Is<UserProfile>(x => x.HdId == userProfile.HdId), commit, CancellationToken.None)).ReturnsAsync(insertResult);
         }
 
         /// <summary>

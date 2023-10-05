@@ -17,6 +17,7 @@ namespace HealthGateway.Database.Delegates
 {
     using System;
     using System.Collections.Generic;
+    using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Database.Constants;
@@ -33,8 +34,9 @@ namespace HealthGateway.Database.Delegates
         /// </summary>
         /// <param name="profile">The profile to create.</param>
         /// <param name="commit">if true the transaction is persisted immediately.</param>
+        /// <param name="ct">A cancellation token.</param>
         /// <returns>A DB result which encapsulates the return object and status.</returns>
-        DbResult<UserProfile> InsertUserProfile(UserProfile profile, bool commit = true);
+        Task<DbResult<UserProfile>> InsertUserProfileAsync(UserProfile profile, bool commit = true, CancellationToken ct = default);
 
         /// <summary>
         /// Updates select attributes of the UserProfile object in the DB.
