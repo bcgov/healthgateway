@@ -104,7 +104,7 @@ namespace HealthGateway.Admin.Client.Pages
 
         private bool CanViewMessagingVerifications => this.UserHasRole(Roles.Admin) || this.UserHasRole(Roles.Reviewer);
 
-        private bool CanViewDatasetAccess => this.UserHasRole(Roles.Admin) || this.UserHasRole(Roles.Reviewer);
+        private bool CanViewDatasetAccess => (this.UserHasRole(Roles.Admin) || this.UserHasRole(Roles.Reviewer)) && !string.IsNullOrWhiteSpace(this.Hdid);
 
         private bool CanEditDatasetAccess => this.UserHasRole(Roles.Admin);
 
