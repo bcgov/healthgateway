@@ -90,13 +90,18 @@ const recommendationFields: ReportField[] = [
         tdAlign: "start",
         thAlign: "start",
         thAttr: { "data-testid": "recommendationTitle" },
-        tdAttr: { "data-testid": "recommendationItem" },
+        tdAttr: {
+            "data-testid": "recommendationItem",
+        },
     },
     {
         key: "due_date",
         title: "Due Date",
         thAttr: { "data-testid": "recommendationDateTitle" },
-        tdAttr: { "data-testid": "recommendationDateItem" },
+        tdAttr: {
+            "data-testid": "recommendationDateItem",
+            style: "white-space: nowrap",
+        },
     },
 ];
 
@@ -210,7 +215,7 @@ immunizationStore
         </div>
         <section
             v-else-if="!isDependent || forceShow"
-            class="d-none d-md-block"
+            :class="forceShow ? '' : 'd-none d-md-block'"
         >
             <template v-if="!hideImmunizations">
                 <h4 class="text-h6 font-weight-bold mb-2">
@@ -294,7 +299,7 @@ immunizationStore
                 </p>
                 <HgDataTableComponent
                     v-if="!isRecommendationEmpty || isLoading"
-                    class="d-none d-md-block"
+                    :class="forceShow ? '' : 'd-none d-md-block'"
                     fixed-header
                     :loading="isLoading"
                     :items="recommendationItems"

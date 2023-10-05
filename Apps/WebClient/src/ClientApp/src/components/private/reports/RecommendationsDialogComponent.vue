@@ -17,6 +17,7 @@ import { ReportFilterBuilder } from "@/models/reportFilter";
 import { ReportFormatType, reportMimeTypeMap } from "@/models/reportRequest";
 import RequestResult from "@/models/requestResult";
 import { ILogger } from "@/services/interfaces";
+import { useAppStore } from "@/stores/app";
 import { useErrorStore } from "@/stores/error";
 import { useReportStore } from "@/stores/report";
 import EventTracker from "@/utility/eventTracker";
@@ -37,6 +38,7 @@ const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
 
 const reportStore = useReportStore();
 const errorStore = useErrorStore();
+const appStore = useAppStore();
 
 const messageModal = ref<InstanceType<typeof MessageModalComponent>>();
 const recommendationsReportComponent =
@@ -112,8 +114,16 @@ function showDialog() {
 
 <template>
     <div class="d-flex justify-content">
-        <v-dialog v-model="isVisible" max-width="1000px" persistent>
-            <v-card data-testid="recommendations-dialog">
+        <v-dialog
+            v-model="isVisible"
+            max-width="1000px"
+            :fullscreen="appStore.isMobile"
+            persistent
+        >
+            <v-card
+                data-testid="recommendations-dialog"
+                :class="{ 'mobile-padding': appStore.isMobile }"
+            >
                 <v-card-title class="px-0">
                     <v-toolbar
                         title="Vaccine Recommendations"
@@ -163,7 +173,10 @@ function showDialog() {
                         </template>
                     </ImmunizationReportComponent>
                 </v-card-text>
-                <v-card-actions class="pa-4 justify-end">
+                <v-card-actions
+                    class="pa-4 justify-end"
+                    :class="{ 'fixed-bottom-actions': appStore.isMobile }"
+                >
                     <HgButtonComponent
                         variant="secondary"
                         text="Close"
@@ -214,3 +227,19 @@ function showDialog() {
         />
     </div>
 </template>
+
+<style scoped lang="scss">
+.fixed-bottom-actions {
+    background-color: white;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 2;
+}
+
+.mobile-padding {
+    // height required to ensure that the last comment is not hidden by the add comment component
+    padding-bottom: 65px;
+}
+</style>
