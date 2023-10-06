@@ -53,6 +53,13 @@
     </PagerContent>
 </MudTable>
 
+@if (ContainsInvalidDoses)
+{
+    <MudAlert data-testid="invalid-dose-alert" Severity="Severity.Warning" Class="mt-4">
+        This record has invalid doses.
+    </MudAlert>
+}
+
 <div class="d-flex justify-end mt-4">
     <HgButton
         EndIcon="fas fa-paper-plane"

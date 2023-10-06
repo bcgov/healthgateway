@@ -21,7 +21,6 @@ namespace HealthGateway.Admin.Server.Delegates
     using System.Net;
     using System.Threading.Tasks;
     using AutoMapper;
-    using HealthGateway.AccountDataAccess.Patient;
     using HealthGateway.Admin.Common.Models.CovidSupport;
     using HealthGateway.Admin.Server.Api;
     using HealthGateway.Admin.Server.Models.Immunization;
@@ -62,14 +61,14 @@ namespace HealthGateway.Admin.Server.Delegates
         private static ActivitySource Source { get; } = new(nameof(RestImmunizationAdminDelegate));
 
         /// <inheritdoc/>
-        public async Task<VaccineDetails> GetVaccineDetailsWithRetries(PatientModel patient, string accessToken, bool refresh = false)
+        public async Task<VaccineDetails> GetVaccineDetailsWithRetries(string phn, string accessToken, bool refresh = false)
         {
             this.logger.LogDebug("Getting vaccine details with retries...");
             using Activity? activity = Source.StartActivity();
 
             CovidImmunizationsRequest request = new()
             {
-                PersonalHealthNumber = patient.Phn,
+                PersonalHealthNumber = phn,
                 IgnoreCache = refresh,
             };
 

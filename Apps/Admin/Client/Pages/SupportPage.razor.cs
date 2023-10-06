@@ -33,6 +33,7 @@ namespace HealthGateway.Admin.Client.Pages
     using Microsoft.AspNetCore.Components.Authorization;
     using Microsoft.AspNetCore.WebUtilities;
     using Microsoft.Extensions.Primitives;
+    using Microsoft.JSInterop;
     using MudBlazor;
 
     /// <summary>
@@ -57,6 +58,9 @@ namespace HealthGateway.Admin.Client.Pages
         [Inject]
         private AuthenticationStateProvider AuthenticationStateProvider { get; set; } = default!;
 
+        [Inject]
+        private IJSRuntime JsRuntime { get; set; } = default!;
+
         private List<PatientQueryType> QueryTypes => this.UserHasRole(Roles.Admin) || this.UserHasRole(Roles.Reviewer)
             ? new() { PatientQueryType.Phn, PatientQueryType.Email, PatientQueryType.Sms, PatientQueryType.Hdid, PatientQueryType.Dependent }
             : new() { PatientQueryType.Phn };
@@ -69,8 +73,12 @@ namespace HealthGateway.Admin.Client.Pages
 
             set
             {
-                this.Dispatcher.Dispatch(new PatientSupportActions.ResetStateAction());
-                this.QueryParameter = string.Empty;
+                if (!this.IsPreviousPagePatientDetails())
+                {
+                    this.Dispatcher.Dispatch(new PatientSupportActions.ResetStateAction());
+                    this.QueryParameter = string.Empty;
+                }
+
                 this.QueryType = value;
             }
         }
@@ -122,22 +130,8 @@ namespace HealthGateway.Admin.Client.Pages
         {
             await base.OnInitializedAsync();
             this.ResetPatientSupportState();
+            await this.RepopulateQuery();
             this.AuthenticationState = await this.AuthenticationStateProvider.GetAuthenticationStateAsync();
-
-            Uri uri = this.NavigationManager.ToAbsoluteUri(this.NavigationManager.Uri);
-            if (QueryHelpers.ParseQuery(uri.Query).TryGetValue(PatientQueryType.Hdid.ToString(), out StringValues hdid))
-            {
-                this.Dispatcher.Dispatch(
-                    new PatientSupportActions.LoadAction
-                    {
-                        QueryType = PatientQueryType.Hdid,
-                        QueryString = StringManipulator.StripWhitespace(hdid),
-                    });
-
-                this.QueryParameter = hdid!;
-                this.SelectedQueryType = PatientQueryType.Hdid;
-            }
-
             this.ActionSubscriber.SubscribeToAction<PatientSupportActions.LoadSuccessAction>(this, this.CheckForSingleResult);
         }
 
@@ -152,12 +146,34 @@ namespace HealthGateway.Admin.Client.Pages
             this.QueryParameter = string.Empty;
         }
 
-        private void ResetPatientSupportState()
+        private bool IsPreviousPagePatientDetails()
         {
             Uri uri = this.NavigationManager.ToAbsoluteUri(this.NavigationManager.Uri);
-            if (!QueryHelpers.ParseQuery(uri.Query).TryGetValue("details", out StringValues _))
+            return QueryHelpers.ParseQuery(uri.Query).TryGetValue("details", out StringValues _);
+        }
+
+        private void ResetPatientSupportState()
+        {
+            if (!this.IsPreviousPagePatientDetails())
             {
                 this.Dispatcher.Dispatch(new PatientSupportActions.ResetStateAction());
+            }
+        }
+
+        private async Task RepopulateQuery()
+        {
+            if (this.IsPreviousPagePatientDetails())
+            {
+                string queryTypeString = await this.JsRuntime.InvokeAsync<string>("sessionStorage.getItem", "supportQueryType");
+                string queryString = await this.JsRuntime.InvokeAsync<string>("sessionStorage.getItem", "supportQueryParameter");
+
+                if (Enum.TryParse(queryTypeString, out PatientQueryType queryType))
+                {
+                    this.SelectedQueryType = queryType;
+                }
+
+                this.QueryParameter = queryString;
+                this.StateHasChanged();
             }
         }
 
@@ -173,6 +189,9 @@ namespace HealthGateway.Admin.Client.Pages
                         QueryType = this.SelectedQueryType,
                         QueryString = StringManipulator.StripWhitespace(this.QueryParameter),
                     });
+
+                await this.JsRuntime.InvokeVoidAsync("sessionStorage.setItem", "supportQueryType", this.SelectedQueryType);
+                await this.JsRuntime.InvokeVoidAsync("sessionStorage.setItem", "supportQueryParameter", this.QueryParameter);
             }
         }
 
@@ -180,18 +199,18 @@ namespace HealthGateway.Admin.Client.Pages
         {
             if (action.Data.Count == 1)
             {
-                this.NavigateToPatientDetails(action.Data.Single().Hdid);
+                this.NavigateToPatientDetails(action.Data.Single().PersonalHealthNumber);
             }
         }
 
-        private void NavigateToPatientDetails(string hdid)
+        private void NavigateToPatientDetails(string phn)
         {
-            this.NavigationManager.NavigateTo($"patient-details?hdid={hdid}");
+            this.NavigationManager.NavigateTo($"patient-details?phn={phn}");
         }
 
         private void RowClickEvent(TableRowClickEventArgs<PatientRow> tableRowClickEventArgs)
         {
-            this.NavigateToPatientDetails(tableRowClickEventArgs.Item.Hdid);
+            this.NavigateToPatientDetails(tableRowClickEventArgs.Item.PersonalHealthNumber);
         }
 
         private sealed record PatientRow

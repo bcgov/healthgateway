@@ -17,11 +17,9 @@ namespace HealthGateway.Admin.Tests.Delegates
 {
     using System;
     using System.Collections.Generic;
-    using System.Globalization;
     using System.Linq;
     using System.Threading.Tasks;
     using AutoMapper;
-    using HealthGateway.AccountDataAccess.Patient;
     using HealthGateway.Admin.Common.Models.CovidSupport;
     using HealthGateway.Admin.Server.Api;
     using HealthGateway.Admin.Server.Delegates;
@@ -42,12 +40,10 @@ namespace HealthGateway.Admin.Tests.Delegates
     public class RestImmunizationAdminDelegateTests
     {
         private const string AccessToken = "access_token";
-        private const string Hdid = "DEV4FPEGCXG2NB5K2USBL52S66SC3GOUHWRP3GTXR2BTY5HEC4YA";
         private const string Phn = "9735361219";
         private const string Product = "Moderna mRNA-1273";
         private const string Lot = "300042698";
         private const string Location = "BC Canada";
-        private static readonly DateTime Birthdate = DateTime.Parse("2000-01-01", CultureInfo.InvariantCulture);
 
         private static readonly IMapper AutoMapper = MapperUtil.InitializeAutoMapper();
         private static readonly IConfiguration Configuration = GetIConfigurationRoot();
@@ -60,7 +56,6 @@ namespace HealthGateway.Admin.Tests.Delegates
         public async Task GetVaccineDetailsWithRetriesThrowsMaximumRetryAttemptsReached()
         {
             // Arrange
-            PatientModel patient = GeneratePatientModel(Phn, Hdid, Birthdate);
             VaccineStatusResult vaccineStatusResult = GenerateVaccineStatusResult();
             VaccineDoseResponse vaccineDoseResponse = GenerateVaccineDoseResponse();
             VaccineDetailsResponse vaccineDetailsResponse = GenerateVaccineDetailsResponse(vaccineStatusResult, vaccineDoseResponse);
@@ -81,7 +76,7 @@ namespace HealthGateway.Admin.Tests.Delegates
             // Act
             async Task Actual()
             {
-                await adminDelegate.GetVaccineDetailsWithRetries(patient, AccessToken);
+                await adminDelegate.GetVaccineDetailsWithRetries(Phn, AccessToken);
             }
 
             // Verify
@@ -97,7 +92,6 @@ namespace HealthGateway.Admin.Tests.Delegates
         public async Task ShouldGetVaccineDetailsWithRetries()
         {
             // Arrange
-            PatientModel patient = GeneratePatientModel(Phn, Hdid, Birthdate);
             string expectedStatus = "AllDosesReceived";
             VaccineStatusResult vaccineStatusResult = GenerateVaccineStatusResult(expectedStatus);
             VaccineDoseResponse vaccineDoseResponse = GenerateVaccineDoseResponse();
@@ -119,28 +113,13 @@ namespace HealthGateway.Admin.Tests.Delegates
             IImmunizationAdminDelegate adminDelegate = CreateImmunizationAdminDelegate(immunizationAdminApiMock);
 
             // Act
-            VaccineDetails actual = await adminDelegate.GetVaccineDetailsWithRetries(patient, AccessToken);
+            VaccineDetails actual = await adminDelegate.GetVaccineDetailsWithRetries(Phn, AccessToken);
 
             // Assert
             Assert.NotNull(actual.VaccineStatusResult);
             Assert.True(expectedBlocked);
             Assert.True(actual.ContainsInvalidDoses);
             Assert.Equal(actual.VaccineStatusResult?.StatusIndicator, expectedStatus);
-        }
-
-        private static PatientModel GeneratePatientModel(
-            string phn,
-            string hdid,
-            DateTime birthdate,
-            bool isDeceased = false)
-        {
-            return new()
-            {
-                Phn = phn,
-                Hdid = hdid,
-                Birthdate = birthdate,
-                IsDeceased = isDeceased,
-            };
         }
 
         private static VaccineDetailsResponse GenerateVaccineDetailsResponse(

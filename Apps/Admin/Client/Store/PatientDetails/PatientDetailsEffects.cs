@@ -22,6 +22,7 @@ namespace HealthGateway.Admin.Client.Store.PatientDetails
     using Fluxor;
     using HealthGateway.Admin.Client.Api;
     using HealthGateway.Admin.Client.Utils;
+    using HealthGateway.Admin.Common.Constants;
     using HealthGateway.Admin.Common.Models;
     using Microsoft.Extensions.Logging;
     using Refit;
@@ -46,7 +47,7 @@ namespace HealthGateway.Admin.Client.Store.PatientDetails
 
             try
             {
-                PatientSupportDetails response = await this.SupportApi.GetPatientSupportDetailsAsync(action.Hdid).ConfigureAwait(true);
+                PatientSupportDetails response = await this.SupportApi.GetPatientSupportDetailsAsync(action.QueryType, action.QueryString).ConfigureAwait(true);
                 this.Logger.LogInformation("Patient details loaded successfully!");
                 dispatcher.Dispatch(new PatientDetailsActions.LoadSuccessAction { Data = response });
             }
@@ -81,7 +82,7 @@ namespace HealthGateway.Admin.Client.Store.PatientDetails
         public Task HandleBlockSuccessAction(PatientDetailsActions.BlockAccessSuccessAction action, IDispatcher dispatcher)
         {
             this.Logger.LogInformation("Reload the patient's data for details page");
-            dispatcher.Dispatch(new PatientDetailsActions.LoadAction { Hdid = action.Hdid });
+            dispatcher.Dispatch(new PatientDetailsActions.LoadAction { QueryType = ClientRegistryType.Hdid, QueryString = action.Hdid });
             return Task.CompletedTask;
         }
 
@@ -92,7 +93,7 @@ namespace HealthGateway.Admin.Client.Store.PatientDetails
             try
             {
                 await this.SupportApi.SubmitCovidAssessment(action.Request).ConfigureAwait(true);
-                dispatcher.Dispatch(new PatientDetailsActions.SubmitCovid19TreatmentAssessmentSuccessAction { Hdid = action.Hdid });
+                dispatcher.Dispatch(new PatientDetailsActions.SubmitCovid19TreatmentAssessmentSuccessAction { Phn = action.Phn });
             }
             catch (Exception e) when (e is ApiException or HttpRequestException)
             {
@@ -106,7 +107,7 @@ namespace HealthGateway.Admin.Client.Store.PatientDetails
         public Task HandleSubmitCovid19TreatmentAssessmentSuccessAction(PatientDetailsActions.SubmitCovid19TreatmentAssessmentSuccessAction action, IDispatcher dispatcher)
         {
             this.Logger.LogInformation("Reload the patient's data for details page");
-            dispatcher.Dispatch(new PatientDetailsActions.LoadAction { Hdid = action.Hdid });
+            dispatcher.Dispatch(new PatientDetailsActions.LoadAction { QueryType = ClientRegistryType.Phn, QueryString = action.Phn });
             return Task.CompletedTask;
         }
     }

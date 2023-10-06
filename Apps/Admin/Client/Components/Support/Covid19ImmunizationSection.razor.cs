@@ -48,7 +48,7 @@ namespace HealthGateway.Admin.Client.Components.Support
         /// </summary>
         [Parameter]
         [EditorRequired]
-        public IEnumerable<VaccineDose> Data { get; set; } = Enumerable.Empty<VaccineDose>();
+        public VaccineDetails? Data { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether data is loading.
@@ -82,11 +82,13 @@ namespace HealthGateway.Admin.Client.Components.Support
         [Inject]
         private IState<VaccineCardState> VaccineCardState { get; set; } = default!;
 
+        private bool ContainsInvalidDoses => this.Data?.ContainsInvalidDoses ?? false;
+
         private bool MailVaccineCardIsLoading => this.VaccineCardState.Value.MailVaccineCard.IsLoading;
 
         private bool PrintVaccineCardIsLoading => this.VaccineCardState.Value.PrintVaccineCard.IsLoading;
 
-        private IEnumerable<VaccineDoseRow> Rows => this.Data.Select(d => new VaccineDoseRow(d));
+        private IEnumerable<VaccineDoseRow> Rows => this.Data?.Doses.Select(d => new VaccineDoseRow(d)) ?? Enumerable.Empty<VaccineDoseRow>();
 
         private ReportModel? VaccineCardStateData => this.VaccineCardState.Value.PrintVaccineCard.Result;
 

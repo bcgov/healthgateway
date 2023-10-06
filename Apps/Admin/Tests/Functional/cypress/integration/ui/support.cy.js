@@ -1,5 +1,7 @@
 import {
+    formatPhn,
     performSearch,
+    verifySearchInput,
     verifySingleSupportResult,
     verifySupportTableResults,
 } from "../../utilities/supportUtilities";
@@ -92,15 +94,20 @@ describe("Support", () => {
     it("Verify support queries", () => {
         performSearch("PHN", phn);
         verifySingleSupportResult(hdid, phn);
+        const formattedPhn = formatPhn(phn);
+        verifySearchInput("Phn", formattedPhn);
 
         performSearch("HDID", hdid);
         verifySingleSupportResult(hdid, phn);
+        verifySearchInput("Hdid", hdid);
 
         performSearch("SMS", sms);
         verifySupportTableResults(hdid, phn, 2);
+        verifySearchInput("Sms", sms);
 
         performSearch("Email", email);
         verifySingleSupportResult(emailHdid, emailPhn);
+        verifySearchInput("Email", email);
     });
 
     it("Verify support query warnings", () => {
@@ -108,7 +115,7 @@ describe("Support", () => {
         cy.get("[data-testid=user-banner-feedback-warning-message]").should(
             "be.visible"
         );
-        verifySingleSupportResult("", phnDuplicate);
+        verifySingleSupportResult("", phnDuplicate, "PHN", phnDuplicate);
         cy.get("[data-testid=user-banner-feedback-warning-message]").within(
             () => {
                 cy.get("button").parent(".mud-alert-close").click();
