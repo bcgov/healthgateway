@@ -251,6 +251,7 @@ namespace HealthGateway.Common.Delegates
             return retVal;
         }
 
+        // ReSharper disable once CognitiveComplexity
         private async Task<RequestResult<T>> PostAsync<T>(string endpointString, StringContent httpContent)
             where T : class
         {

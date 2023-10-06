@@ -35,26 +35,7 @@ namespace HealthGateway.Common.Utils
         /// <inheritdoc/>
         public override T Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
-            Utf8JsonReader clonedReader = reader;
-            Type? actualType = null;
-            while (clonedReader.Read())
-            {
-                if (clonedReader.TokenType == JsonTokenType.PropertyName && this.Discriminator.Equals(clonedReader.GetString(), StringComparison.OrdinalIgnoreCase))
-                {
-                    clonedReader.Read();
-                    string? typeValue = clonedReader.GetString();
-                    if (string.IsNullOrEmpty(typeValue))
-                    {
-                        continue;
-                    }
-
-                    actualType = this.ResolveType(typeValue);
-                    if (actualType != null && this.CanConvert(typeToConvert, actualType))
-                    {
-                        break;
-                    }
-                }
-            }
+            Type? actualType = this.FindType(typeToConvert, ref reader);
 
             if (actualType == null)
             {
@@ -94,9 +75,11 @@ namespace HealthGateway.Common.Utils
         /// </summary>
         /// <param name="discriminatorValue">The discovered discriminator value.</param>
         /// <returns>Type to use for deserialization, null if type not found.</returns>
-        protected virtual Type? ResolveType(string discriminatorValue)
+        protected virtual Type? ResolveType(string? discriminatorValue)
         {
-            return Type.GetType(discriminatorValue);
+            return string.IsNullOrEmpty(discriminatorValue)
+                ? null
+                : Type.GetType(discriminatorValue);
         }
 
         /// <summary>
@@ -107,6 +90,25 @@ namespace HealthGateway.Common.Utils
         protected virtual string ResolveDiscriminatorValue(T value)
         {
             return value!.GetType().AssemblyQualifiedName!;
+        }
+
+        private Type? FindType(Type typeToConvert, ref Utf8JsonReader reader)
+        {
+            Utf8JsonReader clonedReader = reader;
+            while (clonedReader.Read())
+            {
+                if (clonedReader.TokenType == JsonTokenType.PropertyName && this.Discriminator.Equals(clonedReader.GetString(), StringComparison.OrdinalIgnoreCase))
+                {
+                    clonedReader.Read();
+                    Type? actualType = this.ResolveType(clonedReader.GetString());
+                    if (actualType != null && this.CanConvert(typeToConvert, actualType))
+                    {
+                        return actualType;
+                    }
+                }
+            }
+
+            return null;
         }
     }
 }

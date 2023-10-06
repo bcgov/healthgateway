@@ -220,7 +220,7 @@ namespace HealthGateway.Patient.Services
             return value.Type;
         }
 
-        protected override Type? ResolveType(string discriminatorValue)
+        protected override Type? ResolveType(string? discriminatorValue)
         {
             return discriminatorValue switch
             {

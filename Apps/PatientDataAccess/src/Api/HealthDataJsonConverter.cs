@@ -24,7 +24,7 @@ namespace HealthGateway.PatientDataAccess.Api
     {
         protected override string Discriminator => "healthDataType";
 
-        protected override Type? ResolveType(string discriminatorValue)
+        protected override Type? ResolveType(string? discriminatorValue)
         {
             return discriminatorValue switch
             {
