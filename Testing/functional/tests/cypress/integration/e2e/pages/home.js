@@ -144,3 +144,41 @@ describe("Home page - Recommendations", () => {
         cy.get("[data-testid=recommendations-dialog]").should("not.exist");
     });
 });
+
+describe("MOBILE - Home page - Recommendations", () => {
+    beforeEach(() => {
+        cy.configureSettings({
+            homepage: {
+                showRecommendationsLink: true,
+            },
+            datasets: [
+                {
+                    name: "immunization",
+                    enabled: true,
+                },
+            ],
+        });
+        cy.viewport("iphone-6");
+
+        cy.login(
+            Cypress.env("keycloak.hthgtwy20.username"),
+            Cypress.env("keycloak.password"),
+            AuthMethod.KeyCloak,
+            homeUrl
+        );
+    });
+
+    it("Mobile - Link should open recommendations dialog with content", () => {
+        cy.get("[data-testid=recommendations-card-button]").click();
+        cy.get("[data-testid=recommendations-dialog]")
+            .should("be.visible")
+            .within(() => {
+                cy.get("[data-testid=recommendation-history-report-table]");
+                cy.get("tbody tr").should("have.length.least", 1);
+                cy.get(
+                    "[data-testid=close-recommendations-dialog-button]"
+                ).click();
+            });
+        cy.get("[data-testid=recommendations-dialog]").should("not.exist");
+    });
+});
