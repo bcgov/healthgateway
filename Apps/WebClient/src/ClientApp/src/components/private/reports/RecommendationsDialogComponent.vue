@@ -239,7 +239,7 @@ function showDialog() {
 }
 
 .mobile-padding {
-    // height required to ensure that the last comment is not hidden by the add comment component
+    // Padding is required to ensure that all dialog content is visible and not hidden by the fixed actions
     padding-bottom: 65px;
 }
 </style>
