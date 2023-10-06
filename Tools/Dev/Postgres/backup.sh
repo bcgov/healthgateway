@@ -1,11 +1,8 @@
 #!/bin/sh
 now="$(date +'%Y%m%d_%H_%M_%S')"
-filename="gateway_$now".gz
+filename="gateway_${now}"
 backupfolder="backups"
 fullpathbackupfile="$backupfolder/$filename"
-logfile="$backupfolder/"backup_log_"$(date +'%Y_%m')".txt
 echo "pg_dump started at $(date +'%d-%m-%Y %H:%M:%S')s" 
-docker exec gatewaydb pg_dump --username=gateway --dbname=gateway --format=c --file=$fullpathbackupfile --blobs 
+docker exec gatewaydb pg_dump -Fd -v -U hglocal -j 9 -f ${fullpathbackupfile}
 echo "pg_dump finished at $(date +'%d-%m-%Y %H:%M:%S')" 
-echo "operation finished at $(date +'%d-%m-%Y %H:%M:%S')"
-echo "*****************" 
