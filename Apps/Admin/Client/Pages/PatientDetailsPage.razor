@@ -82,6 +82,7 @@
             <HgField Label="Mailing Address" Value="@AddressUtility.GetAddressAsSingleLine(Patient.PostalAddress)" data-testid="patient-mailing-address" />
         </MudItem>
     </MudGrid>
+
     @if (Patient.Status == PatientStatus.Default)
     {
         if (CanViewAccountDetails)
@@ -133,7 +134,7 @@
 
     if (ImmunizationsAreBlocked)
     {
-        <MudAlert data-testid="blocked-immunization-alert" Severity="Severity.Error" Dense="true" Outlined="true" Class="alert-background-color">
+        <MudAlert data-testid="blocked-immunization-alert" Severity="Severity.Error" Dense="true" Outlined="true" Class="alert-background-color mt-4">
             Unable to retrieve vaccine records for this individual.
         </MudAlert>
     }
