@@ -20,6 +20,7 @@ namespace HealthGateway.GatewayApi.Services
     using System.Diagnostics.CodeAnalysis;
     using System.Globalization;
     using System.Linq;
+    using System.Threading;
     using System.Threading.Tasks;
     using AutoMapper;
     using FluentValidation.Results;
@@ -34,7 +35,9 @@ namespace HealthGateway.GatewayApi.Services
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Factories;
+    using HealthGateway.Common.Messaging;
     using HealthGateway.Common.Models;
+    using HealthGateway.Common.Models.Events;
     using HealthGateway.Common.Services;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
@@ -73,6 +76,8 @@ namespace HealthGateway.GatewayApi.Services
         private readonly int userProfileHistoryRecordLimit;
         private readonly IUserSmsService userSmsService;
         private readonly IPatientRepository patientRepository;
+        private readonly bool changeFeedEnabled;
+        private readonly IMessageSender messageSender;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UserProfileService"/> class.
@@ -95,6 +100,7 @@ namespace HealthGateway.GatewayApi.Services
         /// <param name="applicationSettingsDelegate">The injected Application Settings delegate.</param>
         /// <param name="cacheProvider">The injected cache provider.</param>
         /// <param name="patientRepository">The injected patient repository.</param>
+        /// <param name="messageSender">The message sender.</param>
         public UserProfileService(
             ILogger<UserProfileService> logger,
             IPatientService patientService,
@@ -113,7 +119,8 @@ namespace HealthGateway.GatewayApi.Services
             IAuthenticationDelegate authenticationDelegate,
             IApplicationSettingsDelegate applicationSettingsDelegate,
             ICacheProvider cacheProvider,
-            IPatientRepository patientRepository)
+            IPatientRepository patientRepository,
+            IMessageSender messageSender)
         {
             this.logger = logger;
             this.patientService = patientService;
@@ -135,6 +142,9 @@ namespace HealthGateway.GatewayApi.Services
             this.applicationSettingsDelegate = applicationSettingsDelegate;
             this.cacheProvider = cacheProvider;
             this.patientRepository = patientRepository;
+            this.messageSender = messageSender;
+            this.changeFeedEnabled = configuration.GetSection(ChangeFeedConfiguration.ConfigurationSectionKey)
+                .GetValue($"{ChangeFeedConfiguration.AccountsKey}:Enabled", false);
         }
 
         /// <inheritdoc/>
@@ -214,7 +224,7 @@ namespace HealthGateway.GatewayApi.Services
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResult<UserProfileModel>> CreateUserProfile(CreateUserRequest createProfileRequest, DateTime jwtAuthTime, string? jwtEmailAddress)
+        public async Task<RequestResult<UserProfileModel>> CreateUserProfile(CreateUserRequest createProfileRequest, DateTime jwtAuthTime, string? jwtEmailAddress, CancellationToken ct = default)
         {
             this.logger.LogTrace("Creating user profile... {Hdid}", createProfileRequest.Profile.HdId);
 
@@ -244,7 +254,17 @@ namespace HealthGateway.GatewayApi.Services
                 YearOfBirth = birthDate?.Year.ToString(CultureInfo.InvariantCulture),
                 LastLoginClientCode = this.authenticationDelegate.FetchAuthenticatedUserClientType(),
             };
-            DbResult<UserProfile> insertResult = this.userProfileDelegate.InsertUserProfile(newProfile);
+            DbResult<UserProfile> insertResult = await this.userProfileDelegate.InsertUserProfileAsync(newProfile, !this.changeFeedEnabled, ct);
+
+            if (this.changeFeedEnabled)
+            {
+                await this.messageSender.SendAsync(
+                    new[]
+                    {
+                        new MessageEnvelope(new AccountCreatedEvent(hdid, DateTime.UtcNow), hdid),
+                    },
+                    ct);
+            }
 
             if (insertResult.Status != DbStatusCode.Created)
             {
@@ -264,15 +284,19 @@ namespace HealthGateway.GatewayApi.Services
             if (!string.IsNullOrWhiteSpace(requestedEmail))
             {
                 bool isEmailVerified = requestedEmail.Equals(jwtEmailAddress, StringComparison.OrdinalIgnoreCase);
-                this.userEmailService.CreateUserEmail(hdid, requestedEmail, isEmailVerified);
+                await this.userEmailService.CreateUserEmailAsync(hdid, requestedEmail, isEmailVerified, !this.changeFeedEnabled, ct);
                 userProfileModel.Email = requestedEmail;
                 userProfileModel.IsEmailVerified = isEmailVerified;
+                if (isEmailVerified)
+                {
+                    await this.messageSender.SendAsync(new[] { new MessageEnvelope(new NotificationChannelVerifiedEvent(hdid, NotificationChannel.Email, requestedEmail)) }, ct);
+                }
             }
 
             // Add SMS verification
             if (!string.IsNullOrWhiteSpace(requestedSmsNumber))
             {
-                MessagingVerification smsVerification = this.userSmsService.CreateUserSms(hdid, requestedSmsNumber);
+                MessagingVerification smsVerification = await this.userSmsService.CreateUserSmsAsync(hdid, requestedSmsNumber, ct);
                 notificationRequest.SmsVerificationCode = smsVerification.SmsValidationCode;
                 userProfileModel.SmsNumber = requestedSmsNumber;
             }

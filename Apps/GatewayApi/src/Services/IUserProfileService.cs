@@ -17,6 +17,7 @@ namespace HealthGateway.GatewayApi.Services
 {
     using System;
     using System.Collections.Generic;
+    using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.GatewayApi.Models;
@@ -40,8 +41,9 @@ namespace HealthGateway.GatewayApi.Services
         /// <param name="createProfileRequest">The request to create a user profile model.</param>
         /// <param name="jwtAuthTime">The date of last jwt authorization time.</param>
         /// <param name="jwtEmailAddress">The email address contained by the jwt.</param>
+        /// <param name="ct">A cancellation token.</param>
         /// <returns>The wrapped user profile.</returns>
-        Task<RequestResult<UserProfileModel>> CreateUserProfile(CreateUserRequest createProfileRequest, DateTime jwtAuthTime, string? jwtEmailAddress);
+        Task<RequestResult<UserProfileModel>> CreateUserProfile(CreateUserRequest createProfileRequest, DateTime jwtAuthTime, string? jwtEmailAddress, CancellationToken ct = default);
 
         /// <summary>
         /// Closed the user profile.

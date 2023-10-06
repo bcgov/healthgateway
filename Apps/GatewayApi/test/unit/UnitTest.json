@@ -31,5 +31,16 @@
     },
     "ServiceEndpoints": {
         "Service": "https://localhost/service"
+    },
+    "ChangeFeed": {
+        "Dependents": {
+            "Enabled": true
+        },
+        "Accounts": {
+            "Enabled": true
+        },
+        "NotificationChannelVerified": {
+            "Enabled": true
+        }
     }
 }
