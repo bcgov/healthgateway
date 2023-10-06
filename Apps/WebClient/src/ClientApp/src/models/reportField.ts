@@ -4,6 +4,6 @@ export default interface ReportField {
     thAlign?: "start" | "end" | "center";
     tdAlign?: "start" | "end" | "center";
     width?: number | string;
-    thAttr?: { "data-testid": string; class?: string };
-    tdAttr?: { "data-testid": string; class?: string };
+    thAttr?: { "data-testid": string; class?: string; style?: string };
+    tdAttr?: { "data-testid": string; class?: string; style?: string };
 }
