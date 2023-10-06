@@ -231,20 +231,18 @@ namespace HealthGateway.Admin.Server.Services
         private async Task<PatientSupportResult?> GetPatientSupportResultAsync(PatientIdentifierType identifierType, string identifier, CancellationToken ct)
         {
             PatientModel? patient = await this.GetPatientAsync(identifierType, identifier, ct).ConfigureAwait(true);
-            if (patient == null)
-            {
-                return null;
-            }
 
-            string? hdid = identifierType == PatientIdentifierType.Hdid ? identifier : patient.Hdid;
+            string? hdid = identifierType == PatientIdentifierType.Hdid ? identifier : patient?.Hdid;
             UserProfile? profile = await this.userProfileDelegate.GetUserProfileAsync(hdid).ConfigureAwait(true);
 
-            if (profile == null)
+            switch (patient)
             {
-                return null;
+                case null when profile == null:
+                case null:
+                    return null;
+                default:
+                    return this.MapToPatientSupportResult(patient, profile);
             }
-
-            return this.MapToPatientSupportResult(patient, profile);
         }
 
         private async Task<PatientSupportResult> GetPatientSupportResultAsync(UserProfile profile, CancellationToken ct)
