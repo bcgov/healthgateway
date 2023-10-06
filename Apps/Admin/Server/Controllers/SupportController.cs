@@ -86,6 +86,10 @@ namespace HealthGateway.Admin.Server.Controllers
         /// </summary>
         /// <param name="queryType">The type of query to be performed when searching for patient support details.</param>
         /// <param name="queryString">The string value associated with the query type when searching for patient support details.</param>
+        /// <param name="refreshVaccineDetails">
+        /// Whether the call should force cached vaccine validation details data to be
+        /// refreshed.
+        /// </param>
         /// <param name="ct">A cancellation token.</param>
         /// <returns>Patient support details matching the query.</returns>
         /// <response code="200">Returns the patient support details matching the query.</response>
@@ -96,13 +100,25 @@ namespace HealthGateway.Admin.Server.Controllers
         /// </response>
         [HttpGet]
         [Route("PatientSupportDetails")]
-        public async Task<PatientSupportDetails> GetPatientSupportDetails([FromQuery] ClientRegistryType queryType, [FromQuery] string queryString, CancellationToken ct)
+        public async Task<PatientSupportDetails> GetPatientSupportDetails(
+            [FromQuery] ClientRegistryType queryType,
+            [FromQuery] string queryString,
+            [FromQuery] bool refreshVaccineDetails,
+            CancellationToken ct)
         {
             ClaimsPrincipal user = this.HttpContext.User;
             bool includeEverything = user.IsInRole("AdminUser") || user.IsInRole("AdminReviewer");
             bool includeCovidDetails = user.IsInRole("SupportUser");
 
-            return await this.supportService.GetPatientSupportDetailsAsync(queryType, queryString, includeEverything, includeEverything, includeEverything, includeCovidDetails, ct)
+            return await this.supportService.GetPatientSupportDetailsAsync(
+                    queryType,
+                    queryString,
+                    includeEverything,
+                    includeEverything,
+                    includeEverything,
+                    includeCovidDetails,
+                    refreshVaccineDetails,
+                    ct)
                 .ConfigureAwait(true);
         }
 

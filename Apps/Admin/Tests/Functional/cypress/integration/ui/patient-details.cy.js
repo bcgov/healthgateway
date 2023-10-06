@@ -8,8 +8,9 @@ const hdidPatientDeceased =
     "MPOLGP66AV4PPDB6ZMYEWQ63WKRYPM4EPDW5MSXA2LA65EQOEMCQ";
 const hdidPatientNotUser =
     "C54JQKXANHJK7TIYBRCHJBOKXOIXASNQE76WSRCTOPKOXRMI5OAA";
+const phn = "9735353315";
 
-describe("Patient details", () => {
+describe("Patient details as admin", () => {
     beforeEach(() => {
         // HDID with results
         cy.intercept(
@@ -150,5 +151,58 @@ describe("Patient details", () => {
         cy.get("[data-testid=user-banner-feedback-status-warning-message]")
             .should("be.visible")
             .contains("Patient is not a user");
+    });
+});
+
+describe("Patient details as support", () => {
+    beforeEach(() => {
+        cy.intercept(
+            "GET",
+            `**/Support/Users?queryString=${phn}&queryType=Phn`,
+            {
+                fixture: "SupportService/users-phn.json",
+            }
+        );
+
+        // Patient Details with one dose
+        cy.intercept(
+            "GET",
+            `**/Support/PatientSupportDetails?queryString=${phn}&queryType=Phn&refreshVaccineDetails=False`,
+            {
+                fixture: "SupportService/patient-details-one-dose.json",
+            }
+        );
+
+        // Patient Details with vaccine details with multiple doses
+        cy.intercept(
+            "GET",
+            `**/Support/PatientSupportDetails?queryString=${phn}&queryType=Phn&refreshVaccineDetails=True`,
+            {
+                fixture: "SupportService/patient-details.json",
+            }
+        );
+
+        cy.login(
+            Cypress.env("keycloak_support_username"),
+            Cypress.env("keycloak_password"),
+            "/support"
+        );
+    });
+
+    it("Verify patient details with phn and refresh", () => {
+        performSearch("PHN", phn);
+        cy.get("[data-testid=patient-phn]").should("be.visible").contains(phn);
+
+        getTableRows("[data-testid=immunization-table]").should(
+            "have.length",
+            1
+        );
+
+        cy.get("[data-testid=refresh-button]").click();
+
+        getTableRows("[data-testid=immunization-table]").should(
+            "have.length",
+            5
+        );
     });
 });

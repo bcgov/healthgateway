@@ -112,6 +112,7 @@ namespace HealthGateway.Admin.Server.Services
             bool includeBlockedDataSources,
             bool includeAgentActions,
             bool includeCovidDetails,
+            bool refreshVaccineDetails,
             CancellationToken ct = default)
         {
             IEnumerable<MessagingVerificationModel>? messagingVerifications = null;
@@ -161,7 +162,7 @@ namespace HealthGateway.Admin.Server.Services
 
             if (includeCovidDetails)
             {
-                vaccineDetails = await this.GetVaccineDetails(patient).ConfigureAwait(true);
+                vaccineDetails = await this.GetVaccineDetails(patient, refreshVaccineDetails).ConfigureAwait(true);
                 covidAssessmentDetails = await this.immunizationAdminApi.GetCovidAssessmentDetails(new() { Phn = patient.Phn }, this.GetAccessToken()).ConfigureAwait(true);
             }
 
@@ -288,11 +289,11 @@ namespace HealthGateway.Admin.Server.Services
             return patient;
         }
 
-        private async Task<VaccineDetails> GetVaccineDetails(PatientModel patient)
+        private async Task<VaccineDetails> GetVaccineDetails(PatientModel patient, bool refresh)
         {
             if (!string.IsNullOrEmpty(patient.Phn) && patient.Birthdate != DateTime.MinValue)
             {
-                return await this.immunizationAdminDelegate.GetVaccineDetailsWithRetries(patient.Phn, this.GetAccessToken()).ConfigureAwait(true);
+                return await this.immunizationAdminDelegate.GetVaccineDetailsWithRetries(patient.Phn, this.GetAccessToken(), refresh).ConfigureAwait(true);
             }
 
             this.logger.LogError("Patient PHN {PersonalHealthNumber} or DOB {Birthdate}) are invalid", patient.Phn, patient.Birthdate);

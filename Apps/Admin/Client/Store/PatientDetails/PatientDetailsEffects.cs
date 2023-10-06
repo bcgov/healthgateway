@@ -47,7 +47,7 @@ namespace HealthGateway.Admin.Client.Store.PatientDetails
 
             try
             {
-                PatientSupportDetails response = await this.SupportApi.GetPatientSupportDetailsAsync(action.QueryType, action.QueryString).ConfigureAwait(true);
+                PatientSupportDetails response = await this.SupportApi.GetPatientSupportDetailsAsync(action.QueryType, action.QueryString, action.RefreshVaccineDetails).ConfigureAwait(true);
                 this.Logger.LogInformation("Patient details loaded successfully!");
                 dispatcher.Dispatch(new PatientDetailsActions.LoadSuccessAction { Data = response });
             }
@@ -82,7 +82,13 @@ namespace HealthGateway.Admin.Client.Store.PatientDetails
         public Task HandleBlockSuccessAction(PatientDetailsActions.BlockAccessSuccessAction action, IDispatcher dispatcher)
         {
             this.Logger.LogInformation("Reload the patient's data for details page");
-            dispatcher.Dispatch(new PatientDetailsActions.LoadAction { QueryType = ClientRegistryType.Hdid, QueryString = action.Hdid });
+            dispatcher.Dispatch(
+                new PatientDetailsActions.LoadAction
+                {
+                    QueryType = ClientRegistryType.Hdid,
+                    QueryString = action.Hdid,
+                    RefreshVaccineDetails = false,
+                });
             return Task.CompletedTask;
         }
 
@@ -107,7 +113,13 @@ namespace HealthGateway.Admin.Client.Store.PatientDetails
         public Task HandleSubmitCovid19TreatmentAssessmentSuccessAction(PatientDetailsActions.SubmitCovid19TreatmentAssessmentSuccessAction action, IDispatcher dispatcher)
         {
             this.Logger.LogInformation("Reload the patient's data for details page");
-            dispatcher.Dispatch(new PatientDetailsActions.LoadAction { QueryType = ClientRegistryType.Phn, QueryString = action.Phn });
+            dispatcher.Dispatch(
+                new PatientDetailsActions.LoadAction
+                {
+                    QueryType = ClientRegistryType.Phn,
+                    QueryString = action.Phn,
+                    RefreshVaccineDetails = false,
+                });
             return Task.CompletedTask;
         }
     }

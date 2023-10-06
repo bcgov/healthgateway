@@ -38,6 +38,10 @@ namespace HealthGateway.Admin.Server.Services
         /// <param name="includeBlockedDataSources">A value indicating whether blocked data sources should be returned.</param>
         /// <param name="includeAgentActions">A value indicating whether agent actions should be returned.</param>
         /// <param name="includeCovidDetails">A value indicating whether covid details should be returned.</param>
+        /// <param name="refreshVaccineDetails">
+        /// Whether the call should force cached vaccine validation details data to be
+        /// refreshed.
+        /// </param>
         /// <param name="ct">A cancellation token.</param>
         /// <returns>A patient support details matching the query.</returns>
         Task<PatientSupportDetails> GetPatientSupportDetailsAsync(
@@ -47,6 +51,7 @@ namespace HealthGateway.Admin.Server.Services
             bool includeBlockedDataSources,
             bool includeAgentActions,
             bool includeCovidDetails,
+            bool refreshVaccineDetails,
             CancellationToken ct = default);
 
         /// <summary>
