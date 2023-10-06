@@ -21,6 +21,7 @@ interface Props {
     hdid: string;
     filter: ReportFilter;
     isDependent?: boolean;
+    template?: TemplateType;
     hideImmunizations?: boolean;
     hideRecommendations?: boolean;
     hideRecommendationHeader?: boolean;
@@ -28,6 +29,7 @@ interface Props {
 }
 const props = withDefaults(defineProps<Props>(), {
     isDependent: false,
+    template: undefined,
     hideImmunizations: false,
     hideRecommendations: false,
     hideRecommendationHeader: false,
@@ -169,9 +171,11 @@ function generateReport(
             records: immunizationItems.value,
             recommendations: recommendationItems.value,
         },
-        template: props.isDependent
-            ? TemplateType.DependentImmunization
-            : TemplateType.Immunization,
+        template:
+            props.template ??
+            (props.isDependent
+                ? TemplateType.DependentImmunization
+                : TemplateType.Immunization),
         type: reportFormatType,
     });
 }

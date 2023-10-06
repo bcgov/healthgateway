@@ -528,7 +528,7 @@ watch(vaccineRecordState, () => {
                     />
                 </template>
                 <p class="text-body-1">
-                    View recommendations for vaccines you are eligible for.
+                    View your recommendations for vaccines.
                 </p>
             </HgCardComponent>
         </v-col>
