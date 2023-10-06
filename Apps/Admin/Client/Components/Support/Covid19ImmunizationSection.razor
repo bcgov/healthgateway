@@ -88,7 +88,7 @@
         Variant="@Variant.Filled"
         Color="@Color.Primary"
         Loading="@IsLoading"
-        Disabled="@(IsLoading || !Rows.Any())"
+        Disabled="@IsLoading"
         OnClick="@Refresh"
         data-testid="refresh-button">
         Refresh
