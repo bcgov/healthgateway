@@ -15,7 +15,7 @@ Once the DB has started and you see a message like
 database system is ready to accept connections
 ```
 
-you can stop following the logs CTRL-C and start the JobScheduler application to run any new migrations or view the DBMaintainer README to run them manually.
+you can stop following the logs CTRL-C and start the JobScheduler application to run any new migrations and run the drug loader tasks.  You can also view the DBMaintainer README to run them manually.
 
 ## Upgrading init scripts
 
@@ -34,4 +34,8 @@ SET ROLE hglocal;
 
 ## Removing your local database
 
-Remove the pgdata folder.
+Remove the pgdata volume by executing
+
+```console
+docker volume rm gatewaydb.local
+```
