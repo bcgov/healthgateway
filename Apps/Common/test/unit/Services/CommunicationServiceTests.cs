@@ -170,6 +170,8 @@ namespace HealthGateway.CommonTests.Services
             }
         }
 
+        // ReSharper disable once CognitiveComplexity
+
         /// <summary>
         /// Validates Insert and Update operations when cache is empty.
         /// </summary>

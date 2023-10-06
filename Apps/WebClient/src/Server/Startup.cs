@@ -87,6 +87,8 @@ namespace HealthGateway.WebClient.Server
             services.AddSingleton<IConfigurationService, ConfigurationService>();
         }
 
+        // ReSharper disable once CognitiveComplexity
+
         /// <summary>
         /// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         /// </summary>
