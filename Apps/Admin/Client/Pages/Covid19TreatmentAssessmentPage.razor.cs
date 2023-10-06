@@ -149,7 +149,7 @@ namespace HealthGateway.Admin.Client.Pages
             {
                 this.Dispatcher.Dispatch(new PatientDetailsActions.ResetStateAction());
                 this.Dispatcher.Dispatch(
-                    new PatientDetailsActions.LoadAction { QueryType = ClientRegistryType.Phn, QueryString = this.Phn });
+                    new PatientDetailsActions.LoadAction { QueryType = ClientRegistryType.Phn, QueryString = this.Phn, RefreshVaccineDetails = false });
             }
         }
 

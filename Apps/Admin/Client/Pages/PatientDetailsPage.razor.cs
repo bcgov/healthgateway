@@ -157,7 +157,7 @@ namespace HealthGateway.Admin.Client.Pages
                 this.Dispatcher.Dispatch(new PatientSupportActions.ResetStateAction());
                 this.Dispatcher.Dispatch(new PatientSupportActions.LoadAction { QueryType = PatientQueryType.Phn, QueryString = this.Phn });
                 this.Dispatcher.Dispatch(new PatientDetailsActions.ResetStateAction());
-                this.Dispatcher.Dispatch(new PatientDetailsActions.LoadAction { QueryType = ClientRegistryType.Phn, QueryString = this.Phn });
+                this.Dispatcher.Dispatch(new PatientDetailsActions.LoadAction { QueryType = ClientRegistryType.Phn, QueryString = this.Phn, RefreshVaccineDetails = false });
             }
 
             this.PreviousSearchedPhn = this.Phn;

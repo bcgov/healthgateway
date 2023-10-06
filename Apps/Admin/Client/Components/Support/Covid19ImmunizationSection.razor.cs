@@ -21,7 +21,9 @@ namespace HealthGateway.Admin.Client.Components.Support
     using System.Threading.Tasks;
     using Fluxor;
     using Fluxor.Blazor.Web.Components;
+    using HealthGateway.Admin.Client.Store.PatientDetails;
     using HealthGateway.Admin.Client.Store.VaccineCard;
+    using HealthGateway.Admin.Common.Constants;
     using HealthGateway.Admin.Common.Models.CovidSupport;
     using HealthGateway.Common.Data.Models;
     using Microsoft.AspNetCore.Components;
@@ -164,6 +166,11 @@ namespace HealthGateway.Admin.Client.Components.Support
         private void Print()
         {
             this.Dispatcher.Dispatch(new VaccineCardActions.PrintVaccineCardAction { Phn = this.Phn });
+        }
+
+        private void Refresh()
+        {
+            this.Dispatcher.Dispatch(new PatientDetailsActions.LoadAction { QueryType = ClientRegistryType.Phn, QueryString = this.Phn, RefreshVaccineDetails = true });
         }
 
         private sealed record VaccineDoseRow

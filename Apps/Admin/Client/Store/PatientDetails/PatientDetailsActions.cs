@@ -42,6 +42,11 @@ namespace HealthGateway.Admin.Client.Store.PatientDetails
             /// Gets the query string.
             /// </summary>
             public required string QueryString { get; init; }
+
+            /// <summary>
+            /// Gets or sets a value indicating whether the call should force cached vaccine validation details data to be refreshed.
+            /// </summary>
+            public bool RefreshVaccineDetails { get; set; }
         }
 
         /// <summary>

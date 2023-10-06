@@ -43,9 +43,13 @@ public interface ISupportApi
     /// </summary>
     /// <param name="queryType">The type of query to be performed when searching for patient support details.</param>
     /// <param name="queryString">The string value associated with the query type when searching for patient support details.</param>
+    /// <param name="refreshVaccineDetails">
+    /// Whether the call should force cached vaccine validation details data to be
+    /// refreshed.
+    /// </param>
     /// <returns>The patient support details object.</returns>
     [Get("/PatientSupportDetails?queryType={queryType}&queryString={queryString}")]
-    Task<PatientSupportDetails> GetPatientSupportDetailsAsync(ClientRegistryType queryType, string queryString);
+    Task<PatientSupportDetails> GetPatientSupportDetailsAsync(ClientRegistryType queryType, string queryString, bool refreshVaccineDetails);
 
     /// <summary>
     /// Creates, updates, or deletes block access configuration for the passed HDID.

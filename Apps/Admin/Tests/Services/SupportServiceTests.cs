@@ -146,7 +146,8 @@ namespace HealthGateway.Admin.Tests.Services
                     includeMessagingVerifications,
                     includeBlockedDataSources,
                     includeAgentActions,
-                    includeCovidDetails);
+                    includeCovidDetails,
+                    false);
 
             // Assert
             Assert.Equal(expectedMessagingVerifications, actualResult.MessagingVerifications?.Count().ToString(CultureInfo.InvariantCulture));
@@ -192,7 +193,8 @@ namespace HealthGateway.Admin.Tests.Services
                     true,
                     true,
                     true,
-                    true);
+                    true,
+                    false);
             }
 
             // Verify
@@ -228,7 +230,7 @@ namespace HealthGateway.Admin.Tests.Services
             // Act
             async Task Actual()
             {
-                await supportService.GetPatientSupportDetailsAsync(ClientRegistryType.Phn, Phn, false, false, false, true);
+                await supportService.GetPatientSupportDetailsAsync(ClientRegistryType.Phn, Phn, false, false, false, true, false);
             }
 
             // Verify
@@ -262,7 +264,7 @@ namespace HealthGateway.Admin.Tests.Services
             // Act
             async Task Actual()
             {
-                await supportService.GetPatientSupportDetailsAsync(ClientRegistryType.Hdid, Hdid, true, true, true, true);
+                await supportService.GetPatientSupportDetailsAsync(ClientRegistryType.Hdid, Hdid, true, true, true, true, false);
             }
 
             // Verify
