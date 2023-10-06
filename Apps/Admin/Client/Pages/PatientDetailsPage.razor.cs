@@ -116,7 +116,7 @@ namespace HealthGateway.Admin.Client.Pages
 
         private string Covid19TreatmentAssessmentPath => $"/covid-19-treatment-assessment?phn={this.Phn}";
 
-        private bool ImmunizationsAreBlaocked => this.VaccineDetails?.Blocked ?? false;
+        private bool ImmunizationsAreBlocked => this.VaccineDetails?.Blocked ?? false;
 
         private AuthenticationState? AuthenticationState { get; set; }
 

@@ -164,8 +164,8 @@ namespace HealthGateway.Admin.Client.Pages
         {
             if (this.IsPreviousPagePatientDetails())
             {
-                string queryTypeString = await this.JsRuntime.InvokeAsync<string>("sessionStorage.getItem", "queryType");
-                string queryString = await this.JsRuntime.InvokeAsync<string>("sessionStorage.getItem", "queryParameter");
+                string queryTypeString = await this.JsRuntime.InvokeAsync<string>("sessionStorage.getItem", "supportQueryType");
+                string queryString = await this.JsRuntime.InvokeAsync<string>("sessionStorage.getItem", "supportQueryParameter");
 
                 if (Enum.TryParse(queryTypeString, out PatientQueryType queryType))
                 {
@@ -190,8 +190,8 @@ namespace HealthGateway.Admin.Client.Pages
                         QueryString = StringManipulator.StripWhitespace(this.QueryParameter),
                     });
 
-                await this.JsRuntime.InvokeVoidAsync("sessionStorage.setItem", "queryType", this.SelectedQueryType);
-                await this.JsRuntime.InvokeVoidAsync("sessionStorage.setItem", "queryParameter", this.QueryParameter);
+                await this.JsRuntime.InvokeVoidAsync("sessionStorage.setItem", "supportQueryType", this.SelectedQueryType);
+                await this.JsRuntime.InvokeVoidAsync("sessionStorage.setItem", "supportQueryParameter", this.QueryParameter);
             }
         }
 

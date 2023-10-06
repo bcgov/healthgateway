@@ -124,14 +124,14 @@
         </MudText>
     }
 
-    if (CanViewCovidDetails && !ImmunizationsAreBlaocked)
+    if (CanViewCovidDetails && !ImmunizationsAreBlocked)
     {
         <Covid19ImmunizationSection Phn="@Patient.PersonalHealthNumber" Data="@VaccineDetails" IsLoading="@PatientSupportDetailsLoading" MailAddress="@MailAddress" />
 
         <Covid19AssessmentSection Data="@AssessmentDetails" IsLoading="@PatientSupportDetailsLoading" AssessmentPagePath="@Covid19TreatmentAssessmentPath" />
     }
 
-    if (ImmunizationsAreBlaocked)
+    if (ImmunizationsAreBlocked)
     {
         <MudAlert data-testid="blocked-immunization-alert" Severity="Severity.Error" Dense="true" Outlined="true" Class="alert-background-color">
             Unable to retrieve vaccine records for this individual.

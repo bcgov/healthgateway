@@ -107,8 +107,10 @@ namespace HealthGateway.Admin.Tests.Services
             // Arrange
             PatientDetailsQuery patientQuery = new()
             {
-                Hdid = queryType == ClientRegistryType.Hdid ? Hdid : null, Phn = queryType == ClientRegistryType.Phn ? Phn : null,
-                Source = queryType == ClientRegistryType.Hdid ? PatientDetailSource.All : PatientDetailSource.Empi, UseCache = false,
+                Hdid = queryType == ClientRegistryType.Hdid ? Hdid : null,
+                Phn = queryType == ClientRegistryType.Phn ? Phn : null,
+                Source = queryType == ClientRegistryType.Hdid ? PatientDetailSource.All : PatientDetailSource.Empi,
+                UseCache = false,
             };
             AccountDataAccess.Patient.Name commonName = GenerateName();
             AccountDataAccess.Patient.Name legalName = GenerateName("Jim", "Bo");
