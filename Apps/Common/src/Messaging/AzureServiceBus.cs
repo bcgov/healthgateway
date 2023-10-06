@@ -95,6 +95,8 @@ internal class AzureServiceBus : IMessageSender, IMessageReceiver, IAsyncDisposa
 
 #pragma warning disable CA1031 // Do not catch general exception types - need to handle all exception types thrown from receive handlers
 
+    // ReSharper disable once CognitiveComplexity
+
     /// <inheritdoc/>
     public virtual async Task Subscribe(Func<string, IEnumerable<MessageEnvelope>, Task<bool>> receiveHandler, Func<Exception, Task> errorHandler, CancellationToken ct = default)
     {
