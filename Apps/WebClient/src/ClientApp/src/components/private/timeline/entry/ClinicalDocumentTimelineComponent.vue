@@ -34,7 +34,8 @@ const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
 const clinicalDocumentStore = useClinicalDocumentStore();
 const timelineStore = useTimelineStore();
 
-const messageModal = ref<InstanceType<typeof MessageModalComponent>>();
+const sensitiveDocumentModal =
+    ref<InstanceType<typeof MessageModalComponent>>();
 
 const cols = computed(() => timelineStore.columnCount);
 const isLoadingFile = computed(() => {
@@ -52,7 +53,7 @@ const entryIcon = computed(
 );
 
 function showConfirmationModal(): void {
-    messageModal.value?.showModal();
+    sensitiveDocumentModal.value?.showModal();
 }
 
 function downloadFile(): void {
@@ -77,6 +78,7 @@ function downloadFile(): void {
 
 <template>
     <TimelineEntryComponent
+        v-bind="$attrs"
         :card-id="index + '-' + datekey"
         :entry-icon="entryIcon"
         icon-class="bg-primary"
@@ -86,6 +88,7 @@ function downloadFile(): void {
         :is-mobile-details="isMobileDetails"
         :allow-comment="commentsAreEnabled"
         has-attachment
+        @click-attachment-button="showConfirmationModal"
     >
         <v-row>
             <v-col :cols="cols">
@@ -117,11 +120,11 @@ function downloadFile(): void {
                 />
             </v-col>
         </v-row>
-        <MessageModalComponent
-            ref="messageModal"
-            title="Sensitive Document"
-            message="The file that you are downloading contains personal information. If you are on a public computer, please ensure that the file is deleted before you log off."
-            @submit="downloadFile"
-        />
     </TimelineEntryComponent>
+    <MessageModalComponent
+        ref="sensitiveDocumentModal"
+        title="Sensitive Document"
+        message="The file that you are downloading contains personal information. If you are on a public computer, please ensure that the file is deleted before you log off."
+        @submit="downloadFile"
+    />
 </template>

@@ -20,7 +20,7 @@ describe("Diagnostic Imaging", () => {
 
     it("Validate card details with a file", () => {
         cy.get("[data-testid=timelineCard")
-            .filter(":has([data-testid=attachmentIcon])")
+            .filter(":has([data-testid=attachment-button])")
             .first()
             .within(() => {
                 cy.get("[data-testid=diagnosticimagingTitle]")
@@ -40,7 +40,7 @@ describe("Diagnostic Imaging", () => {
 
     it("Validate card details without a file", () => {
         cy.get("[data-testid=timelineCard")
-            .not(":has([data-testid=attachmentIcon])")
+            .not(":has([data-testid=attachment-button])")
             .first()
             .within(() => {
                 cy.get("[data-testid=diagnosticimagingTitle]")
@@ -60,7 +60,7 @@ describe("Diagnostic Imaging", () => {
 
     it("Validate file download", () => {
         cy.get("[data-testid=timelineCard")
-            .filter(":has([data-testid=attachmentIcon])")
+            .filter(":has([data-testid=attachment-button])")
             .first()
             .within(() => {
                 cy.get("[data-testid=diagnosticimagingTitle]")
