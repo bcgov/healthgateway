@@ -29,7 +29,8 @@ const props = withDefaults(defineProps<Props>(), {
 
 const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
 const patientDataStore = usePatientDataStore();
-const messageModal = ref<InstanceType<typeof MessageModalComponent>>();
+const sensitiveDocumentModal =
+    ref<InstanceType<typeof MessageModalComponent>>();
 
 const entryIcon = computed(
     () => entryTypeMap.get(EntryType.BcCancerScreening)?.icon
@@ -39,12 +40,10 @@ const isLoadingFile = computed(
         props.entry.fileId !== undefined &&
         patientDataStore.isPatientDataFileLoading(props.entry.fileId)
 );
-const hasFile = computed(
-    () => props.entry.fileId !== undefined && props.entry.fileId !== ""
-);
+const hasFile = computed(() => Boolean(props.entry.fileId));
 
 function showConfirmationModal(): void {
-    messageModal.value?.showModal();
+    sensitiveDocumentModal.value?.showModal();
 }
 
 function downloadFile(): void {
@@ -72,6 +71,7 @@ function downloadFile(): void {
 
 <template>
     <TimelineEntryComponent
+        v-bind="$attrs"
         :card-id="`${index}-${datekey}`"
         :entry-icon="entryIcon"
         icon-class="bg-primary"
@@ -80,7 +80,8 @@ function downloadFile(): void {
         :entry="entry"
         :is-mobile-details="isMobileDetails"
         :allow-comment="commentsAreEnabled"
-        :has-attachment="Boolean(entry.fileId)"
+        :has-attachment="hasFile"
+        @click-attachment-button="showConfirmationModal"
     >
         <p class="text-body-1 mb-3">
             <span
@@ -125,13 +126,13 @@ function downloadFile(): void {
             :text="entry.callToActionText"
             prepend-icon="eye"
             :loading="isLoadingFile"
-            @click="showConfirmationModal()"
-        />
-        <MessageModalComponent
-            ref="messageModal"
-            title="Sensitive Document"
-            message="The file that you are downloading contains personal information. If you are on a public computer, please ensure that the file is deleted before you log off."
-            @submit="downloadFile"
+            @click="showConfirmationModal"
         />
     </TimelineEntryComponent>
+    <MessageModalComponent
+        ref="sensitiveDocumentModal"
+        title="Sensitive Document"
+        message="The file that you are downloading contains personal information. If you are on a public computer, please ensure that the file is deleted before you log off."
+        @submit="downloadFile"
+    />
 </template>
