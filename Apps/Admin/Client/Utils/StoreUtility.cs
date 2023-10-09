@@ -17,8 +17,13 @@
 namespace HealthGateway.Admin.Client.Utils
 {
     using System;
+    using System.Threading.Tasks;
+    using Fluxor;
     using HealthGateway.Admin.Client.Store;
+    using HealthGateway.Admin.Client.Store.PatientSupport;
+    using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ViewModels;
+    using Microsoft.JSInterop;
 
     /// <summary>
     /// Utilities for interacting with the application store.
@@ -69,6 +74,21 @@ namespace HealthGateway.Admin.Client.Utils
             {
                 Message = "Unknown error",
             };
+        }
+
+        /// <summary>
+        /// Initiates patient support load action and sets the session storage item.
+        /// </summary>
+        /// <param name="dispatcher">The dispatcher used to initiate the action.</param>
+        /// <param name="jsRuntime">The javascript runtime used for the session storage.</param>
+        /// <param name="patientQueryType">The patient query type to query by and the key to set the session storage item to.</param>
+        /// <param name="patientQueryString">The patient query string to query by and the value to set the session item to.</param>
+        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
+        public static async Task LoadPatientSupportAction(IDispatcher dispatcher, IJSRuntime jsRuntime, PatientQueryType patientQueryType, string patientQueryString)
+        {
+            dispatcher.Dispatch(new PatientSupportActions.LoadAction { QueryType = patientQueryType, QueryString = patientQueryString });
+            await SessionUtility.SetSessionStorageItem(jsRuntime, SessionUtility.SupportQueryType, patientQueryType.ToString());
+            await SessionUtility.SetSessionStorageItem(jsRuntime, SessionUtility.SupportQueryString, patientQueryString);
         }
     }
 }

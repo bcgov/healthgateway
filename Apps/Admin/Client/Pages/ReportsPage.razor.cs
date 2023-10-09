@@ -17,12 +17,17 @@ namespace HealthGateway.Admin.Client.Pages;
 
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Fluxor;
 using Fluxor.Blazor.Web.Components;
 using HealthGateway.Admin.Client.Store;
 using HealthGateway.Admin.Client.Store.AdminReport;
+using HealthGateway.Admin.Client.Store.PatientSupport;
+using HealthGateway.Admin.Client.Utils;
 using HealthGateway.Admin.Common.Models;
+using HealthGateway.Common.Data.Constants;
 using Microsoft.AspNetCore.Components;
+using Microsoft.JSInterop;
 using MudBlazor;
 
 /// <summary>
@@ -31,6 +36,9 @@ using MudBlazor;
 public partial class ReportsPage : FluxorComponent
 {
     [Inject]
+    private IActionSubscriber ActionSubscriber { get; set; } = default!;
+
+    [Inject]
     private IDispatcher Dispatcher { get; set; } = default!;
 
     [Inject]
@@ -38,6 +46,9 @@ public partial class ReportsPage : FluxorComponent
 
     [Inject]
     private IState<AdminReportState> AdminReportState { get; set; } = default!;
+
+    [Inject]
+    private IJSRuntime JsRuntime { get; set; } = default!;
 
     private BaseRequestState<IEnumerable<BlockedAccessRecord>> BlockedAccessState => this.AdminReportState.Value.BlockedAccess;
 
@@ -64,8 +75,17 @@ public partial class ReportsPage : FluxorComponent
         this.Dispatcher.Dispatch(new AdminReportActions.GetProtectedDependentsAction());
     }
 
-    private void HandleBlockedAccessRowClick(TableRowClickEventArgs<BlockedAccessRecord> args)
+    private async Task HandleBlockedAccessRowClick(TableRowClickEventArgs<BlockedAccessRecord> args)
     {
-        this.NavigationManager.NavigateTo($"/patient-details?hdid={args.Item.Hdid}");
+        await StoreUtility.LoadPatientSupportAction(this.Dispatcher, this.JsRuntime, PatientQueryType.Hdid, args.Item.Hdid);
+        this.ActionSubscriber.SubscribeToAction<PatientSupportActions.LoadSuccessAction>(this, this.NavigateToPatientDetails);
+    }
+
+    private void NavigateToPatientDetails(PatientSupportActions.LoadSuccessAction action)
+    {
+        if (action.Data.Count == 1)
+        {
+            this.NavigationManager.NavigateTo($"/patient-details?phn={action.Data.Single().PersonalHealthNumber}");
+        }
     }
 }

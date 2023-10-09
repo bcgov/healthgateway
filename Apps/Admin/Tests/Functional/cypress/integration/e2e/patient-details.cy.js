@@ -336,7 +336,6 @@ describe("Patient details page as admin user", () => {
         cy.get("[data-testid=patient-phn]")
             .should("be.visible")
             .contains(phnWithInvalidDoses);
-        cy.scrollTo("bottom");
         cy.get("[data-testid=immunization-table]").should("not.exist");
         cy.get("[data-testid=assessment-history-table]").should("not.exist");
     });
