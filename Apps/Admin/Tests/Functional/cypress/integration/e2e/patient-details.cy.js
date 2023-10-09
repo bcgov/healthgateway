@@ -84,7 +84,7 @@ function validateCovid19TreatmentAssessmentFormBackCancel() {
     cy.url().should("include", "/patient-details");
     cy.get("[data-testid=start-covid-19-treatment-assessment-button]").click();
     cy.url().should("include", "/covid-19-treatment-assessment");
-    cy.scrollTo("bottom");
+    cy.scrollTo("bottom", { ensureScrollable: false });
     cy.get("[data-testid=cancel-covid-19-treatment-assessment]").click();
     cy.url().should("include", "/patient-details");
 }
@@ -114,7 +114,7 @@ function validateCovid19TreatmentAssessmentInfoMessageForRadioSelection() {
         );
     });
 
-    cy.scrollTo("bottom");
+    cy.scrollTo("bottom", { ensureScrollable: false });
 
     cy.get("[data-testid=assessment-question-6]").within(() => {
         cy.get("[data-testid=assessment-option-yes]").click();
@@ -168,10 +168,10 @@ function validateCovid19TreatmentAssessmentInfoMessageForRadioSelection() {
 function validateCovid19TreatmentAssessmentFormRequiredInputs() {
     cy.get("[data-testid=start-covid-19-treatment-assessment-button]").click();
     cy.url().should("include", "/covid-19-treatment-assessment");
-    cy.scrollTo("bottom");
+    cy.scrollTo("bottom", { ensureScrollable: false });
     cy.get("[data-testid=submit-covid-19-treatment-assessment]").click();
 
-    cy.scrollTo("top");
+    cy.scrollTo("top", { ensureScrollable: false });
     validateCovid19InputContainsError("[data-testid=phone-number-input]");
     cy.get("[data-testid=assessment-question-]")
         .contains("Do you have a family doctor or nurse practitioner?")
@@ -203,7 +203,7 @@ function validateCovid19TreatmentAssessmentFormRequiredInputs() {
         .contains("Required")
         .should("not.exist");
 
-    cy.scrollTo("bottom");
+    cy.scrollTo("bottom", { ensureScrollable: false });
     cy.get("[data-testid=assessment-question-8] div")
         .contains("Required")
         .should("not.exist");
@@ -246,7 +246,7 @@ function validateCovid19TreatmentAssessmentFormSubmission() {
         "[data-testid=assessment-question-4] [data-testid=assessment-option-not-sure]"
     ).click();
 
-    cy.scrollTo("bottom");
+    cy.scrollTo("bottom", { ensureScrollable: false });
 
     cy.get(
         '[data-testid=assessment-question-5] button[aria-label="Open Date Picker"]'
@@ -290,7 +290,7 @@ function validatePrintVaccineCardSubmission() {
     cy.intercept("GET", `**/Document?phn=${phnWithInvalidDoses}`).as(
         "getVaccineCard"
     );
-    cy.scrollTo("bottom");
+    cy.scrollTo("bottom", { ensureScrollable: false });
     cy.get("[data-testid=print-button]").click();
 
     cy.wait("@getVaccineCard").then((interception) => {
@@ -336,6 +336,7 @@ describe("Patient details page as admin user", () => {
         cy.get("[data-testid=patient-phn]")
             .should("be.visible")
             .contains(phnWithInvalidDoses);
+        cy.scrollTo("bottom", { ensureScrollable: false });
         cy.get("[data-testid=immunization-table]").should("not.exist");
         cy.get("[data-testid=assessment-history-table]").should("not.exist");
     });
@@ -510,7 +511,7 @@ describe("Patient Details as Support", () => {
             .contains(phnWithInvalidDoses);
         cy.get("[data-testid=patient-hdid]").should("not.exist");
 
-        cy.scrollTo("bottom");
+        cy.scrollTo("bottom", { ensureScrollable: false });
         getTableRows("[data-testid=immunization-table]").should(
             "have.length.greaterThan",
             0
