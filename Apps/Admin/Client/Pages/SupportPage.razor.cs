@@ -24,6 +24,7 @@ namespace HealthGateway.Admin.Client.Pages
     using Fluxor.Blazor.Web.Components;
     using HealthGateway.Admin.Client.Authorization;
     using HealthGateway.Admin.Client.Store.PatientSupport;
+    using HealthGateway.Admin.Client.Utils;
     using HealthGateway.Admin.Common.Constants;
     using HealthGateway.Admin.Common.Models;
     using HealthGateway.Common.Data.Constants;
@@ -76,9 +77,9 @@ namespace HealthGateway.Admin.Client.Pages
                 if (!this.IsPreviousPagePatientDetails())
                 {
                     this.Dispatcher.Dispatch(new PatientSupportActions.ResetStateAction());
-                    this.QueryParameter = string.Empty;
                 }
 
+                this.QueryParameter = string.Empty;
                 this.QueryType = value;
             }
         }
@@ -164,8 +165,8 @@ namespace HealthGateway.Admin.Client.Pages
         {
             if (this.IsPreviousPagePatientDetails())
             {
-                string queryTypeString = await this.JsRuntime.InvokeAsync<string>("sessionStorage.getItem", "supportQueryType");
-                string queryString = await this.JsRuntime.InvokeAsync<string>("sessionStorage.getItem", "supportQueryParameter");
+                string queryTypeString = await SessionUtility.GetSessionStorageItem(this.JsRuntime, SessionUtility.SupportQueryType);
+                string queryString = await SessionUtility.GetSessionStorageItem(this.JsRuntime, SessionUtility.SupportQueryString);
 
                 if (Enum.TryParse(queryTypeString, out PatientQueryType queryType))
                 {
@@ -183,15 +184,7 @@ namespace HealthGateway.Admin.Client.Pages
             if (this.Form.IsValid)
             {
                 this.ResetPatientSupportState();
-                this.Dispatcher.Dispatch(
-                    new PatientSupportActions.LoadAction
-                    {
-                        QueryType = this.SelectedQueryType,
-                        QueryString = StringManipulator.StripWhitespace(this.QueryParameter),
-                    });
-
-                await this.JsRuntime.InvokeVoidAsync("sessionStorage.setItem", "supportQueryType", this.SelectedQueryType);
-                await this.JsRuntime.InvokeVoidAsync("sessionStorage.setItem", "supportQueryParameter", this.QueryParameter);
+                await StoreUtility.LoadPatientSupportAction(this.Dispatcher, this.JsRuntime, this.SelectedQueryType, StringManipulator.StripWhitespace(this.QueryParameter));
             }
         }
 

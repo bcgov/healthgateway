@@ -126,7 +126,6 @@ describe("Feedback Review", () => {
                     .should("be.visible")
                     .click();
             });
-        cy.location("pathname").should("eq", "/support");
         cy.location("pathname").should("eq", "/patient-details");
     });
 });
