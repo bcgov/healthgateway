@@ -23,6 +23,9 @@
         {
             "name": "Apps",
             "path": "."
+        },
+        {
+            "path": "../Build"
         }
     ],
     "tasks": {

@@ -3,7 +3,7 @@ name: $(date:yyyy).$(date:MM).$(date:dd).$(rev:r)
 pr: none
 
 trigger:
-  batch: "true"
+  batch: true
   branches:
     include:
       - dev
