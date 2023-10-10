@@ -106,9 +106,12 @@ describe("dependents - dashboard", () => {
         cy.get(recommendationsDownloadPdfButtonSelector).first().click();
         cy.get(confirmationModalButton).click();
 
-        cy.verifyDownload("HealthGatewayDependentImmunizationReport.pdf", {
-            timeout: 60000,
-            interval: 5000,
-        });
+        cy.verifyDownload(
+            "HealthGatewayDependentImmunizationRecommendationReport.pdf",
+            {
+                timeout: 60000,
+                interval: 5000,
+            }
+        );
     });
 });
