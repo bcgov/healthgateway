@@ -8,7 +8,7 @@ variables:
 pr: none
 
 trigger:
-  batch: "true"
+  batch: true
   branches:
     include:
       - dev

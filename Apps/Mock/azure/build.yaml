@@ -11,7 +11,7 @@ resources:
           - dev
 
 trigger:
-  batch: "true"
+  batch: true
   branches:
     include:
       - dev

@@ -3,7 +3,7 @@ name: 1.0.0$(Rev:.r) #Build number
 pr: none
 
 trigger:
-  batch: "true"
+  batch: true
   branches:
     include:
       - dev
@@ -21,14 +21,14 @@ variables:
   - name: Image.Name
     value: $[lower(variables['App.Name'])]
   - name: App.Home
-    value: $(Build.SourcesDirectory)/Apps/$(App.Name)    
+    value: $(Build.SourcesDirectory)/Apps/$(App.Name)
 
 steps:
-    - task: Docker@2
-      displayName: 'Building Image for $(App.Name) and pushing to Docker Hub'
-      inputs:
-        containerRegistry: 'docker-health'
-        repository: $(DockerRepo)/$(Image.Name)
-        Dockerfile: '$(App.Home)/Dockerfile'
-        buildContext: '$(App.Home)'
-        tags: '$(Build.BuildNumber)'
+  - task: Docker@2
+    displayName: "Building Image for $(App.Name) and pushing to Docker Hub"
+    inputs:
+      containerRegistry: "docker-health"
+      repository: $(DockerRepo)/$(Image.Name)
+      Dockerfile: "$(App.Home)/Dockerfile"
+      buildContext: "$(App.Home)"
+      tags: "$(Build.BuildNumber)"
