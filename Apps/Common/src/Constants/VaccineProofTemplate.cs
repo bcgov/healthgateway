@@ -37,6 +37,12 @@ namespace HealthGateway.Common.Constants
         Federal,
 
         /// <summary>
+        /// Indicates that the Cover Page plus Federal template should be used.
+        /// </summary>
+        [EnumMember(Value = "FederalWithCover")]
+        FederalWithCover,
+
+        /// <summary>
         /// Indicates that the Federal and BC Provincial template should be used.
         /// </summary>
         [EnumMember(Value = "Combined")]
