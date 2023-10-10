@@ -31,7 +31,7 @@ namespace HealthGateway.Admin.Client.Utils
         /// <summary>
         /// Session storage key for support query string.
         /// </summary>
-        public const string SupportQueryString = "supportQueryString";
+        public const string SupportQueryString = "supportQueryParameter";
 
         /// <summary>
         /// Sets the session storage item.

@@ -79,12 +79,12 @@ namespace HealthGateway.Admin.Client.Pages
                     this.Dispatcher.Dispatch(new PatientSupportActions.ResetStateAction());
                 }
 
-                this.QueryString = string.Empty;
+                this.QueryParameter = string.Empty;
                 this.QueryType = value;
             }
         }
 
-        private string QueryString { get; set; } = string.Empty;
+        private string QueryParameter { get; set; } = string.Empty;
 
         private MudForm Form { get; set; } = default!;
 
@@ -144,7 +144,7 @@ namespace HealthGateway.Admin.Client.Pages
         private void Clear()
         {
             this.Dispatcher.Dispatch(new PatientSupportActions.ResetStateAction());
-            this.QueryString = string.Empty;
+            this.QueryParameter = string.Empty;
         }
 
         private bool IsPreviousPagePatientDetails()
@@ -173,7 +173,7 @@ namespace HealthGateway.Admin.Client.Pages
                     this.SelectedQueryType = queryType;
                 }
 
-                this.QueryString = queryString;
+                this.QueryParameter = queryString;
                 this.StateHasChanged();
             }
         }
@@ -184,7 +184,7 @@ namespace HealthGateway.Admin.Client.Pages
             if (this.Form.IsValid)
             {
                 this.ResetPatientSupportState();
-                await StoreUtility.LoadPatientSupportAction(this.Dispatcher, this.JsRuntime, this.SelectedQueryType, StringManipulator.StripWhitespace(this.QueryString));
+                await StoreUtility.LoadPatientSupportAction(this.Dispatcher, this.JsRuntime, this.SelectedQueryType, StringManipulator.StripWhitespace(this.QueryParameter));
             }
         }
 
