@@ -25,8 +25,12 @@ export class RestAuthenticationService implements IAuthenticationService {
         this.keycloak = keycloak;
 
         this.scope = oidcConfig.scope;
-        this.logonCallback = oidcConfig.callbacks["Logon"];
-        this.logoutCallback = oidcConfig.callbacks["Logout"];
+        this.logonCallback =
+            oidcConfig.callbacks?.["Logon"] ||
+            `${location.origin}/loginCallback`;
+        this.logoutCallback =
+            oidcConfig.callbacks?.["Logout"] ||
+            `${location.origin}/logoutComplete`;
     }
 
     public static async GetService(
