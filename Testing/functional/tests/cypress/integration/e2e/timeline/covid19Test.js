@@ -4,12 +4,12 @@ const {
     validateFileDownload,
 } = require("../../../support/functions/timeline");
 
-describe("Clinical Document", () => {
+describe("COVID-19 Test Results", () => {
     beforeEach(() => {
         cy.configureSettings({
             datasets: [
                 {
-                    name: "clinicalDocument",
+                    name: "covid19TestResult",
                     enabled: true,
                 },
             ],
@@ -22,30 +22,19 @@ describe("Clinical Document", () => {
         cy.checkTimelineHasLoaded();
     });
 
-    it("Validate Card Details", () => {
-        cy.get("[data-testid=clinicaldocumentTitle]").should("be.visible");
-        cy.get("[data-testid=entryCardDetailsTitle")
-            .first()
-            .click({ force: true });
-        cy.get("[data-testid=clinical-document-discipline").should(
-            "be.visible"
-        );
-        cy.get("[data-testid=clinical-document-facility").should("be.visible");
-    });
-
     it("Validate file download", () => {
-        cy.get("[data-testid=timelineCard")
+        cy.contains("[data-testid=entryCardDate]", "2020-Dec-03")
+            .parents("[data-testid=timelineCard]")
             .filter(":has([data-testid=attachment-button])")
             .first()
             .within(() => {
-                validateFileDownload(
-                    "[data-testid=clinical-document-download-button]"
-                );
+                validateFileDownload("[data-testid=covid-result-download-btn]");
             });
     });
 
     it("Validate attachment download", () => {
-        cy.get("[data-testid=timelineCard")
+        cy.contains("[data-testid=entryCardDate]", "2020-Dec-03")
+            .parents("[data-testid=timelineCard]")
             .filter(":has([data-testid=attachment-button])")
             .first()
             .within(() => {

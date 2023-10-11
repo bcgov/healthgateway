@@ -4,12 +4,12 @@ const {
     validateFileDownload,
 } = require("../../../support/functions/timeline");
 
-describe("Clinical Document", () => {
+describe("Laboratory Orders", () => {
     beforeEach(() => {
         cy.configureSettings({
             datasets: [
                 {
-                    name: "clinicalDocument",
+                    name: "labResult",
                     enabled: true,
                 },
             ],
@@ -22,24 +22,13 @@ describe("Clinical Document", () => {
         cy.checkTimelineHasLoaded();
     });
 
-    it("Validate Card Details", () => {
-        cy.get("[data-testid=clinicaldocumentTitle]").should("be.visible");
-        cy.get("[data-testid=entryCardDetailsTitle")
-            .first()
-            .click({ force: true });
-        cy.get("[data-testid=clinical-document-discipline").should(
-            "be.visible"
-        );
-        cy.get("[data-testid=clinical-document-facility").should("be.visible");
-    });
-
     it("Validate file download", () => {
         cy.get("[data-testid=timelineCard")
             .filter(":has([data-testid=attachment-button])")
             .first()
             .within(() => {
                 validateFileDownload(
-                    "[data-testid=clinical-document-download-button]"
+                    "[data-testid=laboratory-report-download-btn]"
                 );
             });
     });
