@@ -35,6 +35,8 @@ terraform.rc
 
 # Ignore Secret files
 *.secrets.json
+**/secrets
+**/secrets/*
 
 # User Load files
 users/**
