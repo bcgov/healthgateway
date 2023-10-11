@@ -227,7 +227,7 @@ function showDialog() {
                         <template #activator="{ props: slotProps }">
                             <HgButtonComponent
                                 id="export-recommendations-record-button"
-                                text="Download Immunization Record"
+                                text="Download Record"
                                 variant="primary"
                                 data-testid="export-recommendations-record-button"
                                 v-bind="slotProps"
