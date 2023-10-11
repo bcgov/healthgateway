@@ -1,41 +1,10 @@
 const { AuthMethod } = require("../../../support/constants");
+const {
+    validateAttachmentDownload,
+    validateFileDownload,
+} = require("../../../support/functions/timeline");
 
-describe("Diagnostic Imaging", () => {
-    function downloadFileTests(fileNamePrefix) {
-        // Expand the card (require force as the title isn't a natural click target)
-        cy.get("[data-testid=bccancerscreeningTitle]")
-            .should("be.visible")
-            .click({ force: true });
-        // Test for generic message modal regarding sensitive data
-        cy.get("[data-testid=bc-cancer-screening-download-button]")
-            .should("be.visible")
-            .click();
-        cy.document()
-            .find("[data-testid=generic-message-modal]")
-            .should("be.visible");
-        // Submit the generic message modal, which should close the modal
-        cy.document().find("[data-testid=generic-message-submit-btn]").click();
-        cy.document()
-            .find("[data-testid=generic-message-modal]")
-            .should("not.exist");
-
-        // Test for file download with the entry date suffix.
-        cy.get("[data-testid=entryCardDate]")
-            .first()
-            .invoke("text")
-            .then((text) => {
-                var date = new Date(text);
-                var dateSuffix = date
-                    .toISOString()
-                    .slice(0, 10)
-                    .replace(/-/g, "_");
-
-                cy.verifyDownload(`${fileNamePrefix}_${dateSuffix}`, {
-                    contains: true,
-                });
-            });
-    }
-
+describe("BC Cancer", () => {
     beforeEach(() => {
         cy.configureSettings({
             datasets: [
@@ -66,17 +35,47 @@ describe("Diagnostic Imaging", () => {
             });
     });
 
-    it("Validate result file download", () => {
+    it("Validate screening file download", () => {
         cy.get("[data-testid=timelineCard")
-            .filter(`:contains("BC Cancer Result")`)
-            .first()
-            .within(() => downloadFileTests("bc_cancer_result"));
-    });
-
-    it("Validate recall file download", () => {
-        cy.get("[data-testid=timelineCard]")
+            .filter(":has([data-testid=attachment-button])")
             .filter(`:contains("BC Cancer Screening")`)
             .first()
-            .within(() => downloadFileTests("bc_cancer_screening"));
+            .within(() => {
+                validateFileDownload(
+                    "[data-testid=bc-cancer-screening-download-button]"
+                );
+            });
+    });
+
+    it("Validate screening attachment download", () => {
+        cy.get("[data-testid=timelineCard")
+            .filter(":has([data-testid=attachment-button])")
+            .filter(`:contains("BC Cancer Screening")`)
+            .first()
+            .within(() => {
+                validateAttachmentDownload();
+            });
+    });
+
+    it("Validate result file download", () => {
+        cy.get("[data-testid=timelineCard")
+            .filter(":has([data-testid=attachment-button])")
+            .filter(`:contains("BC Cancer Result")`)
+            .first()
+            .within(() => {
+                validateFileDownload(
+                    "[data-testid=bc-cancer-screening-download-button]"
+                );
+            });
+    });
+
+    it("Validate result attachment download", () => {
+        cy.get("[data-testid=timelineCard")
+            .filter(":has([data-testid=attachment-button])")
+            .filter(`:contains("BC Cancer Result")`)
+            .first()
+            .within(() => {
+                validateAttachmentDownload();
+            });
     });
 });

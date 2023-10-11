@@ -64,7 +64,7 @@ describe("Laboratory Orders", () => {
                                 }
 
                                 if (result === "Pending") {
-                                    // PHSA stattus is Actuve but has been converted to Pending for user readability
+                                    // PHSA stattus is Active but has been converted to Pending for user readability
                                     expect(status).equal("Pending");
                                 }
                             });
