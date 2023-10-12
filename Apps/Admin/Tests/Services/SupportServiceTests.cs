@@ -334,7 +334,7 @@ namespace HealthGateway.Admin.Tests.Services
         }
 
         /// <summary>
-        /// GetPatientsAsync - HDID - Not Found.
+        /// GetPatientsAsync - HDID - Patient Not Found.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
@@ -342,6 +342,8 @@ namespace HealthGateway.Admin.Tests.Services
         {
             // Arrange
             PatientDetailsQuery query = new() { Hdid = Hdid, Source = PatientDetailSource.All, UseCache = false };
+
+            // Patient not found
             PatientModel? patient = null;
             Mock<IPatientRepository> patientRepositoryMock = GetPatientRepositoryMock((query, patient));
 
@@ -350,18 +352,11 @@ namespace HealthGateway.Admin.Tests.Services
 
             ISupportService supportService = CreateSupportService(patientRepositoryMock: patientRepositoryMock, userProfileDelegateMock: userProfileDelegateMock);
 
-            IEnumerable<PatientSupportResult> expectedResult = new List<PatientSupportResult>
-            {
-                GetExpectedPatientSupportDetails(patient, profile),
-            };
-
             // Act
             IEnumerable<PatientSupportResult> actualResult = await supportService.GetPatientsAsync(PatientQueryType.Hdid, Hdid);
 
             // Assert
-            Assert.Single(actualResult);
-            Assert.Equal(PatientStatus.NotFound, actualResult.First().Status);
-            actualResult.ShouldDeepEqual(expectedResult);
+            Assert.Empty(actualResult);
         }
 
         /// <summary>
@@ -400,7 +395,7 @@ namespace HealthGateway.Admin.Tests.Services
         }
 
         /// <summary>
-        /// GetPatientsAsync - HDID - Not User.
+        /// GetPatientsAsync - HDID - Patient found but user not found.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
@@ -415,6 +410,7 @@ namespace HealthGateway.Admin.Tests.Services
             PatientModel patient = GeneratePatientModel(Phn, Hdid, Birthdate, commonName, legalName, physicalAddress, postalAddress);
             Mock<IPatientRepository> patientRepositoryMock = GetPatientRepositoryMock((query, patient));
 
+            // User not found
             UserProfile? profile = null;
             Mock<IUserProfileDelegate> userProfileDelegateMock = GetUserProfileDelegateMock(profile);
 
@@ -432,27 +428,6 @@ namespace HealthGateway.Admin.Tests.Services
             Assert.Single(actualResult);
             Assert.Equal(PatientStatus.NotUser, actualResult.First().Status);
             actualResult.ShouldDeepEqual(expectedResult);
-        }
-
-        /// <summary>
-        /// GetPatientsAsync - HDID - Not Found and Not User.
-        /// </summary>
-        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
-        public async Task ShouldGetPatientByHdidNotFoundNotUser()
-        {
-            // Arrange
-            PatientDetailsQuery query = new() { Hdid = Hdid, Source = PatientDetailSource.All, UseCache = false };
-            Mock<IPatientRepository> patientRepositoryMock = GetPatientRepositoryMock((query, null));
-            Mock<IUserProfileDelegate> userProfileDelegateMock = GetUserProfileDelegateMock();
-
-            ISupportService supportService = CreateSupportService(patientRepositoryMock: patientRepositoryMock, userProfileDelegateMock: userProfileDelegateMock);
-
-            // Act
-            IEnumerable<PatientSupportResult> actualResult = await supportService.GetPatientsAsync(PatientQueryType.Hdid, Hdid);
-
-            // Assert
-            Assert.Empty(actualResult);
         }
 
         /// <summary>
