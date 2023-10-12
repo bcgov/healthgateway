@@ -19,6 +19,7 @@ namespace HealthGateway.Admin.Server.Services
     using System.Collections.Generic;
     using System.Globalization;
     using System.IO;
+    using System.Threading;
     using System.Threading.Tasks;
     using CsvHelper;
     using CsvHelper.Configuration;
@@ -117,7 +118,7 @@ namespace HealthGateway.Admin.Server.Services
         }
 
         /// <inheritdoc/>
-        public Stream GetYearOfBirthCounts(string startPeriod, string endPeriod, int timeOffset)
+        public async Task<Stream> GetYearOfBirthCountsAsync(string startPeriod, string endPeriod, int timeOffset, CancellationToken ct)
         {
             TimeSpan ts = new(0, timeOffset, 0);
             DateTime startDate = DateTime.Parse(startPeriod, CultureInfo.InvariantCulture).Date.Add(ts);
@@ -125,12 +126,12 @@ namespace HealthGateway.Admin.Server.Services
             DateTime endDate = DateTime.Parse(endPeriod, CultureInfo.InvariantCulture).Date.Add(ts).AddDays(1).AddMilliseconds(-1);
             endDate = DateTime.SpecifyKind(endDate, DateTimeKind.Utc);
 
-            IDictionary<string, int> yobCounts = this.userProfileDelegate.GetLoggedInUserYearOfBirthCounts(startDate, endDate);
+            IDictionary<string, int> yobCounts = await this.userProfileDelegate.GetLoggedInUserYearOfBirthCountsAsync(startDate, endDate, ct);
 
             MemoryStream stream = new();
-            using StreamWriter writer = new(stream, leaveOpen: true);
-            using CsvWriter csv = new(writer, CultureInfo.CurrentCulture, true);
-            csv.WriteRecords(yobCounts);
+            await using StreamWriter writer = new(stream, leaveOpen: true);
+            await using CsvWriter csv = new(writer, CultureInfo.CurrentCulture, true);
+            await csv.WriteRecordsAsync(yobCounts, ct);
 
             return stream;
         }

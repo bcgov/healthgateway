@@ -159,7 +159,8 @@ namespace HealthGateway.Database.Delegates
         /// </summary>
         /// <param name="startDate">The start date of last login of users.</param>
         /// <param name="endDate">The end date of last login of users.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The counts of logged in users by year of birth.</returns>
-        IDictionary<string, int> GetLoggedInUserYearOfBirthCounts(DateTime startDate, DateTime endDate);
+        Task<IDictionary<string, int>> GetLoggedInUserYearOfBirthCountsAsync(DateTime startDate, DateTime endDate, CancellationToken ct);
     }
 }
