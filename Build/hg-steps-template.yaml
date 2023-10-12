@@ -92,17 +92,17 @@ steps:
     displayName: "Creating Code Coverage Report for $(App.Name)"
     condition: and(succeeded(), and(eq(variables['WASMBuild'], false),eq(variables['UnitTests'], true)))
 
-  - script: |
-      set -e
-      if [ "$(EnableAzure)" = True ] ; then
-          echo Running in Azure, Installing dotnet-reportgenerator
-          dotnet tool install -g dotnet-reportgenerator-globaltool
-      else
-          echo Running in OpenShift, skipping dotnet-reportgenerator tool install
-      fi
-      reportgenerator -reports:$(App.Home)/coverage.cobertura.xml -targetdir:$(App.Home)/CodeCoverage -reporttypes:"HtmlInline_AzurePipelines;Cobertura"
-    displayName: "Creating Code Coverage Report for Blazor Solution $(App.Name)"
-    condition: and(succeeded(), and(eq(variables['WASMBuild'], true),eq(variables['UnitTests'], true)))
+  # - script: |
+  #     set -e
+  #     if [ "$(EnableAzure)" = True ] ; then
+  #         echo Running in Azure, Installing dotnet-reportgenerator
+  #         dotnet tool install -g dotnet-reportgenerator-globaltool
+  #     else
+  #         echo Running in OpenShift, skipping dotnet-reportgenerator tool install
+  #     fi
+  #     reportgenerator -reports:$(App.Home)/coverage.cobertura.xml -targetdir:$(App.Home)/CodeCoverage -reporttypes:"HtmlInline_AzurePipelines;Cobertura"
+  #   displayName: "Creating Code Coverage Report for Blazor Solution $(App.Name)"
+  #   condition: and(succeeded(), and(eq(variables['WASMBuild'], true),eq(variables['UnitTests'], true)))
 
   # - task: PublishCodeCoverageResults@1
   #   displayName: "Publishing Code Coverage for $(App.Name)"
