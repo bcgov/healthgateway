@@ -35,8 +35,7 @@ namespace HealthGateway.Admin.Server.Controllers
         /// Initializes a new instance of the <see cref="DashboardController"/> class.
         /// </summary>
         /// <param name="dashboardService">The injected dashboard service.</param>
-        public DashboardController(
-            IDashboardService dashboardService)
+        public DashboardController(IDashboardService dashboardService)
         {
             this.dashboardService = dashboardService;
         }
@@ -72,7 +71,7 @@ namespace HealthGateway.Admin.Server.Controllers
         /// </response>
         [HttpGet]
         [Route("LoggedInCount")]
-        public IActionResult GetLoggedinUsersCount(int timeOffset)
+        public IActionResult GetLoggedInUsersCount(int timeOffset)
         {
             return new JsonResult(this.dashboardService.GetDailyLoggedInUsersCount(timeOffset));
         }
