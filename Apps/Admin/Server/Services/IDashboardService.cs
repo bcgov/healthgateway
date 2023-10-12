@@ -17,6 +17,8 @@ namespace HealthGateway.Admin.Server.Services
 {
     using System;
     using System.Collections.Generic;
+    using System.Threading;
+    using System.Threading.Tasks;
 
     /// <summary>
     /// Service that provides functionality to the admin dashboard.
@@ -62,5 +64,15 @@ namespace HealthGateway.Admin.Server.Services
         /// <param name="timeOffset">The offset from the client browser to UTC.</param>
         /// <returns>A dictionary pairing the ratings with the counts.</returns>
         IDictionary<string, int> GetRatingSummary(string startPeriod, string endPeriod, int timeOffset);
+
+        /// <summary>
+        /// Retrieves year of birth counts for users that have logged in between two dates.
+        /// </summary>
+        /// <param name="startPeriod">The period start of last login of users.</param>
+        /// <param name="endPeriod">The period end of last login of users.</param>
+        /// <param name="timeOffset">The clients offset to get to UTC.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
+        /// <returns>A dictionary mapping birth years to user counts.</returns>
+        Task<IDictionary<string, int>> GetYearOfBirthCountsAsync(string startPeriod, string endPeriod, int timeOffset, CancellationToken ct);
     }
 }

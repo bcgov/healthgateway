@@ -15,8 +15,12 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Admin.Server.Controllers
 {
+    using System.Collections.Generic;
+    using System.Threading;
+    using System.Threading.Tasks;
     using HealthGateway.Admin.Server.Services;
     using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
 
     /// <summary>
@@ -133,6 +137,30 @@ namespace HealthGateway.Admin.Server.Controllers
         public IActionResult GetRatingsSummary([FromQuery] string startPeriod, [FromQuery] string endPeriod, [FromQuery] int timeOffset)
         {
             return new JsonResult(this.dashboardService.GetRatingSummary(startPeriod, endPeriod, timeOffset));
+        }
+
+        /// <summary>
+        /// Retrieves year of birth counts for users that have logged in between two dates.
+        /// </summary>
+        /// <returns>A dictionary mapping birth years to user counts.</returns>
+        /// <param name="startPeriod">The start period for the data.</param>
+        /// <param name="endPeriod">The end period for the data.</param>
+        /// <param name="timeOffset">The current timezone offset from the client browser to UTC.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
+        /// <response code="200">Returns a dictionary mapping birth years to user counts.</response>
+        /// <response code="401">The client must authenticate itself to get the requested response.</response>
+        /// <response code="403">
+        /// The client does not have access rights to the content; that is, it is unauthorized, so the server
+        /// is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.
+        /// </response>
+        [HttpGet]
+        [Route("YearOfBirthCounts")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        public async Task<IDictionary<string, int>> GetYearOfBirthCounts([FromQuery] string startPeriod, [FromQuery] string endPeriod, [FromQuery] int timeOffset, CancellationToken ct)
+        {
+            return await this.dashboardService.GetYearOfBirthCountsAsync(startPeriod, endPeriod, timeOffset, ct);
         }
     }
 }

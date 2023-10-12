@@ -18,6 +18,8 @@ namespace HealthGateway.Admin.Server.Services
     using System;
     using System.Collections.Generic;
     using System.Globalization;
+    using System.Threading;
+    using System.Threading.Tasks;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Database.Delegates;
     using Microsoft.Extensions.Logging;
@@ -103,6 +105,14 @@ namespace HealthGateway.Admin.Server.Services
             DateTime startDate = GetStartDateTime(startPeriod, timeOffset);
             DateTime endDate = GetEndDateTime(endPeriod, timeOffset);
             return this.ratingDelegate.GetSummary(startDate, endDate);
+        }
+
+        /// <inheritdoc/>
+        public async Task<IDictionary<string, int>> GetYearOfBirthCountsAsync(string startPeriod, string endPeriod, int timeOffset, CancellationToken ct)
+        {
+            DateTime startDate = GetStartDateTime(startPeriod, timeOffset);
+            DateTime endDate = GetEndDateTime(endPeriod, timeOffset);
+            return await this.userProfileDelegate.GetLoggedInUserYearOfBirthCountsAsync(startDate, endDate, ct);
         }
 
         private static DateTime GetStartDateTime(string startPeriod, int timeOffset)
