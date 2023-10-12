@@ -104,14 +104,14 @@ steps:
     displayName: "Creating Code Coverage Report for Blazor Solution $(App.Name)"
     condition: and(succeeded(), and(eq(variables['WASMBuild'], true),eq(variables['UnitTests'], true)))
 
-  - task: PublishCodeCoverageResults@1
-    displayName: "Publishing Code Coverage for $(App.Name)"
-    condition: and(succeeded(), and(eq(${{ parameters.publish }}, true), eq(variables['UnitTests'], true)))
-    inputs:
-      codeCoverageTool: Cobertura
-      summaryFileLocation: "$(App.Home)/CodeCoverage/Cobertura.xml"
-      pathToSources: "$(App.Home)/src"
-      reportDirectory: "$(App.Home)/CodeCoverage"
+  # - task: PublishCodeCoverageResults@1
+  #   displayName: "Publishing Code Coverage for $(App.Name)"
+  #   condition: and(succeeded(), and(eq(${{ parameters.publish }}, true), eq(variables['UnitTests'], true)))
+  #   inputs:
+  #     codeCoverageTool: Cobertura
+  #     summaryFileLocation: "$(App.Home)/CodeCoverage/Cobertura.xml"
+  #     pathToSources: "$(App.Home)/src"
+  #     reportDirectory: "$(App.Home)/CodeCoverage"
 
   - task: DotNetCoreCLI@2
     displayName: "Publishing code for $(App.Name)"
