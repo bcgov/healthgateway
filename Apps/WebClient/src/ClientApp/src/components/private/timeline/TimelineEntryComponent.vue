@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, ref, watch } from "vue";
 
+import HgIconButtonComponent from "@/components/common/HgIconButtonComponent.vue";
 import CommentSectionComponent from "@/components/private/timeline/comment/CommentSectionComponent.vue";
 import TimelineEntry from "@/models/timeline/timelineEntry";
 import { useAppStore } from "@/stores/app";
@@ -27,6 +28,10 @@ const props = withDefaults(defineProps<Props>(), {
     isMobileDetails: false,
     subtitle: "",
 });
+
+const emit = defineEmits<{
+    (e: "click-attachment-button"): void;
+}>();
 
 const appStore = useAppStore();
 const eventStore = useEventStore();
@@ -122,30 +127,33 @@ watch(
                                     {{ subtitle }}
                                 </slot>
                             </v-col>
-                            <v-col cols="auto" class="text-primary">
+                            <v-col
+                                cols="auto"
+                                class="text-primary d-flex align-center all-pointer-events"
+                            >
                                 <span
                                     v-if="commentCount > 1"
-                                    class="pr-2"
                                     data-testid="commentCount"
                                 >
                                     {{ commentCount }}
                                 </span>
                                 <v-icon
                                     v-if="commentCount > 0"
+                                    class="pa-2"
                                     icon="far fa-comment"
                                     size="x-small"
                                     data-testid="commentIcon"
                                 />
-                                <v-icon
+                                <HgIconButtonComponent
                                     v-if="hasAttachment"
-                                    class="ml-2"
                                     icon="paperclip"
                                     size="x-small"
-                                    data-testid="attachmentIcon"
+                                    data-testid="attachment-button"
+                                    @click.stop="
+                                        emit('click-attachment-button')
+                                    "
                                 />
-                                <span class="all-pointer-events ml-2">
-                                    <slot name="header-menu" />
-                                </span>
+                                <slot name="header-menu" />
                             </v-col>
                         </v-row>
                     </v-col>

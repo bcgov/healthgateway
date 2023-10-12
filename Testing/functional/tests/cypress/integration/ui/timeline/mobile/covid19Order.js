@@ -71,11 +71,11 @@ describe("COVID-19 Orders", () => {
                         expect($div.text().trim()).equal(finalStatus);
                     });
 
-                // Validate Report Attachment Icon
-                cy.log("Card with reports should have an attachment icon.");
-                cy.get("[data-testid=attachmentIcon]").should("exist");
+                // Validate Report Attachment Button
+                cy.log("Card with reports should have an attachment button.");
+                cy.get("[data-testid=attachment-button]").should("exist");
 
-                cy.log("Card with attachment icon should have a report.");
+                cy.log("Card with attachment button should have a report.");
                 cy.get("[data-testid=covid-result-download-btn]").should(
                     "exist"
                 );
@@ -146,11 +146,11 @@ describe("COVID-19 Orders", () => {
                         expect($div.text().trim()).equal(correctedStatus);
                     });
 
-                // Validate Report Attachment Icon
-                cy.log("Card with reports should have an attachment icon.");
-                cy.get("[data-testid=attachmentIcon]").should("exist");
+                // Validate Report Attachment Button
+                cy.log("Card with reports should have an attachment button.");
+                cy.get("[data-testid=attachment-button]").should("exist");
 
-                cy.log("Card with attachment icon should have a report.");
+                cy.log("Card with attachment button should have a report.");
                 cy.get("[data-testid=covid-result-download-btn]").should(
                     "exist"
                 );
@@ -188,9 +188,9 @@ describe("COVID-19 Orders", () => {
                         expect($div.text().trim()).equal(amendedStatus);
                     });
 
-                // Validate Report Attachment Icon
-                cy.log("Card with reports should have an attachment icon.");
-                cy.get("[data-testid=attachmentIcon]").should("exist");
+                // Validate Report Attachment Button
+                cy.log("Card with reports should have an attachment button.");
+                cy.get("[data-testid=attachment-button]").should("exist");
 
                 cy.log("Card with attachment icon should have a report.");
                 cy.get("[data-testid=covid-result-download-btn]").should(

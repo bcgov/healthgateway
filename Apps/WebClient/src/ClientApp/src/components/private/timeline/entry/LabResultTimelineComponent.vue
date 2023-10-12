@@ -59,7 +59,8 @@ const timelineStore = useTimelineStore();
 
 const isLoadingDocument = ref(false);
 const showInfoDetails = ref(false);
-const messageModal = ref<InstanceType<typeof MessageModalComponent>>();
+const sensitiveDocumentModal =
+    ref<InstanceType<typeof MessageModalComponent>>();
 
 const cols = computed(() => timelineStore.columnCount);
 const entryIcon = computed<string | undefined>(
@@ -72,7 +73,7 @@ function getStatusInfoId(labPdfId: string, index: number): string {
 }
 
 function showConfirmationModal(): void {
-    messageModal.value?.showModal();
+    sensitiveDocumentModal.value?.showModal();
 }
 
 function formatDate(date?: DateWrapper): string | undefined {
@@ -116,6 +117,7 @@ function getReport(): void {
 
 <template>
     <TimelineEntryComponent
+        v-bind="$attrs"
         :card-id="index + '-' + datekey"
         :entry-icon="entryIcon"
         icon-class="bg-primary"
@@ -125,6 +127,7 @@ function getReport(): void {
         :is-mobile-details="isMobileDetails"
         :has-attachment="entry.reportAvailable"
         :allow-comment="commentsAreEnabled"
+        @click-attachment-button="showConfirmationModal"
     >
         <v-row>
             <v-col :cols="cols">
@@ -281,11 +284,11 @@ function getReport(): void {
                 </InfoTooltipComponent>
             </template>
         </HgDataTableComponent>
-        <MessageModalComponent
-            ref="messageModal"
-            title="Sensitive Document"
-            message="The file that you are downloading contains personal information. If you are on a public computer, please ensure that the file is deleted before you log off."
-            @submit="getReport"
-        />
     </TimelineEntryComponent>
+    <MessageModalComponent
+        ref="sensitiveDocumentModal"
+        title="Sensitive Document"
+        message="The file that you are downloading contains personal information. If you are on a public computer, please ensure that the file is deleted before you log off."
+        @submit="getReport"
+    />
 </template>

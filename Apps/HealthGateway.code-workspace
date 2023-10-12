@@ -138,10 +138,10 @@
         },
         "[vue][typescript][javascript]": {
             "editor.formatOnSave": false,
-            "editor.codeActionsOnSave": [
-                "source.addMissingImports",
-                "source.fixAll.eslint"
-            ]
+            "editor.codeActionsOnSave": {
+                "source.addMissingImports": "explicit",
+                "source.fixAll.eslint": "explicit"
+            }
         },
         "omnisharp.defaultLaunchSolution": "HealthGateway.sln",
         "typescript.preferences.importModuleSpecifier": "non-relative"
