@@ -64,7 +64,7 @@ steps:
     condition: and(succeeded(), and(eq(variables['WASMBuild'], true),eq(variables['UnitTests'], true)))
     inputs:
       command: "test"
-      projects: "$(App.Home)"
+      projects: "$(App.Home)/Tests/$(App.Name).Tests.csproj"
       arguments: "/p:CollectCoverage=true /p:CoverletOutputFormat=cobertura"
       testRunTitle: "$(App.Name): Performing Unit Tests"
 
