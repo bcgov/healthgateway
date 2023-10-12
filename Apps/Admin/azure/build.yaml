@@ -3,7 +3,6 @@ name: 1.0.0$(Rev:.r) #Build number
 pr: none
 
 resources:
-  self: {} # This prevents concurrent runs
   pipelines:
     - pipeline: Common
       source: Common
