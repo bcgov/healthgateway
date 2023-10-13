@@ -15,6 +15,10 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Admin.Client.Store.Dashboard;
 
+using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Globalization;
+using System.Linq;
 using Fluxor;
 
 #pragma warning disable CS1591, SA1600
@@ -205,6 +209,61 @@ public static class DashboardReducers
         };
     }
 
+    [ReducerMethod(typeof(DashboardActions.GetYearOfBirthCountsAction))]
+    public static DashboardState ReduceGetYearOfBirthCountsAction(DashboardState state)
+    {
+        return state with
+        {
+            GetYearOfBirthCounts = state.GetYearOfBirthCounts with { IsLoading = true },
+        };
+    }
+
+    [ReducerMethod]
+    public static DashboardState ReduceGetYearOfBirthCountsSuccessAction(DashboardState state, DashboardActions.GetYearOfBirthCountsSuccessAction action)
+    {
+        List<string> years = action.Data.Keys.Order().ToList();
+        IDictionary<string, int> yearOfBirthCounts = new Dictionary<string, int>(action.Data);
+
+        // add empty entries for years that are not populated
+        if (years.Count > 0 && int.TryParse(years[0], out int firstYear) && int.TryParse(years[^1], out int lastYear))
+        {
+            for (int year = firstYear; year <= lastYear; year++)
+            {
+                string yearString = year.ToString(CultureInfo.InvariantCulture);
+                if (!yearOfBirthCounts.ContainsKey(yearString))
+                {
+                    yearOfBirthCounts[yearString] = 0;
+                }
+            }
+        }
+
+        return state with
+        {
+            GetYearOfBirthCounts = state.GetYearOfBirthCounts with
+            {
+                Result = action.Data,
+                IsLoading = false,
+                Error = null,
+            },
+            YearOfBirthCounts = yearOfBirthCounts.ToImmutableSortedDictionary(),
+        };
+    }
+
+    [ReducerMethod]
+    public static DashboardState ReduceGetYearOfBirthCountsFailureAction(DashboardState state, DashboardActions.GetYearOfBirthCountsFailureAction action)
+    {
+        return state with
+        {
+            GetYearOfBirthCounts = state.GetYearOfBirthCounts with
+            {
+                Result = null,
+                IsLoading = false,
+                Error = action.Error,
+            },
+            YearOfBirthCounts = ImmutableDictionary<string, int>.Empty,
+        };
+    }
+
     [ReducerMethod(typeof(DashboardActions.ResetStateAction))]
     public static DashboardState ReduceResetStateAction(DashboardState state)
     {
@@ -215,6 +274,8 @@ public static class DashboardReducers
             Dependents = new(),
             UserCounts = new(),
             RatingSummary = new(),
+            GetYearOfBirthCounts = new(),
+            YearOfBirthCounts = ImmutableDictionary<string, int>.Empty,
         };
     }
 }

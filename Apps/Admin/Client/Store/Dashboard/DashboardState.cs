@@ -18,6 +18,7 @@ namespace HealthGateway.Admin.Client.Store.Dashboard;
 
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using Fluxor;
 
 /// <summary>
@@ -51,4 +52,14 @@ public record DashboardState
     /// Gets the rating summary.
     /// </summary>
     public BaseRequestState<IDictionary<string, int>> RatingSummary { get; init; } = new();
+
+    /// <summary>
+    /// Gets the request state for retrieving year of birth counts.
+    /// </summary>
+    public BaseRequestState<IDictionary<string, int>> GetYearOfBirthCounts { get; init; } = new();
+
+    /// <summary>
+    /// Gets year of birth counts associated with the most recent query.
+    /// </summary>
+    public IDictionary<string, int> YearOfBirthCounts { get; init; } = ImmutableDictionary<string, int>.Empty;
 }

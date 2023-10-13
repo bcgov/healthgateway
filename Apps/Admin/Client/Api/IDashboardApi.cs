@@ -51,15 +51,15 @@ public interface IDashboardApi
     Task<IDictionary<DateTime, int>> GetDependentCountAsync(int timeOffset);
 
     /// <summary>
-    /// Retrieves the recurring user counts.
+    /// Retrieves user counts.
     /// </summary>
-    /// <param name="days">The number of unique days for evaluating a user.</param>
+    /// <param name="days">The number of unique days for evaluating a recurring user.</param>
     /// <param name="startPeriod">The period start over which to evaluate the user.</param>
     /// <param name="endPeriod">The period end over which to evaluate the user.</param>
     /// <param name="timeOffset">The offset from the client browser to UTC.</param>
-    /// <returns>The recurrent user counts.</returns>
+    /// <returns>The counts of recurring users, mobile logins, and web logins.</returns>
     [Get("/RecurringUserCounts")]
-    Task<IDictionary<string, int>> GetRecurringUserCountsAsync(int days, string startPeriod, string endPeriod, int timeOffset);
+    Task<IDictionary<string, int>> GetUserCountsAsync(int days, string startPeriod, string endPeriod, int timeOffset);
 
     /// <summary>
     /// Retrieves the ratings summary.
@@ -70,4 +70,14 @@ public interface IDashboardApi
     /// <returns>A dictionary pairing the ratings with the counts.</returns>
     [Get("/Ratings/Summary?startPeriod={startPeriod}&endPeriod={endPeriod}&timeOffset={timeOffset}")]
     Task<IDictionary<string, int>> GetRatingsSummaryAsync(string startPeriod, string endPeriod, int timeOffset);
+
+    /// <summary>
+    /// Retrieves year of birth counts for users that have logged in between two dates.
+    /// </summary>
+    /// <param name="startPeriod">The start period for the data.</param>
+    /// <param name="endPeriod">The end period for the data.</param>
+    /// <param name="timeOffset">The current timezone offset from the client browser to UTC.</param>
+    /// <returns>A dictionary pairing the ratings with the counts.</returns>
+    [Get("/YearOfBirthCounts?startPeriod={startPeriod}&endPeriod={endPeriod}&timeOffset={timeOffset}")]
+    Task<IDictionary<string, int>> GetYearOfBirthCountsAsync(string startPeriod, string endPeriod, int timeOffset);
 }

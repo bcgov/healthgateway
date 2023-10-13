@@ -157,6 +157,37 @@ public static class DashboardActions
     public record RatingSummaryFailureAction : BaseFailureAction;
 
     /// <summary>
+    /// The action representing the initiation of a retrieval of year of birth counts.
+    /// </summary>
+    public record GetYearOfBirthCountsAction
+    {
+        /// <summary>
+        /// Gets the start of the period to evaluate.
+        /// </summary>
+        public required string StartPeriod { get; init; }
+
+        /// <summary>
+        /// Gets the end of the period to evaluate.
+        /// </summary>
+        public required string EndPeriod { get; init; }
+
+        /// <summary>
+        /// Gets the offset from the client browser to UTC.
+        /// </summary>
+        public required int TimeOffset { get; init; }
+    }
+
+    /// <summary>
+    /// The action representing a successful retrieval of year of birth counts.
+    /// </summary>
+    public record GetYearOfBirthCountsSuccessAction : BaseSuccessAction<IDictionary<string, int>>;
+
+    /// <summary>
+    /// The action representing a failed retrieval of year of birth counts.
+    /// </summary>
+    public record GetYearOfBirthCountsFailureAction : BaseFailureAction;
+
+    /// <summary>
     /// The action that clears the state.
     /// </summary>
     public record ResetStateAction;
