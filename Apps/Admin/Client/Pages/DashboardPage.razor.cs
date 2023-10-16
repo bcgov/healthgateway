@@ -43,31 +43,31 @@ public partial class DashboardPage : FluxorComponent
     [Inject]
     private IState<DashboardState> DashboardState { get; set; } = default!;
 
-    private IDictionary<DateTime, int> RegisteredUsersResult => this.DashboardState.Value.RegisteredUsers.Result ?? ImmutableDictionary<DateTime, int>.Empty;
+    private IDictionary<DateTime, int> RegisteredUsers => this.DashboardState.Value.GetRegisteredUsers.Result ?? ImmutableDictionary<DateTime, int>.Empty;
 
-    private IDictionary<DateTime, int> LoggedInUsersResult => this.DashboardState.Value.LoggedInUsers.Result ?? ImmutableDictionary<DateTime, int>.Empty;
+    private IDictionary<DateTime, int> LoggedInUsers => this.DashboardState.Value.GetLoggedInUsers.Result ?? ImmutableDictionary<DateTime, int>.Empty;
 
-    private IDictionary<DateTime, int> DependentsResult => this.DashboardState.Value.Dependents.Result ?? ImmutableDictionary<DateTime, int>.Empty;
+    private IDictionary<DateTime, int> Dependents => this.DashboardState.Value.GetDependents.Result ?? ImmutableDictionary<DateTime, int>.Empty;
 
-    private IDictionary<string, int> UserCountsResult => this.DashboardState.Value.UserCounts.Result ?? ImmutableDictionary<string, int>.Empty;
+    private IDictionary<string, int> UserCounts => this.DashboardState.Value.GetUserCounts.Result ?? ImmutableDictionary<string, int>.Empty;
 
     private IDictionary<string, int> YearOfBirthCounts => this.DashboardState.Value.YearOfBirthCounts;
 
-    private int RecurringUserCount => this.UserCountsResult.TryGetValue("RecurringUserCount", out int recurringUserCount) ? recurringUserCount : 0;
+    private int RecurringUserCount => this.UserCounts.TryGetValue("RecurringUserCount", out int recurringUserCount) ? recurringUserCount : 0;
 
-    private int MobileUserCount => this.UserCountsResult.TryGetValue(UserLoginClientType.Mobile.ToString(), out int mobileCount) ? mobileCount : 0;
+    private int MobileUserCount => this.UserCounts.TryGetValue(UserLoginClientType.Mobile.ToString(), out int mobileCount) ? mobileCount : 0;
 
-    private int WebUserCount => this.UserCountsResult.TryGetValue(UserLoginClientType.Web.ToString(), out int webCount) ? webCount : 0;
+    private int WebUserCount => this.UserCounts.TryGetValue(UserLoginClientType.Web.ToString(), out int webCount) ? webCount : 0;
 
-    private bool RegisteredUsersLoading => this.DashboardState.Value.RegisteredUsers.IsLoading;
+    private bool RegisteredUsersLoading => this.DashboardState.Value.GetRegisteredUsers.IsLoading;
 
-    private bool LoggedInUsersLoading => this.DashboardState.Value.LoggedInUsers.IsLoading;
+    private bool LoggedInUsersLoading => this.DashboardState.Value.GetLoggedInUsers.IsLoading;
 
-    private bool DependentsLoading => this.DashboardState.Value.Dependents.IsLoading;
+    private bool DependentsLoading => this.DashboardState.Value.GetDependents.IsLoading;
 
-    private bool RecurringUsersLoading => this.DashboardState.Value.UserCounts.IsLoading;
+    private bool UserCountsLoading => this.DashboardState.Value.GetUserCounts.IsLoading;
 
-    private bool RatingSummaryLoading => this.DashboardState.Value.RatingSummary.IsLoading;
+    private bool RatingSummaryLoading => this.DashboardState.Value.GetRatingSummary.IsLoading;
 
     private bool YearOfBirthCountsLoading => this.DashboardState.Value.GetYearOfBirthCounts.IsLoading;
 
@@ -81,15 +81,15 @@ public partial class DashboardPage : FluxorComponent
 
     private int CurrentUniqueDays { get; set; } = 3;
 
-    private string RegisteredUsersErrorMessage => this.DashboardState.Value.RegisteredUsers.Error?.Message ?? string.Empty;
+    private string RegisteredUsersErrorMessage => this.DashboardState.Value.GetRegisteredUsers.Error?.Message ?? string.Empty;
 
-    private string LoggedInUsersErrorMessage => this.DashboardState.Value.LoggedInUsers.Error?.Message ?? string.Empty;
+    private string LoggedInUsersErrorMessage => this.DashboardState.Value.GetLoggedInUsers.Error?.Message ?? string.Empty;
 
-    private string DependentsErrorMessage => this.DashboardState.Value.Dependents.Error?.Message ?? string.Empty;
+    private string DependentsErrorMessage => this.DashboardState.Value.GetDependents.Error?.Message ?? string.Empty;
 
-    private string RecurringUsersErrorMessage => this.DashboardState.Value.UserCounts.Error?.Message ?? string.Empty;
+    private string RecurringUsersErrorMessage => this.DashboardState.Value.GetUserCounts.Error?.Message ?? string.Empty;
 
-    private string RatingSummaryErrorMessage => this.DashboardState.Value.RatingSummary.Error?.Message ?? string.Empty;
+    private string RatingSummaryErrorMessage => this.DashboardState.Value.GetRatingSummary.Error?.Message ?? string.Empty;
 
     private string YearOfBirthCountsErrorMessage => this.DashboardState.Value.GetYearOfBirthCounts.Error?.Message ?? string.Empty;
 
@@ -127,7 +127,7 @@ public partial class DashboardPage : FluxorComponent
         set
         {
             this.Dispatcher.Dispatch(
-                new DashboardActions.LoadRecurringUsersAction
+                new DashboardActions.GetUserCountsAction
                 {
                     Days = value,
                     StartPeriod = this.SelectedDateRange.Start?.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture) ?? string.Empty,
@@ -140,9 +140,9 @@ public partial class DashboardPage : FluxorComponent
 
     private int TimeOffset { get; } = (int)TimeZoneInfo.Local.GetUtcOffset(DateTime.Now).TotalMinutes;
 
-    private int TotalRegisteredUsers => this.RegisteredUsersResult.Sum(r => r.Value);
+    private int TotalRegisteredUsers => this.RegisteredUsers.Sum(r => r.Value);
 
-    private int TotalDependents => this.DependentsResult.Sum(r => r.Value);
+    private int TotalDependents => this.Dependents.Sum(r => r.Value);
 
     private IEnumerable<DailyDataRow> TableData
     {
@@ -153,7 +153,7 @@ public partial class DashboardPage : FluxorComponent
 
             List<DailyDataRow> results = new();
 
-            foreach (KeyValuePair<DateTime, int> user in this.RegisteredUsersResult)
+            foreach (KeyValuePair<DateTime, int> user in this.RegisteredUsers)
             {
                 DailyDataRow dashboardDailyData = new()
                 {
@@ -164,7 +164,7 @@ public partial class DashboardPage : FluxorComponent
                 results.Add(dashboardDailyData);
             }
 
-            foreach (KeyValuePair<DateTime, int> loggedInUser in this.LoggedInUsersResult)
+            foreach (KeyValuePair<DateTime, int> loggedInUser in this.LoggedInUsers)
             {
                 DailyDataRow dashboardDailyData = new()
                 {
@@ -175,7 +175,7 @@ public partial class DashboardPage : FluxorComponent
                 results.Add(dashboardDailyData);
             }
 
-            foreach (KeyValuePair<DateTime, int> dependent in this.DependentsResult)
+            foreach (KeyValuePair<DateTime, int> dependent in this.Dependents)
             {
                 DailyDataRow dashboardDailyData = new()
                 {
@@ -211,11 +211,11 @@ public partial class DashboardPage : FluxorComponent
     private void RetrieveData(int days, string startPeriod, string endPeriod, int timeOffset, bool initialLoad)
     {
         string endDate = initialLoad ? DateTime.Now.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture) : endPeriod;
-        this.Dispatcher.Dispatch(new DashboardActions.LoadRegisteredUsersAction { TimeOffset = timeOffset });
-        this.Dispatcher.Dispatch(new DashboardActions.LoadLoggedInUsersAction { TimeOffset = timeOffset });
-        this.Dispatcher.Dispatch(new DashboardActions.LoadDependentsAction { TimeOffset = timeOffset });
-        this.Dispatcher.Dispatch(new DashboardActions.LoadRecurringUsersAction { Days = days, StartPeriod = startPeriod, EndPeriod = endPeriod, TimeOffset = timeOffset });
-        this.Dispatcher.Dispatch(new DashboardActions.LoadRatingSummaryAction { StartPeriod = startPeriod, EndPeriod = endDate, TimeOffset = timeOffset });
+        this.Dispatcher.Dispatch(new DashboardActions.GetRegisteredUsersAction { TimeOffset = timeOffset });
+        this.Dispatcher.Dispatch(new DashboardActions.GetLoggedInUsersAction { TimeOffset = timeOffset });
+        this.Dispatcher.Dispatch(new DashboardActions.GetDependentsAction { TimeOffset = timeOffset });
+        this.Dispatcher.Dispatch(new DashboardActions.GetUserCountsAction { Days = days, StartPeriod = startPeriod, EndPeriod = endPeriod, TimeOffset = timeOffset });
+        this.Dispatcher.Dispatch(new DashboardActions.GetRatingSummaryAction { StartPeriod = startPeriod, EndPeriod = endDate, TimeOffset = timeOffset });
         this.Dispatcher.Dispatch(new DashboardActions.GetYearOfBirthCountsAction { StartPeriod = startPeriod, EndPeriod = endPeriod, TimeOffset = timeOffset });
     }
 

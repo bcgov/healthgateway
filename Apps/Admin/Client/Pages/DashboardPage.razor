@@ -19,7 +19,7 @@
     <MudItem xs="12" lg="12">
         <MudPaper Class="my-2 pa-4 d-flex justify-end" Elevation="0">
             <HgButton
-                Loading="@(RegisteredUsersLoading || LoggedInUsersLoading || DependentsLoading || RecurringUsersLoading || RatingSummaryLoading || YearOfBirthCountsLoading)"
+                Loading="@(RegisteredUsersLoading || LoggedInUsersLoading || DependentsLoading || UserCountsLoading || RatingSummaryLoading || YearOfBirthCountsLoading)"
                 EndIcon="fas fa-arrow-rotate-right"
                 OnClick="RefreshData"
                 data-testid="refresh-btn">
@@ -72,7 +72,7 @@ else
     </MudGrid>
 }
 
-@if (RegisteredUsersLoading || LoggedInUsersLoading || DependentsLoading || RecurringUsersLoading || YearOfBirthCountsLoading)
+@if (RegisteredUsersLoading || LoggedInUsersLoading || DependentsLoading || UserCountsLoading || YearOfBirthCountsLoading)
 {
     <MudGrid Class="my-3">
         <MudItem xs="6" lg="3">
@@ -95,7 +95,7 @@ else
     </MudGrid>
 }
 
-@if (RecurringUsersLoading)
+@if (UserCountsLoading)
 {
     <MudSkeleton Width="20%" />
     <MudGrid Class="my-3">

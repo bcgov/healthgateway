@@ -27,9 +27,9 @@ using System.Diagnostics.CodeAnalysis;
 public static class DashboardActions
 {
     /// <summary>
-    /// The action representing the initiation of a registered users load.
+    /// The action representing the initiation of a retrieval of registered users.
     /// </summary>
-    public record LoadRegisteredUsersAction
+    public record GetRegisteredUsersAction
     {
         /// <summary>
         /// Gets the offset from the client browser to UTC.
@@ -38,19 +38,19 @@ public static class DashboardActions
     }
 
     /// <summary>
-    /// The action representing a successful registered users load.
+    /// The action representing a successful retrieval of registered users.
     /// </summary>
-    public record RegisteredUsersSuccessAction : BaseSuccessAction<IDictionary<DateTime, int>>;
+    public record GetRegisteredUsersSuccessAction : BaseSuccessAction<IDictionary<DateTime, int>>;
 
     /// <summary>
-    /// The action representing a failed registered users load.
+    /// The action representing a failed retrieval of registered users.
     /// </summary>
-    public record RegisteredUsersFailureAction : BaseFailureAction;
+    public record GetRegisteredUsersFailureAction : BaseFailureAction;
 
     /// <summary>
-    /// The action representing the initiation of a logged in users load.
+    /// The action representing the initiation of a retrieval of logged in users.
     /// </summary>
-    public record LoadLoggedInUsersAction
+    public record GetLoggedInUsersAction
     {
         /// <summary>
         /// Gets the offset from the client browser to UTC.
@@ -59,19 +59,19 @@ public static class DashboardActions
     }
 
     /// <summary>
-    /// The action representing a successful logged in users load.
+    /// The action representing a successful retrieval of logged in users.
     /// </summary>
-    public record LoggedInUsersSuccessAction : BaseSuccessAction<IDictionary<DateTime, int>>;
+    public record GetLoggedInUsersSuccessAction : BaseSuccessAction<IDictionary<DateTime, int>>;
 
     /// <summary>
-    /// The action representing a failed logged in users load.
+    /// The action representing a failed retrieval of logged in users.
     /// </summary>
-    public record LoggedInUsersFailureAction : BaseFailureAction;
+    public record GetLoggedInUsersFailureAction : BaseFailureAction;
 
     /// <summary>
-    /// The action representing the initiation of a dependents load.
+    /// The action representing the initiation of a retrieval of dependents.
     /// </summary>
-    public record LoadDependentsAction
+    public record GetDependentsAction
     {
         /// <summary>
         /// Gets the offset from the client browser to UTC.
@@ -80,19 +80,19 @@ public static class DashboardActions
     }
 
     /// <summary>
-    /// The action representing a successful dependents load.
+    /// The action representing a successful retrieval of dependents.
     /// </summary>
-    public record DependentsSuccessAction : BaseSuccessAction<IDictionary<DateTime, int>>;
+    public record GetDependentsSuccessAction : BaseSuccessAction<IDictionary<DateTime, int>>;
 
     /// <summary>
-    /// The action representing a failed dependents load.
+    /// The action representing a failed retrieval of dependents.
     /// </summary>
-    public record DependentsFailureAction : BaseFailureAction;
+    public record GetDependentsFailureAction : BaseFailureAction;
 
     /// <summary>
-    /// The action representing the initiation of a recurring users load.
+    /// The action representing the initiation of a retrieval of user counts.
     /// </summary>
-    public record LoadRecurringUsersAction
+    public record GetUserCountsAction
     {
         /// <summary>
         /// Gets the minimum number of unique days logged in required to qualify as a recurring user.
@@ -116,19 +116,19 @@ public static class DashboardActions
     }
 
     /// <summary>
-    /// The action representing a successful recurring users load.
+    /// The action representing a successful retrieval of user counts.
     /// </summary>
-    public record RecurringUsersSuccessAction : BaseSuccessAction<IDictionary<string, int>>;
+    public record GetUserCountsSuccessAction : BaseSuccessAction<IDictionary<string, int>>;
 
     /// <summary>
-    /// The action representing a failed recurring users load.
+    /// The action representing a failed retrieval of user counts.
     /// </summary>
-    public record RecurringUsersFailureAction : BaseFailureAction;
+    public record GetUserCountsFailureAction : BaseFailureAction;
 
     /// <summary>
-    /// The action representing the initiation of a rating summary load.
+    /// The action representing the initiation of a retrieval of a ratings summary.
     /// </summary>
-    public record LoadRatingSummaryAction
+    public record GetRatingSummaryAction
     {
         /// <summary>
         /// Gets the start of the period to evaluate.
@@ -147,14 +147,14 @@ public static class DashboardActions
     }
 
     /// <summary>
-    /// The action representing a successful rating summary load.
+    /// The action representing a successful retrieval of a ratings summary.
     /// </summary>
-    public record RatingSummarySuccessAction : BaseSuccessAction<IDictionary<string, int>>;
+    public record GetRatingSummarySuccessAction : BaseSuccessAction<IDictionary<string, int>>;
 
     /// <summary>
-    /// The action representing a failed rating summary load.
+    /// The action representing a failed retrieval of a ratings summary.
     /// </summary>
-    public record RatingSummaryFailureAction : BaseFailureAction;
+    public record GetRatingSummaryFailureAction : BaseFailureAction;
 
     /// <summary>
     /// The action representing the initiation of a retrieval of year of birth counts.

@@ -24,21 +24,21 @@ using Fluxor;
 #pragma warning disable CS1591, SA1600
 public static class DashboardReducers
 {
-    [ReducerMethod(typeof(DashboardActions.LoadRegisteredUsersAction))]
-    public static DashboardState ReduceRegisteredUsersAction(DashboardState state)
+    [ReducerMethod(typeof(DashboardActions.GetRegisteredUsersAction))]
+    public static DashboardState ReduceGetRegisteredUsersAction(DashboardState state)
     {
         return state with
         {
-            RegisteredUsers = state.RegisteredUsers with { IsLoading = true },
+            GetRegisteredUsers = state.GetRegisteredUsers with { IsLoading = true },
         };
     }
 
     [ReducerMethod]
-    public static DashboardState ReduceLoadRegisteredUsersSuccessAction(DashboardState state, DashboardActions.RegisteredUsersSuccessAction action)
+    public static DashboardState ReduceGetRegisteredUsersSuccessAction(DashboardState state, DashboardActions.GetRegisteredUsersSuccessAction action)
     {
         return state with
         {
-            RegisteredUsers = state.RegisteredUsers with
+            GetRegisteredUsers = state.GetRegisteredUsers with
             {
                 Result = action.Data,
                 IsLoading = false,
@@ -48,11 +48,11 @@ public static class DashboardReducers
     }
 
     [ReducerMethod]
-    public static DashboardState ReduceRegisteredUserFailureAction(DashboardState state, DashboardActions.RegisteredUsersFailureAction action)
+    public static DashboardState ReduceGetRegisteredUsersFailureAction(DashboardState state, DashboardActions.GetRegisteredUsersFailureAction action)
     {
         return state with
         {
-            RegisteredUsers = state.RegisteredUsers with
+            GetRegisteredUsers = state.GetRegisteredUsers with
             {
                 Result = null,
                 IsLoading = false,
@@ -61,21 +61,21 @@ public static class DashboardReducers
         };
     }
 
-    [ReducerMethod(typeof(DashboardActions.LoadLoggedInUsersAction))]
-    public static DashboardState ReduceLoggedInUsersAction(DashboardState state)
+    [ReducerMethod(typeof(DashboardActions.GetLoggedInUsersAction))]
+    public static DashboardState ReduceGetLoggedInUsersAction(DashboardState state)
     {
         return state with
         {
-            LoggedInUsers = state.LoggedInUsers with { IsLoading = true },
+            GetLoggedInUsers = state.GetLoggedInUsers with { IsLoading = true },
         };
     }
 
     [ReducerMethod]
-    public static DashboardState ReduceLoggedInUsersSuccessAction(DashboardState state, DashboardActions.LoggedInUsersSuccessAction action)
+    public static DashboardState ReduceGetLoggedInUsersSuccessAction(DashboardState state, DashboardActions.GetLoggedInUsersSuccessAction action)
     {
         return state with
         {
-            LoggedInUsers = state.LoggedInUsers with
+            GetLoggedInUsers = state.GetLoggedInUsers with
             {
                 Result = action.Data,
                 IsLoading = false,
@@ -85,11 +85,11 @@ public static class DashboardReducers
     }
 
     [ReducerMethod]
-    public static DashboardState ReduceLoggedInUserFailureAction(DashboardState state, DashboardActions.LoggedInUsersFailureAction action)
+    public static DashboardState ReduceGetLoggedInUserFailureAction(DashboardState state, DashboardActions.GetLoggedInUsersFailureAction action)
     {
         return state with
         {
-            LoggedInUsers = state.LoggedInUsers with
+            GetLoggedInUsers = state.GetLoggedInUsers with
             {
                 Result = null,
                 IsLoading = false,
@@ -98,21 +98,21 @@ public static class DashboardReducers
         };
     }
 
-    [ReducerMethod(typeof(DashboardActions.LoadDependentsAction))]
-    public static DashboardState ReduceDependentsAction(DashboardState state)
+    [ReducerMethod(typeof(DashboardActions.GetDependentsAction))]
+    public static DashboardState ReduceGetDependentsAction(DashboardState state)
     {
         return state with
         {
-            Dependents = state.Dependents with { IsLoading = true },
+            GetDependents = state.GetDependents with { IsLoading = true },
         };
     }
 
     [ReducerMethod]
-    public static DashboardState ReduceDependentsSuccessAction(DashboardState state, DashboardActions.DependentsSuccessAction action)
+    public static DashboardState ReducGeteDependentsSuccessAction(DashboardState state, DashboardActions.GetDependentsSuccessAction action)
     {
         return state with
         {
-            Dependents = state.Dependents with
+            GetDependents = state.GetDependents with
             {
                 Result = action.Data,
                 IsLoading = false,
@@ -122,11 +122,11 @@ public static class DashboardReducers
     }
 
     [ReducerMethod]
-    public static DashboardState ReduceDependentsFailureAction(DashboardState state, DashboardActions.DependentsFailureAction action)
+    public static DashboardState ReduceGetDependentsFailureAction(DashboardState state, DashboardActions.GetDependentsFailureAction action)
     {
         return state with
         {
-            Dependents = state.Dependents with
+            GetDependents = state.GetDependents with
             {
                 Result = null,
                 IsLoading = false,
@@ -135,21 +135,21 @@ public static class DashboardReducers
         };
     }
 
-    [ReducerMethod(typeof(DashboardActions.LoadRecurringUsersAction))]
-    public static DashboardState ReduceRecurringUsersAction(DashboardState state)
+    [ReducerMethod(typeof(DashboardActions.GetUserCountsAction))]
+    public static DashboardState ReduceGetUserCountsAction(DashboardState state)
     {
         return state with
         {
-            UserCounts = state.UserCounts with { IsLoading = true },
+            GetUserCounts = state.GetUserCounts with { IsLoading = true },
         };
     }
 
     [ReducerMethod]
-    public static DashboardState ReduceRecurringUsersSuccessAction(DashboardState state, DashboardActions.RecurringUsersSuccessAction action)
+    public static DashboardState ReduceGetUserCountsSuccessAction(DashboardState state, DashboardActions.GetUserCountsSuccessAction action)
     {
         return state with
         {
-            UserCounts = state.UserCounts with
+            GetUserCounts = state.GetUserCounts with
             {
                 Result = action.Data,
                 IsLoading = false,
@@ -159,11 +159,11 @@ public static class DashboardReducers
     }
 
     [ReducerMethod]
-    public static DashboardState ReduceRecurringUsersFailureAction(DashboardState state, DashboardActions.RecurringUsersFailureAction action)
+    public static DashboardState ReduceGetUserCountsFailureAction(DashboardState state, DashboardActions.GetUserCountsFailureAction action)
     {
         return state with
         {
-            UserCounts = state.UserCounts with
+            GetUserCounts = state.GetUserCounts with
             {
                 Result = null,
                 IsLoading = false,
@@ -172,21 +172,21 @@ public static class DashboardReducers
         };
     }
 
-    [ReducerMethod(typeof(DashboardActions.LoadRatingSummaryAction))]
-    public static DashboardState ReduceRatingSummaryAction(DashboardState state)
+    [ReducerMethod(typeof(DashboardActions.GetRatingSummaryAction))]
+    public static DashboardState ReduceGetRatingSummaryAction(DashboardState state)
     {
         return state with
         {
-            RatingSummary = state.RatingSummary with { IsLoading = true },
+            GetRatingSummary = state.GetRatingSummary with { IsLoading = true },
         };
     }
 
     [ReducerMethod]
-    public static DashboardState ReduceRatingSummarySuccessAction(DashboardState state, DashboardActions.RatingSummarySuccessAction action)
+    public static DashboardState ReduceGetRatingSummarySuccessAction(DashboardState state, DashboardActions.GetRatingSummarySuccessAction action)
     {
         return state with
         {
-            RatingSummary = state.RatingSummary with
+            GetRatingSummary = state.GetRatingSummary with
             {
                 Result = action.Data,
                 IsLoading = false,
@@ -196,11 +196,11 @@ public static class DashboardReducers
     }
 
     [ReducerMethod]
-    public static DashboardState ReduceRatingSummaryFailureAction(DashboardState state, DashboardActions.RatingSummaryFailureAction action)
+    public static DashboardState ReduceGetRatingSummaryFailureAction(DashboardState state, DashboardActions.GetRatingSummaryFailureAction action)
     {
         return state with
         {
-            RatingSummary = state.RatingSummary with
+            GetRatingSummary = state.GetRatingSummary with
             {
                 Result = null,
                 IsLoading = false,
@@ -269,11 +269,11 @@ public static class DashboardReducers
     {
         return state with
         {
-            RegisteredUsers = new(),
-            LoggedInUsers = new(),
-            Dependents = new(),
-            UserCounts = new(),
-            RatingSummary = new(),
+            GetRegisteredUsers = new(),
+            GetLoggedInUsers = new(),
+            GetDependents = new(),
+            GetUserCounts = new(),
+            GetRatingSummary = new(),
             GetYearOfBirthCounts = new(),
             YearOfBirthCounts = ImmutableDictionary<string, int>.Empty,
         };
