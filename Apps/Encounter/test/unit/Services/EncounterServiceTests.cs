@@ -426,9 +426,8 @@ namespace HealthGateway.EncounterTests.Services
                 { "PHSA:BaseUrl", ConfigBaseUrl },
                 { "PHSA:FetchSize", ConfigFetchSize },
                 { "PHSA:BackOffMilliseconds", ConfigBackOffMilliseconds },
+                { "MspVisit:ExcludedFeeDescriptions", "PRIMARY CARE PANEL REPORT,LFP DIRECT PATIENT CARE TIME,LFP INDIRECT PATIENT CARE TIME" },
             };
-
-            configuration["MspVisit:ExcludedFeeDescriptions:1"] = "PRIMARY CARE PANEL REPORT";
 
             return new ConfigurationBuilder()
                 .AddInMemoryCollection(configuration)
