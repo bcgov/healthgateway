@@ -24,6 +24,7 @@ using Fluxor;
 using Fluxor.Blazor.Web.Components;
 using HealthGateway.Admin.Client.Store.Dashboard;
 using HealthGateway.Common.Data.Constants;
+using HealthGateway.Common.Data.Utils;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
 
@@ -50,6 +51,8 @@ public partial class DashboardPage : FluxorComponent
 
     private IDictionary<string, int> UserCountsResult => this.DashboardState.Value.UserCounts.Result ?? ImmutableDictionary<string, int>.Empty;
 
+    private IDictionary<string, int> YearOfBirthCounts => this.DashboardState.Value.YearOfBirthCounts;
+
     private int RecurringUserCount => this.UserCountsResult.TryGetValue("RecurringUserCount", out int recurringUserCount) ? recurringUserCount : 0;
 
     private int MobileUserCount => this.UserCountsResult.TryGetValue(UserLoginClientType.Mobile.ToString(), out int mobileCount) ? mobileCount : 0;
@@ -66,6 +69,8 @@ public partial class DashboardPage : FluxorComponent
 
     private bool RatingSummaryLoading => this.DashboardState.Value.RatingSummary.IsLoading;
 
+    private bool YearOfBirthCountsLoading => this.DashboardState.Value.GetYearOfBirthCounts.IsLoading;
+
     private MudDateRangePicker SelectedDateRangePicker { get; set; } = default!;
 
     private DateTime MinimumDateTime { get; } = new(2019, 06, 1, 0, 0, 0, DateTimeKind.Local);
@@ -76,25 +81,28 @@ public partial class DashboardPage : FluxorComponent
 
     private int CurrentUniqueDays { get; set; } = 3;
 
-    private bool RegisteredUsersHasError => this.DashboardState.Value.RegisteredUsers.Error != null && this.DashboardState.Value.RegisteredUsers.Error.Message.Length > 0;
-
     private string RegisteredUsersErrorMessage => this.DashboardState.Value.RegisteredUsers.Error?.Message ?? string.Empty;
-
-    private bool LoggedInUsersHasError => this.DashboardState.Value.LoggedInUsers.Error != null && this.DashboardState.Value.LoggedInUsers.Error.Message.Length > 0;
 
     private string LoggedInUsersErrorMessage => this.DashboardState.Value.LoggedInUsers.Error?.Message ?? string.Empty;
 
-    private bool DependentsHasError => this.DashboardState.Value.Dependents.Error != null && this.DashboardState.Value.Dependents.Error.Message.Length > 0;
-
     private string DependentsErrorMessage => this.DashboardState.Value.Dependents.Error?.Message ?? string.Empty;
-
-    private bool RecurringUsersHasError => this.DashboardState.Value.UserCounts.Error != null && this.DashboardState.Value.UserCounts.Error.Message.Length > 0;
 
     private string RecurringUsersErrorMessage => this.DashboardState.Value.UserCounts.Error?.Message ?? string.Empty;
 
-    private bool RatingSummaryHasError => this.DashboardState.Value.RatingSummary.Error != null && this.DashboardState.Value.RatingSummary.Error.Message.Length > 0;
-
     private string RatingSummaryErrorMessage => this.DashboardState.Value.RatingSummary.Error?.Message ?? string.Empty;
+
+    private string YearOfBirthCountsErrorMessage => this.DashboardState.Value.GetYearOfBirthCounts.Error?.Message ?? string.Empty;
+
+    private IEnumerable<string> ErrorMessages => StringManipulator.ExcludeBlanks(
+        new[]
+        {
+            this.RegisteredUsersErrorMessage,
+            this.DependentsErrorMessage,
+            this.LoggedInUsersErrorMessage,
+            this.RecurringUsersErrorMessage,
+            this.RatingSummaryErrorMessage,
+            this.YearOfBirthCountsErrorMessage,
+        });
 
     private DateRange SelectedDateRange
     {
@@ -102,61 +110,13 @@ public partial class DashboardPage : FluxorComponent
 
         set
         {
-            this.LoadDispatchActions(
+            this.RetrieveData(
                 this.UniqueDays,
                 value.Start?.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture),
                 value.End?.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture),
                 this.TimeOffset,
                 false);
             this.DateRange = value;
-        }
-    }
-
-    private bool HasError
-    {
-        get
-        {
-            bool test = this.RegisteredUsersHasError ||
-                        this.LoggedInUsersHasError ||
-                        this.DependentsHasError ||
-                        this.RecurringUsersHasError ||
-                        this.RatingSummaryHasError;
-            return test;
-        }
-    }
-
-    private List<string> ErrorList
-    {
-        get
-        {
-            List<string> errors = new();
-
-            if (this.RegisteredUsersHasError)
-            {
-                errors.Add(this.RegisteredUsersErrorMessage);
-            }
-
-            if (this.LoggedInUsersHasError)
-            {
-                errors.Add(this.LoggedInUsersErrorMessage);
-            }
-
-            if (this.DependentsHasError)
-            {
-                errors.Add(this.DependentsErrorMessage);
-            }
-
-            if (this.RecurringUsersHasError)
-            {
-                errors.Add(this.RecurringUsersErrorMessage);
-            }
-
-            if (this.RatingSummaryHasError)
-            {
-                errors.Add(this.RatingSummaryErrorMessage);
-            }
-
-            return errors;
         }
     }
 
@@ -244,23 +204,24 @@ public partial class DashboardPage : FluxorComponent
     protected override void OnInitialized()
     {
         base.OnInitialized();
-        this.ResetDashboardState();
-        this.LoadDispatchActions(this.UniqueDays, StartDate, EndDate, this.TimeOffset, true);
+        this.Dispatcher.Dispatch(new DashboardActions.ResetStateAction());
+        this.RetrieveData(this.UniqueDays, StartDate, EndDate, this.TimeOffset, true);
     }
 
-    private void LoadDispatchActions(int days, string startPeriod, string endPeriod, int timeOffset, bool initialLoad)
+    private void RetrieveData(int days, string startPeriod, string endPeriod, int timeOffset, bool initialLoad)
     {
         string endDate = initialLoad ? DateTime.Now.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture) : endPeriod;
         this.Dispatcher.Dispatch(new DashboardActions.LoadRegisteredUsersAction { TimeOffset = timeOffset });
         this.Dispatcher.Dispatch(new DashboardActions.LoadLoggedInUsersAction { TimeOffset = timeOffset });
         this.Dispatcher.Dispatch(new DashboardActions.LoadDependentsAction { TimeOffset = timeOffset });
         this.Dispatcher.Dispatch(new DashboardActions.LoadRecurringUsersAction { Days = days, StartPeriod = startPeriod, EndPeriod = endPeriod, TimeOffset = timeOffset });
-        this.DispatchRatingSummaryAction(startPeriod, endDate, timeOffset);
+        this.Dispatcher.Dispatch(new DashboardActions.LoadRatingSummaryAction { StartPeriod = startPeriod, EndPeriod = endDate, TimeOffset = timeOffset });
+        this.Dispatcher.Dispatch(new DashboardActions.GetYearOfBirthCountsAction { StartPeriod = startPeriod, EndPeriod = endPeriod, TimeOffset = timeOffset });
     }
 
-    private void ReloadDispatchActions()
+    private void RefreshData()
     {
-        this.LoadDispatchActions(
+        this.RetrieveData(
             this.UniqueDays,
             this.SelectedDateRange.Start?.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture),
             this.SelectedDateRange.End?.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture),
@@ -268,14 +229,18 @@ public partial class DashboardPage : FluxorComponent
             false);
     }
 
-    private void DispatchRatingSummaryAction(string startPeriod, string endPeriod, int timeOffset)
+    private ChartSeries GetYearOfBirthCountSeries()
     {
-        this.Dispatcher.Dispatch(new DashboardActions.LoadRatingSummaryAction { StartPeriod = startPeriod, EndPeriod = endPeriod, TimeOffset = timeOffset });
+        return new ChartSeries
+        {
+            Name = "Count of Unique Users",
+            Data = this.YearOfBirthCounts.Select(kvp => (double)kvp.Value).ToArray(),
+        };
     }
 
-    private void ResetDashboardState()
+    private string[] GetYearOfBirthLabels()
     {
-        this.Dispatcher.Dispatch(new DashboardActions.ResetStateAction());
+        return this.YearOfBirthCounts.Select((kvp, i) => i % 10 == 0 ? kvp.Key : string.Empty).ToArray();
     }
 
     private sealed record DailyDataRow
