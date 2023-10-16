@@ -129,7 +129,9 @@ namespace HealthGateway.Encounter.Services
                     if (response.ResourcePayload is { Claims: not null })
                     {
                         result.TotalResultCount = response.ResourcePayload.TotalRecords;
-                        IEnumerable<Claim> filteredClaims = response.ResourcePayload.Claims.Where(c => !this.excludedFeeDescriptions.Contains(c.FeeDesc));
+                        IEnumerable<Claim> filteredClaims = response.ResourcePayload.Claims.Where(
+                            c => !this.excludedFeeDescriptions
+                                .Exists(d => c.FeeDesc.StartsWith(d, StringComparison.OrdinalIgnoreCase)));
                         result.ResourcePayload = this.autoMapper
                             .Map<IEnumerable<Claim>, IEnumerable<EncounterModel>>(filteredClaims)
                             .GroupBy(e => e.Id)

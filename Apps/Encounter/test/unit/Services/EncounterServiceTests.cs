@@ -58,7 +58,7 @@ namespace HealthGateway.EncounterTests.Services
         private readonly Claim excludeClaim = new()
         {
             ClaimId = 3,
-            FeeDesc = "PRIMARY CARE PANEL REPORT",
+            FeeDesc = "PRIMARY CARE PANEL REPORT with appended data",
             PractitionerName = "Mock Name 2",
             ServiceDate = DateTime.ParseExact("2010/07/15", "yyyy/MM/dd", CultureInfo.InvariantCulture),
         };
