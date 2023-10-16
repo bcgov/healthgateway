@@ -35,11 +35,10 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
         public static void ConfigureHangfireQueue(IServiceCollection services, IConfiguration configuration)
         {
             services.AddHangfire(
-                x =>
-                {
-                    JobStorage.Current = new PostgreSqlStorage(configuration.GetConnectionString("GatewayConnection"));
-                    x.UsePostgreSqlStorage(configuration.GetConnectionString("GatewayConnection"));
-                });
+                config =>
+                    config.UsePostgreSqlStorage(
+                        c =>
+                            c.UseNpgsqlConnection(configuration.GetConnectionString("GatewayConnection"))));
         }
     }
 }
