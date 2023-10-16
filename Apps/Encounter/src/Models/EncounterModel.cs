@@ -52,5 +52,11 @@ namespace HealthGateway.Encounter.Models
         /// </summary>
         [JsonPropertyName("clinic")]
         public Clinic Clinic { get; set; } = new();
+
+        /// <summary>
+        /// Gets or sets the Fee Desc.
+        /// </summary>
+        [JsonPropertyName("feeDesc")]
+        public string FeeDesc { get; set; } = string.Empty;
     }
 }

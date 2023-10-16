@@ -55,9 +55,18 @@ namespace HealthGateway.EncounterTests.Services
         private const string ConfigFetchSize = "25";
         private readonly string ipAddress = "127.0.0.1";
 
+        private readonly Claim excludeClaim = new()
+        {
+            ClaimId = 3,
+            FeeDesc = "PRIMARY CARE PANEL REPORT",
+            PractitionerName = "Mock Name 2",
+            ServiceDate = DateTime.ParseExact("2010/07/15", "yyyy/MM/dd", CultureInfo.InvariantCulture),
+        };
+
         private readonly Claim oddClaim = new()
         {
             ClaimId = 2,
+            FeeDesc = "VALID REPORT",
             PractitionerName = "Mock Name 2",
             ServiceDate = DateTime.ParseExact("2015/07/15", "yyyy/MM/dd", CultureInfo.InvariantCulture),
         };
@@ -75,6 +84,7 @@ namespace HealthGateway.EncounterTests.Services
         private readonly Claim sameClaim = new()
         {
             ClaimId = 1,
+            FeeDesc = "VALID REPORT",
             PractitionerName = "Mock Name 1",
             LocationName = "Mock Name 1",
             SpecialtyDesc = "Mocked SpecialtyDesc 1",
@@ -113,6 +123,7 @@ namespace HealthGateway.EncounterTests.Services
                         this.sameClaim,
                         this.oddClaim,
                         this.sameClaim,
+                        this.excludeClaim,
                     },
                 },
             };
@@ -410,15 +421,17 @@ namespace HealthGateway.EncounterTests.Services
 
         private static IConfigurationRoot GetIConfigurationRoot()
         {
-            Dictionary<string, string?> configuration = new()
+            Dictionary<string, string> configuration = new()
             {
                 { "PHSA:BaseUrl", ConfigBaseUrl },
                 { "PHSA:FetchSize", ConfigFetchSize },
-                { "PHSA: BackOffMilliseconds", ConfigBackOffMilliseconds },
+                { "PHSA:BackOffMilliseconds", ConfigBackOffMilliseconds },
             };
 
+            configuration["MspVisit:ExcludedFeeDescriptions:1"] = "PRIMARY CARE PANEL REPORT";
+
             return new ConfigurationBuilder()
-                .AddInMemoryCollection(configuration.ToList())
+                .AddInMemoryCollection(configuration!)
                 .Build();
         }
 

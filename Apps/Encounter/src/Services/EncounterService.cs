@@ -50,6 +50,7 @@ namespace HealthGateway.Encounter.Services
         private readonly IPatientService patientService;
         private readonly PhsaConfig phsaConfig;
         private readonly IPatientRepository patientRepository;
+        private readonly List<string> excludedFeeDescriptions;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="EncounterService"/> class.
@@ -81,6 +82,7 @@ namespace HealthGateway.Encounter.Services
             this.autoMapper = autoMapper;
             this.phsaConfig = new PhsaConfig();
             configuration.Bind(PhsaConfig.ConfigurationSectionKey, this.phsaConfig);
+            this.excludedFeeDescriptions = configuration.GetSection("MspVisit:ExcludedFeeDescriptions").Get<List<string>>() ?? new List<string>();
         }
 
         private static ActivitySource Source { get; } = new(nameof(EncounterService));
@@ -127,7 +129,9 @@ namespace HealthGateway.Encounter.Services
                     if (response.ResourcePayload is { Claims: not null })
                     {
                         result.TotalResultCount = response.ResourcePayload.TotalRecords;
-                        result.ResourcePayload = this.autoMapper.Map<IEnumerable<Claim>, IEnumerable<EncounterModel>>(response.ResourcePayload.Claims)
+                        IEnumerable<Claim> filteredClaims = response.ResourcePayload.Claims.Where(c => !this.excludedFeeDescriptions.Contains(c.FeeDesc));
+                        result.ResourcePayload = this.autoMapper
+                            .Map<IEnumerable<Claim>, IEnumerable<EncounterModel>>(filteredClaims)
                             .GroupBy(e => e.Id)
                             .Select(g => g.First());
                     }
