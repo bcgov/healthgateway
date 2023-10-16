@@ -421,7 +421,7 @@ namespace HealthGateway.EncounterTests.Services
 
         private static IConfigurationRoot GetIConfigurationRoot()
         {
-            Dictionary<string, string> configuration = new()
+            Dictionary<string, string?> configuration = new()
             {
                 { "PHSA:BaseUrl", ConfigBaseUrl },
                 { "PHSA:FetchSize", ConfigFetchSize },
@@ -431,7 +431,7 @@ namespace HealthGateway.EncounterTests.Services
             configuration["MspVisit:ExcludedFeeDescriptions:1"] = "PRIMARY CARE PANEL REPORT";
 
             return new ConfigurationBuilder()
-                .AddInMemoryCollection(configuration!)
+                .AddInMemoryCollection(configuration)
                 .Build();
         }
 
