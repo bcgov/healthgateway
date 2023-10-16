@@ -148,54 +148,18 @@ public partial class DashboardPage : FluxorComponent
     {
         get
         {
-            DateTime? startDate = this.SelectedDateRange.Start;
-            DateTime? endDate = this.SelectedDateRange.End;
-
-            List<DailyDataRow> results = new();
-
-            foreach (KeyValuePair<DateTime, int> user in this.RegisteredUsers)
-            {
-                DailyDataRow dashboardDailyData = new()
-                {
-                    DailyDateTime = user.Key,
-                    TotalRegisteredUsers = user.Value,
-                };
-
-                results.Add(dashboardDailyData);
-            }
-
-            foreach (KeyValuePair<DateTime, int> loggedInUser in this.LoggedInUsers)
-            {
-                DailyDataRow dashboardDailyData = new()
-                {
-                    DailyDateTime = loggedInUser.Key,
-                    TotalLoggedInUsers = loggedInUser.Value,
-                };
-
-                results.Add(dashboardDailyData);
-            }
-
-            foreach (KeyValuePair<DateTime, int> dependent in this.Dependents)
-            {
-                DailyDataRow dashboardDailyData = new()
-                {
-                    DailyDateTime = dependent.Key,
-                    TotalDependents = dependent.Value,
-                };
-
-                results.Add(dashboardDailyData);
-            }
-
-            return results
-                .Where(r => startDate <= r.DailyDateTime && r.DailyDateTime <= endDate)
+            return this.RegisteredUsers.Select(kvp => new DailyDataRow { DailyDateTime = kvp.Key, TotalRegisteredUsers = kvp.Value })
+                .Concat(this.LoggedInUsers.Select(kvp => new DailyDataRow { DailyDateTime = kvp.Key, TotalLoggedInUsers = kvp.Value }))
+                .Concat(this.Dependents.Select(kvp => new DailyDataRow { DailyDateTime = kvp.Key, TotalDependents = kvp.Value }))
+                .Where(r => this.SelectedDateRange.Start <= r.DailyDateTime && r.DailyDateTime <= this.SelectedDateRange.End)
                 .GroupBy(r => r.DailyDateTime)
                 .Select(
-                    grp => new DailyDataRow
+                    group => new DailyDataRow
                     {
-                        DailyDateTime = grp.First().DailyDateTime,
-                        TotalRegisteredUsers = grp.Sum(s => s.TotalRegisteredUsers),
-                        TotalDependents = grp.Sum(d => d.TotalDependents),
-                        TotalLoggedInUsers = grp.Sum(l => l.TotalLoggedInUsers),
+                        DailyDateTime = group.Key,
+                        TotalRegisteredUsers = group.Sum(r => r.TotalRegisteredUsers),
+                        TotalDependents = group.Sum(r => r.TotalDependents),
+                        TotalLoggedInUsers = group.Sum(r => r.TotalLoggedInUsers),
                     });
         }
     }
