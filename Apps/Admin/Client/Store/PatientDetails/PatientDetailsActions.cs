@@ -17,6 +17,7 @@ namespace HealthGateway.Admin.Client.Store.PatientDetails
 {
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
+    using HealthGateway.Admin.Common.Constants;
     using HealthGateway.Admin.Common.Models;
     using HealthGateway.Admin.Common.Models.CovidSupport;
     using HealthGateway.Common.Data.Constants;
@@ -33,9 +34,19 @@ namespace HealthGateway.Admin.Client.Store.PatientDetails
         public record LoadAction
         {
             /// <summary>
-            /// Gets or sets query string.
+            /// Gets the query type.
             /// </summary>
-            public required string Hdid { get; set; }
+            public required ClientRegistryType QueryType { get; init; }
+
+            /// <summary>
+            /// Gets the query string.
+            /// </summary>
+            public required string QueryString { get; init; }
+
+            /// <summary>
+            /// Gets or sets a value indicating whether the call should force cached vaccine validation details data to be refreshed.
+            /// </summary>
+            public bool RefreshVaccineDetails { get; set; }
         }
 
         /// <summary>
@@ -96,9 +107,9 @@ namespace HealthGateway.Admin.Client.Store.PatientDetails
             public required CovidAssessmentRequest Request { get; init; }
 
             /// <summary>
-            /// Gets the HDID associated with the patient.
+            /// Gets the PHN associated with the patient.
             /// </summary>
-            public required string Hdid { get; init; }
+            public required string Phn { get; init; }
         }
 
         /// <summary>
@@ -107,9 +118,9 @@ namespace HealthGateway.Admin.Client.Store.PatientDetails
         public record SubmitCovid19TreatmentAssessmentSuccessAction
         {
             /// <summary>
-            /// Gets the HDID associated with the patient.
+            /// Gets the PHN associated with the patient.
             /// </summary>
-            public required string Hdid { get; init; }
+            public required string Phn { get; init; }
         }
 
         /// <summary>

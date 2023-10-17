@@ -17,6 +17,7 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
 {
     using System;
     using System.Collections.Generic;
+    using System.Globalization;
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
@@ -78,7 +79,7 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
         [Fact]
         public async Task ShouldAddDependent()
         {
-            DateTime dateOfBirth = new(1980, 1, 1);
+            DateTime dateOfBirth = DateTime.Parse("1980-01-01", CultureInfo.InvariantCulture);
             DateOnly expiryDate = DateOnly.FromDateTime(dateOfBirth.AddYears(12));
             Mock<IHttpContextAccessor> httpContextAccessorMock = CreateValidHttpContext(this.token, this.userId, this.hdid);
             Mock<IDependentService> dependentServiceMock = new();
@@ -180,7 +181,7 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
 
             for (int i = 0; i < 10; i++)
             {
-                DateTime dateOfBirth = new(1980 + i, 1, 1);
+                DateTime dateOfBirth = new(1980 + i, 1, 1, 0, 0, 0, DateTimeKind.Local);
                 DateOnly expiryDate = DateOnly.FromDateTime(dateOfBirth);
 
                 dependentModels.Add(

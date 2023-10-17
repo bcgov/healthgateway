@@ -21,17 +21,17 @@ namespace HealthGateway.Admin.Client.Components.Support
     using System.Threading.Tasks;
     using Fluxor;
     using Fluxor.Blazor.Web.Components;
+    using HealthGateway.Admin.Client.Store.PatientDetails;
     using HealthGateway.Admin.Client.Store.VaccineCard;
+    using HealthGateway.Admin.Common.Constants;
     using HealthGateway.Admin.Common.Models.CovidSupport;
     using HealthGateway.Common.Data.Models;
-    using HealthGateway.Common.Data.Utils;
     using Microsoft.AspNetCore.Components;
-    using Microsoft.Extensions.Configuration;
     using Microsoft.JSInterop;
     using MudBlazor;
     using MailVaccineCardAddressConfirmationDialog = AddressConfirmationDialog<
-        Store.VaccineCard.VaccineCardActions.MailVaccineCardFailureAction,
-        Store.VaccineCard.VaccineCardActions.MailVaccineCardSuccessAction>;
+        HealthGateway.Admin.Client.Store.VaccineCard.VaccineCardActions.MailVaccineCardFailureAction,
+        HealthGateway.Admin.Client.Store.VaccineCard.VaccineCardActions.MailVaccineCardSuccessAction>;
 
     /// <summary>
     /// Backing logic for the COVID-19 immunization section.
@@ -50,7 +50,7 @@ namespace HealthGateway.Admin.Client.Components.Support
         /// </summary>
         [Parameter]
         [EditorRequired]
-        public IEnumerable<VaccineDose> Data { get; set; } = Enumerable.Empty<VaccineDose>();
+        public VaccineDetails? Data { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether data is loading.
@@ -70,9 +70,6 @@ namespace HealthGateway.Admin.Client.Components.Support
         private IActionSubscriber ActionSubscriber { get; set; } = default!;
 
         [Inject]
-        private IConfiguration Configuration { get; set; } = default!;
-
-        [Inject]
         private IDialogService Dialog { get; set; } = default!;
 
         [Inject]
@@ -87,11 +84,13 @@ namespace HealthGateway.Admin.Client.Components.Support
         [Inject]
         private IState<VaccineCardState> VaccineCardState { get; set; } = default!;
 
+        private bool ContainsInvalidDoses => this.Data?.ContainsInvalidDoses ?? false;
+
         private bool MailVaccineCardIsLoading => this.VaccineCardState.Value.MailVaccineCard.IsLoading;
 
         private bool PrintVaccineCardIsLoading => this.VaccineCardState.Value.PrintVaccineCard.IsLoading;
 
-        private IEnumerable<VaccineDoseRow> Rows => this.Data.Select(d => new VaccineDoseRow(d));
+        private IEnumerable<VaccineDoseRow> Rows => this.Data?.Doses.Select(d => new VaccineDoseRow(d)) ?? Enumerable.Empty<VaccineDoseRow>();
 
         private ReportModel? VaccineCardStateData => this.VaccineCardState.Value.PrintVaccineCard.Result;
 
@@ -144,16 +143,6 @@ namespace HealthGateway.Admin.Client.Components.Support
             await dialog.Result.ConfigureAwait(true);
         }
 
-        private DateTime? ConvertDateTime(DateTime? utcDateTime)
-        {
-            if (utcDateTime != null)
-            {
-                return TimeZoneInfo.ConvertTimeFromUtc((DateTime)utcDateTime, this.GetTimeZone());
-            }
-
-            return null;
-        }
-
         private void DisplayMailVaccineCardSuccessful(VaccineCardActions.MailVaccineCardSuccessAction action)
         {
             this.Snackbar.Add("BC Vaccine Card mailed successfully.", Severity.Success);
@@ -169,11 +158,6 @@ namespace HealthGateway.Admin.Client.Components.Support
             this.Dispatcher.Dispatch(new VaccineCardActions.ResetStateAction());
         }
 
-        private TimeZoneInfo GetTimeZone()
-        {
-            return DateFormatter.GetLocalTimeZone(this.Configuration);
-        }
-
         private void MailVaccineCard(Address address)
         {
             this.Dispatcher.Dispatch(new VaccineCardActions.MailVaccineCardAction { Phn = this.Phn, MailAddress = address });
@@ -182,6 +166,11 @@ namespace HealthGateway.Admin.Client.Components.Support
         private void Print()
         {
             this.Dispatcher.Dispatch(new VaccineCardActions.PrintVaccineCardAction { Phn = this.Phn });
+        }
+
+        private void Refresh()
+        {
+            this.Dispatcher.Dispatch(new PatientDetailsActions.LoadAction { QueryType = ClientRegistryType.Phn, QueryString = this.Phn, RefreshVaccineDetails = true });
         }
 
         private sealed record VaccineDoseRow
@@ -194,7 +183,7 @@ namespace HealthGateway.Admin.Client.Components.Support
                 this.Location = model.Location;
             }
 
-            public DateTime? Date { get; }
+            public DateOnly? Date { get; }
 
             public string? Product { get; }
 

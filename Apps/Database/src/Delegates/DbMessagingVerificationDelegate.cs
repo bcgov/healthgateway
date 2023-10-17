@@ -19,6 +19,7 @@ namespace HealthGateway.Database.Delegates
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using System.Linq;
+    using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.Models;
@@ -47,7 +48,7 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public Guid Insert(MessagingVerification messageVerification)
+        public async Task<Guid> InsertAsync(MessagingVerification messageVerification, bool commit = true, CancellationToken ct = default)
         {
             this.logger.LogTrace("Inserting message verification to DB...");
             if (messageVerification.VerificationType == MessagingVerificationType.Email && messageVerification.Email == null)
@@ -61,8 +62,12 @@ namespace HealthGateway.Database.Delegates
                 throw new ArgumentException("SMSNumber/SMSValidationCode cannot be null or empty when verification type is SMS");
             }
 
-            this.dbContext.Add(messageVerification);
-            this.dbContext.SaveChanges();
+            await this.dbContext.AddAsync(messageVerification, ct);
+            if (commit)
+            {
+                await this.dbContext.SaveChangesAsync(ct);
+            }
+
             this.logger.LogDebug("Finished inserting message verification to DB");
             return messageVerification.Id;
         }
@@ -96,11 +101,15 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public void Update(MessagingVerification messageVerification)
+        public async Task UpdateAsync(MessagingVerification messageVerification, bool commit = true, CancellationToken ct = default)
         {
             this.logger.LogTrace("Updating email message verification in DB...");
             this.dbContext.Update(messageVerification);
-            this.dbContext.SaveChanges();
+            if (commit)
+            {
+                await this.dbContext.SaveChangesAsync(ct);
+            }
+
             this.logger.LogDebug("Finished updating email message verification {Id} in DB", messageVerification.Id);
         }
 
@@ -125,11 +134,11 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public void Expire(MessagingVerification messageVerification, bool markDeleted)
+        public async Task ExpireAsync(MessagingVerification messageVerification, bool markDeleted, CancellationToken ct = default)
         {
             messageVerification.ExpireDate = DateTime.UtcNow;
             messageVerification.Deleted = markDeleted;
-            this.Update(messageVerification);
+            await this.UpdateAsync(messageVerification, ct: ct);
 
             this.logger.LogDebug("Finished Expiring messaging verification from DB");
         }

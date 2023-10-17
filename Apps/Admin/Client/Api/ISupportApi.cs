@@ -17,6 +17,7 @@ namespace HealthGateway.Admin.Client.Api;
 
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using HealthGateway.Admin.Common.Constants;
 using HealthGateway.Admin.Common.Models;
 using HealthGateway.Admin.Common.Models.CovidSupport;
 using HealthGateway.Common.Data.Constants;
@@ -38,12 +39,17 @@ public interface ISupportApi
     Task<IList<PatientSupportResult>> GetPatientsAsync(PatientQueryType queryType, string queryString);
 
     /// <summary>
-    /// Gets the list of messaging verification models from the server.
+    /// Gets the patient support details model from the server.
     /// </summary>
-    /// <param name="hdid">The hdid associated with the messaging verification.</param>
-    /// <returns>The list of MessagingVerificationModel objects.</returns>
-    [Get("/PatientSupportDetails?hdid={hdid}")]
-    Task<PatientSupportDetails> GetPatientSupportDetailsAsync(string hdid);
+    /// <param name="queryType">The type of query to be performed when searching for patient support details.</param>
+    /// <param name="queryString">The string value associated with the query type when searching for patient support details.</param>
+    /// <param name="refreshVaccineDetails">
+    /// Whether the call should force cached vaccine validation details data to be
+    /// refreshed.
+    /// </param>
+    /// <returns>The patient support details object.</returns>
+    [Get("/PatientSupportDetails?queryType={queryType}&queryString={queryString}")]
+    Task<PatientSupportDetails> GetPatientSupportDetailsAsync(ClientRegistryType queryType, string queryString, bool refreshVaccineDetails);
 
     /// <summary>
     /// Creates, updates, or deletes block access configuration for the passed HDID.

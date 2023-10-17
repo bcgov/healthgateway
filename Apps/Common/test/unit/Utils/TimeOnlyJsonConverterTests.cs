@@ -16,6 +16,7 @@
 namespace HealthGateway.CommonTests.Utils
 {
     using System;
+    using System.Globalization;
     using System.Text.Json;
     using HealthGateway.Common.Utils;
     using Xunit;
@@ -32,7 +33,7 @@ namespace HealthGateway.CommonTests.Utils
         public void ShouldSerialize()
         {
             string timeStr = "20:20:20.7192222";
-            TimeOnly time = TimeOnly.ParseExact(timeStr, "HH:mm:ss.FFFFFFF");
+            TimeOnly time = TimeOnly.ParseExact(timeStr, "HH:mm:ss.FFFFFFF", CultureInfo.InvariantCulture);
             JsonSerializerOptions options = new()
             {
                 Converters = { new TimeOnlyJsonConverter() },
@@ -50,7 +51,7 @@ namespace HealthGateway.CommonTests.Utils
         public void ShouldDeserialize()
         {
             string timeStr = "20:20:20.7192222";
-            TimeOnly time = TimeOnly.ParseExact(timeStr, "HH:mm:ss.FFFFFFF");
+            TimeOnly time = TimeOnly.ParseExact(timeStr, "HH:mm:ss.FFFFFFF", CultureInfo.InvariantCulture);
             JsonSerializerOptions options = new()
             {
                 Converters = { new TimeOnlyJsonConverter() },

@@ -17,6 +17,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
 {
     using System;
     using System.Collections.Generic;
+    using System.Globalization;
     using System.Linq;
     using AutoMapper;
     using DeepEqual.Syntax;
@@ -150,7 +151,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             DbResult<UserProfile> profileDbResult = new()
             {
                 Payload = new UserProfile
-                    { EncryptionKey = encryptionKey },
+                { EncryptionKey = encryptionKey },
             };
 
             Mock<IUserProfileDelegate> profileDelegateMock = new();
@@ -178,7 +179,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             DbResult<UserProfile> profileDbResult = new()
             {
                 Payload = new UserProfile
-                    { EncryptionKey = encryptionKey },
+                { EncryptionKey = encryptionKey },
             };
 
             Mock<IUserProfileDelegate> profileDelegateMock = new();
@@ -190,7 +191,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 ParentEntryId = this.parentEntryId,
                 Text = "Deleted Comment",
                 EntryTypeCode = CommentEntryType.Medication,
-                CreatedDateTime = new DateTime(2020, 1, 1),
+                CreatedDateTime = DateTime.Parse("2020-01-01", CultureInfo.InvariantCulture),
             };
 
             ICommentService service = new CommentService(
@@ -215,7 +216,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             DbResult<UserProfile> profileDbResult = new()
             {
                 Payload = new UserProfile
-                    { EncryptionKey = encryptionKey },
+                { EncryptionKey = encryptionKey },
             };
 
             Mock<IUserProfileDelegate> profileDelegateMock = new();
@@ -227,7 +228,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 ParentEntryId = this.parentEntryId,
                 Text = "Deleted Comment",
                 EntryTypeCode = CommentEntryType.Medication,
-                CreatedDateTime = new DateTime(2020, 1, 1),
+                CreatedDateTime = DateTime.Parse("2020-01-01", CultureInfo.InvariantCulture),
             };
 
             ICommentService service = new CommentService(
@@ -252,7 +253,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             DbResult<UserProfile> profileDbResult = new()
             {
                 Payload = new UserProfile
-                    { EncryptionKey = encryptionKey },
+                { EncryptionKey = encryptionKey },
             };
 
             Mock<IUserProfileDelegate> profileDelegateMock = new();
@@ -264,7 +265,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 ParentEntryId = this.parentEntryId,
                 Text = "Deleted Comment",
                 EntryTypeCode = CommentEntryType.Medication,
-                CreatedDateTime = new DateTime(2020, 1, 1),
+                CreatedDateTime = DateTime.Parse("2020-01-01", CultureInfo.InvariantCulture),
             };
 
             ICommentService service = new CommentService(
@@ -285,7 +286,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             DbResult<UserProfile> profileDbResult = new()
             {
                 Payload = new UserProfile
-                    { EncryptionKey = encryptionKey },
+                { EncryptionKey = encryptionKey },
             };
 
             Mock<IUserProfileDelegate> profileDelegateMock = new();
@@ -301,7 +302,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 ParentEntryId = this.parentEntryId,
                 Text = "Deleted Comment",
                 EntryTypeCode = CommentEntryType.Medication,
-                CreatedDateTime = new DateTime(2020, 1, 1),
+                CreatedDateTime = DateTime.Parse("2020-01-01", CultureInfo.InvariantCulture),
             };
             IMapper autoMapper = MapperUtil.InitializeAutoMapper();
             Comment comment = CommentMapUtils.ToDbModel(userComment, cryptoDelegateMock.Object, encryptionKey, autoMapper);
@@ -332,7 +333,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             DbResult<UserProfile> profileDbResult = new()
             {
                 Payload = new UserProfile
-                    { EncryptionKey = encryptionKey },
+                { EncryptionKey = encryptionKey },
             };
 
             Mock<IUserProfileDelegate> profileDelegateMock = new();
@@ -348,7 +349,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 ParentEntryId = this.parentEntryId,
                 Text = "Updated Comment",
                 EntryTypeCode = CommentEntryType.Medication,
-                CreatedDateTime = new DateTime(2020, 1, 1),
+                CreatedDateTime = DateTime.Parse("2020-01-01", CultureInfo.InvariantCulture),
             };
 
             IMapper autoMapper = MapperUtil.InitializeAutoMapper();
@@ -381,7 +382,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             DbResult<UserProfile> profileDbResult = new()
             {
                 Payload = new UserProfile
-                    { EncryptionKey = encryptionKey },
+                { EncryptionKey = encryptionKey },
             };
 
             Mock<IUserProfileDelegate> profileDelegateMock = new();
@@ -399,7 +400,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                     ParentEntryId = this.parentEntryId,
                     Text = "First Comment",
                     EntryTypeCode = CommentEntryType.Medication,
-                    CreatedDateTime = new DateTime(2020, 1, 1),
+                    CreatedDateTime = DateTime.Parse("2020-01-01", CultureInfo.InvariantCulture),
                 },
                 new Comment
                 {
@@ -407,7 +408,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                     ParentEntryId = this.parentEntryId,
                     Text = "Second Comment",
                     EntryTypeCode = CommentEntryType.Medication,
-                    CreatedDateTime = new DateTime(2020, 2, 2),
+                    CreatedDateTime = DateTime.Parse("2020-02-02", CultureInfo.InvariantCulture),
                 },
             };
             IMapper autoMapper = MapperUtil.InitializeAutoMapper();
@@ -440,7 +441,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             DbResult<UserProfile> profileDbResult = new()
             {
                 Payload = new UserProfile
-                    { EncryptionKey = encryptionKey },
+                { EncryptionKey = encryptionKey },
             };
 
             Mock<IUserProfileDelegate> profileDelegateMock = new();
@@ -456,7 +457,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 ParentEntryId = this.parentEntryId,
                 Text = "Inserted Comment",
                 EntryTypeCode = CommentEntryType.Medication,
-                CreatedDateTime = new DateTime(2020, 1, 1),
+                CreatedDateTime = DateTime.Parse("2020-01-01", CultureInfo.InvariantCulture),
             };
             IMapper autoMapper = MapperUtil.InitializeAutoMapper();
             Comment comment = CommentMapUtils.ToDbModel(userComment, cryptoDelegateMock.Object, encryptionKey, autoMapper);

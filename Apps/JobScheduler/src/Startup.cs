@@ -136,7 +136,11 @@ namespace HealthGateway.JobScheduler
             services.AddTransient<IAdminFeedbackJob, AdminFeedbackJob>();
 
             // Enable Hangfire
-            services.AddHangfire(x => x.UsePostgreSqlStorage(this.configuration.GetConnectionString("GatewayConnection")));
+            services.AddHangfire(
+                config =>
+                    config.UsePostgreSqlStorage(
+                        c =>
+                            c.UseNpgsqlConnection(this.configuration.GetConnectionString("GatewayConnection"))));
 
             // Add processing server as IHostedService
             services.AddHangfireServer(opts => { opts.Queues = new[] { "default", AzureServiceBusSettings.OutboxQueueName }; });

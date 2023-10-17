@@ -117,7 +117,7 @@ namespace HealthGateway.JobScheduler.Jobs
                 }
             }
 
-            this.logger.LogDebug("Finished queueing Notification Settings push.");
+            this.logger.LogDebug("Finished queueing Notification Settings push");
         }
     }
 }

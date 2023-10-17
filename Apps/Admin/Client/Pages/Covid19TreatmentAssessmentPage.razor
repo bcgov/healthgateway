@@ -195,7 +195,7 @@
                     OptionThatIndicatesBenefit="CovidTherapyAssessmentOption.No" />
             </AssessmentQuestion>
             <AssessmentQuestion Number="10" Title="Do you agree to the information being added to your CareConnect electronic health record as part of the process to obtain COVID‑19 treatment? *">
-                <AssessmentOptionRadio @bind-SelectedOption="Request.ConsentToSendCc" />
+                <AssessmentOptionRadio @bind-SelectedOption="Request.ConsentToSendCc" Validation="@ValidateRequiredOption" />
             </AssessmentQuestion>
             <MudPaper Elevation="0" Class="mt-4 py-4 px-10">
                 <MudTextField

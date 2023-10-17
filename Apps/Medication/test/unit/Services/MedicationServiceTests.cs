@@ -18,7 +18,6 @@ namespace HealthGateway.MedicationTests.Services
     using System;
     using System.Collections.Generic;
     using System.Globalization;
-    using System.Linq;
     using DeepEqual.Syntax;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
@@ -69,12 +68,12 @@ namespace HealthGateway.MedicationTests.Services
                         FederalData = new FederalDrugSource
                         {
                             UpdateDateTime = loadDate,
-                            DrugProduct = fedData.First(),
+                            DrugProduct = fedData[0],
                         },
                         ProvincialData = new ProvincialDrugSource
                         {
                             UpdateDateTime = loadDate,
-                            PharmaCareDrug = provData.First(),
+                            PharmaCareDrug = provData[0],
                         },
                     }
                 },
@@ -121,7 +120,7 @@ namespace HealthGateway.MedicationTests.Services
                         ProvincialData = new ProvincialDrugSource
                         {
                             UpdateDateTime = loadDate,
-                            PharmaCareDrug = provData.First(),
+                            PharmaCareDrug = provData[0],
                         },
                     }
                 },

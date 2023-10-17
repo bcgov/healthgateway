@@ -43,6 +43,9 @@ psql postgres://$DB_USER:$DB_PASSWORD@$DB_HOST/$DB_NAME?sslmode=require -f db/se
 #psql postgres://$DB_USER:$DB_PASSWORD@$PATRONI_POSTGRES_MASTER_SERVICE_HOST:$PATRONI_POSTGRES_MASTER_SERVICE_PORT/$DB_NAME -f db/seed.sql
 popd
 
+echo "Clearing Redis cache"
+redis-cli -c --cluster call -a $REDIS_PW $REDIS_SERVICE_HOST:$REDIS_SERVICE_PORT flushall --cluster-only-masters
+
 # Seconds to sleep
 wait=$PHSA_SEEDING_WAIT_TIME
 

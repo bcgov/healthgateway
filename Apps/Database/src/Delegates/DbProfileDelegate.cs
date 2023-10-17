@@ -19,6 +19,7 @@ namespace HealthGateway.Database.Delegates
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using System.Linq;
+    using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Database.Constants;
@@ -49,14 +50,18 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public DbResult<UserProfile> InsertUserProfile(UserProfile profile)
+        public async Task<DbResult<UserProfile>> InsertUserProfileAsync(UserProfile profile, bool commit = true, CancellationToken ct = default)
         {
             this.logger.LogTrace("Inserting user profile to DB...");
             DbResult<UserProfile> result = new();
-            this.dbContext.Add(profile);
+            await this.dbContext.AddAsync(profile, ct);
             try
             {
-                this.dbContext.SaveChanges();
+                if (commit)
+                {
+                    await this.dbContext.SaveChangesAsync(ct);
+                }
+
                 result.Payload = profile;
                 result.Status = DbStatusCode.Created;
             }
@@ -322,9 +327,9 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public IDictionary<string, int> GetLoggedInUserYearOfBirthCounts(DateTime startDate, DateTime endDate)
+        public async Task<IDictionary<string, int>> GetLoggedInUserYearOfBirthCountsAsync(DateTime startDate, DateTime endDate, CancellationToken ct)
         {
-            Dictionary<string, int> yobCount = this.dbContext.UserProfile
+            Dictionary<string, int> yobCount = await this.dbContext.UserProfile
                 .Select(x => new { x.HdId, x.LastLoginDateTime, x.YearOfBirth })
                 .Concat(
                     this.dbContext.UserProfileHistory.Select(x => new { x.HdId, x.LastLoginDateTime, x.YearOfBirth }))
@@ -333,7 +338,7 @@ namespace HealthGateway.Database.Delegates
                 .Distinct()
                 .GroupBy(x => x.YearOfBirth)
                 .Select(x => new { yearOfBirth = x.Key, count = x.Count() })
-                .ToDictionary(x => x.yearOfBirth!, x => x.count);
+                .ToDictionaryAsync(x => x.yearOfBirth!, x => x.count, ct);
 
             return new SortedDictionary<string, int>(yobCount);
         }

@@ -215,8 +215,8 @@ namespace HealthGateway.ImmunizationTests.Services.Test
             Assert.Equal(this.antigenName, recommendationResult.Immunization.ImmunizationAgents.First().Name);
             Assert.Collection(
                 recommendationResult.TargetDiseases,
-                item => Assert.Equal(immzRecommendationResponse.Recommendations.First().TargetDisease?.TargetDiseaseCodes.FirstOrDefault()?.Code, item.Code));
-            Assert.Equal(this.diseaseName, recommendationResult.TargetDiseases.First().Name);
+                item => Assert.Equal(immzRecommendationResponse.Recommendations[0].TargetDisease?.TargetDiseaseCodes.FirstOrDefault()?.Code, item.Code));
+            Assert.Equal(this.diseaseName, recommendationResult.TargetDiseases[0].Name);
             Assert.Equal(DateTime.Parse(this.diseaseEligibleDateString, CultureInfo.CurrentCulture), recommendationResult.DiseaseEligibleDate);
             Assert.Null(recommendationResult.DiseaseDueDate);
             Assert.Null(recommendationResult.AgentDueDate);

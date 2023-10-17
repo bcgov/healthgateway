@@ -128,7 +128,7 @@ namespace HealthGateway.Common.Services
         {
             this.logger.LogTrace("Getting email template... {TemplateName}", templateName);
             EmailTemplate retVal = this.emailDelegate.GetEmailTemplate(templateName);
-            this.logger.LogDebug("Finished getting email template.");
+            this.logger.LogDebug("Finished getting email template");
             return retVal;
         }
 
@@ -144,7 +144,7 @@ namespace HealthGateway.Common.Services
             this.logger.LogTrace("Processing template... {Name}", emailTemplate.Name);
             Email email = this.ParseTemplate(emailTemplate, keyValues);
             email.To = toEmail;
-            this.logger.LogDebug("Finished processing template.");
+            this.logger.LogDebug("Finished processing template");
             return email;
         }
 

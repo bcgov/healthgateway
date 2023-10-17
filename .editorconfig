@@ -677,6 +677,9 @@ dotnet_diagnostic.sa1000.severity = error
 # disabled due to StyleCop not recognizing 'required' modifier
 dotnet_diagnostic.sa1206.severity = none
 
+# CS8974: razor related warning
+dotnet_diagnostic.cs8974.severity = none
+
 # Microsoft .NET properties
 csharp_new_line_before_members_in_object_initializers = false
 csharp_preferred_modifier_order = public, private, protected, internal, new, static, abstract, virtual, sealed, readonly, override, extern, unsafe, volatile, async, file, required:suggestion

@@ -18,6 +18,8 @@ namespace HealthGateway.Admin.Server.Services
     using System;
     using System.Collections.Generic;
     using System.Globalization;
+    using System.Threading;
+    using System.Threading.Tasks;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Database.Delegates;
     using Microsoft.Extensions.Logging;
@@ -73,24 +75,16 @@ namespace HealthGateway.Admin.Server.Services
         /// <inheritdoc/>
         public IDictionary<string, int> GetRecurrentUserCounts(int dayCount, string startPeriod, string endPeriod, int timeOffset)
         {
-            int offset = GetOffset(timeOffset);
-            TimeSpan ts = new(0, offset, 0);
-            this.logger.LogDebug("Timespan: {Timespan}", ts.ToString());
-
-            DateTime startDate = DateTime.Parse(startPeriod, CultureInfo.InvariantCulture).Date.Add(ts);
-            startDate = DateTime.SpecifyKind(startDate, DateTimeKind.Utc);
-            DateTime endDate = DateTime.Parse(endPeriod, CultureInfo.InvariantCulture).Date.Add(ts).AddDays(1).AddMilliseconds(-1);
-            endDate = DateTime.SpecifyKind(endDate, DateTimeKind.Utc);
+            DateTime startDate = GetStartDateTime(startPeriod, timeOffset);
+            DateTime endDate = GetEndDateTime(endPeriod, timeOffset);
 
             this.logger.LogDebug(
-                "Start Period (Local): {StartPeriod} - End Period (Local): {EndPeriod} - StartDate (UTC): {StartDate} - End Date (UTC): {EndDate} - Timespan: {Timespan} - TimeOffset (UI): {TimeOffset} - Offset: {Offset}",
+                "Start Period (Local): {StartPeriod} - End Period (Local): {EndPeriod} - StartDate (UTC): {StartDate} - End Date (UTC): {EndDate} - TimeOffset (UI): {TimeOffset}",
                 startPeriod,
                 endPeriod,
                 startDate,
                 endDate,
-                ts.ToString(),
-                timeOffset.ToString(CultureInfo.InvariantCulture),
-                offset.ToString(CultureInfo.InvariantCulture));
+                timeOffset.ToString(CultureInfo.InvariantCulture));
 
             IDictionary<string, int> lastLoginCounts = this.userProfileDelegate.GetLastLoginClientCounts(startDate, endDate);
             int recurringUserCount = this.userProfileDelegate.GetRecurrentUserCount(dayCount, startDate, endDate);
@@ -108,12 +102,31 @@ namespace HealthGateway.Admin.Server.Services
         /// <inheritdoc/>
         public IDictionary<string, int> GetRatingSummary(string startPeriod, string endPeriod, int timeOffset)
         {
+            DateTime startDate = GetStartDateTime(startPeriod, timeOffset);
+            DateTime endDate = GetEndDateTime(endPeriod, timeOffset);
+            return this.ratingDelegate.GetSummary(startDate, endDate);
+        }
+
+        /// <inheritdoc/>
+        public async Task<IDictionary<string, int>> GetYearOfBirthCountsAsync(string startPeriod, string endPeriod, int timeOffset, CancellationToken ct)
+        {
+            DateTime startDate = GetStartDateTime(startPeriod, timeOffset);
+            DateTime endDate = GetEndDateTime(endPeriod, timeOffset);
+            return await this.userProfileDelegate.GetLoggedInUserYearOfBirthCountsAsync(startDate, endDate, ct);
+        }
+
+        private static DateTime GetStartDateTime(string startPeriod, int timeOffset)
+        {
             TimeSpan ts = new(0, GetOffset(timeOffset), 0);
             DateTime startDate = DateTime.Parse(startPeriod, CultureInfo.InvariantCulture).Date.Add(ts);
-            startDate = DateTime.SpecifyKind(startDate, DateTimeKind.Utc);
+            return DateTime.SpecifyKind(startDate, DateTimeKind.Utc);
+        }
+
+        private static DateTime GetEndDateTime(string endPeriod, int timeOffset)
+        {
+            TimeSpan ts = new(0, GetOffset(timeOffset), 0);
             DateTime endDate = DateTime.Parse(endPeriod, CultureInfo.InvariantCulture).Date.Add(ts).AddDays(1).AddMilliseconds(-1);
-            endDate = DateTime.SpecifyKind(endDate, DateTimeKind.Utc);
-            return this.ratingDelegate.GetSummary(startDate, endDate);
+            return DateTime.SpecifyKind(endDate, DateTimeKind.Utc);
         }
 
         /// <summary>

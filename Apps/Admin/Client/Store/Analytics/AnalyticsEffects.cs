@@ -40,7 +40,7 @@ public class AnalyticsEffects
     [EffectMethod]
     public async Task HandleLoadAction(AnalyticsActions.LoadUserProfilesAction action, IDispatcher dispatcher)
     {
-        this.Logger.LogInformation("Loading user profile report.");
+        this.Logger.LogInformation("Loading user profile report");
 
         HttpResponseMessage response = await this.AnalyticsApi.GetUserProfilesAsync(action.StartDate, action.EndDate).ConfigureAwait(true);
         this.Logger.LogInformation("User profiles report exported successfully!");
@@ -62,7 +62,7 @@ public class AnalyticsEffects
     [EffectMethod]
     public async Task HandleLoadAction(AnalyticsActions.LoadCommentsAction action, IDispatcher dispatcher)
     {
-        this.Logger.LogInformation("Loading comments report.");
+        this.Logger.LogInformation("Loading comments report");
 
         HttpResponseMessage response = await this.AnalyticsApi.GetCommentsAsync(action.StartDate, action.EndDate).ConfigureAwait(true);
         this.Logger.LogInformation("Comments report exported successfully!");
@@ -84,7 +84,7 @@ public class AnalyticsEffects
     [EffectMethod]
     public async Task HandleLoadAction(AnalyticsActions.LoadNotesAction action, IDispatcher dispatcher)
     {
-        this.Logger.LogInformation("Loading notes report.");
+        this.Logger.LogInformation("Loading notes report");
 
         HttpResponseMessage response = await this.AnalyticsApi.GetNotesAsync(action.StartDate, action.EndDate).ConfigureAwait(true);
         this.Logger.LogInformation("Notes report exported successfully!");
@@ -106,7 +106,7 @@ public class AnalyticsEffects
     [EffectMethod]
     public async Task HandleLoadAction(AnalyticsActions.LoadRatingsAction action, IDispatcher dispatcher)
     {
-        this.Logger.LogInformation("Loading ratings report.");
+        this.Logger.LogInformation("Loading ratings report");
 
         HttpResponseMessage response = await this.AnalyticsApi.GetRatingsAsync(action.StartDate, action.EndDate).ConfigureAwait(true);
         this.Logger.LogInformation("Ratings report exported successfully!");
@@ -128,7 +128,7 @@ public class AnalyticsEffects
     [EffectMethod]
     public async Task HandleLoadAction(AnalyticsActions.LoadInactiveUsersAction action, IDispatcher dispatcher)
     {
-        this.Logger.LogInformation("Loading inactive users report.");
+        this.Logger.LogInformation("Loading inactive users report");
 
         HttpResponseMessage response = await this.AnalyticsApi.GetInactiveUsersAsync(action.InactiveDays, action.TimeOffset).ConfigureAwait(true);
         this.Logger.LogInformation("Inactive users report exported successfully!");
@@ -172,7 +172,7 @@ public class AnalyticsEffects
     [EffectMethod]
     public async Task HandleLoadAction(AnalyticsActions.LoadYearOfBirthCountsAction action, IDispatcher dispatcher)
     {
-        this.Logger.LogInformation("Loading year of birth counts report.");
+        this.Logger.LogInformation("Loading year of birth counts report");
 
         HttpResponseMessage response = await this.AnalyticsApi.GetYearOfBirthCountsAsync(action.StartPeriod, action.EndPeriod, action.TimeOffset).ConfigureAwait(true);
         this.Logger.LogInformation("Year of birth counts report exported successfully!");

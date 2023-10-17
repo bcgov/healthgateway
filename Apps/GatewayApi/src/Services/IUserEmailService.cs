@@ -16,6 +16,8 @@
 namespace HealthGateway.GatewayApi.Services
 {
     using System;
+    using System.Threading;
+    using System.Threading.Tasks;
     using HealthGateway.Common.Data.ViewModels;
 
     /// <summary>
@@ -28,8 +30,9 @@ namespace HealthGateway.GatewayApi.Services
         /// </summary>
         /// <param name="hdid">The requested user hdid.</param>
         /// <param name="inviteKey">The email invite key.</param>
+        /// <param name="ct">A cancellation token.</param>
         /// <returns>Returns a request result with appropriate result status..</returns>
-        RequestResult<bool> ValidateEmail(string hdid, Guid inviteKey);
+        Task<RequestResult<bool>> ValidateEmailAsync(string hdid, Guid inviteKey, CancellationToken ct = default);
 
         /// <summary>
         /// Creates the a non-validated email.
@@ -37,15 +40,18 @@ namespace HealthGateway.GatewayApi.Services
         /// <param name="hdid">The user hdid.</param>
         /// <param name="emailAddress">Email address to be set for the user.</param>
         /// <param name="isVerified">Indicates whether the email address is verified.</param>
-        /// <returns>returns true if the email was sucessfully created.</returns>
-        bool CreateUserEmail(string hdid, string emailAddress, bool isVerified);
+        /// <param name="commit">If set to true the changes to database are persisted immediately.</param>
+        /// <param name="ct">A cancellation token.</param>
+        /// <returns>returns true if the email was successfully created.</returns>
+        Task<bool> CreateUserEmailAsync(string hdid, string emailAddress, bool isVerified, bool commit = true, CancellationToken ct = default);
 
         /// <summary>
         /// Updates the user email.
         /// </summary>
         /// <param name="hdid">The user hdid.</param>
         /// <param name="emailAddress">Email address to be set for the user.</param>
-        /// <returns>returns true if the email was sucessfully created.</returns>
-        bool UpdateUserEmail(string hdid, string emailAddress);
+        /// <param name="ct">A cancellation token.</param>
+        /// <returns>returns true if the email was successfully created.</returns>
+        Task<bool> UpdateUserEmailAsync(string hdid, string emailAddress, CancellationToken ct = default);
     }
 }

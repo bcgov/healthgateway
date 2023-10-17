@@ -140,7 +140,7 @@ namespace HealthGateway.Admin.Server.Services
         {
             if (communication.CommunicationStatusCode == CommunicationStatus.Processed)
             {
-                this.logger.LogError("Processed communication can't be deleted.");
+                this.logger.LogError("Processed communication can't be deleted");
                 return new RequestResult<Communication>
                 {
                     ResultStatus = ResultType.Error,

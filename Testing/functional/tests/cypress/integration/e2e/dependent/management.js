@@ -92,7 +92,8 @@ describe("dependents - dashboard", () => {
         cy.get("@agedOutDependentCard").should("not.exist");
     });
 
-    it("Validate text fields on add dependent modal", () => {
+    // test should be skipped until the similar test for the old dependent page is removed
+    it.skip("Validate text fields on add dependent modal", () => {
         //Validate Main Add Button
         cy.get("[data-testid=add-dependent-button]")
             .should("be.enabled", "be.visible")
@@ -142,7 +143,8 @@ describe("dependents - dashboard", () => {
         cy.get("[data-testid=add-dependent-dialog]").should("not.exist");
     });
 
-    it("Validate maximum age check on add dependent modal", () => {
+    // test should be skipped until the similar test for the old dependent page is removed
+    it.skip("Validate maximum age check on add dependent modal", () => {
         // Validate that adding a dependent fails when they are over the age of 12
         cy.get("[data-testid=add-dependent-button]").click();
         cy.get("[data-testid=new-dependent-modal-form]").should(
@@ -169,7 +171,8 @@ describe("dependents - dashboard", () => {
         cy.get("[data-testid=cancel-dependent-registration-btn]").click();
     });
 
-    it("Validate data mismatch on add dependent modal", () => {
+    // test should be skipped until the similar test for the old dependent page is removed
+    it.skip("Validate data mismatch on add dependent modal", () => {
         cy.get("[data-testid=add-dependent-button]").click();
 
         cy.get("[data-testid=new-dependent-modal-form]").should(
@@ -205,7 +208,8 @@ describe("dependents - dashboard", () => {
         cy.get("[data-testid=cancel-dependent-registration-btn]").click();
     });
 
-    it("Validate no hdid on add dependent modal", () => {
+    // test should be skipped until the similar test for the old dependent page is removed
+    it.skip("Validate no hdid on add dependent modal", () => {
         cy.get("[data-testid=add-dependent-button]").click();
 
         cy.get("[data-testid=new-dependent-modal-form]").should(

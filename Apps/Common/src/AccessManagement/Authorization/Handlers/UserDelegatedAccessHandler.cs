@@ -114,7 +114,7 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Handlers
                 {
                     if (this.IsExpired(resourceHdid))
                     {
-                        this.logger.LogError("Performing Observation delegation on resource {ResourceHdid} failed as delegation is expired.", resourceHdid);
+                        this.logger.LogError("Performing Observation delegation on resource {ResourceHdid} failed as delegation is expired", resourceHdid);
                     }
                     else
                     {

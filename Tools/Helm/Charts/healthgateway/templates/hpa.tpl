@@ -10,6 +10,7 @@
     {{- $maxReplicas := ($context.scaling).hpaMaxReplicas | default $top.Values.scaling.hpaMaxReplicas | required "hpaMaxReplicas required" -}}
     {{- $cpuUtilization := ($context.scaling).hpaCpuUtilitzation | default $top.Values.scaling.hpaCpuUtilitzation | default 150 -}}
     {{- $memoryUtilization := ($context.scaling).hpaMemoryUtilitzation | default $top.Values.scaling.hpaMemoryUtilitzation | default 150 -}}
+    {{- if ne $minReplicas $maxReplicas -}}
 kind: HorizontalPodAutoscaler
 apiVersion: autoscaling/v2
 metadata:
@@ -36,5 +37,6 @@ spec:
         target:
           type: Utilization
           averageUtilization:  {{ $memoryUtilization }}
+{{- end -}}
 {{- end -}}
 {{- end -}}

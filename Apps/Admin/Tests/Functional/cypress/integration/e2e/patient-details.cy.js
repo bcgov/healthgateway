@@ -2,7 +2,9 @@ import { performSearch } from "../../utilities/supportUtilities";
 import { getTableRows } from "../../utilities/sharedUtilities";
 
 const hdid = "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A";
-const phn = "9735352535";
+const phnWithValidDoses = "9042146714";
+const phnWithInvalidDoses = "9735352535";
+const phnWithBlockedImmunizations = "9873659643";
 const switchName = "Immunization";
 const auditBlockReason = "Test block reason";
 const auditUnblockReason = "Test unblock reason";
@@ -82,7 +84,7 @@ function validateCovid19TreatmentAssessmentFormBackCancel() {
     cy.url().should("include", "/patient-details");
     cy.get("[data-testid=start-covid-19-treatment-assessment-button]").click();
     cy.url().should("include", "/covid-19-treatment-assessment");
-    cy.scrollTo("bottom");
+    cy.scrollTo("bottom", { ensureScrollable: false });
     cy.get("[data-testid=cancel-covid-19-treatment-assessment]").click();
     cy.url().should("include", "/patient-details");
 }
@@ -112,7 +114,7 @@ function validateCovid19TreatmentAssessmentInfoMessageForRadioSelection() {
         );
     });
 
-    cy.scrollTo("bottom");
+    cy.scrollTo("bottom", { ensureScrollable: false });
 
     cy.get("[data-testid=assessment-question-6]").within(() => {
         cy.get("[data-testid=assessment-option-yes]").click();
@@ -166,10 +168,10 @@ function validateCovid19TreatmentAssessmentInfoMessageForRadioSelection() {
 function validateCovid19TreatmentAssessmentFormRequiredInputs() {
     cy.get("[data-testid=start-covid-19-treatment-assessment-button]").click();
     cy.url().should("include", "/covid-19-treatment-assessment");
-    cy.scrollTo("bottom");
+    cy.scrollTo("bottom", { ensureScrollable: false });
     cy.get("[data-testid=submit-covid-19-treatment-assessment]").click();
 
-    cy.scrollTo("top");
+    cy.scrollTo("top", { ensureScrollable: false });
     validateCovid19InputContainsError("[data-testid=phone-number-input]");
     cy.get("[data-testid=assessment-question-]")
         .contains("Do you have a family doctor or nurse practitioner?")
@@ -201,7 +203,7 @@ function validateCovid19TreatmentAssessmentFormRequiredInputs() {
         .contains("Required")
         .should("not.exist");
 
-    cy.scrollTo("bottom");
+    cy.scrollTo("bottom", { ensureScrollable: false });
     cy.get("[data-testid=assessment-question-8] div")
         .contains("Required")
         .should("not.exist");
@@ -210,7 +212,7 @@ function validateCovid19TreatmentAssessmentFormRequiredInputs() {
         .should("not.exist");
     cy.get("[data-testid=assessment-question-10] div")
         .contains("Required")
-        .should("not.exist");
+        .should("be.visible");
 
     cy.get("[data-testid=cancel-covid-19-treatment-assessment]").click();
     cy.url().should("include", "/patient-details");
@@ -244,7 +246,7 @@ function validateCovid19TreatmentAssessmentFormSubmission() {
         "[data-testid=assessment-question-4] [data-testid=assessment-option-not-sure]"
     ).click();
 
-    cy.scrollTo("bottom");
+    cy.scrollTo("bottom", { ensureScrollable: false });
 
     cy.get(
         '[data-testid=assessment-question-5] button[aria-label="Open Date Picker"]'
@@ -285,8 +287,10 @@ function validateCovid19TreatmentAssessmentFormSubmission() {
 }
 
 function validatePrintVaccineCardSubmission() {
-    cy.intercept("GET", "**/Document?phn=9735352535").as("getVaccineCard");
-    cy.scrollTo("bottom");
+    cy.intercept("GET", `**/Document?phn=${phnWithInvalidDoses}`).as(
+        "getVaccineCard"
+    );
+    cy.scrollTo("bottom", { ensureScrollable: false });
     cy.get("[data-testid=print-button]").click();
 
     cy.wait("@getVaccineCard").then((interception) => {
@@ -297,7 +301,7 @@ function validatePrintVaccineCardSubmission() {
     });
 }
 
-describe("Patient details page as admin", () => {
+describe("Patient details page as admin user", () => {
     beforeEach(() => {
         cy.login(
             Cypress.env("keycloak_username"),
@@ -327,10 +331,12 @@ describe("Patient details page as admin", () => {
         );
     });
 
-    it("Verify covid immunization and assessment sections require Support role", () => {
-        performSearch("PHN", phn);
-        cy.get("[data-testid=patient-phn]").should("be.visible").contains(phn);
-        cy.scrollTo("bottom");
+    it("Verify covid immunization and assessment sections not shown", () => {
+        performSearch("PHN", phnWithInvalidDoses);
+        cy.get("[data-testid=patient-phn]")
+            .should("be.visible")
+            .contains(phnWithInvalidDoses);
+        cy.scrollTo("bottom", { ensureScrollable: false });
         cy.get("[data-testid=immunization-table]").should("not.exist");
         cy.get("[data-testid=assessment-history-table]").should("not.exist");
     });
@@ -498,16 +504,19 @@ describe("Patient Details as Support", () => {
         );
     });
 
-    it("Verify covid immunization and assessment sections", () => {
-        performSearch("PHN", phn);
-        cy.get("[data-testid=patient-phn]").should("be.visible").contains(phn);
+    it("Verify covid immunization section (not blocked), assessment section and contains invalid dose", () => {
+        performSearch("PHN", phnWithInvalidDoses);
+        cy.get("[data-testid=patient-phn]")
+            .should("be.visible")
+            .contains(phnWithInvalidDoses);
         cy.get("[data-testid=patient-hdid]").should("not.exist");
 
-        cy.scrollTo("bottom");
+        cy.scrollTo("bottom", { ensureScrollable: false });
         getTableRows("[data-testid=immunization-table]").should(
             "have.length.greaterThan",
             0
         );
+        cy.get("[data-testid=invalid-dose-alert").should("be.visible");
         getTableRows("[data-testid=assessment-history-table]").should(
             "have.length.greaterThan",
             0
@@ -526,5 +535,37 @@ describe("Patient Details as Support", () => {
         validateMailAddressFormSubmission();
         validateCovid19TreatmentAssessmentFormSubmission();
         validatePrintVaccineCardSubmission();
+    });
+
+    it("Verify covid immunization section (not blocked), assessment section and contains valid dose", () => {
+        performSearch("PHN", phnWithValidDoses);
+        cy.get("[data-testid=patient-phn]")
+            .should("be.visible")
+            .contains(phnWithValidDoses);
+        cy.get("[data-testid=patient-hdid]").should("not.exist");
+
+        getTableRows("[data-testid=immunization-table]").should(
+            "have.length.greaterThan",
+            0
+        );
+        getTableRows("[data-testid=assessment-history-table]").should(
+            "have.length.greaterThan",
+            0
+        );
+        cy.get("[data-testid=invalid-dose-alert").should("not.exist");
+    });
+
+    it("Verify covid immunization and assessment sections blocked", () => {
+        performSearch("PHN", phnWithBlockedImmunizations);
+        cy.get("[data-testid=patient-phn]")
+            .should("be.visible")
+            .contains(phnWithBlockedImmunizations);
+        cy.get("[data-testid=patient-hdid]").should("not.exist");
+
+        getTableRows("[data-testid=immunization-table]").should("not.exist");
+        getTableRows("[data-testid=assessment-history-table]").should(
+            "not.exist"
+        );
+        cy.get("[data-testid=blocked-immunization-alert").should("be.visible");
     });
 });

@@ -58,14 +58,14 @@ namespace HealthGateway.GatewayApi.Services
         public async Task<IList<WebAlert>> GetWebAlertsAsync(string hdid)
         {
             using Activity? activity = Source.StartActivity();
-            this.logger.LogDebug("Retrieving web alerts from PHSA.");
+            this.logger.LogDebug("Retrieving web alerts from PHSA");
             Guid pid = await this.GetPersonalAccountPidByHdid(hdid).ConfigureAwait(true) ?? throw new InvalidOperationException($"No pid found for hdid {hdid}");
 
             IList<PhsaWebAlert> phsaWebAlerts = await this.webAlertApi.GetWebAlertsAsync(pid).ConfigureAwait(true);
             IList<WebAlert> webAlerts = this.autoMapper.Map<IEnumerable<PhsaWebAlert>, IList<WebAlert>>(
                 phsaWebAlerts.Where(a => a.ExpirationDateTimeUtc > DateTime.UtcNow && a.ScheduledDateTimeUtc < DateTime.UtcNow)
                     .OrderByDescending(a => a.ScheduledDateTimeUtc));
-            this.logger.LogDebug("Finished retrieving web alerts from PHSA.");
+            this.logger.LogDebug("Finished retrieving web alerts from PHSA");
             return webAlerts;
         }
 
@@ -73,22 +73,22 @@ namespace HealthGateway.GatewayApi.Services
         public async Task DismissWebAlertsAsync(string hdid)
         {
             using Activity? activity = Source.StartActivity();
-            this.logger.LogDebug("Sending request to dismiss web alerts to PHSA.");
+            this.logger.LogDebug("Sending request to dismiss web alerts to PHSA");
             Guid pid = await this.GetPersonalAccountPidByHdid(hdid).ConfigureAwait(true) ?? throw new InvalidOperationException($"No pid found for hdid {hdid}");
 
             await this.webAlertApi.DeleteWebAlertsAsync(pid).ConfigureAwait(true);
-            this.logger.LogDebug("Finished sending request to dismiss web alerts to PHSA.");
+            this.logger.LogDebug("Finished sending request to dismiss web alerts to PHSA");
         }
 
         /// <inheritdoc/>
         public async Task DismissWebAlertAsync(string hdid, Guid webAlertId)
         {
             using Activity? activity = Source.StartActivity();
-            this.logger.LogDebug("Sending request to dismiss web alert to PHSA.");
+            this.logger.LogDebug("Sending request to dismiss web alert to PHSA");
             Guid pid = await this.GetPersonalAccountPidByHdid(hdid).ConfigureAwait(true) ?? throw new InvalidOperationException($"No pid found for hdid {hdid}");
 
             await this.webAlertApi.DeleteWebAlertAsync(pid, webAlertId).ConfigureAwait(true);
-            this.logger.LogDebug("Finished sending request to dismiss web alert to PHSA.");
+            this.logger.LogDebug("Finished sending request to dismiss web alert to PHSA");
         }
 
         private async Task<Guid?> GetPersonalAccountPidByHdid(string hdid) =>

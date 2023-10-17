@@ -141,7 +141,7 @@ namespace HealthGateway.Common.Services
             if (this.phsaConfigV2.TokenCacheEnabled)
             {
                 tokenResponse = this.cacheProvider.GetItem<TokenSwapResponse>(cacheKey);
-                this.logger.LogDebug("Cache key: {CacheKey} was {Found} found in cache.", cacheKey, tokenResponse == null ? "not" : string.Empty);
+                this.logger.LogDebug("Cache key: {CacheKey} was {Found} found in cache", cacheKey, tokenResponse == null ? "not" : string.Empty);
             }
 
             activity?.Stop();

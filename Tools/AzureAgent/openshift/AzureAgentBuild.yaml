@@ -48,7 +48,7 @@ objects:
         dockerStrategy:
           from:
             kind: DockerImage
-            name: "docker.io/ubuntu:20.04"
+            name: "docker.io/ubuntu:22.04"
       successfulBuildsHistoryLimit: 5
       failedBuildsHistoryLimit: 3
       triggers:

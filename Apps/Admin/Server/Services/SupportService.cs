@@ -106,11 +106,13 @@ namespace HealthGateway.Admin.Server.Services
 
         /// <inheritdoc/>
         public async Task<PatientSupportDetails> GetPatientSupportDetailsAsync(
-            string hdid,
+            ClientRegistryType queryType,
+            string queryString,
             bool includeMessagingVerifications,
             bool includeBlockedDataSources,
             bool includeAgentActions,
             bool includeCovidDetails,
+            bool refreshVaccineDetails,
             CancellationToken ct = default)
         {
             IEnumerable<MessagingVerificationModel>? messagingVerifications = null;
@@ -118,10 +120,22 @@ namespace HealthGateway.Admin.Server.Services
             IEnumerable<AgentAction>? agentActions = null;
             VaccineDetails? vaccineDetails = null;
             CovidAssessmentDetailsResponse? covidAssessmentDetails = null;
+            PatientModel patient;
+
+            if (queryType == ClientRegistryType.Hdid)
+            {
+                PatientDetailsQuery query = new(Hdid: queryString, Source: PatientDetailSource.All, UseCache: false);
+                patient = await this.GetPatientAsync(query, ct).ConfigureAwait(true);
+            }
+            else
+            {
+                PatientDetailsQuery query = new(queryString, Source: PatientDetailSource.Empi, UseCache: false);
+                patient = await this.GetPatientAsync(query, ct).ConfigureAwait(true);
+            }
 
             if (includeMessagingVerifications)
             {
-                IList<MessagingVerification> verifications = await this.messagingVerificationDelegate.GetUserMessageVerificationsAsync(hdid).ConfigureAwait(true);
+                IList<MessagingVerification> verifications = await this.messagingVerificationDelegate.GetUserMessageVerificationsAsync(patient.Hdid).ConfigureAwait(true);
 
                 TimeZoneInfo localTimezone = DateFormatter.GetLocalTimeZone(this.configuration);
                 messagingVerifications = verifications.Select(m => MessagingVerificationMapUtils.ToUiModel(m, this.autoMapper, localTimezone));
@@ -129,7 +143,7 @@ namespace HealthGateway.Admin.Server.Services
 
             if (includeAgentActions)
             {
-                AgentAuditQuery agentAuditQuery = new(hdid);
+                AgentAuditQuery agentAuditQuery = new(patient.Hdid);
                 IEnumerable<AgentAudit> audits = await this.auditRepository.Handle(agentAuditQuery, ct).ConfigureAwait(true);
 
                 agentActions = audits.Select(audit => this.autoMapper.Map<AgentAction>(audit));
@@ -138,18 +152,17 @@ namespace HealthGateway.Admin.Server.Services
             if (includeBlockedDataSources)
             {
                 // Invalidate blocked data source cache and then get newest value(s) from database.
-                string blockedAccessCacheKey = string.Format(CultureInfo.InvariantCulture, ICacheProvider.BlockedAccessCachePrefixKey, hdid);
+                string blockedAccessCacheKey = string.Format(CultureInfo.InvariantCulture, ICacheProvider.BlockedAccessCachePrefixKey, patient.Hdid);
                 string message = $"Removing item for key: {blockedAccessCacheKey} from cache";
                 this.logger.LogDebug("{Message}", message);
                 await this.cacheProvider.RemoveItemAsync(blockedAccessCacheKey).ConfigureAwait(true);
 
-                blockedDataSources = await this.patientRepository.GetDataSources(hdid, ct).ConfigureAwait(true);
+                blockedDataSources = await this.patientRepository.GetDataSources(patient.Hdid, ct).ConfigureAwait(true);
             }
 
             if (includeCovidDetails)
             {
-                PatientModel patient = await this.GetPatientAsync(hdid, ct).ConfigureAwait(true);
-                vaccineDetails = await this.GetVaccineDetails(patient).ConfigureAwait(true);
+                vaccineDetails = await this.GetVaccineDetails(patient, refreshVaccineDetails).ConfigureAwait(true);
                 covidAssessmentDetails = await this.immunizationAdminApi.GetCovidAssessmentDetails(new() { Phn = patient.Phn }, this.GetAccessToken()).ConfigureAwait(true);
             }
 
@@ -219,18 +232,13 @@ namespace HealthGateway.Admin.Server.Services
         private async Task<PatientSupportResult?> GetPatientSupportResultAsync(PatientIdentifierType identifierType, string identifier, CancellationToken ct)
         {
             PatientModel? patient = await this.GetPatientAsync(identifierType, identifier, ct).ConfigureAwait(true);
-            UserProfile? profile = null;
-
-            string? hdid = identifierType == PatientIdentifierType.Hdid ? identifier : patient?.Hdid;
-            if (hdid != null)
-            {
-                profile = await this.userProfileDelegate.GetUserProfileAsync(hdid).ConfigureAwait(true);
-            }
-
-            if (patient == null && profile == null)
+            if (patient == null)
             {
                 return null;
             }
+
+            string hdid = identifierType == PatientIdentifierType.Hdid ? identifier : patient.Hdid;
+            UserProfile? profile = await this.userProfileDelegate.GetUserProfileAsync(hdid).ConfigureAwait(true);
 
             return this.MapToPatientSupportResult(patient, profile);
         }
@@ -270,9 +278,8 @@ namespace HealthGateway.Admin.Server.Services
             }
         }
 
-        private async Task<PatientModel> GetPatientAsync(string hdid, CancellationToken ct = default)
+        private async Task<PatientModel> GetPatientAsync(PatientDetailsQuery query, CancellationToken ct = default)
         {
-            PatientDetailsQuery query = new(Hdid: hdid, Source: PatientDetailSource.All, UseCache: false);
             PatientModel? patient = (await this.patientRepository.Query(query, ct).ConfigureAwait(true)).Items.SingleOrDefault();
             if (patient == null)
             {
@@ -282,11 +289,11 @@ namespace HealthGateway.Admin.Server.Services
             return patient;
         }
 
-        private async Task<VaccineDetails> GetVaccineDetails(PatientModel patient)
+        private async Task<VaccineDetails> GetVaccineDetails(PatientModel patient, bool refresh)
         {
             if (!string.IsNullOrEmpty(patient.Phn) && patient.Birthdate != DateTime.MinValue)
             {
-                return await this.immunizationAdminDelegate.GetVaccineDetailsWithRetries(patient, this.GetAccessToken()).ConfigureAwait(true);
+                return await this.immunizationAdminDelegate.GetVaccineDetailsWithRetries(patient.Phn, this.GetAccessToken(), refresh).ConfigureAwait(true);
             }
 
             this.logger.LogError("Patient PHN {PersonalHealthNumber} or DOB {Birthdate}) are invalid", patient.Phn, patient.Birthdate);

@@ -84,7 +84,7 @@ namespace HealthGateway.Patient.Services
 
             if (patientDetails.CommonName == null)
             {
-                this.logger.LogWarning("Client Registry returned a person without a Documented Name.");
+                this.logger.LogWarning("Client Registry returned a person without a Documented Name");
                 if (patientDetails.LegalName == null)
                 {
                     this.logger.LogWarning("Client Registry is unable to determine patient name due to missing legal name. Action Type: {ActionType}", ActionType.InvalidName.Value);

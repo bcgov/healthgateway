@@ -122,6 +122,7 @@ watch(vaccineRecordState, () => {
         <v-col :cols="getGridCols" class="d-flex">
             <HgCardComponent
                 title="Health Records"
+                density="compact"
                 class="flex-grow-1 ma-1"
                 :data-testid="`dependent-health-records-button-${dependent.ownerId}`"
                 @click="handleClickHealthRecordsButton"
@@ -130,23 +131,28 @@ watch(vaccineRecordState, () => {
                     <img
                         src="@/assets/images/gov/health-gateway-logo.svg"
                         alt="Health Gateway Logo"
-                        :height="30"
+                        :height="25"
                     />
                 </template>
                 <template #action-icon>
-                    <v-icon icon="chevron-right" color="primary" />
+                    <v-icon icon="chevron-right" color="primary" size="small" />
                 </template>
             </HgCardComponent>
         </v-col>
         <v-col v-if="showRecommendations" :cols="getGridCols" class="d-flex">
             <HgCardComponent
                 title="Vaccine Recommendations"
+                density="compact"
                 class="flex-grow-1 ma-1"
                 :data-testid="`recommendations-card-${dependent.ownerId}`"
                 @click="showRecommendationsDialog()"
             >
                 <template #icon>
-                    <v-icon icon="vial-circle-check" color="primary" />
+                    <v-icon
+                        icon="calendar-check"
+                        color="primary"
+                        size="small"
+                    />
                 </template>
             </HgCardComponent>
         </v-col>
@@ -157,15 +163,16 @@ watch(vaccineRecordState, () => {
         >
             <HgCardComponent
                 title="Proof of Vaccination"
+                density="compact"
                 class="flex-grow-1 ma-1"
                 :data-testid="`proof-vaccination-card-btn-${dependent.ownerId}`"
                 @click="showSensitiveDocumentDownloadModal()"
             >
                 <template #icon>
-                    <v-icon icon="check-circle" color="success" />
+                    <v-icon icon="check-circle" color="success" size="small" />
                 </template>
                 <template #action-icon>
-                    <v-icon icon="download" color="primary" />
+                    <v-icon icon="download" color="primary" size="small" />
                 </template>
             </HgCardComponent>
         </v-col>

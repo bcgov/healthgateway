@@ -1,4 +1,8 @@
 const { AuthMethod } = require("../../../support/constants");
+const {
+    validateAttachmentDownload,
+    validateFileDownload,
+} = require("../../../support/functions/timeline");
 
 describe("Diagnostic Imaging", () => {
     beforeEach(() => {
@@ -20,7 +24,7 @@ describe("Diagnostic Imaging", () => {
 
     it("Validate card details with a file", () => {
         cy.get("[data-testid=timelineCard")
-            .filter(":has([data-testid=attachmentIcon])")
+            .filter(":has([data-testid=attachment-button])")
             .first()
             .within(() => {
                 cy.get("[data-testid=diagnosticimagingTitle]")
@@ -40,7 +44,7 @@ describe("Diagnostic Imaging", () => {
 
     it("Validate card details without a file", () => {
         cy.get("[data-testid=timelineCard")
-            .not(":has([data-testid=attachmentIcon])")
+            .not(":has([data-testid=attachment-button])")
             .first()
             .within(() => {
                 cy.get("[data-testid=diagnosticimagingTitle]")
@@ -60,45 +64,21 @@ describe("Diagnostic Imaging", () => {
 
     it("Validate file download", () => {
         cy.get("[data-testid=timelineCard")
-            .filter(":has([data-testid=attachmentIcon])")
+            .filter(":has([data-testid=attachment-button])")
             .first()
             .within(() => {
-                cy.get("[data-testid=diagnosticimagingTitle]")
-                    .should("be.visible")
-                    .click({ force: true });
-                cy.get(
+                validateFileDownload(
                     "[data-testid=diagnostic-imaging-download-button]"
-                ).should("be.visible");
-                // Test for generic message modal regarding sensitive data
-                cy.get(
-                    "[data-testid=diagnostic-imaging-download-button]"
-                ).click();
-                cy.document()
-                    .find("[data-testid=generic-message-modal]")
-                    .should("be.visible");
-                // Submit the generic message modal, which should close the modal
-                cy.document()
-                    .find("[data-testid=generic-message-submit-btn]")
-                    .click();
-                cy.document()
-                    .find("[data-testid=generic-message-modal]")
-                    .should("not.exist");
+                );
+            });
+    });
 
-                // Test for file download with the entry date prefxied to the file name.
-                cy.get("[data-testid=entryCardDate]")
-                    .first()
-                    .invoke("text")
-                    .then((text) => {
-                        var date = new Date(text);
-                        var datePrefix = date
-                            .toISOString()
-                            .slice(0, 10)
-                            .replace(/-/g, "_");
-
-                        cy.verifyDownload(`diagnostic_image_${datePrefix}`, {
-                            contains: true,
-                        });
-                    });
+    it("Validate attachment download", () => {
+        cy.get("[data-testid=timelineCard")
+            .filter(":has([data-testid=attachment-button])")
+            .first()
+            .within(() => {
+                validateAttachmentDownload();
             });
     });
 });

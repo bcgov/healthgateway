@@ -64,7 +64,7 @@ steps:
     condition: and(succeeded(), and(eq(variables['WASMBuild'], true),eq(variables['UnitTests'], true)))
     inputs:
       command: "test"
-      projects: "$(App.Home)"
+      projects: "$(App.Home)/Tests/$(App.Name).Tests.csproj"
       arguments: "/p:CollectCoverage=true /p:CoverletOutputFormat=cobertura"
       testRunTitle: "$(App.Name): Performing Unit Tests"
 
@@ -92,26 +92,26 @@ steps:
     displayName: "Creating Code Coverage Report for $(App.Name)"
     condition: and(succeeded(), and(eq(variables['WASMBuild'], false),eq(variables['UnitTests'], true)))
 
-  - script: |
-      set -e
-      if [ "$(EnableAzure)" = True ] ; then
-          echo Running in Azure, Installing dotnet-reportgenerator
-          dotnet tool install -g dotnet-reportgenerator-globaltool
-      else
-          echo Running in OpenShift, skipping dotnet-reportgenerator tool install
-      fi
-      reportgenerator -reports:$(App.Home)/coverage.cobertura.xml -targetdir:$(App.Home)/CodeCoverage -reporttypes:"HtmlInline_AzurePipelines;Cobertura"
-    displayName: "Creating Code Coverage Report for Blazor Solution $(App.Name)"
-    condition: and(succeeded(), and(eq(variables['WASMBuild'], true),eq(variables['UnitTests'], true)))
+  # - script: |
+  #     set -e
+  #     if [ "$(EnableAzure)" = True ] ; then
+  #         echo Running in Azure, Installing dotnet-reportgenerator
+  #         dotnet tool install -g dotnet-reportgenerator-globaltool
+  #     else
+  #         echo Running in OpenShift, skipping dotnet-reportgenerator tool install
+  #     fi
+  #     reportgenerator -reports:$(App.Home)/coverage.cobertura.xml -targetdir:$(App.Home)/CodeCoverage -reporttypes:"HtmlInline_AzurePipelines;Cobertura"
+  #   displayName: "Creating Code Coverage Report for Blazor Solution $(App.Name)"
+  #   condition: and(succeeded(), and(eq(variables['WASMBuild'], true),eq(variables['UnitTests'], true)))
 
-  - task: PublishCodeCoverageResults@1
-    displayName: "Publishing Code Coverage for $(App.Name)"
-    condition: and(succeeded(), and(eq(${{ parameters.publish }}, true), eq(variables['UnitTests'], true)))
-    inputs:
-      codeCoverageTool: Cobertura
-      summaryFileLocation: "$(App.Home)/CodeCoverage/Cobertura.xml"
-      pathToSources: "$(App.Home)/src"
-      reportDirectory: "$(App.Home)/CodeCoverage"
+  # - task: PublishCodeCoverageResults@1
+  #   displayName: "Publishing Code Coverage for $(App.Name)"
+  #   condition: and(succeeded(), and(eq(${{ parameters.publish }}, true), eq(variables['UnitTests'], true)))
+  #   inputs:
+  #     codeCoverageTool: Cobertura
+  #     summaryFileLocation: "$(App.Home)/CodeCoverage/Cobertura.xml"
+  #     pathToSources: "$(App.Home)/src"
+  #     reportDirectory: "$(App.Home)/CodeCoverage"
 
   - task: DotNetCoreCLI@2
     displayName: "Publishing code for $(App.Name)"

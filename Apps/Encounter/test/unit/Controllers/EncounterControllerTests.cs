@@ -17,6 +17,7 @@ namespace HealthGateway.EncounterTests.Controllers
 {
     using System;
     using System.Collections.Generic;
+    using System.Globalization;
     using System.Linq;
     using System.Threading.Tasks;
     using HealthGateway.Common.Data.Constants;
@@ -52,7 +53,7 @@ namespace HealthGateway.EncounterTests.Controllers
                     new()
                     {
                         Id = "1",
-                        EncounterDate = new DateTime(2020, 05, 27),
+                        EncounterDate = DateTime.Parse("2020-05-27", CultureInfo.InvariantCulture),
                         SpecialtyDescription = "LABORATORY MEDICINE",
                         PractitionerName = "PRACTITIONER NAME",
                         Clinic = new Clinic
@@ -63,7 +64,7 @@ namespace HealthGateway.EncounterTests.Controllers
                     new()
                     {
                         Id = "2",
-                        EncounterDate = new DateTime(2020, 06, 27),
+                        EncounterDate = DateTime.Parse("2020-06-27", CultureInfo.InvariantCulture),
                         SpecialtyDescription = "LABORATORY MEDICINE",
                         PractitionerName = "PRACTITIONER NAME",
                         Clinic = new Clinic

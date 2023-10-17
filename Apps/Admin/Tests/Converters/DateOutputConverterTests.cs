@@ -33,7 +33,7 @@ namespace HealthGateway.Admin.Tests.Converters
             // Arrange
             DateOutputConverter converter = new();
             string dateTime = "12/31/2022 17:00:00";
-            DateTime expected = new(2022, 12, 31, 17, 00, 00);
+            DateTime expected = new(2022, 12, 31, 17, 00, 00, DateTimeKind.Local);
 
             // Act
             object? actual = converter.ConvertFromString(dateTime, null, null);
@@ -68,7 +68,7 @@ namespace HealthGateway.Admin.Tests.Converters
         {
             // Arrange
             DateOutputConverter converter = new();
-            DateTime dateTime = new(2022, 12, 31, 17, 00, 00);
+            DateTime dateTime = new(2022, 12, 31, 17, 00, 00, DateTimeKind.Local);
             string expected = "2022-12-31 5:00 PM";
 
             // Act

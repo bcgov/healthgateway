@@ -17,6 +17,7 @@ namespace HealthGateway.Database.Delegates
 {
     using System;
     using System.Collections.Generic;
+    using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.Data.Models;
 
@@ -29,8 +30,10 @@ namespace HealthGateway.Database.Delegates
         /// Inserts a Message Verification and any associated records.
         /// </summary>
         /// <param name="messageVerification">The message verification to insert.</param>
+        /// <param name="commit">If set to true the database changes will be persisted immediately.</param>
+        /// <param name="ct">A Cancellation token.</param>
         /// <returns>Returns the guid of the saved message verification.</returns>
-        Guid Insert(MessagingVerification messageVerification);
+        Task<Guid> InsertAsync(MessagingVerification messageVerification, bool commit = true, CancellationToken ct = default);
 
         /// <summary>
         /// Gets the last Email Message Verification by the Invite key.
@@ -52,7 +55,10 @@ namespace HealthGateway.Database.Delegates
         /// Updates a MessagingVerification using a populated model object.
         /// </summary>
         /// <param name="messageVerification">The populated email to save.</param>
-        void Update(MessagingVerification messageVerification);
+        /// <param name="commit">If commit is set to true the change will be persisted immediately.</param>
+        /// <param name="ct">A cancellation token.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        Task UpdateAsync(MessagingVerification messageVerification, bool commit = true, CancellationToken ct = default);
 
         /// <summary>
         /// Gets all email message verifications from the database.
@@ -65,7 +71,9 @@ namespace HealthGateway.Database.Delegates
         /// </summary>
         /// <param name="messageVerification">The message verification to expire.</param>
         /// <param name="markDeleted">Mark the verification as deleted.</param>
-        void Expire(MessagingVerification messageVerification, bool markDeleted);
+        /// <param name="ct">A cancellation token.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        Task ExpireAsync(MessagingVerification messageVerification, bool markDeleted, CancellationToken ct = default);
 
         /// <summary>
         /// Retrieves a list of messaging verifications matching the query.

@@ -3,38 +3,38 @@ name: 1.0.0$(Rev:.r) #Build number
 pr: none
 
 trigger:
-  batch: "true"
+  batch: true
   branches:
     include:
-    - dev
+      - dev
   paths:
     include:
       - Tools/AzureAgent
 
 resources:
-- repo: self
+  - repo: self
 
 variables:
   - group: Secrets
   - name: tag
-    value: '$(Build.BuildNumber)'
+    value: "$(Build.BuildNumber)"
 
 stages:
-- stage: Build
-  displayName: Build image
-  jobs:
-  - job: Build
-    displayName: Build
-    pool:
-      vmImage: ubuntu-latest
-    steps:
-    - task: Docker@2
-      displayName: Build Azure Agent
-      inputs:
-        containerRegistry: "docker-health"
-        command: 'buildAndPush'
-        repository: '$(DockerRepo)/azure-agent'
-        buildContext: '$(Build.SourcesDirectory)/Tools/AzureAgent'
-        dockerfile: '$(Build.SourcesDirectory)/Tools/AzureAgent/docker/Dockerfile'
-        tags: |
-          $(tag)
+  - stage: Build
+    displayName: Build image
+    jobs:
+      - job: Build
+        displayName: Build
+        pool:
+          vmImage: ubuntu-latest
+        steps:
+          - task: Docker@2
+            displayName: Build Azure Agent
+            inputs:
+              containerRegistry: "docker-health"
+              command: "buildAndPush"
+              repository: "$(DockerRepo)/azure-agent"
+              buildContext: "$(Build.SourcesDirectory)/Tools/AzureAgent"
+              dockerfile: "$(Build.SourcesDirectory)/Tools/AzureAgent/docker/Dockerfile"
+              tags: |
+                $(tag)

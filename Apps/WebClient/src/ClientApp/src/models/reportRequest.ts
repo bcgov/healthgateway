@@ -12,7 +12,9 @@ export default interface ReportRequest {
 export enum TemplateType {
     Encounter = "Encounter",
     DependentImmunization = "DependentImmunization",
+    DependentImmunizationRecommendation = "DependentImmunizationRecommendation",
     Immunization = "Immunization",
+    ImmunizationRecommendation = "ImmunizationRecommendation",
     Medication = "Medication",
     COVID = "COVID",
     MedicationRequest = "MedicationRequest",

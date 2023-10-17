@@ -15,6 +15,7 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Admin.Server.MapProfiles
 {
+    using System;
     using AutoMapper;
     using HealthGateway.Admin.Common.Models.CovidSupport;
     using HealthGateway.Admin.Server.Models.Immunization;
@@ -29,7 +30,8 @@ namespace HealthGateway.Admin.Server.MapProfiles
         /// </summary>
         public VaccineDoseProfile()
         {
-            this.CreateMap<VaccineDoseResponse, VaccineDose>();
+            this.CreateMap<VaccineDoseResponse, VaccineDose>()
+                .ForMember(dest => dest.Date, opt => opt.MapFrom(src => src.Date == null ? null : (DateOnly?)DateOnly.FromDateTime(src.Date.Value)));
         }
     }
 }

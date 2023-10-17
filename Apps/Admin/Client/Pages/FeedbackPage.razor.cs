@@ -23,13 +23,16 @@ using System.Threading.Tasks;
 using Fluxor;
 using Fluxor.Blazor.Web.Components;
 using HealthGateway.Admin.Client.Store;
+using HealthGateway.Admin.Client.Store.PatientSupport;
 using HealthGateway.Admin.Client.Store.Tag;
 using HealthGateway.Admin.Client.Store.UserFeedback;
+using HealthGateway.Admin.Client.Utils;
 using HealthGateway.Admin.Common.Models;
 using HealthGateway.Common.Data.Constants;
 using HealthGateway.Common.Data.Utils;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Configuration;
+using Microsoft.JSInterop;
 using MudBlazor;
 
 /// <summary>
@@ -57,6 +60,9 @@ public partial class FeedbackPage : FluxorComponent
 
     [Inject]
     private NavigationManager NavigationManager { get; set; } = default!;
+
+    [Inject]
+    private IJSRuntime JsRuntime { get; set; } = default!;
 
     private bool FeedbackLoading => this.UserFeedbackState.Value.Load.IsLoading;
 
@@ -186,9 +192,18 @@ public partial class FeedbackPage : FluxorComponent
         }
     }
 
-    private void NavigateToSupport(string hdid)
+    private async Task NavigateToSupport(string hdid)
     {
-        this.NavigationManager.NavigateTo($"support?{PatientQueryType.Hdid}={hdid}");
+        await StoreUtility.LoadPatientSupportAction(this.Dispatcher, this.JsRuntime, PatientQueryType.Hdid, hdid);
+        this.ActionSubscriber.SubscribeToAction<PatientSupportActions.LoadSuccessAction>(this, this.NavigateToPatientDetails);
+    }
+
+    private void NavigateToPatientDetails(PatientSupportActions.LoadSuccessAction action)
+    {
+        if (action.Data.Count == 1)
+        {
+            this.NavigationManager.NavigateTo($"/patient-details?phn={action.Data.Single().PersonalHealthNumber}");
+        }
     }
 
     private string DescribeTags(List<string> tagIds)

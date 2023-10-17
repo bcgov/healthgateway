@@ -16,6 +16,7 @@
 namespace HealthGateway.ImmunizationTests.Delegates.Test
 {
     using System;
+    using System.Globalization;
     using System.Net;
     using System.Net.Http;
     using System.Threading.Tasks;
@@ -37,7 +38,7 @@ namespace HealthGateway.ImmunizationTests.Delegates.Test
     public class VaccineStatusDelegateTests
     {
         private readonly string accessToken = "XXDDXX";
-        private readonly DateTime dob = new(1990, 01, 05);
+        private readonly DateTime dob = DateTime.Parse("1990-01-05", CultureInfo.InvariantCulture);
         private readonly string hdId = "43465786";
         private readonly string phn = "9735353315";
 

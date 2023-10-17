@@ -51,7 +51,9 @@ public class MessagingTests : ScenarioContextBase<GatewayApi.Startup>, IDisposab
         await base.InitializeAsync();
         this.receiver = this.Host.Services.GetRequiredService<IMessageReceiver>();
 
-        GlobalConfiguration.Configuration.UsePostgreSqlStorage(this.Host.Services.GetRequiredService<IConfiguration>().GetConnectionString("GatewayConnection"));
+        GlobalConfiguration.Configuration.UsePostgreSqlStorage(
+            c => c.UseNpgsqlConnection(
+                this.Host.Services.GetRequiredService<IConfiguration>().GetConnectionString("GatewayConnection")));
     }
 
     private async Task SendMessages(IEnumerable<IEnumerable<TestMessage>> messageGroups, CancellationToken ct)

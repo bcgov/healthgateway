@@ -26,15 +26,20 @@ Realm Settings/Login/Duplicate emails should be set to ON
 
 ## Terraform configuration
 
-Please quest the Terraform configuration files from a Health Gateway team member and place in the Terraform directory.
+Sync the Health Gateway secrets and ideally create a link to them under the Terraform directory.
+
+```console
+cd Terraform
+ln -sf syncFolder/Keycloak/Terraform secrets
+```
 
 ## Run
 
 ```console
 terraform login
 terraform init
-terraform workspace select [Keycloak-???] where ??? is dev, test or prod
-terraform apply -var-file ???.tfvars
+terraform workspace select Keycloak-[dev | test | prod]
+terraform plan/apply -var-file secrets/[dev|test|prod].secrests.tfvars
 ```
 
 ## Populating Users

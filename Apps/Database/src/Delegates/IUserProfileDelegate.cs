@@ -17,6 +17,7 @@ namespace HealthGateway.Database.Delegates
 {
     using System;
     using System.Collections.Generic;
+    using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Database.Constants;
@@ -32,8 +33,10 @@ namespace HealthGateway.Database.Delegates
         /// Creates a UserProfile object in the database.
         /// </summary>
         /// <param name="profile">The profile to create.</param>
+        /// <param name="commit">if true the transaction is persisted immediately.</param>
+        /// <param name="ct">A cancellation token.</param>
         /// <returns>A DB result which encapsulates the return object and status.</returns>
-        DbResult<UserProfile> InsertUserProfile(UserProfile profile);
+        Task<DbResult<UserProfile>> InsertUserProfileAsync(UserProfile profile, bool commit = true, CancellationToken ct = default);
 
         /// <summary>
         /// Updates select attributes of the UserProfile object in the DB.
@@ -156,7 +159,8 @@ namespace HealthGateway.Database.Delegates
         /// </summary>
         /// <param name="startDate">The start date of last login of users.</param>
         /// <param name="endDate">The end date of last login of users.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The counts of logged in users by year of birth.</returns>
-        IDictionary<string, int> GetLoggedInUserYearOfBirthCounts(DateTime startDate, DateTime endDate);
+        Task<IDictionary<string, int>> GetLoggedInUserYearOfBirthCountsAsync(DateTime startDate, DateTime endDate, CancellationToken ct);
     }
 }

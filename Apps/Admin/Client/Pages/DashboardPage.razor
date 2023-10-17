@@ -8,8 +8,8 @@
 <PageTitle>Health Gateway Admin Dashboard</PageTitle>
 <HgPageHeading>Dashboard</HgPageHeading>
 
-<HgBannerFeedback Severity="Severity.Error" IsEnabled="@HasError" TResetAction="DashboardActions.ResetStateAction">
-    @foreach (string error in ErrorList)
+<HgBannerFeedback Severity="Severity.Error" IsEnabled="@ErrorMessages.Any()" TResetAction="DashboardActions.ResetStateAction">
+    @foreach (string error in ErrorMessages)
     {
         <li>@error</li>
     }
@@ -18,7 +18,13 @@
 <MudGrid>
     <MudItem xs="12" lg="12">
         <MudPaper Class="my-2 pa-4 d-flex justify-end" Elevation="0">
-            <HgButton Loading="@(RegisteredUsersLoading || LoggedInUsersLoading || DependentsLoading || RecurringUsersLoading)" EndIcon="fas fa-arrow-rotate-right" OnClick="ReloadDispatchActions" data-testid="refresh-btn">Refresh</HgButton>
+            <HgButton
+                Loading="@(RegisteredUsersLoading || LoggedInUsersLoading || DependentsLoading || UserCountsLoading || RatingSummaryLoading || YearOfBirthCountsLoading)"
+                EndIcon="fas fa-arrow-rotate-right"
+                OnClick="RefreshData"
+                data-testid="refresh-btn">
+                Refresh
+            </HgButton>
         </MudPaper>
     </MudItem>
 </MudGrid>
@@ -66,7 +72,7 @@ else
     </MudGrid>
 }
 
-@if (RegisteredUsersLoading || LoggedInUsersLoading || DependentsLoading || RecurringUsersLoading)
+@if (RegisteredUsersLoading || LoggedInUsersLoading || DependentsLoading || UserCountsLoading || YearOfBirthCountsLoading)
 {
     <MudGrid Class="my-3">
         <MudItem xs="6" lg="3">
@@ -89,7 +95,7 @@ else
     </MudGrid>
 }
 
-@if (RecurringUsersLoading)
+@if (UserCountsLoading)
 {
     <MudSkeleton Width="20%" />
     <MudGrid Class="my-3">
@@ -173,6 +179,32 @@ else
         Rating Summary
     </MudText>
     <RatingSummary />
+}
+
+@if (YearOfBirthCountsLoading)
+{
+    <MudSkeleton data-testid="skeleton-year-of-birth-chart" SkeletonType="SkeletonType.Rectangle" Width="500px" Height="350px" />
+}
+else if (YearOfBirthCountsErrorMessage.Length == 0)
+{
+    <MudText Class="my-3" Typo="Typo.subtitle1">
+        Population Demographics
+    </MudText>
+
+    @if (YearOfBirthCounts.Any())
+    {
+        <MudChart
+            data-testid="year-of-birth-chart"
+            ChartType="ChartType.Bar"
+            ChartSeries="@(new List<ChartSeries> { GetYearOfBirthCountSeries() })"
+            XAxisLabels="@GetYearOfBirthLabels()"
+            Width="100%"
+            Height="450" />
+    }
+    else
+    {
+        <MudText Typo="Typo.body2">No results within selected time frame.</MudText>
+    }
 }
 
 <MudGrid>

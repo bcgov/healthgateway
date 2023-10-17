@@ -67,7 +67,7 @@ namespace HealthGateway.Admin.Client.Pages
         private bool HasPatientsWarning => this.PatientSupportState.Value.WarningMessages.Any();
 
         private PatientSupportResult? Patient =>
-            this.PatientSupportState.Value.Result?.SingleOrDefault(x => x.Hdid == this.Hdid);
+            this.PatientSupportState.Value.Result?.SingleOrDefault(x => x.PersonalHealthNumber == this.Phn);
 
         private bool PatientDetailsLoaded => this.PatientDetailsState.Value.Loaded;
 
@@ -79,13 +79,13 @@ namespace HealthGateway.Admin.Client.Pages
 
         private string? StatusWarning => this.Patient == null ? null : FormattingUtility.FormatPatientStatus(this.Patient.Status);
 
-        private string PatientDetailsUrl => $"/patient-details?hdid={this.Hdid}";
+        private string PatientDetailsUrl => $"/patient-details?phn={this.Phn}";
 
         private MudForm Form { get; set; } = default!;
 
         private MudDatePicker SymptomOnsetDatePicker { get; set; } = default!;
 
-        private string Hdid { get; set; } = string.Empty;
+        private string Phn { get; set; } = string.Empty;
 
         private CovidAssessmentRequest Request { get; } = new();
 
@@ -109,9 +109,9 @@ namespace HealthGateway.Admin.Client.Pages
             base.OnInitialized();
 
             Uri uri = this.NavigationManager.ToAbsoluteUri(this.NavigationManager.Uri);
-            if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("hdid", out StringValues hdid) && hdid != StringValues.Empty)
+            if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("phn", out StringValues phn) && phn != StringValues.Empty)
             {
-                this.Hdid = hdid.ToString();
+                this.Phn = phn.ToString();
                 this.RetrievePatientDetails();
             }
             else
@@ -140,13 +140,16 @@ namespace HealthGateway.Admin.Client.Pages
             if (this.Patient == null)
             {
                 this.Dispatcher.Dispatch(new PatientSupportActions.ResetStateAction());
-                this.Dispatcher.Dispatch(new PatientSupportActions.LoadAction { QueryType = PatientQueryType.Hdid, QueryString = this.Hdid });
+
+                this.Dispatcher.Dispatch(
+                    new PatientSupportActions.LoadAction { QueryType = PatientQueryType.Phn, QueryString = this.Phn });
             }
 
             if (this.AssessmentInfo == null)
             {
                 this.Dispatcher.Dispatch(new PatientDetailsActions.ResetStateAction());
-                this.Dispatcher.Dispatch(new PatientDetailsActions.LoadAction { Hdid = this.Hdid });
+                this.Dispatcher.Dispatch(
+                    new PatientDetailsActions.LoadAction { QueryType = ClientRegistryType.Phn, QueryString = this.Phn, RefreshVaccineDetails = false });
             }
         }
 
@@ -174,7 +177,7 @@ namespace HealthGateway.Admin.Client.Pages
             this.Request.LastName = this.Patient?.LegalName?.Surname ?? string.Empty;
             this.Request.Birthdate = this.Patient?.Birthdate?.ToDateTime(TimeOnly.MinValue);
 
-            this.Dispatcher.Dispatch(new PatientDetailsActions.SubmitCovid19TreatmentAssessmentAction { Request = this.Request, Hdid = this.Hdid });
+            this.Dispatcher.Dispatch(new PatientDetailsActions.SubmitCovid19TreatmentAssessmentAction { Request = this.Request, Phn = this.Phn });
         }
 
         private async Task OpenAddressConfirmationDialog()

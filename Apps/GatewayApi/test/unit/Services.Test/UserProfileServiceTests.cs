@@ -20,11 +20,13 @@ namespace HealthGateway.GatewayApiTests.Services.Test
     using System.Linq;
     using System.Threading.Tasks;
     using AutoMapper;
+    using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Models;
+    using HealthGateway.Common.Models.Events;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
@@ -275,9 +277,13 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             Dictionary<string, string?> localConfig = new()
             {
                 { "WebClient:MinPatientAge", "0" },
+                {
+                    $"{ChangeFeedConfiguration.ConfigurationSectionKey}:{ChangeFeedConfiguration.AccountsKey}:Enabled",
+                    "false"
+                },
             };
             UserProfileServiceMock mockService = new UserProfileServiceMock(GetIConfigurationRoot(localConfig))
-                .SetupUserProfileDelegateMockInsert(userProfile, userProfileDbResult)
+                .SetupUserProfileDelegateMockInsert(userProfile, userProfileDbResult, true)
                 .SetupCryptoDelegateMockGenerateKey("abc")
                 .SetupPatientServiceMockCustomPatient(this.hdid, patientModel)
                 .SetupPatientRepository(this.hdid, dataSources);
@@ -292,6 +298,65 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 ;
 
             // Assert
+            Assert.Equal(ResultType.Success, actualResult.ResultStatus);
+            Assert.Equal(dataSources, actualResult.ResourcePayload?.BlockedDataSources);
+        }
+
+        /// <summary>
+        /// CreateUserProfile call.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+        [Fact]
+        public async Task ShouldInsertUserProfileWithChangeFeed()
+        {
+            // Arrange
+            UserProfile userProfile = new()
+            {
+                HdId = this.hdid,
+                TermsOfServiceId = this.termsOfServiceGuid,
+                Email = "unit.test@hgw.ca",
+            };
+
+            HashSet<DataSource> dataSources = new()
+            {
+                DataSource.Immunization,
+                DataSource.Medication,
+            };
+
+            PatientModel patientModel = new()
+            {
+                Birthdate = DateTime.Now.AddYears(-20),
+            };
+
+            DbResult<UserProfile> userProfileDbResult = new()
+            {
+                Payload = userProfile,
+                Status = DbStatusCode.Created,
+            };
+            Dictionary<string, string?> localConfig = new()
+            {
+                { "WebClient:MinPatientAge", "0" },
+                {
+                    $"{ChangeFeedConfiguration.ConfigurationSectionKey}:{ChangeFeedConfiguration.AccountsKey}:Enabled",
+                    "true"
+                },
+            };
+            UserProfileServiceMock mockService = new UserProfileServiceMock(GetIConfigurationRoot(localConfig))
+                .SetupUserProfileDelegateMockInsert(userProfile, userProfileDbResult, false)
+                .SetupCryptoDelegateMockGenerateKey("abc")
+                .SetupPatientServiceMockCustomPatient(this.hdid, patientModel)
+                .SetupPatientRepository(this.hdid, dataSources);
+
+            IUserProfileService service = mockService.UserProfileServiceMockInstance();
+
+            // Act
+            RequestResult<UserProfileModel> actualResult = await service.CreateUserProfile(
+                new CreateUserRequest { Profile = userProfile },
+                DateTime.Today,
+                It.IsAny<string>());
+
+            // Assert
+            mockService.VerifyMessageSenderSendAsync<AccountCreatedEvent>();
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             Assert.Equal(dataSources, actualResult.ResourcePayload?.BlockedDataSources);
         }
@@ -327,9 +392,13 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             Dictionary<string, string?> localConfig = new()
             {
                 { "WebClient:MinPatientAge", "0" },
+                {
+                    $"{ChangeFeedConfiguration.ConfigurationSectionKey}:{ChangeFeedConfiguration.AccountsKey}:Enabled",
+                    "false"
+                },
             };
             UserProfileServiceMock mockService = new UserProfileServiceMock(GetIConfigurationRoot(localConfig))
-                .SetupUserProfileDelegateMockInsert(userProfile, insertResult)
+                .SetupUserProfileDelegateMockInsert(userProfile, insertResult, true)
                 .SetupCryptoDelegateMockGenerateKey("abc")
                 .SetupPatientServiceMockCustomPatient(this.hdid, patientModel);
             IUserProfileService service = mockService.UserProfileServiceMockInstance();
@@ -755,6 +824,11 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             Assert.Null(actualResult.ResourcePayload?.ClosedDateTime);
         }
 
+        /// <summary>
+        /// Build a test ready configuration populated through the available appsettings files.
+        /// </summary>
+        /// <param name="localConfig">Used to overwrite any of the appsettings brought in through the UnitTest.json</param>
+        /// <returns>IConfigurationRoot instance.</returns>
         private static IConfigurationRoot GetIConfigurationRoot(Dictionary<string, string?>? localConfig)
         {
             Dictionary<string, string?> myConfiguration = localConfig ?? new();

@@ -17,6 +17,7 @@ namespace HealthGateway.AdminWebClientTests.Delegates.Test
 {
     using System;
     using System.Collections.Generic;
+    using System.Globalization;
     using System.Linq;
     using System.Net;
     using System.Net.Http;
@@ -41,7 +42,7 @@ namespace HealthGateway.AdminWebClientTests.Delegates.Test
     {
         private readonly string accessToken = "XXDDXX";
         private readonly IConfiguration configuration;
-        private readonly DateTime dob = new(1990, 01, 05);
+        private readonly DateTime dob = DateTime.Parse("1990-01-05", CultureInfo.InvariantCulture);
         private readonly string phn = "9735353315";
 
         /// <summary>

@@ -64,6 +64,10 @@ function getOutcomeClasses(outcome: string): string[] {
     }
 }
 
+function showConfirmationModal(): void {
+    sensitiveDocumentModal.value?.showModal();
+}
+
 function getReport(): void {
     SnowPlow.trackEvent({
         action: "download_report",
@@ -101,6 +105,7 @@ function getReport(): void {
 
 <template>
     <TimelineEntryComponent
+        v-bind="$attrs"
         :card-id="index + '-' + datekey"
         :entry-icon="entryIcon"
         icon-class="bg-primary"
@@ -108,7 +113,8 @@ function getReport(): void {
         :entry="entry"
         :is-mobile-details="isMobileDetails"
         :allow-comment="commentsAreEnabled"
-        :has-attachment="entry.reportAvailable"
+        :has-attachment="entry.reportAvailable && entry.resultReady"
+        @click-attachment-button="showConfirmationModal"
     >
         <template
             v-if="entry.resultReady && entry.tests.length === 1"
@@ -129,7 +135,7 @@ function getReport(): void {
             text="Download Full Report"
             prepend-icon="download"
             :loading="isLoadingDocument"
-            @click="sensitiveDocumentModal?.showModal()"
+            @click="showConfirmationModal"
         />
         <v-row>
             <v-col>
@@ -204,11 +210,11 @@ function getReport(): void {
                 </v-col>
             </v-row>
         </template>
-        <MessageModalComponent
-            ref="sensitiveDocumentModal"
-            title="Sensitive Document"
-            message="The file that you are downloading contains personal information. If you are on a public computer, please ensure that the file is deleted before you log off."
-            @submit="getReport"
-        />
     </TimelineEntryComponent>
+    <MessageModalComponent
+        ref="sensitiveDocumentModal"
+        title="Sensitive Document"
+        message="The file that you are downloading contains personal information. If you are on a public computer, please ensure that the file is deleted before you log off."
+        @submit="getReport"
+    />
 </template>

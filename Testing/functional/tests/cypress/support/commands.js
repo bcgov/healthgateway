@@ -136,12 +136,15 @@ Cypress.Commands.add(
                     cy.log(
                         `State Id:  ${stateId}, Generated Code Verifier: ${codeVerifier}`
                     );
+                    const loginCallback =
+                        config.openIdConnect.callbacks?.Logon ||
+                        `${Cypress.config().baseUrl}/loginCallback`;
                     const stateStore = {
                         id: stateId,
                         created: new Date().getTime(),
                         request_type: "si:r",
                         code_verifier: codeVerifier,
-                        redirect_uri: config.openIdConnect.callbacks.Logon,
+                        redirect_uri: loginCallback,
                         authority: config.openIdConnect.authority,
                         client_id: config.openIdConnect.clientId,
                         response_mode: "query",
@@ -155,7 +158,7 @@ Cypress.Commands.add(
                     );
 
                     const escapedRedirectPath = encodeURI(path);
-                    const redirectUri = `${config.openIdConnect.callbacks.Logon}?redirect=${escapedRedirectPath}`;
+                    const redirectUri = `${loginCallback}?redirect=${escapedRedirectPath}`;
 
                     cy.log("Requesting Keycloak Authentication form");
                     cy.request({
@@ -250,6 +253,9 @@ Cypress.Commands.add("getTokens", (username, password) => {
 
         cy.log("Performing Keycloak Authentication");
         let stateId = generateRandomString(32); //"d0b27ba424b64b358b65d40cfdbc040b"
+        const loginCallback =
+            config.openIdConnect.callbacks?.Logon ||
+            `${Cypress.config().baseUrl}/loginCallback`;
         cy.request({
             url: `${config.openIdConnect.authority}/protocol/openid-connect/auth`,
             followRedirect: false,
@@ -257,7 +263,7 @@ Cypress.Commands.add("getTokens", (username, password) => {
                 scope: config.openIdConnect.scope,
                 response_type: config.openIdConnect.responseType,
                 approval_prompt: "auto",
-                redirect_uri: config.openIdConnect.callbacks.Logon,
+                redirect_uri: loginCallback,
                 client_id: config.openIdConnect.clientId,
                 response_mode: "query",
                 state: stateId,
@@ -302,7 +308,7 @@ Cypress.Commands.add("getTokens", (username, password) => {
                     url: `${config.openIdConnect.authority}/protocol/openid-connect/token`,
                     body: {
                         client_id: config.openIdConnect.clientId,
-                        redirect_uri: config.openIdConnect.callbacks.Logon,
+                        redirect_uri: loginCallback,
                         code,
                         grant_type: "authorization_code",
                     },

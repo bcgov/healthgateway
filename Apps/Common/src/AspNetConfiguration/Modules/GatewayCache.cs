@@ -53,7 +53,7 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
             string? connectionString = configuration.GetValue<string>("RedisConnection");
             if (string.IsNullOrEmpty(connectionString))
             {
-                logger.LogWarning("Redis cache Connection string is null/empty and caching likely broken. Configuring in memory cache instead.");
+                logger.LogWarning("Redis cache Connection string is null/empty and caching likely broken. Configuring in memory cache instead");
                 services.AddDistributedMemoryCache();
             }
             else

@@ -90,7 +90,7 @@ namespace HealthGateway.Admin.Delegates
 
             if (refreshInProgress)
             {
-                this.logger.LogDebug("Maximum retry attempts reached.");
+                this.logger.LogDebug("Maximum retry attempts reached");
                 retVal.ResultError = new RequestResultError
                 {
                     ResultMessage = "Refresh in progress",
@@ -112,7 +112,7 @@ namespace HealthGateway.Admin.Delegates
         private async Task<RequestResult<PhsaResult<VaccineStatusResult>>> GetVaccineStatus(string phn, DateTime dateOfBirth, string accessToken)
         {
             using Activity? activity = Source.StartActivity();
-            this.logger.LogDebug("Getting vaccine status for PHN {PersonalHealthNumber}, DoB {DateOfBirth}.", phn, dateOfBirth);
+            this.logger.LogDebug("Getting vaccine status for PHN {PersonalHealthNumber}, DoB {DateOfBirth}", phn, dateOfBirth);
 
             RequestResult<PhsaResult<VaccineStatusResult>> retVal = new()
             {
