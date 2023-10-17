@@ -138,6 +138,11 @@ namespace HealthGateway.Admin.Client.Pages
             this.ActionSubscriber.SubscribeToAction<PatientSupportActions.LoadSuccessAction>(this, this.CheckForSingleResult);
         }
 
+        private static string ClickableRowClassFunc(PatientRow row, int _)
+        {
+            return !string.IsNullOrEmpty(row.PersonalHealthNumber) ? "cursor-pointer" : string.Empty;
+        }
+
         private bool UserHasRole(string role)
         {
             return this.AuthenticationState?.User.IsInRole(role) == true;
@@ -211,11 +216,6 @@ namespace HealthGateway.Admin.Client.Pages
             {
                 this.NavigateToPatientDetails(tableRowClickEventArgs.Item.PersonalHealthNumber);
             }
-        }
-
-        private string ClickableRowClassFunc(PatientRow row, int rowIndex)
-        {
-            return !string.IsNullOrEmpty(row.PersonalHealthNumber) ? "cursor-pointer" : string.Empty;
         }
 
         private sealed record PatientRow
