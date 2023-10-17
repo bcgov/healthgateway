@@ -191,7 +191,9 @@ namespace HealthGateway.Admin.Client.Pages
 
         private void CheckForSingleResult(PatientSupportActions.LoadSuccessAction action)
         {
-            if (action.Data.Count == 1 && this.ShouldNavigateToPatientDetails)
+            if (action.Data.Count == 1 &&
+                this.ShouldNavigateToPatientDetails &&
+                !string.IsNullOrEmpty(action.Data.Single().PersonalHealthNumber))
             {
                 this.NavigateToPatientDetails(action.Data.Single().PersonalHealthNumber);
             }
@@ -204,7 +206,16 @@ namespace HealthGateway.Admin.Client.Pages
 
         private void RowClickEvent(TableRowClickEventArgs<PatientRow> tableRowClickEventArgs)
         {
-            this.NavigateToPatientDetails(tableRowClickEventArgs.Item.PersonalHealthNumber);
+            string phn = tableRowClickEventArgs.Item.PersonalHealthNumber;
+            if (!string.IsNullOrEmpty(phn))
+            {
+                this.NavigateToPatientDetails(tableRowClickEventArgs.Item.PersonalHealthNumber);
+            }
+        }
+
+        private string ClickableRowClassFunc(PatientRow row, int rowIndex)
+        {
+            return !string.IsNullOrEmpty(row.PersonalHealthNumber) ? "cursor-pointer" : string.Empty;
         }
 
         private sealed record PatientRow
