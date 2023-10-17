@@ -92,6 +92,8 @@ namespace HealthGateway.Admin.Client.Pages
 
         private string? StatusWarning => this.Patient == null ? null : FormattingUtility.FormatPatientStatus(this.Patient.Status);
 
+        private bool ShowStatusWarning => !(this.UserHasRole(Roles.Support) && this.Patient?.Status == PatientStatus.NotUser);
+
         private Address? MailAddress => this.Patient?.PostalAddress ?? this.Patient?.PhysicalAddress;
 
         private DateTime? ProfileCreatedDateTime =>

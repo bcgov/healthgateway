@@ -47,14 +47,17 @@
     </ul>
 </HgBannerFeedback>
 
-<HgBannerFeedback
-    Severity="@Severity.Info"
-    IsEnabled="@(!string.IsNullOrEmpty(StatusWarning))"
-    TResetAction="PatientSupportActions.ResetStateAction"
-    Class="mt-4"
-    DataTestId="user-banner-feedback-status-warning-message">
-    @StatusWarning
-</HgBannerFeedback>
+@if (ShowStatusWarning)
+{
+    <HgBannerFeedback
+        Severity="@Severity.Info"
+        IsEnabled="@(!string.IsNullOrEmpty(StatusWarning))"
+        TResetAction="PatientSupportActions.ResetStateAction"
+        Class="mt-4"
+        DataTestId="user-banner-feedback-status-warning-message">
+        @StatusWarning
+    </HgBannerFeedback>
+}
 
 @if (Patient != null)
 {
