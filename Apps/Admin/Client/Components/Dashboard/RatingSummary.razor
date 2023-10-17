@@ -1,10 +1,10 @@
 @inherits Fluxor.Blazor.Web.Components.FluxorComponent
 
 <MudGrid>
-    <MudItem xs="1" lg="1" Class="d-flex justify-center justify-center  align-center">
+    <MudItem xs="4" lg="1" Class="d-flex justify-center justify-center align-center">
         <MudText data-testid="average-rating" Class="my-3" Typo="Typo.h4" Style="font-weight:bold">@AverageRating</MudText>
     </MudItem>
-    <MudItem xs="6" lg="10">
+    <MudItem xs="8" lg="5">
         @for (int i = 5; i >= 1; i--)
         {
             int percentage = RatingDetails[i - 1].Percentage;
@@ -12,16 +12,16 @@
             int stars = i;
 
             <MudGrid>
-                <MudItem xs="6" lg="2" Class="d-flex justify-end">
+                <MudItem xs="6" lg="4" Class="d-flex justify-end">
                     @for (int x = 1; x <= stars; x++)
                     {
                         <MudIcon Icon="fas fa-star" Color="Color.Warning" Size="Size.Small" />
                     }
                 </MudItem>
-                <MudItem xs="6" lg="3" Class="mt-3">
+                <MudItem xs="4" lg="7" Class="mt-3">
                     <MudProgressLinear Value="@percentage" />
                 </MudItem>
-                <MudItem xs="6" lg="1" Class="d-flex justify-center">
+                <MudItem xs="2" lg="1" Class="d-flex justify-center">
                     <MudText Typo="Typo.subtitle1">@count</MudText>
                 </MudItem>
             </MudGrid>

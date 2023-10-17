@@ -18,6 +18,7 @@ namespace HealthGateway.Admin.Client.Store.Dashboard;
 
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using Fluxor;
 
 /// <summary>
@@ -28,27 +29,37 @@ using Fluxor;
 public record DashboardState
 {
     /// <summary>
-    /// Gets the registered users.
+    /// Gets the request state for retrieving registered users.
     /// </summary>
-    public BaseRequestState<IDictionary<DateTime, int>> RegisteredUsers { get; init; } = new();
+    public BaseRequestState<IDictionary<DateTime, int>> GetRegisteredUsers { get; init; } = new();
 
     /// <summary>
-    /// Gets the logged in users.
+    /// Gets the request state for retrieving logged in users.
     /// </summary>
-    public BaseRequestState<IDictionary<DateTime, int>> LoggedInUsers { get; init; } = new();
+    public BaseRequestState<IDictionary<DateTime, int>> GetLoggedInUsers { get; init; } = new();
 
     /// <summary>
-    /// Gets the dependents.
+    /// Gets the request state for retrieving dependents.
     /// </summary>
-    public BaseRequestState<IDictionary<DateTime, int>> Dependents { get; init; } = new();
+    public BaseRequestState<IDictionary<DateTime, int>> GetDependents { get; init; } = new();
 
     /// <summary>
-    /// Gets the recurring users.
+    /// Gets the request state for retrieving user counts.
     /// </summary>
-    public BaseRequestState<IDictionary<string, int>> UserCounts { get; init; } = new();
+    public BaseRequestState<IDictionary<string, int>> GetUserCounts { get; init; } = new();
 
     /// <summary>
-    /// Gets the rating summary.
+    /// Gets the request state for retrieving a rating summary.
     /// </summary>
-    public BaseRequestState<IDictionary<string, int>> RatingSummary { get; init; } = new();
+    public BaseRequestState<IDictionary<string, int>> GetRatingSummary { get; init; } = new();
+
+    /// <summary>
+    /// Gets the request state for retrieving year of birth counts.
+    /// </summary>
+    public BaseRequestState<IDictionary<string, int>> GetYearOfBirthCounts { get; init; } = new();
+
+    /// <summary>
+    /// Gets year of birth counts associated with the most recent query.
+    /// </summary>
+    public IDictionary<string, int> YearOfBirthCounts { get; init; } = ImmutableDictionary<string, int>.Empty;
 }

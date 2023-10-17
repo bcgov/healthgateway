@@ -17,6 +17,7 @@ namespace HealthGateway.Admin.Server.Services
 {
     using System;
     using System.IO;
+    using System.Threading;
     using System.Threading.Tasks;
 
     /// <summary>
@@ -73,10 +74,11 @@ namespace HealthGateway.Admin.Server.Services
         /// <summary>
         /// Retrieves stream of logged in user year of birth counts over a date range.
         /// </summary>
-        /// <param name="startPeriod">The period start of last login of users.</param>
-        /// <param name="endPeriod">The period end of last login of users.</param>
-        /// <param name="timeOffset">The clients offset to get to UTC.</param>
+        /// <param name="startPeriod">The start period for the data.</param>
+        /// <param name="endPeriod">The end period for the data.</param>
+        /// <param name="timeOffset">The current timezone offset from the client browser to UTC.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>Return the counts of logged in users by year of birth for time range.</returns>
-        Stream GetYearOfBirthCounts(string startPeriod, string endPeriod, int timeOffset);
+        Task<Stream> GetYearOfBirthCountsAsync(string startPeriod, string endPeriod, int timeOffset, CancellationToken ct);
     }
 }

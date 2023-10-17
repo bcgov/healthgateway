@@ -21,6 +21,8 @@ namespace HealthGateway.Admin.Tests.Services
     using System.Globalization;
     using System.IO;
     using System.Linq;
+    using System.Threading;
+    using System.Threading.Tasks;
     using AutoMapper;
     using DeepEqual.Syntax;
     using HealthGateway.Admin.Server.Models;
@@ -55,13 +57,14 @@ namespace HealthGateway.Admin.Tests.Services
         /// <summary>
         /// Happy path year of birth counts download.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void ShouldGetYearOfBirthCounts()
+        public async Task ShouldGetYearOfBirthCounts()
         {
             Dictionary<string, int> getResult = new();
 
             Mock<IUserProfileDelegate> profileDelegateMock = new();
-            profileDelegateMock.Setup(s => s.GetLoggedInUserYearOfBirthCounts(It.IsAny<DateTime>(), It.IsAny<DateTime>())).Returns(getResult);
+            profileDelegateMock.Setup(s => s.GetLoggedInUserYearOfBirthCountsAsync(It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<CancellationToken>())).ReturnsAsync(getResult);
 
             IInactiveUserService inactiveUserService = new InactiveUserService(
                 new Mock<IAuthenticationDelegate>().Object,
@@ -81,9 +84,9 @@ namespace HealthGateway.Admin.Tests.Services
 
             string startPeriod = DateTime.Now.AddDays(-30).ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
             string endPeriod = DateTime.Now.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
-            int timeOffset = -300;
+            const int timeOffset = -300;
 
-            Stream yobCounts = service.GetYearOfBirthCounts(startPeriod, endPeriod, timeOffset);
+            Stream yobCounts = await service.GetYearOfBirthCountsAsync(startPeriod, endPeriod, timeOffset, CancellationToken.None);
 
             Assert.NotNull(yobCounts);
         }
