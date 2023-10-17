@@ -82,7 +82,12 @@ namespace HealthGateway.Encounter.Services
             this.autoMapper = autoMapper;
             this.phsaConfig = new PhsaConfig();
             configuration.Bind(PhsaConfig.ConfigurationSectionKey, this.phsaConfig);
-            this.excludedFeeDescriptions = configuration.GetSection("MspVisit:ExcludedFeeDescriptions").Get<List<string>>() ?? new List<string>();
+            this.excludedFeeDescriptions = configuration.GetSection("MspVisit:ExcludedFeeDescriptions")
+                .Get<string>()
+                ?
+                .Split(',')
+                .Select(s => s.Trim())
+                .ToList() ?? new List<string>();
         }
 
         private static ActivitySource Source { get; } = new(nameof(EncounterService));
