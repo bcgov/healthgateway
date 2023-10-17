@@ -68,8 +68,8 @@ namespace HealthGateway.Admin.Server.Services
         /// <summary>
         /// Retrieves year of birth counts for users that have logged in between two dates.
         /// </summary>
-        /// <param name="startPeriod">The period start of last login of users.</param>
-        /// <param name="endPeriod">The period end of last login of users.</param>
+        /// <param name="startPeriod">The start period for the data.</param>
+        /// <param name="endPeriod">The end period for the data.</param>
         /// <param name="timeOffset">The clients offset to get to UTC.</param>
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A dictionary mapping birth years to user counts.</returns>

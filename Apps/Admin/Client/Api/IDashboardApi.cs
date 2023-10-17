@@ -77,7 +77,7 @@ public interface IDashboardApi
     /// <param name="startPeriod">The start period for the data.</param>
     /// <param name="endPeriod">The end period for the data.</param>
     /// <param name="timeOffset">The current timezone offset from the client browser to UTC.</param>
-    /// <returns>A dictionary pairing the ratings with the counts.</returns>
+    /// <returns>A dictionary mapping birth years to user counts.</returns>
     [Get("/YearOfBirthCounts?startPeriod={startPeriod}&endPeriod={endPeriod}&timeOffset={timeOffset}")]
     Task<IDictionary<string, int>> GetYearOfBirthCountsAsync(string startPeriod, string endPeriod, int timeOffset);
 }
