@@ -98,7 +98,11 @@ namespace HealthGateway.GatewayApi.Services
                 this.profileDelegate.Update(userProfile, !this.changeFeedEnabled);
                 if (this.changeFeedEnabled)
                 {
-                    await this.messageSender.SendAsync(new[] { new MessageEnvelope(new NotificationChannelVerifiedEvent(hdid, NotificationChannel.Sms, smsVerification.SmsNumber)) }, ct);
+                    MessageEnvelope[] events =
+                    {
+                        new(new NotificationChannelVerifiedEvent(hdid, NotificationChannel.Sms, smsVerification.SmsNumber), hdid),
+                    };
+                    await this.messageSender.SendAsync(events, ct);
                 }
 
                 retVal.ResourcePayload = true;

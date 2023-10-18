@@ -158,7 +158,11 @@ namespace HealthGateway.GatewayApi.Services
 
             if (this.changeFeedEnabled)
             {
-                await this.messageSender.SendAsync(new[] { new MessageEnvelope(new NotificationChannelVerifiedEvent(hdid, NotificationChannel.Email, matchingVerification.Email!.To)) }, ct);
+                MessageEnvelope[] events =
+                {
+                    new(new NotificationChannelVerifiedEvent(hdid, NotificationChannel.Email, matchingVerification.Email!.To), hdid),
+                };
+                await this.messageSender.SendAsync(events, ct);
             }
 
             // Update the notification settings

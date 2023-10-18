@@ -118,8 +118,12 @@ namespace HealthGateway.JobScheduler.Jobs
                     this.dbContext.UserProfile.Remove(profile);
                     if (this.changeFeedEnabled)
                     {
+                        MessageEnvelope[] events =
+                        {
+                            new(new AccountClosedEvent(profile.HdId, DateTime.Now), profile.HdId),
+                        };
                         this.messageSender.SendAsync(
-                                new[] { new MessageEnvelope(new AccountClosedEvent(profile.HdId, DateTime.Now)) },
+                                events,
                                 CancellationToken.None)
                             .GetAwaiter()
                             .GetResult();

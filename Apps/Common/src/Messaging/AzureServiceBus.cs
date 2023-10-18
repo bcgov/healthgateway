@@ -61,7 +61,7 @@ internal class AzureServiceBus : IMessageSender, IMessageReceiver, IAsyncDisposa
                 new ServiceBusMessage
                 {
                     Body = new BinaryData(m.Content.Serialize(false)),
-                    SessionId = m.SessionId ?? string.Empty,
+                    SessionId = m.SessionId,
                     ContentType = ContentType.ApplicationJson.ToString(),
                     ApplicationProperties =
                     {
