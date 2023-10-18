@@ -27,7 +27,7 @@
         "vue": "^3.2.0",
         "vue-clipboard3": "^2.0.0",
         "vue-router": "^4.2.5",
-        "vuetify": "^3.3.21"
+        "vuetify": "^3.3.22"
     },
     "devDependencies": {
         "@babel/types": "^7.23.0",
