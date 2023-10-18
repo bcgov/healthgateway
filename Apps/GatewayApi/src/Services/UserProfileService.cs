@@ -76,7 +76,8 @@ namespace HealthGateway.GatewayApi.Services
         private readonly int userProfileHistoryRecordLimit;
         private readonly IUserSmsService userSmsService;
         private readonly IPatientRepository patientRepository;
-        private readonly bool changeFeedEnabled;
+        private readonly bool accountsChangeFeedEnabled;
+        private readonly bool notificationChannelChangeFeedEnabled;
         private readonly IMessageSender messageSender;
 
         /// <summary>
@@ -143,8 +144,10 @@ namespace HealthGateway.GatewayApi.Services
             this.cacheProvider = cacheProvider;
             this.patientRepository = patientRepository;
             this.messageSender = messageSender;
-            this.changeFeedEnabled = configuration.GetSection(ChangeFeedConfiguration.ConfigurationSectionKey)
+            this.accountsChangeFeedEnabled = configuration.GetSection(ChangeFeedConfiguration.ConfigurationSectionKey)
                 .GetValue($"{ChangeFeedConfiguration.AccountsKey}:Enabled", false);
+            this.notificationChannelChangeFeedEnabled = configuration.GetSection(ChangeFeedConfiguration.ConfigurationSectionKey)
+                .GetValue($"{ChangeFeedConfiguration.NotificationChannelVerifiedKey}:Enabled", false);
         }
 
         /// <inheritdoc/>
@@ -254,9 +257,9 @@ namespace HealthGateway.GatewayApi.Services
                 YearOfBirth = birthDate?.Year.ToString(CultureInfo.InvariantCulture),
                 LastLoginClientCode = this.authenticationDelegate.FetchAuthenticatedUserClientType(),
             };
-            DbResult<UserProfile> insertResult = await this.userProfileDelegate.InsertUserProfileAsync(newProfile, !this.changeFeedEnabled, ct);
+            DbResult<UserProfile> insertResult = await this.userProfileDelegate.InsertUserProfileAsync(newProfile, !this.accountsChangeFeedEnabled, ct);
 
-            if (this.changeFeedEnabled)
+            if (this.accountsChangeFeedEnabled)
             {
                 await this.messageSender.SendAsync(
                     new[]
@@ -284,12 +287,16 @@ namespace HealthGateway.GatewayApi.Services
             if (!string.IsNullOrWhiteSpace(requestedEmail))
             {
                 bool isEmailVerified = requestedEmail.Equals(jwtEmailAddress, StringComparison.OrdinalIgnoreCase);
-                await this.userEmailService.CreateUserEmailAsync(hdid, requestedEmail, isEmailVerified, !this.changeFeedEnabled, ct);
+                await this.userEmailService.CreateUserEmailAsync(hdid, requestedEmail, isEmailVerified, !this.notificationChannelChangeFeedEnabled, ct);
                 userProfileModel.Email = requestedEmail;
                 userProfileModel.IsEmailVerified = isEmailVerified;
-                if (isEmailVerified)
+                if (isEmailVerified && this.notificationChannelChangeFeedEnabled)
                 {
-                    await this.messageSender.SendAsync(new[] { new MessageEnvelope(new NotificationChannelVerifiedEvent(hdid, NotificationChannel.Email, requestedEmail)) }, ct);
+                    MessageEnvelope[] events =
+                    {
+                        new(new NotificationChannelVerifiedEvent(hdid, NotificationChannel.Email, requestedEmail), hdid),
+                    };
+                    await this.messageSender.SendAsync(events, ct);
                 }
             }
 

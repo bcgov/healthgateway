@@ -32,7 +32,7 @@ public abstract record MessageBase;
 /// </summary>
 /// <param name="SessionId">The session id to manage FIFO.</param>
 /// <param name="Content">The message.</param>
-public record MessageEnvelope(MessageBase Content, string? SessionId = null)
+public record MessageEnvelope(MessageBase Content, string SessionId)
 {
     /// <summary>
     /// Gets or sets the message creation timestamp.
