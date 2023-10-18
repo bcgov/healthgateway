@@ -35,7 +35,7 @@
         "@fortawesome/free-regular-svg-icons": "^6.4.2",
         "@fortawesome/free-solid-svg-icons": "^6.4.2",
         "@fortawesome/vue-fontawesome": "^3.0.3",
-        "@types/file-saver": "^2.0.5",
+        "@types/file-saver": "^2.0.6",
         "@types/luxon": "^3.3.2",
         "@types/node": "^18.18.5",
         "@types/throttle-debounce": "^5.0.0",
