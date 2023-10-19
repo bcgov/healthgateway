@@ -1425,7 +1425,7 @@ watch(vaccineRecordState, () => {
                                         class="d-none d-md-table-cell text-center"
                                         scope="col"
                                     >
-                                        Discipline
+                                        Type
                                     </th>
                                     <th
                                         class="d-none d-md-table-cell text-center"
