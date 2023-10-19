@@ -25,9 +25,10 @@ const emit = defineEmits<{
     (e: "blur"): void;
 }>();
 
-const currentYear = new DateWrapper().year();
-const currentMonth = new DateWrapper().month();
-const currentDay = new DateWrapper().day();
+const today = DateWrapper.today();
+const currentYear = today.year();
+const currentMonth = today.month();
+const currentDay = today.day();
 const monthNames = [
     "January",
     "February",

@@ -93,7 +93,7 @@ export const useVaccinationStatusAuthenticatedStore = defineStore(
         function setVaccinationStatus(vaccinationStatus: VaccinationStatus) {
             vaccination.value.data = {
                 ...vaccinationStatus,
-                issueddate: new DateWrapper().toISO(),
+                issuedDateTime: DateWrapper.now().toISO(),
             };
             vaccination.value.status = LoadStatus.LOADED;
             vaccination.value.statusMessage = "";

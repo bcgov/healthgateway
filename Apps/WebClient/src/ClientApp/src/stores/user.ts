@@ -345,7 +345,7 @@ export const useUserStore = defineStore("user", () => {
                 preference: UserPreferenceType.QuickLinks,
                 value: jsonString,
                 version: 0,
-                createdDateTime: new DateWrapper().toISO(),
+                createdDateTime: DateWrapper.now().toISO(),
             };
         } else {
             preference = { ...preference, value: jsonString };

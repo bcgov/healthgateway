@@ -62,13 +62,15 @@ function recoverAccount(): void {
 }
 
 function calculateTimeForDeletion(): void {
-    if (userStore.userIsActive) {
+    if (userStore.userIsActive || !userStore.user.closedDateTime) {
         return undefined;
     }
 
-    let endDate = new DateWrapper(userStore.user.closedDateTime);
-    endDate = endDate.add({ hour: configStore.webConfig.hoursForDeletion });
-    timeForDeletion.value = endDate.diff(new DateWrapper()).milliseconds;
+    const endDate = DateWrapper.fromIso(userStore.user.closedDateTime).add({
+        hour: configStore.webConfig.hoursForDeletion,
+    });
+
+    timeForDeletion.value = endDate.diff(DateWrapper.now()).milliseconds;
 }
 
 calculateTimeForDeletion();

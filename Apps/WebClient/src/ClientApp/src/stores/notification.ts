@@ -29,18 +29,13 @@ export const useNotificationStore = defineStore("notification", () => {
 
     const newNotifications = computed(() => {
         if (userStore.lastLoginDateTime) {
-            const lastLoginDateTime = new DateWrapper(
-                userStore.lastLoginDateTime,
-                {
-                    isUtc: true,
-                    hasTime: true,
-                }
+            const lastLoginDateTime = DateWrapper.fromIso(
+                userStore.lastLoginDateTime
             );
             return notifications.value.filter((n) =>
-                new DateWrapper(n.scheduledDateTimeUtc, {
-                    isUtc: true,
-                    hasTime: true,
-                }).isAfter(lastLoginDateTime)
+                DateWrapper.fromIso(n.scheduledDateTimeUtc).isAfter(
+                    lastLoginDateTime
+                )
             );
         }
         return notifications.value;

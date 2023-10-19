@@ -20,7 +20,7 @@ export default class ClinicalDocumentTimelineEntry extends TimelineEntry {
         super(
             model.id,
             EntryType.ClinicalDocument,
-            new DateWrapper(model.serviceDate)
+            DateWrapper.fromIsoDate(model.serviceDate)
         );
         this.fileId = model.fileId;
         this.name = model.name;

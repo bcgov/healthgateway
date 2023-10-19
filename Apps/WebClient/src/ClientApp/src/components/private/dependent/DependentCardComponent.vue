@@ -30,16 +30,15 @@ const selectedTabIndex = ref(0);
 const formattedName = computed(() => {
     return DependentUtil.formatName(props.dependent.dependentInformation);
 });
-const isExpired = computed(() => {
-    const birthDate = new DateWrapper(
-        props.dependent.dependentInformation.dateOfBirth
-    );
-    const now = new DateWrapper();
-    return (
-        now.diff(birthDate, "year").years >
-        configStore.webConfig.maxDependentAge
-    );
-});
+const isExpired = computed(
+    () =>
+        DateWrapper.today().diff(
+            DateWrapper.fromIsoDate(
+                props.dependent.dependentInformation.dateOfBirth
+            ),
+            "year"
+        ).years > configStore.webConfig.maxDependentAge
+);
 
 function removeDependent(): void {
     dependentStore.removeDependent(userStore.hdid, props.dependent);

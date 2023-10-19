@@ -12,7 +12,11 @@ import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import { container } from "@/ioc/container";
 import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
 import { ClinicalDocument } from "@/models/clinicalDocument";
-import { DateWrapper, StringISODate } from "@/models/dateWrapper";
+import {
+    DateWrapper,
+    StringISODate,
+    StringISODateTime,
+} from "@/models/dateWrapper";
 import type { Dependent } from "@/models/dependent";
 import EncodedMedia from "@/models/encodedMedia";
 import { ResultError } from "@/models/errors";
@@ -128,7 +132,7 @@ const headerData = computed<ReportHeader>(() => {
     return {
         phn: props.dependent.dependentInformation.PHN,
         dateOfBirth: formatDate(
-            props.dependent.dependentInformation.dateOfBirth ?? ""
+            props.dependent.dependentInformation.dateOfBirth
         ),
         name: props.dependent.dependentInformation
             ? props.dependent.dependentInformation.firstname +
@@ -136,23 +140,22 @@ const headerData = computed<ReportHeader>(() => {
               props.dependent.dependentInformation.lastname
             : "",
         isRedacted: false,
-        datePrinted: new DateWrapper().format(),
+        datePrinted: DateWrapper.now().format(),
         filterText: "",
     };
 });
 const isVaccineRecordDownloading = computed(
     () => vaccineRecordState.value.status === LoadStatus.REQUESTED
 );
-const isExpired = computed(() => {
-    const birthDate = new DateWrapper(
-        props.dependent.dependentInformation.dateOfBirth
-    );
-    const now = new DateWrapper();
-    return (
-        now.diff(birthDate, "year").years >
-        webClientConfig.value.maxDependentAge
-    );
-});
+const isExpired = computed(
+    () =>
+        DateWrapper.today().diff(
+            DateWrapper.fromIsoDate(
+                props.dependent.dependentInformation.dateOfBirth
+            ),
+            "year"
+        ).years > webClientConfig.value.maxDependentAge
+);
 // Lab Results
 const isLaboratoryOrderTabShown = computed(() =>
     ConfigUtil.isDependentDatasetEnabled(EntryType.LabResult)
@@ -164,9 +167,9 @@ const labResults = computed(() =>
     labResultStore
         .labResults(dependentHdid.value)
         .sort((a, b) =>
-            DateSortUtility.descendingByString(
-                a.timelineDateTime,
-                b.timelineDateTime
+            DateSortUtility.descending(
+                DateWrapper.fromIso(a.timelineDateTime),
+                DateWrapper.fromIso(b.timelineDateTime)
             )
         )
 );
@@ -181,7 +184,10 @@ const clinicalDocuments = computed(() =>
     clinicalDocumentStore
         .clinicalDocuments(dependentHdid.value)
         .sort((a, b) =>
-            DateSortUtility.descendingByString(a.serviceDate, b.serviceDate)
+            DateSortUtility.descending(
+                DateWrapper.fromIsoDate(a.serviceDate),
+                DateWrapper.fromIsoDate(b.serviceDate)
+            )
         )
 );
 // Covid-19
@@ -216,7 +222,7 @@ const immunizationItems = computed(() =>
     immunizationStore
         .immunizations(dependentHdid.value)
         .map<ImmunizationRow>((x) => ({
-            date: DateWrapper.format(x.dateOfImmunization),
+            date: DateWrapper.fromIsoDate(x.dateOfImmunization).format(),
             immunization: x.immunization.name,
             agent: getAgentNames(x.immunization.immunizationAgents),
             product: getProductNames(x.immunization.immunizationAgents),
@@ -229,10 +235,9 @@ const recommendationItems = computed(() =>
         .recommendations(dependentHdid.value)
         .map<RecommendationRow>((x) => ({
             immunization: x.recommendedVaccinations,
-            due_date:
-                x.agentDueDate === undefined || x.agentDueDate === null
-                    ? ""
-                    : DateWrapper.format(x.agentDueDate),
+            due_date: x.agentDueDate
+                ? DateWrapper.fromIsoDate(x.agentDueDate).format()
+                : "",
         }))
 );
 const isDownloadImmunizationReportButtonDisabled = computed(() => {
@@ -300,9 +305,8 @@ function downloadLaboratoryOrderReport(): void {
     isReportDownloading.value = true;
     trackClickLink("download_report", "Dependent Lab PDF");
 
-    const dateString = new DateWrapper(
-        selectedLaboratoryOrderRow.value.timelineDateTime,
-        { hasTime: true }
+    const dateString = DateWrapper.fromIso(
+        selectedLaboratoryOrderRow.value.timelineDateTime
     ).format("yyyy_MM_dd-HH_mm");
 
     laboratoryService
@@ -446,8 +450,12 @@ function downloadVaccinePdf(): void {
     vaccinationStatusStore.retrieveVaccineRecord(dependentHdid.value);
 }
 
+function formatDateTime(dateTime: StringISODateTime): string {
+    return dateTime ? DateWrapper.fromIso(dateTime).format() : "";
+}
+
 function formatDate(date: StringISODate): string {
-    return new DateWrapper(date).format();
+    return date ? DateWrapper.fromIsoDate(date).format() : "";
 }
 
 function fetchClinicalDocuments(): void {
@@ -830,7 +838,7 @@ watch(vaccineRecordState, () => {
                                             class="text-center text-nowrap"
                                         >
                                             {{
-                                                formatDate(
+                                                formatDateTime(
                                                     row.test.collectedDateTime
                                                 )
                                             }}
@@ -1346,7 +1354,9 @@ watch(vaccineRecordState, () => {
                                         :data-testid="`lab-results-date-${dependent.ownerId}-${index}`"
                                         class="text-center text-nowrap"
                                     >
-                                        {{ formatDate(row.timelineDateTime) }}
+                                        {{
+                                            formatDateTime(row.timelineDateTime)
+                                        }}
                                     </td>
                                     <td
                                         :data-testid="`lab-results-title-${dependent.ownerId}-${index}`"

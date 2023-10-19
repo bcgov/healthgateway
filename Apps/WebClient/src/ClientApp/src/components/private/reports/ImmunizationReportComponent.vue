@@ -123,17 +123,21 @@ const isLoading = computed(
 const visibleImmunizations = computed(() =>
     immunizationStore
         .immunizations(props.hdid)
-        .filter((record) => props.filter.allowsDate(record.dateOfImmunization))
+        .filter((record) =>
+            props.filter.allowsDate(
+                DateWrapper.fromIsoDate(record.dateOfImmunization)
+            )
+        )
         .sort((a, b) =>
-            DateSortUtility.descendingByString(
-                a.dateOfImmunization,
-                b.dateOfImmunization
+            DateSortUtility.descending(
+                DateWrapper.fromIsoDate(a.dateOfImmunization),
+                DateWrapper.fromIsoDate(b.dateOfImmunization)
             )
         )
 );
 const immunizationItems = computed(() =>
     visibleImmunizations.value.map<ImmunizationRow>((x) => ({
-        date: DateWrapper.format(x.dateOfImmunization),
+        date: DateWrapper.fromIsoDate(x.dateOfImmunization).format(),
         immunization: x.immunization.name,
         agents: x.immunization.immunizationAgents,
         provider_clinic: x.providerOrClinic,
@@ -144,19 +148,22 @@ const visibleRecommendations = computed(() =>
         .recommendations(props.hdid)
         .filter((x) => x.recommendedVaccinations)
         .sort((a, b) =>
-            DateSortUtility.descendingByOptionalString(
-                a.agentDueDate,
+            DateSortUtility.descending(
+                a.agentDueDate
+                    ? DateWrapper.fromIsoDate(a.agentDueDate)
+                    : undefined,
                 b.agentDueDate
+                    ? DateWrapper.fromIsoDate(b.agentDueDate)
+                    : undefined
             )
         )
 );
 const recommendationItems = computed(() =>
     visibleRecommendations.value.map<RecommendationRow>((x) => ({
         immunization: x.recommendedVaccinations,
-        due_date:
-            x.agentDueDate === undefined || x.agentDueDate === null
-                ? ""
-                : DateWrapper.format(x.agentDueDate),
+        due_date: x.agentDueDate
+            ? DateWrapper.fromIsoDate(x.agentDueDate).format()
+            : "",
     }))
 );
 const hasRecommendationsSlot = computed(

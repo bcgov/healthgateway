@@ -17,7 +17,7 @@ export default class ImmunizationTimelineEntry extends TimelineEntry {
         super(
             model.id,
             EntryType.Immunization,
-            new DateWrapper(model.dateOfImmunization)
+            DateWrapper.fromIsoDate(model.dateOfImmunization)
         );
         this.immunization = new ImmunizationViewModel(model);
     }
@@ -57,15 +57,11 @@ class ForecastViewModel {
 
     constructor(model: Forecast) {
         this.displayName = model.displayName;
-        if (model.dueDate) {
-            this.dueDate = DateWrapper.format(
-                model.dueDate,
-                DateTimeFormat.formatDateString
-            );
-        } else {
-            this.dueDate = "";
-        }
-
+        this.dueDate = model.dueDate
+            ? DateWrapper.fromIsoDate(model.dueDate).format(
+                  DateTimeFormat.formatDateString
+              )
+            : "";
         this.status = model.status;
     }
 }
@@ -92,7 +88,9 @@ class ImmunizationViewModel {
         this.name = model.immunization.name;
         this.status = model.status;
         this.valid = model.valid;
-        this.dateOfImmunization = new DateWrapper(model.dateOfImmunization);
+        this.dateOfImmunization = DateWrapper.fromIsoDate(
+            model.dateOfImmunization
+        );
         this.providerOrClinic =
             model.providerOrClinic === "" ? "N/A" : model.providerOrClinic;
         this.immunizationAgents = [];

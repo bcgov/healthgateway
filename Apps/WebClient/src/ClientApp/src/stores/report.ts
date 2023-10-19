@@ -16,35 +16,35 @@ export const useReportStore = defineStore("reports", () => {
         if (dependent) {
             return {
                 phn: dependent.dependentInformation.PHN,
-                dateOfBirth: DateWrapper.format(
-                    dependent.dependentInformation.dateOfBirth ?? ""
-                ),
+                dateOfBirth: dependent.dependentInformation.dateOfBirth
+                    ? DateWrapper.fromIsoDate(
+                          dependent.dependentInformation.dateOfBirth
+                      ).format()
+                    : "",
                 name: dependent.dependentInformation
                     ? dependent.dependentInformation.firstname +
                       " " +
                       dependent.dependentInformation.lastname
                     : "",
                 isRedacted: reportFilter.hasMedicationsFilter(),
-                datePrinted: new DateWrapper(
-                    new DateWrapper().toISO()
-                ).format(),
+                datePrinted: DateWrapper.now().format(),
                 filterText: reportFilter.filterText,
             };
         } else {
             return {
                 phn: userStore.patient.personalHealthNumber,
-                dateOfBirth: DateWrapper.format(
-                    userStore.patient.birthdate ?? ""
-                ),
+                dateOfBirth: userStore.patient.birthdate
+                    ? DateWrapper.fromIsoDate(
+                          userStore.patient.birthdate
+                      ).format()
+                    : "",
                 name: userStore.patient
                     ? userStore.patient.preferredName.givenName +
                       " " +
                       userStore.patient.preferredName.surname
                     : "",
                 isRedacted: reportFilter.hasMedicationsFilter(),
-                datePrinted: new DateWrapper(
-                    new DateWrapper().toISO()
-                ).format(),
+                datePrinted: DateWrapper.now().format(),
                 filterText: reportFilter.filterText,
             };
         }

@@ -62,14 +62,13 @@ const qrCodeUrl = computed<string | null>(() => {
     }
 });
 
-const issuedDate = computed<string | undefined>(() => {
-    if (props.status?.issueddate) {
-        return new DateWrapper(props.status.issueddate, {
-            hasTime: true,
-        }).format("MMMM-dd-yyyy, HH:mm");
-    }
-    return undefined;
-});
+const issuedDateTime = computed<string | undefined>(() =>
+    props.status?.issuedDateTime
+        ? DateWrapper.fromIso(props.status.issuedDateTime).format(
+              "MMMM-dd-yyyy, HH:mm"
+          )
+        : undefined
+);
 
 function onClickPreviousButton(): void {
     emit("click-previous-button");
@@ -154,11 +153,12 @@ function hideDialog(): void {
             </h2>
             <div
                 v-if="
-                    issuedDate && (isFullyVaccinated || isPartiallyVaccinated)
+                    issuedDateTime &&
+                    (isFullyVaccinated || isPartiallyVaccinated)
                 "
                 class="mt-4 text-body-2"
             >
-                Issued on {{ issuedDate }}
+                Issued on {{ issuedDateTime }}
             </div>
             <div
                 v-if="qrCodeUrl !== null && !isVaccinationNotFound"

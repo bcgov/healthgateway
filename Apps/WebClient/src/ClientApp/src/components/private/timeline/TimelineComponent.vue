@@ -177,10 +177,10 @@ const filterLabels = computed(() => {
     }
 
     const startDate = filter.value.startDate
-        ? `From ${new DateWrapper(filter.value.startDate).format()}`
+        ? `From ${DateWrapper.fromIsoDate(filter.value.startDate).format()}`
         : "";
     const endDate = filter.value.endDate
-        ? `To ${new DateWrapper(filter.value.endDate).format()}`
+        ? `To ${DateWrapper.fromIsoDate(filter.value.endDate).format()}`
         : "";
     if (startDate && endDate) {
         labels.push([FilterLabelType.Date, `${startDate} ${endDate}`]);

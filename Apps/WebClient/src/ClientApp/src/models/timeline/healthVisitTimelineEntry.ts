@@ -21,7 +21,7 @@ export default class HealthVisitTimelineEntry extends TimelineEntry {
         super(
             model.id,
             EntryType.HealthVisit,
-            new DateWrapper(model.encounterDate)
+            DateWrapper.fromIsoDate(model.encounterDate)
         );
         this.practitionerName =
             model.practitionerName || "Unknown Practitioner";
@@ -29,7 +29,7 @@ export default class HealthVisitTimelineEntry extends TimelineEntry {
         this.clinic = new ClinicViewModel(model.clinic);
 
         const duration = Duration.fromObject({ years: 6 });
-        const warningDate = new DateWrapper().subtract(duration);
+        const warningDate = DateWrapper.today().subtract(duration);
         this.showRollOffWarning = this.date.isBeforeOrSame(warningDate);
 
         this.getComments = getComments;

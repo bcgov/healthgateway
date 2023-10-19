@@ -6,6 +6,7 @@ import { ResultType } from "@/constants/resulttype";
 import { container } from "@/ioc/container";
 import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
 import { Dictionary } from "@/models/baseTypes";
+import { DateWrapper } from "@/models/dateWrapper";
 import { ResultError } from "@/models/errors";
 import { LoadStatus } from "@/models/storeOperations";
 import { UserComment } from "@/models/userComment";
@@ -14,7 +15,10 @@ import { useErrorStore } from "@/stores/error";
 import DateSortUtility from "@/utility/dateSortUtility";
 
 const commentsSort = (a: UserComment, b: UserComment): number =>
-    DateSortUtility.ascendingByString(a.createdDateTime, b.createdDateTime);
+    DateSortUtility.ascending(
+        DateWrapper.fromIso(a.createdDateTime),
+        DateWrapper.fromIso(b.createdDateTime)
+    );
 
 export const useCommentStore = defineStore("comment", () => {
     const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);

@@ -23,7 +23,7 @@ import { useTimelineStore } from "@/stores/timeline";
 import { useUserStore } from "@/stores/user";
 import ValidationUtil from "@/utility/validationUtil";
 
-const defaultDateString = new DateWrapper().toISODate();
+const defaultDateString = DateWrapper.today().toISODate();
 
 const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
 const appStore = useAppStore();
@@ -102,7 +102,9 @@ function updateNote(): void {
                 id: entry.value.id,
                 text: noteText.value,
                 title: noteTitle.value,
-                journalDate: new DateWrapper(noteDateString.value).toISODate(),
+                journalDate: DateWrapper.fromIsoDate(
+                    noteDateString.value
+                ).toISODate(),
                 version: entry.value.version as number,
                 hdId: userStore.hdid,
             })
@@ -118,7 +120,7 @@ function updateNote(): void {
 }
 
 function createNote(): void {
-    const date = new DateWrapper(noteDateString.value).toISODate();
+    const date = DateWrapper.fromIsoDate(noteDateString.value);
     loadingStore.applyLoader(
         Loader.NoteDialog,
         "createNote",
@@ -126,13 +128,13 @@ function createNote(): void {
             .createNote(userStore.hdid, {
                 text: noteText.value,
                 title: noteTitle.value,
-                journalDate: date,
+                journalDate: date.toISODate(),
                 hdId: userStore.hdid,
                 version: 0,
             })
             .then(() => {
                 timelineStore.clearFilter();
-                timelineStore.setSelectedDate(new DateWrapper(date));
+                timelineStore.setSelectedDate(date);
             })
             .then(closeDialog)
             .catch((err: ResultError) => {

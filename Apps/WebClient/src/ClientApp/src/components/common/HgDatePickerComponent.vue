@@ -25,8 +25,8 @@ const props = withDefaults(defineProps<Props>(), {
     label: "Date",
     state: undefined,
     errorMessages: () => [],
-    minDate: () => new DateWrapper("1900-01-01"),
-    maxDate: () => new DateWrapper("2099-12-31"),
+    minDate: () => DateWrapper.fromNumerical(1900, 1, 1),
+    maxDate: () => DateWrapper.fromNumerical(2099, 12, 31),
 });
 
 const emit = defineEmits<{
@@ -86,7 +86,7 @@ const maxJsDate = computed(() => props.maxDate.toJSDate());
 const v$ = useVuelidate(validations, { textFieldValue });
 
 function fromIsoFormat(value: string): string {
-    return value ? new DateWrapper(value).format().toUpperCase() : "";
+    return value ? DateWrapper.fromIsoDate(value).format().toUpperCase() : "";
 }
 
 function toIsoFormat(value: string): string {

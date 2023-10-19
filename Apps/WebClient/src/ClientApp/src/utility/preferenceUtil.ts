@@ -13,7 +13,7 @@ export default abstract class PreferenceUtil {
                 preference: type,
                 value,
                 version: 0,
-                createdDateTime: new DateWrapper().toISO(),
+                createdDateTime: DateWrapper.now().toISO(),
             };
         }
     }

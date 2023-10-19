@@ -147,7 +147,7 @@ const reportFilterDateString = computed(() => {
 });
 
 function formatDate(date: string): string {
-    return DateWrapper.format(date);
+    return DateWrapper.fromIsoDate(date).format();
 }
 
 function clearFilterDates(): void {

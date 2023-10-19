@@ -25,7 +25,7 @@ export default class DiagnosticImagingTimelineEntry extends TimelineEntry {
         super(
             model.id ?? `diagnosticImaging-${model.examDate}`,
             EntryType.DiagnosticImaging,
-            new DateWrapper(model.examDate)
+            DateWrapper.fromIsoDate(model.examDate)
         );
 
         this.title = model.modality || "N/A";

@@ -17,7 +17,7 @@ const userStore = useUserStore();
 
 const formattedLoginDateTimes = computed(() =>
     userStore.user.lastLoginDateTimes.map((time) =>
-        new DateWrapper(time, { isUtc: true }).format("yyyy-MMM-dd, t")
+        DateWrapper.fromIso(time).format("yyyy-MMM-dd, t")
     )
 );
 </script>
