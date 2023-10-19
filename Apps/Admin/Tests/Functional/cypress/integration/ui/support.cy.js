@@ -29,7 +29,7 @@ describe("Support", () => {
             "GET",
             `**/Support/Users?queryString=${phn}&queryType=Phn`,
             {
-                fixture: "SupportService/users-phn.json",
+                fixture: "SupportService/users.json",
             }
         );
 
@@ -38,7 +38,7 @@ describe("Support", () => {
             "GET",
             `**/Support/Users?queryString=${hdid}&queryType=Hdid`,
             {
-                fixture: "SupportService/users-hdid.json",
+                fixture: "SupportService/users.json",
             }
         );
 

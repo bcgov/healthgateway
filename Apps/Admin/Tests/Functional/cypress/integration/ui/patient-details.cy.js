@@ -2,56 +2,69 @@ import { performSearch } from "../../utilities/supportUtilities";
 import { getTableRows } from "../../utilities/sharedUtilities";
 
 const hdid = "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A";
-const hdidPatientNotFound =
-    "RD33Y2LJEUZCY2TCMOIECUTKS3E62MEQ62CSUL6Q553IHHBI3AWZ";
 const hdidPatientDeceased =
     "MPOLGP66AV4PPDB6ZMYEWQ63WKRYPM4EPDW5MSXA2LA65EQOEMCQ";
 const hdidPatientNotUser =
     "C54JQKXANHJK7TIYBRCHJBOKXOIXASNQE76WSRCTOPKOXRMI5OAA";
 const phn = "9735353315";
+const phnPatientDeceased = "9873224879";
+const phnPatientNotUser = "9872868128";
 
 describe("Patient details as admin", () => {
     beforeEach(() => {
-        // HDID with results
+        // PHN with results
         cy.intercept(
             "GET",
-            `**/Support/Users?queryString=${hdid}&queryType=Hdid`,
+            `**/Support/Users?queryString=${phn}&queryType=Phn`,
             {
-                fixture: "SupportService/users-hdid.json",
+                fixture: "SupportService/users.json",
             }
         );
 
-        // HDID not found
+        // PHN deceased
         cy.intercept(
             "GET",
-            `**/Support/Users?queryString=${hdidPatientNotFound}&queryType=Hdid`,
+            `**/Support/Users?queryString=${phnPatientDeceased}&queryType=Phn`,
             {
-                fixture: "SupportService/users-hdid-not-found.json",
+                fixture: "SupportService/users-patient-deceased.json",
             }
         );
 
-        // HDID deceased
+        // PHN not a user
         cy.intercept(
             "GET",
-            `**/Support/Users?queryString=${hdidPatientDeceased}&queryType=Hdid`,
+            `**/Support/Users?queryString=${phnPatientNotUser}&queryType=Phn`,
             {
-                fixture: "SupportService/users-hdid-deceased.json",
+                fixture: "SupportService/users-patient-not-user.json",
             }
         );
 
-        // HDID not a user
+        // Patient Details
         cy.intercept(
             "GET",
-            `**/Support/Users?queryString=${hdidPatientNotUser}&queryType=Hdid`,
+            `**/PatientSupportDetails?queryString=${phn}&queryType=Phn&refreshVaccineDetails=False`,
             {
-                fixture: "SupportService/users-hdid-not-user.json",
+                fixture: "SupportService/patient-details.json",
             }
         );
 
-        // Message Verifications
-        cy.intercept("GET", `**/Support/Verifications?hdid=${hdid}`, {
-            fixture: "SupportService/messaging-verification.json",
-        });
+        // Patient Details with deceased PHN
+        cy.intercept(
+            "GET",
+            `**/PatientSupportDetails?queryString=${phnPatientDeceased}&queryType=Phn&refreshVaccineDetails=False`,
+            {
+                fixture: "SupportService/patient-details.json",
+            }
+        );
+
+        // Patient Details with not a user PHN
+        cy.intercept(
+            "GET",
+            `**/PatientSupportDetails?queryString=${phnPatientNotUser}&queryType=Phn&refreshVaccineDetails=False`,
+            {
+                fixture: "SupportService/patient-details.json",
+            }
+        );
 
         cy.login(
             Cypress.env("keycloak_username"),
@@ -61,7 +74,7 @@ describe("Patient details as admin", () => {
     });
 
     it("Verify patient details", () => {
-        performSearch("HDID", hdid);
+        performSearch("PHN", phn);
 
         cy.get("[data-testid=patient-name]").should("be.visible");
         cy.get("[data-testid=patient-dob]").should("be.visible");
@@ -81,32 +94,8 @@ describe("Patient details as admin", () => {
         );
     });
 
-    it("Verify patient not found", () => {
-        performSearch("HDID", hdidPatientNotFound);
-
-        cy.get("[data-testid=patient-name]").should("be.visible");
-        cy.get("[data-testid=patient-dob]").should("be.visible");
-        cy.get("[data-testid=patient-phn]").should("be.visible");
-        cy.get("[data-testid=patient-hdid]")
-            .should("be.visible")
-            .contains(hdidPatientNotFound);
-        cy.get("[data-testid=patient-physical-address]").should("be.visible");
-        cy.get("[data-testid=patient-mailing-address]").should("be.visible");
-
-        cy.get("[data-testid=profile-created-datetime]").should("not.exist");
-        cy.get("[data-testid=profile-last-login-datetime]").should("not.exist");
-        cy.get("[data-testid=messaging-verification-table]").should(
-            "not.exist"
-        );
-        cy.get("[data-testid=no-hg-profile]").should("be.visible");
-
-        cy.get("[data-testid=user-banner-feedback-status-warning-message]")
-            .should("be.visible")
-            .contains("Patient not found");
-    });
-
     it("Verify patient deceased", () => {
-        performSearch("HDID", hdidPatientDeceased);
+        performSearch("PHN", phnPatientDeceased);
 
         cy.get("[data-testid=patient-name]").should("be.visible");
         cy.get("[data-testid=patient-dob]").should("be.visible");
@@ -130,7 +119,7 @@ describe("Patient details as admin", () => {
     });
 
     it("Verify patient not a user", () => {
-        performSearch("HDID", hdidPatientNotUser);
+        performSearch("PHN", phnPatientNotUser);
 
         cy.get("[data-testid=patient-name]").should("be.visible");
         cy.get("[data-testid=patient-dob]").should("be.visible");
@@ -160,7 +149,43 @@ describe("Patient details as support", () => {
             "GET",
             `**/Support/Users?queryString=${phn}&queryType=Phn`,
             {
-                fixture: "SupportService/users-phn.json",
+                fixture: "SupportService/users.json",
+            }
+        );
+
+        // PHN deceased
+        cy.intercept(
+            "GET",
+            `**/Support/Users?queryString=${phnPatientDeceased}&queryType=Phn`,
+            {
+                fixture: "SupportService/users-patient-deceased.json",
+            }
+        );
+
+        // PHN not a user
+        cy.intercept(
+            "GET",
+            `**/Support/Users?queryString=${phnPatientNotUser}&queryType=Phn`,
+            {
+                fixture: "SupportService/users-patient-not-user.json",
+            }
+        );
+
+        // Patient Details with deceased PHN
+        cy.intercept(
+            "GET",
+            `**/PatientSupportDetails?queryString=${phnPatientDeceased}&queryType=Phn&refreshVaccineDetails=False`,
+            {
+                fixture: "SupportService/patient-details.json",
+            }
+        );
+
+        // Patient Details with not a user PHN
+        cy.intercept(
+            "GET",
+            `**/PatientSupportDetails?queryString=${phnPatientNotUser}&queryType=Phn&refreshVaccineDetails=False`,
+            {
+                fixture: "SupportService/patient-details.json",
             }
         );
 
@@ -204,5 +229,29 @@ describe("Patient details as support", () => {
             "have.length",
             5
         );
+    });
+
+    it("Verify patient deceased", () => {
+        performSearch("PHN", phnPatientDeceased);
+
+        cy.get("[data-testid=patient-name]").should("be.visible");
+        cy.get("[data-testid=patient-dob]").should("be.visible");
+        cy.get("[data-testid=patient-phn]").should("be.visible");
+        cy.get("[data-testid=patient-hdid]").should("not.exist");
+        cy.get("[data-testid=user-banner-feedback-status-warning-message]")
+            .should("be.visible")
+            .contains("Patient is deceased");
+    });
+
+    it("Verify patient not a user", () => {
+        performSearch("PHN", phnPatientNotUser);
+
+        cy.get("[data-testid=patient-name]").should("be.visible");
+        cy.get("[data-testid=patient-dob]").should("be.visible");
+        cy.get("[data-testid=patient-phn]").should("be.visible");
+        cy.get("[data-testid=patient-hdid]").should("not.exist");
+        cy.get(
+            "[data-testid=user-banner-feedback-status-warning-message]"
+        ).should("not.exist");
     });
 });
