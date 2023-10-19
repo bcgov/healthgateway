@@ -38,7 +38,7 @@
         "@types/file-saver": "^2.0.5",
         "@types/luxon": "^3.3.2",
         "@types/node": "^18.18.5",
-        "@types/throttle-debounce": "^5.0.0",
+        "@types/throttle-debounce": "^5.0.1",
         "@types/webfontloader": "^1.6.35",
         "@vitejs/plugin-vue": "^4.4.0",
         "@vue/eslint-config-prettier": "^7.1.0",
