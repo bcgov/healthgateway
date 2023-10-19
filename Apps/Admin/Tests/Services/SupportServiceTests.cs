@@ -352,11 +352,18 @@ namespace HealthGateway.Admin.Tests.Services
 
             ISupportService supportService = CreateSupportService(patientRepositoryMock: patientRepositoryMock, userProfileDelegateMock: userProfileDelegateMock);
 
+            IEnumerable<PatientSupportResult> expectedResult = new List<PatientSupportResult>
+            {
+                GetExpectedPatientSupportDetails(patient, profile),
+            };
+
             // Act
             IEnumerable<PatientSupportResult> actualResult = await supportService.GetPatientsAsync(PatientQueryType.Hdid, Hdid);
 
             // Assert
-            Assert.Empty(actualResult);
+            Assert.Single(actualResult);
+            Assert.Equal(PatientStatus.NotFound, actualResult.First().Status);
+            actualResult.ShouldDeepEqual(expectedResult);
         }
 
         /// <summary>

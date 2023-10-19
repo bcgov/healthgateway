@@ -122,6 +122,7 @@
                       Striped="true"
                       Dense="true"
                       Hover="true"
+                      RowClassFunc="@((row, _) => !string.IsNullOrEmpty(row.PersonalHealthNumber) ? "cursor-pointer" : string.Empty)"
                       OnRowClick="RowClickEvent"
                       T="PatientRow"
                       data-testid="user-table">
