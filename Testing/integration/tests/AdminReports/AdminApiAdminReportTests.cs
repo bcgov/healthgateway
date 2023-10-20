@@ -16,7 +16,7 @@
 namespace HealthGateway.IntegrationTests.AdminReports;
 
 using Alba;
-using HealthGateway.Admin.Common.Models;
+using HealthGateway.Admin.Common.Models.AdminReports;
 using HealthGateway.Admin.Server;
 using HealthGateway.Common.Data.Constants;
 using Xunit.Abstractions;

@@ -18,7 +18,8 @@ namespace HealthGateway.Admin.Server.Services
     using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
-    using HealthGateway.Admin.Common.Models;
+    using HealthGateway.Admin.Common.Models.AdminReports;
+    using HealthGateway.Common.Data.Constants;
     using HealthGateway.Database.Models;
 
     /// <summary>
@@ -29,9 +30,12 @@ namespace HealthGateway.Admin.Server.Services
         /// <summary>
         /// Retrieves a collection of protected dependent HDIDs.
         /// </summary>
+        /// <param name="page">Page number of the protected dependents report.</param>
+        /// <param name="pageSize">Number or records per page to return from the protected dependents report.</param>
+        /// <param name="sortDirection">The sort direction for the records in the protected dependents report.</param>
         /// <param name="ct">Cancellation token to manage async request.</param>
         /// <returns>A collection of HDID strings.</returns>
-        Task<IList<string>> GetProtectedDependentsReportAsync(CancellationToken ct);
+        Task<IList<ProtectedDependentRecord>> GetProtectedDependentsReportAsync(int page, int pageSize, SortDirection sortDirection, CancellationToken ct);
 
         /// <summary>
         /// Retrieves a collection of user HDIDs and their blocked data sources.

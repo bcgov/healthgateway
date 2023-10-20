@@ -23,7 +23,7 @@ namespace HealthGateway.Admin.Client.Store.AdminReport
     using Fluxor;
     using HealthGateway.Admin.Client.Api;
     using HealthGateway.Admin.Client.Utils;
-    using HealthGateway.Admin.Common.Models;
+    using HealthGateway.Admin.Common.Models.AdminReports;
     using Microsoft.Extensions.Logging;
     using Refit;
 

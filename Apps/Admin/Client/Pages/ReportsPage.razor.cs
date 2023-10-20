@@ -24,7 +24,7 @@ using HealthGateway.Admin.Client.Store;
 using HealthGateway.Admin.Client.Store.AdminReport;
 using HealthGateway.Admin.Client.Store.PatientSupport;
 using HealthGateway.Admin.Client.Utils;
-using HealthGateway.Admin.Common.Models;
+using HealthGateway.Admin.Common.Models.AdminReports;
 using HealthGateway.Common.Data.Constants;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
