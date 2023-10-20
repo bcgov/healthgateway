@@ -82,7 +82,7 @@ namespace HealthGateway.Admin.Server.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        public async Task<IEnumerable<ProtectedDependentRecord>> ProtectedDependentsReport(
+        public async Task<ProtectedDependentReport> ProtectedDependentsReport(
             [FromQuery] int page = 0,
             [FromQuery] int pageSize = 25,
             [FromQuery] SortDirection sortDirection = SortDirection.Ascending,
