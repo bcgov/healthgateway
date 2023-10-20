@@ -56,6 +56,6 @@ namespace HealthGateway.Database.Delegates
         /// <param name="sortDirection">The sort direction for the records in the protected dependents report.</param>
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A list of HDID strings.</returns>
-        Task<IList<string>> GetProtectedDependentHdidsAsync(int page, int pageSize, SortDirection sortDirection, CancellationToken ct);
+        Task<(IList<string> Hdids, int TotalHdids)> GetProtectedDependentHdidsAsync(int page, int pageSize, SortDirection sortDirection, CancellationToken ct);
     }
 }

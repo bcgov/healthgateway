@@ -84,7 +84,7 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public async Task<IList<string>> GetProtectedDependentHdidsAsync(int page, int pageSize, SortDirection sortDirection, CancellationToken ct)
+        public async Task<(IList<string> Hdids, int TotalHdids)> GetProtectedDependentHdidsAsync(int page, int pageSize, SortDirection sortDirection, CancellationToken ct)
         {
             int safePageSize = pageSize > 0 ? pageSize : 25;
             int recordsToSkip = int.Max(page, 0) * safePageSize;
@@ -99,10 +99,12 @@ namespace HealthGateway.Database.Delegates
                 : query.OrderByDescending(d => d.HdId);
 
             // Get the records for the page
-            return await query.Skip(recordsToSkip)
+            List<string> records = await query.Skip(recordsToSkip)
                 .Take(safePageSize)
                 .Select(d => d.HdId)
                 .ToListAsync(ct);
+            int totalCount = this.dbContext.Dependent.Count(d => d.Protected);
+            return (records, totalCount);
         }
     }
 }

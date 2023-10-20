@@ -15,10 +15,5 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Admin.Common.Models.AdminReports
 {
-    /// <summary>
-    /// Represents a protected dependent.
-    /// </summary>
-    /// <param name="Hdid">The dependent's HDID.</param>
-    /// <param name="Phn">The dependent's personal health number.</param>
-    public record ProtectedDependentRecord(string Hdid, string? Phn);
+    public record ReportMetaData(int TotalCount, int? Page, int? PageSize);
 }

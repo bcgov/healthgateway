@@ -47,7 +47,7 @@ public class AdminApiAdminReportsTests : ScenarioContextBase<Program>
         blockedAccessRecords.ShouldBeEquivalentTo(expectedRecords);
     }
 
-    private readonly IList<ProtectedDependentRecord> protectedDependentReport = new List<ProtectedDependentRecord>
+    private readonly IList<ProtectedDependentRecord> protectedDependentRecords = new List<ProtectedDependentRecord>
     {
         new("35224807075386271", "9872868128"),
         new("508820774378599978", "9872868103"),
@@ -56,24 +56,28 @@ public class AdminApiAdminReportsTests : ScenarioContextBase<Program>
     [Fact]
     public async Task RetrieveProtectedDependentsReport()
     {
+        ReportMetaData expectedMetaData = new(2, 1, 25);
         IScenarioResult scenarioResponse = await this.Host.Scenario(
             scenario => { scenario.Get.Url("/v1/api/AdminReport/ProtectedDependents"); });
 
-        IEnumerable<ProtectedDependentRecord> protectedDependents = (await scenarioResponse.ReadAsJsonAsync<IEnumerable<ProtectedDependentRecord>>()).ShouldNotBeNull();
-        protectedDependents.Count().ShouldBe(2);
-        protectedDependents.ShouldBeEquivalentTo(this.protectedDependentReport);
+        ProtectedDependentReport protectedDependents = (await scenarioResponse.ReadAsJsonAsync<ProtectedDependentReport>()).ShouldNotBeNull();
+        protectedDependents.Records.Count.ShouldBe(2);
+        protectedDependents.Records.ShouldBeEquivalentTo(this.protectedDependentRecords);
+        protectedDependents.MetaData.ShouldBeEquivalentTo(expectedMetaData);
     }
 
     [Fact]
     public async Task RetrieveProtectedDependentsReportDescending()
     {
-        List<ProtectedDependentRecord> expectedResults = this.protectedDependentReport.Reverse().ToList();
+        List<ProtectedDependentRecord> expectedRecords = this.protectedDependentRecords.Reverse().ToList();
+        ReportMetaData expectedMetaData = new(2, 1, 25);
         IScenarioResult scenarioResponse = await this.Host.Scenario(
             scenario => { scenario.Get.Url("/v1/api/AdminReport/ProtectedDependents?sortDirection=Descending"); });
 
-        IEnumerable<ProtectedDependentRecord> protectedDependents = (await scenarioResponse.ReadAsJsonAsync<IEnumerable<ProtectedDependentRecord>>()).ShouldNotBeNull();
-        protectedDependents.Count().ShouldBe(2);
-        protectedDependents.ShouldBeEquivalentTo(expectedResults);
+        ProtectedDependentReport protectedDependents = (await scenarioResponse.ReadAsJsonAsync<ProtectedDependentReport>()).ShouldNotBeNull();
+        protectedDependents.Records.Count.ShouldBe(2);
+        protectedDependents.Records.ShouldBeEquivalentTo(expectedRecords);
+        protectedDependents.MetaData.ShouldBeEquivalentTo(expectedMetaData);
     }
 
     [Fact]
@@ -81,13 +85,15 @@ public class AdminApiAdminReportsTests : ScenarioContextBase<Program>
     {
         IList<ProtectedDependentRecord> expectedResults = new List<ProtectedDependentRecord>
         {
-            this.protectedDependentReport[1],
+            this.protectedDependentRecords[1],
         };
+        ReportMetaData expectedMetaData = new(2, 2, 1);
         IScenarioResult scenarioResponse = await this.Host.Scenario(
             scenario => { scenario.Get.Url("/v1/api/AdminReport/ProtectedDependents?page=2&pageSize=1"); });
 
-        IEnumerable<ProtectedDependentRecord> protectedDependents = (await scenarioResponse.ReadAsJsonAsync<IEnumerable<ProtectedDependentRecord>>()).ShouldNotBeNull();
-        protectedDependents.Count().ShouldBe(1);
-        protectedDependents.ShouldBeEquivalentTo(expectedResults);
+        ProtectedDependentReport protectedDependents = (await scenarioResponse.ReadAsJsonAsync<ProtectedDependentReport>()).ShouldNotBeNull();
+        protectedDependents.Records.Count.ShouldBe(1);
+        protectedDependents.Records.ShouldBeEquivalentTo(expectedResults);
+        protectedDependents.MetaData.ShouldBeEquivalentTo(expectedMetaData);
     }
 }
