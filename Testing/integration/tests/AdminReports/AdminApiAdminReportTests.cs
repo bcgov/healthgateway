@@ -47,20 +47,47 @@ public class AdminApiAdminReportsTests : ScenarioContextBase<Program>
         blockedAccessRecords.ShouldBeEquivalentTo(expectedRecords);
     }
 
+    private readonly IList<ProtectedDependentRecord> protectedDependentReport = new List<ProtectedDependentRecord>
+    {
+        new("35224807075386271", "9872868128"),
+        new("508820774378599978", "9872868103"),
+    };
+
     [Fact]
     public async Task RetrieveProtectedDependentsReport()
     {
-        IEnumerable<string> expectedHdids = new List<string>
-        {
-            "508820774378599978",
-            "35224807075386271",
-        };
-
         IScenarioResult scenarioResponse = await this.Host.Scenario(
             scenario => { scenario.Get.Url("/v1/api/AdminReport/ProtectedDependents"); });
 
-        IEnumerable<string> protectedHdids = (await scenarioResponse.ReadAsJsonAsync<IEnumerable<string>>()).ShouldNotBeNull();
-        protectedHdids.Count().ShouldBe(2);
-        protectedHdids.ShouldBeEquivalentTo(expectedHdids);
+        IEnumerable<ProtectedDependentRecord> protectedDependents = (await scenarioResponse.ReadAsJsonAsync<IEnumerable<ProtectedDependentRecord>>()).ShouldNotBeNull();
+        protectedDependents.Count().ShouldBe(2);
+        protectedDependents.ShouldBeEquivalentTo(this.protectedDependentReport);
+    }
+
+    [Fact]
+    public async Task RetrieveProtectedDependentsReportDescending()
+    {
+        List<ProtectedDependentRecord> expectedResults = this.protectedDependentReport.Reverse().ToList();
+        IScenarioResult scenarioResponse = await this.Host.Scenario(
+            scenario => { scenario.Get.Url("/v1/api/AdminReport/ProtectedDependents?sortDirection=Descending"); });
+
+        IEnumerable<ProtectedDependentRecord> protectedDependents = (await scenarioResponse.ReadAsJsonAsync<IEnumerable<ProtectedDependentRecord>>()).ShouldNotBeNull();
+        protectedDependents.Count().ShouldBe(2);
+        protectedDependents.ShouldBeEquivalentTo(expectedResults);
+    }
+
+    [Fact]
+    public async Task RetrieveProtectedDependentsReportPaged()
+    {
+        IList<ProtectedDependentRecord> expectedResults = new List<ProtectedDependentRecord>
+        {
+            this.protectedDependentReport[1],
+        };
+        IScenarioResult scenarioResponse = await this.Host.Scenario(
+            scenario => { scenario.Get.Url("/v1/api/AdminReport/ProtectedDependents?page=2&pageSize=1"); });
+
+        IEnumerable<ProtectedDependentRecord> protectedDependents = (await scenarioResponse.ReadAsJsonAsync<IEnumerable<ProtectedDependentRecord>>()).ShouldNotBeNull();
+        protectedDependents.Count().ShouldBe(1);
+        protectedDependents.ShouldBeEquivalentTo(expectedResults);
     }
 }
