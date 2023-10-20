@@ -13,15 +13,12 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Admin.Common.Models
+namespace HealthGateway.Admin.Common.Models.AdminReports
 {
-    using System.Collections.Generic;
-    using HealthGateway.Common.Data.Constants;
-
     /// <summary>
-    /// Represents a patient with blocked access to data sources.
+    /// Represents a protected dependent.
     /// </summary>
-    /// <param name="Hdid">Patient's HDID.</param>
-    /// <param name="BlockedSources">List of <see cref="DataSource"/> that are blocked</param>
-    public record BlockedAccessRecord(string Hdid, IList<DataSource> BlockedSources);
+    /// <param name="Hdid">The dependent's HDID.</param>
+    /// <param name="Phn">The dependent's personal health number.</param>
+    public record ProtectedDependentRecord(string Hdid, string? Phn);
 }
