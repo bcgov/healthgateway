@@ -28,7 +28,7 @@ export default class MedicationTimelineEntry extends TimelineEntry {
         super(
             model.prescriptionIdentifier,
             EntryType.Medication,
-            new DateWrapper(model.dispensedDate)
+            DateWrapper.fromIsoDate(model.dispensedDate)
         );
 
         const summary = model.medicationSummary;

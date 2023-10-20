@@ -75,12 +75,14 @@ const visibleRecords = computed(() =>
     covid19TestResultStore
         .covid19TestResults(props.hdid)
         .filter((r) =>
-            props.filter.allowsDate(r.labResults[0].collectedDateTime)
+            props.filter.allowsDate(
+                DateWrapper.fromIso(r.labResults[0].collectedDateTime)
+            )
         )
         .sort((a, b) =>
-            DateSortUtility.descendingByString(
-                a.labResults[0].collectedDateTime,
-                b.labResults[0].collectedDateTime
+            DateSortUtility.descending(
+                DateWrapper.fromIso(a.labResults[0].collectedDateTime),
+                DateWrapper.fromIso(b.labResults[0].collectedDateTime)
             )
         )
 );
@@ -88,7 +90,7 @@ const items = computed(() =>
     visibleRecords.value.map<Covid19TestResultRow>((x) => {
         const labResult = x.labResults[0];
         return {
-            date: DateWrapper.format(labResult.collectedDateTime),
+            date: DateWrapper.fromIso(labResult.collectedDateTime).format(),
             test_type: labResult.testType,
             test_location: x.location ?? "",
             result: labResult.filteredLabResultOutcome,

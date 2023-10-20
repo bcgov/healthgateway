@@ -1,11 +1,11 @@
-import { DateWrapper, StringISODate } from "@/models/dateWrapper";
+import { DateWrapper, IDateWrapper, StringISODate } from "@/models/dateWrapper";
 
 export interface IReportFilter {
     readonly startDate: StringISODate | null;
     readonly endDate: StringISODate | null;
     readonly medications: string[];
     readonly filterText: string;
-    allowsDate(dateString: StringISODate): boolean;
+    allowsDate(date: IDateWrapper): boolean;
     allowsMedication(medicationName: string): boolean;
     hasActiveFilter(): boolean;
     hasMedicationsFilter(): boolean;
@@ -28,18 +28,20 @@ export default class ReportFilter implements IReportFilter {
         this.medications = builder.medications;
     }
 
-    public allowsDate(dateString: StringISODate): boolean {
+    public allowsDate(date: IDateWrapper): boolean {
         let filterStart = true;
         if (this.startDate !== null) {
-            filterStart = new DateWrapper(dateString).isAfterOrSame(
-                new DateWrapper(this.startDate)
+            filterStart = date.isAfterOrSame(
+                DateWrapper.fromIsoDate(this.startDate)
             );
         }
 
         let filterEnd = true;
         if (this.endDate !== null) {
-            filterEnd = new DateWrapper(dateString).isBeforeOrSame(
-                new DateWrapper(this.endDate)
+            filterEnd = date.isBefore(
+                DateWrapper.fromIsoDate(this.endDate)
+                    .add({ days: 1 })
+                    .startOf("day")
             );
         }
         return filterStart && filterEnd;
@@ -67,16 +69,12 @@ export default class ReportFilter implements IReportFilter {
         }
 
         const start = this.startDate
-            ? ` from ${this.formatDate(this.startDate)}`
+            ? ` from ${DateWrapper.fromIsoDate(this.startDate).format()}`
             : "";
         const end = this.endDate
-            ? this.formatDate(this.endDate)
-            : this.formatDate(new DateWrapper().toISO());
+            ? DateWrapper.fromIsoDate(this.endDate).format()
+            : DateWrapper.today().format();
         return `Displaying records${start} up to ${end}`;
-    }
-
-    private formatDate(date: string): string {
-        return new DateWrapper(date).format();
     }
 }
 

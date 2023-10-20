@@ -71,14 +71,21 @@ const isEmpty = computed(() => visibleRecords.value.length === 0);
 const visibleRecords = computed(() =>
     healthVisitStore
         .healthVisits(props.hdid)
-        .filter((record) => props.filter.allowsDate(record.encounterDate))
+        .filter((record) =>
+            props.filter.allowsDate(
+                DateWrapper.fromIsoDate(record.encounterDate)
+            )
+        )
         .sort((a, b) =>
-            DateSortUtility.descendingByString(a.encounterDate, b.encounterDate)
+            DateSortUtility.descending(
+                DateWrapper.fromIsoDate(a.encounterDate),
+                DateWrapper.fromIsoDate(b.encounterDate)
+            )
         )
 );
 const items = computed(() =>
     visibleRecords.value.map<EncounterRow>((x) => ({
-        date: DateWrapper.format(x.encounterDate),
+        date: DateWrapper.fromIsoDate(x.encounterDate).format(),
         specialty_description: x.specialtyDescription,
         practitioner: x.practitionerName,
         clinic_practitioner: x.clinic.name,

@@ -29,7 +29,7 @@ const isUpdating = ref(false);
 const isMobile = computed(() => appStore.isMobile);
 
 function formatDate(date: string): string {
-    return new DateWrapper(date, { isUtc: true }).format("yyyy-MMM-dd, t");
+    return DateWrapper.fromIso(date).format("yyyy-MMM-dd, t");
 }
 
 function onCancel(): void {

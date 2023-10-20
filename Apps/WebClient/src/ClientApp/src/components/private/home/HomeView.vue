@@ -79,11 +79,9 @@ const unverifiedEmail = computed(
 const unverifiedSms = computed(
     () => !user.value.verifiedSms && user.value.hasSms
 );
-const isPacificTime = computed(() => {
-    const isDaylightSavings = new DateWrapper().isInDST();
-    const pacificTimeZoneHourOffset = isDaylightSavings ? 7 : 8;
-    return new Date().getTimezoneOffset() / 60 === pacificTimeZoneHourOffset;
-});
+const isPacificTime = computed(
+    () => DateWrapper.now().offset() === DateWrapper.now().toLocal().offset()
+);
 const showFederalCardButton = computed(
     () =>
         configStore.webConfig.featureToggleConfiguration.homepage

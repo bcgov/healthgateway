@@ -4,6 +4,7 @@ import { computed, ref } from "vue";
 import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import { container } from "@/ioc/container";
 import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
+import { DateWrapper } from "@/models/dateWrapper";
 import { Dependent } from "@/models/dependent";
 import { ResultError } from "@/models/errors";
 import { LoadStatus } from "@/models/storeOperations";
@@ -12,9 +13,9 @@ import { useErrorStore } from "@/stores/error";
 import DateSortUtility from "@/utility/dateSortUtility";
 
 const dependentSort = (a: Dependent, b: Dependent): number =>
-    DateSortUtility.descendingByString(
-        a.dependentInformation.dateOfBirth,
-        b.dependentInformation.dateOfBirth
+    DateSortUtility.descending(
+        DateWrapper.fromIsoDate(a.dependentInformation.dateOfBirth),
+        DateWrapper.fromIsoDate(b.dependentInformation.dateOfBirth)
     );
 
 export const useDependentStore = defineStore("dependent", () => {

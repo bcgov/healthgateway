@@ -105,7 +105,7 @@ function saveSmsEdit(): void {
 
 function updateSms(): void {
     // Reset timer when user submits their SMS number
-    userStore.updateSmsResendDateTime(new DateWrapper());
+    userStore.updateSmsResendDateTime(DateWrapper.now());
 
     // Send update to backend
     loadingStore.applyLoader(

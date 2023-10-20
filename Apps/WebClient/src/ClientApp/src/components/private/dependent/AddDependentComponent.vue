@@ -51,7 +51,7 @@ const phnMaskaOptions = {
     eager: true,
 };
 
-const maxBirthdate = new DateWrapper();
+const maxBirthdate = DateWrapper.today();
 
 const dependentService = container.get<IDependentService>(
     SERVICE_IDENTIFIER.DependentService
@@ -91,7 +91,7 @@ const isDependentAlreadyAdded = computed(() =>
 );
 const isLoading = computed(() => loadingStore.isLoading(Loader.AddDependent));
 const minBirthdate = computed<IDateWrapper>(() =>
-    new DateWrapper().subtract(
+    DateWrapper.today().subtract(
         Duration.fromObject({ years: configStore.webConfig.maxDependentAge })
     )
 );
@@ -113,10 +113,14 @@ const validations = computed(() => ({
                 `Dependent must be under the age of
                         ${configStore.webConfig.maxDependentAge}.`,
                 (value: string) =>
-                    new DateWrapper(value).isAfter(minBirthdate.value)
+                    DateWrapper.fromIsoDate(value).isAfterOrSame(
+                        minBirthdate.value
+                    )
             ),
             maxValue: helpers.withMessage("Invalid Date.", (value: string) =>
-                new DateWrapper(value).isBefore(new DateWrapper())
+                DateWrapper.fromIsoDate(value).isBeforeOrSame(
+                    DateWrapper.today()
+                )
             ),
         },
         PHN: {

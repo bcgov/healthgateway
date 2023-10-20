@@ -64,14 +64,22 @@ function formatDate(date: DateWrapper): string {
                 <DisplayFieldComponent
                     name="Effective Date"
                     name-class="font-weight-bold"
-                    :value="formatDate(entry.effectiveDate)"
+                    :value="
+                        entry.effectiveDate
+                            ? formatDate(entry.effectiveDate)
+                            : undefined
+                    "
                 />
             </v-col>
             <v-col :cols="cols">
                 <DisplayFieldComponent
                     name="Expiry Date"
                     name-class="font-weight-bold"
-                    :value="formatDate(entry.expiryDate)"
+                    :value="
+                        entry.expiryDate
+                            ? formatDate(entry.expiryDate)
+                            : undefined
+                    "
                 />
             </v-col>
         </v-row>

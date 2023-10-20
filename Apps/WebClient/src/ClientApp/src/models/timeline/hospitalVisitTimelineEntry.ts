@@ -24,22 +24,17 @@ export default class HospitalVisitTimelineEntry extends TimelineEntry {
         super(
             model.encounterId,
             EntryType.HospitalVisit,
-            new DateWrapper(model.admitDateTime, { hasTime: true })
+            DateWrapper.fromIso(model.admitDateTime)
         );
         this.healthService = model.healthService;
         this.visitType = model.visitType;
         this.outpatient = model.visitType === "Outpatient Visit";
         this.facility = model.facility;
         this.healthAuthority = model.healthAuthority;
-        this.admitDateTime = new DateWrapper(model.admitDateTime, {
-            hasTime: true,
-        });
-        this.endDateTime =
-            model.endDateTime !== null
-                ? new DateWrapper(model.endDateTime, {
-                      hasTime: true,
-                  })
-                : undefined;
+        this.admitDateTime = DateWrapper.fromIso(model.admitDateTime);
+        this.endDateTime = model.endDateTime
+            ? DateWrapper.fromIso(model.endDateTime)
+            : undefined;
         this.provider = model.provider;
         this.getComments = getComments;
     }

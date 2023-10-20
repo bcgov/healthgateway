@@ -67,7 +67,7 @@ interface ISelectOption {
     value: unknown;
 }
 
-const currentDate = new DateWrapper();
+const currentDate = DateWrapper.today();
 
 const testTakenMinutesAgoOptions: ISelectOption[] = [
     { value: -1, title: "Time" },
@@ -190,7 +190,9 @@ const validations = computed(() => ({
             validationMessages.dob.maxValue,
             (value: string) =>
                 props.dataSource === PcrDataSource.Manual
-                    ? new DateWrapper(value).isBefore(new DateWrapper())
+                    ? DateWrapper.fromIsoDate(value).isBefore(
+                          DateWrapper.today()
+                      )
                     : true
         ),
     },

@@ -60,15 +60,20 @@ const noteStore = useNoteStore();
 const notesAreLoading = computed(() => noteStore.notesAreLoading);
 const visibleRecords = computed(() =>
     noteStore.notes
-        .filter((record) => props.filter.allowsDate(record.journalDate))
+        .filter((record) =>
+            props.filter.allowsDate(DateWrapper.fromIsoDate(record.journalDate))
+        )
         .sort((a, b) =>
-            DateSortUtility.descendingByString(a.journalDate, b.journalDate)
+            DateSortUtility.descending(
+                DateWrapper.fromIsoDate(a.journalDate),
+                DateWrapper.fromIsoDate(b.journalDate)
+            )
         )
 );
 const isEmpty = computed(() => visibleRecords.value.length === 0);
 const items = computed(() => {
     return visibleRecords.value.map<UserNoteRow>((x) => ({
-        date: DateWrapper.format(x.journalDate),
+        date: DateWrapper.fromIsoDate(x.journalDate).format(),
         title: x.title,
         note: x.text,
     }));

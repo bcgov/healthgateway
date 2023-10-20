@@ -34,14 +34,12 @@ export const useConfigStore = defineStore("config", () => {
         const offlineConfig = webConfig.value.offlineMode;
 
         if (offlineConfig) {
-            const startTime = new DateWrapper(offlineConfig.startDateTime, {
-                hasTime: true,
-            });
+            const startTime = DateWrapper.fromIso(offlineConfig.startDateTime);
             const endTime = offlineConfig.endDateTime
-                ? new DateWrapper(offlineConfig.endDateTime, { hasTime: true })
+                ? DateWrapper.fromIso(offlineConfig.endDateTime)
                 : DateWrapper.fromNumerical(2050, 12, 31);
 
-            const now = new DateWrapper();
+            const now = DateWrapper.now();
             if (
                 now.isAfterOrSame(startTime) &&
                 now.isBeforeOrSame(endTime) &&

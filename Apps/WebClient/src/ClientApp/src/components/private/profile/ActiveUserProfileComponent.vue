@@ -15,9 +15,14 @@ const emit = defineEmits<{
 
 const userStore = useUserStore();
 
+const isPacificTime = computed(
+    () => DateWrapper.now().offset() === DateWrapper.now().toLocal().offset()
+);
 const formattedLoginDateTimes = computed(() =>
     userStore.user.lastLoginDateTimes.map((time) =>
-        new DateWrapper(time, { isUtc: true }).format("yyyy-MMM-dd, t")
+        DateWrapper.fromIso(time).format(
+            isPacificTime.value ? "yyyy-MMM-dd, t" : "yyyy-MMM-dd, t ZZZZ"
+        )
     )
 );
 </script>

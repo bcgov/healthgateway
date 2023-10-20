@@ -1,12 +1,27 @@
-﻿import { DateWrapper } from "@/models/dateWrapper";
+﻿import { IDateWrapper } from "@/models/dateWrapper";
 
 export default class DateSortUtility {
     /**
-     * Sort comparison test to determine dates in descending order.
-     * @param aDate instance of DateWrapper
-     * @param bDate instance of DateWrapper
+     * Sort comparison test to arrange dates in descending order.
+     * @param aDate instance of IDateWrapper
+     * @param bDate instance of IDateWrapper
      */
-    static descending(aDate: DateWrapper, bDate: DateWrapper): number {
+    static descending(aDate?: IDateWrapper, bDate?: IDateWrapper): number {
+        const firstDateEmpty = aDate === undefined;
+        const secondDateEmpty = bDate === undefined;
+
+        if (firstDateEmpty && secondDateEmpty) {
+            return 0;
+        }
+
+        if (firstDateEmpty) {
+            return 1;
+        }
+
+        if (secondDateEmpty) {
+            return -1;
+        }
+
         if (aDate.isBefore(bDate)) {
             return 1;
         }
@@ -15,63 +30,11 @@ export default class DateSortUtility {
     }
 
     /**
-     * Sort comparison test to determine dates in ascending order.
-     * @param aDate instance of DateWrapper
-     * @param bDate instance of DateWrapper
+     * Sort comparison test to arrange dates in ascending order.
+     * @param aDate instance of IDateWrapper
+     * @param bDate instance of IDateWrapper
      */
-    static ascending(aDate: DateWrapper, bDate: DateWrapper): number {
+    static ascending(aDate?: IDateWrapper, bDate?: IDateWrapper): number {
         return -1 * DateSortUtility.descending(aDate, bDate);
-    }
-
-    /**
-     * Sort comparison test to determine dates in descending order. Using the DateWrapper class to handle the date comparison.
-     * @param aDate valid date string
-     * @param bDate valid date string
-     */
-    static descendingByString(aDate: string, bDate: string): number {
-        return DateSortUtility.descending(
-            new DateWrapper(aDate),
-            new DateWrapper(bDate)
-        );
-    }
-
-    /**
-     * Sort comparison test to determine dates in ascending order. Using the DateWrapper class to handle the date comparison.
-     * @param aDate valid date string
-     * @param bDate valid date string
-     */
-    static ascendingByString(aDate: string, bDate: string): number {
-        return -1 * DateSortUtility.descendingByString(aDate, bDate);
-    }
-
-    /**
-     * Sort comparison test to determine dates in descending order. Using the DateWrapper class to handle the date comparison.
-     * undefined dates are sorted to the end of the list.
-     * @param aDate
-     * @param bDate
-     */
-    static descendingByOptionalString(aDate?: string, bDate?: string): number {
-        if (aDate && bDate) {
-            return DateSortUtility.descendingByString(aDate, bDate);
-        }
-
-        const firstDateEmpty = aDate === undefined;
-        const secondDateEmpty = bDate === undefined;
-
-        if (firstDateEmpty && secondDateEmpty) {
-            return 0;
-        }
-
-        return firstDateEmpty ? 1 : -1;
-    }
-
-    /**
-     * Sort comparison test to determine dates in ascending order. Using the DateWrapper class to handle the date comparison.
-     * undefined dates are sorted to the end of the list.
-     * @param aDate
-     * @param bDate
-     */
-    static ascendingByOptionalString(aDate?: string, bDate?: string): number {
-        return -1 * DateSortUtility.descendingByOptionalString(aDate, bDate);
     }
 }

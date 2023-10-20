@@ -44,7 +44,7 @@ function addComment(): void {
             userProfileId: userStore.user.hdid,
             entryTypeCode: props.comment.entryTypeCode,
             version: 0,
-            createdDateTime: new DateWrapper().toISO(),
+            createdDateTime: DateWrapper.now().toISO(),
         })
         .then((newComment) => {
             if (newComment !== undefined) {

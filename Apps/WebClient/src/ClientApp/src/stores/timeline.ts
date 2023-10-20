@@ -12,7 +12,7 @@ export const useTimelineStore = defineStore("timeline", () => {
 
     const keyword = ref("");
     const timeLineFilter = ref(TimelineFilterBuilder.buildEmpty());
-    const timeLineLinearDate = ref(new DateWrapper().toISO());
+    const timeLineLinearDate = ref(DateWrapper.now().toISO());
     const timeLineSelectedDate = ref<StringISODate>();
 
     const filter = computed(() => timeLineFilter.value);
@@ -20,14 +20,14 @@ export const useTimelineStore = defineStore("timeline", () => {
         () => timeLineFilter.value.hasActiveFilter() || keyword.value !== ""
     );
     const linearDate = computed<IDateWrapper>(() => {
-        return new DateWrapper(timeLineLinearDate.value);
+        return DateWrapper.fromIso(timeLineLinearDate.value);
     });
     const selectedDate = computed<IDateWrapper | undefined>(() => {
         if (timeLineSelectedDate.value === undefined) {
             return undefined;
         }
 
-        return new DateWrapper(timeLineLinearDate.value);
+        return DateWrapper.fromIso(timeLineLinearDate.value);
     });
     const selectedEntryTypes = computed(() => timeLineFilter.value.entryTypes);
     const columnCount = computed(() => 12);
