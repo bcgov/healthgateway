@@ -18,7 +18,7 @@ namespace HealthGateway.Admin.Client.Store.AdminReport
 {
     using System.Collections.Generic;
     using Fluxor;
-    using HealthGateway.Admin.Common.Models;
+    using HealthGateway.Admin.Common.Models.AdminReports;
 
     /// <summary>
     /// The state for the feature.

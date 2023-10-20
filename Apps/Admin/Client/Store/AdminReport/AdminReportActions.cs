@@ -17,7 +17,7 @@ namespace HealthGateway.Admin.Client.Store.AdminReport
 {
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
-    using HealthGateway.Admin.Common.Models;
+    using HealthGateway.Admin.Common.Models.AdminReports;
 
     /// <summary>
     /// Static class that implements all actions for the feature.
