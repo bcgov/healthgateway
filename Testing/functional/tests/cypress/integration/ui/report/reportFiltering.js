@@ -135,9 +135,9 @@ describe("Report Filtering", () => {
                 );
                 cy.get("[data-testid=apply-filter-btn]").click();
 
-                const excludedFilterId = `[data-testid=${replaceSpaceWithDash(
+                const excludedFilterId = `[data-testid='${replaceSpaceWithDash(
                     brandText
-                )}-excluded]`;
+                )}-excluded']`;
                 cy.get(excludedFilterId).contains(brandText);
 
                 cy.get("[data-testid=medicationReportBrandNameItem]")
@@ -154,9 +154,9 @@ describe("Report Filtering", () => {
                 cy.get("[data-testid=advanced-btn]").click();
                 cy.get(excludedFilterId).contains(brandText);
 
-                const clearExcludedFilterId = `[data-testid=${replaceSpaceWithDash(
+                const clearExcludedFilterId = `[data-testid='${replaceSpaceWithDash(
                     brandText
-                )}-clear-filter]`;
+                )}-clear-filter']`;
                 cy.get(`${clearExcludedFilterId} .v-chip__close`).click();
 
                 cy.get("[data-testid=medicationReportBrandNameItem]")
