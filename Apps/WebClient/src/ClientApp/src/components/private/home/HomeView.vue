@@ -20,7 +20,6 @@ import { ServiceName } from "@/constants/serviceName";
 import UserPreferenceType from "@/constants/userPreferenceType";
 import { container } from "@/ioc/container";
 import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
-import { DateWrapper } from "@/models/dateWrapper";
 import { QuickLink } from "@/models/quickLink";
 import { LoadStatus } from "@/models/storeOperations";
 import { TimelineFilterBuilder } from "@/models/timeline/timelineFilter";
@@ -78,9 +77,6 @@ const unverifiedEmail = computed(
 );
 const unverifiedSms = computed(
     () => !user.value.verifiedSms && user.value.hasSms
-);
-const isPacificTime = computed(
-    () => DateWrapper.now().offset() === DateWrapper.now().toLocal().offset()
 );
 const showFederalCardButton = computed(
     () =>
@@ -385,17 +381,6 @@ watch(vaccineRecordState, () => {
             to complete your verification.
         </span>
     </v-alert>
-    <v-alert
-        v-if="!isPacificTime"
-        closable
-        type="info"
-        title="Looks like you're in a different timezone."
-        text="Heads up: your health records are recorded and displayed in
-                Pacific Time."
-        class="d-print-none mb-4"
-        variant="outlined"
-        border
-    />
     <PageTitleComponent title="Home">
         <template #append>
             <AddQuickLinkComponent :disabled="isAddQuickLinkButtonDisabled" />

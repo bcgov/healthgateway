@@ -3,6 +3,7 @@ import { computed, ref } from "vue";
 import { useDisplay } from "vuetify";
 
 import { AppErrorType } from "@/constants/errorType";
+import { DateWrapper } from "@/models/dateWrapper";
 
 export const useAppStore = defineStore("app", () => {
     const display = useDisplay();
@@ -11,6 +12,11 @@ export const useAppStore = defineStore("app", () => {
     const isIdle = ref(false);
 
     const isMobile = computed(() => !display.mdAndUp.value);
+    const isPacificTime = computed(
+        () =>
+            DateWrapper.now().offset() === DateWrapper.now().toLocal().offset()
+    );
+
     function setAppError(errorType: AppErrorType): void {
         appError.value = errorType;
     }
@@ -23,6 +29,7 @@ export const useAppStore = defineStore("app", () => {
         appError,
         isMobile,
         isIdle,
+        isPacificTime,
         setAppError,
         setIsIdle,
     };
