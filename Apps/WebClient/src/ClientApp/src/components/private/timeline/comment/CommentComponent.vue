@@ -29,7 +29,9 @@ const isUpdating = ref(false);
 const isMobile = computed(() => appStore.isMobile);
 
 function formatDate(date: string): string {
-    return DateWrapper.fromIso(date).format("yyyy-MMM-dd, t");
+    return DateWrapper.fromIso(date).format(
+        appStore.isPacificTime ? "yyyy-MMM-dd, t" : "yyyy-MMM-dd, t ZZZZ"
+    );
 }
 
 function onCancel(): void {
