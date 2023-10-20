@@ -109,13 +109,17 @@ export default abstract class TimelineEntry {
     }
 
     private dateRangeApplies(filter: TimelineFilter): boolean {
-        const startDateWapper = DateWrapper.fromIsoDate(filter.startDate);
-        const endDateWapper = DateWrapper.fromIsoDate(filter.endDate).add({
-            days: 1,
-        });
         return (
-            (!filter.startDate || this.date.isAfterOrSame(startDateWapper)) &&
-            (!filter.endDate || this.date.isBefore(endDateWapper))
+            (!filter.startDate ||
+                this.date.isAfterOrSame(
+                    DateWrapper.fromIsoDate(filter.startDate)
+                )) &&
+            (!filter.endDate ||
+                this.date.isBefore(
+                    DateWrapper.fromIsoDate(filter.endDate).add({
+                        days: 1,
+                    })
+                ))
         );
     }
 }

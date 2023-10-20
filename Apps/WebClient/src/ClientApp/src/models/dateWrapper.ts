@@ -254,7 +254,7 @@ export class DateWrapper implements IDateWrapper {
      */
     public static fromIsoDate(dateString: string): DateWrapper {
         return new DateWrapper(
-            DateTime.fromFormat(dateString, "yyyy-MM-dd", {
+            DateTime.fromFormat(dateString.substring(0, 10), "yyyy-MM-dd", {
                 zone: pacificTimeZone,
             })
         );
