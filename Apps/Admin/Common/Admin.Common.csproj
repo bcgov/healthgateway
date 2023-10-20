@@ -3,7 +3,6 @@
     <RootNamespace>HealthGateway.Admin.Common</RootNamespace>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(MSBuildThisFileName).xml</DocumentationFile>
-    <UserSecretsId>80d44c01-acdf-4da6-b4ac-e2ff9a232b59</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
