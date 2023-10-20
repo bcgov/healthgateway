@@ -86,7 +86,7 @@ const maxJsDate = computed(() => props.maxDate.toJSDate());
 const v$ = useVuelidate(validations, { textFieldValue });
 
 function fromIsoFormat(value: string): string {
-    return value ? DateWrapper.fromIsoDate(value).format().toUpperCase() : "";
+    return DateWrapper.fromIsoDate(value).format().toUpperCase();
 }
 
 function toIsoFormat(value: string): string {

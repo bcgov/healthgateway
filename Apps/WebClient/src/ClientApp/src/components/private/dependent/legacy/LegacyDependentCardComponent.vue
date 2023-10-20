@@ -235,9 +235,7 @@ const recommendationItems = computed(() =>
         .recommendations(dependentHdid.value)
         .map<RecommendationRow>((x) => ({
             immunization: x.recommendedVaccinations,
-            due_date: x.agentDueDate
-                ? DateWrapper.fromIsoDate(x.agentDueDate).format()
-                : "",
+            due_date: DateWrapper.fromIsoDate(x.agentDueDate).format(),
         }))
 );
 const isDownloadImmunizationReportButtonDisabled = computed(() => {
@@ -451,11 +449,11 @@ function downloadVaccinePdf(): void {
 }
 
 function formatDateTime(dateTime: StringISODateTime): string {
-    return dateTime ? DateWrapper.fromIso(dateTime).format() : "";
+    return DateWrapper.fromIso(dateTime).format();
 }
 
 function formatDate(date: StringISODate): string {
-    return date ? DateWrapper.fromIsoDate(date).format() : "";
+    return DateWrapper.fromIsoDate(date).format();
 }
 
 function fetchClinicalDocuments(): void {

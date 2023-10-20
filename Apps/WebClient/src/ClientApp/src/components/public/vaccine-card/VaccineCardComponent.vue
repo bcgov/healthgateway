@@ -62,12 +62,10 @@ const qrCodeUrl = computed<string | null>(() => {
     }
 });
 
-const issuedDateTime = computed<string | undefined>(() =>
-    props.status?.issuedDateTime
-        ? DateWrapper.fromIso(props.status.issuedDateTime).format(
-              "MMMM-dd-yyyy, HH:mm"
-          )
-        : undefined
+const issuedDateTime = computed(() =>
+    DateWrapper.fromIso(props.status?.issuedDateTime).format(
+        "MMMM-dd-yyyy, HH:mm"
+    )
 );
 
 function onClickPreviousButton(): void {

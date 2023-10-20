@@ -57,11 +57,9 @@ class ForecastViewModel {
 
     constructor(model: Forecast) {
         this.displayName = model.displayName;
-        this.dueDate = model.dueDate
-            ? DateWrapper.fromIsoDate(model.dueDate).format(
-                  DateTimeFormat.formatDateString
-              )
-            : "";
+        this.dueDate = DateWrapper.fromIsoDate(model.dueDate).format(
+            DateTimeFormat.formatDateString
+        );
         this.status = model.status;
     }
 }

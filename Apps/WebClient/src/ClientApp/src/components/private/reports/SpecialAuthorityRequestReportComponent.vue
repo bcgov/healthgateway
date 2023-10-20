@@ -102,12 +102,8 @@ const items = computed(() =>
         requested_drug_name: x.drugName ?? "",
         status: x.requestStatus ?? "",
         prescriber_name: prescriberName(x),
-        effective_date: x.effectiveDate
-            ? DateWrapper.fromIsoDate(x.effectiveDate).format()
-            : "",
-        expiry_date: x.expiryDate
-            ? DateWrapper.fromIsoDate(x.expiryDate).format()
-            : "",
+        effective_date: DateWrapper.fromIsoDate(x.effectiveDate).format(),
+        expiry_date: DateWrapper.fromIsoDate(x.expiryDate).format(),
         reference_number: x.referenceNumber,
     }))
 );

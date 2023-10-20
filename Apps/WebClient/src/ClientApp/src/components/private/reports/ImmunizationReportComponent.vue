@@ -161,9 +161,7 @@ const visibleRecommendations = computed(() =>
 const recommendationItems = computed(() =>
     visibleRecommendations.value.map<RecommendationRow>((x) => ({
         immunization: x.recommendedVaccinations,
-        due_date: x.agentDueDate
-            ? DateWrapper.fromIsoDate(x.agentDueDate).format()
-            : "",
+        due_date: DateWrapper.fromIsoDate(x.agentDueDate).format(),
     }))
 );
 const hasRecommendationsSlot = computed(

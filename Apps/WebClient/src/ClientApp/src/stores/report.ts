@@ -16,11 +16,9 @@ export const useReportStore = defineStore("reports", () => {
         if (dependent) {
             return {
                 phn: dependent.dependentInformation.PHN,
-                dateOfBirth: dependent.dependentInformation.dateOfBirth
-                    ? DateWrapper.fromIsoDate(
-                          dependent.dependentInformation.dateOfBirth
-                      ).format()
-                    : "",
+                dateOfBirth: DateWrapper.fromIsoDate(
+                    dependent.dependentInformation.dateOfBirth
+                ).format(),
                 name: dependent.dependentInformation
                     ? dependent.dependentInformation.firstname +
                       " " +
@@ -33,11 +31,9 @@ export const useReportStore = defineStore("reports", () => {
         } else {
             return {
                 phn: userStore.patient.personalHealthNumber,
-                dateOfBirth: userStore.patient.birthdate
-                    ? DateWrapper.fromIsoDate(
-                          userStore.patient.birthdate
-                      ).format()
-                    : "",
+                dateOfBirth: DateWrapper.fromIsoDate(
+                    userStore.patient.birthdate
+                ).format(),
                 name: userStore.patient
                     ? userStore.patient.preferredName.givenName +
                       " " +
