@@ -42,20 +42,20 @@ export interface IDateWrapper {
      * Formats the date using the given a set of tokens.
      * See https://moment.github.io/luxon/#/formatting for the rules.
      * @param formatString The tokens to format the string as.
-     * @returns A string representation of the datetime with the given format.
+     * @returns A string representation of the datetime with the given format, or the empty string if the date is invalid.
      */
     format(formatString?: string): string;
 
     /**
      * Formats the datetime to the ISO format (YYYY-MM-DDTHH:MM:SS:M-Z).
      * @param toUtc (optional) Whether to set the time zone to UTC.
-     * @returns The formatted string representation.
+     * @returns The formatted string representation, or the empty string if the date is invalid.
      */
     toISO(toUtc?: boolean): StringISODate;
 
     /**
      * Formats the date to the ISO format without time (YYYY-MM-DD).
-     * @returns The formatted string representation.
+     * @returns The formatted string representation, or the empty string if the date is invalid.
      */
     toISODate(): StringISODate;
 
@@ -234,14 +234,14 @@ export class DateWrapper implements IDateWrapper {
      * Creates a new DateWrapper from an ISO date string.
      * @param dateString ISO date string.
      * @param defaultZone The time zone to use for date strings that do not include a timezone offset. Defaults to the Pacific Time Zone.
-     * @returns A new DateWrapper object.
+     * @returns A new DateWrapper object. If the date string is empty or invalid, the method isValid() will return false.
      */
     public static fromIso(
-        dateString: string,
+        dateString?: string | null,
         defaultZone: string = pacificTimeZone
     ): DateWrapper {
         return new DateWrapper(
-            DateTime.fromISO(dateString, { zone: defaultZone }).setZone(
+            DateTime.fromISO(dateString!, { zone: defaultZone }).setZone(
                 pacificTimeZone
             )
         );
@@ -251,10 +251,11 @@ export class DateWrapper implements IDateWrapper {
      * Creates a new DateWrapper from a string containing a date. Any time information is discarded.
      * @param dateString Date string in "yyyy-MM-dd" format.
      * @returns A new DateWrapper object for the given date at the start of the day.
+     * If the date string is empty or invalid, the method isValid() will return false.
      */
-    public static fromIsoDate(dateString: string): DateWrapper {
+    public static fromIsoDate(dateString?: string | null): DateWrapper {
         return new DateWrapper(
-            DateTime.fromFormat(dateString.substring(0, 10), "yyyy-MM-dd", {
+            DateTime.fromFormat(dateString?.substring(0, 10)!, "yyyy-MM-dd", {
                 zone: pacificTimeZone,
             })
         );
@@ -305,12 +306,14 @@ export class DateWrapper implements IDateWrapper {
 
     /** {@inheritDoc IDateWrapper.format} */
     public format(formatString?: string): string {
-        return this.internalDate.toFormat(
-            formatString ?? DateWrapper.defaultFormat,
-            {
-                locale,
-            }
-        );
+        return this.internalDate.isValid
+            ? this.internalDate.toFormat(
+                  formatString ?? DateWrapper.defaultFormat,
+                  {
+                      locale,
+                  }
+              )
+            : "";
     }
 
     /** {@inheritDoc IDateWrapper.toISO} */
