@@ -18,7 +18,9 @@ namespace HealthGateway.Admin.Client.Store.UserFeedback;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Linq;
 using Fluxor;
+using HealthGateway.Admin.Client.Models;
 using HealthGateway.Admin.Common.Models;
 
 #pragma warning disable CS1591, SA1600
@@ -47,7 +49,7 @@ public static class UserFeedbackReducers
                 Result = action.Data,
                 Error = null,
             },
-            FeedbackData = action.Data.ResourcePayload.ToImmutableDictionary(tag => tag.Id),
+            FeedbackData = action.Data.ToImmutableDictionary(tag => tag.Id),
         };
     }
 
@@ -79,13 +81,10 @@ public static class UserFeedbackReducers
     [ReducerMethod]
     public static UserFeedbackState ReduceUpdateSuccessAction(UserFeedbackState state, UserFeedbackActions.UpdateSuccessAction action)
     {
-        IImmutableDictionary<Guid, UserFeedbackView> data = state.FeedbackData ?? new Dictionary<Guid, UserFeedbackView>().ToImmutableDictionary();
+        IImmutableDictionary<Guid, ExtendedUserFeedbackView> data = state.FeedbackData ?? new Dictionary<Guid, ExtendedUserFeedbackView>().ToImmutableDictionary();
 
-        UserFeedbackView? feedback = action.Data.ResourcePayload;
-        if (feedback != null)
-        {
-            data = data.Remove(feedback.Id).Add(feedback.Id, feedback);
-        }
+        ExtendedUserFeedbackView feedback = action.Data;
+        data = data.Remove(feedback.Id).Add(feedback.Id, feedback);
 
         return state with
         {
@@ -112,8 +111,33 @@ public static class UserFeedbackReducers
         };
     }
 
-    [ReducerMethod(typeof(UserFeedbackActions.AssociateTagsAction))]
-    public static UserFeedbackState ReduceAssociateTagsAction(UserFeedbackState state)
+    [ReducerMethod]
+    public static UserFeedbackState ReduceChangeAssociatedTagsAction(UserFeedbackState state, UserFeedbackActions.ChangeAssociatedTagsAction action)
+    {
+        IImmutableDictionary<Guid, ExtendedUserFeedbackView> data = state.FeedbackData ?? new Dictionary<Guid, ExtendedUserFeedbackView>().ToImmutableDictionary();
+
+        if (state.FeedbackData != null && state.FeedbackData.TryGetValue(action.FeedbackId, out ExtendedUserFeedbackView? feedback))
+        {
+            feedback = feedback.ShallowCopy();
+            feedback.IsDirty = true;
+            feedback.Tags = action.TagIds.Select(
+                    u => new UserFeedbackTagView
+                    {
+                        FeedbackId = action.FeedbackId,
+                        TagId = u,
+                    })
+                .ToList();
+            data = data.Remove(feedback.Id).Add(feedback.Id, feedback);
+        }
+
+        return state with
+        {
+            FeedbackData = data,
+        };
+    }
+
+    [ReducerMethod(typeof(UserFeedbackActions.SaveAssociatedTagsAction))]
+    public static UserFeedbackState ReduceSaveAssociatedTagsAction(UserFeedbackState state)
     {
         return state with
         {
@@ -125,15 +149,12 @@ public static class UserFeedbackReducers
     }
 
     [ReducerMethod]
-    public static UserFeedbackState ReduceAssociateTagsSuccessAction(UserFeedbackState state, UserFeedbackActions.AssociateTagsSuccessAction action)
+    public static UserFeedbackState ReduceSaveAssociatedTagsSuccessAction(UserFeedbackState state, UserFeedbackActions.SaveAssociatedTagsSuccessAction action)
     {
-        IImmutableDictionary<Guid, UserFeedbackView> data = state.FeedbackData ?? new Dictionary<Guid, UserFeedbackView>().ToImmutableDictionary();
+        IImmutableDictionary<Guid, ExtendedUserFeedbackView> data = state.FeedbackData ?? new Dictionary<Guid, ExtendedUserFeedbackView>().ToImmutableDictionary();
 
-        UserFeedbackView? feedback = action.Data.ResourcePayload;
-        if (feedback != null)
-        {
-            data = data.Remove(feedback.Id).Add(feedback.Id, feedback);
-        }
+        ExtendedUserFeedbackView feedback = action.Data;
+        data = data.Remove(feedback.Id).Add(feedback.Id, feedback);
 
         return state with
         {
@@ -148,7 +169,7 @@ public static class UserFeedbackReducers
     }
 
     [ReducerMethod]
-    public static UserFeedbackState ReduceAssociateTagsFailureAction(UserFeedbackState state, UserFeedbackActions.AssociateTagsFailureAction action)
+    public static UserFeedbackState ReduceSaveAssociatedTagsFailureAction(UserFeedbackState state, UserFeedbackActions.SaveAssociatedTagsFailureAction action)
     {
         return state with
         {

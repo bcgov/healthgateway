@@ -18,31 +18,13 @@ namespace HealthGateway.Admin.Common.Models;
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.Text.Json.Serialization;
+using System.Linq;
 
 /// <summary>
 /// Model that provides a user representation of a user feedback.
 /// </summary>
 public class UserFeedbackView
 {
-    /// <summary>
-    /// Initializes a new instance of the <see cref="UserFeedbackView"/> class.
-    /// </summary>
-    public UserFeedbackView()
-    {
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="UserFeedbackView"/> class.
-    /// </summary>
-    /// <param name="tags">The list of user feedback tags.</param>
-    [JsonConstructor]
-    public UserFeedbackView(IList<UserFeedbackTagView> tags)
-    {
-        this.Tags = tags;
-    }
-
     /// <summary>
     /// Gets or sets the user feedback id.
     /// </summary>
@@ -84,32 +66,7 @@ public class UserFeedbackView
     public string Email { get; set; } = string.Empty;
 
     /// <summary>
-    /// Gets or sets a value indicating whether the feedback has been modified or not.
-    /// </summary>
-    public bool IsDirty { get; set; }
-
-    /// <summary>
     /// Gets or sets the feedback admin tags.
     /// </summary>
-    [SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "Team decision")]
-    public IList<UserFeedbackTagView> Tags { get; set; } = new List<UserFeedbackTagView>();
-
-    /// <summary>
-    /// Returns a shallow copy of the object.
-    /// </summary>
-    /// <returns>A new object containing the same values as the current object.</returns>
-    public UserFeedbackView ShallowCopy()
-    {
-        return (UserFeedbackView)this.MemberwiseClone();
-    }
-
-    /// <summary>
-    /// Sets the feedback admin tags and marks the instance as "dirty".
-    /// </summary>
-    /// <param name="tags">A list of feedback admin tags.</param>
-    public void SetTags(IList<UserFeedbackTagView> tags)
-    {
-        this.Tags = tags;
-        this.IsDirty = true;
-    }
+    public IEnumerable<UserFeedbackTagView> Tags { get; set; } = Enumerable.Empty<UserFeedbackTagView>();
 }

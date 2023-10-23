@@ -22,6 +22,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Fluxor;
 using Fluxor.Blazor.Web.Components;
+using HealthGateway.Admin.Client.Models;
 using HealthGateway.Admin.Client.Store;
 using HealthGateway.Admin.Client.Store.PatientSupport;
 using HealthGateway.Admin.Client.Store.Tag;
@@ -87,9 +88,9 @@ public partial class FeedbackPage : FluxorComponent
 
     private IEnumerable<AdminTagView> Tags => this.TagState.Value.Data?.Values.OrderBy(t => t.Name) ?? Enumerable.Empty<AdminTagView>();
 
-    private IEnumerable<UserFeedbackView> Feedback => this.UserFeedbackState.Value.FeedbackData?.Values ?? Enumerable.Empty<UserFeedbackView>();
+    private IEnumerable<ExtendedUserFeedbackView> Feedback => this.UserFeedbackState.Value.FeedbackData?.Values ?? Enumerable.Empty<ExtendedUserFeedbackView>();
 
-    private IEnumerable<UserFeedbackView> FilteredFeedback => this.Feedback
+    private IEnumerable<ExtendedUserFeedbackView> FilteredFeedback => this.Feedback
         .Where(f => this.TagIdFilter.All(t => f.Tags.Any(ft => ft.TagId == t)));
 
     private IEnumerable<FeedbackRow> FeedbackRows => this.FilteredFeedback.Select(f => new FeedbackRow(f));
@@ -113,7 +114,7 @@ public partial class FeedbackPage : FluxorComponent
         base.OnInitialized();
         this.ResetState();
         this.ActionSubscriber.SubscribeToAction<UserFeedbackActions.UpdateSuccessAction>(this, this.HandleFeedbackUpdateSuccessful);
-        this.ActionSubscriber.SubscribeToAction<UserFeedbackActions.AssociateTagsSuccessAction>(this, this.HandleFeedbackAssociateSuccessful);
+        this.ActionSubscriber.SubscribeToAction<UserFeedbackActions.SaveAssociatedTagsSuccessAction>(this, this.HandleFeedbackAssociateSuccessful);
         this.ActionSubscriber.SubscribeToAction<TagActions.AddSuccessAction>(this, this.HandleTagAddSuccessful);
         this.ActionSubscriber.SubscribeToAction<TagActions.DeleteSuccessAction>(this, this.HandleTagDeleteSuccessful);
         this.Dispatcher.Dispatch(new TagActions.LoadAction());
@@ -145,7 +146,7 @@ public partial class FeedbackPage : FluxorComponent
         this.Snackbar.Add("Feedback updated.", Severity.Success);
     }
 
-    private void HandleFeedbackAssociateSuccessful(UserFeedbackActions.AssociateTagsSuccessAction action)
+    private void HandleFeedbackAssociateSuccessful(UserFeedbackActions.SaveAssociatedTagsSuccessAction action)
     {
         this.Snackbar.Add("Feedback tags updated.", Severity.Success);
     }
@@ -219,31 +220,27 @@ public partial class FeedbackPage : FluxorComponent
         return string.Join(", ", tags.Select(t => t.Name).OrderBy(t => t));
     }
 
-    private void AssociateTags(IEnumerable<Guid> tagIds, Guid feedbackId)
+    private void ChangeAssociatedTags(IEnumerable<Guid> tagIds, Guid feedbackId)
     {
-        this.Logger.LogInformation("Associate tags started");
-        UserFeedbackView userFeedbackView = this.FilteredFeedback.Single(v => v.Id == feedbackId);
-        IEnumerable<UserFeedbackTagView> userFeedbackTagViews = tagIds.Select(
-            u => new UserFeedbackTagView
-                { FeedbackId = feedbackId, TagId = u });
-        userFeedbackView.SetTags(userFeedbackTagViews.ToList());
-        this.Logger.LogInformation("Associate tags finished");
+        this.Logger.LogInformation("Change associated tags started");
+        this.Dispatcher.Dispatch(new UserFeedbackActions.ChangeAssociatedTagsAction { TagIds = tagIds, FeedbackId = feedbackId });
+        this.Logger.LogInformation("Change associated tags finished");
     }
 
     private void SaveAssociatedTags(Guid feedbackId)
     {
         this.Logger.LogInformation("Save associated tags started");
         IEnumerable<Guid> tagIds = this.FeedbackRows.Single(r => r.Id == feedbackId).TagIds;
-        this.Dispatcher.Dispatch(new UserFeedbackActions.AssociateTagsAction { TagIds = tagIds, FeedbackId = feedbackId });
+        this.Dispatcher.Dispatch(new UserFeedbackActions.SaveAssociatedTagsAction { TagIds = tagIds, FeedbackId = feedbackId });
         this.Logger.LogInformation("Save associated tags finished.");
     }
 
     private void ToggleIsReviewed(Guid feedbackId)
     {
-        UserFeedbackView? currentFeedback = this.Feedback.FirstOrDefault(f => f.Id == feedbackId);
+        ExtendedUserFeedbackView? currentFeedback = this.Feedback.FirstOrDefault(f => f.Id == feedbackId);
         if (currentFeedback != null)
         {
-            UserFeedbackView updatedFeedback = currentFeedback.ShallowCopy();
+            ExtendedUserFeedbackView updatedFeedback = currentFeedback.ShallowCopy();
             updatedFeedback.IsReviewed = !updatedFeedback.IsReviewed;
             this.Dispatcher.Dispatch(new UserFeedbackActions.UpdateAction { UserFeedbackView = updatedFeedback });
         }
@@ -266,7 +263,7 @@ public partial class FeedbackPage : FluxorComponent
 
     private sealed class FeedbackRow
     {
-        public FeedbackRow(UserFeedbackView model)
+        public FeedbackRow(ExtendedUserFeedbackView model)
         {
             this.Id = model.Id;
             this.DateTime = model.CreatedDateTime;

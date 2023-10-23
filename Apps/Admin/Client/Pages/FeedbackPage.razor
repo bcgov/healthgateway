@@ -135,7 +135,7 @@ else
                         <MudSelect T="Guid"
                                    MultiSelection="true"
                                    SelectedValues="@context.TagIds"
-                                   SelectedValuesChanged="@(tagIds => AssociateTags(tagIds, context.Id))"
+                                   SelectedValuesChanged="@(tagIds => ChangeAssociatedTags(tagIds, context.Id))"
                                    MultiSelectionTextFunc="@DescribeTags"
                                    Disabled="@FeedbackUpdating"
                                    Variant="@Variant.Filled"
@@ -150,7 +150,7 @@ else
                         <MudIconButton OnClick="@(() => SaveAssociatedTags(context.Id))"
                                        Icon="fas fa-save"
                                        Color="@Color.Primary"
-                                       Disabled="@(!context.IsDirty)"
+                                       Disabled="@(!context.IsDirty || FeedbackUpdating)"
                                        data-testid="feedback-tag-save-button" />
                     </div>
                 </MudTd>
