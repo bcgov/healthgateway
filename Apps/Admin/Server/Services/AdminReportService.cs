@@ -22,8 +22,10 @@ namespace HealthGateway.Admin.Server.Services
     using HealthGateway.AccountDataAccess.Patient;
     using HealthGateway.Admin.Common.Models.AdminReports;
     using HealthGateway.Common.Data.Constants;
+    using HealthGateway.Common.Data.ErrorHandling;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
+    using Serilog;
 
     /// <inheritdoc/>
     public class AdminReportService : IAdminReportService
@@ -31,6 +33,7 @@ namespace HealthGateway.Admin.Server.Services
         private readonly IDelegationDelegate delegationDelegate;
         private readonly IBlockedAccessDelegate blockedAccessDelegate;
         private readonly IPatientRepository patientRepository;
+        private readonly ILogger logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AdminReportService"/> class.
@@ -38,11 +41,12 @@ namespace HealthGateway.Admin.Server.Services
         /// <param name="delegationDelegate">The ResourceDelegate delegate to communicate with DB.</param>
         /// <param name="blockedAccessDelegate">The BlockedAccess delegate to communicate with DB.</param>
         /// <param name="patientRepository">The patient repository used to retrieve patient details.</param>
-        public AdminReportService(IDelegationDelegate delegationDelegate, IBlockedAccessDelegate blockedAccessDelegate, IPatientRepository patientRepository)
+        public AdminReportService(IDelegationDelegate delegationDelegate, IBlockedAccessDelegate blockedAccessDelegate, IPatientRepository patientRepository, ILogger logger)
         {
             this.delegationDelegate = delegationDelegate;
             this.blockedAccessDelegate = blockedAccessDelegate;
             this.patientRepository = patientRepository;
+            this.logger = logger;
         }
 
         /// <inheritdoc/>
@@ -54,8 +58,17 @@ namespace HealthGateway.Admin.Server.Services
                     async hdid =>
                     {
                         PatientQuery query = new PatientDetailsQuery(Hdid: hdid, Source: PatientDetailSource.All);
-                        PatientQueryResult patient = await this.patientRepository.Query(query, ct);
-                        return new ProtectedDependentRecord(hdid, patient.Items.SingleOrDefault()?.Phn);
+                        PatientQueryResult? patient = null;
+                        try
+                        {
+                            patient = await this.patientRepository.Query(query, ct);
+                        }
+                        catch (ProblemDetailsException e)
+                        {
+                            this.logger.Error($"Error retrieving patient details for hdid {hdid}: {e.Message}");
+                        }
+
+                        return new ProtectedDependentRecord(hdid, patient?.Items.SingleOrDefault()?.Phn);
                     });
             return new ProtectedDependentReport(await Task.WhenAll(tasks), new ReportMetaData(protectedHdids.TotalHdids, page, pageSize));
         }

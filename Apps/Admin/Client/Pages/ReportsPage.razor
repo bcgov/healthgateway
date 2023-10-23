@@ -29,8 +29,7 @@
 </MudText>
 <MudTable
     Class="mt-4"
-    Loading="@(ProtectedDependentsState.IsLoading)"
-    Items="@ProtectedDependentHdids"
+    ServerData="@GetProtectedDependentsTableData"
     AllowUnsorted="@false"
     Striped="@true"
     Dense="@true"
@@ -39,14 +38,19 @@
     <HeaderContent>
         <MudTh>
             <MudTableSortLabel
-                SortBy="new Func<string, object>(x => x)"
+                T="ProtectedDependentRecord"
+                SortLabel="Hdid"
                 InitialDirection="@SortDirection.Ascending">
                 HDID
             </MudTableSortLabel>
         </MudTh>
+        <MudTh>
+            PHN
+        </MudTh>
     </HeaderContent>
     <RowTemplate>
-        <MudTd data-testid="protected-dependent-hdid" DataLabel="HDID">@context</MudTd>
+        <MudTd data-testid="protected-dependent-hdid" DataLabel="HDID">@context.Hdid</MudTd>
+        <MudTd data-testid="protected-dependent-phn" DataLabel="HDID">@context.Phn</MudTd>
     </RowTemplate>
     <PagerContent>
         <MudTablePager PageSizeOptions="new[]{20, 50, 100}" />

@@ -28,11 +28,6 @@ namespace HealthGateway.Admin.Client.Store.AdminReport
     public record AdminReportState
     {
         /// <summary>
-        /// Gets the request state for retrieving protected dependents.
-        /// </summary>
-        public BaseRequestState<IEnumerable<string>> ProtectedDependents { get; init; } = new();
-
-        /// <summary>
         /// Gets the request state for retrieving users with blocked data sources.
         /// </summary>
         public BaseRequestState<IEnumerable<BlockedAccessRecord>> BlockedAccess { get; init; } = new();
