@@ -15,11 +15,15 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Admin.Client.Pages;
 
+using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Fluxor;
 using Fluxor.Blazor.Web.Components;
+using HealthGateway.Admin.Client.Api;
 using HealthGateway.Admin.Client.Store;
 using HealthGateway.Admin.Client.Store.AdminReport;
 using HealthGateway.Admin.Client.Store.PatientSupport;
@@ -29,6 +33,8 @@ using HealthGateway.Common.Data.Constants;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using MudBlazor;
+using Refit;
+using SortDirection = HealthGateway.Common.Data.Constants.SortDirection;
 
 /// <summary>
 /// Backing logic for the Reports page.
@@ -50,19 +56,18 @@ public partial class ReportsPage : FluxorComponent
     [Inject]
     private IJSRuntime JsRuntime { get; set; } = default!;
 
+    [Inject]
+    private IAdminReportApi AdminReportApi { get; set; } = default!;
+
+    private string? ProtectedDependentsErrorMessage { get; set; }
+
     private BaseRequestState<IEnumerable<BlockedAccessRecord>> BlockedAccessState => this.AdminReportState.Value.BlockedAccess;
 
-    private BaseRequestState<IEnumerable<string>> ProtectedDependentsState => this.AdminReportState.Value.ProtectedDependents;
-
     private IEnumerable<BlockedAccessRecord> BlockedAccessRecords => this.BlockedAccessState.Result ?? Enumerable.Empty<BlockedAccessRecord>();
-
-    private IEnumerable<string> ProtectedDependentHdids => this.ProtectedDependentsState.Result ?? Enumerable.Empty<string>();
 
     private string? BlockedAccessErrorMessage => this.BlockedAccessState.Error?.Message;
 
     private bool HasBlockedAccessError => this.BlockedAccessErrorMessage?.Length > 0;
-
-    private string? ProtectedDependentsErrorMessage => this.ProtectedDependentsState.Error?.Message;
 
     private bool HasProtectedDependentsError => this.ProtectedDependentsErrorMessage?.Length > 0;
 
@@ -72,7 +77,27 @@ public partial class ReportsPage : FluxorComponent
         base.OnInitialized();
         this.Dispatcher.Dispatch(new AdminReportActions.ResetStateAction());
         this.Dispatcher.Dispatch(new AdminReportActions.GetBlockedAccessAction());
-        this.Dispatcher.Dispatch(new AdminReportActions.GetProtectedDependentsAction());
+    }
+
+    private async Task<TableData<ProtectedDependentRecord>> GetProtectedDependentsTableData(TableState tableState)
+    {
+        SortDirection sortDirection = tableState.SortDirection == MudBlazor.SortDirection.Descending ? SortDirection.Descending : SortDirection.Ascending;
+        ProtectedDependentReport report = new(ImmutableArray<ProtectedDependentRecord>.Empty, new ReportMetaData(0, tableState.Page, tableState.PageSize));
+        try
+        {
+            report = await this.AdminReportApi.GetProtectedDependentsReport(tableState.Page, tableState.PageSize, sortDirection);
+        }
+        catch (Exception e) when (e is ApiException or HttpRequestException)
+        {
+            RequestError error = StoreUtility.FormatRequestError(e);
+            this.ProtectedDependentsErrorMessage = error.Message;
+        }
+
+        return new TableData<ProtectedDependentRecord>
+        {
+            Items = report.Records,
+            TotalItems = report.MetaData.TotalCount,
+        };
     }
 
     private async Task HandleBlockedAccessRowClick(TableRowClickEventArgs<BlockedAccessRecord> args)

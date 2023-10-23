@@ -26,7 +26,6 @@ namespace HealthGateway.Admin.Client.Store.AdminReport
             return state with
             {
                 BlockedAccess = new(),
-                ProtectedDependents = new(),
             };
         }
 
@@ -62,45 +61,6 @@ namespace HealthGateway.Admin.Client.Store.AdminReport
             return state with
             {
                 BlockedAccess = state.BlockedAccess with
-                {
-                    IsLoading = false,
-                    Error = action.Error,
-                },
-            };
-        }
-
-        [ReducerMethod(typeof(AdminReportActions.GetProtectedDependentsAction))]
-        public static AdminReportState ReduceGetProtectedDependentsAction(AdminReportState state)
-        {
-            return state with
-            {
-                ProtectedDependents = state.ProtectedDependents with
-                {
-                    IsLoading = true,
-                },
-            };
-        }
-
-        [ReducerMethod]
-        public static AdminReportState ReduceGetProtectedDependentsSuccessAction(AdminReportState state, AdminReportActions.GetProtectedDependentsSuccessAction action)
-        {
-            return state with
-            {
-                ProtectedDependents = state.ProtectedDependents with
-                {
-                    IsLoading = false,
-                    Error = null,
-                    Result = action.Data,
-                },
-            };
-        }
-
-        [ReducerMethod]
-        public static AdminReportState ReduceGetProtectedDependentsFailureAction(AdminReportState state, AdminReportActions.GetProtectedDependentsFailureAction action)
-        {
-            return state with
-            {
-                ProtectedDependents = state.ProtectedDependents with
                 {
                     IsLoading = false,
                     Error = action.Error,
