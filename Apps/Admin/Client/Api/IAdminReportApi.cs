@@ -17,7 +17,7 @@ namespace HealthGateway.Admin.Client.Api
 {
     using System.Collections.Generic;
     using System.Threading.Tasks;
-    using HealthGateway.Admin.Common.Models;
+    using HealthGateway.Admin.Common.Models.AdminReports;
     using Refit;
 
     /// <summary>
