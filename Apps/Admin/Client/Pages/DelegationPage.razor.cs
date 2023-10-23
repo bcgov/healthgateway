@@ -29,6 +29,8 @@ namespace HealthGateway.Admin.Client.Pages
     using HealthGateway.Common.Data.Utils;
     using HealthGateway.Common.Data.Validations;
     using Microsoft.AspNetCore.Components;
+    using Microsoft.AspNetCore.WebUtilities;
+    using Microsoft.Extensions.Primitives;
     using MudBlazor;
 
     /// <summary>
@@ -62,6 +64,9 @@ namespace HealthGateway.Admin.Client.Pages
         [Inject]
         private IDialogService Dialog { get; set; } = default!;
 
+        [Inject]
+        private NavigationManager NavigationManager { get; set; } = default!;
+
         private MudForm Form { get; set; } = default!;
 
         private string QueryParameter { get; set; } = string.Empty;
@@ -87,7 +92,16 @@ namespace HealthGateway.Admin.Client.Pages
         protected override void OnInitialized()
         {
             base.OnInitialized();
-            this.ResetDelegationState();
+            Uri uri = this.NavigationManager.ToAbsoluteUri(this.NavigationManager.Uri);
+            if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("phn", out StringValues phn) && phn != StringValues.Empty)
+            {
+                this.QueryParameter = phn.ToString();
+                this.Dispatcher.Dispatch(new DelegationActions.SearchAction { Phn = StringManipulator.StripWhitespace(this.QueryParameter) });
+            }
+            else
+            {
+                this.ResetDelegationState();
+            }
         }
 
         /// <summary>

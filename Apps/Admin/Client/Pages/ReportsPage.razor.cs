@@ -106,6 +106,14 @@ public partial class ReportsPage : FluxorComponent
         this.ActionSubscriber.SubscribeToAction<PatientSupportActions.LoadSuccessAction>(this, this.NavigateToPatientDetails);
     }
 
+    private void HandleProtectedDependentsRowClick(TableRowClickEventArgs<ProtectedDependentRecord> args)
+    {
+        if (args.Item.Phn != null)
+        {
+            this.NavigationManager.NavigateTo("/delegation?Phn=" + args.Item.Phn);
+        }
+    }
+
     private void NavigateToPatientDetails(PatientSupportActions.LoadSuccessAction action)
     {
         if (action.Data.Count == 1)
