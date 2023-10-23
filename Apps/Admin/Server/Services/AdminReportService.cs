@@ -49,14 +49,13 @@ namespace HealthGateway.Admin.Server.Services
         public async Task<IList<ProtectedDependentRecord>> GetProtectedDependentsReportAsync(int page, int pageSize, SortDirection sortDirection, CancellationToken ct)
         {
             IEnumerable<string> protectedHdids = await this.delegationDelegate.GetProtectedDependentHdidsAsync(page, pageSize, sortDirection, ct);
-            List<Task<ProtectedDependentRecord>> tasks = protectedHdids.Select(
-                    async hdid =>
-                    {
-                        PatientQuery query = new PatientDetailsQuery(Hdid: hdid, Source: PatientDetailSource.All);
-                        PatientQueryResult patient = await this.patientRepository.Query(query, ct);
-                        return new ProtectedDependentRecord(hdid, patient.Items.SingleOrDefault()?.Phn);
-                    })
-                .ToList();
+            IEnumerable<Task<ProtectedDependentRecord>> tasks = protectedHdids.Select(
+                async hdid =>
+                {
+                    PatientQuery query = new PatientDetailsQuery(Hdid: hdid, Source: PatientDetailSource.All);
+                    PatientQueryResult patient = await this.patientRepository.Query(query, ct);
+                    return new ProtectedDependentRecord(hdid, patient.Items.SingleOrDefault()?.Phn);
+                });
             return await Task.WhenAll(tasks);
         }
 

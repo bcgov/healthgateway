@@ -68,7 +68,7 @@ namespace HealthGateway.Admin.Server.Controllers
         /// <summary>
         /// Retrieves a collection of user HDIDs that have dependents.
         /// </summary>
-        /// <param name="page">Page number of the protected dependents report.</param>
+        /// <param name="page">Page number of the protected dependents report (First page is zero).</param>
         /// <param name="pageSize">Number or records per page to return from the protected dependents report.</param>
         /// <param name="sortDirection">The sort direction for the records in the protected dependents report.</param>
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
@@ -83,7 +83,7 @@ namespace HealthGateway.Admin.Server.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<IEnumerable<ProtectedDependentRecord>> ProtectedDependentsReport(
-            [FromQuery] int page,
+            [FromQuery] int page = 0,
             [FromQuery] int pageSize = 25,
             [FromQuery] SortDirection sortDirection = SortDirection.Ascending,
             CancellationToken ct = default)
