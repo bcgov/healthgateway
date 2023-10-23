@@ -32,6 +32,7 @@ using HealthGateway.Common.Data.Constants;
 using HealthGateway.Common.Data.Utils;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Microsoft.JSInterop;
 using MudBlazor;
 
@@ -64,6 +65,9 @@ public partial class FeedbackPage : FluxorComponent
     [Inject]
     private IJSRuntime JsRuntime { get; set; } = default!;
 
+    [Inject]
+    private ILogger<FeedbackPage> Logger { get; set; } = default!;
+
     private bool FeedbackLoading => this.UserFeedbackState.Value.Load.IsLoading;
 
     private bool FeedbackLoaded => this.UserFeedbackState.Value.Load.Loaded;
@@ -85,9 +89,12 @@ public partial class FeedbackPage : FluxorComponent
 
     private IEnumerable<UserFeedbackView> Feedback => this.UserFeedbackState.Value.FeedbackData?.Values ?? Enumerable.Empty<UserFeedbackView>();
 
-    private IEnumerable<FeedbackRow> FeedbackRows => this.Feedback
-        .Where(f => this.TagIdFilter.All(t => f.Tags.Any(ft => ft.TagId == t)))
-        .Select(f => new FeedbackRow(f));
+    private IEnumerable<UserFeedbackView> FilteredFeedback => this.Feedback
+        .Where(f => this.TagIdFilter.All(t => f.Tags.Any(ft => ft.TagId == t)));
+
+    private IEnumerable<FeedbackRow> FeedbackRows => this.FilteredFeedback.Select(f => new FeedbackRow(f));
+
+    private bool AnyUnsavedFeedbackChanges => this.FeedbackRows.Any(f => f.IsDirty);
 
     private MudChip[] SelectedTagChips { get; set; } = Array.Empty<MudChip>();
 
@@ -214,7 +221,21 @@ public partial class FeedbackPage : FluxorComponent
 
     private void AssociateTags(IEnumerable<Guid> tagIds, Guid feedbackId)
     {
+        this.Logger.LogInformation("Associate tags started");
+        UserFeedbackView userFeedbackView = this.FilteredFeedback.Single(v => v.Id == feedbackId);
+        IEnumerable<UserFeedbackTagView> userFeedbackTagViews = tagIds.Select(
+            u => new UserFeedbackTagView
+                { FeedbackId = feedbackId, TagId = u });
+        userFeedbackView.SetTags(userFeedbackTagViews.ToList());
+        this.Logger.LogInformation("Associate tags finished");
+    }
+
+    private void SaveAssociatedTags(Guid feedbackId)
+    {
+        this.Logger.LogInformation("Save associated tags started");
+        IEnumerable<Guid> tagIds = this.FeedbackRows.Single(r => r.Id == feedbackId).TagIds;
         this.Dispatcher.Dispatch(new UserFeedbackActions.AssociateTagsAction { TagIds = tagIds, FeedbackId = feedbackId });
+        this.Logger.LogInformation("Save associated tags finished.");
     }
 
     private void ToggleIsReviewed(Guid feedbackId)
@@ -254,6 +275,7 @@ public partial class FeedbackPage : FluxorComponent
             this.Comments = model.Comment ?? string.Empty;
             this.TagIds = model.Tags.Select(t => t.TagId);
             this.IsReviewed = model.IsReviewed;
+            this.IsDirty = model.IsDirty;
         }
 
         public Guid Id { get; }
@@ -269,5 +291,7 @@ public partial class FeedbackPage : FluxorComponent
         public IEnumerable<Guid> TagIds { get; }
 
         public bool IsReviewed { get; }
+
+        public bool IsDirty { get; }
     }
 }

@@ -18,6 +18,7 @@ namespace HealthGateway.Admin.Common.Models;
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Text.Json.Serialization;
 
 /// <summary>
@@ -83,9 +84,15 @@ public class UserFeedbackView
     public string Email { get; set; } = string.Empty;
 
     /// <summary>
-    /// Gets the feedback admin tags.
+    /// Gets or sets a value indicating whether the feedback has been modified or not.
     /// </summary>
-    public IList<UserFeedbackTagView> Tags { get; } = new List<UserFeedbackTagView>();
+    public bool IsDirty { get; set; }
+
+    /// <summary>
+    /// Gets or sets the feedback admin tags.
+    /// </summary>
+    [SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "Team decision")]
+    public IList<UserFeedbackTagView> Tags { get; set; } = new List<UserFeedbackTagView>();
 
     /// <summary>
     /// Returns a shallow copy of the object.
@@ -94,5 +101,15 @@ public class UserFeedbackView
     public UserFeedbackView ShallowCopy()
     {
         return (UserFeedbackView)this.MemberwiseClone();
+    }
+
+    /// <summary>
+    /// Sets the feedback admin tags and marks the instance as "dirty".
+    /// </summary>
+    /// <param name="tags">A list of feedback admin tags.</param>
+    public void SetTags(IList<UserFeedbackTagView> tags)
+    {
+        this.Tags = tags;
+        this.IsDirty = true;
     }
 }

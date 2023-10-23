@@ -4,10 +4,12 @@
 @using HealthGateway.Admin.Client.Store.Tag
 @using HealthGateway.Admin.Common.Models
 @using HealthGateway.Common.Data.Utils
+@using HealthGateway.Admin.Client.Components.Site
 @inherits Fluxor.Blazor.Web.Components.FluxorComponent
 
 <PageTitle>Health Gateway Admin Feedback Review</PageTitle>
 <HgPageHeading>Feedback Review</HgPageHeading>
+<NavigationConfirmation Enabled="@AnyUnsavedFeedbackChanges" />
 
 @foreach (RequestError error in TagErrors)
 {
@@ -83,7 +85,7 @@ else
                   Dense="true"
                   data-testid="feedback-table">
             <HeaderContent>
-                <MudTh>
+                <MudTh Style="min-width: 175px;">
                     <MudTableSortLabel SortBy="new Func<FeedbackRow, object>(x => x.DateTime)"
                                        InitialDirection="@SortDirection.Descending">
                         Date
@@ -129,21 +131,28 @@ else
                 </MudTd>
                 <MudTd DataLabel="Comments" data-testid="feedback-comments">@context.Comments</MudTd>
                 <MudTd DataLabel="Tags">
-                    <MudSelect T="Guid"
-                               MultiSelection="true"
-                               SelectedValues="@context.TagIds"
-                               SelectedValuesChanged="@(tagIds => AssociateTags(tagIds, context.Id))"
-                               MultiSelectionTextFunc="@DescribeTags"
-                               Disabled="@FeedbackUpdating"
-                               Variant="@Variant.Filled"
-                               Margin="@Margin.Dense"
-                               Dense="true"
-                               data-testid="feedback-tag-select">
-                        @foreach (AdminTagView tag in Tags)
-                        {
-                            <MudSelectItem T="Guid" Value="@tag.Id" data-testid="feedback-tag">@tag.Name</MudSelectItem>
-                        }
-                    </MudSelect>
+                    <div class="d-flex justify-end">
+                        <MudSelect T="Guid"
+                                   MultiSelection="true"
+                                   SelectedValues="@context.TagIds"
+                                   SelectedValuesChanged="@(tagIds => AssociateTags(tagIds, context.Id))"
+                                   MultiSelectionTextFunc="@DescribeTags"
+                                   Disabled="@FeedbackUpdating"
+                                   Variant="@Variant.Filled"
+                                   Margin="@Margin.Dense"
+                                   Dense="true"
+                                   data-testid="feedback-tag-select">
+                            @foreach (AdminTagView tag in Tags)
+                            {
+                                <MudSelectItem T="Guid" Value="@tag.Id" data-testid="feedback-tag">@tag.Name</MudSelectItem>
+                            }
+                        </MudSelect>
+                        <MudIconButton OnClick="@(() => SaveAssociatedTags(context.Id))"
+                                       Icon="fas fa-save"
+                                       Color="@Color.Primary"
+                                       Disabled="@(!context.IsDirty)"
+                                       data-testid="feedback-tag-save-button" />
+                    </div>
                 </MudTd>
                 <MudTd DataLabel="Reviewed">
                     <MudIconButton Icon="@(context.IsReviewed ? "fas fa-check" : "fas fa-xmark")"

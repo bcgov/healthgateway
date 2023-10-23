@@ -109,6 +109,10 @@ public class UserFeedbackEffects
             if (response is { ResourcePayload: { }, ResultStatus: ResultType.Success })
             {
                 this.Logger.LogInformation("Tags associated to user feedback successfully!");
+
+                // Associate Tags succeeded so reset IsDirty property to false.
+                response.ResourcePayload.IsDirty = false;
+
                 dispatcher.Dispatch(new UserFeedbackActions.AssociateTagsSuccessAction { Data = response });
                 return;
             }

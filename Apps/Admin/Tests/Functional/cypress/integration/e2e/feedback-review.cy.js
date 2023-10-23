@@ -59,10 +59,20 @@ describe("Feedback Review", () => {
                 cy.get("[data-testid=feedback-tag-select]").click();
             });
         cy.get("[data-testid=feedback-tag]").contains(suggestionTag).click();
+        cy.get(rowSelector)
+            .first()
+            .within(() => {
+                cy.get("[data-testid=feedback-tag-save-button]")
+                    .should("be.enabled")
+                    .click();
+            });
         cy.validateTableLoad("[data-testid=feedback-table]");
         cy.get(rowSelector)
             .first()
             .within(() => {
+                cy.get("[data-testid=feedback-tag-save-button]").should(
+                    "not.be.enabled"
+                );
                 cy.get("[data-testid=feedback-tag-select]").should(
                     "have.value",
                     suggestionTag
@@ -95,10 +105,20 @@ describe("Feedback Review", () => {
                 cy.get("[data-testid=feedback-tag-select]").click();
             });
         cy.get("[data-testid=feedback-tag]").contains(suggestionTag).click();
+        cy.get(rowSelector)
+            .first()
+            .within(() => {
+                cy.get("[data-testid=feedback-tag-save-button]")
+                    .should("be.enabled")
+                    .click();
+            });
         cy.validateTableLoad("[data-testid=feedback-table]");
         cy.get(rowSelector)
             .first()
             .within(() => {
+                cy.get("[data-testid=feedback-tag-save-button]").should(
+                    "not.be.enabled"
+                );
                 cy.get("[data-testid=feedback-tag-select]").should(
                     "not.have.value",
                     suggestionTag
