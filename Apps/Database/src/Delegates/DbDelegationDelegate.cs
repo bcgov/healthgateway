@@ -87,7 +87,7 @@ namespace HealthGateway.Database.Delegates
         public async Task<IList<string>> GetProtectedDependentHdidsAsync(int page, int pageSize, SortDirection sortDirection, CancellationToken ct)
         {
             int safePageSize = pageSize > 0 ? pageSize : 25;
-            int recordsToSkip = int.Max(page - 1, 0) * safePageSize;
+            int recordsToSkip = int.Max(page, 0) * safePageSize;
 
             // Begin query for protected dependents only
             IQueryable<Dependent> query = this.dbContext.Dependent
