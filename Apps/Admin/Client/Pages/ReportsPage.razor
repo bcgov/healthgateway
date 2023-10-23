@@ -29,11 +29,14 @@
 </MudText>
 <MudTable
     Class="mt-4"
+    T="ProtectedDependentRecord"
     ServerData="@GetProtectedDependentsTableData"
     AllowUnsorted="@false"
     Striped="@true"
     Dense="@true"
     RowsPerPage="20"
+    RowClassFunc="@((row, _) => !string.IsNullOrEmpty(row.Phn) ? "cursor-pointer" : string.Empty)"
+    OnRowClick="@HandleProtectedDependentsRowClick"
     data-testid="protected-dependents-table">
     <HeaderContent>
         <MudTh>
