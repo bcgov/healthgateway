@@ -13,7 +13,8 @@
     <Compile Remove="Mock\**" />
     <EmbeddedResource Remove="Mock\**" />
     <None Remove="Mock\**" />
-    <None Remove="UnitTest.json" />
+    <None Remove="Assets\appsettings.json" />
+    <None Remove="Assets\featuretoggleconfig.json" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="coverlet.msbuild" Version="6.0.0">
@@ -35,7 +36,11 @@
     <ProjectReference Include="..\..\src\WebClient.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="UnitTest.json">
+    <Content Include="Assets\appsettings.json">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\featuretoggleconfig.json">
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

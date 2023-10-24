@@ -1,0 +1,93 @@
+{
+    "homepage": {
+        "showFederalProofOfVaccination": true,
+        "showRecommendationsLink": true
+    },
+    "waitingQueue": {
+        "enabled": true
+    },
+    "notificationCentre": {
+        "enabled": true
+    },
+    "timeline": {
+        "comment": true
+    },
+    "datasets": [
+        {
+            "name": "bcCancerScreening",
+            "enabled": true
+        },
+        {
+            "name": "clinicalDocument",
+            "enabled": true
+        },
+        {
+            "name": "covid19TestResult",
+            "enabled": true
+        },
+        {
+            "name": "diagnosticImaging",
+            "enabled": true
+        },
+        {
+            "name": "healthVisit",
+            "enabled": true
+        },
+        {
+            "name": "hospitalVisit",
+            "enabled": true
+        },
+        {
+            "name": "immunization",
+            "enabled": true
+        },
+        {
+            "name": "labResult",
+            "enabled": true
+        },
+        {
+            "name": "medication",
+            "enabled": true
+        },
+        {
+            "name": "note",
+            "enabled": true
+        },
+        {
+            "name": "specialAuthorityRequest",
+            "enabled": true
+        }
+    ],
+    "covid19": {
+        "pcrTestEnabled": true,
+        "publicCovid19": {
+            "showFederalProofOfVaccination": true
+        },
+        "proofOfVaccination": {
+            "exportPdf": false
+        }
+    },
+    "dependents": {
+        "enabled": true,
+        "timelineEnabled": true,
+        "datasets": [
+            {
+                "name": "note",
+                "enabled": false
+            }
+        ]
+    },
+    "services": {
+        "enabled": true,
+        "services": [
+            {
+                "name": "organDonorRegistration",
+                "enabled": true
+            },
+            {
+                "name": "healthConnectRegistry",
+                "enabled": true
+            }
+        ]
+    }
+}
