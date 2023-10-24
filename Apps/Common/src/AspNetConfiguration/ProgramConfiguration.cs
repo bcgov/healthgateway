@@ -16,7 +16,6 @@
 namespace HealthGateway.Common.AspNetConfiguration
 {
     using System.Diagnostics.CodeAnalysis;
-    using System.Globalization;
     using HealthGateway.Common.AspNetConfiguration.Modules;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
@@ -83,7 +82,6 @@ namespace HealthGateway.Common.AspNetConfiguration
                 .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
                 .ReadFrom.Configuration(configuration)
                 .Enrich.FromLogContext()
-                .WriteTo.Console(outputTemplate: Observability.LogOutputTemplate, formatProvider: CultureInfo.InvariantCulture)
                 .CreateBootstrapLogger();
 
             using var factory = new SerilogLoggerFactory(Log.Logger);
