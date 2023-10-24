@@ -18,29 +18,15 @@ namespace HealthGateway.WebClient.Server.Models
     using System;
 
     /// <summary>
-    /// A collection of configuration items for use by Health Gateway Mobile.
+    /// Configuration data to be used by the Health Gateway Mobile App.
     /// </summary>
-    public class MobileConfiguration
-    {
-        /// <summary>
-        /// Gets or sets a value indicating whether the mobile application should be considered online or not.
-        /// </summary>
-        public bool Online { get; set; }
-
-        /// <summary>
-        /// Gets or sets the base url for the endpoints to be used by the mobile application.
-        /// </summary>
-        public Uri? BaseUrl { get; set; }
-
-        /// <summary>
-        /// Gets or sets the Mobile Authentication Configuration.
-        /// </summary>
-        public MobileAuthentication? Authentication { get; set; }
-
-        /// <summary>
-        /// Gets or sets the mobile version.
-        /// The use of this version is to trigger forced updates in the future.
-        /// </summary>
-        public int Version { get; set; }
-    }
+    /// <param name="Online">Gets a value indicating whether the mobile application should be considered online.</param>
+    /// <param name="BaseUrl">Gets the base URL for the endpoints used by the mobile application.</param>
+    /// <param name="Authentication">Gets settings for authentication.</param>
+    /// <param name="Version">Gets the version number of this configuration.</param>
+    public record MobileConfiguration(
+        bool Online = false,
+        Uri? BaseUrl = null,
+        MobileAuthenticationSettings? Authentication = null,
+        int Version = 0);
 }
