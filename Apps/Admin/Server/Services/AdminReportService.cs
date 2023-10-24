@@ -41,6 +41,7 @@ namespace HealthGateway.Admin.Server.Services
         /// <param name="delegationDelegate">The ResourceDelegate delegate to communicate with DB.</param>
         /// <param name="blockedAccessDelegate">The BlockedAccess delegate to communicate with DB.</param>
         /// <param name="patientRepository">The patient repository used to retrieve patient details.</param>
+        /// <param name="logger">Injected Logger.</param>
         public AdminReportService(IDelegationDelegate delegationDelegate, IBlockedAccessDelegate blockedAccessDelegate, IPatientRepository patientRepository, ILogger logger)
         {
             this.delegationDelegate = delegationDelegate;

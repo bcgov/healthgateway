@@ -15,5 +15,11 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Admin.Common.Models.AdminReports
 {
+    /// <summary>
+    /// Meta data describing the metrics of a report dataset.
+    /// </summary>
+    /// <param name="TotalCount">Total number of applicable records within report.</param>
+    /// <param name="Page">The current page of the dataset (Zero is the first page).</param>
+    /// <param name="PageSize">The total number of records to be returned per page.</param>
     public record ReportMetaData(int TotalCount, int? Page, int? PageSize);
 }

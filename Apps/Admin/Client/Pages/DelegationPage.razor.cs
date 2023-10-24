@@ -92,15 +92,13 @@ namespace HealthGateway.Admin.Client.Pages
         protected override void OnInitialized()
         {
             base.OnInitialized();
+            this.ResetDelegationState();
+
             Uri uri = this.NavigationManager.ToAbsoluteUri(this.NavigationManager.Uri);
             if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("phn", out StringValues phn) && phn != StringValues.Empty)
             {
                 this.QueryParameter = phn.ToString();
                 this.Dispatcher.Dispatch(new DelegationActions.SearchAction { Phn = StringManipulator.StripWhitespace(this.QueryParameter) });
-            }
-            else
-            {
-                this.ResetDelegationState();
             }
         }
 
