@@ -18,30 +18,13 @@ namespace HealthGateway.Admin.Common.Models;
 
 using System;
 using System.Collections.Generic;
-using System.Text.Json.Serialization;
+using System.Linq;
 
 /// <summary>
 /// Model that provides a user representation of a user feedback.
 /// </summary>
 public class UserFeedbackView
 {
-    /// <summary>
-    /// Initializes a new instance of the <see cref="UserFeedbackView"/> class.
-    /// </summary>
-    public UserFeedbackView()
-    {
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="UserFeedbackView"/> class.
-    /// </summary>
-    /// <param name="tags">The list of user feedback tags.</param>
-    [JsonConstructor]
-    public UserFeedbackView(IList<UserFeedbackTagView> tags)
-    {
-        this.Tags = tags;
-    }
-
     /// <summary>
     /// Gets or sets the user feedback id.
     /// </summary>
@@ -83,16 +66,7 @@ public class UserFeedbackView
     public string Email { get; set; } = string.Empty;
 
     /// <summary>
-    /// Gets the feedback admin tags.
+    /// Gets or sets the feedback admin tags.
     /// </summary>
-    public IList<UserFeedbackTagView> Tags { get; } = new List<UserFeedbackTagView>();
-
-    /// <summary>
-    /// Returns a shallow copy of the object.
-    /// </summary>
-    /// <returns>A new object containing the same values as the current object.</returns>
-    public UserFeedbackView ShallowCopy()
-    {
-        return (UserFeedbackView)this.MemberwiseClone();
-    }
+    public IEnumerable<UserFeedbackTagView> Tags { get; set; } = Enumerable.Empty<UserFeedbackTagView>();
 }
