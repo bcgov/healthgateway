@@ -56,7 +56,7 @@ public class AdminApiAdminReportsTests : ScenarioContextBase<Program>
     [Fact]
     public async Task RetrieveProtectedDependentsReport()
     {
-        ReportMetaData expectedMetaData = new(2, 1, 25);
+        ReportMetaData expectedMetaData = new(2, 0, 25);
         IScenarioResult scenarioResponse = await this.Host.Scenario(
             scenario => { scenario.Get.Url("/v1/api/AdminReport/ProtectedDependents"); });
 
@@ -70,7 +70,7 @@ public class AdminApiAdminReportsTests : ScenarioContextBase<Program>
     public async Task RetrieveProtectedDependentsReportDescending()
     {
         List<ProtectedDependentRecord> expectedRecords = this.protectedDependentRecords.Reverse().ToList();
-        ReportMetaData expectedMetaData = new(2, 1, 25);
+        ReportMetaData expectedMetaData = new(2, 0, 25);
         IScenarioResult scenarioResponse = await this.Host.Scenario(
             scenario => { scenario.Get.Url("/v1/api/AdminReport/ProtectedDependents?sortDirection=Descending"); });
 
@@ -87,9 +87,9 @@ public class AdminApiAdminReportsTests : ScenarioContextBase<Program>
         {
             this.protectedDependentRecords[1],
         };
-        ReportMetaData expectedMetaData = new(2, 2, 1);
+        ReportMetaData expectedMetaData = new(2, 1, 1);
         IScenarioResult scenarioResponse = await this.Host.Scenario(
-            scenario => { scenario.Get.Url("/v1/api/AdminReport/ProtectedDependents?page=2&pageSize=1"); });
+            scenario => { scenario.Get.Url("/v1/api/AdminReport/ProtectedDependents?page=1&pageSize=1"); });
 
         ProtectedDependentReport protectedDependents = (await scenarioResponse.ReadAsJsonAsync<ProtectedDependentReport>()).ShouldNotBeNull();
         protectedDependents.Records.Count.ShouldBe(1);
