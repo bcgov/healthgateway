@@ -38,7 +38,7 @@ namespace HealthGateway.WebClientTests.Services
         public ConfigurationServiceTests()
         {
             IConfiguration config = new ConfigurationBuilder()
-                .AddJsonFile("UnitTest.json")
+                .AddJsonFile("Assets/appsettings.json")
                 .Build();
 
             // Mock dependency injection of controller
@@ -93,6 +93,29 @@ namespace HealthGateway.WebClientTests.Services
                             "External", new Uri("https://localhost/external")
                         },
                     },
+                    FeatureToggleFilePath = "Assets/featuretoggleconfig.json",
+                    FeatureToggleConfiguration = new FeatureToggleConfiguration(
+                        new HomepageSettings(true, true),
+                        new WaitingQueueSettings(true),
+                        new NotificationCentreSettings(true),
+                        new TimelineSettings(true),
+                        new DatasetSettings[]
+                        {
+                            new("bcCancerScreening", true),
+                            new("clinicalDocument", true),
+                            new("covid19TestResult", true),
+                            new("diagnosticImaging", true),
+                            new("healthVisit", true),
+                            new("hospitalVisit", true),
+                            new("immunization", true),
+                            new("labResult", true),
+                            new("medication", true),
+                            new("note", true),
+                            new("specialAuthorityRequest", true),
+                        },
+                        new Covid19Settings(true, new PublicCovid19Settings(true), new ProofOfVaccinationSettings(false)),
+                        new DependentsSettings(true, true, new DatasetSettings[] { new("note", false) }),
+                        new ServicesSettings(true, new ServiceSetting[] { new("organDonorRegistration", true), new("healthConnectRegistry", true) })),
                 },
                 ServiceEndpoints = new Dictionary<string, Uri>
                 {
@@ -102,6 +125,61 @@ namespace HealthGateway.WebClientTests.Services
                 },
             };
             ExternalConfiguration actualResult = this.service.GetConfiguration();
+
+            expectedResult.ShouldDeepEqual(actualResult);
+        }
+
+        /// <summary>
+        /// GetMobileConfiguration - Happy Path.
+        /// </summary>
+        [Fact]
+        public void TestGetMobileConfiguration()
+        {
+            MobileConfiguration expectedResult = new(
+                true,
+                new Uri("https://hg-prod.api.gov.bc.ca/"),
+                new MobileAuthenticationSettings(
+                    new Uri("https://loginproxy.gov.bc.ca/auth/realms/health-gateway-gold"),
+                    "bcsc-mobile",
+                    "hg-mobile",
+                    "myhealthbc://*"),
+                2)
+            {
+                Datasets = new[]
+                {
+                    "bcCancerScreening",
+                    "clinicalDocument",
+                    "covid19TestResult",
+                    "diagnosticImaging",
+                    "healthVisit",
+                    "hospitalVisit",
+                    "immunization",
+                    "labResult",
+                    "medication",
+                    "note",
+                    "specialAuthorityRequest",
+                },
+                DependentDatasets = new[]
+                {
+                    "bcCancerScreening",
+                    "clinicalDocument",
+                    "covid19TestResult",
+                    "diagnosticImaging",
+                    "healthVisit",
+                    "hospitalVisit",
+                    "immunization",
+                    "labResult",
+                    "medication",
+                    "specialAuthorityRequest",
+                },
+                Services = new[]
+                {
+                    "organDonorRegistration",
+                    "healthConnectRegistry",
+                },
+            };
+
+            MobileConfiguration actualResult = this.service.GetMobileConfiguration();
 
             expectedResult.ShouldDeepEqual(actualResult);
         }

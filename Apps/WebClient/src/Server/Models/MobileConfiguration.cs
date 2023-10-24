@@ -16,31 +16,35 @@
 namespace HealthGateway.WebClient.Server.Models
 {
     using System;
+    using System.Collections.Generic;
+    using System.Linq;
 
     /// <summary>
-    /// A collection of configuration items for use by Health Gateway Mobile.
+    /// Configuration data to be used by the Health Gateway Mobile App.
     /// </summary>
-    public class MobileConfiguration
+    /// <param name="Online">Gets a value indicating whether the mobile application should be considered online.</param>
+    /// <param name="BaseUrl">Gets the base URL for the endpoints used by the mobile application.</param>
+    /// <param name="Authentication">Gets settings for authentication.</param>
+    /// <param name="Version">Gets the version number of this configuration.</param>
+    public record MobileConfiguration(
+        bool Online = false,
+        Uri? BaseUrl = null,
+        MobileAuthenticationSettings? Authentication = null,
+        int Version = 0)
     {
         /// <summary>
-        /// Gets or sets a value indicating whether the mobile application should be considered online or not.
+        /// Gets or sets the collection of enabled datasets.
         /// </summary>
-        public bool Online { get; set; }
+        public IEnumerable<string> Datasets { get; set; } = Enumerable.Empty<string>();
 
         /// <summary>
-        /// Gets or sets the base url for the endpoints to be used by the mobile application.
+        /// Gets or sets the collection of enabled datasets for dependents.
         /// </summary>
-        public Uri? BaseUrl { get; set; }
+        public IEnumerable<string> DependentDatasets { get; set; } = Enumerable.Empty<string>();
 
         /// <summary>
-        /// Gets or sets the Mobile Authentication Configuration.
+        /// Gets or sets the collection of enabled services.
         /// </summary>
-        public MobileAuthentication? Authentication { get; set; }
-
-        /// <summary>
-        /// Gets or sets the mobile version.
-        /// The use of this version is to trigger forced updates in the future.
-        /// </summary>
-        public int Version { get; set; }
+        public IEnumerable<string> Services { get; set; } = Enumerable.Empty<string>();
     }
 }

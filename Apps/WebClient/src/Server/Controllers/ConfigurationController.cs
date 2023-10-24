@@ -28,7 +28,7 @@ namespace HealthGateway.WebClient.Server.Controllers
     [Produces("application/json")]
     public class ConfigurationController : Controller
     {
-        private readonly IConfigurationService configservice;
+        private readonly IConfigurationService configurationService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ConfigurationController"/> class.
@@ -36,7 +36,7 @@ namespace HealthGateway.WebClient.Server.Controllers
         /// <param name="service">The injected configuration service provider.</param>
         public ConfigurationController(IConfigurationService service)
         {
-            this.configservice = service;
+            this.configurationService = service;
         }
 
         /// <summary>
@@ -46,7 +46,7 @@ namespace HealthGateway.WebClient.Server.Controllers
         [HttpGet]
         public ExternalConfiguration Index()
         {
-            ExternalConfiguration config = this.configservice.GetConfiguration();
+            ExternalConfiguration config = this.configurationService.GetConfiguration();
             config.WebClient.ClientIp = this.HttpContext.Connection.RemoteIpAddress?.MapToIPv4().ToString();
             return config;
         }
@@ -59,7 +59,7 @@ namespace HealthGateway.WebClient.Server.Controllers
         [Route("~/MobileConfiguration")]
         public MobileConfiguration MobileConfiguration()
         {
-            MobileConfiguration config = this.configservice.GetMobileConfiguration();
+            MobileConfiguration config = this.configurationService.GetMobileConfiguration();
             return config;
         }
     }
