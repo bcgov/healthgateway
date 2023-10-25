@@ -11,13 +11,7 @@ describe("Reports", () => {
         );
     });
 
-    it("Verify reports", () => {
-        cy.log("Checking protected dependents table");
-        getTableRows("[data-testid=protected-dependents-table]").should(
-            "have.length.gt",
-            0
-        );
-
+    it("Verify blocked access reports", () => {
         cy.log("Checking blocked access table");
         getTableRows("[data-testid=blocked-access-table]").should(
             "have.length.gt",
@@ -33,5 +27,24 @@ describe("Reports", () => {
         cy.contains("[data-testid=patient-hdid]", blockedHdid).should(
             "be.visible"
         );
+    });
+
+    it("Verify protected dependent reports", () => {
+        cy.log("Checking protected dependents table");
+        getTableRows("[data-testid=protected-dependents-table]").should(
+            "have.length.gt",
+            0
+        );
+
+        cy.log(
+            "Checking protected dependent row click goes to delegation page"
+        );
+        cy.contains("[data-testid=protected-dependent-phn]", /[0-9].*?/)
+            .first()
+            .should("be.visible")
+            .click();
+
+        cy.url().should("include", "/delegation");
+        cy.get("[data-testid=dependent-table]").should("be.visible");
     });
 });
