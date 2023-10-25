@@ -56,28 +56,28 @@ public class AdminApiAdminReportsTests : ScenarioContextBase<Program>
     [Fact]
     public async Task RetrieveProtectedDependentsReport()
     {
-        ReportMetaData expectedMetaData = new(2, 0, 25);
+        ReportMetadata expectedMetadata = new(2, 0, 25);
         IScenarioResult scenarioResponse = await this.Host.Scenario(
             scenario => { scenario.Get.Url("/v1/api/AdminReport/ProtectedDependents"); });
 
         ProtectedDependentReport protectedDependents = (await scenarioResponse.ReadAsJsonAsync<ProtectedDependentReport>()).ShouldNotBeNull();
         protectedDependents.Records.Count.ShouldBe(2);
         protectedDependents.Records.ShouldBeEquivalentTo(this.protectedDependentRecords);
-        protectedDependents.MetaData.ShouldBeEquivalentTo(expectedMetaData);
+        protectedDependents.Metadata.ShouldBeEquivalentTo(expectedMetadata);
     }
 
     [Fact]
     public async Task RetrieveProtectedDependentsReportDescending()
     {
         List<ProtectedDependentRecord> expectedRecords = this.protectedDependentRecords.Reverse().ToList();
-        ReportMetaData expectedMetaData = new(2, 0, 25);
+        ReportMetadata expectedMetadata = new(2, 0, 25);
         IScenarioResult scenarioResponse = await this.Host.Scenario(
             scenario => { scenario.Get.Url("/v1/api/AdminReport/ProtectedDependents?sortDirection=Descending"); });
 
         ProtectedDependentReport protectedDependents = (await scenarioResponse.ReadAsJsonAsync<ProtectedDependentReport>()).ShouldNotBeNull();
         protectedDependents.Records.Count.ShouldBe(2);
         protectedDependents.Records.ShouldBeEquivalentTo(expectedRecords);
-        protectedDependents.MetaData.ShouldBeEquivalentTo(expectedMetaData);
+        protectedDependents.Metadata.ShouldBeEquivalentTo(expectedMetadata);
     }
 
     [Fact]
@@ -87,13 +87,13 @@ public class AdminApiAdminReportsTests : ScenarioContextBase<Program>
         {
             this.protectedDependentRecords[1],
         };
-        ReportMetaData expectedMetaData = new(2, 1, 1);
+        ReportMetadata expectedMetadata = new(2, 1, 1);
         IScenarioResult scenarioResponse = await this.Host.Scenario(
             scenario => { scenario.Get.Url("/v1/api/AdminReport/ProtectedDependents?page=1&pageSize=1"); });
 
         ProtectedDependentReport protectedDependents = (await scenarioResponse.ReadAsJsonAsync<ProtectedDependentReport>()).ShouldNotBeNull();
         protectedDependents.Records.Count.ShouldBe(1);
         protectedDependents.Records.ShouldBeEquivalentTo(expectedResults);
-        protectedDependents.MetaData.ShouldBeEquivalentTo(expectedMetaData);
+        protectedDependents.Metadata.ShouldBeEquivalentTo(expectedMetadata);
     }
 }
