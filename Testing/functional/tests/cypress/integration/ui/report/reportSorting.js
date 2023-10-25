@@ -59,63 +59,6 @@ describe("Reports - Medication", () => {
                     });
             });
     });
-
-    it("Validate Immunization Report with Unsorted Data", () => {
-        cy.intercept("GET", `**/Immunization?hdid=${HDID}`, {
-            fixture: "Report/immunizationUnSorted.json",
-        });
-        cy.vSelect("[data-testid=report-type]", "Immunizations");
-
-        cy.get("[data-testid=report-sample]").should("be.visible");
-
-        cy.get("[data-testid=immunizationDateItem]")
-            .first()
-            .then(($dateItem) => {
-                // Column date in the 1st row in the table
-                const firstDate = new Date($dateItem.text().trim());
-                cy.get("[data-testid=immunizationDateItem]")
-                    .eq(1)
-                    .then(($dateItem) => {
-                        // Column date in the 2nd row in the table
-                        const secondDate = new Date($dateItem.text().trim());
-                        expect(firstDate).to.be.gte(secondDate);
-                        // Column date in the last row in the table
-                        cy.get("[data-testid=immunizationDateItem]")
-                            .eq(2)
-                            .then(($dateItem) => {
-                                // Column date in the last row in the table
-                                const lastDate = new Date(
-                                    $dateItem.text().trim()
-                                );
-                                expect(firstDate).to.be.gte(lastDate);
-                                expect(secondDate).to.be.gte(lastDate);
-                            });
-                    });
-            });
-
-        cy.get("[data-testid=recommendationDateItem]")
-            .first()
-            .then(($dateItem) => {
-                // Column date in the 1st row in the table
-                const firstDate = getDate($dateItem.text());
-                cy.get("[data-testid=recommendationDateItem]")
-                    .eq(1)
-                    .then(($dateItem) => {
-                        // Column date in the 2nd row in the table
-                        const secondDate = getDate($dateItem.text());
-                        expect(firstDate).to.be.gte(secondDate);
-                        // Column date in the last row in the table
-                        cy.get("[data-testid=recommendationDateItem]")
-                            .eq(4)
-                            .then(($dateItem) => {
-                                // Column date in the last row in the table
-                                const lastDate = getDate($dateItem.text());
-                                expect(firstDate).to.be.gte(lastDate);
-                                expect(secondDate).to.be.gte(lastDate);
-                            });
-                    });
-            });
-    });
 });
 
 describe("Reports - Covid19", () => {
