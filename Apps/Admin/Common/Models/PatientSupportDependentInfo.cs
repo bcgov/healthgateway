@@ -15,14 +15,16 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Admin.Common.Models
 {
+    using System;
+
     /// <summary>
-    /// The dependent info model used for delegation.
+    /// The dependent info model used for patient details.
     /// </summary>
-    public class DependentInfo : BaseDependentInfo
+    public class PatientSupportDependentInfo : BaseDependentInfo
     {
         /// <summary>
-        /// Gets or sets a value indicating whether the dependent is in a protected state.
+        /// Gets or sets the date when the dependent relationship is set to expire.
         /// </summary>
-        public bool Protected { get; set; }
+        public DateOnly ExpiryDate { get; set; }
     }
 }
