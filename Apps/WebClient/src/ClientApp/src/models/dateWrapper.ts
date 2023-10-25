@@ -241,7 +241,7 @@ export class DateWrapper implements IDateWrapper {
         defaultZone: string = pacificTimeZone
     ): DateWrapper {
         return new DateWrapper(
-            DateTime.fromISO(dateString!, { zone: defaultZone }).setZone(
+            DateTime.fromISO(dateString || "", { zone: defaultZone }).setZone(
                 pacificTimeZone
             )
         );
@@ -255,9 +255,13 @@ export class DateWrapper implements IDateWrapper {
      */
     public static fromIsoDate(dateString?: string | null): DateWrapper {
         return new DateWrapper(
-            DateTime.fromFormat(dateString?.substring(0, 10)!, "yyyy-MM-dd", {
-                zone: pacificTimeZone,
-            })
+            DateTime.fromFormat(
+                (dateString || "").substring(0, 10),
+                "yyyy-MM-dd",
+                {
+                    zone: pacificTimeZone,
+                }
+            )
         );
     }
 
