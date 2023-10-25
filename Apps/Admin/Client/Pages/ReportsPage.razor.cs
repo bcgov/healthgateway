@@ -82,7 +82,7 @@ public partial class ReportsPage : FluxorComponent
     private async Task<TableData<ProtectedDependentRecord>> GetProtectedDependentsTableData(TableState tableState)
     {
         SortDirection sortDirection = tableState.SortDirection == MudBlazor.SortDirection.Descending ? SortDirection.Descending : SortDirection.Ascending;
-        ProtectedDependentReport report = new(ImmutableArray<ProtectedDependentRecord>.Empty, new ReportMetaData(0, tableState.Page, tableState.PageSize));
+        ProtectedDependentReport report = new(ImmutableArray<ProtectedDependentRecord>.Empty, new ReportMetadata(0, tableState.Page, tableState.PageSize));
         try
         {
             report = await this.AdminReportApi.GetProtectedDependentsReport(tableState.Page, tableState.PageSize, sortDirection);
@@ -96,7 +96,7 @@ public partial class ReportsPage : FluxorComponent
         return new TableData<ProtectedDependentRecord>
         {
             Items = report.Records,
-            TotalItems = report.MetaData.TotalCount,
+            TotalItems = report.Metadata.TotalCount,
         };
     }
 

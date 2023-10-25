@@ -71,7 +71,7 @@ namespace HealthGateway.Admin.Server.Services
 
                         return new ProtectedDependentRecord(hdid, patient?.Items.SingleOrDefault()?.Phn);
                     });
-            return new ProtectedDependentReport(await Task.WhenAll(tasks), new ReportMetaData(protectedHdids.TotalHdids, page, pageSize));
+            return new ProtectedDependentReport(await Task.WhenAll(tasks), new ReportMetadata(protectedHdids.TotalHdids, page, pageSize));
         }
 
         /// <inheritdoc/>

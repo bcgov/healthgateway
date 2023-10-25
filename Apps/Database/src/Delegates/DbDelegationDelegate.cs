@@ -103,7 +103,7 @@ namespace HealthGateway.Database.Delegates
                 .Take(safePageSize)
                 .Select(d => d.HdId)
                 .ToListAsync(ct);
-            int totalCount = this.dbContext.Dependent.Count(d => d.Protected);
+            int totalCount = await this.dbContext.Dependent.CountAsync(d => d.Protected, ct);
             return (records, totalCount);
         }
     }
