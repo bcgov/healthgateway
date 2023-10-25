@@ -18,7 +18,7 @@ namespace HealthGateway.Admin.Client.Store.AdminReport
 {
     using System.Collections.Generic;
     using Fluxor;
-    using HealthGateway.Admin.Common.Models;
+    using HealthGateway.Admin.Common.Models.AdminReports;
 
     /// <summary>
     /// The state for the feature.
@@ -27,11 +27,6 @@ namespace HealthGateway.Admin.Client.Store.AdminReport
     [FeatureState]
     public record AdminReportState
     {
-        /// <summary>
-        /// Gets the request state for retrieving protected dependents.
-        /// </summary>
-        public BaseRequestState<IEnumerable<string>> ProtectedDependents { get; init; } = new();
-
         /// <summary>
         /// Gets the request state for retrieving users with blocked data sources.
         /// </summary>

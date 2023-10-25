@@ -16,7 +16,7 @@
 namespace HealthGateway.IntegrationTests.AdminReports;
 
 using Alba;
-using HealthGateway.Admin.Common.Models;
+using HealthGateway.Admin.Common.Models.AdminReports;
 using HealthGateway.Admin.Server;
 using HealthGateway.Common.Data.Constants;
 using Xunit.Abstractions;
@@ -47,20 +47,53 @@ public class AdminApiAdminReportsTests : ScenarioContextBase<Program>
         blockedAccessRecords.ShouldBeEquivalentTo(expectedRecords);
     }
 
+    private readonly IList<ProtectedDependentRecord> protectedDependentRecords = new List<ProtectedDependentRecord>
+    {
+        new("35224807075386271", "9872868128"),
+        new("508820774378599978", "9872868103"),
+    };
+
     [Fact]
     public async Task RetrieveProtectedDependentsReport()
     {
-        IEnumerable<string> expectedHdids = new List<string>
-        {
-            "508820774378599978",
-            "35224807075386271",
-        };
-
+        ReportMetadata expectedMetadata = new(2, 0, 25);
         IScenarioResult scenarioResponse = await this.Host.Scenario(
             scenario => { scenario.Get.Url("/v1/api/AdminReport/ProtectedDependents"); });
 
-        IEnumerable<string> protectedHdids = (await scenarioResponse.ReadAsJsonAsync<IEnumerable<string>>()).ShouldNotBeNull();
-        protectedHdids.Count().ShouldBe(2);
-        protectedHdids.ShouldBeEquivalentTo(expectedHdids);
+        ProtectedDependentReport protectedDependents = (await scenarioResponse.ReadAsJsonAsync<ProtectedDependentReport>()).ShouldNotBeNull();
+        protectedDependents.Records.Count.ShouldBe(2);
+        protectedDependents.Records.ShouldBeEquivalentTo(this.protectedDependentRecords);
+        protectedDependents.Metadata.ShouldBeEquivalentTo(expectedMetadata);
+    }
+
+    [Fact]
+    public async Task RetrieveProtectedDependentsReportDescending()
+    {
+        List<ProtectedDependentRecord> expectedRecords = this.protectedDependentRecords.Reverse().ToList();
+        ReportMetadata expectedMetadata = new(2, 0, 25);
+        IScenarioResult scenarioResponse = await this.Host.Scenario(
+            scenario => { scenario.Get.Url("/v1/api/AdminReport/ProtectedDependents?sortDirection=Descending"); });
+
+        ProtectedDependentReport protectedDependents = (await scenarioResponse.ReadAsJsonAsync<ProtectedDependentReport>()).ShouldNotBeNull();
+        protectedDependents.Records.Count.ShouldBe(2);
+        protectedDependents.Records.ShouldBeEquivalentTo(expectedRecords);
+        protectedDependents.Metadata.ShouldBeEquivalentTo(expectedMetadata);
+    }
+
+    [Fact]
+    public async Task RetrieveProtectedDependentsReportPaged()
+    {
+        IList<ProtectedDependentRecord> expectedResults = new List<ProtectedDependentRecord>
+        {
+            this.protectedDependentRecords[1],
+        };
+        ReportMetadata expectedMetadata = new(2, 1, 1);
+        IScenarioResult scenarioResponse = await this.Host.Scenario(
+            scenario => { scenario.Get.Url("/v1/api/AdminReport/ProtectedDependents?page=1&pageSize=1"); });
+
+        ProtectedDependentReport protectedDependents = (await scenarioResponse.ReadAsJsonAsync<ProtectedDependentReport>()).ShouldNotBeNull();
+        protectedDependents.Records.Count.ShouldBe(1);
+        protectedDependents.Records.ShouldBeEquivalentTo(expectedResults);
+        protectedDependents.Metadata.ShouldBeEquivalentTo(expectedMetadata);
     }
 }

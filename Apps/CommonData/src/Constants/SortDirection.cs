@@ -13,15 +13,21 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Admin.Common.Models
+namespace HealthGateway.Common.Data.Constants
 {
-    using System.Collections.Generic;
-    using HealthGateway.Common.Data.Constants;
-
     /// <summary>
-    /// Represents a patient with blocked access to data sources.
+    /// Represents the sort direction.
     /// </summary>
-    /// <param name="Hdid">Patient's HDID.</param>
-    /// <param name="BlockedSources">List of <see cref="DataSource"/> that are blocked</param>
-    public record BlockedAccessRecord(string Hdid, IList<DataSource> BlockedSources);
+    public enum SortDirection
+    {
+        /// <summary>
+        /// Ascending sort direction.
+        /// </summary>
+        Ascending,
+
+        /// <summary>
+        /// Descending sort direction.
+        /// </summary>
+        Descending,
+    }
 }

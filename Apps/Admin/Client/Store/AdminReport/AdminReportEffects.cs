@@ -23,7 +23,7 @@ namespace HealthGateway.Admin.Client.Store.AdminReport
     using Fluxor;
     using HealthGateway.Admin.Client.Api;
     using HealthGateway.Admin.Client.Utils;
-    using HealthGateway.Admin.Common.Models;
+    using HealthGateway.Admin.Common.Models.AdminReports;
     using Microsoft.Extensions.Logging;
     using Refit;
 
@@ -52,23 +52,6 @@ namespace HealthGateway.Admin.Client.Store.AdminReport
             catch (Exception e) when (e is ApiException or HttpRequestException)
             {
                 this.Logger.LogError("Error retrieving users with blocked data sources: {Exception}", e.ToString());
-                RequestError error = StoreUtility.FormatRequestError(e);
-                dispatcher.Dispatch(new AdminReportActions.GetProtectedDependentsFailureAction { Error = error });
-            }
-        }
-
-        [EffectMethod(typeof(AdminReportActions.GetProtectedDependentsAction))]
-        public async Task HandleGetProtectedDependentsAction(IDispatcher dispatcher)
-        {
-            this.Logger.LogInformation("Retrieving protected dependents");
-            try
-            {
-                IEnumerable<string> report = await this.AdminReportApi.GetProtectedDependentsReport().ConfigureAwait(true);
-                dispatcher.Dispatch(new AdminReportActions.GetProtectedDependentsSuccessAction { Data = report });
-            }
-            catch (Exception e) when (e is ApiException or HttpRequestException)
-            {
-                this.Logger.LogError("Error retrieving protected dependents: {Exception}", e.ToString());
                 RequestError error = StoreUtility.FormatRequestError(e);
                 dispatcher.Dispatch(new AdminReportActions.GetProtectedDependentsFailureAction { Error = error });
             }
