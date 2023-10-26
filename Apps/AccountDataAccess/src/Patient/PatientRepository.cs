@@ -25,6 +25,8 @@ namespace HealthGateway.AccountDataAccess.Patient
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.CacheProviders;
     using HealthGateway.Common.Data.Constants;
+    using HealthGateway.Common.Messaging;
+    using HealthGateway.Common.Models.Events;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using Microsoft.Extensions.Configuration;
@@ -36,8 +38,11 @@ namespace HealthGateway.AccountDataAccess.Patient
     internal class PatientRepository : IPatientRepository
     {
         private const string BlockedAccessKey = "BlockedAccess";
+        private const string BlockedDataSourceChangeFeedKey = "BlockedDataSources";
         private const string CacheTtlKey = "CacheTtl";
+        private const string ChangeFeedConfigSection = "ChangeFeed";
         private readonly int blockedAccessCacheTtl;
+        private readonly bool changeFeedEnabled;
 
         /// <summary>
         /// The injected logger delegate.
@@ -47,6 +52,7 @@ namespace HealthGateway.AccountDataAccess.Patient
         private readonly IBlockedAccessDelegate blockedAccessDelegate;
         private readonly ICacheProvider cacheProvider;
         private readonly PatientQueryFactory patientQueryFactory;
+        private readonly IMessageSender messageSender;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PatientRepository"/> class.
@@ -57,20 +63,24 @@ namespace HealthGateway.AccountDataAccess.Patient
         /// <param name="cacheProvider">The injected cache provider.</param>
         /// <param name="configuration">The Configuration to use.</param>
         /// <param name="patientQueryFactory">The injected patient query factory.</param>
+        /// <param name="messageSender">The change feed message sender</param>
         public PatientRepository(
             ILogger<PatientRepository> logger,
             IBlockedAccessDelegate blockedAccessDelegate,
             IAuthenticationDelegate authenticationDelegate,
             ICacheProvider cacheProvider,
             IConfiguration configuration,
-            PatientQueryFactory patientQueryFactory)
+            PatientQueryFactory patientQueryFactory,
+            IMessageSender messageSender)
         {
             this.logger = logger;
             this.blockedAccessDelegate = blockedAccessDelegate;
             this.authenticationDelegate = authenticationDelegate;
             this.cacheProvider = cacheProvider;
             this.patientQueryFactory = patientQueryFactory;
+            this.messageSender = messageSender;
             this.blockedAccessCacheTtl = configuration.GetValue($"{BlockedAccessKey}:{CacheTtlKey}", 30);
+            this.changeFeedEnabled = configuration.GetSection(ChangeFeedConfigSection).GetValue($"{BlockedDataSourceChangeFeedKey}:Enabled", false);
         }
 
         /// <inheritdoc/>
@@ -94,7 +104,7 @@ namespace HealthGateway.AccountDataAccess.Patient
         }
 
         /// <inheritdoc/>
-        public async Task BlockAccess(BlockAccessCommand command, CancellationToken ct = default)
+        public async Task BlockAccessAsync(BlockAccessCommand command, CancellationToken ct = default)
         {
             string authenticatedUserId = this.authenticationDelegate.FetchAuthenticatedUserId() ?? UserId.DefaultUser;
 
@@ -120,16 +130,23 @@ namespace HealthGateway.AccountDataAccess.Patient
 
             HashSet<DataSource> sources = command.DataSources.ToHashSet();
 
+            // commit to the database if change feed is disabled; if change feed enabled, commit will happen when message sender is called
+            // this is temporary and will be changed when we introduce a proper unit of work to manage transactions.
             if (sources.Any())
             {
                 blockedAccess.DataSources = sources;
                 blockedAccess.CreatedDateTime = DateTime.UtcNow;
                 blockedAccess.UpdatedDateTime = DateTime.UtcNow;
-                await this.blockedAccessDelegate.UpdateBlockedAccessAsync(blockedAccess, agentAudit).ConfigureAwait(true);
+                await this.blockedAccessDelegate.UpdateBlockedAccessAsync(blockedAccess, agentAudit, !this.changeFeedEnabled);
             }
             else
             {
-                await this.blockedAccessDelegate.DeleteBlockedAccessAsync(blockedAccess, agentAudit);
+                await this.blockedAccessDelegate.DeleteBlockedAccessAsync(blockedAccess, agentAudit, !this.changeFeedEnabled);
+            }
+
+            if (this.changeFeedEnabled)
+            {
+                await this.messageSender.SendAsync(new[] { new MessageEnvelope(new DataSourcesBlockedEvent(command.Hdid, blockedAccess.DataSources), command.Hdid) }, ct);
             }
         }
 

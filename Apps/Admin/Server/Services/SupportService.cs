@@ -208,7 +208,7 @@ namespace HealthGateway.Admin.Server.Services
         public async Task BlockAccessAsync(string hdid, IEnumerable<DataSource> dataSources, string reason, CancellationToken ct = default)
         {
             BlockAccessCommand blockAccessCommand = new(hdid, dataSources, reason);
-            await this.patientRepository.BlockAccess(blockAccessCommand, ct).ConfigureAwait(true);
+            await this.patientRepository.BlockAccessAsync(blockAccessCommand, ct).ConfigureAwait(true);
         }
 
         private async Task<IEnumerable<UserProfile>> GetDelegateProfilesAsync(string dependentPhn, CancellationToken ct)

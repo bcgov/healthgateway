@@ -43,7 +43,7 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public async Task DeleteBlockedAccessAsync(BlockedAccess blockedAccess, AgentAudit agentAudit)
+        public async Task DeleteBlockedAccessAsync(BlockedAccess blockedAccess, AgentAudit agentAudit, bool commit = true)
         {
             this.logger.LogDebug("Blocked access version: {Version} for hdid: {Hdid}", blockedAccess.Version, blockedAccess.Hdid);
 
@@ -56,7 +56,7 @@ namespace HealthGateway.Database.Delegates
 
             this.dbContext.AgentAudit.Add(agentAudit);
 
-            await this.dbContext.SaveChangesAsync().ConfigureAwait(true);
+            await this.dbContext.SaveChangesAsync();
         }
 
         /// <inheritdoc/>
@@ -65,7 +65,7 @@ namespace HealthGateway.Database.Delegates
             IQueryable<BlockedAccess> query = this.dbContext.BlockedAccess
                 .Where(d => d.Hdid == hdid);
 
-            return await query.SingleOrDefaultAsync().ConfigureAwait(true);
+            return await query.SingleOrDefaultAsync();
         }
 
         /// <inheritdoc/>
@@ -78,7 +78,7 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public async Task UpdateBlockedAccessAsync(BlockedAccess blockedAccess, AgentAudit agentAudit)
+        public async Task UpdateBlockedAccessAsync(BlockedAccess blockedAccess, AgentAudit agentAudit, bool commit = true)
         {
             if (blockedAccess.Version == 0)
             {
@@ -91,7 +91,10 @@ namespace HealthGateway.Database.Delegates
 
             this.dbContext.AgentAudit.Add(agentAudit);
 
-            await this.dbContext.SaveChangesAsync().ConfigureAwait(true);
+            if (commit)
+            {
+                await this.dbContext.SaveChangesAsync();
+            }
         }
 
         /// <inheritdoc/>
