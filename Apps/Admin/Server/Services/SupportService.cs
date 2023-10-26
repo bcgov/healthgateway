@@ -119,7 +119,7 @@ namespace HealthGateway.Admin.Server.Services
             IEnumerable<MessagingVerificationModel>? messagingVerifications = null;
             IEnumerable<DataSource>? blockedDataSources = null;
             IEnumerable<AgentAction>? agentActions = null;
-            IList<PatientSupportDependentInfo>? dependents = null;
+            IEnumerable<PatientSupportDependentInfo>? dependents = null;
             VaccineDetails? vaccineDetails = null;
             CovidAssessmentDetailsResponse? covidAssessmentDetails = null;
             PatientModel patient;
@@ -137,46 +137,22 @@ namespace HealthGateway.Admin.Server.Services
 
             if (includeMessagingVerifications)
             {
-                IList<MessagingVerification> verifications = await this.messagingVerificationDelegate.GetUserMessageVerificationsAsync(patient.Hdid).ConfigureAwait(true);
-
-                TimeZoneInfo localTimezone = DateFormatter.GetLocalTimeZone(this.configuration);
-                messagingVerifications = verifications.Select(m => MessagingVerificationMapUtils.ToUiModel(m, this.autoMapper, localTimezone));
-            }
-
-            if (includeAgentActions)
-            {
-                AgentAuditQuery agentAuditQuery = new(patient.Hdid);
-                IEnumerable<AgentAudit> audits = await this.auditRepository.Handle(agentAuditQuery, ct).ConfigureAwait(true);
-
-                agentActions = audits.Select(audit => this.autoMapper.Map<AgentAction>(audit));
+                messagingVerifications = await this.GetMessagingVerificationsAsync(patient.Hdid, ct);
             }
 
             if (includeBlockedDataSources)
             {
-                // Invalidate blocked data source cache and then get newest value(s) from database.
-                string blockedAccessCacheKey = string.Format(CultureInfo.InvariantCulture, ICacheProvider.BlockedAccessCachePrefixKey, patient.Hdid);
-                string message = $"Removing item for key: {blockedAccessCacheKey} from cache";
-                this.logger.LogDebug("{Message}", message);
-                await this.cacheProvider.RemoveItemAsync(blockedAccessCacheKey).ConfigureAwait(true);
+                blockedDataSources = await this.GetBlockedDataSourcesAsync(patient.Hdid, ct);
+            }
 
-                blockedDataSources = await this.patientRepository.GetDataSources(patient.Hdid, ct).ConfigureAwait(true);
+            if (includeAgentActions)
+            {
+                agentActions = await this.GetAgentActionsAsync(patient.Hdid, ct);
             }
 
             if (includeDependents)
             {
-                dependents = new List<PatientSupportDependentInfo>();
-
-                IList<ResourceDelegate> resourceDelegates = await this.SearchDependents(patient.Hdid);
-                foreach (ResourceDelegate resourceDelegate in resourceDelegates)
-                {
-                    PatientModel? dependentPatient = await this.GetPatientAsync(PatientIdentifierType.Hdid, resourceDelegate.ResourceOwnerHdid, ct);
-                    if (dependentPatient != null)
-                    {
-                        PatientSupportDependentInfo dependentInfo = this.autoMapper.Map<PatientModel, PatientSupportDependentInfo>(dependentPatient);
-                        dependentInfo.ExpiryDate = resourceDelegate.ExpiryDate;
-                        dependents.Add(dependentInfo);
-                    }
-                }
+                dependents = await this.GetDependentsAsync(patient.Hdid, ct);
             }
 
             if (includeCovidDetails)
@@ -229,6 +205,52 @@ namespace HealthGateway.Admin.Server.Services
         {
             BlockAccessCommand blockAccessCommand = new(hdid, dataSources, reason);
             await this.patientRepository.BlockAccess(blockAccessCommand, ct).ConfigureAwait(true);
+        }
+
+        private async Task<IList<PatientSupportDependentInfo>> GetDependentsAsync(string delegateHdid, CancellationToken ct)
+        {
+            List<PatientSupportDependentInfo> dependents = new();
+
+            IList<ResourceDelegate> resourceDelegates = await this.SearchDependents(delegateHdid);
+            foreach (ResourceDelegate resourceDelegate in resourceDelegates)
+            {
+                PatientModel? dependentPatient = await this.GetPatientAsync(PatientIdentifierType.Hdid, resourceDelegate.ResourceOwnerHdid, ct);
+                if (dependentPatient != null)
+                {
+                    PatientSupportDependentInfo dependentInfo = this.autoMapper.Map<PatientModel, PatientSupportDependentInfo>(dependentPatient);
+                    dependentInfo.ExpiryDate = resourceDelegate.ExpiryDate;
+                    dependents.Add(dependentInfo);
+                }
+            }
+
+            return dependents;
+        }
+
+        private async Task<IEnumerable<MessagingVerificationModel>> GetMessagingVerificationsAsync(string hdid, CancellationToken ct)
+        {
+            IEnumerable<MessagingVerification> verifications = await this.messagingVerificationDelegate.GetUserMessageVerificationsAsync(hdid, ct);
+
+            TimeZoneInfo localTimezone = DateFormatter.GetLocalTimeZone(this.configuration);
+            return verifications.Select(m => MessagingVerificationMapUtils.ToUiModel(m, this.autoMapper, localTimezone));
+        }
+
+        private async Task<IEnumerable<DataSource>> GetBlockedDataSourcesAsync(string hdid, CancellationToken ct)
+        {
+            // Invalidate blocked data source cache and then get newest value(s) from database.
+            string blockedAccessCacheKey = string.Format(CultureInfo.InvariantCulture, ICacheProvider.BlockedAccessCachePrefixKey, hdid);
+            string message = $"Removing item for key: {blockedAccessCacheKey} from cache";
+            this.logger.LogDebug("{Message}", message);
+            await this.cacheProvider.RemoveItemAsync(blockedAccessCacheKey);
+
+            return await this.patientRepository.GetDataSources(hdid, ct);
+        }
+
+        private async Task<IEnumerable<AgentAction>> GetAgentActionsAsync(string hdid, CancellationToken ct)
+        {
+            AgentAuditQuery agentAuditQuery = new(hdid);
+            IEnumerable<AgentAudit> audits = await this.auditRepository.Handle(agentAuditQuery, ct).ConfigureAwait(true);
+
+            return audits.Select(audit => this.autoMapper.Map<AgentAudit, AgentAction>(audit));
         }
 
         private async Task<IEnumerable<UserProfile>> GetDelegateProfilesAsync(string dependentPhn, CancellationToken ct)

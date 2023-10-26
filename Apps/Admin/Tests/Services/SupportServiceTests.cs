@@ -859,7 +859,7 @@ namespace HealthGateway.Admin.Tests.Services
         private static Mock<IMessagingVerificationDelegate> GetMessagingVerificationDelegateMock(IList<MessagingVerification> result)
         {
             Mock<IMessagingVerificationDelegate> mock = new();
-            mock.Setup(d => d.GetUserMessageVerificationsAsync(It.IsAny<string>())).ReturnsAsync(result);
+            mock.Setup(d => d.GetUserMessageVerificationsAsync(It.IsAny<string>(), CancellationToken.None)).ReturnsAsync(result);
             return mock;
         }
 
