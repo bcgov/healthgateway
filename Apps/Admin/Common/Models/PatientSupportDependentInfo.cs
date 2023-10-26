@@ -13,22 +13,18 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Admin.Server.MapProfiles
+namespace HealthGateway.Admin.Common.Models
 {
-    using AutoMapper;
-    using HealthGateway.Admin.Common.Models;
+    using System;
 
     /// <summary>
-    /// An AutoMapper profile class which defines mapping between patient and dependent models.
+    /// The dependent info model used for patient details.
     /// </summary>
-    public class DependentInfoProfile : Profile
+    public class PatientSupportDependentInfo : DependentInfo
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="DependentInfoProfile"/> class.
+        /// Gets or sets the date when the dependent relationship is set to expire.
         /// </summary>
-        public DependentInfoProfile()
-        {
-            this.CreateMap<HealthGateway.Common.Models.PatientModel, DependentInfo>();
-        }
+        public DateOnly ExpiryDate { get; set; }
     }
 }

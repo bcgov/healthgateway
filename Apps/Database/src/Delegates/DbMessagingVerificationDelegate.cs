@@ -144,13 +144,13 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public async Task<IList<MessagingVerification>> GetUserMessageVerificationsAsync(string hdid)
+        public async Task<IList<MessagingVerification>> GetUserMessageVerificationsAsync(string hdid, CancellationToken ct = default)
         {
             return await this.dbContext.MessagingVerification.Where(mv => mv.UserProfileId == hdid)
                 .Include(mv => mv.Email)
                 .OrderByDescending(mv => mv.CreatedDateTime)
                 .AsNoTracking()
-                .ToListAsync()
+                .ToListAsync(ct)
                 .ConfigureAwait(true);
         }
     }

@@ -42,6 +42,11 @@ namespace HealthGateway.Admin.Common.Models
         public IEnumerable<DataSource>? BlockedDataSources { get; set; } = Enumerable.Empty<DataSource>();
 
         /// <summary>
+        /// Gets or sets the dependents.
+        /// </summary>
+        public IEnumerable<PatientSupportDependentInfo>? Dependents { get; set; } = Enumerable.Empty<PatientSupportDependentInfo>();
+
+        /// <summary>
         /// Gets the vaccine details.
         /// </summary>
         public VaccineDetails? VaccineDetails { get; init; }
