@@ -30,6 +30,8 @@ namespace AccountDataAccessTest
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ErrorHandling;
+    using HealthGateway.Common.Messaging;
+    using HealthGateway.Common.Models.Events;
     using HealthGateway.Common.Utils;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
@@ -231,14 +233,22 @@ namespace AccountDataAccessTest
         /// <summary>
         /// Block access.
         /// </summary>
+        /// <param name="blockedDataSourcesEnabled">
+        /// The value indicates whether blocked data sources change feed should be enabled
+        /// or not.
+        /// </param>
         /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
-        [Fact]
-        public async Task ShouldBlockAccess()
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public async Task ShouldBlockAccess(bool blockedDataSourcesEnabled)
         {
             // Arrange
-            string reason = "Unit Test Block Access";
+            const string reason = "Unit Test Block Access";
+            bool commit = !blockedDataSourcesEnabled;
 
             Mock<IBlockedAccessDelegate> blockedAccessDelegate = new();
+            Mock<IMessageSender> messageSender = new();
             HashSet<DataSource> dataSources = new()
             {
                 DataSource.Immunization,
@@ -260,16 +270,28 @@ namespace AccountDataAccessTest
             };
 
             BlockAccessCommand command = new(Hdid, dataSources, reason);
-            PatientRepository patientRepository = GetPatientRepository(blockedAccess, blockedAccessDelegate);
+            PatientRepository patientRepository = GetPatientRepository(blockedAccess, blockedAccessDelegate, blockedDataSourcesEnabled, messageSender);
 
             // Act
-            await patientRepository.BlockAccess(command);
+            await patientRepository.BlockAccessAsync(command);
 
             // Verify
             blockedAccessDelegate.Verify(
-                v => v.UpdateBlockedAccessAsync(
+                d => d.UpdateBlockedAccessAsync(
                     It.Is<BlockedAccess>(ba => AssertBlockedAccess(blockedAccess, ba)),
-                    It.Is<AgentAudit>(aa => AssertAgentAudit(audit, aa))));
+                    It.Is<AgentAudit>(aa => AssertAgentAudit(audit, aa)),
+                    commit));
+
+            if (blockedDataSourcesEnabled)
+            {
+                messageSender.Verify(
+                    s => s.SendAsync(
+                        It.Is<IEnumerable<MessageEnvelope>>(
+                            me => AssertDataSourcesBlockedEvent(
+                                blockedAccess,
+                                me.Select(envelope => envelope.Content as DataSourcesBlockedEvent)!.First())),
+                        It.IsAny<CancellationToken>()));
+            }
         }
 
         /// <summary>
@@ -394,11 +416,19 @@ namespace AccountDataAccessTest
             return true;
         }
 
-        private static IConfigurationRoot GetIConfigurationRoot()
+        private static bool AssertDataSourcesBlockedEvent(BlockedAccess expected, DataSourcesBlockedEvent actual)
+        {
+            Assert.Equal(expected.Hdid, actual.Hdid);
+            Assert.Equal(GetDataSourceValues(expected.DataSources), actual.DataSources);
+            return true;
+        }
+
+        private static IConfigurationRoot GetIConfigurationRoot(bool blockedDataSourcesEnabled = false)
         {
             Dictionary<string, string?> myConfiguration = new()
             {
                 { "BlockedAccess:CacheTtl", "5" },
+                { "ChangeFeed:BlockedDataSources:Enabled", blockedDataSourcesEnabled.ToString() },
             };
 
             return new ConfigurationBuilder()
@@ -408,11 +438,25 @@ namespace AccountDataAccessTest
 
         private static PatientRepository GetPatientRepository(
             BlockedAccess blockedAccess,
-            Mock<IBlockedAccessDelegate>? blockedAccessDelegate = null)
+            Mock<IBlockedAccessDelegate>? blockedAccessDelegate = null,
+            bool? blockedDataSourcesEnabled = null,
+            Mock<IMessageSender>? messageSender = null)
         {
-            blockedAccessDelegate = blockedAccessDelegate ?? new();
+            blockedAccessDelegate ??= new();
             blockedAccessDelegate.Setup(p => p.GetBlockedAccessAsync(It.IsAny<string>())).ReturnsAsync(blockedAccess);
             blockedAccessDelegate.Setup(p => p.GetDataSourcesAsync(It.IsAny<string>())).ReturnsAsync(blockedAccess.DataSources);
+
+            bool changeFeedEnabled = blockedDataSourcesEnabled ?? false;
+            messageSender ??= new();
+
+            if (changeFeedEnabled)
+            {
+                IEnumerable<MessageEnvelope> events = new MessageEnvelope[]
+                {
+                    new(new DataSourcesBlockedEvent(blockedAccess.Hdid, GetDataSourceValues(blockedAccess.DataSources)), blockedAccess.Hdid),
+                };
+                messageSender.Setup(ms => ms.SendAsync(events, It.IsAny<CancellationToken>()));
+            }
 
             string blockedAccessCacheKey = string.Format(CultureInfo.InvariantCulture, ICacheProvider.BlockedAccessCachePrefixKey, blockedAccess.Hdid);
             Mock<ICacheProvider> cacheProvider = new();
@@ -428,10 +472,11 @@ namespace AccountDataAccessTest
                 blockedAccessDelegate.Object,
                 new Mock<IAuthenticationDelegate>().Object,
                 cacheProvider.Object,
-                GetIConfigurationRoot(),
+                GetIConfigurationRoot(blockedDataSourcesEnabled ?? false),
                 GetPatientQueryFactory(
                     new PatientModel(),
-                    new PatientDetailsQuery(Hdid: Hdid, Source: PatientDetailSource.All, UseCache: false)));
+                    new PatientDetailsQuery(Hdid: Hdid, Source: PatientDetailSource.All, UseCache: false)),
+                messageSender.Object);
             return patientRepository;
         }
 
@@ -447,7 +492,8 @@ namespace AccountDataAccessTest
                 new Mock<IAuthenticationDelegate>().Object,
                 new Mock<ICacheProvider>().Object,
                 GetIConfigurationRoot(),
-                GetPatientQueryFactory(patient, patientDetailsQuery, patientIdentity, cachedPatient));
+                GetPatientQueryFactory(patient, patientDetailsQuery, patientIdentity, cachedPatient),
+                new Mock<IMessageSender>().Object);
             return patientRepository;
         }
 
@@ -505,6 +551,11 @@ namespace AccountDataAccessTest
 
             ServiceProvider serviceProvider = serviceCollection.BuildServiceProvider();
             return new(serviceProvider);
+        }
+
+        private static IEnumerable<string> GetDataSourceValues(HashSet<DataSource> dataSources)
+        {
+            return dataSources.Select(ds => Enum.GetName(typeof(DataSource), ds))!;
         }
     }
 }
