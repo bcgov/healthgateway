@@ -146,7 +146,8 @@ namespace HealthGateway.AccountDataAccess.Patient
 
             if (this.changeFeedEnabled)
             {
-                await this.messageSender.SendAsync(new[] { new MessageEnvelope(new DataSourcesBlockedEvent(command.Hdid, blockedAccess.DataSources), command.Hdid) }, ct);
+                IEnumerable<string> dataSourceValues = blockedAccess.DataSources.Select(ds => Enum.GetName(typeof(DataSource), ds))!;
+                await this.messageSender.SendAsync(new[] { new MessageEnvelope(new DataSourcesBlockedEvent(command.Hdid, dataSourceValues), command.Hdid) }, ct);
             }
         }
 

@@ -419,7 +419,7 @@ namespace AccountDataAccessTest
         private static bool AssertDataSourcesBlockedEvent(BlockedAccess expected, DataSourcesBlockedEvent actual)
         {
             Assert.Equal(expected.Hdid, actual.Hdid);
-            Assert.Equal(expected.DataSources, actual.DataSources);
+            Assert.Equal(GetDataSourceValues(expected.DataSources), actual.DataSources);
             return true;
         }
 
@@ -453,7 +453,7 @@ namespace AccountDataAccessTest
             {
                 IEnumerable<MessageEnvelope> events = new MessageEnvelope[]
                 {
-                    new(new DataSourcesBlockedEvent(blockedAccess.Hdid, blockedAccess.DataSources), blockedAccess.Hdid),
+                    new(new DataSourcesBlockedEvent(blockedAccess.Hdid, GetDataSourceValues(blockedAccess.DataSources)), blockedAccess.Hdid),
                 };
                 messageSender.Setup(ms => ms.SendAsync(events, It.IsAny<CancellationToken>()));
             }
@@ -551,6 +551,11 @@ namespace AccountDataAccessTest
 
             ServiceProvider serviceProvider = serviceCollection.BuildServiceProvider();
             return new(serviceProvider);
+        }
+
+        private static IEnumerable<string> GetDataSourceValues(HashSet<DataSource> dataSources)
+        {
+            return dataSources.Select(ds => Enum.GetName(typeof(DataSource), ds))!;
         }
     }
 }
