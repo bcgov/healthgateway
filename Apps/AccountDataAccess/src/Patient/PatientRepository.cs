@@ -80,7 +80,7 @@ namespace HealthGateway.AccountDataAccess.Patient
             this.patientQueryFactory = patientQueryFactory;
             this.messageSender = messageSender;
             this.blockedAccessCacheTtl = configuration.GetValue($"{BlockedAccessKey}:{CacheTtlKey}", 30);
-            this.changeFeedEnabled = configuration.GetSection(ChangeFeedConfigSection).GetValue($"{BlockedDataSourceChangeFeedKey}:Enabled", false);
+            this.changeFeedEnabled = configuration.GetValue($"{ChangeFeedConfigSection}:{BlockedDataSourceChangeFeedKey}:Enabled", false);
         }
 
         /// <inheritdoc/>
