@@ -233,12 +233,7 @@ namespace HealthGateway.AdminWebClientTests.Services.Test
 
                         return new ResourceDelegateQueryResult
                         {
-                            Items = items.Select(
-                                i => new ResourceDelegate
-                                {
-                                    ResourceOwnerHdid = dependentHdid,
-                                    ProfileHdid = i,
-                                }),
+                            Items = items.Select(i => new ResourceDelegate { ResourceOwnerHdid = dependentHdid, ProfileHdid = i }).ToList(),
                         };
                     });
 

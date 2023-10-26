@@ -116,6 +116,7 @@ namespace HealthGateway.Admin.Server.Controllers
                     includeEverything,
                     includeEverything,
                     includeEverything,
+                    includeEverything,
                     includeCovidDetails,
                     refreshVaccineDetails,
                     ct)

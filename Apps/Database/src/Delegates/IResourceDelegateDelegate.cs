@@ -44,11 +44,8 @@ namespace HealthGateway.Database.Delegates
         /// <param name="page">The page to start at.</param>
         /// <param name="pageSize">The amount of rows to fetch per call.</param>
         /// <returns>A list of resourceDelegates wrapped in a DBResult.</returns>
-#pragma warning disable CA1716 // Identifiers should not match keywords
-
+        [SuppressMessage("Naming", "CA1716:Identifiers should not match keywords", Justification = "Team decision")]
         DbResult<IEnumerable<ResourceDelegate>> Get(string delegateId, int page = 0, int pageSize = 500);
-
-#pragma warning restore CA1716 // Identifiers should not match keywords
 
         /// <summary>
         /// Gets the list of Resource Delegate records for a date range from the database.
@@ -125,8 +122,8 @@ namespace HealthGateway.Database.Delegates
     public record ResourceDelegateQueryResult
     {
         /// <summary>
-        /// gets or sets the found items.
+        /// Gets the found items.
         /// </summary>
-        public IEnumerable<ResourceDelegate> Items { get; set; } = Array.Empty<ResourceDelegate>();
+        public IList<ResourceDelegate> Items { get; init; } = Array.Empty<ResourceDelegate>();
     }
 }

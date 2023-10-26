@@ -208,7 +208,7 @@ namespace HealthGateway.Database.Delegates
                 dbQuery = dbQuery.Take(query.TakeAmount.Value);
             }
 
-            IEnumerable<ResourceDelegate> items = await dbQuery.ToArrayAsync().ConfigureAwait(true);
+            IList<ResourceDelegate> items = await dbQuery.ToArrayAsync().ConfigureAwait(true);
             return new ResourceDelegateQueryResult
             {
                 Items = items,

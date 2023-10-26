@@ -111,6 +111,7 @@ namespace HealthGateway.Admin.Server.Services
             bool includeMessagingVerifications,
             bool includeBlockedDataSources,
             bool includeAgentActions,
+            bool includeDependents,
             bool includeCovidDetails,
             bool refreshVaccineDetails,
             CancellationToken ct = default)
@@ -118,6 +119,7 @@ namespace HealthGateway.Admin.Server.Services
             IEnumerable<MessagingVerificationModel>? messagingVerifications = null;
             IEnumerable<DataSource>? blockedDataSources = null;
             IEnumerable<AgentAction>? agentActions = null;
+            IList<PatientSupportDependentInfo>? dependents = null;
             VaccineDetails? vaccineDetails = null;
             CovidAssessmentDetailsResponse? covidAssessmentDetails = null;
             PatientModel patient;
@@ -160,6 +162,23 @@ namespace HealthGateway.Admin.Server.Services
                 blockedDataSources = await this.patientRepository.GetDataSources(patient.Hdid, ct).ConfigureAwait(true);
             }
 
+            if (includeDependents)
+            {
+                dependents = new List<PatientSupportDependentInfo>();
+
+                IList<ResourceDelegate> resourceDelegates = await this.SearchDependents(patient.Hdid);
+                foreach (ResourceDelegate resourceDelegate in resourceDelegates)
+                {
+                    PatientModel? dependentPatient = await this.GetPatientAsync(PatientIdentifierType.Hdid, resourceDelegate.ResourceOwnerHdid, ct);
+                    if (dependentPatient != null)
+                    {
+                        PatientSupportDependentInfo dependentInfo = this.autoMapper.Map<PatientModel, PatientSupportDependentInfo>(dependentPatient);
+                        dependentInfo.ExpiryDate = resourceDelegate.ExpiryDate;
+                        dependents.Add(dependentInfo);
+                    }
+                }
+            }
+
             if (includeCovidDetails)
             {
                 vaccineDetails = await this.GetVaccineDetails(patient, refreshVaccineDetails).ConfigureAwait(true);
@@ -171,6 +190,7 @@ namespace HealthGateway.Admin.Server.Services
                 MessagingVerifications = messagingVerifications,
                 AgentActions = agentActions,
                 BlockedDataSources = blockedDataSources,
+                Dependents = dependents,
                 VaccineDetails = vaccineDetails,
                 CovidAssessmentDetails = covidAssessmentDetails,
             };
@@ -292,6 +312,13 @@ namespace HealthGateway.Admin.Server.Services
             }
 
             return patient;
+        }
+
+        private async Task<IList<ResourceDelegate>> SearchDependents(string delegateHdid)
+        {
+            ResourceDelegateQuery query = new() { ByDelegateHdid = delegateHdid };
+            ResourceDelegateQueryResult result = await this.resourceDelegateDelegate.SearchAsync(query);
+            return result.Items;
         }
 
         private async Task<VaccineDetails> GetVaccineDetails(PatientModel patient, bool refresh)

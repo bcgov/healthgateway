@@ -37,6 +37,7 @@ namespace HealthGateway.Admin.Server.Services
         /// <param name="includeMessagingVerifications">A value indicating whether messaging verifications should be returned.</param>
         /// <param name="includeBlockedDataSources">A value indicating whether blocked data sources should be returned.</param>
         /// <param name="includeAgentActions">A value indicating whether agent actions should be returned.</param>
+        /// <param name="includeDependents">A value indicating whether dependents should be returned.</param>
         /// <param name="includeCovidDetails">A value indicating whether covid details should be returned.</param>
         /// <param name="refreshVaccineDetails">
         /// Whether the call should force cached vaccine validation details data to be
@@ -50,6 +51,7 @@ namespace HealthGateway.Admin.Server.Services
             bool includeMessagingVerifications,
             bool includeBlockedDataSources,
             bool includeAgentActions,
+            bool includeDependents,
             bool includeCovidDetails,
             bool refreshVaccineDetails,
             CancellationToken ct = default);
