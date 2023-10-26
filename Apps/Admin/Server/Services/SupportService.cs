@@ -52,6 +52,7 @@ namespace HealthGateway.Admin.Server.Services
         private readonly IConfiguration configuration;
         private readonly IMessagingVerificationDelegate messagingVerificationDelegate;
         private readonly IPatientRepository patientRepository;
+        private readonly IDelegationDelegate delegationDelegate;
         private readonly IResourceDelegateDelegate resourceDelegateDelegate;
         private readonly IUserProfileDelegate userProfileDelegate;
         private readonly IAuthenticationDelegate authenticationDelegate;
@@ -68,6 +69,7 @@ namespace HealthGateway.Admin.Server.Services
         /// <param name="configuration">The configuration to use.</param>
         /// <param name="messagingVerificationDelegate">The Messaging verification delegate to interact with the DB.</param>
         /// <param name="patientRepository">The injected patient repository.</param>
+        /// <param name="delegationDelegate">The injected delegation delegate.</param>
         /// <param name="resourceDelegateDelegate">The resource delegate used to lookup delegates and owners.</param>
         /// <param name="userProfileDelegate">The user profile delegate to interact with the DB.</param>
         /// <param name="authenticationDelegate">The auth delegate to fetch tokens.</param>
@@ -81,6 +83,7 @@ namespace HealthGateway.Admin.Server.Services
             IConfiguration configuration,
             IMessagingVerificationDelegate messagingVerificationDelegate,
             IPatientRepository patientRepository,
+            IDelegationDelegate delegationDelegate,
             IResourceDelegateDelegate resourceDelegateDelegate,
             IUserProfileDelegate userProfileDelegate,
             IAuthenticationDelegate authenticationDelegate,
@@ -94,6 +97,7 @@ namespace HealthGateway.Admin.Server.Services
             this.configuration = configuration;
             this.messagingVerificationDelegate = messagingVerificationDelegate;
             this.patientRepository = patientRepository;
+            this.delegationDelegate = delegationDelegate;
             this.resourceDelegateDelegate = resourceDelegateDelegate;
             this.userProfileDelegate = userProfileDelegate;
             this.authenticationDelegate = authenticationDelegate;
@@ -217,8 +221,10 @@ namespace HealthGateway.Admin.Server.Services
                 PatientModel? dependentPatient = await this.GetPatientAsync(PatientIdentifierType.Hdid, resourceDelegate.ResourceOwnerHdid, ct);
                 if (dependentPatient != null)
                 {
+                    Dependent? dependent = await this.delegationDelegate.GetDependentAsync(resourceDelegate.ResourceOwnerHdid, false, ct);
                     PatientSupportDependentInfo dependentInfo = this.autoMapper.Map<PatientModel, PatientSupportDependentInfo>(dependentPatient);
                     dependentInfo.ExpiryDate = resourceDelegate.ExpiryDate;
+                    dependentInfo.Protected = dependent?.Protected == true;
                     dependents.Add(dependentInfo);
                 }
             }

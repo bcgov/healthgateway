@@ -20,7 +20,7 @@ namespace HealthGateway.Admin.Common.Models
     /// <summary>
     /// The dependent info model used for patient details.
     /// </summary>
-    public class PatientSupportDependentInfo : BaseDependentInfo
+    public class PatientSupportDependentInfo : DependentInfo
     {
         /// <summary>
         /// Gets or sets the date when the dependent relationship is set to expire.

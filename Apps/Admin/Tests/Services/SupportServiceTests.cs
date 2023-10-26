@@ -938,6 +938,7 @@ namespace HealthGateway.Admin.Tests.Services
                 Configuration,
                 messagingVerificationDelegateMock.Object,
                 patientRepositoryMock.Object,
+                new Mock<IDelegationDelegate>().Object,
                 resourceDelegateDelegateMock.Object,
                 userProfileDelegateMock.Object,
                 authenticationDelegateMock.Object,

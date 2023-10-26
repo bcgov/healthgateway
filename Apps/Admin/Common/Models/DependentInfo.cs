@@ -15,11 +15,49 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Admin.Common.Models
 {
+    using System;
+    using HealthGateway.Common.Data.Models;
+
     /// <summary>
     /// The dependent info model used for delegation.
     /// </summary>
-    public class DependentInfo : BaseDependentInfo
+    public class DependentInfo
     {
+        /// <summary>
+        /// Gets or sets the health-directed identifier.
+        /// </summary>
+        public string Hdid { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets the personal health number.
+        /// </summary>
+        public string Phn { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets the dependent's first name.
+        /// </summary>
+        public string FirstName { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets the dependent's last name.
+        /// </summary>
+        public string LastName { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets the dependent's date of birth.
+        /// </summary>
+        public DateTime Birthdate { get; set; }
+
+        /// <summary>
+        /// Gets or sets the physical address for the dependent.
+        /// </summary>
+        public Address? PhysicalAddress { get; set; }
+
+        /// <summary>
+        /// Gets or sets the postal address for the dependent.
+        /// </summary>
+        public Address? PostalAddress { get; set; }
+
         /// <summary>
         /// Gets or sets a value indicating whether the dependent is in a protected state.
         /// </summary>

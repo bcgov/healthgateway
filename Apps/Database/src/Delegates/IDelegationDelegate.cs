@@ -33,8 +33,9 @@ namespace HealthGateway.Database.Delegates
         /// Indicates whether allowed delegation should be included in the returned
         /// dependent.
         /// </param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The dependent or null if not found.</returns>
-        Task<Dependent?> GetDependentAsync(string hdid, bool includeAllowedDelegation = false);
+        Task<Dependent?> GetDependentAsync(string hdid, bool includeAllowedDelegation = false, CancellationToken ct = default);
 
         /// <summary>
         /// Adds or updates the dependent object including allowed delegation associations as well as resource delegates and agent

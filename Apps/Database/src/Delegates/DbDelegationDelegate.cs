@@ -42,7 +42,7 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public async Task<Dependent?> GetDependentAsync(string hdid, bool includeAllowedDelegation = false)
+        public async Task<Dependent?> GetDependentAsync(string hdid, bool includeAllowedDelegation = false, CancellationToken ct = default)
         {
             this.logger.LogTrace("Getting dependent - includeAllowedDelegation : {IncludeAllowedDelegation}", includeAllowedDelegation.ToString());
 
@@ -54,7 +54,7 @@ namespace HealthGateway.Database.Delegates
                 query = query.Include(d => d.AllowedDelegations);
             }
 
-            return await query.SingleOrDefaultAsync();
+            return await query.SingleOrDefaultAsync(ct);
         }
 
         /// <inheritdoc/>

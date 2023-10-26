@@ -128,7 +128,7 @@ namespace HealthGateway.Admin.Server.Services
                 }
 
                 // Get dependent
-                Dependent? dependent = await this.delegationDelegate.GetDependentAsync(dependentPatientInfo.HdId, true);
+                Dependent? dependent = await this.delegationDelegate.GetDependentAsync(dependentPatientInfo.HdId, true, ct);
 
                 if (dependent != null)
                 {
@@ -175,7 +175,7 @@ namespace HealthGateway.Admin.Server.Services
         public async Task<AgentAction> ProtectDependentAsync(string dependentHdid, IEnumerable<string> delegateHdids, string reason, CancellationToken ct = default)
         {
             string authenticatedUserId = this.authenticationDelegate.FetchAuthenticatedUserId() ?? UserId.DefaultUser;
-            Dependent? dependent = await this.delegationDelegate.GetDependentAsync(dependentHdid, true);
+            Dependent? dependent = await this.delegationDelegate.GetDependentAsync(dependentHdid, true, ct);
             dependent ??= new() { HdId = dependentHdid, CreatedBy = authenticatedUserId };
 
             dependent.Protected = true;
@@ -248,7 +248,7 @@ namespace HealthGateway.Admin.Server.Services
         public async Task<AgentAction> UnprotectDependentAsync(string dependentHdid, string reason, CancellationToken ct = default)
         {
             string authenticatedUserId = this.authenticationDelegate.FetchAuthenticatedUserId() ?? UserId.DefaultUser;
-            Dependent? dependent = await this.delegationDelegate.GetDependentAsync(dependentHdid, true);
+            Dependent? dependent = await this.delegationDelegate.GetDependentAsync(dependentHdid, true, ct);
 
             if (dependent == null)
             {
