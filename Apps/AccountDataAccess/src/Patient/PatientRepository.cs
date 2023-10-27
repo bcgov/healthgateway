@@ -24,6 +24,7 @@ namespace HealthGateway.AccountDataAccess.Patient
     using HealthGateway.AccountDataAccess.Patient.Strategy;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.CacheProviders;
+    using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.Utils;
     using HealthGateway.Common.Messaging;
@@ -39,11 +40,9 @@ namespace HealthGateway.AccountDataAccess.Patient
     internal class PatientRepository : IPatientRepository
     {
         private const string BlockedAccessKey = "BlockedAccess";
-        private const string BlockedDataSourceChangeFeedKey = "BlockedDataSources";
         private const string CacheTtlKey = "CacheTtl";
-        private const string ChangeFeedConfigSection = "ChangeFeed";
         private readonly int blockedAccessCacheTtl;
-        private readonly bool changeFeedEnabled;
+        private readonly bool blockedDataSourcesChangeFeedEnabled;
 
         /// <summary>
         /// The injected logger delegate.
@@ -81,7 +80,8 @@ namespace HealthGateway.AccountDataAccess.Patient
             this.patientQueryFactory = patientQueryFactory;
             this.messageSender = messageSender;
             this.blockedAccessCacheTtl = configuration.GetValue($"{BlockedAccessKey}:{CacheTtlKey}", 30);
-            this.changeFeedEnabled = configuration.GetValue($"{ChangeFeedConfigSection}:{BlockedDataSourceChangeFeedKey}:Enabled", false);
+            ChangeFeedOptions? changeFeedConfiguration = configuration.GetSection(ChangeFeedOptions.ChangeFeed).Get<ChangeFeedOptions>();
+            this.blockedDataSourcesChangeFeedEnabled = changeFeedConfiguration?.BlockedDataSources.Enabled ?? false;
         }
 
         /// <inheritdoc/>
@@ -138,14 +138,14 @@ namespace HealthGateway.AccountDataAccess.Patient
                 blockedAccess.DataSources = sources;
                 blockedAccess.CreatedDateTime = DateTime.UtcNow;
                 blockedAccess.UpdatedDateTime = DateTime.UtcNow;
-                await this.blockedAccessDelegate.UpdateBlockedAccessAsync(blockedAccess, agentAudit, !this.changeFeedEnabled);
+                await this.blockedAccessDelegate.UpdateBlockedAccessAsync(blockedAccess, agentAudit, !this.blockedDataSourcesChangeFeedEnabled);
             }
             else
             {
-                await this.blockedAccessDelegate.DeleteBlockedAccessAsync(blockedAccess, agentAudit, !this.changeFeedEnabled);
+                await this.blockedAccessDelegate.DeleteBlockedAccessAsync(blockedAccess, agentAudit, !this.blockedDataSourcesChangeFeedEnabled);
             }
 
-            if (this.changeFeedEnabled)
+            if (this.blockedDataSourcesChangeFeedEnabled)
             {
                 IEnumerable<string> dataSourceValues = blockedAccess.DataSources.Select(ds => EnumUtility.ToEnumString(ds));
                 await this.messageSender.SendAsync(new[] { new MessageEnvelope(new DataSourcesBlockedEvent(command.Hdid, dataSourceValues), command.Hdid) }, ct);

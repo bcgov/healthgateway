@@ -18,26 +18,36 @@ namespace HealthGateway.Common.Constants
     /// <summary>
     /// Change feed configuration constants.
     /// </summary>
-    public static class ChangeFeedConfiguration
+    public class ChangeFeedOptions
     {
         /// <summary>
         /// The configuration section key.
         /// </summary>
-        public static readonly string ConfigurationSectionKey = "ChangeFeed";
+        public const string ChangeFeed = "ChangeFeed";
 
         /// <summary>
-        /// The internal change feed configuration key for dependent events.
+        /// Gets or sets the configuration for users events.
         /// </summary>
-        public static readonly string DependentsKey = "Dependents";
+        public ChangeFeedConfiguration Dependents { get; set; } = new(false);
 
         /// <summary>
-        /// The internal change feed configuration key for account events.
+        /// Gets or sets the configuration for accounts events.
         /// </summary>
-        public static readonly string AccountsKey = "Accounts";
+        public ChangeFeedConfiguration Accounts { get; set; } = new(false);
 
         /// <summary>
-        /// The internal change feed configuration key for notification verification events.
+        /// Gets or sets the configuration for notifications events.
         /// </summary>
-        public static readonly string NotificationChannelVerifiedKey = "NotificationChannelVerified";
+        public ChangeFeedConfiguration Notifications { get; set; } = new(false);
+
+        /// <summary>
+        /// Gets or sets the configuration for blocked data sources events.
+        /// </summary>
+        public ChangeFeedConfiguration BlockedDataSources { get; set; } = new(false);
     }
+
+    /// <summary>
+    /// Change feed event configuration.
+    /// </summary>
+    public record ChangeFeedConfiguration(bool Enabled);
 }

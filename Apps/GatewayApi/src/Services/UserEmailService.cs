@@ -50,7 +50,7 @@ namespace HealthGateway.GatewayApi.Services
         private readonly INotificationSettingsService notificationSettingsService;
         private readonly IUserProfileDelegate profileDelegate;
         private readonly string webClientConfigSection = "WebClient";
-        private readonly bool changeFeedEnabled;
+        private readonly bool notificationsChangeFeedEnabled;
         private readonly IMessageSender messageSender;
 
         /// <summary>
@@ -83,8 +83,9 @@ namespace HealthGateway.GatewayApi.Services
 
             this.httpContextAccessor = httpContextAccessor;
             this.messageSender = messageSender;
-            this.changeFeedEnabled = configuration.GetSection(ChangeFeedConfiguration.ConfigurationSectionKey)
-                .GetValue($"{ChangeFeedConfiguration.NotificationChannelVerifiedKey}:Enabled", false);
+            ChangeFeedOptions? changeFeedConfiguration = configuration.GetSection(ChangeFeedOptions.ChangeFeed)
+                .Get<ChangeFeedOptions>();
+            this.notificationsChangeFeedEnabled = changeFeedConfiguration?.Notifications.Enabled ?? false;
         }
 
         /// <inheritdoc/>
@@ -152,11 +153,11 @@ namespace HealthGateway.GatewayApi.Services
             }
 
             matchingVerification.Validated = true;
-            await this.messageVerificationDelegate.UpdateAsync(matchingVerification, !this.changeFeedEnabled, ct);
+            await this.messageVerificationDelegate.UpdateAsync(matchingVerification, !this.notificationsChangeFeedEnabled, ct);
             userProfile.Email = matchingVerification.Email!.To; // Gets the user email from the email sent.
-            this.profileDelegate.Update(userProfile, !this.changeFeedEnabled);
+            this.profileDelegate.Update(userProfile, !this.notificationsChangeFeedEnabled);
 
-            if (this.changeFeedEnabled)
+            if (this.notificationsChangeFeedEnabled)
             {
                 MessageEnvelope[] events =
                 {

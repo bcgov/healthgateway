@@ -107,7 +107,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             userProfileDelegate.Setup(s => s.GetUserProfileAsync(It.IsAny<string>())).ReturnsAsync(userProfileMock);
             userProfileDelegate.Setup(s => s.Update(It.IsAny<UserProfile>(), It.IsAny<bool>())).Returns(new DbResult<UserProfile>());
 
-            string changeFeedKey = $"{ChangeFeedConfiguration.ConfigurationSectionKey}:{ChangeFeedConfiguration.NotificationChannelVerifiedKey}:Enabled";
+            string changeFeedKey = $"{ChangeFeedOptions.ChangeFeed}:Notifications:Enabled";
             Dictionary<string, string?> configDict = new()
             {
                 { changeFeedKey, "true" },

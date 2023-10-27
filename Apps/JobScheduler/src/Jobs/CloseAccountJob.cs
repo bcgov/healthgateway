@@ -62,7 +62,7 @@ namespace HealthGateway.JobScheduler.Jobs
         private readonly Uri tokenUri;
         private readonly IKeycloakAdminApi keycloakAdminApi;
         private readonly IMessageSender messageSender;
-        private readonly bool changeFeedEnabled;
+        private readonly bool accountsChangeFeedEnabled;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CloseAccountJob"/> class.
@@ -97,7 +97,8 @@ namespace HealthGateway.JobScheduler.Jobs
             this.emailTemplate = configuration.GetValue<string>($"{JobKey}:{EmailTemplateKey}") ??
                                  throw new ArgumentNullException(nameof(configuration), $"{JobKey}:{EmailTemplateKey} is null");
             (this.tokenUri, this.tokenRequest) = this.authDelegate.GetClientCredentialsAuth(AuthConfigSectionName);
-            this.changeFeedEnabled = configuration.GetSection(ChangeFeedConfiguration.ConfigurationSectionKey).GetValue($"{ChangeFeedConfiguration.AccountsKey}:Enabled", false);
+            ChangeFeedOptions? changeFeedConfiguration = configuration.GetSection(ChangeFeedOptions.ChangeFeed).Get<ChangeFeedOptions>();
+            this.accountsChangeFeedEnabled = changeFeedConfiguration?.Accounts.Enabled ?? false;
         }
 
         /// <summary>
@@ -116,7 +117,7 @@ namespace HealthGateway.JobScheduler.Jobs
                 foreach (UserProfile profile in profileResult.Payload)
                 {
                     this.dbContext.UserProfile.Remove(profile);
-                    if (this.changeFeedEnabled)
+                    if (this.accountsChangeFeedEnabled)
                     {
                         MessageEnvelope[] events =
                         {

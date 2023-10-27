@@ -39,7 +39,7 @@
         "Accounts": {
             "Enabled": true
         },
-        "NotificationChannelVerified": {
+        "Notifications": {
             "Enabled": true
         }
     }

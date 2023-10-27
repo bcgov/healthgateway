@@ -49,7 +49,7 @@ namespace HealthGateway.GatewayApi.Services
         private readonly INotificationSettingsService notificationSettingsService;
         private readonly IUserProfileDelegate profileDelegate;
         private readonly IMessageSender messageSender;
-        private readonly bool changeFeedEnabled;
+        private readonly bool notificationsChangeFeedEnabled;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UserSmsService"/> class.
@@ -73,8 +73,9 @@ namespace HealthGateway.GatewayApi.Services
             this.profileDelegate = profileDelegate;
             this.notificationSettingsService = notificationSettingsService;
             this.messageSender = messageSender;
-            this.changeFeedEnabled = configuration.GetSection(ChangeFeedConfiguration.ConfigurationSectionKey)
-                .GetValue($"{ChangeFeedConfiguration.NotificationChannelVerifiedKey}:Enabled", false);
+            ChangeFeedOptions? changeFeedConfiguration = configuration.GetSection(ChangeFeedOptions.ChangeFeed)
+                .Get<ChangeFeedOptions>();
+            this.notificationsChangeFeedEnabled = changeFeedConfiguration?.Notifications.Enabled ?? false;
         }
 
         /// <inheritdoc/>
@@ -93,10 +94,10 @@ namespace HealthGateway.GatewayApi.Services
                 smsVerification.ExpireDate >= DateTime.UtcNow)
             {
                 smsVerification.Validated = true;
-                await this.messageVerificationDelegate.UpdateAsync(smsVerification, !this.changeFeedEnabled, ct);
+                await this.messageVerificationDelegate.UpdateAsync(smsVerification, !this.notificationsChangeFeedEnabled, ct);
                 userProfile.SmsNumber = smsVerification.SmsNumber; // Gets the user sms number from the message sent.
-                this.profileDelegate.Update(userProfile, !this.changeFeedEnabled);
-                if (this.changeFeedEnabled)
+                this.profileDelegate.Update(userProfile, !this.notificationsChangeFeedEnabled);
+                if (this.notificationsChangeFeedEnabled)
                 {
                     MessageEnvelope[] events =
                     {
