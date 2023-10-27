@@ -61,6 +61,7 @@ namespace HealthGateway.Patient
             MessageBus.ConfigureMessageBus(services, configuration);
 
             Patient.ConfigurePatientAccess(services, logger, configuration);
+            JobScheduler.ConfigureHangfireQueue(services, configuration);
             PersonalAccount.ConfigurePersonalAccountAccess(services, logger, configuration);
 
             services.AddTransient<IPatientService, PatientService>();
