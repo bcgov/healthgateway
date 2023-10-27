@@ -30,6 +30,7 @@ namespace AccountDataAccessTest
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ErrorHandling;
+    using HealthGateway.Common.Data.Utils;
     using HealthGateway.Common.Messaging;
     using HealthGateway.Common.Models.Events;
     using HealthGateway.Common.Utils;
@@ -555,7 +556,7 @@ namespace AccountDataAccessTest
 
         private static IEnumerable<string> GetDataSourceValues(HashSet<DataSource> dataSources)
         {
-            return dataSources.Select(ds => Enum.GetName(typeof(DataSource), ds))!;
+            return dataSources.Select(ds => EnumUtility.ToEnumString(ds));
         }
     }
 }

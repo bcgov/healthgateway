@@ -25,6 +25,7 @@ namespace HealthGateway.AccountDataAccess.Patient
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.CacheProviders;
     using HealthGateway.Common.Data.Constants;
+    using HealthGateway.Common.Data.Utils;
     using HealthGateway.Common.Messaging;
     using HealthGateway.Common.Models.Events;
     using HealthGateway.Database.Delegates;
@@ -146,7 +147,7 @@ namespace HealthGateway.AccountDataAccess.Patient
 
             if (this.changeFeedEnabled)
             {
-                IEnumerable<string> dataSourceValues = blockedAccess.DataSources.Select(ds => Enum.GetName(typeof(DataSource), ds))!;
+                IEnumerable<string> dataSourceValues = blockedAccess.DataSources.Select(ds => EnumUtility.ToEnumString(ds));
                 await this.messageSender.SendAsync(new[] { new MessageEnvelope(new DataSourcesBlockedEvent(command.Hdid, dataSourceValues), command.Hdid) }, ct);
             }
         }
