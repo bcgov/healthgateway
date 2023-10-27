@@ -30,6 +30,7 @@ namespace HealthGateway.Admin.Server.Services
     using HealthGateway.Admin.Common.Models.CovidSupport;
     using HealthGateway.Admin.Server.Api;
     using HealthGateway.Admin.Server.Delegates;
+    using HealthGateway.Admin.Server.Models;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.CacheProviders;
     using HealthGateway.Common.Constants;
@@ -110,14 +111,7 @@ namespace HealthGateway.Admin.Server.Services
 
         /// <inheritdoc/>
         public async Task<PatientSupportDetails> GetPatientSupportDetailsAsync(
-            ClientRegistryType queryType,
-            string queryString,
-            bool includeMessagingVerifications,
-            bool includeBlockedDataSources,
-            bool includeAgentActions,
-            bool includeDependents,
-            bool includeCovidDetails,
-            bool refreshVaccineDetails,
+            PatientSupportDetailsQuery query,
             CancellationToken ct = default)
         {
             IEnumerable<MessagingVerificationModel>? messagingVerifications = null;
@@ -128,40 +122,38 @@ namespace HealthGateway.Admin.Server.Services
             CovidAssessmentDetailsResponse? covidAssessmentDetails = null;
             PatientModel patient;
 
-            if (queryType == ClientRegistryType.Hdid)
+            if (query.QueryType == ClientRegistryType.Hdid)
             {
-                PatientDetailsQuery query = new(Hdid: queryString, Source: PatientDetailSource.All, UseCache: false);
-                patient = await this.GetPatientAsync(query, ct).ConfigureAwait(true);
+                patient = await this.GetPatientAsync(new(Hdid: query.QueryParameter, Source: PatientDetailSource.All, UseCache: false), ct).ConfigureAwait(true);
             }
             else
             {
-                PatientDetailsQuery query = new(queryString, Source: PatientDetailSource.Empi, UseCache: false);
-                patient = await this.GetPatientAsync(query, ct).ConfigureAwait(true);
+                patient = await this.GetPatientAsync(new(query.QueryParameter, Source: PatientDetailSource.Empi, UseCache: false), ct).ConfigureAwait(true);
             }
 
-            if (includeMessagingVerifications)
+            if (query.IncludeMessagingVerifications)
             {
                 messagingVerifications = await this.GetMessagingVerificationsAsync(patient.Hdid, ct);
             }
 
-            if (includeBlockedDataSources)
+            if (query.IncludeBlockedDataSources)
             {
                 blockedDataSources = await this.GetBlockedDataSourcesAsync(patient.Hdid, ct);
             }
 
-            if (includeAgentActions)
+            if (query.IncludeAgentActions)
             {
                 agentActions = await this.GetAgentActionsAsync(patient.Hdid, ct);
             }
 
-            if (includeDependents)
+            if (query.IncludeDependents)
             {
                 dependents = await this.GetDependentsAsync(patient.Hdid, ct);
             }
 
-            if (includeCovidDetails)
+            if (query.IncludeCovidDetails)
             {
-                vaccineDetails = await this.GetVaccineDetails(patient, refreshVaccineDetails).ConfigureAwait(true);
+                vaccineDetails = await this.GetVaccineDetails(patient, query.RefreshVaccineDetails).ConfigureAwait(true);
                 covidAssessmentDetails = await this.immunizationAdminApi.GetCovidAssessmentDetails(new() { Phn = patient.Phn }, this.GetAccessToken()).ConfigureAwait(true);
             }
 

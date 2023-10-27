@@ -22,6 +22,7 @@ namespace HealthGateway.Admin.Server.Controllers
     using HealthGateway.Admin.Common.Constants;
     using HealthGateway.Admin.Common.Models;
     using HealthGateway.Admin.Common.Models.CovidSupport;
+    using HealthGateway.Admin.Server.Models;
     using HealthGateway.Admin.Server.Services;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.Models;
@@ -107,20 +108,23 @@ namespace HealthGateway.Admin.Server.Controllers
             CancellationToken ct)
         {
             ClaimsPrincipal user = this.HttpContext.User;
-            bool includeEverything = user.IsInRole("AdminUser") || user.IsInRole("AdminReviewer");
-            bool includeCovidDetails = user.IsInRole("SupportUser");
+            bool userIsAdmin = user.IsInRole("AdminUser");
+            bool userIsReviewer = user.IsInRole("AdminReviewer");
+            bool userIsSupport = user.IsInRole("SupportUser");
 
             return await this.supportService.GetPatientSupportDetailsAsync(
-                    queryType,
-                    queryString,
-                    includeEverything,
-                    includeEverything,
-                    includeEverything,
-                    includeEverything,
-                    includeCovidDetails,
-                    refreshVaccineDetails,
-                    ct)
-                .ConfigureAwait(true);
+                new PatientSupportDetailsQuery
+                {
+                    QueryType = queryType,
+                    QueryParameter = queryString,
+                    IncludeMessagingVerifications = userIsAdmin || userIsReviewer,
+                    IncludeBlockedDataSources = userIsAdmin || userIsReviewer,
+                    IncludeAgentActions = userIsAdmin || userIsReviewer,
+                    IncludeDependents = userIsAdmin || userIsReviewer,
+                    IncludeCovidDetails = userIsSupport,
+                    RefreshVaccineDetails = refreshVaccineDetails,
+                },
+                ct);
         }
 
         /// <summary>

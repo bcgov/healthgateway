@@ -155,14 +155,17 @@ namespace HealthGateway.Admin.Tests.Services
             // Act
             PatientSupportDetails actualResult =
                 await supportService.GetPatientSupportDetailsAsync(
-                    queryType,
-                    queryType == ClientRegistryType.Hdid ? Hdid : Phn,
-                    includeMessagingVerifications,
-                    includeBlockedDataSources,
-                    includeAgentActions,
-                    includeDependents,
-                    includeCovidDetails,
-                    false);
+                    new()
+                    {
+                        QueryType = queryType,
+                        QueryParameter = queryType == ClientRegistryType.Hdid ? Hdid : Phn,
+                        IncludeMessagingVerifications = includeMessagingVerifications,
+                        IncludeBlockedDataSources = includeBlockedDataSources,
+                        IncludeAgentActions = includeAgentActions,
+                        IncludeDependents = includeDependents,
+                        IncludeCovidDetails = includeCovidDetails,
+                        RefreshVaccineDetails = false,
+                    });
 
             // Assert
             Assert.Equal(expectedMessagingVerificationCount, actualResult.MessagingVerifications?.Count());
@@ -204,14 +207,17 @@ namespace HealthGateway.Admin.Tests.Services
             async Task Actual()
             {
                 await supportService.GetPatientSupportDetailsAsync(
-                    queryType,
-                    queryType == ClientRegistryType.Hdid ? Hdid : Phn,
-                    true,
-                    true,
-                    true,
-                    true,
-                    true,
-                    false);
+                    new()
+                    {
+                        QueryType = queryType,
+                        QueryParameter = queryType == ClientRegistryType.Hdid ? Hdid : Phn,
+                        IncludeMessagingVerifications = true,
+                        IncludeBlockedDataSources = true,
+                        IncludeAgentActions = true,
+                        IncludeDependents = true,
+                        IncludeCovidDetails = true,
+                        RefreshVaccineDetails = false,
+                    });
             }
 
             // Verify
@@ -247,7 +253,18 @@ namespace HealthGateway.Admin.Tests.Services
             // Act
             async Task Actual()
             {
-                await supportService.GetPatientSupportDetailsAsync(ClientRegistryType.Phn, Phn, false, false, false, false, true, false);
+                await supportService.GetPatientSupportDetailsAsync(
+                    new()
+                    {
+                        QueryType = ClientRegistryType.Phn,
+                        QueryParameter = Phn,
+                        IncludeMessagingVerifications = false,
+                        IncludeBlockedDataSources = false,
+                        IncludeAgentActions = false,
+                        IncludeDependents = false,
+                        IncludeCovidDetails = true,
+                        RefreshVaccineDetails = false,
+                    });
             }
 
             // Verify
@@ -281,7 +298,18 @@ namespace HealthGateway.Admin.Tests.Services
             // Act
             async Task Actual()
             {
-                await supportService.GetPatientSupportDetailsAsync(ClientRegistryType.Hdid, Hdid, true, true, true, false, true, false);
+                await supportService.GetPatientSupportDetailsAsync(
+                    new()
+                    {
+                        QueryType = ClientRegistryType.Hdid,
+                        QueryParameter = Hdid,
+                        IncludeMessagingVerifications = true,
+                        IncludeBlockedDataSources = true,
+                        IncludeAgentActions = true,
+                        IncludeDependents = false,
+                        IncludeCovidDetails = true,
+                        RefreshVaccineDetails = false,
+                    });
             }
 
             // Verify
