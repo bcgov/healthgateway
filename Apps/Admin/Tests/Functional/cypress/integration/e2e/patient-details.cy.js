@@ -331,6 +331,27 @@ describe("Patient details page as admin user", () => {
         );
     });
 
+    it("Verify dependent section", () => {
+        performSearch("HDID", hdid);
+        getTableRows("[data-testid=dependent-table]")
+            .should("have.length.gt", 1)
+            .first()
+            .within(() => {
+                cy.get("[data-testid=dependent-name]").contains("John Tester");
+                cy.get("[data-testid=dependent-dob]").contains("2005-01-01");
+                cy.get("[data-testid=dependent-phn]").contains("9874307215");
+                cy.get("[data-testid=dependent-address]").should(
+                    "not.be.empty"
+                );
+                cy.get("[data-testid=dependent-expiry-date]")
+                    .invoke("text")
+                    .should("match", /^\d{4}-\d{2}-\d{2}$/);
+                cy.get("[data-testid=dependent-protected-icon]").should(
+                    "not.exist"
+                );
+            });
+    });
+
     it("Verify covid immunization and assessment sections not shown", () => {
         performSearch("PHN", phnWithInvalidDoses);
         cy.get("[data-testid=patient-phn]")
@@ -567,5 +588,11 @@ describe("Patient Details as Support", () => {
             "not.exist"
         );
         cy.get("[data-testid=blocked-immunization-alert").should("be.visible");
+    });
+
+    it("Verify dependent section not shown", () => {
+        performSearch("PHN", phnWithValidDoses);
+        cy.get("[data-testid=patient-name]").should("be.visible");
+        cy.get("[data-testid=dependent-table]").should("not.exist");
     });
 });
