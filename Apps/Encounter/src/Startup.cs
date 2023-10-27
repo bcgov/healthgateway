@@ -65,6 +65,7 @@ namespace HealthGateway.Encounter
             this.startupConfig.ConfigurePatientAccess(services);
             this.startupConfig.ConfigureTracing(services);
             this.startupConfig.ConfigureAccessControl(services);
+            this.startupConfig.ConfigureMessaging(services);
 
             // Bind configuration
             PhsaConfig phsaConfig = new();
