@@ -68,6 +68,7 @@ namespace HealthGateway.Medication
             this.startupConfig.ConfigureSwaggerServices(services);
             this.startupConfig.ConfigurePatientAccess(services);
             this.startupConfig.ConfigureTracing(services);
+            this.startupConfig.ConfigureMessaging(services);
 
             // Add auto mapper
             services.AddAutoMapper(typeof(Startup));
