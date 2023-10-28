@@ -18,8 +18,8 @@ namespace HealthGateway.Admin.Server.Services
     using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
-    using HealthGateway.Admin.Common.Constants;
     using HealthGateway.Admin.Common.Models;
+    using HealthGateway.Admin.Server.Models;
     using HealthGateway.Common.Data.Constants;
 
     /// <summary>
@@ -28,33 +28,13 @@ namespace HealthGateway.Admin.Server.Services
     public interface ISupportService
     {
         /// <summary>
-        /// Retrieves patient support details, which includes messaging verifications, agent changes, blocked data sources and
-        /// covid details
-        /// matching the query.
+        /// Retrieves patient support details, which may include messaging verifications, agent actions, blocked data sources,
+        /// dependents, and COVID-19 details.
         /// </summary>
-        /// <param name="queryType">The type of query to be performed when searching for patient support details.</param>
-        /// <param name="queryString">The string value associated with the query type when searching for patient support details.</param>
-        /// <param name="includeMessagingVerifications">A value indicating whether messaging verifications should be returned.</param>
-        /// <param name="includeBlockedDataSources">A value indicating whether blocked data sources should be returned.</param>
-        /// <param name="includeAgentActions">A value indicating whether agent actions should be returned.</param>
-        /// <param name="includeDependents">A value indicating whether dependents should be returned.</param>
-        /// <param name="includeCovidDetails">A value indicating whether covid details should be returned.</param>
-        /// <param name="refreshVaccineDetails">
-        /// Whether the call should force cached vaccine validation details data to be
-        /// refreshed.
-        /// </param>
+        /// <param name="query">Query model.</param>
         /// <param name="ct">A cancellation token.</param>
-        /// <returns>A patient support details matching the query.</returns>
-        Task<PatientSupportDetails> GetPatientSupportDetailsAsync(
-            ClientRegistryType queryType,
-            string queryString,
-            bool includeMessagingVerifications,
-            bool includeBlockedDataSources,
-            bool includeAgentActions,
-            bool includeDependents,
-            bool includeCovidDetails,
-            bool refreshVaccineDetails,
-            CancellationToken ct = default);
+        /// <returns>Patient support details matching the query.</returns>
+        Task<PatientSupportDetails> GetPatientSupportDetailsAsync(PatientSupportDetailsQuery query, CancellationToken ct = default);
 
         /// <summary>
         /// Retrieves the collection of patients that match the query.
