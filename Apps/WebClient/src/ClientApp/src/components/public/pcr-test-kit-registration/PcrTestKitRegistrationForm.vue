@@ -455,7 +455,11 @@ if (!props.serialNumber) {
                         />
                     </v-col>
                 </v-row>
-                <v-row align="center" no-gutters>
+                <v-row
+                    v-if="dataSource === PcrDataSource.Manual"
+                    align="center"
+                    no-gutters
+                >
                     <v-col cols="auto">
                         <v-checkbox
                             v-model="noPhn"
@@ -524,6 +528,7 @@ if (!props.serialNumber) {
                 <v-row>
                     <v-col>
                         <HgDatePickerComponent
+                            v-if="dataSource === PcrDataSource.Manual"
                             v-model="v$.dob.$model"
                             label="Date of Birth"
                             data-testid="dob-input"
