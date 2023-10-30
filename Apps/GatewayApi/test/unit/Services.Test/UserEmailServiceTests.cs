@@ -121,7 +121,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 .Returns(new DbResult<UserProfile>());
             Mock<IMessageSender> mockMessageSender = new();
 
-            string changeFeedKey = $"{ChangeFeedConfiguration.ConfigurationSectionKey}:{ChangeFeedConfiguration.NotificationChannelVerifiedKey}:Enabled";
+            string changeFeedKey = $"{ChangeFeedOptions.ChangeFeed}:Notifications:Enabled";
             Dictionary<string, string?> configDict = new()
             {
                 { changeFeedKey, "true" },

@@ -278,7 +278,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             {
                 { "WebClient:MinPatientAge", "0" },
                 {
-                    $"{ChangeFeedConfiguration.ConfigurationSectionKey}:{ChangeFeedConfiguration.AccountsKey}:Enabled",
+                    $"{ChangeFeedOptions.ChangeFeed}:Accounts:Enabled",
                     "false"
                 },
             };
@@ -337,7 +337,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             {
                 { "WebClient:MinPatientAge", "0" },
                 {
-                    $"{ChangeFeedConfiguration.ConfigurationSectionKey}:{ChangeFeedConfiguration.AccountsKey}:Enabled",
+                    $"{ChangeFeedOptions.ChangeFeed}:Accounts:Enabled",
                     "true"
                 },
             };
@@ -393,7 +393,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             {
                 { "WebClient:MinPatientAge", "0" },
                 {
-                    $"{ChangeFeedConfiguration.ConfigurationSectionKey}:{ChangeFeedConfiguration.AccountsKey}:Enabled",
+                    $"{ChangeFeedOptions.ChangeFeed}:Accounts:Enabled",
                     "false"
                 },
             };

@@ -77,7 +77,7 @@ namespace HealthGateway.GatewayApi.Services
         private readonly IUserSmsService userSmsService;
         private readonly IPatientRepository patientRepository;
         private readonly bool accountsChangeFeedEnabled;
-        private readonly bool notificationChannelChangeFeedEnabled;
+        private readonly bool notificationsChangeFeedEnabled;
         private readonly IMessageSender messageSender;
 
         /// <summary>
@@ -144,10 +144,9 @@ namespace HealthGateway.GatewayApi.Services
             this.cacheProvider = cacheProvider;
             this.patientRepository = patientRepository;
             this.messageSender = messageSender;
-            this.accountsChangeFeedEnabled = configuration.GetSection(ChangeFeedConfiguration.ConfigurationSectionKey)
-                .GetValue($"{ChangeFeedConfiguration.AccountsKey}:Enabled", false);
-            this.notificationChannelChangeFeedEnabled = configuration.GetSection(ChangeFeedConfiguration.ConfigurationSectionKey)
-                .GetValue($"{ChangeFeedConfiguration.NotificationChannelVerifiedKey}:Enabled", false);
+            ChangeFeedOptions? changeFeedConfiguration = configuration.GetSection(ChangeFeedOptions.ChangeFeed).Get<ChangeFeedOptions>();
+            this.accountsChangeFeedEnabled = changeFeedConfiguration?.Accounts.Enabled ?? false;
+            this.notificationsChangeFeedEnabled = changeFeedConfiguration?.Notifications.Enabled ?? false;
         }
 
         /// <inheritdoc/>
@@ -287,10 +286,10 @@ namespace HealthGateway.GatewayApi.Services
             if (!string.IsNullOrWhiteSpace(requestedEmail))
             {
                 bool isEmailVerified = requestedEmail.Equals(jwtEmailAddress, StringComparison.OrdinalIgnoreCase);
-                await this.userEmailService.CreateUserEmailAsync(hdid, requestedEmail, isEmailVerified, !this.notificationChannelChangeFeedEnabled, ct);
+                await this.userEmailService.CreateUserEmailAsync(hdid, requestedEmail, isEmailVerified, !this.notificationsChangeFeedEnabled, ct);
                 userProfileModel.Email = requestedEmail;
                 userProfileModel.IsEmailVerified = isEmailVerified;
-                if (isEmailVerified && this.notificationChannelChangeFeedEnabled)
+                if (isEmailVerified && this.notificationsChangeFeedEnabled)
                 {
                     MessageEnvelope[] events =
                     {
