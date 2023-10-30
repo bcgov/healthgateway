@@ -7,7 +7,9 @@
         <HgBannerFeedback
             Severity="@Severity.Error"
             IsEnabled="@HasError"
-            TResetAction="@TErrorAction">
+            TResetAction="@TErrorAction"
+            DataTestId="audit-reason-feedback"
+            Class="mb-4">
             @ErrorMessage
         </HgBannerFeedback>
         <MudTextField

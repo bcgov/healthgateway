@@ -98,6 +98,7 @@ public partial class AuditReasonDialog<TErrorAction, TSuccessAction> : FluxorCom
     {
         this.IsLoading = false;
         this.Error = failureAction.Error;
+        this.StateHasChanged();
     }
 
     private void HandleClickCancel()
