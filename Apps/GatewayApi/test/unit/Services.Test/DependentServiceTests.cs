@@ -196,7 +196,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             AddDependentRequest addDependentRequest = this.SetupMockInput();
             IDependentService service = this.SetupMockDependentService(addDependentRequest, insertResult);
 
-            var exception =
+            ProblemDetailsException exception =
                 (await Should.ThrowAsync<ProblemDetailsException>(async () => await service.AddDependentAsync(this.mockParentHdid, addDependentRequest)))
                 .ShouldNotBeNull();
 
@@ -351,11 +351,13 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                     {
                         Status = DbStatusCode.Deleted,
                     });
-            mockDependentDelegate.Setup(s => s.Get(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new DbResult<IEnumerable<ResourceDelegate>>
-            {
-                Status = DbStatusCode.Deferred,
-                Payload = new[] { new ResourceDelegate { ProfileHdid = this.mockParentHdid, ResourceOwnerHdid = this.mockHdId } },
-            });
+            mockDependentDelegate.Setup(s => s.Get(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>()))
+                .Returns(
+                    new DbResult<IEnumerable<ResourceDelegate>>
+                    {
+                        Status = DbStatusCode.Deferred,
+                        Payload = new[] { new ResourceDelegate { ProfileHdid = this.mockParentHdid, ResourceOwnerHdid = this.mockHdId } },
+                    });
 
             Mock<IUserProfileDelegate> mockUserProfileDelegate = new();
             mockUserProfileDelegate.Setup(s => s.GetUserProfile(this.mockParentHdid))
@@ -557,7 +559,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             mockDependentDelegate.Setup(s => s.GetTotalDelegateCountsAsync(It.IsAny<IEnumerable<string>>())).ReturnsAsync(mockDelegateCountsResult);
 
             Mock<IDelegationDelegate> delegationDelegate = new();
-            delegationDelegate.Setup(s => s.GetDependentAsync(this.mockHdId, true)).ReturnsAsync(dependent);
+            delegationDelegate.Setup(s => s.GetDependentAsync(this.mockHdId, true, CancellationToken.None)).ReturnsAsync(dependent);
 
             Mock<IUserProfileDelegate> mockUserProfileDelegate = new();
             mockUserProfileDelegate.Setup(s => s.GetUserProfile(this.mockParentHdid))

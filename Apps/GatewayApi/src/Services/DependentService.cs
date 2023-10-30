@@ -109,8 +109,8 @@ namespace HealthGateway.GatewayApi.Services
                 return RequestResultFactory.Error<DependentModel>(ErrorType.InvalidState, validationResults.Errors);
             }
 
-            RequestResult<PatientModel> dependentResult = await this.GetDependentAsPatient(addDependentRequest.Phn);
-            RequestResult<DependentModel>? validationResult = await this.ValidateDependent(addDependentRequest, delegateHdid, dependentResult);
+            RequestResult<PatientModel> dependentResult = await this.GetDependentAsPatientAsync(addDependentRequest.Phn);
+            RequestResult<DependentModel>? validationResult = await this.ValidateDependentAsync(addDependentRequest, delegateHdid, dependentResult, ct);
             if (validationResult != null)
             {
                 return validationResult;
@@ -293,7 +293,11 @@ namespace HealthGateway.GatewayApi.Services
             return replacedValue;
         }
 
-        private async Task<RequestResult<DependentModel>?> ValidateDependent(AddDependentRequest addDependentRequest, string delegateHdid, RequestResult<PatientModel> dependentResult)
+        private async Task<RequestResult<DependentModel>?> ValidateDependentAsync(
+            AddDependentRequest addDependentRequest,
+            string delegateHdid,
+            RequestResult<PatientModel> dependentResult,
+            CancellationToken ct)
         {
             switch (dependentResult.ResultStatus)
             {
@@ -319,7 +323,7 @@ namespace HealthGateway.GatewayApi.Services
                     }
 
                     // Verify delegate is allowed to access dependent
-                    Dependent? dependent = await this.delegationDelegate.GetDependentAsync(dependentResult.ResourcePayload?.HdId, true);
+                    Dependent? dependent = await this.delegationDelegate.GetDependentAsync(dependentResult.ResourcePayload?.HdId, true, ct);
                     if (dependent is { Protected: true } && dependent.AllowedDelegations.All(d => d.DelegateHdId != delegateHdid))
                     {
                         return RequestResultFactory.ActionRequired<DependentModel>(ActionType.Protected, ErrorMessages.CannotPerformAction);
@@ -329,7 +333,7 @@ namespace HealthGateway.GatewayApi.Services
             }
         }
 
-        private async Task<RequestResult<PatientModel>> GetDependentAsPatient(string phn)
+        private async Task<RequestResult<PatientModel>> GetDependentAsPatientAsync(string phn)
         {
             return await this.patientService.GetPatient(phn, PatientIdentifierType.Phn);
         }

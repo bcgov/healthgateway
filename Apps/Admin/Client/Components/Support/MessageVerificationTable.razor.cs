@@ -26,7 +26,7 @@ namespace HealthGateway.Admin.Client.Components.Support
     using Microsoft.Extensions.Configuration;
 
     /// <summary>
-    /// Backing logic for the messaging verification table page.
+    /// Backing logic for the messaging verification table.
     /// </summary>
     public partial class MessageVerificationTable : FluxorComponent
     {

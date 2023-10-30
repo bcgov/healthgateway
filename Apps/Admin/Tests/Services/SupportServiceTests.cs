@@ -79,27 +79,31 @@ namespace HealthGateway.Admin.Tests.Services
         /// GetPatientSupportDetailsAsync - Happy Path.
         /// </summary>
         /// <param name="includeMessagingVerifications">Value indicating whether messaging verifications are included.</param>
-        /// <param name="expectedMessagingVerifications">Expected number of messaging verifications returned.</param>
+        /// <param name="expectedMessagingVerificationCount">Expected number of messaging verifications returned.</param>
         /// <param name="includeAgentActions">Value indicating whether agent actions are included.</param>
-        /// <param name="expectedAgentActions">Expected number of agent actions returned.</param>
+        /// <param name="expectedAgentActionCount">Expected number of agent actions returned.</param>
         /// <param name="includeBlockedDataSources">Value indicating whether blocked data sources are included.</param>
-        /// <param name="expectedBlockedDataSources">Expected number of blocked data sources returned.</param>
+        /// <param name="expectedBlockedDataSourceCount">Expected number of blocked data sources returned.</param>
+        /// <param name="includeDependents">Value indicating whether dependents are included.</param>
+        /// <param name="expectedDependentCount">Expected number of dependents returned.</param>
         /// <param name="includeCovidDetails">Value indicating whether covid details are included.</param>
         /// <param name="expectedCovidDetails">Value indicating if expected covid details are returned.</param>
         /// <param name="queryType">Value indicating the type of query to execute.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Theory]
-        [InlineData(true, "2", true, "1", true, "1", true, false, ClientRegistryType.Hdid)]
-        [InlineData(false, null, false, null, false, null, false, true, ClientRegistryType.Hdid)]
-        [InlineData(false, null, false, null, false, null, true, false, ClientRegistryType.Phn)]
-        [InlineData(false, null, false, null, false, null, false, true, ClientRegistryType.Phn)]
+        [InlineData(true, 2, true, 1, true, 1, true, 1, true, false, ClientRegistryType.Hdid)]
+        [InlineData(false, null, false, null, false, null, false, null, false, true, ClientRegistryType.Hdid)]
+        [InlineData(false, null, false, null, false, null, false, null, true, false, ClientRegistryType.Phn)]
+        [InlineData(false, null, false, null, false, null, false, null, false, true, ClientRegistryType.Phn)]
         public async Task ShouldGetPatientSupportDetailsAsync(
             bool includeMessagingVerifications,
-            string? expectedMessagingVerifications,
+            int? expectedMessagingVerificationCount,
             bool includeAgentActions,
-            string? expectedAgentActions,
+            int? expectedAgentActionCount,
             bool includeBlockedDataSources,
-            string? expectedBlockedDataSources,
+            int? expectedBlockedDataSourceCount,
+            bool includeDependents,
+            int? expectedDependentCount,
             bool includeCovidDetails,
             bool expectedCovidDetails,
             ClientRegistryType queryType)
@@ -127,11 +131,21 @@ namespace HealthGateway.Admin.Tests.Services
             {
                 DataSource.Immunization,
             };
+            ResourceDelegateQuery resourceDelegateQuery = new() { ByDelegateHdid = patientQuery.Hdid };
+            IList<ResourceDelegate> resourceDelegates = GenerateResourceDelegatesForDelegate(patientQuery.Hdid, new List<string> { Hdid2 });
+            PatientDetailsQuery dependentPatientQuery =
+                new()
+                {
+                    Hdid = Hdid2,
+                    Source = PatientDetailSource.All,
+                    UseCache = false,
+                };
+            PatientModel dependentPatient = GeneratePatientModel(Phn2, Hdid2, Birthdate2, commonName, legalName, physicalAddress, postalAddress);
 
             ISupportService supportService = CreateSupportService(
                 GetMessagingVerificationDelegateMock(messagingVerifications),
-                GetPatientRepositoryMock(blockedDataSources, (patientQuery, patient)),
-                null,
+                GetPatientRepositoryMock(blockedDataSources, (patientQuery, patient), (dependentPatientQuery, dependentPatient)),
+                GetResourceDelegateDelegateMock(resourceDelegateQuery, resourceDelegates),
                 null,
                 GetAuthenticationDelegateMock(AccessToken),
                 GetImmunizationAdminDelegateMock(vaccineDetails),
@@ -141,18 +155,23 @@ namespace HealthGateway.Admin.Tests.Services
             // Act
             PatientSupportDetails actualResult =
                 await supportService.GetPatientSupportDetailsAsync(
-                    queryType,
-                    queryType == ClientRegistryType.Hdid ? Hdid : Phn,
-                    includeMessagingVerifications,
-                    includeBlockedDataSources,
-                    includeAgentActions,
-                    includeCovidDetails,
-                    false);
+                    new()
+                    {
+                        QueryType = queryType,
+                        QueryParameter = queryType == ClientRegistryType.Hdid ? Hdid : Phn,
+                        IncludeMessagingVerifications = includeMessagingVerifications,
+                        IncludeBlockedDataSources = includeBlockedDataSources,
+                        IncludeAgentActions = includeAgentActions,
+                        IncludeDependents = includeDependents,
+                        IncludeCovidDetails = includeCovidDetails,
+                        RefreshVaccineDetails = false,
+                    });
 
             // Assert
-            Assert.Equal(expectedMessagingVerifications, actualResult.MessagingVerifications?.Count().ToString(CultureInfo.InvariantCulture));
-            Assert.Equal(expectedAgentActions, actualResult.AgentActions?.Count().ToString(CultureInfo.InvariantCulture));
-            Assert.Equal(expectedBlockedDataSources, actualResult.BlockedDataSources?.Count().ToString(CultureInfo.InvariantCulture));
+            Assert.Equal(expectedMessagingVerificationCount, actualResult.MessagingVerifications?.Count());
+            Assert.Equal(expectedAgentActionCount, actualResult.AgentActions?.Count());
+            Assert.Equal(expectedBlockedDataSourceCount, actualResult.BlockedDataSources?.Count());
+            Assert.Equal(expectedDependentCount, actualResult.Dependents?.Count());
             Assert.Equal(expectedCovidDetails, actualResult.VaccineDetails == null);
             Assert.Equal(expectedCovidDetails, actualResult.CovidAssessmentDetails == null);
         }
@@ -188,13 +207,17 @@ namespace HealthGateway.Admin.Tests.Services
             async Task Actual()
             {
                 await supportService.GetPatientSupportDetailsAsync(
-                    queryType,
-                    queryType == ClientRegistryType.Hdid ? Hdid : Phn,
-                    true,
-                    true,
-                    true,
-                    true,
-                    false);
+                    new()
+                    {
+                        QueryType = queryType,
+                        QueryParameter = queryType == ClientRegistryType.Hdid ? Hdid : Phn,
+                        IncludeMessagingVerifications = true,
+                        IncludeBlockedDataSources = true,
+                        IncludeAgentActions = true,
+                        IncludeDependents = true,
+                        IncludeCovidDetails = true,
+                        RefreshVaccineDetails = false,
+                    });
             }
 
             // Verify
@@ -230,7 +253,18 @@ namespace HealthGateway.Admin.Tests.Services
             // Act
             async Task Actual()
             {
-                await supportService.GetPatientSupportDetailsAsync(ClientRegistryType.Phn, Phn, false, false, false, true, false);
+                await supportService.GetPatientSupportDetailsAsync(
+                    new()
+                    {
+                        QueryType = ClientRegistryType.Phn,
+                        QueryParameter = Phn,
+                        IncludeMessagingVerifications = false,
+                        IncludeBlockedDataSources = false,
+                        IncludeAgentActions = false,
+                        IncludeDependents = false,
+                        IncludeCovidDetails = true,
+                        RefreshVaccineDetails = false,
+                    });
             }
 
             // Verify
@@ -264,7 +298,18 @@ namespace HealthGateway.Admin.Tests.Services
             // Act
             async Task Actual()
             {
-                await supportService.GetPatientSupportDetailsAsync(ClientRegistryType.Hdid, Hdid, true, true, true, true, false);
+                await supportService.GetPatientSupportDetailsAsync(
+                    new()
+                    {
+                        QueryType = ClientRegistryType.Hdid,
+                        QueryParameter = Hdid,
+                        IncludeMessagingVerifications = true,
+                        IncludeBlockedDataSources = true,
+                        IncludeAgentActions = true,
+                        IncludeDependents = false,
+                        IncludeCovidDetails = true,
+                        RefreshVaccineDetails = false,
+                    });
             }
 
             // Verify
@@ -540,7 +585,11 @@ namespace HealthGateway.Admin.Tests.Services
                 (secondDelegateQuery, secondDelegatePatient));
 
             ResourceDelegateQuery resourceDelegateQuery = new() { ByOwnerHdid = dependentHdid, IncludeProfile = true, TakeAmount = 25 };
-            IList<ResourceDelegate> resourceDelegates = GenerateResourceDelegates(dependentHdid, new List<string> { Hdid, Hdid2 }, DateTime.Now.Subtract(TimeSpan.FromDays(1)), DateTime.Now);
+            IList<ResourceDelegate> resourceDelegates = GenerateResourceDelegatesForDependent(
+                dependentHdid,
+                new List<string> { Hdid, Hdid2 },
+                DateTime.Now.Subtract(TimeSpan.FromDays(1)),
+                DateTime.Now);
             Mock<IResourceDelegateDelegate> resourceDelegateDelegateMock = GetResourceDelegateDelegateMock(resourceDelegateQuery, resourceDelegates);
 
             ISupportService supportService = CreateSupportService(patientRepositoryMock: patientRepositoryMock, resourceDelegateDelegateMock: resourceDelegateDelegateMock);
@@ -689,7 +738,12 @@ namespace HealthGateway.Admin.Tests.Services
             };
         }
 
-        private static IList<ResourceDelegate> GenerateResourceDelegates(
+        private static IList<ResourceDelegate> GenerateResourceDelegatesForDelegate(string delegateHdid, IEnumerable<string> dependentHdids)
+        {
+            return dependentHdids.Select(dependentHdid => new ResourceDelegate { ResourceOwnerHdid = dependentHdid, ProfileHdid = delegateHdid }).ToList();
+        }
+
+        private static IList<ResourceDelegate> GenerateResourceDelegatesForDependent(
             string dependentHdid,
             IEnumerable<string> delegateHdids,
             DateTime profileCreatedDateTime,
@@ -833,7 +887,7 @@ namespace HealthGateway.Admin.Tests.Services
         private static Mock<IMessagingVerificationDelegate> GetMessagingVerificationDelegateMock(IList<MessagingVerification> result)
         {
             Mock<IMessagingVerificationDelegate> mock = new();
-            mock.Setup(d => d.GetUserMessageVerificationsAsync(It.IsAny<string>())).ReturnsAsync(result);
+            mock.Setup(d => d.GetUserMessageVerificationsAsync(It.IsAny<string>(), CancellationToken.None)).ReturnsAsync(result);
             return mock;
         }
 
@@ -859,7 +913,7 @@ namespace HealthGateway.Admin.Tests.Services
             return mock;
         }
 
-        private static Mock<IResourceDelegateDelegate> GetResourceDelegateDelegateMock(ResourceDelegateQuery query, IEnumerable<ResourceDelegate> result)
+        private static Mock<IResourceDelegateDelegate> GetResourceDelegateDelegateMock(ResourceDelegateQuery query, IList<ResourceDelegate> result)
         {
             Mock<IResourceDelegateDelegate> mock = new();
             mock.Setup(d => d.SearchAsync(query)).ReturnsAsync(new ResourceDelegateQueryResult { Items = result });
@@ -912,6 +966,7 @@ namespace HealthGateway.Admin.Tests.Services
                 Configuration,
                 messagingVerificationDelegateMock.Object,
                 patientRepositoryMock.Object,
+                new Mock<IDelegationDelegate>().Object,
                 resourceDelegateDelegateMock.Object,
                 userProfileDelegateMock.Object,
                 authenticationDelegateMock.Object,

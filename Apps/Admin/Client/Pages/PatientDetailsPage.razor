@@ -117,6 +117,11 @@
         {
             <AgentAuditHistory Title="Agent Reason History" AgentActions="@AgentAuditHistory" IsLoading="@PatientSupportDetailsLoading" />
         }
+
+        if (CanViewDependents)
+        {
+            <DependentTable Data="@Dependents" IsLoading="@PatientSupportDetailsLoading" />
+        }
     }
     else if (CanViewAccountDetails)
     {

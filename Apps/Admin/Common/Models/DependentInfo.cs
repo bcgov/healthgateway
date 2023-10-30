@@ -19,14 +19,19 @@ namespace HealthGateway.Admin.Common.Models
     using HealthGateway.Common.Data.Models;
 
     /// <summary>
-    /// The dependent info model.
+    /// The dependent info model used for delegation.
     /// </summary>
     public class DependentInfo
     {
         /// <summary>
-        /// Gets or sets the health directed identifier.
+        /// Gets or sets the health-directed identifier.
         /// </summary>
         public string Hdid { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets the personal health number.
+        /// </summary>
+        public string Phn { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the dependent's first name.

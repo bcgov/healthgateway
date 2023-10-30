@@ -21,14 +21,16 @@ namespace HealthGateway.Admin.Server.MapProfiles
     /// <summary>
     /// An AutoMapper profile class which defines mapping between patient and dependent models.
     /// </summary>
-    public class DependentInfoProfile : Profile
+    public class PatientSupportDependentInfoProfile : Profile
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="DependentInfoProfile"/> class.
+        /// Initializes a new instance of the <see cref="PatientSupportDependentInfoProfile"/> class.
         /// </summary>
-        public DependentInfoProfile()
+        public PatientSupportDependentInfoProfile()
         {
-            this.CreateMap<HealthGateway.Common.Models.PatientModel, DependentInfo>();
+            this.CreateMap<AccountDataAccess.Patient.PatientModel, PatientSupportDependentInfo>()
+                .ForMember(dest => dest.FirstName, opt => opt.MapFrom(src => src.PreferredName.GivenName))
+                .ForMember(dest => dest.LastName, opt => opt.MapFrom(src => src.PreferredName.Surname));
         }
     }
 }

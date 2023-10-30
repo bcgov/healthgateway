@@ -18,6 +18,7 @@ namespace HealthGateway.AdminWebClientTests.Services.Test
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading;
     using System.Threading.Tasks;
     using AutoMapper;
     using HealthGateway.Admin.Models;
@@ -233,12 +234,7 @@ namespace HealthGateway.AdminWebClientTests.Services.Test
 
                         return new ResourceDelegateQueryResult
                         {
-                            Items = items.Select(
-                                i => new ResourceDelegate
-                                {
-                                    ResourceOwnerHdid = dependentHdid,
-                                    ProfileHdid = i,
-                                }),
+                            Items = items.Select(i => new ResourceDelegate { ResourceOwnerHdid = dependentHdid, ProfileHdid = i }).ToList(),
                         };
                     });
 
@@ -382,7 +378,8 @@ namespace HealthGateway.AdminWebClientTests.Services.Test
             IList<MessagingVerification>? verificationResult = null)
         {
             Mock<IMessagingVerificationDelegate> mockMessagingVerificationDelegate = new();
-            mockMessagingVerificationDelegate.Setup(d => d.GetUserMessageVerificationsAsync(It.IsAny<string>())).ReturnsAsync(verificationResult ?? Array.Empty<MessagingVerification>());
+            mockMessagingVerificationDelegate.Setup(d => d.GetUserMessageVerificationsAsync(It.IsAny<string>(), CancellationToken.None))
+                .ReturnsAsync(verificationResult ?? Array.Empty<MessagingVerification>());
 
             Mock<IPatientService> mockPatientService = new();
             if (patientResult != null)
