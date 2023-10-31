@@ -117,9 +117,10 @@ namespace HealthGateway.Database.Delegates
         /// <summary>
         /// Returns the daily count of logged in users with the given offset .
         /// </summary>
-        /// <param name="offset">The clients offset to get to UTC.</param>
+        /// <param name="startDateTimeOffset">The start datetime offset to query.</param>
+        /// <param name="endDateTimeOffset">The end datetime offset to query.</param>
         /// <returns>The daily count of logged in users.</returns>
-        IDictionary<DateTime, int> GetDailyLoggedInUsersCount(TimeSpan offset);
+        IDictionary<DateTime, int> GetLoggedInUsersCount(DateTimeOffset startDateTimeOffset, DateTimeOffset endDateTimeOffset);
 
         /// <summary>
         /// Returns the list of all UserProfiles sorted by CreatedDateTime in assending order.
