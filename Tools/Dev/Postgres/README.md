@@ -1,6 +1,8 @@
-# Developer DB Setup
+# Developer Tooling Setup
 
-## DB Initialization
+## Postgres
+
+### DB Initialization
 
 To initialize the Health Gateway DB start the Docker image
 
@@ -17,7 +19,7 @@ database system is ready to accept connections
 
 you can stop following the logs CTRL-C and start the JobScheduler application to run any new migrations and run the drug loader tasks.  You can also view the DBMaintainer README to run them manually.
 
-## Upgrading init scripts
+### Upgrading init scripts
 
 If you would like to update the initialization script in the DBMaintainer folder
 
@@ -32,10 +34,42 @@ Where XXX is the name of the last migration included.  You then need to add the 
 SET ROLE hglocal;
 ```
 
-## Removing your local database
+### Clean up
 
 Remove the pgdata volume by executing
 
 ```console
 docker volume rm gatewaydb.local
+```
+
+## Redis
+
+### Clean up
+
+Remove the Redis volume by executing
+
+```console
+docker volume rm gatewaycache.local
+```
+
+## Seq
+
+### Verify
+
+```console
+curl -XPOST "http://localhost:5341/api/events/raw?clef" \
+  -d "{'@t':'2018-06-07T03:44:57.8532799Z','@mt':'Hello, {User}','User':'alice'}"
+```
+### Password
+
+```console
+echo $(echo 'NewPassword' | docker run --rm -i datalust/seq config hash)
+```
+
+### Cleanup
+
+Remove the Seq log volume by executing
+
+```console
+docker volume rm gatewaylogs.local
 ```

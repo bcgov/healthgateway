@@ -94,7 +94,7 @@ function downloadFile(): void {
             <v-col :cols="cols">
                 <DisplayFieldComponent
                     data-testid="clinical-document-discipline"
-                    name="Discipline"
+                    name="Type"
                     name-class="font-weight-bold"
                     :value="entry.discipline"
                 />

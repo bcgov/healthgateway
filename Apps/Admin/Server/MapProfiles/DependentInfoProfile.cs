@@ -17,7 +17,6 @@ namespace HealthGateway.Admin.Server.MapProfiles
 {
     using AutoMapper;
     using HealthGateway.Admin.Common.Models;
-    using HealthGateway.Common.Models;
 
     /// <summary>
     /// An AutoMapper profile class which defines mapping between patient and dependent models.
@@ -29,7 +28,7 @@ namespace HealthGateway.Admin.Server.MapProfiles
         /// </summary>
         public DependentInfoProfile()
         {
-            this.CreateMap<PatientModel, DependentInfo>();
+            this.CreateMap<HealthGateway.Common.Models.PatientModel, DependentInfo>();
         }
     }
 }

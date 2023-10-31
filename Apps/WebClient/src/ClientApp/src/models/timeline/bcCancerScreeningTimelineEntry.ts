@@ -28,7 +28,7 @@ export default class BcCancerScreeningTimelineEntry extends TimelineEntry {
         super(
             model.id ?? `cancerScreening-${date}`,
             EntryType.BcCancerScreening,
-            new DateWrapper(date, { isUtc: true })
+            DateWrapper.fromIso(date)
         );
         this.isResult = isResult;
         this.subtitle = `Programe: ${model.programName}`;

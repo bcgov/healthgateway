@@ -80,7 +80,7 @@ const doses = computed(() =>
         const agent = element.immunization.immunizationAgents[0];
         return {
             product: agent.productName,
-            date: DateWrapper.format(element.dateOfImmunization),
+            date: DateWrapper.fromIsoDate(element.dateOfImmunization).format(),
             agent: agent.name,
             lot: agent.lotNumber,
             provider: element.providerOrClinic,
@@ -133,7 +133,9 @@ const patientName = computed(() => {
     return undefined;
 });
 const patientBirthdate = computed(() =>
-    formatDate(vaccinationStatus.value?.birthdate ?? undefined)
+    vaccinationStatus.value?.birthdate
+        ? DateWrapper.fromIsoDate(vaccinationStatus.value?.birthdate)
+        : undefined
 );
 
 function retrieveImmunizations(hdid: string): Promise<void> {
@@ -150,10 +152,6 @@ function retrieveAuthenticatedVaccineRecord(hdid: string): Promise<void> {
 
 function stopAuthenticatedVaccineRecordDownload(hdid: string): void {
     vaccinationStatusAuthenticatedStore.stopVaccineRecordDownload(hdid);
-}
-
-function formatDate(date: string | undefined): string {
-    return date === undefined ? "" : DateWrapper.format(date, "yyyy-MMM-dd");
 }
 
 function showImmunizationHistory(show: boolean): void {

@@ -24,8 +24,8 @@ spec:
   strategy:
     type: Rolling
     rollingParams:
-      maxUnavailable: 33%
-      maxSurge: 33%
+      maxUnavailable: 50%
+      maxSurge: 50%
     resources:
       limits:
         cpu: 15m
@@ -51,17 +51,21 @@ spec:
         {{ print "checksum/" $value.name  "-secrets"}}: {{ $top.Files.Get $value.file | toYaml | sha256sum }}
         {{- end }}
     spec:
+      hostAliases:
+        - ip: "142.34.135.210"
+          hostnames:
+          - "hlthgwsvc.hibc.gov.bc.ca"
       containers:
         - name: {{ $name }}
           image: {{ $image }}:{{ $tag }}
           imagePullPolicy: Always
           resources:
             limits:
-              cpu: {{ $context.limitCpu | default "150m" }}
-              memory: {{ $context.limitMemory | default "512Mi" }}
+              cpu: {{ $context.limitCpu | default ($top.Values.defaultResources).limitCpu | default "150m" }}
+              memory: {{ $context.limitMemory | default ($top.Values.defaultResources).limitMemory | default "512Mi" }}
             requests:
-              cpu: {{ $context.requestCpu | default "50m" }}
-              memory: {{ $context.requestMemory | default "256Mi" }}
+              cpu: {{ $context.requestCpu | default ($top.Values.defaultResources).requestCpu | default "50m" }}
+              memory: {{ $context.requestMemory | default ($top.Values.defaultResources).requestMemory | default "256Mi" }}
           volumeMounts:
             - mountPath: /dpkeys
               name: dp

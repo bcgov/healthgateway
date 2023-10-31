@@ -17,7 +17,9 @@ export default class NoteTimelineEntry extends TimelineEntry {
         super(
             model.id ?? "TEMP_ID",
             EntryType.Note,
-            new DateWrapper(model.journalDate ?? "")
+            model.journalDate
+                ? DateWrapper.fromIsoDate(model.journalDate)
+                : DateWrapper.today()
         );
         this.text = model.text ?? "";
         this.title = model.title || "No Title";

@@ -2,7 +2,7 @@
 @layout MainLayout
 @attribute [Authorize(Roles = $"{Roles.Admin}")]
 @using HealthGateway.Admin.Client.Store.AdminReport
-@using HealthGateway.Admin.Common.Models
+@using HealthGateway.Admin.Common.Models.AdminReports
 @inherits Fluxor.Blazor.Web.Components.FluxorComponent
 
 <PageTitle>Health Gateway Admin Reports</PageTitle>
@@ -29,24 +29,31 @@
 </MudText>
 <MudTable
     Class="mt-4"
-    Loading="@(ProtectedDependentsState.IsLoading)"
-    Items="@ProtectedDependentHdids"
+    T="ProtectedDependentRecord"
+    ServerData="@GetProtectedDependentsTableData"
     AllowUnsorted="@false"
     Striped="@true"
     Dense="@true"
     RowsPerPage="20"
+    RowClassFunc="@((row, _) => !string.IsNullOrEmpty(row.Phn) ? "cursor-pointer" : string.Empty)"
+    OnRowClick="@HandleProtectedDependentsRowClick"
     data-testid="protected-dependents-table">
     <HeaderContent>
         <MudTh>
             <MudTableSortLabel
-                SortBy="new Func<string, object>(x => x)"
+                T="ProtectedDependentRecord"
+                SortLabel="Hdid"
                 InitialDirection="@SortDirection.Ascending">
                 HDID
             </MudTableSortLabel>
         </MudTh>
+        <MudTh>
+            PHN
+        </MudTh>
     </HeaderContent>
     <RowTemplate>
-        <MudTd data-testid="protected-dependent-hdid" DataLabel="HDID">@context</MudTd>
+        <MudTd data-testid="protected-dependent-hdid" DataLabel="HDID">@context.Hdid</MudTd>
+        <MudTd data-testid="protected-dependent-phn" DataLabel="PHN">@context.Phn</MudTd>
     </RowTemplate>
     <PagerContent>
         <MudTablePager PageSizeOptions="new[]{20, 50, 100}" />

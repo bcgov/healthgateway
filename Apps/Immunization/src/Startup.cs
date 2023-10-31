@@ -63,6 +63,8 @@ namespace HealthGateway.Immunization
             this.startupConfig.ConfigureTracing(services);
             this.startupConfig.ConfigureAccessControl(services);
             this.startupConfig.ConfigurePatientAccess(services);
+            this.startupConfig.ConfigureMessaging(services);
+            this.startupConfig.ConfigureHangfireQueue(services);
 
             // Add Services
             services.AddTransient<IImmunizationService, ImmunizationService>();

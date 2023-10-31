@@ -7,6 +7,7 @@ import { ResultType } from "@/constants/resulttype";
 import { container } from "@/ioc/container";
 import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
 import { ImmunizationDatasetState } from "@/models/datasetState";
+import { DateWrapper } from "@/models/dateWrapper";
 import { ResultError } from "@/models/errors";
 import { ImmunizationEvent, Recommendation } from "@/models/immunizationModel";
 import ImmunizationResult from "@/models/immunizationResult";
@@ -26,13 +27,16 @@ const defaultImmunizationDatasetState: ImmunizationDatasetState = {
 };
 
 const immunizationSort = (a: ImmunizationEvent, b: ImmunizationEvent): number =>
-    DateSortUtility.ascendingByString(
-        a.dateOfImmunization,
-        b.dateOfImmunization
+    DateSortUtility.ascending(
+        DateWrapper.fromIsoDate(a.dateOfImmunization),
+        DateWrapper.fromIsoDate(b.dateOfImmunization)
     );
 
 const recommendationSort = (a: Recommendation, b: Recommendation): number =>
-    DateSortUtility.ascendingByOptionalString(a.agentDueDate, b.agentDueDate);
+    DateSortUtility.ascending(
+        a.agentDueDate ? DateWrapper.fromIsoDate(a.agentDueDate) : undefined,
+        b.agentDueDate ? DateWrapper.fromIsoDate(b.agentDueDate) : undefined
+    );
 
 export const useImmunizationStore = defineStore("immunization", () => {
     const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);

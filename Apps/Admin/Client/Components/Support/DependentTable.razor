@@ -1,0 +1,75 @@
+@using HealthGateway.Common.Data.Utils
+@inherits Fluxor.Blazor.Web.Components.FluxorComponent
+
+<MudText Class="mt-4" Typo="Typo.subtitle1">
+    Dependents
+</MudText>
+
+<MudTable Class="mt-4"
+          Items="@Rows"
+          Loading="@IsLoading"
+          AllowUnsorted="false"
+          Breakpoint="@Breakpoint.Md"
+          HorizontalScrollbar="true"
+          Striped="true"
+          Dense="true"
+          data-testid="dependent-table">
+    <ColGroup>
+        <MudHidden Breakpoint="@Breakpoint.MdAndDown">
+            <col />
+            <col style="width: 125px;" />
+            <col />
+            <col />
+            <col style="width: 145px;" />
+            <col />
+        </MudHidden>
+    </ColGroup>
+    <HeaderContent>
+        <MudTh>
+            <MudTableSortLabel SortBy="new Func<DependentRow, object>(x => x.Name)">
+                Name
+            </MudTableSortLabel>
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortBy="new Func<DependentRow, object>(x => x.Birthdate)" InitialDirection="@SortDirection.Ascending">
+                DOB
+            </MudTableSortLabel>
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortBy="new Func<DependentRow, object>(x => x.Phn)">
+                PHN
+            </MudTableSortLabel>
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortBy="new Func<DependentRow, object>(x => x.Address)">
+                Address
+            </MudTableSortLabel>
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortBy="new Func<DependentRow, object>(x => x.ExpiryDate)">
+                Expiry Date
+            </MudTableSortLabel>
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortBy="new Func<DependentRow, object>(x => x.Protected)">
+                Protected
+            </MudTableSortLabel>
+        </MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd data-testid="dependent-name" DataLabel="Name">@context.Name</MudTd>
+        <MudTd data-testid="dependent-dob" DataLabel="DOB">@DateFormatter.ToShortDate(context.Birthdate)</MudTd>
+        <MudTd data-testid="dependent-phn" DataLabel="PHN">@context.Phn</MudTd>
+        <MudTd data-testid="dependent-address" DataLabel="Address">@context.Address</MudTd>
+        <MudTd data-testid="dependent-expiry-date" DataLabel="Expiry Date">@DateFormatter.ToShortDate(context.ExpiryDate)</MudTd>
+        <MudTd data-testid="dependent-protected" DataLabel="Protected">
+            @if (context.Protected)
+            {
+                <MudIcon data-testid="dependent-protected-icon" Icon="fas fa-check" Color="@Color.Primary" />
+            }
+        </MudTd>
+    </RowTemplate>
+    <PagerContent>
+        <MudTablePager />
+    </PagerContent>
+</MudTable>

@@ -101,18 +101,23 @@ const visibleRecords = computed(() =>
         .medications(props.hdid)
         .filter(
             (record) =>
-                props.filter.allowsDate(record.dispensedDate) &&
+                props.filter.allowsDate(
+                    DateWrapper.fromIsoDate(record.dispensedDate)
+                ) &&
                 props.filter.allowsMedication(
                     record.medicationSummary.brandName
                 )
         )
         .sort((a, b) =>
-            DateSortUtility.descendingByString(a.dispensedDate, b.dispensedDate)
+            DateSortUtility.descending(
+                DateWrapper.fromIsoDate(a.dispensedDate),
+                DateWrapper.fromIsoDate(b.dispensedDate)
+            )
         )
 );
 const items = computed(() =>
     visibleRecords.value.map<MedicationRow>((x) => ({
-        date: DateWrapper.format(x.dispensedDate),
+        date: DateWrapper.fromIsoDate(x.dispensedDate).format(),
         din_pin: x.medicationSummary.din,
         title: x.medicationSummary.title,
         subtitle: x.medicationSummary.subtitle || notFoundText,

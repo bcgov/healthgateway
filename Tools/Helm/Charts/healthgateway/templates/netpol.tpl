@@ -24,7 +24,7 @@ spec:
             network.openshift.io/policy-group: ingress
       - podSelector:
           matchLabels:
-            app.kubernetes.io/instance: {{ $top.Release.Name }}
+            role: api
       ports:
         - protocol: {{ $protocol | upper }}
           port: {{ $port }}

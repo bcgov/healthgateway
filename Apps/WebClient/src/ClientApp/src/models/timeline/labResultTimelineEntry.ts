@@ -30,27 +30,20 @@ export default class LabResultTimelineEntry extends TimelineEntry {
         super(
             model.labPdfId,
             EntryType.LabResult,
-            new DateWrapper(model.timelineDateTime, {
-                hasTime: true,
-            })
+            DateWrapper.fromIso(model.timelineDateTime)
         );
 
         this.commonName = model.commonName;
         this.reportAvailable = model.reportAvailable;
         this.labPdfId = model.labPdfId;
 
-        if (model.collectionDateTime != null) {
-            this.collectionDateTime = new DateWrapper(
-                model.collectionDateTime,
-                {
-                    hasTime: true,
-                }
+        if (model.collectionDateTime) {
+            this.collectionDateTime = DateWrapper.fromIso(
+                model.collectionDateTime
             );
         }
 
-        this.timelineDateTime = new DateWrapper(model.timelineDateTime, {
-            hasTime: true,
-        });
+        this.timelineDateTime = DateWrapper.fromIso(model.timelineDateTime);
         this.orderingProvider = model.orderingProvider;
         this.reportingLab = model.reportingSource;
 

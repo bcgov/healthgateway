@@ -41,6 +41,11 @@ namespace HealthGateway.Admin.Client.Store.PatientDetails
         public ImmutableList<AgentAction>? AgentActions { get; init; }
 
         /// <summary>
+        /// Gets the dependents linked to the patient support details.
+        /// </summary>
+        public ImmutableList<PatientSupportDependentInfo>? Dependents { get; init; }
+
+        /// <summary>
         /// Gets the blocked data sources linked to the patient support details.
         /// </summary>
         public ImmutableList<DataSource>? BlockedDataSources { get; init; }

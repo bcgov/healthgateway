@@ -66,6 +66,8 @@ namespace HealthGateway.ClinicalDocument
             this.startupConfig.ConfigurePhsaV2Access(services);
             this.startupConfig.ConfigureTracing(services);
             this.startupConfig.ConfigureAccessControl(services);
+            this.startupConfig.ConfigureMessaging(services);
+            this.startupConfig.ConfigureHangfireQueue(services);
 
             // Add services
             services.AddTransient<IClinicalDocumentService, ClinicalDocumentService>();

@@ -74,17 +74,23 @@ const isEmpty = computed(() => visibleRecords.value.length === 0);
 const visibleRecords = computed(() =>
     labResultStore
         .labResults(props.hdid)
-        .filter((record) => props.filter.allowsDate(record.timelineDateTime))
+        .filter((record) =>
+            props.filter.allowsDate(
+                DateWrapper.fromIso(record.timelineDateTime)
+            )
+        )
         .sort((a, b) =>
-            DateSortUtility.descendingByString(
-                a.timelineDateTime,
-                b.timelineDateTime
+            DateSortUtility.descending(
+                DateWrapper.fromIso(a.timelineDateTime),
+                DateWrapper.fromIso(b.timelineDateTime)
             )
         )
 );
 const items = computed(() =>
     visibleRecords.value.flatMap<LabResultRow>((x) => {
-        const timelineDateTime = DateWrapper.format(x.timelineDateTime);
+        const timelineDateTime = DateWrapper.fromIso(
+            x.timelineDateTime
+        ).format();
         return x.laboratoryTests.map<LabResultRow>((y) => ({
             date: timelineDateTime,
             test: y.batteryType ?? "",

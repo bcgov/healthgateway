@@ -67,7 +67,7 @@ interface ISelectOption {
     value: unknown;
 }
 
-const currentDate = new DateWrapper();
+const currentDate = DateWrapper.today();
 
 const testTakenMinutesAgoOptions: ISelectOption[] = [
     { value: -1, title: "Time" },
@@ -190,7 +190,9 @@ const validations = computed(() => ({
             validationMessages.dob.maxValue,
             (value: string) =>
                 props.dataSource === PcrDataSource.Manual
-                    ? new DateWrapper(value).isBefore(new DateWrapper())
+                    ? DateWrapper.fromIsoDate(value).isBefore(
+                          DateWrapper.today()
+                      )
                     : true
         ),
     },
@@ -453,7 +455,11 @@ if (!props.serialNumber) {
                         />
                     </v-col>
                 </v-row>
-                <v-row align="center" no-gutters>
+                <v-row
+                    v-if="dataSource === PcrDataSource.Manual"
+                    align="center"
+                    no-gutters
+                >
                     <v-col cols="auto">
                         <v-checkbox
                             v-model="noPhn"
@@ -522,6 +528,7 @@ if (!props.serialNumber) {
                 <v-row>
                     <v-col>
                         <HgDatePickerComponent
+                            v-if="dataSource === PcrDataSource.Manual"
                             v-model="v$.dob.$model"
                             label="Date of Birth"
                             data-testid="dob-input"

@@ -1,7 +1,53 @@
 {
-    "messagingVerifications": null,
-    "agentActions": null,
-    "blockedDataSources": null,
+    "messagingVerifications": [
+        {
+            "id": "e3d1b6ce-781d-4adc-ab40-a9e9ae847d93",
+            "userProfileId": "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A",
+            "validated": true,
+            "emailId": null,
+            "email": null,
+            "inviteKey": "00000000-0000-0000-0000-000000000000",
+            "verificationType": "SMS",
+            "smsNumber": "2506715000",
+            "smsValidationCode": "654321",
+            "expireDate": "2023-10-18T20:05:46.25725Z",
+            "verificationAttempts": 0,
+            "deleted": false,
+            "updatedDateTime": "2023-10-17T20:05:46.25725Z"
+        },
+        {
+            "id": "4f72e000-ace5-4d4c-92cf-a96438304e85",
+            "userProfileId": "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A",
+            "validated": false,
+            "emailId": null,
+            "email": null,
+            "inviteKey": "00000000-0000-0000-0000-000000000000",
+            "verificationType": "SMS",
+            "smsNumber": "2506715000",
+            "smsValidationCode": "123456",
+            "expireDate": "2023-10-18T20:05:46.25725Z",
+            "verificationAttempts": 0,
+            "deleted": false,
+            "updatedDateTime": "2023-10-17T19:05:46.25725Z"
+        }
+    ],
+    "agentActions": [
+        {
+            "hdid": "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A",
+            "agentUsername": "blazoradmin",
+            "reason": "Test block reason",
+            "operationCode": 0,
+            "transactionDateTime": "2023-10-17T20:06:47.2404Z"
+        },
+        {
+            "hdid": "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A",
+            "agentUsername": "blazoradmin",
+            "reason": "Test unblock reason",
+            "operationCode": 0,
+            "transactionDateTime": "2023-10-17T20:06:58.575245Z"
+        }
+    ],
+    "blockedDataSources": ["ClinicalDocument"],
     "vaccineDetails": {
         "blocked": false,
         "containsInvalidDoses": true,

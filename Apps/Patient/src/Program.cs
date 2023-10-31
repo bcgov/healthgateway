@@ -58,8 +58,10 @@ namespace HealthGateway.Patient
             Auth.ConfigureAuthorizationServices(services, logger, configuration);
             Auth.ConfigureDelegateAuthorizationServices(services, logger, configuration);
             SwaggerDoc.ConfigureSwaggerServices(services, configuration);
+            MessageBus.ConfigureMessageBus(services, configuration);
 
             Patient.ConfigurePatientAccess(services, logger, configuration);
+            JobScheduler.ConfigureHangfireQueue(services, configuration);
             PersonalAccount.ConfigurePersonalAccountAccess(services, logger, configuration);
 
             services.AddTransient<IPatientService, PatientService>();

@@ -15,7 +15,7 @@ const otherDelegateCount = computed(
 );
 
 function formatDate(date: StringISODate): string {
-    return DateWrapper.format(date);
+    return DateWrapper.fromIsoDate(date).format();
 }
 </script>
 

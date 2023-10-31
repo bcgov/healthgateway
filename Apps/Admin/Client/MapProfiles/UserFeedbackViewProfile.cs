@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,15 +13,23 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Admin.Common.Models
+namespace HealthGateway.Admin.Client.MapProfiles
 {
-    using System.Collections.Generic;
-    using HealthGateway.Common.Data.Constants;
+    using AutoMapper;
+    using HealthGateway.Admin.Client.Models;
+    using HealthGateway.Admin.Common.Models;
 
     /// <summary>
-    /// Represents a patient with blocked access to data sources.
+    /// An AutoMapper profile class which defines mappings to front-end models.
     /// </summary>
-    /// <param name="Hdid">Patient's HDID.</param>
-    /// <param name="BlockedSources">List of <see cref="DataSource"/> that are blocked</param>
-    public record BlockedAccessRecord(string Hdid, IList<DataSource> BlockedSources);
+    public class UserFeedbackViewProfile : Profile
+    {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UserFeedbackViewProfile"/> class.
+        /// </summary>
+        public UserFeedbackViewProfile()
+        {
+            this.CreateMap<UserFeedbackView, ExtendedUserFeedbackView>();
+        }
+    }
 }

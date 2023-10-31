@@ -76,15 +76,20 @@ const isEmpty = computed(() => visibleRecords.value.length === 0);
 const visibleRecords = computed(() =>
     hospitalVisitStore
         .hospitalVisits(props.hdid)
-        .filter((record) => props.filter.allowsDate(record.admitDateTime))
+        .filter((record) =>
+            props.filter.allowsDate(DateWrapper.fromIso(record.admitDateTime))
+        )
         .sort((a, b) =>
-            DateSortUtility.descendingByString(a.admitDateTime, b.admitDateTime)
+            DateSortUtility.descending(
+                DateWrapper.fromIso(a.admitDateTime),
+                DateWrapper.fromIso(b.admitDateTime)
+            )
         )
 );
 const items = computed(() =>
     visibleRecords.value.map<HospitalVisitRow>((x) => {
         return {
-            date: DateWrapper.format(x.admitDateTime),
+            date: DateWrapper.fromIso(x.admitDateTime).format(),
             health_service: x.healthService,
             visit_type: x.visitType,
             location: x.facility,

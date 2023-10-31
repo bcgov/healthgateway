@@ -18,8 +18,7 @@ namespace HealthGateway.Admin.Client.Store.UserFeedback;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using HealthGateway.Admin.Common.Models;
-using HealthGateway.Common.Data.ViewModels;
+using HealthGateway.Admin.Client.Models;
 
 /// <summary>
 /// Static class that implements all actions for the feature.
@@ -40,7 +39,7 @@ public static class UserFeedbackActions
     /// <summary>
     /// The action representing a successful load.
     /// </summary>
-    public record LoadSuccessAction : BaseSuccessAction<RequestResult<IEnumerable<UserFeedbackView>>>;
+    public record LoadSuccessAction : BaseSuccessAction<IEnumerable<ExtendedUserFeedbackView>>;
 
     /// <summary>
     /// The action representing the initiation of an update.
@@ -50,7 +49,7 @@ public static class UserFeedbackActions
         /// <summary>
         /// Gets the user feedback view.
         /// </summary>
-        public required UserFeedbackView UserFeedbackView { get; init; }
+        public required ExtendedUserFeedbackView UserFeedbackView { get; init; }
     }
 
     /// <summary>
@@ -61,12 +60,12 @@ public static class UserFeedbackActions
     /// <summary>
     /// The action representing a successful update.
     /// </summary>
-    public record UpdateSuccessAction : BaseSuccessAction<RequestResult<UserFeedbackView>>;
+    public record UpdateSuccessAction : BaseSuccessAction<ExtendedUserFeedbackView>;
 
     /// <summary>
-    /// The action representing the initiation of an associated tag.
+    /// The action representing the initiation of a change of associated tags.
     /// </summary>
-    public record AssociateTagsAction
+    public record ChangeAssociatedTagsAction
     {
         /// <summary>
         /// Gets the tag IDs.
@@ -80,14 +79,30 @@ public static class UserFeedbackActions
     }
 
     /// <summary>
-    /// The action representing a failed tag association.
+    /// The action representing the initiation of a save of associated tags.
     /// </summary>
-    public record AssociateTagsFailureAction : BaseFailureAction;
+    public record SaveAssociatedTagsAction
+    {
+        /// <summary>
+        /// Gets the tag IDs.
+        /// </summary>
+        public required IEnumerable<Guid> TagIds { get; init; }
+
+        /// <summary>
+        /// Gets the feedback ID.
+        /// </summary>
+        public required Guid FeedbackId { get; init; }
+    }
 
     /// <summary>
-    /// The action representing a successful tag association.
+    /// The action representing a failed save of associated tags.
     /// </summary>
-    public record AssociateTagsSuccessAction : BaseSuccessAction<RequestResult<UserFeedbackView>>;
+    public record SaveAssociatedTagsFailureAction : BaseFailureAction;
+
+    /// <summary>
+    /// The action representing a successful save of associated tags.
+    /// </summary>
+    public record SaveAssociatedTagsSuccessAction : BaseSuccessAction<ExtendedUserFeedbackView>;
 
     /// <summary>
     /// The action that clears the state.

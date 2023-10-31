@@ -19,31 +19,59 @@ namespace HealthGateway.Admin.Server.Services
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
-    using HealthGateway.Admin.Common.Models;
+    using HealthGateway.AccountDataAccess.Patient;
+    using HealthGateway.Admin.Common.Models.AdminReports;
+    using HealthGateway.Common.Data.Constants;
+    using HealthGateway.Common.Data.ErrorHandling;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
+    using Serilog;
 
     /// <inheritdoc/>
     public class AdminReportService : IAdminReportService
     {
         private readonly IDelegationDelegate delegationDelegate;
         private readonly IBlockedAccessDelegate blockedAccessDelegate;
+        private readonly IPatientRepository patientRepository;
+        private readonly ILogger logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AdminReportService"/> class.
         /// </summary>
         /// <param name="delegationDelegate">The ResourceDelegate delegate to communicate with DB.</param>
         /// <param name="blockedAccessDelegate">The BlockedAccess delegate to communicate with DB.</param>
-        public AdminReportService(IDelegationDelegate delegationDelegate, IBlockedAccessDelegate blockedAccessDelegate)
+        /// <param name="patientRepository">The patient repository used to retrieve patient details.</param>
+        /// <param name="logger">Injected Logger.</param>
+        public AdminReportService(IDelegationDelegate delegationDelegate, IBlockedAccessDelegate blockedAccessDelegate, IPatientRepository patientRepository, ILogger logger)
         {
             this.delegationDelegate = delegationDelegate;
             this.blockedAccessDelegate = blockedAccessDelegate;
+            this.patientRepository = patientRepository;
+            this.logger = logger;
         }
 
         /// <inheritdoc/>
-        public Task<IList<string>> GetProtectedDependentsReportAsync(CancellationToken ct)
+        public async Task<ProtectedDependentReport> GetProtectedDependentsReportAsync(int page, int pageSize, SortDirection sortDirection, CancellationToken ct)
         {
-            return this.delegationDelegate.GetProtectedDependentHdidsAsync(ct);
+            (IList<string> Hdids, int TotalHdids) protectedHdids = await this.delegationDelegate.GetProtectedDependentHdidsAsync(page, pageSize, sortDirection, ct);
+            IEnumerable<Task<ProtectedDependentRecord>> tasks = protectedHdids.Hdids
+                .Select(
+                    async hdid =>
+                    {
+                        PatientQuery query = new PatientDetailsQuery(Hdid: hdid, Source: PatientDetailSource.All);
+                        PatientQueryResult? patient = null;
+                        try
+                        {
+                            patient = await this.patientRepository.Query(query, ct);
+                        }
+                        catch (ProblemDetailsException e)
+                        {
+                            this.logger.Error($"Error retrieving patient details for hdid {hdid}: {e.Message}");
+                        }
+
+                        return new ProtectedDependentRecord(hdid, patient?.Items.SingleOrDefault()?.Phn);
+                    });
+            return new ProtectedDependentReport(await Task.WhenAll(tasks), new ReportMetadata(protectedHdids.TotalHdids, page, pageSize));
         }
 
         /// <inheritdoc/>

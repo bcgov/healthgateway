@@ -19,30 +19,32 @@ using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
+using AutoMapper;
 using Fluxor;
 using HealthGateway.Admin.Client.Api;
+using HealthGateway.Admin.Client.Models;
 using HealthGateway.Admin.Client.Utils;
 using HealthGateway.Admin.Common.Models;
 using HealthGateway.Common.Data.Constants;
 using HealthGateway.Common.Data.ViewModels;
-using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Logging;
 using Refit;
 
 #pragma warning disable CS1591, SA1600
 public class UserFeedbackEffects
 {
-    public UserFeedbackEffects(ILogger<UserFeedbackEffects> logger, IUserFeedbackApi api)
+    public UserFeedbackEffects(ILogger<UserFeedbackEffects> logger, IUserFeedbackApi api, IMapper autoMapper)
     {
         this.Logger = logger;
         this.Api = api;
+        this.AutoMapper = autoMapper;
     }
 
-    [Inject]
-    private ILogger<UserFeedbackEffects> Logger { get; set; }
+    private ILogger<UserFeedbackEffects> Logger { get; }
 
-    [Inject]
-    private IUserFeedbackApi Api { get; set; }
+    private IUserFeedbackApi Api { get; }
+
+    private IMapper AutoMapper { get; }
 
     [EffectMethod(typeof(UserFeedbackActions.LoadAction))]
     public async Task HandleLoadAction(IDispatcher dispatcher)
@@ -55,7 +57,11 @@ public class UserFeedbackEffects
             if (response is { ResourcePayload: { }, ResultStatus: ResultType.Success })
             {
                 this.Logger.LogInformation("User feedback loaded successfully!");
-                dispatcher.Dispatch(new UserFeedbackActions.LoadSuccessAction { Data = response });
+                dispatcher.Dispatch(
+                    new UserFeedbackActions.LoadSuccessAction
+                    {
+                        Data = this.AutoMapper.Map<IEnumerable<UserFeedbackView>, IEnumerable<ExtendedUserFeedbackView>>(response.ResourcePayload),
+                    });
                 return;
             }
 
@@ -82,7 +88,11 @@ public class UserFeedbackEffects
             if (response is { ResourcePayload: { }, ResultStatus: ResultType.Success })
             {
                 this.Logger.LogInformation("User feedback updated successfully!");
-                dispatcher.Dispatch(new UserFeedbackActions.UpdateSuccessAction { Data = response });
+                dispatcher.Dispatch(
+                    new UserFeedbackActions.UpdateSuccessAction
+                    {
+                        Data = this.AutoMapper.Map<UserFeedbackView, ExtendedUserFeedbackView>(response.ResourcePayload),
+                    });
                 return;
             }
 
@@ -99,7 +109,7 @@ public class UserFeedbackEffects
     }
 
     [EffectMethod]
-    public async Task HandleAssociateTagsAction(UserFeedbackActions.AssociateTagsAction action, IDispatcher dispatcher)
+    public async Task HandleSaveAssociatedTagsAction(UserFeedbackActions.SaveAssociatedTagsAction action, IDispatcher dispatcher)
     {
         this.Logger.LogInformation("Associating tags with user feedback!");
 
@@ -109,19 +119,24 @@ public class UserFeedbackEffects
             if (response is { ResourcePayload: { }, ResultStatus: ResultType.Success })
             {
                 this.Logger.LogInformation("Tags associated to user feedback successfully!");
-                dispatcher.Dispatch(new UserFeedbackActions.AssociateTagsSuccessAction { Data = response });
+
+                dispatcher.Dispatch(
+                    new UserFeedbackActions.SaveAssociatedTagsSuccessAction
+                    {
+                        Data = this.AutoMapper.Map<UserFeedbackView, ExtendedUserFeedbackView>(response.ResourcePayload),
+                    });
                 return;
             }
 
             RequestError error = StoreUtility.FormatRequestError(null, response.ResultError);
             this.Logger.LogError("Error associating tags to user feedback, reason: {ErrorMessage}", error.Message);
-            dispatcher.Dispatch(new UserFeedbackActions.AssociateTagsFailureAction { Error = error });
+            dispatcher.Dispatch(new UserFeedbackActions.SaveAssociatedTagsFailureAction { Error = error });
         }
         catch (Exception e) when (e is ApiException or HttpRequestException)
         {
             RequestError error = StoreUtility.FormatRequestError(e);
             this.Logger.LogError("Error associating tags to user feedback, reason: {Exception}", e.ToString());
-            dispatcher.Dispatch(new UserFeedbackActions.AssociateTagsFailureAction { Error = error });
+            dispatcher.Dispatch(new UserFeedbackActions.SaveAssociatedTagsFailureAction { Error = error });
         }
     }
 }

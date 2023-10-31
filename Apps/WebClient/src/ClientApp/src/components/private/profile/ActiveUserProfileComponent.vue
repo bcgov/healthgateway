@@ -7,17 +7,21 @@ import UserProfileEmailComponent from "@/components/private/profile/UserProfileE
 import UserProfileManageAccountComponent from "@/components/private/profile/UserProfileManageAccountComponent.vue";
 import UserProfileSmsComponent from "@/components/private/profile/UserProfileSmsComponent.vue";
 import { DateWrapper } from "@/models/dateWrapper";
+import { useAppStore } from "@/stores/app";
 import { useUserStore } from "@/stores/user";
 
 const emit = defineEmits<{
     (e: "email-updated", value: string): void;
 }>();
 
+const appStore = useAppStore();
 const userStore = useUserStore();
 
 const formattedLoginDateTimes = computed(() =>
     userStore.user.lastLoginDateTimes.map((time) =>
-        new DateWrapper(time, { isUtc: true }).format("yyyy-MMM-dd, t")
+        DateWrapper.fromIso(time).format(
+            appStore.isPacificTime ? "yyyy-MMM-dd, t" : "yyyy-MMM-dd, t ZZZZ"
+        )
     )
 );
 </script>

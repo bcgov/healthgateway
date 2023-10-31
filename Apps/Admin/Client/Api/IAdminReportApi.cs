@@ -17,7 +17,8 @@ namespace HealthGateway.Admin.Client.Api
 {
     using System.Collections.Generic;
     using System.Threading.Tasks;
-    using HealthGateway.Admin.Common.Models;
+    using HealthGateway.Admin.Common.Models.AdminReports;
+    using HealthGateway.Common.Data.Constants;
     using Refit;
 
     /// <summary>
@@ -35,8 +36,11 @@ namespace HealthGateway.Admin.Client.Api
         /// <summary>
         /// Retrieves a collection of user HDIDs that have dependents.
         /// </summary>
+        /// <param name="page">Page number of the protected dependents report (First page is zero).</param>
+        /// <param name="pageSize">Number or records per page to return from the protected dependents report.</param>
+        /// <param name="sortDirection">The sort direction for the records in the protected dependents report.</param>
         /// <returns>Collection of user HDIDs that have dependents attached.</returns>
         [Get("/ProtectedDependents")]
-        Task<IEnumerable<string>> GetProtectedDependentsReport();
+        Task<ProtectedDependentReport> GetProtectedDependentsReport(int? page = 0, int? pageSize = 25, SortDirection? sortDirection = SortDirection.Ascending);
     }
 }

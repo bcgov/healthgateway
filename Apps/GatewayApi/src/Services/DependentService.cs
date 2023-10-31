@@ -55,7 +55,7 @@ namespace HealthGateway.GatewayApi.Services
         private readonly IMapper autoMapper;
         private readonly ILogger logger;
         private readonly int maxDependentAge;
-        private readonly bool changeFeedEnabled;
+        private readonly bool dependentsChangeFeedEnabled;
         private readonly INotificationSettingsService notificationSettingsService;
         private readonly IPatientService patientService;
         private readonly IDelegationDelegate delegationDelegate;
@@ -94,8 +94,8 @@ namespace HealthGateway.GatewayApi.Services
             this.userProfileDelegate = userProfileDelegate;
             this.messageSender = messageSender;
             this.maxDependentAge = configuration.GetSection(WebClientConfigSection).GetValue(MaxDependentAgeKey, 12);
-            this.changeFeedEnabled = configuration.GetSection(ChangeFeedConfiguration.ConfigurationSectionKey)
-                .GetValue($"{ChangeFeedConfiguration.DependentsKey}:Enabled", false);
+            ChangeFeedOptions? changeFeedConfiguration = configuration.GetSection(ChangeFeedOptions.ChangeFeed).Get<ChangeFeedOptions>();
+            this.dependentsChangeFeedEnabled = changeFeedConfiguration?.Dependents.Enabled ?? false;
             this.autoMapper = autoMapper;
         }
 
@@ -109,8 +109,8 @@ namespace HealthGateway.GatewayApi.Services
                 return RequestResultFactory.Error<DependentModel>(ErrorType.InvalidState, validationResults.Errors);
             }
 
-            RequestResult<PatientModel> dependentResult = await this.GetDependentAsPatient(addDependentRequest.Phn);
-            RequestResult<DependentModel>? validationResult = await this.ValidateDependent(addDependentRequest, delegateHdid, dependentResult);
+            RequestResult<PatientModel> dependentResult = await this.GetDependentAsPatientAsync(addDependentRequest.Phn);
+            RequestResult<DependentModel>? validationResult = await this.ValidateDependentAsync(addDependentRequest, delegateHdid, dependentResult, ct);
             if (validationResult != null)
             {
                 return validationResult;
@@ -129,14 +129,14 @@ namespace HealthGateway.GatewayApi.Services
 
             // commit to the database if change feed is disabled; if change feed enabled, commit will happen when message sender is called
             // this is temporary and will be changed when we introduce a proper unit of work to manage transactionality.
-            DbResult<ResourceDelegate> dbDependent = this.resourceDelegateDelegate.Insert(resourceDelegate, !this.changeFeedEnabled);
+            DbResult<ResourceDelegate> dbDependent = this.resourceDelegateDelegate.Insert(resourceDelegate, !this.dependentsChangeFeedEnabled);
             if (dbDependent.Status == DbStatusCode.Error)
             {
                 throw new ProblemDetailsException(ExceptionUtility.CreateServerError($"{ServiceType.Database}:{ErrorType.CommunicationInternal}", dbDependent.Message));
             }
 
             this.UpdateNotificationSettings(dependentHdid, delegateHdid);
-            if (this.changeFeedEnabled)
+            if (this.dependentsChangeFeedEnabled)
             {
                 await this.messageSender.SendAsync(new[] { new MessageEnvelope(new DependentAddedEvent(delegateHdid, dependentHdid), delegateHdid) }, ct);
             }
@@ -244,7 +244,7 @@ namespace HealthGateway.GatewayApi.Services
 
             // commit to the database if change feed is disabled; if change feed enabled, commit will happen when message sender is called
             // this is temporary and will be changed when we introduce a proper unit of work to manage transactionality.
-            DbResult<ResourceDelegate> dbDependent = this.resourceDelegateDelegate.Delete(resourceDelegate, !this.changeFeedEnabled);
+            DbResult<ResourceDelegate> dbDependent = this.resourceDelegateDelegate.Delete(resourceDelegate, !this.dependentsChangeFeedEnabled);
             if (dbDependent.Status == DbStatusCode.Error)
             {
                 throw new ProblemDetailsException(ExceptionUtility.CreateServerError($"{ServiceType.Database}:{ErrorType.CommunicationInternal}", dbDependent.Message));
@@ -252,7 +252,7 @@ namespace HealthGateway.GatewayApi.Services
 
             this.UpdateNotificationSettings(dependent.OwnerId, dependent.DelegateId, true);
 
-            if (this.changeFeedEnabled)
+            if (this.dependentsChangeFeedEnabled)
             {
                 await this.messageSender.SendAsync(new[] { new MessageEnvelope(new DependentRemovedEvent(dependent.DelegateId, dependent.OwnerId), dependent.DelegateId) }, ct);
             }
@@ -293,7 +293,11 @@ namespace HealthGateway.GatewayApi.Services
             return replacedValue;
         }
 
-        private async Task<RequestResult<DependentModel>?> ValidateDependent(AddDependentRequest addDependentRequest, string delegateHdid, RequestResult<PatientModel> dependentResult)
+        private async Task<RequestResult<DependentModel>?> ValidateDependentAsync(
+            AddDependentRequest addDependentRequest,
+            string delegateHdid,
+            RequestResult<PatientModel> dependentResult,
+            CancellationToken ct)
         {
             switch (dependentResult.ResultStatus)
             {
@@ -319,7 +323,7 @@ namespace HealthGateway.GatewayApi.Services
                     }
 
                     // Verify delegate is allowed to access dependent
-                    Dependent? dependent = await this.delegationDelegate.GetDependentAsync(dependentResult.ResourcePayload?.HdId, true);
+                    Dependent? dependent = await this.delegationDelegate.GetDependentAsync(dependentResult.ResourcePayload?.HdId, true, ct);
                     if (dependent is { Protected: true } && dependent.AllowedDelegations.All(d => d.DelegateHdId != delegateHdid))
                     {
                         return RequestResultFactory.ActionRequired<DependentModel>(ActionType.Protected, ErrorMessages.CannotPerformAction);
@@ -329,7 +333,7 @@ namespace HealthGateway.GatewayApi.Services
             }
         }
 
-        private async Task<RequestResult<PatientModel>> GetDependentAsPatient(string phn)
+        private async Task<RequestResult<PatientModel>> GetDependentAsPatientAsync(string phn)
         {
             return await this.patientService.GetPatient(phn, PatientIdentifierType.Phn);
         }

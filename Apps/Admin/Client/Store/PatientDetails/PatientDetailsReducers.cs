@@ -41,6 +41,7 @@ namespace HealthGateway.Admin.Client.Store.PatientDetails
                 MessagingVerifications = action.Data.MessagingVerifications?.ToImmutableList(),
                 BlockedDataSources = action.Data.BlockedDataSources?.ToImmutableList(),
                 AgentActions = action.Data.AgentActions?.ToImmutableList(),
+                Dependents = action.Data.Dependents?.ToImmutableList(),
                 VaccineDetails = action.Data.VaccineDetails,
                 CovidAssessmentDetails = action.Data.CovidAssessmentDetails,
             };
@@ -67,6 +68,7 @@ namespace HealthGateway.Admin.Client.Store.PatientDetails
                 MessagingVerifications = null,
                 BlockedDataSources = null,
                 AgentActions = null,
+                Dependents = null,
                 VaccineDetails = null,
                 CovidAssessmentDetails = null,
             };

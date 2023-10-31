@@ -9,8 +9,8 @@ export default class SpecialAuthorityRequestTimelineEntry extends TimelineEntry 
     public drugName: string;
     public requestStatus?: string;
     public prescriberName?: string;
-    public effectiveDate: DateWrapper;
-    public expiryDate: DateWrapper;
+    public effectiveDate?: DateWrapper;
+    public expiryDate?: DateWrapper;
     public referenceNumber: string;
 
     private getComments: (entyId: string) => UserComment[] | null;
@@ -22,7 +22,7 @@ export default class SpecialAuthorityRequestTimelineEntry extends TimelineEntry 
         super(
             model.referenceNumber,
             EntryType.SpecialAuthorityRequest,
-            new DateWrapper(model.requestedDate)
+            DateWrapper.fromIsoDate(model.requestedDate)
         );
 
         this.drugName = model.drugName ?? "";
@@ -33,8 +33,12 @@ export default class SpecialAuthorityRequestTimelineEntry extends TimelineEntry 
         ]
             .filter((s) => Boolean(s))
             .join(" ");
-        this.effectiveDate = new DateWrapper(model.effectiveDate);
-        this.expiryDate = new DateWrapper(model.expiryDate);
+        this.effectiveDate = model.effectiveDate
+            ? DateWrapper.fromIsoDate(model.effectiveDate)
+            : undefined;
+        this.expiryDate = model.expiryDate
+            ? DateWrapper.fromIsoDate(model.expiryDate)
+            : undefined;
         this.referenceNumber = model.referenceNumber;
         this.getComments = getComments;
     }

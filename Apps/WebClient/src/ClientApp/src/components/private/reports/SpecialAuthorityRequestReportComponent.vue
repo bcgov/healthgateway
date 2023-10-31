@@ -84,23 +84,26 @@ const isEmpty = computed(() => visibleRecords.value.length === 0);
 const visibleRecords = computed(() =>
     specialAuthorityStore
         .specialAuthorityRequests(props.hdid)
-        .filter((record) => props.filter.allowsDate(record.requestedDate))
+        .filter((record) =>
+            props.filter.allowsDate(
+                DateWrapper.fromIsoDate(record.requestedDate)
+            )
+        )
         .sort((a, b) =>
-            DateSortUtility.descendingByString(a.requestedDate, b.requestedDate)
+            DateSortUtility.descending(
+                DateWrapper.fromIsoDate(a.requestedDate),
+                DateWrapper.fromIsoDate(b.requestedDate)
+            )
         )
 );
 const items = computed(() =>
     visibleRecords.value.map<SpecialAuthorityRequestRow>((x) => ({
-        date: DateWrapper.format(x.requestedDate),
+        date: DateWrapper.fromIsoDate(x.requestedDate).format(),
         requested_drug_name: x.drugName ?? "",
         status: x.requestStatus ?? "",
         prescriber_name: prescriberName(x),
-        effective_date:
-            x.effectiveDate === undefined
-                ? ""
-                : DateWrapper.format(x.effectiveDate),
-        expiry_date:
-            x.expiryDate === undefined ? "" : DateWrapper.format(x.expiryDate),
+        effective_date: DateWrapper.fromIsoDate(x.effectiveDate).format(),
+        expiry_date: DateWrapper.fromIsoDate(x.expiryDate).format(),
         reference_number: x.referenceNumber,
     }))
 );

@@ -86,7 +86,7 @@ namespace HealthGateway.AccountDataAccess.Patient
         /// <param name="command">The command details used to block access.</param>
         /// <param name="ct">The cancellation token.</param>
         /// <returns>The agent audit entry created from the operation.</returns>
-        Task BlockAccess(BlockAccessCommand command, CancellationToken ct = default);
+        Task BlockAccessAsync(BlockAccessCommand command, CancellationToken ct = default);
     }
 
     /// <summary>

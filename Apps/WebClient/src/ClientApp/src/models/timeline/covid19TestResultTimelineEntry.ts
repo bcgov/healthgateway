@@ -34,9 +34,7 @@ export default class Covid19TestResultTimelineEntry extends TimelineEntry {
         super(
             model.id,
             EntryType.Covid19TestResult,
-            new DateWrapper(model.labResults[0].collectedDateTime, {
-                hasTime: true,
-            })
+            DateWrapper.fromIso(model.labResults[0].collectedDateTime)
         );
 
         this.orderingProviderIds = model.orderingProviderIds;
@@ -101,21 +99,15 @@ export class Covid19TestData {
         this.id = model.id;
         this.testType = model.testType;
         this.outOfRange = model.outOfRange ? "True" : "False";
-        this.collectedDateTime = new DateWrapper(model.collectedDateTime, {
-            hasTime: true,
-        });
+        this.collectedDateTime = DateWrapper.fromIso(model.collectedDateTime);
         this.testStatus = model.testStatus;
         this.resultReady = model.resultReady;
         this.resultDescription = model.resultDescription;
         this.resultLink = model.resultLink;
         this.labResultOutcome = model.labResultOutcome;
         this.filteredLabResultOutcome = model.filteredLabResultOutcome;
-        this.receivedDateTime = new DateWrapper(model.receivedDateTime, {
-            hasTime: true,
-        });
-        this.resultDateTime = new DateWrapper(model.resultDateTime, {
-            hasTime: true,
-        });
+        this.receivedDateTime = DateWrapper.fromIso(model.receivedDateTime);
+        this.resultDateTime = DateWrapper.fromIso(model.resultDateTime);
         this.loinc = model.loinc;
         this.loincName = model.loincName;
     }

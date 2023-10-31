@@ -75,7 +75,7 @@ function setResendTimeout(): void {
         minutes: configStore.webConfig.timeouts.resendSMS,
     });
 
-    const now = new DateWrapper();
+    const now = DateWrapper.now();
     allowRetry.value = smsTimeWhenEnabled.isBefore(now);
     if (!allowRetry.value) {
         const millisecondsToExpire = smsTimeWhenEnabled.diff(now).milliseconds;
@@ -111,7 +111,7 @@ function verifySms(): void {
 
 function sendUserSmsUpdate(): void {
     smsVerificationSent.value = true;
-    userStore.updateSmsResendDateTime(new DateWrapper());
+    userStore.updateSmsResendDateTime(DateWrapper.now());
     userProfileService
         .updateSmsNumber(user.value.hdid, props.smsNumber)
         .then(() => setTimeout(() => (smsVerificationSent.value = false), 5000))
@@ -131,7 +131,7 @@ function sendUserSmsUpdate(): void {
 function getTimeout(): number {
     let resendTime: IDateWrapper;
     if (!smsResendDateTime.value) {
-        const now = new DateWrapper();
+        const now = DateWrapper.now();
         userStore.updateSmsResendDateTime(now);
         resendTime = now;
     } else {
@@ -140,7 +140,7 @@ function getTimeout(): number {
     resendTime = resendTime.add(
         configStore.webConfig.timeouts.resendSMS * 60 * 1000
     );
-    return resendTime.diff(new DateWrapper()).milliseconds;
+    return resendTime.diff(DateWrapper.now()).milliseconds;
 }
 
 function onVerificationChange(): void {

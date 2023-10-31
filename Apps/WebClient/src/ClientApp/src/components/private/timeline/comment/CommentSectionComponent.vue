@@ -34,7 +34,7 @@ const newComment: UserComment = {
         entryTypeMap.get(props.parentEntry.type)?.commentType ??
         CommentEntryType.None,
     userProfileId: "",
-    createdDateTime: new DateWrapper().toISODate(),
+    createdDateTime: DateWrapper.now().toISODate(),
     version: 0,
 };
 

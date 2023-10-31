@@ -13,7 +13,7 @@ import { ILogger } from "@/services/interfaces";
 import { useErrorStore } from "@/stores/error";
 import { useUserStore } from "@/stores/user";
 
-const today = new DateWrapper().format("yyyy-MMM-dd");
+const today = DateWrapper.today().format();
 
 const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
 const { toClipboard } = useClipboard();

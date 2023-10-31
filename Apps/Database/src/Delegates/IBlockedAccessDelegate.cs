@@ -31,8 +31,9 @@ namespace HealthGateway.Database.Delegates
         /// </summary>
         /// <param name="blockedAccess">The blocked access object to delete.</param>
         /// <param name="agentAudit">The agent audit to create.</param>
+        /// <param name="commit">Should commit, default to true.</param>
         /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
-        Task DeleteBlockedAccessAsync(BlockedAccess blockedAccess, AgentAudit agentAudit);
+        Task DeleteBlockedAccessAsync(BlockedAccess blockedAccess, AgentAudit agentAudit, bool commit = true);
 
         /// <summary>
         /// Fetches the blocked access by hdid from the database.
@@ -53,8 +54,9 @@ namespace HealthGateway.Database.Delegates
         /// </summary>
         /// <param name="blockedAccess">The blocked access object to add or update.</param>
         /// <param name="agentAudit">The agent audit to create.</param>
+        /// <param name="commit">Should commit, default to true.</param>
         /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
-        Task UpdateBlockedAccessAsync(BlockedAccess blockedAccess, AgentAudit agentAudit);
+        Task UpdateBlockedAccessAsync(BlockedAccess blockedAccess, AgentAudit agentAudit, bool commit = true);
 
         /// <summary>
         /// Retrieves all blocked access records.

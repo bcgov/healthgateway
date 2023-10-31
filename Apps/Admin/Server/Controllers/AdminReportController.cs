@@ -18,8 +18,9 @@ namespace HealthGateway.Admin.Server.Controllers
     using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
-    using HealthGateway.Admin.Common.Models;
+    using HealthGateway.Admin.Common.Models.AdminReports;
     using HealthGateway.Admin.Server.Services;
+    using HealthGateway.Common.Data.Constants;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
@@ -67,6 +68,9 @@ namespace HealthGateway.Admin.Server.Controllers
         /// <summary>
         /// Retrieves a collection of user HDIDs that have dependents.
         /// </summary>
+        /// <param name="page">Page number of the protected dependents report (First page is zero).</param>
+        /// <param name="pageSize">Number or records per page to return from the protected dependents report.</param>
+        /// <param name="sortDirection">The sort direction for the records in the protected dependents report.</param>
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>List of user HDIDs that have dependents attached.</returns>
         /// <response code="200">Returns the list of user HDIDs that have dependents attached.</response>
@@ -78,9 +82,13 @@ namespace HealthGateway.Admin.Server.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        public async Task<IEnumerable<string>> ProtectedDependentsReport(CancellationToken ct)
+        public async Task<ProtectedDependentReport> ProtectedDependentsReport(
+            [FromQuery] int page = 0,
+            [FromQuery] int pageSize = 25,
+            [FromQuery] SortDirection sortDirection = SortDirection.Ascending,
+            CancellationToken ct = default)
         {
-            return await this.adminReportService.GetProtectedDependentsReportAsync(ct);
+            return await this.adminReportService.GetProtectedDependentsReportAsync(page, pageSize, sortDirection, ct);
         }
     }
 }

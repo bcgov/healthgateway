@@ -751,7 +751,7 @@ namespace HealthGateway.Admin.Tests.Services
             resourceDelegateDelegate.Setup(r => r.SearchAsync(It.IsAny<ResourceDelegateQuery>())).ReturnsAsync(result);
 
             Mock<IDelegationDelegate> delegationDelegate = new();
-            delegationDelegate.Setup(p => p.GetDependentAsync(DependentHdid, true)).ReturnsAsync(protectedDependent);
+            delegationDelegate.Setup(p => p.GetDependentAsync(DependentHdid, true, CancellationToken.None)).ReturnsAsync(protectedDependent);
 
             Mock<IAuditRepository> agentAuditRepository = new();
             agentAuditRepository.Setup(p => p.Handle(It.IsAny<AgentAuditQuery>(), It.IsAny<CancellationToken>()))
@@ -783,7 +783,7 @@ namespace HealthGateway.Admin.Tests.Services
             Mock<IResourceDelegateDelegate> resourceDelegateDelegate = new();
             resourceDelegateDelegate.Setup(r => r.SearchAsync(new() { ByOwnerHdid = resourceOwnerHdid })).ReturnsAsync(resourceDelegates);
 
-            delegationDelegate.Setup(p => p.GetDependentAsync(resourceOwnerHdid, true)).ReturnsAsync(dependent);
+            delegationDelegate.Setup(p => p.GetDependentAsync(resourceOwnerHdid, true, CancellationToken.None)).ReturnsAsync(dependent);
 
             Mock<IMessageSender> messageSender = new();
 

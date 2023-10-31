@@ -9,6 +9,7 @@ azureagent:
     dev:
     test:
     prod:
+      imageTag: production
 
 images:
   webclient:
@@ -19,9 +20,9 @@ images:
     image: artifacts.developer.gov.bc.ca/docker-remote/healthopenshift/patient
   admin:
     image: artifacts.developer.gov.bc.ca/docker-remote/healthopenshift/admin
-  webadmin:
+  adminwebclient:
     image: artifacts.developer.gov.bc.ca/docker-remote/healthopenshift/adminwebclient
-  clinicaldoc:
+  clinicaldocument:
     image: artifacts.developer.gov.bc.ca/docker-remote/healthopenshift/clinicaldocument
   encounter:
     image: artifacts.developer.gov.bc.ca/docker-remote/healthopenshift/encounter
@@ -33,7 +34,7 @@ images:
     image: artifacts.developer.gov.bc.ca/docker-remote/healthopenshift/medication
   hgcdogs:
     image: artifacts.developer.gov.bc.ca/docker-remote/bcgovimages/common-document-generation-service
-  jobscheduler:
+  hangfire:
     image: artifacts.developer.gov.bc.ca/docker-remote/healthopenshift/hangfire
   azure-agent:
     image: artifacts.developer.gov.bc.ca/docker-remote/healthopenshift/azure-agent

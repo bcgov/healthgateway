@@ -31,7 +31,7 @@ const phnMaskaOptions = {
     eager: true,
 };
 
-const currentDate = new DateWrapper();
+const currentDate = DateWrapper.today();
 
 const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
 
@@ -110,7 +110,9 @@ const validations = computed(() => ({
         maxValue: helpers.withMessage(
             "Invalid Date of Birth",
             (value: string) =>
-                new DateWrapper(value).isBefore(new DateWrapper())
+                DateWrapper.fromIsoDate(value).isBeforeOrSame(
+                    DateWrapper.today()
+                )
         ),
     },
     dateOfVaccine: {
@@ -121,7 +123,9 @@ const validations = computed(() => ({
         maxValue: helpers.withMessage(
             "Invalid Date of Vaccine",
             (value: string) =>
-                new DateWrapper(value).isBefore(new DateWrapper())
+                DateWrapper.fromIsoDate(value).isBeforeOrSame(
+                    DateWrapper.today()
+                )
         ),
     },
 }));

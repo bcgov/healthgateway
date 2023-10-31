@@ -79,7 +79,8 @@ namespace HealthGateway.Database.Delegates
         /// Retrieves a list of messaging verifications matching the query.
         /// </summary>
         /// <param name="hdid">The HDID associated with the messaging verifications.</param>
+        /// <param name="ct">A cancellation token.</param>
         /// <returns>A list of messaging verifications matching the query.</returns>
-        Task<IList<MessagingVerification>> GetUserMessageVerificationsAsync(string hdid);
+        Task<IList<MessagingVerification>> GetUserMessageVerificationsAsync(string hdid, CancellationToken ct = default);
     }
 }

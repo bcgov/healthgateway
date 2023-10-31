@@ -15,7 +15,9 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.WebClient.Server.Services
 {
+    using System;
     using System.IO;
+    using System.Linq;
     using System.Text.Json;
     using HealthGateway.WebClient.Server.Models;
     using Microsoft.Extensions.Configuration;
@@ -38,7 +40,6 @@ namespace HealthGateway.WebClient.Server.Services
         public ConfigurationService(ILogger<ConfigurationService> logger, IConfiguration configuration)
         {
             this.logger = logger;
-            this.config = new ExternalConfiguration();
             this.config = configuration.Get<ExternalConfiguration>() ?? new();
 
             if (!string.IsNullOrEmpty(this.config.WebClient.FeatureToggleFilePath))
@@ -49,8 +50,22 @@ namespace HealthGateway.WebClient.Server.Services
                     new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
             }
 
-            this.mobileConfig = new MobileConfiguration();
-            configuration.Bind("MobileConfiguration", this.mobileConfig);
+            this.mobileConfig = configuration.GetSection("MobileConfiguration").Get<MobileConfiguration>() ?? new();
+            FeatureToggleConfiguration? featureToggleConfig = this.config.WebClient.FeatureToggleConfiguration;
+            if (featureToggleConfig != null)
+            {
+                this.mobileConfig.Datasets = featureToggleConfig.Datasets.Where(d => d.Enabled).Select(d => d.Name);
+                if (featureToggleConfig.Dependents.Enabled)
+                {
+                    this.mobileConfig.DependentDatasets = this.mobileConfig.Datasets
+                        .Where(d => !Array.Exists(featureToggleConfig.Dependents.Datasets, dd => dd.Name == d && !dd.Enabled));
+                }
+
+                if (featureToggleConfig.Services.Enabled)
+                {
+                    this.mobileConfig.Services = featureToggleConfig.Services.Services.Where(s => s.Enabled).Select(s => s.Name);
+                }
+            }
         }
 
         /// <inheritdoc/>

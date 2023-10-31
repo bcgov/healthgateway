@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { onBeforeUnmount } from "vue";
 import { computed, ref } from "vue";
 
 interface Props {
@@ -22,7 +23,25 @@ const hasText = computed(() => !!props.text);
 function handleClick() {
     openedFromClick.value = !openedFromClick.value;
     openedFromHover.value = false;
+    if (openedFromClick.value) {
+        setTimeout(() => {
+            document.addEventListener("click", closeOnOutsideClick, {
+                once: true,
+            });
+        });
+    }
 }
+
+function closeOnOutsideClick() {
+    if (openedFromClick.value) {
+        openedFromClick.value = false;
+    }
+}
+
+onBeforeUnmount(() => {
+    // Remove click event if the event hasn't been triggered once.
+    document.removeEventListener("click", closeOnOutsideClick);
+});
 </script>
 
 <template>

@@ -102,10 +102,7 @@ function getEntryType(categoryName: string): EntryType | undefined {
 }
 
 function formatDate(date: StringISODateTime): string {
-    return new DateWrapper(date, {
-        hasTime: true,
-        isUtc: true,
-    }).format("MMMM d, yyyy");
+    return DateWrapper.fromIso(date).format("MMMM d, yyyy");
 }
 
 function formatActionText(

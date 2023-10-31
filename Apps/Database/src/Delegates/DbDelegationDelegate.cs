@@ -19,6 +19,7 @@ namespace HealthGateway.Database.Delegates
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using HealthGateway.Common.Data.Constants;
     using HealthGateway.Database.Context;
     using HealthGateway.Database.Models;
     using Microsoft.EntityFrameworkCore;
@@ -42,7 +43,7 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public async Task<Dependent?> GetDependentAsync(string hdid, bool includeAllowedDelegation = false)
+        public async Task<Dependent?> GetDependentAsync(string hdid, bool includeAllowedDelegation = false, CancellationToken ct = default)
         {
             this.logger.LogTrace("Getting dependent - includeAllowedDelegation : {IncludeAllowedDelegation}", includeAllowedDelegation.ToString());
 
@@ -54,7 +55,7 @@ namespace HealthGateway.Database.Delegates
                 query = query.Include(d => d.AllowedDelegations);
             }
 
-            return await query.SingleOrDefaultAsync();
+            return await query.SingleOrDefaultAsync(ct);
         }
 
         /// <inheritdoc/>
@@ -83,9 +84,27 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public async Task<IList<string>> GetProtectedDependentHdidsAsync(CancellationToken ct)
+        public async Task<(IList<string> Hdids, int TotalHdids)> GetProtectedDependentHdidsAsync(int page, int pageSize, SortDirection sortDirection, CancellationToken ct)
         {
-            return await this.dbContext.Dependent.Where(d => d.Protected).Select(d => d.HdId).ToListAsync(ct);
+            int safePageSize = pageSize > 0 ? pageSize : 25;
+            int recordsToSkip = int.Max(page, 0) * safePageSize;
+
+            // Begin query for protected dependents only
+            IQueryable<Dependent> query = this.dbContext.Dependent
+                .Where(d => d.Protected);
+
+            // Configure the sort direction
+            query = sortDirection == SortDirection.Ascending
+                ? query.OrderBy(d => d.HdId)
+                : query.OrderByDescending(d => d.HdId);
+
+            // Get the records for the page
+            List<string> records = await query.Skip(recordsToSkip)
+                .Take(safePageSize)
+                .Select(d => d.HdId)
+                .ToListAsync(ct);
+            int totalCount = await this.dbContext.Dependent.CountAsync(d => d.Protected, ct);
+            return (records, totalCount);
         }
     }
 }

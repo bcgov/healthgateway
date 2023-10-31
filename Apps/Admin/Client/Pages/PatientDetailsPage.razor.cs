@@ -72,6 +72,8 @@ namespace HealthGateway.Admin.Client.Pages
         private IEnumerable<AgentAction> AgentAuditHistory =>
             this.PatientDetailsState.Value.AgentActions?.OrderByDescending(a => a.TransactionDateTime) ?? Enumerable.Empty<AgentAction>();
 
+        private IEnumerable<PatientSupportDependentInfo> Dependents => this.PatientDetailsState.Value.Dependents ?? Enumerable.Empty<PatientSupportDependentInfo>();
+
         private VaccineDetails? VaccineDetails => this.PatientDetailsState.Value.VaccineDetails;
 
         private CovidAssessmentDetailsResponse? AssessmentInfo => this.PatientDetailsState.Value.Result?.CovidAssessmentDetails;
@@ -92,6 +94,8 @@ namespace HealthGateway.Admin.Client.Pages
 
         private string? StatusWarning => this.Patient == null ? null : FormattingUtility.FormatPatientStatus(this.Patient.Status);
 
+        private bool ShowStatusWarning => this.UserHasRole(Roles.Admin) || this.UserHasRole(Roles.Reviewer) || this.Patient?.Status != PatientStatus.NotUser;
+
         private Address? MailAddress => this.Patient?.PostalAddress ?? this.Patient?.PhysicalAddress;
 
         private DateTime? ProfileCreatedDateTime =>
@@ -109,6 +113,8 @@ namespace HealthGateway.Admin.Client.Pages
         private bool CanEditDatasetAccess => this.UserHasRole(Roles.Admin);
 
         private bool CanViewAgentAuditHistory => this.UserHasRole(Roles.Admin) || this.UserHasRole(Roles.Reviewer);
+
+        private bool CanViewDependents => this.UserHasRole(Roles.Admin) || this.UserHasRole(Roles.Reviewer);
 
         private bool CanViewHdid => this.UserHasRole(Roles.Admin) || this.UserHasRole(Roles.Reviewer);
 

@@ -64,6 +64,8 @@ namespace HealthGateway.Laboratory
             this.startupConfig.ConfigureSwaggerServices(services);
             this.startupConfig.ConfigureTracing(services);
             this.startupConfig.ConfigureAccessControl(services);
+            this.startupConfig.ConfigureMessaging(services);
+            this.startupConfig.ConfigureHangfireQueue(services);
             GatewayCache.ConfigureCaching(services, this.startupConfig.Logger, this.startupConfig.Configuration);
 
             // Add services
