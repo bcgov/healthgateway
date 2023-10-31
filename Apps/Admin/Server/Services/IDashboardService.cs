@@ -35,9 +35,11 @@ namespace HealthGateway.Admin.Server.Services
         /// <summary>
         /// Retrieves the daily count of logged in users in the current day.
         /// </summary>
+        /// <param name="startDateLocal">The local start date to query.</param>
+        /// <param name="endDateLocal">The local end date to query.</param>
         /// <param name="timeOffset">The time offset from the client browser to UTC.</param>
         /// <returns>The count of logged in user.</returns>
-        IDictionary<DateTime, int> GetDailyLoggedInUsersCount(int timeOffset);
+        IDictionary<DateTime, int> GetDailyLoggedInUsersCount(DateOnly startDateLocal, DateOnly endDateLocal, int timeOffset);
 
         /// <summary>
         /// Retrieves the count of dependents.

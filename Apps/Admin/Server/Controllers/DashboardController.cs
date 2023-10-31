@@ -15,6 +15,7 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Admin.Server.Controllers
 {
+    using System;
     using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
@@ -65,7 +66,9 @@ namespace HealthGateway.Admin.Server.Controllers
         /// <summary>
         /// Retrieves the count of logged in user in the last day.
         /// </summary>
-        /// <param name="timeOffset">The current timezone offset from the client browser to UTC.</param>
+        /// <param name="startDateLocal">The starting date to get the user counts in the clients Local time.</param>
+        /// <param name="endDateLocal">The ending date for the query in the clients local time.</param>
+        /// <param name="timeOffset">The current timezone offset from the client browser to UTC in minutes.</param>
         /// <returns>The count of logged in users in the current day.</returns>
         /// <response code="200">Returns the list of user feedbacks.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
@@ -75,9 +78,9 @@ namespace HealthGateway.Admin.Server.Controllers
         /// </response>
         [HttpGet]
         [Route("LoggedInCount")]
-        public IActionResult GetLoggedInUsersCount(int timeOffset)
+        public IActionResult GetLoggedInUsersCount(DateOnly startDateLocal, DateOnly endDateLocal, int timeOffset)
         {
-            return new JsonResult(this.dashboardService.GetDailyLoggedInUsersCount(timeOffset));
+            return new JsonResult(this.dashboardService.GetDailyLoggedInUsersCount(startDateLocal, endDateLocal, timeOffset));
         }
 
         /// <summary>

@@ -33,9 +33,9 @@ using MudBlazor;
 /// </summary>
 public partial class DashboardPage : FluxorComponent
 {
-    private static string StartDate => DateTime.Now.AddDays(-30).ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
+    private static DateOnly StartDate => DateOnly.FromDateTime(DateTime.Now.AddDays(-30));
 
-    private static string EndDate => DateTime.Now.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
+    private static DateOnly EndDate => DateOnly.FromDateTime(DateTime.Now);
 
     [Inject]
     private IDispatcher Dispatcher { get; set; } = default!;
@@ -112,8 +112,8 @@ public partial class DashboardPage : FluxorComponent
         {
             this.RetrieveData(
                 this.UniqueDays,
-                value.Start?.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture),
-                value.End?.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture),
+                DateOnly.FromDateTime(value.Start!.Value),
+                DateOnly.FromDateTime(value.End!.Value),
                 this.TimeOffset,
                 false);
             this.DateRange = value;
@@ -172,23 +172,25 @@ public partial class DashboardPage : FluxorComponent
         this.RetrieveData(this.UniqueDays, StartDate, EndDate, this.TimeOffset, true);
     }
 
-    private void RetrieveData(int days, string startPeriod, string endPeriod, int timeOffset, bool initialLoad)
+    private void RetrieveData(int days, DateOnly startPeriod, DateOnly endPeriod, int timeOffset, bool initialLoad)
     {
-        string endDate = initialLoad ? DateTime.Now.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture) : endPeriod;
+        string startDate = startPeriod.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
+        string endDate = endPeriod.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
+        string endDateRatings = initialLoad ? DateTime.Now.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture) : endDate;
         this.Dispatcher.Dispatch(new DashboardActions.GetRegisteredUsersAction { TimeOffset = timeOffset });
-        this.Dispatcher.Dispatch(new DashboardActions.GetLoggedInUsersAction { TimeOffset = timeOffset });
+        this.Dispatcher.Dispatch(new DashboardActions.GetLoggedInUsersAction { StartDateLocal = startPeriod, EndDateLocal = endPeriod, TimeOffset = timeOffset });
         this.Dispatcher.Dispatch(new DashboardActions.GetDependentsAction { TimeOffset = timeOffset });
-        this.Dispatcher.Dispatch(new DashboardActions.GetUserCountsAction { Days = days, StartPeriod = startPeriod, EndPeriod = endPeriod, TimeOffset = timeOffset });
-        this.Dispatcher.Dispatch(new DashboardActions.GetRatingSummaryAction { StartPeriod = startPeriod, EndPeriod = endDate, TimeOffset = timeOffset });
-        this.Dispatcher.Dispatch(new DashboardActions.GetYearOfBirthCountsAction { StartPeriod = startPeriod, EndPeriod = endPeriod, TimeOffset = timeOffset });
+        this.Dispatcher.Dispatch(new DashboardActions.GetUserCountsAction { Days = days, StartPeriod = startDate, EndPeriod = endDate, TimeOffset = timeOffset });
+        this.Dispatcher.Dispatch(new DashboardActions.GetRatingSummaryAction { StartPeriod = startDate, EndPeriod = endDateRatings, TimeOffset = timeOffset });
+        this.Dispatcher.Dispatch(new DashboardActions.GetYearOfBirthCountsAction { StartPeriod = startDate, EndPeriod = endDate, TimeOffset = timeOffset });
     }
 
     private void RefreshData()
     {
         this.RetrieveData(
             this.UniqueDays,
-            this.SelectedDateRange.Start?.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture),
-            this.SelectedDateRange.End?.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture),
+            DateOnly.FromDateTime(this.SelectedDateRange.Start!.Value),
+            DateOnly.FromDateTime(this.SelectedDateRange.End!.Value),
             this.TimeOffset,
             false);
     }

@@ -53,6 +53,16 @@ public static class DashboardActions
     public record GetLoggedInUsersAction
     {
         /// <summary>
+        /// Gets the local start date to query.
+        /// </summary>
+        public required DateOnly StartDateLocal { get; init; }
+
+        /// <summary>
+        /// Gets the local end date to query.
+        /// </summary>
+        public required DateOnly EndDateLocal { get; init; }
+
+        /// <summary>
         /// Gets the offset from the client browser to UTC.
         /// </summary>
         public required int TimeOffset { get; init; }

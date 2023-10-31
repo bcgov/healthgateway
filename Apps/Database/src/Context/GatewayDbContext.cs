@@ -353,6 +353,9 @@ namespace HealthGateway.Database.Context
             modelBuilder.Entity<UserProfileHistory>()
                 .HasIndex(p => p.HdId);
 
+            modelBuilder.Entity<UserProfileHistory>()
+                .HasIndex(p => p.LastLoginDateTime);
+
             // Create unique key for AdminUserProfile
             modelBuilder.Entity<AdminUserProfile>()
                 .HasIndex(p => p.Username)
@@ -365,6 +368,9 @@ namespace HealthGateway.Database.Context
                 .HasPrincipalKey(k => k.HdId)
                 .HasForeignKey(k => k.UserProfileId)
                 .OnDelete(DeleteBehavior.SetNull);
+
+            modelBuilder.Entity<UserProfile>()
+                .HasIndex(p => p.LastLoginDateTime);
 
             // Create Foreign keys for User Profile
             modelBuilder.Entity<UserProfile>()

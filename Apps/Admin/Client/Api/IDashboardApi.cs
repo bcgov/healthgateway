@@ -37,10 +37,12 @@ public interface IDashboardApi
     /// <summary>
     /// Retrieves the count of logged in user in the last day.
     /// </summary>
+    /// <param name="startDateLocal">The local start date to query.</param>
+    /// <param name="endDateLocal">The local end date to query.</param>
     /// <param name="timeOffset">The offset from the client browser to UTC.</param>
     /// <returns>The count of logged in users in the current day.</returns>
     [Get("/LoggedInCount")]
-    Task<IDictionary<DateTime, int>> GetLoggedinUsersCountAsync(int timeOffset);
+    Task<IDictionary<DateTime, int>> GetLoggedinUsersCountAsync(DateOnly startDateLocal, DateOnly endDateLocal, int timeOffset);
 
     /// <summary>
     /// Retrieves the count of dependents.
