@@ -9,6 +9,11 @@ const hdidPatientNotUser =
 const phn = "9735353315";
 const phnPatientDeceased = "9873224879";
 const phnPatientNotUser = "9872868128";
+const datasetName = "Immunization";
+const badRequest = 400;
+const auditReasonInput = "Test block reason";
+const auditReasonFeedback =
+    "Response status code does not indicate success: 400 (Bad Request).";
 
 describe("Patient details as admin", () => {
     beforeEach(() => {
@@ -63,6 +68,15 @@ describe("Patient details as admin", () => {
             `**/PatientSupportDetails?queryString=${phnPatientNotUser}&queryType=Phn&refreshVaccineDetails=False`,
             {
                 fixture: "SupportService/patient-details.json",
+            }
+        );
+
+        // Block Access
+        cy.intercept(
+            "PUT",
+            `**/Support/P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A/BlockAccess`,
+            {
+                statusCode: badRequest,
             }
         );
 
@@ -140,6 +154,43 @@ describe("Patient details as admin", () => {
         cy.get("[data-testid=user-banner-feedback-status-warning-message]")
             .should("be.visible")
             .contains("Patient is not a user");
+    });
+
+    it("Verify block access modal handles 400 error", () => {
+        performSearch("PHN", phn);
+
+        cy.get("[data-testid=patient-hdid]")
+            .should("be.visible")
+            .contains(hdid);
+
+        cy.get(`[data-testid=block-access-switch-${datasetName}]`)
+            .should("exist")
+            .click();
+
+        cy.get(`[data-testid=block-access-switch-${datasetName}]`).should(
+            "be.checked"
+        );
+
+        cy.get("[data-testid=block-access-save]")
+            .should("exist", "be.visible")
+            .click();
+
+        cy.get("[data-testid=audit-reason-input")
+            .should("be.visible")
+            .type(auditReasonInput);
+
+        cy.get("body").click(0, 0);
+        cy.get("[data-testid=audit-confirm-button]")
+            .should("be.visible")
+            .click();
+
+        cy.get("[data-testid=audit-reason-feedback]")
+            .should("be.visible")
+            .contains(auditReasonFeedback);
+
+        cy.get("[data-testid=audit-cancel-button]")
+            .should("be.visible")
+            .click();
     });
 });
 
