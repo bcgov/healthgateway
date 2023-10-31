@@ -66,8 +66,8 @@ namespace HealthGateway.Admin.Server.Controllers
         /// <summary>
         /// Retrieves the count of logged in user in the last day.
         /// </summary>
-        /// <param name="startDateLocal">The starting date to get the user counts in the clients Local time.</param>
-        /// <param name="endDateLocal">The ending date for the query in the clients local time.</param>
+        /// <param name="startDateLocal">The starting date to get the user counts in the client's Local time.</param>
+        /// <param name="endDateLocal">The ending date for the query in the client's local time.</param>
         /// <param name="timeOffset">The current timezone offset from the client browser to UTC in minutes.</param>
         /// <returns>The count of logged in users in the current day.</returns>
         /// <response code="200">Returns the list of user feedbacks.</response>

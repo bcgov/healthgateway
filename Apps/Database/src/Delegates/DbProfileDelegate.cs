@@ -263,11 +263,11 @@ namespace HealthGateway.Database.Delegates
                 });
 
             var userProfileHistoryQuery = this.dbContext.UserProfileHistory
-                .Where(u0 => u0.LastLoginDateTime >= startDateTimeOffset.UtcDateTime && u0.LastLoginDateTime <= endDateTimeOffset.UtcDateTime)
-                .Select(u0 => new
+                .Where(u => u.LastLoginDateTime >= startDateTimeOffset.UtcDateTime && u.LastLoginDateTime <= endDateTimeOffset.UtcDateTime)
+                .Select(u => new
                 {
-                    u0.HdId,
-                    u0.LastLoginDateTime,
+                    u.HdId,
+                    u.LastLoginDateTime,
                 });
 
             var unionQuery = userProfileQuery
