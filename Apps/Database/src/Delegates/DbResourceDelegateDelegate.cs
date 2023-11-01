@@ -208,11 +208,22 @@ namespace HealthGateway.Database.Delegates
                 dbQuery = dbQuery.Take(query.TakeAmount.Value);
             }
 
-            IList<ResourceDelegate> items = await dbQuery.ToArrayAsync();
-            return new ResourceDelegateQueryResult
+            IList<ResourceDelegateQueryResultItem> items;
+            if (query.IncludeDependent)
             {
-                Items = items,
-            };
+                items = await dbQuery.GroupJoin(
+                        this.dbContext.Dependent,
+                        rd => rd.ResourceOwnerHdid,
+                        d => d.HdId,
+                        (rd, d) => new ResourceDelegateQueryResultItem { ResourceDelegate = rd, Dependent = d.FirstOrDefault() })
+                    .ToListAsync();
+            }
+            else
+            {
+                items = await dbQuery.Select(rd => new ResourceDelegateQueryResultItem { ResourceDelegate = rd }).ToListAsync();
+            }
+
+            return new() { Items = items };
         }
     }
 }

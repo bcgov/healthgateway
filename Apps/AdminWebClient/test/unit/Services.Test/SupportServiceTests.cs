@@ -35,7 +35,6 @@ namespace HealthGateway.AdminWebClientTests.Services.Test
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
-    using Microsoft.Extensions.Configuration;
     using Moq;
     using Xunit;
     using UserProfile = HealthGateway.Common.Data.Models.UserProfile;
@@ -53,9 +52,6 @@ namespace HealthGateway.AdminWebClientTests.Services.Test
         private const string ClientRegistryError = "Client Registry Error";
         private const string ProfileNotFound = $"Unable to find user profile for hdid: {Hdid}";
         private const string PatientResponseCode = $"500|{ClientRegistryWarning}";
-        private const string ConfigUnixTimeZoneId = "America/Vancouver";
-        private const string ConfigWindowsTimeZoneId = "Pacific Standard Time";
-        private static readonly IConfiguration Configuration = GetIConfigurationRoot();
 
         /// <summary>
         /// Gets Users by Hdid.
@@ -232,9 +228,14 @@ namespace HealthGateway.AdminWebClientTests.Services.Test
                             ? expectedDelegateHdids
                             : Array.Empty<string>();
 
-                        return new ResourceDelegateQueryResult
+                        return new()
                         {
-                            Items = items.Select(i => new ResourceDelegate { ResourceOwnerHdid = dependentHdid, ProfileHdid = i }).ToList(),
+                            Items = items.Select(
+                                    i => new ResourceDelegateQueryResultItem
+                                    {
+                                        ResourceDelegate = new ResourceDelegate { ResourceOwnerHdid = dependentHdid, ProfileHdid = i },
+                                    })
+                                .ToList(),
                         };
                     });
 
@@ -414,21 +415,7 @@ namespace HealthGateway.AdminWebClientTests.Services.Test
                 messagingVerificationDelegateMock.Object,
                 patientServiceMock.Object,
                 resourceDelegateDelegateMock.Object,
-                autoMapper,
-                Configuration);
-        }
-
-        private static IConfigurationRoot GetIConfigurationRoot()
-        {
-            Dictionary<string, string?> myConfiguration = new()
-            {
-                { "TimeZone:UnixTimeZoneId", ConfigUnixTimeZoneId },
-                { "TimeZone:WindowsTimeZoneId", ConfigWindowsTimeZoneId },
-            };
-
-            return new ConfigurationBuilder()
-                .AddInMemoryCollection(myConfiguration.ToList())
-                .Build();
+                autoMapper);
         }
     }
 }

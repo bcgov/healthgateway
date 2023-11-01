@@ -43,7 +43,6 @@ namespace HealthGateway.Admin.Tests.Services
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
-    using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using Moq;
     using Xunit;
@@ -66,14 +65,10 @@ namespace HealthGateway.Admin.Tests.Services
         private const string ClientRegistryWarning = "Client Registry Warning";
         private const string PatientResponseCode = $"500|{ClientRegistryWarning}";
 
-        private const string ConfigUnixTimeZoneId = "America/Vancouver";
-        private const string ConfigWindowsTimeZoneId = "Pacific Standard Time";
-
         private static readonly DateTime Birthdate = DateTime.Parse("2000-01-01", CultureInfo.InvariantCulture);
         private static readonly DateTime Birthdate2 = DateTime.Parse("1999-12-31", CultureInfo.InvariantCulture);
 
         private static readonly IMapper AutoMapper = MapperUtil.InitializeAutoMapper();
-        private static readonly IConfiguration Configuration = GetIConfigurationRoot();
 
         /// <summary>
         /// GetPatientSupportDetailsAsync - Happy Path.
@@ -131,8 +126,8 @@ namespace HealthGateway.Admin.Tests.Services
             {
                 DataSource.Immunization,
             };
-            ResourceDelegateQuery resourceDelegateQuery = new() { ByDelegateHdid = patientQuery.Hdid };
-            IList<ResourceDelegate> resourceDelegates = GenerateResourceDelegatesForDelegate(patientQuery.Hdid, new List<string> { Hdid2 });
+            ResourceDelegateQuery resourceDelegateQuery = new() { ByDelegateHdid = patientQuery.Hdid, IncludeDependent = true };
+            ResourceDelegateQueryResult resourceDelegateQueryResult = GenerateResourceDelegatesForDelegate(patientQuery.Hdid, new List<string> { Hdid2 });
             PatientDetailsQuery dependentPatientQuery =
                 new()
                 {
@@ -145,7 +140,7 @@ namespace HealthGateway.Admin.Tests.Services
             ISupportService supportService = CreateSupportService(
                 GetMessagingVerificationDelegateMock(messagingVerifications),
                 GetPatientRepositoryMock(blockedDataSources, (patientQuery, patient), (dependentPatientQuery, dependentPatient)),
-                GetResourceDelegateDelegateMock(resourceDelegateQuery, resourceDelegates),
+                GetResourceDelegateDelegateMock(resourceDelegateQuery, resourceDelegateQueryResult),
                 null,
                 GetAuthenticationDelegateMock(AccessToken),
                 GetImmunizationAdminDelegateMock(vaccineDetails),
@@ -585,26 +580,26 @@ namespace HealthGateway.Admin.Tests.Services
                 (secondDelegateQuery, secondDelegatePatient));
 
             ResourceDelegateQuery resourceDelegateQuery = new() { ByOwnerHdid = dependentHdid, IncludeProfile = true, TakeAmount = 25 };
-            IList<ResourceDelegate> resourceDelegates = GenerateResourceDelegatesForDependent(
+            ResourceDelegateQueryResult resourceDelegateQueryResult = GenerateResourceDelegatesForDependent(
                 dependentHdid,
                 new List<string> { Hdid, Hdid2 },
                 DateTime.Now.Subtract(TimeSpan.FromDays(1)),
                 DateTime.Now);
-            Mock<IResourceDelegateDelegate> resourceDelegateDelegateMock = GetResourceDelegateDelegateMock(resourceDelegateQuery, resourceDelegates);
+            Mock<IResourceDelegateDelegate> resourceDelegateDelegateMock = GetResourceDelegateDelegateMock(resourceDelegateQuery, resourceDelegateQueryResult);
 
             ISupportService supportService = CreateSupportService(patientRepositoryMock: patientRepositoryMock, resourceDelegateDelegateMock: resourceDelegateDelegateMock);
 
             IEnumerable<PatientSupportResult> expectedResult = new List<PatientSupportResult>
             {
-                GetExpectedPatientSupportDetails(firstDelegatePatient, resourceDelegates[0].UserProfile),
-                GetExpectedPatientSupportDetails(secondDelegatePatient, resourceDelegates[1].UserProfile),
+                GetExpectedPatientSupportDetails(firstDelegatePatient, resourceDelegateQueryResult.Items[0].ResourceDelegate.UserProfile),
+                GetExpectedPatientSupportDetails(secondDelegatePatient, resourceDelegateQueryResult.Items[1].ResourceDelegate.UserProfile),
             };
 
             // Act
             IEnumerable<PatientSupportResult> actualResult = await supportService.GetPatientsAsync(PatientQueryType.Dependent, dependentPhn);
 
             // Assert
-            Assert.Equal(resourceDelegates.Count, actualResult.Count());
+            Assert.Equal(resourceDelegateQueryResult.Items.Count, actualResult.Count());
             actualResult.ShouldDeepEqual(expectedResult);
         }
 
@@ -738,25 +733,41 @@ namespace HealthGateway.Admin.Tests.Services
             };
         }
 
-        private static IList<ResourceDelegate> GenerateResourceDelegatesForDelegate(string delegateHdid, IEnumerable<string> dependentHdids)
+        private static ResourceDelegateQueryResult GenerateResourceDelegatesForDelegate(string delegateHdid, IEnumerable<string> dependentHdids)
         {
-            return dependentHdids.Select(dependentHdid => new ResourceDelegate { ResourceOwnerHdid = dependentHdid, ProfileHdid = delegateHdid }).ToList();
+            return new()
+            {
+                Items = dependentHdids
+                    .Select(
+                        dependentHdid => new ResourceDelegateQueryResultItem
+                        {
+                            ResourceDelegate = new ResourceDelegate { ResourceOwnerHdid = dependentHdid, ProfileHdid = delegateHdid },
+                            Dependent = new Dependent { HdId = dependentHdid },
+                        })
+                    .ToList(),
+            };
         }
 
-        private static IList<ResourceDelegate> GenerateResourceDelegatesForDependent(
+        private static ResourceDelegateQueryResult GenerateResourceDelegatesForDependent(
             string dependentHdid,
             IEnumerable<string> delegateHdids,
             DateTime profileCreatedDateTime,
             DateTime profileLastLoginDateTime)
         {
-            return delegateHdids.Select(
-                    delegateHdid => new ResourceDelegate
-                    {
-                        ResourceOwnerHdid = dependentHdid,
-                        ProfileHdid = delegateHdid,
-                        UserProfile = new() { HdId = delegateHdid, CreatedDateTime = profileCreatedDateTime, LastLoginDateTime = profileLastLoginDateTime },
-                    })
-                .ToList();
+            return new()
+            {
+                Items = delegateHdids.Select(
+                        delegateHdid => new ResourceDelegateQueryResultItem
+                        {
+                            ResourceDelegate = new ResourceDelegate
+                            {
+                                ResourceOwnerHdid = dependentHdid,
+                                ProfileHdid = delegateHdid,
+                                UserProfile = new() { HdId = delegateHdid, CreatedDateTime = profileCreatedDateTime, LastLoginDateTime = profileLastLoginDateTime },
+                            },
+                        })
+                    .ToList(),
+            };
         }
 
         private static AccountDataAccess.Patient.Name GenerateName(string givenName = "John", string surname = "Doe")
@@ -913,10 +924,10 @@ namespace HealthGateway.Admin.Tests.Services
             return mock;
         }
 
-        private static Mock<IResourceDelegateDelegate> GetResourceDelegateDelegateMock(ResourceDelegateQuery query, IList<ResourceDelegate> result)
+        private static Mock<IResourceDelegateDelegate> GetResourceDelegateDelegateMock(ResourceDelegateQuery query, ResourceDelegateQueryResult result)
         {
             Mock<IResourceDelegateDelegate> mock = new();
-            mock.Setup(d => d.SearchAsync(query)).ReturnsAsync(new ResourceDelegateQueryResult { Items = result });
+            mock.Setup(d => d.SearchAsync(query)).ReturnsAsync(result);
             return mock;
         }
 
@@ -963,10 +974,8 @@ namespace HealthGateway.Admin.Tests.Services
 
             return new SupportService(
                 AutoMapper,
-                Configuration,
                 messagingVerificationDelegateMock.Object,
                 patientRepositoryMock.Object,
-                new Mock<IDelegationDelegate>().Object,
                 resourceDelegateDelegateMock.Object,
                 userProfileDelegateMock.Object,
                 authenticationDelegateMock.Object,
@@ -975,19 +984,6 @@ namespace HealthGateway.Admin.Tests.Services
                 auditRepositoryMock.Object,
                 new Mock<ICacheProvider>().Object,
                 new Mock<ILogger<SupportService>>().Object);
-        }
-
-        private static IConfigurationRoot GetIConfigurationRoot()
-        {
-            Dictionary<string, string?> myConfiguration = new()
-            {
-                { "TimeZone:UnixTimeZoneId", ConfigUnixTimeZoneId },
-                { "TimeZone:WindowsTimeZoneId", ConfigWindowsTimeZoneId },
-            };
-
-            return new ConfigurationBuilder()
-                .AddInMemoryCollection(myConfiguration.ToList())
-                .Build();
         }
     }
 }
