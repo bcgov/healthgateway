@@ -126,8 +126,6 @@ namespace HealthGateway.Admin.Client.Pages
 
         private AuthenticationState? AuthenticationState { get; set; }
 
-        private bool ShouldNavigateToPatientDetails { get; set; } = true;
-
         /// <inheritdoc/>
         protected override async Task OnInitializedAsync()
         {
@@ -173,8 +171,7 @@ namespace HealthGateway.Admin.Client.Pages
                 }
 
                 this.QueryParameter = queryString;
-                this.ShouldNavigateToPatientDetails = false;
-                await StoreUtility.LoadPatientSupportAction(this.Dispatcher, this.JsRuntime, this.SelectedQueryType, this.QueryParameter);
+                await StoreUtility.LoadPatientSupportAction(this.Dispatcher, this.JsRuntime, this.SelectedQueryType, this.QueryParameter, false);
             }
         }
 
@@ -184,7 +181,6 @@ namespace HealthGateway.Admin.Client.Pages
             if (this.Form.IsValid)
             {
                 this.ResetPatientSupportState();
-                this.ShouldNavigateToPatientDetails = true;
                 await StoreUtility.LoadPatientSupportAction(this.Dispatcher, this.JsRuntime, this.SelectedQueryType, StringManipulator.StripWhitespace(this.QueryParameter));
             }
         }
@@ -192,7 +188,7 @@ namespace HealthGateway.Admin.Client.Pages
         private void CheckForSingleResult(PatientSupportActions.LoadSuccessAction action)
         {
             if (action.Data.Count == 1 &&
-                this.ShouldNavigateToPatientDetails &&
+                action.ShouldNavigateToPatientDetails &&
                 !string.IsNullOrEmpty(action.Data.Single().PersonalHealthNumber))
             {
                 this.NavigateToPatientDetails(action.Data.Single().PersonalHealthNumber);
