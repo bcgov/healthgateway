@@ -59,10 +59,12 @@ namespace HealthGateway.Admin.Server.Services
         }
 
         /// <inheritdoc/>
-        public IDictionary<DateTime, int> GetDailyLoggedInUsersCount(int timeOffset)
+        public IDictionary<DateTime, int> GetDailyLoggedInUsersCount(DateOnly startDateLocal, DateOnly endDateLocal, int timeOffset)
         {
-            TimeSpan ts = new(0, timeOffset, 0);
-            return this.userProfileDelegate.GetDailyLoggedInUsersCount(ts);
+            TimeSpan offsetSpan = TimeSpan.FromMinutes(timeOffset);
+            DateTimeOffset startDateTimeOffset = new(startDateLocal.ToDateTime(TimeOnly.MinValue), offsetSpan);
+            DateTimeOffset endDateTimeOffset = new(endDateLocal.ToDateTime(TimeOnly.MaxValue), offsetSpan);
+            return this.userProfileDelegate.GetLoggedInUsersCount(startDateTimeOffset, endDateTimeOffset);
         }
 
         /// <inheritdoc/>

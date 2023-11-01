@@ -66,7 +66,7 @@ public class DashboardEffects
 
         try
         {
-            IDictionary<DateTime, int> response = await this.DashboardApi.GetLoggedinUsersCountAsync(action.TimeOffset).ConfigureAwait(true);
+            IDictionary<DateTime, int> response = await this.DashboardApi.GetLoggedinUsersCountAsync(action.StartDateLocal, action.EndDateLocal, action.TimeOffset).ConfigureAwait(true);
             this.Logger.LogInformation("Logged in users retrieved successfully!");
             dispatcher.Dispatch(new DashboardActions.GetLoggedInUsersSuccessAction { Data = response });
         }

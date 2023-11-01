@@ -138,6 +138,7 @@ namespace HealthGateway.Admin.Server
             PhsaV2.ConfigurePhsaV2Access(services, logger, configuration, PhsaConfigV2.AdminConfigurationSectionKey);
             ExceptionHandling.ConfigureProblemDetails(services, environment);
             MessageBus.ConfigureMessageBus(services, configuration);
+            Utility.ConfigureTracing(services, logger, configuration);
         }
 
         private static void AddServices(IServiceCollection services, IConfiguration configuration)
