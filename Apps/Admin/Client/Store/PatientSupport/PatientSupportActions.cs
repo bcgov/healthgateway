@@ -40,6 +40,11 @@ namespace HealthGateway.Admin.Client.Store.PatientSupport
             /// Gets the query string.
             /// </summary>
             public required string QueryString { get; init; }
+
+            /// <summary>
+            /// Gets or sets a value indicating whether patient details should be navigated to.
+            /// </summary>
+            public bool ShouldNavigateToPatientDetails { get; set; } = true;
         }
 
         /// <summary>
@@ -50,7 +55,13 @@ namespace HealthGateway.Admin.Client.Store.PatientSupport
         /// <summary>
         /// The action representing a successful load.
         /// </summary>
-        public record LoadSuccessAction : BaseSuccessAction<IList<PatientSupportResult>>;
+        public record LoadSuccessAction : BaseSuccessAction<IList<PatientSupportResult>>
+        {
+            /// <summary>
+            /// Gets or sets a value indicating whether patient details should be navigated to.
+            /// </summary>
+            public bool ShouldNavigateToPatientDetails { get; set; }
+        }
 
         /// <summary>
         /// The action that clears the state.

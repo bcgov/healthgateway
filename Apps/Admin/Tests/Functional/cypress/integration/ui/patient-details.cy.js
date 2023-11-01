@@ -163,6 +163,8 @@ describe("Patient details as admin", () => {
             .should("be.visible")
             .contains(hdid);
 
+        cy.get("[data-testid=block-access-loader]").should("not.be.visible");
+
         cy.get(`[data-testid=block-access-switch-${datasetName}]`)
             .should("exist")
             .click();
