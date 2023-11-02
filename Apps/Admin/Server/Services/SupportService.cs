@@ -133,7 +133,7 @@ namespace HealthGateway.Admin.Server.Services
             IEnumerable<PatientSupportDependentInfo>? dependents =
                 query.IncludeDependents ? await this.GetAllDependentInfoAsync(patient.Hdid, ct) : null;
 
-            PatientSupportDetails details = new()
+            return new()
             {
                 MessagingVerifications = messagingVerifications,
                 BlockedDataSources = blockedDataSources,
@@ -142,8 +142,6 @@ namespace HealthGateway.Admin.Server.Services
                 VaccineDetails = getVaccineDetails == null ? null : await getVaccineDetails,
                 CovidAssessmentDetails = getCovidAssessmentDetails == null ? null : await getCovidAssessmentDetails,
             };
-
-            return details;
         }
 
         /// <inheritdoc/>
