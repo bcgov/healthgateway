@@ -180,40 +180,38 @@ function getFormattedFilterCount(entryType: EntryType): string {
                         prepend-inner-icon="search"
                     />
                     <SectionHeaderComponent title="Type" class="mb-3" />
-                    <v-row class="mb-3">
-                        <v-col
-                            v-for="(entryType, index) in enabledEntryTypes"
-                            :key="index"
-                            class="py-0"
-                            cols="12"
-                            sm="6"
+                    <div class="mb-3">
+                        <v-chip-group
+                            v-model="selectedEntryTypes"
+                            column
+                            multiple
                         >
-                            <v-checkbox
-                                v-model="selectedEntryTypes"
+                            <!-- loop through selectedEntryTypes and display -->
+                            <v-chip
+                                v-for="(entryType, index) in enabledEntryTypes"
+                                :key="index"
                                 :data-testid="`${entryType.type}-filter`"
                                 :name="entryType.type + '-filter'"
                                 :value="entryType.type"
-                                density="compact"
+                                filter
                                 hide-details
                                 color="primary"
                             >
-                                <template #label>
-                                    <p class="ml-1">
-                                        {{ entryType.display }}
-                                        <span
-                                            :data-testid="`${entryType.type}Count`"
-                                        >
-                                            ({{
-                                                getFormattedFilterCount(
-                                                    entryType.type
-                                                )
-                                            }})
-                                        </span>
-                                    </p>
-                                </template>
-                            </v-checkbox>
-                        </v-col>
-                    </v-row>
+                                <p class="ml-1">
+                                    {{ entryType.display }}
+                                    <span
+                                        :data-testid="`${entryType.type}Count`"
+                                    >
+                                        ({{
+                                            getFormattedFilterCount(
+                                                entryType.type
+                                            )
+                                        }})
+                                    </span>
+                                </p>
+                            </v-chip>
+                        </v-chip-group>
+                    </div>
                     <SectionHeaderComponent title="Dates" />
                     <v-row>
                         <v-col cols="12" sm="6">
