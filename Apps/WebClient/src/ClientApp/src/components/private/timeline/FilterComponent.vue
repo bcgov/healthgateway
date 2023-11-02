@@ -171,12 +171,12 @@ function getFormattedFilterCount(entryType: EntryType): string {
                 </v-card-title>
                 <v-divider />
                 <v-card-text class="pa-4">
-                    <SectionHeaderComponent title="Keywords" />
+                    <SectionHeaderComponent title="Search" />
                     <v-text-field
                         v-model="keywordInputText"
                         data-testid="filterTextInput"
-                        label="Keywords"
                         maxlength="50"
+                        placeholder="i.e. Medication Name"
                         prepend-inner-icon="search"
                     />
                     <SectionHeaderComponent title="Type" class="mb-3" />
@@ -195,6 +195,7 @@ function getFormattedFilterCount(entryType: EntryType): string {
                                 :value="entryType.type"
                                 filter
                                 hide-details
+                                variant="outlined"
                                 color="primary"
                             >
                                 <p class="ml-1">
