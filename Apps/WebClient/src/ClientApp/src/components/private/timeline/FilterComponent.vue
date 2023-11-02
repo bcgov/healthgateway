@@ -126,6 +126,10 @@ function getFilterCount(entryType: EntryType): number | undefined {
     }
 }
 
+function isSelected(entryType: EntryType) {
+    return selectedEntryTypes.value.includes(entryType);
+}
+
 function getFormattedFilterCount(entryType: EntryType): string {
     const num = getFilterCount(entryType);
 
@@ -193,9 +197,12 @@ function getFormattedFilterCount(entryType: EntryType): string {
                                 :data-testid="`${entryType.type}-filter`"
                                 :name="entryType.type + '-filter'"
                                 :value="entryType.type"
-                                filter
                                 hide-details
-                                variant="outlined"
+                                :variant="
+                                    isSelected(entryType.type)
+                                        ? 'elevated'
+                                        : 'outlined'
+                                "
                                 color="primary"
                             >
                                 <p class="ml-1">
