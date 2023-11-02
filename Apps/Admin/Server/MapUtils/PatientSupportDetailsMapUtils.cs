@@ -22,46 +22,44 @@ namespace HealthGateway.Admin.Server.MapUtils
     using HealthGateway.Common.Data.Models;
 
     /// <summary>
-    /// Static Helper classes for conversion of model objects.
+    /// Static helper class for conversion of model objects.
     /// </summary>
     public static class PatientSupportDetailsMapUtils
     {
         /// <summary>
         /// Creates a UI model from a user profile model and a patient model.
         /// </summary>
+        /// <param name="patient">The patient model to convert.</param>
         /// <param name="userProfile">The user profile model to convert.</param>
-        /// <param name="patientModel">The patient model to convert.</param>
         /// <param name="mapper">The AutoMapper IMapper.</param>
         /// <returns>The created UI model.</returns>
-        public static PatientSupportResult ToUiModel(UserProfile? userProfile, PatientModel? patientModel, IMapper mapper)
+        public static PatientSupportResult ToUiModel(PatientModel? patient, UserProfile? userProfile, IMapper mapper)
         {
-            return mapper.Map<PatientModel?, PatientSupportResult>(
-                patientModel,
-                opts => opts.AfterMap(
-                    (_, dest) =>
-                    {
-                        dest.Status = PatientStatus.Default;
-                        if (patientModel == null)
-                        {
-                            dest.Status = PatientStatus.NotFound;
-                        }
-                        else if (patientModel.IsDeceased == true)
-                        {
-                            dest.Status = PatientStatus.Deceased;
-                        }
-                        else if (userProfile == null)
-                        {
-                            dest.Status = PatientStatus.NotUser;
-                        }
+            PatientSupportResult patientSupportResult = mapper.Map<PatientModel?, PatientSupportResult>(patient) ?? new PatientSupportResult();
 
-                        dest.ProfileCreatedDateTime = userProfile?.CreatedDateTime;
-                        dest.ProfileLastLoginDateTime = userProfile?.LastLoginDateTime;
+            patientSupportResult.Status = PatientStatus.Default;
+            if (patient == null)
+            {
+                patientSupportResult.Status = PatientStatus.NotFound;
+            }
+            else if (patient.IsDeceased == true)
+            {
+                patientSupportResult.Status = PatientStatus.Deceased;
+            }
+            else if (userProfile == null)
+            {
+                patientSupportResult.Status = PatientStatus.NotUser;
+            }
 
-                        if (patientModel == null && userProfile != null)
-                        {
-                            dest.Hdid = userProfile.HdId;
-                        }
-                    }));
+            patientSupportResult.ProfileCreatedDateTime = userProfile?.CreatedDateTime;
+            patientSupportResult.ProfileLastLoginDateTime = userProfile?.LastLoginDateTime;
+
+            if (patient == null && userProfile != null)
+            {
+                patientSupportResult.Hdid = userProfile.HdId;
+            }
+
+            return patientSupportResult;
         }
     }
 }

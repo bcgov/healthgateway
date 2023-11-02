@@ -114,6 +114,11 @@ namespace HealthGateway.Database.Delegates
         public bool IncludeProfile { get; init; }
 
         /// <summary>
+        /// Gets a value indicating whether the associated dependent data should be included in the result if available.
+        /// </summary>
+        public bool IncludeDependent { get; init; }
+
+        /// <summary>
         /// Gets the maximum number of records to return. If null, all matching records will be returned.
         /// </summary>
         public int? TakeAmount { get; init; }
@@ -124,6 +129,19 @@ namespace HealthGateway.Database.Delegates
         /// <summary>
         /// Gets the found items.
         /// </summary>
-        public IList<ResourceDelegate> Items { get; init; } = Array.Empty<ResourceDelegate>();
+        public IList<ResourceDelegateQueryResultItem> Items { get; init; } = Array.Empty<ResourceDelegateQueryResultItem>();
+    }
+
+    public record ResourceDelegateQueryResultItem
+    {
+        /// <summary>
+        /// Gets the matching resource delegate.
+        /// </summary>
+        public required ResourceDelegate ResourceDelegate { get; init; }
+
+        /// <summary>
+        /// Gets the dependent associated with the resource delegate.
+        /// </summary>
+        public Dependent? Dependent { get; init; }
     }
 }

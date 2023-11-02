@@ -26,17 +26,13 @@ namespace HealthGateway.Admin.Services
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ErrorHandling;
     using HealthGateway.Common.Data.Models;
-    using HealthGateway.Common.Data.Utils;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Factories;
-    using HealthGateway.Common.MapUtils;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Services;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
-    using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
-    using Microsoft.Extensions.Configuration;
     using Microsoft.IdentityModel.Tokens;
 
     /// <inheritdoc/>
@@ -47,7 +43,6 @@ namespace HealthGateway.Admin.Services
         private readonly IPatientService patientService;
         private readonly IResourceDelegateDelegate resourceDelegateDelegate;
         private readonly IUserProfileDelegate userProfileDelegate;
-        private readonly IConfiguration configuration;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SupportService"/> class.
@@ -57,32 +52,28 @@ namespace HealthGateway.Admin.Services
         /// <param name="patientService">The patient service to lookup HDIDs by PHN.</param>
         /// <param name="resourceDelegateDelegate">The resource delegate used to lookup delegates and owners.</param>
         /// <param name="autoMapper">The injected automapper provider.</param>
-        /// <param name="configuration">The configuration to use.</param>
         public SupportService(
             IUserProfileDelegate userProfileDelegate,
             IMessagingVerificationDelegate messagingVerificationDelegate,
             IPatientService patientService,
             IResourceDelegateDelegate resourceDelegateDelegate,
-            IMapper autoMapper,
-            IConfiguration configuration)
+            IMapper autoMapper)
         {
             this.userProfileDelegate = userProfileDelegate;
             this.messagingVerificationDelegate = messagingVerificationDelegate;
             this.patientService = patientService;
             this.resourceDelegateDelegate = resourceDelegateDelegate;
             this.autoMapper = autoMapper;
-            this.configuration = configuration;
         }
 
         /// <inheritdoc/>
         public RequestResult<IEnumerable<MessagingVerificationModel>> GetMessageVerifications(string hdid)
         {
             IEnumerable<MessagingVerification> dbResult = this.messagingVerificationDelegate.GetUserMessageVerificationsAsync(hdid).Result;
-            TimeZoneInfo localTimezone = DateFormatter.GetLocalTimeZone(this.configuration);
             RequestResult<IEnumerable<MessagingVerificationModel>> result = new()
             {
                 ResultStatus = ResultType.Success,
-                ResourcePayload = dbResult.Select(m => MessagingVerificationMapUtils.ToUiModel(m, this.autoMapper, localTimezone)),
+                ResourcePayload = dbResult.Select(m => this.autoMapper.Map<MessagingVerification, MessagingVerificationModel>(m)),
             };
             return result;
         }
@@ -180,14 +171,11 @@ namespace HealthGateway.Admin.Services
         private async Task<RequestResult<IEnumerable<PatientSupportDetails>>> SearchDelegates(string forOwnerByPhn)
         {
             string ownerHdid = await this.patientService.GetPatientHdid(forOwnerByPhn).ConfigureAwait(true);
-            IEnumerable<ResourceDelegate> results = (await this.resourceDelegateDelegate.SearchAsync(
-                    new ResourceDelegateQuery
-                    {
-                        ByOwnerHdid = ownerHdid,
-                    })
-                .ConfigureAwait(true)).Items;
 
-            return RequestResultFactory.Success(this.autoMapper.Map<IEnumerable<PatientSupportDetails>>(results));
+            ResourceDelegateQuery query = new() { ByOwnerHdid = ownerHdid };
+            ResourceDelegateQueryResult result = await this.resourceDelegateDelegate.SearchAsync(query);
+
+            return RequestResultFactory.Success(this.autoMapper.Map<IEnumerable<PatientSupportDetails>>(result.Items.Select(r => r.ResourceDelegate)));
         }
     }
 }

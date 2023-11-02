@@ -294,7 +294,7 @@ namespace HealthGateway.Admin.Server.Services
         {
             ResourceDelegateQuery query = new() { ByOwnerHdid = ownerHdid };
             ResourceDelegateQueryResult result = await this.resourceDelegateDelegate.SearchAsync(query);
-            return result.Items;
+            return result.Items.Select(c => c.ResourceDelegate);
         }
 
         private void ValidatePatientResult(RequestResult<PatientModel> patientResult)
