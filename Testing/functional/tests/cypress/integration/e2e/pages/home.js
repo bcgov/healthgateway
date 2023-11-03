@@ -120,9 +120,8 @@ describe("Home page - Recommendations", () => {
         cy.get("[data-testid=add-quick-link-button]").click();
         cy.get("[data-testid=recommendations-dialog-filter]")
             .should("be.visible")
-            .find("input")
-            .should("not.to.be.checked")
-            .check({ force: true });
+            .should("not.have.class", "v-chip--selected")
+            .click();
         cy.get("[data-testid=add-quick-link-btn]").click();
 
         cy.get("[data-testid=recommendations-card-button]").should(
