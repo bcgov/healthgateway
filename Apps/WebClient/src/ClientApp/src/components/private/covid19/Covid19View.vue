@@ -133,9 +133,7 @@ const patientName = computed(() => {
     return undefined;
 });
 const patientBirthdate = computed(() =>
-    vaccinationStatus.value?.birthdate
-        ? DateWrapper.fromIsoDate(vaccinationStatus.value?.birthdate)
-        : undefined
+    DateWrapper.fromIsoDate(vaccinationStatus.value?.birthdate).format()
 );
 
 function retrieveImmunizations(hdid: string): Promise<void> {
