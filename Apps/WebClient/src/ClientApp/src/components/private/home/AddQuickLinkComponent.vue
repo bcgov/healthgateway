@@ -213,6 +213,10 @@ async function handleSubmit(): Promise<void> {
     }
 }
 
+function isSelected(linkName: string): boolean {
+    return selectedQuickLinks.value.includes(linkName);
+}
+
 function hideModal(): void {
     isVisible.value = false;
 }
@@ -286,9 +290,12 @@ function hideModal(): void {
                             :name="quickLink.module + '-filter'"
                             :value="quickLink.module"
                             :text="quickLink.name"
-                            filter
-                            variant="outlined"
                             color="primary"
+                            :variant="
+                                isSelected(quickLink.module)
+                                    ? 'elevated'
+                                    : 'outlined'
+                            "
                         />
                         <v-chip
                             v-if="showOrganDonorRegistration"
@@ -297,9 +304,12 @@ function hideModal(): void {
                             name="organ-donor-registration-filter"
                             value="organ-donor-registration"
                             text="Organ Donor Registration"
-                            filter
-                            variant="outlined"
                             color="primary"
+                            :variant="
+                                isSelected('organ-donor-registration')
+                                    ? 'elevated'
+                                    : 'outlined'
+                            "
                         />
                         <v-chip
                             v-if="showHealthConnectRegistry"
@@ -308,9 +318,12 @@ function hideModal(): void {
                             name="health-connect-registry-filter"
                             value="health-connect-registry"
                             text="Health Connect Registry"
-                            filter
-                            variant="outlined"
                             color="primary"
+                            :variant="
+                                isSelected('health-connect-registry')
+                                    ? 'elevated'
+                                    : 'outlined'
+                            "
                         />
                         <v-chip
                             v-if="showVaccineCard"
@@ -319,9 +332,12 @@ function hideModal(): void {
                             name="bc-vaccine-card-filter"
                             value="bc-vaccine-card"
                             text="BC Vaccine Card"
-                            filter
-                            variant="outlined"
                             color="primary"
+                            :variant="
+                                isSelected('bc-vaccine-card')
+                                    ? 'elevated'
+                                    : 'outlined'
+                            "
                         />
                         <v-chip
                             v-if="showImmunizationRecord"
@@ -330,8 +346,12 @@ function hideModal(): void {
                             name="immunization-record-filter"
                             value="immunization-record"
                             text="Add Vaccines"
-                            filter
                             color="primary"
+                            :variant="
+                                isSelected('immunization-record')
+                                    ? 'elevated'
+                                    : 'outlined'
+                            "
                         />
                         <v-chip
                             v-if="showRecommendationsDialog"
@@ -340,9 +360,12 @@ function hideModal(): void {
                             name="recommendations-dialog-filter"
                             value="recommendations-dialog"
                             text="Vaccine Recommendations"
-                            filter
-                            variant="outlined"
                             color="primary"
+                            :variant="
+                                isSelected('recommendations-dialog')
+                                    ? 'elevated'
+                                    : 'outlined'
+                            "
                         />
                     </v-chip-group>
                 </v-card-text>
