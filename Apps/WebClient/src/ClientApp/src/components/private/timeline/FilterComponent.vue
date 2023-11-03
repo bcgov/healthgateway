@@ -205,7 +205,7 @@ function getFormattedFilterCount(entryType: EntryType): string {
                                 "
                                 color="primary"
                             >
-                                <p class="ml-1">
+                                <p>
                                     {{ entryType.display }}
                                     <span
                                         :data-testid="`${entryType.type}Count`"
