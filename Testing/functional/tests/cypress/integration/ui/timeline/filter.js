@@ -6,14 +6,14 @@ describe("Filters", () => {
         cy.get(`[data-testid=${alert}]`).should("not.exist");
 
         cy.get("[data-testid=filterDropdown]").click();
-        cy.get(`[data-testid=${filter}-filter] input`).click();
+        cy.get(`[data-testid=${filter}-filter]`).click();
         cy.get("[data-testid=btnFilterApply]").click();
         cy.get("[data-testid=btnFilterApply]").should("not.exist");
 
         cy.get(`[data-testid=${alert}]`).should("be.visible");
 
         cy.get("[data-testid=filterDropdown]").click();
-        cy.get("[data-testid=HealthVisit-filter] input").click();
+        cy.get("[data-testid=HealthVisit-filter]").click();
         cy.get("[data-testid=btnFilterApply]").click();
 
         cy.get(`[data-testid=${alert}]`).should("not.exist");
@@ -79,7 +79,7 @@ describe("Filters", () => {
         );
 
         cy.get("[data-testid=filterDropdown]").click();
-        cy.get("[data-testid=Immunization-filter] input").click();
+        cy.get("[data-testid=Immunization-filter]").click();
         cy.get("[data-testid=btnFilterApply]").click();
 
         cy.get("[data-testid=immunizationTitle]").should("be.visible");

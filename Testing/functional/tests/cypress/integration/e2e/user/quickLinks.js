@@ -83,9 +83,9 @@ describe("Quick Links", () => {
         cy.get("[data-testid=filterContainer]").should("not.exist");
         cy.get("[data-testid=filterDropdown]").click();
         cy.get("[data-testid=filterContainer]").should("be.visible");
-        cy.get("[data-testid=Covid19TestResult-filter] input").should(
-            "be.checked"
-        );
+        cy.get(
+            "[data-testid=Covid19TestResult-filter].v-chip--selected"
+        ).should("exist");
         cy.get("[data-testid=btnFilterCancel]").click();
         cy.get("[data-testid=covid19testresultTitle]").should("be.visible");
 
