@@ -61,9 +61,8 @@ namespace HealthGateway.Admin.Server.Services
         /// <inheritdoc/>
         public IDictionary<DateTime, int> GetDailyLoggedInUsersCount(DateOnly startDateLocal, DateOnly endDateLocal, int timeOffset)
         {
-            TimeSpan offsetSpan = TimeSpan.FromMinutes(timeOffset);
-            DateTimeOffset startDateTimeOffset = new(startDateLocal.ToDateTime(TimeOnly.MinValue), offsetSpan);
-            DateTimeOffset endDateTimeOffset = new(endDateLocal.ToDateTime(TimeOnly.MaxValue), offsetSpan);
+            DateTimeOffset startDateTimeOffset = GetStartDateTimeOffset(startDateLocal, timeOffset);
+            DateTimeOffset endDateTimeOffset = GetEndDateTimeOffset(endDateLocal, timeOffset);
             return this.userProfileDelegate.GetLoggedInUsersCount(startDateTimeOffset, endDateTimeOffset);
         }
 
@@ -75,17 +74,17 @@ namespace HealthGateway.Admin.Server.Services
         }
 
         /// <inheritdoc/>
-        public IDictionary<string, int> GetRecurrentUserCounts(int dayCount, string startPeriod, string endPeriod, int timeOffset)
+        public IDictionary<string, int> GetRecurrentUserCounts(int dayCount, DateOnly startDateLocal, DateOnly endDateLocal, int timeOffset)
         {
-            DateTime startDate = GetStartDateTime(startPeriod, timeOffset);
-            DateTime endDate = GetEndDateTime(endPeriod, timeOffset);
+            DateTimeOffset startDate = GetStartDateTimeOffset(startDateLocal, timeOffset);
+            DateTimeOffset endDate = GetEndDateTimeOffset(endDateLocal, timeOffset);
 
             this.logger.LogDebug(
-                "Start Period (Local): {StartPeriod} - End Period (Local): {EndPeriod} - StartDate (UTC): {StartDate} - End Date (UTC): {EndDate} - TimeOffset (UI): {TimeOffset}",
-                startPeriod,
-                endPeriod,
-                startDate,
-                endDate,
+                "Start Date (Local): {StartDate} - End Date (Local): {EndDate} - StartDate (UTC): {StartDateUtc} - End Date (UTC): {EndDateUtc} - TimeOffset (UI): {TimeOffset}",
+                startDate.DateTime,
+                endDate.DateTime,
+                startDate.UtcDateTime,
+                endDate.UtcDateTime,
                 timeOffset.ToString(CultureInfo.InvariantCulture));
 
             IDictionary<string, int> lastLoginCounts = this.userProfileDelegate.GetLastLoginClientCounts(startDate, endDate);
@@ -102,46 +101,33 @@ namespace HealthGateway.Admin.Server.Services
         }
 
         /// <inheritdoc/>
-        public IDictionary<string, int> GetRatingSummary(string startPeriod, string endPeriod, int timeOffset)
+        public IDictionary<string, int> GetRatingSummary(DateOnly startDateLocal, DateOnly endDateLocal, int timeOffset)
         {
-            DateTime startDate = GetStartDateTime(startPeriod, timeOffset);
-            DateTime endDate = GetEndDateTime(endPeriod, timeOffset);
+            DateTimeOffset startDate = GetStartDateTimeOffset(startDateLocal, timeOffset);
+            DateTimeOffset endDate = GetEndDateTimeOffset(endDateLocal, timeOffset);
             return this.ratingDelegate.GetSummary(startDate, endDate);
         }
 
         /// <inheritdoc/>
-        public async Task<IDictionary<string, int>> GetYearOfBirthCountsAsync(string startPeriod, string endPeriod, int timeOffset, CancellationToken ct)
+        public async Task<IDictionary<string, int>> GetYearOfBirthCountsAsync(DateOnly startDateLocal, DateOnly endDateLocal, int timeOffset, CancellationToken ct)
         {
-            DateTime startDate = GetStartDateTime(startPeriod, timeOffset);
-            DateTime endDate = GetEndDateTime(endPeriod, timeOffset);
+            DateTimeOffset startDate = GetStartDateTimeOffset(startDateLocal, timeOffset);
+            DateTimeOffset endDate = GetEndDateTimeOffset(endDateLocal, timeOffset);
             return await this.userProfileDelegate.GetLoggedInUserYearOfBirthCountsAsync(startDate, endDate, ct);
         }
 
-        private static DateTime GetStartDateTime(string startPeriod, int timeOffset)
+        private static DateTimeOffset GetStartDateTimeOffset(DateOnly startDateLocal, int timeOffset)
         {
-            TimeSpan ts = new(0, GetOffset(timeOffset), 0);
-            DateTime startDate = DateTime.Parse(startPeriod, CultureInfo.InvariantCulture).Date.Add(ts);
-            return DateTime.SpecifyKind(startDate, DateTimeKind.Utc);
+            TimeSpan offsetSpan = TimeSpan.FromMinutes(timeOffset);
+            DateTimeOffset startDateTimeOffset = new(startDateLocal.ToDateTime(TimeOnly.MinValue), offsetSpan);
+            return startDateTimeOffset;
         }
 
-        private static DateTime GetEndDateTime(string endPeriod, int timeOffset)
+        private static DateTimeOffset GetEndDateTimeOffset(DateOnly endDateLocal, int timeOffset)
         {
-            TimeSpan ts = new(0, GetOffset(timeOffset), 0);
-            DateTime endDate = DateTime.Parse(endPeriod, CultureInfo.InvariantCulture).Date.Add(ts).AddDays(1).AddMilliseconds(-1);
-            return DateTime.SpecifyKind(endDate, DateTimeKind.Utc);
-        }
-
-        /// <summary>
-        /// Returns an offset value that can be used to create a date in UTC.
-        /// </summary>
-        /// <param name="timeOffset">The offset from the client browser to UTC.</param>
-        /// <returns>The offset value used to create UTC.</returns>
-        private static int GetOffset(int timeOffset)
-        {
-            // If timeOffset is a negative value, then it means current timezone is [n] minutes behind UTC so we need to change this value to a positive when creating TimeSpan for DateTime object in UTC.
-            // If timeOffset is a positive value, then it means current timezone is [n] minutes ahead of UTC so we need to change this value to a negative when creating TimeSpan for DateTime object in UTC.
-            // If timeOffset is 0, then it means current timezone is UTC.
-            return timeOffset * -1;
+            TimeSpan offsetSpan = TimeSpan.FromMinutes(timeOffset);
+            DateTimeOffset endDateTimeOffset = new(endDateLocal.ToDateTime(TimeOnly.MaxValue), offsetSpan);
+            return endDateTimeOffset;
         }
     }
 }

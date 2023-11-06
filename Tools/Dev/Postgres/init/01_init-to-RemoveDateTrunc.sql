@@ -860,7 +860,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM gateway."__EFMigrationsHistory" WHERE "MigrationId" = '20191119083157_InitialCreate') THEN
     INSERT INTO gateway."__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20191119083157_InitialCreate', '7.0.10');
+    VALUES ('20191119083157_InitialCreate', '7.0.13');
     END IF;
 END $EF$;
 COMMIT;
@@ -880,7 +880,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM gateway."__EFMigrationsHistory" WHERE "MigrationId" = '20191120010543_UpdateRegistrationEmail') THEN
     INSERT INTO gateway."__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20191120010543_UpdateRegistrationEmail', '7.0.10');
+    VALUES ('20191120010543_UpdateRegistrationEmail', '7.0.13');
     END IF;
 END $EF$;
 COMMIT;
@@ -899,7 +899,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM gateway."__EFMigrationsHistory" WHERE "MigrationId" = '20191128232437_ChangeEmailInviteToNullableHdid') THEN
     INSERT INTO gateway."__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20191128232437_ChangeEmailInviteToNullableHdid', '7.0.10');
+    VALUES ('20191128232437_ChangeEmailInviteToNullableHdid', '7.0.13');
     END IF;
 END $EF$;
 COMMIT;
@@ -986,7 +986,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM gateway."__EFMigrationsHistory" WHERE "MigrationId" = '20191203232803_AddUpdateEmailTemplate') THEN
     INSERT INTO gateway."__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20191203232803_AddUpdateEmailTemplate', '7.0.10');
+    VALUES ('20191203232803_AddUpdateEmailTemplate', '7.0.13');
     END IF;
 END $EF$;
 COMMIT;
@@ -1035,7 +1035,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM gateway."__EFMigrationsHistory" WHERE "MigrationId" = '20191204191457_UpdateEmailVerificationTemplate') THEN
     INSERT INTO gateway."__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20191204191457_UpdateEmailVerificationTemplate', '7.0.10');
+    VALUES ('20191204191457_UpdateEmailVerificationTemplate', '7.0.13');
     END IF;
 END $EF$;
 COMMIT;
@@ -1122,7 +1122,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM gateway."__EFMigrationsHistory" WHERE "MigrationId" = '20191204211020_UpdateEmailTemplateLogo') THEN
     INSERT INTO gateway."__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20191204211020_UpdateEmailTemplateLogo', '7.0.10');
+    VALUES ('20191204211020_UpdateEmailTemplateLogo', '7.0.13');
     END IF;
 END $EF$;
 COMMIT;
@@ -1155,7 +1155,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM gateway."__EFMigrationsHistory" WHERE "MigrationId" = '20200107171825_NullableReferenceTypes') THEN
     INSERT INTO gateway."__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20200107171825_NullableReferenceTypes', '7.0.10');
+    VALUES ('20200107171825_NullableReferenceTypes', '7.0.13');
     END IF;
 END $EF$;
 COMMIT;
@@ -1182,7 +1182,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM gateway."__EFMigrationsHistory" WHERE "MigrationId" = '20200115203341_AddBetaRequest') THEN
     INSERT INTO gateway."__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20200115203341_AddBetaRequest', '7.0.10');
+    VALUES ('20200115203341_AddBetaRequest', '7.0.13');
     END IF;
 END $EF$;
 COMMIT;
@@ -1201,7 +1201,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM gateway."__EFMigrationsHistory" WHERE "MigrationId" = '20200117220253_UpdateEmailInviteExpire') THEN
     INSERT INTO gateway."__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20200117220253_UpdateEmailInviteExpire', '7.0.10');
+    VALUES ('20200117220253_UpdateEmailInviteExpire', '7.0.13');
     END IF;
 END $EF$;
 COMMIT;
@@ -1249,7 +1249,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM gateway."__EFMigrationsHistory" WHERE "MigrationId" = '20200123030013_UpdateBetaConfirmationTemplate') THEN
     INSERT INTO gateway."__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20200123030013_UpdateBetaConfirmationTemplate', '7.0.10');
+    VALUES ('20200123030013_UpdateBetaConfirmationTemplate', '7.0.13');
     END IF;
 END $EF$;
 COMMIT;
@@ -1269,7 +1269,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM gateway."__EFMigrationsHistory" WHERE "MigrationId" = '20200129233249_UpdateProgramTypes') THEN
     INSERT INTO gateway."__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20200129233249_UpdateProgramTypes', '7.0.10');
+    VALUES ('20200129233249_UpdateProgramTypes', '7.0.13');
     END IF;
 END $EF$;
 COMMIT;
@@ -1288,7 +1288,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM gateway."__EFMigrationsHistory" WHERE "MigrationId" = '20200218200745_UpdateUserFeedbackReviewed') THEN
     INSERT INTO gateway."__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20200218200745_UpdateUserFeedbackReviewed', '7.0.10');
+    VALUES ('20200218200745_UpdateUserFeedbackReviewed', '7.0.13');
     END IF;
 END $EF$;
 COMMIT;
@@ -1403,7 +1403,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM gateway."__EFMigrationsHistory" WHERE "MigrationId" = '20200221211918_LegalAgreements') THEN
     INSERT INTO gateway."__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20200221211918_LegalAgreements', '7.0.10');
+    VALUES ('20200221211918_LegalAgreements', '7.0.13');
     END IF;
 END $EF$;
 COMMIT;
@@ -1465,7 +1465,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM gateway."__EFMigrationsHistory" WHERE "MigrationId" = '20200224231036_ApplicationSettings') THEN
     INSERT INTO gateway."__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20200224231036_ApplicationSettings', '7.0.10');
+    VALUES ('20200224231036_ApplicationSettings', '7.0.13');
     END IF;
 END $EF$;
 COMMIT;
@@ -1555,7 +1555,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM gateway."__EFMigrationsHistory" WHERE "MigrationId" = '20200226012259_UserProfileHistory') THEN
     INSERT INTO gateway."__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20200226012259_UserProfileHistory', '7.0.10');
+    VALUES ('20200226012259_UserProfileHistory', '7.0.13');
     END IF;
 END $EF$;
 COMMIT;
@@ -1630,7 +1630,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM gateway."__EFMigrationsHistory" WHERE "MigrationId" = '20200226200434_ToSTemplate') THEN
     INSERT INTO gateway."__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20200226200434_ToSTemplate', '7.0.10');
+    VALUES ('20200226200434_ToSTemplate', '7.0.13');
     END IF;
 END $EF$;
 COMMIT;
@@ -1750,7 +1750,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM gateway."__EFMigrationsHistory" WHERE "MigrationId" = '20200226230220_AccountClosureTemplates') THEN
     INSERT INTO gateway."__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20200226230220_AccountClosureTemplates', '7.0.10');
+    VALUES ('20200226230220_AccountClosureTemplates', '7.0.13');
     END IF;
 END $EF$;
 COMMIT;
@@ -1786,7 +1786,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM gateway."__EFMigrationsHistory" WHERE "MigrationId" = '20200227234222_ChangeEmailTemplatePriority') THEN
     INSERT INTO gateway."__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20200227234222_ChangeEmailTemplatePriority', '7.0.10');
+    VALUES ('20200227234222_ChangeEmailTemplatePriority', '7.0.13');
     END IF;
 END $EF$;
 COMMIT;
@@ -1840,7 +1840,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM gateway."__EFMigrationsHistory" WHERE "MigrationId" = '20200228193314_ToSTemplateUpdate') THEN
     INSERT INTO gateway."__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20200228193314_ToSTemplateUpdate', '7.0.10');
+    VALUES ('20200228193314_ToSTemplateUpdate', '7.0.13');
     END IF;
 END $EF$;
 COMMIT;
@@ -1878,7 +1878,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM gateway."__EFMigrationsHistory" WHERE "MigrationId" = '20200304212452_Notes') THEN
     INSERT INTO gateway."__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20200304212452_Notes', '7.0.10');
+    VALUES ('20200304212452_Notes', '7.0.13');
     END IF;
 END $EF$;
 COMMIT;
@@ -1927,7 +1927,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM gateway."__EFMigrationsHistory" WHERE "MigrationId" = '20200304214641_UpdateVerifyEmailTemplate') THEN
     INSERT INTO gateway."__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20200304214641_UpdateVerifyEmailTemplate', '7.0.10');
+    VALUES ('20200304214641_UpdateVerifyEmailTemplate', '7.0.13');
     END IF;
 END $EF$;
 COMMIT;
@@ -1953,7 +1953,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM gateway."__EFMigrationsHistory" WHERE "MigrationId" = '20200312180332_CompositeNoteKeys') THEN
     INSERT INTO gateway."__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20200312180332_CompositeNoteKeys', '7.0.10');
+    VALUES ('20200312180332_CompositeNoteKeys', '7.0.13');
     END IF;
 END $EF$;
 COMMIT;
@@ -2068,7 +2068,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM gateway."__EFMigrationsHistory" WHERE "MigrationId" = '20200317223800_ToSUpdate4Notes') THEN
     INSERT INTO gateway."__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20200317223800_ToSUpdate4Notes', '7.0.10');
+    VALUES ('20200317223800_ToSUpdate4Notes', '7.0.13');
     END IF;
 END $EF$;
 COMMIT;
@@ -2099,7 +2099,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM gateway."__EFMigrationsHistory" WHERE "MigrationId" = '20200330230502_GenericCache') THEN
     INSERT INTO gateway."__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20200330230502_GenericCache', '7.0.10');
+    VALUES ('20200330230502_GenericCache', '7.0.13');
     END IF;
 END $EF$;
 COMMIT;
@@ -2132,7 +2132,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM gateway."__EFMigrationsHistory" WHERE "MigrationId" = '20200413234129_AddHDID2Feedback') THEN
     INSERT INTO gateway."__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20200413234129_AddHDID2Feedback', '7.0.10');
+    VALUES ('20200413234129_AddHDID2Feedback', '7.0.13');
     END IF;
 END $EF$;
 COMMIT;
@@ -2170,7 +2170,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM gateway."__EFMigrationsHistory" WHERE "MigrationId" = '20200421223141_Comment') THEN
     INSERT INTO gateway."__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20200421223141_Comment', '7.0.10');
+    VALUES ('20200421223141_Comment', '7.0.13');
     END IF;
 END $EF$;
 COMMIT;
@@ -2240,7 +2240,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM gateway."__EFMigrationsHistory" WHERE "MigrationId" = '20200422234729_SupportEncryption') THEN
     INSERT INTO gateway."__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20200422234729_SupportEncryption', '7.0.10');
+    VALUES ('20200422234729_SupportEncryption', '7.0.13');
     END IF;
 END $EF$;
 COMMIT;
@@ -2270,7 +2270,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM gateway."__EFMigrationsHistory" WHERE "MigrationId" = '20200423173644_Communication') THEN
     INSERT INTO gateway."__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20200423173644_Communication', '7.0.10');
+    VALUES ('20200423173644_Communication', '7.0.13');
     END IF;
 END $EF$;
 COMMIT;
@@ -2290,7 +2290,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM gateway."__EFMigrationsHistory" WHERE "MigrationId" = '20200512223446_AddLaboratoryApplication') THEN
     INSERT INTO gateway."__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20200512223446_AddLaboratoryApplication', '7.0.10');
+    VALUES ('20200512223446_AddLaboratoryApplication', '7.0.13');
     END IF;
 END $EF$;
 COMMIT;
@@ -2309,7 +2309,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM gateway."__EFMigrationsHistory" WHERE "MigrationId" = '20200514220748_UpdateCommentModel') THEN
     INSERT INTO gateway."__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20200514220748_UpdateCommentModel', '7.0.10');
+    VALUES ('20200514220748_UpdateCommentModel', '7.0.13');
     END IF;
 END $EF$;
 COMMIT;
@@ -2328,7 +2328,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM gateway."__EFMigrationsHistory" WHERE "MigrationId" = '20200515154544_UpdateProfile') THEN
     INSERT INTO gateway."__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20200515154544_UpdateProfile', '7.0.10');
+    VALUES ('20200515154544_UpdateProfile', '7.0.13');
     END IF;
 END $EF$;
 COMMIT;
@@ -2382,7 +2382,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM gateway."__EFMigrationsHistory" WHERE "MigrationId" = '20200521185337_RenameEmailInviteDB') THEN
     INSERT INTO gateway."__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20200521185337_RenameEmailInviteDB', '7.0.10');
+    VALUES ('20200521185337_RenameEmailInviteDB', '7.0.13');
     END IF;
 END $EF$;
 COMMIT;
@@ -2401,7 +2401,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM gateway."__EFMigrationsHistory" WHERE "MigrationId" = '20200521185607_RenameEmailInviteModel') THEN
     INSERT INTO gateway."__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20200521185607_RenameEmailInviteModel', '7.0.10');
+    VALUES ('20200521185607_RenameEmailInviteModel', '7.0.13');
     END IF;
 END $EF$;
 COMMIT;
@@ -2490,7 +2490,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM gateway."__EFMigrationsHistory" WHERE "MigrationId" = '20200526063610_SMSVerification') THEN
     INSERT INTO gateway."__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20200526063610_SMSVerification', '7.0.10');
+    VALUES ('20200526063610_SMSVerification', '7.0.13');
     END IF;
 END $EF$;
 COMMIT;
@@ -2509,7 +2509,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM gateway."__EFMigrationsHistory" WHERE "MigrationId" = '20200526203427_MissingMigrationNullable') THEN
     INSERT INTO gateway."__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20200526203427_MissingMigrationNullable', '7.0.10');
+    VALUES ('20200526203427_MissingMigrationNullable', '7.0.13');
     END IF;
 END $EF$;
 COMMIT;
@@ -2565,7 +2565,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM gateway."__EFMigrationsHistory" WHERE "MigrationId" = '20200529202233_PhoneBugfix') THEN
     INSERT INTO gateway."__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20200529202233_PhoneBugfix', '7.0.10');
+    VALUES ('20200529202233_PhoneBugfix', '7.0.13');
     END IF;
 END $EF$;
 COMMIT;
@@ -2598,7 +2598,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM gateway."__EFMigrationsHistory" WHERE "MigrationId" = '20200601194243_UpdateMessagingVerification') THEN
     INSERT INTO gateway."__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20200601194243_UpdateMessagingVerification', '7.0.10');
+    VALUES ('20200601194243_UpdateMessagingVerification', '7.0.13');
     END IF;
 END $EF$;
 COMMIT;
@@ -2624,7 +2624,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM gateway."__EFMigrationsHistory" WHERE "MigrationId" = '20200609144240_UpdateMessagingVerificationAttempts') THEN
     INSERT INTO gateway."__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20200609144240_UpdateMessagingVerificationAttempts', '7.0.10');
+    VALUES ('20200609144240_UpdateMessagingVerificationAttempts', '7.0.13');
     END IF;
 END $EF$;
 COMMIT;
@@ -2644,7 +2644,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM gateway."__EFMigrationsHistory" WHERE "MigrationId" = '20200619221413_CommunicationDateConstraint') THEN
     INSERT INTO gateway."__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20200619221413_CommunicationDateConstraint', '7.0.10');
+    VALUES ('20200619221413_CommunicationDateConstraint', '7.0.13');
     END IF;
 END $EF$;
 COMMIT;
@@ -2775,7 +2775,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM gateway."__EFMigrationsHistory" WHERE "MigrationId" = '20200622183501_ToSUpdateCovid') THEN
     INSERT INTO gateway."__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20200622183501_ToSUpdateCovid', '7.0.10');
+    VALUES ('20200622183501_ToSUpdateCovid', '7.0.13');
     END IF;
 END $EF$;
 COMMIT;
@@ -2795,7 +2795,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM gateway."__EFMigrationsHistory" WHERE "MigrationId" = '20200630213031_MvToSEffDt') THEN
     INSERT INTO gateway."__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20200630213031_MvToSEffDt', '7.0.10');
+    VALUES ('20200630213031_MvToSEffDt', '7.0.13');
     END IF;
 END $EF$;
 COMMIT;
@@ -2823,7 +2823,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM gateway."__EFMigrationsHistory" WHERE "MigrationId" = '20200710203326_AddUserPreference') THEN
     INSERT INTO gateway."__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20200710203326_AddUserPreference', '7.0.10');
+    VALUES ('20200710203326_AddUserPreference', '7.0.13');
     END IF;
 END $EF$;
 COMMIT;
@@ -2995,7 +2995,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM gateway."__EFMigrationsHistory" WHERE "MigrationId" = '20200724222252_NewComms') THEN
     INSERT INTO gateway."__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20200724222252_NewComms', '7.0.10');
+    VALUES ('20200724222252_NewComms', '7.0.13');
     END IF;
 END $EF$;
 COMMIT;
@@ -3014,7 +3014,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM gateway."__EFMigrationsHistory" WHERE "MigrationId" = '20200724230921_UpdateCommunicationAddScheduledDate') THEN
     INSERT INTO gateway."__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20200724230921_UpdateCommunicationAddScheduledDate', '7.0.10');
+    VALUES ('20200724230921_UpdateCommunicationAddScheduledDate', '7.0.13');
     END IF;
 END $EF$;
 COMMIT;
@@ -3076,7 +3076,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM gateway."__EFMigrationsHistory" WHERE "MigrationId" = '20200803222317_PushBannerChange') THEN
     INSERT INTO gateway."__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20200803222317_PushBannerChange', '7.0.10');
+    VALUES ('20200803222317_PushBannerChange', '7.0.13');
     END IF;
 END $EF$;
 COMMIT;
@@ -3104,7 +3104,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM gateway."__EFMigrationsHistory" WHERE "MigrationId" = '20200817213421_AddRatingsTable') THEN
     INSERT INTO gateway."__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20200817213421_AddRatingsTable', '7.0.10');
+    VALUES ('20200817213421_AddRatingsTable', '7.0.13');
     END IF;
 END $EF$;
 COMMIT;
@@ -3124,7 +3124,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM gateway."__EFMigrationsHistory" WHERE "MigrationId" = '20200901174715_UpdateProgramTypeCode') THEN
     INSERT INTO gateway."__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20200901174715_UpdateProgramTypeCode', '7.0.10');
+    VALUES ('20200901174715_UpdateProgramTypeCode', '7.0.13');
     END IF;
 END $EF$;
 COMMIT;
@@ -3144,7 +3144,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM gateway."__EFMigrationsHistory" WHERE "MigrationId" = '20200922192259_AddCommunicationStatusCodeDraft') THEN
     INSERT INTO gateway."__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20200922192259_AddCommunicationStatusCodeDraft', '7.0.10');
+    VALUES ('20200922192259_AddCommunicationStatusCodeDraft', '7.0.13');
     END IF;
 END $EF$;
 COMMIT;
@@ -3172,7 +3172,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM gateway."__EFMigrationsHistory" WHERE "MigrationId" = '20200926222603_ModifyUniqueDateRangeConstraint') THEN
     INSERT INTO gateway."__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20200926222603_ModifyUniqueDateRangeConstraint', '7.0.10');
+    VALUES ('20200926222603_ModifyUniqueDateRangeConstraint', '7.0.13');
     END IF;
 END $EF$;
 COMMIT;
@@ -3199,7 +3199,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM gateway."__EFMigrationsHistory" WHERE "MigrationId" = '20201008222443_UserDelegate') THEN
     INSERT INTO gateway."__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20201008222443_UserDelegate', '7.0.10');
+    VALUES ('20201008222443_UserDelegate', '7.0.13');
     END IF;
 END $EF$;
 COMMIT;
@@ -3225,7 +3225,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM gateway."__EFMigrationsHistory" WHERE "MigrationId" = '20201017085954_GenericCacheIndexes') THEN
     INSERT INTO gateway."__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20201017085954_GenericCacheIndexes', '7.0.10');
+    VALUES ('20201017085954_GenericCacheIndexes', '7.0.13');
     END IF;
 END $EF$;
 COMMIT;
@@ -3258,7 +3258,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM gateway."__EFMigrationsHistory" WHERE "MigrationId" = '20201018001236_GenericCacheUnique') THEN
     INSERT INTO gateway."__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20201018001236_GenericCacheUnique', '7.0.10');
+    VALUES ('20201018001236_GenericCacheUnique', '7.0.13');
     END IF;
 END $EF$;
 COMMIT;
@@ -3323,7 +3323,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM gateway."__EFMigrationsHistory" WHERE "MigrationId" = '20201021193628_AddUserDelegateHistory') THEN
     INSERT INTO gateway."__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20201021193628_AddUserDelegateHistory', '7.0.10');
+    VALUES ('20201021193628_AddUserDelegateHistory', '7.0.13');
     END IF;
 END $EF$;
 COMMIT;
@@ -3476,7 +3476,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM gateway."__EFMigrationsHistory" WHERE "MigrationId" = '20201118002050_AddResourceDelegate') THEN
     INSERT INTO gateway."__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20201118002050_AddResourceDelegate', '7.0.10');
+    VALUES ('20201118002050_AddResourceDelegate', '7.0.13');
     END IF;
 END $EF$;
 COMMIT;
@@ -3495,7 +3495,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM gateway."__EFMigrationsHistory" WHERE "MigrationId" = '20201208231819_RemoveBetaRequest') THEN
     INSERT INTO gateway."__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20201208231819_RemoveBetaRequest', '7.0.10');
+    VALUES ('20201208231819_RemoveBetaRequest', '7.0.13');
     END IF;
 END $EF$;
 COMMIT;
@@ -3716,7 +3716,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM gateway."__EFMigrationsHistory" WHERE "MigrationId" = '20201224092706_UpdatedTermsOfService') THEN
     INSERT INTO gateway."__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20201224092706_UpdatedTermsOfService', '7.0.10');
+    VALUES ('20201224092706_UpdatedTermsOfService', '7.0.13');
     END IF;
 END $EF$;
 COMMIT;
@@ -3956,7 +3956,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM gateway."__EFMigrationsHistory" WHERE "MigrationId" = '20201224191731_FixTermsOfService') THEN
     INSERT INTO gateway."__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20201224191731_FixTermsOfService', '7.0.10');
+    VALUES ('20201224191731_FixTermsOfService', '7.0.13');
     END IF;
 END $EF$;
 COMMIT;
@@ -3976,7 +3976,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM gateway."__EFMigrationsHistory" WHERE "MigrationId" = '20210105213714_UpdateToSDate') THEN
     INSERT INTO gateway."__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20210105213714_UpdateToSDate', '7.0.10');
+    VALUES ('20210105213714_UpdateToSDate', '7.0.13');
     END IF;
 END $EF$;
 COMMIT;
@@ -4002,7 +4002,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM gateway."__EFMigrationsHistory" WHERE "MigrationId" = '20210105220604_UpdateFeedbackFK') THEN
     INSERT INTO gateway."__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20210105220604_UpdateFeedbackFK', '7.0.10');
+    VALUES ('20210105220604_UpdateFeedbackFK', '7.0.13');
     END IF;
 END $EF$;
 COMMIT;
@@ -4022,7 +4022,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM gateway."__EFMigrationsHistory" WHERE "MigrationId" = '20210106170417_UpdateToSDate2') THEN
     INSERT INTO gateway."__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20210106170417_UpdateToSDate2', '7.0.10');
+    VALUES ('20210106170417_UpdateToSDate2', '7.0.13');
     END IF;
 END $EF$;
 COMMIT;
@@ -4098,7 +4098,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM gateway."__EFMigrationsHistory" WHERE "MigrationId" = '20210107205552_UserProfileHistoryLogin') THEN
     INSERT INTO gateway."__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20210107205552_UserProfileHistoryLogin', '7.0.10');
+    VALUES ('20210107205552_UserProfileHistoryLogin', '7.0.13');
     END IF;
 END $EF$;
 COMMIT;
@@ -4152,7 +4152,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM gateway."__EFMigrationsHistory" WHERE "MigrationId" = '20210107212709_UpdateToSEmail') THEN
     INSERT INTO gateway."__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20210107212709_UpdateToSEmail', '7.0.10');
+    VALUES ('20210107212709_UpdateToSEmail', '7.0.13');
     END IF;
 END $EF$;
 COMMIT;
@@ -4173,7 +4173,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM gateway."__EFMigrationsHistory" WHERE "MigrationId" = '20210111203912_UserProfileHistoryNullValue') THEN
     INSERT INTO gateway."__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20210111203912_UserProfileHistoryNullValue', '7.0.10');
+    VALUES ('20210111203912_UserProfileHistoryNullValue', '7.0.13');
     END IF;
 END $EF$;
 COMMIT;
@@ -4202,7 +4202,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM gateway."__EFMigrationsHistory" WHERE "MigrationId" = '20210119080944_EventLog') THEN
     INSERT INTO gateway."__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20210119080944_EventLog', '7.0.10');
+    VALUES ('20210119080944_EventLog', '7.0.13');
     END IF;
 END $EF$;
 COMMIT;
@@ -4269,7 +4269,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM gateway."__EFMigrationsHistory" WHERE "MigrationId" = '20210122215516_AddCommentEntryTypeCode') THEN
     INSERT INTO gateway."__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20210122215516_AddCommentEntryTypeCode', '7.0.10');
+    VALUES ('20210122215516_AddCommentEntryTypeCode', '7.0.13');
     END IF;
 END $EF$;
 COMMIT;
@@ -4319,7 +4319,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM gateway."__EFMigrationsHistory" WHERE "MigrationId" = '20210211202508_UpdateEmailValidationTemplate') THEN
     INSERT INTO gateway."__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20210211202508_UpdateEmailValidationTemplate', '7.0.10');
+    VALUES ('20210211202508_UpdateEmailValidationTemplate', '7.0.13');
     END IF;
 END $EF$;
 COMMIT;
@@ -4358,7 +4358,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM gateway."__EFMigrationsHistory" WHERE "MigrationId" = '20210316172822_FixMessagingVerification') THEN
     INSERT INTO gateway."__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20210316172822_FixMessagingVerification', '7.0.10');
+    VALUES ('20210316172822_FixMessagingVerification', '7.0.13');
     END IF;
 END $EF$;
 COMMIT;
@@ -4378,7 +4378,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM gateway."__EFMigrationsHistory" WHERE "MigrationId" = '20210317235519_AddSpecialAuthorityCommentEntryTypeCode') THEN
     INSERT INTO gateway."__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20210317235519_AddSpecialAuthorityCommentEntryTypeCode', '7.0.10');
+    VALUES ('20210317235519_AddSpecialAuthorityCommentEntryTypeCode', '7.0.13');
     END IF;
 END $EF$;
 COMMIT;
@@ -5113,7 +5113,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM gateway."__EFMigrationsHistory" WHERE "MigrationId" = '20210330184059_UpdatedAssets') THEN
     INSERT INTO gateway."__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20210330184059_UpdatedAssets', '7.0.10');
+    VALUES ('20210330184059_UpdatedAssets', '7.0.13');
     END IF;
 END $EF$;
 COMMIT;
@@ -5999,7 +5999,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM gateway."__EFMigrationsHistory" WHERE "MigrationId" = '20210420220008_UpdateAssets') THEN
     INSERT INTO gateway."__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20210420220008_UpdateAssets', '7.0.10');
+    VALUES ('20210420220008_UpdateAssets', '7.0.13');
     END IF;
 END $EF$;
 COMMIT;
@@ -6065,7 +6065,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM gateway."__EFMigrationsHistory" WHERE "MigrationId" = '20210510213821_CreateAdminTag') THEN
     INSERT INTO gateway."__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20210510213821_CreateAdminTag', '7.0.10');
+    VALUES ('20210510213821_CreateAdminTag', '7.0.13');
     END IF;
 END $EF$;
 COMMIT;
@@ -6206,7 +6206,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM gateway."__EFMigrationsHistory" WHERE "MigrationId" = '20210601235231_SetupWallet') THEN
     INSERT INTO gateway."__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20210601235231_SetupWallet', '7.0.10');
+    VALUES ('20210601235231_SetupWallet', '7.0.13');
     END IF;
 END $EF$;
 COMMIT;
@@ -6236,7 +6236,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM gateway."__EFMigrationsHistory" WHERE "MigrationId" = '20210604003608_AddRequiredCredentialsAttributes') THEN
     INSERT INTO gateway."__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20210604003608_AddRequiredCredentialsAttributes', '7.0.10');
+    VALUES ('20210604003608_AddRequiredCredentialsAttributes', '7.0.13');
     END IF;
 END $EF$;
 COMMIT;
@@ -6262,7 +6262,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM gateway."__EFMigrationsHistory" WHERE "MigrationId" = '20210607193749_UpdateCredFieldsRegd') THEN
     INSERT INTO gateway."__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20210607193749_UpdateCredFieldsRegd', '7.0.10');
+    VALUES ('20210607193749_UpdateCredFieldsRegd', '7.0.13');
     END IF;
 END $EF$;
 COMMIT;
@@ -6292,7 +6292,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM gateway."__EFMigrationsHistory" WHERE "MigrationId" = '20210618155609_AdminFeedbackEmail') THEN
     INSERT INTO gateway."__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20210618155609_AdminFeedbackEmail', '7.0.10');
+    VALUES ('20210618155609_AdminFeedbackEmail', '7.0.13');
     END IF;
 END $EF$;
 COMMIT;
@@ -6364,7 +6364,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM gateway."__EFMigrationsHistory" WHERE "MigrationId" = '20210618185129_AddInAppCommsType') THEN
     INSERT INTO gateway."__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20210618185129_AddInAppCommsType', '7.0.10');
+    VALUES ('20210618185129_AddInAppCommsType', '7.0.13');
     END IF;
 END $EF$;
 COMMIT;
@@ -6395,7 +6395,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM gateway."__EFMigrationsHistory" WHERE "MigrationId" = '20210621184624_UpdateAdminFeedbackTemplate') THEN
     INSERT INTO gateway."__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20210621184624_UpdateAdminFeedbackTemplate', '7.0.10');
+    VALUES ('20210621184624_UpdateAdminFeedbackTemplate', '7.0.13');
     END IF;
 END $EF$;
 COMMIT;
@@ -6421,7 +6421,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM gateway."__EFMigrationsHistory" WHERE "MigrationId" = '20210621225608_UserProfileVerifications') THEN
     INSERT INTO gateway."__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20210621225608_UserProfileVerifications', '7.0.10');
+    VALUES ('20210621225608_UserProfileVerifications', '7.0.13');
     END IF;
 END $EF$;
 COMMIT;
@@ -6456,7 +6456,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM gateway."__EFMigrationsHistory" WHERE "MigrationId" = '20210726205526_FixMVConstraint') THEN
     INSERT INTO gateway."__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20210726205526_FixMVConstraint', '7.0.10');
+    VALUES ('20210726205526_FixMVConstraint', '7.0.13');
     END IF;
 END $EF$;
 COMMIT;
@@ -6525,7 +6525,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM gateway."__EFMigrationsHistory" WHERE "MigrationId" = '20211027211258_VaccineProofRequestCache') THEN
     INSERT INTO gateway."__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20211027211258_VaccineProofRequestCache', '7.0.10');
+    VALUES ('20211027211258_VaccineProofRequestCache', '7.0.13');
     END IF;
 END $EF$;
 COMMIT;
@@ -6544,7 +6544,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM gateway."__EFMigrationsHistory" WHERE "MigrationId" = '20211028175602_VPAddAssetEndpoint') THEN
     INSERT INTO gateway."__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20211028175602_VPAddAssetEndpoint', '7.0.10');
+    VALUES ('20211028175602_VPAddAssetEndpoint', '7.0.13');
     END IF;
 END $EF$;
 COMMIT;
@@ -6598,7 +6598,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM gateway."__EFMigrationsHistory" WHERE "MigrationId" = '20211103205732_CleanupVCVP') THEN
     INSERT INTO gateway."__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20211103205732_CleanupVCVP', '7.0.10');
+    VALUES ('20211103205732_CleanupVCVP', '7.0.13');
     END IF;
 END $EF$;
 COMMIT;
@@ -6626,7 +6626,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM gateway."__EFMigrationsHistory" WHERE "MigrationId" = '20211109195934_AdminAllowOverlapMultipleStatus') THEN
     INSERT INTO gateway."__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20211109195934_AdminAllowOverlapMultipleStatus', '7.0.10');
+    VALUES ('20211109195934_AdminAllowOverlapMultipleStatus', '7.0.13');
     END IF;
 END $EF$;
 COMMIT;
@@ -6645,7 +6645,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM gateway."__EFMigrationsHistory" WHERE "MigrationId" = '20211206215849_AddIndexToUserProfileHistory') THEN
     INSERT INTO gateway."__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20211206215849_AddIndexToUserProfileHistory', '7.0.10');
+    VALUES ('20211206215849_AddIndexToUserProfileHistory', '7.0.13');
     END IF;
 END $EF$;
 COMMIT;
@@ -6681,7 +6681,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM gateway."__EFMigrationsHistory" WHERE "MigrationId" = '20211221220853_CreateAdminUserProfile') THEN
     INSERT INTO gateway."__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20211221220853_CreateAdminUserProfile', '7.0.10');
+    VALUES ('20211221220853_CreateAdminUserProfile', '7.0.13');
     END IF;
 END $EF$;
 COMMIT;
@@ -6700,7 +6700,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM gateway."__EFMigrationsHistory" WHERE "MigrationId" = '20220112050257_DropEmailFromAdminUserProfile') THEN
     INSERT INTO gateway."__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20220112050257_DropEmailFromAdminUserProfile', '7.0.10');
+    VALUES ('20220112050257_DropEmailFromAdminUserProfile', '7.0.13');
     END IF;
 END $EF$;
 COMMIT;
@@ -6728,7 +6728,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM gateway."__EFMigrationsHistory" WHERE "MigrationId" = '20220127215846_AddAllLaboratoryOrdersCommentEntryType') THEN
     INSERT INTO gateway."__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20220127215846_AddAllLaboratoryOrdersCommentEntryType', '7.0.10');
+    VALUES ('20220127215846_AddAllLaboratoryOrdersCommentEntryType', '7.0.13');
     END IF;
 END $EF$;
 COMMIT;
@@ -7562,7 +7562,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM gateway."__EFMigrationsHistory" WHERE "MigrationId" = '20220419231412_EF6Upgrade') THEN
     INSERT INTO gateway."__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20220419231412_EF6Upgrade', '7.0.10');
+    VALUES ('20220419231412_EF6Upgrade', '7.0.13');
     END IF;
 END $EF$;
 COMMIT;
@@ -7581,7 +7581,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM gateway."__EFMigrationsHistory" WHERE "MigrationId" = '20220420211930_NoteJournalType') THEN
     INSERT INTO gateway."__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20220420211930_NoteJournalType', '7.0.10');
+    VALUES ('20220420211930_NoteJournalType', '7.0.13');
     END IF;
 END $EF$;
 COMMIT;
@@ -7600,7 +7600,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM gateway."__EFMigrationsHistory" WHERE "MigrationId" = '20220420212201_RenameNoteJournal') THEN
     INSERT INTO gateway."__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20220420212201_RenameNoteJournal', '7.0.10');
+    VALUES ('20220420212201_RenameNoteJournal', '7.0.13');
     END IF;
 END $EF$;
 COMMIT;
@@ -7628,7 +7628,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM gateway."__EFMigrationsHistory" WHERE "MigrationId" = '20220503003723_AddDateTruncate') THEN
     INSERT INTO gateway."__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20220503003723_AddDateTruncate', '7.0.10');
+    VALUES ('20220503003723_AddDateTruncate', '7.0.13');
     END IF;
 END $EF$;
 COMMIT;
@@ -7647,7 +7647,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM gateway."__EFMigrationsHistory" WHERE "MigrationId" = '20220510181145_UpdateParentEntryIdPrecision') THEN
     INSERT INTO gateway."__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20220510181145_UpdateParentEntryIdPrecision', '7.0.10');
+    VALUES ('20220510181145_UpdateParentEntryIdPrecision', '7.0.13');
     END IF;
 END $EF$;
 COMMIT;
@@ -7694,7 +7694,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM gateway."__EFMigrationsHistory" WHERE "MigrationId" = '20220518183026_UserProfileToSFK') THEN
     INSERT INTO gateway."__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20220518183026_UserProfileToSFK', '7.0.10');
+    VALUES ('20220518183026_UserProfileToSFK', '7.0.13');
     END IF;
 END $EF$;
 COMMIT;
@@ -7763,7 +7763,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM gateway."__EFMigrationsHistory" WHERE "MigrationId" = '20220518211625_UserRemoveAcceptedToS') THEN
     INSERT INTO gateway."__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20220518211625_UserRemoveAcceptedToS', '7.0.10');
+    VALUES ('20220518211625_UserRemoveAcceptedToS', '7.0.13');
     END IF;
 END $EF$;
 COMMIT;
@@ -7791,7 +7791,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM gateway."__EFMigrationsHistory" WHERE "MigrationId" = '20220519190920_ToSJobCleanup') THEN
     INSERT INTO gateway."__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20220519190920_ToSJobCleanup', '7.0.10');
+    VALUES ('20220519190920_ToSJobCleanup', '7.0.13');
     END IF;
 END $EF$;
 COMMIT;
@@ -8022,7 +8022,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM gateway."__EFMigrationsHistory" WHERE "MigrationId" = '20220519201544_ToSUpdate051922') THEN
     INSERT INTO gateway."__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20220519201544_ToSUpdate051922', '7.0.10');
+    VALUES ('20220519201544_ToSUpdate051922', '7.0.13');
     END IF;
 END $EF$;
 COMMIT;
@@ -8282,7 +8282,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM gateway."__EFMigrationsHistory" WHERE "MigrationId" = '20220606211634_RevampTermsOfService') THEN
     INSERT INTO gateway."__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20220606211634_RevampTermsOfService', '7.0.10');
+    VALUES ('20220606211634_RevampTermsOfService', '7.0.13');
     END IF;
 END $EF$;
 COMMIT;
@@ -8309,7 +8309,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM gateway."__EFMigrationsHistory" WHERE "MigrationId" = '20220607220711_RemoveCommunicationEmail') THEN
     INSERT INTO gateway."__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20220607220711_RemoveCommunicationEmail', '7.0.10');
+    VALUES ('20220607220711_RemoveCommunicationEmail', '7.0.13');
     END IF;
 END $EF$;
 COMMIT;
@@ -8357,7 +8357,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM gateway."__EFMigrationsHistory" WHERE "MigrationId" = '20220819210700_UpdateResourceDelegate') THEN
     INSERT INTO gateway."__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20220819210700_UpdateResourceDelegate', '7.0.10');
+    VALUES ('20220819210700_UpdateResourceDelegate', '7.0.13');
     END IF;
 END $EF$;
 COMMIT;
@@ -8616,7 +8616,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM gateway."__EFMigrationsHistory" WHERE "MigrationId" = '20220822182613_ToSUpdate') THEN
     INSERT INTO gateway."__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20220822182613_ToSUpdate', '7.0.10');
+    VALUES ('20220822182613_ToSUpdate', '7.0.13');
     END IF;
 END $EF$;
 COMMIT;
@@ -8635,7 +8635,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM gateway."__EFMigrationsHistory" WHERE "MigrationId" = '20220823003707_RemoveGenericCache') THEN
     INSERT INTO gateway."__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20220823003707_RemoveGenericCache', '7.0.10');
+    VALUES ('20220823003707_RemoveGenericCache', '7.0.13');
     END IF;
 END $EF$;
 COMMIT;
@@ -8655,7 +8655,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM gateway."__EFMigrationsHistory" WHERE "MigrationId" = '20220825002518_ClinicalDocCommentEntry') THEN
     INSERT INTO gateway."__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20220825002518_ClinicalDocCommentEntry', '7.0.10');
+    VALUES ('20220825002518_ClinicalDocCommentEntry', '7.0.13');
     END IF;
 END $EF$;
 COMMIT;
@@ -8675,7 +8675,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM gateway."__EFMigrationsHistory" WHERE "MigrationId" = '20220830055608_NewCDOAppType') THEN
     INSERT INTO gateway."__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20220830055608_NewCDOAppType', '7.0.10');
+    VALUES ('20220830055608_NewCDOAppType', '7.0.13');
     END IF;
 END $EF$;
 COMMIT;
@@ -8751,7 +8751,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM gateway."__EFMigrationsHistory" WHERE "MigrationId" = '20220903162916_AddMobileComms') THEN
     INSERT INTO gateway."__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20220903162916_AddMobileComms', '7.0.10');
+    VALUES ('20220903162916_AddMobileComms', '7.0.13');
     END IF;
 END $EF$;
 COMMIT;
@@ -8808,7 +8808,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM gateway."__EFMigrationsHistory" WHERE "MigrationId" = '20221005233413_AddYearOfBirthToUserProfile') THEN
     INSERT INTO gateway."__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20221005233413_AddYearOfBirthToUserProfile', '7.0.10');
+    VALUES ('20221005233413_AddYearOfBirthToUserProfile', '7.0.13');
     END IF;
 END $EF$;
 COMMIT;
@@ -8828,7 +8828,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM gateway."__EFMigrationsHistory" WHERE "MigrationId" = '20221019215540_HospitalVisitCommentEntry') THEN
     INSERT INTO gateway."__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20221019215540_HospitalVisitCommentEntry', '7.0.10');
+    VALUES ('20221019215540_HospitalVisitCommentEntry', '7.0.13');
     END IF;
 END $EF$;
 COMMIT;
@@ -8854,7 +8854,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM gateway."__EFMigrationsHistory" WHERE "MigrationId" = '20221208194329_AddUserProfileToUserFeedback') THEN
     INSERT INTO gateway."__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20221208194329_AddUserProfileToUserFeedback', '7.0.10');
+    VALUES ('20221208194329_AddUserProfileToUserFeedback', '7.0.13');
     END IF;
 END $EF$;
 COMMIT;
@@ -8964,7 +8964,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM gateway."__EFMigrationsHistory" WHERE "MigrationId" = '20221209222859_AddLastLoginClientCodeToUserProfile') THEN
     INSERT INTO gateway."__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20221209222859_AddLastLoginClientCodeToUserProfile', '7.0.10');
+    VALUES ('20221209222859_AddLastLoginClientCodeToUserProfile', '7.0.13');
     END IF;
 END $EF$;
 COMMIT;
@@ -8990,7 +8990,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM gateway."__EFMigrationsHistory" WHERE "MigrationId" = '20230104233040_OnDeleteSetNullUserFeedbackUserProfile') THEN
     INSERT INTO gateway."__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20230104233040_OnDeleteSetNullUserFeedbackUserProfile', '7.0.10');
+    VALUES ('20230104233040_OnDeleteSetNullUserFeedbackUserProfile', '7.0.13');
     END IF;
 END $EF$;
 COMMIT;
@@ -9010,7 +9010,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM gateway."__EFMigrationsHistory" WHERE "MigrationId" = '20230313212610_ResolveMigrationIssueForCommentEntryType') THEN
     INSERT INTO gateway."__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20230313212610_ResolveMigrationIssueForCommentEntryType', '7.0.10');
+    VALUES ('20230313212610_ResolveMigrationIssueForCommentEntryType', '7.0.13');
     END IF;
 END $EF$;
 COMMIT;
@@ -9053,7 +9053,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM gateway."__EFMigrationsHistory" WHERE "MigrationId" = '20230314220815_CreateDependentDelegationTables') THEN
     INSERT INTO gateway."__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20230314220815_CreateDependentDelegationTables', '7.0.10');
+    VALUES ('20230314220815_CreateDependentDelegationTables', '7.0.13');
     END IF;
 END $EF$;
 COMMIT;
@@ -9072,7 +9072,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM gateway."__EFMigrationsHistory" WHERE "MigrationId" = '20230323175128_AddExpiryDateToResourceDelegate') THEN
     INSERT INTO gateway."__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20230323175128_AddExpiryDateToResourceDelegate', '7.0.10');
+    VALUES ('20230323175128_AddExpiryDateToResourceDelegate', '7.0.13');
     END IF;
 END $EF$;
 COMMIT;
@@ -9136,7 +9136,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM gateway."__EFMigrationsHistory" WHERE "MigrationId" = '20230412022509_CreateDependentAuditTables') THEN
     INSERT INTO gateway."__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20230412022509_CreateDependentAuditTables', '7.0.10');
+    VALUES ('20230412022509_CreateDependentAuditTables', '7.0.13');
     END IF;
 END $EF$;
 COMMIT;
@@ -9156,7 +9156,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM gateway."__EFMigrationsHistory" WHERE "MigrationId" = '20230421214103_TourChangeInitial') THEN
     INSERT INTO gateway."__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20230421214103_TourChangeInitial', '7.0.10');
+    VALUES ('20230421214103_TourChangeInitial', '7.0.13');
     END IF;
 END $EF$;
 COMMIT;
@@ -9224,7 +9224,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM gateway."__EFMigrationsHistory" WHERE "MigrationId" = '20230428053159_ReworkMessageVerfications') THEN
     INSERT INTO gateway."__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20230428053159_ReworkMessageVerfications', '7.0.10');
+    VALUES ('20230428053159_ReworkMessageVerfications', '7.0.13');
     END IF;
 END $EF$;
 COMMIT;
@@ -9243,7 +9243,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM gateway."__EFMigrationsHistory" WHERE "MigrationId" = '20230501202904_RemoveRequiredInviteKey') THEN
     INSERT INTO gateway."__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20230501202904_RemoveRequiredInviteKey', '7.0.10');
+    VALUES ('20230501202904_RemoveRequiredInviteKey', '7.0.13');
     END IF;
 END $EF$;
 COMMIT;
@@ -9269,7 +9269,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM gateway."__EFMigrationsHistory" WHERE "MigrationId" = '20230504184240_CreateMessagingOutbox') THEN
     INSERT INTO gateway."__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20230504184240_CreateMessagingOutbox', '7.0.10');
+    VALUES ('20230504184240_CreateMessagingOutbox', '7.0.13');
     END IF;
 END $EF$;
 COMMIT;
@@ -9429,7 +9429,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM gateway."__EFMigrationsHistory" WHERE "MigrationId" = '20230508204917_CreateBlockedAccessTable') THEN
     INSERT INTO gateway."__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20230508204917_CreateBlockedAccessTable', '7.0.10');
+    VALUES ('20230508204917_CreateBlockedAccessTable', '7.0.13');
     END IF;
 END $EF$;
 COMMIT;
@@ -9462,7 +9462,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM gateway."__EFMigrationsHistory" WHERE "MigrationId" = '20230524201808_AddColumnsPharmaCareDrug') THEN
     INSERT INTO gateway."__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20230524201808_AddColumnsPharmaCareDrug', '7.0.10');
+    VALUES ('20230524201808_AddColumnsPharmaCareDrug', '7.0.13');
     END IF;
 END $EF$;
 COMMIT;
@@ -9482,7 +9482,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM gateway."__EFMigrationsHistory" WHERE "MigrationId" = '20230526034844_AddNewProgramTypeCode') THEN
     INSERT INTO gateway."__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20230526034844_AddNewProgramTypeCode', '7.0.10');
+    VALUES ('20230526034844_AddNewProgramTypeCode', '7.0.13');
     END IF;
 END $EF$;
 COMMIT;
@@ -9503,7 +9503,7 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM gateway."__EFMigrationsHistory" WHERE "MigrationId" = '20230530175319_UpdateExpiryDateToRequired') THEN
     INSERT INTO gateway."__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20230530175319_UpdateExpiryDateToRequired', '7.0.10');
+    VALUES ('20230530175319_UpdateExpiryDateToRequired', '7.0.13');
     END IF;
 END $EF$;
 COMMIT;
@@ -9523,7 +9523,72 @@ DO $EF$
 BEGIN
     IF NOT EXISTS(SELECT 1 FROM gateway."__EFMigrationsHistory" WHERE "MigrationId" = '20230811223424_AddDiagnosticImagingCommentEntryTypeCode') THEN
     INSERT INTO gateway."__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-    VALUES ('20230811223424_AddDiagnosticImagingCommentEntryTypeCode', '7.0.10');
+    VALUES ('20230811223424_AddDiagnosticImagingCommentEntryTypeCode', '7.0.13');
+    END IF;
+END $EF$;
+COMMIT;
+
+START TRANSACTION;
+
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM gateway."__EFMigrationsHistory" WHERE "MigrationId" = '20230824180327_AddCancerScreeningCommentEntryTypeCode') THEN
+    INSERT INTO gateway."CommentEntryTypeCode" ("CommentEntryCode", "CreatedBy", "CreatedDateTime", "Description", "UpdatedBy", "UpdatedDateTime")
+    VALUES ('CNS', 'System', TIMESTAMPTZ '2019-05-01 07:00:00Z', 'Comment for a Cancer Screening Entry', 'System', TIMESTAMPTZ '2019-05-01 07:00:00Z');
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM gateway."__EFMigrationsHistory" WHERE "MigrationId" = '20230824180327_AddCancerScreeningCommentEntryTypeCode') THEN
+    INSERT INTO gateway."__EFMigrationsHistory" ("MigrationId", "ProductVersion")
+    VALUES ('20230824180327_AddCancerScreeningCommentEntryTypeCode', '7.0.13');
+    END IF;
+END $EF$;
+COMMIT;
+
+START TRANSACTION;
+
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM gateway."__EFMigrationsHistory" WHERE "MigrationId" = '20231031220124_ProfileIndexes') THEN
+    CREATE INDEX "IX_UserProfileHistory_LastLoginDateTime" ON gateway."UserProfileHistory" ("LastLoginDateTime");
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM gateway."__EFMigrationsHistory" WHERE "MigrationId" = '20231031220124_ProfileIndexes') THEN
+    CREATE INDEX "IX_UserProfile_LastLoginDateTime" ON gateway."UserProfile" ("LastLoginDateTime");
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM gateway."__EFMigrationsHistory" WHERE "MigrationId" = '20231031220124_ProfileIndexes') THEN
+    INSERT INTO gateway."__EFMigrationsHistory" ("MigrationId", "ProductVersion")
+    VALUES ('20231031220124_ProfileIndexes', '7.0.13');
+    END IF;
+END $EF$;
+COMMIT;
+
+START TRANSACTION;
+
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM gateway."__EFMigrationsHistory" WHERE "MigrationId" = '20231103223810_RemoveDateTruncate') THEN
+    DROP FUNCTION IF EXISTS gateway.date_trunc(text, timestamp with time zone);
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM gateway."__EFMigrationsHistory" WHERE "MigrationId" = '20231103223810_RemoveDateTruncate') THEN
+    INSERT INTO gateway."__EFMigrationsHistory" ("MigrationId", "ProductVersion")
+    VALUES ('20231103223810_RemoveDateTruncate', '7.0.13');
     END IF;
 END $EF$;
 COMMIT;

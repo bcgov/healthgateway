@@ -110,14 +110,14 @@ public static class DashboardActions
         public required int Days { get; init; }
 
         /// <summary>
-        /// Gets the start of the period to evaluate.
+        /// Gets the local start date to query.
         /// </summary>
-        public required string StartPeriod { get; init; }
+        public required DateOnly StartDateLocal { get; init; }
 
         /// <summary>
-        /// Gets the end of the period to evaluate.
+        /// Gets the local end date to query.
         /// </summary>
-        public required string EndPeriod { get; init; }
+        public required DateOnly EndDateLocal { get; init; }
 
         /// <summary>
         /// Gets the offset from the client browser to UTC.
@@ -141,14 +141,14 @@ public static class DashboardActions
     public record GetRatingSummaryAction
     {
         /// <summary>
-        /// Gets the start of the period to evaluate.
+        /// Gets the local start date to query.
         /// </summary>
-        public required string StartPeriod { get; init; }
+        public required DateOnly StartDateLocal { get; init; }
 
         /// <summary>
-        /// Gets the end of the period to evaluate.
+        /// Gets the local end date to query.
         /// </summary>
-        public required string EndPeriod { get; init; }
+        public required DateOnly EndDateLocal { get; init; }
 
         /// <summary>
         /// Gets the offset from the client browser to UTC.
@@ -172,14 +172,14 @@ public static class DashboardActions
     public record GetYearOfBirthCountsAction
     {
         /// <summary>
-        /// Gets the start of the period to evaluate.
+        /// Gets the local start date to query.
         /// </summary>
-        public required string StartPeriod { get; init; }
+        public required DateOnly StartDateLocal { get; init; }
 
         /// <summary>
-        /// Gets the end of the period to evaluate.
+        /// Gets the local end date to query.
         /// </summary>
-        public required string EndPeriod { get; init; }
+        public required DateOnly EndDateLocal { get; init; }
 
         /// <summary>
         /// Gets the offset from the client browser to UTC.

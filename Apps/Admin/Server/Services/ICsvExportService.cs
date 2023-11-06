@@ -74,11 +74,11 @@ namespace HealthGateway.Admin.Server.Services
         /// <summary>
         /// Retrieves stream of logged in user year of birth counts over a date range.
         /// </summary>
-        /// <param name="startPeriod">The start period for the data.</param>
-        /// <param name="endPeriod">The end period for the data.</param>
+        /// <param name="startDateLocal">The local start date to query.</param>
+        /// <param name="endDateLocal">The local end date to query.</param>
         /// <param name="timeOffset">The current timezone offset from the client browser to UTC.</param>
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>Return the counts of logged in users by year of birth for time range.</returns>
-        Task<Stream> GetYearOfBirthCountsAsync(string startPeriod, string endPeriod, int timeOffset, CancellationToken ct);
+        Task<Stream> GetYearOfBirthCountsAsync(DateOnly startDateLocal, DateOnly endDateLocal, int timeOffset, CancellationToken ct);
     }
 }

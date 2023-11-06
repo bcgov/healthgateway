@@ -37,9 +37,6 @@ namespace HealthGateway.Database.Context
     [ExcludeFromCodeCoverage]
     public class GatewayDbContext : BaseDbContext
     {
-        private static readonly MethodInfo? DateTruncMethod
-            = typeof(GatewayDbContext).GetRuntimeMethod(nameof(DateTrunc), new[] { typeof(string), typeof(DateTime) });
-
         /// <summary>
         /// Initializes a new instance of the <see cref="GatewayDbContext"/> class.
         /// </summary>
@@ -89,18 +86,6 @@ namespace HealthGateway.Database.Context
         public DbSet<OutboxItem> Outbox { get; set; } = null!;
 
 #pragma warning restore CS1591, SA1600
-
-        /// <summary>
-        /// Provides a static mapping for the date_trunc postgres function.
-        /// </summary>
-        /// <param name="field">selects to which precision to truncate the input value.</param>
-        /// <param name="source">datetime to be truncated.</param>
-        /// <returns>A datetime that has been truncated to the field precision.</returns>
-        /// <exception cref="NotSupportedException">NA.</exception>
-        public static DateTime DateTrunc(string field, DateTime source)
-        {
-            throw new NotSupportedException();
-        }
 
         /// <inheritdoc/>
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -441,8 +426,6 @@ namespace HealthGateway.Database.Context
             modelBuilder.Entity<AuditGroupCode>()
                 .Property(e => e.Code)
                 .HasConversion(auditGroupCodeConverter);
-
-            modelBuilder.HasDbFunction(DateTruncMethod).HasName("date_trunc");
 
             // Initial seed data
             this.SeedProgramTypes(modelBuilder);

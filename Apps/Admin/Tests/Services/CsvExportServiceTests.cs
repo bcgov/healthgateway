@@ -18,7 +18,6 @@ namespace HealthGateway.Admin.Tests.Services
 {
     using System;
     using System.Collections.Generic;
-    using System.Globalization;
     using System.IO;
     using System.Linq;
     using System.Threading;
@@ -64,7 +63,7 @@ namespace HealthGateway.Admin.Tests.Services
             Dictionary<string, int> getResult = new();
 
             Mock<IUserProfileDelegate> profileDelegateMock = new();
-            profileDelegateMock.Setup(s => s.GetLoggedInUserYearOfBirthCountsAsync(It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<CancellationToken>())).ReturnsAsync(getResult);
+            profileDelegateMock.Setup(s => s.GetLoggedInUserYearOfBirthCountsAsync(It.IsAny<DateTimeOffset>(), It.IsAny<DateTimeOffset>(), It.IsAny<CancellationToken>())).ReturnsAsync(getResult);
 
             IInactiveUserService inactiveUserService = new InactiveUserService(
                 new Mock<IAuthenticationDelegate>().Object,
@@ -82,11 +81,11 @@ namespace HealthGateway.Admin.Tests.Services
                 inactiveUserService,
                 new Mock<IFeedbackDelegate>().Object);
 
-            string startPeriod = DateTime.Now.AddDays(-30).ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
-            string endPeriod = DateTime.Now.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
+            DateOnly startDateLocal = DateOnly.FromDateTime(DateTime.Now.AddDays(-30));
+            DateOnly endDateLocal = DateOnly.FromDateTime(DateTime.Now);
             const int timeOffset = -300;
 
-            Stream yobCounts = await service.GetYearOfBirthCountsAsync(startPeriod, endPeriod, timeOffset, CancellationToken.None);
+            Stream yobCounts = await service.GetYearOfBirthCountsAsync(startDateLocal, endDateLocal, timeOffset, CancellationToken.None);
 
             Assert.NotNull(yobCounts);
         }

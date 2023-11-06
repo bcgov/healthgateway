@@ -52,29 +52,29 @@ namespace HealthGateway.Admin.Server.Services
         /// Retrieves the recurring user counts.
         /// </summary>
         /// <param name="dayCount">The number of unique days for evaluating a user.</param>
-        /// <param name="startPeriod">The period start over which to evaluate the user.</param>
-        /// <param name="endPeriod">The period end over which to evaluate the user.</param>
+        /// <param name="startDateLocal">The local start date to query.</param>
+        /// <param name="endDateLocal">The local end date to query.</param>
         /// <param name="timeOffset">The offset from the client browser to UTC.</param>
         /// <returns>The counts for recurrent users.</returns>
-        IDictionary<string, int> GetRecurrentUserCounts(int dayCount, string startPeriod, string endPeriod, int timeOffset);
+        IDictionary<string, int> GetRecurrentUserCounts(int dayCount, DateOnly startDateLocal, DateOnly endDateLocal, int timeOffset);
 
         /// <summary>
         /// Retrieves the ratings summary.
         /// </summary>
-        /// <param name="startPeriod">The period start to calculate the summary.</param>
-        /// <param name="endPeriod">The period end to calculate the summary.</param>
+        /// <param name="startDateLocal">The local start date to query.</param>
+        /// <param name="endDateLocal">The local end date to query.</param>
         /// <param name="timeOffset">The offset from the client browser to UTC.</param>
         /// <returns>A dictionary pairing the ratings with the counts.</returns>
-        IDictionary<string, int> GetRatingSummary(string startPeriod, string endPeriod, int timeOffset);
+        IDictionary<string, int> GetRatingSummary(DateOnly startDateLocal, DateOnly endDateLocal, int timeOffset);
 
         /// <summary>
         /// Retrieves year of birth counts for users that have logged in between two dates.
         /// </summary>
-        /// <param name="startPeriod">The start period for the data.</param>
-        /// <param name="endPeriod">The end period for the data.</param>
+        /// <param name="startDateLocal">The local start date to query.</param>
+        /// <param name="endDateLocal">The local end date to query.</param>
         /// <param name="timeOffset">The clients offset to get to UTC.</param>
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A dictionary mapping birth years to user counts.</returns>
-        Task<IDictionary<string, int>> GetYearOfBirthCountsAsync(string startPeriod, string endPeriod, int timeOffset, CancellationToken ct);
+        Task<IDictionary<string, int>> GetYearOfBirthCountsAsync(DateOnly startDateLocal, DateOnly endDateLocal, int timeOffset, CancellationToken ct);
     }
 }

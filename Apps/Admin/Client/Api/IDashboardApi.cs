@@ -56,30 +56,30 @@ public interface IDashboardApi
     /// Retrieves user counts.
     /// </summary>
     /// <param name="days">The number of unique days for evaluating a recurring user.</param>
-    /// <param name="startPeriod">The period start over which to evaluate the user.</param>
-    /// <param name="endPeriod">The period end over which to evaluate the user.</param>
+    /// <param name="startDateLocal">The local start date to query.</param>
+    /// <param name="endDateLocal">The local end date to query.</param>
     /// <param name="timeOffset">The offset from the client browser to UTC.</param>
     /// <returns>The counts of recurring users, mobile logins, and web logins.</returns>
     [Get("/RecurringUserCounts")]
-    Task<IDictionary<string, int>> GetUserCountsAsync(int days, string startPeriod, string endPeriod, int timeOffset);
+    Task<IDictionary<string, int>> GetUserCountsAsync(int days, DateOnly startDateLocal, DateOnly endDateLocal, int timeOffset);
 
     /// <summary>
     /// Retrieves the ratings summary.
     /// </summary>
-    /// <param name="startPeriod">The period start to calculate the summary.</param>
-    /// <param name="endPeriod">The period end to calculate the summary.</param>
+    /// <param name="startDateLocal">The local start date to query.</param>
+    /// <param name="endDateLocal">The local end date to query.</param>
     /// <param name="timeOffset">The offset from the client browser to UTC.</param>
     /// <returns>A dictionary pairing the ratings with the counts.</returns>
-    [Get("/Ratings/Summary?startPeriod={startPeriod}&endPeriod={endPeriod}&timeOffset={timeOffset}")]
-    Task<IDictionary<string, int>> GetRatingsSummaryAsync(string startPeriod, string endPeriod, int timeOffset);
+    [Get("/Ratings/Summary")]
+    Task<IDictionary<string, int>> GetRatingsSummaryAsync(DateOnly startDateLocal, DateOnly endDateLocal, int timeOffset);
 
     /// <summary>
     /// Retrieves year of birth counts for users that have logged in between two dates.
     /// </summary>
-    /// <param name="startPeriod">The start period for the data.</param>
-    /// <param name="endPeriod">The end period for the data.</param>
+    /// <param name="startDateLocal">The local start date to query.</param>
+    /// <param name="endDateLocal">The local end date to query.</param>
     /// <param name="timeOffset">The current timezone offset from the client browser to UTC.</param>
     /// <returns>A dictionary mapping birth years to user counts.</returns>
-    [Get("/YearOfBirthCounts?startPeriod={startPeriod}&endPeriod={endPeriod}&timeOffset={timeOffset}")]
-    Task<IDictionary<string, int>> GetYearOfBirthCountsAsync(string startPeriod, string endPeriod, int timeOffset);
+    [Get("/YearOfBirthCounts")]
+    Task<IDictionary<string, int>> GetYearOfBirthCountsAsync(DateOnly startDateLocal, DateOnly endDateLocal, int timeOffset);
 }

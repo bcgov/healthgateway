@@ -118,15 +118,13 @@ namespace HealthGateway.Admin.Server.Services
         }
 
         /// <inheritdoc/>
-        public async Task<Stream> GetYearOfBirthCountsAsync(string startPeriod, string endPeriod, int timeOffset, CancellationToken ct)
+        public async Task<Stream> GetYearOfBirthCountsAsync(DateOnly startDateLocal, DateOnly endDateLocal, int timeOffset, CancellationToken ct)
         {
-            TimeSpan ts = new(0, timeOffset, 0);
-            DateTime startDate = DateTime.Parse(startPeriod, CultureInfo.InvariantCulture).Date.Add(ts);
-            startDate = DateTime.SpecifyKind(startDate, DateTimeKind.Utc);
-            DateTime endDate = DateTime.Parse(endPeriod, CultureInfo.InvariantCulture).Date.Add(ts).AddDays(1).AddMilliseconds(-1);
-            endDate = DateTime.SpecifyKind(endDate, DateTimeKind.Utc);
+            TimeSpan offsetSpan = TimeSpan.FromMinutes(timeOffset);
+            DateTimeOffset startDateOffset = new(startDateLocal.ToDateTime(TimeOnly.MinValue), offsetSpan);
+            DateTimeOffset endDateOffset = new(endDateLocal.ToDateTime(TimeOnly.MaxValue), offsetSpan);
 
-            IDictionary<string, int> yobCounts = await this.userProfileDelegate.GetLoggedInUserYearOfBirthCountsAsync(startDate, endDate, ct);
+            IDictionary<string, int> yobCounts = await this.userProfileDelegate.GetLoggedInUserYearOfBirthCountsAsync(startDateOffset, endDateOffset, ct);
 
             MemoryStream stream = new();
             await using StreamWriter writer = new(stream, leaveOpen: true);

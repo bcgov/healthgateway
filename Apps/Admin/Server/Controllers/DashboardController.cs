@@ -105,8 +105,8 @@ namespace HealthGateway.Admin.Server.Controllers
         /// Retrieves recurring user counts.
         /// </summary>
         /// <param name="days">The number of unique days for evaluating a user.</param>
-        /// <param name="startPeriod">The period start over which to evaluate the user.</param>
-        /// <param name="endPeriod">The period end over which to evaluate the user.</param>
+        /// <param name="startDateLocal">The starting date to get the user counts in the client's Local time.</param>
+        /// <param name="endDateLocal">The ending date for the query in the client's local time.</param>
         /// <param name="timeOffset">The current timezone offset from the client browser to UTC.</param>
         /// <returns>The recurrent user counts.</returns>
         /// <response code="200">Returns the list of user feedbacks.</response>
@@ -117,16 +117,16 @@ namespace HealthGateway.Admin.Server.Controllers
         /// </response>
         [HttpGet]
         [Route("RecurringUserCounts")]
-        public IActionResult GetRecurringUserCounts(int days, string startPeriod, string endPeriod, int timeOffset)
+        public IActionResult GetRecurringUserCounts(int days, DateOnly startDateLocal, DateOnly endDateLocal, int timeOffset)
         {
-            return new JsonResult(this.dashboardService.GetRecurrentUserCounts(days, startPeriod, endPeriod, timeOffset));
+            return new JsonResult(this.dashboardService.GetRecurrentUserCounts(days, startDateLocal, endDateLocal, timeOffset));
         }
 
         /// <summary>
         /// Retrieves the ratings summary.
         /// </summary>
-        /// <param name="startPeriod">The period start to calculate the summary.</param>
-        /// <param name="endPeriod">The period end to calculate the summary.</param>
+        /// <param name="startDateLocal">The starting date to get the user counts in the client's Local time.</param>
+        /// <param name="endDateLocal">The ending date for the query in the client's local time.</param>
         /// <param name="timeOffset">The current timezone offset from the client browser to UTC.</param>
         /// <returns>A dictionary pairing the ratings with the counts.</returns>
         /// <response code="200">Returns the ratings summary.</response>
@@ -137,17 +137,17 @@ namespace HealthGateway.Admin.Server.Controllers
         /// </response>
         [HttpGet]
         [Route("Ratings/Summary")]
-        public IActionResult GetRatingsSummary([FromQuery] string startPeriod, [FromQuery] string endPeriod, [FromQuery] int timeOffset)
+        public IActionResult GetRatingsSummary([FromQuery] DateOnly startDateLocal, [FromQuery] DateOnly endDateLocal, [FromQuery] int timeOffset)
         {
-            return new JsonResult(this.dashboardService.GetRatingSummary(startPeriod, endPeriod, timeOffset));
+            return new JsonResult(this.dashboardService.GetRatingSummary(startDateLocal, endDateLocal, timeOffset));
         }
 
         /// <summary>
         /// Retrieves year of birth counts for users that have logged in between two dates.
         /// </summary>
         /// <returns>A dictionary mapping birth years to user counts.</returns>
-        /// <param name="startPeriod">The start period for the data.</param>
-        /// <param name="endPeriod">The end period for the data.</param>
+        /// <param name="startDateLocal">The starting date to get the user counts in the client's Local time.</param>
+        /// <param name="endDateLocal">The ending date for the query in the client's local time.</param>
         /// <param name="timeOffset">The current timezone offset from the client browser to UTC.</param>
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <response code="200">Returns a dictionary mapping birth years to user counts.</response>
@@ -161,9 +161,9 @@ namespace HealthGateway.Admin.Server.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        public async Task<IDictionary<string, int>> GetYearOfBirthCounts([FromQuery] string startPeriod, [FromQuery] string endPeriod, [FromQuery] int timeOffset, CancellationToken ct)
+        public async Task<IDictionary<string, int>> GetYearOfBirthCounts([FromQuery] DateOnly startDateLocal, [FromQuery] DateOnly endDateLocal, [FromQuery] int timeOffset, CancellationToken ct)
         {
-            return await this.dashboardService.GetYearOfBirthCountsAsync(startPeriod, endPeriod, timeOffset, ct);
+            return await this.dashboardService.GetYearOfBirthCountsAsync(startDateLocal, endDateLocal, timeOffset, ct);
         }
     }
 }

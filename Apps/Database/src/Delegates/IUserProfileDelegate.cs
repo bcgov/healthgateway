@@ -134,18 +134,18 @@ namespace HealthGateway.Database.Delegates
         /// Retrieves the count recurring users.
         /// </summary>
         /// <param name="dayCount">The number of unique days for evaluating a user.</param>
-        /// <param name="startDate">The start date to evaluate the user in UTC.</param>
-        /// <param name="endDate">The end date to evaluate the user in UTC.</param>
+        /// <param name="startDateTimeOffset">The start datetime offset to query.</param>
+        /// <param name="endDateTimeOffset">The end datetime offset to query.</param>
         /// <returns>The count of recurrent users.</returns>
-        int GetRecurrentUserCount(int dayCount, DateTime startDate, DateTime endDate);
+        int GetRecurrentUserCount(int dayCount, DateTimeOffset startDateTimeOffset, DateTimeOffset endDateTimeOffset);
 
         /// <summary>
         /// Returns the list of login client counts over a date range.
         /// </summary>
-        /// <param name="startDate">The start date of last login of users.</param>
-        /// <param name="endDate">The end date of last login of users.</param>
+        /// <param name="startDateTimeOffset">The start datetime offset to query.</param>
+        /// <param name="endDateTimeOffset">The end datetime offset to query.</param>
         /// <returns>The counts of login clients for date range.</returns>
-        IDictionary<string, int> GetLastLoginClientCounts(DateTime startDate, DateTime endDate);
+        IDictionary<string, int> GetLastLoginClientCounts(DateTimeOffset startDateTimeOffset, DateTimeOffset endDateTimeOffset);
 
         /// <summary>
         /// Returns the list of UserProfileHistory for a particular hdid and x number of records to return.
@@ -158,10 +158,10 @@ namespace HealthGateway.Database.Delegates
         /// <summary>
         /// Returns the list of logged in user year of birth counts over a date range.
         /// </summary>
-        /// <param name="startDate">The start date of last login of users.</param>
-        /// <param name="endDate">The end date of last login of users.</param>
+        /// <param name="startDateTimeOffset">The start datetime offset to query.</param>
+        /// <param name="endDateTimeOffset">The end datetime offset to query.</param>
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The counts of logged in users by year of birth.</returns>
-        Task<IDictionary<string, int>> GetLoggedInUserYearOfBirthCountsAsync(DateTime startDate, DateTime endDate, CancellationToken ct);
+        Task<IDictionary<string, int>> GetLoggedInUserYearOfBirthCountsAsync(DateTimeOffset startDateTimeOffset, DateTimeOffset endDateTimeOffset, CancellationToken ct);
     }
 }
