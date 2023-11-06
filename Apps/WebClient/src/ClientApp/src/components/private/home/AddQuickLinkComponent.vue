@@ -213,8 +213,10 @@ async function handleSubmit(): Promise<void> {
     }
 }
 
-function isSelected(linkName: string): boolean {
-    return selectedQuickLinks.value.includes(linkName);
+function isSelectedVariant(linkName: string): "elevated" | "outlined" {
+    return selectedQuickLinks.value.includes(linkName)
+        ? "elevated"
+        : "outlined";
 }
 
 function hideModal(): void {
@@ -291,11 +293,7 @@ function hideModal(): void {
                             :value="quickLink.module"
                             :text="quickLink.name"
                             color="primary"
-                            :variant="
-                                isSelected(quickLink.module)
-                                    ? 'elevated'
-                                    : 'outlined'
-                            "
+                            :variant="isSelectedVariant(quickLink.module)"
                         />
                         <v-chip
                             v-if="showOrganDonorRegistration"
@@ -306,9 +304,7 @@ function hideModal(): void {
                             text="Organ Donor Registration"
                             color="primary"
                             :variant="
-                                isSelected('organ-donor-registration')
-                                    ? 'elevated'
-                                    : 'outlined'
+                                isSelectedVariant('organ-donor-registration')
                             "
                         />
                         <v-chip
@@ -320,9 +316,7 @@ function hideModal(): void {
                             text="Health Connect Registry"
                             color="primary"
                             :variant="
-                                isSelected('health-connect-registry')
-                                    ? 'elevated'
-                                    : 'outlined'
+                                isSelectedVariant('health-connect-registry')
                             "
                         />
                         <v-chip
@@ -333,11 +327,7 @@ function hideModal(): void {
                             value="bc-vaccine-card"
                             text="BC Vaccine Card"
                             color="primary"
-                            :variant="
-                                isSelected('bc-vaccine-card')
-                                    ? 'elevated'
-                                    : 'outlined'
-                            "
+                            :variant="isSelectedVariant('bc-vaccine-card')"
                         />
                         <v-chip
                             v-if="showImmunizationRecord"
@@ -347,11 +337,7 @@ function hideModal(): void {
                             value="immunization-record"
                             text="Add Vaccines"
                             color="primary"
-                            :variant="
-                                isSelected('immunization-record')
-                                    ? 'elevated'
-                                    : 'outlined'
-                            "
+                            :variant="isSelectedVariant('immunization-record')"
                         />
                         <v-chip
                             v-if="showRecommendationsDialog"
@@ -362,9 +348,7 @@ function hideModal(): void {
                             text="Vaccine Recommendations"
                             color="primary"
                             :variant="
-                                isSelected('recommendations-dialog')
-                                    ? 'elevated'
-                                    : 'outlined'
+                                isSelectedVariant('recommendations-dialog')
                             "
                         />
                     </v-chip-group>
