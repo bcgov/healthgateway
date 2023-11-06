@@ -284,10 +284,10 @@ function hideModal(): void {
                     <v-chip-group v-model="selectedQuickLinks" column multiple>
                         <v-chip
                             v-for="quickLink in enabledQuickLinkFilter"
-                            :id="quickLink.module + '-filter'"
+                            :id="`${quickLink.module}-filter`"
                             :key="quickLink.module"
                             :data-testid="`${quickLink.module}-filter`"
-                            :name="quickLink.module + '-filter'"
+                            :name="`${quickLink.module}-filter`"
                             :value="quickLink.module"
                             :text="quickLink.name"
                             color="primary"
