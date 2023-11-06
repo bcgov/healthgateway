@@ -18,7 +18,6 @@ namespace HealthGateway.Admin.Client.Pages;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Globalization;
 using System.Linq;
 using Fluxor;
 using Fluxor.Blazor.Web.Components;
@@ -114,8 +113,7 @@ public partial class DashboardPage : FluxorComponent
                 this.UniqueDays,
                 DateOnly.FromDateTime(value.Start!.Value),
                 DateOnly.FromDateTime(value.End!.Value),
-                this.TimeOffset,
-                false);
+                this.TimeOffset);
             this.DateRange = value;
         }
     }
@@ -130,8 +128,8 @@ public partial class DashboardPage : FluxorComponent
                 new DashboardActions.GetUserCountsAction
                 {
                     Days = value,
-                    StartPeriod = this.SelectedDateRange.Start?.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture) ?? string.Empty,
-                    EndPeriod = this.SelectedDateRange.End?.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture) ?? string.Empty,
+                    StartDateLocal = DateOnly.FromDateTime(this.SelectedDateRange.Start!.Value),
+                    EndDateLocal = DateOnly.FromDateTime(this.SelectedDateRange.End!.Value),
                     TimeOffset = this.TimeOffset,
                 });
             this.CurrentUniqueDays = value;
@@ -169,20 +167,17 @@ public partial class DashboardPage : FluxorComponent
     {
         base.OnInitialized();
         this.Dispatcher.Dispatch(new DashboardActions.ResetStateAction());
-        this.RetrieveData(this.UniqueDays, StartDate, EndDate, this.TimeOffset, true);
+        this.RetrieveData(this.UniqueDays, StartDate, EndDate, this.TimeOffset);
     }
 
-    private void RetrieveData(int days, DateOnly startPeriod, DateOnly endPeriod, int timeOffset, bool initialLoad)
+    private void RetrieveData(int days, DateOnly startDate, DateOnly endDate, int timeOffset)
     {
-        string startDate = startPeriod.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
-        string endDate = endPeriod.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
-        string endDateRatings = initialLoad ? DateTime.Now.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture) : endDate;
         this.Dispatcher.Dispatch(new DashboardActions.GetRegisteredUsersAction { TimeOffset = timeOffset });
-        this.Dispatcher.Dispatch(new DashboardActions.GetLoggedInUsersAction { StartDateLocal = startPeriod, EndDateLocal = endPeriod, TimeOffset = timeOffset });
+        this.Dispatcher.Dispatch(new DashboardActions.GetLoggedInUsersAction { StartDateLocal = startDate, EndDateLocal = endDate, TimeOffset = timeOffset });
         this.Dispatcher.Dispatch(new DashboardActions.GetDependentsAction { TimeOffset = timeOffset });
-        this.Dispatcher.Dispatch(new DashboardActions.GetUserCountsAction { Days = days, StartPeriod = startDate, EndPeriod = endDate, TimeOffset = timeOffset });
-        this.Dispatcher.Dispatch(new DashboardActions.GetRatingSummaryAction { StartPeriod = startDate, EndPeriod = endDateRatings, TimeOffset = timeOffset });
-        this.Dispatcher.Dispatch(new DashboardActions.GetYearOfBirthCountsAction { StartPeriod = startDate, EndPeriod = endDate, TimeOffset = timeOffset });
+        this.Dispatcher.Dispatch(new DashboardActions.GetUserCountsAction { Days = days, StartDateLocal = startDate, EndDateLocal = endDate, TimeOffset = timeOffset });
+        this.Dispatcher.Dispatch(new DashboardActions.GetRatingSummaryAction { StartDateLocal = startDate, EndDateLocal = endDate, TimeOffset = timeOffset });
+        this.Dispatcher.Dispatch(new DashboardActions.GetYearOfBirthCountsAction { StartDateLocal = startDate, EndDateLocal = endDate, TimeOffset = timeOffset });
     }
 
     private void RefreshData()
@@ -191,8 +186,7 @@ public partial class DashboardPage : FluxorComponent
             this.UniqueDays,
             DateOnly.FromDateTime(this.SelectedDateRange.Start!.Value),
             DateOnly.FromDateTime(this.SelectedDateRange.End!.Value),
-            this.TimeOffset,
-            false);
+            this.TimeOffset);
     }
 
     private ChartSeries GetYearOfBirthCountSeries()

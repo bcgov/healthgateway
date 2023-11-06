@@ -43,9 +43,9 @@ namespace HealthGateway.Database.Delegates
         /// <summary>
         /// Gets the ratings summary.
         /// </summary>
-        /// <param name="startDate">The period start to calculate the summary in UTC.</param>
-        /// <param name="endDate">The period end to calculate the summary in UTC.</param>
+        /// <param name="startDateTimeOffset">The start datetime offset to query.</param>
+        /// <param name="endDateTimeOffset">The end datetime offset to query.</param>
         /// <returns>A dictionary pairing the ratings with the counts.</returns>
-        IDictionary<string, int> GetSummary(DateTime startDate, DateTime endDate);
+        IDictionary<string, int> GetSummary(DateTimeOffset startDateTimeOffset, DateTimeOffset endDateTimeOffset);
     }
 }

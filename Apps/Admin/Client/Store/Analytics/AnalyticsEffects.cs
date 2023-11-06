@@ -174,7 +174,7 @@ public class AnalyticsEffects
     {
         this.Logger.LogInformation("Loading year of birth counts report");
 
-        HttpResponseMessage response = await this.AnalyticsApi.GetYearOfBirthCountsAsync(action.StartPeriod, action.EndPeriod, action.TimeOffset).ConfigureAwait(true);
+        HttpResponseMessage response = await this.AnalyticsApi.GetYearOfBirthCountsAsync(action.StartDateLocal, action.EndDateLocal, action.TimeOffset).ConfigureAwait(true);
         this.Logger.LogInformation("Year of birth counts report exported successfully!");
         if (response.IsSuccessStatusCode)
         {

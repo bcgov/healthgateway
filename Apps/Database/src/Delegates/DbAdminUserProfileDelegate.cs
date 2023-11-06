@@ -77,9 +77,8 @@ public class DbAdminUserProfileDelegate : IAdminUserProfileDelegate
         DbResult<IEnumerable<AdminUserProfile>> result = new()
         {
             Payload = this.dbContext.AdminUserProfile
-                .Where(
-                    profile => GatewayDbContext.DateTrunc("days", profile.LastLoginDateTime.AddMinutes(timeOffset.TotalMinutes)) >=
-                               GatewayDbContext.DateTrunc("days", DateTime.UtcNow.AddMinutes(timeOffset.TotalMinutes).AddDays(-activeDays)))
+                .Where(profile => profile.LastLoginDateTime.AddMinutes(timeOffset.TotalMinutes).Date >=
+                                    DateTime.UtcNow.AddMinutes(timeOffset.TotalMinutes).AddDays(-activeDays).Date)
                 .OrderByDescending(profile => profile.LastLoginDateTime)
                 .ToList(),
             Status = DbStatusCode.Read,
@@ -98,8 +97,8 @@ public class DbAdminUserProfileDelegate : IAdminUserProfileDelegate
         {
             Payload = this.dbContext.AdminUserProfile
                 .Where(
-                    profile => GatewayDbContext.DateTrunc("days", profile.LastLoginDateTime.AddMinutes(timeOffset.TotalMinutes)) <=
-                               GatewayDbContext.DateTrunc("days", DateTime.UtcNow.AddMinutes(timeOffset.TotalMinutes).AddDays(-inactiveDays)))
+                    profile => profile.LastLoginDateTime.AddMinutes(timeOffset.TotalMinutes).Date <=
+                                DateTime.UtcNow.AddMinutes(timeOffset.TotalMinutes).AddDays(-inactiveDays).Date)
                 .OrderByDescending(profile => profile.LastLoginDateTime)
                 .ToList(),
             Status = DbStatusCode.Read,

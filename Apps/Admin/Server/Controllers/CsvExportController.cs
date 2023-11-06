@@ -168,8 +168,8 @@ namespace HealthGateway.Admin.Server.Controllers
         /// Retrieves a list of year of birth counts inclusively between UTC dates.
         /// </summary>
         /// <returns>A CSV of year of birth counts.</returns>
-        /// <param name="startPeriod">The start period for the data.</param>
-        /// <param name="endPeriod">The end period for the data.</param>
+        /// <param name="startDateLocal">The starting date to get the user counts in the client's Local time.</param>
+        /// <param name="endDateLocal">The ending date for the query in the client's local time.</param>
         /// <param name="timeOffset">The current timezone offset from the client browser to UTC.</param>
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <response code="200">Returns the list of beta requests.</response>
@@ -181,9 +181,9 @@ namespace HealthGateway.Admin.Server.Controllers
         [HttpGet]
         [Route("GetYearOfBirthCounts")]
         [Produces("text/csv")]
-        public async Task<FileStreamResult> GetYearOfBirthCounts([FromQuery] string startPeriod, [FromQuery] string endPeriod, [FromQuery] int timeOffset, CancellationToken ct)
+        public async Task<FileStreamResult> GetYearOfBirthCounts([FromQuery] DateOnly startDateLocal, [FromQuery] DateOnly endDateLocal, [FromQuery] int timeOffset, CancellationToken ct)
         {
-            Stream stream = await this.dataExportService.GetYearOfBirthCountsAsync(startPeriod, endPeriod, timeOffset, ct);
+            Stream stream = await this.dataExportService.GetYearOfBirthCountsAsync(startDateLocal, endDateLocal, timeOffset, ct);
             return SendContentResponse("YearOfBirthCounts", stream);
         }
 

@@ -67,7 +67,7 @@ public interface IAnalyticsApi
     /// <param name="inactiveDays">The days inactive to filter the users last login.</param>
     /// <param name="timeOffset">The offset from the client browser to UTC.</param>
     /// <returns>HttpResponseMessage.</returns>
-    [Get("/GetInactiveUsers?inactiveDays={inactiveDays}&timeOffset={timeOffset}")]
+    [Get("/GetInactiveUsers")]
     Task<HttpResponseMessage> GetInactiveUsersAsync(int inactiveDays, int timeOffset);
 
     /// <summary>
@@ -80,10 +80,10 @@ public interface IAnalyticsApi
     /// <summary>
     /// Retrieves a list of year of birth counts for time period.
     /// </summary>
-    /// <param name="startPeriod">The period start to count year of birth.</param>
-    /// <param name="endPeriod">The period end to count year of birth.</param>
+    /// <param name="startDateLocal">The local start date to query.</param>
+    /// <param name="endDateLocal">The local end date to query.</param>
     /// <param name="timeOffset">The offset from the client browser to UTC.</param>
     /// <returns>HttpResponseMessage.</returns>
-    [Get("/GetYearOfBirthCounts?startPeriod={startPeriod}&endPeriod={endPeriod}&timeOffset={timeOffset}")]
-    Task<HttpResponseMessage> GetYearOfBirthCountsAsync(string startPeriod, string endPeriod, int timeOffset);
+    [Get("/GetYearOfBirthCounts")]
+    Task<HttpResponseMessage> GetYearOfBirthCountsAsync(DateOnly startDateLocal, DateOnly endDateLocal, int timeOffset);
 }

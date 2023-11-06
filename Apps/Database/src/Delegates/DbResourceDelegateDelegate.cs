@@ -122,7 +122,7 @@ namespace HealthGateway.Database.Delegates
         {
             this.logger.LogTrace("Counting resource delegates from DB...");
             Dictionary<DateTime, int> dateCount = this.dbContext.ResourceDelegate
-                .Select(x => new { x.ProfileHdid, x.ResourceOwnerHdid, createdDate = GatewayDbContext.DateTrunc("days", x.CreatedDateTime.AddMinutes(offset.TotalMinutes)) })
+                .Select(x => new { x.ProfileHdid, x.ResourceOwnerHdid, createdDate = x.CreatedDateTime.AddMinutes(offset.TotalMinutes).Date })
                 .GroupBy(x => x.createdDate)
                 .Select(x => new { createdDate = x.Key, count = x.Count() })
                 .OrderBy(x => x.createdDate)

@@ -241,7 +241,7 @@ namespace HealthGateway.Database.Delegates
         public IDictionary<DateTime, int> GetDailyRegisteredUsersCount(TimeSpan offset)
         {
             Dictionary<DateTime, int> dateCount = this.dbContext.UserProfile
-                .Select(x => new { x.HdId, createdDate = GatewayDbContext.DateTrunc("days", x.CreatedDateTime.AddMinutes(offset.TotalMinutes)) })
+                .Select(x => new { x.HdId, createdDate = x.CreatedDateTime.AddMinutes(offset.TotalMinutes).Date })
                 .GroupBy(x => x.createdDate)
                 .Select(x => new { createdDate = x.Key, count = x.Count() })
                 .OrderBy(x => x.createdDate)
@@ -301,16 +301,16 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public int GetRecurrentUserCount(int dayCount, DateTime startDate, DateTime endDate)
+        public int GetRecurrentUserCount(int dayCount, DateTimeOffset startDateTimeOffset, DateTimeOffset endDateTimeOffset)
         {
-            this.logger.LogTrace("Retrieving recurring user count for {DayCount} days between {StartDate} and {EndDate}...", dayCount, startDate, endDate);
+            this.logger.LogTrace("Retrieving recurring user count for {DayCount} days between {StartDate} and {EndDate}...", dayCount, startDateTimeOffset, endDateTimeOffset);
 
             int recurrentCount = this.dbContext.UserProfile
                 .Select(x => new { x.HdId, x.LastLoginDateTime })
                 .Concat(
                     this.dbContext.UserProfileHistory.Select(x => new { x.HdId, x.LastLoginDateTime }))
-                .Where(x => x.LastLoginDateTime >= startDate && x.LastLoginDateTime <= endDate)
-                .Select(x => new { x.HdId, lastLoginDate = GatewayDbContext.DateTrunc("days", x.LastLoginDateTime) })
+                .Where(x => x.LastLoginDateTime >= startDateTimeOffset.UtcDateTime && x.LastLoginDateTime <= endDateTimeOffset.UtcDateTime)
+                .Select(x => new { x.HdId, lastLoginDate = x.LastLoginDateTime.Date })
                 .Distinct()
                 .GroupBy(x => x.HdId)
                 .Select(x => new { HdId = x.Key, count = x.Count() })
@@ -320,13 +320,16 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public IDictionary<string, int> GetLastLoginClientCounts(DateTime startDate, DateTime endDate)
+        public IDictionary<string, int> GetLastLoginClientCounts(DateTimeOffset startDateTimeOffset, DateTimeOffset endDateTimeOffset)
         {
             Dictionary<string, int> loginClientCounts = this.dbContext.UserProfile
                 .Select(x => new { x.HdId, x.LastLoginClientCode, x.LastLoginDateTime })
                 .Concat(
                     this.dbContext.UserProfileHistory.Select(x => new { x.HdId, x.LastLoginClientCode, x.LastLoginDateTime }))
-                .Where(x => x.LastLoginClientCode != null && x.LastLoginDateTime >= startDate && x.LastLoginDateTime <= endDate)
+                .Where(x =>
+                    x.LastLoginClientCode != null &&
+                    x.LastLoginDateTime >= startDateTimeOffset.UtcDateTime &&
+                    x.LastLoginDateTime <= endDateTimeOffset.UtcDateTime)
                 .Select(x => new { x.HdId, x.LastLoginClientCode })
                 .Distinct()
                 .GroupBy(x => x.LastLoginClientCode)
@@ -349,13 +352,13 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public async Task<IDictionary<string, int>> GetLoggedInUserYearOfBirthCountsAsync(DateTime startDate, DateTime endDate, CancellationToken ct)
+        public async Task<IDictionary<string, int>> GetLoggedInUserYearOfBirthCountsAsync(DateTimeOffset startDateTimeOffset, DateTimeOffset endDateTimeOffset, CancellationToken ct)
         {
             Dictionary<string, int> yobCount = await this.dbContext.UserProfile
                 .Select(x => new { x.HdId, x.LastLoginDateTime, x.YearOfBirth })
                 .Concat(
                     this.dbContext.UserProfileHistory.Select(x => new { x.HdId, x.LastLoginDateTime, x.YearOfBirth }))
-                .Where(x => x.YearOfBirth != null && x.LastLoginDateTime >= startDate && x.LastLoginDateTime <= endDate)
+                .Where(x => x.YearOfBirth != null && x.LastLoginDateTime >= startDateTimeOffset.UtcDateTime && x.LastLoginDateTime <= endDateTimeOffset.UtcDateTime)
                 .Select(x => new { x.HdId, x.YearOfBirth })
                 .Distinct()
                 .GroupBy(x => x.YearOfBirth)

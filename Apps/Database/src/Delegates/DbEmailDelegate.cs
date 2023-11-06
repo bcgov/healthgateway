@@ -134,7 +134,7 @@ namespace HealthGateway.Database.Delegates
             int deletedCount = this.dbContext.Email
                 .Where(
                     email => email.EmailStatusCode == EmailStatus.Processed &&
-                             email.CreatedDateTime <= GatewayDbContext.DateTrunc("days", DateTime.UtcNow.AddDays(daysAgo * -1)))
+                             email.CreatedDateTime <= DateTime.UtcNow.AddDays(daysAgo * -1).Date)
                 .Where(email => this.dbContext.MessagingVerification.Any(msgVerification => msgVerification.EmailId == email.Id && msgVerification.EmailAddress == email.To))
                 .OrderBy(email => email.CreatedDateTime)
                 .Take(maxRows)

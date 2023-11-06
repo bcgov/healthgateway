@@ -15,6 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Admin.Client.Store.Analytics;
 
+using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Net.Http;
 
@@ -71,14 +72,14 @@ public static class AnalyticsActions
     public record LoadYearOfBirthCountsAction
     {
         /// <summary>
-        /// Gets the start period.
+        /// Gets the start date in local time.
         /// </summary>
-        public required string StartPeriod { get; init; }
+        public required DateOnly StartDateLocal { get; init; }
 
         /// <summary>
-        /// Gets the end period.
+        /// Gets the end date in local time.
         /// </summary>
-        public required string EndPeriod { get; init; }
+        public required DateOnly EndDateLocal { get; init; }
 
         /// <summary>
         /// Gets the offset from the client browser to UTC.

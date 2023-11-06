@@ -104,7 +104,7 @@ public class DashboardEffects
 
         try
         {
-            IDictionary<string, int> response = await this.DashboardApi.GetUserCountsAsync(action.Days, action.StartPeriod, action.EndPeriod, action.TimeOffset).ConfigureAwait(true);
+            IDictionary<string, int> response = await this.DashboardApi.GetUserCountsAsync(action.Days, action.StartDateLocal, action.EndDateLocal, action.TimeOffset).ConfigureAwait(true);
             this.Logger.LogInformation("User counts retrieved successfully!");
             dispatcher.Dispatch(new DashboardActions.GetUserCountsSuccessAction { Data = response });
         }
@@ -123,7 +123,7 @@ public class DashboardEffects
 
         try
         {
-            IDictionary<string, int> response = await this.DashboardApi.GetRatingsSummaryAsync(action.StartPeriod, action.EndPeriod, action.TimeOffset).ConfigureAwait(true);
+            IDictionary<string, int> response = await this.DashboardApi.GetRatingsSummaryAsync(action.StartDateLocal, action.EndDateLocal, action.TimeOffset).ConfigureAwait(true);
             this.Logger.LogInformation("Rating summary retrieved successfully!");
             dispatcher.Dispatch(new DashboardActions.GetRatingSummarySuccessAction { Data = response });
         }
@@ -142,7 +142,7 @@ public class DashboardEffects
 
         try
         {
-            IDictionary<string, int> response = await this.DashboardApi.GetYearOfBirthCountsAsync(action.StartPeriod, action.EndPeriod, action.TimeOffset).ConfigureAwait(true);
+            IDictionary<string, int> response = await this.DashboardApi.GetYearOfBirthCountsAsync(action.StartDateLocal, action.EndDateLocal, action.TimeOffset).ConfigureAwait(true);
             this.Logger.LogInformation("Year of birth counts retrieved successfully!");
             dispatcher.Dispatch(new DashboardActions.GetYearOfBirthCountsSuccessAction { Data = response });
         }
