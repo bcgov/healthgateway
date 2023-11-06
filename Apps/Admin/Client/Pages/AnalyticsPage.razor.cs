@@ -51,7 +51,7 @@ public partial class AnalyticsPage : FluxorComponent
 
     private DateOnly EndDate { get; set; } = DateOnly.FromDateTime(DateTime.Now);
 
-    private int TimeOffset { get; } = (int)TimeZoneInfo.Local.GetUtcOffset(DateTime.UtcNow).TotalMinutes * -1;
+    private int TimeOffset { get; } = (int)TimeZoneInfo.Local.GetUtcOffset(DateTime.UtcNow).TotalMinutes;
 
     private DateRange DateRange { get; set; } = new(DateTime.Now.AddDays(-30).Date, DateTime.Now.Date);
 
