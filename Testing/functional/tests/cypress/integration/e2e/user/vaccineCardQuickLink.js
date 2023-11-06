@@ -7,8 +7,8 @@ const addQuickLinkSubmitButtonSelector = "[data-testid=add-quick-link-btn]";
 const quickLinkMenuButtonSelector = "[data-testid=card-menu-button]";
 const quickLinkRemoveButtonSelector = "[data-testid=remove-quick-link-button]";
 const vaccineCardQuickLinkCardSelector = "[data-testid=bc-vaccine-card-card]";
-const vaccineCardAddQuickLinkCheckboxSelector =
-    "[data-testid=bc-vaccine-card-filter] input";
+const vaccineCardAddQuickLinkChipSelector =
+    "[data-testid=bc-vaccine-card-filter]";
 
 describe("Vaccine Card Quick Link", () => {
     it("Remove and Add Vaccine Card Quick Link", () => {
@@ -43,9 +43,7 @@ describe("Vaccine Card Quick Link", () => {
             .should("be.visible")
             .should("be.enabled")
             .click();
-        cy.get(vaccineCardAddQuickLinkCheckboxSelector)
-            .should("exist")
-            .check({ force: true });
+        cy.get(vaccineCardAddQuickLinkChipSelector).should("exist").click();
         cy.get(addQuickLinkSubmitButtonSelector)
             .should("be.visible")
             .should("be.enabled")
@@ -82,11 +80,11 @@ describe("Vaccine Card Quick Link", () => {
         cy.log("Verifying vaccine card quicklink not present");
         cy.get(vaccineCardQuickLinkCardSelector).should("not.exist");
 
-        cy.log("Verifying add vaccine card checkbox not present");
+        cy.log("Verifying add vaccine card chip not present");
         cy.get(addQuickLinkButtonSelector)
             .should("be.visible")
             .should("be.enabled")
             .click();
-        cy.get(vaccineCardAddQuickLinkCheckboxSelector).should("not.exist");
+        cy.get(vaccineCardAddQuickLinkChipSelector).should("not.exist");
     });
 });

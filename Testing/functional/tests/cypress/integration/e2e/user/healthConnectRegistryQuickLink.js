@@ -8,8 +8,8 @@ const quickLinkMenuButtonSelector = "[data-testid=card-menu-button]";
 const quickLinkRemoveButtonSelector = "[data-testid=remove-quick-link-button]";
 const healthConnectQuickLinkCardSelector =
     "[data-testid=health-connect-registry-card]";
-const healthConnectAddQuickLinkCheckboxSelector =
-    "[data-testid=health-connect-registry-filter] input";
+const healthConnectAddQuickLinkChipSelector =
+    "[data-testid=health-connect-registry-filter]";
 const serviceName = "healthConnectRegistry";
 
 describe("Health Connect Registry Card", () => {
@@ -54,9 +54,7 @@ describe("Health Connect Registry Card", () => {
         cy.get(addQuickLinkButtonSelector)
             .should("be.visible", "be.enabled")
             .click();
-        cy.get(healthConnectAddQuickLinkCheckboxSelector)
-            .should("exist")
-            .check({ force: true });
+        cy.get(healthConnectAddQuickLinkChipSelector).should("exist").click();
         cy.get(addQuickLinkSubmitButtonSelector)
             .should("be.visible")
             .should("be.enabled")
@@ -87,11 +85,11 @@ describe("Disabling health connect services", () => {
         cy.log("Verifying health connect quicklink not present");
         cy.get(healthConnectQuickLinkCardSelector).should("not.exist");
 
-        cy.log("Verifying add health connect checkbox not present");
+        cy.log("Verifying add health connect chip not present");
         cy.get(addQuickLinkButtonSelector)
             .should("be.visible", "be.enabled")
             .click();
-        cy.get(healthConnectAddQuickLinkCheckboxSelector).should("not.exist");
+        cy.get(healthConnectAddQuickLinkChipSelector).should("not.exist");
     };
 
     it("Should not show quick link and settings when services module is disabled", () => {

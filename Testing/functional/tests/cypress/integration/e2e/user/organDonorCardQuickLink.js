@@ -8,8 +8,8 @@ const quickLinkMenuButtonSelector = "[data-testid=card-menu-button]";
 const quickLinkRemoveButtonSelector = "[data-testid=remove-quick-link-button]";
 const organDonorQuickLinkCardSelector =
     "[data-testid=organ-donor-registration-card]";
-const organDonorAddQuickLinkCheckboxSelector =
-    "[data-testid=organ-donor-registration-filter] input";
+const organDonorAddQuickLinkChipSelector =
+    "[data-testid=organ-donor-registration-filter]";
 
 describe("Organ Donor Quick Link", () => {
     it("Remove and Add Organ Donor Card Quick Link", () => {
@@ -53,9 +53,7 @@ describe("Organ Donor Quick Link", () => {
         cy.get(addQuickLinkButtonSelector)
             .should("be.visible", "be.enabled")
             .click();
-        cy.get(organDonorAddQuickLinkCheckboxSelector)
-            .should("exist")
-            .check({ force: true });
+        cy.get(organDonorAddQuickLinkChipSelector).should("exist").click();
         cy.get(addQuickLinkSubmitButtonSelector)
             .should("be.visible", "be.enabled")
             .click();
@@ -85,11 +83,11 @@ describe("Disabling organ donor services", () => {
         cy.log("Verifying organ donor quicklink not present");
         cy.get(organDonorQuickLinkCardSelector).should("not.exist");
 
-        cy.log("Verifying add organ donor checkbox not present");
+        cy.log("Verifying add organ donor chip not present");
         cy.get(addQuickLinkButtonSelector)
             .should("be.visible", "be.enabled")
             .click();
-        cy.get(organDonorAddQuickLinkCheckboxSelector).should("not.exist");
+        cy.get(organDonorAddQuickLinkChipSelector).should("not.exist");
     };
 
     it("Should not show quick link and settings when services module is disabled", () => {
