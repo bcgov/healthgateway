@@ -125,7 +125,7 @@ namespace HealthGateway.Admin.Server.Controllers
         /// <summary>
         /// Retrieves the ratings summary.
         /// </summary>
-        /// <param name="startDateLocal">The starting date to get the user counts in the client's Local time.</param>
+        /// <param name="startDateLocal">The starting date to calculate the summary in the client's Local time.</param>
         /// <param name="endDateLocal">The ending date for the query in the client's local time.</param>
         /// <param name="timeOffset">The current timezone offset from the client browser to UTC.</param>
         /// <returns>A dictionary pairing the ratings with the counts.</returns>
@@ -146,7 +146,7 @@ namespace HealthGateway.Admin.Server.Controllers
         /// Retrieves year of birth counts for users that have logged in between two dates.
         /// </summary>
         /// <returns>A dictionary mapping birth years to user counts.</returns>
-        /// <param name="startDateLocal">The starting date to get the user counts in the client's Local time.</param>
+        /// <param name="startDateLocal">The starting date to get the birth counts in the client's Local time.</param>
         /// <param name="endDateLocal">The ending date for the query in the client's local time.</param>
         /// <param name="timeOffset">The current timezone offset from the client browser to UTC.</param>
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
