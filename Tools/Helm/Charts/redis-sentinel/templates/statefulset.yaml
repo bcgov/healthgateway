@@ -1,21 +1,23 @@
+{{ $image := print .Values.imageRepository ":" .Values.imageTag }}
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: redis
+  name: {{ .Release.Name }}-rs
+  labels: {{ include "standard.labels" . | nindent 4 }}
 spec:
-  serviceName: redis
+  serviceName: {{ .Release.Name }}-rs-svc
   replicas: 3
   selector:
     matchLabels:
-      app: redis
+      app: {{ .Release.Name }}-rs
   template:
     metadata:
-      labels:
-        app: redis
+      labels: {{ include "standard.labels" . | nindent 8 }}
+        app: {{ .Release.Name }}-rs
     spec:
       initContainers:
-        - name: redis-config
-          image: redis:7
+        - name: config
+          image: {{ $image }}
           resources:
             requests:
               cpu: 25m
@@ -27,13 +29,23 @@ spec:
             - name: REDIS_NODES
               valueFrom:
                 configMapKeyRef:
-                  name: redis-config
+                  name: {{ .Release.Name }}-rs-config
                   key: REDIS_NODES
             - name: REDIS_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: redis-secret
+                  name: {{ .Release.Name }}-rs-secret
                   key: REDIS_PASSWORD
+            - name: REDIS_PORT
+              value: {{ .Values.redisPort | required "Values.redisPort" | quote }}
+            - name: SENTINEL_PORT
+              value: {{ .Values.sentinelPort | required "Values.sentinelPort" | quote }}
+            - name: REDIS_SERVICE
+              value: {{ .Release.Name }}-rs-svc
+            - name: NODE_NAME_PREFIX
+              value: {{ .Release.Name }}-rs
+            - name: SENTINEL_SET
+              value: {{ .Values.setName | default "mymaster" }}
           command: ["sh", "-c", "/scripts/init.sh"]
           volumeMounts:
             - name: redis-config
@@ -43,8 +55,8 @@ spec:
             - name: scripts
               mountPath: /scripts/
       containers:
-        - name: redis
-          image: redis:7
+        - name: redis-sentinel
+          image: {{ $image }}
           lifecycle:
             preStop:
               exec:
@@ -74,15 +86,15 @@ spec:
             failureThreshold: 3
           command: ["/scripts/start.sh"]
           ports:
-            - containerPort: 6379
+            - containerPort: {{ .Values.redisPort }}
               name: redis
-            - containerPort: 26379
+            - containerPort: {{ .Values.sentinelPort }}
               name: sentinel
           env:
             - name: REDISCLI_AUTH
               valueFrom:
                 secretKeyRef:
-                  name: redis-secret
+                  name: {{ .Release.Name }}-rs-secret
                   key: REDIS_PASSWORD
           volumeMounts:
             - name: data
@@ -93,13 +105,7 @@ spec:
               mountPath: /tmp/redis/
             - name: scripts
               mountPath: /scripts/
-          resources:
-            requests:
-              cpu: 50m
-              memory: 128Mi
-            limits:
-              cpu: 250m
-              memory: 512Mi
+          resources: {{ toYaml .Values.resources | nindent 12 }}
       volumes:
         - name: data
           emptyDir: {}
@@ -107,7 +113,7 @@ spec:
           emptyDir: {}
         - name: scripts
           configMap:
-            name: redis-config
+            name: {{ .Release.Name }}-rs-config
             defaultMode: 0777
             items:
               - key: redis_init.sh
@@ -120,7 +126,7 @@ spec:
                 path: init.sh
         - name: config
           configMap:
-            name: redis-config
+            name: {{ .Release.Name }}-rs-config
             items:
               - key: redis.conf
                 path: redis.conf

@@ -1,26 +1,27 @@
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: redis-netpol
+  name: {{ .Release.Name }}-rs-netpol
+  labels: {{ include "standard.labels" . | nindent 4 }}
 spec:
   podSelector:
     matchLabels:
-      app: redis
+      app: {{ .Release.Name }}-rs
   ingress:
     - from:
         - podSelector:
             matchLabels:
-              app: redis
+              app: {{ .Release.Name }}-rs
       ports:
-        - port: 6379
+        - port: {{ .Values.redisPort }}
           protocol: TCP
-        - port: 26379
+        - port: {{ .Values.sentinelPort }}
           protocol: TCP
     - from:
         - podSelector:
             matchLabels: {}
       ports:
-        - port: 6379
+        - port: {{ .Values.redisPort }}
           protocol: TCP
-        - port: 26379
+        - port: {{ .Values.sentinelPort }}
           protocol: TCP
