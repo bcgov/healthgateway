@@ -143,7 +143,7 @@
                 "source.fixAll.eslint": "explicit"
             }
         },
-        "omnisharp.defaultLaunchSolution": "HealthGateway.sln",
-        "typescript.preferences.importModuleSpecifier": "non-relative"
+        "typescript.preferences.importModuleSpecifier": "non-relative",
+        "dotnet.defaultSolution": "HealthGateway.sln"
     }
 }

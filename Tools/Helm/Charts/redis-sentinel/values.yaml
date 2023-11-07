@@ -1,0 +1,23 @@
+# image:
+#   repository: artifacts.developer.gov.bc.ca/docker-remote/redis
+#   tag: ""
+
+# service:
+#   redis:
+#     port: 6379
+#   # gossip:
+#   #   port: 16379
+#   sentinel:
+#     port: 26379
+
+# resources:
+#   limits:
+#     cpu: 150m
+#     memory: 128Mi
+#   requests:
+#     cpu: 50m
+#     memory: 64Mi
+#   storage:
+#     size: 2Gi
+
+password: ~

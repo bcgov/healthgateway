@@ -1,0 +1,126 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: redis
+spec:
+  serviceName: redis
+  replicas: 3
+  selector:
+    matchLabels:
+      app: redis
+  template:
+    metadata:
+      labels:
+        app: redis
+    spec:
+      initContainers:
+        - name: redis-config
+          image: redis:7
+          resources:
+            requests:
+              cpu: 25m
+              memory: 32Mi
+            limits:
+              cpu: 50m
+              memory: 64Mi
+          env:
+            - name: REDIS_NODES
+              valueFrom:
+                configMapKeyRef:
+                  name: redis-config
+                  key: REDIS_NODES
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: redis-secret
+                  key: REDIS_PASSWORD
+          command: ["sh", "-c", "/scripts/init.sh"]
+          volumeMounts:
+            - name: redis-config
+              mountPath: /etc/redis/
+            - name: config
+              mountPath: /tmp/redis/
+            - name: scripts
+              mountPath: /scripts/
+      containers:
+        - name: redis
+          image: redis:7
+          lifecycle:
+            preStop:
+              exec:
+                command:
+                  ["/bin/sh", "-c", "redis-cli -h $HOSTNAME shutdown save"]
+          livenessProbe:
+            exec:
+              command:
+                [
+                  "/bin/sh",
+                  "-c",
+                  'test "$(redis-cli -h $HOSTNAME ping)" = "PONG"',
+                ]
+            initialDelaySeconds: 15
+            timeoutSeconds: 1
+            failureThreshold: 3
+          readinessProbe:
+            exec:
+              command:
+                [
+                  "/bin/sh",
+                  "-c",
+                  'test "$(redis-cli -h $HOSTNAME ping)" = "PONG"',
+                ]
+            initialDelaySeconds: 10
+            timeoutSeconds: 1
+            failureThreshold: 3
+          command: ["/scripts/start.sh"]
+          ports:
+            - containerPort: 6379
+              name: redis
+            - containerPort: 26379
+              name: sentinel
+          env:
+            - name: REDISCLI_AUTH
+              valueFrom:
+                secretKeyRef:
+                  name: redis-secret
+                  key: REDIS_PASSWORD
+          volumeMounts:
+            - name: data
+              mountPath: /data
+            - name: redis-config
+              mountPath: /etc/redis/
+            - name: config
+              mountPath: /tmp/redis/
+            - name: scripts
+              mountPath: /scripts/
+          resources:
+            requests:
+              cpu: 50m
+              memory: 128Mi
+            limits:
+              cpu: 250m
+              memory: 512Mi
+      volumes:
+        - name: data
+          emptyDir: {}
+        - name: redis-config
+          emptyDir: {}
+        - name: scripts
+          configMap:
+            name: redis-config
+            defaultMode: 0777
+            items:
+              - key: redis_init.sh
+                path: redis_init.sh
+              - key: sentinel_init.sh
+                path: sentinel_init.sh
+              - key: start.sh
+                path: start.sh
+              - key: init.sh
+                path: init.sh
+        - name: config
+          configMap:
+            name: redis-config
+            items:
+              - key: redis.conf
+                path: redis.conf
