@@ -157,7 +157,7 @@ public partial class AnalyticsPage : FluxorComponent
     {
         byte[] fileBytes = await content.ReadAsByteArrayAsync().ConfigureAwait(true);
         string fileName = this.ReportName == YearOfBirthReportName
-            ? $"{this.ReportName}_export_{this.StartDate}_to_{this.EndDate}.csv"
+            ? $"{this.ReportName}_export_{this.StartDate.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}_to_{this.EndDate.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}.csv"
             : $"{this.ReportName}_export_{DateTime.Now.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}.csv";
 
         await this.JsRuntime.InvokeAsync<object>("saveAsFile", fileName, Convert.ToBase64String(fileBytes)).ConfigureAwait(true);
