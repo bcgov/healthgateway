@@ -12,16 +12,17 @@
 <HgPageHeading>Delegation</HgPageHeading>
 <NavigationConfirmation Enabled="@AnyUnsavedDelegationChanges" />
 
-<MudForm @ref="Form">
+<MudForm @ref="Form" id="query-controls">
     <div class="d-flex align-start">
         <HgTextField
             T="string"
             Label="PHN"
             Required="@true"
+            Immediate="@true"
             Validation="@ValidateQueryParameter"
             Mask="@Mask.PhnMask"
             TopMargin="Breakpoint.None"
-            Class="flex-grow-1"
+            Class="flex-grow-1 query-input"
             @bind-Value="QueryParameter"
             data-testid="query-input" />
         <HgButton
@@ -31,7 +32,7 @@
             Loading="@Searching"
             TopMargin="Breakpoint.Always"
             LeftMargin="Breakpoint.Always"
-            OnClick="Search"
+            OnClick="SearchAsync"
             data-testid="search-button">
             Search
         </HgButton>
