@@ -61,7 +61,7 @@ spec:
             preStop:
               exec:
                 command:
-                  ["/bin/sh", "-c", "redis-cli -h $HOSTNAME shutdown save"]
+                  ["/bin/sh", "-c", "redis-cli -h $HOSTNAME -p {{ .Values.redisPort }} shutdown save && redis-cli -h $HOSTNAME -p {{ .Values.sentinelPort }} shutdown save"]
           livenessProbe:
             exec:
               command:
@@ -97,8 +97,9 @@ spec:
                   name: {{ .Release.Name }}-rs-secret
                   key: REDIS_PASSWORD
           volumeMounts:
-            - name: data
+            - name: rs-data
               mountPath: /data
+              readOnly: false
             - name: redis-config
               mountPath: /etc/redis/
             - name: config
@@ -107,8 +108,6 @@ spec:
               mountPath: /scripts/
           resources: {{ toYaml .Values.resources | nindent 12 }}
       volumes:
-        - name: data
-          emptyDir: {}
         - name: redis-config
           emptyDir: {}
         - name: scripts
@@ -130,3 +129,16 @@ spec:
             items:
               - key: redis.conf
                 path: redis.conf
+  volumeClaimTemplates:
+    - kind: PersistentVolumeClaim
+      metadata:
+        name: rs-data
+        annotations:
+          volume.beta.kubernetes.io/storage-class: {{ .Values.persistentVolumeClass }}
+      spec:
+        storageClassName: {{ .Values.persistentVolumeClass }}
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: {{ .Values.persistentVolumeSize }}

@@ -3,6 +3,8 @@ imageTag: 7
 
 redisPort: 6379
 sentinelPort: 26379
+persistentVolumeSize: 1Gi
+persistentVolumeClass: netapp-block-standard
 
 resources:
   requests:
