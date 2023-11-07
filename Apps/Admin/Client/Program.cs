@@ -101,6 +101,7 @@ namespace HealthGateway.Admin.Client
             builder.Services.AddBlazoredLocalStorage();
 
             builder.Services.AddSingleton<IDateConversionService, DateConversionService>();
+            builder.Services.AddTransient<IKeyInterceptorService, KeyInterceptorService>();
 
             app[0] = builder.Build();
             await app[0].RunAsync().ConfigureAwait(true);
