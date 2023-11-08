@@ -11,6 +11,7 @@ import MessagingVerification from "@/models/messagingVerification";
 import RequestResult from "@/models/requestResult";
 import User from "@/models/user";
 import { QueryType } from "@/models/userQuery";
+import { EventData } from "@/plugins/extensions";
 
 export interface IConfigService {
     initialize(http: IHttpDelegate): void;
@@ -71,4 +72,8 @@ export interface IHttpDelegate {
         payload?: unknown,
         headers?: Dictionary<string>
     ): Promise<T>;
+}
+
+export interface ITrackingService {
+    track(data: EventData): Promise<void>;
 }
