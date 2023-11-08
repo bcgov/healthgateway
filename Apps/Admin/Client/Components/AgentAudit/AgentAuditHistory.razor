@@ -4,7 +4,7 @@
 
 @if (!string.IsNullOrEmpty(Title))
 {
-    <MudText Typo="Typo.h5" Class="mb-4 mt-6" data-testid="agent-audit-history-title">
+    <MudText Typo="Typo.h6" Class="mb-4 mt-6" data-testid="agent-audit-history-title">
         @Title (<span data-testid="agent-audit-history-count">@(AgentActions.Count())</span>)
     </MudText>
 }

@@ -4,7 +4,7 @@
 
 @if (Patient != null)
 {
-    <MudText Class="mb-4 mt-6" Typo="Typo.h5">
+    <MudText Class="mb-4 mt-6" Typo="Typo.h6">
         Patient Details
     </MudText>
     <MudGrid Spacing="2">
@@ -27,7 +27,7 @@
 
     if (CanViewCovidDetails && !ImmunizationsAreBlocked)
     {
-        <MudText Class="mb-4 mt-6" Typo="Typo.h5">
+        <MudText Class="mb-4 mt-6" Typo="Typo.h6">
             Covid-19 Section
         </MudText>
         <Covid19ImmunizationSection Phn="@Patient.PersonalHealthNumber" Data="@VaccineDetails" IsLoading="@PatientSupportDetailsLoading" MailAddress="@MailAddress" />
