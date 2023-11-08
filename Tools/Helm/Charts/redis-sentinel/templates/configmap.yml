@@ -1,10 +1,11 @@
+{{- $name := include "standard.name" . -}}
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ .Release.Name }}-rs-config
+  name: {{ $name }}-config
   labels: {{ include "standard.labels" . | nindent 4 }}
 data:
-  REDIS_NODES: "{{ .Release.Name }}-rs-0.{{ .Release.Name }}-rs-svc,{{ .Release.Name }}-rs-1.{{ .Release.Name }}-rs-svc,{{ .Release.Name }}-rs-2.{{ .Release.Name }}-rs-svc"
+  REDIS_NODES: "{{ $name }}-0.{{ $name }}-svc,{{ $name }}-1.{{ $name }}-svc,{{ $name }}-2.{{ $name }}-svc"
   redis.conf: |
     appendonly no
     masteruser default

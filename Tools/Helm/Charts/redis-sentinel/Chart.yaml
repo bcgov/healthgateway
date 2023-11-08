@@ -1,5 +1,5 @@
 apiVersion: v2
-name: redis-sentinel
+name: rs
 description: A Helm chart to deploy Redis with Sentinel support into OpenShift
 type: application
 version: 1.0.0

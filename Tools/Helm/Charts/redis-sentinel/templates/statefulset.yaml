@@ -1,22 +1,23 @@
-{{ $image := print .Values.imageRepository ":" .Values.imageTag }}
+{{- $name := include "standard.name" . -}}
+{{- $image := print .Values.imageRepository ":" .Values.imageTag -}}
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: {{ .Release.Name }}-rs
+  name: {{ $name }}
   labels: {{ include "standard.labels" . | nindent 4 }}
 spec:
-  serviceName: {{ .Release.Name }}-rs-svc
+  serviceName: {{ $name }}-svc
   replicas: 3
   selector:
     matchLabels:
-      app: {{ .Release.Name }}-rs
+      name: {{ $name }}
   template:
     metadata:
       labels: {{ include "standard.labels" . | nindent 8 }}
-        app: {{ .Release.Name }}-rs
+        name: {{ $name }}
     spec:
       initContainers:
-        - name: config
+        - name: {{ $name }}-config
           image: {{ $image }}
           resources:
             requests:
@@ -29,21 +30,21 @@ spec:
             - name: REDIS_NODES
               valueFrom:
                 configMapKeyRef:
-                  name: {{ .Release.Name }}-rs-config
+                  name: {{ $name }}-config
                   key: REDIS_NODES
             - name: REDIS_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Release.Name }}-rs-secret
+                  name: {{ $name }}-secret
                   key: REDIS_PASSWORD
             - name: REDIS_PORT
               value: {{ .Values.redisPort | required "Values.redisPort" | quote }}
             - name: SENTINEL_PORT
               value: {{ .Values.sentinelPort | required "Values.sentinelPort" | quote }}
             - name: REDIS_SERVICE
-              value: {{ .Release.Name }}-rs-svc
+              value: {{ $name }}-svc
             - name: NODE_NAME_PREFIX
-              value: {{ .Release.Name }}-rs
+              value: {{ $name }}
             - name: SENTINEL_SET
               value: {{ .Values.setName | default "mymaster" }}
           command: ["sh", "-c", "/scripts/init.sh"]
@@ -55,7 +56,7 @@ spec:
             - name: scripts
               mountPath: /scripts/
       containers:
-        - name: redis-sentinel
+        - name: {{ $name }}
           image: {{ $image }}
           lifecycle:
             preStop:
@@ -94,10 +95,10 @@ spec:
             - name: REDISCLI_AUTH
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Release.Name }}-rs-secret
+                  name: {{ $name }}-secret
                   key: REDIS_PASSWORD
           volumeMounts:
-            - name: rs-data
+            - name: data
               mountPath: /data
               readOnly: false
             - name: redis-config
@@ -112,7 +113,7 @@ spec:
           emptyDir: {}
         - name: scripts
           configMap:
-            name: {{ .Release.Name }}-rs-config
+            name: {{ $name }}-config
             defaultMode: 0777
             items:
               - key: redis_init.sh
@@ -125,14 +126,14 @@ spec:
                 path: init.sh
         - name: config
           configMap:
-            name: {{ .Release.Name }}-rs-config
+            name: {{ $name }}-config
             items:
               - key: redis.conf
                 path: redis.conf
   volumeClaimTemplates:
     - kind: PersistentVolumeClaim
       metadata:
-        name: rs-data
+        name: data
         annotations:
           volume.beta.kubernetes.io/storage-class: {{ .Values.persistentVolumeClass }}
       spec:

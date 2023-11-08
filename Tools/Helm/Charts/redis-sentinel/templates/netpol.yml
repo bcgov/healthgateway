@@ -1,17 +1,18 @@
+{{- $name := include "standard.name" . -}}
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: {{ .Release.Name }}-rs-netpol
+  name: {{ $name }}-netpol
   labels: {{ include "standard.labels" . | nindent 4 }}
 spec:
   podSelector:
     matchLabels:
-      app: {{ .Release.Name }}-rs
+      name: {{ $name }}
   ingress:
     - from:
         - podSelector:
             matchLabels:
-              app: {{ .Release.Name }}-rs
+              name: {{ $name }}
       ports:
         - port: {{ .Values.redisPort }}
           protocol: TCP
