@@ -10,8 +10,8 @@ export interface SnowPlowEvent {
 }
 
 export interface EventData {
-    action: Action | string;
-    text: Text | string;
+    action: Action;
+    text: Text;
     actor?: Actor;
     dataset?: Dataset;
     destination?: Destination | Dataset;
