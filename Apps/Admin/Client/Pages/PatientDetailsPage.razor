@@ -58,7 +58,7 @@
 
 @if (Patient != null)
 {
-    <HgTabs data-testid="patient-details-tabjs">
+    <HgTabs data-testid="patient-details-tabs">
         <ChildContent>
             <MudTabPanel Text="Profile">
                 <ProfileTab Phn="@Phn" />
@@ -86,7 +86,7 @@
 }
 else if (PatientsLoaded)
 {
-    <MudText Class="mt-4" Typo="Typo.subtitle1">
+    <MudText Class="mt-4" Typo="Typo.h6">
         No user found with the specified HDID.
     </MudText>
 }
