@@ -65,6 +65,8 @@ namespace HealthGateway.Admin.Client.Pages
 
         private string? StatusWarning => this.Patient == null ? null : FormattingUtility.FormatPatientStatus(this.Patient.Status);
 
+        private bool IsGatewayUser => this.Patient?.Status == PatientStatus.Default;
+
         private bool ShowStatusWarning => this.UserHasRole(Roles.Admin) || this.UserHasRole(Roles.Reviewer) || this.Patient?.Status != PatientStatus.NotUser;
 
         private bool CanViewAccountDetails => this.UserHasRole(Roles.Admin) || this.UserHasRole(Roles.Reviewer);

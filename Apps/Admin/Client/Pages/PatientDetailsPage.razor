@@ -52,7 +52,7 @@
         Severity="@Severity.Info"
         IsEnabled="@(!string.IsNullOrEmpty(StatusWarning))"
         TResetAction="PatientSupportActions.ResetStateAction"
-        Class="mt-4"
+        Class="my-4"
         DataTestId="user-banner-feedback-status-warning-message">
         @StatusWarning
     </HgBannerFeedback>
@@ -60,7 +60,7 @@
 
 @if (Patient != null)
 {
-    <HgTabs data-testid="patient-details-tabs">
+    <HgTabs data-testid="patient-details-tabs" PanelClass="pa-4">
         <ChildContent>
             <MudTabPanel Text="Profile">
                 <ProfileTab Phn="@Phn" />
@@ -71,13 +71,13 @@
                     <AccountTab Phn="@Phn" />
                 </MudTabPanel>
             }
-            @if (CanViewManageProfile)
+            @if (CanViewManageProfile && IsGatewayUser)
             {
                 <MudTabPanel Text="Manage">
                     <ManageTab Phn="@Phn" />
                 </MudTabPanel>
             }
-            @if (CanViewNotes)
+            @if (CanViewNotes && IsGatewayUser)
             {
                 <MudTabPanel Text="Notes">
                     <NotesTab />

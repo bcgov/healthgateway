@@ -24,6 +24,7 @@ namespace HealthGateway.Admin.Client.Components.Details
     using HealthGateway.Admin.Client.Authorization;
     using HealthGateway.Admin.Client.Store.PatientDetails;
     using HealthGateway.Admin.Client.Store.PatientSupport;
+    using HealthGateway.Admin.Common.Constants;
     using HealthGateway.Admin.Common.Models;
     using HealthGateway.Common.Data.Utils;
     using HealthGateway.Common.Data.ViewModels;
@@ -72,6 +73,8 @@ namespace HealthGateway.Admin.Client.Components.Details
         private bool CanViewHdid => this.UserHasRole(Roles.Admin) || this.UserHasRole(Roles.Reviewer);
 
         private bool CanViewMessagingVerifications => this.UserHasRole(Roles.Admin) || this.UserHasRole(Roles.Reviewer);
+
+        private bool IsGatewayUser => this.Patient?.Status == PatientStatus.Default;
 
         /// <inheritdoc/>
         protected override async Task OnInitializedAsync()

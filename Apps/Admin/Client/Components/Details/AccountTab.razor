@@ -1,10 +1,9 @@
-﻿@using HealthGateway.Admin.Common.Constants
-@using HealthGateway.Admin.Client.Components.Support
+﻿@using HealthGateway.Admin.Client.Components.Support
 @inherits Fluxor.Blazor.Web.Components.FluxorComponent
 
 @if (Patient != null)
 {
-    @if (Patient.Status == PatientStatus.Default)
+    @if (IsGatewayUser)
     {
         <MudText Class="mb-4 mt-6" Typo="Typo.h6">
             User Details
@@ -26,12 +25,12 @@
     }
     else
     {
-        <MudText data-testid="no-hg-profile">
+        <MudText data-testid="no-hg-profile" Class="mt-6">
             No Health Gateway Profile
         </MudText>
     }
 }
-@if (CanViewMessagingVerifications)
+@if (CanViewMessagingVerifications && IsGatewayUser)
 {
     <MessageVerificationTable Data="@MessagingVerifications" IsLoading="@PatientSupportDetailsLoading" />
 }
