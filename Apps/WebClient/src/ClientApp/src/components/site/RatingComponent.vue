@@ -4,9 +4,14 @@ import { ref } from "vue";
 import HgButtonComponent from "@/components/common/HgButtonComponent.vue";
 import { container } from "@/ioc/container";
 import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
-import { ILogger, IUserRatingService } from "@/services/interfaces";
+import { Action, Rating, Text } from "@/plugins/extensions";
+import {
+    ILogger,
+    ITrackingService,
+    IUserRatingService,
+} from "@/services/interfaces";
 import { useConfigStore } from "@/stores/config";
-import SnowPlow from "@/utility/snowPlow";
+import EventDataUtility from "@/utility/eventDataUtility";
 
 const emit = defineEmits<{
     (e: "on-close"): void;
@@ -20,6 +25,9 @@ const question =
 const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
 const ratingService = container.get<IUserRatingService>(
     SERVICE_IDENTIFIER.UserRatingService
+);
+const trackingService = container.get<ITrackingService>(
+    SERVICE_IDENTIFIER.TrackingService
 );
 
 const configStore = useConfigStore();
@@ -51,20 +59,17 @@ function handleRating(value: number | string, skip = false): void {
     logger.debug(
         `submitting rating: ratingValue = ${value}, skip = ${skip} ...`
     );
+
     ratingService
         .submitRating({ ratingValue: Number(value), skip })
         .then(() => {
-            if (skip) {
-                SnowPlow.trackEvent({
-                    action: "submit_app_rating",
-                    text: "skip",
-                });
-            } else {
-                SnowPlow.trackEvent({
-                    action: "submit_app_rating",
-                    text: value.toString(),
-                });
-            }
+            trackingService.track({
+                action: Action.Submit,
+                text: Text.AppRating,
+                rating: skip
+                    ? Rating.Skip
+                    : EventDataUtility.getRating(value.toString()),
+            });
             logger.debug(`submitRating with success.`);
         })
         .catch((err: unknown) =>

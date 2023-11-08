@@ -21,6 +21,7 @@ import {
     IReportService,
     ISpecialAuthorityService,
     ITicketService,
+    ITrackingService,
     IUserCommentService,
     IUserFeedbackService,
     IUserNoteService,
@@ -46,6 +47,7 @@ import { RestPcrTestService } from "@/services/restPcrTestService";
 import { RestReportService } from "@/services/restReportService";
 import { RestSpecialAuthorityService } from "@/services/restSpecialAuthorityService";
 import { RestTicketService } from "@/services/restTicketService";
+import { RestTrackingService } from "@/services/restTrackingService";
 import { RestUserCommentService } from "@/services/restUserCommentService";
 import { RestUserFeedbackService } from "@/services/restUserFeedback";
 import { RestUserNoteService } from "@/services/restUserNoteService";
@@ -233,6 +235,12 @@ export async function initializeServices(): Promise<void> {
                 c.get<IHttpDelegate>(DELEGATE_IDENTIFIER.HttpDelegate),
                 configStore.config
             )
+    );
+
+    container.set<ITrackingService>(
+        SERVICE_IDENTIFIER.TrackingService,
+        (c) =>
+            new RestTrackingService(c.get<ILogger>(SERVICE_IDENTIFIER.Logger))
     );
 
     container.set<IUserCommentService>(

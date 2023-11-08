@@ -38,6 +38,7 @@ import type { UserPreference } from "@/models/userPreference";
 import UserProfile, { CreateUserRequest } from "@/models/userProfile";
 import UserRating from "@/models/userRating";
 import VaccinationStatus from "@/models/vaccinationStatus";
+import { EventData } from "@/plugins/extensions";
 
 export interface IAuthenticationService {
     signIn(redirectPath: string, idpHint?: string): Promise<OidcTokenDetails>;
@@ -268,4 +269,8 @@ export interface IPatientDataService {
         patientDataTypes: PatientDataType[]
     ): Promise<PatientDataResponse>;
     getFile(hdid: string, fileId: string): Promise<PatientDataFile>;
+}
+
+export interface ITrackingService {
+    track(data: EventData): Promise<void>;
 }

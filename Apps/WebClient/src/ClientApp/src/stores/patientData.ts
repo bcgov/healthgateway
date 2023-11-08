@@ -17,11 +17,16 @@ import PatientDataResponse, {
     PatientDataType,
 } from "@/models/patientDataResponse";
 import { LoadStatus } from "@/models/storeOperations";
-import { ILogger, IPatientDataService } from "@/services/interfaces";
+import { Action, Text } from "@/plugins/extensions";
+import {
+    ILogger,
+    IPatientDataService,
+    ITrackingService,
+} from "@/services/interfaces";
 import { patientDataTypeToEntryTypeMap } from "@/services/restPatientDataService";
 import { useErrorStore } from "@/stores/error";
 import { DatasetMapUtils } from "@/stores/utils/DatasetMapUtils";
-import EventTracker from "@/utility/eventTracker";
+import EventDataUtility from "@/utility/eventDataUtility";
 
 const defaultPatientDataState: PatientDataState = {
     data: new Map<PatientDataType, PatientData[]>(),
@@ -37,6 +42,10 @@ const defaultPatientDataFileState: PatientDataFileState = {
     error: undefined,
 };
 
+const trackingService = container.get<ITrackingService>(
+    SERVICE_IDENTIFIER.TrackingService
+);
+
 function reportDataLoaded(
     patientDataTypes: PatientDataType[],
     data: PatientDataResponse
@@ -48,7 +57,11 @@ function reportDataLoaded(
         );
         const entryType = patientDataTypeToEntryTypeMap.get(patientDataType);
         if (dataSet && entryType !== undefined) {
-            EventTracker.loadData(entryType, dataSet.length);
+            trackingService.track({
+                action: Action.Load,
+                text: Text.Data,
+                dataset: EventDataUtility.getDataset(entryType),
+            });
         }
     });
 }

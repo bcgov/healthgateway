@@ -12,10 +12,14 @@ import ReportFilter from "@/models/reportFilter";
 import ReportHeader from "@/models/reportHeader";
 import { ReportFormatType, TemplateType } from "@/models/reportRequest";
 import RequestResult from "@/models/requestResult";
-import { ILogger, IReportService } from "@/services/interfaces";
+import { Action, Destination, Origin, Text } from "@/plugins/extensions";
+import {
+    ILogger,
+    IReportService,
+    ITrackingService,
+} from "@/services/interfaces";
 import { useImmunizationStore } from "@/stores/immunization";
 import DateSortUtility from "@/utility/dateSortUtility";
-import EventTracker from "@/utility/eventTracker";
 
 interface Props {
     hdid: string;
@@ -108,6 +112,9 @@ const recommendationFields: ReportField[] = [
 ];
 
 const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+const trackingService = container.get<ITrackingService>(
+    SERVICE_IDENTIFIER.TrackingService
+);
 const immunizationStore = useImmunizationStore();
 const slots = useSlots();
 
@@ -194,8 +201,13 @@ function onIsEmptyChanged(): void {
     emit("on-is-empty-changed", isEmpty.value && isRecommendationEmpty.value);
 }
 
-function trackLink(href: string, text: string) {
-    EventTracker.click(text);
+function trackLink(href: string, destination: Destination) {
+    trackingService.track({
+        action: Action.Visit,
+        text: Text.ExternalLink,
+        destination: destination,
+        origin: Origin.Exports,
+    });
     window.open(href, "_blank", "noopener");
 }
 
@@ -282,7 +294,7 @@ immunizationStore
                             @click.prevent="
                                 trackLink(
                                     'https://immunizebc.ca/tools-resources/immunization-schedules',
-                                    'public_health_page'
+                                    Destination.PublicHealthImmunizationSchedule
                                 )
                             "
                         >
@@ -295,7 +307,7 @@ immunizationStore
                             @click.prevent="
                                 trackLink(
                                     'https://www2.gov.bc.ca/gov/content/health/managing-your-health/immunizations#resources',
-                                    'bc_gov_imms'
+                                    Destination.BcGovImmunizations
                                 )
                             "
                         >

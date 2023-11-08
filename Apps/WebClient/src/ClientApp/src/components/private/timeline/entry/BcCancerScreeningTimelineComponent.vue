@@ -10,9 +10,10 @@ import { container } from "@/ioc/container";
 import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
 import { PatientDataFile } from "@/models/patientDataResponse";
 import BcCancerScreeningTimelineEntry from "@/models/timeline/bcCancerScreeningTimelineEntry";
-import { ILogger } from "@/services/interfaces";
+import { Action, Actor, Format, Text } from "@/plugins/extensions";
+import { ILogger, ITrackingService } from "@/services/interfaces";
 import { usePatientDataStore } from "@/stores/patientData";
-import SnowPlow from "@/utility/snowPlow";
+import EventDataUtility from "@/utility/eventDataUtility";
 
 interface Props {
     hdid: string;
@@ -28,6 +29,9 @@ const props = withDefaults(defineProps<Props>(), {
 });
 
 const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+const trackingService = container.get<ITrackingService>(
+    SERVICE_IDENTIFIER.TrackingService
+);
 const patientDataStore = usePatientDataStore();
 const sensitiveDocumentModal =
     ref<InstanceType<typeof MessageModalComponent>>();
@@ -48,9 +52,12 @@ function showConfirmationModal(): void {
 
 function downloadFile(): void {
     if (props.entry.fileId) {
-        SnowPlow.trackEvent({
-            action: "download_report",
-            text: props.entry.eventText,
+        trackingService.track({
+            action: Action.Download,
+            text: Text.Document,
+            type: EventDataUtility.getType(props.entry.screeningType),
+            format: Format.Pdf,
+            actor: Actor.User,
         });
         const dateString = props.entry.date.format("yyyy_MM_dd-HH_mm");
         patientDataStore

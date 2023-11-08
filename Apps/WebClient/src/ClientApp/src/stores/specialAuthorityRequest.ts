@@ -1,7 +1,6 @@
 ﻿import { defineStore } from "pinia";
 import { ref } from "vue";
 
-import { EntryType } from "@/constants/entryType";
 import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import { ResultType } from "@/constants/resulttype";
 import { container } from "@/ioc/container";
@@ -11,10 +10,14 @@ import { ResultError } from "@/models/errors";
 import MedicationRequest from "@/models/medicationRequest";
 import RequestResult from "@/models/requestResult";
 import { LoadStatus } from "@/models/storeOperations";
-import { ILogger, ISpecialAuthorityService } from "@/services/interfaces";
+import { Action, Dataset, Text } from "@/plugins/extensions";
+import {
+    ILogger,
+    ISpecialAuthorityService,
+    ITrackingService,
+} from "@/services/interfaces";
 import { useErrorStore } from "@/stores/error";
 import { DatasetMapUtils } from "@/stores/utils/DatasetMapUtils";
-import EventTracker from "@/utility/eventTracker";
 
 const defaultSpecialAuthorityRequestState: SpecialAuthorityRequestState = {
     data: [],
@@ -22,6 +25,9 @@ const defaultSpecialAuthorityRequestState: SpecialAuthorityRequestState = {
     statusMessage: "",
     error: undefined,
 };
+const trackingService = container.get<ITrackingService>(
+    SERVICE_IDENTIFIER.TrackingService
+);
 export const useSpecialAuthorityRequestStore = defineStore(
     "specialAuthorityRequest",
     () => {
@@ -135,10 +141,11 @@ export const useSpecialAuthorityRequestStore = defineStore(
                     if (result.resultStatus === ResultType.Error) {
                         throw result.resultError;
                     }
-                    EventTracker.loadData(
-                        EntryType.SpecialAuthorityRequest,
-                        result.resourcePayload.length
-                    );
+                    trackingService.track({
+                        action: Action.Load,
+                        text: Text.Data,
+                        dataset: Dataset.SpecialAuthorityRequests,
+                    });
                     setSpecialAuthorityRequests(hdid, result);
                     return result;
                 })

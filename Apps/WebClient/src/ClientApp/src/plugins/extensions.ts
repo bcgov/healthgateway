@@ -10,6 +10,94 @@ export interface SnowPlowEvent {
 }
 
 export interface EventData {
-    action: string;
-    text: string;
+    action: Action | string;
+    text: Text | string;
+    actor?: Actor;
+    dataset?: Dataset;
+    destination?: Destination | Dataset;
+    format?: Format;
+    origin?: Origin;
+    rating?: Rating;
+    type?: Type;
+    url?: string;
+}
+
+export const enum Action {
+    Download = "Download",
+    Load = "Load",
+    Submit = "Submit",
+    View = "View",
+    Visit = "Visit",
+}
+
+export const enum Actor {
+    Guardian = "Guardian",
+    User = "User",
+}
+
+export const enum Dataset {
+    BcCancer = "BC Cancer",
+    ClinicalDocuments = "Clinical Documents",
+    Covid19Tests = "COVID-19 Tests",
+    HealthVisits = "Health Visits",
+    HospitalVisits = "Hospital Visits",
+    ImagingReports = "Imaging Reports",
+    Immunizations = "Immunizations",
+    LabResults = "Lab Results",
+    Notes = "Notes",
+    Medications = "Medications",
+    SpecialAuthorityRequests = "Special Authority Requests",
+}
+
+export const enum Destination {
+    BcGovImmunizations = "BC Gov Immunizations",
+    BcVaccineCard = "BC Vaccine Card",
+    BookVaccine = "Book a Vaccine",
+    ImmunizationRecommendationDialog = "Immunization Recommendations Dialog",
+    OrganDonorRegistration = "Organ Donor Registration",
+    PrimaryCare = "Primary Care",
+    PublicHealthImmunizationSchedule = "Public Health Immunization Schedule",
+    Timeline = "Timeline",
+}
+
+export const enum Format {
+    Csv = "CSV",
+    Image = "Image",
+    Pdf = "PDF",
+    XLSX = "XLSX",
+}
+
+export const enum Origin {
+    Dependents = "Dependents",
+    Exports = "Exports",
+    Home = "Home",
+    ImmunizationRecommendationDialog = "Immunization Recommendations Dialog",
+}
+
+export const enum Rating {
+    Skip = "Skip",
+    One = "1",
+    Two = "2",
+    Three = "3",
+    Four = "4",
+    Five = "5",
+}
+
+export const enum Text {
+    Data = "Data",
+    Document = "Document",
+    Export = "Export",
+    ExternalLink = "External Link",
+    InternalLink = "Internal Link",
+    Page = "Page",
+    AppRating = "App Rating",
+    Request = "Request",
+}
+
+export const enum Type {
+    Covid19ProofOfVaccination = "COVID-19 Proof of Vaccination",
+    OrganDonorRegistration = "Organ Donor Registration",
+    PublicCovid19ProofOfVaccination = "Public COVID-19 Proof of Vaccination",
+    Recall = "Recall",
+    Result = "Result",
 }

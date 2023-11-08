@@ -18,7 +18,8 @@ import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
 import CovidVaccineRecord from "@/models/covidVaccineRecord";
 import { DateWrapper, StringISODate } from "@/models/dateWrapper";
 import VaccinationStatus from "@/models/vaccinationStatus";
-import { ILogger } from "@/services/interfaces";
+import { Action, Actor, Format, Text, Type } from "@/plugins/extensions";
+import { ILogger, ITrackingService } from "@/services/interfaces";
 import { useAppStore } from "@/stores/app";
 import { useConfigStore } from "@/stores/config";
 import { useVaccinationStatusPublicStore } from "@/stores/vaccinationStatusPublic";
@@ -34,6 +35,9 @@ const phnMaskaOptions = {
 const currentDate = DateWrapper.today();
 
 const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+const trackingService = container.get<ITrackingService>(
+    SERVICE_IDENTIFIER.TrackingService
+);
 
 const appStore = useAppStore();
 const configStore = useConfigStore();
@@ -161,9 +165,10 @@ function handleSubmit(): void {
     v$.value.$touch();
 
     if (!v$.value.$invalid) {
-        SnowPlow.trackEvent({
-            action: "view_qr",
-            text: "vaxcard",
+        trackingService.track({
+            action: Action.Submit,
+            text: Text.Request,
+            type: Type.PublicCovid19ProofOfVaccination,
         });
         logger.debug("Vaccine card calling retrieve vaccine status.");
         retrieveVaccineStatus(
@@ -184,10 +189,11 @@ function downloadImage(): void {
 
     if (printingArea !== null) {
         isDownloading.value = true;
-
-        SnowPlow.trackEvent({
-            action: "save_qr",
-            text: "vaxcard",
+        trackingService.track({
+            action: Action.Download,
+            text: Text.Document,
+            type: Type.PublicCovid19ProofOfVaccination,
+            format: Format.Image,
         });
 
         html2canvas(printingArea, {
@@ -238,6 +244,13 @@ watch(vaccineRecord, (value) => {
         const mimeType = value.document.mediaType;
         const downloadLink = `data:${mimeType};base64,${value.document.data}`;
         fetch(downloadLink).then((res) => {
+            trackingService.track({
+                action: Action.Download,
+                text: Text.Document,
+                type: Type.PublicCovid19ProofOfVaccination,
+                format: Format.Pdf,
+                actor: Actor.User,
+            });
             SnowPlow.trackEvent({
                 action: "download_card",
                 text: "Public COVID Card PDF",

@@ -7,18 +7,33 @@ import HgCardComponent from "@/components/common/HgCardComponent.vue";
 import LoadingComponent from "@/components/common/LoadingComponent.vue";
 import MessageModalComponent from "@/components/common/MessageModalComponent.vue";
 import RecommendationsDialogComponent from "@/components/private/reports/RecommendationsDialogComponent.vue";
+import { container } from "@/ioc/container";
+import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
 import type { Dependent } from "@/models/dependent";
 import { LoadStatus } from "@/models/storeOperations";
 import VaccineRecordState from "@/models/vaccineRecordState";
+import {
+    Action,
+    Actor,
+    Destination,
+    Format,
+    Origin,
+    Text,
+    Type,
+} from "@/plugins/extensions";
+import { ITrackingService } from "@/services/interfaces";
 import { useConfigStore } from "@/stores/config";
 import { useVaccinationStatusAuthenticatedStore } from "@/stores/vaccinationStatusAuthenticated";
 import { getGridCols } from "@/utility/gridUtilty";
-import SnowPlow from "@/utility/snowPlow";
 
 interface Props {
     dependent: Dependent;
 }
 const props = defineProps<Props>();
+
+const trackingService = container.get<ITrackingService>(
+    SERVICE_IDENTIFIER.TrackingService
+);
 
 const configStore = useConfigStore();
 const vaccinationStatusStore = useVaccinationStatusAuthenticatedStore();
@@ -64,9 +79,11 @@ function stopAuthenticatedVaccineRecordDownload(hdid: string): void {
 }
 
 function handleClickHealthRecordsButton(): void {
-    SnowPlow.trackEvent({
-        action: "click",
-        text: "dependent_all_records",
+    trackingService.track({
+        action: Action.Visit,
+        text: Text.InternalLink,
+        destination: Destination.Timeline,
+        origin: Origin.Dependents,
     });
     router.push({
         path: `/dependents/${props.dependent.ownerId}/timeline`,
@@ -74,17 +91,22 @@ function handleClickHealthRecordsButton(): void {
 }
 
 function showRecommendationsDialog(): void {
-    SnowPlow.trackEvent({
-        action: "click",
-        text: "dependent_recommendations",
+    trackingService.track({
+        action: Action.Visit,
+        text: Text.InternalLink,
+        destination: Destination.ImmunizationRecommendationDialog,
+        origin: Origin.Dependents,
     });
     recommendationsDialogComponent.value?.showDialog();
 }
 
 function handleFederalProofOfVaccinationDownload(): void {
-    SnowPlow.trackEvent({
-        action: "click_button",
-        text: "Dependent_Proof",
+    trackingService.track({
+        action: Action.Download,
+        text: Text.Document,
+        type: Type.Covid19ProofOfVaccination,
+        format: Format.Pdf,
+        actor: Actor.Guardian,
     });
     retrieveAuthenticatedVaccineRecord(props.dependent.ownerId);
 }

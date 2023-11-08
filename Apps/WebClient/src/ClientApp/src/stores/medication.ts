@@ -2,7 +2,6 @@
 import { ref } from "vue";
 
 import { ActionType } from "@/constants/actionType";
-import { EntryType } from "@/constants/entryType";
 import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import { ResultType } from "@/constants/resulttype";
 import { container } from "@/ioc/container";
@@ -12,10 +11,14 @@ import { ResultError } from "@/models/errors";
 import MedicationStatementHistory from "@/models/medicationStatementHistory";
 import RequestResult from "@/models/requestResult";
 import { LoadStatus } from "@/models/storeOperations";
-import { ILogger, IMedicationService } from "@/services/interfaces";
+import { Action, Dataset, Text } from "@/plugins/extensions";
+import {
+    ILogger,
+    IMedicationService,
+    ITrackingService,
+} from "@/services/interfaces";
 import { useErrorStore } from "@/stores/error";
 import { DatasetMapUtils } from "@/stores/utils/DatasetMapUtils";
-import EventTracker from "@/utility/eventTracker";
 
 const defaultMedicationState: MedicationState = {
     data: [],
@@ -27,6 +30,9 @@ const defaultMedicationState: MedicationState = {
 
 export const useMedicationStore = defineStore("medication", () => {
     const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+    const trackingService = container.get<ITrackingService>(
+        SERVICE_IDENTIFIER.TrackingService
+    );
     const medicationService = container.get<IMedicationService>(
         SERVICE_IDENTIFIER.MedicationService
     );
@@ -146,10 +152,11 @@ export const useMedicationStore = defineStore("medication", () => {
                 }
 
                 if (result.resultStatus === ResultType.Success) {
-                    EventTracker.loadData(
-                        EntryType.Medication,
-                        result.resourcePayload.length
-                    );
+                    trackingService.track({
+                        action: Action.Load,
+                        text: Text.Data,
+                        dataset: Dataset.Medications,
+                    });
                 }
                 setMedications(hdid, result);
                 return result;

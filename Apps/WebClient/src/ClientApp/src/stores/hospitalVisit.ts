@@ -2,7 +2,6 @@
 import { ref } from "vue";
 
 import { ActionType } from "@/constants/actionType";
-import { EntryType } from "@/constants/entryType";
 import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import { ResultType } from "@/constants/resulttype";
 import { container } from "@/ioc/container";
@@ -13,10 +12,14 @@ import { ResultError } from "@/models/errors";
 import HospitalVisitResult from "@/models/hospitalVisitResult";
 import RequestResult from "@/models/requestResult";
 import { LoadStatus } from "@/models/storeOperations";
-import { IHospitalVisitService, ILogger } from "@/services/interfaces";
+import { Action, Dataset, Text } from "@/plugins/extensions";
+import {
+    IHospitalVisitService,
+    ILogger,
+    ITrackingService,
+} from "@/services/interfaces";
 import { useErrorStore } from "@/stores/error";
 import { DatasetMapUtils } from "@/stores/utils/DatasetMapUtils";
-import EventTracker from "@/utility/eventTracker";
 
 const defaultHospitalVisitState: HospitalVisitState = {
     data: [],
@@ -30,6 +33,9 @@ export const useHospitalVisitStore = defineStore("hospitalVisit", () => {
     const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
     const hospitalVisitService = container.get<IHospitalVisitService>(
         SERVICE_IDENTIFIER.HospitalVisitService
+    );
+    const trackingService = container.get<ITrackingService>(
+        SERVICE_IDENTIFIER.TrackingService
     );
     const datasetMapUtil = new DatasetMapUtils<
         HospitalVisit[],
@@ -143,10 +149,11 @@ export const useHospitalVisitStore = defineStore("hospitalVisit", () => {
                     result.resultStatus === ResultType.Success &&
                     payload.loaded
                 ) {
-                    EventTracker.loadData(
-                        EntryType.HospitalVisit,
-                        result.totalResultCount
-                    );
+                    trackingService.track({
+                        action: Action.Load,
+                        text: Text.Data,
+                        dataset: Dataset.HospitalVisits,
+                    });
                     logger.info(`Hospital Visits loaded.`);
                     setHospitalVisits(hdid, payload);
                 } else if (

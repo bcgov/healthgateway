@@ -18,12 +18,12 @@ import { ImmunizationEvent } from "@/models/immunizationModel";
 import { LoadStatus } from "@/models/storeOperations";
 import VaccinationStatus from "@/models/vaccinationStatus";
 import VaccineRecordState from "@/models/vaccineRecordState";
-import { ILogger } from "@/services/interfaces";
+import { Action, Actor, Format, Text, Type } from "@/plugins/extensions";
+import { ILogger, ITrackingService } from "@/services/interfaces";
 import { useConfigStore } from "@/stores/config";
 import { useImmunizationStore } from "@/stores/immunization";
 import { useUserStore } from "@/stores/user";
 import { useVaccinationStatusAuthenticatedStore } from "@/stores/vaccinationStatusAuthenticated";
-import SnowPlow from "@/utility/snowPlow";
 
 const breadcrumbItems: BreadcrumbItem[] = [
     {
@@ -35,6 +35,9 @@ const breadcrumbItems: BreadcrumbItem[] = [
 ];
 
 const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+const trackingService = container.get<ITrackingService>(
+    SERVICE_IDENTIFIER.TrackingService
+);
 
 const configStore = useConfigStore();
 const immunizationStore = useImmunizationStore();
@@ -162,9 +165,10 @@ function showImmunizationHistory(show: boolean): void {
 function fetchVaccineCardData(): void {
     retrieveVaccineStatus(userStore.user.hdid)
         .then(() =>
-            SnowPlow.trackEvent({
-                action: "view_card",
-                text: "COVID Card",
+            trackingService.track({
+                action: Action.Visit,
+                text: Text.Page,
+                url: "/covid19",
             })
         )
         .catch((err) => logger.error(`Error loading COVID-19 data: ${err}`));
@@ -186,9 +190,12 @@ function download(): void {
     const printingArea = document.querySelector<HTMLElement>(".vaccine-card");
     if (printingArea !== null) {
         isDownloading.value = true;
-        SnowPlow.trackEvent({
-            action: "download_card",
-            text: "COVID Card Image",
+        trackingService.track({
+            action: Action.Download,
+            text: Text.Document,
+            type: Type.Covid19ProofOfVaccination,
+            format: Format.Image,
+            actor: Actor.User,
         });
         html2canvas(printingArea, {
             scale: 2,
@@ -227,9 +234,12 @@ watch(vaccineRecordState, () => {
         const mimeType = vaccineRecordState.value.record.document.mediaType;
         const downloadLink = `data:${mimeType};base64,${vaccineRecordState.value.record.document.data}`;
         fetch(downloadLink).then((res) => {
-            SnowPlow.trackEvent({
-                action: "download_card",
-                text: "COVID Card PDF",
+            trackingService.track({
+                action: Action.Download,
+                text: Text.Document,
+                type: Type.Covid19ProofOfVaccination,
+                format: Format.Pdf,
+                actor: Actor.User,
             });
             res.blob().then((blob) =>
                 saveAs(blob, "ProvincialVaccineProof.pdf")

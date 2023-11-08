@@ -23,15 +23,24 @@ import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
 import { QuickLink } from "@/models/quickLink";
 import { LoadStatus } from "@/models/storeOperations";
 import { TimelineFilterBuilder } from "@/models/timeline/timelineFilter";
-import { ILogger } from "@/services/interfaces";
+import {
+    Action,
+    Actor,
+    Destination,
+    Format,
+    Origin,
+    Text,
+    Type,
+} from "@/plugins/extensions";
+import { ILogger, ITrackingService } from "@/services/interfaces";
 import { useConfigStore } from "@/stores/config";
 import { useErrorStore } from "@/stores/error";
 import { useTimelineStore } from "@/stores/timeline";
 import { useUserStore } from "@/stores/user";
 import { useVaccinationStatusAuthenticatedStore } from "@/stores/vaccinationStatusAuthenticated";
 import ConfigUtil from "@/utility/configUtil";
+import EventDataUtility from "@/utility/eventDataUtility";
 import { getGridCols } from "@/utility/gridUtilty";
-import SnowPlow from "@/utility/snowPlow";
 
 interface QuickLinkCard {
     index: number;
@@ -42,6 +51,9 @@ interface QuickLinkCard {
 }
 
 const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+const trackingService = container.get<ITrackingService>(
+    SERVICE_IDENTIFIER.TrackingService
+);
 const router = useRouter();
 const configStore = useConfigStore();
 const userStore = useUserStore();
@@ -191,17 +203,7 @@ function stopAuthenticatedVaccineRecordDownload(hdid: string): void {
     authenticatedVaccinationStatusStore.stopVaccineRecordDownload(hdid);
 }
 
-function trackClickLink(linkType: string | undefined): void {
-    if (linkType) {
-        SnowPlow.trackEvent({
-            action: "click",
-            text: `home_${linkType}`,
-        });
-    }
-}
-
 function retrieveVaccinePdf(): void {
-    trackClickLink("federal_proof");
     retrieveAuthenticatedVaccineRecord(user.value.hdid);
 }
 
@@ -228,27 +230,52 @@ function removeQuickLink(targetQuickLink: QuickLink): Promise<void> {
 }
 
 function handleClickHealthRecords(): void {
-    trackClickLink("all_records");
+    trackingService.track({
+        action: Action.Visit,
+        text: Text.InternalLink,
+        destination: Destination.Timeline,
+        origin: Origin.Home,
+    });
     router.push({ path: "/timeline" });
 }
 
 function handleClickVaccineCard(): void {
-    trackClickLink("bc_vaccine_card");
+    trackingService.track({
+        action: Action.Visit,
+        text: Text.InternalLink,
+        destination: Destination.BcVaccineCard,
+        origin: Origin.Home,
+    });
     router.push({ path: "/covid19" });
 }
 
 function handleClickOrganDonorCard(): void {
-    trackClickLink("organ_donor_registration");
+    trackingService.track({
+        action: Action.Visit,
+        text: Text.InternalLink,
+        destination: Destination.OrganDonorRegistration,
+        origin: Origin.Home,
+    });
     router.push({ path: "/services" });
 }
 
 function showRecommendationsDialog(): void {
-    trackClickLink("recommendations");
+    trackingService.track({
+        action: Action.Visit,
+        text: Text.InternalLink,
+        destination: Destination.ImmunizationRecommendationDialog,
+        origin: Origin.Home,
+    });
     recommendationsDialogComponent.value?.showDialog();
 }
 
 function handleClickHealthConnectCard(): void {
-    trackClickLink("primarycare");
+    trackingService.track({
+        action: Action.Visit,
+        text: Text.InternalLink,
+        destination: Destination.PrimaryCare,
+        origin: Origin.Home,
+    });
     window.open(
         "https://www.healthlinkbc.ca/health-connect-registry",
         undefined,
@@ -313,8 +340,12 @@ function handleClickQuickLink(index: number): void {
         .filter((d): d is EntryTypeDetails => d !== undefined);
 
     if (detailsCollection.length === 1) {
-        const linkType = detailsCollection[0].eventName;
-        trackClickLink(linkType);
+        trackingService.track({
+            action: Action.Visit,
+            text: Text.InternalLink,
+            destination: EventDataUtility.getDataset(detailsCollection[0].type),
+            origin: Origin.Home,
+        });
     }
 
     const entryTypes = detailsCollection.map((d) => d.type);
@@ -341,9 +372,12 @@ watch(vaccineRecordState, () => {
         const mimeType = vaccineRecordState.value.record.document.mediaType;
         const downloadLink = `data:${mimeType};base64,${vaccineRecordState.value.record.document.data}`;
         fetch(downloadLink).then((res) => {
-            SnowPlow.trackEvent({
-                action: "click_button",
-                text: "FederalPVC",
+            trackingService.track({
+                action: Action.Download,
+                text: Text.Document,
+                type: Type.Covid19ProofOfVaccination,
+                format: Format.Pdf,
+                actor: Actor.User,
             });
             res.blob().then((blob) => saveAs(blob, "VaccineProof.pdf"));
         });

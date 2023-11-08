@@ -1,7 +1,6 @@
 import { defineStore } from "pinia";
 import { computed, ref } from "vue";
 
-import { EntryType } from "@/constants/entryType";
 import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import { ResultType } from "@/constants/resulttype";
 import { container } from "@/ioc/container";
@@ -9,15 +8,22 @@ import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
 import { ResultError } from "@/models/errors";
 import { LoadStatus } from "@/models/storeOperations";
 import UserNote from "@/models/userNote";
-import { ILogger, IUserNoteService } from "@/services/interfaces";
+import { Action, Dataset, Text } from "@/plugins/extensions";
+import {
+    ILogger,
+    ITrackingService,
+    IUserNoteService,
+} from "@/services/interfaces";
 import { useErrorStore } from "@/stores/error";
 import { EventName, useEventStore } from "@/stores/event";
-import EventTracker from "@/utility/eventTracker";
 
 export const useNoteStore = defineStore("note", () => {
     const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
     const noteService = container.get<IUserNoteService>(
         SERVICE_IDENTIFIER.UserNoteService
+    );
+    const trackingService = container.get<ITrackingService>(
+        SERVICE_IDENTIFIER.TrackingService
     );
     const errorStore = useErrorStore();
     const eventStore = useEventStore();
@@ -65,10 +71,11 @@ export const useNoteStore = defineStore("note", () => {
             return noteService
                 .getNotes(hdid)
                 .then((result) => {
-                    EventTracker.loadData(
-                        EntryType.Note,
-                        result.resourcePayload.length
-                    );
+                    trackingService.track({
+                        action: Action.Load,
+                        text: Text.Data,
+                        dataset: Dataset.Notes,
+                    });
                     if (result.resultStatus === ResultType.Success) {
                         notes.value = result.resourcePayload;
                         error.value = undefined;

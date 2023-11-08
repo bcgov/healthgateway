@@ -1,7 +1,6 @@
 ﻿import { defineStore } from "pinia";
 import { ref } from "vue";
 
-import { EntryType } from "@/constants/entryType";
 import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import { ResultType } from "@/constants/resulttype";
 import { container } from "@/ioc/container";
@@ -15,10 +14,14 @@ import EncodedMedia from "@/models/encodedMedia";
 import { ResultError } from "@/models/errors";
 import RequestResult from "@/models/requestResult";
 import { LoadStatus } from "@/models/storeOperations";
-import { IClinicalDocumentService, ILogger } from "@/services/interfaces";
+import { Action, Dataset, Text } from "@/plugins/extensions";
+import {
+    IClinicalDocumentService,
+    ILogger,
+    ITrackingService,
+} from "@/services/interfaces";
 import { useErrorStore } from "@/stores/error";
 import { DatasetMapUtils } from "@/stores/utils/DatasetMapUtils";
-import EventTracker from "@/utility/eventTracker";
 
 const defaultClinicalDocumentDatasetState: ClinicalDocumentDatasetState = {
     data: [],
@@ -31,6 +34,9 @@ export const useClinicalDocumentStore = defineStore("clinicalDocument", () => {
     const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
     const clinicalDocumentService = container.get<IClinicalDocumentService>(
         SERVICE_IDENTIFIER.ClinicalDocumentService
+    );
+    const trackingService = container.get<ITrackingService>(
+        SERVICE_IDENTIFIER.TrackingService
     );
     const datasetMapUtil = new DatasetMapUtils<
         ClinicalDocument[],
@@ -108,10 +114,11 @@ export const useClinicalDocumentStore = defineStore("clinicalDocument", () => {
             .getRecords(hdid)
             .then((result) => {
                 if (result.resultStatus === ResultType.Success) {
-                    EventTracker.loadData(
-                        EntryType.ClinicalDocument,
-                        result.resourcePayload.length
-                    );
+                    trackingService.track({
+                        action: Action.Load,
+                        text: Text.Data,
+                        dataset: Dataset.ClinicalDocuments,
+                    });
                     datasetMapUtil.setStateData(
                         clinicalDocumentMap.value,
                         hdid,

@@ -33,10 +33,19 @@ import RequestResult from "@/models/requestResult";
 import { LoadStatus } from "@/models/storeOperations";
 import User from "@/models/user";
 import {
+    Action,
+    Actor,
+    Dataset,
+    Format,
+    Text,
+    Type,
+} from "@/plugins/extensions";
+import {
     IClinicalDocumentService,
     ILaboratoryService,
     ILogger,
     IReportService,
+    ITrackingService,
 } from "@/services/interfaces";
 import { useClinicalDocumentStore } from "@/stores/clinicalDocument";
 import { useConfigStore } from "@/stores/config";
@@ -49,7 +58,7 @@ import { useUserStore } from "@/stores/user";
 import { useVaccinationStatusAuthenticatedStore } from "@/stores/vaccinationStatusAuthenticated";
 import ConfigUtil from "@/utility/configUtil";
 import DateSortUtility from "@/utility/dateSortUtility";
-import SnowPlow from "@/utility/snowPlow";
+import EventDataUtility from "@/utility/eventDataUtility";
 
 interface Props {
     dependent: Dependent;
@@ -94,6 +103,9 @@ const clinicalDocumentService = container.get<IClinicalDocumentService>(
 );
 const laboratoryService = container.get<ILaboratoryService>(
     SERVICE_IDENTIFIER.LaboratoryService
+);
+const trackingService = container.get<ITrackingService>(
+    SERVICE_IDENTIFIER.TrackingService
 );
 const userStore = useUserStore();
 const configStore = useConfigStore();
@@ -301,7 +313,13 @@ function downloadLaboratoryOrderReport(): void {
     }
 
     isReportDownloading.value = true;
-    trackClickLink("download_report", "Dependent Lab PDF");
+    trackingService.track({
+        action: Action.Download,
+        text: Text.Document,
+        dataset: Dataset.LabResults,
+        format: Format.Pdf,
+        actor: Actor.Guardian,
+    });
 
     const dateString = DateWrapper.fromIso(
         selectedLaboratoryOrderRow.value.timelineDateTime
@@ -343,12 +361,15 @@ function downloadLaboratoryOrderReport(): void {
 
 function downloadImmunizationReport(): void {
     isReportDownloading.value = true;
-
-    const action = "download_report";
-    const reportName = "Dependent Immunization";
     const formatTypeName = ReportFormatType[reportFormatType.value];
-    const eventName = `${reportName} (${formatTypeName})`;
-    trackClickLink(action, eventName);
+
+    trackingService.track({
+        action: Action.Download,
+        text: Text.Export,
+        dataset: Dataset.Immunizations,
+        format: EventDataUtility.getFormat(formatTypeName),
+        actor: Actor.Guardian,
+    });
 
     generateReport(
         TemplateType.DependentImmunization,
@@ -388,8 +409,16 @@ function downloadClinicalDocument(): void {
         return;
     }
 
+    logger.debug("downloadClinicalDocument()");
+
     isReportDownloading.value = true;
-    trackClickLink("download_report", "Dependent Clinical Doc");
+    trackingService.track({
+        action: Action.Download,
+        text: Text.Document,
+        dataset: Dataset.ClinicalDocuments,
+        format: Format.Pdf,
+        actor: Actor.Guardian,
+    });
 
     clinicalDocumentService
         .getFile(selectedClinicalDocumentRow.value.fileId, dependentHdid.value)
@@ -444,7 +473,6 @@ function downloadDocument(): void {
 
 function downloadVaccinePdf(): void {
     logger.debug(`Downloading vaccine PDF for hdid: ${dependentHdid.value}`);
-    trackClickLink("Click Button", "Dependent Proof");
     vaccinationStatusStore.retrieveVaccineRecord(dependentHdid.value);
 }
 
@@ -577,15 +605,6 @@ function showDeleteConfirmationModal(): void {
     deleteModal.value?.showModal();
 }
 
-function trackClickLink(action: string, linkType: string | undefined): void {
-    if (linkType) {
-        SnowPlow.trackEvent({
-            action: `${action}`,
-            text: `${linkType}`,
-        });
-    }
-}
-
 watch(vaccineRecordState, () => {
     if (vaccineRecordState.value.resultMessage.length > 0) {
         vaccineRecordResultModal.value?.showModal();
@@ -599,7 +618,13 @@ watch(vaccineRecordState, () => {
         const mimeType = vaccineRecordState.value.record.document.mediaType;
         const downloadLink = `data:${mimeType};base64,${vaccineRecordState.value.record.document.data}`;
         fetch(downloadLink).then((res) => {
-            trackClickLink("Download Card", "Dependent Proof");
+            trackingService.track({
+                action: Action.Download,
+                text: Text.Document,
+                type: Type.Covid19ProofOfVaccination,
+                format: Format.Pdf,
+                actor: Actor.Guardian,
+            });
             res.blob().then((blob) => saveAs(blob, "VaccineProof.pdf"));
         });
         vaccinationStatusStore.stopVaccineRecordDownload(dependentHdid.value);
