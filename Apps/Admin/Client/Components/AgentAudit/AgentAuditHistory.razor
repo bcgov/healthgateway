@@ -1,43 +1,41 @@
 ﻿@using HealthGateway.Common.Data.Utils
 @inherits Fluxor.Blazor.Web.Components.FluxorComponent
 
-<MudExpansionPanels Class="mt-4">
-    <MudProgressLinear Class="rounded-t overflow-hidden" hidden="@(!IsLoading)" Color="Color.Primary" Indeterminate="true" />
-    <MudExpansionPanel Class="my-0">
-        <TitleContent>
-            <MudText Typo="Typo.subtitle1" data-testid="agent-audit-history-title">@Title (<span data-testid="agent-audit-history-count">@(AgentActions.Count())</span>)</MudText>
-        </TitleContent>
-        <ChildContent>
-            <MudTable Class="mt-4"
-                      Items="@AgentActions"
-                      AllowUnsorted="false"
-                      Breakpoint="@Breakpoint.Md"
-                      HorizontalScrollbar="true"
-                      RowsPerPage="5"
-                      Striped="true"
-                      Dense="true"
-                      data-testid="agent-audit-history-table">
-                <RowTemplate>
-                    <MudTd data-testid="agent-action-history-item" DataLabel="Agent-History">
-                        <MudListItem Class="background-secondary">
-                            <MudText Typo="Typo.body1" Color="@Color.Primary" data-testid="agent">
-                                @context.AgentUsername
-                            </MudText>
-                            <div class="mt-4 px-4">
-                                <MudText Typo="Typo.body1" data-testid="reason">
-                                    @context.Reason
-                                </MudText>
-                                <MudText Typo="Typo.body2" Color="@Color.Primary" data-testid="datetime">
-                                    @DateFormatter.ToShortDateAndTime(ConvertDateTime(context.TransactionDateTime))
-                                </MudText>
-                            </div>
-                        </MudListItem>
-                    </MudTd>
-                </RowTemplate>
-                <PagerContent>
-                    <MudTablePager PageSizeOptions="@PageSizes" />
-                </PagerContent>
-            </MudTable>
-        </ChildContent>
-    </MudExpansionPanel>
-</MudExpansionPanels>
+
+@if (!string.IsNullOrEmpty(Title))
+{
+    <MudText Typo="Typo.h5" Class="mb-4 mt-6" data-testid="agent-audit-history-title">
+        @Title (<span data-testid="agent-audit-history-count">@(AgentActions.Count())</span>)
+    </MudText>
+}
+<MudTable Class="mt-4"
+          Items="@AgentActions"
+          AllowUnsorted="false"
+          Breakpoint="@Breakpoint.Md"
+          HorizontalScrollbar="true"
+          RowsPerPage="5"
+          Loading="IsLoading"
+          Striped="true"
+          Dense="true"
+          data-testid="agent-audit-history-table">
+    <RowTemplate>
+        <MudTd data-testid="agent-action-history-item" DataLabel="Agent-History">
+            <MudListItem Class="background-secondary">
+                <MudText Typo="Typo.body1" Color="@Color.Primary" data-testid="agent">
+                    @context.AgentUsername
+                </MudText>
+                <div class="mt-4 px-4">
+                    <MudText Typo="Typo.body1" data-testid="reason">
+                        @context.Reason
+                    </MudText>
+                    <MudText Typo="Typo.body2" Color="@Color.Primary" data-testid="datetime">
+                        @DateFormatter.ToShortDateAndTime(ConvertDateTime(context.TransactionDateTime))
+                    </MudText>
+                </div>
+            </MudListItem>
+        </MudTd>
+    </RowTemplate>
+    <PagerContent>
+        <MudTablePager PageSizeOptions="@PageSizes" />
+    </PagerContent>
+</MudTable>
