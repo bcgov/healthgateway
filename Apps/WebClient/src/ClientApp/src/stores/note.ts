@@ -22,9 +22,6 @@ export const useNoteStore = defineStore("note", () => {
     const noteService = container.get<IUserNoteService>(
         SERVICE_IDENTIFIER.UserNoteService
     );
-    const trackingService = container.get<ITrackingService>(
-        SERVICE_IDENTIFIER.TrackingService
-    );
     const errorStore = useErrorStore();
     const eventStore = useEventStore();
 
@@ -62,6 +59,9 @@ export const useNoteStore = defineStore("note", () => {
     }
 
     function retrieveNotes(hdid: string): Promise<void> {
+        const trackingService = container.get<ITrackingService>(
+            SERVICE_IDENTIFIER.TrackingService
+        );
         if (status.value === LoadStatus.LOADED) {
             logger.debug(`Notes found stored, not querying!`);
             return Promise.resolve();

@@ -33,9 +33,6 @@ export const useLabResultStore = defineStore("labResult", () => {
     const laboratoryService = container.get<ILaboratoryService>(
         SERVICE_IDENTIFIER.LaboratoryService
     );
-    const trackingService = container.get<ITrackingService>(
-        SERVICE_IDENTIFIER.TrackingService
-    );
     const datasetMapUtil = new DatasetMapUtils<
         LaboratoryOrder[],
         LabResultState
@@ -114,6 +111,9 @@ export const useLabResultStore = defineStore("labResult", () => {
     function retrieveLabResults(
         hdid: string
     ): Promise<RequestResult<LaboratoryOrderResult>> {
+        const trackingService = container.get<ITrackingService>(
+            SERVICE_IDENTIFIER.TrackingService
+        );
         if (getLabResultState(hdid).status === LoadStatus.LOADED) {
             logger.debug("Lab results found stored, not querying!");
             return Promise.resolve({

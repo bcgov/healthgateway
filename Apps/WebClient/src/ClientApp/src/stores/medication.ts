@@ -30,9 +30,6 @@ const defaultMedicationState: MedicationState = {
 
 export const useMedicationStore = defineStore("medication", () => {
     const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-    const trackingService = container.get<ITrackingService>(
-        SERVICE_IDENTIFIER.TrackingService
-    );
     const medicationService = container.get<IMedicationService>(
         SERVICE_IDENTIFIER.MedicationService
     );
@@ -129,6 +126,9 @@ export const useMedicationStore = defineStore("medication", () => {
         hdid: string,
         protectiveWord?: string
     ): Promise<RequestResult<MedicationStatementHistory[]>> {
+        const trackingService = container.get<ITrackingService>(
+            SERVICE_IDENTIFIER.TrackingService
+        );
         if (getMedicationState(hdid).status === LoadStatus.LOADED) {
             logger.debug("Medications found stored, not querying!");
             const medicationsData: MedicationStatementHistory[] =

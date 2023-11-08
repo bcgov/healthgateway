@@ -24,7 +24,6 @@ import { useAppStore } from "@/stores/app";
 import { useConfigStore } from "@/stores/config";
 import { useVaccinationStatusPublicStore } from "@/stores/vaccinationStatusPublic";
 import { phnMask } from "@/utility/masks";
-import SnowPlow from "@/utility/snowPlow";
 import ValidationUtil from "@/utility/validationUtil";
 
 const phnMaskaOptions = {
@@ -250,10 +249,6 @@ watch(vaccineRecord, (value) => {
                 type: Type.PublicCovid19ProofOfVaccination,
                 format: Format.Pdf,
                 actor: Actor.User,
-            });
-            SnowPlow.trackEvent({
-                action: "download_card",
-                text: "Public COVID Card PDF",
             });
             res.blob().then((blob) => saveAs(blob, "VaccineProof.pdf"));
         });

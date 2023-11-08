@@ -35,9 +35,6 @@ export const useClinicalDocumentStore = defineStore("clinicalDocument", () => {
     const clinicalDocumentService = container.get<IClinicalDocumentService>(
         SERVICE_IDENTIFIER.ClinicalDocumentService
     );
-    const trackingService = container.get<ITrackingService>(
-        SERVICE_IDENTIFIER.TrackingService
-    );
     const datasetMapUtil = new DatasetMapUtils<
         ClinicalDocument[],
         ClinicalDocumentDatasetState
@@ -96,6 +93,9 @@ export const useClinicalDocumentStore = defineStore("clinicalDocument", () => {
     function retrieveClinicalDocuments(
         hdid: string
     ): Promise<RequestResult<ClinicalDocument[]>> {
+        const trackingService = container.get<ITrackingService>(
+            SERVICE_IDENTIFIER.TrackingService
+        );
         if (getClinicalDocumentState(hdid).status === LoadStatus.LOADED) {
             logger.debug(`Clinical documents found stored, not querying!`);
             const records = clinicalDocuments(hdid);

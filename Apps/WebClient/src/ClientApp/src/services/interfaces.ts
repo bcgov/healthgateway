@@ -272,5 +272,5 @@ export interface IPatientDataService {
 }
 
 export interface ITrackingService {
-    track(data: EventData): Promise<void>;
+    track(data: EventData): void;
 }

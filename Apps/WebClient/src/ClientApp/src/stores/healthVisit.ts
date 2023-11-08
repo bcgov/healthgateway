@@ -31,9 +31,6 @@ export const useHealthVisitStore = defineStore("healthVisit", () => {
     const healthVisitsService = container.get<IEncounterService>(
         SERVICE_IDENTIFIER.EncounterService
     );
-    const trackingService = container.get<ITrackingService>(
-        SERVICE_IDENTIFIER.TrackingService
-    );
     const datasetMapUtil = new DatasetMapUtils<Encounter[], HealthVisitState>(
         defaultHealthVisitState
     );
@@ -80,6 +77,9 @@ export const useHealthVisitStore = defineStore("healthVisit", () => {
     function retrieveHealthVisits(
         hdid: string
     ): Promise<RequestResult<Encounter[]>> {
+        const trackingService = container.get<ITrackingService>(
+            SERVICE_IDENTIFIER.TrackingService
+        );
         if (getHealthVisitState(hdid).status === LoadStatus.LOADED) {
             logger.debug(`Health Visits found stored, not querying!`);
             const visits: Encounter[] = healthVisits(hdid);

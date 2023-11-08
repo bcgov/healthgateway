@@ -46,9 +46,6 @@ export const useImmunizationStore = defineStore("immunization", () => {
     const immunizationService = container.get<IImmunizationService>(
         SERVICE_IDENTIFIER.ImmunizationService
     );
-    const trackingService = container.get<ITrackingService>(
-        SERVICE_IDENTIFIER.TrackingService
-    );
     const datasetMapUtil = new DatasetMapUtils<
         ImmunizationEvent[],
         ImmunizationDatasetState
@@ -142,6 +139,9 @@ export const useImmunizationStore = defineStore("immunization", () => {
     }
 
     function retrieveImmunizations(hdid: string): Promise<void> {
+        const trackingService = container.get<ITrackingService>(
+            SERVICE_IDENTIFIER.TrackingService
+        );
         if (getImmunizationDatasetState(hdid).status === LoadStatus.LOADED) {
             logger.debug(`Immunizations found stored, not querying!`);
             return Promise.resolve();

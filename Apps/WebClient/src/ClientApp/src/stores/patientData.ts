@@ -42,15 +42,15 @@ const defaultPatientDataFileState: PatientDataFileState = {
     error: undefined,
 };
 
-const trackingService = container.get<ITrackingService>(
-    SERVICE_IDENTIFIER.TrackingService
-);
-
 function reportDataLoaded(
     patientDataTypes: PatientDataType[],
     data: PatientDataResponse
 ) {
-    patientDataTypes.forEach((patientDataType) => {
+    const trackingService = container.get<ITrackingService>(
+        SERVICE_IDENTIFIER.TrackingService
+    );
+
+    for (const patientDataType of patientDataTypes) {
         const dataSet = data.items.filter(
             (i) =>
                 i.type === PatientDataToHealthDataTypeMap.get(patientDataType)
@@ -63,7 +63,7 @@ function reportDataLoaded(
                 dataset: EventDataUtility.getDataset(entryType),
             });
         }
-    });
+    }
 }
 
 function getErrorSource(patientDataType: PatientDataType): ErrorSourceType {

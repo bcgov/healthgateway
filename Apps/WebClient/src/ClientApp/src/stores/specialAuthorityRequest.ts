@@ -25,9 +25,6 @@ const defaultSpecialAuthorityRequestState: SpecialAuthorityRequestState = {
     statusMessage: "",
     error: undefined,
 };
-const trackingService = container.get<ITrackingService>(
-    SERVICE_IDENTIFIER.TrackingService
-);
 export const useSpecialAuthorityRequestStore = defineStore(
     "specialAuthorityRequest",
     () => {
@@ -115,6 +112,9 @@ export const useSpecialAuthorityRequestStore = defineStore(
         function retrieveSpecialAuthorityRequests(
             hdid: string
         ): Promise<RequestResult<MedicationRequest[]>> {
+            const trackingService = container.get<ITrackingService>(
+                SERVICE_IDENTIFIER.TrackingService
+            );
             if (
                 getSpecialAuthorityRequestState(hdid).status ===
                 LoadStatus.LOADED
