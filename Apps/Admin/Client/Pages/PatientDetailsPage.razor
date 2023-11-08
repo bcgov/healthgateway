@@ -18,7 +18,8 @@
     Severity="Severity.Error"
     IsEnabled="HasPatientSupportDetailsError"
     TResetAction="PatientDetailsActions.ResetStateAction"
-    DataTestId="messaging-verification-banner-feedback-error-message">
+    DataTestId="messaging-verification-banner-feedback-error-message"
+    Class="mb-4">
     @PatientDetailsState.Value.Error?.Message
 </HgBannerFeedback>
 
@@ -26,7 +27,8 @@
     Severity="Severity.Error"
     IsEnabled="HasPatientsError"
     TResetAction="PatientSupportActions.ResetStateAction"
-    DataTestId="user-banner-feedback-error-message">
+    DataTestId="user-banner-feedback-error-message"
+    Class="mb-4">
     @PatientSupportState.Value.Error?.Message
 </HgBannerFeedback>
 
@@ -34,8 +36,8 @@
     Severity="@Severity.Info"
     IsEnabled="HasPatientsWarning"
     TResetAction="PatientSupportActions.ResetStateAction"
-    Class="mt-4"
-    DataTestId="user-banner-feedback-warning-message">
+    DataTestId="user-banner-feedback-warning-message"
+    Class="mb-4">
     <ul>
         @foreach (string warning in PatientSupportState.Value.WarningMessages)
         {
