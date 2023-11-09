@@ -64,7 +64,7 @@ const showOrganDonorRegistration = computed(
 function getDecisionFile(): void {
     const registrationDataValue = registrationData.value;
     if (registrationDataValue?.registrationFileId) {
-        trackingService.track({
+        trackingService.trackEvent({
             action: Action.Download,
             text: Text.Document,
             type: Type.OrganDonorRegistration,

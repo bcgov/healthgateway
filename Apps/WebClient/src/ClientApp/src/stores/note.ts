@@ -71,7 +71,7 @@ export const useNoteStore = defineStore("note", () => {
             return noteService
                 .getNotes(hdid)
                 .then((result) => {
-                    trackingService.track({
+                    trackingService.trackEvent({
                         action: Action.Load,
                         text: Text.Data,
                         dataset: Dataset.Notes,

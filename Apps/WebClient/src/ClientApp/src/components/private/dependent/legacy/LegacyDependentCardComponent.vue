@@ -313,7 +313,7 @@ function downloadLaboratoryOrderReport(): void {
     }
 
     isReportDownloading.value = true;
-    trackingService.track({
+    trackingService.trackEvent({
         action: Action.Download,
         text: Text.Document,
         dataset: Dataset.LabResults,
@@ -363,7 +363,7 @@ function downloadImmunizationReport(): void {
     isReportDownloading.value = true;
     const formatTypeName = ReportFormatType[reportFormatType.value];
 
-    trackingService.track({
+    trackingService.trackEvent({
         action: Action.Download,
         text: Text.Export,
         dataset: Dataset.Immunizations,
@@ -412,7 +412,7 @@ function downloadClinicalDocument(): void {
     logger.debug("downloadClinicalDocument()");
 
     isReportDownloading.value = true;
-    trackingService.track({
+    trackingService.trackEvent({
         action: Action.Download,
         text: Text.Document,
         dataset: Dataset.ClinicalDocuments,
@@ -618,7 +618,7 @@ watch(vaccineRecordState, () => {
         const mimeType = vaccineRecordState.value.record.document.mediaType;
         const downloadLink = `data:${mimeType};base64,${vaccineRecordState.value.record.document.data}`;
         fetch(downloadLink).then((res) => {
-            trackingService.track({
+            trackingService.trackEvent({
                 action: Action.Download,
                 text: Text.Document,
                 type: Type.Covid19ProofOfVaccination,

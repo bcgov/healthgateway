@@ -134,7 +134,7 @@ export const useLabResultStore = defineStore("labResult", () => {
         return laboratoryService
             .getLaboratoryOrders(hdid)
             .then((result) => {
-                trackingService.track({
+                trackingService.trackEvent({
                     action: Action.Load,
                     text: Text.Data,
                     dataset: Dataset.LabResults,

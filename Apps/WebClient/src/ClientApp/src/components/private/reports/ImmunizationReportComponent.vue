@@ -202,7 +202,7 @@ function onIsEmptyChanged(): void {
 }
 
 function trackLink(href: string, destination: Destination) {
-    trackingService.track({
+    trackingService.trackEvent({
         action: Action.Visit,
         text: Text.ExternalLink,
         destination: destination,

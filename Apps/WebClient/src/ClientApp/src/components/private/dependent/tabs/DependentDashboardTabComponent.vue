@@ -79,7 +79,7 @@ function stopAuthenticatedVaccineRecordDownload(hdid: string): void {
 }
 
 function handleClickHealthRecordsButton(): void {
-    trackingService.track({
+    trackingService.trackEvent({
         action: Action.Visit,
         text: Text.InternalLink,
         destination: Destination.Timeline,
@@ -91,7 +91,7 @@ function handleClickHealthRecordsButton(): void {
 }
 
 function showRecommendationsDialog(): void {
-    trackingService.track({
+    trackingService.trackEvent({
         action: Action.Visit,
         text: Text.InternalLink,
         destination: Destination.ImmunizationRecommendationDialog,
@@ -101,7 +101,7 @@ function showRecommendationsDialog(): void {
 }
 
 function handleFederalProofOfVaccinationDownload(): void {
-    trackingService.track({
+    trackingService.trackEvent({
         action: Action.Download,
         text: Text.Document,
         type: Type.Covid19ProofOfVaccination,

@@ -152,7 +152,7 @@ export const useMedicationStore = defineStore("medication", () => {
                 }
 
                 if (result.resultStatus === ResultType.Success) {
-                    trackingService.track({
+                    trackingService.trackEvent({
                         action: Action.Load,
                         text: Text.Data,
                         dataset: Dataset.Medications,

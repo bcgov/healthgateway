@@ -244,7 +244,7 @@ function downloadReport(): void {
 
 function trackDownload(): void {
     const formatTypeName = ReportFormatType[reportFormatType.value];
-    trackingService.track({
+    trackingService.trackEvent({
         action: Action.Download,
         text: Text.Export,
         dataset: EventDataUtility.getDataset(selectedEntryType.value),

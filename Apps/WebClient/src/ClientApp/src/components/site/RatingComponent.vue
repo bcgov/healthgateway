@@ -63,7 +63,7 @@ function handleRating(value: number | string, skip = false): void {
     ratingService
         .submitRating({ ratingValue: Number(value), skip })
         .then(() => {
-            trackingService.track({
+            trackingService.trackEvent({
                 action: Action.Submit,
                 text: Text.AppRating,
                 rating: skip

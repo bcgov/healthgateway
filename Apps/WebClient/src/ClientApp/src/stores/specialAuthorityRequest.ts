@@ -141,7 +141,7 @@ export const useSpecialAuthorityRequestStore = defineStore(
                     if (result.resultStatus === ResultType.Error) {
                         throw result.resultError;
                     }
-                    trackingService.track({
+                    trackingService.trackEvent({
                         action: Action.Load,
                         text: Text.Data,
                         dataset: Dataset.SpecialAuthorityRequests,

@@ -88,7 +88,7 @@ function formatDate(date?: DateWrapper): string | undefined {
 }
 
 function getReport(): void {
-    trackingService.track({
+    trackingService.trackEvent({
         action: Action.Download,
         text: Text.Document,
         dataset: Dataset.LabResults,

@@ -165,7 +165,7 @@ function showImmunizationHistory(show: boolean): void {
 function fetchVaccineCardData(): void {
     retrieveVaccineStatus(userStore.user.hdid)
         .then(() =>
-            trackingService.track({
+            trackingService.trackEvent({
                 action: Action.Visit,
                 text: Text.Page,
                 url: "/covid19",
@@ -190,7 +190,7 @@ function download(): void {
     const printingArea = document.querySelector<HTMLElement>(".vaccine-card");
     if (printingArea !== null) {
         isDownloading.value = true;
-        trackingService.track({
+        trackingService.trackEvent({
             action: Action.Download,
             text: Text.Document,
             type: Type.Covid19ProofOfVaccination,
@@ -234,7 +234,7 @@ watch(vaccineRecordState, () => {
         const mimeType = vaccineRecordState.value.record.document.mediaType;
         const downloadLink = `data:${mimeType};base64,${vaccineRecordState.value.record.document.data}`;
         fetch(downloadLink).then((res) => {
-            trackingService.track({
+            trackingService.trackEvent({
                 action: Action.Download,
                 text: Text.Document,
                 type: Type.Covid19ProofOfVaccination,

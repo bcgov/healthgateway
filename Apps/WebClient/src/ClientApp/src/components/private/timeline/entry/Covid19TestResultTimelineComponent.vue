@@ -76,7 +76,7 @@ function showConfirmationModal(): void {
 }
 
 function getReport(): void {
-    trackingService.track({
+    trackingService.trackEvent({
         action: Action.Download,
         text: Text.Document,
         dataset: Dataset.Covid19Tests,

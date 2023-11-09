@@ -149,7 +149,7 @@ export const useHospitalVisitStore = defineStore("hospitalVisit", () => {
                     result.resultStatus === ResultType.Success &&
                     payload.loaded
                 ) {
-                    trackingService.track({
+                    trackingService.trackEvent({
                         action: Action.Load,
                         text: Text.Data,
                         dataset: Dataset.HospitalVisits,

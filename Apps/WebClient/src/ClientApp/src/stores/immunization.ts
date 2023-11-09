@@ -165,7 +165,7 @@ export const useImmunizationStore = defineStore("immunization", () => {
                         retrieveImmunizations(hdid);
                     }, 10000);
                 } else {
-                    trackingService.track({
+                    trackingService.trackEvent({
                         action: Action.Load,
                         text: Text.Data,
                         dataset: Dataset.Immunizations,

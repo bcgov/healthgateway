@@ -230,7 +230,7 @@ function removeQuickLink(targetQuickLink: QuickLink): Promise<void> {
 }
 
 function handleClickHealthRecords(): void {
-    trackingService.track({
+    trackingService.trackEvent({
         action: Action.Visit,
         text: Text.InternalLink,
         destination: Destination.Timeline,
@@ -240,7 +240,7 @@ function handleClickHealthRecords(): void {
 }
 
 function handleClickVaccineCard(): void {
-    trackingService.track({
+    trackingService.trackEvent({
         action: Action.Visit,
         text: Text.InternalLink,
         destination: Destination.BcVaccineCard,
@@ -250,7 +250,7 @@ function handleClickVaccineCard(): void {
 }
 
 function handleClickOrganDonorCard(): void {
-    trackingService.track({
+    trackingService.trackEvent({
         action: Action.Visit,
         text: Text.InternalLink,
         destination: Destination.OrganDonorRegistration,
@@ -260,7 +260,7 @@ function handleClickOrganDonorCard(): void {
 }
 
 function showRecommendationsDialog(): void {
-    trackingService.track({
+    trackingService.trackEvent({
         action: Action.Visit,
         text: Text.InternalLink,
         destination: Destination.ImmunizationRecommendationDialog,
@@ -270,7 +270,7 @@ function showRecommendationsDialog(): void {
 }
 
 function handleClickHealthConnectCard(): void {
-    trackingService.track({
+    trackingService.trackEvent({
         action: Action.Visit,
         text: Text.InternalLink,
         destination: Destination.PrimaryCare,
@@ -340,7 +340,7 @@ function handleClickQuickLink(index: number): void {
         .filter((d): d is EntryTypeDetails => d !== undefined);
 
     if (detailsCollection.length === 1) {
-        trackingService.track({
+        trackingService.trackEvent({
             action: Action.Visit,
             text: Text.InternalLink,
             destination: EventDataUtility.getDataset(detailsCollection[0].type),
@@ -372,7 +372,7 @@ watch(vaccineRecordState, () => {
         const mimeType = vaccineRecordState.value.record.document.mediaType;
         const downloadLink = `data:${mimeType};base64,${vaccineRecordState.value.record.document.data}`;
         fetch(downloadLink).then((res) => {
-            trackingService.track({
+            trackingService.trackEvent({
                 action: Action.Download,
                 text: Text.Document,
                 type: Type.Covid19ProofOfVaccination,

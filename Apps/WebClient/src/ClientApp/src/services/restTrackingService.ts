@@ -10,7 +10,7 @@ export class RestTrackingService implements ITrackingService {
         this.logger = logger;
     }
 
-    public track(data: EventData): void {
+    public trackEvent(data: EventData): void {
         this.logger.debug(`Tracking event: ${JSON.stringify(data)}`);
 
         window.snowplow("trackSelfDescribingEvent", {

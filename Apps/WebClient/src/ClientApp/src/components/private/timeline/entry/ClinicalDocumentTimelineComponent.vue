@@ -60,7 +60,7 @@ function showConfirmationModal(): void {
 }
 
 function downloadFile(): void {
-    trackingService.track({
+    trackingService.trackEvent({
         action: Action.Download,
         text: Text.Document,
         dataset: Dataset.ClinicalDocuments,

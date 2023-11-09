@@ -99,7 +99,7 @@ export const useHealthVisitStore = defineStore("healthVisit", () => {
             .then((result) => {
                 const payload = result.resourcePayload;
                 if (result.resultStatus === ResultType.Success) {
-                    trackingService.track({
+                    trackingService.trackEvent({
                         action: Action.Load,
                         text: Text.Data,
                         dataset: Dataset.HealthVisits,

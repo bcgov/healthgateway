@@ -164,7 +164,7 @@ function handleSubmit(): void {
     v$.value.$touch();
 
     if (!v$.value.$invalid) {
-        trackingService.track({
+        trackingService.trackEvent({
             action: Action.Submit,
             text: Text.Request,
             type: Type.PublicCovid19ProofOfVaccination,
@@ -188,7 +188,7 @@ function downloadImage(): void {
 
     if (printingArea !== null) {
         isDownloading.value = true;
-        trackingService.track({
+        trackingService.trackEvent({
             action: Action.Download,
             text: Text.Document,
             type: Type.PublicCovid19ProofOfVaccination,
@@ -243,7 +243,7 @@ watch(vaccineRecord, (value) => {
         const mimeType = value.document.mediaType;
         const downloadLink = `data:${mimeType};base64,${value.document.data}`;
         fetch(downloadLink).then((res) => {
-            trackingService.track({
+            trackingService.trackEvent({
                 action: Action.Download,
                 text: Text.Document,
                 type: Type.PublicCovid19ProofOfVaccination,

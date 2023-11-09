@@ -56,7 +56,7 @@ function showConfirmationModal(): void {
 
 function downloadFile(): void {
     if (props.entry.fileId) {
-        trackingService.track({
+        trackingService.trackEvent({
             action: Action.Download,
             text: Text.Document,
             dataset: Dataset.ImagingReports,
