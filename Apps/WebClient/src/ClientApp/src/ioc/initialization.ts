@@ -87,12 +87,6 @@ export async function initializeServices(): Promise<void> {
         () => authenticationService
     );
 
-    container.set<ITrackingService>(
-        SERVICE_IDENTIFIER.TrackingService,
-        (c) =>
-            new RestTrackingService(c.get<ILogger>(SERVICE_IDENTIFIER.Logger))
-    );
-
     container.set<IClinicalDocumentService>(
         SERVICE_IDENTIFIER.ClinicalDocumentService,
         (c) =>
