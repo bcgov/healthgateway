@@ -361,13 +361,12 @@ function downloadLaboratoryOrderReport(): void {
 
 function downloadImmunizationReport(): void {
     isReportDownloading.value = true;
-    const formatTypeName = ReportFormatType[reportFormatType.value];
 
     trackingService.trackEvent({
         action: Action.Download,
         text: Text.Export,
         dataset: Dataset.Immunizations,
-        format: EventDataUtility.getFormat(formatTypeName),
+        format: EventDataUtility.getFormat(reportFormatType.value),
         actor: Actor.Guardian,
     });
 

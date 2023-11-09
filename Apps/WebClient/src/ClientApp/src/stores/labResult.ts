@@ -134,11 +134,13 @@ export const useLabResultStore = defineStore("labResult", () => {
         return laboratoryService
             .getLaboratoryOrders(hdid)
             .then((result) => {
-                trackingService.trackEvent({
-                    action: Action.Load,
-                    text: Text.Data,
-                    dataset: Dataset.LabResults,
-                });
+                if (result.resourcePayload.orders.length > 0) {
+                    trackingService.trackEvent({
+                        action: Action.Load,
+                        text: Text.Data,
+                        dataset: Dataset.LabResults,
+                    });
+                }
                 const payload = result.resourcePayload;
                 if (
                     result.resultStatus === ResultType.Success &&

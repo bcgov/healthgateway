@@ -343,7 +343,9 @@ function handleClickQuickLink(index: number): void {
         trackingService.trackEvent({
             action: Action.Visit,
             text: Text.InternalLink,
-            destination: EventDataUtility.getDataset(detailsCollection[0].type),
+            destination: `${EventDataUtility.getDataset(
+                detailsCollection[0].type
+            )} Timeline`,
             origin: Origin.Home,
         });
     }

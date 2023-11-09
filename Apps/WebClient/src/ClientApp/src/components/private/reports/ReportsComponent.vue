@@ -243,12 +243,11 @@ function downloadReport(): void {
 }
 
 function trackDownload(): void {
-    const formatTypeName = ReportFormatType[reportFormatType.value];
     trackingService.trackEvent({
         action: Action.Download,
         text: Text.Export,
         dataset: EventDataUtility.getDataset(selectedEntryType.value),
-        format: EventDataUtility.getFormat(formatTypeName),
+        format: EventDataUtility.getFormat(reportFormatType.value),
         actor: props.isDependent ? Actor.Guardian : Actor.User,
     });
 }

@@ -56,7 +56,7 @@ function reportDataLoaded(
                 i.type === PatientDataToHealthDataTypeMap.get(patientDataType)
         );
         const entryType = patientDataTypeToEntryTypeMap.get(patientDataType);
-        if (dataSet && entryType !== undefined) {
+        if (dataSet.length > 0 && entryType !== undefined) {
             trackingService.trackEvent({
                 action: Action.Load,
                 text: Text.Data,

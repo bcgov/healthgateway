@@ -71,15 +71,18 @@ export const useNoteStore = defineStore("note", () => {
             return noteService
                 .getNotes(hdid)
                 .then((result) => {
-                    trackingService.trackEvent({
-                        action: Action.Load,
-                        text: Text.Data,
-                        dataset: Dataset.Notes,
-                    });
                     if (result.resultStatus === ResultType.Success) {
                         notes.value = result.resourcePayload;
                         error.value = undefined;
                         status.value = LoadStatus.LOADED;
+
+                        if (result.resourcePayload.length > 0) {
+                            trackingService.trackEvent({
+                                action: Action.Load,
+                                text: Text.Data,
+                                dataset: Dataset.Notes,
+                            });
+                        }
                     } else {
                         if (result.resultError) {
                             throw result.resultError;

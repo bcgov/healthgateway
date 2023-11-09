@@ -151,7 +151,10 @@ export const useMedicationStore = defineStore("medication", () => {
                     throw result.resultError;
                 }
 
-                if (result.resultStatus === ResultType.Success) {
+                if (
+                    result.resultStatus === ResultType.Success &&
+                    result.resourcePayload.length > 0
+                ) {
                     trackingService.trackEvent({
                         action: Action.Load,
                         text: Text.Data,

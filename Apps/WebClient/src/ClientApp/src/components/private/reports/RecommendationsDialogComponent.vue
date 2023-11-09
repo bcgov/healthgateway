@@ -69,13 +69,11 @@ function showConfirmationModal(type: ReportFormatType): void {
 }
 
 function trackDownload() {
-    const formatTypeName = ReportFormatType[reportFormatType.value];
-
     trackingService.trackEvent({
         action: Action.Download,
         text: Text.Export,
         dataset: EventDataUtility.getDataset(EntryType.Immunization),
-        format: EventDataUtility.getFormat(formatTypeName),
+        format: EventDataUtility.getFormat(reportFormatType.value),
         actor: props.isDependent ? Actor.Guardian : Actor.User,
     });
 }

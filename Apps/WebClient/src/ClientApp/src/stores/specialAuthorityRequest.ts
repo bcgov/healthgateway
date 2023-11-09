@@ -141,11 +141,13 @@ export const useSpecialAuthorityRequestStore = defineStore(
                     if (result.resultStatus === ResultType.Error) {
                         throw result.resultError;
                     }
-                    trackingService.trackEvent({
-                        action: Action.Load,
-                        text: Text.Data,
-                        dataset: Dataset.SpecialAuthorityRequests,
-                    });
+                    if (result.resourcePayload.length > 0) {
+                        trackingService.trackEvent({
+                            action: Action.Load,
+                            text: Text.Data,
+                            dataset: Dataset.SpecialAuthorityRequests,
+                        });
+                    }
                     setSpecialAuthorityRequests(hdid, result);
                     return result;
                 })

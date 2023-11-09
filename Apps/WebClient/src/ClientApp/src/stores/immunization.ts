@@ -164,7 +164,7 @@ export const useImmunizationStore = defineStore("immunization", () => {
                         logger.info(`Re-querying for immunizations`);
                         retrieveImmunizations(hdid);
                     }, 10000);
-                } else {
+                } else if (payload.immunizations.length > 0) {
                     trackingService.trackEvent({
                         action: Action.Load,
                         text: Text.Data,

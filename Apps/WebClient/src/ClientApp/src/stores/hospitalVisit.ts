@@ -149,11 +149,13 @@ export const useHospitalVisitStore = defineStore("hospitalVisit", () => {
                     result.resultStatus === ResultType.Success &&
                     payload.loaded
                 ) {
-                    trackingService.trackEvent({
-                        action: Action.Load,
-                        text: Text.Data,
-                        dataset: Dataset.HospitalVisits,
-                    });
+                    if (result.totalResultCount > 0) {
+                        trackingService.trackEvent({
+                            action: Action.Load,
+                            text: Text.Data,
+                            dataset: Dataset.HospitalVisits,
+                        });
+                    }
                     logger.info(`Hospital Visits loaded.`);
                     setHospitalVisits(hdid, payload);
                 } else if (

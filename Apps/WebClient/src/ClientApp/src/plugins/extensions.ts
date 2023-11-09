@@ -14,7 +14,7 @@ export interface EventData {
     text: Text;
     actor?: Actor;
     dataset?: Dataset;
-    destination?: Destination | Dataset;
+    destination?: Destination | string;
     format?: Format;
     origin?: Origin;
     rating?: Rating;
@@ -84,13 +84,13 @@ export const enum Rating {
 }
 
 export const enum Text {
+    AppRating = "App Rating",
     Data = "Data",
     Document = "Document",
     Export = "Export",
     ExternalLink = "External Link",
     InternalLink = "Internal Link",
     Page = "Page",
-    AppRating = "App Rating",
     Request = "Request",
 }
 

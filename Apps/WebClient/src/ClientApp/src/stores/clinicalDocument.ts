@@ -114,11 +114,13 @@ export const useClinicalDocumentStore = defineStore("clinicalDocument", () => {
             .getRecords(hdid)
             .then((result) => {
                 if (result.resultStatus === ResultType.Success) {
-                    trackingService.trackEvent({
-                        action: Action.Load,
-                        text: Text.Data,
-                        dataset: Dataset.ClinicalDocuments,
-                    });
+                    if (result.resourcePayload.length > 0) {
+                        trackingService.trackEvent({
+                            action: Action.Load,
+                            text: Text.Data,
+                            dataset: Dataset.ClinicalDocuments,
+                        });
+                    }
                     datasetMapUtil.setStateData(
                         clinicalDocumentMap.value,
                         hdid,
