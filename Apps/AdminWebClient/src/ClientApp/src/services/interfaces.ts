@@ -75,5 +75,5 @@ export interface IHttpDelegate {
 }
 
 export interface ITrackingService {
-    track(data: EventData): Promise<void>;
+    trackEvent(data: EventData): void;
 }

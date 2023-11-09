@@ -291,7 +291,7 @@ export default class CovidCardView extends Vue {
                 this.$refs.observer as Vue & { validate: () => boolean }
             ).validate();
             if (isValid) {
-                this.trackingService.track({
+                this.trackingService.trackEvent({
                     action: Action.Mail,
                     text: Text.Document,
                     type: Type.Covid19ProofOfVaccination,
@@ -352,7 +352,7 @@ export default class CovidCardView extends Vue {
     }
 
     private handlePrint() {
-        this.trackingService.track({
+        this.trackingService.trackEvent({
             action: Action.Print,
             text: Text.Document,
             type: Type.Covid19ProofOfVaccination,
