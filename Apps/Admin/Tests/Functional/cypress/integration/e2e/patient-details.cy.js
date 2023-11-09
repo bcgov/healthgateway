@@ -313,7 +313,7 @@ function validatePrintVaccineCardSubmission() {
     });
 }
 
-describe.skip("Patient details page as admin user", () => {
+describe("Patient details page as admin user", () => {
     beforeEach(() => {
         cy.login(
             Cypress.env("keycloak_username"),
@@ -530,7 +530,7 @@ describe.skip("Patient details page as admin user", () => {
     });
 });
 
-describe.skip("Patient details page as reviewer", () => {
+describe("Patient details page as reviewer", () => {
     beforeEach(() => {
         cy.login(
             Cypress.env("keycloak_reviewer_username"),
