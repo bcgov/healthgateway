@@ -22,15 +22,14 @@ namespace HealthGateway.Admin.Client.Components.Details
     using Fluxor;
     using Fluxor.Blazor.Web.Components;
     using HealthGateway.Admin.Client.Authorization;
+    using HealthGateway.Admin.Client.Services;
     using HealthGateway.Admin.Client.Store.PatientDetails;
     using HealthGateway.Admin.Client.Store.PatientSupport;
     using HealthGateway.Admin.Common.Constants;
     using HealthGateway.Admin.Common.Models;
-    using HealthGateway.Common.Data.Utils;
     using HealthGateway.Common.Data.ViewModels;
     using Microsoft.AspNetCore.Components;
     using Microsoft.AspNetCore.Components.Authorization;
-    using Microsoft.Extensions.Configuration;
 
     /// <summary>
     /// Backing logic for the AccountTab component.
@@ -53,7 +52,7 @@ namespace HealthGateway.Admin.Client.Components.Details
         private AuthenticationStateProvider AuthenticationStateProvider { get; set; } = default!;
 
         [Inject]
-        private IConfiguration Configuration { get; set; } = default!;
+        private IDateConversionService DateConversionService { get; set; } = default!;
 
         private AuthenticationState? AuthenticationState { get; set; }
 
@@ -61,10 +60,10 @@ namespace HealthGateway.Admin.Client.Components.Details
             this.PatientSupportState.Value.Result?.SingleOrDefault(x => x.PersonalHealthNumber == this.Phn);
 
         private DateTime? ProfileCreatedDateTime =>
-            this.Patient?.ProfileCreatedDateTime == null ? null : TimeZoneInfo.ConvertTimeFromUtc(this.Patient.ProfileCreatedDateTime.Value, this.GetTimeZone());
+            this.Patient?.ProfileCreatedDateTime == null ? null : this.DateConversionService.ConvertFromUtc(this.Patient.ProfileCreatedDateTime.Value);
 
         private DateTime? ProfileLastLoginDateTime =>
-            this.Patient?.ProfileLastLoginDateTime == null ? null : TimeZoneInfo.ConvertTimeFromUtc(this.Patient.ProfileLastLoginDateTime.Value, this.GetTimeZone());
+            this.Patient?.ProfileLastLoginDateTime == null ? null : this.DateConversionService.ConvertFromUtc(this.Patient.ProfileLastLoginDateTime.Value);
 
         private IEnumerable<MessagingVerificationModel> MessagingVerifications => this.PatientDetailsState.Value.MessagingVerifications ?? Enumerable.Empty<MessagingVerificationModel>();
 
@@ -86,11 +85,6 @@ namespace HealthGateway.Admin.Client.Components.Details
         private bool UserHasRole(string role)
         {
             return this.AuthenticationState?.User.IsInRole(role) == true;
-        }
-
-        private TimeZoneInfo GetTimeZone()
-        {
-            return DateFormatter.GetLocalTimeZone(this.Configuration);
         }
     }
 }
