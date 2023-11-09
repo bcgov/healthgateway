@@ -272,7 +272,7 @@ function showRecommendationsDialog(): void {
 function handleClickHealthConnectCard(): void {
     trackingService.trackEvent({
         action: Action.Visit,
-        text: Text.InternalLink,
+        text: Text.ExternalLink,
         destination: Destination.PrimaryCare,
         origin: Origin.Home,
     });
