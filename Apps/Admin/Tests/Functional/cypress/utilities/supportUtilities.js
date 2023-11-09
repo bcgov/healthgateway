@@ -1,5 +1,11 @@
 import { getTableRows } from "./sharedUtilities";
 
+function selectTab(tabText) {
+    cy.get("[data-testid=patient-details-tabs]")
+        .contains(".mud-tab", tabText)
+        .click();
+}
+
 export function performSearch(queryType, queryString) {
     cy.get("[data-testid=query-type-select]").click({ force: true });
     cy.get("[data-testid=query-type]")
@@ -23,14 +29,15 @@ export function verifySearchInput(queryType, queryString) {
 
 export function verifySingleSupportResult(expectedHdid, expectedPhn) {
     cy.get("[data-testid=user-table]").should("not.exist");
+    cy.get("[data-testid=patient-phn]")
+        .should("be.visible")
+        .contains(expectedPhn);
     if (expectedHdid) {
+        selectTab("Account");
         cy.get("[data-testid=patient-hdid]")
             .should("be.visible")
             .contains(expectedHdid);
     }
-    cy.get("[data-testid=patient-phn]")
-        .should("be.visible")
-        .contains(expectedPhn);
     cy.get("[data-testid=patient-details-back-button]")
         .should("be.visible")
         .click();
