@@ -73,7 +73,7 @@ namespace HealthGateway.Admin.Client.Components.Details
 
         private bool CanViewMessagingVerifications => this.UserHasRole(Roles.Admin) || this.UserHasRole(Roles.Reviewer);
 
-        private bool IsGatewayUser => this.Patient?.Status == PatientStatus.Default;
+        private bool IsDefaultPatientStatus => this.Patient?.Status == PatientStatus.Default;
 
         /// <inheritdoc/>
         protected override async Task OnInitializedAsync()
