@@ -25,20 +25,29 @@
         </MudItem>
     </MudGrid>
 
-    if (CanViewCovidDetails && !ImmunizationsAreBlocked)
-    {
-        <MudText Class="mb-4 mt-6" Typo="Typo.h6">
-            Covid-19 Section
-        </MudText>
-        <Covid19ImmunizationSection Phn="@Patient.PersonalHealthNumber" Data="@VaccineDetails" IsLoading="@PatientSupportDetailsLoading" MailAddress="@MailAddress" />
+    <MudExpansionPanels Class="mt-6">
+        <MudProgressLinear Class="rounding-t overlow-hidden" hidden="@(!PatientSupportDetailsLoading)" Color="Color.Primary" Indeterminate="true"></MudProgressLinear>
+        <MudExpansionPanel>
+            <TitleContent>
+                <MudText Typo="Typo.h6" data-testid="profile-covid19-section-title">
+                    COVID-19 Section
+                </MudText>
+            </TitleContent>
+            <ChildContent>
+                @if (CanViewCovidDetails && !ImmunizationsAreBlocked)
+                {
+                    <Covid19ImmunizationSection Phn="@Patient.PersonalHealthNumber" Data="@VaccineDetails" IsLoading="@PatientSupportDetailsLoading" MailAddress="@MailAddress" />
 
-        <Covid19AssessmentSection Data="@AssessmentDetails" IsLoading="@PatientSupportDetailsLoading" AssessmentPagePath="@Covid19TreatmentAssessmentPath" />
-    }
+                    <Covid19AssessmentSection Data="@AssessmentDetails" IsLoading="@PatientSupportDetailsLoading" AssessmentPagePath="@Covid19TreatmentAssessmentPath" />
+                }
 
-    if (ImmunizationsAreBlocked)
-    {
-        <MudAlert data-testid="blocked-immunization-alert" Severity="Severity.Error" Dense="true" Outlined="true" Class="alert-background-color mt-4">
-            Unable to retrieve vaccine records for this individual.
-        </MudAlert>
-    }
+                @if (ImmunizationsAreBlocked)
+                {
+                    <MudAlert data-testid="blocked-immunization-alert" Severity="Severity.Error" Dense="true" Outlined="true" Class="alert-background-color mt-4">
+                        Unable to retrieve vaccine records for this individual.
+                    </MudAlert>
+                }
+            </ChildContent>
+        </MudExpansionPanel>
+    </MudExpansionPanels>
 }
