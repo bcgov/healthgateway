@@ -193,6 +193,7 @@ function downloadImage(): void {
             text: Text.Document,
             type: Type.PublicCovid19ProofOfVaccination,
             format: Format.Image,
+            actor: Actor.User,
         });
 
         html2canvas(printingArea, {
