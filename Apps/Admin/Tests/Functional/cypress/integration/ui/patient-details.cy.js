@@ -15,6 +15,12 @@ const auditReasonInput = "Test block reason";
 const auditReasonFeedback =
     "Response status code does not indicate success: 400 (Bad Request).";
 
+function selectTab(tabText) {
+    cy.get("[data-testid=patient-details-tabs]")
+        .contains(".mud-tab", tabText)
+        .click();
+}
+
 describe("Patient details as admin", () => {
     beforeEach(() => {
         // PHN with results
@@ -90,14 +96,19 @@ describe("Patient details as admin", () => {
     it("Verify patient details", () => {
         performSearch("PHN", phn);
 
+        selectTab("Profile");
+
         cy.get("[data-testid=patient-name]").should("be.visible");
         cy.get("[data-testid=patient-dob]").should("be.visible");
         cy.get("[data-testid=patient-phn]").should("be.visible");
+        cy.get("[data-testid=patient-physical-address]").should("be.visible");
+        cy.get("[data-testid=patient-mailing-address]").should("be.visible");
+
+        selectTab("Account");
+
         cy.get("[data-testid=patient-hdid]")
             .should("be.visible")
             .contains(hdid);
-        cy.get("[data-testid=patient-physical-address]").should("be.visible");
-        cy.get("[data-testid=patient-mailing-address]").should("be.visible");
         cy.get("[data-testid=profile-created-datetime]").should("be.visible");
         cy.get("[data-testid=profile-last-login-datetime]").should(
             "be.visible"
@@ -111,15 +122,19 @@ describe("Patient details as admin", () => {
     it("Verify patient deceased", () => {
         performSearch("PHN", phnPatientDeceased);
 
+        selectTab("Profile");
+
         cy.get("[data-testid=patient-name]").should("be.visible");
         cy.get("[data-testid=patient-dob]").should("be.visible");
         cy.get("[data-testid=patient-phn]").should("be.visible");
-        cy.get("[data-testid=patient-hdid]")
-            .should("be.visible")
-            .contains(hdidPatientDeceased);
         cy.get("[data-testid=patient-physical-address]").should("be.visible");
         cy.get("[data-testid=patient-mailing-address]").should("be.visible");
 
+        selectTab("Account");
+
+        cy.get("[data-testid=patient-hdid]")
+            .should("be.visible")
+            .contains(hdidPatientDeceased);
         cy.get("[data-testid=profile-created-datetime]").should("not.exist");
         cy.get("[data-testid=profile-last-login-datetime]").should("not.exist");
         cy.get("[data-testid=messaging-verification-table]").should(
@@ -135,14 +150,19 @@ describe("Patient details as admin", () => {
     it("Verify patient not a user", () => {
         performSearch("PHN", phnPatientNotUser);
 
+        selectTab("Profile");
+
         cy.get("[data-testid=patient-name]").should("be.visible");
         cy.get("[data-testid=patient-dob]").should("be.visible");
         cy.get("[data-testid=patient-phn]").should("be.visible");
+        cy.get("[data-testid=patient-physical-address]").should("be.visible");
+        cy.get("[data-testid=patient-mailing-address]").should("be.visible");
+
+        selectTab("Account");
+
         cy.get("[data-testid=patient-hdid]")
             .should("be.visible")
             .contains(hdidPatientNotUser);
-        cy.get("[data-testid=patient-physical-address]").should("be.visible");
-        cy.get("[data-testid=patient-mailing-address]").should("be.visible");
 
         cy.get("[data-testid=profile-created-datetime]").should("not.exist");
         cy.get("[data-testid=profile-last-login-datetime]").should("not.exist");
@@ -159,9 +179,13 @@ describe("Patient details as admin", () => {
     it("Verify block access modal handles 400 error", () => {
         performSearch("PHN", phn);
 
+        selectTab("Account");
+
         cy.get("[data-testid=patient-hdid]")
             .should("be.visible")
             .contains(hdid);
+
+        selectTab("Manage");
 
         cy.get("[data-testid=block-access-loader]").should("not.be.visible");
 

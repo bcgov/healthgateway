@@ -3,11 +3,19 @@
 
 @if (Patient != null)
 {
-    @if (IsGatewayUser)
+    <MudText Class="mb-4 mt-6" Typo="Typo.h6">
+        Account Details
+    </MudText>
+    @if (CanViewHdid)
     {
-        <MudText Class="mb-4 mt-6" Typo="Typo.h6">
-            User Details
-        </MudText>
+        <MudGrid Spacing="2">
+            <MudItem xs="12">
+                <HgField Label="HDID" Value="@Patient.Hdid" data-testid="patient-hdid" />
+            </MudItem>
+        </MudGrid>
+    }
+    @if (IsDefaultPatientStatus)
+    {
         <MudGrid Spacing="2">
             <MudItem xs="12" lg="6">
                 <HgField Label="Account Created" Value="@ProfileCreatedDateTime.ToString()" data-testid="profile-created-datetime" />
@@ -15,12 +23,6 @@
             <MudItem xs="12" lg="6">
                 <HgField Label="Last Login" Value="@ProfileLastLoginDateTime.ToString()" data-testid="profile-last-login-datetime" />
             </MudItem>
-            @if (CanViewHdid)
-            {
-                <MudItem xs="12">
-                    <HgField Label="HDID" Value="@Patient.Hdid" data-testid="patient-hdid" />
-                </MudItem>
-            }
         </MudGrid>
     }
     else
@@ -30,8 +32,7 @@
         </MudText>
     }
 }
-
-@if (CanViewMessagingVerifications && IsGatewayUser)
+@if (CanViewMessagingVerifications && IsDefaultPatientStatus)
 {
     <MessageVerificationTable Data="@MessagingVerifications" IsLoading="@PatientSupportDetailsLoading" />
 }
