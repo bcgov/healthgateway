@@ -19,7 +19,7 @@
     <MudItem xs="12" lg="12">
         <MudPaper Class="my-2 pa-4 d-flex justify-end" Elevation="0">
             <HgButton
-                Loading="@(RegisteredUsersLoading || LoggedInUsersLoading || DependentsLoading || UserCountsLoading || RatingSummaryLoading || YearOfBirthCountsLoading)"
+                Loading="@(DailyUserRegistrationCountsLoading || DailyDependentRegistrationCountsLoading || DailyUniqueLoginCountsLoading || RecurringUserCountLoading || AppLoginCountsLoading || RatingsSummaryLoading || YearOfBirthCountsLoading)"
                 EndIcon="fas fa-arrow-rotate-right"
                 OnClick="RefreshData"
                 data-testid="refresh-btn">
@@ -29,7 +29,7 @@
     </MudItem>
 </MudGrid>
 
-@if (RegisteredUsersLoading || DependentsLoading)
+@if (DailyUserRegistrationCountsLoading || DailyDependentRegistrationCountsLoading)
 {
     <MudGrid>
         <MudItem xs="6" lg="6">
@@ -72,7 +72,7 @@ else
     </MudGrid>
 }
 
-@if (RegisteredUsersLoading || LoggedInUsersLoading || DependentsLoading || UserCountsLoading || YearOfBirthCountsLoading)
+@if (DailyUserRegistrationCountsLoading || DailyUniqueLoginCountsLoading || DailyDependentRegistrationCountsLoading || RecurringUserCountLoading || AppLoginCountsLoading || YearOfBirthCountsLoading)
 {
     <MudGrid Class="my-3">
         <MudItem xs="6" lg="3">
@@ -95,7 +95,7 @@ else
     </MudGrid>
 }
 
-@if (UserCountsLoading)
+@if (RecurringUserCountLoading || AppLoginCountsLoading)
 {
     <MudSkeleton Width="20%" />
     <MudGrid Class="my-3">
@@ -151,7 +151,7 @@ else
                     Mobile Logins
                 </MudText>
                 <MudText Align="Align.Center" Typo="Typo.subtitle1" data-testid="total-mobile-users">
-                    @MobileUserCount
+                    @AppLoginCounts.Mobile
                 </MudText>
             </MudPaper>
         </MudItem>
@@ -161,14 +161,14 @@ else
                     Web Logins
                 </MudText>
                 <MudText Align="Align.Center" Typo="Typo.subtitle1" data-testid="total-web-users">
-                    @WebUserCount
+                    @AppLoginCounts.Web
                 </MudText>
             </MudPaper>
         </MudItem>
     </MudGrid>
 }
 
-@if (RatingSummaryLoading)
+@if (RatingsSummaryLoading)
 {
     <MudSkeleton Width="20%" />
     <MudSkeleton data-testid="skeleton-rating-summary" SkeletonType="SkeletonType.Rectangle" Width="500px" Height="350px" />
@@ -213,7 +213,7 @@ else if (YearOfBirthCountsErrorMessage.Length == 0)
             Daily Data
         </MudText>
         <MudTable Class="mt-3"
-                  Loading="@(RegisteredUsersLoading || LoggedInUsersLoading || DependentsLoading)"
+                  Loading="@(DailyUserRegistrationCountsLoading || DailyUniqueLoginCountsLoading || DailyDependentRegistrationCountsLoading)"
                   Items="@TableData"
                   AllowUnsorted="false"
                   HorizontalScrollbar="true"
@@ -223,32 +223,32 @@ else if (YearOfBirthCountsErrorMessage.Length == 0)
                   data-testid="daily-data-table">
             <HeaderContent>
                 <MudTh>
-                    <MudTableSortLabel SortBy="new Func<DailyDataRow, object>(x => x.DailyDateTime)"
+                    <MudTableSortLabel SortBy="new Func<DailyDataRow, object>(x => x.Date)"
                                        InitialDirection="@SortDirection.Descending">
                         Date
                     </MudTableSortLabel>
                 </MudTh>
                 <MudTh>
-                    <MudTableSortLabel SortBy="new Func<DailyDataRow, object>(x => x.TotalRegisteredUsers)">
+                    <MudTableSortLabel SortBy="new Func<DailyDataRow, object>(x => x.UserRegistrations)">
                         Registered
                     </MudTableSortLabel>
                 </MudTh>
                 <MudTh>
-                    <MudTableSortLabel SortBy="new Func<DailyDataRow, object>(x => x.TotalLoggedInUsers)">
+                    <MudTableSortLabel SortBy="new Func<DailyDataRow, object>(x => x.UniqueLogins)">
                         Logged In
                     </MudTableSortLabel>
                 </MudTh>
                 <MudTh>
-                    <MudTableSortLabel SortBy="new Func<DailyDataRow, object>(x => x.TotalDependents)">
+                    <MudTableSortLabel SortBy="new Func<DailyDataRow, object>(x => x.DependentRegistrations)">
                         Dependents
                     </MudTableSortLabel>
                 </MudTh>
             </HeaderContent>
             <RowTemplate>
-                <MudTd data-testid="daily-data-date" DataLabel="Date">@context.DailyDateTime.ToString("yyyy-MM-dd")</MudTd>
-                <MudTd data-testid="daily-data-total-registered-users" DataLabel="Registered">@context.TotalRegisteredUsers</MudTd>
-                <MudTd data-testid="daily-data-total-logged-in-users" DataLabel="Logged In">@context.TotalLoggedInUsers</MudTd>
-                <MudTd data-testid="daily-data-dependents" DataLabel="Dependents">@context.TotalDependents</MudTd>
+                <MudTd data-testid="daily-data-date" DataLabel="Date">@context.Date.ToString("yyyy-MM-dd")</MudTd>
+                <MudTd data-testid="daily-data-total-registered-users" DataLabel="Registered">@context.UserRegistrations</MudTd>
+                <MudTd data-testid="daily-data-total-logged-in-users" DataLabel="Logged In">@context.UniqueLogins</MudTd>
+                <MudTd data-testid="daily-data-dependents" DataLabel="Dependents">@context.DependentRegistrations</MudTd>
             </RowTemplate>
             <PagerContent>
                 <MudTablePager PageSizeOptions="new[]{10, 25, 50, 100, 200}" />
