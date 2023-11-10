@@ -3,6 +3,7 @@ export const SERVICE_IDENTIFIER = {
     AuthenticationService: Symbol.for("AuthService"),
     SupportService: Symbol.for("SupportService"),
     CovidSupportService: Symbol.for("CovidSupportService"),
+    TrackingService: Symbol.for("TrackingService"),
 };
 
 export const DELEGATE_IDENTIFIER = {

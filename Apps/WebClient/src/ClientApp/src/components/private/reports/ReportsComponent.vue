@@ -27,14 +27,15 @@ import ReportHeader from "@/models/reportHeader";
 import { ReportFormatType, reportMimeTypeMap } from "@/models/reportRequest";
 import RequestResult from "@/models/requestResult";
 import SelectOption from "@/models/selectOption";
-import { ILogger } from "@/services/interfaces";
+import { Action, Actor, Text } from "@/plugins/extensions";
+import { ILogger, ITrackingService } from "@/services/interfaces";
 import { useErrorStore } from "@/stores/error";
 import { useLabResultStore } from "@/stores/labResult";
 import { useMedicationStore } from "@/stores/medication";
 import { useReportStore } from "@/stores/report";
 import { useUserStore } from "@/stores/user";
 import ConfigUtil from "@/utility/configUtil";
-import EventTracker from "@/utility/eventTracker";
+import EventDataUtility from "@/utility/eventDataUtility";
 
 interface Props {
     hdid: string;
@@ -56,6 +57,9 @@ const reportComponentMap = new Map<EntryType, unknown>([
 ]);
 
 const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+const trackingService = container.get<ITrackingService>(
+    SERVICE_IDENTIFIER.TrackingService
+);
 const medicationStore = useMedicationStore();
 const userStore = useUserStore();
 const labResultsStore = useLabResultStore();
@@ -239,17 +243,13 @@ function downloadReport(): void {
 }
 
 function trackDownload(): void {
-    let reportEventName =
-        entryTypeMap.get(selectedEntryType.value)?.reportEventName ?? "";
-
-    const formatTypeName = ReportFormatType[reportFormatType.value];
-    const eventName = `${reportEventName} (${formatTypeName})`;
-
-    if (!props.isDependent) {
-        EventTracker.downloadReport(eventName);
-    } else {
-        EventTracker.downloadReport(`Dependent_${eventName}`);
-    }
+    trackingService.trackEvent({
+        action: Action.Download,
+        text: Text.Export,
+        dataset: EventDataUtility.getDataset(selectedEntryType.value),
+        format: EventDataUtility.getFormat(reportFormatType.value),
+        actor: props.isDependent ? Actor.Guardian : Actor.User,
+    });
 }
 
 function replaceSpaceWithDash(source: string): string {

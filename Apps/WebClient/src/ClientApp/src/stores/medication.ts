@@ -2,7 +2,6 @@
 import { ref } from "vue";
 
 import { ActionType } from "@/constants/actionType";
-import { EntryType } from "@/constants/entryType";
 import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import { ResultType } from "@/constants/resulttype";
 import { container } from "@/ioc/container";
@@ -12,10 +11,14 @@ import { ResultError } from "@/models/errors";
 import MedicationStatementHistory from "@/models/medicationStatementHistory";
 import RequestResult from "@/models/requestResult";
 import { LoadStatus } from "@/models/storeOperations";
-import { ILogger, IMedicationService } from "@/services/interfaces";
+import { Action, Dataset, Text } from "@/plugins/extensions";
+import {
+    ILogger,
+    IMedicationService,
+    ITrackingService,
+} from "@/services/interfaces";
 import { useErrorStore } from "@/stores/error";
 import { DatasetMapUtils } from "@/stores/utils/DatasetMapUtils";
-import EventTracker from "@/utility/eventTracker";
 
 const defaultMedicationState: MedicationState = {
     data: [],
@@ -123,6 +126,9 @@ export const useMedicationStore = defineStore("medication", () => {
         hdid: string,
         protectiveWord?: string
     ): Promise<RequestResult<MedicationStatementHistory[]>> {
+        const trackingService = container.get<ITrackingService>(
+            SERVICE_IDENTIFIER.TrackingService
+        );
         if (getMedicationState(hdid).status === LoadStatus.LOADED) {
             logger.debug("Medications found stored, not querying!");
             const medicationsData: MedicationStatementHistory[] =
@@ -145,11 +151,15 @@ export const useMedicationStore = defineStore("medication", () => {
                     throw result.resultError;
                 }
 
-                if (result.resultStatus === ResultType.Success) {
-                    EventTracker.loadData(
-                        EntryType.Medication,
-                        result.resourcePayload.length
-                    );
+                if (
+                    result.resultStatus === ResultType.Success &&
+                    result.resourcePayload.length > 0
+                ) {
+                    trackingService.trackEvent({
+                        action: Action.Load,
+                        text: Text.Data,
+                        dataset: Dataset.Medications,
+                    });
                 }
                 setMedications(hdid, result);
                 return result;
