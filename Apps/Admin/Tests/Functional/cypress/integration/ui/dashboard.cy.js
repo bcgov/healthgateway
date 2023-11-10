@@ -12,8 +12,9 @@ function getPastDate(daysAgo) {
     // resetting the hours to 0 will fix this, since the day boundary hasn't been crossed
     date.setUTCHours(0);
 
-    cy.log(`"${daysAgo} days ago" was ${date.toISOString()}`);
-    return date.toISOString();
+    const dateString = date.toISOString().substring(0, 10);
+    cy.log(`"${daysAgo} days ago" was ${dateString}`);
+    return dateString;
 }
 
 describe("Dashboard", () => {
@@ -51,11 +52,14 @@ describe("Dashboard", () => {
         });
 
         // matches [data-testid=total-unique-users]
-        cy.intercept("GET", "**/Dashboard/RecurringUserCounts?days=3*", {
+        cy.intercept("GET", "**/Dashboard/RecurringUserCount?days=3*", {
+            body: 2,
+        });
+
+        cy.intercept("GET", "**/Dashboard/AppLoginCounts*", {
             body: {
                 Mobile: 1,
                 Web: 4,
-                RecurringUserCount: 2,
             },
         });
 
@@ -95,24 +99,16 @@ describe("Dashboard", () => {
             });
 
         cy.log("Change value in unique days input field.");
-        cy.intercept("GET", "**/Dashboard/RecurringUserCounts?days=5*", {
-            body: {
-                Mobile: 0,
-                Web: 0,
-                RecurringUserCount: 0,
-            },
+        cy.intercept("GET", "**/Dashboard/RecurringUserCount?days=5*", {
+            body: 0,
         });
         cy.log("Updating unique days input value.");
         cy.get("[data-testid=unique-days-input]").clear().type(5);
         cy.get("[data-testid=total-unique-users]").click();
         cy.get("[data-testid=total-unique-users]").contains(0);
 
-        cy.intercept("GET", "**/Dashboard/RecurringUserCounts?days=2*", {
-            body: {
-                Mobile: 0,
-                Web: 0,
-                RecurringUserCount: 3,
-            },
+        cy.intercept("GET", "**/Dashboard/RecurringUserCount?days=2*", {
+            body: 3,
         });
         cy.log("Updating unique days input value.");
         cy.get("[data-testid=unique-days-input]").clear().type(2);
@@ -149,11 +145,14 @@ describe("Dashboard", () => {
             fixture: "DashboardService/summary-refresh.json",
         });
 
-        cy.intercept("GET", "**/Dashboard/RecurringUserCounts?days=2*", {
+        cy.intercept("GET", "**/Dashboard/RecurringUserCount?days=2*", {
+            body: 10,
+        });
+
+        cy.intercept("GET", "**/Dashboard/AppLoginCounts*", {
             body: {
                 Mobile: 0,
                 Web: 0,
-                RecurringUserCount: 10,
             },
         });
 
