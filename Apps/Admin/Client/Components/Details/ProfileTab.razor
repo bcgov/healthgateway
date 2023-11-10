@@ -1,6 +1,4 @@
-﻿@using HealthGateway.Common.Data.Utils
-@using HealthGateway.Admin.Client.Components.Support
-@inherits Fluxor.Blazor.Web.Components.FluxorComponent
+﻿@inherits Fluxor.Blazor.Web.Components.FluxorComponent
 
 @if (Patient != null)
 {
@@ -25,29 +23,32 @@
         </MudItem>
     </MudGrid>
 
-    <MudExpansionPanels Class="mt-6">
-        <MudProgressLinear Class="rounding-t overlow-hidden" hidden="@(!PatientSupportDetailsLoading)" Color="Color.Primary" Indeterminate="true"></MudProgressLinear>
-        <MudExpansionPanel>
-            <TitleContent>
-                <MudText Typo="Typo.h6" data-testid="profile-covid19-section-title">
-                    COVID-19 Section
-                </MudText>
-            </TitleContent>
-            <ChildContent>
-                @if (CanViewCovidDetails && !ImmunizationsAreBlocked)
-                {
-                    <Covid19ImmunizationSection Phn="@Patient.PersonalHealthNumber" Data="@VaccineDetails" IsLoading="@PatientSupportDetailsLoading" MailAddress="@MailAddress" />
+    if (CanViewCovidDetails)
+    {
+        <MudExpansionPanels Class="mt-6">
+            <MudProgressLinear Class="rounding-t overlow-hidden" hidden="@(!PatientSupportDetailsLoading)" Color="Color.Primary" Indeterminate="true"></MudProgressLinear>
+            <MudExpansionPanel>
+                <TitleContent>
+                    <MudText Typo="Typo.h6" data-testid="profile-covid19-section-title">
+                        COVID-19 Section
+                    </MudText>
+                </TitleContent>
+                <ChildContent>
+                    @if (!ImmunizationsAreBlocked)
+                    {
+                        <Covid19ImmunizationSection Phn="@Patient.PersonalHealthNumber" Data="@VaccineDetails" IsLoading="@PatientSupportDetailsLoading" MailAddress="@MailAddress" />
 
-                    <Covid19AssessmentSection Data="@AssessmentDetails" IsLoading="@PatientSupportDetailsLoading" AssessmentPagePath="@Covid19TreatmentAssessmentPath" />
-                }
+                        <Covid19AssessmentSection Data="@AssessmentDetails" IsLoading="@PatientSupportDetailsLoading" AssessmentPagePath="@Covid19TreatmentAssessmentPath" />
+                    }
 
-                @if (ImmunizationsAreBlocked)
-                {
-                    <MudAlert data-testid="blocked-immunization-alert" Severity="Severity.Error" Dense="true" Outlined="true" Class="alert-background-color mt-4">
-                        Unable to retrieve vaccine records for this individual.
-                    </MudAlert>
-                }
-            </ChildContent>
-        </MudExpansionPanel>
-    </MudExpansionPanels>
+                    @if (ImmunizationsAreBlocked)
+                    {
+                        <MudAlert data-testid="blocked-immunization-alert" Severity="Severity.Error" Dense="true" Outlined="true" Class="alert-background-color mt-4">
+                            Unable to retrieve vaccine records for this individual.
+                        </MudAlert>
+                    }
+                </ChildContent>
+            </MudExpansionPanel>
+        </MudExpansionPanels>
+    }
 }
