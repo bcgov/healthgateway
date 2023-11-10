@@ -11,10 +11,10 @@ import { container } from "@/ioc/container";
 import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
 import { PatientDataFile } from "@/models/patientDataResponse";
 import DiagnosticImagingTimelineEntry from "@/models/timeline/diagnosticImagingTimelineEntry";
-import { ILogger } from "@/services/interfaces";
+import { Action, Actor, Dataset, Format, Text } from "@/plugins/extensions";
+import { ILogger, ITrackingService } from "@/services/interfaces";
 import { usePatientDataStore } from "@/stores/patientData";
 import { useTimelineStore } from "@/stores/timeline";
-import SnowPlow from "@/utility/snowPlow";
 
 interface Props {
     hdid: string;
@@ -30,6 +30,9 @@ const props = withDefaults(defineProps<Props>(), {
 });
 
 const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+const trackingService = container.get<ITrackingService>(
+    SERVICE_IDENTIFIER.TrackingService
+);
 const patientDataStore = usePatientDataStore();
 const timelineStore = useTimelineStore();
 
@@ -53,9 +56,12 @@ function showConfirmationModal(): void {
 
 function downloadFile(): void {
     if (props.entry.fileId) {
-        SnowPlow.trackEvent({
-            action: "download_report",
-            text: "Diagnostic Imaging PDF",
+        trackingService.trackEvent({
+            action: Action.Download,
+            text: Text.Document,
+            dataset: Dataset.ImagingReports,
+            format: Format.Pdf,
+            actor: Actor.User,
         });
         const dateString = props.entry.date.format("yyyy_MM_dd-HH_mm");
         patientDataStore

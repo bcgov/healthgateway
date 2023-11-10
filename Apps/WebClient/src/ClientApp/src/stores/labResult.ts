@@ -2,7 +2,6 @@
 import { ref } from "vue";
 
 import { ActionType } from "@/constants/actionType";
-import { EntryType } from "@/constants/entryType";
 import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import { ResultType } from "@/constants/resulttype";
 import { container } from "@/ioc/container";
@@ -12,10 +11,14 @@ import { ResultError } from "@/models/errors";
 import { LaboratoryOrder, LaboratoryOrderResult } from "@/models/laboratory";
 import RequestResult from "@/models/requestResult";
 import { LoadStatus } from "@/models/storeOperations";
-import { ILaboratoryService, ILogger } from "@/services/interfaces";
+import { Action, Dataset, Text } from "@/plugins/extensions";
+import {
+    ILaboratoryService,
+    ILogger,
+    ITrackingService,
+} from "@/services/interfaces";
 import { useErrorStore } from "@/stores/error";
 import { DatasetMapUtils } from "@/stores/utils/DatasetMapUtils";
-import EventTracker from "@/utility/eventTracker";
 
 export const defaultLabResultState: LabResultState = {
     data: [],
@@ -108,6 +111,9 @@ export const useLabResultStore = defineStore("labResult", () => {
     function retrieveLabResults(
         hdid: string
     ): Promise<RequestResult<LaboratoryOrderResult>> {
+        const trackingService = container.get<ITrackingService>(
+            SERVICE_IDENTIFIER.TrackingService
+        );
         if (getLabResultState(hdid).status === LoadStatus.LOADED) {
             logger.debug("Lab results found stored, not querying!");
             return Promise.resolve({
@@ -128,10 +134,13 @@ export const useLabResultStore = defineStore("labResult", () => {
         return laboratoryService
             .getLaboratoryOrders(hdid)
             .then((result) => {
-                EventTracker.loadData(
-                    EntryType.LabResult,
-                    result.resourcePayload.orders.length
-                );
+                if (result.resourcePayload.orders.length > 0) {
+                    trackingService.trackEvent({
+                        action: Action.Load,
+                        text: Text.Data,
+                        dataset: Dataset.LabResults,
+                    });
+                }
                 const payload = result.resourcePayload;
                 if (
                     result.resultStatus === ResultType.Success &&

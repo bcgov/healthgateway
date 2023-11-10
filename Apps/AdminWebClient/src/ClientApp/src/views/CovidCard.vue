@@ -24,12 +24,12 @@ import type BannerFeedback from "@/models/bannerFeedback";
 import type CovidCardPatientResult from "@/models/covidCardPatientResult";
 import CovidTreatmentAssessmentDetails from "@/models/covidTreatmentAssessmentDetails";
 import { DateWrapper, StringISODate } from "@/models/dateWrapper";
+import { Action, Text, Type } from "@/plugins/extensions";
 import { SERVICE_IDENTIFIER } from "@/plugins/inversify";
 import container from "@/plugins/inversify.config";
-import { ICovidSupportService } from "@/services/interfaces";
+import { ICovidSupportService, ITrackingService } from "@/services/interfaces";
 import { Mask, phnMaskTemplate } from "@/utility/masks";
 import PHNValidator from "@/utility/phnValidator";
-import SnowPlow from "@/utility/snowPlow";
 
 library.add(faEye, faEyeSlash, faClipboardList);
 
@@ -80,6 +80,7 @@ export default class CovidCardView extends Vue {
     private assessmentHistory: AssessmentHistoryRow[] = [];
     private maskHdid = true;
     private covidSupportService!: ICovidSupportService;
+    private trackingService!: ITrackingService;
 
     private bannerFeedback: BannerFeedback = {
         type: FeedbackType.NONE,
@@ -137,6 +138,9 @@ export default class CovidCardView extends Vue {
     private mounted() {
         this.covidSupportService = container.get(
             SERVICE_IDENTIFIER.CovidSupportService
+        );
+        this.trackingService = container.get(
+            SERVICE_IDENTIFIER.TrackingService
         );
     }
 
@@ -287,9 +291,10 @@ export default class CovidCardView extends Vue {
                 this.$refs.observer as Vue & { validate: () => boolean }
             ).validate();
             if (isValid) {
-                SnowPlow.trackEvent({
-                    action: "click_button",
-                    text: "mail proof",
+                this.trackingService.trackEvent({
+                    action: Action.Mail,
+                    text: Text.Document,
+                    type: Type.Covid19ProofOfVaccination,
                 });
 
                 // retrieve the country name for the given country code
@@ -347,9 +352,10 @@ export default class CovidCardView extends Vue {
     }
 
     private handlePrint() {
-        SnowPlow.trackEvent({
-            action: "click_button",
-            text: "print proof",
+        this.trackingService.trackEvent({
+            action: Action.Print,
+            text: Text.Document,
+            type: Type.Covid19ProofOfVaccination,
         });
         this.isLoading = true;
         this.covidSupportService
@@ -462,7 +468,7 @@ export default class CovidCardView extends Vue {
                 showCovidTreatmentAssessment
             "
             :details="assessmentDetails"
-            :patient="searchResult.patient"
+            :patient="searchResult?.patient"
             :default-address="address"
             @on-cancel="covidTreatmentAssessmentCancelled"
             @on-submit="covidTreatmentAssessmentSubmitted"

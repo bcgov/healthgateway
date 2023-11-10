@@ -14,10 +14,14 @@ import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
 import { DateWrapper } from "@/models/dateWrapper";
 import { ResultError } from "@/models/errors";
 import Covid19TestResultTimelineEntry from "@/models/timeline/covid19TestResultTimelineEntry";
-import { ILaboratoryService, ILogger } from "@/services/interfaces";
+import { Action, Actor, Dataset, Format, Text } from "@/plugins/extensions";
+import {
+    ILaboratoryService,
+    ILogger,
+    ITrackingService,
+} from "@/services/interfaces";
 import { useErrorStore } from "@/stores/error";
 import { useTimelineStore } from "@/stores/timeline";
-import SnowPlow from "@/utility/snowPlow";
 
 interface Props {
     hdid: string;
@@ -35,6 +39,9 @@ const props = withDefaults(defineProps<Props>(), {
 const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
 const laboratoryService = container.get<ILaboratoryService>(
     SERVICE_IDENTIFIER.LaboratoryService
+);
+const trackingService = container.get<ITrackingService>(
+    SERVICE_IDENTIFIER.TrackingService
 );
 const errorStore = useErrorStore();
 const timelineStore = useTimelineStore();
@@ -69,9 +76,12 @@ function showConfirmationModal(): void {
 }
 
 function getReport(): void {
-    SnowPlow.trackEvent({
-        action: "download_report",
-        text: "COVID Test PDF",
+    trackingService.trackEvent({
+        action: Action.Download,
+        text: Text.Document,
+        dataset: Dataset.Covid19Tests,
+        format: Format.Pdf,
+        actor: Actor.User,
     });
 
     isLoadingDocument.value = true;

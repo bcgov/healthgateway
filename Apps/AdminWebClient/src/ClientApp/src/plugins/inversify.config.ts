@@ -10,11 +10,13 @@ import {
     ICovidSupportService,
     IHttpDelegate,
     ISupportService,
+    ITrackingService,
 } from "@/services/interfaces";
 import { RestAuthenticationService } from "@/services/restAuthenticationService";
 import { RestConfigService } from "@/services/restConfigService";
 import { RestCovidSupportService } from "@/services/restCovidSupportService";
 import { RestSupportService } from "@/services/restSupportService";
+import { RestTrackingService } from "@/services/restTrackingService";
 
 const container = new Container();
 container
@@ -32,6 +34,10 @@ container
 container
     .bind<ICovidSupportService>(SERVICE_IDENTIFIER.CovidSupportService)
     .to(RestCovidSupportService)
+    .inSingletonScope();
+container
+    .bind<ITrackingService>(SERVICE_IDENTIFIER.TrackingService)
+    .to(RestTrackingService)
     .inSingletonScope();
 container
     .bind<IHttpDelegate>(DELEGATE_IDENTIFIER.HttpDelegate)
