@@ -6,7 +6,9 @@ import ErrorTranslator from "@/utility/errorTranslator";
 
 export class RestConfigService implements IConfigService {
     private logger;
-    private readonly CONFIG_BASE_URI: string = import.meta.env.VITE_CONFIG_BASE_URI || "/configuration";
+    private readonly CONFIG_BASE_URI: string = `${
+        import.meta.env.VITE_CONFIG_BASE_URI || ""
+    }/configuration`;
     private http;
 
     constructor(logger: ILogger, httpDelegate: IHttpDelegate) {
