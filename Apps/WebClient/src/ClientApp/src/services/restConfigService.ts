@@ -5,8 +5,8 @@ import { IConfigService, IHttpDelegate, ILogger } from "@/services/interfaces";
 import ErrorTranslator from "@/utility/errorTranslator";
 
 export class RestConfigService implements IConfigService {
-    private readonly CONFIG_BASE_URI: string = "/configuration";
     private logger;
+    private readonly CONFIG_BASE_URI: string = import.meta.env.VITE_CONFIG_BASE_URI || "/configuration";
     private http;
 
     constructor(logger: ILogger, httpDelegate: IHttpDelegate) {
