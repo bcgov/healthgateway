@@ -74,7 +74,6 @@ namespace HealthGateway.Admin.Client.Components.Details
 
         private bool PatientSupportDetailsLoading => this.PatientDetailsState.Value.IsLoading;
 
-
         /// <inheritdoc/>
         protected override async Task OnInitializedAsync()
         {
