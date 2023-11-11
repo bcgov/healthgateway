@@ -68,7 +68,7 @@ namespace HealthGateway.Admin.Client.Components.Details
         private IEnumerable<PreviousAssessmentDetails> AssessmentDetails =>
             this.AssessmentInfo?.PreviousAssessmentDetailsList?.OrderByDescending(a => a.DateTimeOfAssessment) ?? Enumerable.Empty<PreviousAssessmentDetails>();
 
-        private bool CanViewCovidDetails => this.UserHasRole(Roles.Support);
+        private bool CanViewCovidDetails => this.UserHasRole(Roles.Support) || this.UserHasRole(Roles.Admin);
 
         private bool ImmunizationsAreBlocked => this.VaccineDetails?.Blocked ?? false;
 
