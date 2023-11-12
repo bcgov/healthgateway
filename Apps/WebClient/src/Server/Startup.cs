@@ -17,7 +17,6 @@
 namespace HealthGateway.WebClient.Server
 {
     using System;
-    using System.Diagnostics;
     using System.Diagnostics.CodeAnalysis;
     using HealthGateway.Common.AspNetConfiguration;
     using HealthGateway.Common.Utils;
@@ -27,7 +26,6 @@ namespace HealthGateway.WebClient.Server
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.Rewrite;
-    using Microsoft.AspNetCore.SpaServices;
     using Microsoft.AspNetCore.StaticFiles;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
