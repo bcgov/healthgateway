@@ -16,8 +16,12 @@
 namespace HealthGateway.Database.Models
 {
     using System;
+    using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
+    using System.ComponentModel.DataAnnotations.Schema;
+    using System.Diagnostics.CodeAnalysis;
     using System.Text.Json;
+    using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Database.Constants;
 
@@ -66,5 +70,17 @@ namespace HealthGateway.Database.Models
         /// Gets or sets the UserProfile associated with <see cref="ProfileHdid"/>.
         /// </summary>
         public virtual UserProfile UserProfile { get; set; } = null!;
+
+        /// <summary>
+        /// Gets or sets the access for the data sets.
+        /// </summary>
+        [Column(TypeName = "jsonb")]
+        [SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "Team decision")]
+        public HashSet<DataSource>? DataSources { get; set; }
+
+        /// <summary>
+        /// Gets the delegate invitations.
+        /// </summary>
+        public ICollection<DelegateInvitation>? DelegateInvitations { get; } = new List<DelegateInvitation>();
     }
 }

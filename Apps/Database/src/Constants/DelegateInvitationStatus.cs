@@ -18,26 +18,44 @@ namespace HealthGateway.Database.Constants
     using System.Runtime.Serialization;
 
     /// <summary>
-    /// ResourceDelegate Reasons for delegation.
+    /// Invitation status for a DelegateInvitation.
     /// </summary>
-    public enum ResourceDelegateReason
+    public enum DelegateInvitationStatus
     {
         /// <summary>
-        /// Represents a delegation for Covid Laboratory.
+        /// Represents active status for a delegate invitation.
         /// </summary>
-        [EnumMember(Value = "COVIDLab")]
-        CovidLab,
+        [EnumMember(Value = "Active")]
+        Active,
 
         /// <summary>
-        /// Represents a delegation for attested access to youth data.
+        /// Represents access expired status for a delegate invitation.
         /// </summary>
-        [EnumMember(Value = "Guardian")]
-        Guardian,
+        [EnumMember(Value = "AccessExpired")]
+        AccessExpired,
 
         /// <summary>
-        /// Represents a delegation for invited.
+        /// Represents declined status for a delegate invitation.
         /// </summary>
-        [EnumMember(Value = "Invited")]
-        Invited,
+        [EnumMember(Value = "Declined")]
+        Declined,
+
+        /// <summary>
+        /// Represents invite expired status for a delegate invitation.
+        /// </summary>
+        [EnumMember(Value = "InviteExpired")]
+        InviteExpired,
+
+        /// <summary>
+        /// Represents locked status for a delegate invitation.
+        /// </summary>
+        [EnumMember(Value = "Locked")]
+        Locked,
+
+        /// <summary>
+        /// Represents pending status for a delegate invitation.
+        /// </summary>
+        [EnumMember(Value = "Pending")]
+        Pending,
     }
 }

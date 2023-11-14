@@ -13,31 +13,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Database.Constants
+namespace HealthGateway.Database.Models
 {
-    using System.Runtime.Serialization;
+    using System.ComponentModel.DataAnnotations;
+    using HealthGateway.Common.Data.Models;
+    using HealthGateway.Database.Constants;
 
-    /// <summary>
-    /// ResourceDelegate Reasons for delegation.
-    /// </summary>
-    public enum ResourceDelegateReason
+#pragma warning disable CS1591 // self explanatory simple model
+#pragma warning disable SA1600 // self explanatory simple model
+    public class DelegateInvitationStatusCode : AuditableEntity
     {
-        /// <summary>
-        /// Represents a delegation for Covid Laboratory.
-        /// </summary>
-        [EnumMember(Value = "COVIDLab")]
-        CovidLab,
+        [Key]
+        [Required]
+        [MaxLength(50)]
+        public DelegateInvitationStatus Code { get; set; }
 
-        /// <summary>
-        /// Represents a delegation for attested access to youth data.
-        /// </summary>
-        [EnumMember(Value = "Guardian")]
-        Guardian,
-
-        /// <summary>
-        /// Represents a delegation for invited.
-        /// </summary>
-        [EnumMember(Value = "Invited")]
-        Invited,
+        [Required]
+        [MaxLength(50)]
+        public string? Description { get; set; }
     }
 }
