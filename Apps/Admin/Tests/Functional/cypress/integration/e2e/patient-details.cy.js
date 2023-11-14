@@ -1,5 +1,5 @@
 import { performSearch } from "../../utilities/supportUtilities";
-import { getTableRows } from "../../utilities/sharedUtilities";
+import { getTableRows, selectTab } from "../../utilities/sharedUtilities";
 
 const hdid = "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A";
 const phnWithValidDoses = "9042146714";
@@ -9,10 +9,8 @@ const switchName = "Immunization";
 const auditBlockReason = "Test block reason";
 const auditUnblockReason = "Test unblock reason";
 
-function selectTab(tabText) {
-    cy.get("[data-testid=patient-details-tabs]")
-        .contains(".mud-tab", tabText)
-        .click();
+function selectPatientTab(tabText) {
+    selectTab("[data-testid=patient-details-tabs]", tabText);
 }
 
 function validateTabDoesNotExist(tabText) {
@@ -325,7 +323,7 @@ describe("Patient details page as admin user", () => {
     it("Verify message verification", () => {
         performSearch("HDID", hdid);
 
-        selectTab("Profile");
+        selectPatientTab("Profile");
 
         cy.get("[data-testid=patient-name]").should("be.visible");
         cy.get("[data-testid=patient-dob]").should("be.visible");
@@ -333,7 +331,7 @@ describe("Patient details page as admin user", () => {
         cy.get("[data-testid=patient-mailing-address]").should("be.visible");
         cy.get("[data-testid=patient-physical-address]").should("be.visible");
 
-        selectTab("Account");
+        selectPatientTab("Account");
 
         cy.get("[data-testid=patient-hdid]")
             .should("be.visible")
@@ -351,7 +349,7 @@ describe("Patient details page as admin user", () => {
     it("Verify dependent section", () => {
         performSearch("HDID", hdid);
 
-        selectTab("Manage");
+        selectPatientTab("Manage");
 
         getTableRows("[data-testid=dependent-table]")
             .should("have.length.gt", 1)
@@ -372,23 +370,67 @@ describe("Patient details page as admin user", () => {
             });
     });
 
-    it("Verify covid immunization and assessment sections not shown", () => {
+    it("Verify covid immunization section (not blocked), assessment section and contains invalid dose", () => {
         performSearch("PHN", phnWithInvalidDoses);
 
-        selectTab("Profile");
+        selectPatientTab("Profile");
 
         cy.get("[data-testid=patient-phn]")
             .should("be.visible")
             .contains(phnWithInvalidDoses);
+        cy.get("[data-testid=patient-hdid]").should("not.exist");
+
         cy.scrollTo("bottom", { ensureScrollable: false });
-        cy.get("[data-testid=immunization-table]").should("not.exist");
-        cy.get("[data-testid=assessment-history-table]").should("not.exist");
+        getTableRows("[data-testid=immunization-table]").should(
+            "have.length.greaterThan",
+            0
+        );
+        cy.get("[data-testid=invalid-dose-alert").should("be.visible");
+        getTableRows("[data-testid=assessment-history-table]").should(
+            "have.length.greaterThan",
+            0
+        );
+        cy.get("[data-testid=mail-button]").should("be.visible", "be.enabled");
+        cy.get("[data-testid=print-button]").should("be.visible", "be.enabled");
+        cy.get(
+            "[data-testid=start-covid-19-treatment-assessment-button]"
+        ).should("be.visible", "be.enabled");
+
+        validateMailAddressFormCancel();
+        validateMailAddressFormRequiredInputs();
+        validateCovid19TreatmentAssessmentFormBackCancel();
+        validateCovid19TreatmentAssessmentFormRequiredInputs();
+        validateCovid19TreatmentAssessmentInfoMessageForRadioSelection();
+        validateMailAddressFormSubmission();
+        validateCovid19TreatmentAssessmentFormSubmission();
+        validatePrintVaccineCardSubmission();
+    });
+
+    it("Verify covid immunization section (not blocked), assessment section and contains valid dose", () => {
+        performSearch("PHN", phnWithValidDoses);
+
+        selectPatientTab("Profile");
+
+        cy.get("[data-testid=patient-phn]")
+            .should("be.visible")
+            .contains(phnWithValidDoses);
+        cy.get("[data-testid=patient-hdid]").should("not.exist");
+
+        getTableRows("[data-testid=immunization-table]").should(
+            "have.length.greaterThan",
+            0
+        );
+        getTableRows("[data-testid=assessment-history-table]").should(
+            "have.length.greaterThan",
+            0
+        );
+        cy.get("[data-testid=invalid-dose-alert").should("not.exist");
     });
 
     it("Verify block access initial", () => {
         performSearch("HDID", hdid);
 
-        selectTab("Manage");
+        selectPatientTab("Manage");
 
         cy.get("[data-testid=block-access-switches]").should("be.visible");
         cy.get(`[data-testid*="block-access-switch"]`).should(
@@ -402,7 +444,7 @@ describe("Patient details page as admin user", () => {
     it("Verify block access change can be cancelled", () => {
         performSearch("HDID", hdid);
 
-        selectTab("Manage");
+        selectPatientTab("Manage");
 
         cy.get("[data-testid=block-access-loader]").should("not.be.visible");
 
@@ -427,14 +469,14 @@ describe("Patient details page as admin user", () => {
     it("Verify block access can be blocked with audit reason.", () => {
         performSearch("HDID", hdid);
 
-        selectTab("Manage");
+        selectPatientTab("Manage");
 
         cy.get("[data-testid=block-access-loader]").should("not.be.visible");
 
-        selectTab("Notes");
+        selectPatientTab("Notes");
 
         checkAgentAuditHistory().then((presaveCount) => {
-            selectTab("Manage");
+            selectPatientTab("Manage");
 
             cy.get(`[data-testid=block-access-switch-${switchName}]`)
                 .should("exist")
@@ -464,7 +506,7 @@ describe("Patient details page as admin user", () => {
                 "be.checked"
             );
 
-            selectTab("Notes");
+            selectPatientTab("Notes");
 
             // Check agent audit history
             checkAgentAuditHistory().then((postsaveCount) => {
@@ -478,7 +520,7 @@ describe("Patient details page as admin user", () => {
     it("Verify block access can be unblocked with audit reason.", () => {
         performSearch("HDID", hdid);
 
-        selectTab("Manage");
+        selectPatientTab("Manage");
 
         cy.get("[data-testid=block-access-loader]").should("not.be.visible");
 
@@ -486,10 +528,10 @@ describe("Patient details page as admin user", () => {
             "be.checked"
         );
 
-        selectTab("Notes");
+        selectPatientTab("Notes");
 
         checkAgentAuditHistory().then((presaveCount) => {
-            selectTab("Manage");
+            selectPatientTab("Manage");
 
             cy.get(`[data-testid=block-access-switch-${switchName}]`)
                 .should("exist")
@@ -518,7 +560,7 @@ describe("Patient details page as admin user", () => {
                 "not.be.checked"
             );
 
-            selectTab("Notes");
+            selectPatientTab("Notes");
 
             // Check agent audit history
             checkAgentAuditHistory().then((postsaveCount) => {
@@ -543,7 +585,7 @@ describe("Patient details page as reviewer", () => {
     it("Verify block access readonly", () => {
         performSearch("HDID", hdid);
 
-        selectTab("Manage");
+        selectPatientTab("Manage");
 
         cy.get(`[data-testid*="block-access-switch-"]`).each(($el) => {
             // follow the mud tag structure to find the mud-readonly class
@@ -572,7 +614,7 @@ describe("Patient Details as Support", () => {
     it("Verify covid immunization section (not blocked), assessment section and contains invalid dose", () => {
         performSearch("PHN", phnWithInvalidDoses);
 
-        selectTab("Profile");
+        selectPatientTab("Profile");
         validateTabDoesNotExist("Account");
         validateTabDoesNotExist("Manage");
         validateTabDoesNotExist("Notes");
@@ -611,7 +653,7 @@ describe("Patient Details as Support", () => {
     it("Verify covid immunization section (not blocked), assessment section and contains valid dose", () => {
         performSearch("PHN", phnWithValidDoses);
 
-        selectTab("Profile");
+        selectPatientTab("Profile");
         validateTabDoesNotExist("Account");
         validateTabDoesNotExist("Manage");
         validateTabDoesNotExist("Notes");
@@ -635,7 +677,7 @@ describe("Patient Details as Support", () => {
     it("Verify covid immunization and assessment sections blocked", () => {
         performSearch("PHN", phnWithBlockedImmunizations);
 
-        selectTab("Profile");
+        selectPatientTab("Profile");
         validateTabDoesNotExist("Account");
         validateTabDoesNotExist("Manage");
         validateTabDoesNotExist("Notes");
@@ -655,7 +697,7 @@ describe("Patient Details as Support", () => {
     it("Verify dependent section not shown", () => {
         performSearch("PHN", phnWithValidDoses);
 
-        selectTab("Profile");
+        selectPatientTab("Profile");
         validateTabDoesNotExist("Account");
         validateTabDoesNotExist("Manage");
         validateTabDoesNotExist("Notes");
