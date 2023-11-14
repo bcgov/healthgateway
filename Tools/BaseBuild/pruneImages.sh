@@ -18,21 +18,21 @@ echo "OpenShift Imagestream data will be temporarily saved to $file"
 echo
 
 #The set of imagestreams to clean old builds from
-imageStreams=("adminwebclient" "admin" "encounter" "hangfire" "hgcdogs" "immunization" "laboratory" "medication" "odrproxy" "patient" "webclient" "gatewayapi")
+imageStreams=("adminwebclient" "admin" "clinicaldocument" "encounter" "gatewayapi" "hangfire" "hgcdogs" "immunization" "laboratory" "medication" "odrproxy" "offline" "patient" "webclient" "gatewayapi")
 for isName in "${imageStreams[@]}"; do
   echo "Extracting ImageStream information for $isName"
   oc get imagestream $isName -o json > $file
 
-  echo "Determining Production release -2 build image for $isName"
-  imageHash=$(cat $file | jq '.status.tags[] | select(.tag=="production") | .items[2].image // empty')
+  echo "Determining Production release build image for $isName"
+  imageHash=$(cat $file | jq '.status.tags[] | select(.tag=="production") | .items[0].image // empty')
   if [ ! -z "$imageHash" ]; then
-    echo "N-2 Production build image is $imageHash"
+    echo "Production build image is $imageHash"
     echo "Determining build number for image $imageHash"
     buildNumber=$(cat $file | jq '.status.tags[] | select(.tag!="dev" and .tag!="test" and .tag!="mock" and .tag!="production" and .tag!="latest" and .items[].image=='$imageHash') | .tag')
     echo "$isName image $imageHash maps to build $buildNumber"
 
     echo "Looking for builds prior to $buildNumber to cleanup"
-    oldBuilds=($(cat $file | jq '.status.tags[] | select(.tag!="dev" and .tag!="test" and .tag!="mock" and .tag!="production" and .tag!="latest" and .tag<'$buildNumber').tag'))
+    oldBuilds=($(cat $file | jq '.status.tags[] | select(.tag != "dev" and .tag != "test" and .tag != "mock" and .tag != "production" and .tag != "latest" and ([.tag | split(".") | map(tonumber)] < [('$buildNumber' | split(".") | map(tonumber))])).tag'))
     declare -i count=0
     for build in "${oldBuilds[@]}"; do 
         count=$count+1
@@ -42,7 +42,7 @@ for isName in "${imageStreams[@]}"; do
     echo Found $count builds to cleanup and wrote to $outfile
     echo
   else
-    echo "$isName does not have 3 Production versions, nothing to do."
+    echo "$isName does not have Production versions, nothing to do."
     echo
   fi
 done  
