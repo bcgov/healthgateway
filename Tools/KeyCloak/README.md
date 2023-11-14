@@ -39,7 +39,7 @@ ln -sf syncFolder/Keycloak/Terraform secrets
 terraform login
 terraform init
 terraform workspace select Keycloak-[dev | test | prod]
-terraform plan/apply -var-file secrets/[dev|test|prod].secrests.tfvars
+terraform plan/apply -var-file secrets/[dev|test|prod].secrets.tfvars
 ```
 
 ## Populating Users
