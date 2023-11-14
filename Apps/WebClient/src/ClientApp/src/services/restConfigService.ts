@@ -6,10 +6,9 @@ import ErrorTranslator from "@/utility/errorTranslator";
 
 export class RestConfigService implements IConfigService {
     private logger;
-    private readonly CONFIG_BASE_URI: string = `${
-        import.meta.env.VITE_CONFIG_BASE_URI || ""
-    }/configuration`;
+    private readonly CONFIG_BASE_URI: string = "configuration" ;
     private http;
+    private baseUri = import.meta.env.VITE_WEB_CLIENT_BASE_URI || "/" ;
 
     constructor(logger: ILogger, httpDelegate: IHttpDelegate) {
         this.logger = logger;
@@ -18,7 +17,7 @@ export class RestConfigService implements IConfigService {
 
     public getConfiguration(): Promise<ExternalConfiguration> {
         return this.http
-            .getWithCors<ExternalConfiguration>(`${this.CONFIG_BASE_URI}/`)
+            .getWithCors<ExternalConfiguration>(`${this.baseUri}${this.CONFIG_BASE_URI}`)
             .catch((err: HttpError) => {
                 this.logger.error(
                     `Error in RestConfigService.getConfiguration()`
