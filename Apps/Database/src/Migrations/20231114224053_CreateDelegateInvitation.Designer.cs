@@ -32,7 +32,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace HealthGateway.Database.Migrations
 {
     [DbContext(typeof(GatewayDbContext))]
-    [Migration("20231114200557_CreateDelegateInvitation")]
+    [Migration("20231114224053_CreateDelegateInvitation")]
     partial class CreateDelegateInvitation
     {
         /// <inheritdoc />
