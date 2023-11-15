@@ -35,7 +35,7 @@ namespace HealthGateway.Database.Constants
         Guardian,
 
         /// <summary>
-        /// Represents a delegation for invited.
+        /// Represents a delegation via invitation by the data owner.
         /// </summary>
         [EnumMember(Value = "Invited")]
         Invited,
