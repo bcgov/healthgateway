@@ -13,12 +13,11 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Common.Services
+namespace HealthGateway.GatewayApi.Services
 {
     using System.Threading;
     using System.Threading.Tasks;
-    using HealthGateway.Common.Data.Models;
-    using HealthGateway.Database.Models;
+    using HealthGateway.GatewayApi.Models;
 
     /// <summary>
     /// The delegate service.
@@ -29,9 +28,9 @@ namespace HealthGateway.Common.Services
         /// Creates a delegate invitation for the given delegator's hdid.
         /// </summary>
         /// <param name="hdid">The delegator's hdid.</param>
-        /// <param name="request">The delegate invitation request model.</param>
+        /// <param name="request">The create delegate invitation request model.</param>
         /// <param name="ct">A cancellation token.</param>
         /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
-        Task<DelegateInvitation> CreateDelegateInvitationAsync(string hdid, DelegateInvitationRequest request, CancellationToken ct = default);
+        Task<string> CreateDelegateInvitationAsync(string hdid, CreateDelegateInvitationRequest request, CancellationToken ct = default);
     }
 }

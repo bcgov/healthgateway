@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Common.Data.Models
+namespace HealthGateway.GatewayApi.Models
 {
     using System;
     using System.Collections.Generic;
@@ -21,44 +21,29 @@ namespace HealthGateway.Common.Data.Models
     using HealthGateway.Common.Data.Constants;
 
     /// <summary>
-    /// The DelegateInvitationRequest model.
+    /// The CreateDelegateInvitationRequest model.
     /// </summary>
-    public record DelegateInvitationRequest
+    public record CreateDelegateInvitationRequest
     {
-        /// <summary>
-        /// Gets or sets the id.
-        /// </summary>
-        public Guid? Id { get; set; }
-
-        /// <summary>
-        /// Gets or sets the sharing code.
-        /// </summary>
-        public string? SharingCode { get; set; }
-
         /// <summary>
         /// Gets or sets the nickname.
         /// </summary>
-        public string? Nickname { get; set; }
+        public string Nickname { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the email.
         /// </summary>
-        public string? Email { get; set; }
+        public string Email { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the expiry date.
         /// </summary>
-        public DateOnly? ExpiryDate { get; set; }
-
-        /// <summary>
-        /// Gets or sets the status for the delegate invitation.
-        /// </summary>
-        public DelegateInvitationStatus? Status { get; set; }
+        public DateOnly ExpiryDate { get; set; }
 
         /// <summary>
         /// Gets or sets the access for the data sets.
         /// </summary>
         [SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "Team decision")]
-        public HashSet<DataSource>? DataSources { get; set; }
+        public HashSet<DataSource> DataSources { get; set; } = new();
     }
 }
