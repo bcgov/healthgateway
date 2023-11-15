@@ -6,6 +6,7 @@ import Communication, { CommunicationType } from "@/models/communication";
 import { ExternalConfiguration } from "@/models/configData";
 import CovidVaccineRecord from "@/models/covidVaccineRecord";
 import { StringISODate } from "@/models/dateWrapper";
+import { DelegateInvitation } from "@/models/delegateInvitation";
 import type { Dependent } from "@/models/dependent";
 import EncodedMedia from "@/models/encodedMedia";
 import { Encounter } from "@/models/encounter";
@@ -273,4 +274,10 @@ export interface IPatientDataService {
 
 export interface ITrackingService {
     trackEvent(data: EventData): void;
+}
+
+export interface IDelegateService {
+    createInvitation(
+        invite: DelegateInvitation
+    ): Promise<DelegateInvitation | undefined>;
 }
