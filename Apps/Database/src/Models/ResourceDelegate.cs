@@ -81,6 +81,6 @@ namespace HealthGateway.Database.Models
         /// <summary>
         /// Gets the delegate invitations.
         /// </summary>
-        public ICollection<DelegateInvitation>? DelegateInvitations { get; } = new List<DelegateInvitation>();
+        public virtual ICollection<DelegateInvitation>? DelegateInvitations { get; } = new List<DelegateInvitation>();
     }
 }
