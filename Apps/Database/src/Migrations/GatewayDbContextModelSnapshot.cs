@@ -1649,7 +1649,6 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<HashSet<DataSource>>("DataSources")
-                        .IsRequired()
                         .HasColumnType("jsonb");
 
                     b.Property<DateOnly>("ExpiryDate")

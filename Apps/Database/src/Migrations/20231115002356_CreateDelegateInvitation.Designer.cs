@@ -32,7 +32,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace HealthGateway.Database.Migrations
 {
     [DbContext(typeof(GatewayDbContext))]
-    [Migration("20231114224053_CreateDelegateInvitation")]
+    [Migration("20231115002356_CreateDelegateInvitation")]
     partial class CreateDelegateInvitation
     {
         /// <inheritdoc />
@@ -1668,7 +1668,6 @@ namespace HealthGateway.Database.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<HashSet<DataSource>>("DataSources")
-                        .IsRequired()
                         .HasColumnType("jsonb");
 
                     b.Property<DateOnly>("ExpiryDate")

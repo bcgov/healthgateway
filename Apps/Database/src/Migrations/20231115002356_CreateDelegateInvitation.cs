@@ -50,7 +50,7 @@ namespace HealthGateway.Database.Migrations
                     SharingCode = table.Column<string>(type: "character varying(6)", maxLength: 6, nullable: false),
                     FailedAttempts = table.Column<int>(type: "integer", nullable: false),
                     ExpiryDate = table.Column<DateOnly>(type: "date", nullable: false),
-                    DataSources = table.Column<HashSet<DataSource>>(type: "jsonb", nullable: false),
+                    DataSources = table.Column<HashSet<DataSource>>(type: "jsonb", nullable: true),
                     ResourceOwnerHdid = table.Column<string>(type: "character varying(52)", maxLength: 52, nullable: false),
                     ResourceOwnerIdentifier = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
                     ProfileHdid = table.Column<string>(type: "character varying(52)", maxLength: 52, nullable: true),

@@ -72,10 +72,9 @@ namespace HealthGateway.Database.Models
         /// <summary>
         /// Gets or sets the access for the data sets.
         /// </summary>
-        [Required]
         [Column(TypeName = "jsonb")]
         [SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "Team decision")]
-        public HashSet<DataSource> DataSources { get; set; } = new();
+        public HashSet<DataSource>? DataSources { get; set; }
 
         /// <summary>
         /// Gets or sets the resource owner hdid.
