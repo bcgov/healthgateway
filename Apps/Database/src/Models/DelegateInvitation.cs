@@ -91,7 +91,7 @@ namespace HealthGateway.Database.Models
         public string ResourceOwnerIdentifier { get; set; } = null!;
 
         /// <summary>
-        /// Gets or sets the hdid.
+        /// Gets or sets the delegate's HDID.
         /// </summary>
         [MaxLength(52)]
         public string? ProfileHdid { get; set; }
