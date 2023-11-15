@@ -16,7 +16,6 @@
 namespace HealthGateway.Admin.Client.Pages
 {
     using System;
-    using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
     using Fluxor;
@@ -27,15 +26,10 @@ namespace HealthGateway.Admin.Client.Pages
     using HealthGateway.Admin.Client.Utils;
     using HealthGateway.Admin.Common.Constants;
     using HealthGateway.Admin.Common.Models;
-    using HealthGateway.Admin.Common.Models.CovidSupport;
     using HealthGateway.Common.Data.Constants;
-    using HealthGateway.Common.Data.Models;
-    using HealthGateway.Common.Data.Utils;
-    using HealthGateway.Common.Data.ViewModels;
     using Microsoft.AspNetCore.Components;
     using Microsoft.AspNetCore.Components.Authorization;
     using Microsoft.AspNetCore.WebUtilities;
-    using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Primitives;
 
     /// <summary>
@@ -56,32 +50,11 @@ namespace HealthGateway.Admin.Client.Pages
         private NavigationManager NavigationManager { get; set; } = default!;
 
         [Inject]
-        private IConfiguration Configuration { get; set; } = default!;
-
-        [Inject]
         private AuthenticationStateProvider AuthenticationStateProvider { get; set; } = default!;
 
-        private bool PatientSupportDetailsLoading => this.PatientDetailsState.Value.IsLoading;
+        private bool PatientsLoaded => this.PatientSupportState.Value.Loaded;
 
         private bool HasPatientSupportDetailsError => this.PatientDetailsState.Value.Error is { Message.Length: > 0 };
-
-        private IEnumerable<MessagingVerificationModel> MessagingVerifications => this.PatientDetailsState.Value.MessagingVerifications ?? Enumerable.Empty<MessagingVerificationModel>();
-
-        private IEnumerable<DataSource> BlockedDataSources => this.PatientDetailsState.Value.BlockedDataSources ?? Enumerable.Empty<DataSource>();
-
-        private IEnumerable<AgentAction> AgentAuditHistory =>
-            this.PatientDetailsState.Value.AgentActions?.OrderByDescending(a => a.TransactionDateTime) ?? Enumerable.Empty<AgentAction>();
-
-        private IEnumerable<PatientSupportDependentInfo> Dependents => this.PatientDetailsState.Value.Dependents ?? Enumerable.Empty<PatientSupportDependentInfo>();
-
-        private VaccineDetails? VaccineDetails => this.PatientDetailsState.Value.VaccineDetails;
-
-        private CovidAssessmentDetailsResponse? AssessmentInfo => this.PatientDetailsState.Value.Result?.CovidAssessmentDetails;
-
-        private IEnumerable<PreviousAssessmentDetails> AssessmentDetails =>
-            this.AssessmentInfo?.PreviousAssessmentDetailsList?.OrderByDescending(a => a.DateTimeOfAssessment) ?? Enumerable.Empty<PreviousAssessmentDetails>();
-
-        private bool PatientsLoaded => this.PatientSupportState.Value.Loaded;
 
         private bool HasPatientsError => this.PatientSupportState.Value.Error is { Message.Length: > 0 };
 
@@ -90,43 +63,19 @@ namespace HealthGateway.Admin.Client.Pages
         private PatientSupportResult? Patient =>
             this.PatientSupportState.Value.Result?.SingleOrDefault(x => x.PersonalHealthNumber == this.Phn);
 
-        private string PatientName => StringManipulator.JoinWithoutBlanks(new[] { this.Patient?.PreferredName?.GivenName, this.Patient?.PreferredName?.Surname });
-
         private string? StatusWarning => this.Patient == null ? null : FormattingUtility.FormatPatientStatus(this.Patient.Status);
+
+        private bool IsGatewayUser => this.Patient?.Status == PatientStatus.Default;
 
         private bool ShowStatusWarning => this.UserHasRole(Roles.Admin) || this.UserHasRole(Roles.Reviewer) || this.Patient?.Status != PatientStatus.NotUser;
 
-        private Address? MailAddress => this.Patient?.PostalAddress ?? this.Patient?.PhysicalAddress;
-
-        private DateTime? ProfileCreatedDateTime =>
-            this.Patient?.ProfileCreatedDateTime == null ? null : TimeZoneInfo.ConvertTimeFromUtc(this.Patient.ProfileCreatedDateTime.Value, this.GetTimeZone());
-
-        private DateTime? ProfileLastLoginDateTime =>
-            this.Patient?.ProfileLastLoginDateTime == null ? null : TimeZoneInfo.ConvertTimeFromUtc(this.Patient.ProfileLastLoginDateTime.Value, this.GetTimeZone());
-
         private bool CanViewAccountDetails => this.UserHasRole(Roles.Admin) || this.UserHasRole(Roles.Reviewer);
 
-        private bool CanViewMessagingVerifications => this.UserHasRole(Roles.Admin) || this.UserHasRole(Roles.Reviewer);
+        private bool CanViewManageProfile => this.UserHasRole(Roles.Admin) || this.UserHasRole(Roles.Reviewer);
 
-        private bool CanViewDatasetAccess => (this.UserHasRole(Roles.Admin) || this.UserHasRole(Roles.Reviewer)) && !string.IsNullOrWhiteSpace(this.Hdid);
-
-        private bool CanEditDatasetAccess => this.UserHasRole(Roles.Admin);
-
-        private bool CanViewAgentAuditHistory => this.UserHasRole(Roles.Admin) || this.UserHasRole(Roles.Reviewer);
-
-        private bool CanViewDependents => this.UserHasRole(Roles.Admin) || this.UserHasRole(Roles.Reviewer);
-
-        private bool CanViewHdid => this.UserHasRole(Roles.Admin) || this.UserHasRole(Roles.Reviewer);
-
-        private bool CanViewCovidDetails => this.UserHasRole(Roles.Support);
-
-        private string Covid19TreatmentAssessmentPath => $"/covid-19-treatment-assessment?phn={this.Phn}";
-
-        private bool ImmunizationsAreBlocked => this.VaccineDetails?.Blocked ?? false;
+        private bool CanViewNotes => this.UserHasRole(Roles.Admin) || this.UserHasRole(Roles.Reviewer);
 
         private AuthenticationState? AuthenticationState { get; set; }
-
-        private string Hdid => this.Patient?.Hdid ?? string.Empty;
 
         private string Phn { get; set; } = string.Empty;
 
@@ -172,11 +121,6 @@ namespace HealthGateway.Admin.Client.Pages
         private bool UserHasRole(string role)
         {
             return this.AuthenticationState?.User.IsInRole(role) == true;
-        }
-
-        private TimeZoneInfo GetTimeZone()
-        {
-            return DateFormatter.GetLocalTimeZone(this.Configuration);
         }
     }
 }

@@ -40,6 +40,12 @@ namespace HealthGateway.Admin.Client.Components.Common
         public RenderFragment<MudTabs>? Header { get; set; }
 
         /// <summary>
+        /// Gets or sets classes to apply to the tabs panel.
+        /// </summary>
+        [Parameter]
+        public string? PanelClass { get; set; }
+
+        /// <summary>
         /// Gets the underlying MudBlazor component.
         /// </summary>
         public MudTabs MudComponent { get; private set; } = default!;
