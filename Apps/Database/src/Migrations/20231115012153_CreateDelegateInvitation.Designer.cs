@@ -32,7 +32,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace HealthGateway.Database.Migrations
 {
     [DbContext(typeof(GatewayDbContext))]
-    [Migration("20231115002356_CreateDelegateInvitation")]
+    [Migration("20231115012153_CreateDelegateInvitation")]
     partial class CreateDelegateInvitation
     {
         /// <inheritdoc />
@@ -1731,6 +1731,8 @@ namespace HealthGateway.Database.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("Status");
+
                     b.HasIndex("ResourceOwnerHdid", "ProfileHdid", "ReasonCode");
 
                     b.ToTable("DelegateInvitation", "gateway");
@@ -1752,8 +1754,8 @@ namespace HealthGateway.Database.Migrations
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
+                        .HasMaxLength(80)
+                        .HasColumnType("character varying(80)");
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
@@ -3229,8 +3231,8 @@ namespace HealthGateway.Database.Migrations
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
+                        .HasMaxLength(80)
+                        .HasColumnType("character varying(80)");
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
@@ -3266,7 +3268,7 @@ namespace HealthGateway.Database.Migrations
                             ReasonTypeCode = "Invited",
                             CreatedBy = "System",
                             CreatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Resource Delegation for Invited",
+                            Description = "Resource delegation via invitation by the data owner",
                             UpdatedBy = "System",
                             UpdatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Version = 0u
@@ -3994,6 +3996,12 @@ namespace HealthGateway.Database.Migrations
 
             modelBuilder.Entity("HealthGateway.Database.Models.DelegateInvitation", b =>
                 {
+                    b.HasOne("HealthGateway.Database.Models.DelegateInvitationStatusCode", null)
+                        .WithMany()
+                        .HasForeignKey("Status")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.HasOne("HealthGateway.Database.Models.ResourceDelegate", "ResourceDelegate")
                         .WithMany("DelegateInvitations")
                         .HasForeignKey("ResourceOwnerHdid", "ProfileHdid", "ReasonCode");

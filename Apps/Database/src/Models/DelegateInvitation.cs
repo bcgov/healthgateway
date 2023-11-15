@@ -84,13 +84,6 @@ namespace HealthGateway.Database.Models
         public string ResourceOwnerHdid { get; set; } = null!;
 
         /// <summary>
-        /// Gets or sets the resource owner identifier.
-        /// </summary>
-        [Required]
-        [MaxLength(255)]
-        public string ResourceOwnerIdentifier { get; set; } = null!;
-
-        /// <summary>
         /// Gets or sets the delegate's HDID.
         /// </summary>
         [MaxLength(52)]
@@ -101,6 +94,13 @@ namespace HealthGateway.Database.Models
         /// </summary>
         [MaxLength(10)]
         public ResourceDelegateReason? ReasonCode { get; set; }
+
+        /// <summary>
+        /// Gets or sets the resource owner identifier.
+        /// </summary>
+        [Required]
+        [MaxLength(255)]
+        public string ResourceOwnerIdentifier { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets a value indicating whether the delegation invitation was removed by the owner.

@@ -67,16 +67,16 @@ namespace HealthGateway.Database.Models
         public JsonDocument? ReasonObject { get; set; }
 
         /// <summary>
-        /// Gets or sets the UserProfile associated with <see cref="ProfileHdid"/>.
-        /// </summary>
-        public virtual UserProfile UserProfile { get; set; } = null!;
-
-        /// <summary>
         /// Gets or sets the access for the data sets.
         /// </summary>
         [Column(TypeName = "jsonb")]
         [SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "Team decision")]
         public HashSet<DataSource>? DataSources { get; set; }
+
+        /// <summary>
+        /// Gets or sets the UserProfile associated with <see cref="ProfileHdid"/>.
+        /// </summary>
+        public virtual UserProfile UserProfile { get; set; } = null!;
 
         /// <summary>
         /// Gets the delegate invitations.

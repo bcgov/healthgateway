@@ -434,6 +434,13 @@ namespace HealthGateway.Database.Context
                 .WithMany(p => p.DelegateInvitations)
                 .HasForeignKey(c => new { c.ResourceOwnerHdid, c.ProfileHdid, c.ReasonCode });
 
+            modelBuilder.Entity<DelegateInvitation>()
+                .HasOne<DelegateInvitationStatusCode>()
+                .WithMany()
+                .HasPrincipalKey(k => k.Code)
+                .HasForeignKey(k => k.Status)
+                .OnDelete(DeleteBehavior.Restrict);
+
             ValueConverter<DelegateInvitationStatus, string> delegateInvitationStatusConverter = new(
                 v => EnumUtility.ToEnumString(v, true),
                 v => EnumUtility.ToEnum<DelegateInvitationStatus>(v, true));

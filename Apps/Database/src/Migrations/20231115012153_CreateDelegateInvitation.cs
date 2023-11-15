@@ -32,12 +32,41 @@ namespace HealthGateway.Database.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.AlterColumn<string>(
+                name: "Description",
+                schema: "gateway",
+                table: "ResourceDelegateReasonCode",
+                type: "character varying(80)",
+                maxLength: 80,
+                nullable: false,
+                oldClrType: typeof(string),
+                oldType: "character varying(50)",
+                oldMaxLength: 50);
+
             migrationBuilder.AddColumn<HashSet<DataSource>>(
                 name: "DataSources",
                 schema: "gateway",
                 table: "ResourceDelegate",
                 type: "jsonb",
                 nullable: true);
+
+            migrationBuilder.CreateTable(
+                name: "DelegateInvitationStatusCode",
+                schema: "gateway",
+                columns: table => new
+                {
+                    Code = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
+                    Description = table.Column<string>(type: "character varying(80)", maxLength: 80, nullable: false),
+                    CreatedBy = table.Column<string>(type: "character varying(60)", maxLength: 60, nullable: false),
+                    CreatedDateTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UpdatedBy = table.Column<string>(type: "character varying(60)", maxLength: 60, nullable: false),
+                    UpdatedDateTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    xmin = table.Column<uint>(type: "xid", rowVersion: true, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_DelegateInvitationStatusCode", x => x.Code);
+                });
 
             migrationBuilder.CreateTable(
                 name: "DelegateInvitation",
@@ -52,9 +81,9 @@ namespace HealthGateway.Database.Migrations
                     ExpiryDate = table.Column<DateOnly>(type: "date", nullable: false),
                     DataSources = table.Column<HashSet<DataSource>>(type: "jsonb", nullable: true),
                     ResourceOwnerHdid = table.Column<string>(type: "character varying(52)", maxLength: 52, nullable: false),
-                    ResourceOwnerIdentifier = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
                     ProfileHdid = table.Column<string>(type: "character varying(52)", maxLength: 52, nullable: true),
                     ReasonCode = table.Column<string>(type: "character varying(10)", maxLength: 10, nullable: true),
+                    ResourceOwnerIdentifier = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
                     RemovedByOwner = table.Column<bool>(type: "boolean", nullable: false),
                     RemovedByDelegate = table.Column<bool>(type: "boolean", nullable: false),
                     CreatedBy = table.Column<string>(type: "character varying(60)", maxLength: 60, nullable: false),
@@ -67,29 +96,18 @@ namespace HealthGateway.Database.Migrations
                 {
                     table.PrimaryKey("PK_DelegateInvitation", x => x.DelegateInvitationId);
                     table.ForeignKey(
+                        name: "FK_DelegateInvitation_DelegateInvitationStatusCode_Status",
+                        column: x => x.Status,
+                        principalSchema: "gateway",
+                        principalTable: "DelegateInvitationStatusCode",
+                        principalColumn: "Code",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
                         name: "FK_DelegateInvitation_ResourceDelegate_ResourceOwnerHdid_Profi~",
                         columns: x => new { x.ResourceOwnerHdid, x.ProfileHdid, x.ReasonCode },
                         principalSchema: "gateway",
                         principalTable: "ResourceDelegate",
                         principalColumns: new[] { "ResourceOwnerHdid", "ProfileHdid", "ReasonCode" });
-                });
-
-            migrationBuilder.CreateTable(
-                name: "DelegateInvitationStatusCode",
-                schema: "gateway",
-                columns: table => new
-                {
-                    Code = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
-                    Description = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
-                    CreatedBy = table.Column<string>(type: "character varying(60)", maxLength: 60, nullable: false),
-                    CreatedDateTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    UpdatedBy = table.Column<string>(type: "character varying(60)", maxLength: 60, nullable: false),
-                    UpdatedDateTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    xmin = table.Column<uint>(type: "xid", rowVersion: true, nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_DelegateInvitationStatusCode", x => x.Code);
                 });
 
             migrationBuilder.InsertData(
@@ -110,13 +128,19 @@ namespace HealthGateway.Database.Migrations
                 schema: "gateway",
                 table: "ResourceDelegateReasonCode",
                 columns: new[] { "ReasonTypeCode", "CreatedBy", "CreatedDateTime", "Description", "UpdatedBy", "UpdatedDateTime" },
-                values: new object[] { "Invited", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Utc), "Resource Delegation for Invited", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Utc) });
+                values: new object[] { "Invited", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Utc), "Resource delegation via invitation by the data owner", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Utc) });
 
             migrationBuilder.CreateIndex(
                 name: "IX_DelegateInvitation_ResourceOwnerHdid_ProfileHdid_ReasonCode",
                 schema: "gateway",
                 table: "DelegateInvitation",
                 columns: new[] { "ResourceOwnerHdid", "ProfileHdid", "ReasonCode" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_DelegateInvitation_Status",
+                schema: "gateway",
+                table: "DelegateInvitation",
+                column: "Status");
         }
 
         /// <inheritdoc />
@@ -140,6 +164,17 @@ namespace HealthGateway.Database.Migrations
                 name: "DataSources",
                 schema: "gateway",
                 table: "ResourceDelegate");
+
+            migrationBuilder.AlterColumn<string>(
+                name: "Description",
+                schema: "gateway",
+                table: "ResourceDelegateReasonCode",
+                type: "character varying(50)",
+                maxLength: 50,
+                nullable: false,
+                oldClrType: typeof(string),
+                oldType: "character varying(80)",
+                oldMaxLength: 80);
         }
     }
 }
