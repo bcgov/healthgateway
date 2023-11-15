@@ -1,4 +1,8 @@
-import { getTableRows } from "./sharedUtilities";
+import { getTableRows, selectTab } from "./sharedUtilities";
+
+function selectPatientTab(tabText) {
+    selectTab("[data-testid=patient-details-tabs]", tabText);
+}
 
 export function performSearch(queryType, queryString) {
     cy.get("[data-testid=query-type-select]").click({ force: true });
@@ -23,14 +27,15 @@ export function verifySearchInput(queryType, queryString) {
 
 export function verifySingleSupportResult(expectedHdid, expectedPhn) {
     cy.get("[data-testid=user-table]").should("not.exist");
+    cy.get("[data-testid=patient-phn]")
+        .should("be.visible")
+        .contains(expectedPhn);
     if (expectedHdid) {
+        selectPatientTab("Account");
         cy.get("[data-testid=patient-hdid]")
             .should("be.visible")
             .contains(expectedHdid);
     }
-    cy.get("[data-testid=patient-phn]")
-        .should("be.visible")
-        .contains(expectedPhn);
     cy.get("[data-testid=patient-details-back-button]")
         .should("be.visible")
         .click();
