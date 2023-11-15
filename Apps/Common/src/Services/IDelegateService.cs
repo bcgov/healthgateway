@@ -21,7 +21,7 @@ namespace HealthGateway.Common.Services
     using HealthGateway.Database.Models;
 
     /// <summary>
-    /// The Dependent service.
+    /// The delegate service.
     /// </summary>
     public interface IDelegateService
     {
