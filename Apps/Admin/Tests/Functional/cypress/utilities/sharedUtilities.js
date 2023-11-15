@@ -28,3 +28,7 @@ export function getTodayPlusDaysDate(days) {
     cy.log(`Today plus ${days} => ${dateString}`);
     return dateString;
 }
+
+export function selectTab(tabsSelector, tabText) {
+    cy.get(tabsSelector).contains(".mud-tab", tabText).click();
+}

@@ -1,9 +1,7 @@
-import { getTableRows } from "./sharedUtilities";
+import { getTableRows, selectTab } from "./sharedUtilities";
 
-function selectTab(tabText) {
-    cy.get("[data-testid=patient-details-tabs]")
-        .contains(".mud-tab", tabText)
-        .click();
+function selectPatientTab(tabText) {
+    selectTab("[data-testid=patient-details-tabs]", tabText);
 }
 
 export function performSearch(queryType, queryString) {
@@ -33,7 +31,7 @@ export function verifySingleSupportResult(expectedHdid, expectedPhn) {
         .should("be.visible")
         .contains(expectedPhn);
     if (expectedHdid) {
-        selectTab("Account");
+        selectPatientTab("Account");
         cy.get("[data-testid=patient-hdid]")
             .should("be.visible")
             .contains(expectedHdid);
