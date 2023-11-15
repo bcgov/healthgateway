@@ -13,7 +13,7 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.GatewayApi.Services
+namespace HealthGateway.Common.Services
 {
     using System.Threading;
     using System.Threading.Tasks;

@@ -18,6 +18,7 @@ namespace HealthGateway.GatewayApi.Controllers
     using System.Threading.Tasks;
     using HealthGateway.Common.AccessManagement.Authorization.Policy;
     using HealthGateway.Common.Data.Models;
+    using HealthGateway.Common.Services;
     using HealthGateway.Database.Models;
     using HealthGateway.GatewayApi.Services;
     using Microsoft.AspNetCore.Authorization;
