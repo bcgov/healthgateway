@@ -60,6 +60,10 @@ namespace HealthGateway.GatewayApi.Controllers
         [HttpPost]
         [Authorize(Policy = UserProfilePolicy.Write)]
         [Route("{hdid}/Invitations")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<DelegateInvitation> CreateDelegateInvitation(string hdid, [FromBody] DelegateInvitationRequest request)
         {
             return await this.delegateService.CreateDelegateInvitationAsync(hdid, request);
