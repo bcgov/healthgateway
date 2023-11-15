@@ -117,6 +117,6 @@ namespace HealthGateway.Database.Models
         /// <summary>
         /// Gets or sets the resource delegate.
         /// </summary>
-        public ResourceDelegate ResourceDelegate { get; set; } = null!;
+        public virtual ResourceDelegate ResourceDelegate { get; set; } = null!;
     }
 }
