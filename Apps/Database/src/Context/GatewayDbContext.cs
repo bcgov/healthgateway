@@ -84,6 +84,7 @@ namespace HealthGateway.Database.Context
         public DbSet<AllowedDelegation> AllowedDelegation { get; set; } = null!;
         public DbSet<BlockedAccess> BlockedAccess { get; set; } = null!;
         public DbSet<OutboxItem> Outbox { get; set; } = null!;
+        public DbSet<DelegateInvitation> DelegateInvitation { get; set; } = null!;
 
 #pragma warning restore CS1591, SA1600
 
@@ -427,6 +428,31 @@ namespace HealthGateway.Database.Context
                 .Property(e => e.Code)
                 .HasConversion(auditGroupCodeConverter);
 
+            // Create Foreign Key for DelegateInvitation
+            modelBuilder.Entity<DelegateInvitation>()
+                .HasOne(c => c.ResourceDelegate)
+                .WithMany(p => p.DelegateInvitations)
+                .HasForeignKey(c => new { c.ResourceOwnerHdid, c.ProfileHdid, c.ReasonCode });
+
+            modelBuilder.Entity<DelegateInvitation>()
+                .HasOne<DelegateInvitationStatusCode>()
+                .WithMany()
+                .HasPrincipalKey(k => k.Code)
+                .HasForeignKey(k => k.Status)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            ValueConverter<DelegateInvitationStatus, string> delegateInvitationStatusConverter = new(
+                v => EnumUtility.ToEnumString(v, true),
+                v => EnumUtility.ToEnum<DelegateInvitationStatus>(v, true));
+
+            modelBuilder.Entity<DelegateInvitation>()
+                .Property(e => e.Status)
+                .HasConversion(delegateInvitationStatusConverter);
+
+            modelBuilder.Entity<DelegateInvitationStatusCode>()
+                .Property(e => e.Code)
+                .HasConversion(delegateInvitationStatusConverter);
+
             // Initial seed data
             this.SeedProgramTypes(modelBuilder);
             this.SeedEmail(modelBuilder);
@@ -440,6 +466,7 @@ namespace HealthGateway.Database.Context
             this.SeedAuditOperationCodes(modelBuilder);
             this.SeedApplicationSettings(modelBuilder);
             this.SeedAuditGroupCodes(modelBuilder);
+            this.SeedDelegateInvitationStatusCodes(modelBuilder);
         }
 
         /// <summary>
@@ -1016,6 +1043,15 @@ namespace HealthGateway.Database.Context
                         CreatedDateTime = this.DefaultSeedDate,
                         UpdatedBy = UserId.DefaultUser,
                         UpdatedDateTime = this.DefaultSeedDate,
+                    },
+                    new ResourceDelegateReasonCode
+                    {
+                        ReasonTypeCode = ResourceDelegateReason.Invited,
+                        Description = "Resource delegation via invitation by the data owner",
+                        CreatedBy = UserId.DefaultUser,
+                        CreatedDateTime = this.DefaultSeedDate,
+                        UpdatedBy = UserId.DefaultUser,
+                        UpdatedDateTime = this.DefaultSeedDate,
                     });
         }
 
@@ -1186,6 +1222,70 @@ namespace HealthGateway.Database.Context
                     {
                         Code = AuditOperation.UnprotectDependent,
                         Description = "Unprotect Dependent Operation Code",
+                        CreatedBy = UserId.DefaultUser,
+                        CreatedDateTime = this.DefaultSeedDate.ToUniversalTime(),
+                        UpdatedBy = UserId.DefaultUser,
+                        UpdatedDateTime = this.DefaultSeedDate.ToUniversalTime(),
+                    });
+        }
+
+        /// <summary>
+        /// Seeds the Delegate Invitation Status Codes.
+        /// </summary>
+        /// <param name="modelBuilder">The passed in model builder.</param>
+        private void SeedDelegateInvitationStatusCodes(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<DelegateInvitationStatusCode>()
+                .HasData(
+                    new DelegateInvitationStatusCode
+                    {
+                        Code = DelegateInvitationStatus.Active,
+                        Description = "Active Delegate Invitation Status Code",
+                        CreatedBy = UserId.DefaultUser,
+                        CreatedDateTime = this.DefaultSeedDate.ToUniversalTime(),
+                        UpdatedBy = UserId.DefaultUser,
+                        UpdatedDateTime = this.DefaultSeedDate.ToUniversalTime(),
+                    },
+                    new DelegateInvitationStatusCode
+                    {
+                        Code = DelegateInvitationStatus.AccessExpired,
+                        Description = "Access Expired Delegate Invitation Status Code",
+                        CreatedBy = UserId.DefaultUser,
+                        CreatedDateTime = this.DefaultSeedDate.ToUniversalTime(),
+                        UpdatedBy = UserId.DefaultUser,
+                        UpdatedDateTime = this.DefaultSeedDate.ToUniversalTime(),
+                    },
+                    new DelegateInvitationStatusCode
+                    {
+                        Code = DelegateInvitationStatus.Declined,
+                        Description = "Declined Delegate Invitation Status Code",
+                        CreatedBy = UserId.DefaultUser,
+                        CreatedDateTime = this.DefaultSeedDate.ToUniversalTime(),
+                        UpdatedBy = UserId.DefaultUser,
+                        UpdatedDateTime = this.DefaultSeedDate.ToUniversalTime(),
+                    },
+                    new DelegateInvitationStatusCode
+                    {
+                        Code = DelegateInvitationStatus.InviteExpired,
+                        Description = "Invite Expired Delegate Invitation Status Code",
+                        CreatedBy = UserId.DefaultUser,
+                        CreatedDateTime = this.DefaultSeedDate.ToUniversalTime(),
+                        UpdatedBy = UserId.DefaultUser,
+                        UpdatedDateTime = this.DefaultSeedDate.ToUniversalTime(),
+                    },
+                    new DelegateInvitationStatusCode
+                    {
+                        Code = DelegateInvitationStatus.Locked,
+                        Description = "Locked Delegate Invitation Status Code",
+                        CreatedBy = UserId.DefaultUser,
+                        CreatedDateTime = this.DefaultSeedDate.ToUniversalTime(),
+                        UpdatedBy = UserId.DefaultUser,
+                        UpdatedDateTime = this.DefaultSeedDate.ToUniversalTime(),
+                    },
+                    new DelegateInvitationStatusCode
+                    {
+                        Code = DelegateInvitationStatus.Pending,
+                        Description = "Pending Delegate Invitation Status Code",
                         CreatedBy = UserId.DefaultUser,
                         CreatedDateTime = this.DefaultSeedDate.ToUniversalTime(),
                         UpdatedBy = UserId.DefaultUser,
