@@ -7,30 +7,37 @@ export interface DelegateInvitation {
     /**
      * The delegate invitation id.
      */
-    id: string;
+    id?: string;
 
     /**
      * The friendly name of the delegate.
      */
-    nickname: string;
+    nickname?: string;
 
     /**
      * The delegate invitation status.
+     * Pending, Active, Declined, Locked, InviteExpired, AccessExpired
      */
-    status: string;
+    status?:
+        | "Pending"
+        | "Active"
+        | "Declined"
+        | "Locked"
+        | "InviteExpired"
+        | "AccessExpired";
 
     /**
      * The email address to send the invitation.
      */
-    email: string;
+    email?: string;
 
     /**
      * The expiry date of access.
      */
-    expiryDate: string;
+    expiryDate?: string;
 
     /**
      * The list of data sources the delegate has access to.
      */
-    dataSources: DataSource[];
+    dataSources?: DataSource[];
 }

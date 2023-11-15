@@ -12,7 +12,7 @@ import { useErrorStore } from "@/stores/error";
 const cleanInvitation: DelegateInvitation = {
     id: "",
     nickname: "",
-    status: "",
+    status: "Pending",
     email: "",
     expiryDate: "",
     dataSources: [],
@@ -40,19 +40,16 @@ export const useDelegateStore = defineStore("delegate", () => {
 
     function createInvitation(
         invitation: DelegateInvitation
-    ): Promise<DelegateInvitation | void> {
+    ): Promise<string | void> {
         logger.debug("Create invitation");
         invitationsAreLoading.value = true;
         return delegateService
             .createInvitation(invitation)
             .catch((error: ResultError) => {
-                handleError(error, ErrorType.Create);
+                handleError(error, ErrorType.Create, "sharing-dialog");
             })
             .then((result) => {
-                if (result) {
-                    // TODO retrieve all invitations, once endpoint is created
-                    invitations.value.push(result);
-                }
+                // TODO: retrieve all invitations, when invitation is successfully created
                 invitationsAreLoading.value = false;
                 resetNewInvitation();
                 return result;
@@ -63,11 +60,15 @@ export const useDelegateStore = defineStore("delegate", () => {
         newInvitation.value = { ...cleanInvitation };
     }
 
-    function handleError(incomingError: ResultError, errorType: ErrorType) {
+    function handleError(
+        incomingError: ResultError,
+        errorType: ErrorType,
+        errorKey?: string
+    ) {
         logger.error(`Error: ${JSON.stringify(incomingError)}`);
         setInvitationsError(incomingError);
         if (incomingError.statusCode === 429) {
-            const errorKey = "page";
+            errorKey = errorKey ?? "page";
             if (errorType === ErrorType.Retrieve) {
                 errorStore.setTooManyRequestsWarning(errorKey);
             } else {

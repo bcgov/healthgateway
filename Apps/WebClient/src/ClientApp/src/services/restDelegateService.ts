@@ -26,14 +26,14 @@ export class RestDelegateService implements IDelegateService {
 
     public createInvitation(
         invite: DelegateInvitation
-    ): Promise<DelegateInvitation | undefined> {
+    ): Promise<string | undefined> {
         const uri = path.join(
             this.baseUri,
             this.DELEGATE_BASE_URI,
             "Invitations"
         );
         return this.http
-            .post<DelegateInvitation>(uri, invite)
+            .post<string>(uri, invite)
             .catch((err: HttpError) => {
                 this.logger.error(
                     `Error in RestDelegateService.createInvitation()`
@@ -43,11 +43,11 @@ export class RestDelegateService implements IDelegateService {
                     ServiceCode.HealthGatewayUser
                 );
             })
-            .then((requestResult) => {
+            .then((sharingCode) => {
                 this.logger.verbose(
-                    `createInvitation result: ${requestResult}`
+                    `createInvitation sharing code: ${sharingCode}`
                 );
-                return requestResult;
+                return sharingCode;
             });
     }
 }

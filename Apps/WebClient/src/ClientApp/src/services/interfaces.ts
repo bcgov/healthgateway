@@ -277,7 +277,5 @@ export interface ITrackingService {
 }
 
 export interface IDelegateService {
-    createInvitation(
-        invite: DelegateInvitation
-    ): Promise<DelegateInvitation | undefined>;
+    createInvitation(invite: DelegateInvitation): Promise<string | undefined>;
 }
