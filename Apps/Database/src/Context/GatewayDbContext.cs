@@ -1040,7 +1040,7 @@ namespace HealthGateway.Database.Context
                     new ResourceDelegateReasonCode
                     {
                         ReasonTypeCode = ResourceDelegateReason.Invited,
-                        Description = "Resource Delegation for Invited",
+                        Description = "Resource delegation via invitation by the data owner",
                         CreatedBy = UserId.DefaultUser,
                         CreatedDateTime = this.DefaultSeedDate,
                         UpdatedBy = UserId.DefaultUser,
