@@ -77,7 +77,7 @@ namespace HealthGateway.Database.Models
         public HashSet<DataSource>? DataSources { get; set; }
 
         /// <summary>
-        /// Gets or sets the resource owner hdid.
+        /// Gets or sets the resource owner's HDID.
         /// </summary>
         [Required]
         [MaxLength(52)]
