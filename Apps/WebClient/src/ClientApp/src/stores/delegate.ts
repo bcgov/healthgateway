@@ -86,8 +86,7 @@ export const useDelegateStore = defineStore("delegate", () => {
                 }
             });
         }
-        // TODO: Remove this once all paths are covered
-        return Promise.resolve();
+        throw new Error("Invalid invitation dialog state");
     }
 
     function createInvitation(
