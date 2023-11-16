@@ -7,7 +7,7 @@ import HgIconButtonComponent from "@/components/common/HgIconButtonComponent.vue
 import MessageModalComponent from "@/components/common/MessageModalComponent.vue";
 import TooManyRequestsComponent from "@/components/error/TooManyRequestsComponent.vue";
 import ImmunizationReportComponent from "@/components/private/reports/ImmunizationReportComponent.vue";
-import { EntryType, entryTypeMap } from "@/constants/entryType";
+import { EntryType } from "@/constants/entryType";
 import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import { container } from "@/ioc/container";
 import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
@@ -20,11 +20,12 @@ import {
     TemplateType,
 } from "@/models/reportRequest";
 import RequestResult from "@/models/requestResult";
-import { ILogger } from "@/services/interfaces";
+import { Action, Actor, Destination, Origin, Text } from "@/plugins/extensions";
+import { ILogger, ITrackingService } from "@/services/interfaces";
 import { useAppStore } from "@/stores/app";
 import { useErrorStore } from "@/stores/error";
 import { useReportStore } from "@/stores/report";
-import EventTracker from "@/utility/eventTracker";
+import EventDataUtility from "@/utility/eventDataUtility";
 
 interface Props {
     hdid: string;
@@ -39,6 +40,9 @@ const reportFilter = ReportFilterBuilder.buildEmpty();
 defineExpose({ showDialog });
 
 const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+const trackingService = container.get<ITrackingService>(
+    SERVICE_IDENTIFIER.TrackingService
+);
 
 const reportStore = useReportStore();
 const errorStore = useErrorStore();
@@ -65,17 +69,13 @@ function showConfirmationModal(type: ReportFormatType): void {
 }
 
 function trackDownload() {
-    let reportEventName =
-        entryTypeMap.get(EntryType.Immunization)?.reportEventName ?? "";
-
-    const formatTypeName = ReportFormatType[reportFormatType.value];
-    const eventName = `${reportEventName} (${formatTypeName})`;
-
-    if (!props.isDependent) {
-        EventTracker.downloadReport(eventName);
-    } else {
-        EventTracker.downloadReport(`Dependent_${eventName}`);
-    }
+    trackingService.trackEvent({
+        action: Action.Download,
+        text: Text.Export,
+        dataset: EventDataUtility.getDataset(EntryType.Immunization),
+        format: EventDataUtility.getFormat(reportFormatType.value),
+        actor: props.isDependent ? Actor.Guardian : Actor.User,
+    });
 }
 
 function downloadReport() {
@@ -118,7 +118,12 @@ function downloadReport() {
 }
 
 function visitVaccinationBooking() {
-    EventTracker.click("bookvaccine");
+    trackingService.trackEvent({
+        action: Action.Visit,
+        text: Text.ExternalLink,
+        destination: Destination.BookVaccine,
+        origin: Origin.ImmunizationRecommendationDialog,
+    });
     window.open("https://www.getvaccinated.gov.bc.ca/s/", "_blank", "noopener");
 }
 

@@ -1,7 +1,6 @@
 ﻿import { defineStore } from "pinia";
 import { ref } from "vue";
 
-import { EntryType } from "@/constants/entryType";
 import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import { ResultType } from "@/constants/resulttype";
 import { container } from "@/ioc/container";
@@ -12,11 +11,15 @@ import { ResultError } from "@/models/errors";
 import { ImmunizationEvent, Recommendation } from "@/models/immunizationModel";
 import ImmunizationResult from "@/models/immunizationResult";
 import { LoadStatus } from "@/models/storeOperations";
-import { IImmunizationService, ILogger } from "@/services/interfaces";
+import { Action, Dataset, Text } from "@/plugins/extensions";
+import {
+    IImmunizationService,
+    ILogger,
+    ITrackingService,
+} from "@/services/interfaces";
 import { useErrorStore } from "@/stores/error";
 import { DatasetMapUtils } from "@/stores/utils/DatasetMapUtils";
 import DateSortUtility from "@/utility/dateSortUtility";
-import EventTracker from "@/utility/eventTracker";
 
 const defaultImmunizationDatasetState: ImmunizationDatasetState = {
     data: [],
@@ -136,6 +139,9 @@ export const useImmunizationStore = defineStore("immunization", () => {
     }
 
     function retrieveImmunizations(hdid: string): Promise<void> {
+        const trackingService = container.get<ITrackingService>(
+            SERVICE_IDENTIFIER.TrackingService
+        );
         if (getImmunizationDatasetState(hdid).status === LoadStatus.LOADED) {
             logger.debug(`Immunizations found stored, not querying!`);
             return Promise.resolve();
@@ -158,11 +164,12 @@ export const useImmunizationStore = defineStore("immunization", () => {
                         logger.info(`Re-querying for immunizations`);
                         retrieveImmunizations(hdid);
                     }, 10000);
-                } else {
-                    EventTracker.loadData(
-                        EntryType.Immunization,
-                        payload.immunizations.length
-                    );
+                } else if (payload.immunizations.length > 0) {
+                    trackingService.trackEvent({
+                        action: Action.Load,
+                        text: Text.Data,
+                        dataset: Dataset.Immunizations,
+                    });
                 }
                 setImmunizations(hdid, payload);
             })

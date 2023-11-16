@@ -17,11 +17,16 @@ import PatientDataResponse, {
     PatientDataType,
 } from "@/models/patientDataResponse";
 import { LoadStatus } from "@/models/storeOperations";
-import { ILogger, IPatientDataService } from "@/services/interfaces";
+import { Action, Text } from "@/plugins/extensions";
+import {
+    ILogger,
+    IPatientDataService,
+    ITrackingService,
+} from "@/services/interfaces";
 import { patientDataTypeToEntryTypeMap } from "@/services/restPatientDataService";
 import { useErrorStore } from "@/stores/error";
 import { DatasetMapUtils } from "@/stores/utils/DatasetMapUtils";
-import EventTracker from "@/utility/eventTracker";
+import EventDataUtility from "@/utility/eventDataUtility";
 
 const defaultPatientDataState: PatientDataState = {
     data: new Map<PatientDataType, PatientData[]>(),
@@ -41,16 +46,24 @@ function reportDataLoaded(
     patientDataTypes: PatientDataType[],
     data: PatientDataResponse
 ) {
-    patientDataTypes.forEach((patientDataType) => {
+    const trackingService = container.get<ITrackingService>(
+        SERVICE_IDENTIFIER.TrackingService
+    );
+
+    for (const patientDataType of patientDataTypes) {
         const dataSet = data.items.filter(
             (i) =>
                 i.type === PatientDataToHealthDataTypeMap.get(patientDataType)
         );
         const entryType = patientDataTypeToEntryTypeMap.get(patientDataType);
-        if (dataSet && entryType !== undefined) {
-            EventTracker.loadData(entryType, dataSet.length);
+        if (dataSet.length > 0 && entryType !== undefined) {
+            trackingService.trackEvent({
+                action: Action.Load,
+                text: Text.Data,
+                dataset: EventDataUtility.getDataset(entryType),
+            });
         }
-    });
+    }
 }
 
 function getErrorSource(patientDataType: PatientDataType): ErrorSourceType {

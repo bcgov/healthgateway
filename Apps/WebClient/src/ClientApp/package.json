@@ -4,8 +4,9 @@
     "version": "2.0.0-alpha",
     "scripts": {
         "dev": "vite",
-        "build": "vue-tsc --noEmit && vite build",
+        "build": "vue-tsc --noEmit && npm run lintcheck && vite build",
         "preview": "vite preview",
+        "lintcheck": "eslint src --max-warnings 0",
         "lint": "eslint src --fix"
     },
     "dependencies": {

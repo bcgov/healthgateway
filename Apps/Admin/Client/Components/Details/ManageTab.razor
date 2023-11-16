@@ -1,0 +1,13 @@
+﻿@using HealthGateway.Admin.Client.Components.Support
+@inherits Fluxor.Blazor.Web.Components.FluxorComponent
+
+
+@if (CanViewDatasetAccess)
+{
+    <DatasetAccessSection Data="@BlockedDataSources" IsLoading="@PatientSupportDetailsLoading" Hdid="@Hdid" CanEdit="@CanEditDatasetAccess" />
+}
+
+@if (CanViewDependents)
+{
+    <DependentTable Data="@Dependents" IsLoading="@PatientSupportDetailsLoading" />
+}

@@ -3,10 +3,7 @@
 @attribute [Authorize(Roles = $"{Roles.Admin},{Roles.Reviewer},{Roles.Support}")]
 @using HealthGateway.Admin.Client.Store.PatientDetails
 @using HealthGateway.Admin.Client.Store.PatientSupport
-@using HealthGateway.Common.Data.Utils
-@using HealthGateway.Admin.Common.Constants
-@using HealthGateway.Admin.Client.Components.Support
-@using HealthGateway.Admin.Client.Components.AgentAudit
+@using HealthGateway.Admin.Client.Components.Details
 @inherits Fluxor.Blazor.Web.Components.FluxorComponent
 
 <PageTitle>Health Gateway Admin Patient Details</PageTitle>
@@ -21,7 +18,8 @@
     Severity="Severity.Error"
     IsEnabled="HasPatientSupportDetailsError"
     TResetAction="PatientDetailsActions.ResetStateAction"
-    DataTestId="messaging-verification-banner-feedback-error-message">
+    DataTestId="messaging-verification-banner-feedback-error-message"
+    Class="mb-4">
     @PatientDetailsState.Value.Error?.Message
 </HgBannerFeedback>
 
@@ -29,7 +27,8 @@
     Severity="Severity.Error"
     IsEnabled="HasPatientsError"
     TResetAction="PatientSupportActions.ResetStateAction"
-    DataTestId="user-banner-feedback-error-message">
+    DataTestId="user-banner-feedback-error-message"
+    Class="mb-4">
     @PatientSupportState.Value.Error?.Message
 </HgBannerFeedback>
 
@@ -37,8 +36,8 @@
     Severity="@Severity.Info"
     IsEnabled="HasPatientsWarning"
     TResetAction="PatientSupportActions.ResetStateAction"
-    Class="mt-4"
-    DataTestId="user-banner-feedback-warning-message">
+    DataTestId="user-banner-feedback-warning-message"
+    Class="mb-4">
     <ul>
         @foreach (string warning in PatientSupportState.Value.WarningMessages)
         {
@@ -53,7 +52,7 @@
         Severity="@Severity.Info"
         IsEnabled="@(!string.IsNullOrEmpty(StatusWarning))"
         TResetAction="PatientSupportActions.ResetStateAction"
-        Class="mt-4"
+        Class="my-4"
         DataTestId="user-banner-feedback-status-warning-message">
         @StatusWarning
     </HgBannerFeedback>
@@ -61,95 +60,35 @@
 
 @if (Patient != null)
 {
-    <HgPageHeading TopMargin="Breakpoint.Always">User Details</HgPageHeading>
-    <MudGrid Spacing="2">
-        <MudItem xs="12" lg="4">
-            <HgField Label="Name" Value="@PatientName" data-testid="patient-name" />
-        </MudItem>
-        <MudItem xs="12" lg="4">
-            <HgField Label="Birthdate" Value="@Patient.Birthdate.ToString()" data-testid="patient-dob" />
-        </MudItem>
-        <MudItem xs="12" lg="4">
-            <HgField Label="PHN" Value="@Patient.PersonalHealthNumber" data-testid="patient-phn" />
-        </MudItem>
-        @if (CanViewHdid)
-        {
-            <MudItem xs="12">
-                <HgField Label="HDID" Value="@Patient.Hdid" data-testid="patient-hdid" />
-            </MudItem>
-        }
-        <MudItem xs="12" lg="6">
-            <HgField Label="Physical Address" Value="@AddressUtility.GetAddressAsSingleLine(Patient.PhysicalAddress)" data-testid="patient-physical-address" />
-        </MudItem>
-        <MudItem xs="12" lg="6">
-            <HgField Label="Mailing Address" Value="@AddressUtility.GetAddressAsSingleLine(Patient.PostalAddress)" data-testid="patient-mailing-address" />
-        </MudItem>
-    </MudGrid>
-
-    @if (Patient.Status == PatientStatus.Default)
-    {
-        if (CanViewAccountDetails)
-        {
-            <MudText Class="mt-4" Typo="Typo.subtitle1">
-                Account Details
-            </MudText>
-            <MudGrid Spacing="2" Class="mt-2">
-                <MudItem xs="12" lg="6">
-                    <HgField Label="Account Created" Value="@ProfileCreatedDateTime.ToString()" data-testid="profile-created-datetime" />
-                </MudItem>
-                <MudItem xs="12" lg="6">
-                    <HgField Label="Last Login" Value="@ProfileLastLoginDateTime.ToString()" data-testid="profile-last-login-datetime" />
-                </MudItem>
-            </MudGrid>
-        }
-
-        if (CanViewMessagingVerifications)
-        {
-            <MessageVerificationTable Data="@MessagingVerifications" IsLoading="@PatientSupportDetailsLoading" />
-        }
-
-        if (CanViewDatasetAccess)
-        {
-            <DatasetAccessSection Data="@BlockedDataSources" IsLoading="@PatientSupportDetailsLoading" Hdid="@Hdid" CanEdit="@CanEditDatasetAccess" />
-        }
-
-        if (CanViewAgentAuditHistory)
-        {
-            <AgentAuditHistory Title="Agent Reason History" AgentActions="@AgentAuditHistory" IsLoading="@PatientSupportDetailsLoading" />
-        }
-
-        if (CanViewDependents)
-        {
-            <DependentTable Data="@Dependents" IsLoading="@PatientSupportDetailsLoading" />
-        }
-    }
-    else if (CanViewAccountDetails)
-    {
-        <MudText Class="mt-4" Typo="Typo.subtitle1">
-            Account Details
-        </MudText>
-        <MudText Class="mt-4" data-testid="no-hg-profile">
-            No Health Gateway Profile
-        </MudText>
-    }
-
-    if (CanViewCovidDetails && !ImmunizationsAreBlocked)
-    {
-        <Covid19ImmunizationSection Phn="@Patient.PersonalHealthNumber" Data="@VaccineDetails" IsLoading="@PatientSupportDetailsLoading" MailAddress="@MailAddress" />
-
-        <Covid19AssessmentSection Data="@AssessmentDetails" IsLoading="@PatientSupportDetailsLoading" AssessmentPagePath="@Covid19TreatmentAssessmentPath" />
-    }
-
-    if (ImmunizationsAreBlocked)
-    {
-        <MudAlert data-testid="blocked-immunization-alert" Severity="Severity.Error" Dense="true" Outlined="true" Class="alert-background-color mt-4">
-            Unable to retrieve vaccine records for this individual.
-        </MudAlert>
-    }
+    <HgTabs data-testid="patient-details-tabs" PanelClass="pa-4">
+        <ChildContent>
+            <MudTabPanel Text="Profile">
+                <ProfileTab Phn="@Phn" />
+            </MudTabPanel>
+            @if (CanViewAccountDetails)
+            {
+                <MudTabPanel Text="Account">
+                    <AccountTab Phn="@Phn" />
+                </MudTabPanel>
+            }
+            @if (CanViewManageProfile && IsGatewayUser)
+            {
+                <MudTabPanel Text="Manage">
+                    <ManageTab Phn="@Phn" />
+                </MudTabPanel>
+            }
+            @if (CanViewNotes && IsGatewayUser)
+            {
+                <MudTabPanel Text="Notes">
+                    <NotesTab />
+                </MudTabPanel>
+            }
+        </ChildContent>
+    </HgTabs>
 }
 else if (PatientsLoaded)
 {
-    <MudText Class="mt-4" Typo="Typo.subtitle1">
+    <MudText Class="mt-4" Typo="Typo.h6">
         No user found with the specified HDID.
     </MudText>
 }

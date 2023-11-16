@@ -15,11 +15,11 @@ import {
     PatientDataFile,
     PatientDataType,
 } from "@/models/patientDataResponse";
-import { ILogger } from "@/services/interfaces";
+import { Action, Actor, Format, Text, Type } from "@/plugins/extensions";
+import { ILogger, ITrackingService } from "@/services/interfaces";
 import { useErrorStore } from "@/stores/error";
 import { usePatientDataStore } from "@/stores/patientData";
 import { useUserStore } from "@/stores/user";
-import SnowPlow from "@/utility/snowPlow";
 
 interface Props {
     hdid: string;
@@ -27,6 +27,9 @@ interface Props {
 const props = defineProps<Props>();
 
 const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+const trackingService = container.get<ITrackingService>(
+    SERVICE_IDENTIFIER.TrackingService
+);
 const errorStore = useErrorStore();
 const patientDataStore = usePatientDataStore();
 const userStore = useUserStore();
@@ -61,9 +64,12 @@ const showOrganDonorRegistration = computed(
 function getDecisionFile(): void {
     const registrationDataValue = registrationData.value;
     if (registrationDataValue?.registrationFileId) {
-        SnowPlow.trackEvent({
-            action: "download_report",
-            text: "Organ Donor",
+        trackingService.trackEvent({
+            action: Action.Download,
+            text: Text.Document,
+            type: Type.OrganDonorRegistration,
+            format: Format.Pdf,
+            actor: Actor.User,
         });
         patientDataStore
             .retrievePatientDataFile(

@@ -15,19 +15,22 @@
     @ErrorMessage
 </HgBannerFeedback>
 
-<MudForm @ref="Form">
+<MudForm @ref="Form" id="query-controls">
     <div class="d-flex align-start">
         <HgTextField
             T="string"
             Label="Query"
             Required="@true"
+            Immediate="@true"
             Validation="@ValidateQueryParameter"
+            TopMargin="Breakpoint.None"
             @bind-Value="Query"
-            Class="flex-grow-1"
+            Class="flex-grow-1 query-input"
             data-testid="query-input" />
         <HgButton
-            TopMargin="Breakpoint.Always"
             EndIcon="fas fa-magnifying-glass"
+            TopMargin="Breakpoint.Always"
+            LeftMargin="Breakpoint.Always"
             OnClick="SearchAsync"
             data-testid="search-btn">
             Search

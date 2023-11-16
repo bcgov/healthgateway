@@ -24,6 +24,7 @@ namespace HealthGateway.Admin.Client.Pages
     using HealthGateway.Admin.Client.Components.AgentAudit;
     using HealthGateway.Admin.Client.Components.Delegation;
     using HealthGateway.Admin.Client.Models;
+    using HealthGateway.Admin.Client.Services;
     using HealthGateway.Admin.Client.Store.Delegation;
     using HealthGateway.Admin.Common.Models;
     using HealthGateway.Common.Data.Utils;
@@ -67,6 +68,9 @@ namespace HealthGateway.Admin.Client.Pages
         [Inject]
         private NavigationManager NavigationManager { get; set; } = default!;
 
+        [Inject]
+        private IKeyInterceptorService KeyInterceptorService { get; set; } = default!;
+
         private MudForm Form { get; set; } = default!;
 
         private string QueryParameter { get; set; } = string.Empty;
@@ -102,6 +106,32 @@ namespace HealthGateway.Admin.Client.Pages
             }
         }
 
+        /// <inheritdoc/>
+        protected override async Task OnAfterRenderAsync(bool firstRender)
+        {
+            if (firstRender)
+            {
+                await this.KeyInterceptorService.RegisterOnKeyDownAsync(
+                    "query-controls",
+                    "query-input",
+                    IKeyInterceptorService.EnterKey,
+                    _ => this.SearchAsync());
+            }
+
+            await base.OnAfterRenderAsync(firstRender);
+        }
+
+        /// <inheritdoc/>
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                this.KeyInterceptorService.Dispose();
+            }
+
+            base.Dispose(disposing);
+        }
+
         /// <summary>
         /// Resets the component to its initial state.
         /// </summary>
@@ -110,7 +140,7 @@ namespace HealthGateway.Admin.Client.Pages
             this.Dispatcher.Dispatch(new DelegationActions.ResetStateAction());
         }
 
-        private async Task Search()
+        private async Task SearchAsync()
         {
             await this.Form.Validate().ConfigureAwait(true);
             if (this.Form.IsValid)

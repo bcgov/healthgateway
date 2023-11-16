@@ -10,6 +10,20 @@ export interface SnowPlowEvent {
 }
 
 export interface EventData {
-    action: string;
-    text: string;
+    action: Action;
+    text: Text;
+    type?: Type;
+}
+
+export const enum Action {
+    Mail = "Mail",
+    Print = "Print",
+}
+
+export const enum Text {
+    Document = "Document",
+}
+
+export const enum Type {
+    Covid19ProofOfVaccination = "COVID-19 Proof of Vaccination",
 }
