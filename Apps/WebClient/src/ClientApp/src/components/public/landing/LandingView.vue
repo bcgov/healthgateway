@@ -4,7 +4,7 @@ import { useDisplay } from "vuetify";
 
 import HgButtonComponent from "@/components/common/HgButtonComponent.vue";
 import HgIconButtonComponent from "@/components/common/HgIconButtonComponent.vue";
-import TileComponent from "@/components/public/landing/TileComponent.vue";
+import TileComponent from "@/components/site/TileComponent.vue";
 import { EntryType, entryTypeMap } from "@/constants/entryType";
 import { ServiceName } from "@/constants/serviceName";
 import { InfoTile } from "@/models/infoTile";

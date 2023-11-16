@@ -109,6 +109,10 @@ const PcrTestKitRegistrationView = () =>
     import(
         /* webpackChunkName: "pcrTest" */ "@/components/public/pcr-test-kit-registration/PcrTestKitRegistrationView.vue"
     );
+const SharingView = () =>
+    import(
+        /* webpackChunkName: "sharing" */ "@/components/private/sharing/SharingView.vue"
+    );
 
 export enum UserState {
     offline = "offline",
@@ -135,6 +139,21 @@ const routes = [
                 UserState.offline,
             ],
             requiresProcessedWaitlistTicket: false,
+        },
+    },
+    {
+        path: Path.AcceptTermsOfService,
+        component: AcceptTermsOfServiceView,
+        meta: {
+            validStates: [UserState.acceptTermsOfService],
+            requiresProcessedWaitlistTicket: true,
+        },
+    },
+    {
+        path: Path.Busy,
+        component: QueueFullView,
+        meta: {
+            stateless: true,
         },
     },
     {
@@ -171,14 +190,6 @@ const routes = [
         },
     },
     {
-        path: Path.IdirLoggedIn,
-        component: IdirLoggedInView,
-        meta: {
-            validStates: [UserState.invalidIdentityProvider],
-            requiresProcessedWaitlistTicket: true,
-        },
-    },
-    {
         path: Path.Home,
         name: "Home",
         component: HomeView,
@@ -188,15 +199,10 @@ const routes = [
         },
     },
     {
-        path: Path.Profile,
-        name: "Profile",
-        component: ProfileView,
+        path: Path.IdirLoggedIn,
+        component: IdirLoggedInView,
         meta: {
-            validStates: [
-                UserState.registered,
-                UserState.pendingDeletion,
-                UserState.acceptTermsOfService,
-            ],
+            validStates: [UserState.invalidIdentityProvider],
             requiresProcessedWaitlistTicket: true,
         },
     },
@@ -222,50 +228,21 @@ const routes = [
         },
     },
     {
-        path: Path.Logout,
-        name: "Logout",
-        component: LogoutView,
-        meta: { stateless: true },
-    },
-    {
         path: Path.LogoutComplete,
         name: "LogoutComplete",
         component: LogoutCompleteView,
         meta: { stateless: true },
     },
     {
-        path: Path.VaccineCard,
-        component: PublicVaccineCardView,
-        meta: {
-            validStates: [
-                UserState.unauthenticated,
-                UserState.invalidIdentityProvider,
-                UserState.noPatient,
-                UserState.registered,
-                UserState.pendingDeletion,
-            ],
-            requiresProcessedWaitlistTicket: true,
-        },
+        path: Path.Logout,
+        name: "Logout",
+        component: LogoutView,
+        meta: { stateless: true },
     },
     {
-        path: Path.Registration,
-        name: "Registration",
-        component: RegistrationView,
-        meta: {
-            validStates: [UserState.notRegistered],
-            requiresProcessedWaitlistTicket: true,
-        },
-    },
-    {
-        path: Path.Services,
-        name: "Services",
-        component: ServicesView,
-        meta: {
-            validStates: [UserState.registered],
-            requiredFeaturesEnabled: (config: FeatureToggleConfiguration) =>
-                config.services.enabled,
-            requiresProcessedWaitlistTicket: true,
-        },
+        path: Path.NotFound,
+        component: NotFoundView,
+        meta: { stateless: true },
     },
     {
         path: Path.PatientRetrievalError,
@@ -274,16 +251,6 @@ const routes = [
             validStates: [UserState.noPatient],
             requiresProcessedWaitlistTicket: true,
         },
-    },
-    {
-        path: Path.Unauthorized,
-        component: UnauthorizedView,
-        meta: { stateless: true },
-    },
-    {
-        path: Path.NotFound,
-        component: NotFoundView,
-        meta: { stateless: true },
     },
     {
         path: Path.PcrTestKitRegistration,
@@ -318,6 +285,35 @@ const routes = [
         },
     },
     {
+        path: Path.Profile,
+        name: "Profile",
+        component: ProfileView,
+        meta: {
+            validStates: [
+                UserState.registered,
+                UserState.pendingDeletion,
+                UserState.acceptTermsOfService,
+            ],
+            requiresProcessedWaitlistTicket: true,
+        },
+    },
+    {
+        path: Path.Queue,
+        component: QueueView,
+        meta: {
+            stateless: true,
+        },
+    },
+    {
+        path: Path.Registration,
+        name: "Registration",
+        component: RegistrationView,
+        meta: {
+            validStates: [UserState.notRegistered],
+            requiresProcessedWaitlistTicket: true,
+        },
+    },
+    {
         path: Path.Reports,
         component: ReportsView,
         meta: {
@@ -326,10 +322,24 @@ const routes = [
         },
     },
     {
-        path: Path.Timeline,
-        component: UserTimelineView,
+        path: Path.Sharing,
+        name: "Sharing",
+        component: SharingView,
         meta: {
             validStates: [UserState.registered],
+            requiredFeaturesEnabled: (config: FeatureToggleConfiguration) =>
+                config.sharing.enabled,
+            requiresProcessedWaitlistTicket: true,
+        },
+    },
+    {
+        path: Path.Services,
+        name: "Services",
+        component: ServicesView,
+        meta: {
+            validStates: [UserState.registered],
+            requiredFeaturesEnabled: (config: FeatureToggleConfiguration) =>
+                config.services.enabled,
             requiresProcessedWaitlistTicket: true,
         },
     },
@@ -348,10 +358,29 @@ const routes = [
         },
     },
     {
-        path: Path.AcceptTermsOfService,
-        component: AcceptTermsOfServiceView,
+        path: Path.Timeline,
+        component: UserTimelineView,
         meta: {
-            validStates: [UserState.acceptTermsOfService],
+            validStates: [UserState.registered],
+            requiresProcessedWaitlistTicket: true,
+        },
+    },
+    {
+        path: Path.Unauthorized,
+        component: UnauthorizedView,
+        meta: { stateless: true },
+    },
+    {
+        path: Path.VaccineCard,
+        component: PublicVaccineCardView,
+        meta: {
+            validStates: [
+                UserState.unauthenticated,
+                UserState.invalidIdentityProvider,
+                UserState.noPatient,
+                UserState.registered,
+                UserState.pendingDeletion,
+            ],
             requiresProcessedWaitlistTicket: true,
         },
     },
@@ -362,20 +391,6 @@ const routes = [
         meta: {
             validStates: [UserState.registered],
             requiresProcessedWaitlistTicket: true,
-        },
-    },
-    {
-        path: Path.Queue,
-        component: QueueView,
-        meta: {
-            stateless: true,
-        },
-    },
-    {
-        path: Path.Busy,
-        component: QueueFullView,
-        meta: {
-            stateless: true,
         },
     },
     {
