@@ -71,10 +71,7 @@ export const useDelegateStore = defineStore("delegate", () => {
     }
 
     function submitInvitationDialog(): Promise<string | void> {
-        if (
-            invitationDialogState.value != null &&
-            invitationDialogState.value.mode === "Create"
-        ) {
+        if (invitationDialogState.value?.mode === "Create") {
             return createInvitation({
                 nickname: invitationDialogState.value.nickname,
                 email: invitationDialogState.value.email,
