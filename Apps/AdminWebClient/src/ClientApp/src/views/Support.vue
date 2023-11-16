@@ -122,7 +122,9 @@ export default class SupportView extends Vue {
             this.selectedQueryType = QueryType.HDID;
             this.searchText = this.hdid;
             this.handleSearch();
-            this.$router.replace({ path: "/support" });
+            this.$router
+                .replace({ path: "/support" })
+                .catch((error) => console.warn(error.message));
         }
     }
 
