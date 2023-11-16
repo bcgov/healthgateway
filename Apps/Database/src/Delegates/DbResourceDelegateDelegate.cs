@@ -19,6 +19,7 @@ namespace HealthGateway.Database.Delegates
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using System.Linq;
+    using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Context;
@@ -118,15 +119,16 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public IDictionary<DateTime, int> GetDailyDependentCount(TimeSpan offset)
+        public async Task<IDictionary<DateOnly, int>> GetDailyDependentRegistrationCountsAsync(TimeSpan offset, CancellationToken ct = default)
         {
             this.logger.LogTrace("Counting resource delegates from DB...");
-            Dictionary<DateTime, int> dateCount = this.dbContext.ResourceDelegate
+            Dictionary<DateOnly, int> dateCount = await this.dbContext.ResourceDelegate
+                .Where(x => x.ReasonCode == ResourceDelegateReason.Guardian)
                 .Select(x => new { x.ProfileHdid, x.ResourceOwnerHdid, createdDate = x.CreatedDateTime.AddMinutes(offset.TotalMinutes).Date })
                 .GroupBy(x => x.createdDate)
                 .Select(x => new { createdDate = x.Key, count = x.Count() })
                 .OrderBy(x => x.createdDate)
-                .ToDictionary(x => x.createdDate, x => x.count);
+                .ToDictionaryAsync(x => DateOnly.FromDateTime(x.createdDate), x => x.count, ct);
             this.logger.LogTrace("Finished counting resource delegates from DB...");
 
             return dateCount;
