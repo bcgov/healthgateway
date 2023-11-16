@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import { ref } from "vue";
+import { computed, ref } from "vue";
 
 import { DataSource } from "@/constants/dataSource";
 import { ErrorSourceType, ErrorType } from "@/constants/errorType";
@@ -27,6 +27,7 @@ export interface DelegateInvitationDialogState {
     email?: string;
     expiryDate?: string;
     dataSources?: DataSource[];
+    sharingCode?: string;
 }
 
 export const useDelegateStore = defineStore("delegate", () => {
@@ -43,10 +44,30 @@ export const useDelegateStore = defineStore("delegate", () => {
     const error = ref<ResultError>();
     const statusMessage = ref("");
 
+    const isInvitationDialogVisible = computed(
+        () => invitationDialogState.value != undefined
+    );
+
     function setInvitationsError(incomingError: ResultError) {
         error.value = incomingError;
         statusMessage.value = incomingError.resultMessage;
         invitationsAreLoading.value = false;
+    }
+
+    function setDialogToSharingCode(sharingCode: string) {
+        invitationDialogState.value = {
+            ...invitationDialogState.value,
+            mode: "Create",
+            step: DelegateInvitationDialogStep.sharingCode,
+            sharingCode: sharingCode,
+        };
+    }
+
+    function startNewInvitation(): void {
+        invitationDialogState.value = {
+            mode: "Create",
+            step: DelegateInvitationDialogStep.contact,
+        };
     }
 
     function submitInvitationDialog(): Promise<string | void> {
@@ -59,6 +80,10 @@ export const useDelegateStore = defineStore("delegate", () => {
                 email: invitationDialogState.value.email,
                 expiryDate: invitationDialogState.value.expiryDate,
                 dataSources: invitationDialogState.value.dataSources,
+            }).then((sharingCode) => {
+                if (sharingCode != undefined) {
+                    setDialogToSharingCode(sharingCode!);
+                }
             });
         }
         // TODO: Remove this once all paths are covered
@@ -74,12 +99,6 @@ export const useDelegateStore = defineStore("delegate", () => {
             .createInvitation(invitation)
             .catch((error: ResultError) => {
                 handleError(error, ErrorType.Create, "sharing-dialog");
-            })
-            .then((result) => {
-                // TODO: retrieve all invitations, when invitation is successfully created
-                invitationsAreLoading.value = false;
-                resetInvitationDialogState();
-                return result;
             });
     }
 
@@ -111,9 +130,12 @@ export const useDelegateStore = defineStore("delegate", () => {
     }
 
     return {
-        submitInvitationDialog,
-        resetInvitationDialogState,
         invitations,
         invitationsAreLoading,
+        isInvitationDialogVisible,
+        invitationDialogState,
+        startNewInvitation,
+        submitInvitationDialog,
+        resetInvitationDialogState,
     };
 });
