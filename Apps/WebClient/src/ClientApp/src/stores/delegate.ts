@@ -1,17 +1,38 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
 
+import { DataSource } from "@/constants/dataSource";
+import { DelegateInvitationStatus } from "@/constants/delegateInvitationStatus";
 import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import { container } from "@/ioc/container";
 import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
-import { DelegateInvitation } from "@/models/delegateInvitation";
 import { ResultError } from "@/models/errors";
+import { CreateDelegateInvitationRequest } from "@/models/sharing/createDelegateInvitationRequest";
+import { DelegateInvitation } from "@/models/sharing/delegateInvitation";
 import { IDelegateService, ILogger } from "@/services/interfaces";
 import { useErrorStore } from "@/stores/error";
 
-const emptyInvitation: DelegateInvitation = {
-    status: "Pending",
-    dataSources: [],
+export enum DelegateInvitationDialogStep {
+    contact = 0,
+    nickname = 1,
+    dataSources = 2,
+    expiryDate = 3,
+    review = 4,
+    sharingCode = 5,
+}
+
+export interface DelegateInvitationDialogState {
+    mode: "Create" | "Modify";
+    step: DelegateInvitationDialogStep;
+    nickname?: string;
+    email?: string;
+    expiryDate?: string;
+    dataSources?: DataSource[];
+}
+
+const defaultInvitationDialogState: DelegateInvitationDialogState = {
+    mode: "Create",
+    step: DelegateInvitationDialogStep.contact,
 };
 
 export const useDelegateStore = defineStore("delegate", () => {
@@ -23,7 +44,9 @@ export const useDelegateStore = defineStore("delegate", () => {
     const errorStore = useErrorStore();
 
     const invitations = ref<DelegateInvitation[]>([]);
-    const newInvitation = ref<DelegateInvitation>({ ...emptyInvitation });
+    const invitationDialogState = ref<DelegateInvitationDialogState>({
+        ...defaultInvitationDialogState,
+    });
     const invitationsAreLoading = ref(false);
     const error = ref<ResultError>();
     const statusMessage = ref("");
@@ -34,8 +57,22 @@ export const useDelegateStore = defineStore("delegate", () => {
         invitationsAreLoading.value = false;
     }
 
+    function submitInvitationDialog(): Promise<string | void> {
+        if (invitationDialogState.value.mode === "Create") {
+            return createInvitation({
+                status: DelegateInvitationStatus.Pending,
+                nickname: invitationDialogState.value.nickname,
+                email: invitationDialogState.value.email,
+                expiryDate: invitationDialogState.value.expiryDate,
+                dataSources: invitationDialogState.value.dataSources,
+            });
+        }
+        // TODO: Remove this once all paths are covered
+        return Promise.resolve();
+    }
+
     function createInvitation(
-        invitation: DelegateInvitation
+        invitation: CreateDelegateInvitationRequest
     ): Promise<string | void> {
         logger.debug("Create invitation");
         invitationsAreLoading.value = true;
@@ -47,13 +84,13 @@ export const useDelegateStore = defineStore("delegate", () => {
             .then((result) => {
                 // TODO: retrieve all invitations, when invitation is successfully created
                 invitationsAreLoading.value = false;
-                resetNewInvitation();
+                resetInvitationDialogState();
                 return result;
             });
     }
 
-    function resetNewInvitation() {
-        newInvitation.value = { ...emptyInvitation };
+    function resetInvitationDialogState() {
+        invitationDialogState.value = { ...defaultInvitationDialogState };
     }
 
     function handleError(
@@ -80,8 +117,8 @@ export const useDelegateStore = defineStore("delegate", () => {
     }
 
     return {
-        createInvitation,
-        resetInvitation: resetNewInvitation,
+        submitInvitationDialog,
+        resetInvitationDialogState,
         invitations,
         invitationsAreLoading,
     };

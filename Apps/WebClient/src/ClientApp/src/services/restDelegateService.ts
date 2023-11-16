@@ -2,8 +2,8 @@ import path from "path";
 
 import { ServiceCode } from "@/constants/serviceCodes";
 import { ExternalConfiguration } from "@/models/configData";
-import { DelegateInvitation } from "@/models/delegateInvitation";
 import { HttpError } from "@/models/errors";
+import { CreateDelegateInvitationRequest } from "@/models/sharing/createDelegateInvitationRequest";
 import ErrorTranslator from "@/utility/errorTranslator";
 
 import { IDelegateService, IHttpDelegate, ILogger } from "./interfaces";
@@ -25,7 +25,7 @@ export class RestDelegateService implements IDelegateService {
     }
 
     public createInvitation(
-        invite: DelegateInvitation
+        invite: CreateDelegateInvitationRequest
     ): Promise<string | undefined> {
         const uri = path.join(
             this.baseUri,

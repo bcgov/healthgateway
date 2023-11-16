@@ -1,14 +1,10 @@
 import { DataSource } from "@/constants/dataSource";
+import { DelegateInvitationStatus } from "@/constants/delegateInvitationStatus";
 
 /**
- * Represents the delegate invitation model
+ * Represents the request delegate invitation model.
  */
-export interface DelegateInvitation {
-    /**
-     * The delegate invitation id.
-     */
-    id?: string;
-
+export interface CreateDelegateInvitationRequest {
     /**
      * The friendly name of the delegate.
      */
@@ -16,15 +12,8 @@ export interface DelegateInvitation {
 
     /**
      * The delegate invitation status.
-     * Pending, Active, Declined, Locked, InviteExpired, AccessExpired
      */
-    status?:
-        | "Pending"
-        | "Active"
-        | "Declined"
-        | "Locked"
-        | "InviteExpired"
-        | "AccessExpired";
+    status?: DelegateInvitationStatus;
 
     /**
      * The email address to send the invitation.
