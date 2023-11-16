@@ -6,6 +6,7 @@ export interface DelegateInvitation {
      * The delegate invitation id.
      */
     id: string;
+
     /**
      * The friendly name of the delegate.
      */

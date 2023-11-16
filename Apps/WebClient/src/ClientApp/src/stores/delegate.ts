@@ -2,7 +2,6 @@ import { defineStore } from "pinia";
 import { ref } from "vue";
 
 import { DataSource } from "@/constants/dataSource";
-import { DelegateInvitationStatus } from "@/constants/delegateInvitationStatus";
 import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import { container } from "@/ioc/container";
 import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
@@ -30,11 +29,6 @@ export interface DelegateInvitationDialogState {
     dataSources?: DataSource[];
 }
 
-const defaultInvitationDialogState: DelegateInvitationDialogState = {
-    mode: "Create",
-    step: DelegateInvitationDialogStep.contact,
-};
-
 export const useDelegateStore = defineStore("delegate", () => {
     const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
     const delegateService = container.get<IDelegateService>(
@@ -44,9 +38,7 @@ export const useDelegateStore = defineStore("delegate", () => {
     const errorStore = useErrorStore();
 
     const invitations = ref<DelegateInvitation[]>([]);
-    const invitationDialogState = ref<DelegateInvitationDialogState>({
-        ...defaultInvitationDialogState,
-    });
+    const invitationDialogState = ref<DelegateInvitationDialogState>();
     const invitationsAreLoading = ref(false);
     const error = ref<ResultError>();
     const statusMessage = ref("");
@@ -58,9 +50,11 @@ export const useDelegateStore = defineStore("delegate", () => {
     }
 
     function submitInvitationDialog(): Promise<string | void> {
-        if (invitationDialogState.value.mode === "Create") {
+        if (
+            invitationDialogState.value != null &&
+            invitationDialogState.value.mode === "Create"
+        ) {
             return createInvitation({
-                status: DelegateInvitationStatus.Pending,
                 nickname: invitationDialogState.value.nickname,
                 email: invitationDialogState.value.email,
                 expiryDate: invitationDialogState.value.expiryDate,
@@ -90,7 +84,7 @@ export const useDelegateStore = defineStore("delegate", () => {
     }
 
     function resetInvitationDialogState() {
-        invitationDialogState.value = { ...defaultInvitationDialogState };
+        invitationDialogState.value = undefined;
     }
 
     function handleError(
