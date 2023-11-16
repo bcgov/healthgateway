@@ -44,7 +44,7 @@ namespace HealthGateway.PatientTests.Services
 
     // Disable documentation for tests.
 #pragma warning disable SA1600
-
+#pragma warning disable CS1591
     public class PatientDataServiceTests
     {
         private readonly Guid pid = Guid.NewGuid();
@@ -312,6 +312,6 @@ namespace HealthGateway.PatientTests.Services
             return personalAccountService;
         }
     }
-
+#pragma warning restore CS1591
 #pragma warning restore SA1600
 }

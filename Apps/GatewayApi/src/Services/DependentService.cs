@@ -102,7 +102,7 @@ namespace HealthGateway.GatewayApi.Services
         /// <inheritdoc/>
         public async Task<RequestResult<DependentModel>> AddDependentAsync(string delegateHdid, AddDependentRequest addDependentRequest, CancellationToken ct = default)
         {
-            ValidationResult? validationResults = new AddDependentRequestValidator(this.maxDependentAge).Validate(addDependentRequest);
+            ValidationResult? validationResults = await new AddDependentRequestValidator(this.maxDependentAge).ValidateAsync(addDependentRequest, ct);
 
             if (!validationResults.IsValid)
             {

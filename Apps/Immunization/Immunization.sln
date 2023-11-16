@@ -8,8 +8,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ImmunizationTests", "test\u
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common", "..\Common\src\Common.csproj", "{2168A472-86BE-4ACA-B2EF-761D2128DF82}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImmunizationTestsFunctional", "test\functional\ImmunizationTestsFunctional.csproj", "{DFBA69C6-97D9-4CCF-BEDA-C9246862CD0C}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

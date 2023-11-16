@@ -44,7 +44,7 @@ namespace HealthGateway.Common.Data.Utils
         public static readonly IEnumerable<CountryCode> CountryCodes = Enum.GetValues<CountryCode>()[1..];
 
         [SuppressMessage("ReSharper", "StringLiteralTypo", Justification = "Country names don't require spellchecking")]
-        private static readonly IDictionary<string, CountryCode> CountryAliases = new Dictionary<string, CountryCode>
+        private static readonly Dictionary<string, CountryCode> CountryAliases = new Dictionary<string, CountryCode>
         {
             ["Admiralty Islands (included in Papua New Guinea)"] = CountryCode.PG,
             ["Aegean Islands (included in Greece)"] = CountryCode.GR,

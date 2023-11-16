@@ -84,7 +84,7 @@ namespace HealthGateway.Admin.Client.Pages
             {
                 AccessTokenResult? tokenResult = await this.TokenProvider.RequestAccessToken().ConfigureAwait(true);
                 tokenResult.TryGetToken(out AccessToken? accessToken);
-                this.Token = accessToken.Value;
+                this.Token = accessToken?.Value;
 
                 this.AuthMessage = $"{user.Identity.Name} is authenticated.";
                 this.Claims = user.Claims;

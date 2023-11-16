@@ -56,11 +56,7 @@ namespace HealthGateway.Common.Services
         /// <param name="clientRuntime">The client runtime.</param>
         public void ApplyClientBehavior(ServiceEndpoint endpoint, ClientRuntime clientRuntime)
         {
-            if (clientRuntime is null)
-            {
-                throw new ArgumentNullException(nameof(clientRuntime));
-            }
-
+            ArgumentNullException.ThrowIfNull(clientRuntime);
             clientRuntime.ClientMessageInspectors.Add(this.messageInspector);
         }
 

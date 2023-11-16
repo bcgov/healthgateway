@@ -63,7 +63,6 @@ namespace HealthGateway.JobScheduler.Listeners
         /// </summary>
         /// <param name="stoppingToken">The cancellation token to use.</param>
         /// <returns>The task.</returns>
-        [SuppressMessage("Security", "CA2100:Review SQL queries for security vulnerabilities", Justification = "Abstract class property")]
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             this.logger.LogInformation("Banner Listener is starting");

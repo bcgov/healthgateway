@@ -464,7 +464,7 @@ namespace HealthGateway.EncounterTests.Services
                     RemoteIpAddress = IPAddress.Parse(this.ipAddress),
                 },
             };
-            context.Request.Headers.Add("Authorization", "MockJWTHeader");
+            context.Request.Headers.Append("Authorization", "MockJWTHeader");
             return context;
         }
     }

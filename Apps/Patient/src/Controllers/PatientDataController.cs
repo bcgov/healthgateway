@@ -15,7 +15,6 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Patient.Controllers
 {
-    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.AccessManagement.Authorization.Policy;
@@ -67,7 +66,7 @@ namespace HealthGateway.Patient.Controllers
                 throw new ProblemDetailsException(ExceptionUtility.CreateValidationError(nameof(hdid), "Hdid is missing"));
             }
 
-            if (patientDataTypes == null || !patientDataTypes.Any())
+            if (patientDataTypes == null || patientDataTypes.Length == 0)
             {
                 throw new ProblemDetailsException(ExceptionUtility.CreateValidationError(nameof(patientDataTypes), "Must have at least one data type"));
             }

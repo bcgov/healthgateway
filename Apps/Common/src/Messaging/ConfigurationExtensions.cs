@@ -38,10 +38,7 @@ namespace HealthGateway.Common.Messaging
         /// <returns>Same services.</returns>
         public static IServiceCollection AddMessaging(this IServiceCollection services, MessagingSettings settings)
         {
-            if (settings == null)
-            {
-                throw new ArgumentNullException(nameof(settings));
-            }
+            ArgumentNullException.ThrowIfNull(settings);
 
             return settings switch
             {

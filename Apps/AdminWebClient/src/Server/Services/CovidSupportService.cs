@@ -252,7 +252,7 @@ namespace HealthGateway.Admin.Services
         /// <inheritdoc/>
         public async Task<RequestResult<CovidAssessmentDetailsResponse>> GetCovidAssessmentDetailsAsync(string phn)
         {
-            if (!new PhnValidator().Validate(phn).IsValid)
+            if (!(await new PhnValidator().ValidateAsync(phn)).IsValid)
             {
                 return RequestResultFactory.ActionRequired<CovidAssessmentDetailsResponse>(ActionType.Validation, "Form data did not pass validation");
             }
