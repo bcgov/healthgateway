@@ -17,7 +17,7 @@ namespace HealthGateway.GatewayApi.Models
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics.CodeAnalysis;
+    using System.Collections.Immutable;
     using HealthGateway.Common.Data.Constants;
 
     /// <summary>
@@ -41,9 +41,8 @@ namespace HealthGateway.GatewayApi.Models
         public DateOnly ExpiryDate { get; set; }
 
         /// <summary>
-        /// Gets or sets the access for the data sets.
+        /// Gets the access for the data sets.
         /// </summary>
-        [SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "Team decision")]
-        public HashSet<DataSource> DataSources { get; set; } = new();
+        private ISet<DataSource> DataSources { get; init; } = ImmutableHashSet<DataSource>.Empty;
     }
 }
