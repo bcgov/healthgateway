@@ -15,6 +15,7 @@ export const enum ErrorType {
 export enum ErrorSourceType {
     Comment = "comment",
     Dependent = "dependent",
+    Delegate = "delegate",
     Encounter = "health visit",
     HospitalVisit = "hospital visit",
     Immunization = "immunization",

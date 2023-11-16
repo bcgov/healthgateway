@@ -77,7 +77,7 @@ export const useDelegateStore = defineStore("delegate", () => {
         } else {
             errorStore.addError(
                 errorType,
-                ErrorSourceType.Dependent,
+                ErrorSourceType.Delegate,
                 incomingError.traceId
             );
         }
