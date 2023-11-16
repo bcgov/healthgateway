@@ -21,7 +21,7 @@ export class RestDelegateService implements IDelegateService {
     ) {
         this.logger = logger;
         this.http = http;
-        this.baseUri = config.serviceEndpoints["Delegate"];
+        this.baseUri = config.serviceEndpoints["GatewayApi"];
     }
 
     public createInvitation(
