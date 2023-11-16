@@ -9,12 +9,8 @@ import { ResultError } from "@/models/errors";
 import { IDelegateService, ILogger } from "@/services/interfaces";
 import { useErrorStore } from "@/stores/error";
 
-const cleanInvitation: DelegateInvitation = {
-    id: "",
-    nickname: "",
+const emptyInvitation: DelegateInvitation = {
     status: "Pending",
-    email: "",
-    expiryDate: "",
     dataSources: [],
 };
 
@@ -27,7 +23,7 @@ export const useDelegateStore = defineStore("delegate", () => {
     const errorStore = useErrorStore();
 
     const invitations = ref<DelegateInvitation[]>([]);
-    const newInvitation = ref<DelegateInvitation>({ ...cleanInvitation });
+    const newInvitation = ref<DelegateInvitation>({ ...emptyInvitation });
     const invitationsAreLoading = ref(false);
     const error = ref<ResultError>();
     const statusMessage = ref("");
@@ -57,7 +53,7 @@ export const useDelegateStore = defineStore("delegate", () => {
     }
 
     function resetNewInvitation() {
-        newInvitation.value = { ...cleanInvitation };
+        newInvitation.value = { ...emptyInvitation };
     }
 
     function handleError(
