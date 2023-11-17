@@ -21,7 +21,6 @@ using System.Globalization;
 using System.Linq;
 using Fluxor;
 
-#pragma warning disable CS1591, SA1600
 public static class DashboardReducers
 {
     [ReducerMethod(typeof(DashboardActions.GetRegisteredUsersAction))]

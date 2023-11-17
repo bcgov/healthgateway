@@ -24,7 +24,6 @@ namespace HealthGateway.Admin.Client.Store.Configuration
     using Microsoft.Extensions.Logging;
     using Refit;
 
-#pragma warning disable CS1591, SA1600
     public class ConfigurationEffects
     {
         public ConfigurationEffects(ILogger<ConfigurationEffects> logger, IConfigurationApi configApi)

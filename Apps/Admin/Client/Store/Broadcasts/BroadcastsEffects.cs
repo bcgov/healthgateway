@@ -30,7 +30,6 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Logging;
 using Refit;
 
-#pragma warning disable CS1591, SA1600
 public class BroadcastsEffects
 {
     public BroadcastsEffects(ILogger<BroadcastsEffects> logger, IBroadcastsApi api)

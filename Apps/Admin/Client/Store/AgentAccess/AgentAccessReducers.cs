@@ -13,20 +13,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-#pragma warning disable CS1591
 namespace HealthGateway.Admin.Client.Store.AgentAccess;
 
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Diagnostics.CodeAnalysis;
 using Fluxor;
 using HealthGateway.Admin.Common.Models;
 
 /// <summary>
 /// The set of reducers for the feature.
 /// </summary>
-[SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600:Elements should be documented", Justification = "Accessed only by Fluxor")]
 public static class AgentAccessReducers
 {
     [ReducerMethod(typeof(AgentAccessActions.SearchAction))]

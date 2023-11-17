@@ -22,7 +22,6 @@ using HealthGateway.Admin.Client.Api;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Logging;
 
-#pragma warning disable CS1591, SA1600
 public class AnalyticsEffects
 {
     public AnalyticsEffects(ILogger<AnalyticsEffects> logger, IAnalyticsApi analyticsApi)

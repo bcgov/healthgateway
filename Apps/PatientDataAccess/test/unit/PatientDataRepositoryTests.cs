@@ -29,9 +29,6 @@ namespace PatientDataAccessTests
     using OrganDonorRegistration = HealthGateway.PatientDataAccess.Api.OrganDonorRegistration;
     using OrganDonorRegistrationStatus = HealthGateway.PatientDataAccess.Api.OrganDonorRegistrationStatus;
 
-    // Disable documentation for tests.
-#pragma warning disable SA1600
-
     public class PatientDataRepositoryTests
     {
         private readonly Guid pid = Guid.NewGuid();
@@ -262,6 +259,4 @@ namespace PatientDataAccessTests
             return new PatientDataRepository(api, mapper);
         }
     }
-
-#pragma warning restore SA1600
 }

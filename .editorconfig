@@ -801,6 +801,7 @@ resharper_web_config_wrong_module_highlighting = warning
 
 # SA1629: Documentation text should end with a period
 dotnet_diagnostic.SA1629.severity = none
+
 # IDE0058: Remove unnecessary expression value
 dotnet_diagnostic.IDE0058.severity = none
 
@@ -808,3 +809,17 @@ dotnet_diagnostic.IDE0058.severity = none
 
 # CA1506: Avoid excessive class coupling
 dotnet_diagnostic.ca1506.severity = none
+
+# CS1591: Missing XML comment for publicly visible type or member
+dotnet_diagnostic.cs1591.severity = none
+
+# SA1600: Elements should be documented
+dotnet_diagnostic.sa1600.severity = none
+
+[**/Store/**/*{Effects,Reducers}.cs]
+
+# CS1591: Missing XML comment for publicly visible type or member
+dotnet_diagnostic.cs1591.severity = none
+
+# SA1600: Elements should be documented
+dotnet_diagnostic.sa1600.severity = none

@@ -29,7 +29,6 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Logging;
 using Refit;
 
-#pragma warning disable CS1591, SA1600
 public class TagEffects
 {
     public TagEffects(ILogger<TagEffects> logger, ITagApi api)

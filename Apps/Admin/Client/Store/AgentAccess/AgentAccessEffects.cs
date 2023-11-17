@@ -13,13 +13,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-
-#pragma warning disable CS1591
 namespace HealthGateway.Admin.Client.Store.AgentAccess;
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -31,7 +28,6 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Logging;
 using Refit;
 
-[SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600:Elements should be documented", Justification = "Accessed only by Fluxor")]
 public class AgentAccessEffects
 {
     public AgentAccessEffects(ILogger<AgentAccessEffects> logger, IAgentAccessApi api)

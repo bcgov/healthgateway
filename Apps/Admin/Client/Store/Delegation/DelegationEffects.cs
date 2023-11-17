@@ -32,7 +32,6 @@ namespace HealthGateway.Admin.Client.Store.Delegation
     using Microsoft.Extensions.Logging;
     using Refit;
 
-#pragma warning disable CS1591, SA1600
     public class DelegationEffects
     {
         public DelegationEffects(IDelegationApi api, IMapper autoMapper, IState<DelegationState> delegationState, ILogger<DelegationEffects> logger)

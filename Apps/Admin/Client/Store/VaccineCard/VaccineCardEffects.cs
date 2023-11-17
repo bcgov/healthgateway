@@ -27,7 +27,6 @@ namespace HealthGateway.Admin.Client.Store.VaccineCard
     using Microsoft.Extensions.Logging;
     using Refit;
 
-#pragma warning disable CS1591, SA1600
     public class VaccineCardEffects
     {
         public VaccineCardEffects(ILogger<VaccineCardEffects> logger, ISupportApi supportApi)
