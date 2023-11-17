@@ -251,7 +251,6 @@ namespace PatientDataAccessTests
             result.ShouldNotBeNull().Items.ShouldBeEmpty();
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1859:Use concrete types when possible for improved performance", Justification = "Team decision")]
         private static IPatientDataRepository CreateSut(IPatientApi api)
         {
             IMapper? mapper = new MapperConfiguration(cfg => cfg.AddMaps(typeof(Mappings))).CreateMapper();

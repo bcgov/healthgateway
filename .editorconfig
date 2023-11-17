@@ -22,6 +22,9 @@ indent_size = 2
 # S101: Types should be named in PascalCase
 dotnet_diagnostic.s101.severity = none
 
+# S2094: Remove this empty record, write its code or make it an "interface"
+dotnet_diagnostic.s2094.severity = none
+
 # CA1000: Do not declare static members on generic types
 dotnet_diagnostic.ca1000.severity = warning
 
@@ -291,6 +294,15 @@ dotnet_diagnostic.ca1828.severity = warning
 
 # CA1829: Use Length/Count property instead of Count() when available
 dotnet_diagnostic.ca1829.severity = warning
+
+# CA1848: For improved performance, use the LoggerMessage delegates
+dotnet_diagnostic.ca1848.severity = suggestion
+
+# CA1859: Use concrete types when possible for improved performance
+dotnet_diagnostic.ca1859.severity = suggestion
+
+# CA1863: Cache a 'CompositeFormat' for repeated use in this formatting operation	
+dotnet_diagnostic.ca1863.severity = suggestion
 
 # CA2000: Dispose objects before losing scope
 dotnet_diagnostic.ca2000.severity = warning
@@ -673,6 +685,9 @@ dotnet_diagnostic.s1135.severity = warning
 # SA1000: Keywords should be spaced correctly
 dotnet_diagnostic.sa1000.severity = error
 
+# SA1010: Opening square brackets should not be preceded by a space
+dotnet_diagnostic.sa1010.severity = none
+
 # SA1206: Declaration keywords should follow order
 # disabled due to StyleCop not recognizing 'required' modifier
 dotnet_diagnostic.sa1206.severity = none
@@ -805,10 +820,16 @@ dotnet_diagnostic.SA1629.severity = none
 # IDE0058: Remove unnecessary expression value
 dotnet_diagnostic.IDE0058.severity = none
 
-[**/{test/unit,Tests}/**/*Tests.cs]
+[**/{test,Tests}/**/*Tests.cs]
 
 # CA1506: Avoid excessive class coupling
 dotnet_diagnostic.ca1506.severity = none
+
+# CA1859: Use concrete types when possible for improved performance
+dotnet_diagnostic.ca1859.severity = none
+
+# CA1869: Cache and reuse 'JsonSerializerOptions' instances
+dotnet_diagnostic.ca1869.severity = none
 
 # CS1591: Missing XML comment for publicly visible type or member
 dotnet_diagnostic.cs1591.severity = none

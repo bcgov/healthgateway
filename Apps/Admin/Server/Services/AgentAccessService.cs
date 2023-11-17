@@ -129,7 +129,7 @@ namespace HealthGateway.Admin.Server.Services
             JwtModel jwtModel = this.authDelegate.AuthenticateAsSystem(this.tokenUri, this.tokenRequest);
             List<UserRepresentation> users = await this.keycloakAdminApi.GetUsersSearchAsync(searchString, firstRecord, resultLimit.GetValueOrDefault(), jwtModel.AccessToken).ConfigureAwait(true);
 
-            List<AdminAgent> adminAgents = new();
+            List<AdminAgent> adminAgents = [];
             foreach (UserRepresentation user in users)
             {
                 string[] splitString = user.Username.Split('@');
@@ -182,12 +182,12 @@ namespace HealthGateway.Admin.Server.Services
                 .Where(r => userRoles.TrueForAll(userRole => userRole.Id != r.Id))
                 .ToList();
 
-            if (rolesToDelete.Any())
+            if (rolesToDelete.Count > 0)
             {
                 await this.keycloakAdminApi.DeleteUserRolesAsync(agent.Id, rolesToDelete, jwtModel.AccessToken).ConfigureAwait(true);
             }
 
-            if (rolesToAdd.Any())
+            if (rolesToAdd.Count > 0)
             {
                 await this.keycloakAdminApi.AddUserRolesAsync(agent.Id, rolesToAdd, jwtModel.AccessToken).ConfigureAwait(true);
             }
