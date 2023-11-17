@@ -43,6 +43,6 @@ namespace HealthGateway.GatewayApi.Models
         /// <summary>
         /// Gets the access for the data sets.
         /// </summary>
-        private ISet<DataSource> DataSources { get; init; } = ImmutableHashSet<DataSource>.Empty;
+        public ISet<DataSource> DataSources { get; init; } = ImmutableHashSet<DataSource>.Empty;
     }
 }

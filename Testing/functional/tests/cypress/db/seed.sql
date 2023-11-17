@@ -17,6 +17,7 @@ TRUNCATE gateway."Dependent" CASCADE;
 TRUNCATE gateway."AgentAudit" CASCADE;
 TRUNCATE gateway."BlockedAccess" CASCADE;
 TRUNCATE gateway."Outbox" CASCADE;
+TRUNCATE gateway."DelegateInvitation" CASCADE;
 
 
 /* Registered HealthGateway User - Keycloak User (healthgateway) */
