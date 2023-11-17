@@ -21,6 +21,7 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
+    using Npgsql;
 
     /// <summary>
     /// Provides ASP.Net Services related to Authentication and Authorization services.
@@ -41,11 +42,15 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
             bool isSensitiveDataLoggingEnabled = section.GetValue("Enabled", false);
             logger.LogDebug("Sensitive Data Logging is enabled: {IsSensitiveDataLoggingEnabled}", isSensitiveDataLoggingEnabled);
 
+            NpgsqlDataSourceBuilder dataSourceBuilder = new(configuration.GetConnectionString("GatewayConnection"));
+            dataSourceBuilder.EnableDynamicJsonMappings();
+            NpgsqlDataSource dataSource = dataSourceBuilder.Build();
+
             services.AddDbContextPool<GatewayDbContext>(
                 options =>
                 {
                     options.UseNpgsql(
-                        configuration.GetConnectionString("GatewayConnection"),
+                        dataSource,
                         x => x.MigrationsHistoryTable("__EFMigrationsHistory", "gateway"));
                     if (isSensitiveDataLoggingEnabled)
                     {
