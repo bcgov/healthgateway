@@ -15,7 +15,7 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Common.Models.Cacheable
 {
-    using HealthGateway.Common.Constants;
+    using HealthGateway.Common.Data.Constants;
 
     /// <summary>
     /// A hash of something.

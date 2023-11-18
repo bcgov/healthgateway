@@ -17,7 +17,7 @@ namespace HealthGateway.Common.Delegates
 {
     using System;
     using System.Security.Cryptography;
-    using HealthGateway.Common.Constants;
+    using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Models.Cacheable;
     using Microsoft.AspNetCore.Cryptography.KeyDerivation;

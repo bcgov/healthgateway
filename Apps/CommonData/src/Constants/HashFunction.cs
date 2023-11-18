@@ -13,7 +13,7 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Common.Constants
+namespace HealthGateway.Common.Data.Constants
 {
     /// <summary>
     /// The enumeration of Hash functions.

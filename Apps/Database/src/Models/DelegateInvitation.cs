@@ -55,7 +55,7 @@ namespace HealthGateway.Database.Models
         /// </summary>
         [Required]
         [MaxLength(50)]
-        public string SharingCodeHashFunction { get; set; } = null!;
+        public HashFunction SharingCodeHashFunction { get; set; }
 
         /// <summary>
         /// Gets or sets the sharing code iterations.

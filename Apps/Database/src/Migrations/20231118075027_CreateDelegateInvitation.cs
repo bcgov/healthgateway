@@ -69,6 +69,24 @@ namespace HealthGateway.Database.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "HashFunctionCode",
+                schema: "gateway",
+                columns: table => new
+                {
+                    Code = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
+                    Description = table.Column<string>(type: "character varying(80)", maxLength: 80, nullable: false),
+                    CreatedBy = table.Column<string>(type: "character varying(60)", maxLength: 60, nullable: false),
+                    CreatedDateTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UpdatedBy = table.Column<string>(type: "character varying(60)", maxLength: 60, nullable: false),
+                    UpdatedDateTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    xmin = table.Column<uint>(type: "xid", rowVersion: true, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_HashFunctionCode", x => x.Code);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "DelegateInvitation",
                 schema: "gateway",
                 columns: table => new
@@ -129,6 +147,17 @@ namespace HealthGateway.Database.Migrations
 
             migrationBuilder.InsertData(
                 schema: "gateway",
+                table: "HashFunctionCode",
+                columns: new[] { "Code", "CreatedBy", "CreatedDateTime", "Description", "UpdatedBy", "UpdatedDateTime" },
+                values: new object[,]
+                {
+                    { "HmacSha1", "System", new DateTime(2019, 5, 1, 7, 0, 0, 0, DateTimeKind.Utc), "HmacSha1 Hash Function Status Code", "System", new DateTime(2019, 5, 1, 7, 0, 0, 0, DateTimeKind.Utc) },
+                    { "HmacSha256", "System", new DateTime(2019, 5, 1, 7, 0, 0, 0, DateTimeKind.Utc), "HmacSha256 Hash Function Status Code", "System", new DateTime(2019, 5, 1, 7, 0, 0, 0, DateTimeKind.Utc) },
+                    { "HmacSha512", "System", new DateTime(2019, 5, 1, 7, 0, 0, 0, DateTimeKind.Utc), "HmacSha512 Hash Function Status Code", "System", new DateTime(2019, 5, 1, 7, 0, 0, 0, DateTimeKind.Utc) }
+                });
+
+            migrationBuilder.InsertData(
+                schema: "gateway",
                 table: "ResourceDelegateReasonCode",
                 columns: new[] { "ReasonTypeCode", "CreatedBy", "CreatedDateTime", "Description", "UpdatedBy", "UpdatedDateTime" },
                 values: new object[] { "Invited", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Utc), "Resource delegation via invitation by the data owner", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Utc) });
@@ -151,6 +180,10 @@ namespace HealthGateway.Database.Migrations
         {
             migrationBuilder.DropTable(
                 name: "DelegateInvitation",
+                schema: "gateway");
+
+            migrationBuilder.DropTable(
+                name: "HashFunctionCode",
                 schema: "gateway");
 
             migrationBuilder.DropTable(

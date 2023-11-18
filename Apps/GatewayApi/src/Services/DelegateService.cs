@@ -79,12 +79,12 @@ namespace HealthGateway.GatewayApi.Services
             DelegateInvitation delegateInvitation = this.autoMapper.Map<DelegateInvitation>(request);
             string sharingCode = VerificationCodeUtility.Generate();
             IHash hash = this.hashDelegate.Hash(sharingCode);
-            this.logger.LogDebug("Sharing code: {SharingCode} \n Hash: {Hash} \n Salt: {Salt} ", sharingCode, hash?.Hash!, hash?.Salt!);
+            this.logger.LogDebug("Sharing code: {SharingCode} \n Hash: {Hash} \n Salt: {Salt} ", sharingCode, hash.Hash!, hash.Salt!);
 
             delegateInvitation.SharingCodeHash = hash.Hash!;
             delegateInvitation.SharingCodeSalt = hash.Salt!;
             delegateInvitation.SharingCodeIterations = hash.Iterations;
-            delegateInvitation.SharingCodeHashFunction = hash.PseudoRandomFunction.ToString();
+            delegateInvitation.SharingCodeHashFunction = hash.PseudoRandomFunction;
             delegateInvitation.ResourceOwnerHdid = hdid;
             delegateInvitation.ResourceOwnerIdentifier = resourceOwnerIdentifier;
 

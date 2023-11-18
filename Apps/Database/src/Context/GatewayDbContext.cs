@@ -453,6 +453,18 @@ namespace HealthGateway.Database.Context
                 .Property(e => e.Code)
                 .HasConversion(delegateInvitationStatusConverter);
 
+            ValueConverter<HashFunction, string> delegateInvitationHashFunctionConverter = new(
+                v => EnumUtility.ToEnumString(v, true),
+                v => EnumUtility.ToEnum<HashFunction>(v, true));
+
+            modelBuilder.Entity<DelegateInvitation>()
+                .Property(e => e.SharingCodeHashFunction)
+                .HasConversion(delegateInvitationHashFunctionConverter);
+
+            modelBuilder.Entity<HashFunctionCode>()
+                .Property(e => e.Code)
+                .HasConversion(delegateInvitationHashFunctionConverter);
+
             // Initial seed data
             this.SeedProgramTypes(modelBuilder);
             this.SeedEmail(modelBuilder);
@@ -467,6 +479,7 @@ namespace HealthGateway.Database.Context
             this.SeedApplicationSettings(modelBuilder);
             this.SeedAuditGroupCodes(modelBuilder);
             this.SeedDelegateInvitationStatusCodes(modelBuilder);
+            this.SeedHashFunctionCodes(modelBuilder);
         }
 
         /// <summary>
@@ -1336,6 +1349,43 @@ namespace HealthGateway.Database.Context
                         Component = TourApplicationSettings.Component,
                         Key = TourApplicationSettings.LatestChangeDateTime,
                         Value = new DateTime(2023, 5, 3, 15, 0, 0, DateTimeKind.Utc).ToString("o"),
+                        CreatedBy = UserId.DefaultUser,
+                        CreatedDateTime = this.DefaultSeedDate.ToUniversalTime(),
+                        UpdatedBy = UserId.DefaultUser,
+                        UpdatedDateTime = this.DefaultSeedDate.ToUniversalTime(),
+                    });
+        }
+
+        /// <summary>
+        /// Seeds the Hash Function Codes.
+        /// </summary>
+        /// <param name="modelBuilder">The passed in model builder.</param>
+        private void SeedHashFunctionCodes(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<HashFunctionCode>()
+                .HasData(
+                    new HashFunctionCode
+                    {
+                        Code = HashFunction.HmacSha1,
+                        Description = "HmacSha1 Hash Function Status Code",
+                        CreatedBy = UserId.DefaultUser,
+                        CreatedDateTime = this.DefaultSeedDate.ToUniversalTime(),
+                        UpdatedBy = UserId.DefaultUser,
+                        UpdatedDateTime = this.DefaultSeedDate.ToUniversalTime(),
+                    },
+                    new HashFunctionCode
+                    {
+                        Code = HashFunction.HmacSha256,
+                        Description = "HmacSha256 Hash Function Status Code",
+                        CreatedBy = UserId.DefaultUser,
+                        CreatedDateTime = this.DefaultSeedDate.ToUniversalTime(),
+                        UpdatedBy = UserId.DefaultUser,
+                        UpdatedDateTime = this.DefaultSeedDate.ToUniversalTime(),
+                    },
+                    new HashFunctionCode
+                    {
+                        Code = HashFunction.HmacSha512,
+                        Description = "HmacSha512 Hash Function Status Code",
                         CreatedBy = UserId.DefaultUser,
                         CreatedDateTime = this.DefaultSeedDate.ToUniversalTime(),
                         UpdatedBy = UserId.DefaultUser,
