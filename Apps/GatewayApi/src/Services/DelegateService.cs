@@ -81,10 +81,10 @@ namespace HealthGateway.GatewayApi.Services
             IHash hash = this.hashDelegate.Hash(sharingCode);
             this.logger.LogDebug("Sharing code: {SharingCode} \n Hash: {Hash} \n Salt: {Salt} ", sharingCode, hash?.Hash!, hash?.Salt!);
 
-            delegateInvitation.SharingCodeHash = hash?.Hash!;
-            delegateInvitation.SharingCodeSalt = hash?.Salt!;
-            delegateInvitation.SharingCodeIterations = hash?.Iterations ?? 0;
-            delegateInvitation.SharingCodeHashFunction = hash?.PseudoRandomFunction.ToString()!;
+            delegateInvitation.SharingCodeHash = hash.Hash!;
+            delegateInvitation.SharingCodeSalt = hash.Salt!;
+            delegateInvitation.SharingCodeIterations = hash.Iterations;
+            delegateInvitation.SharingCodeHashFunction = hash.PseudoRandomFunction.ToString();
             delegateInvitation.ResourceOwnerHdid = hdid;
             delegateInvitation.ResourceOwnerIdentifier = resourceOwnerIdentifier;
 
