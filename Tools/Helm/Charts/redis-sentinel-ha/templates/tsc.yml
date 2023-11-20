@@ -1,0 +1,28 @@
+{{- if .Values.generateTsc -}}
+{{- $name := include "standard.name" . -}}
+apiVersion: porter.devops.gov.bc.ca/v1alpha1
+kind: TransportServerClaim
+metadata:
+  name: {{ $name }}-sentinel-tscs
+  labels: {{ include "standard.labels" . | nindent 4 }}
+spec:
+  monitor:
+    interval: 10
+    timeout: 10
+    type: tcp
+  service: {{ $name }}-svc
+  servicePort: {{ .Values.sentinelPort }}
+---
+apiVersion: porter.devops.gov.bc.ca/v1alpha1
+kind: TransportServerClaim
+metadata:
+  name: {{ $name }}-redis-tscs
+  labels: {{ include "standard.labels" . | nindent 4 }}
+spec:
+  monitor:
+    interval: 10
+    timeout: 10
+    type: tcp
+  service: {{ $name }}-svc
+  servicePort: {{ .Values.redisPort }}
+{{- end -}}

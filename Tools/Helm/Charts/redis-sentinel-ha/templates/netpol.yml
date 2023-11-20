@@ -1,0 +1,45 @@
+{{- $name := include "standard.name" . -}}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ $name }}-netpol
+  labels: {{ include "standard.labels" . | nindent 4 }}
+spec:
+  podSelector:
+    matchLabels:
+      name: {{ $name }}
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              name: {{ $name }}
+      ports:
+        - port: {{ .Values.redisPort }}
+          protocol: TCP
+        - port: {{ .Values.sentinelPort }}
+          protocol: TCP
+    - from:
+        - podSelector:
+            matchLabels: {}
+      ports:
+        - port: {{ .Values.redisPort }}
+          protocol: TCP
+        - port: {{ .Values.sentinelPort }}
+          protocol: TCP
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ $name }}-allow-from-f5-ingress
+  labels: {{ include "standard.labels" . | nindent 4 }}
+spec:
+  podSelector:
+    matchLabels:
+      name: {{ $name }}
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              network.openshift.io/policy-group: ingress
+  policyTypes:
+    - Ingress

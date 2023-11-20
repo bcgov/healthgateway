@@ -1,0 +1,24 @@
+imageRepository: artifacts.developer.gov.bc.ca/docker-remote/redis
+imageTag: 7
+
+#generateTsc: false
+#datacenterName: k
+#datacenterName: c
+
+redisPort: 6379
+sentinelPort: 26379
+tscPort: 53835
+sentinelMasterServiceName: sentinel-rs-svc-gold
+
+persistentVolumeSize: 1Gi
+persistentVolumeClass: netapp-block-standard
+
+resources:
+  requests:
+    cpu: 50m
+    memory: 128Mi
+  limits:
+    cpu: 250m
+    memory: 512Mi
+
+password: ~
