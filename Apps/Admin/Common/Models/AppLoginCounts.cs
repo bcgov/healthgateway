@@ -1,4 +1,4 @@
-// -------------------------------------------------------------------------
+﻿// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,24 +13,12 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Common.Data.Constants
+namespace HealthGateway.Admin.Common.Models
 {
-    using System.Text.Json.Serialization;
-
     /// <summary>
-    /// Represents the type of login client used.
+    /// Model containing login counts for Health Gateway applications.
     /// </summary>
-    [JsonConverter(typeof(JsonStringEnumConverter))]
-    public enum UserLoginClientType
-    {
-        /// <summary>
-        /// Login from Health Gateway web app.
-        /// </summary>
-        Web,
-
-        /// <summary>
-        /// Login from Health Gateway mobile app.
-        /// </summary>
-        Mobile,
-    }
+    /// <param name="Web">Number of Health Gateway web app logins.</param>
+    /// <param name="Mobile">Number of Health Gateway mobile app logins.</param>
+    public record AppLoginCounts(int Web, int Mobile);
 }

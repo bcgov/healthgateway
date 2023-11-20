@@ -15,205 +15,195 @@
     }
 </HgBannerFeedback>
 
-<MudGrid>
-    <MudItem xs="12" lg="12">
-        <MudPaper Class="my-2 pa-4 d-flex justify-end" Elevation="0">
-            <HgButton
-                Loading="@(RegisteredUsersLoading || LoggedInUsersLoading || DependentsLoading || UserCountsLoading || RatingSummaryLoading || YearOfBirthCountsLoading)"
-                EndIcon="fas fa-arrow-rotate-right"
-                OnClick="RefreshData"
-                data-testid="refresh-btn">
-                Refresh
-            </HgButton>
-        </MudPaper>
-    </MudItem>
-</MudGrid>
-
-@if (RegisteredUsersLoading || DependentsLoading)
-{
-    <MudGrid>
-        <MudItem xs="6" lg="6">
-            <MudPaper Class="my-2 pa-4" Outlined="true">
+<MudText Class="mt-12" Typo="@Typo.h6">All-Time Counts</MudText>
+<MudGrid Class="mt-6">
+    <MudItem xs="12" lg="4">
+        <MudPaper Class="my-2 pa-4" Outlined="true">
+            @if (DailyUserRegistrationCountsLoading)
+            {
                 <MudSkeleton />
                 <MudSkeleton data-testid="skeleton-registered-users" />
-            </MudPaper>
-        </MudItem>
-        <MudItem xs="6" lg="6">
-            <MudPaper Class="my-2 pa-4" Outlined="true">
-                <MudSkeleton />
-                <MudSkeleton data-testid="skeleton-dependents" />
-            </MudPaper>
-        </MudItem>
-    </MudGrid>
-}
-else
-{
-    <MudGrid>
-        <MudItem xs="6" lg="6">
-            <MudPaper Class="my-2 pa-4" Outlined="true">
+            }
+            else
+            {
                 <MudText Align="Align.Center" Typo="Typo.subtitle1">
                     Registered Users
                 </MudText>
                 <MudText Align="Align.Center" Typo="Typo.subtitle1" data-testid="total-registered-users">
                     @TotalRegisteredUsers
                 </MudText>
-            </MudPaper>
-        </MudItem>
-        <MudItem xs="6" lg="6">
-            <MudPaper Class="my-2 pa-4" Outlined="true">
+            }
+        </MudPaper>
+    </MudItem>
+    <MudItem xs="12" lg="4">
+        <MudPaper Class="my-2 pa-4" Outlined="true">
+            @if (DailyDependentRegistrationCountsLoading)
+            {
+                <MudSkeleton />
+                <MudSkeleton data-testid="skeleton-dependents" />
+            }
+            else
+            {
                 <MudText Align="Align.Center" Typo="Typo.subtitle1">
                     Dependents
                 </MudText>
                 <MudText Align="Align.Center" Typo="Typo.subtitle1" data-testid="total-dependents">
                     @TotalDependents
                 </MudText>
-            </MudPaper>
-        </MudItem>
-    </MudGrid>
-}
+            }
+        </MudPaper>
+    </MudItem>
+</MudGrid>
 
-@if (RegisteredUsersLoading || LoggedInUsersLoading || DependentsLoading || UserCountsLoading || YearOfBirthCountsLoading)
-{
-    <MudGrid Class="my-3">
-        <MudItem xs="6" lg="3">
+<MudText Class="mt-12" Typo="@Typo.h6">Platform & Demographics</MudText>
+<MudGrid Class="mt-6">
+    <MudItem xs="12" sm="6" md="5" lg="4">
+        @if (AppLoginCountsLoading)
+        {
             <MudSkeleton data-testid="skeleton-selected-date-range" SkeletonType="SkeletonType.Rectangle" Height="48px" />
-        </MudItem>
-    </MudGrid>
-}
-else
-{
-    <MudGrid Class="my-3">
-        <MudItem xs="6" lg="3">
-            <MudDateRangePicker data-testid="minimum-maximum-date-time-picker" Mindate="@MinimumDateTime" MaxDate="@MaximumDateTime" @ref="SelectedDateRangePicker" Label="Select Date Range" @bind-DateRange="SelectedDateRange" Color="Color.Success" Style="font-weight:bold">
+        }
+        else
+        {
+            <MudDateRangePicker MinDate="@MinimumDateTime" MaxDate="@MaximumDateTime" @ref="DemographicsDateRangePicker" Label="Select Date Range" @bind-DateRange="DemographicsDateRange" Color="Color.Success" Style="font-weight:bold">
                 <PickerActions>
-                    <MudButton Class="mr-auto align-self-start" OnClick="@(() => SelectedDateRangePicker.Clear())">Clear</MudButton>
-                    <MudButton OnClick="@(() => SelectedDateRangePicker.Close(false))">Cancel</MudButton>
-                    <MudButton Color="Color.Primary" OnClick="@(() => SelectedDateRangePicker.Close())">Ok</MudButton>
+                    <MudButton Class="mr-auto align-self-start" OnClick="@(() => DemographicsDateRangePicker.Clear())">Clear</MudButton>
+                    <MudButton OnClick="@(() => DemographicsDateRangePicker.Close(false))">Cancel</MudButton>
+                    <MudButton Color="Color.Primary" OnClick="@(() => DemographicsDateRangePicker.Close())">Ok</MudButton>
                 </PickerActions>
             </MudDateRangePicker>
-        </MudItem>
-    </MudGrid>
-}
-
-@if (UserCountsLoading)
-{
-    <MudSkeleton Width="20%" />
-    <MudGrid Class="my-3">
-        <MudItem xs="12" lg="4">
-            <MudSkeleton data-testid="skeleton-unique-days" SkeletonType="SkeletonType.Rectangle" Height="48px" />
-        </MudItem>
-    </MudGrid>
-    <MudGrid>
-        <MudItem xs="12" lg="4">
-            <MudPaper Class="my-2 pa-4" Outlined="true">
-                <MudSkeleton />
-                <MudSkeleton data-testid="skeleton-user-count" />
-            </MudPaper>
-        </MudItem>
-        <MudItem xs="12" lg="4">
-            <MudPaper Class="my-2 pa-4" Outlined="true">
+        }
+    </MudItem>
+</MudGrid>
+<MudGrid Class="mt-6">
+    <MudItem xs="12" lg="4">
+        <MudPaper Class="my-2 pa-4" Outlined="true">
+            @if (AppLoginCountsLoading)
+            {
                 <MudSkeleton />
                 <MudSkeleton data-testid="skeleton-mobile-count" />
-            </MudPaper>
-        </MudItem>
-        <MudItem xs="12" lg="4">
-            <MudPaper Class="my-2 pa-4" Outlined="true">
-                <MudSkeleton />
-                <MudSkeleton data-testid="skeleton-web-count" />
-            </MudPaper>
-        </MudItem>
-    </MudGrid>
-}
-else
-{
-    <MudText Class="my-3" Typo="Typo.subtitle1">
-        User Counts
-    </MudText>
-    <MudGrid Class="my-3">
-        <MudItem xs="12" lg="4">
-            <MudNumericField data-testid="unique-days-input" T="int" Label="Unique Days" @bind-Value="UniqueDays" Required="@true" />
-        </MudItem>
-    </MudGrid>
-    <MudGrid>
-        <MudItem xs="12" lg="4">
-            <MudPaper Class="my-2 pa-4" Outlined="true">
+            }
+            else
+            {
                 <MudText Align="Align.Center" Typo="Typo.subtitle1">
-                    Recurring Users
-                </MudText>
-                <MudText Align="Align.Center" Typo="Typo.subtitle1" data-testid="total-unique-users">
-                    @RecurringUserCount
-                </MudText>
-            </MudPaper>
-        </MudItem>
-        <MudItem xs="12" lg="4">
-            <MudPaper Class="my-2 pa-4" Outlined="true">
-                <MudText Align="Align.Center" Typo="Typo.subtitle1">
-                    Mobile Logins
+                    Mobile App Logins
                 </MudText>
                 <MudText Align="Align.Center" Typo="Typo.subtitle1" data-testid="total-mobile-users">
-                    @MobileUserCount
+                    @AppLoginCounts.Mobile
                 </MudText>
-            </MudPaper>
-        </MudItem>
-        <MudItem xs="12" lg="4">
-            <MudPaper Class="my-2 pa-4" Outlined="true">
+            }
+        </MudPaper>
+    </MudItem>
+    <MudItem xs="12" lg="4">
+        <MudPaper Class="my-2 pa-4" Outlined="true">
+            @if (AppLoginCountsLoading)
+            {
+                <MudSkeleton />
+                <MudSkeleton data-testid="skeleton-web-count" />
+            }
+            else
+            {
                 <MudText Align="Align.Center" Typo="Typo.subtitle1">
                     Web Logins
                 </MudText>
                 <MudText Align="Align.Center" Typo="Typo.subtitle1" data-testid="total-web-users">
-                    @WebUserCount
+                    @AppLoginCounts.Web
                 </MudText>
-            </MudPaper>
-        </MudItem>
-    </MudGrid>
-}
+            }
+        </MudPaper>
+    </MudItem>
+    <MudItem xs="12" lg="6">
+        @if (YearOfBirthCountsLoading)
+        {
+            <MudSkeleton data-testid="skeleton-year-of-birth-chart" SkeletonType="SkeletonType.Rectangle" Width="100%" Height="325px" />
+        }
+        else if (YearOfBirthCountsErrorMessage.Length == 0)
+        {
+            @if (YearOfBirthCounts.Any())
+            {
+                <MudChart
+                    data-testid="year-of-birth-chart"
+                    ChartType="ChartType.Bar"
+                    ChartSeries="@(new List<ChartSeries> { GetYearOfBirthCountSeries() })"
+                    XAxisLabels="@GetYearOfBirthLabels()"
+                    Width="100%"
+                    Height="325" />
+            }
+            else
+            {
+                <MudText Typo="Typo.body2">No results within selected time frame.</MudText>
+            }
+        }
+    </MudItem>
+    <MudItem xs="12" lg="6" Class="d-flex flex-column justify-center">
+        @if (RatingsSummaryLoading)
+        {
+            <MudGrid>
+                <MudItem xs="4" lg="2">
+                    <MudSkeleton Width="100%" />
+                </MudItem>
+                <MudItem xs="8" lg="10">
+                    <MudSkeleton data-testid="skeleton-rating-summary" SkeletonType="SkeletonType.Rectangle" Width="100%" Height="200px" />
+                </MudItem>
+            </MudGrid>
+        }
+        else
+        {
+            <RatingSummary />
+        }
+    </MudItem>
+</MudGrid>
 
-@if (RatingSummaryLoading)
-{
-    <MudSkeleton Width="20%" />
-    <MudSkeleton data-testid="skeleton-rating-summary" SkeletonType="SkeletonType.Rectangle" Width="500px" Height="350px" />
-}
-else
-{
-    <MudText Class="my-3" Typo="Typo.subtitle1">
-        Rating Summary
-    </MudText>
-    <RatingSummary />
-}
-
-@if (YearOfBirthCountsLoading)
-{
-    <MudSkeleton data-testid="skeleton-year-of-birth-chart" SkeletonType="SkeletonType.Rectangle" Width="500px" Height="350px" />
-}
-else if (YearOfBirthCountsErrorMessage.Length == 0)
-{
-    <MudText Class="my-3" Typo="Typo.subtitle1">
-        Population Demographics
-    </MudText>
-
-    @if (YearOfBirthCounts.Any())
-    {
-        <MudChart
-            data-testid="year-of-birth-chart"
-            ChartType="ChartType.Bar"
-            ChartSeries="@(new List<ChartSeries> { GetYearOfBirthCountSeries() })"
-            XAxisLabels="@GetYearOfBirthLabels()"
-            Width="100%"
-            Height="450" />
-    }
-    else
-    {
-        <MudText Typo="Typo.body2">No results within selected time frame.</MudText>
-    }
-}
-
-<MudGrid>
-    <MudItem xs="12" lg="12">
-        <MudText Class="mt-3" Typo="Typo.subtitle1">
-            Daily Data
-        </MudText>
+<MudText Class="mt-12" Typo="@Typo.h6">Usage</MudText>
+<MudGrid Class="mt-6">
+    <MudItem xs="12" sm="6" md="5" lg="4">
+        @if (RecurringUserCountLoading)
+        {
+            <MudSkeleton data-testid="skeleton-usage-date-range" SkeletonType="SkeletonType.Rectangle" Height="48px" />
+        }
+        else
+        {
+            <MudDateRangePicker MinDate="@MinimumDateTime" MaxDate="@MaximumDateTime" @ref="UsageDateRangePicker" Label="Select Date Range" @bind-DateRange="UsageDateRange" Color="Color.Success" Style="font-weight:bold">
+                <PickerActions>
+                    <MudButton Class="mr-auto align-self-start" OnClick="@(() => UsageDateRangePicker.Clear())">Clear</MudButton>
+                    <MudButton OnClick="@(() => UsageDateRangePicker.Close(false))">Cancel</MudButton>
+                    <MudButton Color="Color.Primary" OnClick="@(() => UsageDateRangePicker.Close())">Ok</MudButton>
+                </PickerActions>
+            </MudDateRangePicker>
+        }
+    </MudItem>
+    <MudItem xs="12" sm="6" md="5" lg="4">
+        @if (RecurringUserCountLoading)
+        {
+            <MudSkeleton data-testid="skeleton-unique-days" SkeletonType="SkeletonType.Rectangle" Height="48px" />
+        }
+        else
+        {
+            <MudNumericField data-testid="unique-days-input" T="int" Label="Unique Days" @bind-Value="UniqueDays" Required="@true" />
+        }
+    </MudItem>
+</MudGrid>
+<MudGrid Class="mt-6">
+    <MudItem xs="12" lg="4">
+        <MudPaper Class="my-2 pa-4" Outlined="true">
+            @if (RecurringUserCountLoading)
+            {
+                <MudSkeleton />
+                <MudSkeleton data-testid="skeleton-user-count" />
+            }
+            else
+            {
+                <MudText Align="Align.Center" Typo="Typo.subtitle1">
+                    Recurring Users
+                </MudText>
+                <MudText Align="Align.Center" Typo="Typo.subtitle1" data-testid="recurring-user-count">
+                    @RecurringUserCount
+                </MudText>
+            }
+        </MudPaper>
+    </MudItem>
+    <MudItem xs="12">
         <MudTable Class="mt-3"
-                  Loading="@(RegisteredUsersLoading || LoggedInUsersLoading || DependentsLoading)"
+                  Loading="@(DailyUserRegistrationCountsLoading || DailyUniqueLoginCountsLoading || DailyDependentRegistrationCountsLoading)"
                   Items="@TableData"
                   AllowUnsorted="false"
                   HorizontalScrollbar="true"
@@ -223,32 +213,32 @@ else if (YearOfBirthCountsErrorMessage.Length == 0)
                   data-testid="daily-data-table">
             <HeaderContent>
                 <MudTh>
-                    <MudTableSortLabel SortBy="new Func<DailyDataRow, object>(x => x.DailyDateTime)"
+                    <MudTableSortLabel SortBy="new Func<DailyDataRow, object>(x => x.Date)"
                                        InitialDirection="@SortDirection.Descending">
                         Date
                     </MudTableSortLabel>
                 </MudTh>
                 <MudTh>
-                    <MudTableSortLabel SortBy="new Func<DailyDataRow, object>(x => x.TotalRegisteredUsers)">
+                    <MudTableSortLabel SortBy="new Func<DailyDataRow, object>(x => x.UserRegistrations)">
                         Registered
                     </MudTableSortLabel>
                 </MudTh>
                 <MudTh>
-                    <MudTableSortLabel SortBy="new Func<DailyDataRow, object>(x => x.TotalLoggedInUsers)">
+                    <MudTableSortLabel SortBy="new Func<DailyDataRow, object>(x => x.UniqueLogins)">
                         Logged In
                     </MudTableSortLabel>
                 </MudTh>
                 <MudTh>
-                    <MudTableSortLabel SortBy="new Func<DailyDataRow, object>(x => x.TotalDependents)">
+                    <MudTableSortLabel SortBy="new Func<DailyDataRow, object>(x => x.DependentRegistrations)">
                         Dependents
                     </MudTableSortLabel>
                 </MudTh>
             </HeaderContent>
             <RowTemplate>
-                <MudTd data-testid="daily-data-date" DataLabel="Date">@context.DailyDateTime.ToString("yyyy-MM-dd")</MudTd>
-                <MudTd data-testid="daily-data-total-registered-users" DataLabel="Registered">@context.TotalRegisteredUsers</MudTd>
-                <MudTd data-testid="daily-data-total-logged-in-users" DataLabel="Logged In">@context.TotalLoggedInUsers</MudTd>
-                <MudTd data-testid="daily-data-dependents" DataLabel="Dependents">@context.TotalDependents</MudTd>
+                <MudTd data-testid="daily-data-date" DataLabel="Date">@context.Date.ToString("yyyy-MM-dd")</MudTd>
+                <MudTd data-testid="daily-data-total-registered-users" DataLabel="Registered">@context.UserRegistrations</MudTd>
+                <MudTd data-testid="daily-data-total-logged-in-users" DataLabel="Logged In">@context.UniqueLogins</MudTd>
+                <MudTd data-testid="daily-data-dependents" DataLabel="Dependents">@context.DependentRegistrations</MudTd>
             </RowTemplate>
             <PagerContent>
                 <MudTablePager PageSizeOptions="new[]{10, 25, 50, 100, 200}" />

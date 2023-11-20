@@ -11,7 +11,7 @@ describe("Dashboard", () => {
         cy.log("Dashboard test started.");
         cy.get("[data-testid=total-registered-users]").contains(8);
         cy.get("[data-testid=total-dependents]").contains(6);
-        cy.get("[data-testid=total-unique-users]").contains(2);
+        cy.get("[data-testid=recurring-user-count]").contains(2);
         cy.get("[data-testid=total-mobile-users]").contains(3);
         cy.get("[data-testid=total-web-users]").contains(4);
         cy.get("[data-testid=average-rating]").contains("4.00");
@@ -30,12 +30,12 @@ describe("Dashboard", () => {
 
         cy.log("Change value in unique days input field.");
         cy.get("[data-testid=unique-days-input]").clear().type(5);
-        cy.get("[data-testid=total-unique-users]").click();
-        cy.get("[data-testid=total-unique-users]").contains(0);
+        cy.get("[data-testid=recurring-user-count]").click();
+        cy.get("[data-testid=recurring-user-count]").contains(0);
 
         cy.get("[data-testid=unique-days-input]").clear().type(2);
-        cy.get("[data-testid=total-unique-users]").click();
-        cy.get("[data-testid=total-unique-users]").contains(3);
+        cy.get("[data-testid=recurring-user-count]").click();
+        cy.get("[data-testid=recurring-user-count]").contains(3);
 
         cy.log("Dashboard test finished.");
     });
