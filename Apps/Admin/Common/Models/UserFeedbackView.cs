@@ -18,7 +18,6 @@ namespace HealthGateway.Admin.Common.Models;
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 /// <summary>
 /// Model that provides a user representation of a user feedback.
@@ -68,5 +67,5 @@ public class UserFeedbackView
     /// <summary>
     /// Gets or sets the feedback admin tags.
     /// </summary>
-    public IEnumerable<UserFeedbackTagView> Tags { get; set; } = Enumerable.Empty<UserFeedbackTagView>();
+    public IEnumerable<UserFeedbackTagView> Tags { get; set; } = [];
 }

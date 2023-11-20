@@ -145,13 +145,13 @@ namespace HealthGateway.Admin.Server.Services
         }
 
         /// <inheritdoc/>
-        public async Task<IList<PatientSupportResult>> GetPatientsAsync(PatientQueryType queryType, string queryString, CancellationToken ct = default)
+        public async Task<IReadOnlyList<PatientSupportResult>> GetPatientsAsync(PatientQueryType queryType, string queryString, CancellationToken ct = default)
         {
             if (queryType is PatientQueryType.Hdid or PatientQueryType.Phn)
             {
                 PatientIdentifierType identifierType = queryType == PatientQueryType.Phn ? PatientIdentifierType.Phn : PatientIdentifierType.Hdid;
                 PatientSupportResult? patientSupportDetails = await this.GetPatientSupportResultAsync(identifierType, queryString, ct);
-                return patientSupportDetails == null ? Array.Empty<PatientSupportResult>() : new List<PatientSupportResult> { patientSupportDetails };
+                return patientSupportDetails == null ? [] : [patientSupportDetails];
             }
 
             IEnumerable<UserProfile> profiles = queryType switch
@@ -291,7 +291,7 @@ namespace HealthGateway.Admin.Server.Services
             PatientModel? dependent = await this.TryGetPatientAsync(PatientIdentifierType.Phn, dependentPhn, ct);
             if (dependent == null)
             {
-                return Enumerable.Empty<UserProfile>();
+                return [];
             }
 
             ResourceDelegateQuery query = new()

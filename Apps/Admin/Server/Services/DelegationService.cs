@@ -273,7 +273,7 @@ namespace HealthGateway.Admin.Server.Services
 
             if (this.changeFeedEnabled)
             {
-                await this.delegationDelegate.UpdateDelegationAsync(dependent, Enumerable.Empty<ResourceDelegate>(), agentAudit, false);
+                await this.delegationDelegate.UpdateDelegationAsync(dependent, [], agentAudit, false);
 
                 MessageEnvelope[] events =
                 {
@@ -284,7 +284,7 @@ namespace HealthGateway.Admin.Server.Services
             }
             else
             {
-                await this.delegationDelegate.UpdateDelegationAsync(dependent, Enumerable.Empty<ResourceDelegate>(), agentAudit);
+                await this.delegationDelegate.UpdateDelegationAsync(dependent, [], agentAudit);
             }
 
             return this.autoMapper.Map<AgentAudit, AgentAction>(agentAudit);

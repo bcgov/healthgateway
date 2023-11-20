@@ -1,10 +1,10 @@
 ﻿@page "/feedback"
 @layout MainLayout
 @attribute [Authorize(Roles = $"{Roles.Admin},{Roles.Reviewer}")]
+@using HealthGateway.Admin.Client.Components.Site
 @using HealthGateway.Admin.Client.Store.Tag
 @using HealthGateway.Admin.Common.Models
 @using HealthGateway.Common.Data.Utils
-@using HealthGateway.Admin.Client.Components.Site
 @inherits Fluxor.Blazor.Web.Components.FluxorComponent
 
 <PageTitle>Health Gateway Admin Feedback Review</PageTitle>
@@ -163,7 +163,7 @@ else
                 </MudTd>
             </RowTemplate>
             <PagerContent>
-                <MudTablePager data-testid="feedback-table-pagination" PageSizeOptions="new[]{10, 25, 50, 100, 200}" />
+                <MudTablePager data-testid="feedback-table-pagination" PageSizeOptions="[10, 25, 50, 100, 200]" />
             </PagerContent>
         </MudTable>
     </MudForm>

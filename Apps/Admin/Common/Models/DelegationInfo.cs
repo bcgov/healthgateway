@@ -16,7 +16,6 @@
 namespace HealthGateway.Admin.Common.Models
 {
     using System.Collections.Generic;
-    using System.Linq;
 
     /// <summary>
     /// The delegation info model.
@@ -31,11 +30,11 @@ namespace HealthGateway.Admin.Common.Models
         /// <summary>
         /// Gets or sets the collection of delegate info.
         /// </summary>
-        public IEnumerable<DelegateInfo> Delegates { get; set; } = Enumerable.Empty<DelegateInfo>();
+        public IEnumerable<DelegateInfo> Delegates { get; set; } = [];
 
         /// <summary>
         /// Gets or sets the agent actions.
         /// </summary>
-        public IEnumerable<AgentAction> AgentActions { get; set; } = Enumerable.Empty<AgentAction>();
+        public IEnumerable<AgentAction> AgentActions { get; set; } = [];
     }
 }

@@ -65,7 +65,7 @@ namespace HealthGateway.Admin.Client.Components.Details
         private DateTime? ProfileLastLoginDateTime =>
             this.Patient?.ProfileLastLoginDateTime == null ? null : this.DateConversionService.ConvertFromUtc(this.Patient.ProfileLastLoginDateTime.Value);
 
-        private IEnumerable<MessagingVerificationModel> MessagingVerifications => this.PatientDetailsState.Value.MessagingVerifications ?? Enumerable.Empty<MessagingVerificationModel>();
+        private IEnumerable<MessagingVerificationModel> MessagingVerifications => this.PatientDetailsState.Value.MessagingVerifications ?? [];
 
         private bool PatientSupportDetailsLoading => this.PatientDetailsState.Value.IsLoading;
 

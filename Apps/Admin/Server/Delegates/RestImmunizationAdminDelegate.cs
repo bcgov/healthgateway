@@ -94,12 +94,12 @@ namespace HealthGateway.Admin.Server.Delegates
                 throw new ProblemDetailsException(ExceptionUtility.CreateProblemDetails(ErrorMessages.MaximumRetryAttemptsReached, HttpStatusCode.BadRequest, nameof(RestImmunizationAdminDelegate)));
             }
 
-            return new VaccineDetails(
-                this.autoMapper.Map<IEnumerable<VaccineDoseResponse>, IList<VaccineDose>>(response.Result?.Doses),
-                response.Result?.VaccineStatusResult)
+            return new()
             {
                 Blocked = response.Result?.Blocked ?? false,
                 ContainsInvalidDoses = response.Result?.ContainsInvalidDoses ?? false,
+                Doses = this.autoMapper.Map<IEnumerable<VaccineDoseResponse>, IReadOnlyList<VaccineDose>>(response.Result?.Doses),
+                VaccineStatusResult = response.Result?.VaccineStatusResult,
             };
         }
     }

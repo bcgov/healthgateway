@@ -19,21 +19,21 @@
     /// <summary>
     /// Pagination variants.
     /// </summary>
-    public IList<Variant> Variants { get; } = new List<Variant>
-    {
+    private IEnumerable<Variant> Variants { get; } =
+    [
         Variant.Text,
         Variant.Outlined,
         Variant.Filled,
-    };
+    ];
 
     /// <summary>
     /// Colour settings.
     /// </summary>
-    public IList<Color> Colours { get; } = new List<Color>
-    {
+    private IEnumerable<Color> Colours { get; } =
+    [
         Color.Default,
         Color.Primary,
         Color.Secondary,
         Color.Tertiary,
-    };
+    ];
 }

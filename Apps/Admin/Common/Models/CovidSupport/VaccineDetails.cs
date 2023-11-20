@@ -25,26 +25,6 @@ namespace HealthGateway.Admin.Common.Models.CovidSupport
     public class VaccineDetails
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="VaccineDetails"/> class.
-        /// </summary>
-        public VaccineDetails()
-        {
-            this.Doses = new List<VaccineDose>();
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="VaccineDetails"/> class.
-        /// </summary>
-        /// <param name="doses">The list of doses.</param>
-        /// <param name="vaccineStatusResult">The patient's vaccine status.</param>
-        [JsonConstructor]
-        public VaccineDetails(IList<VaccineDose> doses, VaccineStatusResult vaccineStatusResult)
-        {
-            this.Doses = doses;
-            this.VaccineStatusResult = vaccineStatusResult;
-        }
-
-        /// <summary>
         /// Gets or sets a value indicating whether the requested record has been protected from being accessed.
         /// </summary>
         public bool Blocked { get; set; }
@@ -55,9 +35,9 @@ namespace HealthGateway.Admin.Common.Models.CovidSupport
         public bool ContainsInvalidDoses { get; set; }
 
         /// <summary>
-        /// Gets the retrieved doses. Empty if no valid COVID-19 doses were found.
+        /// Gets or sets the retrieved doses. Empty if no valid COVID-19 doses were found.
         /// </summary>
-        public IList<VaccineDose> Doses { get; }
+        public IReadOnlyList<VaccineDose> Doses { get; set; } = [];
 
         /// <summary>
         /// Gets or sets the Vaccine Status Result.

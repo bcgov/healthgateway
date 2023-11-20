@@ -34,7 +34,7 @@ namespace HealthGateway.Admin.Client.Components.Support
         /// </summary>
         [Parameter]
         [EditorRequired]
-        public IEnumerable<PreviousAssessmentDetails> Data { get; set; } = Enumerable.Empty<PreviousAssessmentDetails>();
+        public IEnumerable<PreviousAssessmentDetails> Data { get; set; } = [];
 
         /// <summary>
         /// Gets or sets a value indicating whether data is loading.

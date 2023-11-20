@@ -107,7 +107,7 @@ namespace HealthGateway.Admin.Server.Services
                 return GetStream<AdminUserProfileView, AdminUserProfileViewCsvMap>(inactiveUsersResult.ResourcePayload);
             }
 
-            return GetStream<AdminUserProfileView, AdminUserProfileViewCsvMap>(new List<AdminUserProfileView>());
+            return GetStream<AdminUserProfileView, AdminUserProfileViewCsvMap>([]);
         }
 
         /// <inheritdoc/>
