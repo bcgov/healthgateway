@@ -129,9 +129,9 @@ public partial class DashboardPage : FluxorComponent
 
     private DateTime DemographicsDateRangeEnd => this.DemographicsDateRange?.End ?? this.MaximumDateTime;
 
-    private DateTime UsageDateRangeStart => this.DemographicsDateRange?.Start ?? this.MinimumDateTime;
+    private DateTime UsageDateRangeStart => this.UsageDateRange?.Start ?? this.MinimumDateTime;
 
-    private DateTime UsageDateRangeEnd => this.DemographicsDateRange?.End ?? this.MaximumDateTime;
+    private DateTime UsageDateRangeEnd => this.UsageDateRange?.End ?? this.MaximumDateTime;
 
     private int UniqueDays
     {
@@ -144,8 +144,8 @@ public partial class DashboardPage : FluxorComponent
                 new DashboardActions.GetRecurringUserCountAction
                 {
                     Days = value,
-                    StartDateLocal = DateOnly.FromDateTime(this.DemographicsDateRangeStart),
-                    EndDateLocal = DateOnly.FromDateTime(this.DemographicsDateRangeEnd),
+                    StartDateLocal = DateOnly.FromDateTime(this.UsageDateRangeStart),
+                    EndDateLocal = DateOnly.FromDateTime(this.UsageDateRangeEnd),
                     TimeOffset = this.TimeOffset,
                 });
         }
