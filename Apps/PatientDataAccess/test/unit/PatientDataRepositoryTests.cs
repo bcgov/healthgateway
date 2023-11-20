@@ -29,9 +29,6 @@ namespace PatientDataAccessTests
     using OrganDonorRegistration = HealthGateway.PatientDataAccess.Api.OrganDonorRegistration;
     using OrganDonorRegistrationStatus = HealthGateway.PatientDataAccess.Api.OrganDonorRegistrationStatus;
 
-    // Disable documentation for tests.
-#pragma warning disable SA1600
-
     public class PatientDataRepositoryTests
     {
         private readonly Guid pid = Guid.NewGuid();
@@ -254,7 +251,6 @@ namespace PatientDataAccessTests
             result.ShouldNotBeNull().Items.ShouldBeEmpty();
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1859:Use concrete types when possible for improved performance", Justification = "Team decision")]
         private static IPatientDataRepository CreateSut(IPatientApi api)
         {
             IMapper? mapper = new MapperConfiguration(cfg => cfg.AddMaps(typeof(Mappings))).CreateMapper();
@@ -262,6 +258,4 @@ namespace PatientDataAccessTests
             return new PatientDataRepository(api, mapper);
         }
     }
-
-#pragma warning restore SA1600
 }

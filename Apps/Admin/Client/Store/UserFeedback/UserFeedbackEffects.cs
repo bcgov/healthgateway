@@ -30,7 +30,6 @@ using HealthGateway.Common.Data.ViewModels;
 using Microsoft.Extensions.Logging;
 using Refit;
 
-#pragma warning disable CS1591, SA1600
 public class UserFeedbackEffects
 {
     public UserFeedbackEffects(ILogger<UserFeedbackEffects> logger, IUserFeedbackApi api, IMapper autoMapper)

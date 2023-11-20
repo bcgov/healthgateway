@@ -50,7 +50,7 @@ namespace HealthGateway.Admin.Client.Authorization
 
             ClaimsIdentity identity = (ClaimsIdentity)user.Identity;
             List<Claim> roleClaims = identity.FindAll(claim => claim.Type == "roles").ToList();
-            if (!roleClaims.Any())
+            if (roleClaims.Count == 0)
             {
                 return user;
             }

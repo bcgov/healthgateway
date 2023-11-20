@@ -28,7 +28,6 @@ namespace HealthGateway.Admin.Client.Store.PatientSupport
     using Microsoft.Extensions.Logging;
     using Refit;
 
-#pragma warning disable CS1591, SA1600
     public class PatientSupportEffects
     {
         public PatientSupportEffects(ILogger<PatientSupportEffects> logger, ISupportApi supportApi)

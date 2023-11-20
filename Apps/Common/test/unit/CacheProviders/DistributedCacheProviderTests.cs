@@ -144,14 +144,13 @@ namespace HealthGateway.CommonTests.CacheProviders
         /// A <see cref="Task"/> representing the asynchronous unit test.
         /// </returns>
         [Fact]
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1849:Call async methods when in an async method", Justification = "Team decision")]
         public async Task AddItemAsyncToCacheExpired()
         {
             string key = $"key_{GenerateRandomString()}";
             string value = $"value_{GenerateRandomString()}";
 
             await this.cacheProvider.AddItemAsync(key, value, TimeSpan.FromMilliseconds(100));
-            Thread.Sleep(101);
+            await Task.Delay(101);
 
             Assert.Null(await this.cacheProvider.GetItemAsync<string>(key));
         }

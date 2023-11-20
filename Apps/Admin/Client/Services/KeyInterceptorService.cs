@@ -24,7 +24,7 @@ namespace HealthGateway.Admin.Client.Services
     /// <inheritdoc/>
     public class KeyInterceptorService : IKeyInterceptorService
     {
-        private readonly IList<IKeyInterceptor> keyInterceptors = new List<IKeyInterceptor>();
+        private readonly List<IKeyInterceptor> keyInterceptors = [];
         private bool isDisposed;
 
         /// <summary>
@@ -48,7 +48,7 @@ namespace HealthGateway.Admin.Client.Services
                 new()
                 {
                     TargetClass = targetClass,
-                    Keys = new List<KeyOptions> { new() { Key = key, PreventDown = "key+none", SubscribeDown = true } },
+                    Keys = [new() { Key = key, PreventDown = "key+none", SubscribeDown = true }],
                 });
 
             keyInterceptor.KeyDown += async args => await callback(args);

@@ -17,7 +17,6 @@ namespace HealthGateway.Admin.Client.Store.AdminReport
 {
     using Fluxor;
 
-#pragma warning disable CS1591, SA1600
     public static class AdminReportReducers
     {
         [ReducerMethod(typeof(AdminReportActions.ResetStateAction))]

@@ -21,7 +21,6 @@ using System.Globalization;
 using System.Linq;
 using Fluxor;
 
-#pragma warning disable CS1591, SA1600
 public static class DashboardReducers
 {
     [ReducerMethod(typeof(DashboardActions.GetRegisteredUsersAction))]
@@ -222,7 +221,7 @@ public static class DashboardReducers
     public static DashboardState ReduceGetYearOfBirthCountsSuccessAction(DashboardState state, DashboardActions.GetYearOfBirthCountsSuccessAction action)
     {
         List<string> years = action.Data.Keys.Order().ToList();
-        IDictionary<string, int> yearOfBirthCounts = new Dictionary<string, int>(action.Data);
+        Dictionary<string, int> yearOfBirthCounts = new(action.Data);
 
         // add empty entries for years that are not populated
         if (years.Count > 0 && int.TryParse(years[0], out int firstYear) && int.TryParse(years[^1], out int lastYear))
