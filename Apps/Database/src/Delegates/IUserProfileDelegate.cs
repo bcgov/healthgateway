@@ -19,6 +19,7 @@ namespace HealthGateway.Database.Delegates
     using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
+    using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Models;
@@ -108,22 +109,24 @@ namespace HealthGateway.Database.Delegates
         DbResult<List<UserProfile>> GetClosedProfiles(DateTime filterDateTime, int page = 0, int pageSize = 500);
 
         /// <summary>
-        /// Returns the daily count of registered users from the database.
+        /// Retrieves the daily counts of user registrations.
         /// </summary>
         /// <param name="offset">The clients offset to get to UTC.</param>
-        /// <returns>The count of user profiles that accepted the terms of service.</returns>
-        IDictionary<DateTime, int> GetDailyRegisteredUsersCount(TimeSpan offset);
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
+        /// <returns>The daily counts of user registrations by date.</returns>
+        Task<IDictionary<DateOnly, int>> GetDailyUserRegistrationCountsAsync(TimeSpan offset, CancellationToken ct = default);
 
         /// <summary>
-        /// Returns the daily count of logged in users with the given offset .
+        /// Retrieves the daily counts of unique user logins over a date range.
         /// </summary>
         /// <param name="startDateTimeOffset">The start datetime offset to query.</param>
         /// <param name="endDateTimeOffset">The end datetime offset to query.</param>
-        /// <returns>The daily count of logged in users.</returns>
-        IDictionary<DateTime, int> GetLoggedInUsersCount(DateTimeOffset startDateTimeOffset, DateTimeOffset endDateTimeOffset);
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
+        /// <returns>The number of unique user logins by date.</returns>
+        Task<IDictionary<DateOnly, int>> GetDailyUniqueLoginCountsAsync(DateTimeOffset startDateTimeOffset, DateTimeOffset endDateTimeOffset, CancellationToken ct = default);
 
         /// <summary>
-        /// Returns the list of all UserProfiles sorted by CreatedDateTime in assending order.
+        /// Returns the list of all UserProfiles sorted by CreatedDateTime in ascending order.
         /// </summary>
         /// <param name="page">The page to request.</param>
         /// <param name="pageSize">The amount of records to retrieve in 1 request.</param>
@@ -131,21 +134,23 @@ namespace HealthGateway.Database.Delegates
         DbResult<IEnumerable<UserProfile>> GetAll(int page, int pageSize);
 
         /// <summary>
-        /// Retrieves the count recurring users.
+        /// Retrieves a count of recurring users over a date range.
         /// </summary>
-        /// <param name="dayCount">The number of unique days for evaluating a user.</param>
+        /// <param name="dayCount">Minimum number of days users must have logged in within the period to count as recurring.</param>
         /// <param name="startDateTimeOffset">The start datetime offset to query.</param>
         /// <param name="endDateTimeOffset">The end datetime offset to query.</param>
-        /// <returns>The count of recurrent users.</returns>
-        int GetRecurrentUserCount(int dayCount, DateTimeOffset startDateTimeOffset, DateTimeOffset endDateTimeOffset);
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
+        /// <returns>A count of recurring users.</returns>
+        Task<int> GetRecurringUserCountAsync(int dayCount, DateTimeOffset startDateTimeOffset, DateTimeOffset endDateTimeOffset, CancellationToken ct = default);
 
         /// <summary>
-        /// Returns the list of login client counts over a date range.
+        /// Retrieves unique login counts over a date range grouped by client type.
         /// </summary>
         /// <param name="startDateTimeOffset">The start datetime offset to query.</param>
         /// <param name="endDateTimeOffset">The end datetime offset to query.</param>
-        /// <returns>The counts of login clients for date range.</returns>
-        IDictionary<string, int> GetLastLoginClientCounts(DateTimeOffset startDateTimeOffset, DateTimeOffset endDateTimeOffset);
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
+        /// <returns>A dictionary containing login counts grouped by client type.</returns>
+        Task<IDictionary<UserLoginClientType, int>> GetLoginClientCountsAsync(DateTimeOffset startDateTimeOffset, DateTimeOffset endDateTimeOffset, CancellationToken ct = default);
 
         /// <summary>
         /// Returns the list of UserProfileHistory for a particular hdid and x number of records to return.

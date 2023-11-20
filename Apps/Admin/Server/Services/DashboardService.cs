@@ -17,95 +17,83 @@ namespace HealthGateway.Admin.Server.Services
 {
     using System;
     using System.Collections.Generic;
-    using System.Globalization;
     using System.Threading;
     using System.Threading.Tasks;
+    using HealthGateway.Admin.Common.Models;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Database.Delegates;
-    using Microsoft.Extensions.Logging;
 
     /// <inheritdoc/>
     public class DashboardService : IDashboardService
     {
         private readonly IResourceDelegateDelegate dependentDelegate;
-        private readonly ILogger logger;
         private readonly IRatingDelegate ratingDelegate;
         private readonly IUserProfileDelegate userProfileDelegate;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DashboardService"/> class.
         /// </summary>
-        /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="dependentDelegate">The dependent delegate to interact with the DB.</param>
         /// <param name="userProfileDelegate">The user profile delegate to interact with the DB.</param>
         /// <param name="ratingDelegate">The rating delegate.</param>
         public DashboardService(
-            ILogger<DashboardService> logger,
             IResourceDelegateDelegate dependentDelegate,
             IUserProfileDelegate userProfileDelegate,
             IRatingDelegate ratingDelegate)
         {
-            this.logger = logger;
             this.dependentDelegate = dependentDelegate;
             this.userProfileDelegate = userProfileDelegate;
             this.ratingDelegate = ratingDelegate;
         }
 
         /// <inheritdoc/>
-        public IDictionary<DateTime, int> GetDailyRegisteredUsersCount(int timeOffset)
+        public async Task<IDictionary<DateOnly, int>> GetDailyUserRegistrationCountsAsync(int timeOffset, CancellationToken ct = default)
         {
             TimeSpan ts = new(0, timeOffset, 0);
-            return this.userProfileDelegate.GetDailyRegisteredUsersCount(ts);
+            return await this.userProfileDelegate.GetDailyUserRegistrationCountsAsync(ts, ct);
         }
 
         /// <inheritdoc/>
-        public IDictionary<DateTime, int> GetDailyLoggedInUsersCount(DateOnly startDateLocal, DateOnly endDateLocal, int timeOffset)
+        public async Task<IDictionary<DateOnly, int>> GetDailyDependentRegistrationCountsAsync(int timeOffset, CancellationToken ct = default)
+        {
+            TimeSpan ts = new(0, timeOffset, 0);
+            return await this.dependentDelegate.GetDailyDependentRegistrationCountsAsync(ts, ct);
+        }
+
+        /// <inheritdoc/>
+        public async Task<IDictionary<DateOnly, int>> GetDailyUniqueLoginCountsAsync(DateOnly startDateLocal, DateOnly endDateLocal, int timeOffset, CancellationToken ct = default)
         {
             DateTimeOffset startDateTimeOffset = GetStartDateTimeOffset(startDateLocal, timeOffset);
             DateTimeOffset endDateTimeOffset = GetEndDateTimeOffset(endDateLocal, timeOffset);
-            return this.userProfileDelegate.GetLoggedInUsersCount(startDateTimeOffset, endDateTimeOffset);
+            return await this.userProfileDelegate.GetDailyUniqueLoginCountsAsync(startDateTimeOffset, endDateTimeOffset, ct);
         }
 
         /// <inheritdoc/>
-        public IDictionary<DateTime, int> GetDailyDependentCount(int timeOffset)
+        public async Task<int> GetRecurringUserCountAsync(int dayCount, DateOnly startDateLocal, DateOnly endDateLocal, int timeOffset, CancellationToken ct = default)
         {
-            TimeSpan ts = new(0, timeOffset, 0);
-            return this.dependentDelegate.GetDailyDependentCount(ts);
+            DateTimeOffset startDate = GetStartDateTimeOffset(startDateLocal, timeOffset);
+            DateTimeOffset endDate = GetEndDateTimeOffset(endDateLocal, timeOffset);
+            return await this.userProfileDelegate.GetRecurringUserCountAsync(dayCount, startDate, endDate, ct);
         }
 
         /// <inheritdoc/>
-        public IDictionary<string, int> GetRecurrentUserCounts(int dayCount, DateOnly startDateLocal, DateOnly endDateLocal, int timeOffset)
+        public async Task<AppLoginCounts> GetAppLoginCountsAsync(DateOnly startDateLocal, DateOnly endDateLocal, int timeOffset, CancellationToken ct = default)
         {
             DateTimeOffset startDate = GetStartDateTimeOffset(startDateLocal, timeOffset);
             DateTimeOffset endDate = GetEndDateTimeOffset(endDateLocal, timeOffset);
 
-            this.logger.LogDebug(
-                "Start Date (Local): {StartDate} - End Date (Local): {EndDate} - StartDate (UTC): {StartDateUtc} - End Date (UTC): {EndDateUtc} - TimeOffset (UI): {TimeOffset}",
-                startDate.DateTime,
-                endDate.DateTime,
-                startDate.UtcDateTime,
-                endDate.UtcDateTime,
-                timeOffset.ToString(CultureInfo.InvariantCulture));
-
-            IDictionary<string, int> lastLoginCounts = this.userProfileDelegate.GetLastLoginClientCounts(startDate, endDate);
-            int recurringUserCount = this.userProfileDelegate.GetRecurrentUserCount(dayCount, startDate, endDate);
-
-            IDictionary<string, int> recurringUserCounts = new Dictionary<string, int>
-            {
-                { UserLoginClientType.Mobile.ToString(), lastLoginCounts.TryGetValue(UserLoginClientType.Mobile.ToString(), out int mobileCount) ? mobileCount : 0 },
-                { UserLoginClientType.Web.ToString(), lastLoginCounts.TryGetValue(UserLoginClientType.Web.ToString(), out int webCount) ? webCount : 0 },
-                { "RecurringUserCount", recurringUserCount },
-            };
-
-            return recurringUserCounts;
+            IDictionary<UserLoginClientType, int> lastLoginClientCounts = await this.userProfileDelegate.GetLoginClientCountsAsync(startDate, endDate, ct);
+            return new(
+                lastLoginClientCounts.TryGetValue(UserLoginClientType.Web, out int webCount) ? webCount : 0,
+                lastLoginClientCounts.TryGetValue(UserLoginClientType.Mobile, out int mobileCount) ? mobileCount : 0);
         }
 
         /// <inheritdoc/>
-        public IDictionary<string, int> GetRatingSummary(DateOnly startDateLocal, DateOnly endDateLocal, int timeOffset)
+        public async Task<IDictionary<string, int>> GetRatingsSummaryAsync(DateOnly startDateLocal, DateOnly endDateLocal, int timeOffset, CancellationToken ct = default)
         {
             DateTimeOffset startDate = GetStartDateTimeOffset(startDateLocal, timeOffset);
             DateTimeOffset endDate = GetEndDateTimeOffset(endDateLocal, timeOffset);
-            return this.ratingDelegate.GetSummary(startDate, endDate);
+            return await this.ratingDelegate.GetRatingsSummaryAsync(startDate, endDate, ct);
         }
 
         /// <inheritdoc/>
