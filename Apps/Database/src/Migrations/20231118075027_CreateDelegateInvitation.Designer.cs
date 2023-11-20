@@ -32,7 +32,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace HealthGateway.Database.Migrations
 {
     [DbContext(typeof(GatewayDbContext))]
-    [Migration("20231115012153_CreateDelegateInvitation")]
+    [Migration("20231118075027_CreateDelegateInvitation")]
     partial class CreateDelegateInvitation
     {
         /// <inheritdoc />
@@ -1705,10 +1705,23 @@ namespace HealthGateway.Database.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("character varying(255)");
 
-                    b.Property<string>("SharingCode")
+                    b.Property<string>("SharingCodeHash")
                         .IsRequired()
-                        .HasMaxLength(6)
-                        .HasColumnType("character varying(6)");
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
+
+                    b.Property<string>("SharingCodeHashFunction")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<int>("SharingCodeIterations")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("SharingCodeSalt")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
 
                     b.Property<string>("Status")
                         .IsRequired()
@@ -2408,6 +2421,76 @@ namespace HealthGateway.Database.Migrations
                         .IsUnique();
 
                     b.ToTable("Form", "gateway");
+                });
+
+            modelBuilder.Entity("HealthGateway.Database.Models.HashFunctionCode", b =>
+                {
+                    b.Property<string>("Code")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)");
+
+                    b.Property<DateTime>("CreatedDateTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(80)
+                        .HasColumnType("character varying(80)");
+
+                    b.Property<string>("UpdatedBy")
+                        .IsRequired()
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)");
+
+                    b.Property<DateTime>("UpdatedDateTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<uint>("Version")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
+
+                    b.HasKey("Code");
+
+                    b.ToTable("HashFunctionCode", "gateway");
+
+                    b.HasData(
+                        new
+                        {
+                            Code = "HmacSha1",
+                            CreatedBy = "System",
+                            CreatedDateTime = new DateTime(2019, 5, 1, 7, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "HmacSha1 Hash Function Status Code",
+                            UpdatedBy = "System",
+                            UpdatedDateTime = new DateTime(2019, 5, 1, 7, 0, 0, 0, DateTimeKind.Utc),
+                            Version = 0u
+                        },
+                        new
+                        {
+                            Code = "HmacSha256",
+                            CreatedBy = "System",
+                            CreatedDateTime = new DateTime(2019, 5, 1, 7, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "HmacSha256 Hash Function Status Code",
+                            UpdatedBy = "System",
+                            UpdatedDateTime = new DateTime(2019, 5, 1, 7, 0, 0, 0, DateTimeKind.Utc),
+                            Version = 0u
+                        },
+                        new
+                        {
+                            Code = "HmacSha512",
+                            CreatedBy = "System",
+                            CreatedDateTime = new DateTime(2019, 5, 1, 7, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "HmacSha512 Hash Function Status Code",
+                            UpdatedBy = "System",
+                            UpdatedDateTime = new DateTime(2019, 5, 1, 7, 0, 0, 0, DateTimeKind.Utc),
+                            Version = 0u
+                        });
                 });
 
             modelBuilder.Entity("HealthGateway.Database.Models.LegalAgreementTypeCode", b =>

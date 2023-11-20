@@ -51,11 +51,31 @@ namespace HealthGateway.Database.Models
         public DelegateInvitationStatus Status { get; set; }
 
         /// <summary>
-        /// Gets or sets the sharing code.
+        /// Gets or sets the sharing code hash function.
         /// </summary>
         [Required]
-        [MaxLength(6)]
-        public string SharingCode { get; set; } = null!;
+        [MaxLength(50)]
+        public HashFunction SharingCodeHashFunction { get; set; }
+
+        /// <summary>
+        /// Gets or sets the sharing code iterations.
+        /// </summary>
+        [Required]
+        public int SharingCodeIterations { get; set; }
+
+        /// <summary>
+        /// Gets or sets the sharing code salt.
+        /// </summary>
+        [Required]
+        [MaxLength(255)]
+        public string SharingCodeSalt { get; set; } = null!;
+
+        /// <summary>
+        /// Gets or sets the sharing code hash.
+        /// </summary>
+        [Required]
+        [MaxLength(255)]
+        public string SharingCodeHash { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the failed attempts.

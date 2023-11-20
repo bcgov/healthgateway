@@ -13,31 +13,26 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Common.Models.Cacheable
+namespace HealthGateway.Common.Data.Constants
 {
-    using HealthGateway.Common.Data.Constants;
-
     /// <summary>
-    /// A hash of something.
+    /// The enumeration of Hash functions.
     /// </summary>
-    public class HmacHash : IHash
+    public enum HashFunction
     {
         /// <summary>
-        /// Gets or sets the pseudo random function that was used to generate this hash.
+        /// The HMAC algorithm (RFC 2104) using the SHA-1 hash function (FIPS 180-4).
         /// </summary>
-        public HashFunction PseudoRandomFunction { get; set; } = HashFunction.HmacSha512;
+        HmacSha1 = 0,
 
         /// <summary>
-        /// Gets or sets the iterations used to generate this hash.
+        /// The HMAC algorithm (RFC 2104) using the SHA-256 hash function (FIPS 180-4).
         /// </summary>
-        public int Iterations { get; set; }
+        HmacSha256 = 1,
 
         /// <summary>
-        /// Gets or sets the base64 salt that was used in generating the hash.
+        /// The HMAC algorithm (RFC 2104) using the SHA-512 hash function (FIPS 180-4).
         /// </summary>
-        public string? Salt { get; set; }
-
-        /// <inheritdoc/>
-        public string? Hash { get; set; }
+        HmacSha512 = 2,
     }
 }

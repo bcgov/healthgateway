@@ -129,5 +129,10 @@ namespace HealthGateway.Common.Constants
         /// Error message to return when unable to get vaccine status.
         /// </summary>
         public const string CannotGetVaccineStatus = "Error retrieving vaccine status information.";
+
+        /// <summary>
+        /// Error message to return when unable to submit delegate invitation request due to validation error.
+        /// </summary>
+        public const string InvalidDelegateInvitationRequest = "Unable to submit delegate invitation request due to validation error.";
     }
 }
