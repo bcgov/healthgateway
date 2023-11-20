@@ -20,6 +20,8 @@ namespace HealthGateway.Database.Delegates
     using System.Diagnostics.CodeAnalysis;
     using System.Globalization;
     using System.Linq;
+    using System.Threading;
+    using System.Threading.Tasks;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Context;
     using HealthGateway.Database.Models;
@@ -80,14 +82,14 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public IDictionary<string, int> GetSummary(DateTimeOffset startDateTimeOffset, DateTimeOffset endDateTimeOffset)
+        public async Task<IDictionary<string, int>> GetRatingsSummaryAsync(DateTimeOffset startDateTimeOffset, DateTimeOffset endDateTimeOffset, CancellationToken ct = default)
         {
             this.logger.LogTrace("Retrieving the ratings summary between {StartDate} and {EndDate}...", startDateTimeOffset, endDateTimeOffset);
-            return this.dbContext.Rating
+            return await this.dbContext.Rating
                 .Where(r => r.CreatedDateTime >= startDateTimeOffset.UtcDateTime && r.CreatedDateTime <= endDateTimeOffset.UtcDateTime && !r.Skip)
                 .GroupBy(x => x.RatingValue)
                 .Select(r => new { Value = r.Key, Count = r.Count() })
-                .ToDictionary(r => r.Value.ToString(CultureInfo.CurrentCulture), r => r.Count);
+                .ToDictionaryAsync(r => r.Value.ToString(CultureInfo.CurrentCulture), r => r.Count, ct);
         }
     }
 }

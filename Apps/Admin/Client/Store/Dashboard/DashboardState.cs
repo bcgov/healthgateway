@@ -20,6 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using Fluxor;
+using HealthGateway.Admin.Common.Models;
 
 /// <summary>
 /// The state for the feature.
@@ -29,29 +30,34 @@ using Fluxor;
 public record DashboardState
 {
     /// <summary>
-    /// Gets the request state for retrieving registered users.
+    /// Gets the request state for retrieving daily counts of user registrations.
     /// </summary>
-    public BaseRequestState<IDictionary<DateTime, int>> GetRegisteredUsers { get; init; } = new();
+    public BaseRequestState<IDictionary<DateOnly, int>> GetDailyUserRegistrationCounts { get; init; } = new();
 
     /// <summary>
-    /// Gets the request state for retrieving logged in users.
+    /// Gets the request state for retrieving daily counts of dependent registrations.
     /// </summary>
-    public BaseRequestState<IDictionary<DateTime, int>> GetLoggedInUsers { get; init; } = new();
+    public BaseRequestState<IDictionary<DateOnly, int>> GetDailyDependentRegistrationCounts { get; init; } = new();
 
     /// <summary>
-    /// Gets the request state for retrieving dependents.
+    /// Gets the request state for retrieving daily counts of unique user logins.
     /// </summary>
-    public BaseRequestState<IDictionary<DateTime, int>> GetDependents { get; init; } = new();
+    public BaseRequestState<IDictionary<DateOnly, int>> GetDailyUniqueLoginCounts { get; init; } = new();
 
     /// <summary>
-    /// Gets the request state for retrieving user counts.
+    /// Gets the request state for retrieving a recurring user count.
     /// </summary>
-    public BaseRequestState<IDictionary<string, int>> GetUserCounts { get; init; } = new();
+    public BaseRequestState<int?> GetRecurringUserCount { get; init; } = new();
 
     /// <summary>
-    /// Gets the request state for retrieving a rating summary.
+    /// Gets the request state for retrieving app login counts.
     /// </summary>
-    public BaseRequestState<IDictionary<string, int>> GetRatingSummary { get; init; } = new();
+    public BaseRequestState<AppLoginCounts> GetAppLoginCounts { get; init; } = new();
+
+    /// <summary>
+    /// Gets the request state for retrieving a ratings summary.
+    /// </summary>
+    public BaseRequestState<IDictionary<string, int>> GetRatingsSummary { get; init; } = new();
 
     /// <summary>
     /// Gets the request state for retrieving year of birth counts.

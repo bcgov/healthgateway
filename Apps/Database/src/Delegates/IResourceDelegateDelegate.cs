@@ -20,6 +20,7 @@ namespace HealthGateway.Database.Delegates
     using System;
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
+    using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
@@ -59,11 +60,12 @@ namespace HealthGateway.Database.Delegates
         DbResult<IEnumerable<ResourceDelegate>> Get(DateTime fromDate, DateTime? toDate, int page, int pageSize);
 
         /// <summary>
-        /// Gets the count of dependents from the database.
+        /// Retrieves the daily counts of dependent registrations.
         /// </summary>
-        /// <param name="offset">The clients offset to get to UTC.</param>
-        /// <returns>Total number of dependents.</returns>
-        IDictionary<DateTime, int> GetDailyDependentCount(TimeSpan offset);
+        /// <param name="offset">The local timezone offset from UTC in minutes.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
+        /// <returns>The number of dependent registrations by date.</returns>
+        Task<IDictionary<DateOnly, int>> GetDailyDependentRegistrationCountsAsync(TimeSpan offset, CancellationToken ct = default);
 
         /// <summary>
         /// Gets the total number of delegates associated with each specified dependent from the database.

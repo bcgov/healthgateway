@@ -22,6 +22,7 @@ using System.Threading.Tasks;
 using Fluxor;
 using HealthGateway.Admin.Client.Api;
 using HealthGateway.Admin.Client.Utils;
+using HealthGateway.Admin.Common.Models;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Logging;
 using Refit;
@@ -41,96 +42,115 @@ public class DashboardEffects
     private IDashboardApi DashboardApi { get; set; }
 
     [EffectMethod]
-    public async Task HandleGetRegisteredUsersAction(DashboardActions.GetRegisteredUsersAction action, IDispatcher dispatcher)
+    public async Task HandleGetDailyUserRegistrationCountsAction(DashboardActions.GetDailyUserRegistrationCountsAction action, IDispatcher dispatcher)
     {
-        this.Logger.LogInformation("Retrieving registered users");
+        this.Logger.LogInformation("Retrieving daily user registration counts");
         try
         {
-            IDictionary<DateTime, int> response = await this.DashboardApi.GetRegisteredUserCountAsync(action.TimeOffset).ConfigureAwait(true);
-            this.Logger.LogInformation("Registered users retrieved successfully!");
-            dispatcher.Dispatch(new DashboardActions.GetRegisteredUsersSuccessAction { Data = response });
+            IDictionary<DateOnly, int> response = await this.DashboardApi.GetDailyUserRegistrationCountsAsync(action.TimeOffset).ConfigureAwait(true);
+            this.Logger.LogInformation("Daily user registration counts retrieved successfully");
+            dispatcher.Dispatch(new DashboardActions.GetDailyUserRegistrationCountsSuccessAction { Data = response });
         }
         catch (ApiException ex)
         {
             RequestError error = StoreUtility.FormatRequestError(ex);
-            this.Logger.LogError("Error retrieving registered users, reason: {ErrorMessage}", error.Message);
-            dispatcher.Dispatch(new DashboardActions.GetRegisteredUsersFailureAction { Error = error });
+            this.Logger.LogError("Error retrieving daily user registration counts, reason: {ErrorMessage}", error.Message);
+            dispatcher.Dispatch(new DashboardActions.GetDailyUserRegistrationCountsFailureAction { Error = error });
         }
     }
 
     [EffectMethod]
-    public async Task HandleGetLoggedInUsersAction(DashboardActions.GetLoggedInUsersAction action, IDispatcher dispatcher)
+    public async Task HandleGetDailyDependentRegistrationCountsAction(DashboardActions.GetDailyDependentRegistrationCountsAction action, IDispatcher dispatcher)
     {
-        this.Logger.LogInformation("Retrieving logged in users");
+        this.Logger.LogInformation("Retrieving daily dependent registration counts");
 
         try
         {
-            IDictionary<DateTime, int> response = await this.DashboardApi.GetLoggedinUsersCountAsync(action.StartDateLocal, action.EndDateLocal, action.TimeOffset).ConfigureAwait(true);
-            this.Logger.LogInformation("Logged in users retrieved successfully!");
-            dispatcher.Dispatch(new DashboardActions.GetLoggedInUsersSuccessAction { Data = response });
+            IDictionary<DateOnly, int> response = await this.DashboardApi.GetDailyDependentRegistrationCountsAsync(action.TimeOffset).ConfigureAwait(true);
+            this.Logger.LogInformation("Daily dependent registration counts retrieved successfully");
+            dispatcher.Dispatch(new DashboardActions.GetDailyDependentRegistrationCountsSuccessAction { Data = response });
         }
         catch (ApiException ex)
         {
             RequestError error = StoreUtility.FormatRequestError(ex);
-            this.Logger.LogError("Error retrieving logged in users, reason: {ErrorMessage}", error.Message);
-            dispatcher.Dispatch(new DashboardActions.GetLoggedInUsersFailureAction { Error = error });
+            this.Logger.LogError("Error retrieving daily dependent registration counts, reason: {ErrorMessage}", error.Message);
+            dispatcher.Dispatch(new DashboardActions.GetDailyDependentRegistrationCountsFailureAction { Error = error });
         }
     }
 
     [EffectMethod]
-    public async Task HandleGetDependentsAction(DashboardActions.GetDependentsAction action, IDispatcher dispatcher)
+    public async Task HandleGetDailyUniqueLoginCountsAction(DashboardActions.GetDailyUniqueLoginCountsAction action, IDispatcher dispatcher)
     {
-        this.Logger.LogInformation("Retrieving dependents");
+        this.Logger.LogInformation("Retrieving daily unique login counts");
 
         try
         {
-            IDictionary<DateTime, int> response = await this.DashboardApi.GetDependentCountAsync(action.TimeOffset).ConfigureAwait(true);
-            this.Logger.LogInformation("Dependents retrieved successfully!");
-            dispatcher.Dispatch(new DashboardActions.GetDependentsSuccessAction { Data = response });
+            IDictionary<DateOnly, int> response = await this.DashboardApi.GetDailyUniqueLoginCountsAsync(action.StartDateLocal, action.EndDateLocal, action.TimeOffset).ConfigureAwait(true);
+            this.Logger.LogInformation("Daily unique login counts retrieved successfully");
+            dispatcher.Dispatch(new DashboardActions.GetDailyUniqueLoginCountsSuccessAction { Data = response });
         }
         catch (ApiException ex)
         {
             RequestError error = StoreUtility.FormatRequestError(ex);
-            this.Logger.LogError("Error retrieving dependents, reason: {ErrorMessage}", error.Message);
-            dispatcher.Dispatch(new DashboardActions.GetDependentsFailureAction { Error = error });
+            this.Logger.LogError("Error retrieving daily unique login counts, reason: {ErrorMessage}", error.Message);
+            dispatcher.Dispatch(new DashboardActions.GetDailyUniqueLoginCountsFailureAction { Error = error });
         }
     }
 
     [EffectMethod]
-    public async Task HandleGetUserCountsAction(DashboardActions.GetUserCountsAction action, IDispatcher dispatcher)
+    public async Task HandleGetRecurringUserCountAction(DashboardActions.GetRecurringUserCountAction action, IDispatcher dispatcher)
     {
-        this.Logger.LogInformation("Retrieving user counts");
+        this.Logger.LogInformation("Retrieving recurring user count");
 
         try
         {
-            IDictionary<string, int> response = await this.DashboardApi.GetUserCountsAsync(action.Days, action.StartDateLocal, action.EndDateLocal, action.TimeOffset).ConfigureAwait(true);
-            this.Logger.LogInformation("User counts retrieved successfully!");
-            dispatcher.Dispatch(new DashboardActions.GetUserCountsSuccessAction { Data = response });
+            int response = await this.DashboardApi.GetRecurringUserCountAsync(action.Days, action.StartDateLocal, action.EndDateLocal, action.TimeOffset).ConfigureAwait(true);
+            this.Logger.LogInformation("Recurring user count retrieved successfully");
+            dispatcher.Dispatch(new DashboardActions.GetRecurringUserCountSuccessAction { Data = response });
         }
         catch (ApiException ex)
         {
             RequestError error = StoreUtility.FormatRequestError(ex);
-            this.Logger.LogError("Error retrieving user counts, reason: {ErrorMessage}", error.Message);
-            dispatcher.Dispatch(new DashboardActions.GetUserCountsFailureAction { Error = error });
+            this.Logger.LogError("Error retrieving recurring user count, reason: {ErrorMessage}", error.Message);
+            dispatcher.Dispatch(new DashboardActions.GetRecurringUserCountFailureAction { Error = error });
         }
     }
 
     [EffectMethod]
-    public async Task HandleGetRatingSummaryAction(DashboardActions.GetRatingSummaryAction action, IDispatcher dispatcher)
+    public async Task HandleGetAppLoginCountsAction(DashboardActions.GetAppLoginCountsAction action, IDispatcher dispatcher)
     {
-        this.Logger.LogInformation("Retrieving rating summary");
+        this.Logger.LogInformation("Retrieving app login counts");
+
+        try
+        {
+            AppLoginCounts response = await this.DashboardApi.GetAppLoginCountsAsync(action.StartDateLocal, action.EndDateLocal, action.TimeOffset).ConfigureAwait(true);
+            this.Logger.LogInformation("App login counts retrieved successfully");
+            dispatcher.Dispatch(new DashboardActions.GetAppLoginCountsSuccessAction { Data = response });
+        }
+        catch (ApiException ex)
+        {
+            RequestError error = StoreUtility.FormatRequestError(ex);
+            this.Logger.LogError("Error retrieving recurring app login counts, reason: {ErrorMessage}", error.Message);
+            dispatcher.Dispatch(new DashboardActions.GetAppLoginCountsFailureAction { Error = error });
+        }
+    }
+
+    [EffectMethod]
+    public async Task HandleGetRatingsSummaryAction(DashboardActions.GetRatingsSummaryAction action, IDispatcher dispatcher)
+    {
+        this.Logger.LogInformation("Retrieving ratings summary");
 
         try
         {
             IDictionary<string, int> response = await this.DashboardApi.GetRatingsSummaryAsync(action.StartDateLocal, action.EndDateLocal, action.TimeOffset).ConfigureAwait(true);
-            this.Logger.LogInformation("Rating summary retrieved successfully!");
-            dispatcher.Dispatch(new DashboardActions.GetRatingSummarySuccessAction { Data = response });
+            this.Logger.LogInformation("Ratings summary retrieved successfully");
+            dispatcher.Dispatch(new DashboardActions.GetRatingsSummarySuccessAction { Data = response });
         }
         catch (ApiException ex)
         {
             RequestError error = StoreUtility.FormatRequestError(ex);
-            this.Logger.LogError("Error retrieving rating summary, reason: {ErrorMessage}", error.Message);
-            dispatcher.Dispatch(new DashboardActions.GetRatingSummaryFailureAction { Error = error });
+            this.Logger.LogError("Error retrieving ratings summary, reason: {ErrorMessage}", error.Message);
+            dispatcher.Dispatch(new DashboardActions.GetRatingsSummaryFailureAction { Error = error });
         }
     }
 
@@ -142,7 +162,7 @@ public class DashboardEffects
         try
         {
             IDictionary<string, int> response = await this.DashboardApi.GetYearOfBirthCountsAsync(action.StartDateLocal, action.EndDateLocal, action.TimeOffset).ConfigureAwait(true);
-            this.Logger.LogInformation("Year of birth counts retrieved successfully!");
+            this.Logger.LogInformation("Year of birth counts retrieved successfully");
             dispatcher.Dispatch(new DashboardActions.GetYearOfBirthCountsSuccessAction { Data = response });
         }
         catch (ApiException ex)

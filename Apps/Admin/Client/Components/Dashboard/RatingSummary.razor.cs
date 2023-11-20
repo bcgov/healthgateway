@@ -33,7 +33,7 @@ public partial class RatingSummary : FluxorComponent
     [Inject]
     private IState<DashboardState> DashboardState { get; set; } = default!;
 
-    private IDictionary<string, int> RatingSummaryResult => this.DashboardState.Value.GetRatingSummary.Result ?? ImmutableDictionary<string, int>.Empty;
+    private IDictionary<string, int> RatingSummaryResult => this.DashboardState.Value.GetRatingsSummary.Result ?? ImmutableDictionary<string, int>.Empty;
 
     private Dictionary<int, int> Ratings => this.RatingSummaryResult.ToDictionary(r => Convert.ToInt32(r.Key, CultureInfo.InvariantCulture), r => r.Value);
 

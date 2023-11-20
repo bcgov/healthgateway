@@ -37,7 +37,6 @@ public record BaseRequestState
 /// </summary>
 /// <typeparam name="TModel">The type of the model returned by the request.</typeparam>
 public record BaseRequestState<TModel> : BaseRequestState
-    where TModel : class
 {
     /// <summary>
     /// Gets the result.
