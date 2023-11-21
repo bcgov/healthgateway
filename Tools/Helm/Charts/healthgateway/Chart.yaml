@@ -5,11 +5,8 @@ type: application
 version: 1.0.0
 appVersion: "1.0.0"
 dependencies:
-  - name: patroni
-    version: 1.5.2
-    condition: patroni.enabled
-    repository: https://bcgov.github.io/sso-helm-charts
-  - name: redis
+  - name: redis-sentinel
+    alias: redis
     version: 1.0.0
     condition: redis.enabled
-    repository: "file://../redis"
+    repository: "file://../redis-sentinel"
