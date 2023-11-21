@@ -11,24 +11,47 @@ import { DelegateInvitation } from "@/models/sharing/delegateInvitation";
 import { IDelegateService, ILogger } from "@/services/interfaces";
 import { useErrorStore } from "@/stores/error";
 
-export enum DelegateInvitationDialogStep {
+export enum DelegateInvitationWizardStep {
     contact = 0,
-    nickname = 1,
-    dataSources = 2,
-    expiryDate = 3,
-    review = 4,
-    sharingCode = 5,
+    dataSources = 1,
+    expiryDate = 2,
+    review = 3,
+    sharingCode = 4,
 }
 
-export interface DelegateInvitationDialogState {
-    mode: "Create" | "Modify";
-    step: DelegateInvitationDialogStep;
+export interface DelegateInvitationWizardState {
+    mode?: "Create" | "Modify";
+    step?: DelegateInvitationWizardStep;
     nickname?: string;
     email?: string;
+    expiryDateRange?: string;
     expiryDate?: string;
     dataSources?: DataSource[];
     sharingCode?: string;
 }
+
+const wizardConfiguration = {
+    [DelegateInvitationWizardStep.contact]: {
+        next: DelegateInvitationWizardStep.dataSources,
+        previous: undefined,
+    },
+    [DelegateInvitationWizardStep.dataSources]: {
+        next: DelegateInvitationWizardStep.expiryDate,
+        previous: DelegateInvitationWizardStep.contact,
+    },
+    [DelegateInvitationWizardStep.expiryDate]: {
+        next: DelegateInvitationWizardStep.review,
+        previous: DelegateInvitationWizardStep.dataSources,
+    },
+    [DelegateInvitationWizardStep.review]: {
+        next: DelegateInvitationWizardStep.sharingCode,
+        previous: DelegateInvitationWizardStep.expiryDate,
+    },
+    [DelegateInvitationWizardStep.sharingCode]: {
+        next: undefined,
+        previous: DelegateInvitationWizardStep.review,
+    },
+};
 
 export const useDelegateStore = defineStore("delegate", () => {
     const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
@@ -39,13 +62,29 @@ export const useDelegateStore = defineStore("delegate", () => {
     const errorStore = useErrorStore();
 
     const invitations = ref<DelegateInvitation[]>([]);
-    const invitationDialogState = ref<DelegateInvitationDialogState>();
+    const invitationWizardState = ref<DelegateInvitationWizardState>();
     const invitationsAreLoading = ref(false);
     const error = ref<ResultError>();
     const statusMessage = ref("");
 
+    const wizardNextStep = computed(() => {
+        const currentStep = invitationWizardState.value?.step;
+        if (currentStep === undefined) {
+            return DelegateInvitationWizardStep.contact;
+        }
+        return wizardConfiguration[currentStep].next;
+    });
+
+    const wizardPreviousStep = computed(() => {
+        const currentStep = invitationWizardState.value?.step;
+        if (currentStep === undefined) {
+            return undefined;
+        }
+        return wizardConfiguration[currentStep].previous;
+    });
+
     const isInvitationDialogVisible = computed(
-        () => invitationDialogState.value != undefined
+        () => invitationWizardState.value != undefined
     );
 
     function setInvitationsError(incomingError: ResultError) {
@@ -54,32 +93,81 @@ export const useDelegateStore = defineStore("delegate", () => {
         invitationsAreLoading.value = false;
     }
 
-    function setDialogToSharingCode(sharingCode: string) {
-        invitationDialogState.value = {
-            ...invitationDialogState.value,
+    function startNewInvitation(): void {
+        invitationWizardState.value = {
             mode: "Create",
-            step: DelegateInvitationDialogStep.sharingCode,
+            step: wizardNextStep.value,
+        };
+    }
+
+    function wizardToPreviousStep(): void {
+        if (wizardPreviousStep.value === undefined) {
+            return;
+        }
+        invitationWizardState.value = {
+            ...invitationWizardState.value,
+            step: wizardPreviousStep.value,
+        };
+    }
+
+    function wiazrdToNextStep(): void {
+        if (wizardNextStep.value === undefined) {
+            return;
+        }
+        invitationWizardState.value = {
+            ...invitationWizardState.value,
+            step: wizardNextStep.value,
+        };
+    }
+
+    function clearInvitationDialogState() {
+        invitationWizardState.value = undefined;
+    }
+
+    function captureInvitationContact(email: string, nickname: string) {
+        invitationWizardState.value = {
+            ...invitationWizardState.value,
+            email: email,
+            nickname: nickname,
+        };
+        wiazrdToNextStep();
+    }
+
+    function captureInvitationDataSources(dataSources: DataSource[]) {
+        invitationWizardState.value = {
+            ...invitationWizardState.value,
+            dataSources: dataSources,
+        };
+        wiazrdToNextStep();
+    }
+
+    function captureExpiryDate(expiryDateRange: string, expiryDate?: string) {
+        invitationWizardState.value = {
+            ...invitationWizardState.value,
+            expiryDate: expiryDate,
+            expiryDateRange: expiryDateRange,
+        };
+        wiazrdToNextStep();
+    }
+
+    function setWizardSharingCode(sharingCode: string) {
+        invitationWizardState.value = {
+            ...invitationWizardState.value,
+            step: wizardNextStep.value,
             sharingCode: sharingCode,
         };
     }
 
-    function startNewInvitation(): void {
-        invitationDialogState.value = {
-            mode: "Create",
-            step: DelegateInvitationDialogStep.contact,
-        };
-    }
-
     function submitInvitationDialog(): Promise<string | void> {
-        if (invitationDialogState.value?.mode === "Create") {
+        if (invitationWizardState.value?.mode === "Create") {
             return createInvitation({
-                nickname: invitationDialogState.value.nickname,
-                email: invitationDialogState.value.email,
-                expiryDate: invitationDialogState.value.expiryDate,
-                dataSources: invitationDialogState.value.dataSources,
+                nickname: invitationWizardState.value.nickname,
+                email: invitationWizardState.value.email,
+                expiryDate: invitationWizardState.value.expiryDate,
+                dataSources: invitationWizardState.value.dataSources,
             }).then((sharingCode) => {
                 if (sharingCode != undefined) {
-                    setDialogToSharingCode(sharingCode!);
+                    setWizardSharingCode(sharingCode!);
                 }
             });
         }
@@ -96,10 +184,6 @@ export const useDelegateStore = defineStore("delegate", () => {
             .catch((error: ResultError) => {
                 handleError(error, ErrorType.Create, "sharing-dialog");
             });
-    }
-
-    function resetInvitationDialogState() {
-        invitationDialogState.value = undefined;
     }
 
     function handleError(
@@ -129,9 +213,15 @@ export const useDelegateStore = defineStore("delegate", () => {
         invitations,
         invitationsAreLoading,
         isInvitationDialogVisible,
-        invitationDialogState,
+        wizardPreviousStep,
+        wizardNextStep,
+        invitationWizardState,
         startNewInvitation,
+        captureInvitationContact,
+        captureInvitationDataSources,
+        captureExpiryDate,
         submitInvitationDialog,
-        resetInvitationDialogState,
+        wizardToPreviousStep,
+        clearInvitationDialogState,
     };
 });
