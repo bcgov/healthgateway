@@ -27,22 +27,12 @@ namespace HealthGateway.Admin.Client.Store.VaccineCard
     using Microsoft.Extensions.Logging;
     using Refit;
 
-    public class VaccineCardEffects
+    public class VaccineCardEffects(ILogger<VaccineCardEffects> logger, ISupportApi supportApi)
     {
-        public VaccineCardEffects(ILogger<VaccineCardEffects> logger, ISupportApi supportApi)
-        {
-            this.Logger = logger;
-            this.SupportApi = supportApi;
-        }
-
-        private ILogger<VaccineCardEffects> Logger { get; }
-
-        private ISupportApi SupportApi { get; }
-
         [EffectMethod]
         public async Task HandleMailVaccineCardAction(VaccineCardActions.MailVaccineCardAction action, IDispatcher dispatcher)
         {
-            this.Logger.LogInformation("Request to mail vaccine card");
+            logger.LogInformation("Request to mail vaccine card");
             try
             {
                 MailDocumentRequest request = new()
@@ -51,12 +41,12 @@ namespace HealthGateway.Admin.Client.Store.VaccineCard
                     MailAddress = action.MailAddress,
                 };
 
-                await this.SupportApi.MailVaccineCard(request).ConfigureAwait(true);
+                await supportApi.MailVaccineCard(request).ConfigureAwait(true);
                 dispatcher.Dispatch(new VaccineCardActions.MailVaccineCardSuccessAction());
             }
             catch (Exception e) when (e is ApiException or HttpRequestException)
             {
-                this.Logger.LogError("Error requesting to mail vaccine card: {Exception}", e.ToString());
+                logger.LogError("Error requesting to mail vaccine card: {Exception}", e.ToString());
                 RequestError error = StoreUtility.FormatRequestError(e);
                 dispatcher.Dispatch(new VaccineCardActions.MailVaccineCardFailureAction { Error = error });
             }
@@ -65,15 +55,15 @@ namespace HealthGateway.Admin.Client.Store.VaccineCard
         [EffectMethod]
         public async Task HandlePrintVaccineCardAction(VaccineCardActions.PrintVaccineCardAction action, IDispatcher dispatcher)
         {
-            this.Logger.LogInformation("Retrieving vaccine card");
+            logger.LogInformation("Retrieving vaccine card");
             try
             {
-                ReportModel report = await this.SupportApi.RetrieveVaccineRecord(action.Phn).ConfigureAwait(true);
+                ReportModel report = await supportApi.RetrieveVaccineRecord(action.Phn).ConfigureAwait(true);
                 dispatcher.Dispatch(new VaccineCardActions.PrintVaccineCardSuccessAction { Data = report });
             }
             catch (Exception e) when (e is ApiException or HttpRequestException)
             {
-                this.Logger.LogError("Error retrieving vaccine card record: {Exception}", e.ToString());
+                logger.LogError("Error retrieving vaccine card record: {Exception}", e.ToString());
                 RequestError error = StoreUtility.FormatRequestError(e);
                 dispatcher.Dispatch(new VaccineCardActions.PrintVaccineCardFailureAction { Error = error });
             }

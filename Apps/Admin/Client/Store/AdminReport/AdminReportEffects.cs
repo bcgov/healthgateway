@@ -27,30 +27,20 @@ namespace HealthGateway.Admin.Client.Store.AdminReport
     using Microsoft.Extensions.Logging;
     using Refit;
 
-    public class AdminReportEffects
+    public class AdminReportEffects(ILogger<AdminReportEffects> logger, IAdminReportApi adminReportApi)
     {
-        public AdminReportEffects(ILogger<AdminReportEffects> logger, IAdminReportApi adminReportApi)
-        {
-            this.Logger = logger;
-            this.AdminReportApi = adminReportApi;
-        }
-
-        private ILogger<AdminReportEffects> Logger { get; }
-
-        private IAdminReportApi AdminReportApi { get; }
-
         [EffectMethod(typeof(AdminReportActions.GetBlockedAccessAction))]
         public async Task HandleGetBlockedAccessAction(IDispatcher dispatcher)
         {
-            this.Logger.LogInformation("Retrieving users with blocked data sources");
+            logger.LogInformation("Retrieving users with blocked data sources");
             try
             {
-                IEnumerable<BlockedAccessRecord> report = await this.AdminReportApi.GetBlockedAccessReport().ConfigureAwait(true);
+                IEnumerable<BlockedAccessRecord> report = await adminReportApi.GetBlockedAccessReport().ConfigureAwait(true);
                 dispatcher.Dispatch(new AdminReportActions.GetBlockedAccessSuccessAction { Data = report });
             }
             catch (Exception e) when (e is ApiException or HttpRequestException)
             {
-                this.Logger.LogError("Error retrieving users with blocked data sources: {Exception}", e.ToString());
+                logger.LogError("Error retrieving users with blocked data sources: {Exception}", e.ToString());
                 RequestError error = StoreUtility.FormatRequestError(e);
                 dispatcher.Dispatch(new AdminReportActions.GetProtectedDependentsFailureAction { Error = error });
             }

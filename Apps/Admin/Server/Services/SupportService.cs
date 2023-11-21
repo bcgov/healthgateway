@@ -45,60 +45,30 @@ namespace HealthGateway.Admin.Server.Services
     using Microsoft.Extensions.Logging;
 
     /// <inheritdoc/>
-    public class SupportService : ISupportService
+    /// <param name="autoMapper">The injected automapper provider.</param>
+    /// <param name="messagingVerificationDelegate">The Messaging verification delegate to interact with the DB.</param>
+    /// <param name="patientRepository">The injected patient repository.</param>
+    /// <param name="resourceDelegateDelegate">The resource delegate used to lookup delegates and owners.</param>
+    /// <param name="userProfileDelegate">The user profile delegate to interact with the DB.</param>
+    /// <param name="authenticationDelegate">The auth delegate to fetch tokens.</param>
+    /// <param name="immunizationAdminDelegate">The injected immunization admin delegate.</param>
+    /// <param name="immunizationAdminApi">The injected immunization admin api.</param>
+    /// <param name="auditRepository">The injected audit repository.</param>
+    /// <param name="cacheProvider">The injected cache provider.</param>
+    /// <param name="logger">The injected logger provider.</param>
+    public class SupportService(
+        IMapper autoMapper,
+        IMessagingVerificationDelegate messagingVerificationDelegate,
+        IPatientRepository patientRepository,
+        IResourceDelegateDelegate resourceDelegateDelegate,
+        IUserProfileDelegate userProfileDelegate,
+        IAuthenticationDelegate authenticationDelegate,
+        IImmunizationAdminDelegate immunizationAdminDelegate,
+        IImmunizationAdminApi immunizationAdminApi,
+        IAuditRepository auditRepository,
+        ICacheProvider cacheProvider,
+        ILogger<SupportService> logger) : ISupportService
     {
-        private readonly IMapper autoMapper;
-        private readonly IMessagingVerificationDelegate messagingVerificationDelegate;
-        private readonly IPatientRepository patientRepository;
-        private readonly IResourceDelegateDelegate resourceDelegateDelegate;
-        private readonly IUserProfileDelegate userProfileDelegate;
-        private readonly IAuthenticationDelegate authenticationDelegate;
-        private readonly IImmunizationAdminDelegate immunizationAdminDelegate;
-        private readonly IImmunizationAdminApi immunizationAdminApi;
-        private readonly IAuditRepository auditRepository;
-        private readonly ICacheProvider cacheProvider;
-        private readonly ILogger<SupportService> logger;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SupportService"/> class.
-        /// </summary>
-        /// <param name="autoMapper">The injected automapper provider.</param>
-        /// <param name="messagingVerificationDelegate">The Messaging verification delegate to interact with the DB.</param>
-        /// <param name="patientRepository">The injected patient repository.</param>
-        /// <param name="resourceDelegateDelegate">The resource delegate used to lookup delegates and owners.</param>
-        /// <param name="userProfileDelegate">The user profile delegate to interact with the DB.</param>
-        /// <param name="authenticationDelegate">The auth delegate to fetch tokens.</param>
-        /// <param name="immunizationAdminDelegate">The injected immunization admin delegate.</param>
-        /// <param name="immunizationAdminApi">The injected immunization admin api.</param>
-        /// <param name="auditRepository">The injected audit repository.</param>
-        /// <param name="cacheProvider">The injected cache provider.</param>
-        /// <param name="logger">The injected logger provider.</param>
-        public SupportService(
-            IMapper autoMapper,
-            IMessagingVerificationDelegate messagingVerificationDelegate,
-            IPatientRepository patientRepository,
-            IResourceDelegateDelegate resourceDelegateDelegate,
-            IUserProfileDelegate userProfileDelegate,
-            IAuthenticationDelegate authenticationDelegate,
-            IImmunizationAdminDelegate immunizationAdminDelegate,
-            IImmunizationAdminApi immunizationAdminApi,
-            IAuditRepository auditRepository,
-            ICacheProvider cacheProvider,
-            ILogger<SupportService> logger)
-        {
-            this.autoMapper = autoMapper;
-            this.messagingVerificationDelegate = messagingVerificationDelegate;
-            this.patientRepository = patientRepository;
-            this.resourceDelegateDelegate = resourceDelegateDelegate;
-            this.userProfileDelegate = userProfileDelegate;
-            this.authenticationDelegate = authenticationDelegate;
-            this.immunizationAdminDelegate = immunizationAdminDelegate;
-            this.immunizationAdminApi = immunizationAdminApi;
-            this.auditRepository = auditRepository;
-            this.cacheProvider = cacheProvider;
-            this.logger = logger;
-        }
-
         /// <inheritdoc/>
         public async Task<PatientSupportDetails> GetPatientSupportDetailsAsync(
             PatientSupportDetailsQuery query,
@@ -119,7 +89,7 @@ namespace HealthGateway.Admin.Server.Services
                 query.IncludeCovidDetails ? this.GetVaccineDetails(patient, query.RefreshVaccineDetails) : null;
 
             Task<CovidAssessmentDetailsResponse>? getCovidAssessmentDetails =
-                query.IncludeCovidDetails ? this.immunizationAdminApi.GetCovidAssessmentDetails(new() { Phn = patient.Phn }, this.GetAccessToken()) : null;
+                query.IncludeCovidDetails ? immunizationAdminApi.GetCovidAssessmentDetails(new() { Phn = patient.Phn }, this.GetAccessToken()) : null;
 
             IEnumerable<MessagingVerificationModel>? messagingVerifications =
                 query.IncludeMessagingVerifications ? await this.GetMessagingVerificationsAsync(patient.Hdid, ct) : null;
@@ -159,9 +129,9 @@ namespace HealthGateway.Admin.Server.Services
                 PatientQueryType.Dependent =>
                     await this.GetDelegateProfilesAsync(queryString, ct),
                 PatientQueryType.Email =>
-                    await this.userProfileDelegate.GetUserProfilesAsync(UserQueryType.Email, queryString),
+                    await userProfileDelegate.GetUserProfilesAsync(UserQueryType.Email, queryString),
                 PatientQueryType.Sms =>
-                    await this.userProfileDelegate.GetUserProfilesAsync(UserQueryType.Sms, queryString),
+                    await userProfileDelegate.GetUserProfilesAsync(UserQueryType.Sms, queryString),
                 _ =>
                     throw new ProblemDetailsException(ExceptionUtility.CreateProblemDetails($"Unknown {nameof(queryType)}", HttpStatusCode.BadRequest, nameof(SupportService))),
             };
@@ -174,12 +144,12 @@ namespace HealthGateway.Admin.Server.Services
         public async Task BlockAccessAsync(string hdid, IEnumerable<DataSource> dataSources, string reason, CancellationToken ct = default)
         {
             BlockAccessCommand blockAccessCommand = new(hdid, dataSources, reason);
-            await this.patientRepository.BlockAccessAsync(blockAccessCommand, ct);
+            await patientRepository.BlockAccessAsync(blockAccessCommand, ct);
         }
 
         private async Task<PatientModel> GetPatientAsync(PatientDetailsQuery query, CancellationToken ct = default)
         {
-            PatientModel? patient = (await this.patientRepository.Query(query, ct)).Items.SingleOrDefault();
+            PatientModel? patient = (await patientRepository.Query(query, ct)).Items.SingleOrDefault();
             return patient ?? throw new ProblemDetailsException(ExceptionUtility.CreateProblemDetails(ErrorMessages.ClientRegistryRecordsNotFound, HttpStatusCode.NotFound, nameof(SupportService)));
         }
 
@@ -201,8 +171,8 @@ namespace HealthGateway.Admin.Server.Services
 
         private async Task<IEnumerable<MessagingVerificationModel>> GetMessagingVerificationsAsync(string hdid, CancellationToken ct)
         {
-            IEnumerable<MessagingVerification> verifications = await this.messagingVerificationDelegate.GetUserMessageVerificationsAsync(hdid, ct);
-            return verifications.Select(m => this.autoMapper.Map<MessagingVerification, MessagingVerificationModel>(m));
+            IEnumerable<MessagingVerification> verifications = await messagingVerificationDelegate.GetUserMessageVerificationsAsync(hdid, ct);
+            return verifications.Select(m => autoMapper.Map<MessagingVerification, MessagingVerificationModel>(m));
         }
 
         private async Task<IEnumerable<DataSource>> GetBlockedDataSourcesAsync(string hdid, CancellationToken ct)
@@ -210,22 +180,22 @@ namespace HealthGateway.Admin.Server.Services
             // Invalidate blocked data source cache and then get newest value(s) from database.
             string blockedAccessCacheKey = string.Format(CultureInfo.InvariantCulture, ICacheProvider.BlockedAccessCachePrefixKey, hdid);
             string message = $"Removing item for key: {blockedAccessCacheKey} from cache";
-            this.logger.LogDebug("{Message}", message);
-            await this.cacheProvider.RemoveItemAsync(blockedAccessCacheKey);
+            logger.LogDebug("{Message}", message);
+            await cacheProvider.RemoveItemAsync(blockedAccessCacheKey);
 
-            return await this.patientRepository.GetDataSources(hdid, ct);
+            return await patientRepository.GetDataSources(hdid, ct);
         }
 
         private async Task<IEnumerable<AgentAction>> GetAgentActionsAsync(string hdid, CancellationToken ct)
         {
-            IEnumerable<AgentAudit> audits = await this.auditRepository.Handle(new(hdid), ct);
-            return audits.Select(audit => this.autoMapper.Map<AgentAudit, AgentAction>(audit));
+            IEnumerable<AgentAudit> audits = await auditRepository.Handle(new(hdid), ct);
+            return audits.Select(audit => autoMapper.Map<AgentAudit, AgentAction>(audit));
         }
 
         private async Task<IEnumerable<PatientSupportDependentInfo>> GetAllDependentInfoAsync(string delegateHdid, CancellationToken ct)
         {
             ResourceDelegateQuery query = new() { ByDelegateHdid = delegateHdid, IncludeDependent = true };
-            ResourceDelegateQueryResult result = await this.resourceDelegateDelegate.SearchAsync(query);
+            ResourceDelegateQueryResult result = await resourceDelegateDelegate.SearchAsync(query);
             IEnumerable<Task<PatientSupportDependentInfo?>> tasks = result.Items.Select(r => this.GetDependentInfoAsync(r, ct));
             return (await Task.WhenAll(tasks)).OfType<PatientSupportDependentInfo>();
         }
@@ -238,7 +208,7 @@ namespace HealthGateway.Admin.Server.Services
                 return null;
             }
 
-            PatientSupportDependentInfo dependentInfo = this.autoMapper.Map<PatientModel, PatientSupportDependentInfo>(patient);
+            PatientSupportDependentInfo dependentInfo = autoMapper.Map<PatientModel, PatientSupportDependentInfo>(patient);
             dependentInfo.ExpiryDate = item.ResourceDelegate.ExpiryDate;
             dependentInfo.Protected = item.Dependent?.Protected == true;
             return dependentInfo;
@@ -248,16 +218,16 @@ namespace HealthGateway.Admin.Server.Services
         {
             if (!string.IsNullOrEmpty(patient.Phn) && patient.Birthdate != DateTime.MinValue)
             {
-                return this.immunizationAdminDelegate.GetVaccineDetailsWithRetries(patient.Phn, this.GetAccessToken(), refresh);
+                return immunizationAdminDelegate.GetVaccineDetailsWithRetries(patient.Phn, this.GetAccessToken(), refresh);
             }
 
-            this.logger.LogError("Patient PHN {PersonalHealthNumber} or DOB {Birthdate}) are invalid", patient.Phn, patient.Birthdate);
+            logger.LogError("Patient PHN {PersonalHealthNumber} or DOB {Birthdate}) are invalid", patient.Phn, patient.Birthdate);
             throw new ProblemDetailsException(ExceptionUtility.CreateProblemDetails(ErrorMessages.PhnOrDateAndBirthInvalid, HttpStatusCode.BadRequest, nameof(SupportService)));
         }
 
         private string GetAccessToken()
         {
-            string? accessToken = this.authenticationDelegate.FetchAuthenticatedUserToken();
+            string? accessToken = authenticationDelegate.FetchAuthenticatedUserToken();
             return accessToken ?? throw new ProblemDetailsException(ExceptionUtility.CreateProblemDetails(ErrorMessages.CannotFindAccessToken, HttpStatusCode.Unauthorized, nameof(SupportService)));
         }
 
@@ -270,20 +240,20 @@ namespace HealthGateway.Admin.Server.Services
                 : patient?.Hdid;
             UserProfile? profile = hdid == null
                 ? null
-                : await this.userProfileDelegate.GetUserProfileAsync(hdid);
+                : await userProfileDelegate.GetUserProfileAsync(hdid);
 
             if (patient == null && profile == null)
             {
                 return null;
             }
 
-            return PatientSupportDetailsMapUtils.ToUiModel(patient, profile, this.autoMapper);
+            return PatientSupportDetailsMapUtils.ToUiModel(patient, profile, autoMapper);
         }
 
         private async Task<PatientSupportResult> GetPatientSupportResultAsync(UserProfile profile, CancellationToken ct)
         {
             PatientModel? patient = await this.TryGetPatientAsync(PatientIdentifierType.Hdid, profile.HdId, ct);
-            return PatientSupportDetailsMapUtils.ToUiModel(patient, profile, this.autoMapper);
+            return PatientSupportDetailsMapUtils.ToUiModel(patient, profile, autoMapper);
         }
 
         private async Task<IEnumerable<UserProfile>> GetDelegateProfilesAsync(string dependentPhn, CancellationToken ct)
@@ -300,7 +270,7 @@ namespace HealthGateway.Admin.Server.Services
                 IncludeProfile = true,
                 TakeAmount = 25,
             };
-            ResourceDelegateQueryResult result = await this.resourceDelegateDelegate.SearchAsync(query);
+            ResourceDelegateQueryResult result = await resourceDelegateDelegate.SearchAsync(query);
             return result.Items.Select(c => c.ResourceDelegate.UserProfile);
         }
     }

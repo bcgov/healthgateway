@@ -26,29 +26,19 @@ namespace HealthGateway.Admin.Server.Controllers
     /// <summary>
     /// Web API to handle system broadcasts.
     /// </summary>
+    /// <param name="broadcastService">The injected broadcast service.</param>
     [ApiController]
     [ApiVersion("1.0")]
     [Route("v{version:apiVersion}/api/[controller]")]
     [Produces("application/json")]
     [Authorize(Roles = "AdminUser,AdminReviewer")]
-    public class BroadcastController
+    public class BroadcastController(IBroadcastService broadcastService)
     {
-        private readonly IBroadcastService broadcastService;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="BroadcastController"/> class.
-        /// </summary>
-        /// <param name="broadcastService">The injected broadcast service.</param>
-        public BroadcastController(IBroadcastService broadcastService)
-        {
-            this.broadcastService = broadcastService;
-        }
-
         /// <summary>
         /// Creates a broadcast.
         /// </summary>
-        /// <returns>The created broadcast wrapped in a RequestResult.</returns>
         /// <param name="broadcast">The broadcast model.</param>
+        /// <returns>The created broadcast wrapped in a RequestResult.</returns>
         /// <response code="200">Returns the created broadcast wrapped in a RequestResult.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
         /// <response code="403">
@@ -58,7 +48,7 @@ namespace HealthGateway.Admin.Server.Controllers
         [HttpPost]
         public async Task<RequestResult<Broadcast>> CreateBroadcast(Broadcast broadcast)
         {
-            return await this.broadcastService.CreateBroadcastAsync(broadcast).ConfigureAwait(true);
+            return await broadcastService.CreateBroadcastAsync(broadcast).ConfigureAwait(true);
         }
 
         /// <summary>
@@ -74,7 +64,7 @@ namespace HealthGateway.Admin.Server.Controllers
         [HttpGet]
         public async Task<RequestResult<IEnumerable<Broadcast>>> GetBroadcasts()
         {
-            return await this.broadcastService.GetBroadcastsAsync().ConfigureAwait(true);
+            return await broadcastService.GetBroadcastsAsync().ConfigureAwait(true);
         }
 
         /// <summary>
@@ -91,7 +81,7 @@ namespace HealthGateway.Admin.Server.Controllers
         [HttpPut]
         public async Task<RequestResult<Broadcast>> UpdateBroadcast(Broadcast broadcast)
         {
-            return await this.broadcastService.UpdateBroadcastAsync(broadcast).ConfigureAwait(true);
+            return await broadcastService.UpdateBroadcastAsync(broadcast).ConfigureAwait(true);
         }
 
         /// <summary>
@@ -108,7 +98,7 @@ namespace HealthGateway.Admin.Server.Controllers
         [HttpDelete]
         public async Task<RequestResult<Broadcast>> DeleteBroadcast(Broadcast broadcast)
         {
-            return await this.broadcastService.DeleteBroadcastAsync(broadcast).ConfigureAwait(true);
+            return await broadcastService.DeleteBroadcastAsync(broadcast).ConfigureAwait(true);
         }
     }
 }

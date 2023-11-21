@@ -25,29 +25,19 @@ namespace HealthGateway.Admin.Server.Controllers
     /// <summary>
     /// Web API to handle system communications.
     /// </summary>
+    /// <param name="communicationService">The injected communication service.</param>
     [ApiController]
     [ApiVersion("1.0")]
     [Route("v{version:apiVersion}/api/[controller]")]
     [Produces("application/json")]
     [Authorize(Roles = "AdminUser,AdminReviewer")]
-    public class CommunicationController
+    public class CommunicationController(ICommunicationService communicationService)
     {
-        private readonly ICommunicationService communicationService;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="CommunicationController"/> class.
-        /// </summary>
-        /// <param name="communicationService">The injected communication service.</param>
-        public CommunicationController(ICommunicationService communicationService)
-        {
-            this.communicationService = communicationService;
-        }
-
         /// <summary>
         /// Adds a given communication to the backend.
         /// </summary>
-        /// <returns>The added communication wrapped in a RequestResult.</returns>
         /// <param name="communication">The communication to be added.</param>
+        /// <returns>The added communication wrapped in a RequestResult.</returns>
         /// <response code="200">Returns the communication json.</response>
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
         /// <response code="403">
@@ -57,14 +47,14 @@ namespace HealthGateway.Admin.Server.Controllers
         [HttpPost]
         public RequestResult<Communication> Add(Communication communication)
         {
-            return this.communicationService.Add(communication);
+            return communicationService.Add(communication);
         }
 
         /// <summary>
         /// Updates a given communication to the backend.
         /// </summary>
-        /// <returns>The updated communication wrapped in a RequestResult.</returns>
         /// <param name="communication">The communication to be updated.</param>
+        /// <returns>The updated communication wrapped in a RequestResult.</returns>
         /// <response code="200">Returns the communication json.</response>
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
         /// <response code="403">
@@ -74,7 +64,7 @@ namespace HealthGateway.Admin.Server.Controllers
         [HttpPut]
         public RequestResult<Communication> Update(Communication communication)
         {
-            return this.communicationService.Update(communication);
+            return communicationService.Update(communication);
         }
 
         /// <summary>
@@ -90,7 +80,7 @@ namespace HealthGateway.Admin.Server.Controllers
         [HttpGet]
         public RequestResult<IEnumerable<Communication>> GetAll()
         {
-            return this.communicationService.GetAll();
+            return communicationService.GetAll();
         }
 
         /// <summary>
@@ -107,7 +97,7 @@ namespace HealthGateway.Admin.Server.Controllers
         [HttpDelete]
         public RequestResult<Communication> Delete([FromBody] Communication communication)
         {
-            return this.communicationService.Delete(communication);
+            return communicationService.Delete(communication);
         }
     }
 }

@@ -24,39 +24,26 @@ namespace HealthGateway.Admin.Client.Store.PatientSupport
     using HealthGateway.Admin.Client.Api;
     using HealthGateway.Admin.Client.Utils;
     using HealthGateway.Admin.Common.Models;
-    using Microsoft.AspNetCore.Components;
     using Microsoft.Extensions.Logging;
     using Refit;
 
-    public class PatientSupportEffects
+    public class PatientSupportEffects(ILogger<PatientSupportEffects> logger, ISupportApi supportApi)
     {
-        public PatientSupportEffects(ILogger<PatientSupportEffects> logger, ISupportApi supportApi)
-        {
-            this.Logger = logger;
-            this.SupportApi = supportApi;
-        }
-
-        [Inject]
-        private ILogger<PatientSupportEffects> Logger { get; set; }
-
-        [Inject]
-        private ISupportApi SupportApi { get; set; }
-
         [EffectMethod]
         public async Task HandleLoadAction(PatientSupportActions.LoadAction action, IDispatcher dispatcher)
         {
-            this.Logger.LogInformation("Loading patients!");
+            logger.LogInformation("Loading patients!");
 
             try
             {
-                IList<PatientSupportResult> response = await this.SupportApi.GetPatientsAsync(action.QueryType, action.QueryString).ConfigureAwait(true);
-                this.Logger.LogInformation("Patients loaded successfully!");
+                IList<PatientSupportResult> response = await supportApi.GetPatientsAsync(action.QueryType, action.QueryString).ConfigureAwait(true);
+                logger.LogInformation("Patients loaded successfully!");
                 dispatcher.Dispatch(new PatientSupportActions.LoadSuccessAction { Data = response, ShouldNavigateToPatientDetails = action.ShouldNavigateToPatientDetails });
             }
             catch (Exception e) when (e is ApiException or HttpRequestException)
             {
                 RequestError error = StoreUtility.FormatRequestError(e);
-                this.Logger.LogError("Error loading patients, reason: {ErrorMessage}", error.Message);
+                logger.LogError("Error loading patients, reason: {ErrorMessage}", error.Message);
                 dispatcher.Dispatch(new PatientSupportActions.LoadFailureAction { Error = error });
             }
         }

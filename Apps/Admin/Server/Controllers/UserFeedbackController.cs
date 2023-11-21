@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -26,24 +26,14 @@ namespace HealthGateway.Admin.Server.Controllers
     /// <summary>
     /// Web API to handle user feedback review.
     /// </summary>
+    /// <param name="feedbackService">The injected user feedback service.</param>
     [ApiController]
     [ApiVersion("1.0")]
     [Route("v{version:apiVersion}/api/[controller]")]
     [Produces("application/json")]
     [Authorize(Roles = "AdminUser,AdminReviewer")]
-    public class UserFeedbackController
+    public class UserFeedbackController(IUserFeedbackService feedbackService)
     {
-        private readonly IUserFeedbackService feedbackService;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="UserFeedbackController"/> class.
-        /// </summary>
-        /// <param name="feedbackService">The injected user feedback service.</param>
-        public UserFeedbackController(IUserFeedbackService feedbackService)
-        {
-            this.feedbackService = feedbackService;
-        }
-
         /// <summary>
         /// Retrieves a list of user feedbacks.
         /// </summary>
@@ -57,14 +47,14 @@ namespace HealthGateway.Admin.Server.Controllers
         [HttpGet]
         public RequestResult<IList<UserFeedbackView>> GetFeedbackList()
         {
-            return this.feedbackService.GetUserFeedback();
+            return feedbackService.GetUserFeedback();
         }
 
         /// <summary>
         /// Sends email invites to the beta requests with the given ids.
         /// </summary>
-        /// <returns>A list of ids of the beta requests that where successfully processed.</returns>
         /// <param name="feedback">user feedback to update.</param>
+        /// <returns>A list of ids of the beta requests that where successfully processed.</returns>
         /// <response code="200">Returns the beta requests ids that where invited.</response>
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
         /// <response code="403">
@@ -74,7 +64,7 @@ namespace HealthGateway.Admin.Server.Controllers
         [HttpPatch]
         public RequestResult<UserFeedbackView> UpdateUserFeedback(UserFeedbackView feedback)
         {
-            return this.feedbackService.UpdateFeedbackReview(feedback);
+            return feedbackService.UpdateFeedbackReview(feedback);
         }
     }
 }
