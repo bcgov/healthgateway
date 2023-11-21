@@ -18,6 +18,7 @@ namespace HealthGateway.Admin.Client.Pages;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Globalization;
 using System.Linq;
 using Fluxor;
 using Fluxor.Blazor.Web.Components;
@@ -184,6 +185,11 @@ public partial class DashboardPage : FluxorComponent
         this.Dispatcher.Dispatch(new DashboardActions.ResetStateAction());
         this.RetrieveDemographicsData();
         this.RetrieveUsageData();
+    }
+
+    private static string FormatNumber(int number)
+    {
+        return number.ToString("N0", CultureInfo.InvariantCulture);
     }
 
     private void RetrieveDemographicsData()
