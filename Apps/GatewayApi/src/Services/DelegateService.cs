@@ -15,6 +15,7 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.GatewayApi.Services
 {
+    using System;
     using System.Net;
     using System.Threading;
     using System.Threading.Tasks;
@@ -22,6 +23,7 @@ namespace HealthGateway.GatewayApi.Services
     using FluentValidation.Results;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.ErrorHandling;
+    using HealthGateway.Common.Data.Utils;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.Models.Cacheable;
     using HealthGateway.Common.Utils;
@@ -29,11 +31,13 @@ namespace HealthGateway.GatewayApi.Services
     using HealthGateway.Database.Models;
     using HealthGateway.GatewayApi.Models;
     using HealthGateway.GatewayApi.Validations;
+    using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
 
     /// <inheritdoc/>
     public class DelegateService : IDelegateService
     {
+        private readonly IConfiguration configuration;
         private readonly IMapper autoMapper;
         private readonly ILogger<DelegateService> logger;
         private readonly IDelegateInvitationDelegate delegateInvitationDelegate;
@@ -43,18 +47,21 @@ namespace HealthGateway.GatewayApi.Services
         /// <summary>
         /// Initializes a new instance of the <see cref="DelegateService"/> class.
         /// </summary>
+        /// <param name="configuration">The configuration to use.</param>
         /// <param name="autoMapper">The injected auto mapper provider.</param>
         /// <param name="logger">The injected logger.</param>
         /// <param name="delegateInvitationDelegate">The injected delegate invitation delegate.</param>
         /// <param name="hashDelegate">The injected hash delegate.</param>
         /// <param name="patientDetailsService">The injected patient details service.</param>
         public DelegateService(
+            IConfiguration configuration,
             IMapper autoMapper,
             ILogger<DelegateService> logger,
             IDelegateInvitationDelegate delegateInvitationDelegate,
             IHashDelegate hashDelegate,
             IPatientDetailsService patientDetailsService)
         {
+            this.configuration = configuration;
             this.autoMapper = autoMapper;
             this.logger = logger;
             this.delegateInvitationDelegate = delegateInvitationDelegate;
@@ -65,7 +72,10 @@ namespace HealthGateway.GatewayApi.Services
         /// <inheritdoc/>
         public async Task<string> CreateDelegateInvitationAsync(string hdid, CreateDelegateInvitationRequest request, CancellationToken ct = default)
         {
-            ValidationResult validationResult = await new CreateDelegateInvitationRequestValidator().ValidateAsync(request, ct);
+            TimeZoneInfo localTimezone = DateFormatter.GetLocalTimeZone(this.configuration);
+            DateOnly referenceDate = DateOnly.FromDateTime(TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, localTimezone));
+
+            ValidationResult validationResult = await new CreateDelegateInvitationRequestValidator(referenceDate).ValidateAsync(request, ct);
 
             if (!validationResult.IsValid)
             {
