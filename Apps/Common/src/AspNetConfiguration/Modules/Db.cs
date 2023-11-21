@@ -43,7 +43,7 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
             logger.LogDebug("Sensitive Data Logging is enabled: {IsSensitiveDataLoggingEnabled}", isSensitiveDataLoggingEnabled);
 
             NpgsqlDataSourceBuilder dataSourceBuilder = new(configuration.GetConnectionString("GatewayConnection"));
-            dataSourceBuilder.EnableDynamicJsonMappings();
+            dataSourceBuilder.EnableDynamicJson();
             NpgsqlDataSource dataSource = dataSourceBuilder.Build();
 
             services.AddDbContextPool<GatewayDbContext>(
