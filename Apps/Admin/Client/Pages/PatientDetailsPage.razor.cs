@@ -73,7 +73,7 @@ namespace HealthGateway.Admin.Client.Pages
 
         private bool CanViewManageProfile => this.UserHasRole(Roles.Admin) || this.UserHasRole(Roles.Reviewer);
 
-        private bool CanViewNotes => this.UserHasRole(Roles.Admin) || this.UserHasRole(Roles.Reviewer);
+        private bool CanViewNotes => this.UserHasRole(Roles.Admin);
 
         private AuthenticationState? AuthenticationState { get; set; }
 
