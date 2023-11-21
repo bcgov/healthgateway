@@ -47,8 +47,8 @@ namespace HealthGateway.GatewayApiTests.Services.Test
 
         private const string ValidEmail = "delegator@gateway.ca";
         private const string InvalidEmail = "delegator@gateway";
-        private const string ValidNickName = "12345678901234567890"; // 20 characters
-        private const string InvalidNickName = "123456789012345678901"; // 21 characters
+        private const string ValidNickname = "12345678901234567890"; // 20 characters
+        private const string InvalidNickname = "123456789012345678901"; // 21 characters
         private static readonly HashSet<DataSource> ValidDataSources = new()
         {
             DataSource.Immunization,
@@ -64,26 +64,26 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         /// <returns>Test cases as arrays of objects.</returns>
         public static IEnumerable<object[]> TestCases()
         {
-            yield return new object[] { ValidEmail, ValidNickName, 1, ValidDataSources, true };
-            yield return new object[] { ValidEmail, ValidNickName, 0, ValidDataSources, true };
-            yield return new object[] { InvalidEmail, ValidNickName, 1, ValidDataSources, false };
-            yield return new object[] { ValidEmail, InvalidNickName, 1, ValidDataSources, false };
-            yield return new object[] { ValidEmail, ValidNickName, -1, ValidDataSources, false };
-            yield return new object[] { ValidEmail, ValidNickName, 1, InvalidDataSources, false };
+            yield return new object[] { ValidEmail, ValidNickname, 1, ValidDataSources, true };
+            yield return new object[] { ValidEmail, ValidNickname, 0, ValidDataSources, true };
+            yield return new object[] { InvalidEmail, ValidNickname, 1, ValidDataSources, false };
+            yield return new object[] { ValidEmail, InvalidNickname, 1, ValidDataSources, false };
+            yield return new object[] { ValidEmail, ValidNickname, -1, ValidDataSources, false };
+            yield return new object[] { ValidEmail, ValidNickname, 1, InvalidDataSources, false };
         }
 
         /// <summary>
         /// Should create delegate invitation.
         /// </summary>
         /// <param name="email">Email to validate.</param>
-        /// <param name="nickName">Nick name to validate.</param>
+        /// <param name="nickname">Nickname to validate.</param>
         /// <param name="daysToAdd">Number of days to add to create expiry date from utc now.</param>
         /// <param name="dataSources">Data sources to validate.</param>
         /// <param name="success">The value indicates whether the test should succeed or not.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Theory]
         [MemberData(nameof(TestCases))]
-        public async Task CreateDelegateInvitation(string email, string nickName, int daysToAdd, HashSet<DataSource> dataSources, bool success)
+        public async Task CreateDelegateInvitation(string email, string nickname, int daysToAdd, HashSet<DataSource> dataSources, bool success)
         {
             TimeZoneInfo localTimezone = DateFormatter.GetLocalTimeZone(GetConfiguration());
             Mock<IDelegateInvitationDelegate> delegateInvitationDelegate = new();
@@ -95,7 +95,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             {
                 ResourceOwnerHdid = Hdid,
                 ResourceOwnerIdentifier = $"{patient.PreferredName.GivenName} {patient.PreferredName.Surname[0]}",
-                Nickname = nickName,
+                Nickname = nickname,
                 ExpiryDate = DateOnly.FromDateTime(TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, localTimezone)).AddDays(daysToAdd),
                 DataSources = dataSources,
             };
@@ -103,7 +103,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             CreateDelegateInvitationRequest request = new()
             {
                 Email = email,
-                Nickname = nickName,
+                Nickname = nickname,
                 ExpiryDate = DateOnly.FromDateTime(TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, localTimezone)).AddDays(daysToAdd),
                 DataSources = dataSources,
             };
