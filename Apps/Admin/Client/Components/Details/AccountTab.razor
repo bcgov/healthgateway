@@ -7,7 +7,7 @@
         Account Details
     </MudText>
     <MudGrid Spacing="2">
-        @if (CanViewHdid)
+        @if (CanViewHdid && !string.IsNullOrWhiteSpace(Patient.Hdid))
         {
             <MudItem xs="12">
                 <HgField Label="HDID" Value="@Patient.Hdid" data-testid="patient-hdid" />
