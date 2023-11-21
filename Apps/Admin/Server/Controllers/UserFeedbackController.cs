@@ -51,11 +51,11 @@ namespace HealthGateway.Admin.Server.Controllers
         }
 
         /// <summary>
-        /// Sends email invites to the beta requests with the given ids.
+        /// Updates a user feedback.
         /// </summary>
-        /// <param name="feedback">user feedback to update.</param>
-        /// <returns>A list of ids of the beta requests that where successfully processed.</returns>
-        /// <response code="200">Returns the beta requests ids that where invited.</response>
+        /// <param name="feedback">The user feedback to update.</param>
+        /// <returns>The updated user feedback view wrapped in a request result.</returns>
+        /// <response code="200">Returns the updated user feedback view wrapped in a request result.</response>
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
         /// <response code="403">
         /// The client does not have access rights to the content; that is, it is unauthorized, so the server

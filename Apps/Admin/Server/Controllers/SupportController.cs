@@ -121,7 +121,7 @@ namespace HealthGateway.Admin.Server.Controllers
         /// <param name="hdid">The hdid belonging to the data sources to block.</param>
         /// <param name="request">The request object containing data sources to block.</param>
         /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
-        /// <response code="200">The dependent is protected.</response>
+        /// <response code="200">Data source access has been updated.</response>
         /// <response code="401">The client must authenticate itself to get the requested resource.</response>
         [HttpPut]
         [Route("{hdid}/BlockAccess")]
@@ -176,8 +176,8 @@ namespace HealthGateway.Admin.Server.Controllers
         /// Submitting a completed anti viral screening form.
         /// </summary>
         /// <param name="request">The covid therapy assessment request to use for submission.</param>
-        /// <returns>A CovidAssessmentResponse object.</returns>
-        /// <response code="200">The covid assessment request was submitted.</response>
+        /// <returns>A covid therapy assessment response.</returns>
+        /// <response code="200">Returns a covid therapy assessment response.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
         /// <response code="403">
         /// The client does not have access rights to the content; that is, it is unauthorized, so the server

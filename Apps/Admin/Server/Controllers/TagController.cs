@@ -37,7 +37,7 @@ namespace HealthGateway.Admin.Server.Controllers
         /// <summary>
         /// Gets all admin tags.
         /// </summary>
-        /// <returns>The list of dependent model wrapped in a request result.</returns>
+        /// <returns>The list of admin tags wrapped in a request result.</returns>
         /// <response code="200">Returns the list of admin tags.</response>
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
         /// <response code="403">
@@ -57,7 +57,7 @@ namespace HealthGateway.Admin.Server.Controllers
         /// </summary>
         /// <param name="tagName">The tag name.</param>
         /// <returns>The newly created tag model.</returns>
-        /// <response code="200">Returns the list of dependents.</response>
+        /// <response code="200">Returns the newly created tag model.</response>
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
         /// <response code="403">
         /// The client does not have access rights to the content; that is, it is unauthorized, so the server
@@ -76,7 +76,7 @@ namespace HealthGateway.Admin.Server.Controllers
         /// </summary>
         /// <param name="tag">The admin tag.</param>
         /// <returns>The deleted tag wrapped in a request result.</returns>
-        /// <response code="200">Returns the list of dependents.</response>
+        /// <response code="200">Returns the deleted tag wrapped in a request result.</response>
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
         /// <response code="403">
         /// The client does not have access rights to the content; that is, it is unauthorized, so the server

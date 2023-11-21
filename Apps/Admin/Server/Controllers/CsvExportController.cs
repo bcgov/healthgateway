@@ -37,12 +37,12 @@ namespace HealthGateway.Admin.Server.Controllers
     public class CsvExportController(ICsvExportService dataExportService)
     {
         /// <summary>
-        /// Retrieves a list of User Profiles created inclusively between UTC dates if provided.
+        /// Retrieves user profiles.
         /// </summary>
         /// <param name="startDate">The optional start date for the data.</param>
         /// <param name="endDate">The optional end date for the data.</param>
-        /// <returns>A CSV of the raw data. email.</returns>
-        /// <response code="200">Returns the list of beta requests.</response>
+        /// <returns>A CSV of user profiles.</returns>
+        /// <response code="200">Returns a CSV of user profiles.</response>
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
         /// <response code="403">
         /// The client does not have access rights to the content; that is, it is unauthorized, so the server
@@ -57,12 +57,12 @@ namespace HealthGateway.Admin.Server.Controllers
         }
 
         /// <summary>
-        /// Retrieves a list of inactive users created exclusive of the days inactive.
+        /// Retrieves inactive users.
         /// </summary>
         /// <param name="inactiveDays">The days inactive to filter the users last login.</param>
         /// <param name="timeOffset">The offset from the client browser to UTC.</param>
         /// <returns>A CSV of inactive users.</returns>
-        /// <response code="200">Returns the list of beta requests.</response>
+        /// <response code="200">Returns a CSV of inactive users.</response>
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
         /// <response code="403">
         /// The client does not have access rights to the content; that is, it is unauthorized, so the server
@@ -77,12 +77,12 @@ namespace HealthGateway.Admin.Server.Controllers
         }
 
         /// <summary>
-        /// Retrieves a list of Comments inclusively between UTC dates if provided.
+        /// Retrieves user comment metadata.
         /// </summary>
         /// <param name="startDate">The optional start date for the data.</param>
         /// <param name="endDate">The optional end date for the data.</param>
-        /// <returns>The invite email.</returns>
-        /// <response code="200">Returns the list of beta requests.</response>
+        /// <returns>A CSV of user comment metadata.</returns>
+        /// <response code="200">Returns a CSV of user comment metadata.</response>
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
         /// <response code="403">
         /// The client does not have access rights to the content; that is, it is unauthorized, so the server
@@ -97,12 +97,12 @@ namespace HealthGateway.Admin.Server.Controllers
         }
 
         /// <summary>
-        /// Retrieves a list of Notes inclusively between UTC dates if provided.
+        /// Retrieves user note metadata.
         /// </summary>
         /// <param name="startDate">The optional start date for the data.</param>
         /// <param name="endDate">The optional end date for the data.</param>
-        /// <returns>The invite email.</returns>
-        /// <response code="200">Returns the list of beta requests.</response>
+        /// <returns>A CSV of user note metadata.</returns>
+        /// <response code="200">Returns a CSV of user note metadata.</response>
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
         /// <response code="403">
         /// The client does not have access rights to the content; that is, it is unauthorized, so the server
@@ -117,12 +117,12 @@ namespace HealthGateway.Admin.Server.Controllers
         }
 
         /// <summary>
-        /// Retrieves a list of Ratings inclusively between UTC dates if provided.
+        /// Retrieves ratings.
         /// </summary>
         /// <param name="startDate">The optional start date for the data.</param>
         /// <param name="endDate">The optional end date for the data.</param>
-        /// <returns>A CSV of Ratings.</returns>
-        /// <response code="200">Returns the list of beta requests.</response>
+        /// <returns>A CSV of ratings.</returns>
+        /// <response code="200">Returns a CSV of ratings.</response>
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
         /// <response code="403">
         /// The client does not have access rights to the content; that is, it is unauthorized, so the server
@@ -137,10 +137,10 @@ namespace HealthGateway.Admin.Server.Controllers
         }
 
         /// <summary>
-        /// Retrieves a list of User Feedback.
+        /// Retrieves user feedback.
         /// </summary>
-        /// <returns>A CSV of User Feedback.</returns>
-        /// <response code="200">Returns the list of user feedback.</response>
+        /// <returns>A CSV of user feedback.</returns>
+        /// <response code="200">Returns a CSV of user feedback.</response>
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
         /// <response code="403">
         /// The client does not have access rights to the content; that is, it is unauthorized, so the server
@@ -155,14 +155,14 @@ namespace HealthGateway.Admin.Server.Controllers
         }
 
         /// <summary>
-        /// Retrieves a list of year of birth counts inclusively between UTC dates.
+        /// Retrieves year of birth counts.
         /// </summary>
-        /// <param name="startDateLocal">The starting date to get the user counts in the client's Local time.</param>
+        /// <param name="startDateLocal">The starting date to get the user counts in the client's local time.</param>
         /// <param name="endDateLocal">The ending date for the query in the client's local time.</param>
         /// <param name="timeOffset">The current timezone offset from the client browser to UTC.</param>
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A CSV of year of birth counts.</returns>
-        /// <response code="200">Returns the list of beta requests.</response>
+        /// <response code="200">Returns a CSV of year of birth counts.</response>
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
         /// <response code="403">
         /// The client does not have access rights to the content; that is, it is unauthorized, so the server

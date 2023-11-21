@@ -34,11 +34,11 @@ namespace HealthGateway.Admin.Server.Controllers
     public class CommunicationController(ICommunicationService communicationService)
     {
         /// <summary>
-        /// Adds a given communication to the backend.
+        /// Adds a communication.
         /// </summary>
         /// <param name="communication">The communication to be added.</param>
         /// <returns>The added communication wrapped in a RequestResult.</returns>
-        /// <response code="200">Returns the communication json.</response>
+        /// <response code="200">Returns the added communication wrapped in a RequestResult.</response>
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
         /// <response code="403">
         /// The client does not have access rights to the content; that is, it is unauthorized, so the server
@@ -51,11 +51,11 @@ namespace HealthGateway.Admin.Server.Controllers
         }
 
         /// <summary>
-        /// Updates a given communication to the backend.
+        /// Updates a communication.
         /// </summary>
         /// <param name="communication">The communication to be updated.</param>
         /// <returns>The updated communication wrapped in a RequestResult.</returns>
-        /// <response code="200">Returns the communication json.</response>
+        /// <response code="200">Returns the updated communication wrapped in a RequestResult.</response>
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
         /// <response code="403">
         /// The client does not have access rights to the content; that is, it is unauthorized, so the server
@@ -68,10 +68,10 @@ namespace HealthGateway.Admin.Server.Controllers
         }
 
         /// <summary>
-        /// Gets all communication entries from the backend.
+        /// Gets all communications.
         /// </summary>
-        /// <returns>The list of all communication entries.</returns>
-        /// <response code="200">Returns the communication json.</response>
+        /// <returns>The list of all communication entries wrapped in a RequestResult.</returns>
+        /// <response code="200">Returns the list of all communication entries wrapped in a RequestResult.</response>
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
         /// <response code="403">
         /// The client does not have access rights to the content; that is, it is unauthorized, so the server
@@ -84,11 +84,11 @@ namespace HealthGateway.Admin.Server.Controllers
         }
 
         /// <summary>
-        /// Deletes the Communication that is passed to the controller.
+        /// Deletes a communication.
         /// </summary>
-        /// <param name="communication">The communication object to delete.</param>
-        /// <returns>The communication object delete wrapped in a Request result.</returns>
-        /// <response code="200">Returns the communication json of the deleted object wrapped in a request result.</response>
+        /// <param name="communication">The communication to delete.</param>
+        /// <returns>The deleted communication wrapped in a Request result.</returns>
+        /// <response code="200">Returns the deleted communication wrapped in a Request result.</response>
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
         /// <response code="403">
         /// The client does not have access rights to the content; that is, it is unauthorized, so the server
