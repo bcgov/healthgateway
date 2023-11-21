@@ -1,0 +1,17 @@
+imageRepository: artifacts.developer.gov.bc.ca/docker-remote/redis
+imageTag: 7
+
+redisPort: 6379
+sentinelPort: 26379
+persistentVolumeSize: 1Gi
+persistentVolumeClass: netapp-block-standard
+
+resources:
+  requests:
+    cpu: 50m
+    memory: 128Mi
+  limits:
+    cpu: 250m
+    memory: 512Mi
+
+password: ~
