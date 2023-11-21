@@ -586,6 +586,7 @@ describe("Patient details page as reviewer", () => {
         performSearch("HDID", hdid);
 
         selectPatientTab("Manage");
+        validateTabDoesNotExist("Notes");
 
         cy.get(`[data-testid*="block-access-switch-"]`).each(($el) => {
             // follow the mud tag structure to find the mud-readonly class

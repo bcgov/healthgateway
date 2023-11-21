@@ -69,4 +69,9 @@ public partial class RatingSummary : FluxorComponent
             return details;
         }
     }
+
+    private static string FormatNumber(int? number)
+    {
+        return number != null ? number.Value.ToString("N0", CultureInfo.InvariantCulture) : string.Empty;
+    }
 }

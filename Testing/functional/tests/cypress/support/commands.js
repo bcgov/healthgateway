@@ -321,8 +321,13 @@ Cypress.Commands.add("getTokens", (username, password) => {
 
 Cypress.Commands.add("readConfig", () => {
     cy.log(`Reading Environment Configuration`);
+    let baseWebClientUrl = Cypress.env("baseWebClientUrl");
+    if (!baseWebClientUrl) {
+        baseWebClientUrl = Cypress.config("baseUrl");
+    }
+
     return cy
-        .request(`${Cypress.config("baseUrl")}/configuration`)
+        .request(`${baseWebClientUrl}/configuration`)
         .should((response) => {
             expect(response.status).to.eq(200);
         })
@@ -382,7 +387,7 @@ Cypress.Commands.add("configureSettings", (settings) => {
             config.webClient.featureToggleConfiguration =
                 featureToggleConfiguration;
 
-            cy.intercept("GET", "**/configuration/", {
+            cy.intercept("GET", "**/configuration", {
                 statusCode: 200,
                 body: config,
             });
