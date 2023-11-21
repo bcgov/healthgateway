@@ -28,10 +28,10 @@ namespace HealthGateway.Common.Data.Validations
         /// <summary>
         /// Initializes a new instance of the <see cref="ExpiryDateValidator"/> class.
         /// </summary>
-        /// <param name="referenceDate">A reference point to validate against, defaults to UtcNow.</param>
-        public ExpiryDateValidator(DateOnly? referenceDate = null)
+        /// <param name="referenceDate">A reference point to validate against.</param>
+        public ExpiryDateValidator(DateOnly referenceDate)
         {
-            this.referenceDate = referenceDate ?? DateOnly.FromDateTime(DateTime.UtcNow);
+            this.referenceDate = referenceDate;
             this.RuleFor(v => v).NotEmpty().Must(this.IsValidInternal).WithMessage("Invalid date");
         }
 
@@ -39,10 +39,11 @@ namespace HealthGateway.Common.Data.Validations
         /// Validates an expiry date is not a past date.
         /// </summary>
         /// <param name="expiryDate">Expiry date to validate.</param>
+        /// <param name="referenceDate">A reference point to validate against.</param>
         /// <returns>True if valid, false if not.</returns>
-        public static bool IsValid(DateOnly expiryDate)
+        public static bool IsValid(DateOnly expiryDate, DateOnly referenceDate)
         {
-            return new ExpiryDateValidator().Validate(expiryDate).IsValid;
+            return new ExpiryDateValidator(referenceDate).Validate(expiryDate).IsValid;
         }
 
         private bool IsValidInternal(DateOnly expiryDate)
