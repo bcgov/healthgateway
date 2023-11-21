@@ -22,7 +22,7 @@
                     <MudProgressLinear Value="@percentage" />
                 </MudItem>
                 <MudItem xs="2" lg="1" Class="d-flex justify-center">
-                    <MudText Typo="Typo.subtitle1">@count</MudText>
+                    <MudText Typo="Typo.subtitle1">@FormatNumber(count)</MudText>
                 </MudItem>
             </MudGrid>
         }
@@ -30,6 +30,6 @@
 </MudGrid>
 <MudGrid>
     <MudItem xs="6" lg="6">
-        <MudText Class="my-3 d-flex justify-end" Typo="Typo.subtitle2">@TotalRatings Ratings</MudText>
+        <MudText Class="my-3 d-flex justify-end" Typo="Typo.subtitle2">@FormatNumber(TotalRatings) Ratings</MudText>
     </MudItem>
 </MudGrid>
