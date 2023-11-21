@@ -119,7 +119,7 @@ namespace HealthGateway.Admin.Server.Controllers
                     QueryParameter = queryString,
                     IncludeMessagingVerifications = userIsAdmin || userIsReviewer,
                     IncludeBlockedDataSources = userIsAdmin || userIsReviewer,
-                    IncludeAgentActions = userIsAdmin || userIsReviewer,
+                    IncludeAgentActions = userIsAdmin,
                     IncludeDependents = userIsAdmin || userIsReviewer,
                     IncludeCovidDetails = userIsAdmin || userIsSupport,
                     RefreshVaccineDetails = refreshVaccineDetails,
