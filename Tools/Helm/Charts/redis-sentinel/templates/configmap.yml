@@ -1,0 +1,87 @@
+{{- $name := include "standard.name" . -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ $name }}-config
+  labels: {{ include "standard.labels" . | nindent 4 }}
+data:
+  REDIS_NODES: "{{ $name }}-0.{{ $name }}-svc,{{ $name }}-1.{{ $name }}-svc,{{ $name }}-2.{{ $name }}-svc"
+  redis.conf: |
+    appendonly no
+    masteruser default
+    protected-mode no
+    save 900 1
+    save 300 10
+    save 60 10000
+  sentinel_init.sh: |
+    #!/bin/bash
+    for i in ${REDIS_NODES//,/ }
+    do
+        echo "finding master at $i"
+        MASTER=$(redis-cli --no-auth-warning --raw -h $i -a ${REDIS_PASSWORD} info replication | awk '{print $1}' | grep master_host: | cut -d ":" -f2)
+        
+        if [ "${MASTER}" == "" ]; then
+            echo "no master found, defaulting to ${NODE_NAME_PREFIX}-0"
+            MASTER=${NODE_NAME_PREFIX}-0.${REDIS_SERVICE}
+        else
+            echo "found ${MASTER}"
+            break
+        fi
+        
+    done
+    echo "sentinel monitor ${SENTINEL_SET} ${MASTER} ${REDIS_PORT} 2" >> /tmp/master
+    echo "port ${SENTINEL_PORT}
+    sentinel resolve-hostnames yes
+    sentinel announce-hostnames yes
+    $(cat /tmp/master)
+    sentinel down-after-milliseconds ${SENTINEL_SET} 1000
+    sentinel failover-timeout ${SENTINEL_SET} 10000
+    sentinel parallel-syncs ${SENTINEL_SET} 1
+    sentinel sentinel-pass ${REDIS_PASSWORD}
+    sentinel auth-pass ${SENTINEL_SET} ${REDIS_PASSWORD}
+    requirepass ${REDIS_PASSWORD}
+    sentinel announce-ip ${HOSTNAME}.${REDIS_SERVICE}
+    sentinel announce-port ${SENTINEL_PORT}
+    " > /etc/redis/sentinel.conf
+    cat /etc/redis/sentinel.conf
+  redis_init.sh: |
+    #!/bin/bash
+    cp /tmp/redis/redis.conf /etc/redis/redis.conf
+    echo "requirepass ${REDIS_PASSWORD}" >> /etc/redis/redis.conf
+    echo "masterauth ${REDIS_PASSWORD}" >> /etc/redis/redis.conf
+    echo "replica-announce-ip ${HOSTNAME}.${REDIS_SERVICE}" >> /etc/redis/redis.conf
+    echo "replica-announce-port ${REDIS_PORT} " >> /etc/redis/redis.conf
+
+    echo "finding master..."
+    if [ "$(timeout 5 redis-cli -h ${REDIS_SERVICE} -p ${SENTINEL_PORT} -a ${REDIS_PASSWORD} ping)" != "PONG" ]; then
+      echo "sentinel not found, defaulting to ${NODE_NAME_PREFIX}-0"
+      if [ ${HOSTNAME} == "${NODE_NAME_PREFIX}-0" ]; then
+        echo "this is ${NODE_NAME_PREFIX}-0, not updating config..."
+      else
+        echo "updating redis.conf..."
+        echo "repl-ping-replica-period 3" >> /etc/redis/redis.conf
+        echo "slave-read-only no" >> /etc/redis/redis.conf
+        echo "slaveof ${NODE_NAME_PREFIX}-0.${REDIS_SERVICE} ${REDIS_PORT}" >> /etc/redis/redis.conf
+      fi
+    else
+      echo "sentinel found, finding master"
+      MASTER=$(redis-cli -h ${REDIS_SERVICE} -p ${SENTINEL_PORT} -a ${REDIS_PASSWORD} sentinel get-master-addr-by-name ${SENTINEL_SET} | grep -E "(^${NODE_NAME_PREFIX}-*)|([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})")
+      if [ "${HOSTNAME}.${REDIS_SERVICE}" == ${MASTER} ]; then
+        echo "this is master, not updating config..."
+      else
+        echo "master found : ${MASTER}, updating redis.conf"
+        echo "slave-read-only no" >> /etc/redis/redis.conf
+        echo "slaveof ${MASTER} ${REDIS_PORT}" >> /etc/redis/redis.conf
+        echo "repl-ping-replica-period 3" >> /etc/redis/redis.conf
+      fi
+    fi
+    cat /etc/redis/redis.conf
+  init.sh: |
+    #!/bin/bash
+    /scripts/redis_init.sh
+    /scripts/sentinel_init.sh
+  start.sh: |
+    #!/bin/bash
+    redis-server /etc/redis/redis.conf &
+    redis-sentinel /etc/redis/sentinel.conf &
+    sleep infinity

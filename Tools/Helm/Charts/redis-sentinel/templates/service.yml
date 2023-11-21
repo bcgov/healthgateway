@@ -1,0 +1,14 @@
+{{- $name := include "standard.name" . -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $name }}-svc
+  labels: {{ include "standard.labels" . | nindent 4 }}
+spec:
+  type: ClusterIP
+  ports:
+    - port: {{ .Values.sentinelPort }}
+      targetPort: {{ .Values.sentinelPort }}
+      name: sentinel
+  selector:
+    name: {{ $name }}
