@@ -16,6 +16,7 @@ module.exports = defineConfig({
         testsuitesTitle: false,
     },
     env: {
+        baseWebClientUrl: "",
         "bcsc.username": "hthgtwy11",
         "bcsc.password": "",
         "keycloak.username": "healthgateway",
