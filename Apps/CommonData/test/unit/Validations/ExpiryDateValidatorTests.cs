@@ -41,7 +41,7 @@ namespace HealthGateway.Common.Data.Tests.Validations
         {
             TimeZoneInfo localTimezone = DateFormatter.GetLocalTimeZone(GetConfiguration());
             DateOnly referenceDate = DateOnly.FromDateTime(TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, localTimezone));
-            DateOnly expiryDate = DateOnly.FromDateTime(TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, localTimezone)).AddDays(daysToAdd);
+            DateOnly expiryDate = referenceDate.AddDays(daysToAdd);
             bool actual = ExpiryDateValidator.IsValid(expiryDate, referenceDate);
             Assert.True(actual == success);
         }
