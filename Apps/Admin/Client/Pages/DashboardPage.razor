@@ -30,7 +30,7 @@
                     Registered Users
                 </MudText>
                 <MudText Align="Align.Center" Typo="Typo.subtitle1" data-testid="total-registered-users">
-                    @FormatNumber(@TotalRegisteredUsers)
+                    @FormatNumber(TotalRegisteredUsers)
                 </MudText>
             }
         </MudPaper>
@@ -48,7 +48,7 @@
                     Dependents
                 </MudText>
                 <MudText Align="Align.Center" Typo="Typo.subtitle1" data-testid="total-dependents">
-                    @FormatNumber(@TotalDependents)
+                    @FormatNumber(TotalDependents)
                 </MudText>
             }
         </MudPaper>
@@ -88,7 +88,7 @@
                     Mobile App Logins
                 </MudText>
                 <MudText Align="Align.Center" Typo="Typo.subtitle1" data-testid="total-mobile-users">
-                    @FormatNumber(@AppLoginCounts.Mobile)
+                    @FormatNumber(AppLoginCounts.Mobile)
                 </MudText>
             }
         </MudPaper>
@@ -106,7 +106,7 @@
                     Web Logins
                 </MudText>
                 <MudText Align="Align.Center" Typo="Typo.subtitle1" data-testid="total-web-users">
-                    @FormatNumber(@AppLoginCounts.Web)
+                    @FormatNumber(AppLoginCounts.Web)
                 </MudText>
             }
         </MudPaper>
@@ -196,7 +196,7 @@
                     Recurring Users
                 </MudText>
                 <MudText Align="Align.Center" Typo="Typo.subtitle1" data-testid="recurring-user-count">
-                    @FormatNumber(@RecurringUserCount)
+                    @FormatNumber(RecurringUserCount)
                 </MudText>
             }
         </MudPaper>
@@ -236,9 +236,9 @@
             </HeaderContent>
             <RowTemplate>
                 <MudTd data-testid="daily-data-date" DataLabel="Date">@context.Date.ToString("yyyy-MM-dd")</MudTd>
-                <MudTd data-testid="daily-data-total-registered-users" DataLabel="Registered">@FormatNumber(@context.UserRegistrations)</MudTd>
-                <MudTd data-testid="daily-data-total-logged-in-users" DataLabel="Logged In">@FormatNumber(@context.UniqueLogins)</MudTd>
-                <MudTd data-testid="daily-data-dependents" DataLabel="Dependents">@FormatNumber(@context.DependentRegistrations)</MudTd>
+                <MudTd data-testid="daily-data-total-registered-users" DataLabel="Registered">@FormatNumber(context.UserRegistrations)</MudTd>
+                <MudTd data-testid="daily-data-total-logged-in-users" DataLabel="Logged In">@FormatNumber(context.UniqueLogins)</MudTd>
+                <MudTd data-testid="daily-data-dependents" DataLabel="Dependents">@FormatNumber(context.DependentRegistrations)</MudTd>
             </RowTemplate>
             <PagerContent>
                 <MudTablePager PageSizeOptions="new[]{10, 25, 50, 100, 200}" />
