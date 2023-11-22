@@ -13,31 +13,36 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Database.Constants
+namespace HealthGateway.GatewayApi.Models
 {
-    using System.Runtime.Serialization;
+    using System;
+    using System.Collections.Generic;
+    using System.Collections.Immutable;
+    using HealthGateway.Common.Data.Constants;
 
     /// <summary>
-    /// ResourceDelegate Reasons for delegation.
+    /// The CreateDelegationRequest model.
     /// </summary>
-    public enum ResourceDelegateReason
+    public record CreateDelegationRequest
     {
         /// <summary>
-        /// Represents a delegation for Covid Laboratory.
+        /// Gets or sets the nickname.
         /// </summary>
-        [EnumMember(Value = "COVIDLab")]
-        CovidLab,
+        public string Nickname { get; set; } = string.Empty;
 
         /// <summary>
-        /// Represents a delegation for attested access to youth data.
+        /// Gets or sets the email.
         /// </summary>
-        [EnumMember(Value = "Guardian")]
-        Guardian,
+        public string Email { get; set; } = string.Empty;
 
         /// <summary>
-        /// Represents a delegation via invitation by the data owner.
+        /// Gets or sets the expiry date.
         /// </summary>
-        [EnumMember(Value = "Invited")]
-        Invited,
+        public DateOnly ExpiryDate { get; set; }
+
+        /// <summary>
+        /// Gets the access for the data sets.
+        /// </summary>
+        public ISet<DataSource> DataSources { get; init; } = ImmutableHashSet<DataSource>.Empty;
     }
 }

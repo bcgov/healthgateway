@@ -24,7 +24,6 @@ namespace HealthGateway.Admin.Server.Services
     using AutoMapper;
     using FluentValidation.Results;
     using HealthGateway.AccountDataAccess.Audit;
-    using HealthGateway.Admin.Common.Constants;
     using HealthGateway.Admin.Common.Models;
     using HealthGateway.Admin.Server.Validations;
     using HealthGateway.Common.AccessManagement.Authentication;
@@ -39,6 +38,7 @@ namespace HealthGateway.Admin.Server.Services
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using Microsoft.Extensions.Configuration;
+    using DelegationStatus = HealthGateway.Admin.Common.Constants.DelegationStatus;
 
     /// <inheritdoc/>
     public class DelegationService : IDelegationService
@@ -228,7 +228,7 @@ namespace HealthGateway.Admin.Server.Services
             // Update dependent, allow delegation and resource delegate in database
             if (this.changeFeedEnabled)
             {
-                await this.delegationDelegate.UpdateDelegationAsync(dependent, resourceDelegatesToDelete, agentAudit, false);
+                await this.delegationDelegate.UpdateDependentAsync(dependent, resourceDelegatesToDelete, agentAudit, false);
                 IEnumerable<MessageEnvelope> events = new MessageEnvelope[]
                 {
                     new(new DependentProtectionAddedEvent(dependentHdid), dependentHdid),
@@ -238,7 +238,7 @@ namespace HealthGateway.Admin.Server.Services
             }
             else
             {
-                await this.delegationDelegate.UpdateDelegationAsync(dependent, resourceDelegatesToDelete, agentAudit);
+                await this.delegationDelegate.UpdateDependentAsync(dependent, resourceDelegatesToDelete, agentAudit);
             }
 
             return this.autoMapper.Map<AgentAudit, AgentAction>(agentAudit);
@@ -273,7 +273,7 @@ namespace HealthGateway.Admin.Server.Services
 
             if (this.changeFeedEnabled)
             {
-                await this.delegationDelegate.UpdateDelegationAsync(dependent, Enumerable.Empty<ResourceDelegate>(), agentAudit, false);
+                await this.delegationDelegate.UpdateDependentAsync(dependent, Enumerable.Empty<ResourceDelegate>(), agentAudit, false);
 
                 MessageEnvelope[] events =
                 {
@@ -284,7 +284,7 @@ namespace HealthGateway.Admin.Server.Services
             }
             else
             {
-                await this.delegationDelegate.UpdateDelegationAsync(dependent, Enumerable.Empty<ResourceDelegate>(), agentAudit);
+                await this.delegationDelegate.UpdateDependentAsync(dependent, Enumerable.Empty<ResourceDelegate>(), agentAudit);
             }
 
             return this.autoMapper.Map<AgentAudit, AgentAction>(agentAudit);

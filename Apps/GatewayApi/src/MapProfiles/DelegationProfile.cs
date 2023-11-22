@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,26 +13,24 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Common.Constants
+namespace HealthGateway.GatewayApi.MapProfiles
 {
+    using AutoMapper;
+    using HealthGateway.Database.Models;
+    using HealthGateway.GatewayApi.Models;
+
     /// <summary>
-    /// The enumeration of Hash functions.
+    /// An AutoMapper profile class which defines mapping between Delegation and *DelegationRequest.
     /// </summary>
-    public enum HashFunction
+    public class DelegationProfile : Profile
     {
         /// <summary>
-        /// The HMAC algorithm (RFC 2104) using the SHA-1 hash function (FIPS 180-4).
+        /// Initializes a new instance of the <see cref="DelegationProfile"/> class.
         /// </summary>
-        HmacSha1 = 0,
-
-        /// <summary>
-        /// The HMAC algorithm (RFC 2104) using the SHA-256 hash function (FIPS 180-4).
-        /// </summary>
-        HmacSha256 = 1,
-
-        /// <summary>
-        /// The HMAC algorithm (RFC 2104) using the SHA-512 hash function (FIPS 180-4).
-        /// </summary>
-        HmacSha512 = 2,
+        public DelegationProfile()
+        {
+            this.CreateMap<CreateDelegationRequest, Delegation>()
+                .ReverseMap();
+        }
     }
 }

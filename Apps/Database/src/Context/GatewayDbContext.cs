@@ -84,6 +84,7 @@ namespace HealthGateway.Database.Context
         public DbSet<AllowedDelegation> AllowedDelegation { get; set; } = null!;
         public DbSet<BlockedAccess> BlockedAccess { get; set; } = null!;
         public DbSet<OutboxItem> Outbox { get; set; } = null!;
+        public DbSet<Delegation> Delegation { get; set; } = null!;
 
 #pragma warning restore CS1591, SA1600
 
@@ -427,6 +428,43 @@ namespace HealthGateway.Database.Context
                 .Property(e => e.Code)
                 .HasConversion(auditGroupCodeConverter);
 
+            // Create Foreign Key for Delegation
+            modelBuilder.Entity<Delegation>()
+                .HasOne(c => c.ResourceDelegate)
+                .WithMany(p => p.Delegations)
+                .HasForeignKey(c => new { c.ResourceOwnerHdid, c.ProfileHdid, c.ReasonCode });
+
+            modelBuilder.Entity<Delegation>()
+                .HasOne<DelegationStatusCode>()
+                .WithMany()
+                .HasPrincipalKey(k => k.Code)
+                .HasForeignKey(k => k.Status)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            ValueConverter<DelegationStatus, string> delegationStatusConverter = new(
+                v => EnumUtility.ToEnumString(v, true),
+                v => EnumUtility.ToEnum<DelegationStatus>(v, true));
+
+            modelBuilder.Entity<Delegation>()
+                .Property(e => e.Status)
+                .HasConversion(delegationStatusConverter);
+
+            modelBuilder.Entity<DelegationStatusCode>()
+                .Property(e => e.Code)
+                .HasConversion(delegationStatusConverter);
+
+            ValueConverter<HashFunction, string> delegationHashFunctionConverter = new(
+                v => EnumUtility.ToEnumString(v, true),
+                v => EnumUtility.ToEnum<HashFunction>(v, true));
+
+            modelBuilder.Entity<Delegation>()
+                .Property(e => e.SharingCodeHashFunction)
+                .HasConversion(delegationHashFunctionConverter);
+
+            modelBuilder.Entity<HashFunctionCode>()
+                .Property(e => e.Code)
+                .HasConversion(delegationHashFunctionConverter);
+
             // Initial seed data
             this.SeedProgramTypes(modelBuilder);
             this.SeedEmail(modelBuilder);
@@ -440,6 +478,8 @@ namespace HealthGateway.Database.Context
             this.SeedAuditOperationCodes(modelBuilder);
             this.SeedApplicationSettings(modelBuilder);
             this.SeedAuditGroupCodes(modelBuilder);
+            this.SeedDelegationStatusCodes(modelBuilder);
+            this.SeedHashFunctionCodes(modelBuilder);
         }
 
         /// <summary>
@@ -1016,6 +1056,15 @@ namespace HealthGateway.Database.Context
                         CreatedDateTime = this.DefaultSeedDate,
                         UpdatedBy = UserId.DefaultUser,
                         UpdatedDateTime = this.DefaultSeedDate,
+                    },
+                    new ResourceDelegateReasonCode
+                    {
+                        ReasonTypeCode = ResourceDelegateReason.Invited,
+                        Description = "Resource delegation via invitation by the data owner",
+                        CreatedBy = UserId.DefaultUser,
+                        CreatedDateTime = this.DefaultSeedDate,
+                        UpdatedBy = UserId.DefaultUser,
+                        UpdatedDateTime = this.DefaultSeedDate,
                     });
         }
 
@@ -1194,6 +1243,70 @@ namespace HealthGateway.Database.Context
         }
 
         /// <summary>
+        /// Seeds the Delegation Status Codes.
+        /// </summary>
+        /// <param name="modelBuilder">The passed in model builder.</param>
+        private void SeedDelegationStatusCodes(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<DelegationStatusCode>()
+                .HasData(
+                    new DelegationStatusCode
+                    {
+                        Code = DelegationStatus.Active,
+                        Description = "Active Delegation Status Code",
+                        CreatedBy = UserId.DefaultUser,
+                        CreatedDateTime = this.DefaultSeedDate.ToUniversalTime(),
+                        UpdatedBy = UserId.DefaultUser,
+                        UpdatedDateTime = this.DefaultSeedDate.ToUniversalTime(),
+                    },
+                    new DelegationStatusCode
+                    {
+                        Code = DelegationStatus.AccessExpired,
+                        Description = "Access Expired Delegation Status Code",
+                        CreatedBy = UserId.DefaultUser,
+                        CreatedDateTime = this.DefaultSeedDate.ToUniversalTime(),
+                        UpdatedBy = UserId.DefaultUser,
+                        UpdatedDateTime = this.DefaultSeedDate.ToUniversalTime(),
+                    },
+                    new DelegationStatusCode
+                    {
+                        Code = DelegationStatus.Declined,
+                        Description = "Declined Delegation Status Code",
+                        CreatedBy = UserId.DefaultUser,
+                        CreatedDateTime = this.DefaultSeedDate.ToUniversalTime(),
+                        UpdatedBy = UserId.DefaultUser,
+                        UpdatedDateTime = this.DefaultSeedDate.ToUniversalTime(),
+                    },
+                    new DelegationStatusCode
+                    {
+                        Code = DelegationStatus.InviteExpired,
+                        Description = "Invite Expired Delegation Status Code",
+                        CreatedBy = UserId.DefaultUser,
+                        CreatedDateTime = this.DefaultSeedDate.ToUniversalTime(),
+                        UpdatedBy = UserId.DefaultUser,
+                        UpdatedDateTime = this.DefaultSeedDate.ToUniversalTime(),
+                    },
+                    new DelegationStatusCode
+                    {
+                        Code = DelegationStatus.Locked,
+                        Description = "Locked Delegation Status Code",
+                        CreatedBy = UserId.DefaultUser,
+                        CreatedDateTime = this.DefaultSeedDate.ToUniversalTime(),
+                        UpdatedBy = UserId.DefaultUser,
+                        UpdatedDateTime = this.DefaultSeedDate.ToUniversalTime(),
+                    },
+                    new DelegationStatusCode
+                    {
+                        Code = DelegationStatus.Pending,
+                        Description = "Pending Delegation Status Code",
+                        CreatedBy = UserId.DefaultUser,
+                        CreatedDateTime = this.DefaultSeedDate.ToUniversalTime(),
+                        UpdatedBy = UserId.DefaultUser,
+                        UpdatedDateTime = this.DefaultSeedDate.ToUniversalTime(),
+                    });
+        }
+
+        /// <summary>
         /// Seeds the Audit Group Codes.
         /// </summary>
         /// <param name="modelBuilder">The passed in model builder.</param>
@@ -1236,6 +1349,43 @@ namespace HealthGateway.Database.Context
                         Component = TourApplicationSettings.Component,
                         Key = TourApplicationSettings.LatestChangeDateTime,
                         Value = new DateTime(2023, 5, 3, 15, 0, 0, DateTimeKind.Utc).ToString("o"),
+                        CreatedBy = UserId.DefaultUser,
+                        CreatedDateTime = this.DefaultSeedDate.ToUniversalTime(),
+                        UpdatedBy = UserId.DefaultUser,
+                        UpdatedDateTime = this.DefaultSeedDate.ToUniversalTime(),
+                    });
+        }
+
+        /// <summary>
+        /// Seeds the Hash Function Codes.
+        /// </summary>
+        /// <param name="modelBuilder">The passed in model builder.</param>
+        private void SeedHashFunctionCodes(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<HashFunctionCode>()
+                .HasData(
+                    new HashFunctionCode
+                    {
+                        Code = HashFunction.HmacSha1,
+                        Description = "HmacSha1 Hash Function Status Code",
+                        CreatedBy = UserId.DefaultUser,
+                        CreatedDateTime = this.DefaultSeedDate.ToUniversalTime(),
+                        UpdatedBy = UserId.DefaultUser,
+                        UpdatedDateTime = this.DefaultSeedDate.ToUniversalTime(),
+                    },
+                    new HashFunctionCode
+                    {
+                        Code = HashFunction.HmacSha256,
+                        Description = "HmacSha256 Hash Function Status Code",
+                        CreatedBy = UserId.DefaultUser,
+                        CreatedDateTime = this.DefaultSeedDate.ToUniversalTime(),
+                        UpdatedBy = UserId.DefaultUser,
+                        UpdatedDateTime = this.DefaultSeedDate.ToUniversalTime(),
+                    },
+                    new HashFunctionCode
+                    {
+                        Code = HashFunction.HmacSha512,
+                        Description = "HmacSha512 Hash Function Status Code",
                         CreatedBy = UserId.DefaultUser,
                         CreatedDateTime = this.DefaultSeedDate.ToUniversalTime(),
                         UpdatedBy = UserId.DefaultUser,

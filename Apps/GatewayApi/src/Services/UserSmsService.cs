@@ -16,9 +16,7 @@
 namespace HealthGateway.GatewayApi.Services
 {
     using System;
-    using System.Globalization;
     using System.Net;
-    using System.Security.Cryptography;
     using System.Text.RegularExpressions;
     using System.Threading;
     using System.Threading.Tasks;
@@ -31,6 +29,7 @@ namespace HealthGateway.GatewayApi.Services
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Models.Events;
     using HealthGateway.Common.Services;
+    using HealthGateway.Common.Utils;
     using HealthGateway.Database.Delegates;
     using HealthGateway.GatewayApi.Validations;
     using Microsoft.Extensions.Configuration;
@@ -186,22 +185,6 @@ namespace HealthGateway.GatewayApi.Services
             return true;
         }
 
-        /// <summary>
-        /// Creates a new 6 digit verification code.
-        /// </summary>
-        /// <returns>The verification code.</returns>
-        private static string CreateVerificationCode()
-        {
-            using RandomNumberGenerator generator = RandomNumberGenerator.Create();
-            byte[] data = new byte[4];
-            generator.GetBytes(data);
-            return
-                BitConverter
-                    .ToUInt32(data)
-                    .ToString("D6", CultureInfo.InvariantCulture)
-                    .Substring(0, 6);
-        }
-
         private static string SanitizeSms(string smsNumber)
         {
             return NonDigitRegex().Replace(smsNumber, string.Empty);
@@ -217,7 +200,7 @@ namespace HealthGateway.GatewayApi.Services
             {
                 UserProfileId = hdid,
                 SmsNumber = sms,
-                SmsValidationCode = CreateVerificationCode(),
+                SmsValidationCode = VerificationCodeUtility.Generate(),
                 VerificationType = MessagingVerificationType.Sms,
                 ExpireDate = DateTime.UtcNow.AddDays(VerificationExpiryDays),
             };

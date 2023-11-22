@@ -29,7 +29,7 @@ namespace HealthGateway.Database.Models
         public ResourceDelegateReason ReasonTypeCode { get; set; }
 
         [Required]
-        [MaxLength(50)]
+        [MaxLength(80)]
         public string? Description { get; set; }
     }
 }
