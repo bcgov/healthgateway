@@ -91,7 +91,7 @@ namespace HealthGateway.Database.Migrations
                 schema: "gateway",
                 columns: table => new
                 {
-                    DelegateInvitationId = table.Column<Guid>(type: "uuid", nullable: false),
+                    DelegationId = table.Column<Guid>(type: "uuid", nullable: false),
                     Nickname = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: false),
                     Status = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
                     SharingCodeHashFunction = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
@@ -115,7 +115,7 @@ namespace HealthGateway.Database.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Delegation", x => x.DelegateInvitationId);
+                    table.PrimaryKey("PK_Delegation", x => x.DelegationId);
                     table.ForeignKey(
                         name: "FK_Delegation_DelegationStatusCode_Status",
                         column: x => x.Status,
@@ -142,7 +142,7 @@ namespace HealthGateway.Database.Migrations
                     { "Declined", "System", new DateTime(2019, 5, 1, 7, 0, 0, 0, DateTimeKind.Utc), "Declined Delegation Status Code", "System", new DateTime(2019, 5, 1, 7, 0, 0, 0, DateTimeKind.Utc) },
                     { "InviteExpired", "System", new DateTime(2019, 5, 1, 7, 0, 0, 0, DateTimeKind.Utc), "Invite Expired Delegation Status Code", "System", new DateTime(2019, 5, 1, 7, 0, 0, 0, DateTimeKind.Utc) },
                     { "Locked", "System", new DateTime(2019, 5, 1, 7, 0, 0, 0, DateTimeKind.Utc), "Locked Delegation Status Code", "System", new DateTime(2019, 5, 1, 7, 0, 0, 0, DateTimeKind.Utc) },
-                    { "Pending", "System", new DateTime(2019, 5, 1, 7, 0, 0, 0, DateTimeKind.Utc), "Pending Delegation Status Code", "System", new DateTime(2019, 5, 1, 7, 0, 0, 0, DateTimeKind.Utc) },
+                    { "Pending", "System", new DateTime(2019, 5, 1, 7, 0, 0, 0, DateTimeKind.Utc), "Pending Delegation Status Code", "System", new DateTime(2019, 5, 1, 7, 0, 0, 0, DateTimeKind.Utc) }
                 });
 
             migrationBuilder.InsertData(
@@ -153,7 +153,7 @@ namespace HealthGateway.Database.Migrations
                 {
                     { "HmacSha1", "System", new DateTime(2019, 5, 1, 7, 0, 0, 0, DateTimeKind.Utc), "HmacSha1 Hash Function Status Code", "System", new DateTime(2019, 5, 1, 7, 0, 0, 0, DateTimeKind.Utc) },
                     { "HmacSha256", "System", new DateTime(2019, 5, 1, 7, 0, 0, 0, DateTimeKind.Utc), "HmacSha256 Hash Function Status Code", "System", new DateTime(2019, 5, 1, 7, 0, 0, 0, DateTimeKind.Utc) },
-                    { "HmacSha512", "System", new DateTime(2019, 5, 1, 7, 0, 0, 0, DateTimeKind.Utc), "HmacSha512 Hash Function Status Code", "System", new DateTime(2019, 5, 1, 7, 0, 0, 0, DateTimeKind.Utc) },
+                    { "HmacSha512", "System", new DateTime(2019, 5, 1, 7, 0, 0, 0, DateTimeKind.Utc), "HmacSha512 Hash Function Status Code", "System", new DateTime(2019, 5, 1, 7, 0, 0, 0, DateTimeKind.Utc) }
                 });
 
             migrationBuilder.InsertData(

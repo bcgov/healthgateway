@@ -33,7 +33,7 @@ namespace HealthGateway.Database.Models
         /// Gets or sets the primary key.
         /// </summary>
         [Key]
-        [Column("DelegateInvitationId")]
+        [Column("DelegationId")]
         public Guid Id { get; set; }
 
         /// <summary>

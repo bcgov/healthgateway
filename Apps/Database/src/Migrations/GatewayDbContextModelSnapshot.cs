@@ -1638,7 +1638,7 @@ namespace HealthGateway.Database.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid")
-                        .HasColumnName("DelegateInvitationId");
+                        .HasColumnName("DelegationId");
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
