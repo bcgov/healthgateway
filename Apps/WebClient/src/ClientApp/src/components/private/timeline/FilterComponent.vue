@@ -126,6 +126,10 @@ function getFilterCount(entryType: EntryType): number | undefined {
     }
 }
 
+function isSelected(entryType: EntryType) {
+    return selectedEntryTypes.value.includes(entryType);
+}
+
 function getFormattedFilterCount(entryType: EntryType): string {
     const num = getFilterCount(entryType);
 
@@ -171,49 +175,51 @@ function getFormattedFilterCount(entryType: EntryType): string {
                 </v-card-title>
                 <v-divider />
                 <v-card-text class="pa-4">
-                    <SectionHeaderComponent title="Keywords" />
+                    <SectionHeaderComponent title="Search" />
                     <v-text-field
                         v-model="keywordInputText"
                         data-testid="filterTextInput"
-                        label="Keywords"
                         maxlength="50"
+                        placeholder="i.e. Medication Name"
                         prepend-inner-icon="search"
                     />
                     <SectionHeaderComponent title="Type" class="mb-3" />
-                    <v-row class="mb-3">
-                        <v-col
-                            v-for="(entryType, index) in enabledEntryTypes"
-                            :key="index"
-                            class="py-0"
-                            cols="12"
-                            sm="6"
+                    <div class="mb-3">
+                        <v-chip-group
+                            v-model="selectedEntryTypes"
+                            column
+                            multiple
                         >
-                            <v-checkbox
-                                v-model="selectedEntryTypes"
+                            <!-- loop through selectedEntryTypes and display -->
+                            <v-chip
+                                v-for="(entryType, index) in enabledEntryTypes"
+                                :key="index"
                                 :data-testid="`${entryType.type}-filter`"
                                 :name="entryType.type + '-filter'"
                                 :value="entryType.type"
-                                density="compact"
                                 hide-details
+                                :variant="
+                                    isSelected(entryType.type)
+                                        ? 'elevated'
+                                        : 'outlined'
+                                "
                                 color="primary"
                             >
-                                <template #label>
-                                    <p class="ml-1">
-                                        {{ entryType.display }}
-                                        <span
-                                            :data-testid="`${entryType.type}Count`"
-                                        >
-                                            ({{
-                                                getFormattedFilterCount(
-                                                    entryType.type
-                                                )
-                                            }})
-                                        </span>
-                                    </p>
-                                </template>
-                            </v-checkbox>
-                        </v-col>
-                    </v-row>
+                                <p>
+                                    {{ entryType.display }}
+                                    <span
+                                        :data-testid="`${entryType.type}Count`"
+                                    >
+                                        ({{
+                                            getFormattedFilterCount(
+                                                entryType.type
+                                            )
+                                        }})
+                                    </span>
+                                </p>
+                            </v-chip>
+                        </v-chip-group>
+                    </div>
                     <SectionHeaderComponent title="Dates" />
                     <v-row>
                         <v-col cols="12" sm="6">

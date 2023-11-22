@@ -17,7 +17,6 @@
 namespace HealthGateway.WebClient.Server
 {
     using System;
-    using System.Diagnostics;
     using System.Diagnostics.CodeAnalysis;
     using HealthGateway.Common.AspNetConfiguration;
     using HealthGateway.Common.Utils;
@@ -27,13 +26,11 @@ namespace HealthGateway.WebClient.Server
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.Rewrite;
-    using Microsoft.AspNetCore.SpaServices;
     using Microsoft.AspNetCore.StaticFiles;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Primitives;
-    using VueCliMiddleware;
 
     /// <summary>
     /// Configures the application during startup.
@@ -152,30 +149,12 @@ namespace HealthGateway.WebClient.Server
                     endpoints.MapRazorPages();
                     endpoints.MapControllers();
                     endpoints.MapControllerRoute("default", "{controller}/{action=Index}/{id?}");
-
-                    if (env.IsDevelopment() && Debugger.IsAttached)
-                    {
-                        endpoints.MapToVueCliProxy(
-                            "{*path}",
-                            new SpaOptions { SourcePath = "ClientApp" },
-                            "dev",
-                            8585,
-                            regex: "ready in ",
-                            forceKill: true);
-                    }
                 });
 
             app.UseSpa(
                 spa =>
                 {
                     spa.Options.SourcePath = "ClientApp";
-                    if (env.IsDevelopment() && !Debugger.IsAttached)
-                    {
-                        // change this to whatever webpack dev server says it's running on
-#pragma warning disable S1075
-                        spa.UseProxyToSpaDevelopmentServer("http://localhost:8080");
-#pragma warning restore S1075
-                    }
                 });
         }
 

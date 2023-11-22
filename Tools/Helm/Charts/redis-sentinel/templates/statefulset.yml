@@ -1,0 +1,145 @@
+{{- $name := include "standard.name" . -}}
+{{- $image := print .Values.imageRepository ":" .Values.imageTag -}}
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ $name }}
+  labels: {{ include "standard.labels" . | nindent 4 }}
+spec:
+  serviceName: {{ $name }}-svc
+  replicas: 3
+  selector:
+    matchLabels:
+      name: {{ $name }}
+  template:
+    metadata:
+      labels: {{ include "standard.labels" . | nindent 8 }}
+        name: {{ $name }}
+    spec:
+      initContainers:
+        - name: {{ $name }}-config
+          image: {{ $image }}
+          resources:
+            requests:
+              cpu: 25m
+              memory: 32Mi
+            limits:
+              cpu: 50m
+              memory: 64Mi
+          env:
+            - name: REDIS_NODES
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ $name }}-config
+                  key: REDIS_NODES
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $name }}-secret
+                  key: REDIS_PASSWORD
+            - name: REDIS_PORT
+              value: {{ .Values.redisPort | required "Values.redisPort" | quote }}
+            - name: SENTINEL_PORT
+              value: {{ .Values.sentinelPort | required "Values.sentinelPort" | quote }}
+            - name: REDIS_SERVICE
+              value: {{ $name }}-svc
+            - name: NODE_NAME_PREFIX
+              value: {{ $name }}
+            - name: SENTINEL_SET
+              value: {{ .Values.setName | default "mymaster" }}
+          command: ["sh", "-c", "/scripts/init.sh"]
+          volumeMounts:
+            - name: redis-config
+              mountPath: /etc/redis/
+            - name: config
+              mountPath: /tmp/redis/
+            - name: scripts
+              mountPath: /scripts/
+      containers:
+        - name: {{ $name }}
+          image: {{ $image }}
+          lifecycle:
+            preStop:
+              exec:
+                command:
+                  ["/bin/sh", "-c", "redis-cli -h $HOSTNAME -p {{ .Values.redisPort }} shutdown save && redis-cli -h $HOSTNAME -p {{ .Values.sentinelPort }} shutdown save"]
+          livenessProbe:
+            exec:
+              command:
+                [
+                  "/bin/sh",
+                  "-c",
+                  'test "$(redis-cli -h $HOSTNAME ping)" = "PONG"',
+                ]
+            initialDelaySeconds: 15
+            timeoutSeconds: 1
+            failureThreshold: 3
+          readinessProbe:
+            exec:
+              command:
+                [
+                  "/bin/sh",
+                  "-c",
+                  'test "$(redis-cli -h $HOSTNAME ping)" = "PONG"',
+                ]
+            initialDelaySeconds: 10
+            timeoutSeconds: 1
+            failureThreshold: 3
+          command: ["/scripts/start.sh"]
+          ports:
+            - containerPort: {{ .Values.redisPort }}
+              name: redis
+            - containerPort: {{ .Values.sentinelPort }}
+              name: sentinel
+          env:
+            - name: REDISCLI_AUTH
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $name }}-secret
+                  key: REDIS_PASSWORD
+          volumeMounts:
+            - name: data
+              mountPath: /data
+              readOnly: false
+            - name: redis-config
+              mountPath: /etc/redis/
+            - name: config
+              mountPath: /tmp/redis/
+            - name: scripts
+              mountPath: /scripts/
+          resources: {{ toYaml .Values.resources | nindent 12 }}
+      volumes:
+        - name: redis-config
+          emptyDir: {}
+        - name: scripts
+          configMap:
+            name: {{ $name }}-config
+            defaultMode: 0777
+            items:
+              - key: redis_init.sh
+                path: redis_init.sh
+              - key: sentinel_init.sh
+                path: sentinel_init.sh
+              - key: start.sh
+                path: start.sh
+              - key: init.sh
+                path: init.sh
+        - name: config
+          configMap:
+            name: {{ $name }}-config
+            items:
+              - key: redis.conf
+                path: redis.conf
+  volumeClaimTemplates:
+    - kind: PersistentVolumeClaim
+      metadata:
+        name: data
+        annotations:
+          volume.beta.kubernetes.io/storage-class: {{ .Values.persistentVolumeClass }}
+      spec:
+        storageClassName: {{ .Values.persistentVolumeClass }}
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: {{ .Values.persistentVolumeSize }}

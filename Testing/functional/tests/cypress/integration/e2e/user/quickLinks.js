@@ -13,8 +13,8 @@ const immunizationTitle = "Immunizations";
 const laboratoryTitle = "COVID‑19 Tests";
 
 const addQuickLinkButtonSelector = "[data-testid=add-quick-link-button]";
-const addQuickLinkCheckboxSelector =
-    "[data-testid=quick-link-modal-text] input[type=checkbox]";
+const addQuickLinkChipSelector =
+    "[data-testid=quick-link-modal-text] span.v-chip";
 const addQuickLinkCancelButtonSelector =
     "[data-testid=cancel-add-quick-link-btn]";
 const addQuickLinkSubmitButtonSelector = "[data-testid=add-quick-link-btn]";
@@ -24,8 +24,8 @@ const cardButtonTitleSelector = "[data-testid=card-button-title]";
 const quickLinkMenuButtonSelector = "[data-testid=card-menu-button]";
 const quickLinkRemoveButtonSelector = "[data-testid=remove-quick-link-button]";
 
-function getQuickLinkCheckbox(module) {
-    return cy.get(`${addQuickLinkCheckboxSelector}[value=${module}]`);
+function getQuickLinkChip(module) {
+    return cy.get(`${addQuickLinkChipSelector}[name=${module}-filter]`);
 }
 
 function getQuickLinkCard(title) {
@@ -59,9 +59,9 @@ describe("Quick Links", () => {
             .should("be.visible")
             .should("be.enabled")
             .click();
-        getQuickLinkCheckbox(laboratoryModule)
+        getQuickLinkChip(laboratoryModule)
             .should("exist")
-            .check({ force: true });
+            .click({ force: true });
         cy.get(addQuickLinkSubmitButtonSelector)
             .should("be.visible")
             .should("be.enabled")
@@ -83,9 +83,9 @@ describe("Quick Links", () => {
         cy.get("[data-testid=filterContainer]").should("not.exist");
         cy.get("[data-testid=filterDropdown]").click();
         cy.get("[data-testid=filterContainer]").should("be.visible");
-        cy.get("[data-testid=Covid19TestResult-filter] input").should(
-            "be.checked"
-        );
+        cy.get("[data-testid=Covid19TestResult-filter]")
+            .should("exist")
+            .should("have.class", "v-chip--selected");
         cy.get("[data-testid=btnFilterCancel]").click();
         cy.get("[data-testid=covid19testresultTitle]").should("be.visible");
 
@@ -145,15 +145,15 @@ describe("Quick Links", () => {
             .click();
 
         cy.log("Verifying 3 checkboxes exist");
-        cy.get(addQuickLinkCheckboxSelector).should("have.length", 3);
+        cy.get(addQuickLinkChipSelector).should("have.length", 3);
 
         cy.log("Selecting encounters and immunization checkboxes");
-        getQuickLinkCheckbox(encounterModule)
+        getQuickLinkChip(encounterModule)
             .should("exist")
-            .check({ force: true });
-        getQuickLinkCheckbox(immunizationModule)
+            .click({ force: true });
+        getQuickLinkChip(immunizationModule)
             .should("exist")
-            .check({ force: true });
+            .click({ force: true });
 
         cy.log("Adding quick links");
         cy.get(addQuickLinkSubmitButtonSelector)
@@ -177,10 +177,10 @@ describe("Quick Links", () => {
             .should("not.be.enabled");
 
         cy.log("Verifying 1 checkbox remains");
-        cy.get(addQuickLinkCheckboxSelector).should("have.length", 1);
-        getQuickLinkCheckbox(laboratoryModule)
+        cy.get(addQuickLinkChipSelector).should("have.length", 1);
+        getQuickLinkChip(laboratoryModule)
             .should("exist")
-            .should("not.be.checked");
+            .should("not.have.class", "v-chip--selected");
 
         cy.log("Cancelling add quick link modal");
         cy.get(addQuickLinkCancelButtonSelector)
@@ -215,7 +215,7 @@ describe("Quick Links", () => {
             .click();
 
         cy.log("Verifying 3 checkboxes exist");
-        cy.get(addQuickLinkCheckboxSelector).should("have.length", 3);
+        cy.get(addQuickLinkChipSelector).should("have.length", 3);
     });
 });
 
@@ -269,25 +269,15 @@ describe("Add Quick Link Modal", () => {
         cy.get(addQuickLinkModalTextSelector).should("exist");
 
         // Check off
-        getQuickLinkCheckbox(encounterModule)
-            .should("exist")
-            .check({ force: true });
+        getQuickLinkChip(encounterModule).should("exist").click();
 
-        getQuickLinkCheckbox(immunizationModule)
-            .should("exist")
-            .check({ force: true });
+        getQuickLinkChip(immunizationModule).should("exist").click();
 
-        getQuickLinkCheckbox(laboratoryModule)
-            .should("exist")
-            .check({ force: true });
+        getQuickLinkChip(laboratoryModule).should("exist").click();
 
-        getQuickLinkCheckbox(allLaboratoryModule)
-            .should("exist")
-            .check({ force: true });
+        getQuickLinkChip(allLaboratoryModule).should("exist").click();
 
-        getQuickLinkCheckbox(medicationRequestModule)
-            .should("exist")
-            .check({ force: true });
+        getQuickLinkChip(medicationRequestModule).should("exist").click();
 
         // Cancel
         cy.get(addQuickLinkCancelButtonSelector).click();
@@ -295,21 +285,21 @@ describe("Add Quick Link Modal", () => {
         cy.get(addQuickLinkModalTextSelector).should("exist");
 
         // Verify
-        getQuickLinkCheckbox(encounterModule)
+        getQuickLinkChip(encounterModule)
             .should("exist")
-            .should("not.be.checked");
-        getQuickLinkCheckbox(immunizationModule)
+            .should("not.have.class", "v-chip--selected");
+        getQuickLinkChip(immunizationModule)
             .should("exist")
-            .should("not.be.checked");
-        getQuickLinkCheckbox(laboratoryModule)
+            .should("not.have.class", "v-chip--selected");
+        getQuickLinkChip(laboratoryModule)
             .should("exist")
-            .should("not.be.checked");
-        getQuickLinkCheckbox(allLaboratoryModule)
+            .should("not.have.class", "v-chip--selected");
+        getQuickLinkChip(allLaboratoryModule)
             .should("exist")
-            .should("not.be.checked");
-        getQuickLinkCheckbox(medicationRequestModule)
+            .should("not.have.class", "v-chip--selected");
+        getQuickLinkChip(medicationRequestModule)
             .should("exist")
-            .should("not.be.checked");
+            .should("not.have.class", "v-chip--selected");
     });
 
     it("Add Quick Link - 2 selected and 1 un-selected", () => {
@@ -317,33 +307,36 @@ describe("Add Quick Link Modal", () => {
         cy.get(addQuickLinkModalTextSelector).should("exist");
 
         // Check off
-        getQuickLinkCheckbox(immunizationModule)
+        getQuickLinkChip(immunizationModule)
             .should("exist")
-            .check({ force: true });
+            .click()
+            .should("have.class", "v-chip--selected");
 
-        getQuickLinkCheckbox(laboratoryModule)
+        getQuickLinkChip(laboratoryModule)
             .should("exist")
-            .check({ force: true });
+            .click()
+            .should("have.class", "v-chip--selected");
 
-        getQuickLinkCheckbox(immunizationModule)
+        getQuickLinkChip(immunizationModule)
             .should("exist")
-            .uncheck({ force: true });
+            .click()
+            .should("not.have.class", "v-chip--selected");
 
         // Verify
-        getQuickLinkCheckbox(encounterModule)
+        getQuickLinkChip(encounterModule)
             .should("exist")
-            .and("not.be.checked");
-        getQuickLinkCheckbox(immunizationModule)
+            .and("not.have.class", "v-chip--selected");
+        getQuickLinkChip(immunizationModule)
             .should("exist")
-            .and("not.be.checked");
-        getQuickLinkCheckbox(laboratoryModule)
+            .and("not.have.class", "v-chip--selected");
+        getQuickLinkChip(laboratoryModule)
             .should("exist")
-            .and("be.checked");
-        getQuickLinkCheckbox(allLaboratoryModule)
+            .and("have.class", "v-chip--selected");
+        getQuickLinkChip(allLaboratoryModule)
             .should("exist")
-            .and("not.be.checked");
-        getQuickLinkCheckbox(medicationRequestModule)
+            .and("not.have.class", "v-chip--selected");
+        getQuickLinkChip(medicationRequestModule)
             .should("exist")
-            .and("not.be.checked");
+            .and("not.have.class", "v-chip--selected");
     });
 });

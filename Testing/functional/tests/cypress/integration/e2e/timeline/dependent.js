@@ -9,9 +9,7 @@ const homePath = "/home";
 const unauthorizedPath = "/unauthorized";
 
 function assertDatasetPresence(dataset, expected = true) {
-    const filterSelector = `[data-testid=${toPascalCase(
-        dataset
-    )}-filter] input`;
+    const filterSelector = `[data-testid=${toPascalCase(dataset)}-filter]`;
     const timelineCardSelector = `[data-testid=${dataset.toLowerCase()}Title]`;
 
     cy.get("[data-testid=filterContainer]").should("not.exist");

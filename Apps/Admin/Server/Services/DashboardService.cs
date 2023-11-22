@@ -17,131 +17,105 @@ namespace HealthGateway.Admin.Server.Services
 {
     using System;
     using System.Collections.Generic;
-    using System.Globalization;
     using System.Threading;
     using System.Threading.Tasks;
+    using HealthGateway.Admin.Common.Models;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Database.Delegates;
-    using Microsoft.Extensions.Logging;
 
     /// <inheritdoc/>
     public class DashboardService : IDashboardService
     {
         private readonly IResourceDelegateDelegate dependentDelegate;
-        private readonly ILogger logger;
         private readonly IRatingDelegate ratingDelegate;
         private readonly IUserProfileDelegate userProfileDelegate;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DashboardService"/> class.
         /// </summary>
-        /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="dependentDelegate">The dependent delegate to interact with the DB.</param>
         /// <param name="userProfileDelegate">The user profile delegate to interact with the DB.</param>
         /// <param name="ratingDelegate">The rating delegate.</param>
         public DashboardService(
-            ILogger<DashboardService> logger,
             IResourceDelegateDelegate dependentDelegate,
             IUserProfileDelegate userProfileDelegate,
             IRatingDelegate ratingDelegate)
         {
-            this.logger = logger;
             this.dependentDelegate = dependentDelegate;
             this.userProfileDelegate = userProfileDelegate;
             this.ratingDelegate = ratingDelegate;
         }
 
         /// <inheritdoc/>
-        public IDictionary<DateTime, int> GetDailyRegisteredUsersCount(int timeOffset)
+        public async Task<IDictionary<DateOnly, int>> GetDailyUserRegistrationCountsAsync(int timeOffset, CancellationToken ct = default)
         {
             TimeSpan ts = new(0, timeOffset, 0);
-            return this.userProfileDelegate.GetDailyRegisteredUsersCount(ts);
+            return await this.userProfileDelegate.GetDailyUserRegistrationCountsAsync(ts, ct);
         }
 
         /// <inheritdoc/>
-        public IDictionary<DateTime, int> GetDailyLoggedInUsersCount(DateOnly startDateLocal, DateOnly endDateLocal, int timeOffset)
-        {
-            TimeSpan offsetSpan = TimeSpan.FromMinutes(timeOffset);
-            DateTimeOffset startDateTimeOffset = new(startDateLocal.ToDateTime(TimeOnly.MinValue), offsetSpan);
-            DateTimeOffset endDateTimeOffset = new(endDateLocal.ToDateTime(TimeOnly.MaxValue), offsetSpan);
-            return this.userProfileDelegate.GetLoggedInUsersCount(startDateTimeOffset, endDateTimeOffset);
-        }
-
-        /// <inheritdoc/>
-        public IDictionary<DateTime, int> GetDailyDependentCount(int timeOffset)
+        public async Task<IDictionary<DateOnly, int>> GetDailyDependentRegistrationCountsAsync(int timeOffset, CancellationToken ct = default)
         {
             TimeSpan ts = new(0, timeOffset, 0);
-            return this.dependentDelegate.GetDailyDependentCount(ts);
+            return await this.dependentDelegate.GetDailyDependentRegistrationCountsAsync(ts, ct);
         }
 
         /// <inheritdoc/>
-        public IDictionary<string, int> GetRecurrentUserCounts(int dayCount, string startPeriod, string endPeriod, int timeOffset)
+        public async Task<IDictionary<DateOnly, int>> GetDailyUniqueLoginCountsAsync(DateOnly startDateLocal, DateOnly endDateLocal, int timeOffset, CancellationToken ct = default)
         {
-            DateTime startDate = GetStartDateTime(startPeriod, timeOffset);
-            DateTime endDate = GetEndDateTime(endPeriod, timeOffset);
-
-            this.logger.LogDebug(
-                "Start Period (Local): {StartPeriod} - End Period (Local): {EndPeriod} - StartDate (UTC): {StartDate} - End Date (UTC): {EndDate} - TimeOffset (UI): {TimeOffset}",
-                startPeriod,
-                endPeriod,
-                startDate,
-                endDate,
-                timeOffset.ToString(CultureInfo.InvariantCulture));
-
-            IDictionary<string, int> lastLoginCounts = this.userProfileDelegate.GetLastLoginClientCounts(startDate, endDate);
-            int recurringUserCount = this.userProfileDelegate.GetRecurrentUserCount(dayCount, startDate, endDate);
-
-            IDictionary<string, int> recurringUserCounts = new Dictionary<string, int>
-            {
-                { UserLoginClientType.Mobile.ToString(), lastLoginCounts.TryGetValue(UserLoginClientType.Mobile.ToString(), out int mobileCount) ? mobileCount : 0 },
-                { UserLoginClientType.Web.ToString(), lastLoginCounts.TryGetValue(UserLoginClientType.Web.ToString(), out int webCount) ? webCount : 0 },
-                { "RecurringUserCount", recurringUserCount },
-            };
-
-            return recurringUserCounts;
+            DateTimeOffset startDateTimeOffset = GetStartDateTimeOffset(startDateLocal, timeOffset);
+            DateTimeOffset endDateTimeOffset = GetEndDateTimeOffset(endDateLocal, timeOffset);
+            return await this.userProfileDelegate.GetDailyUniqueLoginCountsAsync(startDateTimeOffset, endDateTimeOffset, ct);
         }
 
         /// <inheritdoc/>
-        public IDictionary<string, int> GetRatingSummary(string startPeriod, string endPeriod, int timeOffset)
+        public async Task<int> GetRecurringUserCountAsync(int dayCount, DateOnly startDateLocal, DateOnly endDateLocal, int timeOffset, CancellationToken ct = default)
         {
-            DateTime startDate = GetStartDateTime(startPeriod, timeOffset);
-            DateTime endDate = GetEndDateTime(endPeriod, timeOffset);
-            return this.ratingDelegate.GetSummary(startDate, endDate);
+            DateTimeOffset startDate = GetStartDateTimeOffset(startDateLocal, timeOffset);
+            DateTimeOffset endDate = GetEndDateTimeOffset(endDateLocal, timeOffset);
+            return await this.userProfileDelegate.GetRecurringUserCountAsync(dayCount, startDate, endDate, ct);
         }
 
         /// <inheritdoc/>
-        public async Task<IDictionary<string, int>> GetYearOfBirthCountsAsync(string startPeriod, string endPeriod, int timeOffset, CancellationToken ct)
+        public async Task<AppLoginCounts> GetAppLoginCountsAsync(DateOnly startDateLocal, DateOnly endDateLocal, int timeOffset, CancellationToken ct = default)
         {
-            DateTime startDate = GetStartDateTime(startPeriod, timeOffset);
-            DateTime endDate = GetEndDateTime(endPeriod, timeOffset);
+            DateTimeOffset startDate = GetStartDateTimeOffset(startDateLocal, timeOffset);
+            DateTimeOffset endDate = GetEndDateTimeOffset(endDateLocal, timeOffset);
+
+            IDictionary<UserLoginClientType, int> lastLoginClientCounts = await this.userProfileDelegate.GetLoginClientCountsAsync(startDate, endDate, ct);
+            return new(
+                lastLoginClientCounts.TryGetValue(UserLoginClientType.Web, out int webCount) ? webCount : 0,
+                lastLoginClientCounts.TryGetValue(UserLoginClientType.Mobile, out int mobileCount) ? mobileCount : 0);
+        }
+
+        /// <inheritdoc/>
+        public async Task<IDictionary<string, int>> GetRatingsSummaryAsync(DateOnly startDateLocal, DateOnly endDateLocal, int timeOffset, CancellationToken ct = default)
+        {
+            DateTimeOffset startDate = GetStartDateTimeOffset(startDateLocal, timeOffset);
+            DateTimeOffset endDate = GetEndDateTimeOffset(endDateLocal, timeOffset);
+            return await this.ratingDelegate.GetRatingsSummaryAsync(startDate, endDate, ct);
+        }
+
+        /// <inheritdoc/>
+        public async Task<IDictionary<string, int>> GetYearOfBirthCountsAsync(DateOnly startDateLocal, DateOnly endDateLocal, int timeOffset, CancellationToken ct)
+        {
+            DateTimeOffset startDate = GetStartDateTimeOffset(startDateLocal, timeOffset);
+            DateTimeOffset endDate = GetEndDateTimeOffset(endDateLocal, timeOffset);
             return await this.userProfileDelegate.GetLoggedInUserYearOfBirthCountsAsync(startDate, endDate, ct);
         }
 
-        private static DateTime GetStartDateTime(string startPeriod, int timeOffset)
+        private static DateTimeOffset GetStartDateTimeOffset(DateOnly startDateLocal, int timeOffset)
         {
-            TimeSpan ts = new(0, GetOffset(timeOffset), 0);
-            DateTime startDate = DateTime.Parse(startPeriod, CultureInfo.InvariantCulture).Date.Add(ts);
-            return DateTime.SpecifyKind(startDate, DateTimeKind.Utc);
+            TimeSpan offsetSpan = TimeSpan.FromMinutes(timeOffset);
+            DateTimeOffset startDateTimeOffset = new(startDateLocal.ToDateTime(TimeOnly.MinValue), offsetSpan);
+            return startDateTimeOffset;
         }
 
-        private static DateTime GetEndDateTime(string endPeriod, int timeOffset)
+        private static DateTimeOffset GetEndDateTimeOffset(DateOnly endDateLocal, int timeOffset)
         {
-            TimeSpan ts = new(0, GetOffset(timeOffset), 0);
-            DateTime endDate = DateTime.Parse(endPeriod, CultureInfo.InvariantCulture).Date.Add(ts).AddDays(1).AddMilliseconds(-1);
-            return DateTime.SpecifyKind(endDate, DateTimeKind.Utc);
-        }
-
-        /// <summary>
-        /// Returns an offset value that can be used to create a date in UTC.
-        /// </summary>
-        /// <param name="timeOffset">The offset from the client browser to UTC.</param>
-        /// <returns>The offset value used to create UTC.</returns>
-        private static int GetOffset(int timeOffset)
-        {
-            // If timeOffset is a negative value, then it means current timezone is [n] minutes behind UTC so we need to change this value to a positive when creating TimeSpan for DateTime object in UTC.
-            // If timeOffset is a positive value, then it means current timezone is [n] minutes ahead of UTC so we need to change this value to a negative when creating TimeSpan for DateTime object in UTC.
-            // If timeOffset is 0, then it means current timezone is UTC.
-            return timeOffset * -1;
+            TimeSpan offsetSpan = TimeSpan.FromMinutes(timeOffset);
+            DateTimeOffset endDateTimeOffset = new(endDateLocal.ToDateTime(TimeOnly.MaxValue), offsetSpan);
+            return endDateTimeOffset;
         }
     }
 }

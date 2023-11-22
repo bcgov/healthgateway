@@ -213,6 +213,12 @@ async function handleSubmit(): Promise<void> {
     }
 }
 
+function isSelectedVariant(linkName: string): "elevated" | "outlined" {
+    return selectedQuickLinks.value.includes(linkName)
+        ? "elevated"
+        : "outlined";
+}
+
 function hideModal(): void {
     isVisible.value = false;
 }
@@ -225,6 +231,7 @@ function hideModal(): void {
         data-testid="add-quick-link-modal"
         persistent
         no-click-animation
+        max-width="500px"
     >
         <template #activator="slotProps">
             <HgButtonComponent
@@ -276,79 +283,75 @@ function hideModal(): void {
                             >.
                         </span>
                     </v-alert>
-                    <v-checkbox
-                        v-for="quickLink in enabledQuickLinkFilter"
-                        :id="quickLink.module + '-filter'"
-                        :key="quickLink.module"
-                        v-model="selectedQuickLinks"
-                        :data-testid="`${quickLink.module}-filter`"
-                        :name="quickLink.module + '-filter'"
-                        :value="quickLink.module"
-                        :label="quickLink.name"
-                        density="compact"
-                        hide-details
-                        color="primary"
-                    />
-                    <v-checkbox
-                        v-if="showOrganDonorRegistration"
-                        id="organ-donor-registration-filter"
-                        v-model="selectedQuickLinks"
-                        data-testid="organ-donor-registration-filter"
-                        name="organ-donor-registration-filter"
-                        value="organ-donor-registration"
-                        label="Organ Donor Registration"
-                        density="compact"
-                        hide-details
-                        color="primary"
-                    />
-                    <v-checkbox
-                        v-if="showHealthConnectRegistry"
-                        id="health-connect-registry-filter"
-                        v-model="selectedQuickLinks"
-                        data-testid="health-connect-registry-filter"
-                        name="health-connect-registry-filter"
-                        value="health-connect-registry"
-                        label="Health Connect Registry"
-                        density="compact"
-                        hide-details
-                        color="primary"
-                    />
-                    <v-checkbox
-                        v-if="showVaccineCard"
-                        id="bc-vaccine-card-filter"
-                        v-model="selectedQuickLinks"
-                        data-testid="bc-vaccine-card-filter"
-                        name="bc-vaccine-card-filter"
-                        value="bc-vaccine-card"
-                        label="BC Vaccine Card"
-                        density="compact"
-                        hide-details
-                        color="primary"
-                    />
-                    <v-checkbox
-                        v-if="showImmunizationRecord"
-                        id="immunization-record-filter"
-                        v-model="selectedQuickLinks"
-                        data-testid="immunization-record-filter"
-                        name="immunization-record-filter"
-                        value="immunization-record"
-                        label="Add Vaccines"
-                        density="compact"
-                        hide-details
-                        color="primary"
-                    />
-                    <v-checkbox
-                        v-if="showRecommendationsDialog"
-                        id="recommendations-dialog-filter"
-                        v-model="selectedQuickLinks"
-                        data-testid="recommendations-dialog-filter"
-                        name="recommendations-dialog-filter"
-                        value="recommendations-dialog"
-                        label="Vaccine Recommendations"
-                        density="compact"
-                        hide-details
-                        color="primary"
-                    />
+                    <v-chip-group v-model="selectedQuickLinks" column multiple>
+                        <v-chip
+                            v-for="quickLink in enabledQuickLinkFilter"
+                            :id="`${quickLink.module}-filter`"
+                            :key="quickLink.module"
+                            :data-testid="`${quickLink.module}-filter`"
+                            :name="`${quickLink.module}-filter`"
+                            :value="quickLink.module"
+                            :text="quickLink.name"
+                            color="primary"
+                            :variant="isSelectedVariant(quickLink.module)"
+                        />
+                        <v-chip
+                            v-if="showOrganDonorRegistration"
+                            id="organ-donor-registration-filter"
+                            data-testid="organ-donor-registration-filter"
+                            name="organ-donor-registration-filter"
+                            value="organ-donor-registration"
+                            text="Organ Donor Registration"
+                            color="primary"
+                            :variant="
+                                isSelectedVariant('organ-donor-registration')
+                            "
+                        />
+                        <v-chip
+                            v-if="showHealthConnectRegistry"
+                            id="health-connect-registry-filter"
+                            data-testid="health-connect-registry-filter"
+                            name="health-connect-registry-filter"
+                            value="health-connect-registry"
+                            text="Health Connect Registry"
+                            color="primary"
+                            :variant="
+                                isSelectedVariant('health-connect-registry')
+                            "
+                        />
+                        <v-chip
+                            v-if="showVaccineCard"
+                            id="bc-vaccine-card-filter"
+                            data-testid="bc-vaccine-card-filter"
+                            name="bc-vaccine-card-filter"
+                            value="bc-vaccine-card"
+                            text="BC Vaccine Card"
+                            color="primary"
+                            :variant="isSelectedVariant('bc-vaccine-card')"
+                        />
+                        <v-chip
+                            v-if="showImmunizationRecord"
+                            id="immunization-record-filter"
+                            data-testid="immunization-record-filter"
+                            name="immunization-record-filter"
+                            value="immunization-record"
+                            text="Add Vaccines"
+                            color="primary"
+                            :variant="isSelectedVariant('immunization-record')"
+                        />
+                        <v-chip
+                            v-if="showRecommendationsDialog"
+                            id="recommendations-dialog-filter"
+                            data-testid="recommendations-dialog-filter"
+                            name="recommendations-dialog-filter"
+                            value="recommendations-dialog"
+                            text="Vaccine Recommendations"
+                            color="primary"
+                            :variant="
+                                isSelectedVariant('recommendations-dialog')
+                            "
+                        />
+                    </v-chip-group>
                 </v-card-text>
                 <v-card-actions class="justify-end border-t-sm pa-4">
                     <HgButtonComponent
@@ -362,7 +365,7 @@ function hideModal(): void {
                         variant="primary"
                         :disabled="!isAddButtonEnabled"
                         :loading="isLoading"
-                        text="Add to Home"
+                        text="Save"
                         @click.prevent="handleSubmit"
                     />
                 </v-card-actions>

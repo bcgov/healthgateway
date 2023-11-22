@@ -17,6 +17,8 @@ namespace HealthGateway.Database.Delegates
 {
     using System;
     using System.Collections.Generic;
+    using System.Threading;
+    using System.Threading.Tasks;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
 
@@ -43,9 +45,10 @@ namespace HealthGateway.Database.Delegates
         /// <summary>
         /// Gets the ratings summary.
         /// </summary>
-        /// <param name="startDate">The period start to calculate the summary in UTC.</param>
-        /// <param name="endDate">The period end to calculate the summary in UTC.</param>
+        /// <param name="startDateTimeOffset">The start datetime offset to query.</param>
+        /// <param name="endDateTimeOffset">The end datetime offset to query.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A dictionary pairing the ratings with the counts.</returns>
-        IDictionary<string, int> GetSummary(DateTime startDate, DateTime endDate);
+        Task<IDictionary<string, int>> GetRatingsSummaryAsync(DateTimeOffset startDateTimeOffset, DateTimeOffset endDateTimeOffset, CancellationToken ct = default);
     }
 }

@@ -19,6 +19,7 @@ namespace HealthGateway.Admin.Client.Store.Dashboard;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using HealthGateway.Admin.Common.Models;
 
 /// <summary>
 /// Static class that implements all actions for the feature.
@@ -27,30 +28,51 @@ using System.Diagnostics.CodeAnalysis;
 public static class DashboardActions
 {
     /// <summary>
-    /// The action representing the initiation of a retrieval of registered users.
+    /// The action representing the initiation of a retrieval of daily user registration counts.
     /// </summary>
-    public record GetRegisteredUsersAction
+    public record GetDailyUserRegistrationCountsAction
     {
         /// <summary>
-        /// Gets the offset from the client browser to UTC.
+        /// Gets the local timezone offset from UTC in minutes.
         /// </summary>
         public required int TimeOffset { get; init; }
     }
 
     /// <summary>
-    /// The action representing a successful retrieval of registered users.
+    /// The action representing a successful retrieval of daily user registration counts.
     /// </summary>
-    public record GetRegisteredUsersSuccessAction : BaseSuccessAction<IDictionary<DateTime, int>>;
+    public record GetDailyUserRegistrationCountsSuccessAction : BaseSuccessAction<IDictionary<DateOnly, int>>;
 
     /// <summary>
-    /// The action representing a failed retrieval of registered users.
+    /// The action representing a failed retrieval of daily user registration counts.
     /// </summary>
-    public record GetRegisteredUsersFailureAction : BaseFailureAction;
+    public record GetDailyUserRegistrationCountsFailureAction : BaseFailureAction;
 
     /// <summary>
-    /// The action representing the initiation of a retrieval of logged in users.
+    /// The action representing the initiation of a retrieval of daily dependent registration counts.
     /// </summary>
-    public record GetLoggedInUsersAction
+    public record GetDailyDependentRegistrationCountsAction
+    {
+        /// <summary>
+        /// Gets the local timezone offset from UTC in minutes.
+        /// </summary>
+        public required int TimeOffset { get; init; }
+    }
+
+    /// <summary>
+    /// The action representing a successful retrieval of daily dependent registration counts.
+    /// </summary>
+    public record GetDailyDependentRegistrationCountsSuccessAction : BaseSuccessAction<IDictionary<DateOnly, int>>;
+
+    /// <summary>
+    /// The action representing a failed retrieval of daily dependent registration counts.
+    /// </summary>
+    public record GetDailyDependentRegistrationCountsFailureAction : BaseFailureAction;
+
+    /// <summary>
+    /// The action representing the initiation of a retrieval of daily unique login counts.
+    /// </summary>
+    public record GetDailyUniqueLoginCountsAction
     {
         /// <summary>
         /// Gets the local start date to query.
@@ -63,95 +85,105 @@ public static class DashboardActions
         public required DateOnly EndDateLocal { get; init; }
 
         /// <summary>
-        /// Gets the offset from the client browser to UTC.
+        /// Gets the local timezone offset from UTC in minutes.
         /// </summary>
         public required int TimeOffset { get; init; }
     }
 
     /// <summary>
-    /// The action representing a successful retrieval of logged in users.
+    /// The action representing a successful retrieval of daily unique login counts.
     /// </summary>
-    public record GetLoggedInUsersSuccessAction : BaseSuccessAction<IDictionary<DateTime, int>>;
+    public record GetDailyUniqueLoginCountsSuccessAction : BaseSuccessAction<IDictionary<DateOnly, int>>;
 
     /// <summary>
-    /// The action representing a failed retrieval of logged in users.
+    /// The action representing a failed retrieval of daily unique login counts.
     /// </summary>
-    public record GetLoggedInUsersFailureAction : BaseFailureAction;
+    public record GetDailyUniqueLoginCountsFailureAction : BaseFailureAction;
 
     /// <summary>
-    /// The action representing the initiation of a retrieval of dependents.
+    /// The action representing the initiation of a retrieval of a recurring user count.
     /// </summary>
-    public record GetDependentsAction
+    public record GetRecurringUserCountAction
     {
         /// <summary>
-        /// Gets the offset from the client browser to UTC.
-        /// </summary>
-        public required int TimeOffset { get; init; }
-    }
-
-    /// <summary>
-    /// The action representing a successful retrieval of dependents.
-    /// </summary>
-    public record GetDependentsSuccessAction : BaseSuccessAction<IDictionary<DateTime, int>>;
-
-    /// <summary>
-    /// The action representing a failed retrieval of dependents.
-    /// </summary>
-    public record GetDependentsFailureAction : BaseFailureAction;
-
-    /// <summary>
-    /// The action representing the initiation of a retrieval of user counts.
-    /// </summary>
-    public record GetUserCountsAction
-    {
-        /// <summary>
-        /// Gets the minimum number of unique days logged in required to qualify as a recurring user.
+        /// Gets the minimum number of days users must have logged in within the period to count as recurring.
         /// </summary>
         public required int Days { get; init; }
 
         /// <summary>
-        /// Gets the start of the period to evaluate.
+        /// Gets the local start date to query.
         /// </summary>
-        public required string StartPeriod { get; init; }
+        public required DateOnly StartDateLocal { get; init; }
 
         /// <summary>
-        /// Gets the end of the period to evaluate.
+        /// Gets the local end date to query.
         /// </summary>
-        public required string EndPeriod { get; init; }
+        public required DateOnly EndDateLocal { get; init; }
 
         /// <summary>
-        /// Gets the offset from the client browser to UTC.
+        /// Gets the local timezone offset from UTC in minutes.
         /// </summary>
         public required int TimeOffset { get; init; }
     }
 
     /// <summary>
-    /// The action representing a successful retrieval of user counts.
+    /// The action representing a successful retrieval of a recurring user count.
     /// </summary>
-    public record GetUserCountsSuccessAction : BaseSuccessAction<IDictionary<string, int>>;
+    public record GetRecurringUserCountSuccessAction : BaseSuccessAction<int>;
 
     /// <summary>
-    /// The action representing a failed retrieval of user counts.
+    /// The action representing a failed retrieval of a recurring user count.
     /// </summary>
-    public record GetUserCountsFailureAction : BaseFailureAction;
+    public record GetRecurringUserCountFailureAction : BaseFailureAction;
+
+    /// <summary>
+    /// The action representing the initiation of a retrieval of app login counts.
+    /// </summary>
+    public record GetAppLoginCountsAction
+    {
+        /// <summary>
+        /// Gets the local start date to query.
+        /// </summary>
+        public required DateOnly StartDateLocal { get; init; }
+
+        /// <summary>
+        /// Gets the local end date to query.
+        /// </summary>
+        public required DateOnly EndDateLocal { get; init; }
+
+        /// <summary>
+        /// Gets the local timezone offset from UTC in minutes.
+        /// </summary>
+        public required int TimeOffset { get; init; }
+    }
+
+    /// <summary>
+    /// The action representing a successful retrieval of app login counts.
+    /// </summary>
+    public record GetAppLoginCountsSuccessAction : BaseSuccessAction<AppLoginCounts>;
+
+    /// <summary>
+    /// The action representing a failed retrieval of app login counts.
+    /// </summary>
+    public record GetAppLoginCountsFailureAction : BaseFailureAction;
 
     /// <summary>
     /// The action representing the initiation of a retrieval of a ratings summary.
     /// </summary>
-    public record GetRatingSummaryAction
+    public record GetRatingsSummaryAction
     {
         /// <summary>
-        /// Gets the start of the period to evaluate.
+        /// Gets the local start date to query.
         /// </summary>
-        public required string StartPeriod { get; init; }
+        public required DateOnly StartDateLocal { get; init; }
 
         /// <summary>
-        /// Gets the end of the period to evaluate.
+        /// Gets the local end date to query.
         /// </summary>
-        public required string EndPeriod { get; init; }
+        public required DateOnly EndDateLocal { get; init; }
 
         /// <summary>
-        /// Gets the offset from the client browser to UTC.
+        /// Gets the local timezone offset from UTC in minutes.
         /// </summary>
         public required int TimeOffset { get; init; }
     }
@@ -159,12 +191,12 @@ public static class DashboardActions
     /// <summary>
     /// The action representing a successful retrieval of a ratings summary.
     /// </summary>
-    public record GetRatingSummarySuccessAction : BaseSuccessAction<IDictionary<string, int>>;
+    public record GetRatingsSummarySuccessAction : BaseSuccessAction<IDictionary<string, int>>;
 
     /// <summary>
     /// The action representing a failed retrieval of a ratings summary.
     /// </summary>
-    public record GetRatingSummaryFailureAction : BaseFailureAction;
+    public record GetRatingsSummaryFailureAction : BaseFailureAction;
 
     /// <summary>
     /// The action representing the initiation of a retrieval of year of birth counts.
@@ -172,17 +204,17 @@ public static class DashboardActions
     public record GetYearOfBirthCountsAction
     {
         /// <summary>
-        /// Gets the start of the period to evaluate.
+        /// Gets the local start date to query.
         /// </summary>
-        public required string StartPeriod { get; init; }
+        public required DateOnly StartDateLocal { get; init; }
 
         /// <summary>
-        /// Gets the end of the period to evaluate.
+        /// Gets the local end date to query.
         /// </summary>
-        public required string EndPeriod { get; init; }
+        public required DateOnly EndDateLocal { get; init; }
 
         /// <summary>
-        /// Gets the offset from the client browser to UTC.
+        /// Gets the local timezone offset from UTC in minutes.
         /// </summary>
         public required int TimeOffset { get; init; }
     }

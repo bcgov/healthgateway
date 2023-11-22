@@ -1,0 +1,40 @@
+﻿@using HealthGateway.Admin.Client.Components.Support
+@inherits Fluxor.Blazor.Web.Components.FluxorComponent
+
+@if (Patient != null)
+{
+    <MudText Class="mb-4 mt-6" Typo="Typo.h6">
+        Account Details
+    </MudText>
+    <MudGrid Spacing="2">
+        @if (CanViewHdid && !string.IsNullOrWhiteSpace(Patient.Hdid))
+        {
+            <MudItem xs="12">
+                <HgField Label="HDID" Value="@Patient.Hdid" data-testid="patient-hdid" />
+            </MudItem>
+        }
+
+        @if (IsDefaultPatientStatus)
+        {
+            <MudItem xs="12" lg="6">
+                <HgField Label="Account Created" Value="@ProfileCreatedDateTime.ToString()" data-testid="profile-created-datetime" />
+            </MudItem>
+            <MudItem xs="12" lg="6">
+                <HgField Label="Last Login" Value="@ProfileLastLoginDateTime.ToString()" data-testid="profile-last-login-datetime" />
+            </MudItem>
+        }
+        else
+        {
+            <MudItem xs="12">
+                <MudText data-testid="no-hg-profile">
+                    No Health Gateway Profile
+                </MudText>
+            </MudItem>
+        }
+    </MudGrid>
+}
+
+@if (CanViewMessagingVerifications && IsDefaultPatientStatus)
+{
+    <MessageVerificationTable Data="@MessagingVerifications" IsLoading="@PatientSupportDetailsLoading" />
+}

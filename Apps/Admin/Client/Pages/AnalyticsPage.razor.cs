@@ -47,11 +47,11 @@ public partial class AnalyticsPage : FluxorComponent
 
     private int InactiveDays { get; set; } = 90;
 
-    private string StartDate { get; set; } = DateTime.Now.AddDays(-30).ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
+    private DateOnly StartDate { get; set; } = DateOnly.FromDateTime(DateTime.Now.AddDays(-30));
 
-    private string EndDate { get; set; } = DateTime.Now.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
+    private DateOnly EndDate { get; set; } = DateOnly.FromDateTime(DateTime.Now);
 
-    private int TimeOffset { get; } = (int)TimeZoneInfo.Local.GetUtcOffset(DateTime.UtcNow).TotalMinutes * -1;
+    private int TimeOffset { get; } = (int)TimeZoneInfo.Local.GetUtcOffset(DateTime.UtcNow).TotalMinutes;
 
     private DateRange DateRange { get; set; } = new(DateTime.Now.AddDays(-30).Date, DateTime.Now.Date);
 
@@ -61,8 +61,8 @@ public partial class AnalyticsPage : FluxorComponent
 
         set
         {
-            this.StartDate = value.Start?.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture) ?? string.Empty;
-            this.EndDate = value.End?.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture) ?? string.Empty;
+            this.StartDate = DateOnly.FromDateTime(value.Start!.Value);
+            this.EndDate = DateOnly.FromDateTime(value.End!.Value);
             this.DateRange = value;
         }
     }
@@ -140,7 +140,7 @@ public partial class AnalyticsPage : FluxorComponent
     {
         this.ResetAnalyticsState();
         this.ReportName = YearOfBirthReportName;
-        this.Dispatcher.Dispatch(new AnalyticsActions.LoadYearOfBirthCountsAction { StartPeriod = this.StartDate, EndPeriod = this.EndDate, TimeOffset = this.TimeOffset });
+        this.Dispatcher.Dispatch(new AnalyticsActions.LoadYearOfBirthCountsAction { StartDateLocal = this.StartDate, EndDateLocal = this.EndDate, TimeOffset = this.TimeOffset });
     }
 
     private void DownloadAnalyticsReport(AnalyticsActions.LoadSuccessAction action)
@@ -157,7 +157,7 @@ public partial class AnalyticsPage : FluxorComponent
     {
         byte[] fileBytes = await content.ReadAsByteArrayAsync().ConfigureAwait(true);
         string fileName = this.ReportName == YearOfBirthReportName
-            ? $"{this.ReportName}_export_{this.StartDate}_to_{this.EndDate}.csv"
+            ? $"{this.ReportName}_export_{this.StartDate.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}_to_{this.EndDate.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}.csv"
             : $"{this.ReportName}_export_{DateTime.Now.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}.csv";
 
         await this.JsRuntime.InvokeAsync<object>("saveAsFile", fileName, Convert.ToBase64String(fileBytes)).ConfigureAwait(true);

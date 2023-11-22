@@ -23,6 +23,7 @@ namespace HealthGateway.Admin.Client.Pages
     using Fluxor;
     using Fluxor.Blazor.Web.Components;
     using HealthGateway.Admin.Client.Authorization;
+    using HealthGateway.Admin.Client.Services;
     using HealthGateway.Admin.Client.Store.PatientSupport;
     using HealthGateway.Admin.Client.Utils;
     using HealthGateway.Admin.Common.Constants;
@@ -58,6 +59,9 @@ namespace HealthGateway.Admin.Client.Pages
 
         [Inject]
         private AuthenticationStateProvider AuthenticationStateProvider { get; set; } = default!;
+
+        [Inject]
+        private IKeyInterceptorService KeyInterceptorService { get; set; } = default!;
 
         [Inject]
         private IJSRuntime JsRuntime { get; set; } = default!;
@@ -126,8 +130,6 @@ namespace HealthGateway.Admin.Client.Pages
 
         private AuthenticationState? AuthenticationState { get; set; }
 
-        private bool ShouldNavigateToPatientDetails { get; set; } = true;
-
         /// <inheritdoc/>
         protected override async Task OnInitializedAsync()
         {
@@ -136,6 +138,32 @@ namespace HealthGateway.Admin.Client.Pages
             await this.RepopulateQueryAndResults();
             this.AuthenticationState = await this.AuthenticationStateProvider.GetAuthenticationStateAsync();
             this.ActionSubscriber.SubscribeToAction<PatientSupportActions.LoadSuccessAction>(this, this.CheckForSingleResult);
+        }
+
+        /// <inheritdoc/>
+        protected override async Task OnAfterRenderAsync(bool firstRender)
+        {
+            if (firstRender)
+            {
+                await this.KeyInterceptorService.RegisterOnKeyDownAsync(
+                    "query-controls",
+                    "query-input",
+                    IKeyInterceptorService.EnterKey,
+                    _ => this.SearchAsync());
+            }
+
+            await base.OnAfterRenderAsync(firstRender);
+        }
+
+        /// <inheritdoc/>
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                this.KeyInterceptorService.Dispose();
+            }
+
+            base.Dispose(disposing);
         }
 
         private bool UserHasRole(string role)
@@ -173,8 +201,7 @@ namespace HealthGateway.Admin.Client.Pages
                 }
 
                 this.QueryParameter = queryString;
-                this.ShouldNavigateToPatientDetails = false;
-                await StoreUtility.LoadPatientSupportAction(this.Dispatcher, this.JsRuntime, this.SelectedQueryType, this.QueryParameter);
+                await StoreUtility.LoadPatientSupportAction(this.Dispatcher, this.JsRuntime, this.SelectedQueryType, this.QueryParameter, false);
             }
         }
 
@@ -184,7 +211,6 @@ namespace HealthGateway.Admin.Client.Pages
             if (this.Form.IsValid)
             {
                 this.ResetPatientSupportState();
-                this.ShouldNavigateToPatientDetails = true;
                 await StoreUtility.LoadPatientSupportAction(this.Dispatcher, this.JsRuntime, this.SelectedQueryType, StringManipulator.StripWhitespace(this.QueryParameter));
             }
         }
@@ -192,7 +218,7 @@ namespace HealthGateway.Admin.Client.Pages
         private void CheckForSingleResult(PatientSupportActions.LoadSuccessAction action)
         {
             if (action.Data.Count == 1 &&
-                this.ShouldNavigateToPatientDetails &&
+                action.ShouldNavigateToPatientDetails &&
                 !string.IsNullOrEmpty(action.Data.Single().PersonalHealthNumber))
             {
                 this.NavigateToPatientDetails(action.Data.Single().PersonalHealthNumber);

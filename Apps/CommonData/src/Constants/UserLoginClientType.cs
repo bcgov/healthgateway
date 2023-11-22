@@ -24,12 +24,12 @@ namespace HealthGateway.Common.Data.Constants
     public enum UserLoginClientType
     {
         /// <summary>
-        /// Login from hg web app.
+        /// Login from Health Gateway web app.
         /// </summary>
         Web,
 
         /// <summary>
-        /// Login from hg mobile app.
+        /// Login from Health Gateway mobile app.
         /// </summary>
         Mobile,
     }

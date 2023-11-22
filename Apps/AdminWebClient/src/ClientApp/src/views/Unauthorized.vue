@@ -9,7 +9,9 @@ export default class UnauthorizedView extends Vue {
 
     private mounted(): void {
         if (!this.isAuthenticated) {
-            this.$router.replace({ path: "/" });
+            this.$router
+                .replace({ path: "/" })
+                .catch((error) => console.warn(error.message));
         }
     }
 }

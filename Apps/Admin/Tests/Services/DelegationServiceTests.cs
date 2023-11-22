@@ -705,14 +705,12 @@ namespace HealthGateway.Admin.Tests.Services
 
         private static ResourceDelegateQueryResult GetResourceDelegates(string hdid)
         {
-            return new ResourceDelegateQueryResult
+            return new()
             {
-                Items = new[]
+                Items = new List<ResourceDelegateQueryResultItem>
                 {
-                    new ResourceDelegate
-                        { ResourceOwnerHdid = hdid, ProfileHdid = ProtectedDelegateHdid1, ReasonCode = ResourceDelegateReason.Guardian },
-                    new ResourceDelegate
-                        { ResourceOwnerHdid = hdid, ProfileHdid = ProtectedDelegateHdid2, ReasonCode = ResourceDelegateReason.Guardian },
+                    new() { ResourceDelegate = new() { ResourceOwnerHdid = hdid, ProfileHdid = ProtectedDelegateHdid1, ReasonCode = ResourceDelegateReason.Guardian } },
+                    new() { ResourceDelegate = new() { ResourceOwnerHdid = hdid, ProfileHdid = ProtectedDelegateHdid2, ReasonCode = ResourceDelegateReason.Guardian } },
                 },
             };
         }
@@ -741,10 +739,9 @@ namespace HealthGateway.Admin.Tests.Services
 
             ResourceDelegateQueryResult result = new()
             {
-                Items = new[]
+                Items = new List<ResourceDelegateQueryResultItem>
                 {
-                    new ResourceDelegate
-                        { ResourceOwnerHdid = DependentHdid, ProfileHdid = DelegateHdid, ReasonCode = ResourceDelegateReason.Guardian },
+                    new() { ResourceDelegate = new() { ResourceOwnerHdid = DependentHdid, ProfileHdid = DelegateHdid, ReasonCode = ResourceDelegateReason.Guardian } },
                 },
             };
             Mock<IResourceDelegateDelegate> resourceDelegateDelegate = new();
@@ -771,7 +768,7 @@ namespace HealthGateway.Admin.Tests.Services
         private DelegationService GetDelegationService(
             Dependent? dependent,
             Mock<IDelegationDelegate> delegationDelegate,
-            ResourceDelegateQueryResult resourceDelegates,
+            ResourceDelegateQueryResult resourceDelegateQueryResult,
             string resourceOwnerHdid,
             string authenticatedUser,
             string authenticatedPreferredUsername)
@@ -781,7 +778,7 @@ namespace HealthGateway.Admin.Tests.Services
             authenticationDelegate.Setup(a => a.FetchAuthenticatedPreferredUsername()).Returns(authenticatedPreferredUsername);
 
             Mock<IResourceDelegateDelegate> resourceDelegateDelegate = new();
-            resourceDelegateDelegate.Setup(r => r.SearchAsync(new() { ByOwnerHdid = resourceOwnerHdid })).ReturnsAsync(resourceDelegates);
+            resourceDelegateDelegate.Setup(r => r.SearchAsync(new() { ByOwnerHdid = resourceOwnerHdid })).ReturnsAsync(resourceDelegateQueryResult);
 
             delegationDelegate.Setup(p => p.GetDependentAsync(resourceOwnerHdid, true, CancellationToken.None)).ReturnsAsync(dependent);
 

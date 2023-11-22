@@ -611,7 +611,7 @@ setPageFromDate(linearDate.value);
                             class="mr-1 mb-1"
                             :title="`${label} Filter`"
                             closable
-                            size="small"
+                            :size="appStore.isMobile ? 'small' : 'default'"
                             @click:close="clearFilter(label, value)"
                         >
                             {{ value }}

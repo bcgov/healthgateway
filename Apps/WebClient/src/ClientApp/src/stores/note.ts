@@ -1,7 +1,6 @@
 import { defineStore } from "pinia";
 import { computed, ref } from "vue";
 
-import { EntryType } from "@/constants/entryType";
 import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import { ResultType } from "@/constants/resulttype";
 import { container } from "@/ioc/container";
@@ -9,10 +8,14 @@ import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
 import { ResultError } from "@/models/errors";
 import { LoadStatus } from "@/models/storeOperations";
 import UserNote from "@/models/userNote";
-import { ILogger, IUserNoteService } from "@/services/interfaces";
+import { Action, Dataset, Text } from "@/plugins/extensions";
+import {
+    ILogger,
+    ITrackingService,
+    IUserNoteService,
+} from "@/services/interfaces";
 import { useErrorStore } from "@/stores/error";
 import { EventName, useEventStore } from "@/stores/event";
-import EventTracker from "@/utility/eventTracker";
 
 export const useNoteStore = defineStore("note", () => {
     const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
@@ -56,6 +59,9 @@ export const useNoteStore = defineStore("note", () => {
     }
 
     function retrieveNotes(hdid: string): Promise<void> {
+        const trackingService = container.get<ITrackingService>(
+            SERVICE_IDENTIFIER.TrackingService
+        );
         if (status.value === LoadStatus.LOADED) {
             logger.debug(`Notes found stored, not querying!`);
             return Promise.resolve();
@@ -65,14 +71,18 @@ export const useNoteStore = defineStore("note", () => {
             return noteService
                 .getNotes(hdid)
                 .then((result) => {
-                    EventTracker.loadData(
-                        EntryType.Note,
-                        result.resourcePayload.length
-                    );
                     if (result.resultStatus === ResultType.Success) {
                         notes.value = result.resourcePayload;
                         error.value = undefined;
                         status.value = LoadStatus.LOADED;
+
+                        if (result.resourcePayload.length > 0) {
+                            trackingService.trackEvent({
+                                action: Action.Load,
+                                text: Text.Data,
+                                dataset: Dataset.Notes,
+                            });
+                        }
                     } else {
                         if (result.resultError) {
                             throw result.resultError;

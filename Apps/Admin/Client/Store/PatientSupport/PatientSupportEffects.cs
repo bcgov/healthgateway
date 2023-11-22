@@ -52,7 +52,7 @@ namespace HealthGateway.Admin.Client.Store.PatientSupport
             {
                 IList<PatientSupportResult> response = await this.SupportApi.GetPatientsAsync(action.QueryType, action.QueryString).ConfigureAwait(true);
                 this.Logger.LogInformation("Patients loaded successfully!");
-                dispatcher.Dispatch(new PatientSupportActions.LoadSuccessAction { Data = response });
+                dispatcher.Dispatch(new PatientSupportActions.LoadSuccessAction { Data = response, ShouldNavigateToPatientDetails = action.ShouldNavigateToPatientDetails });
             }
             catch (Exception e) when (e is ApiException or HttpRequestException)
             {

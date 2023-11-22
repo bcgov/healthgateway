@@ -23,12 +23,6 @@
     <AuthorizeView Roles="@($"{Roles.Admin},{Roles.Reviewer},{Roles.Analyst}")">
         <MudNavLink Href="dashboard" Icon="fas fa-gauge">Dashboard</MudNavLink>
     </AuthorizeView>
-    @if (JobSchedulerUrl.Length > 0)
-    {
-        <AuthorizeView Roles="@Roles.Admin">
-            <MudNavLink Href="@JobSchedulerUrl" Icon="fas fa-business-time">Job Scheduler</MudNavLink>
-        </AuthorizeView>
-    }
     <AuthorizeView Roles="@($"{Roles.Admin},{Roles.Reviewer}")">
         <MudNavLink Href="communications" Icon="fas fa-satellite-dish">Communications</MudNavLink>
     </AuthorizeView>

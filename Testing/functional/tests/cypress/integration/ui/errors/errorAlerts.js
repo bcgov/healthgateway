@@ -1,8 +1,7 @@
 import { AuthMethod } from "../../../support/constants";
 
 const addQuickLinkButtonSelector = "[data-testid=add-quick-link-button]";
-const addQuickLinkCheckboxSelector =
-    "[data-testid=quick-link-modal-text] input[type=checkbox]";
+const addQuickLinkChipSelector = "[data-testid=quick-link-modal-text] .v-chip";
 const addQuickLinkSubmitButtonSelector = "[data-testid=add-quick-link-btn]";
 const tooManyRequestsStatusCode = 429;
 const serverErrorStatusCode = 500;
@@ -173,9 +172,9 @@ function testAddQuickLinkError(statusCode = serverErrorStatusCode) {
         .should("be.visible")
         .should("be.enabled")
         .click();
-    cy.get(`${addQuickLinkCheckboxSelector}[value=Laboratory]`)
+    cy.get(`${addQuickLinkChipSelector}[name=Laboratory-filter]`)
         .should("exist")
-        .check({ force: true });
+        .click();
     cy.get(addQuickLinkSubmitButtonSelector)
         .should("be.visible")
         .should("be.enabled")

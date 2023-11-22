@@ -12,10 +12,10 @@ import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
 import EncodedMedia from "@/models/encodedMedia";
 import { LoadStatus } from "@/models/storeOperations";
 import ClinicalDocumentTimelineEntry from "@/models/timeline/clinicalDocumentTimelineEntry";
-import { ILogger } from "@/services/interfaces";
+import { Action, Actor, Dataset, Format, Text } from "@/plugins/extensions";
+import { ILogger, ITrackingService } from "@/services/interfaces";
 import { useClinicalDocumentStore } from "@/stores/clinicalDocument";
 import { useTimelineStore } from "@/stores/timeline";
-import SnowPlow from "@/utility/snowPlow";
 
 interface Props {
     hdid: string;
@@ -31,6 +31,9 @@ const props = withDefaults(defineProps<Props>(), {
 });
 
 const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
+const trackingService = container.get<ITrackingService>(
+    SERVICE_IDENTIFIER.TrackingService
+);
 const clinicalDocumentStore = useClinicalDocumentStore();
 const timelineStore = useTimelineStore();
 
@@ -57,9 +60,12 @@ function showConfirmationModal(): void {
 }
 
 function downloadFile(): void {
-    SnowPlow.trackEvent({
-        action: "download_report",
-        text: "Clinical Document PDF",
+    trackingService.trackEvent({
+        action: Action.Download,
+        text: Text.Document,
+        dataset: Dataset.ClinicalDocuments,
+        format: Format.Pdf,
+        actor: Actor.User,
     });
 
     clinicalDocumentStore

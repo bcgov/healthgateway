@@ -119,9 +119,9 @@ namespace HealthGateway.Admin.Server.Controllers
                     QueryParameter = queryString,
                     IncludeMessagingVerifications = userIsAdmin || userIsReviewer,
                     IncludeBlockedDataSources = userIsAdmin || userIsReviewer,
-                    IncludeAgentActions = userIsAdmin || userIsReviewer,
+                    IncludeAgentActions = userIsAdmin,
                     IncludeDependents = userIsAdmin || userIsReviewer,
-                    IncludeCovidDetails = userIsSupport,
+                    IncludeCovidDetails = userIsAdmin || userIsSupport,
                     RefreshVaccineDetails = refreshVaccineDetails,
                 },
                 ct);
@@ -199,7 +199,7 @@ namespace HealthGateway.Admin.Server.Controllers
         [HttpPost]
         [Produces("application/json")]
         [Route("CovidAssessment")]
-        [Authorize(Roles = "SupportUser")]
+        [Authorize(Roles = "SupportUser,AdminUser")]
         public async Task<CovidAssessmentResponse> SubmitCovidAssessment([FromBody] CovidAssessmentRequest request)
         {
             return await this.covidSupportService.SubmitCovidAssessmentAsync(request).ConfigureAwait(true);

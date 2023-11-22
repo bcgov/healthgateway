@@ -23,7 +23,7 @@ using System.Linq;
 using Fluxor;
 using Fluxor.Blazor.Web.Components;
 using HealthGateway.Admin.Client.Store.Dashboard;
-using HealthGateway.Common.Data.Constants;
+using HealthGateway.Admin.Common.Models;
 using HealthGateway.Common.Data.Utils;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
@@ -33,9 +33,8 @@ using MudBlazor;
 /// </summary>
 public partial class DashboardPage : FluxorComponent
 {
-    private static DateOnly StartDate => DateOnly.FromDateTime(DateTime.Now.AddDays(-30));
-
-    private static DateOnly EndDate => DateOnly.FromDateTime(DateTime.Now);
+    private DateRange? demographicsDateRange = new(DateTime.Now.AddDays(-30).Date, DateTime.Now.Date);
+    private DateRange? usageDateRange = new(DateTime.Now.AddDays(-6).Date, DateTime.Now.Date);
 
     [Inject]
     private IDispatcher Dispatcher { get; set; } = default!;
@@ -43,53 +42,53 @@ public partial class DashboardPage : FluxorComponent
     [Inject]
     private IState<DashboardState> DashboardState { get; set; } = default!;
 
-    private IDictionary<DateTime, int> RegisteredUsers => this.DashboardState.Value.GetRegisteredUsers.Result ?? ImmutableDictionary<DateTime, int>.Empty;
+    private IDictionary<DateOnly, int> UserRegistrationCounts => this.DashboardState.Value.GetDailyUserRegistrationCounts.Result ?? ImmutableDictionary<DateOnly, int>.Empty;
 
-    private IDictionary<DateTime, int> LoggedInUsers => this.DashboardState.Value.GetLoggedInUsers.Result ?? ImmutableDictionary<DateTime, int>.Empty;
+    private IDictionary<DateOnly, int> DailyDependentRegistrationCounts => this.DashboardState.Value.GetDailyDependentRegistrationCounts.Result ?? ImmutableDictionary<DateOnly, int>.Empty;
 
-    private IDictionary<DateTime, int> Dependents => this.DashboardState.Value.GetDependents.Result ?? ImmutableDictionary<DateTime, int>.Empty;
+    private IDictionary<DateOnly, int> DailyUniqueLoginCounts => this.DashboardState.Value.GetDailyUniqueLoginCounts.Result ?? ImmutableDictionary<DateOnly, int>.Empty;
 
-    private IDictionary<string, int> UserCounts => this.DashboardState.Value.GetUserCounts.Result ?? ImmutableDictionary<string, int>.Empty;
+    private int RecurringUserCount => this.DashboardState.Value.GetRecurringUserCount.Result ?? 0;
+
+    private AppLoginCounts AppLoginCounts => this.DashboardState.Value.GetAppLoginCounts.Result ?? new(0, 0);
 
     private IDictionary<string, int> YearOfBirthCounts => this.DashboardState.Value.YearOfBirthCounts;
 
-    private int RecurringUserCount => this.UserCounts.TryGetValue("RecurringUserCount", out int recurringUserCount) ? recurringUserCount : 0;
+    private bool DailyUserRegistrationCountsLoading => this.DashboardState.Value.GetDailyUserRegistrationCounts.IsLoading;
 
-    private int MobileUserCount => this.UserCounts.TryGetValue(UserLoginClientType.Mobile.ToString(), out int mobileCount) ? mobileCount : 0;
+    private bool DailyDependentRegistrationCountsLoading => this.DashboardState.Value.GetDailyDependentRegistrationCounts.IsLoading;
 
-    private int WebUserCount => this.UserCounts.TryGetValue(UserLoginClientType.Web.ToString(), out int webCount) ? webCount : 0;
+    private bool DailyUniqueLoginCountsLoading => this.DashboardState.Value.GetDailyUniqueLoginCounts.IsLoading;
 
-    private bool RegisteredUsersLoading => this.DashboardState.Value.GetRegisteredUsers.IsLoading;
+    private bool RecurringUserCountLoading => this.DashboardState.Value.GetRecurringUserCount.IsLoading;
 
-    private bool LoggedInUsersLoading => this.DashboardState.Value.GetLoggedInUsers.IsLoading;
+    private bool AppLoginCountsLoading => this.DashboardState.Value.GetAppLoginCounts.IsLoading;
 
-    private bool DependentsLoading => this.DashboardState.Value.GetDependents.IsLoading;
-
-    private bool UserCountsLoading => this.DashboardState.Value.GetUserCounts.IsLoading;
-
-    private bool RatingSummaryLoading => this.DashboardState.Value.GetRatingSummary.IsLoading;
+    private bool RatingsSummaryLoading => this.DashboardState.Value.GetRatingsSummary.IsLoading;
 
     private bool YearOfBirthCountsLoading => this.DashboardState.Value.GetYearOfBirthCounts.IsLoading;
 
-    private MudDateRangePicker SelectedDateRangePicker { get; set; } = default!;
+    private MudDateRangePicker DemographicsDateRangePicker { get; set; } = default!;
+
+    private MudDateRangePicker UsageDateRangePicker { get; set; } = default!;
 
     private DateTime MinimumDateTime { get; } = new(2019, 06, 1, 0, 0, 0, DateTimeKind.Local);
 
     private DateTime MaximumDateTime { get; } = DateTime.Now;
 
-    private DateRange DateRange { get; set; } = new(DateTime.Now.AddDays(-30).Date, DateTime.Now.Date);
-
     private int CurrentUniqueDays { get; set; } = 3;
 
-    private string RegisteredUsersErrorMessage => this.DashboardState.Value.GetRegisteredUsers.Error?.Message ?? string.Empty;
+    private string RegisteredUsersErrorMessage => this.DashboardState.Value.GetDailyUserRegistrationCounts.Error?.Message ?? string.Empty;
 
-    private string LoggedInUsersErrorMessage => this.DashboardState.Value.GetLoggedInUsers.Error?.Message ?? string.Empty;
+    private string LoggedInUsersErrorMessage => this.DashboardState.Value.GetDailyUniqueLoginCounts.Error?.Message ?? string.Empty;
 
-    private string DependentsErrorMessage => this.DashboardState.Value.GetDependents.Error?.Message ?? string.Empty;
+    private string DependentsErrorMessage => this.DashboardState.Value.GetDailyDependentRegistrationCounts.Error?.Message ?? string.Empty;
 
-    private string RecurringUsersErrorMessage => this.DashboardState.Value.GetUserCounts.Error?.Message ?? string.Empty;
+    private string RecurringUsersErrorMessage => this.DashboardState.Value.GetRecurringUserCount.Error?.Message ?? string.Empty;
 
-    private string RatingSummaryErrorMessage => this.DashboardState.Value.GetRatingSummary.Error?.Message ?? string.Empty;
+    private string AppLoginCountsErrorMessage => this.DashboardState.Value.GetAppLoginCounts.Error?.Message ?? string.Empty;
+
+    private string RatingSummaryErrorMessage => this.DashboardState.Value.GetRatingsSummary.Error?.Message ?? string.Empty;
 
     private string YearOfBirthCountsErrorMessage => this.DashboardState.Value.GetYearOfBirthCounts.Error?.Message ?? string.Empty;
 
@@ -100,25 +99,40 @@ public partial class DashboardPage : FluxorComponent
             this.DependentsErrorMessage,
             this.LoggedInUsersErrorMessage,
             this.RecurringUsersErrorMessage,
+            this.AppLoginCountsErrorMessage,
             this.RatingSummaryErrorMessage,
             this.YearOfBirthCountsErrorMessage,
         });
 
-    private DateRange SelectedDateRange
+    private DateRange? DemographicsDateRange
     {
-        get => this.DateRange;
+        get => this.demographicsDateRange;
 
         set
         {
-            this.RetrieveData(
-                this.UniqueDays,
-                DateOnly.FromDateTime(value.Start!.Value),
-                DateOnly.FromDateTime(value.End!.Value),
-                this.TimeOffset,
-                false);
-            this.DateRange = value;
+            this.demographicsDateRange = value;
+            this.RetrieveDemographicsData();
         }
     }
+
+    private DateRange? UsageDateRange
+    {
+        get => this.usageDateRange;
+
+        set
+        {
+            this.usageDateRange = value;
+            this.RetrieveUsageData();
+        }
+    }
+
+    private DateTime DemographicsDateRangeStart => this.DemographicsDateRange?.Start ?? this.MinimumDateTime;
+
+    private DateTime DemographicsDateRangeEnd => this.DemographicsDateRange?.End ?? this.MaximumDateTime;
+
+    private DateTime UsageDateRangeStart => this.UsageDateRange?.Start ?? this.MinimumDateTime;
+
+    private DateTime UsageDateRangeEnd => this.UsageDateRange?.End ?? this.MaximumDateTime;
 
     private int UniqueDays
     {
@@ -126,40 +140,40 @@ public partial class DashboardPage : FluxorComponent
 
         set
         {
+            this.CurrentUniqueDays = value;
             this.Dispatcher.Dispatch(
-                new DashboardActions.GetUserCountsAction
+                new DashboardActions.GetRecurringUserCountAction
                 {
                     Days = value,
-                    StartPeriod = this.SelectedDateRange.Start?.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture) ?? string.Empty,
-                    EndPeriod = this.SelectedDateRange.End?.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture) ?? string.Empty,
+                    StartDateLocal = DateOnly.FromDateTime(this.UsageDateRangeStart),
+                    EndDateLocal = DateOnly.FromDateTime(this.UsageDateRangeEnd),
                     TimeOffset = this.TimeOffset,
                 });
-            this.CurrentUniqueDays = value;
         }
     }
 
     private int TimeOffset { get; } = (int)TimeZoneInfo.Local.GetUtcOffset(DateTime.Now).TotalMinutes;
 
-    private int TotalRegisteredUsers => this.RegisteredUsers.Sum(r => r.Value);
+    private int TotalRegisteredUsers => this.UserRegistrationCounts.Sum(r => r.Value);
 
-    private int TotalDependents => this.Dependents.Sum(r => r.Value);
+    private int TotalDependents => this.DailyDependentRegistrationCounts.Sum(r => r.Value);
 
     private IEnumerable<DailyDataRow> TableData
     {
         get
         {
-            return this.RegisteredUsers.Select(kvp => new DailyDataRow { DailyDateTime = kvp.Key, TotalRegisteredUsers = kvp.Value })
-                .Concat(this.LoggedInUsers.Select(kvp => new DailyDataRow { DailyDateTime = kvp.Key, TotalLoggedInUsers = kvp.Value }))
-                .Concat(this.Dependents.Select(kvp => new DailyDataRow { DailyDateTime = kvp.Key, TotalDependents = kvp.Value }))
-                .Where(r => this.SelectedDateRange.Start <= r.DailyDateTime && r.DailyDateTime <= this.SelectedDateRange.End)
-                .GroupBy(r => r.DailyDateTime)
+            return this.UserRegistrationCounts.Select(kvp => new DailyDataRow { Date = kvp.Key, UserRegistrations = kvp.Value })
+                .Concat(this.DailyUniqueLoginCounts.Select(kvp => new DailyDataRow { Date = kvp.Key, UniqueLogins = kvp.Value }))
+                .Concat(this.DailyDependentRegistrationCounts.Select(kvp => new DailyDataRow { Date = kvp.Key, DependentRegistrations = kvp.Value }))
+                .Where(r => this.UsageDateRangeStart <= r.Date.ToDateTime(TimeOnly.MaxValue) && r.Date.ToDateTime(TimeOnly.MinValue) <= this.UsageDateRangeEnd)
+                .GroupBy(r => r.Date)
                 .Select(
                     group => new DailyDataRow
                     {
-                        DailyDateTime = group.Key,
-                        TotalRegisteredUsers = group.Sum(r => r.TotalRegisteredUsers),
-                        TotalDependents = group.Sum(r => r.TotalDependents),
-                        TotalLoggedInUsers = group.Sum(r => r.TotalLoggedInUsers),
+                        Date = group.Key,
+                        UserRegistrations = group.Sum(r => r.UserRegistrations),
+                        DependentRegistrations = group.Sum(r => r.DependentRegistrations),
+                        UniqueLogins = group.Sum(r => r.UniqueLogins),
                     });
         }
     }
@@ -169,30 +183,32 @@ public partial class DashboardPage : FluxorComponent
     {
         base.OnInitialized();
         this.Dispatcher.Dispatch(new DashboardActions.ResetStateAction());
-        this.RetrieveData(this.UniqueDays, StartDate, EndDate, this.TimeOffset, true);
+        this.RetrieveDemographicsData();
+        this.RetrieveUsageData();
     }
 
-    private void RetrieveData(int days, DateOnly startPeriod, DateOnly endPeriod, int timeOffset, bool initialLoad)
+    private static string FormatNumber(int number)
     {
-        string startDate = startPeriod.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
-        string endDate = endPeriod.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
-        string endDateRatings = initialLoad ? DateTime.Now.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture) : endDate;
-        this.Dispatcher.Dispatch(new DashboardActions.GetRegisteredUsersAction { TimeOffset = timeOffset });
-        this.Dispatcher.Dispatch(new DashboardActions.GetLoggedInUsersAction { StartDateLocal = startPeriod, EndDateLocal = endPeriod, TimeOffset = timeOffset });
-        this.Dispatcher.Dispatch(new DashboardActions.GetDependentsAction { TimeOffset = timeOffset });
-        this.Dispatcher.Dispatch(new DashboardActions.GetUserCountsAction { Days = days, StartPeriod = startDate, EndPeriod = endDate, TimeOffset = timeOffset });
-        this.Dispatcher.Dispatch(new DashboardActions.GetRatingSummaryAction { StartPeriod = startDate, EndPeriod = endDateRatings, TimeOffset = timeOffset });
-        this.Dispatcher.Dispatch(new DashboardActions.GetYearOfBirthCountsAction { StartPeriod = startDate, EndPeriod = endDate, TimeOffset = timeOffset });
+        return number.ToString("N0", CultureInfo.InvariantCulture);
     }
 
-    private void RefreshData()
+    private void RetrieveDemographicsData()
     {
-        this.RetrieveData(
-            this.UniqueDays,
-            DateOnly.FromDateTime(this.SelectedDateRange.Start!.Value),
-            DateOnly.FromDateTime(this.SelectedDateRange.End!.Value),
-            this.TimeOffset,
-            false);
+        DateOnly startDate = DateOnly.FromDateTime(this.DemographicsDateRangeStart);
+        DateOnly endDate = DateOnly.FromDateTime(this.DemographicsDateRangeEnd);
+        this.Dispatcher.Dispatch(new DashboardActions.GetAppLoginCountsAction { StartDateLocal = startDate, EndDateLocal = endDate, TimeOffset = this.TimeOffset });
+        this.Dispatcher.Dispatch(new DashboardActions.GetRatingsSummaryAction { StartDateLocal = startDate, EndDateLocal = endDate, TimeOffset = this.TimeOffset });
+        this.Dispatcher.Dispatch(new DashboardActions.GetYearOfBirthCountsAction { StartDateLocal = startDate, EndDateLocal = endDate, TimeOffset = this.TimeOffset });
+    }
+
+    private void RetrieveUsageData()
+    {
+        DateOnly startDate = DateOnly.FromDateTime(this.UsageDateRangeStart);
+        DateOnly endDate = DateOnly.FromDateTime(this.UsageDateRangeEnd);
+        this.Dispatcher.Dispatch(new DashboardActions.GetDailyUserRegistrationCountsAction { TimeOffset = this.TimeOffset });
+        this.Dispatcher.Dispatch(new DashboardActions.GetDailyDependentRegistrationCountsAction { TimeOffset = this.TimeOffset });
+        this.Dispatcher.Dispatch(new DashboardActions.GetDailyUniqueLoginCountsAction { StartDateLocal = startDate, EndDateLocal = endDate, TimeOffset = this.TimeOffset });
+        this.Dispatcher.Dispatch(new DashboardActions.GetRecurringUserCountAction { Days = this.UniqueDays, StartDateLocal = startDate, EndDateLocal = endDate, TimeOffset = this.TimeOffset });
     }
 
     private ChartSeries GetYearOfBirthCountSeries()
@@ -212,23 +228,23 @@ public partial class DashboardPage : FluxorComponent
     private sealed record DailyDataRow
     {
         /// <summary>
-        /// Gets the dashboard daily datetime.
+        /// Gets the date.
         /// </summary>
-        public DateTime DailyDateTime { get; init; }
+        public DateOnly Date { get; init; }
 
         /// <summary>
-        /// Gets the total registered users.
+        /// Gets the user registration count.
         /// </summary>
-        public int TotalRegisteredUsers { get; init; }
+        public int UserRegistrations { get; init; }
 
         /// <summary>
-        /// Gets the total logged in users.
+        /// Gets the unique login count.
         /// </summary>
-        public int TotalLoggedInUsers { get; init; }
+        public int UniqueLogins { get; init; }
 
         /// <summary>
-        /// Gets the total dependents.
+        /// Gets the dependent registration count.
         /// </summary>
-        public int TotalDependents { get; init; }
+        public int DependentRegistrations { get; init; }
     }
 }

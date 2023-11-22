@@ -23,6 +23,7 @@ using System.Threading.Tasks;
 using Fluxor;
 using Fluxor.Blazor.Web.Components;
 using HealthGateway.Admin.Client.Components.AgentAccess;
+using HealthGateway.Admin.Client.Services;
 using HealthGateway.Admin.Client.Store.AgentAccess;
 using HealthGateway.Admin.Client.Utils;
 using HealthGateway.Admin.Common.Models;
@@ -67,6 +68,9 @@ public partial class AgentAccessPage : FluxorComponent
     [Inject]
     private ISnackbar Snackbar { get; set; } = default!;
 
+    [Inject]
+    private IKeyInterceptorService KeyInterceptorService { get; set; } = default!;
+
     private string Query { get; set; } = string.Empty;
 
     [SuppressMessage("Minor Code Smell", "S3459:Unassigned members should be removed", Justification = "Assigned in .razor file")]
@@ -99,6 +103,32 @@ public partial class AgentAccessPage : FluxorComponent
         this.ActionSubscriber.SubscribeToAction<AgentAccessActions.AddSuccessAction>(this, this.DisplayAddSuccessful);
         this.ActionSubscriber.SubscribeToAction<AgentAccessActions.UpdateSuccessAction>(this, this.DisplayUpdateSuccessful);
         this.ActionSubscriber.SubscribeToAction<AgentAccessActions.DeleteSuccessAction>(this, this.DisplayDeleteSuccessful);
+    }
+
+    /// <inheritdoc/>
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await this.KeyInterceptorService.RegisterOnKeyDownAsync(
+                "query-controls",
+                "query-input",
+                IKeyInterceptorService.EnterKey,
+                _ => this.SearchAsync());
+        }
+
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
+    /// <inheritdoc/>
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            this.KeyInterceptorService.Dispose();
+        }
+
+        base.Dispose(disposing);
     }
 
     private void ResetState()

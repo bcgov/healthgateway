@@ -21,7 +21,7 @@
     @PatientSupportState.Value.Error?.Message
 </HgBannerFeedback>
 
-<MudForm @ref="Form">
+<MudForm @ref="Form" id="query-controls">
     <MudGrid Spacing="0">
         <MudItem xs="12" sm="3">
             <HgSelect
@@ -47,12 +47,13 @@
                         T="string"
                         Label="@FormattingUtility.FormatPatientQueryType(PatientQueryType.Phn)"
                         Required="@true"
+                        Immediate="@true"
                         Validation="@ValidateQueryParameter"
                         Mask="@Mask.PhnMask"
                         @bind-Value="QueryParameter"
                         TopMargin="Breakpoint.None"
                         LeftMargin="Breakpoint.Sm"
-                        Class="flex-grow-1"
+                        Class="flex-grow-1 query-input"
                         data-testid="query-input" />
                 }
                 else
@@ -61,11 +62,12 @@
                         T="string"
                         Label="@FormattingUtility.FormatPatientQueryType(SelectedQueryType)"
                         Required="@true"
+                        Immediate="@true"
                         Validation="@ValidateQueryParameter"
                         @bind-Value="QueryParameter"
                         TopMargin="Breakpoint.None"
                         LeftMargin="Breakpoint.Sm"
-                        Class="flex-grow-1"
+                        Class="flex-grow-1 query-input"
                         data-testid="query-input" />
                 }
                 <HgButton
