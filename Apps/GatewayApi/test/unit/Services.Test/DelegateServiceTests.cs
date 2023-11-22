@@ -73,7 +73,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         }
 
         /// <summary>
-        /// Should create delegate invitation.
+        /// Should create delegation.
         /// </summary>
         /// <param name="email">Email to validate.</param>
         /// <param name="nickname">Nickname to validate.</param>
@@ -83,7 +83,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Theory]
         [MemberData(nameof(TestCases))]
-        public async Task CreateDelegateInvitation(string email, string nickname, int daysToAdd, HashSet<DataSource> dataSources, bool success)
+        public async Task CreateDelegation(string email, string nickname, int daysToAdd, HashSet<DataSource> dataSources, bool success)
         {
             TimeZoneInfo localTimezone = DateFormatter.GetLocalTimeZone(GetConfiguration());
             Mock<IDelegationDelegate> delegationDelegate = new();
