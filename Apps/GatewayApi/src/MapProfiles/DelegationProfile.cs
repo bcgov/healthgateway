@@ -20,16 +20,16 @@ namespace HealthGateway.GatewayApi.MapProfiles
     using HealthGateway.GatewayApi.Models;
 
     /// <summary>
-    /// An AutoMapper profile class which defines mapping between DelegateInvitation and *DelegateInvitationRequest.
+    /// An AutoMapper profile class which defines mapping between Delegation and *DelegationRequest.
     /// </summary>
-    public class DelegateInvitationProfile : Profile
+    public class DelegationProfile : Profile
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="DelegateInvitationProfile"/> class.
+        /// Initializes a new instance of the <see cref="DelegationProfile"/> class.
         /// </summary>
-        public DelegateInvitationProfile()
+        public DelegationProfile()
         {
-            this.CreateMap<CreateDelegateInvitationRequest, DelegateInvitation>()
+            this.CreateMap<CreateDelegationRequest, Delegation>()
                 .ReverseMap();
         }
     }

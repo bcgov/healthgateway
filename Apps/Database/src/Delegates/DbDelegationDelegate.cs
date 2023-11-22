@@ -59,31 +59,6 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public async Task UpdateDelegationAsync(Dependent dependent, IEnumerable<ResourceDelegate> resourceDelegatesToRemove, AgentAudit agentAudit, bool commit = true)
-        {
-            if (dependent.Version == 0)
-            {
-                this.dbContext.Dependent.Add(dependent);
-            }
-            else
-            {
-                this.dbContext.Dependent.Update(dependent);
-            }
-
-            foreach (ResourceDelegate resourceDelegate in resourceDelegatesToRemove)
-            {
-                this.dbContext.ResourceDelegate.Remove(resourceDelegate);
-            }
-
-            this.dbContext.AgentAudit.Add(agentAudit);
-
-            if (commit)
-            {
-                await this.dbContext.SaveChangesAsync();
-            }
-        }
-
-        /// <inheritdoc/>
         public async Task<(IList<string> Hdids, int TotalHdids)> GetProtectedDependentHdidsAsync(int page, int pageSize, SortDirection sortDirection, CancellationToken ct)
         {
             int safePageSize = pageSize > 0 ? pageSize : 25;
@@ -105,6 +80,49 @@ namespace HealthGateway.Database.Delegates
                 .ToListAsync(ct);
             int totalCount = await this.dbContext.Dependent.CountAsync(d => d.Protected, ct);
             return (records, totalCount);
+        }
+
+        /// <inheritdoc/>
+        public async Task UpdateDelegationAsync(Delegation delegation, bool commit = true)
+        {
+            if (delegation.Version == 0)
+            {
+                this.dbContext.Delegation.Add(delegation);
+            }
+            else
+            {
+                this.dbContext.Delegation.Update(delegation);
+            }
+
+            if (commit)
+            {
+                await this.dbContext.SaveChangesAsync();
+            }
+        }
+
+        /// <inheritdoc/>
+        public async Task UpdateDependentAsync(Dependent dependent, IEnumerable<ResourceDelegate> resourceDelegatesToRemove, AgentAudit agentAudit, bool commit = true)
+        {
+            if (dependent.Version == 0)
+            {
+                this.dbContext.Dependent.Add(dependent);
+            }
+            else
+            {
+                this.dbContext.Dependent.Update(dependent);
+            }
+
+            foreach (ResourceDelegate resourceDelegate in resourceDelegatesToRemove)
+            {
+                this.dbContext.ResourceDelegate.Remove(resourceDelegate);
+            }
+
+            this.dbContext.AgentAudit.Add(agentAudit);
+
+            if (commit)
+            {
+                await this.dbContext.SaveChangesAsync();
+            }
         }
     }
 }

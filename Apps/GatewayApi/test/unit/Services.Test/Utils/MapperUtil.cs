@@ -43,7 +43,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test.Utils
                     cfg.AddProfile<UserPreferenceProfile>();
                     cfg.AddProfile<UserProfileProfile>();
                     cfg.AddProfile<WebAlertProfile>();
-                    cfg.AddProfile<DelegateInvitationProfile>();
+                    cfg.AddProfile<DelegationProfile>();
                 });
 
             return config.CreateMapper();

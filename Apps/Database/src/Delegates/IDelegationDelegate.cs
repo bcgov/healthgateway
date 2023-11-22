@@ -39,17 +39,6 @@ namespace HealthGateway.Database.Delegates
         Task<Dependent?> GetDependentAsync(string hdid, bool includeAllowedDelegation = false, CancellationToken ct = default);
 
         /// <summary>
-        /// Adds or updates the dependent object including allowed delegation associations as well as resource delegates and agent
-        /// audit to the DB.
-        /// </summary>
-        /// <param name="dependent">The dependent to update.</param>
-        /// <param name="resourceDelegatesToRemove">The resource delegates to remove.</param>
-        /// <param name="agentAudit">The agent audit to create.</param>
-        /// <param name="commit">Should commit, default to true.</param>
-        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
-        Task UpdateDelegationAsync(Dependent dependent, IEnumerable<ResourceDelegate> resourceDelegatesToRemove, AgentAudit agentAudit, bool commit = true);
-
-        /// <summary>
         /// Retrieve all user HDIDs of protected dependents from the database.
         /// </summary>
         /// <param name="page">Page number of the protected dependents report (First page is zero).</param>
@@ -58,5 +47,24 @@ namespace HealthGateway.Database.Delegates
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A list of HDID strings.</returns>
         Task<(IList<string> Hdids, int TotalHdids)> GetProtectedDependentHdidsAsync(int page, int pageSize, SortDirection sortDirection, CancellationToken ct);
+
+        /// <summary>
+        /// Adds or updates the delegation object to the DB.
+        /// </summary>
+        /// <param name="delegation">The delegation to update.</param>
+        /// <param name="commit">Should commit, default to true.</param>
+        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
+        Task UpdateDelegationAsync(Delegation delegation, bool commit = true);
+
+        /// <summary>
+        /// Adds or updates the dependent object including allowed delegation associations as well as resource delegates and agent
+        /// audit to the DB.
+        /// </summary>
+        /// <param name="dependent">The dependent to update.</param>
+        /// <param name="resourceDelegatesToRemove">The resource delegates to remove.</param>
+        /// <param name="agentAudit">The agent audit to create.</param>
+        /// <param name="commit">Should commit, default to true.</param>
+        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
+        Task UpdateDependentAsync(Dependent dependent, IEnumerable<ResourceDelegate> resourceDelegatesToRemove, AgentAudit agentAudit, bool commit = true);
     }
 }

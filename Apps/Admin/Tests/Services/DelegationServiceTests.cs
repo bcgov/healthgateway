@@ -25,7 +25,6 @@ namespace HealthGateway.Admin.Tests.Services
     using AutoMapper;
     using DeepEqual.Syntax;
     using HealthGateway.AccountDataAccess.Audit;
-    using HealthGateway.Admin.Common.Constants;
     using HealthGateway.Admin.Common.Models;
     using HealthGateway.Admin.Server.Services;
     using HealthGateway.Admin.Tests.Utils;
@@ -44,6 +43,7 @@ namespace HealthGateway.Admin.Tests.Services
     using Microsoft.Extensions.Configuration;
     using Moq;
     using Xunit;
+    using DelegationStatus = HealthGateway.Admin.Common.Constants.DelegationStatus;
 
     /// <summary>
     /// Tests for the DelegationService class.
@@ -222,7 +222,7 @@ namespace HealthGateway.Admin.Tests.Services
 
             // Assert
             delegationDelegate.Verify(
-                v => v.UpdateDelegationAsync(
+                v => v.UpdateDependentAsync(
                     It.Is<Dependent>(d => AssertProtectedDependant(expectedDependent, d)),
                     It.Is<IEnumerable<ResourceDelegate>>(rd => AssertProtectedDependentResourceDelegates(expectedDeletedResourceDelegates.ToList(), rd.ToList())),
                     It.Is<AgentAudit>(da => AssertAgentAudit(expectedAgentAudit, da)),
@@ -265,7 +265,7 @@ namespace HealthGateway.Admin.Tests.Services
 
             // Assert
             delegationDelegate.Verify(
-                v => v.UpdateDelegationAsync(
+                v => v.UpdateDependentAsync(
                     It.Is<Dependent>(d => AssertProtectedDependant(expectedDependent, d)),
                     It.Is<IEnumerable<ResourceDelegate>>(rd => AssertProtectedDependentResourceDelegates(expectedDeletedResourceDelegates.ToList(), rd.ToList())),
                     It.Is<AgentAudit>(da => AssertAgentAudit(expectedAgentAudit, da)),
@@ -328,7 +328,7 @@ namespace HealthGateway.Admin.Tests.Services
 
             // Assert
             delegationDelegate.Verify(
-                v => v.UpdateDelegationAsync(
+                v => v.UpdateDependentAsync(
                     It.Is<Dependent>(d => AssertProtectedDependant(expectedDependent, d)),
                     It.Is<IEnumerable<ResourceDelegate>>(rd => AssertProtectedDependentResourceDelegates(expectedDeletedResourceDelegates.ToList(), rd.ToList())),
                     It.Is<AgentAudit>(da => AssertAgentAudit(expectedAgentAudit, da)),

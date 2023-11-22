@@ -116,7 +116,6 @@ namespace HealthGateway.GatewayApi
             services.AddTransient<IResourceDelegateDelegate, DbResourceDelegateDelegate>();
             services.AddTransient<ICDogsDelegate, CDogsDelegate>();
             services.AddTransient<IApplicationSettingsDelegate, DbApplicationSettingsDelegate>();
-            services.AddTransient<IDelegateInvitationDelegate, DbDelegateInvitationDelegate>();
             services.AddTransient<IHashDelegate, HmacHashDelegate>();
 
             // Add API Clients

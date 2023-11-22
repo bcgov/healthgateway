@@ -27,9 +27,9 @@ namespace HealthGateway.GatewayApiTests.Validations
     using Xunit;
 
     /// <summary>
-    /// CreateDelegateInvitationValidator unit tests.
+    /// CreateDelegationValidator unit tests.
     /// </summary>
-    public class CreateDelegateInvitationValidatorTests
+    public class CreateDelegationValidatorTests
     {
         private const string ValidEmail = "delegator@gateway.ca";
         private const string InvalidEmail = "delegator@gateway";
@@ -67,19 +67,19 @@ namespace HealthGateway.GatewayApiTests.Validations
         /// <param name="success">The value indicates whether the test should succeed or not.</param>
         [Theory]
         [MemberData(nameof(TestCases))]
-        public void CreateDelegateInvitationRequestValidator(string email, string nickname, int daysToAdd, HashSet<DataSource> dataSources, bool success)
+        public void CreateDelegationRequestValidator(string email, string nickname, int daysToAdd, HashSet<DataSource> dataSources, bool success)
         {
             TimeZoneInfo localTimezone = DateFormatter.GetLocalTimeZone(GetConfiguration());
             DateOnly referenceDate = DateOnly.FromDateTime(TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, localTimezone));
 
-            CreateDelegateInvitationRequest request = new()
+            CreateDelegationRequest request = new()
             {
                 Email = email,
                 Nickname = nickname,
                 ExpiryDate = DateOnly.FromDateTime(TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, localTimezone)).AddDays(daysToAdd),
                 DataSources = dataSources,
             };
-            ValidationResult result = new CreateDelegateInvitationRequestValidator(referenceDate).Validate(request);
+            ValidationResult result = new CreateDelegationRequestValidator(referenceDate).Validate(request);
             Assert.True(result.IsValid == success);
         }
 

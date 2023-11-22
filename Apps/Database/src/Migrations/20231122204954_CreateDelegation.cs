@@ -27,7 +27,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace HealthGateway.Database.Migrations
 {
     /// <inheritdoc />
-    public partial class CreateDelegateInvitation : Migration
+    public partial class CreateDelegation : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -51,7 +51,7 @@ namespace HealthGateway.Database.Migrations
                 nullable: true);
 
             migrationBuilder.CreateTable(
-                name: "DelegateInvitationStatusCode",
+                name: "DelegationStatusCode",
                 schema: "gateway",
                 columns: table => new
                 {
@@ -65,7 +65,7 @@ namespace HealthGateway.Database.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_DelegateInvitationStatusCode", x => x.Code);
+                    table.PrimaryKey("PK_DelegationStatusCode", x => x.Code);
                 });
 
             migrationBuilder.CreateTable(
@@ -87,11 +87,11 @@ namespace HealthGateway.Database.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "DelegateInvitation",
+                name: "Delegation",
                 schema: "gateway",
                 columns: table => new
                 {
-                    DelegateInvitationId = table.Column<Guid>(type: "uuid", nullable: false),
+                    DelegationId = table.Column<Guid>(type: "uuid", nullable: false),
                     Nickname = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: false),
                     Status = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
                     SharingCodeHashFunction = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
@@ -115,16 +115,16 @@ namespace HealthGateway.Database.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_DelegateInvitation", x => x.DelegateInvitationId);
+                    table.PrimaryKey("PK_Delegation", x => x.DelegationId);
                     table.ForeignKey(
-                        name: "FK_DelegateInvitation_DelegateInvitationStatusCode_Status",
+                        name: "FK_Delegation_DelegationStatusCode_Status",
                         column: x => x.Status,
                         principalSchema: "gateway",
-                        principalTable: "DelegateInvitationStatusCode",
+                        principalTable: "DelegationStatusCode",
                         principalColumn: "Code",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_DelegateInvitation_ResourceDelegate_ResourceOwnerHdid_Profi~",
+                        name: "FK_Delegation_ResourceDelegate_ResourceOwnerHdid_ProfileHdid_R~",
                         columns: x => new { x.ResourceOwnerHdid, x.ProfileHdid, x.ReasonCode },
                         principalSchema: "gateway",
                         principalTable: "ResourceDelegate",
@@ -133,16 +133,16 @@ namespace HealthGateway.Database.Migrations
 
             migrationBuilder.InsertData(
                 schema: "gateway",
-                table: "DelegateInvitationStatusCode",
+                table: "DelegationStatusCode",
                 columns: new[] { "Code", "CreatedBy", "CreatedDateTime", "Description", "UpdatedBy", "UpdatedDateTime" },
                 values: new object[,]
                 {
-                    { "AccessExpired", "System", new DateTime(2019, 5, 1, 7, 0, 0, 0, DateTimeKind.Utc), "Access Expired Delegate Invitation Status Code", "System", new DateTime(2019, 5, 1, 7, 0, 0, 0, DateTimeKind.Utc) },
-                    { "Active", "System", new DateTime(2019, 5, 1, 7, 0, 0, 0, DateTimeKind.Utc), "Active Delegate Invitation Status Code", "System", new DateTime(2019, 5, 1, 7, 0, 0, 0, DateTimeKind.Utc) },
-                    { "Declined", "System", new DateTime(2019, 5, 1, 7, 0, 0, 0, DateTimeKind.Utc), "Declined Delegate Invitation Status Code", "System", new DateTime(2019, 5, 1, 7, 0, 0, 0, DateTimeKind.Utc) },
-                    { "InviteExpired", "System", new DateTime(2019, 5, 1, 7, 0, 0, 0, DateTimeKind.Utc), "Invite Expired Delegate Invitation Status Code", "System", new DateTime(2019, 5, 1, 7, 0, 0, 0, DateTimeKind.Utc) },
-                    { "Locked", "System", new DateTime(2019, 5, 1, 7, 0, 0, 0, DateTimeKind.Utc), "Locked Delegate Invitation Status Code", "System", new DateTime(2019, 5, 1, 7, 0, 0, 0, DateTimeKind.Utc) },
-                    { "Pending", "System", new DateTime(2019, 5, 1, 7, 0, 0, 0, DateTimeKind.Utc), "Pending Delegate Invitation Status Code", "System", new DateTime(2019, 5, 1, 7, 0, 0, 0, DateTimeKind.Utc) }
+                    { "AccessExpired", "System", new DateTime(2019, 5, 1, 7, 0, 0, 0, DateTimeKind.Utc), "Access Expired Delegation Status Code", "System", new DateTime(2019, 5, 1, 7, 0, 0, 0, DateTimeKind.Utc) },
+                    { "Active", "System", new DateTime(2019, 5, 1, 7, 0, 0, 0, DateTimeKind.Utc), "Active Delegation Status Code", "System", new DateTime(2019, 5, 1, 7, 0, 0, 0, DateTimeKind.Utc) },
+                    { "Declined", "System", new DateTime(2019, 5, 1, 7, 0, 0, 0, DateTimeKind.Utc), "Declined Delegation Status Code", "System", new DateTime(2019, 5, 1, 7, 0, 0, 0, DateTimeKind.Utc) },
+                    { "InviteExpired", "System", new DateTime(2019, 5, 1, 7, 0, 0, 0, DateTimeKind.Utc), "Invite Expired Delegation Status Code", "System", new DateTime(2019, 5, 1, 7, 0, 0, 0, DateTimeKind.Utc) },
+                    { "Locked", "System", new DateTime(2019, 5, 1, 7, 0, 0, 0, DateTimeKind.Utc), "Locked Delegation Status Code", "System", new DateTime(2019, 5, 1, 7, 0, 0, 0, DateTimeKind.Utc) },
+                    { "Pending", "System", new DateTime(2019, 5, 1, 7, 0, 0, 0, DateTimeKind.Utc), "Pending Delegation Status Code", "System", new DateTime(2019, 5, 1, 7, 0, 0, 0, DateTimeKind.Utc) }
                 });
 
             migrationBuilder.InsertData(
@@ -163,15 +163,15 @@ namespace HealthGateway.Database.Migrations
                 values: new object[] { "Invited", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Utc), "Resource delegation via invitation by the data owner", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Utc) });
 
             migrationBuilder.CreateIndex(
-                name: "IX_DelegateInvitation_ResourceOwnerHdid_ProfileHdid_ReasonCode",
+                name: "IX_Delegation_ResourceOwnerHdid_ProfileHdid_ReasonCode",
                 schema: "gateway",
-                table: "DelegateInvitation",
+                table: "Delegation",
                 columns: new[] { "ResourceOwnerHdid", "ProfileHdid", "ReasonCode" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_DelegateInvitation_Status",
+                name: "IX_Delegation_Status",
                 schema: "gateway",
-                table: "DelegateInvitation",
+                table: "Delegation",
                 column: "Status");
         }
 
@@ -179,7 +179,7 @@ namespace HealthGateway.Database.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "DelegateInvitation",
+                name: "Delegation",
                 schema: "gateway");
 
             migrationBuilder.DropTable(
@@ -187,7 +187,7 @@ namespace HealthGateway.Database.Migrations
                 schema: "gateway");
 
             migrationBuilder.DropTable(
-                name: "DelegateInvitationStatusCode",
+                name: "DelegationStatusCode",
                 schema: "gateway");
 
             migrationBuilder.DeleteData(

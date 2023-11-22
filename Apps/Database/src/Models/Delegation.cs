@@ -25,15 +25,15 @@ namespace HealthGateway.Database.Models
     using HealthGateway.Database.Constants;
 
     /// <summary>
-    /// The DelegateInvitation model.
+    /// The Delegation model.
     /// </summary>
-    public class DelegateInvitation : AuditableEntity
+    public class Delegation : AuditableEntity
     {
         /// <summary>
         /// Gets or sets the primary key.
         /// </summary>
         [Key]
-        [Column("DelegateInvitationId")]
+        [Column("DelegationId")]
         public Guid Id { get; set; }
 
         /// <summary>
@@ -48,7 +48,7 @@ namespace HealthGateway.Database.Models
         /// </summary>
         [Required]
         [MaxLength(50)]
-        public DelegateInvitationStatus Status { get; set; }
+        public DelegationStatus Status { get; set; }
 
         /// <summary>
         /// Gets or sets the sharing code hash function.

@@ -73,7 +73,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         }
 
         /// <summary>
-        /// Should create delegate invitation.
+        /// Should create delegation.
         /// </summary>
         /// <param name="email">Email to validate.</param>
         /// <param name="nickname">Nickname to validate.</param>
@@ -83,15 +83,15 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Theory]
         [MemberData(nameof(TestCases))]
-        public async Task CreateDelegateInvitation(string email, string nickname, int daysToAdd, HashSet<DataSource> dataSources, bool success)
+        public async Task CreateDelegation(string email, string nickname, int daysToAdd, HashSet<DataSource> dataSources, bool success)
         {
             TimeZoneInfo localTimezone = DateFormatter.GetLocalTimeZone(GetConfiguration());
-            Mock<IDelegateInvitationDelegate> delegateInvitationDelegate = new();
+            Mock<IDelegationDelegate> delegationDelegate = new();
 
             // Setup
             PatientDetails patient = GetPatient(localTimezone);
 
-            DelegateInvitation expectedDelegateInvitation = new()
+            Delegation expectedDelegation = new()
             {
                 ResourceOwnerHdid = Hdid,
                 ResourceOwnerIdentifier = $"{patient.PreferredName.GivenName} {patient.PreferredName.Surname[0]}",
@@ -100,7 +100,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 DataSources = dataSources,
             };
 
-            CreateDelegateInvitationRequest request = new()
+            CreateDelegationRequest request = new()
             {
                 Email = email,
                 Nickname = nickname,
@@ -108,17 +108,17 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 DataSources = dataSources,
             };
 
-            IDelegateService delegateService = GetDelegateService(patient, GetHash(), delegateInvitationDelegate);
+            IDelegateService delegateService = GetDelegateService(patient, GetHash(), delegationDelegate);
 
             if (success)
             {
                 // Act
-                await delegateService.CreateDelegateInvitationAsync(Hdid, request);
+                await delegateService.CreateDelegationAsync(Hdid, request);
 
                 // Verify
-                delegateInvitationDelegate.Verify(
-                    d => d.UpdateDelegateInvitationAsync(
-                        It.Is<DelegateInvitation>(di => AssertDelegateInvitation(expectedDelegateInvitation, di)),
+                delegationDelegate.Verify(
+                    d => d.UpdateDelegationAsync(
+                        It.Is<Delegation>(di => AssertDelegation(expectedDelegation, di)),
                         true));
             }
             else
@@ -126,7 +126,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 // Act
                 async Task Actual()
                 {
-                    await delegateService.CreateDelegateInvitationAsync(Hdid, request);
+                    await delegateService.CreateDelegationAsync(Hdid, request);
                 }
 
                 // Verify
@@ -135,7 +135,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             }
         }
 
-        private static bool AssertDelegateInvitation(DelegateInvitation expected, DelegateInvitation actual)
+        private static bool AssertDelegation(Delegation expected, Delegation actual)
         {
             Assert.Equal(expected.ResourceOwnerHdid, actual.ResourceOwnerHdid);
             Assert.Equal(expected.ResourceOwnerIdentifier, actual.ResourceOwnerIdentifier);
@@ -145,7 +145,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             return true;
         }
 
-        private static IDelegateService GetDelegateService(PatientDetails patient, IHash hash, Mock<IDelegateInvitationDelegate> delegateInvitationDelegate)
+        private static IDelegateService GetDelegateService(PatientDetails patient, IHash hash, IMock<IDelegationDelegate> delegationDelegate)
         {
             Mock<IHashDelegate> hashDelegate = new();
             hashDelegate.Setup(d => d.Hash(It.IsAny<string>())).Returns(hash);
@@ -157,7 +157,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 GetConfiguration(),
                 Mapper,
                 new Mock<ILogger<DelegateService>>().Object,
-                delegateInvitationDelegate.Object,
+                delegationDelegate.Object,
                 hashDelegate.Object,
                 patientDataService.Object);
         }

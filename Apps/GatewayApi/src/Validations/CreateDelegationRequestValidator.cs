@@ -22,15 +22,15 @@ namespace HealthGateway.GatewayApi.Validations
     using HealthGateway.GatewayApi.Models;
 
     /// <summary>
-    /// Validates <see cref="CreateDelegateInvitationRequest"/> instances.
+    /// Validates <see cref="CreateDelegationRequest"/> instances.
     /// </summary>
-    public class CreateDelegateInvitationRequestValidator : AbstractValidator<CreateDelegateInvitationRequest>
+    public class CreateDelegationRequestValidator : AbstractValidator<CreateDelegationRequest>
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="CreateDelegateInvitationRequestValidator"/> class.
+        /// Initializes a new instance of the <see cref="CreateDelegationRequestValidator"/> class.
         /// </summary>
         /// <param name="referenceDate">A reference point to validate against.</param>
-        public CreateDelegateInvitationRequestValidator(DateOnly referenceDate)
+        public CreateDelegationRequestValidator(DateOnly referenceDate)
         {
             this.RuleFor(v => v.Nickname).NotEmpty().MaximumLength(20);
             this.RuleFor(v => v.Email).NotEmpty().SetValidator(new EmailValidator());
