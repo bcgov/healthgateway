@@ -18,42 +18,42 @@ namespace HealthGateway.Common.Data.Constants
     using System.Runtime.Serialization;
 
     /// <summary>
-    /// Invitation status for a DelegateInvitation.
+    /// Invitation status for a Delegation.
     /// </summary>
-    public enum DelegateInvitationStatus
+    public enum DelegationStatus
     {
         /// <summary>
-        /// Represents active status for a delegate invitation.
+        /// Represents active status for a delegation.
         /// </summary>
         [EnumMember(Value = "Active")]
         Active,
 
         /// <summary>
-        /// Represents access expired status for a delegate invitation.
+        /// Represents access expired status for a delegation.
         /// </summary>
         [EnumMember(Value = "AccessExpired")]
         AccessExpired,
 
         /// <summary>
-        /// Represents declined status for a delegate invitation.
+        /// Represents declined status for a delegation.
         /// </summary>
         [EnumMember(Value = "Declined")]
         Declined,
 
         /// <summary>
-        /// Represents invite expired status for a delegate invitation.
+        /// Represents invite expired status for a delegation.
         /// </summary>
         [EnumMember(Value = "InviteExpired")]
         InviteExpired,
 
         /// <summary>
-        /// Represents locked status for a delegate invitation.
+        /// Represents locked status for a delegation.
         /// </summary>
         [EnumMember(Value = "Locked")]
         Locked,
 
         /// <summary>
-        /// Represents pending status for a delegate invitation.
+        /// Represents pending status for a delegation.
         /// </summary>
         [EnumMember(Value = "Pending")]
         Pending,

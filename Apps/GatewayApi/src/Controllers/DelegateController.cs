@@ -46,13 +46,13 @@ namespace HealthGateway.GatewayApi.Controllers
         }
 
         /// <summary>
-        /// Creates a delegate invitation for the given delegator's hdid.
+        /// Creates a delegation for the given delegator's hdid.
         /// </summary>
-        /// <returns>The delegate invitation</returns>
+        /// <returns>The sharing code</returns>
         /// <param name="hdid">The delegator hdid.</param>
-        /// <param name="request">The delegate invitation request model.</param>
+        /// <param name="request">The creat delegation request model.</param>
         /// <param name="ct">cancellation token.</param>
-        /// <response code="200">Returns the delegate invitation.</response>
+        /// <response code="200">Returns the sharing code.</response>
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
         /// <response code="403">
         /// The client does not have access rights to the content; that is, it is unauthorized, so the server
@@ -60,14 +60,14 @@ namespace HealthGateway.GatewayApi.Controllers
         /// </response>
         [HttpPost]
         [Authorize(Policy = UserProfilePolicy.Write)]
-        [Route("{hdid}/Invitations")]
+        [Route("{hdid}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        public async Task<string> CreateDelegateInvitation(string hdid, [FromBody] CreateDelegateInvitationRequest request, CancellationToken ct)
+        public async Task<string> CreateDelegation(string hdid, [FromBody] CreateDelegationRequest request, CancellationToken ct)
         {
-            return await this.delegateService.CreateDelegateInvitationAsync(hdid, request, ct);
+            return await this.delegateService.CreateDelegationAsync(hdid, request, ct);
         }
     }
 }

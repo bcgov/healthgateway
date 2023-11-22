@@ -40,7 +40,7 @@ namespace HealthGateway.GatewayApi.Services
         private readonly IConfiguration configuration;
         private readonly IMapper autoMapper;
         private readonly ILogger<DelegateService> logger;
-        private readonly IDelegateInvitationDelegate delegateInvitationDelegate;
+        private readonly IDelegationDelegate delegationDelegate;
         private readonly IPatientDetailsService patientDetailsService;
         private readonly IHashDelegate hashDelegate;
 
@@ -50,32 +50,32 @@ namespace HealthGateway.GatewayApi.Services
         /// <param name="configuration">The configuration to use.</param>
         /// <param name="autoMapper">The injected auto mapper provider.</param>
         /// <param name="logger">The injected logger.</param>
-        /// <param name="delegateInvitationDelegate">The injected delegate invitation delegate.</param>
+        /// <param name="delegationDelegate">The injected delegation delegate.</param>
         /// <param name="hashDelegate">The injected hash delegate.</param>
         /// <param name="patientDetailsService">The injected patient details service.</param>
         public DelegateService(
             IConfiguration configuration,
             IMapper autoMapper,
             ILogger<DelegateService> logger,
-            IDelegateInvitationDelegate delegateInvitationDelegate,
+            IDelegationDelegate delegationDelegate,
             IHashDelegate hashDelegate,
             IPatientDetailsService patientDetailsService)
         {
             this.configuration = configuration;
             this.autoMapper = autoMapper;
             this.logger = logger;
-            this.delegateInvitationDelegate = delegateInvitationDelegate;
+            this.delegationDelegate = delegationDelegate;
             this.hashDelegate = hashDelegate;
             this.patientDetailsService = patientDetailsService;
         }
 
         /// <inheritdoc/>
-        public async Task<string> CreateDelegateInvitationAsync(string hdid, CreateDelegateInvitationRequest request, CancellationToken ct = default)
+        public async Task<string> CreateDelegationAsync(string hdid, CreateDelegationRequest request, CancellationToken ct = default)
         {
             TimeZoneInfo localTimezone = DateFormatter.GetLocalTimeZone(this.configuration);
             DateOnly referenceDate = DateOnly.FromDateTime(TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, localTimezone));
 
-            ValidationResult validationResult = await new CreateDelegateInvitationRequestValidator(referenceDate).ValidateAsync(request, ct);
+            ValidationResult validationResult = await new CreateDelegationRequestValidator(referenceDate).ValidateAsync(request, ct);
 
             if (!validationResult.IsValid)
             {
@@ -86,19 +86,19 @@ namespace HealthGateway.GatewayApi.Services
             string resourceOwnerIdentifier = $"{patient.PreferredName.GivenName} {patient.PreferredName.Surname[0]}";
             this.logger.LogDebug("Resource owner identifier for delegate invitation: {ResourceOwnerIdentifier}", resourceOwnerIdentifier);
 
-            DelegateInvitation delegateInvitation = this.autoMapper.Map<DelegateInvitation>(request);
+            Delegation delegation = this.autoMapper.Map<Delegation>(request);
             string sharingCode = VerificationCodeUtility.Generate();
             IHash hash = this.hashDelegate.Hash(sharingCode);
             this.logger.LogDebug("Sharing code: {SharingCode} \n Hash: {Hash} \n Salt: {Salt} ", sharingCode, hash.Hash!, hash.Salt!);
 
-            delegateInvitation.SharingCodeHash = hash.Hash!;
-            delegateInvitation.SharingCodeSalt = hash.Salt!;
-            delegateInvitation.SharingCodeIterations = hash.Iterations;
-            delegateInvitation.SharingCodeHashFunction = hash.PseudoRandomFunction;
-            delegateInvitation.ResourceOwnerHdid = hdid;
-            delegateInvitation.ResourceOwnerIdentifier = resourceOwnerIdentifier;
+            delegation.SharingCodeHash = hash.Hash!;
+            delegation.SharingCodeSalt = hash.Salt!;
+            delegation.SharingCodeIterations = hash.Iterations;
+            delegation.SharingCodeHashFunction = hash.PseudoRandomFunction;
+            delegation.ResourceOwnerHdid = hdid;
+            delegation.ResourceOwnerIdentifier = resourceOwnerIdentifier;
 
-            await this.delegateInvitationDelegate.UpdateDelegateInvitationAsync(delegateInvitation);
+            await this.delegationDelegate.UpdateDelegationAsync(delegation);
             return sharingCode;
         }
     }

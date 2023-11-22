@@ -1633,7 +1633,7 @@ namespace HealthGateway.Database.Migrations
                     b.ToTable("Company", "gateway");
                 });
 
-            modelBuilder.Entity("HealthGateway.Database.Models.DelegateInvitation", b =>
+            modelBuilder.Entity("HealthGateway.Database.Models.Delegation", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -1729,10 +1729,10 @@ namespace HealthGateway.Database.Migrations
 
                     b.HasIndex("ResourceOwnerHdid", "ProfileHdid", "ReasonCode");
 
-                    b.ToTable("DelegateInvitation", "gateway");
+                    b.ToTable("Delegation", "gateway");
                 });
 
-            modelBuilder.Entity("HealthGateway.Database.Models.DelegateInvitationStatusCode", b =>
+            modelBuilder.Entity("HealthGateway.Database.Models.DelegationStatusCode", b =>
                 {
                     b.Property<string>("Code")
                         .HasMaxLength(50)
@@ -1767,7 +1767,7 @@ namespace HealthGateway.Database.Migrations
 
                     b.HasKey("Code");
 
-                    b.ToTable("DelegateInvitationStatusCode", "gateway");
+                    b.ToTable("DelegationStatusCode", "gateway");
 
                     b.HasData(
                         new
@@ -1775,7 +1775,7 @@ namespace HealthGateway.Database.Migrations
                             Code = "Active",
                             CreatedBy = "System",
                             CreatedDateTime = new DateTime(2019, 5, 1, 7, 0, 0, 0, DateTimeKind.Utc),
-                            Description = "Active Delegate Invitation Status Code",
+                            Description = "Active Delegation Status Code",
                             UpdatedBy = "System",
                             UpdatedDateTime = new DateTime(2019, 5, 1, 7, 0, 0, 0, DateTimeKind.Utc),
                             Version = 0u
@@ -1785,7 +1785,7 @@ namespace HealthGateway.Database.Migrations
                             Code = "AccessExpired",
                             CreatedBy = "System",
                             CreatedDateTime = new DateTime(2019, 5, 1, 7, 0, 0, 0, DateTimeKind.Utc),
-                            Description = "Access Expired Delegate Invitation Status Code",
+                            Description = "Access Expired Delegation Status Code",
                             UpdatedBy = "System",
                             UpdatedDateTime = new DateTime(2019, 5, 1, 7, 0, 0, 0, DateTimeKind.Utc),
                             Version = 0u
@@ -1795,7 +1795,7 @@ namespace HealthGateway.Database.Migrations
                             Code = "Declined",
                             CreatedBy = "System",
                             CreatedDateTime = new DateTime(2019, 5, 1, 7, 0, 0, 0, DateTimeKind.Utc),
-                            Description = "Declined Delegate Invitation Status Code",
+                            Description = "Declined Delegation Status Code",
                             UpdatedBy = "System",
                             UpdatedDateTime = new DateTime(2019, 5, 1, 7, 0, 0, 0, DateTimeKind.Utc),
                             Version = 0u
@@ -1805,7 +1805,7 @@ namespace HealthGateway.Database.Migrations
                             Code = "InviteExpired",
                             CreatedBy = "System",
                             CreatedDateTime = new DateTime(2019, 5, 1, 7, 0, 0, 0, DateTimeKind.Utc),
-                            Description = "Invite Expired Delegate Invitation Status Code",
+                            Description = "Invite Expired Delegation Status Code",
                             UpdatedBy = "System",
                             UpdatedDateTime = new DateTime(2019, 5, 1, 7, 0, 0, 0, DateTimeKind.Utc),
                             Version = 0u
@@ -1815,7 +1815,7 @@ namespace HealthGateway.Database.Migrations
                             Code = "Locked",
                             CreatedBy = "System",
                             CreatedDateTime = new DateTime(2019, 5, 1, 7, 0, 0, 0, DateTimeKind.Utc),
-                            Description = "Locked Delegate Invitation Status Code",
+                            Description = "Locked Delegation Status Code",
                             UpdatedBy = "System",
                             UpdatedDateTime = new DateTime(2019, 5, 1, 7, 0, 0, 0, DateTimeKind.Utc),
                             Version = 0u
@@ -1825,7 +1825,7 @@ namespace HealthGateway.Database.Migrations
                             Code = "Pending",
                             CreatedBy = "System",
                             CreatedDateTime = new DateTime(2019, 5, 1, 7, 0, 0, 0, DateTimeKind.Utc),
-                            Description = "Pending Delegate Invitation Status Code",
+                            Description = "Pending Delegation Status Code",
                             UpdatedBy = "System",
                             UpdatedDateTime = new DateTime(2019, 5, 1, 7, 0, 0, 0, DateTimeKind.Utc),
                             Version = 0u
@@ -4058,16 +4058,16 @@ namespace HealthGateway.Database.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("HealthGateway.Database.Models.DelegateInvitation", b =>
+            modelBuilder.Entity("HealthGateway.Database.Models.Delegation", b =>
                 {
-                    b.HasOne("HealthGateway.Database.Models.DelegateInvitationStatusCode", null)
+                    b.HasOne("HealthGateway.Database.Models.DelegationStatusCode", null)
                         .WithMany()
                         .HasForeignKey("Status")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("HealthGateway.Database.Models.ResourceDelegate", "ResourceDelegate")
-                        .WithMany("DelegateInvitations")
+                        .WithMany("Delegations")
                         .HasForeignKey("ResourceOwnerHdid", "ProfileHdid", "ReasonCode");
 
                     b.Navigation("ResourceDelegate");
@@ -4274,7 +4274,7 @@ namespace HealthGateway.Database.Migrations
 
             modelBuilder.Entity("HealthGateway.Database.Models.ResourceDelegate", b =>
                 {
-                    b.Navigation("DelegateInvitations");
+                    b.Navigation("Delegations");
                 });
 
             modelBuilder.Entity("HealthGateway.Database.Models.UserFeedback", b =>

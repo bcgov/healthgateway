@@ -21,9 +21,9 @@ namespace HealthGateway.GatewayApi.Models
     using HealthGateway.Common.Data.Constants;
 
     /// <summary>
-    /// The CreateDelegateInvitationRequest model.
+    /// The CreateDelegationRequest model.
     /// </summary>
-    public record CreateDelegateInvitationRequest
+    public record CreateDelegationRequest
     {
         /// <summary>
         /// Gets or sets the nickname.

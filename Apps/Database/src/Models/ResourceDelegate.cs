@@ -79,8 +79,8 @@ namespace HealthGateway.Database.Models
         public virtual UserProfile UserProfile { get; set; } = null!;
 
         /// <summary>
-        /// Gets the delegate invitations.
+        /// Gets the delegations.
         /// </summary>
-        public virtual ICollection<DelegateInvitation>? DelegateInvitations { get; } = new List<DelegateInvitation>();
+        public virtual ICollection<Delegation>? Delegations { get; } = new List<Delegation>();
     }
 }

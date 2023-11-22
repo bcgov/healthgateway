@@ -21,12 +21,12 @@ namespace HealthGateway.Database.Models
 
 #pragma warning disable CS1591 // self explanatory simple model
 #pragma warning disable SA1600 // self explanatory simple model
-    public class DelegateInvitationStatusCode : AuditableEntity
+    public class DelegationStatusCode : AuditableEntity
     {
         [Key]
         [Required]
         [MaxLength(50)]
-        public DelegateInvitationStatus Code { get; set; }
+        public DelegationStatus Code { get; set; }
 
         [Required]
         [MaxLength(80)]
