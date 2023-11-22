@@ -38,7 +38,7 @@
         "@fortawesome/vue-fontawesome": "^3.0.3",
         "@types/file-saver": "^2.0.6",
         "@types/luxon": "^3.3.3",
-        "@types/node": "^18.18.8",
+        "@types/node": "^18.18.12",
         "@types/throttle-debounce": "^5.0.1",
         "@types/webfontloader": "^1.6.36",
         "@vitejs/plugin-vue": "^4.4.0",
