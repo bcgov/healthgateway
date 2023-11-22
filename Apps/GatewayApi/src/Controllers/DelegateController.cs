@@ -50,7 +50,7 @@ namespace HealthGateway.GatewayApi.Controllers
         /// </summary>
         /// <returns>The sharing code</returns>
         /// <param name="hdid">The delegator hdid.</param>
-        /// <param name="request">The creat delegation request model.</param>
+        /// <param name="request">The create delegation request model.</param>
         /// <param name="ct">cancellation token.</param>
         /// <response code="200">Returns the sharing code.</response>
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
