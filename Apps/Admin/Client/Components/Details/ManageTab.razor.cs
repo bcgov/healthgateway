@@ -51,9 +51,9 @@ namespace HealthGateway.Admin.Client.Components.Details
 
         private AuthenticationState? AuthenticationState { get; set; }
 
-        private IEnumerable<DataSource> BlockedDataSources => this.PatientDetailsState.Value.BlockedDataSources ?? Enumerable.Empty<DataSource>();
+        private IEnumerable<DataSource> BlockedDataSources => this.PatientDetailsState.Value.BlockedDataSources ?? [];
 
-        private IEnumerable<PatientSupportDependentInfo> Dependents => this.PatientDetailsState.Value.Dependents ?? Enumerable.Empty<PatientSupportDependentInfo>();
+        private IEnumerable<PatientSupportDependentInfo> Dependents => this.PatientDetailsState.Value.Dependents ?? [];
 
         private PatientSupportResult? Patient =>
             this.PatientSupportState.Value.Result?.SingleOrDefault(x => x.PersonalHealthNumber == this.Phn);

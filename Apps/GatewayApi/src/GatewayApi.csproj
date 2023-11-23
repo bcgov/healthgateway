@@ -8,9 +8,9 @@
     </PropertyGroup>
     <PropertyGroup Condition=" '$(RunConfiguration)' == 'GatewayApi' " />
     <ItemGroup>
-        <PackageReference Include="libphonenumber-csharp" Version="8.13.24" />
+        <PackageReference Include="libphonenumber-csharp" Version="8.13.25" />
         <PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="6.0.0" />
-        <PackageReference Include="Microsoft.Extensions.Http" Version="7.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.0" />
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="..\..\AccountDataAccess\src\AccountDataAccess.csproj" />

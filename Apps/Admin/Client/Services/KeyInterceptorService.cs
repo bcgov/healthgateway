@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,33 +22,23 @@ namespace HealthGateway.Admin.Client.Services
     using MudBlazor.Services;
 
     /// <inheritdoc/>
-    public class KeyInterceptorService : IKeyInterceptorService
+    /// <param name="keyInterceptorFactory">Injected key interceptor factory.</param>
+    public class KeyInterceptorService(IKeyInterceptorFactory keyInterceptorFactory) : IKeyInterceptorService
     {
-        private readonly IList<IKeyInterceptor> keyInterceptors = new List<IKeyInterceptor>();
+        private readonly List<IKeyInterceptor> keyInterceptors = [];
         private bool isDisposed;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="KeyInterceptorService"/> class.
-        /// </summary>
-        /// <param name="keyInterceptorFactory">Injected key interceptor factory.</param>
-        public KeyInterceptorService(IKeyInterceptorFactory keyInterceptorFactory)
-        {
-            this.KeyInterceptorFactory = keyInterceptorFactory;
-        }
-
-        private IKeyInterceptorFactory KeyInterceptorFactory { get; }
 
         /// <inheritdoc/>
         public async Task RegisterOnKeyDownAsync(string ancestorId, string targetClass, string key, Func<KeyboardEventArgs, Task> callback)
         {
-            IKeyInterceptor keyInterceptor = this.KeyInterceptorFactory.Create();
+            IKeyInterceptor keyInterceptor = keyInterceptorFactory.Create();
 
             await keyInterceptor.Connect(
                 ancestorId,
                 new()
                 {
                     TargetClass = targetClass,
-                    Keys = new List<KeyOptions> { new() { Key = key, PreventDown = "key+none", SubscribeDown = true } },
+                    Keys = [new() { Key = key, PreventDown = "key+none", SubscribeDown = true }],
                 });
 
             keyInterceptor.KeyDown += async args => await callback(args);

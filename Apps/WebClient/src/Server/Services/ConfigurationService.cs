@@ -28,6 +28,7 @@ namespace HealthGateway.WebClient.Server.Services
     /// </summary>
     public class ConfigurationService : IConfigurationService
     {
+        private static readonly JsonSerializerOptions SerializerOptions = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
         private readonly ExternalConfiguration config;
         private readonly ILogger logger;
         private readonly MobileConfiguration mobileConfig;
@@ -47,7 +48,7 @@ namespace HealthGateway.WebClient.Server.Services
                 string fileContent = File.ReadAllText(this.config.WebClient.FeatureToggleFilePath);
                 this.config.WebClient.FeatureToggleConfiguration = JsonSerializer.Deserialize<FeatureToggleConfiguration>(
                     fileContent,
-                    new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                    SerializerOptions);
             }
 
             this.mobileConfig = configuration.GetSection("MobileConfiguration").Get<MobileConfiguration>() ?? new();

@@ -33,87 +33,68 @@ namespace HealthGateway.Admin.Server.Services
     using HealthGateway.Database.Wrapper;
 
     /// <inheritdoc/>
-    public class CsvExportService : ICsvExportService
+    /// <param name="noteDelegate">The note delegate to interact with the DB.</param>
+    /// <param name="userProfileDelegate">The user profile delegate to interact with the DB.</param>
+    /// <param name="commentDelegate">The comment delegate to interact with the DB.</param>
+    /// <param name="ratingDelegate">The rating delegate to interact with the DB.</param>
+    /// <param name="inactiveUserService">The inactive user service to get match db and keycloak inactive users.</param>
+    /// <param name="feedbackDelegate">The feedback delegate to interact with the DB.</param>
+    public class CsvExportService(
+        INoteDelegate noteDelegate,
+        IUserProfileDelegate userProfileDelegate,
+        ICommentDelegate commentDelegate,
+        IRatingDelegate ratingDelegate,
+        IInactiveUserService inactiveUserService,
+        IFeedbackDelegate feedbackDelegate) : ICsvExportService
     {
         private const int PageSize = 100000;
         private const int Page = 0;
-        private readonly ICommentDelegate commentDelegate;
-        private readonly IFeedbackDelegate feedbackDelegate;
-        private readonly IInactiveUserService inactiveUserService;
-        private readonly INoteDelegate noteDelegate;
-        private readonly IRatingDelegate ratingDelegate;
-        private readonly IUserProfileDelegate userProfileDelegate;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="CsvExportService"/> class.
-        /// </summary>
-        /// <param name="noteDelegate">The note delegate to interact with the DB.</param>
-        /// <param name="userProfileDelegate">The user profile delegate to interact with the DB.</param>
-        /// <param name="commentDelegate">The comment delegate to interact with the DB.</param>
-        /// <param name="ratingDelegate">The rating delegate to interact with the DB.</param>
-        /// <param name="inactiveUserService">The inactive user service to get match db and keycloak inactive users.</param>
-        /// <param name="feedbackDelegate">The feedback delegate to interact with the DB.</param>
-        public CsvExportService(
-            INoteDelegate noteDelegate,
-            IUserProfileDelegate userProfileDelegate,
-            ICommentDelegate commentDelegate,
-            IRatingDelegate ratingDelegate,
-            IInactiveUserService inactiveUserService,
-            IFeedbackDelegate feedbackDelegate)
-        {
-            this.noteDelegate = noteDelegate;
-            this.userProfileDelegate = userProfileDelegate;
-            this.commentDelegate = commentDelegate;
-            this.ratingDelegate = ratingDelegate;
-            this.inactiveUserService = inactiveUserService;
-            this.feedbackDelegate = feedbackDelegate;
-        }
 
         /// <inheritdoc/>
         public Stream GetComments(DateTime? startDate, DateTime? endDate)
         {
-            DbResult<IEnumerable<Comment>> comments = this.commentDelegate.GetAll(Page, PageSize);
+            DbResult<IEnumerable<Comment>> comments = commentDelegate.GetAll(Page, PageSize);
             return GetStream<Comment, CommentCsvMap>(comments.Payload);
         }
 
         /// <inheritdoc/>
         public Stream GetNotes(DateTime? startDate, DateTime? endDate)
         {
-            DbResult<IEnumerable<Note>> notes = this.noteDelegate.GetAll(Page, PageSize);
+            DbResult<IEnumerable<Note>> notes = noteDelegate.GetAll(Page, PageSize);
             return GetStream<Note, NoteCsvMap>(notes.Payload);
         }
 
         /// <inheritdoc/>
         public Stream GetUserProfiles(DateTime? startDate, DateTime? endDate)
         {
-            DbResult<IEnumerable<UserProfile>> profiles = this.userProfileDelegate.GetAll(Page, PageSize);
+            DbResult<IEnumerable<UserProfile>> profiles = userProfileDelegate.GetAll(Page, PageSize);
             return GetStream<UserProfile, UserProfileCsvMap>(profiles.Payload);
         }
 
         /// <inheritdoc/>
         public Stream GetRatings(DateTime? startDate, DateTime? endDate)
         {
-            DbResult<IEnumerable<Rating>> profiles = this.ratingDelegate.GetAll(Page, PageSize);
+            DbResult<IEnumerable<Rating>> profiles = ratingDelegate.GetAll(Page, PageSize);
             return GetStream<Rating, UserProfileCsvMap>(profiles.Payload);
         }
 
         /// <inheritdoc/>
         public async Task<Stream> GetInactiveUsers(int inactiveDays, int timeOffset)
         {
-            RequestResult<List<AdminUserProfileView>> inactiveUsersResult = await this.inactiveUserService.GetInactiveUsers(inactiveDays, timeOffset).ConfigureAwait(true);
+            RequestResult<List<AdminUserProfileView>> inactiveUsersResult = await inactiveUserService.GetInactiveUsers(inactiveDays, timeOffset).ConfigureAwait(true);
 
             if (inactiveUsersResult.ResultStatus == ResultType.Success)
             {
                 return GetStream<AdminUserProfileView, AdminUserProfileViewCsvMap>(inactiveUsersResult.ResourcePayload);
             }
 
-            return GetStream<AdminUserProfileView, AdminUserProfileViewCsvMap>(new List<AdminUserProfileView>());
+            return GetStream<AdminUserProfileView, AdminUserProfileViewCsvMap>([]);
         }
 
         /// <inheritdoc/>
         public Stream GetUserFeedback()
         {
-            DbResult<IList<UserFeedback>> feedback = this.feedbackDelegate.GetAllUserFeedbackEntries(true);
+            DbResult<IList<UserFeedback>> feedback = feedbackDelegate.GetAllUserFeedbackEntries(true);
             return GetStream<UserFeedback, UserFeedbackCsvMap>(feedback.Payload);
         }
 
@@ -124,7 +105,7 @@ namespace HealthGateway.Admin.Server.Services
             DateTimeOffset startDateOffset = new(startDateLocal.ToDateTime(TimeOnly.MinValue), offsetSpan);
             DateTimeOffset endDateOffset = new(endDateLocal.ToDateTime(TimeOnly.MaxValue), offsetSpan);
 
-            IDictionary<string, int> yobCounts = await this.userProfileDelegate.GetLoggedInUserYearOfBirthCountsAsync(startDateOffset, endDateOffset, ct);
+            IDictionary<string, int> yobCounts = await userProfileDelegate.GetLoggedInUserYearOfBirthCountsAsync(startDateOffset, endDateOffset, ct);
 
             MemoryStream stream = new();
             await using StreamWriter writer = new(stream, leaveOpen: true);

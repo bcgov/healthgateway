@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <IsPackable>false</IsPackable>
@@ -15,13 +15,13 @@
             <PrivateAssets>all</PrivateAssets>
         </PackageReference>
         <PackageReference Include="DeepEqual" Version="4.2.1" />
-        <PackageReference Include="Microsoft.AspNetCore.Cryptography.KeyDerivation" Version="7.0.13" />
+        <PackageReference Include="Microsoft.AspNetCore.Cryptography.KeyDerivation" Version="8.0.0" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
         <PackageReference Include="Moq" Version="4.18.4" />
         <PackageReference Include="Testcontainers" Version="3.6.0" />
         <PackageReference Include="Testcontainers.Redis" Version="3.6.0" />
-        <PackageReference Include="xunit" Version="2.6.1" />
-        <PackageReference Include="xunit.runner.visualstudio" Version="2.5.3">
+        <PackageReference Include="xunit" Version="2.6.2" />
+        <PackageReference Include="xunit.runner.visualstudio" Version="2.5.4">
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
             <PrivateAssets>all</PrivateAssets>
         </PackageReference>

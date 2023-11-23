@@ -33,27 +33,15 @@ namespace HealthGateway.Admin.Server.Controllers
     /// <summary>
     /// Web API to handle user support requests.
     /// </summary>
+    /// <param name="covidSupportService">The injected covid support service.</param>
+    /// <param name="supportService">The injected support service.</param>
     [ApiController]
     [ApiVersion("1.0")]
     [Route("v{version:apiVersion}/api/[controller]")]
     [Produces("application/json")]
     [Authorize(Roles = "AdminUser,AdminReviewer,SupportUser")]
-    public class SupportController : ControllerBase
+    public class SupportController(ICovidSupportService covidSupportService, ISupportService supportService) : ControllerBase
     {
-        private readonly ICovidSupportService covidSupportService;
-        private readonly ISupportService supportService;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SupportController"/> class.
-        /// </summary>
-        /// <param name="covidSupportService">The injected covid support service.</param>
-        /// <param name="supportService">The injected support service.</param>
-        public SupportController(ICovidSupportService covidSupportService, ISupportService supportService)
-        {
-            this.covidSupportService = covidSupportService;
-            this.supportService = supportService;
-        }
-
         /// <summary>
         /// Retrieves the collection of patients that match the query.
         /// </summary>
@@ -78,7 +66,7 @@ namespace HealthGateway.Admin.Server.Controllers
         [ProducesResponseType(StatusCodes.Status502BadGateway, Type = typeof(ProblemDetails))]
         public async Task<IEnumerable<PatientSupportResult>> GetPatients([FromQuery] PatientQueryType queryType, [FromQuery] string queryString, CancellationToken ct)
         {
-            return await this.supportService.GetPatientsAsync(queryType, queryString, ct).ConfigureAwait(true);
+            return await supportService.GetPatientsAsync(queryType, queryString, ct).ConfigureAwait(true);
         }
 
         /// <summary>
@@ -112,7 +100,7 @@ namespace HealthGateway.Admin.Server.Controllers
             bool userIsReviewer = user.IsInRole("AdminReviewer");
             bool userIsSupport = user.IsInRole("SupportUser");
 
-            return await this.supportService.GetPatientSupportDetailsAsync(
+            return await supportService.GetPatientSupportDetailsAsync(
                 new PatientSupportDetailsQuery
                 {
                     QueryType = queryType,
@@ -133,7 +121,7 @@ namespace HealthGateway.Admin.Server.Controllers
         /// <param name="hdid">The hdid belonging to the data sources to block.</param>
         /// <param name="request">The request object containing data sources to block.</param>
         /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
-        /// <response code="200">The dependent is protected.</response>
+        /// <response code="200">Data source access has been updated.</response>
         /// <response code="401">The client must authenticate itself to get the requested resource.</response>
         [HttpPut]
         [Route("{hdid}/BlockAccess")]
@@ -142,14 +130,14 @@ namespace HealthGateway.Admin.Server.Controllers
         [Authorize(Roles = "AdminUser")]
         public async Task BlockAccess(string hdid, BlockAccessRequest request)
         {
-            await this.supportService.BlockAccessAsync(hdid, request.DataSources, request.Reason).ConfigureAwait(true);
+            await supportService.BlockAccessAsync(hdid, request.DataSources, request.Reason).ConfigureAwait(true);
         }
 
         /// <summary>
         /// Triggers the process to physically mail the Vaccine Card document.
         /// </summary>
-        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         /// <param name="request">The mail document request.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         /// <response code="200">The vaccine proof request could be submitted successfully.</response>
         /// <response code="400">The vaccine proof request could not be submitted successfully.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
@@ -162,14 +150,14 @@ namespace HealthGateway.Admin.Server.Controllers
         [Route("Patient/Document")]
         public async Task MailVaccineCard([FromBody] MailDocumentRequest request)
         {
-            await this.covidSupportService.MailVaccineCardAsync(request).ConfigureAwait(true);
+            await covidSupportService.MailVaccineCardAsync(request).ConfigureAwait(true);
         }
 
         /// <summary>
         /// Gets the COVID-19 Vaccine Record document that includes the Vaccine Card and Vaccination History.
         /// </summary>
-        /// <returns>The encoded immunization document.</returns>
         /// <param name="phn">The personal health number that matches the document to retrieve.</param>
+        /// <returns>The encoded immunization document.</returns>
         /// <response code="200">The request to retrieve the encoded immunization document was successful.</response>
         /// <response code="400">The request could not be submitted successfully.</response>
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
@@ -181,15 +169,15 @@ namespace HealthGateway.Admin.Server.Controllers
         [Route("Patient/Document")]
         public async Task<ReportModel> RetrieveVaccineRecord([FromQuery] string phn)
         {
-            return await this.covidSupportService.RetrieveVaccineRecordAsync(phn).ConfigureAwait(true);
+            return await covidSupportService.RetrieveVaccineRecordAsync(phn).ConfigureAwait(true);
         }
 
         /// <summary>
         /// Submitting a completed anti viral screening form.
         /// </summary>
         /// <param name="request">The covid therapy assessment request to use for submission.</param>
-        /// <returns>A CovidAssessmentResponse object.</returns>
-        /// <response code="200">The covid assessment request was submitted.</response>
+        /// <returns>A covid therapy assessment response.</returns>
+        /// <response code="200">Returns a covid therapy assessment response.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
         /// <response code="403">
         /// The client does not have access rights to the content; that is, it is unauthorized, so the server
@@ -202,7 +190,7 @@ namespace HealthGateway.Admin.Server.Controllers
         [Authorize(Roles = "SupportUser,AdminUser")]
         public async Task<CovidAssessmentResponse> SubmitCovidAssessment([FromBody] CovidAssessmentRequest request)
         {
-            return await this.covidSupportService.SubmitCovidAssessmentAsync(request).ConfigureAwait(true);
+            return await covidSupportService.SubmitCovidAssessmentAsync(request).ConfigureAwait(true);
         }
     }
 }

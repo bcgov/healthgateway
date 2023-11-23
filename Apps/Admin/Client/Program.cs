@@ -145,7 +145,7 @@ namespace HealthGateway.Admin.Client
         private static DelegatingHandler ConfigureAuthorization(IServiceProvider serviceProvider, string address)
         {
             return serviceProvider.GetRequiredService<AuthorizationMessageHandler>()
-                .ConfigureHandler(new[] { address });
+                .ConfigureHandler([address]);
         }
     }
 }

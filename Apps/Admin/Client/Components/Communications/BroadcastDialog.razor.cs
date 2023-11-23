@@ -40,12 +40,12 @@ public partial class BroadcastDialog : FluxorComponent
     [Parameter]
     public Broadcast Broadcast { get; set; } = default!;
 
-    private static List<BroadcastActionType> ActionTypes => new()
-    {
+    private static List<BroadcastActionType> ActionTypes =>
+    [
         BroadcastActionType.None,
         BroadcastActionType.InternalLink,
         BroadcastActionType.ExternalLink,
-    };
+    ];
 
     private Func<string, string?> ValidateActionUrl =>
         urlString =>

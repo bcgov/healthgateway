@@ -29,7 +29,6 @@ namespace HealthGateway.Admin.Server.Services
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.ErrorHandling;
     using HealthGateway.Common.Data.Utils;
-    using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using Refit;
 
@@ -50,18 +49,15 @@ namespace HealthGateway.Admin.Server.Services
         /// </summary>
         /// <param name="authDelegate">The OAuth2 authentication service.</param>
         /// <param name="keycloakAdminApi">The keycloak api to access identity access.</param>
-        /// <param name="configuration">The configuration to use.</param>
         /// <param name="logger">Injected Logger Provider.</param>
         public AgentAccessService(
             IAuthenticationDelegate authDelegate,
             IKeycloakAdminApi keycloakAdminApi,
-            ILogger<AgentAccessService> logger,
-            IConfiguration configuration)
+            ILogger<AgentAccessService> logger)
         {
             this.authDelegate = authDelegate;
             this.keycloakAdminApi = keycloakAdminApi;
             this.logger = logger;
-            _ = configuration;
             (this.tokenUri, this.tokenRequest) = this.authDelegate.GetClientCredentialsAuth(AuthConfigSectionName);
         }
 
@@ -129,7 +125,7 @@ namespace HealthGateway.Admin.Server.Services
             JwtModel jwtModel = this.authDelegate.AuthenticateAsSystem(this.tokenUri, this.tokenRequest);
             List<UserRepresentation> users = await this.keycloakAdminApi.GetUsersSearchAsync(searchString, firstRecord, resultLimit.GetValueOrDefault(), jwtModel.AccessToken).ConfigureAwait(true);
 
-            List<AdminAgent> adminAgents = new();
+            List<AdminAgent> adminAgents = [];
             foreach (UserRepresentation user in users)
             {
                 string[] splitString = user.Username.Split('@');
@@ -182,12 +178,12 @@ namespace HealthGateway.Admin.Server.Services
                 .Where(r => userRoles.TrueForAll(userRole => userRole.Id != r.Id))
                 .ToList();
 
-            if (rolesToDelete.Any())
+            if (rolesToDelete.Count > 0)
             {
                 await this.keycloakAdminApi.DeleteUserRolesAsync(agent.Id, rolesToDelete, jwtModel.AccessToken).ConfigureAwait(true);
             }
 
-            if (rolesToAdd.Any())
+            if (rolesToAdd.Count > 0)
             {
                 await this.keycloakAdminApi.AddUserRolesAsync(agent.Id, rolesToAdd, jwtModel.AccessToken).ConfigureAwait(true);
             }

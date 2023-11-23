@@ -17,7 +17,7 @@ steps:
     condition: eq(variables['EnableAzure'], True)
     inputs:
       packageType: sdk
-      version: 7.x
+      version: 8.x
       installationPath: $(Agent.ToolsDirectory)/dotnet
     
   - task: Cache@2

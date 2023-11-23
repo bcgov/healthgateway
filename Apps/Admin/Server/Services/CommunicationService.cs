@@ -27,37 +27,23 @@ namespace HealthGateway.Admin.Server.Services
     using Microsoft.Extensions.Logging;
 
     /// <inheritdoc/>
-    public class CommunicationService : ICommunicationService
+    /// <param name="logger">Injected Logger Provider.</param>
+    /// <param name="communicationDelegate">The communication delegate to interact with the DB.</param>
+    /// <param name="autoMapper">The inject automapper provider.</param>
+    public class CommunicationService(ILogger<CommunicationService> logger, ICommunicationDelegate communicationDelegate, IMapper autoMapper) : ICommunicationService
     {
-        private readonly IMapper autoMapper;
-        private readonly ICommunicationDelegate communicationDelegate;
-        private readonly ILogger logger;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="CommunicationService"/> class.
-        /// </summary>
-        /// <param name="logger">Injected Logger Provider.</param>
-        /// <param name="communicationDelegate">The communication delegate to interact with the DB.</param>
-        /// <param name="autoMapper">The inject automapper provider.</param>
-        public CommunicationService(ILogger<CommunicationService> logger, ICommunicationDelegate communicationDelegate, IMapper autoMapper)
-        {
-            this.logger = logger;
-            this.communicationDelegate = communicationDelegate;
-            this.autoMapper = autoMapper;
-        }
-
         /// <inheritdoc/>
         public RequestResult<Communication> Add(Communication communication)
         {
-            this.logger.LogTrace("Communication received: {Id)}", communication.Id.ToString());
+            logger.LogTrace("Communication received: {Id)}", communication.Id.ToString());
 
             if (communication.EffectiveDateTime < communication.ExpiryDateTime)
             {
-                this.logger.LogTrace("Adding communication... {Id)}", communication.Id.ToString());
-                DbResult<Database.Models.Communication> dbResult = this.communicationDelegate.Add(this.autoMapper.Map<Database.Models.Communication>(communication));
+                logger.LogTrace("Adding communication... {Id)}", communication.Id.ToString());
+                DbResult<Database.Models.Communication> dbResult = communicationDelegate.Add(autoMapper.Map<Database.Models.Communication>(communication));
                 return new RequestResult<Communication>
                 {
-                    ResourcePayload = this.autoMapper.Map<Communication>(dbResult.Payload),
+                    ResourcePayload = autoMapper.Map<Communication>(dbResult.Payload),
                     ResultStatus = dbResult.Status == DbStatusCode.Created ? ResultType.Success : ResultType.Error,
                     ResultError = dbResult.Status == DbStatusCode.Created
                         ? null
@@ -86,12 +72,12 @@ namespace HealthGateway.Admin.Server.Services
         {
             if (communication.EffectiveDateTime < communication.ExpiryDateTime)
             {
-                this.logger.LogTrace("Updating communication... {Id)}", communication.Id.ToString());
+                logger.LogTrace("Updating communication... {Id)}", communication.Id.ToString());
 
-                DbResult<Database.Models.Communication> dbResult = this.communicationDelegate.Update(this.autoMapper.Map<Database.Models.Communication>(communication));
+                DbResult<Database.Models.Communication> dbResult = communicationDelegate.Update(autoMapper.Map<Database.Models.Communication>(communication));
                 return new RequestResult<Communication>
                 {
-                    ResourcePayload = this.autoMapper.Map<Communication>(dbResult.Payload),
+                    ResourcePayload = autoMapper.Map<Communication>(dbResult.Payload),
                     ResultStatus = dbResult.Status == DbStatusCode.Updated ? ResultType.Success : ResultType.Error,
                     ResultError = dbResult.Status == DbStatusCode.Updated
                         ? null
@@ -118,11 +104,11 @@ namespace HealthGateway.Admin.Server.Services
         /// <inheritdoc/>
         public RequestResult<IEnumerable<Communication>> GetAll()
         {
-            this.logger.LogTrace("Getting communication entries...");
-            DbResult<IEnumerable<Database.Models.Communication>> dbResult = this.communicationDelegate.GetAll();
+            logger.LogTrace("Getting communication entries...");
+            DbResult<IEnumerable<Database.Models.Communication>> dbResult = communicationDelegate.GetAll();
             RequestResult<IEnumerable<Communication>> requestResult = new()
             {
-                ResourcePayload = this.autoMapper.Map<IEnumerable<Communication>>(dbResult.Payload),
+                ResourcePayload = autoMapper.Map<IEnumerable<Communication>>(dbResult.Payload),
                 ResultStatus = dbResult.Status == DbStatusCode.Read ? ResultType.Success : ResultType.Error,
                 ResultError = dbResult.Status == DbStatusCode.Read
                     ? null
@@ -140,7 +126,7 @@ namespace HealthGateway.Admin.Server.Services
         {
             if (communication.CommunicationStatusCode == CommunicationStatus.Processed)
             {
-                this.logger.LogError("Processed communication can't be deleted");
+                logger.LogError("Processed communication can't be deleted");
                 return new RequestResult<Communication>
                 {
                     ResultStatus = ResultType.Error,
@@ -152,10 +138,10 @@ namespace HealthGateway.Admin.Server.Services
                 };
             }
 
-            DbResult<Database.Models.Communication> dbResult = this.communicationDelegate.Delete(this.autoMapper.Map<Database.Models.Communication>(communication));
+            DbResult<Database.Models.Communication> dbResult = communicationDelegate.Delete(autoMapper.Map<Database.Models.Communication>(communication));
             RequestResult<Communication> result = new()
             {
-                ResourcePayload = this.autoMapper.Map<Communication>(dbResult.Payload),
+                ResourcePayload = autoMapper.Map<Communication>(dbResult.Payload),
                 ResultStatus = dbResult.Status == DbStatusCode.Deleted ? ResultType.Success : ResultType.Error,
                 ResultError = dbResult.Status == DbStatusCode.Deleted
                     ? null

@@ -31,49 +31,31 @@ namespace HealthGateway.Admin.Server.Services
     using Microsoft.Extensions.Logging;
 
     /// <inheritdoc/>
-    public class UserFeedbackService : IUserFeedbackService
+    /// <param name="logger">Injected Logger Provider.</param>
+    /// <param name="feedbackDelegate">The feedback delegate to interact with the DB.</param>
+    /// <param name="adminTagDelegate">The admin tag delegate to interact with the DB.</param>
+    /// <param name="userProfileDelegate">The user profile delegate to interact with the DB.</param>
+    /// <param name="autoMapper">The injected automapper provider.</param>
+    public class UserFeedbackService(
+        ILogger<UserFeedbackService> logger,
+        IFeedbackDelegate feedbackDelegate,
+        IAdminTagDelegate adminTagDelegate,
+        IUserProfileDelegate userProfileDelegate,
+        IMapper autoMapper) : IUserFeedbackService
     {
-        private readonly IAdminTagDelegate adminTagDelegate;
-        private readonly IMapper autoMapper;
-        private readonly IFeedbackDelegate feedbackDelegate;
-        private readonly ILogger logger;
-        private readonly IUserProfileDelegate userProfileDelegate;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="UserFeedbackService"/> class.
-        /// </summary>
-        /// <param name="logger">Injected Logger Provider.</param>
-        /// <param name="feedbackDelegate">The feedback delegate to interact with the DB.</param>
-        /// <param name="adminTagDelegate">The admin tag delegate to interact with the DB.</param>
-        /// <param name="userProfileDelegate">The user profile delegate to interact with the DB.</param>
-        /// <param name="autoMapper">The injected automapper provider.</param>
-        public UserFeedbackService(
-            ILogger<UserFeedbackService> logger,
-            IFeedbackDelegate feedbackDelegate,
-            IAdminTagDelegate adminTagDelegate,
-            IUserProfileDelegate userProfileDelegate,
-            IMapper autoMapper)
-        {
-            this.logger = logger;
-            this.feedbackDelegate = feedbackDelegate;
-            this.adminTagDelegate = adminTagDelegate;
-            this.userProfileDelegate = userProfileDelegate;
-            this.autoMapper = autoMapper;
-        }
-
         /// <inheritdoc/>
         public RequestResult<IList<UserFeedbackView>> GetUserFeedback()
         {
-            this.logger.LogTrace("Retrieving user feedback...");
-            DbResult<IList<UserFeedback>> userFeedbackResult = this.feedbackDelegate.GetAllUserFeedbackEntries();
+            logger.LogTrace("Retrieving user feedback...");
+            DbResult<IList<UserFeedback>> userFeedbackResult = feedbackDelegate.GetAllUserFeedbackEntries();
 
-            this.logger.LogTrace("Retrieving user emails...");
+            logger.LogTrace("Retrieving user emails...");
             List<string> hdids = userFeedbackResult.Payload
                 .Where(f => f.UserProfileId != null)
                 .Select(f => f.UserProfileId!)
                 .Distinct()
                 .ToList();
-            DbResult<List<UserProfile>> userProfileResult = this.userProfileDelegate.GetUserProfiles(hdids);
+            DbResult<List<UserProfile>> userProfileResult = userProfileDelegate.GetUserProfiles(hdids);
             Dictionary<string, string?> profileEmails = userProfileResult.Payload.ToDictionary(p => p.HdId, p => p.Email);
 
             RequestResult<IList<UserFeedbackView>> result = new()
@@ -88,7 +70,7 @@ namespace HealthGateway.Admin.Server.Services
                                 email = value ?? string.Empty;
                             }
 
-                            return UserFeedbackMapUtils.ToUiModel(p, email, this.autoMapper);
+                            return UserFeedbackMapUtils.ToUiModel(p, email, autoMapper);
                         })
                     .ToList(),
                 ResultStatus = ResultType.Success,
@@ -101,20 +83,20 @@ namespace HealthGateway.Admin.Server.Services
         /// <inheritdoc/>
         public RequestResult<UserFeedbackView> UpdateFeedbackReview(UserFeedbackView feedback)
         {
-            this.logger.LogTrace("Updating user feedback...");
+            logger.LogTrace("Updating user feedback...");
 
             RequestResult<UserFeedbackView> result = new()
             {
                 ResultStatus = ResultType.Error,
             };
 
-            this.feedbackDelegate.UpdateUserFeedback(this.autoMapper.Map<UserFeedback>(feedback));
+            feedbackDelegate.UpdateUserFeedback(autoMapper.Map<UserFeedback>(feedback));
 
-            DbResult<UserFeedback> userFeedbackResult = this.feedbackDelegate.GetUserFeedbackWithFeedbackTags(feedback.Id);
+            DbResult<UserFeedback> userFeedbackResult = feedbackDelegate.GetUserFeedbackWithFeedbackTags(feedback.Id);
             if (userFeedbackResult.Status == DbStatusCode.Read)
             {
                 string email = this.GetUserEmail(userFeedbackResult.Payload.UserProfileId);
-                result.ResourcePayload = UserFeedbackMapUtils.ToUiModel(userFeedbackResult.Payload, email, this.autoMapper);
+                result.ResourcePayload = UserFeedbackMapUtils.ToUiModel(userFeedbackResult.Payload, email, autoMapper);
                 result.ResultStatus = ResultType.Success;
             }
 
@@ -124,11 +106,11 @@ namespace HealthGateway.Admin.Server.Services
         /// <inheritdoc/>
         public RequestResult<IList<AdminTagView>> GetAllTags()
         {
-            this.logger.LogTrace("Retrieving admin tags");
-            DbResult<IEnumerable<AdminTag>> adminTags = this.adminTagDelegate.GetAll();
+            logger.LogTrace("Retrieving admin tags");
+            DbResult<IEnumerable<AdminTag>> adminTags = adminTagDelegate.GetAll();
 
-            this.logger.LogDebug("Finished retrieving admin tags");
-            IList<AdminTagView> adminTagViews = this.autoMapper.Map<IList<AdminTagView>>(adminTags.Payload);
+            logger.LogDebug("Finished retrieving admin tags");
+            IList<AdminTagView> adminTagViews = autoMapper.Map<IList<AdminTagView>>(adminTags.Payload);
             return new RequestResult<IList<AdminTagView>>
             {
                 ResourcePayload = adminTagViews,
@@ -145,12 +127,12 @@ namespace HealthGateway.Admin.Server.Services
                 ResultStatus = ResultType.Error,
             };
 
-            this.logger.LogTrace("Creating new admin tag... {TagName}", tagName);
-            DbResult<AdminTag> tagResult = this.adminTagDelegate.Add(new() { Name = tagName });
+            logger.LogTrace("Creating new admin tag... {TagName}", tagName);
+            DbResult<AdminTag> tagResult = adminTagDelegate.Add(new() { Name = tagName });
             if (tagResult.Status == DbStatusCode.Created)
             {
                 retVal.ResultStatus = ResultType.Success;
-                retVal.ResourcePayload = this.autoMapper.Map<AdminTagView>(tagResult.Payload);
+                retVal.ResourcePayload = autoMapper.Map<AdminTagView>(tagResult.Payload);
             }
             else
             {
@@ -168,12 +150,12 @@ namespace HealthGateway.Admin.Server.Services
                 ResultStatus = ResultType.Error,
             };
 
-            this.logger.LogTrace("Deleting admin tag... {TagName}", tag.Name);
-            DbResult<AdminTag> tagResult = this.adminTagDelegate.Delete(this.autoMapper.Map<AdminTag>(tag));
+            logger.LogTrace("Deleting admin tag... {TagName}", tag.Name);
+            DbResult<AdminTag> tagResult = adminTagDelegate.Delete(autoMapper.Map<AdminTag>(tag));
             if (tagResult.Status == DbStatusCode.Deleted)
             {
                 retVal.ResultStatus = ResultType.Success;
-                retVal.ResourcePayload = this.autoMapper.Map<AdminTagView>(tagResult.Payload);
+                retVal.ResourcePayload = autoMapper.Map<AdminTagView>(tagResult.Payload);
             }
             else
             {
@@ -186,15 +168,15 @@ namespace HealthGateway.Admin.Server.Services
         /// <inheritdoc/>
         public RequestResult<UserFeedbackView> AssociateFeedbackTags(Guid userFeedbackId, IList<Guid> adminTagIds)
         {
-            this.logger.LogTrace("Adding admin tags {AdminTagIds} to feedback {Feedback}", adminTagIds, userFeedbackId.ToString());
+            logger.LogTrace("Adding admin tags {AdminTagIds} to feedback {Feedback}", adminTagIds, userFeedbackId.ToString());
 
             RequestResult<UserFeedbackView> result = new()
             {
                 ResultStatus = ResultType.Error,
             };
 
-            DbResult<UserFeedback> userFeedbackResult = this.feedbackDelegate.GetUserFeedbackWithFeedbackTags(userFeedbackId);
-            DbResult<IEnumerable<AdminTag>> adminTagResult = this.adminTagDelegate.GetAdminTags(adminTagIds);
+            DbResult<UserFeedback> userFeedbackResult = feedbackDelegate.GetUserFeedbackWithFeedbackTags(userFeedbackId);
+            DbResult<IEnumerable<AdminTag>> adminTagResult = adminTagDelegate.GetAdminTags(adminTagIds);
 
             if (userFeedbackResult.Status == DbStatusCode.Read && adminTagResult.Status == DbStatusCode.Read)
             {
@@ -206,18 +188,18 @@ namespace HealthGateway.Admin.Server.Services
                 foreach (UserFeedbackTag userFeedbackTag in feedbackTags)
                 {
                     userFeedback.Tags.Add(userFeedbackTag);
-                    this.logger.LogDebug(
+                    logger.LogDebug(
                         "User feedback tag added for admin tag id: {AdminTagId} and user feedback id: {FeedbackTagExists}",
                         userFeedbackTag.AdminTagId,
                         userFeedbackTag.UserFeedbackId);
                 }
 
-                DbResult<UserFeedback> savedUserFeedbackResult = this.feedbackDelegate.UpdateUserFeedbackWithTagAssociations(userFeedback);
+                DbResult<UserFeedback> savedUserFeedbackResult = feedbackDelegate.UpdateUserFeedbackWithTagAssociations(userFeedback);
 
                 if (savedUserFeedbackResult.Status == DbStatusCode.Updated)
                 {
                     string email = this.GetUserEmail(userFeedback.UserProfileId);
-                    result.ResourcePayload = UserFeedbackMapUtils.ToUiModel(userFeedback, email, this.autoMapper);
+                    result.ResourcePayload = UserFeedbackMapUtils.ToUiModel(userFeedback, email, autoMapper);
                     result.ResultStatus = ResultType.Success;
                 }
                 else
@@ -244,7 +226,7 @@ namespace HealthGateway.Admin.Server.Services
             string email = string.Empty;
             if (hdid != null)
             {
-                DbResult<UserProfile> userProfileResult = this.userProfileDelegate.GetUserProfile(hdid);
+                DbResult<UserProfile> userProfileResult = userProfileDelegate.GetUserProfile(hdid);
                 if (userProfileResult.Status == DbStatusCode.Read)
                 {
                     email = userProfileResult.Payload.Email ?? string.Empty;

@@ -67,8 +67,8 @@ namespace HealthGateway.Admin.Client.Pages
         private IJSRuntime JsRuntime { get; set; } = default!;
 
         private List<PatientQueryType> QueryTypes => this.UserHasRole(Roles.Admin) || this.UserHasRole(Roles.Reviewer)
-            ? new() { PatientQueryType.Phn, PatientQueryType.Email, PatientQueryType.Sms, PatientQueryType.Hdid, PatientQueryType.Dependent }
-            : new() { PatientQueryType.Phn };
+            ? [PatientQueryType.Phn, PatientQueryType.Email, PatientQueryType.Sms, PatientQueryType.Hdid, PatientQueryType.Dependent]
+            : [PatientQueryType.Phn];
 
         private PatientQueryType QueryType { get; set; } = PatientQueryType.Phn;
 
@@ -102,7 +102,7 @@ namespace HealthGateway.Admin.Client.Pages
 
         private bool HasPatientsWarning => this.PatientSupportState.Value.WarningMessages.Any();
 
-        private IImmutableList<PatientSupportResult> Patients => this.PatientSupportState.Value.Result ?? ImmutableList<PatientSupportResult>.Empty;
+        private IImmutableList<PatientSupportResult> Patients => this.PatientSupportState.Value.Result ?? [];
 
         private IEnumerable<PatientRow> PatientRows => this.Patients.Select(v => new PatientRow(v));
 
@@ -244,7 +244,7 @@ namespace HealthGateway.Admin.Client.Pages
             public PatientRow(PatientSupportResult model)
             {
                 this.Status = model.Status;
-                this.Name = StringManipulator.JoinWithoutBlanks(new[] { model.PreferredName?.GivenName, model.PreferredName?.Surname });
+                this.Name = StringManipulator.JoinWithoutBlanks([model.PreferredName?.GivenName, model.PreferredName?.Surname]);
                 this.SortName = $"{model.PreferredName?.Surname}, {model.PreferredName?.GivenName}";
                 this.Birthdate = model.Birthdate;
                 this.PersonalHealthNumber = model.PersonalHealthNumber;
