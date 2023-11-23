@@ -1,9 +1,7 @@
-import path from "path";
-
 import { ServiceCode } from "@/constants/serviceCodes";
 import { ExternalConfiguration } from "@/models/configData";
 import { HttpError } from "@/models/errors";
-import { CreateDelegateInvitationRequest } from "@/models/sharing/createDelegateInvitationRequest";
+import { CreateDelegationRequest } from "@/models/sharing/createDelegationRequest";
 import ErrorTranslator from "@/utility/errorTranslator";
 
 import { IDelegateService, IHttpDelegate, ILogger } from "./interfaces";
@@ -25,15 +23,14 @@ export class RestDelegateService implements IDelegateService {
     }
 
     public createInvitation(
-        invite: CreateDelegateInvitationRequest
+        ownerHdid: string,
+        invite: CreateDelegationRequest
     ): Promise<string | undefined> {
-        const uri = path.join(
-            this.baseUri,
-            this.DELEGATE_BASE_URI,
-            "Invitations"
-        );
         return this.http
-            .post<string>(uri, invite)
+            .post<string>(
+                `${this.baseUri}${this.DELEGATE_BASE_URI}/${ownerHdid}`,
+                invite
+            )
             .catch((err: HttpError) => {
                 this.logger.error(
                     `Error in RestDelegateService.createInvitation()`

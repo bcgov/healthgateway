@@ -3,7 +3,6 @@ import useVuelidate from "@vuelidate/core";
 import { required } from "@vuelidate/validators";
 import { computed, ref } from "vue";
 
-import { DateWrapper } from "@/models/dateWrapper";
 import { useDelegateStore } from "@/stores/delegate";
 import ValidationUtil from "@/utility/validationUtil";
 
@@ -33,16 +32,17 @@ const delegateStore = useDelegateStore();
 const selectedExpiryRange = ref<number>();
 
 const expectedExpiryDate = computed(() => {
-    if (
-        selectedExpiryRange.value === undefined ||
-        selectedExpiryRange.value === 0
-    )
+    if (selectedExpiryRange.value === undefined) {
+        throw new Error(
+            "User must seclect expiry date range before calculating expiry date"
+        );
+    }
+    if (selectedExpiryRange.value === 0) {
         return undefined;
+    }
     const currentDate = new Date();
     currentDate.setMonth(currentDate.getMonth() + selectedExpiryRange.value);
-    return DateWrapper.fromIsoDate(currentDate.toISOString()).format(
-        "dd MMM yyyy"
-    );
+    return currentDate;
 });
 
 const selectedDescription = computed(() => {
@@ -94,14 +94,6 @@ function saveStep() {
                 :error-messages="expiryDateErrorMessages"
                 @blur="v$.selectedExpiryRange.$touch()"
             />
-        </v-col>
-        <v-col>
-            <p class="text-body-2">
-                <span v-if="selectedExpiryRange !== undefined">
-                    Expiected expiry date:
-                    {{ expectedExpiryDate ?? "Never" }}
-                </span>
-            </p>
         </v-col>
     </v-row>
 </template>

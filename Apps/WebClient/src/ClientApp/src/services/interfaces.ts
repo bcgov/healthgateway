@@ -6,7 +6,6 @@ import Communication, { CommunicationType } from "@/models/communication";
 import { ExternalConfiguration } from "@/models/configData";
 import CovidVaccineRecord from "@/models/covidVaccineRecord";
 import { StringISODate } from "@/models/dateWrapper";
-import { CreateDelegateInvitationRequest } from "@/models/sharing/createDelegateInvitationRequest";
 import type { Dependent } from "@/models/dependent";
 import EncodedMedia from "@/models/encodedMedia";
 import { Encounter } from "@/models/encounter";
@@ -29,6 +28,7 @@ import RegisterTestKitRequest from "@/models/registerTestKitRequest";
 import Report from "@/models/report";
 import ReportRequest from "@/models/reportRequest";
 import RequestResult from "@/models/requestResult";
+import { CreateDelegationRequest } from "@/models/sharing/createDelegationRequest";
 import { TermsOfService } from "@/models/termsOfService";
 import { Ticket } from "@/models/ticket";
 import { OidcTokenDetails, OidcUserInfo } from "@/models/user";
@@ -277,5 +277,8 @@ export interface ITrackingService {
 }
 
 export interface IDelegateService {
-    createInvitation(invite: CreateDelegateInvitationRequest): Promise<string | undefined>;
+    createInvitation(
+        ownerHdid: string,
+        invite: CreateDelegationRequest
+    ): Promise<string | undefined>;
 }

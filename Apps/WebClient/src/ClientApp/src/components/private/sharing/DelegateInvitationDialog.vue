@@ -7,6 +7,7 @@ import InvitationContactStepComponent from "@/components/private/sharing/Invitat
 import InvitationDataSourceStepComponent from "@/components/private/sharing/InvitationDataSourceStepComponent.vue";
 import InvitationExpiryStepComponent from "@/components/private/sharing/InvitationExpiryStepComponent.vue";
 import InvitationReviewStepComponent from "@/components/private/sharing/InvitationReviewStepComponent.vue";
+import InvitationSharingCodeStepComponent from "@/components/private/sharing/InvitationSharingCodeStepComponent.vue";
 import {
     DelegateInvitationWizardStep,
     useDelegateStore,
@@ -26,9 +27,8 @@ const invitationReviewStepComponent =
 const showDialog = computed(
     () => delegateStore.invitationWizardState !== undefined
 );
-const currentStep = computed(
-    () => delegateStore.invitationWizardState?.step ?? 0
-);
+const currentStep = computed(() => delegateStore.invitationWizardState?.step);
+const isLastStep = computed(() => delegateStore.wizardNextStep === undefined);
 const currentTitle = computed(() => {
     const mode = delegateStore.invitationWizardState?.mode;
     switch (delegateStore.invitationWizardState?.step) {
@@ -87,6 +87,9 @@ function handleSaveCurrentStep(): void {
         case DelegateInvitationWizardStep.review:
             invitationReviewStepComponent.value?.saveStep();
             break;
+        case DelegateInvitationWizardStep.sharingCode:
+            delegateStore.clearInvitationDialogState();
+            break;
         default:
             break;
     }
@@ -111,7 +114,7 @@ function handleSaveCurrentStep(): void {
                         />
                     </v-toolbar>
                 </v-card-title>
-                <v-card-text class="pb-4">
+                <v-card-text v-if="currentStep !== undefined" class="pb-4">
                     <v-window v-model="currentStep">
                         <v-window-item
                             :value="DelegateInvitationWizardStep.contact"
@@ -149,7 +152,7 @@ function handleSaveCurrentStep(): void {
                             :value="DelegateInvitationWizardStep.sharingCode"
                             class="px-1"
                         >
-                            <p>sharingCode</p>
+                            <InvitationSharingCodeStepComponent />
                         </v-window-item>
                     </v-window>
                 </v-card-text>
@@ -166,7 +169,7 @@ function handleSaveCurrentStep(): void {
                         @click="handleCancel"
                     />
                     <HgButtonComponent
-                        v-else
+                        v-else-if="!isLastStep"
                         variant="secondary"
                         text="Back"
                         data-testid="invitation-dialog-cancel-button"
@@ -180,6 +183,7 @@ function handleSaveCurrentStep(): void {
                         data-testid="invitation-dialog-next-button"
                         @click="handleSaveCurrentStep"
                     />
+                    <v-spacer v-if="isLastStep" />
                 </v-card-actions>
             </v-card>
         </v-dialog>

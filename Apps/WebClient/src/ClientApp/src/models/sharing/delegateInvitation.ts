@@ -1,7 +1,7 @@
 import { DataSource } from "@/constants/dataSource";
-import { DelegateInvitationStatus } from "@/constants/delegateInvitationStatus";
+import { DelegationStatus } from "@/constants/delegateInvitationStatus";
 
-export interface DelegateInvitation {
+export interface Delegation {
     /**
      * The delegate invitation id.
      */
@@ -15,7 +15,7 @@ export interface DelegateInvitation {
     /**
      * The delegate invitation status.
      */
-    status: DelegateInvitationStatus;
+    status: DelegationStatus;
 
     /**
      * The expiry date of access.

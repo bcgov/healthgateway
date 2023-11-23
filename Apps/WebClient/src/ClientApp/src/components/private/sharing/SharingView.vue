@@ -20,10 +20,10 @@ const breadcrumbItems: BreadcrumbItem[] = [
 
 const delegateStore = useDelegateStore();
 
-const invitationsAreLoading = computed(
-    () => delegateStore.invitationsAreLoading
+const delegationsAreLoading = computed(
+    () => delegateStore.delegationsAreLoading
 );
-const hasInvitations = computed(() => delegateStore.invitations.length > 0);
+const hasDelegations = computed(() => delegateStore.delegations.length > 0);
 
 // TODO: call for invitations
 </script>
@@ -31,10 +31,10 @@ const hasInvitations = computed(() => delegateStore.invitations.length > 0);
 <template>
     <BreadcrumbComponent :items="breadcrumbItems" />
     <LoadingComponent
-        :is-loading="invitationsAreLoading"
+        :is-loading="delegationsAreLoading"
         text="Loading invitations"
     />
     <PageTitleComponent title="Sharing" />
-    <EmptySharingPageComponent v-if="!hasInvitations" />
+    <EmptySharingPageComponent v-if="!hasDelegations" class="mb-4" />
     <DelegateInvitationDialog />
 </template>

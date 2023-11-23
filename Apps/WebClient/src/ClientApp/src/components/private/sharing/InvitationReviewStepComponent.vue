@@ -11,7 +11,7 @@ const delegateStore = useDelegateStore();
 const currentInvitation = computed(() => delegateStore.invitationWizardState);
 
 function saveStep() {
-    console.log("saveStep");
+    delegateStore.submitInvitationDialog();
 }
 </script>
 
@@ -58,7 +58,7 @@ function saveStep() {
             <DisplayFieldComponent
                 name-class="font-weight-bold"
                 name="Expiry Date"
-                :value="`${currentInvitation.expiryDateRange} (${currentInvitation.expiryDate})`"
+                :value="`${currentInvitation.expiryDateRange} (${delegateStore.expiryDateDisplay})`"
             />
         </v-col>
         <v-col>

@@ -3,7 +3,7 @@ import { DataSource } from "@/constants/dataSource";
 /**
  * Represents the request delegate invitation model.
  */
-export interface CreateDelegateInvitationRequest {
+export interface CreateDelegationRequest {
     /**
      * The friendly name of the delegate.
      */

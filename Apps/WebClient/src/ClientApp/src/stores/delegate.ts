@@ -5,11 +5,13 @@ import { DataSource } from "@/constants/dataSource";
 import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import { container } from "@/ioc/container";
 import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
+import { DateWrapper } from "@/models/dateWrapper";
 import { ResultError } from "@/models/errors";
-import { CreateDelegateInvitationRequest } from "@/models/sharing/createDelegateInvitationRequest";
-import { DelegateInvitation } from "@/models/sharing/delegateInvitation";
+import { CreateDelegationRequest } from "@/models/sharing/createDelegationRequest";
+import { Delegation } from "@/models/sharing/delegateInvitation";
 import { IDelegateService, ILogger } from "@/services/interfaces";
 import { useErrorStore } from "@/stores/error";
+import { useUserStore } from "@/stores/user";
 
 export enum DelegateInvitationWizardStep {
     contact = 0,
@@ -25,7 +27,7 @@ export interface DelegateInvitationWizardState {
     nickname?: string;
     email?: string;
     expiryDateRange?: string;
-    expiryDate?: string;
+    expiryDate?: Date;
     dataSources?: DataSource[];
     sharingCode?: string;
 }
@@ -59,11 +61,12 @@ export const useDelegateStore = defineStore("delegate", () => {
         SERVICE_IDENTIFIER.DelegateService
     );
 
+    const userStore = useUserStore();
     const errorStore = useErrorStore();
 
-    const invitations = ref<DelegateInvitation[]>([]);
+    const delegations = ref<Delegation[]>([]);
     const invitationWizardState = ref<DelegateInvitationWizardState>();
-    const invitationsAreLoading = ref(false);
+    const delegationsAreLoading = ref(false);
     const error = ref<ResultError>();
     const statusMessage = ref("");
 
@@ -87,10 +90,28 @@ export const useDelegateStore = defineStore("delegate", () => {
         () => invitationWizardState.value != undefined
     );
 
+    const expiryDateDisplay = computed(() => {
+        if (invitationWizardState.value?.expiryDate === undefined)
+            return "Never";
+
+        return DateWrapper.fromIsoDate(
+            invitationWizardState.value?.expiryDate.toISOString()
+        ).format("dd MMM yyyy");
+    });
+
+    const expiryDateOnly = computed(() => {
+        if (invitationWizardState.value?.expiryDate === undefined)
+            return undefined;
+
+        return DateWrapper.fromIsoDate(
+            invitationWizardState.value?.expiryDate.toISOString()
+        ).format("yyyy-MM-dd");
+    });
+
     function setInvitationsError(incomingError: ResultError) {
         error.value = incomingError;
         statusMessage.value = incomingError.resultMessage;
-        invitationsAreLoading.value = false;
+        delegationsAreLoading.value = false;
     }
 
     function startNewInvitation(): void {
@@ -141,7 +162,7 @@ export const useDelegateStore = defineStore("delegate", () => {
         wiazrdToNextStep();
     }
 
-    function captureExpiryDate(expiryDateRange: string, expiryDate?: string) {
+    function captureExpiryDate(expiryDateRange: string, expiryDate?: Date) {
         invitationWizardState.value = {
             ...invitationWizardState.value,
             expiryDate: expiryDate,
@@ -163,7 +184,7 @@ export const useDelegateStore = defineStore("delegate", () => {
             return createInvitation({
                 nickname: invitationWizardState.value.nickname,
                 email: invitationWizardState.value.email,
-                expiryDate: invitationWizardState.value.expiryDate,
+                expiryDate: expiryDateOnly.value,
                 dataSources: invitationWizardState.value.dataSources,
             }).then((sharingCode) => {
                 if (sharingCode != undefined) {
@@ -175,15 +196,16 @@ export const useDelegateStore = defineStore("delegate", () => {
     }
 
     function createInvitation(
-        invitation: CreateDelegateInvitationRequest
+        invitation: CreateDelegationRequest
     ): Promise<string | void> {
         logger.debug("Create invitation");
-        invitationsAreLoading.value = true;
+        delegationsAreLoading.value = true;
         return delegateService
-            .createInvitation(invitation)
+            .createInvitation(userStore.hdid, invitation)
             .catch((error: ResultError) => {
                 handleError(error, ErrorType.Create, "sharing-dialog");
-            });
+            })
+            .finally(() => (delegationsAreLoading.value = false));
     }
 
     function handleError(
@@ -210,9 +232,10 @@ export const useDelegateStore = defineStore("delegate", () => {
     }
 
     return {
-        invitations,
-        invitationsAreLoading,
+        delegations,
+        delegationsAreLoading,
         isInvitationDialogVisible,
+        expiryDateDisplay,
         wizardPreviousStep,
         wizardNextStep,
         invitationWizardState,
