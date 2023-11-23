@@ -44,7 +44,22 @@ psql postgres://$DB_USER:$DB_PASSWORD@$DB_HOST/$DB_NAME?sslmode=require -f db/se
 popd
 
 echo "Clearing Redis cache"
-redis-cli -c --cluster call -a $REDIS_PW $REDIS_SERVICE_HOST:$REDIS_SERVICE_PORT flushall --cluster-only-masters
+if [ -z "$REDIS_ENV" ]; then
+    echo "Error: REDIS_ENV is not set. Please set it to either DEV or TEST."
+    exit 1
+fi
+if [ -z "$REDIS_PASSWORD" ]; then
+    echo "Error: REDIS_PASSWORD is not set. Please set it."
+    exit 1
+fi
+# Construct the environment-specific variables
+REDIS_HOST_VAR="${REDIS_ENV}_REDIS_SVC_SERVICE_HOST"
+REDIS_PORT_VAR="${REDIS_ENV}_REDIS_SVC_SERVICE_PORT"
+REDIS_HOST=${!REDIS_HOST_VAR}
+REDIS_PORT=${!REDIS_PORT_VAR}
+
+echo "Connecting to Redis at $REDIS_HOST:$REDIS_PORT"
+redis-cli -h $REDIS_HOST -p $REDIS_PORT -a $REDIS_PASSWORD --csv SENTINEL get-master-addr-by-name healthgateway | awk -F, '{system("redis-cli -h " $1 " -p " $2 " -a $REDIS_PASSWORD FLUSHALL")}'
 
 # Seconds to sleep
 wait=$PHSA_SEEDING_WAIT_TIME

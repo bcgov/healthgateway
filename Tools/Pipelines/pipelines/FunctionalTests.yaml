@@ -40,6 +40,8 @@ jobs:
         DB_PASSWORD: $(db.password)
         ADMIN_KEYCLOAK_SECRET: $(admin.keycloak.secret)
         PHSA_KEYCLOAK_DEVTOOLS_SECRET: $(phsa.keycloak.devtools.secret)
+        REDIS_PASSWORD: $(redis.pw)
+        REDIS_ENV: $(redis.env)
   - job: "Admin_Tests"
     displayName: "Admin Functional Tests"  
     pool: 
