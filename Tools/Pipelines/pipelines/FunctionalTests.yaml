@@ -27,7 +27,7 @@ jobs:
   - job: "Admin_Seed"
     displayName: "Re-seed DB and PHSA data for Admin"
     pool: 
-      name: "HealthGatewayDev"    
+      name: "HGGoldDev"    
     condition: eq(variables['Admin'], true)    
     steps:
     - task: Bash@3
