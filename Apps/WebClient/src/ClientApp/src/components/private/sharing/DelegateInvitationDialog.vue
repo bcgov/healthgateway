@@ -30,20 +30,15 @@ const showDialog = computed(
 const currentStep = computed(() => delegateStore.invitationWizardState?.step);
 const isLastStep = computed(() => delegateStore.wizardNextStep === undefined);
 const currentTitle = computed(() => {
-    const mode = delegateStore.invitationWizardState?.mode;
     switch (delegateStore.invitationWizardState?.step) {
         case DelegateInvitationWizardStep.contact:
             return "Invite Someone";
         case DelegateInvitationWizardStep.dataSources:
-            return mode === "Create"
-                ? "Select Record Types"
-                : "Edit Record Types";
+            return "Select Record Types";
         case DelegateInvitationWizardStep.expiryDate:
-            return mode === "Create"
-                ? "Select Access Expiry"
-                : "Edit Access Expiry";
+            return "Select Access Expiry";
         case DelegateInvitationWizardStep.review:
-            return mode === "Create" ? "Review Invitation" : "Review Changes";
+            return "Review Invitation";
         case DelegateInvitationWizardStep.sharingCode:
             return "Sharing Code";
         default:
