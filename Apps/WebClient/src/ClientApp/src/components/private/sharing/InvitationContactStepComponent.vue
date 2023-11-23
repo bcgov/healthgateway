@@ -62,7 +62,7 @@ if (delegateStore.invitationWizardState?.email !== undefined) {
 </script>
 
 <template>
-    <v-row>
+    <v-row data-testid="invitation-contact-step">
         <v-col cols="12">
             <h5 class="text-h6 font-weight-bold mb-4">Share records with:</h5>
             <p class="text-body-1">
@@ -89,7 +89,7 @@ if (delegateStore.invitationWizardState?.email !== undefined) {
             <v-text-field
                 id="delegate-nickname"
                 v-model.trim="delegateNickname"
-                data-testId="delegate-email-input"
+                data-testId="delegate-nickname-input"
                 placeholder="e.g. Clair"
                 :error-messages="nicknameErrorMessages"
                 clearable

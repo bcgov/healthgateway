@@ -167,7 +167,7 @@ function handleSaveCurrentStep(): void {
                         v-else-if="!isLastStep"
                         variant="secondary"
                         text="Back"
-                        data-testid="invitation-dialog-cancel-button"
+                        data-testid="invitation-dialog-back-button"
                         size="large"
                         @click="handleBack"
                     />
@@ -175,7 +175,7 @@ function handleSaveCurrentStep(): void {
                         variant="primary"
                         :text="nextStepButtonTitle"
                         size="large"
-                        data-testid="invitation-dialog-next-button"
+                        data-testid="invitation-dialog-confirm-button"
                         @click="handleSaveCurrentStep"
                     />
                     <v-spacer v-if="isLastStep" />

@@ -21,7 +21,7 @@ function recordTypeName(entryType: EntryType): string {
 </script>
 
 <template>
-    <v-row>
+    <v-row data-testid="invitation-review-step">
         <v-col cols="12">
             <h5 class="text-h6 font-weight-bold mb-4">
                 Review the following information:
@@ -37,11 +37,13 @@ function recordTypeName(entryType: EntryType): string {
             <DisplayFieldComponent
                 name-class="font-weight-bold"
                 name="Nickname"
+                data-testid="review-nickname"
                 :value="currentInvitation.nickname"
             />
             <DisplayFieldComponent
                 name-class="font-weight-bold"
                 name="Inviting"
+                data-testid="review-email"
                 :value="currentInvitation.email"
             />
             <DisplayFieldComponent
@@ -55,6 +57,9 @@ function recordTypeName(entryType: EntryType): string {
                         class="ma-1"
                         color="primary"
                         text-color="white"
+                        :data-testid="`review-datasource-${dataSource
+                            .toLowerCase()
+                            .trim()}`"
                     >
                         {{ recordTypeName(entryType) }}
                     </v-chip>
@@ -63,6 +68,7 @@ function recordTypeName(entryType: EntryType): string {
             <DisplayFieldComponent
                 name-class="font-weight-bold"
                 name="Expiry Date"
+                data-testid="review-expiry-date"
                 :value="`${currentInvitation.expiryDateRange} (${delegateStore.expiryDateDisplay})`"
             />
         </v-col>

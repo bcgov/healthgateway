@@ -60,7 +60,7 @@ if (delegateStore.invitationWizardState?.recordTypes !== undefined) {
 </script>
 
 <template>
-    <v-row>
+    <v-row data-testid="invitation-data-sources-step">
         <v-col cols="12">
             <h5 class="text-h6 font-weight-bold mb-4">Health Records:</h5>
             <p class="text-body-1">
