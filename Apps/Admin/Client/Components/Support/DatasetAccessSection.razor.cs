@@ -37,14 +37,14 @@ namespace HealthGateway.Admin.Client.Components.Support
         /// <summary>
         /// Working copy of the data sources which are currently set as blocked for the patient.
         /// </summary>
-        private IEnumerable<DataSource> blockedDataSources = Enumerable.Empty<DataSource>();
+        private IEnumerable<DataSource> blockedDataSources = [];
 
         /// <summary>
         /// Gets or sets the data sources which are currently set as blocked for the patient.
         /// </summary>
         [Parameter]
         [EditorRequired]
-        public IEnumerable<DataSource> Data { get; set; } = Enumerable.Empty<DataSource>();
+        public IEnumerable<DataSource> Data { get; set; } = [];
 
         /// <summary>
         /// Gets or sets a value indicating whether the component is loading.
@@ -58,7 +58,7 @@ namespace HealthGateway.Admin.Client.Components.Support
         /// </summary>
         [Parameter]
         [EditorRequired]
-        public bool CanEdit { get; set; } = false;
+        public bool CanEdit { get; set; }
 
         /// <summary>
         /// Gets or sets the patient's hdid.

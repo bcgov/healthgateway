@@ -43,7 +43,7 @@ namespace HealthGateway.Admin.Server.Services
         /// <param name="queryString">The value to query on.</param>
         /// <param name="ct">A cancellation token.</param>
         /// <returns>The collection of patient support details that match the query.</returns>
-        Task<IList<PatientSupportResult>> GetPatientsAsync(PatientQueryType queryType, string queryString, CancellationToken ct = default);
+        Task<IReadOnlyList<PatientSupportResult>> GetPatientsAsync(PatientQueryType queryType, string queryString, CancellationToken ct = default);
 
         /// <summary>
         /// Block access to data sources associated with the hdid.

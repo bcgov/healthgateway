@@ -17,7 +17,6 @@ namespace HealthGateway.Admin.Client.Pages
 {
     using System;
     using System.Collections.Generic;
-    using System.Linq;
     using System.Security.Claims;
     using System.Threading.Tasks;
     using Fluxor;
@@ -49,7 +48,7 @@ namespace HealthGateway.Admin.Client.Pages
 
         private string? Token { get; set; }
 
-        private IEnumerable<Claim> Claims { get; set; } = Enumerable.Empty<Claim>();
+        private IEnumerable<Claim> Claims { get; set; } = [];
 
         /// <inheritdoc/>
         protected override async Task OnInitializedAsync()

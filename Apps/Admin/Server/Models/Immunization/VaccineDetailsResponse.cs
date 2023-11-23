@@ -26,30 +26,6 @@ namespace HealthGateway.Admin.Server.Models.Immunization
     public class VaccineDetailsResponse
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="VaccineDetailsResponse"/> class.
-        /// </summary>
-        public VaccineDetailsResponse()
-        {
-            this.PirLookupDoseDates = new List<DateTime>();
-            this.ImmBcLookupDoseDates = new List<DateTime>();
-            this.Doses = new List<VaccineDoseResponse>();
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="VaccineDetailsResponse"/> class.
-        /// </summary>
-        /// <param name="pirLookupDoseDates">The list of dose dates from the Provincial Immunization Registry.</param>
-        /// <param name="immBcLookupDoseDates">The list of Immunize BC dose dates.</param>
-        /// <param name="doses">The list of doses.</param>
-        [JsonConstructor]
-        public VaccineDetailsResponse(IList<DateTime> pirLookupDoseDates, IList<DateTime> immBcLookupDoseDates, IList<VaccineDoseResponse> doses)
-        {
-            this.PirLookupDoseDates = pirLookupDoseDates;
-            this.ImmBcLookupDoseDates = immBcLookupDoseDates;
-            this.Doses = doses;
-        }
-
-        /// <summary>
         /// Gets or sets the patient's date of birth.
         /// </summary>
         [JsonPropertyName("verificationDob")]
@@ -68,16 +44,16 @@ namespace HealthGateway.Admin.Server.Models.Immunization
         public bool ContainsInvalidDoses { get; set; }
 
         /// <summary>
-        /// Gets the patient's dose dates from the Provincial Immunization Registry (Panorama).
+        /// Gets or sets the patient's dose dates from the Provincial Immunization Registry (Panorama).
         /// </summary>
         [JsonPropertyName("pirLookupDoseDates")]
-        public IList<DateTime> PirLookupDoseDates { get; }
+        public IEnumerable<DateTime> PirLookupDoseDates { get; set; } = [];
 
         /// <summary>
-        /// Gets the patient's dose dates from Immunize BC.
+        /// Gets or sets the patient's dose dates from Immunize BC.
         /// </summary>
         [JsonPropertyName("immBcLookupDoseDates")]
-        public IList<DateTime> ImmBcLookupDoseDates { get; }
+        public IEnumerable<DateTime> ImmBcLookupDoseDates { get; set; } = [];
 
         /// <summary>
         /// Gets or sets the data from the enterprise-wide master patient index.
@@ -92,9 +68,9 @@ namespace HealthGateway.Admin.Server.Models.Immunization
         public VaccineStatusResult? VaccineStatusResult { get; set; } = null;
 
         /// <summary>
-        /// Gets the patient's doses.
+        /// Gets or sets the patient's doses.
         /// </summary>
         [JsonPropertyName("doses")]
-        public IList<VaccineDoseResponse> Doses { get; }
+        public IEnumerable<VaccineDoseResponse> Doses { get; set; } = [];
     }
 }

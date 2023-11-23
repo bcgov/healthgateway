@@ -43,49 +43,24 @@ namespace HealthGateway.Admin.Server.Services
     /// <summary>
     /// Service that provides COVID-19 Support functionality.
     /// </summary>
-    public class CovidSupportService : ICovidSupportService
+    /// <param name="configuration">The configuration to use.</param>
+    /// <param name="logger">The injected logger provider.</param>
+    /// <param name="authenticationDelegate">The auth delegate to fetch tokens.</param>
+    /// <param name="vaccineProofDelegate">The injected delegate to get the vaccine proof.</param>
+    /// <param name="vaccineStatusDelegate">The injected delegate to get the vaccine status.</param>
+    /// <param name="immunizationAdminApi">The api client to use for immunization.</param>
+    /// <param name="patientRepository">The injected patient repository.</param>
+    public class CovidSupportService(
+        IConfiguration configuration,
+        ILogger<CovidSupportService> logger,
+        IAuthenticationDelegate authenticationDelegate,
+        IVaccineProofDelegate vaccineProofDelegate,
+        IVaccineStatusDelegate vaccineStatusDelegate,
+        IImmunizationAdminApi immunizationAdminApi,
+        IPatientRepository patientRepository) : ICovidSupportService
     {
-        private readonly BcMailPlusConfig bcmpConfig;
-        private readonly VaccineCardConfig vaccineCardConfig;
-        private readonly ILogger<CovidSupportService> logger;
-        private readonly IAuthenticationDelegate authenticationDelegate;
-        private readonly IVaccineProofDelegate vaccineProofDelegate;
-        private readonly IVaccineStatusDelegate vaccineStatusDelegate;
-        private readonly IImmunizationAdminApi immunizationAdminApi;
-        private readonly IPatientRepository patientRepository;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="CovidSupportService"/> class.
-        /// </summary>
-        /// <param name="configuration">The configuration to use.</param>
-        /// <param name="logger">The injected logger provider.</param>
-        /// <param name="authenticationDelegate">The auth delegate to fetch tokens.</param>
-        /// <param name="vaccineProofDelegate">The injected delegate to get the vaccine proof.</param>
-        /// <param name="vaccineStatusDelegate">The injected delegate to get the vaccine status.</param>
-        /// <param name="immunizationAdminApi">The api client to use for immunization.</param>
-        /// <param name="patientRepository">The injected patient repository.</param>
-        public CovidSupportService(
-            IConfiguration configuration,
-            ILogger<CovidSupportService> logger,
-            IAuthenticationDelegate authenticationDelegate,
-            IVaccineProofDelegate vaccineProofDelegate,
-            IVaccineStatusDelegate vaccineStatusDelegate,
-            IImmunizationAdminApi immunizationAdminApi,
-            IPatientRepository patientRepository)
-        {
-            this.logger = logger;
-            this.authenticationDelegate = authenticationDelegate;
-            this.vaccineProofDelegate = vaccineProofDelegate;
-            this.vaccineStatusDelegate = vaccineStatusDelegate;
-            this.immunizationAdminApi = immunizationAdminApi;
-            this.patientRepository = patientRepository;
-
-            this.bcmpConfig = new();
-            configuration.Bind(BcMailPlusConfig.ConfigSectionKey, this.bcmpConfig);
-
-            this.vaccineCardConfig = new();
-            configuration.Bind(VaccineCardConfig.ConfigSectionKey, this.vaccineCardConfig);
-        }
+        private readonly BcMailPlusConfig bcmpConfig = configuration.GetSection(BcMailPlusConfig.ConfigSectionKey).Get<BcMailPlusConfig>() ?? new();
+        private readonly VaccineCardConfig vaccineCardConfig = configuration.GetSection(VaccineCardConfig.ConfigSectionKey).Get<VaccineCardConfig>() ?? new();
 
         /// <inheritdoc/>
         public async Task MailVaccineCardAsync(MailDocumentRequest request, CancellationToken ct = default)
@@ -112,12 +87,12 @@ namespace HealthGateway.Admin.Server.Services
             string accessToken = this.GetAccessToken();
 
             request.Submitted = DateTime.UtcNow;
-            return await this.immunizationAdminApi.SubmitCovidAssessment(request, accessToken).ConfigureAwait(true);
+            return await immunizationAdminApi.SubmitCovidAssessment(request, accessToken).ConfigureAwait(true);
         }
 
         private string GetAccessToken()
         {
-            string? accessToken = this.authenticationDelegate.FetchAuthenticatedUserToken();
+            string? accessToken = authenticationDelegate.FetchAuthenticatedUserToken();
             if (accessToken == null)
             {
                 throw new ProblemDetailsException(ExceptionUtility.CreateProblemDetails(ErrorMessages.CannotFindAccessToken, HttpStatusCode.Unauthorized, nameof(CovidSupportService)));
@@ -129,7 +104,7 @@ namespace HealthGateway.Admin.Server.Services
         private async Task<PatientModel> GetPatientAsync(string phn, CancellationToken ct = default)
         {
             PatientDetailsQuery query = new(phn, Source: PatientDetailSource.Empi, UseCache: true);
-            PatientModel? patient = (await this.patientRepository.Query(query, ct).ConfigureAwait(true)).Items.SingleOrDefault();
+            PatientModel? patient = (await patientRepository.Query(query, ct).ConfigureAwait(true)).Items.SingleOrDefault();
             if (patient == null)
             {
                 throw new ProblemDetailsException(ExceptionUtility.CreateProblemDetails(ErrorMessages.ClientRegistryRecordsNotFound, HttpStatusCode.NotFound, nameof(CovidSupportService)));
@@ -140,7 +115,7 @@ namespace HealthGateway.Admin.Server.Services
 
         private async Task<VaccineStatusResult> GetVaccineStatusResult(string phn, DateTime birthdate, string accessToken)
         {
-            PhsaResult<VaccineStatusResult> phsaResult = await this.vaccineStatusDelegate.GetVaccineStatusWithRetries(phn, birthdate, accessToken).ConfigureAwait(true);
+            PhsaResult<VaccineStatusResult> phsaResult = await vaccineStatusDelegate.GetVaccineStatusWithRetries(phn, birthdate, accessToken).ConfigureAwait(true);
 
             if (phsaResult.Result == null)
             {
@@ -152,7 +127,7 @@ namespace HealthGateway.Admin.Server.Services
 
         private VaccinationStatus GetVaccinationStatus(VaccineStatusResult result)
         {
-            this.logger.LogDebug("Vaccination Status Indicator: {Indicator}", result.StatusIndicator);
+            logger.LogDebug("Vaccination Status Indicator: {Indicator}", result.StatusIndicator);
             VaccineState state = Enum.Parse<VaccineState>(result.StatusIndicator);
             if (state == VaccineState.NotFound || state == VaccineState.DataMismatch || state == VaccineState.Threshold || state == VaccineState.Blocked)
             {
@@ -166,7 +141,7 @@ namespace HealthGateway.Admin.Server.Services
                 VaccineState.Exempt => VaccinationStatus.Exempt,
                 _ => VaccinationStatus.Unknown,
             };
-            this.logger.LogDebug("Vaccination Status: {Status}", status);
+            logger.LogDebug("Vaccination Status: {Status}", status);
 
             if (status == VaccinationStatus.Unknown)
             {
@@ -184,7 +159,7 @@ namespace HealthGateway.Admin.Server.Services
                 SmartHealthCardQr = qrCode,
             };
 
-            RequestResult<VaccineProofResponse> vaccineProof = await this.vaccineProofDelegate.GenerateAsync(this.vaccineCardConfig.PrintTemplate, request).ConfigureAwait(true);
+            RequestResult<VaccineProofResponse> vaccineProof = await vaccineProofDelegate.GenerateAsync(this.vaccineCardConfig.PrintTemplate, request).ConfigureAwait(true);
             if (vaccineProof.ResultStatus != ResultType.Success || vaccineProof.ResourcePayload == null)
             {
                 throw new ProblemDetailsException(
@@ -202,10 +177,10 @@ namespace HealthGateway.Admin.Server.Services
 
             while (processing && retryCount++ <= this.bcmpConfig.MaxRetries)
             {
-                this.logger.LogInformation("Waiting to fetch Vaccine Proof Asset...");
+                logger.LogInformation("Waiting to fetch Vaccine Proof Asset...");
                 await Task.Delay(this.bcmpConfig.BackOffMilliseconds).ConfigureAwait(true);
 
-                result = await this.vaccineProofDelegate.GetAssetAsync(assetUri).ConfigureAwait(true);
+                result = await vaccineProofDelegate.GetAssetAsync(assetUri).ConfigureAwait(true);
                 processing = result.ResultStatus == ResultType.ActionRequired;
             }
 
@@ -231,11 +206,11 @@ namespace HealthGateway.Admin.Server.Services
             };
 
             RequestResult<VaccineProofResponse> response =
-                await this.vaccineProofDelegate.MailAsync(this.vaccineCardConfig.MailTemplate, vaccineProofRequest, address).ConfigureAwait(true);
+                await vaccineProofDelegate.MailAsync(this.vaccineCardConfig.MailTemplate, vaccineProofRequest, address).ConfigureAwait(true);
 
             if (response.ResultStatus != ResultType.Success)
             {
-                this.logger.LogError(
+                logger.LogError(
                     "Error mailing via BCMailPlus - error code: {ResultErrorCode} and error message: {ResultErrorMessage}",
                     response.ResultError?.ErrorCode,
                     response.ResultError?.ResultMessage);

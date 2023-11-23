@@ -24,40 +24,26 @@ namespace HealthGateway.Admin.Server.Services
     using HealthGateway.Database.Delegates;
 
     /// <inheritdoc/>
-    public class DashboardService : IDashboardService
+    /// <param name="dependentDelegate">The dependent delegate to interact with the DB.</param>
+    /// <param name="userProfileDelegate">The user profile delegate to interact with the DB.</param>
+    /// <param name="ratingDelegate">The rating delegate.</param>
+    public class DashboardService(
+        IResourceDelegateDelegate dependentDelegate,
+        IUserProfileDelegate userProfileDelegate,
+        IRatingDelegate ratingDelegate) : IDashboardService
     {
-        private readonly IResourceDelegateDelegate dependentDelegate;
-        private readonly IRatingDelegate ratingDelegate;
-        private readonly IUserProfileDelegate userProfileDelegate;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DashboardService"/> class.
-        /// </summary>
-        /// <param name="dependentDelegate">The dependent delegate to interact with the DB.</param>
-        /// <param name="userProfileDelegate">The user profile delegate to interact with the DB.</param>
-        /// <param name="ratingDelegate">The rating delegate.</param>
-        public DashboardService(
-            IResourceDelegateDelegate dependentDelegate,
-            IUserProfileDelegate userProfileDelegate,
-            IRatingDelegate ratingDelegate)
-        {
-            this.dependentDelegate = dependentDelegate;
-            this.userProfileDelegate = userProfileDelegate;
-            this.ratingDelegate = ratingDelegate;
-        }
-
         /// <inheritdoc/>
         public async Task<IDictionary<DateOnly, int>> GetDailyUserRegistrationCountsAsync(int timeOffset, CancellationToken ct = default)
         {
             TimeSpan ts = new(0, timeOffset, 0);
-            return await this.userProfileDelegate.GetDailyUserRegistrationCountsAsync(ts, ct);
+            return await userProfileDelegate.GetDailyUserRegistrationCountsAsync(ts, ct);
         }
 
         /// <inheritdoc/>
         public async Task<IDictionary<DateOnly, int>> GetDailyDependentRegistrationCountsAsync(int timeOffset, CancellationToken ct = default)
         {
             TimeSpan ts = new(0, timeOffset, 0);
-            return await this.dependentDelegate.GetDailyDependentRegistrationCountsAsync(ts, ct);
+            return await dependentDelegate.GetDailyDependentRegistrationCountsAsync(ts, ct);
         }
 
         /// <inheritdoc/>
@@ -65,7 +51,7 @@ namespace HealthGateway.Admin.Server.Services
         {
             DateTimeOffset startDateTimeOffset = GetStartDateTimeOffset(startDateLocal, timeOffset);
             DateTimeOffset endDateTimeOffset = GetEndDateTimeOffset(endDateLocal, timeOffset);
-            return await this.userProfileDelegate.GetDailyUniqueLoginCountsAsync(startDateTimeOffset, endDateTimeOffset, ct);
+            return await userProfileDelegate.GetDailyUniqueLoginCountsAsync(startDateTimeOffset, endDateTimeOffset, ct);
         }
 
         /// <inheritdoc/>
@@ -73,7 +59,7 @@ namespace HealthGateway.Admin.Server.Services
         {
             DateTimeOffset startDate = GetStartDateTimeOffset(startDateLocal, timeOffset);
             DateTimeOffset endDate = GetEndDateTimeOffset(endDateLocal, timeOffset);
-            return await this.userProfileDelegate.GetRecurringUserCountAsync(dayCount, startDate, endDate, ct);
+            return await userProfileDelegate.GetRecurringUserCountAsync(dayCount, startDate, endDate, ct);
         }
 
         /// <inheritdoc/>
@@ -82,7 +68,7 @@ namespace HealthGateway.Admin.Server.Services
             DateTimeOffset startDate = GetStartDateTimeOffset(startDateLocal, timeOffset);
             DateTimeOffset endDate = GetEndDateTimeOffset(endDateLocal, timeOffset);
 
-            IDictionary<UserLoginClientType, int> lastLoginClientCounts = await this.userProfileDelegate.GetLoginClientCountsAsync(startDate, endDate, ct);
+            IDictionary<UserLoginClientType, int> lastLoginClientCounts = await userProfileDelegate.GetLoginClientCountsAsync(startDate, endDate, ct);
             return new(
                 lastLoginClientCounts.TryGetValue(UserLoginClientType.Web, out int webCount) ? webCount : 0,
                 lastLoginClientCounts.TryGetValue(UserLoginClientType.Mobile, out int mobileCount) ? mobileCount : 0);
@@ -93,7 +79,7 @@ namespace HealthGateway.Admin.Server.Services
         {
             DateTimeOffset startDate = GetStartDateTimeOffset(startDateLocal, timeOffset);
             DateTimeOffset endDate = GetEndDateTimeOffset(endDateLocal, timeOffset);
-            return await this.ratingDelegate.GetRatingsSummaryAsync(startDate, endDate, ct);
+            return await ratingDelegate.GetRatingsSummaryAsync(startDate, endDate, ct);
         }
 
         /// <inheritdoc/>
@@ -101,7 +87,7 @@ namespace HealthGateway.Admin.Server.Services
         {
             DateTimeOffset startDate = GetStartDateTimeOffset(startDateLocal, timeOffset);
             DateTimeOffset endDate = GetEndDateTimeOffset(endDateLocal, timeOffset);
-            return await this.userProfileDelegate.GetLoggedInUserYearOfBirthCountsAsync(startDate, endDate, ct);
+            return await userProfileDelegate.GetLoggedInUserYearOfBirthCountsAsync(startDate, endDate, ct);
         }
 
         private static DateTimeOffset GetStartDateTimeOffset(DateOnly startDateLocal, int timeOffset)

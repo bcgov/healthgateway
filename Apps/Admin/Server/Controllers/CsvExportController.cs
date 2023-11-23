@@ -28,31 +28,21 @@ namespace HealthGateway.Admin.Server.Controllers
     /// <summary>
     /// Web API to export data from Health Gateway and return CSV files.
     /// </summary>
+    /// <param name="dataExportService">The injected data export service.</param>
     [ApiController]
     [ApiVersion("1.0")]
     [Route("v{version:apiVersion}/api/[controller]")]
     [Produces("application/json")]
     [Authorize(Roles = "AdminUser,AdminReviewer")]
-    public class CsvExportController
+    public class CsvExportController(ICsvExportService dataExportService)
     {
-        private readonly ICsvExportService dataExportService;
-
         /// <summary>
-        /// Initializes a new instance of the <see cref="CsvExportController"/> class.
-        /// </summary>
-        /// <param name="dataExportService">The injected data export service.</param>
-        public CsvExportController(ICsvExportService dataExportService)
-        {
-            this.dataExportService = dataExportService;
-        }
-
-        /// <summary>
-        /// Retrieves a list of User Profiles created inclusively between UTC dates if provided.
+        /// Retrieves user profiles.
         /// </summary>
         /// <param name="startDate">The optional start date for the data.</param>
         /// <param name="endDate">The optional end date for the data.</param>
-        /// <returns>A CSV of the raw data. email.</returns>
-        /// <response code="200">Returns the list of beta requests.</response>
+        /// <returns>A CSV of user profiles.</returns>
+        /// <response code="200">Returns a CSV of user profiles.</response>
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
         /// <response code="403">
         /// The client does not have access rights to the content; that is, it is unauthorized, so the server
@@ -63,16 +53,16 @@ namespace HealthGateway.Admin.Server.Controllers
         [Produces("text/csv")]
         public IActionResult GetUserProfiles(DateTime? startDate = null, DateTime? endDate = null)
         {
-            return SendContentResponse("UserProfiles", this.dataExportService.GetUserProfiles(startDate, endDate));
+            return SendContentResponse("UserProfiles", dataExportService.GetUserProfiles(startDate, endDate));
         }
 
         /// <summary>
-        /// Retrieves a list of inactive users created exclusive of the days inactive.
+        /// Retrieves inactive users.
         /// </summary>
         /// <param name="inactiveDays">The days inactive to filter the users last login.</param>
         /// <param name="timeOffset">The offset from the client browser to UTC.</param>
         /// <returns>A CSV of inactive users.</returns>
-        /// <response code="200">Returns the list of beta requests.</response>
+        /// <response code="200">Returns a CSV of inactive users.</response>
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
         /// <response code="403">
         /// The client does not have access rights to the content; that is, it is unauthorized, so the server
@@ -83,16 +73,16 @@ namespace HealthGateway.Admin.Server.Controllers
         [Produces("text/csv")]
         public async Task<IActionResult> GetInactiveAdminUser(int inactiveDays, int timeOffset)
         {
-            return SendContentResponse("InactiveUsers", await this.dataExportService.GetInactiveUsers(inactiveDays, timeOffset).ConfigureAwait(true));
+            return SendContentResponse("InactiveUsers", await dataExportService.GetInactiveUsers(inactiveDays, timeOffset).ConfigureAwait(true));
         }
 
         /// <summary>
-        /// Retrieves a list of Comments inclusively between UTC dates if provided.
+        /// Retrieves user comment metadata.
         /// </summary>
         /// <param name="startDate">The optional start date for the data.</param>
         /// <param name="endDate">The optional end date for the data.</param>
-        /// <returns>The invite email.</returns>
-        /// <response code="200">Returns the list of beta requests.</response>
+        /// <returns>A CSV of user comment metadata.</returns>
+        /// <response code="200">Returns a CSV of user comment metadata.</response>
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
         /// <response code="403">
         /// The client does not have access rights to the content; that is, it is unauthorized, so the server
@@ -103,16 +93,16 @@ namespace HealthGateway.Admin.Server.Controllers
         [Produces("text/csv")]
         public IActionResult GetComments(DateTime? startDate = null, DateTime? endDate = null)
         {
-            return SendContentResponse("Comments", this.dataExportService.GetComments(startDate, endDate));
+            return SendContentResponse("Comments", dataExportService.GetComments(startDate, endDate));
         }
 
         /// <summary>
-        /// Retrieves a list of Notes inclusively between UTC dates if provided.
+        /// Retrieves user note metadata.
         /// </summary>
-        /// <returns>The invite email.</returns>
         /// <param name="startDate">The optional start date for the data.</param>
         /// <param name="endDate">The optional end date for the data.</param>
-        /// <response code="200">Returns the list of beta requests.</response>
+        /// <returns>A CSV of user note metadata.</returns>
+        /// <response code="200">Returns a CSV of user note metadata.</response>
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
         /// <response code="403">
         /// The client does not have access rights to the content; that is, it is unauthorized, so the server
@@ -123,16 +113,16 @@ namespace HealthGateway.Admin.Server.Controllers
         [Produces("text/csv")]
         public IActionResult GetNotes(DateTime? startDate = null, DateTime? endDate = null)
         {
-            return SendContentResponse("Notes", this.dataExportService.GetNotes(startDate, endDate));
+            return SendContentResponse("Notes", dataExportService.GetNotes(startDate, endDate));
         }
 
         /// <summary>
-        /// Retrieves a list of Ratings inclusively between UTC dates if provided.
+        /// Retrieves ratings.
         /// </summary>
-        /// <returns>A CSV of Ratings.</returns>
         /// <param name="startDate">The optional start date for the data.</param>
         /// <param name="endDate">The optional end date for the data.</param>
-        /// <response code="200">Returns the list of beta requests.</response>
+        /// <returns>A CSV of ratings.</returns>
+        /// <response code="200">Returns a CSV of ratings.</response>
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
         /// <response code="403">
         /// The client does not have access rights to the content; that is, it is unauthorized, so the server
@@ -143,14 +133,14 @@ namespace HealthGateway.Admin.Server.Controllers
         [Produces("text/csv")]
         public IActionResult GetRatings(DateTime? startDate = null, DateTime? endDate = null)
         {
-            return SendContentResponse("Ratings", this.dataExportService.GetRatings(startDate, endDate));
+            return SendContentResponse("Ratings", dataExportService.GetRatings(startDate, endDate));
         }
 
         /// <summary>
-        /// Retrieves a list of User Feedback.
+        /// Retrieves user feedback.
         /// </summary>
-        /// <returns>A CSV of User Feedback.</returns>
-        /// <response code="200">Returns the list of user feedback.</response>
+        /// <returns>A CSV of user feedback.</returns>
+        /// <response code="200">Returns a CSV of user feedback.</response>
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
         /// <response code="403">
         /// The client does not have access rights to the content; that is, it is unauthorized, so the server
@@ -161,18 +151,18 @@ namespace HealthGateway.Admin.Server.Controllers
         [Produces("text/csv")]
         public IActionResult GetUserFeedback()
         {
-            return SendContentResponse("UserFeedback", this.dataExportService.GetUserFeedback());
+            return SendContentResponse("UserFeedback", dataExportService.GetUserFeedback());
         }
 
         /// <summary>
-        /// Retrieves a list of year of birth counts inclusively between UTC dates.
+        /// Retrieves year of birth counts.
         /// </summary>
-        /// <returns>A CSV of year of birth counts.</returns>
-        /// <param name="startDateLocal">The starting date to get the user counts in the client's Local time.</param>
+        /// <param name="startDateLocal">The starting date to get the user counts in the client's local time.</param>
         /// <param name="endDateLocal">The ending date for the query in the client's local time.</param>
         /// <param name="timeOffset">The current timezone offset from the client browser to UTC.</param>
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
-        /// <response code="200">Returns the list of beta requests.</response>
+        /// <returns>A CSV of year of birth counts.</returns>
+        /// <response code="200">Returns a CSV of year of birth counts.</response>
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
         /// <response code="403">
         /// The client does not have access rights to the content; that is, it is unauthorized, so the server
@@ -183,7 +173,7 @@ namespace HealthGateway.Admin.Server.Controllers
         [Produces("text/csv")]
         public async Task<FileStreamResult> GetYearOfBirthCounts([FromQuery] DateOnly startDateLocal, [FromQuery] DateOnly endDateLocal, [FromQuery] int timeOffset, CancellationToken ct)
         {
-            Stream stream = await this.dataExportService.GetYearOfBirthCountsAsync(startDateLocal, endDateLocal, timeOffset, ct);
+            Stream stream = await dataExportService.GetYearOfBirthCountsAsync(startDateLocal, endDateLocal, timeOffset, ct);
             return SendContentResponse("YearOfBirthCounts", stream);
         }
 

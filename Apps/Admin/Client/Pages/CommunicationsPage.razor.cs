@@ -87,10 +87,9 @@ public partial class CommunicationsPage : FluxorComponent
 
     private bool IsModalShown { get; set; }
 
-    private IEnumerable<ExtendedBroadcast> Broadcasts => this.BroadcastsState.Value.Data?.Values ?? Enumerable.Empty<ExtendedBroadcast>();
+    private IEnumerable<ExtendedBroadcast> Broadcasts => this.BroadcastsState.Value.Data?.Values ?? [];
 
-    private IEnumerable<ExtendedCommunication> AllCommunications =>
-        this.CommunicationsState.Value.Data ?? Enumerable.Empty<ExtendedCommunication>();
+    private IEnumerable<ExtendedCommunication> AllCommunications => this.CommunicationsState.Value.Data ?? [];
 
     private IEnumerable<ExtendedCommunication> PublicCommunications =>
         this.AllCommunications.Where(c => c.CommunicationTypeCode == CommunicationType.Banner);
@@ -135,17 +134,14 @@ public partial class CommunicationsPage : FluxorComponent
 
     private async Task CreateBroadcastAsync()
     {
-        string title = "Create Notification";
-
+        const string title = "Create Notification";
         Broadcast broadcast = new();
-
         await this.OpenBroadcastDialogAsync(title, broadcast).ConfigureAwait(true);
     }
 
     private async Task EditBroadcastAsync(ExtendedBroadcast broadcast)
     {
-        string title = "Edit Notification";
-
+        const string title = "Edit Notification";
         await this.OpenBroadcastDialogAsync(title, broadcast).ConfigureAwait(true);
     }
 

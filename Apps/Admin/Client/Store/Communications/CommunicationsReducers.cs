@@ -78,15 +78,12 @@ public static class CommunicationsReducers
     [ReducerMethod]
     public static CommunicationsState ReduceAddSuccessAction(CommunicationsState state, CommunicationsActions.AddSuccessAction action)
     {
-        IList<ExtendedCommunication> data = state.Data ?? new List<ExtendedCommunication>();
+        IList<ExtendedCommunication> data = state.Data ?? [];
 
         Communication? communication = action.Data.ResourcePayload;
         if (communication != null)
         {
-            data = new List<ExtendedCommunication>(data)
-            {
-                new(communication),
-            };
+            data = [..data, new(communication)];
         }
 
         return state with
@@ -146,7 +143,7 @@ public static class CommunicationsReducers
     [ReducerMethod]
     public static CommunicationsState ReduceUpdateSuccessAction(CommunicationsState state, CommunicationsActions.UpdateSuccessAction action)
     {
-        IList<ExtendedCommunication> data = state.Data ?? new List<ExtendedCommunication>();
+        IList<ExtendedCommunication> data = state.Data ?? [];
 
         Communication? communication = action.Data.ResourcePayload;
         if (communication != null)
@@ -219,7 +216,7 @@ public static class CommunicationsReducers
     [ReducerMethod]
     public static CommunicationsState ReduceDeleteSuccessAction(CommunicationsState state, CommunicationsActions.DeleteSuccessAction action)
     {
-        IList<ExtendedCommunication> data = state.Data ?? new List<ExtendedCommunication>();
+        IList<ExtendedCommunication> data = state.Data ?? [];
 
         Communication? communication = action.Data.ResourcePayload;
         if (communication != null)
@@ -309,7 +306,7 @@ public static class CommunicationsReducers
     [ReducerMethod]
     public static CommunicationsState ReduceToggleIsExpandedAction(CommunicationsState state, CommunicationsActions.ToggleIsExpandedAction action)
     {
-        IEnumerable<ExtendedCommunication> data = state.Data ?? Enumerable.Empty<ExtendedCommunication>();
+        IEnumerable<ExtendedCommunication> data = state.Data ?? [];
 
         ExtendedCommunication? communication = data.SingleOrDefault(c => c.Id == action.Id);
         if (communication != null)

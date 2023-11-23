@@ -91,7 +91,7 @@ public partial class AgentAccessPage : FluxorComponent
 
     private bool IsModalShown { get; set; }
 
-    private IEnumerable<AdminAgent> Agents => this.AgentAccessState.Value.Data?.Values ?? Enumerable.Empty<AdminAgent>();
+    private IEnumerable<AdminAgent> Agents => this.AgentAccessState.Value.Data?.Values ?? [];
 
     private IEnumerable<AdminAgentRow> Rows => this.Agents.Select(a => new AdminAgentRow(a));
 

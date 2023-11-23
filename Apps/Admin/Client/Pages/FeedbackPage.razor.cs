@@ -86,9 +86,9 @@ public partial class FeedbackPage : FluxorComponent
         .OfType<RequestError>()
         .Where(e => e.Message.Length > 0);
 
-    private IEnumerable<AdminTagView> Tags => this.TagState.Value.Data?.Values.OrderBy(t => t.Name) ?? Enumerable.Empty<AdminTagView>();
+    private IEnumerable<AdminTagView> Tags => (this.TagState.Value.Data?.Values ?? []).OrderBy(t => t.Name);
 
-    private IEnumerable<ExtendedUserFeedbackView> Feedback => this.UserFeedbackState.Value.FeedbackData?.Values ?? Enumerable.Empty<ExtendedUserFeedbackView>();
+    private IEnumerable<ExtendedUserFeedbackView> Feedback => this.UserFeedbackState.Value.FeedbackData?.Values ?? [];
 
     private IEnumerable<ExtendedUserFeedbackView> FilteredFeedback => this.Feedback
         .Where(f => this.TagIdFilter.All(t => f.Tags.Any(ft => ft.TagId == t)));
@@ -97,7 +97,7 @@ public partial class FeedbackPage : FluxorComponent
 
     private bool AnyUnsavedFeedbackChanges => this.FeedbackRows.Any(f => f.IsDirty);
 
-    private MudChip[] SelectedTagChips { get; set; } = Array.Empty<MudChip>();
+    private MudChip[] SelectedTagChips { get; set; } = [];
 
     private IEnumerable<Guid> TagIdFilter => this.SelectedTagChips.Select(c => c.Value).OfType<Guid>();
 

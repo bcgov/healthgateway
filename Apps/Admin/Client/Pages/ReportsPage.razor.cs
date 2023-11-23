@@ -17,7 +17,6 @@ namespace HealthGateway.Admin.Client.Pages;
 
 using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -63,7 +62,7 @@ public partial class ReportsPage : FluxorComponent
 
     private BaseRequestState<IEnumerable<BlockedAccessRecord>> BlockedAccessState => this.AdminReportState.Value.BlockedAccess;
 
-    private IEnumerable<BlockedAccessRecord> BlockedAccessRecords => this.BlockedAccessState.Result ?? Enumerable.Empty<BlockedAccessRecord>();
+    private IEnumerable<BlockedAccessRecord> BlockedAccessRecords => this.BlockedAccessState.Result ?? [];
 
     private string? BlockedAccessErrorMessage => this.BlockedAccessState.Error?.Message;
 
@@ -82,7 +81,7 @@ public partial class ReportsPage : FluxorComponent
     private async Task<TableData<ProtectedDependentRecord>> GetProtectedDependentsTableData(TableState tableState)
     {
         SortDirection sortDirection = tableState.SortDirection == MudBlazor.SortDirection.Descending ? SortDirection.Descending : SortDirection.Ascending;
-        ProtectedDependentReport report = new(ImmutableArray<ProtectedDependentRecord>.Empty, new ReportMetadata(0, tableState.Page, tableState.PageSize));
+        ProtectedDependentReport report;
         try
         {
             report = await this.AdminReportApi.GetProtectedDependentsReport(tableState.Page, tableState.PageSize, sortDirection);
@@ -91,6 +90,8 @@ public partial class ReportsPage : FluxorComponent
         {
             RequestError error = StoreUtility.FormatRequestError(e);
             this.ProtectedDependentsErrorMessage = error.Message;
+
+            report = new([], new ReportMetadata(0, tableState.Page, tableState.PageSize));
         }
 
         return new TableData<ProtectedDependentRecord>

@@ -29,7 +29,6 @@ namespace HealthGateway.Admin.Server.Services
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.ErrorHandling;
     using HealthGateway.Common.Data.Utils;
-    using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using Refit;
 
@@ -50,18 +49,15 @@ namespace HealthGateway.Admin.Server.Services
         /// </summary>
         /// <param name="authDelegate">The OAuth2 authentication service.</param>
         /// <param name="keycloakAdminApi">The keycloak api to access identity access.</param>
-        /// <param name="configuration">The configuration to use.</param>
         /// <param name="logger">Injected Logger Provider.</param>
         public AgentAccessService(
             IAuthenticationDelegate authDelegate,
             IKeycloakAdminApi keycloakAdminApi,
-            ILogger<AgentAccessService> logger,
-            IConfiguration configuration)
+            ILogger<AgentAccessService> logger)
         {
             this.authDelegate = authDelegate;
             this.keycloakAdminApi = keycloakAdminApi;
             this.logger = logger;
-            _ = configuration;
             (this.tokenUri, this.tokenRequest) = this.authDelegate.GetClientCredentialsAuth(AuthConfigSectionName);
         }
 

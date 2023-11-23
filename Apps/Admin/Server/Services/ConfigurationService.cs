@@ -21,19 +21,10 @@ namespace HealthGateway.Admin.Server.Services
     /// <summary>
     /// Provides external configuration data.
     /// </summary>
-    public class ConfigurationService : IConfigurationService
+    /// <param name="configuration">Injected Configuration Provider.</param>
+    public class ConfigurationService(IConfiguration configuration) : IConfigurationService
     {
-        private readonly ExternalConfiguration config;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ConfigurationService"/> class.
-        /// </summary>
-        /// <param name="configuration">Injected Configuration Provider.</param>
-        public ConfigurationService(IConfiguration configuration)
-        {
-            this.config = new ExternalConfiguration();
-            this.config = configuration.Get<ExternalConfiguration>() ?? new();
-        }
+        private readonly ExternalConfiguration config = configuration.Get<ExternalConfiguration>() ?? new();
 
         /// <summary>
         /// Reads the external configuration and returns it to the caller.

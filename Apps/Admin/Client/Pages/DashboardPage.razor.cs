@@ -92,16 +92,15 @@ public partial class DashboardPage : FluxorComponent
     private string YearOfBirthCountsErrorMessage => this.DashboardState.Value.GetYearOfBirthCounts.Error?.Message ?? string.Empty;
 
     private IEnumerable<string> ErrorMessages => StringManipulator.ExcludeBlanks(
-        new[]
-        {
-            this.RegisteredUsersErrorMessage,
-            this.DependentsErrorMessage,
-            this.LoggedInUsersErrorMessage,
-            this.RecurringUsersErrorMessage,
-            this.AppLoginCountsErrorMessage,
-            this.RatingSummaryErrorMessage,
-            this.YearOfBirthCountsErrorMessage,
-        });
+    [
+        this.RegisteredUsersErrorMessage,
+        this.DependentsErrorMessage,
+        this.LoggedInUsersErrorMessage,
+        this.RecurringUsersErrorMessage,
+        this.AppLoginCountsErrorMessage,
+        this.RatingSummaryErrorMessage,
+        this.YearOfBirthCountsErrorMessage,
+    ]);
 
     private DateRange? DemographicsDateRange
     {

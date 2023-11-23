@@ -25,30 +25,20 @@ namespace HealthGateway.Admin.Server.Controllers
     /// <summary>
     /// Web API to handle system communications.
     /// </summary>
+    /// <param name="communicationService">The injected communication service.</param>
     [ApiController]
     [ApiVersion("1.0")]
     [Route("v{version:apiVersion}/api/[controller]")]
     [Produces("application/json")]
     [Authorize(Roles = "AdminUser,AdminReviewer")]
-    public class CommunicationController
+    public class CommunicationController(ICommunicationService communicationService)
     {
-        private readonly ICommunicationService communicationService;
-
         /// <summary>
-        /// Initializes a new instance of the <see cref="CommunicationController"/> class.
+        /// Adds a communication.
         /// </summary>
-        /// <param name="communicationService">The injected communication service.</param>
-        public CommunicationController(ICommunicationService communicationService)
-        {
-            this.communicationService = communicationService;
-        }
-
-        /// <summary>
-        /// Adds a given communication to the backend.
-        /// </summary>
-        /// <returns>The added communication wrapped in a RequestResult.</returns>
         /// <param name="communication">The communication to be added.</param>
-        /// <response code="200">Returns the communication json.</response>
+        /// <returns>The added communication wrapped in a RequestResult.</returns>
+        /// <response code="200">Returns the added communication wrapped in a RequestResult.</response>
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
         /// <response code="403">
         /// The client does not have access rights to the content; that is, it is unauthorized, so the server
@@ -57,15 +47,15 @@ namespace HealthGateway.Admin.Server.Controllers
         [HttpPost]
         public RequestResult<Communication> Add(Communication communication)
         {
-            return this.communicationService.Add(communication);
+            return communicationService.Add(communication);
         }
 
         /// <summary>
-        /// Updates a given communication to the backend.
+        /// Updates a communication.
         /// </summary>
-        /// <returns>The updated communication wrapped in a RequestResult.</returns>
         /// <param name="communication">The communication to be updated.</param>
-        /// <response code="200">Returns the communication json.</response>
+        /// <returns>The updated communication wrapped in a RequestResult.</returns>
+        /// <response code="200">Returns the updated communication wrapped in a RequestResult.</response>
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
         /// <response code="403">
         /// The client does not have access rights to the content; that is, it is unauthorized, so the server
@@ -74,14 +64,14 @@ namespace HealthGateway.Admin.Server.Controllers
         [HttpPut]
         public RequestResult<Communication> Update(Communication communication)
         {
-            return this.communicationService.Update(communication);
+            return communicationService.Update(communication);
         }
 
         /// <summary>
-        /// Gets all communication entries from the backend.
+        /// Gets all communications.
         /// </summary>
-        /// <returns>The list of all communication entries.</returns>
-        /// <response code="200">Returns the communication json.</response>
+        /// <returns>The list of all communication entries wrapped in a RequestResult.</returns>
+        /// <response code="200">Returns the list of all communication entries wrapped in a RequestResult.</response>
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
         /// <response code="403">
         /// The client does not have access rights to the content; that is, it is unauthorized, so the server
@@ -90,15 +80,15 @@ namespace HealthGateway.Admin.Server.Controllers
         [HttpGet]
         public RequestResult<IEnumerable<Communication>> GetAll()
         {
-            return this.communicationService.GetAll();
+            return communicationService.GetAll();
         }
 
         /// <summary>
-        /// Deletes the Communication that is passed to the controller.
+        /// Deletes a communication.
         /// </summary>
-        /// <param name="communication">The communication object to delete.</param>
-        /// <returns>The communication object delete wrapped in a Request result.</returns>
-        /// <response code="200">Returns the communication json of the deleted object wrapped in a request result.</response>
+        /// <param name="communication">The communication to delete.</param>
+        /// <returns>The deleted communication wrapped in a Request result.</returns>
+        /// <response code="200">Returns the deleted communication wrapped in a Request result.</response>
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
         /// <response code="403">
         /// The client does not have access rights to the content; that is, it is unauthorized, so the server
@@ -107,7 +97,7 @@ namespace HealthGateway.Admin.Server.Controllers
         [HttpDelete]
         public RequestResult<Communication> Delete([FromBody] Communication communication)
         {
-            return this.communicationService.Delete(communication);
+            return communicationService.Delete(communication);
         }
     }
 }
