@@ -16,9 +16,9 @@
 namespace HealthGateway.Admin.Client.Components.Common
 {
     using System.Collections.Generic;
-    using System.Linq;
     using HealthGateway.Admin.Client.Constants;
     using HealthGateway.Admin.Client.Utils;
+    using HealthGateway.Common.Data.Utils;
     using Microsoft.AspNetCore.Components;
     using MudBlazor;
 
@@ -106,16 +106,8 @@ namespace HealthGateway.Admin.Client.Components.Common
                 string topMarginClass = SpacingUtility.GenerateMarginClasses(SpacingDirectionCode.Top, this.TopMargin, this.VerticalMarginSize);
                 string bottomMarginClass = SpacingUtility.GenerateMarginClasses(SpacingDirectionCode.Bottom, this.BottomMargin, this.VerticalMarginSize);
 
-                List<string> classes = new()
-                {
-                    leftMarginClass,
-                    rightMarginClass,
-                    topMarginClass,
-                    bottomMarginClass,
-                    this.Class,
-                };
-
-                return string.Join(" ", classes.Where(c => !string.IsNullOrEmpty(c)));
+                IEnumerable<string> classes = [leftMarginClass, rightMarginClass, topMarginClass, bottomMarginClass, this.Class];
+                return StringManipulator.JoinWithoutBlanks(classes);
             }
         }
     }

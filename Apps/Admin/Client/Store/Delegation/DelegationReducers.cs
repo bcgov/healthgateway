@@ -22,7 +22,6 @@ namespace HealthGateway.Admin.Client.Store.Delegation
     using HealthGateway.Admin.Common.Constants;
     using HealthGateway.Admin.Common.Models;
 
-#pragma warning disable CS1591, SA1600
     public static class DelegationReducers
     {
         [ReducerMethod(typeof(DelegationActions.SearchAction))]

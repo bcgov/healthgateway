@@ -39,7 +39,7 @@ namespace HealthGateway.Admin.Client.Components.AgentAudit
         /// </summary>
         [Parameter]
         [EditorRequired]
-        public IEnumerable<AgentAction> AgentActions { get; set; } = new List<AgentAction>();
+        public IEnumerable<AgentAction> AgentActions { get; set; } = [];
 
         /// <summary>
         /// Gets or sets a value indicating whether the component is loading data.
@@ -54,7 +54,7 @@ namespace HealthGateway.Admin.Client.Components.AgentAudit
         [Inject]
         private IConfiguration Configuration { get; set; } = default!;
 
-        private int[] PageSizes { get; } = { 5, 10, 15 };
+        private int[] PageSizes { get; } = [5, 10, 15];
 
         private DateTime ConvertDateTime(DateTime utcDateTime)
         {

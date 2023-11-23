@@ -17,8 +17,6 @@ namespace HealthGateway.Admin.Client.Store.Analytics;
 
 using Fluxor;
 
-#pragma warning disable CS1591, SA1600
-
 public static class AnalyticsReducers
 {
     [ReducerMethod(typeof(AnalyticsActions.LoadUserProfilesAction))]

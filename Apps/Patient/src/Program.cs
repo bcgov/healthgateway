@@ -46,7 +46,7 @@ namespace HealthGateway.Patient
             WebApplicationBuilder builder = ProgramConfiguration.CreateWebAppBuilder(args);
 
             IServiceCollection services = builder.Services;
-            IConfiguration configuration = builder.Configuration;
+            ConfigurationManager configuration = builder.Configuration;
             ILogger logger = ProgramConfiguration.GetInitialLogger(configuration);
             IWebHostEnvironment environment = builder.Environment;
 

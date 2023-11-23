@@ -86,10 +86,10 @@ namespace HealthGateway.Admin.Tests.Services
         {
             RequestResult<PatientModel> dependentResult = GetDependentResult(DateTime.Now.AddYears(-11));
             RequestResult<PatientModel> delegateResult = GetDelegateResult();
-            IEnumerable<AgentAudit> agentAudits = new List<AgentAudit>
-            {
+            IEnumerable<AgentAudit> agentAudits =
+            [
                 GetAgentAudit(DependentHdid, AuditOperation.ProtectDependent, AuditGroup.Dependent),
-            };
+            ];
 
             DelegationInfo expectedDelegationInfo = GetExpectedDelegationInfo(dependentResult.ResourcePayload, delegateResult.ResourcePayload, true);
             Dependent protectedDependent = GetDependent(DependentHdid, true);
@@ -115,10 +115,10 @@ namespace HealthGateway.Admin.Tests.Services
         {
             RequestResult<PatientModel> dependentResult = GetDependentResult(DateTime.Now.AddYears(-11));
             RequestResult<PatientModel> delegateResult = GetDelegateResult();
-            IEnumerable<AgentAudit> agentAudits = new List<AgentAudit>
-            {
+            IEnumerable<AgentAudit> agentAudits =
+            [
                 GetAgentAudit(DependentHdid, AuditOperation.UnprotectDependent, AuditGroup.Dependent),
-            };
+            ];
 
             DelegationInfo expectedDelegationInfo = GetExpectedDelegationInfo(dependentResult.ResourcePayload, delegateResult.ResourcePayload, false);
             Dependent unprotectedDependent = GetDependent(DependentHdid, false);
@@ -186,8 +186,8 @@ namespace HealthGateway.Admin.Tests.Services
                 HdId = DependentHdid,
                 Protected = true,
                 Version = 0,
-                AllowedDelegations = new List<AllowedDelegation>
-                {
+                AllowedDelegations =
+                [
                     new()
                     {
                         DependentHdId = NewDependentHdid,
@@ -198,21 +198,18 @@ namespace HealthGateway.Admin.Tests.Services
                         DependentHdId = NewDependentHdid,
                         DelegateHdId = NewDelegateHdid,
                     },
-                },
+                ],
             };
 
-            IEnumerable<ResourceDelegate> expectedDeletedResourceDelegates = new List<ResourceDelegate>
-            {
+            IEnumerable<ResourceDelegate> expectedDeletedResourceDelegates =
+            [
                 new()
                     { ResourceOwnerHdid = NewDependentHdid, ProfileHdid = ProtectedDelegateHdid2, ReasonCode = ResourceDelegateReason.Guardian },
-            };
+            ];
 
             AgentAudit expectedAgentAudit = GetAgentAudit(NewDependentHdid, AuditOperation.ProtectDependent, AuditGroup.Dependent);
 
-            IEnumerable<string> delegateHdids = new List<string>
-            {
-                ProtectedDelegateHdid1, NewDelegateHdid,
-            };
+            IEnumerable<string> delegateHdids = [ProtectedDelegateHdid1, NewDelegateHdid];
             Mock<IDelegationDelegate> delegationDelegate = new();
             ResourceDelegateQueryResult resourceDelegateQueryResult = GetResourceDelegates(NewDependentHdid);
             DelegationService delegationService = this.GetDelegationService(null, delegationDelegate, resourceDelegateQueryResult, NewDependentHdid, AuthenticatedUser, AuthenticatedPreferredUsername);
@@ -242,10 +239,10 @@ namespace HealthGateway.Admin.Tests.Services
                 HdId = DependentHdid,
                 Protected = false,
                 Version = 150,
-                AllowedDelegations = new List<AllowedDelegation>(),
+                AllowedDelegations = [],
             };
 
-            IEnumerable<ResourceDelegate> expectedDeletedResourceDelegates = Enumerable.Empty<ResourceDelegate>();
+            IEnumerable<ResourceDelegate> expectedDeletedResourceDelegates = [];
 
             AgentAudit expectedAgentAudit = GetAgentAudit(DependentHdid, AuditOperation.UnprotectDependent, AuditGroup.Dependent);
 
@@ -285,8 +282,8 @@ namespace HealthGateway.Admin.Tests.Services
                 HdId = DependentHdid,
                 Protected = true,
                 Version = 150,
-                AllowedDelegations = new List<AllowedDelegation>
-                {
+                AllowedDelegations =
+                [
                     new()
                     {
                         DependentHdId = DependentHdid,
@@ -297,21 +294,17 @@ namespace HealthGateway.Admin.Tests.Services
                         DependentHdId = DependentHdid,
                         DelegateHdId = NewDelegateHdid,
                     },
-                },
+                ],
             };
 
-            IEnumerable<ResourceDelegate> expectedDeletedResourceDelegates = new List<ResourceDelegate>
-            {
-                new()
-                    { ResourceOwnerHdid = DependentHdid, ProfileHdid = ProtectedDelegateHdid2, ReasonCode = ResourceDelegateReason.Guardian },
-            };
+            IEnumerable<ResourceDelegate> expectedDeletedResourceDelegates =
+            [
+                new() { ResourceOwnerHdid = DependentHdid, ProfileHdid = ProtectedDelegateHdid2, ReasonCode = ResourceDelegateReason.Guardian },
+            ];
 
             AgentAudit expectedAgentAudit = GetAgentAudit(DependentHdid, AuditOperation.ProtectDependent, AuditGroup.Dependent);
 
-            IEnumerable<string> delegateHdids = new List<string>
-            {
-                ProtectedDelegateHdid1, NewDelegateHdid,
-            };
+            IEnumerable<string> delegateHdids = [ProtectedDelegateHdid1, NewDelegateHdid];
             Mock<IDelegationDelegate> delegationDelegate = new();
             Dependent protectedDependent = GetDependent(DependentHdid, true);
             ResourceDelegateQueryResult resourceDelegateQueryResult = GetResourceDelegates(DependentHdid);
@@ -375,7 +368,7 @@ namespace HealthGateway.Admin.Tests.Services
             RequestResult<PatientModel> patientResult1 = GetPatientResult(patient1);
             RequestResult<PatientModel> patientResult2 = GetPatientResult(patient2);
 
-            IDelegationService delegationService = this.GetDelegationService(dependentResult, delegateResult, protectedDependent, patientResult1, patientResult2, new List<AgentAudit>());
+            IDelegationService delegationService = this.GetDelegationService(dependentResult, delegateResult, protectedDependent, patientResult1, patientResult2, []);
             await Assert.ThrowsAsync<ProblemDetailsException>(() => delegationService.GetDelegationInformationAsync(DependentPhn));
         }
 
@@ -594,9 +587,9 @@ namespace HealthGateway.Admin.Tests.Services
             DelegationInfo expectedDelegationInfo = new()
             {
                 Dependent = expectedDependentInfo,
-                Delegates = new List<DelegateInfo> { expectedDelegateInfo1, expectedDelegateInfo2, expectedDelegateInfo3 },
-                AgentActions = new List<AgentAction>
-                {
+                Delegates = [expectedDelegateInfo1, expectedDelegateInfo2, expectedDelegateInfo3],
+                AgentActions =
+                [
                     new()
                     {
                         Hdid = DependentHdid,
@@ -605,7 +598,7 @@ namespace HealthGateway.Admin.Tests.Services
                         OperationCode = isProtected ? AuditOperation.ProtectDependent : AuditOperation.UnprotectDependent,
                         TransactionDateTime = TransactionDateTime,
                     },
-                },
+                ],
             };
 
             return expectedDelegationInfo;
@@ -667,8 +660,8 @@ namespace HealthGateway.Admin.Tests.Services
                 HdId = dependentHdid,
                 Protected = isProtected,
                 Version = 150,
-                AllowedDelegations = new List<AllowedDelegation>
-                {
+                AllowedDelegations =
+                [
                     new()
                     {
                         DependentHdId = dependentHdid,
@@ -684,7 +677,7 @@ namespace HealthGateway.Admin.Tests.Services
                         DependentHdId = dependentHdid,
                         DelegateHdId = DelegateHdid,
                     },
-                },
+                ],
             };
         }
 
@@ -707,11 +700,11 @@ namespace HealthGateway.Admin.Tests.Services
         {
             return new()
             {
-                Items = new List<ResourceDelegateQueryResultItem>
-                {
+                Items =
+                [
                     new() { ResourceDelegate = new() { ResourceOwnerHdid = hdid, ProfileHdid = ProtectedDelegateHdid1, ReasonCode = ResourceDelegateReason.Guardian } },
                     new() { ResourceDelegate = new() { ResourceOwnerHdid = hdid, ProfileHdid = ProtectedDelegateHdid2, ReasonCode = ResourceDelegateReason.Guardian } },
-                },
+                ],
             };
         }
 
@@ -739,10 +732,10 @@ namespace HealthGateway.Admin.Tests.Services
 
             ResourceDelegateQueryResult result = new()
             {
-                Items = new List<ResourceDelegateQueryResultItem>
-                {
+                Items =
+                [
                     new() { ResourceDelegate = new() { ResourceOwnerHdid = DependentHdid, ProfileHdid = DelegateHdid, ReasonCode = ResourceDelegateReason.Guardian } },
-                },
+                ],
             };
             Mock<IResourceDelegateDelegate> resourceDelegateDelegate = new();
             resourceDelegateDelegate.Setup(r => r.SearchAsync(It.IsAny<ResourceDelegateQuery>())).ReturnsAsync(result);

@@ -27,32 +27,16 @@ namespace HealthGateway.Admin.Server.Delegates
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
 
-    /// <summary>
-    /// Implementation that uses HTTP to retrieve immunization information.
-    /// </summary>
-    public class RestVaccineStatusDelegate : IVaccineStatusDelegate
+    /// <inheritdoc/>
+    /// <param name="logger">Injected Logger Provider.</param>
+    /// <param name="immunizationAdminApi">The injected Refit API for accessing vaccine statuses for admin users.</param>
+    /// <param name="configuration">The injected configuration provider.</param>
+    public class RestVaccineStatusDelegate(
+        ILogger<RestVaccineStatusDelegate> logger,
+        IImmunizationAdminApi immunizationAdminApi,
+        IConfiguration configuration) : IVaccineStatusDelegate
     {
-        private readonly ILogger logger;
-        private readonly IImmunizationAdminApi immunizationAdminApi;
-        private readonly PhsaConfig phsaConfig;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="RestVaccineStatusDelegate"/> class.
-        /// </summary>
-        /// <param name="logger">Injected Logger Provider.</param>
-        /// <param name="immunizationAdminApi">The injected Refit API for accessing vaccine statuses for admin users.</param>
-        /// <param name="configuration">The injected configuration provider.</param>
-        public RestVaccineStatusDelegate(
-            ILogger<RestVaccineStatusDelegate> logger,
-            IImmunizationAdminApi immunizationAdminApi,
-            IConfiguration configuration)
-        {
-            this.logger = logger;
-            this.immunizationAdminApi = immunizationAdminApi;
-
-            this.phsaConfig = new PhsaConfig();
-            configuration.Bind(PhsaConfig.ConfigurationSectionKey, this.phsaConfig);
-        }
+        private readonly PhsaConfig phsaConfig = configuration.GetSection(PhsaConfig.ConfigurationSectionKey).Get<PhsaConfig>() ?? new();
 
         private static ActivitySource Source { get; } = new(nameof(RestVaccineStatusDelegate));
 
@@ -72,14 +56,14 @@ namespace HealthGateway.Admin.Server.Delegates
             bool refreshInProgress;
             do
             {
-                response = await this.immunizationAdminApi.GetVaccineStatus(query, accessToken).ConfigureAwait(true);
+                response = await immunizationAdminApi.GetVaccineStatus(query, accessToken).ConfigureAwait(true);
 
                 refreshInProgress = response.LoadState.RefreshInProgress;
 
                 attemptCount++;
                 if (refreshInProgress && attemptCount <= this.phsaConfig.MaxRetries)
                 {
-                    this.logger.LogDebug("Refresh in progress, trying again....");
+                    logger.LogDebug("Refresh in progress, trying again....");
                     await Task.Delay(Math.Max(response.LoadState.BackOffMilliseconds, this.phsaConfig.BackOffMilliseconds)).ConfigureAwait(true);
                 }
             }

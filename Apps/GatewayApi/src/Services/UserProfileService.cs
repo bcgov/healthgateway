@@ -510,7 +510,7 @@ namespace HealthGateway.GatewayApi.Services
             }
 
             // Validate UserProfile inputs
-            ValidationResult profileValidationResult = new UserProfileValidator().Validate(createProfileRequest.Profile);
+            ValidationResult profileValidationResult = await new UserProfileValidator().ValidateAsync(createProfileRequest.Profile);
             if (!profileValidationResult.IsValid)
             {
                 this.logger.LogWarning("Profile inputs have failed validation for {Hdid}", createProfileRequest.Profile.HdId);
@@ -526,7 +526,7 @@ namespace HealthGateway.GatewayApi.Services
             DateTime? latestTourChangeDateTime = this.GetLatestTourChangeDateTime();
             UserProfileModel userProfileModel = UserProfileMapUtils.CreateFromDbModel(userProfile, termsOfServiceId, this.autoMapper);
             userProfileModel.HasTourUpdated = profileHistoryCollection != null &&
-                                              profileHistoryCollection.Any() &&
+                                              profileHistoryCollection.Length != 0 &&
                                               latestTourChangeDateTime != null &&
                                               profileHistoryCollection.Max(x => x.LastLoginDateTime) < latestTourChangeDateTime;
             userProfileModel.BlockedDataSources = this.patientRepository.GetDataSources(userProfile.HdId).Result;

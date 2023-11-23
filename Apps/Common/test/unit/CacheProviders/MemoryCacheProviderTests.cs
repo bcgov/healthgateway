@@ -149,7 +149,7 @@ namespace HealthGateway.CommonTests.CacheProviders
             string value = $"value_{GenerateRandomString()}";
 
             await this.cacheProvider.AddItemAsync(key, value, TimeSpan.FromMilliseconds(100));
-            Thread.Sleep(101);
+            await Task.Delay(101);
 
             Assert.Null(await this.cacheProvider.GetItemAsync<string>(key));
         }

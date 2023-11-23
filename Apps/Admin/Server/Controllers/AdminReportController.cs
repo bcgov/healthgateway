@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -28,24 +28,14 @@ namespace HealthGateway.Admin.Server.Controllers
     /// <summary>
     /// Web API to handle admin reports.
     /// </summary>
+    /// <param name="adminReportService">The injected admin report service.</param>
     [ApiController]
     [ApiVersion("1.0")]
     [Route("v{version:apiVersion}/api/[controller]")]
     [Produces("application/json")]
     [Authorize(Roles = "AdminUser")]
-    public class AdminReportController
+    public class AdminReportController(IAdminReportService adminReportService)
     {
-        private readonly IAdminReportService adminReportService;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="AdminReportController"/> class.
-        /// </summary>
-        /// <param name="adminReportService">The injected admin report service.</param>
-        public AdminReportController(IAdminReportService adminReportService)
-        {
-            this.adminReportService = adminReportService;
-        }
-
         /// <summary>
         /// Retrieves a collection of user HDIDs and their blocked data sources.
         /// </summary>
@@ -62,7 +52,7 @@ namespace HealthGateway.Admin.Server.Controllers
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<IEnumerable<BlockedAccessRecord>> BlockedAccessReport(CancellationToken ct)
         {
-            return await this.adminReportService.GetBlockedAccessReportAsync(ct);
+            return await adminReportService.GetBlockedAccessReportAsync(ct);
         }
 
         /// <summary>
@@ -88,7 +78,7 @@ namespace HealthGateway.Admin.Server.Controllers
             [FromQuery] SortDirection sortDirection = SortDirection.Ascending,
             CancellationToken ct = default)
         {
-            return await this.adminReportService.GetProtectedDependentsReportAsync(page, pageSize, sortDirection, ct);
+            return await adminReportService.GetProtectedDependentsReportAsync(page, pageSize, sortDirection, ct);
         }
     }
 }

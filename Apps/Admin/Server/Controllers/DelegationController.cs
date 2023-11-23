@@ -26,24 +26,14 @@ namespace HealthGateway.Admin.Server.Controllers
     /// <summary>
     /// Web API to handle delegation.
     /// </summary>
+    /// <param name="delegationService">The injected delegation service.</param>
     [ApiController]
     [ApiVersion("1.0")]
     [Route("v{version:apiVersion}/api/[controller]")]
     [Produces("application/json")]
     [Authorize(Roles = "AdminUser")]
-    public class DelegationController
+    public class DelegationController(IDelegationService delegationService)
     {
-        private readonly IDelegationService delegationService;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DelegationController"/> class.
-        /// </summary>
-        /// <param name="delegationService">The injected delegation service.</param>
-        public DelegationController(IDelegationService delegationService)
-        {
-            this.delegationService = delegationService;
-        }
-
         /// <summary>
         /// Retrieves delegation information for a person.
         /// </summary>
@@ -68,7 +58,7 @@ namespace HealthGateway.Admin.Server.Controllers
         [ProducesResponseType(StatusCodes.Status502BadGateway, Type = typeof(ProblemDetails))]
         public async Task<DelegationInfo> GetDelegationInformation([FromHeader] string phn, CancellationToken ct)
         {
-            return await this.delegationService.GetDelegationInformationAsync(phn, ct).ConfigureAwait(true);
+            return await delegationService.GetDelegationInformationAsync(phn, ct).ConfigureAwait(true);
         }
 
         /// <summary>
@@ -95,7 +85,7 @@ namespace HealthGateway.Admin.Server.Controllers
         [ProducesResponseType(StatusCodes.Status502BadGateway, Type = typeof(ProblemDetails))]
         public async Task<DelegateInfo> GetDelegateInformation([FromHeader] string phn)
         {
-            return await this.delegationService.GetDelegateInformationAsync(phn).ConfigureAwait(true);
+            return await delegationService.GetDelegateInformationAsync(phn).ConfigureAwait(true);
         }
 
         /// <summary>
@@ -113,7 +103,7 @@ namespace HealthGateway.Admin.Server.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<AgentAction> ProtectDependent(string dependentHdid, ProtectDependentRequest request)
         {
-            return await this.delegationService.ProtectDependentAsync(dependentHdid, request.DelegateHdids, request.Reason).ConfigureAwait(true);
+            return await delegationService.ProtectDependentAsync(dependentHdid, request.DelegateHdids, request.Reason).ConfigureAwait(true);
         }
 
         /// <summary>
@@ -133,7 +123,7 @@ namespace HealthGateway.Admin.Server.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<AgentAction> UnprotectDependent(string dependentHdid, UnprotectDependentRequest request)
         {
-            return await this.delegationService.UnprotectDependentAsync(dependentHdid, request.Reason).ConfigureAwait(true);
+            return await delegationService.UnprotectDependentAsync(dependentHdid, request.Reason).ConfigureAwait(true);
         }
     }
 }

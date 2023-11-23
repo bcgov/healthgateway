@@ -69,7 +69,7 @@ namespace HealthGateway.Admin.Client.Components.Delegation
             public DelegateRow(ExtendedDelegateInfo model)
             {
                 this.Hdid = model.Hdid;
-                this.Name = StringManipulator.JoinWithoutBlanks(new[] { model.FirstName, model.LastName });
+                this.Name = StringManipulator.JoinWithoutBlanks([model.FirstName, model.LastName]);
                 this.DateOfBirth = model.Birthdate;
                 this.PersonalHealthNumber = model.PersonalHealthNumber;
                 this.Address = AddressUtility.GetAddressAsSingleLine(model.PhysicalAddress ?? model.PostalAddress);
