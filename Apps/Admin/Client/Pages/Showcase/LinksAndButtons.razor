@@ -109,18 +109,18 @@
     /// <summary>
     /// Link variants.
     /// </summary>
-    public IList<Variant> Variants { get; } = new List<Variant>
-    {
+    private IEnumerable<Variant> Variants { get; } =
+    [
         Variant.Filled,
         Variant.Outlined,
         Variant.Text,
-    };
+    ];
 
     /// <summary>
     /// Colour settings.
     /// </summary>
-    public IList<Color> Colours { get; } = new List<Color>
-    {
+    private IEnumerable<Color> Colours { get; } =
+    [
         Color.Default,
         Color.Primary,
         Color.Secondary,
@@ -129,5 +129,5 @@
         Color.Success,
         Color.Warning,
         Color.Error,
-    };
+    ];
 }

@@ -21,7 +21,6 @@ using System.Collections.Immutable;
 using Fluxor;
 using HealthGateway.Admin.Common.Models;
 
-#pragma warning disable CS1591, SA1600
 public static class TagReducers
 {
     [ReducerMethod(typeof(TagActions.LoadAction))]

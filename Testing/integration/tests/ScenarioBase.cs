@@ -100,9 +100,7 @@ public class WebAppFixture : IAsyncLifetime
 }
 
 [CollectionDefinition("WebAppScenario")]
-public class ScenarioCollection : ICollectionFixture<WebAppFixture>
-{
-}
+public class ScenarioCollection : ICollectionFixture<WebAppFixture>;
 
 [Collection("WebAppScenario")]
 public abstract class ScenarioContextBase<TStartup> : IAsyncLifetime, IClassFixture<WebAppFixture>
@@ -177,6 +175,7 @@ public abstract class ScenarioContextBase<TStartup> : IAsyncLifetime, IClassFixt
         return user;
     }
 
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1859:Change return type of method from 'IAlbaExtension' to 'OpenConnectUserPassword'", Justification = "Team decision")]
     private IAlbaExtension CreateClientCredentials(string userName)
     {
         string clientId = this.testConfiguration.ClientId;

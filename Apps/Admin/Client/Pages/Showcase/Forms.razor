@@ -102,10 +102,10 @@
     /// <summary>
     /// Form variants.
     /// </summary>
-    public IList<Variant> Variants { get; } = new List<Variant>
-    {
+    private IEnumerable<Variant> Variants { get; } =
+    [
         Variant.Text,
         Variant.Outlined,
         Variant.Filled,
-    };
+    ];
 }

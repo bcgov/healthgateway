@@ -122,7 +122,7 @@ namespace HealthGateway.PatientDataAccess
                 .OfType<string>()
                 .ToArray();
 
-            if (categories.Any())
+            if (categories.Length != 0)
             {
                 HealthOptionsResult results = await this.patientApi.GetHealthOptionsAsync(query.Pid, categories, ct).ConfigureAwait(true) ??
                                               new(new HealthOptionsMetadata(), Array.Empty<HealthOptionsData>());
@@ -141,7 +141,7 @@ namespace HealthGateway.PatientDataAccess
                 .OfType<string>()
                 .ToArray();
 
-            if (categories.Any())
+            if (categories.Length != 0)
             {
                 HealthDataResult results = await this.patientApi.GetHealthDataAsync(query.Pid, categories, ct).ConfigureAwait(true) ??
                                            new(new HealthDataMetadata(), Array.Empty<HealthDataEntry>());

@@ -35,7 +35,7 @@ public partial class RatingSummary : FluxorComponent
 
     private IDictionary<string, int> RatingSummaryResult => this.DashboardState.Value.GetRatingsSummary.Result ?? ImmutableDictionary<string, int>.Empty;
 
-    private IDictionary<int, int> Ratings => this.RatingSummaryResult.ToDictionary(r => Convert.ToInt32(r.Key, CultureInfo.InvariantCulture), r => r.Value);
+    private Dictionary<int, int> Ratings => this.RatingSummaryResult.ToDictionary(r => Convert.ToInt32(r.Key, CultureInfo.InvariantCulture), r => r.Value);
 
     private int TotalRatings => this.RatingSummaryResult.Select(r => r.Value).Sum();
 
@@ -52,7 +52,7 @@ public partial class RatingSummary : FluxorComponent
     {
         get
         {
-            List<(int? Count, int Percentage)> details = new();
+            List<(int? Count, int Percentage)> details = [];
             for (int stars = 1; stars <= 5; stars++)
             {
                 int percentage = 0;

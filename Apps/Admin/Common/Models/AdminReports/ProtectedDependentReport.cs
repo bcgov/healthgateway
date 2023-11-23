@@ -22,7 +22,7 @@ namespace HealthGateway.Admin.Common.Models.AdminReports
     /// </summary>
     /// <param name="Records">The list of records to display.</param>
     /// <param name="Metadata">Metadata describing the dataset metrics.</param>
-    public record ProtectedDependentReport(IList<ProtectedDependentRecord> Records, ReportMetadata Metadata);
+    public record ProtectedDependentReport(IReadOnlyList<ProtectedDependentRecord> Records, ReportMetadata Metadata);
 
     /// <summary>
     /// Represents a protected dependent.

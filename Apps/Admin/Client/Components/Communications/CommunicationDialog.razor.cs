@@ -41,7 +41,7 @@ public partial class CommunicationDialog : FluxorComponent
     [Parameter]
     public Communication Communication { get; set; } = default!;
 
-    private static List<CommunicationStatus> CommunicationStatuses => new() { CommunicationStatus.Draft, CommunicationStatus.New };
+    private static IEnumerable<CommunicationStatus> CommunicationStatuses => [CommunicationStatus.Draft, CommunicationStatus.New];
 
     [CascadingParameter]
     private MudDialogInstance MudDialog { get; set; } = default!;

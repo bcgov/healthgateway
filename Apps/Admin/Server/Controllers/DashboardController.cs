@@ -28,24 +28,14 @@ namespace HealthGateway.Admin.Server.Controllers
     /// <summary>
     /// Web API for the Admin dashboard.
     /// </summary>
+    /// <param name="dashboardService">The injected dashboard service.</param>
     [ApiController]
     [ApiVersion("1.0")]
     [Route("v{version:apiVersion}/api/[controller]")]
     [Produces("application/json")]
     [Authorize(Roles = "AdminUser,AdminReviewer,AdminAnalyst")]
-    public class DashboardController
+    public class DashboardController(IDashboardService dashboardService)
     {
-        private readonly IDashboardService dashboardService;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DashboardController"/> class.
-        /// </summary>
-        /// <param name="dashboardService">The injected dashboard service.</param>
-        public DashboardController(IDashboardService dashboardService)
-        {
-            this.dashboardService = dashboardService;
-        }
-
         /// <summary>
         /// Retrieves the daily counts of user registrations.
         /// </summary>
@@ -65,7 +55,7 @@ namespace HealthGateway.Admin.Server.Controllers
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<IDictionary<DateOnly, int>> GetDailyUserRegistrationCounts([FromQuery] int timeOffset, CancellationToken ct)
         {
-            return await this.dashboardService.GetDailyUserRegistrationCountsAsync(timeOffset, ct);
+            return await dashboardService.GetDailyUserRegistrationCountsAsync(timeOffset, ct);
         }
 
         /// <summary>
@@ -87,7 +77,7 @@ namespace HealthGateway.Admin.Server.Controllers
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<IDictionary<DateOnly, int>> GetDailyDependentRegistrationCounts([FromQuery] int timeOffset, CancellationToken ct)
         {
-            return await this.dashboardService.GetDailyDependentRegistrationCountsAsync(timeOffset, ct);
+            return await dashboardService.GetDailyDependentRegistrationCountsAsync(timeOffset, ct);
         }
 
         /// <summary>
@@ -115,7 +105,7 @@ namespace HealthGateway.Admin.Server.Controllers
             [FromQuery] int timeOffset,
             CancellationToken ct)
         {
-            return await this.dashboardService.GetDailyUniqueLoginCountsAsync(startDateLocal, endDateLocal, timeOffset, ct);
+            return await dashboardService.GetDailyUniqueLoginCountsAsync(startDateLocal, endDateLocal, timeOffset, ct);
         }
 
         /// <summary>
@@ -145,7 +135,7 @@ namespace HealthGateway.Admin.Server.Controllers
             [FromQuery] int timeOffset,
             CancellationToken ct)
         {
-            return await this.dashboardService.GetRecurringUserCountAsync(days, startDateLocal, endDateLocal, timeOffset, ct);
+            return await dashboardService.GetRecurringUserCountAsync(days, startDateLocal, endDateLocal, timeOffset, ct);
         }
 
         /// <summary>
@@ -173,7 +163,7 @@ namespace HealthGateway.Admin.Server.Controllers
             [FromQuery] int timeOffset,
             CancellationToken ct)
         {
-            return await this.dashboardService.GetAppLoginCountsAsync(startDateLocal, endDateLocal, timeOffset, ct);
+            return await dashboardService.GetAppLoginCountsAsync(startDateLocal, endDateLocal, timeOffset, ct);
         }
 
         /// <summary>
@@ -201,7 +191,7 @@ namespace HealthGateway.Admin.Server.Controllers
             [FromQuery] int timeOffset,
             CancellationToken ct)
         {
-            return await this.dashboardService.GetRatingsSummaryAsync(startDateLocal, endDateLocal, timeOffset, ct);
+            return await dashboardService.GetRatingsSummaryAsync(startDateLocal, endDateLocal, timeOffset, ct);
         }
 
         /// <summary>
@@ -229,7 +219,7 @@ namespace HealthGateway.Admin.Server.Controllers
             [FromQuery] int timeOffset,
             CancellationToken ct)
         {
-            return await this.dashboardService.GetYearOfBirthCountsAsync(startDateLocal, endDateLocal, timeOffset, ct);
+            return await dashboardService.GetYearOfBirthCountsAsync(startDateLocal, endDateLocal, timeOffset, ct);
         }
     }
 }

@@ -35,7 +35,7 @@ namespace HealthGateway.Admin.Client.Components.Support
         /// </summary>
         [Parameter]
         [EditorRequired]
-        public IEnumerable<MessagingVerificationModel> Data { get; set; } = Enumerable.Empty<MessagingVerificationModel>();
+        public IEnumerable<MessagingVerificationModel> Data { get; set; } = [];
 
         /// <summary>
         /// Gets or sets a value indicating whether data is loading.

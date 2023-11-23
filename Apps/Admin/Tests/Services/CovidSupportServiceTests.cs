@@ -776,7 +776,7 @@ namespace HealthGateway.Admin.Tests.Services
             Mock<IPatientRepository> mock = new();
             foreach ((PatientDetailsQuery query, PatientModel? patient) in pairs)
             {
-                PatientQueryResult result = new(patient == null ? Enumerable.Empty<PatientModel>() : new List<PatientModel> { patient });
+                PatientQueryResult result = new(patient == null ? [] : [patient]);
                 mock.Setup(p => p.Query(query, It.IsAny<CancellationToken>())).ReturnsAsync(result);
             }
 
@@ -811,8 +811,7 @@ namespace HealthGateway.Admin.Tests.Services
             else if (response.Result == null)
             {
                 mock.Setup(d => d.GetVaccineStatusWithRetries(It.IsAny<string>(), It.IsAny<DateTime>(), It.IsAny<string>()))
-                    .Throws(
-                        new ProblemDetailsException(ExceptionUtility.CreateProblemDetails(ErrorMessages.CannotGetVaccineStatus, HttpStatusCode.BadRequest, nameof(RestVaccineStatusDelegate))));
+                    .Throws(new ProblemDetailsException(ExceptionUtility.CreateProblemDetails(ErrorMessages.CannotGetVaccineStatus, HttpStatusCode.BadRequest, nameof(RestVaccineStatusDelegate))));
             }
             else
             {

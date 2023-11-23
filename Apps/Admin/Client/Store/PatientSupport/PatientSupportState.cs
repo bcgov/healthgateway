@@ -21,6 +21,7 @@ namespace HealthGateway.Admin.Client.Store.PatientSupport
     using System.Linq;
     using Fluxor;
     using HealthGateway.Admin.Common.Models;
+    using HealthGateway.Common.Data.Utils;
 
     /// <summary>
     /// The state for the feature.
@@ -33,6 +34,6 @@ namespace HealthGateway.Admin.Client.Store.PatientSupport
         /// Gets the warning messages for display.
         /// </summary>
         public IEnumerable<string> WarningMessages =>
-            this.Result?.Select(patient => patient.WarningMessage).Where(m => !string.IsNullOrEmpty(m)) ?? Enumerable.Empty<string>();
+            StringManipulator.ExcludeBlanks(this.Result?.Select(patient => patient.WarningMessage) ?? []);
     }
 }

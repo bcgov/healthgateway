@@ -1,4 +1,4 @@
-import { getTableRows } from "../../utilities/sharedUtilities";
+import { getTableRows, selectTab } from "../../utilities/sharedUtilities";
 
 const blockedHdid = "GO4DOSMRJ7MFKPPADDZ3FK2MOJ45SFKONJWR67XNLMZQFNEHDKDA";
 
@@ -24,6 +24,7 @@ describe("Reports", () => {
             .click();
 
         cy.url().should("include", "/patient-details");
+        selectTab("[data-testid=patient-details-tabs]", "Account");
         cy.contains("[data-testid=patient-hdid]", blockedHdid).should(
             "be.visible"
         );

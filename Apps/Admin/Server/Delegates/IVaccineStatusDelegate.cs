@@ -21,7 +21,7 @@ namespace HealthGateway.Admin.Server.Delegates
     using HealthGateway.Common.Models.PHSA;
 
     /// <summary>
-    /// Interface that defines a delegate to retrieve vaccine status information.
+    /// Provides access to vaccine status information.
     /// </summary>
     public interface IVaccineStatusDelegate
     {

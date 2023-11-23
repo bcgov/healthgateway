@@ -31,39 +31,24 @@ namespace HealthGateway.Admin.Server.Delegates
     using Microsoft.Extensions.Logging;
 
     /// <inheritdoc/>
-    public class RestImmunizationAdminDelegate : IImmunizationAdminDelegate
+    /// <param name="logger">Injected Logger Provider.</param>
+    /// <param name="immunizationAdminApi">The injected client for immunization admin api calls.</param>
+    /// <param name="configuration">The injected configuration provider.</param>
+    /// <param name="autoMapper">The injected automapper provider.</param>
+    public class RestImmunizationAdminDelegate(
+        ILogger<RestImmunizationAdminDelegate> logger,
+        IImmunizationAdminApi immunizationAdminApi,
+        IConfiguration configuration,
+        IMapper autoMapper) : IImmunizationAdminDelegate
     {
-        private readonly IMapper autoMapper;
-        private readonly IImmunizationAdminApi immunizationAdminApi;
-        private readonly ILogger logger;
-        private readonly PhsaConfig phsaConfig;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="RestImmunizationAdminDelegate"/> class.
-        /// </summary>
-        /// <param name="logger">Injected Logger Provider.</param>
-        /// <param name="immunizationAdminApi">The injected client for immunization admin api calls.</param>
-        /// <param name="configuration">The injected configuration provider.</param>
-        /// <param name="autoMapper">The injected automapper provider.</param>
-        public RestImmunizationAdminDelegate(
-            ILogger<RestImmunizationAdminDelegate> logger,
-            IImmunizationAdminApi immunizationAdminApi,
-            IConfiguration configuration,
-            IMapper autoMapper)
-        {
-            this.logger = logger;
-            this.immunizationAdminApi = immunizationAdminApi;
-            this.autoMapper = autoMapper;
-            this.phsaConfig = new PhsaConfig();
-            configuration.Bind(PhsaConfig.ConfigurationSectionKey, this.phsaConfig);
-        }
+        private readonly PhsaConfig phsaConfig = configuration.GetSection(PhsaConfig.ConfigurationSectionKey).Get<PhsaConfig>() ?? new();
 
         private static ActivitySource Source { get; } = new(nameof(RestImmunizationAdminDelegate));
 
         /// <inheritdoc/>
         public async Task<VaccineDetails> GetVaccineDetailsWithRetries(string phn, string accessToken, bool refresh = false)
         {
-            this.logger.LogDebug("Getting vaccine details with retries...");
+            logger.LogDebug("Getting vaccine details with retries...");
             using Activity? activity = Source.StartActivity();
 
             CovidImmunizationsRequest request = new()
@@ -77,13 +62,13 @@ namespace HealthGateway.Admin.Server.Delegates
             bool refreshInProgress;
             do
             {
-                response = await this.immunizationAdminApi.GetVaccineDetails(request, accessToken).ConfigureAwait(true);
+                response = await immunizationAdminApi.GetVaccineDetails(request, accessToken).ConfigureAwait(true);
 
                 refreshInProgress = response.LoadState.RefreshInProgress;
 
                 if (refreshInProgress)
                 {
-                    this.logger.LogDebug("Refresh in progress, trying again....");
+                    logger.LogDebug("Refresh in progress, trying again....");
                     await Task.Delay(Math.Max(response.LoadState.BackOffMilliseconds, this.phsaConfig.BackOffMilliseconds)).ConfigureAwait(true);
                 }
             }
@@ -94,12 +79,12 @@ namespace HealthGateway.Admin.Server.Delegates
                 throw new ProblemDetailsException(ExceptionUtility.CreateProblemDetails(ErrorMessages.MaximumRetryAttemptsReached, HttpStatusCode.BadRequest, nameof(RestImmunizationAdminDelegate)));
             }
 
-            return new VaccineDetails(
-                this.autoMapper.Map<IEnumerable<VaccineDoseResponse>, IList<VaccineDose>>(response.Result?.Doses),
-                response.Result?.VaccineStatusResult)
+            return new()
             {
                 Blocked = response.Result?.Blocked ?? false,
                 ContainsInvalidDoses = response.Result?.ContainsInvalidDoses ?? false,
+                Doses = autoMapper.Map<IEnumerable<VaccineDoseResponse>, IReadOnlyList<VaccineDose>>(response.Result?.Doses),
+                VaccineStatusResult = response.Result?.VaccineStatusResult,
             };
         }
     }

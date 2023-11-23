@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 //  Copyright © 2019 Province of British Columbia
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,28 +19,14 @@ namespace HealthGateway.Admin.Client.Services
     using HealthGateway.Common.Data.Utils;
     using Microsoft.Extensions.Configuration;
 
-    /// <summary>
-    /// Injectable service to provide data conversion methods.
-    /// </summary>
-    public class DateConversionService : IDateConversionService
+    /// <inheritdoc/>
+    /// <param name="configuration">Injected application settings</param>
+    public class DateConversionService(IConfiguration configuration) : IDateConversionService
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DateConversionService"/> class.
-        /// </summary>
-        /// <param name="configuration">Injected application settings</param>
-        public DateConversionService(IConfiguration configuration)
-        {
-            this.Configuration = configuration;
-        }
-
-        private IConfiguration Configuration { get; }
-
         /// <inheritdoc/>
         public DateTime ConvertFromUtc(DateTime utcDateTime)
         {
-            return TimeZoneInfo.ConvertTimeFromUtc(
-                utcDateTime,
-                DateFormatter.GetLocalTimeZone(this.Configuration));
+            return TimeZoneInfo.ConvertTimeFromUtc(utcDateTime, DateFormatter.GetLocalTimeZone(configuration));
         }
 
         /// <inheritdoc/>

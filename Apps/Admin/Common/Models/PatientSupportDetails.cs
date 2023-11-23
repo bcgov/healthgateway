@@ -16,7 +16,6 @@
 namespace HealthGateway.Admin.Common.Models
 {
     using System.Collections.Generic;
-    using System.Linq;
     using HealthGateway.Admin.Common.Models.CovidSupport;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ViewModels;
@@ -29,22 +28,22 @@ namespace HealthGateway.Admin.Common.Models
         /// <summary>
         /// Gets or sets the messaging verifications.
         /// </summary>
-        public IEnumerable<MessagingVerificationModel>? MessagingVerifications { get; set; } = Enumerable.Empty<MessagingVerificationModel>();
+        public IEnumerable<MessagingVerificationModel>? MessagingVerifications { get; set; } = [];
 
         /// <summary>
         /// Gets or sets the agent actions.
         /// </summary>
-        public IEnumerable<AgentAction>? AgentActions { get; set; } = Enumerable.Empty<AgentAction>();
+        public IEnumerable<AgentAction>? AgentActions { get; set; } = [];
 
         /// <summary>
         /// Gets or sets the blocked data sources.
         /// </summary>
-        public IEnumerable<DataSource>? BlockedDataSources { get; set; } = Enumerable.Empty<DataSource>();
+        public IEnumerable<DataSource>? BlockedDataSources { get; set; } = [];
 
         /// <summary>
         /// Gets or sets the dependents.
         /// </summary>
-        public IEnumerable<PatientSupportDependentInfo>? Dependents { get; set; } = Enumerable.Empty<PatientSupportDependentInfo>();
+        public IEnumerable<PatientSupportDependentInfo>? Dependents { get; set; } = [];
 
         /// <summary>
         /// Gets the vaccine details.
