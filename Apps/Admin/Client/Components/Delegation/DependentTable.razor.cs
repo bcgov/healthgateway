@@ -17,7 +17,6 @@ namespace HealthGateway.Admin.Client.Components.Delegation
 {
     using System;
     using System.Collections.Generic;
-    using System.Linq;
     using System.Threading.Tasks;
     using Fluxor;
     using Fluxor.Blazor.Web.Components;
@@ -51,7 +50,7 @@ namespace HealthGateway.Admin.Client.Components.Delegation
 
         private bool InEditMode => this.DelegationState.Value.InEditMode;
 
-        private IEnumerable<DependentRow> Rows => new[] { this.Data }.Select(d => new DependentRow(d));
+        private IEnumerable<DependentRow> Rows => [new DependentRow(this.Data)];
 
         private void SetEditMode(bool enabled)
         {
