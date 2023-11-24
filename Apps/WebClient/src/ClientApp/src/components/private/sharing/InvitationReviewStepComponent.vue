@@ -23,7 +23,7 @@ function recordTypeName(entryType: EntryType): string {
 <template>
     <v-row data-testid="invitation-review-step">
         <v-col cols="12">
-            <h5 class="text-h6 font-weight-bold mb-4">
+            <h5 class="text-h6 font-weight-bold">
                 Review the following information:
             </h5>
         </v-col>
