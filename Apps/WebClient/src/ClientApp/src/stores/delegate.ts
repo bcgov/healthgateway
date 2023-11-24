@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 import { computed, ref } from "vue";
 
-import { DataSource } from "@/constants/dataSource";
+import { EntryType } from "@/constants/entryType";
 import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import { container } from "@/ioc/container";
 import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
@@ -12,6 +12,7 @@ import { Delegation } from "@/models/sharing/delegateInvitation";
 import { IDelegateService, ILogger } from "@/services/interfaces";
 import { useErrorStore } from "@/stores/error";
 import { useUserStore } from "@/stores/user";
+import DataSourceUtil from "@/utility/dataSourceUtil";
 
 export enum DelegateInvitationWizardStep {
     contact = 0,
@@ -28,7 +29,7 @@ export interface DelegateInvitationWizardState {
     email?: string;
     expiryDateRange?: string;
     expiryDate?: Date;
-    dataSources?: DataSource[];
+    recordTypes?: EntryType[];
     sharingCode?: string;
 }
 
@@ -154,10 +155,10 @@ export const useDelegateStore = defineStore("delegate", () => {
         wiazrdToNextStep();
     }
 
-    function captureInvitationDataSources(dataSources: DataSource[]) {
+    function captureInvitationRecordTypes(dataSources: EntryType[]) {
         invitationWizardState.value = {
             ...invitationWizardState.value,
-            dataSources: dataSources,
+            recordTypes: dataSources,
         };
         wiazrdToNextStep();
     }
@@ -185,7 +186,9 @@ export const useDelegateStore = defineStore("delegate", () => {
                 nickname: invitationWizardState.value.nickname,
                 email: invitationWizardState.value.email,
                 expiryDate: expiryDateOnly.value,
-                dataSources: invitationWizardState.value.dataSources,
+                dataSources: invitationWizardState.value.recordTypes?.map(
+                    (entryType) => DataSourceUtil.getDataSource(entryType)
+                ),
             }).then((sharingCode) => {
                 if (sharingCode != undefined) {
                     setWizardSharingCode(sharingCode!);
@@ -241,7 +244,7 @@ export const useDelegateStore = defineStore("delegate", () => {
         invitationWizardState,
         startNewInvitation,
         captureInvitationContact,
-        captureInvitationDataSources,
+        captureInvitationRecordTypes,
         captureExpiryDate,
         submitInvitationDialog,
         wizardToPreviousStep,

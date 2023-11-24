@@ -2,6 +2,7 @@
 import { computed } from "vue";
 
 import DisplayFieldComponent from "@/components/common/DisplayFieldComponent.vue";
+import { EntryType, entryTypeMap } from "@/constants/entryType";
 import { useDelegateStore } from "@/stores/delegate";
 
 defineExpose({ saveStep });
@@ -12,6 +13,10 @@ const currentInvitation = computed(() => delegateStore.invitationWizardState);
 
 function saveStep() {
     delegateStore.submitInvitationDialog();
+}
+
+function recordTypeName(entryType: EntryType): string {
+    return entryTypeMap.get(entryType)?.name ?? "Unknown Record Type";
 }
 </script>
 
@@ -45,13 +50,13 @@ function saveStep() {
             >
                 <template #value>
                     <v-chip
-                        v-for="dataSource in currentInvitation.dataSources"
-                        :key="dataSource"
+                        v-for="entryType in currentInvitation.recordTypes"
+                        :key="entryType"
                         class="ma-1"
                         color="primary"
                         text-color="white"
                     >
-                        {{ dataSource }}
+                        {{ recordTypeName(entryType) }}
                     </v-chip>
                 </template>
             </DisplayFieldComponent>

@@ -4,8 +4,8 @@ import { computed, ref } from "vue";
 import HgButtonComponent from "@/components/common/HgButtonComponent.vue";
 import HgIconButtonComponent from "@/components/common/HgIconButtonComponent.vue";
 import InvitationContactStepComponent from "@/components/private/sharing/InvitationContactStepComponent.vue";
-import InvitationDataSourceStepComponent from "@/components/private/sharing/InvitationDataSourceStepComponent.vue";
 import InvitationExpiryStepComponent from "@/components/private/sharing/InvitationExpiryStepComponent.vue";
+import InvitationRecordTypesStepComponent from "@/components/private/sharing/InvitationRecordTypesStepComponent.vue";
 import InvitationReviewStepComponent from "@/components/private/sharing/InvitationReviewStepComponent.vue";
 import InvitationSharingCodeStepComponent from "@/components/private/sharing/InvitationSharingCodeStepComponent.vue";
 import {
@@ -17,8 +17,8 @@ const delegateStore = useDelegateStore();
 
 const invitationContactStepComponent =
     ref<InstanceType<typeof InvitationContactStepComponent>>();
-const invitationDataSourceStepComponent =
-    ref<InstanceType<typeof InvitationDataSourceStepComponent>>();
+const invitationRecordTypesStepComponent =
+    ref<InstanceType<typeof InvitationRecordTypesStepComponent>>();
 const invitationExpiryStepComponent =
     ref<InstanceType<typeof InvitationExpiryStepComponent>>();
 const invitationReviewStepComponent =
@@ -74,7 +74,7 @@ function handleSaveCurrentStep(): void {
             invitationContactStepComponent.value?.saveStep();
             break;
         case DelegateInvitationWizardStep.dataSources:
-            invitationDataSourceStepComponent.value?.saveStep();
+            invitationRecordTypesStepComponent.value?.saveStep();
             break;
         case DelegateInvitationWizardStep.expiryDate:
             invitationExpiryStepComponent.value?.saveStep();
@@ -123,8 +123,8 @@ function handleSaveCurrentStep(): void {
                             :value="DelegateInvitationWizardStep.dataSources"
                             class="px-1"
                         >
-                            <InvitationDataSourceStepComponent
-                                ref="invitationDataSourceStepComponent"
+                            <InvitationRecordTypesStepComponent
+                                ref="invitationRecordTypesStepComponent"
                             />
                         </v-window-item>
                         <v-window-item

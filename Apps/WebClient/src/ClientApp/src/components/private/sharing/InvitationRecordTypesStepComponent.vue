@@ -3,58 +3,59 @@ import useVuelidate from "@vuelidate/core";
 import { minLength, required } from "@vuelidate/validators";
 import { computed, ref } from "vue";
 
-import { DataSource } from "@/constants/dataSource";
 import { EntryType, entryTypeMap } from "@/constants/entryType";
 import { useDelegateStore } from "@/stores/delegate";
 import ConfigUtil from "@/utility/configUtil";
-import DataSourceUtil from "@/utility/dataSourceUtil";
 import ValidationUtil from "@/utility/validationUtil";
 
 defineExpose({ saveStep });
 
 const delegateStore = useDelegateStore();
 
-const selectedDataSources = ref<DataSource[]>([]);
+const selectedRecordTypes = ref<EntryType[]>([]);
 
-let dataSourceOptions: Array<{ title: string; value: DataSource }> = [];
+let entryTypeOptions: Array<{ title: string; value: EntryType }> = [];
 
 const validations = computed(() => ({
-    selectedDataSources: {
+    selectedRecordTypes: {
         required,
         minLength: minLength(1),
     },
 }));
 
 const dataSourcesErrorMessages = computed(() =>
-    ValidationUtil.getErrorMessages(v$.value.selectedDataSources)
+    ValidationUtil.getErrorMessages(v$.value.selectedRecordTypes)
 );
 
-const v$ = useVuelidate(validations, { selectedDataSources });
+const v$ = useVuelidate(validations, {
+    selectedRecordTypes,
+});
 
 function saveStep(): void {
     v$.value.$touch();
     if (v$.value.$invalid) return;
-    delegateStore.captureInvitationDataSources(selectedDataSources.value);
+    delegateStore.captureInvitationRecordTypes(selectedRecordTypes.value);
 }
 
 // INIT
-dataSourceOptions = ConfigUtil.enabledDatasets()
+entryTypeOptions = ConfigUtil.enabledDatasets()
     .map((dataset: EntryType) => {
         const entryDetails = entryTypeMap.get(dataset);
         return entryDetails === undefined
             ? undefined
             : {
                   title: entryDetails.name,
-                  value: DataSourceUtil.getDataSource(dataset),
+                  value: dataset,
               };
     })
     .filter((option) => option !== undefined) as Array<{
     title: string;
-    value: DataSource;
+    value: EntryType;
 }>;
 
-if (delegateStore.invitationWizardState?.dataSources !== undefined) {
-    selectedDataSources.value = delegateStore.invitationWizardState.dataSources;
+if (delegateStore.invitationWizardState?.recordTypes !== undefined) {
+    selectedRecordTypes.value =
+        delegateStore.invitationWizardState.recordTypes ?? [];
 }
 </script>
 
@@ -69,12 +70,12 @@ if (delegateStore.invitationWizardState?.dataSources !== undefined) {
         </v-col>
         <v-col cols="12">
             <v-select
-                v-model="selectedDataSources"
+                v-model="selectedRecordTypes"
                 placeholder="Health Records"
                 multiple
                 chips
                 eager
-                :items="dataSourceOptions"
+                :items="entryTypeOptions"
                 data-testid="invitation-datasources"
                 :error-messages="dataSourcesErrorMessages"
                 @blur="v$.selectedDataSources.$touch()"
