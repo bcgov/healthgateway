@@ -33,7 +33,7 @@ function recordTypeName(entryType: EntryType): string {
                 and try creating this invitation again.
             </p>
         </v-col>
-        <v-col v-else cols="12">
+        <v-col v-else cols="12" class="d-flex flex-column justify-space-evenly">
             <DisplayFieldComponent
                 name-class="font-weight-bold"
                 name="Nickname"
@@ -54,9 +54,10 @@ function recordTypeName(entryType: EntryType): string {
                     <v-chip
                         v-for="entryType in currentInvitation.recordTypes"
                         :key="entryType"
-                        class="ma-1"
+                        class="ml-1"
                         color="primary"
                         text-color="white"
+                        density="compact"
                         :data-testid="`review-record-type-${entryType
                             .toLowerCase()
                             .trim()}`"
