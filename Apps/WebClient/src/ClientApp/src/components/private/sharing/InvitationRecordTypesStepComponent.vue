@@ -23,7 +23,7 @@ const validations = computed(() => ({
     },
 }));
 
-const dataSourcesErrorMessages = computed(() =>
+const recordTypesErrorMessages = computed(() =>
     ValidationUtil.getErrorMessages(v$.value.selectedRecordTypes)
 );
 
@@ -77,8 +77,8 @@ if (delegateStore.invitationWizardState?.recordTypes !== undefined) {
                 eager
                 :items="entryTypeOptions"
                 data-testid="invitation-datasources"
-                :error-messages="dataSourcesErrorMessages"
-                @blur="v$.selectedDataSources.$touch()"
+                :error-messages="recordTypesErrorMessages"
+                @blur="v$.selectedRecordTypes.$touch()"
             />
         </v-col>
     </v-row>
