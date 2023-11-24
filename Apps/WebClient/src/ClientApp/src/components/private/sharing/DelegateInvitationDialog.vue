@@ -94,7 +94,7 @@ function handleSaveCurrentStep(): void {
 <template>
     <v-row justify="center">
         <v-dialog v-model="showDialog" max-width="800px">
-            <v-card>
+            <v-card data-testid="delegation-invitate-dialog">
                 <v-card-title class="bg-primary px-0">
                     <v-toolbar
                         :title="currentTitle"
@@ -167,7 +167,7 @@ function handleSaveCurrentStep(): void {
                         v-else-if="!isLastStep"
                         variant="secondary"
                         text="Back"
-                        data-testid="invitation-dialog-cancel-button"
+                        data-testid="invitation-dialog-back-button"
                         size="large"
                         @click="handleBack"
                     />
@@ -175,7 +175,7 @@ function handleSaveCurrentStep(): void {
                         variant="primary"
                         :text="nextStepButtonTitle"
                         size="large"
-                        data-testid="invitation-dialog-next-button"
+                        data-testid="invitation-dialog-confirm-button"
                         @click="handleSaveCurrentStep"
                     />
                     <v-spacer v-if="isLastStep" />

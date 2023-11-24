@@ -32,7 +32,7 @@ const sharingInfoTiles: InfoTile[] = [
 </script>
 
 <template>
-    <div>
+    <div data-testid="empty-sharing-page">
         <v-card class="my-4">
             <v-card-text class="">
                 <p class="text-body-1">Something goes here</p>
@@ -58,6 +58,7 @@ const sharingInfoTiles: InfoTile[] = [
             class="w-100"
             size="large"
             text="Share with Someone"
+            data-testid="start-new-invitation"
             @click="() => delegateStore.startNewInvitation()"
         />
     </div>

@@ -60,7 +60,7 @@ if (delegateStore.invitationWizardState?.recordTypes !== undefined) {
 </script>
 
 <template>
-    <v-row>
+    <v-row data-testid="invitation-record-types-step">
         <v-col cols="12">
             <h5 class="text-h6 font-weight-bold mb-4">Health Records:</h5>
             <p class="text-body-1">
@@ -76,7 +76,7 @@ if (delegateStore.invitationWizardState?.recordTypes !== undefined) {
                 chips
                 eager
                 :items="entryTypeOptions"
-                data-testid="invitation-datasources"
+                data-testid="invitation-record-types-select"
                 :error-messages="recordTypesErrorMessages"
                 @blur="v$.selectedRecordTypes.$touch()"
             />

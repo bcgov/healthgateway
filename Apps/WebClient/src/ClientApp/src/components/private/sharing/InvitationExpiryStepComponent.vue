@@ -75,7 +75,7 @@ function saveStep() {
 </script>
 
 <template>
-    <v-row>
+    <v-row data-testid="invitation-expiry-step">
         <v-col cols="12">
             <h5 class="text-h6 font-weight-bold mb-4">Expire Access:</h5>
             <p class="text-body-1">
@@ -90,7 +90,7 @@ function saveStep() {
                 placeholder="Set expiry date"
                 eager
                 :items="dateRangeOptions"
-                data-testid="invitation-datasources"
+                data-testid="invitation-expiry-range"
                 :error-messages="expiryDateErrorMessages"
                 @blur="v$.selectedExpiryRange.$touch()"
             />

@@ -9,7 +9,7 @@ const currentInvitation = computed(() => delegateStore.invitationWizardState);
 </script>
 
 <template>
-    <v-row v-if="currentInvitation">
+    <v-row v-if="currentInvitation" data-testid="invitation-sharing-code-step">
         <v-col cols="12" justify="center">
             <v-icon
                 class="d-block mb-2"
@@ -35,6 +35,7 @@ const currentInvitation = computed(() => delegateStore.invitationWizardState);
                 <v-col cols="6" sm="4" class="d-flex align-center">
                     <h5
                         class="text-h5 pa-2 font-weight-bold border text-center w-100"
+                        data-testid="sharing-code"
                     >
                         {{ currentInvitation.sharingCode }}
                     </h5>
