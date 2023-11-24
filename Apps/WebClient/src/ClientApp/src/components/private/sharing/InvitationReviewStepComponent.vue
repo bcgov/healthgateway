@@ -57,7 +57,7 @@ function recordTypeName(entryType: EntryType): string {
                         class="ma-1"
                         color="primary"
                         text-color="white"
-                        :data-testid="`review-datasource-${dataSource
+                        :data-testid="`review-record-type-${entryType
                             .toLowerCase()
                             .trim()}`"
                     >

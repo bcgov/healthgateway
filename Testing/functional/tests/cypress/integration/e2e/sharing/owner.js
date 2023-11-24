@@ -4,8 +4,8 @@ const invalidEmail = "invalidEmail";
 const validDelegateInvite = {
     email: "test@test.com",
     nickname: "test",
-    dataSources: [
-        { dataSource: "BcCancerScreening", name: "BC Cancer Screening" },
+    recordTypes: [
+        { entryType: "bcCancerScreening", name: "BC Cancer Screening" },
     ],
     expiryDateRange: "3 months",
 };
@@ -40,24 +40,24 @@ function testContactStep(testInvite) {
     cy.get("[data-testid=invitation-dialog-confirm-button]").click();
 }
 
-function testDataSourceStep(testInvite) {
-    cy.get("[data-testid=invitation-data-sources-step]")
+function testRecordTypesStep(testInvite) {
+    cy.get("[data-testid=invitation-record-types-step]")
         .should("exist")
         .within(() => {
             // Test empty validation
             cy.document()
                 .find("[data-testid=invitation-dialog-confirm-button]")
                 .click();
-            cy.get("[data-testid=invitation-datasources]").should(
+            cy.get("[data-testid=invitation-record-types-select]").should(
                 "have.class",
                 "v-input--error"
             );
 
             // Enter values
-            for (var i = 0; i < testInvite.dataSources.length; i++) {
+            for (var i = 0; i < testInvite.recordTypes.length; i++) {
                 cy.vSelect(
-                    "[data-testid=invitation-datasources]",
-                    testInvite.dataSources[i].name
+                    "[data-testid=invitation-record-types-select]",
+                    testInvite.recordTypes[i].name
                 );
             }
         });
@@ -101,13 +101,13 @@ function testReviewStep(testInvite) {
                 "have.text",
                 testInvite.nickname
             );
-            for (var i = 0; i < testInvite.dataSources.length; i++) {
-                const formattedDataSource = testInvite.dataSources[i].dataSource
+            for (var i = 0; i < testInvite.recordTypes.length; i++) {
+                const formattedEntryType = testInvite.recordTypes[i].entryType
                     .toLowerCase()
                     .trim();
                 cy.get(
-                    `[data-testid=review-datasource-${formattedDataSource}]`
-                ).should("have.text", testInvite.dataSources[i].name);
+                    `[data-testid=review-record-type-${formattedEntryType}]`
+                ).should("have.text", testInvite.recordTypes[i].name);
             }
         });
     // Create the invitation
@@ -152,7 +152,7 @@ describe("Sharing by the owner", () => {
         cy.get("[data-testid=start-new-invitation]").click();
         cy.get("[data-testid=delegation-invitate-dialog]").should("exist");
         testContactStep(validDelegateInvite);
-        testDataSourceStep(validDelegateInvite);
+        testRecordTypesStep(validDelegateInvite);
         testExpiryDateStep(validDelegateInvite);
         testReviewStep(validDelegateInvite);
         testSharingCodeStep();
