@@ -51,10 +51,6 @@ spec:
         {{ print "checksum/" $value.name  "-secrets"}}: {{ $top.Files.Get $value.file | toYaml | sha256sum }}
         {{- end }}
     spec:
-      hostAliases:
-        - ip: "142.34.135.210"
-          hostnames:
-          - "hlthgwsvc.hibc.gov.bc.ca"
       containers:
         - name: {{ $name }}
           image: {{ $image }}:{{ $tag }}
