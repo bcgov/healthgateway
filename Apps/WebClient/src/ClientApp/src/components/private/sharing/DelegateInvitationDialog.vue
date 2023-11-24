@@ -94,7 +94,7 @@ function handleSaveCurrentStep(): void {
 <template>
     <v-row justify="center">
         <v-dialog v-model="showDialog" max-width="800px">
-            <v-card>
+            <v-card data-testid="delegation-invitate-dialog">
                 <v-card-title class="bg-primary px-0">
                     <v-toolbar
                         :title="currentTitle"

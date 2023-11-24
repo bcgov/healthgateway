@@ -58,6 +58,7 @@ const sharingInfoTiles: InfoTile[] = [
             class="w-100"
             size="large"
             text="Share with Someone"
+            data-testid="start-new-invitation"
             @click="() => delegateStore.startNewInvitation()"
         />
     </div>
