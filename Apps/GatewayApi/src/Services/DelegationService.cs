@@ -35,17 +35,17 @@ namespace HealthGateway.GatewayApi.Services
     using Microsoft.Extensions.Logging;
 
     /// <inheritdoc/>
-    public class DelegateService : IDelegateService
+    public class DelegationService : IDelegationService
     {
         private readonly IConfiguration configuration;
         private readonly IMapper autoMapper;
-        private readonly ILogger<DelegateService> logger;
+        private readonly ILogger<DelegationService> logger;
         private readonly IDelegationDelegate delegationDelegate;
         private readonly IPatientDetailsService patientDetailsService;
         private readonly IHashDelegate hashDelegate;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DelegateService"/> class.
+        /// Initializes a new instance of the <see cref="DelegationService"/> class.
         /// </summary>
         /// <param name="configuration">The configuration to use.</param>
         /// <param name="autoMapper">The injected auto mapper provider.</param>
@@ -53,10 +53,10 @@ namespace HealthGateway.GatewayApi.Services
         /// <param name="delegationDelegate">The injected delegation delegate.</param>
         /// <param name="hashDelegate">The injected hash delegate.</param>
         /// <param name="patientDetailsService">The injected patient details service.</param>
-        public DelegateService(
+        public DelegationService(
             IConfiguration configuration,
             IMapper autoMapper,
-            ILogger<DelegateService> logger,
+            ILogger<DelegationService> logger,
             IDelegationDelegate delegationDelegate,
             IHashDelegate hashDelegate,
             IPatientDetailsService patientDetailsService)
@@ -79,7 +79,7 @@ namespace HealthGateway.GatewayApi.Services
 
             if (!validationResult.IsValid)
             {
-                throw new ProblemDetailsException(ExceptionUtility.CreateProblemDetails(ErrorMessages.InvalidDelegateInvitationRequest, HttpStatusCode.BadRequest, nameof(DelegateService)));
+                throw new ProblemDetailsException(ExceptionUtility.CreateProblemDetails(ErrorMessages.InvalidDelegateInvitationRequest, HttpStatusCode.BadRequest, nameof(DelegationService)));
             }
 
             PatientDetails patient = await this.patientDetailsService.GetPatientAsync(hdid, PatientIdentifierType.Hdid, false, ct);
