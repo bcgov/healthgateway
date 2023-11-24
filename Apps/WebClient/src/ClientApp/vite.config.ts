@@ -24,6 +24,7 @@ export default defineConfig({
             "@": fileURLToPath(new URL("./src", import.meta.url)),
         },
         extensions: [".js", ".json", ".jsx", ".mjs", ".ts", ".tsx", ".vue"],
+        preserveSymlinks: true,
     },
     server: {
         host: "127.0.0.1",

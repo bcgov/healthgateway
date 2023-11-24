@@ -33,7 +33,7 @@ using Xunit.Abstractions;
 public class WebAppFixture : IAsyncLifetime
 {
     private readonly ServiceCollection testRelatedServices = new();
-    private readonly PostgreSqlContainer postgreSqlContainer = new PostgreSqlBuilder().WithImage("docker.io/postgres:11").Build();
+    private readonly PostgreSqlContainer postgreSqlContainer = new PostgreSqlBuilder().WithImage("docker.io/postgres:15").Build();
     private readonly RedisContainer redisContainer = new RedisBuilder().WithImage("docker.io/redis:7.0").Build();
 
     public IServiceCollection Services => this.testRelatedServices;
