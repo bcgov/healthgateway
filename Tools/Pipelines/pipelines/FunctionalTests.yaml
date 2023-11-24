@@ -28,7 +28,8 @@ jobs:
     displayName: "Re-seed DB and PHSA data for Admin"
     pool: 
       name: "HGGoldDev"    
-    condition: eq(variables['Admin'], true)    
+    condition: eq(variables['Admin'], true)
+    timeoutInMinutes: 5
     steps:
     - task: Bash@3
       displayName: 'Re-seed DB and PHSA data for Admin'
@@ -47,9 +48,10 @@ jobs:
     pool: 
       vmImage: "ubuntu-latest"
     condition: and(succeeded(), eq(variables['Admin'], true))
-    dependsOn: "Admin_Seed"    
+    dependsOn: "Admin_Seed"
     strategy:
       parallel: 9
+    timeoutInMinutes: 15
     steps:
     - task: Bash@3
       displayName: 'Run Admin Functional Tests'
@@ -69,7 +71,8 @@ jobs:
     pool: 
       name: "HGGoldDev"
     condition: eq(variables['WebClient'], true)
-    dependsOn: "Admin_Tests"     
+    dependsOn: "Admin_Tests"
+    timeoutInMinutes: 5
     steps:
     - task: Bash@3
       displayName: 'Re-seed DB and PHSA data for Functional Tests'
@@ -88,9 +91,10 @@ jobs:
     pool: 
       vmImage: "ubuntu-latest"
     condition: and(succeeded('HG_Seed'), eq(variables['WebClient'], true))
-    dependsOn: "HG_Seed"    
+    dependsOn: "HG_Seed"
     strategy:
       parallel: 9
+    timeoutInMinutes: 15
     steps:
     - task: Bash@3
       displayName: 'Run HG Functional Tests'
