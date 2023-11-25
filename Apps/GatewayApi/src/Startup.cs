@@ -79,6 +79,7 @@ namespace HealthGateway.GatewayApi
             this.startupConfig.ConfigureTracing(services);
             this.startupConfig.ConfigureAccessControl(services);
             this.startupConfig.ConfigureMessaging(services);
+            this.startupConfig.ConfigureDataProtection(services);
 
             // Add services
             services.AddTransient<IUserProfileService, UserProfileService>();
@@ -98,6 +99,7 @@ namespace HealthGateway.GatewayApi
             services.AddTransient<IWebAlertService, WebAlertService>();
             services.AddTransient<IPatientDetailsService, PatientDetailsService>();
             services.AddTransient<IDelegateService, DelegateService>();
+            services.AddTransient<IHttpRequestService, HttpRequestService>();
 
             // Add delegates
             services.AddTransient<IUserProfileDelegate, DbProfileDelegate>();

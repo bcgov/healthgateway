@@ -19,6 +19,7 @@ using System;
 using System.Collections.Generic;
 using HealthGateway.Common.Data.Constants;
 using Microsoft.EntityFrameworkCore.Migrations;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
@@ -49,6 +50,21 @@ namespace HealthGateway.Database.Migrations
                 table: "ResourceDelegate",
                 type: "jsonb",
                 nullable: true);
+
+            migrationBuilder.CreateTable(
+                name: "DataProtectionKeys",
+                schema: "gateway",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    FriendlyName = table.Column<string>(type: "text", nullable: true),
+                    Xml = table.Column<string>(type: "text", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_DataProtectionKeys", x => x.Id);
+                });
 
             migrationBuilder.CreateTable(
                 name: "DelegationStatusCode",
@@ -147,6 +163,12 @@ namespace HealthGateway.Database.Migrations
 
             migrationBuilder.InsertData(
                 schema: "gateway",
+                table: "EmailTemplate",
+                columns: new[] { "EmailTemplateId", "Body", "CreatedBy", "CreatedDateTime", "EffectiveDate", "ExpiryDate", "FormatCode", "From", "Name", "Priority", "Subject", "UpdatedBy", "UpdatedDateTime" },
+                values: new object[] { new Guid("bb716614-defb-48d0-b243-0796b23c4c35"), "<!DOCTYPE html>\n<html lang=\"en\">\n    <head>\n        <title>Create Delegation Invite</title>\n    </head>\n    <body style=\"margin: 0\">\n        <table\n            style=\"\n                width: 100%;\n                border-spacing: 0px;\n                margin: 0;\n                color: #707070;\n                font-family: Helvetica, Arial, Verdana, Tahoma, sans-serif;\n                font-size: 12px;\n            \"\n            aria-describedby=\"Layout Table\"\n        >\n            <tr style=\"background: #003366\">\n                <th scope=\"col\" style=\"width:45px;\"></th>\n                <th\n                    scope=\"col\"\n                    style=\"text-align: left; width:350px;\"\n                >\n                    <div role=\"img\" aria - label=\"Health Gateway Logo\">\n                        <img\n                            src=\"${ActivationHost}/Logo.png\"\n                            alt=\"Health Gateway Logo\"\n                        />\n                    </div>\n                </th>\n                <th scope=\"col\"></th>\n            </tr>\n            <tr>\n                <td colspan=\"3\" style=\"height:20px;\"></td>\n            </tr>\n            <tr>\n                <td></td>\n                <td>\n                    <p>\n                        ${ResourceOwnerIdentifier} wants to share his Health records with you.\n                    </p>\n                    <p>\n                        You have to accept within ${ExpiryHours} hours to view\n                    </p>\n                    <a\n                        style=\"color: #1292c5; font-weight: 600\"\n                        href=\"${ActivationHost}/SharingInvite/${InviteKey}\"\n                    >\n                        Open Invite Link\n                    </a>\n                </td>\n                <td></td>\n            </tr>\n        </table>\n    </body>\n</html>\n", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Utc), new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Utc), null, "HTML", "HG_Donotreply@gov.bc.ca", "CreateDelegationInvite", 10, "Health Gateway Create Delegation Invite", "System", new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Utc) });
+
+            migrationBuilder.InsertData(
+                schema: "gateway",
                 table: "HashFunctionCode",
                 columns: new[] { "Code", "CreatedBy", "CreatedDateTime", "Description", "UpdatedBy", "UpdatedDateTime" },
                 values: new object[,]
@@ -179,6 +201,10 @@ namespace HealthGateway.Database.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
+                name: "DataProtectionKeys",
+                schema: "gateway");
+
+            migrationBuilder.DropTable(
                 name: "Delegation",
                 schema: "gateway");
 
@@ -189,6 +215,12 @@ namespace HealthGateway.Database.Migrations
             migrationBuilder.DropTable(
                 name: "DelegationStatusCode",
                 schema: "gateway");
+
+            migrationBuilder.DeleteData(
+                schema: "gateway",
+                table: "EmailTemplate",
+                keyColumn: "EmailTemplateId",
+                keyValue: new Guid("bb716614-defb-48d0-b243-0796b23c4c35"));
 
             migrationBuilder.DeleteData(
                 schema: "gateway",

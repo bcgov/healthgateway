@@ -27,6 +27,7 @@ namespace HealthGateway.Database.Context
     using HealthGateway.Common.Data.Utils;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Models;
+    using Microsoft.AspNetCore.DataProtection.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
@@ -35,7 +36,7 @@ namespace HealthGateway.Database.Context
     /// </summary>
     [SuppressMessage("Maintainability", "CA1506:Avoid excessive class coupling", Justification = "Team decision")]
     [ExcludeFromCodeCoverage]
-    public class GatewayDbContext : BaseDbContext
+    public class GatewayDbContext : BaseDbContext, IDataProtectionKeyContext
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="GatewayDbContext"/> class.
@@ -85,6 +86,7 @@ namespace HealthGateway.Database.Context
         public DbSet<BlockedAccess> BlockedAccess { get; set; } = null!;
         public DbSet<OutboxItem> Outbox { get; set; } = null!;
         public DbSet<Delegation> Delegation { get; set; } = null!;
+        public DbSet<DataProtectionKey> DataProtectionKeys { get; set; } = null!;
 
 #pragma warning restore CS1591, SA1600
 
@@ -822,6 +824,21 @@ namespace HealthGateway.Database.Context
                         Subject = "Health Gateway Feedback Received",
                         Body = ReadResource("HealthGateway.Database.Assets.docs.AdminFeedback.html"),
                         Priority = EmailPriority.Low,
+                        EffectiveDate = this.DefaultSeedDate,
+                        FormatCode = EmailFormat.Html,
+                        CreatedBy = UserId.DefaultUser,
+                        CreatedDateTime = this.DefaultSeedDate,
+                        UpdatedBy = UserId.DefaultUser,
+                        UpdatedDateTime = this.DefaultSeedDate,
+                    },
+                    new EmailTemplate
+                    {
+                        Id = Guid.Parse("bb716614-defb-48d0-b243-0796b23c4c35"),
+                        Name = "CreateDelegationInvite",
+                        From = "HG_Donotreply@gov.bc.ca",
+                        Subject = "Health Gateway Create Delegation Invite",
+                        Body = ReadResource("HealthGateway.Database.Assets.docs.CreateDelegationInvite.html"),
+                        Priority = EmailPriority.Standard,
                         EffectiveDate = this.DefaultSeedDate,
                         FormatCode = EmailFormat.Html,
                         CreatedBy = UserId.DefaultUser,

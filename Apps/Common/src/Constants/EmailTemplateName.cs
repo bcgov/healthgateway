@@ -44,5 +44,10 @@ namespace HealthGateway.Common.Constants
         /// Name of the recover account email template.
         /// </summary>
         public const string AccountRecoveredTemplate = "AccountRecovered";
+
+        /// <summary>
+        /// Name of the create delegation invite template.
+        /// </summary>
+        public const string CreateDelegationInvite = "CreateDelegationInvite";
     }
 }

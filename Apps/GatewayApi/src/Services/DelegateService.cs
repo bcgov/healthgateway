@@ -16,6 +16,8 @@
 namespace HealthGateway.GatewayApi.Services
 {
     using System;
+    using System.Collections.Generic;
+    using System.Globalization;
     using System.Net;
     using System.Threading;
     using System.Threading.Tasks;
@@ -23,26 +25,38 @@ namespace HealthGateway.GatewayApi.Services
     using FluentValidation.Results;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.ErrorHandling;
+    using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Data.Utils;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.Models.Cacheable;
+    using HealthGateway.Common.Services;
     using HealthGateway.Common.Utils;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using HealthGateway.GatewayApi.Models;
     using HealthGateway.GatewayApi.Validations;
+    using Microsoft.AspNetCore.DataProtection;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
 
     /// <inheritdoc/>
     public class DelegateService : IDelegateService
     {
+        private const string DelegationInviteKey = "DelegationInvite";
+        private const string ExpiryHoursKey = "ExpiryHours";
+        private const string ExpirationUrlParameter = "expiration";
+        private const string DataProtectionPurpose = "CreateDelegationInvite";
+
         private readonly IConfiguration configuration;
         private readonly IMapper autoMapper;
         private readonly ILogger<DelegateService> logger;
+        private readonly IDataProtector dataProtector;
         private readonly IDelegationDelegate delegationDelegate;
-        private readonly IPatientDetailsService patientDetailsService;
         private readonly IHashDelegate hashDelegate;
+        private readonly IEmailQueueService emailQueueService;
+        private readonly IHttpRequestService httpRequestService;
+        private readonly IPatientDetailsService patientDetailsService;
+        private readonly int delegationInvitationExpiryHours;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DelegateService"/> class.
@@ -50,23 +64,33 @@ namespace HealthGateway.GatewayApi.Services
         /// <param name="configuration">The configuration to use.</param>
         /// <param name="autoMapper">The injected auto mapper provider.</param>
         /// <param name="logger">The injected logger.</param>
+        /// <param name="dataProtectionProvider">The injected data protection provider.</param>
         /// <param name="delegationDelegate">The injected delegation delegate.</param>
         /// <param name="hashDelegate">The injected hash delegate.</param>
+        /// <param name="emailQueueService">The injected email queue service.</param>
+        /// <param name="httpRequestService">The injected http request service.</param>
         /// <param name="patientDetailsService">The injected patient details service.</param>
         public DelegateService(
             IConfiguration configuration,
             IMapper autoMapper,
             ILogger<DelegateService> logger,
+            IDataProtectionProvider dataProtectionProvider,
             IDelegationDelegate delegationDelegate,
             IHashDelegate hashDelegate,
+            IEmailQueueService emailQueueService,
+            IHttpRequestService httpRequestService,
             IPatientDetailsService patientDetailsService)
         {
             this.configuration = configuration;
             this.autoMapper = autoMapper;
             this.logger = logger;
+            this.dataProtector = dataProtectionProvider.CreateProtector(DataProtectionPurpose);
             this.delegationDelegate = delegationDelegate;
             this.hashDelegate = hashDelegate;
+            this.emailQueueService = emailQueueService;
+            this.httpRequestService = httpRequestService;
             this.patientDetailsService = patientDetailsService;
+            this.delegationInvitationExpiryHours = configuration.GetValue($"{DelegationInviteKey}:{ExpiryHoursKey}", 48);
         }
 
         /// <inheritdoc/>
@@ -99,7 +123,38 @@ namespace HealthGateway.GatewayApi.Services
             delegation.ResourceOwnerIdentifier = resourceOwnerIdentifier;
 
             await this.delegationDelegate.UpdateDelegationAsync(delegation);
+            this.SendCreateDelegationInviteEmail(request.Email, resourceOwnerIdentifier, this.CreateInviteKey(delegation.Id.ToString()), sharingCode);
             return sharingCode;
+        }
+
+        private string CreateInviteKey(string id)
+        {
+            DateTime expirationTime = DateTime.UtcNow.AddHours(this.delegationInvitationExpiryHours);
+            long expirationTimeTicks = expirationTime.Ticks;
+            string unprotectedInviteKey = $"{id}?{ExpirationUrlParameter}={expirationTimeTicks}";
+            string protectedInviteKey = this.dataProtector.Protect(unprotectedInviteKey);
+            this.logger.LogDebug("Unprotected Invite Key: {UnprotectedInviteKey} \n Protected Invite Key: {ProtectedInviteKey}", unprotectedInviteKey, protectedInviteKey);
+            return protectedInviteKey;
+        }
+
+        private void SendCreateDelegationInviteEmail(string toEmail, string resourceOwnerIdentifier, string inviteKey, string sharingCode)
+        {
+            string host = this.httpRequestService.GetHost();
+            this.logger.LogDebug("Referer Authority Uri: {Host}", host);
+
+            Dictionary<string, string> keyValues = new()
+            {
+                [EmailTemplateVariable.InviteKey] = inviteKey,
+                [EmailTemplateVariable.ActivationHost] = host,
+                [EmailTemplateVariable.ResourceOwnerIdentifier] = resourceOwnerIdentifier,
+                [EmailTemplateVariable.SharingCode] = sharingCode,
+                [EmailTemplateVariable.ExpiryHours] = this.delegationInvitationExpiryHours.ToString(CultureInfo.InvariantCulture),
+            };
+
+            Email email = this.emailQueueService.ProcessTemplate(toEmail, EmailTemplateName.CreateDelegationInvite, keyValues);
+            this.logger.LogDebug("Sending Email Template: {Template} To: {To} Priority: {Priority}", email.Template, email.To, email.Priority);
+
+            this.emailQueueService.QueueNewEmail(email);
         }
     }
 }

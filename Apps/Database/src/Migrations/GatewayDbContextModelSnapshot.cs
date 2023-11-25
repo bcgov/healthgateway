@@ -22,7 +22,7 @@ namespace HealthGateway.Database.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasDefaultSchema("gateway")
-                .HasAnnotation("ProductVersion", "7.0.13")
+                .HasAnnotation("ProductVersion", "8.0.0")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -2246,6 +2246,22 @@ namespace HealthGateway.Database.Migrations
                             UpdatedBy = "System",
                             UpdatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Version = 0u
+                        },
+                        new
+                        {
+                            Id = new Guid("bb716614-defb-48d0-b243-0796b23c4c35"),
+                            Body = "<!DOCTYPE html>\n<html lang=\"en\">\n    <head>\n        <title>Create Delegation Invite</title>\n    </head>\n    <body style=\"margin: 0\">\n        <table\n            style=\"\n                width: 100%;\n                border-spacing: 0px;\n                margin: 0;\n                color: #707070;\n                font-family: Helvetica, Arial, Verdana, Tahoma, sans-serif;\n                font-size: 12px;\n            \"\n            aria-describedby=\"Layout Table\"\n        >\n            <tr style=\"background: #003366\">\n                <th scope=\"col\" style=\"width:45px;\"></th>\n                <th\n                    scope=\"col\"\n                    style=\"text-align: left; width:350px;\"\n                >\n                    <div role=\"img\" aria - label=\"Health Gateway Logo\">\n                        <img\n                            src=\"${ActivationHost}/Logo.png\"\n                            alt=\"Health Gateway Logo\"\n                        />\n                    </div>\n                </th>\n                <th scope=\"col\"></th>\n            </tr>\n            <tr>\n                <td colspan=\"3\" style=\"height:20px;\"></td>\n            </tr>\n            <tr>\n                <td></td>\n                <td>\n                    <p>\n                        ${ResourceOwnerIdentifier} wants to share his Health records with you.\n                    </p>\n                    <p>\n                        You have to accept within ${ExpiryHours} hours to view\n                    </p>\n                    <a\n                        style=\"color: #1292c5; font-weight: 600\"\n                        href=\"${ActivationHost}/SharingInvite/${InviteKey}\"\n                    >\n                        Open Invite Link\n                    </a>\n                </td>\n                <td></td>\n            </tr>\n        </table>\n    </body>\n</html>\n",
+                            CreatedBy = "System",
+                            CreatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            EffectiveDate = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            FormatCode = "HTML",
+                            From = "HG_Donotreply@gov.bc.ca",
+                            Name = "CreateDelegationInvite",
+                            Priority = 10,
+                            Subject = "Health Gateway Create Delegation Invite",
+                            UpdatedBy = "System",
+                            UpdatedDateTime = new DateTime(2019, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Version = 0u
                         });
                 });
 
@@ -3894,6 +3910,25 @@ namespace HealthGateway.Database.Migrations
                         .IsUnique();
 
                     b.ToTable("VeterinarySpecies", "gateway");
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.DataProtection.EntityFrameworkCore.DataProtectionKey", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("FriendlyName")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Xml")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("DataProtectionKeys", "gateway");
                 });
 
             modelBuilder.Entity("HealthGateway.Common.Data.Models.Email", b =>
