@@ -8,13 +8,13 @@ import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
 import { DateWrapper } from "@/models/dateWrapper";
 import { ResultError } from "@/models/errors";
 import { CreateDelegationRequest } from "@/models/sharing/createDelegationRequest";
-import { Delegation } from "@/models/sharing/delegateInvitation";
-import { IDelegateService, ILogger } from "@/services/interfaces";
+import { Delegation } from "@/models/sharing/delegation";
+import { IDelegationService, ILogger } from "@/services/interfaces";
 import { useErrorStore } from "@/stores/error";
 import { useUserStore } from "@/stores/user";
 import DataSourceUtil from "@/utility/dataSourceUtil";
 
-export enum DelegateInvitationWizardStep {
+export enum DelegationWizardStep {
     contact = 0,
     dataSources = 1,
     expiryDate = 2,
@@ -22,43 +22,50 @@ export enum DelegateInvitationWizardStep {
     sharingCode = 4,
 }
 
-export interface DelegateInvitationWizardState {
+export interface DelegationWizardState {
     mode?: "Create" | "Modify";
-    step?: DelegateInvitationWizardStep;
+    step?: DelegationWizardStep;
     nickname?: string;
     email?: string;
-    expiryDateRange?: string;
+    expiryDateLabel?: string;
     expiryDate?: Date;
     recordTypes?: EntryType[];
     sharingCode?: string;
 }
 
-const wizardConfiguration = {
-    [DelegateInvitationWizardStep.contact]: {
-        next: DelegateInvitationWizardStep.dataSources,
+type WizardConfiguration = {
+    [key in DelegationWizardStep]: {
+        next?: DelegationWizardStep;
+        previous?: DelegationWizardStep;
+    };
+};
+
+const wizardConfiguration: WizardConfiguration = {
+    [DelegationWizardStep.contact]: {
+        next: DelegationWizardStep.dataSources,
         previous: undefined,
     },
-    [DelegateInvitationWizardStep.dataSources]: {
-        next: DelegateInvitationWizardStep.expiryDate,
-        previous: DelegateInvitationWizardStep.contact,
+    [DelegationWizardStep.dataSources]: {
+        next: DelegationWizardStep.expiryDate,
+        previous: DelegationWizardStep.contact,
     },
-    [DelegateInvitationWizardStep.expiryDate]: {
-        next: DelegateInvitationWizardStep.review,
-        previous: DelegateInvitationWizardStep.dataSources,
+    [DelegationWizardStep.expiryDate]: {
+        next: DelegationWizardStep.review,
+        previous: DelegationWizardStep.dataSources,
     },
-    [DelegateInvitationWizardStep.review]: {
-        next: DelegateInvitationWizardStep.sharingCode,
-        previous: DelegateInvitationWizardStep.expiryDate,
+    [DelegationWizardStep.review]: {
+        next: DelegationWizardStep.sharingCode,
+        previous: DelegationWizardStep.expiryDate,
     },
-    [DelegateInvitationWizardStep.sharingCode]: {
+    [DelegationWizardStep.sharingCode]: {
         next: undefined,
-        previous: DelegateInvitationWizardStep.review,
+        previous: DelegationWizardStep.review,
     },
 };
 
-export const useDelegateStore = defineStore("delegate", () => {
+export const useDelegationStore = defineStore("delegation", () => {
     const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-    const delegateService = container.get<IDelegateService>(
+    const delegateService = container.get<IDelegationService>(
         SERVICE_IDENTIFIER.DelegateService
     );
 
@@ -66,127 +73,130 @@ export const useDelegateStore = defineStore("delegate", () => {
     const errorStore = useErrorStore();
 
     const delegations = ref<Delegation[]>([]);
-    const invitationWizardState = ref<DelegateInvitationWizardState>();
+    const delegationWizardState = ref<DelegationWizardState>();
     const delegationsAreLoading = ref(false);
     const error = ref<ResultError>();
     const statusMessage = ref("");
 
     const wizardNextStep = computed(() => {
-        const currentStep = invitationWizardState.value?.step;
+        const currentStep = delegationWizardState.value?.step;
         if (currentStep === undefined) {
-            return DelegateInvitationWizardStep.contact;
+            return DelegationWizardStep.contact;
         }
         return wizardConfiguration[currentStep].next;
     });
 
     const wizardPreviousStep = computed(() => {
-        const currentStep = invitationWizardState.value?.step;
+        const currentStep = delegationWizardState.value?.step;
         if (currentStep === undefined) {
             return undefined;
         }
         return wizardConfiguration[currentStep].previous;
     });
 
-    const isInvitationDialogVisible = computed(
-        () => invitationWizardState.value != undefined
+    const isDelegationDialogVisible = computed(
+        () => delegationWizardState.value != undefined
     );
 
     const expiryDateDisplay = computed(() => {
-        if (invitationWizardState.value?.expiryDate === undefined)
+        if (delegationWizardState.value?.expiryDate === undefined)
             return "Never";
 
         return DateWrapper.fromIsoDate(
-            invitationWizardState.value?.expiryDate.toISOString()
+            delegationWizardState.value?.expiryDate.toISOString()
         ).format("dd MMM yyyy");
     });
 
     const expiryDateOnly = computed(() => {
-        if (invitationWizardState.value?.expiryDate === undefined)
+        if (delegationWizardState.value?.expiryDate === undefined)
             return undefined;
 
         return DateWrapper.fromIsoDate(
-            invitationWizardState.value?.expiryDate.toISOString()
+            delegationWizardState.value?.expiryDate.toISOString()
         ).format("yyyy-MM-dd");
     });
 
-    function setInvitationsError(incomingError: ResultError) {
+    function setDelegationsError(incomingError: ResultError) {
         error.value = incomingError;
         statusMessage.value = incomingError.resultMessage;
         delegationsAreLoading.value = false;
     }
 
-    function startNewInvitation(): void {
-        invitationWizardState.value = {
+    function startNewDelegation(): void {
+        delegationWizardState.value = {
             mode: "Create",
             step: wizardNextStep.value,
         };
     }
 
-    function wizardToPreviousStep(): void {
+    function moveWizardToPreviousStep(): void {
         if (wizardPreviousStep.value === undefined) {
             return;
         }
-        invitationWizardState.value = {
-            ...invitationWizardState.value,
+        delegationWizardState.value = {
+            ...delegationWizardState.value,
             step: wizardPreviousStep.value,
         };
     }
 
-    function wiazrdToNextStep(): void {
+    function moveWiazrdToNextStep(): void {
         if (wizardNextStep.value === undefined) {
             return;
         }
-        invitationWizardState.value = {
-            ...invitationWizardState.value,
+        delegationWizardState.value = {
+            ...delegationWizardState.value,
             step: wizardNextStep.value,
         };
     }
 
-    function clearInvitationDialogState() {
-        invitationWizardState.value = undefined;
+    function clearDelegationWizardState() {
+        delegationWizardState.value = undefined;
     }
 
-    function captureInvitationContact(email: string, nickname: string) {
-        invitationWizardState.value = {
-            ...invitationWizardState.value,
+    function captureDelegationContact(email: string, nickname: string) {
+        delegationWizardState.value = {
+            ...delegationWizardState.value,
             email: email,
             nickname: nickname,
         };
-        wiazrdToNextStep();
+        moveWiazrdToNextStep();
     }
 
-    function captureInvitationRecordTypes(dataSources: EntryType[]) {
-        invitationWizardState.value = {
-            ...invitationWizardState.value,
+    function captureDelegationRecordTypes(dataSources: EntryType[]) {
+        delegationWizardState.value = {
+            ...delegationWizardState.value,
             recordTypes: dataSources,
         };
-        wiazrdToNextStep();
+        moveWiazrdToNextStep();
     }
 
-    function captureExpiryDate(expiryDateRange: string, expiryDate?: Date) {
-        invitationWizardState.value = {
-            ...invitationWizardState.value,
+    function captureDelegationExpiry(
+        expiryDateLabel: string,
+        expiryDate?: Date
+    ) {
+        delegationWizardState.value = {
+            ...delegationWizardState.value,
             expiryDate: expiryDate,
-            expiryDateRange: expiryDateRange,
+            expiryDateLabel: expiryDateLabel,
         };
-        wiazrdToNextStep();
+        moveWiazrdToNextStep();
     }
 
     function setWizardSharingCode(sharingCode: string) {
-        invitationWizardState.value = {
-            ...invitationWizardState.value,
+        delegationWizardState.value = {
+            ...delegationWizardState.value,
             step: wizardNextStep.value,
             sharingCode: sharingCode,
         };
     }
 
-    function submitInvitationDialog(): Promise<string | void> {
-        if (invitationWizardState.value?.mode === "Create") {
-            return createInvitation({
-                nickname: invitationWizardState.value.nickname,
-                email: invitationWizardState.value.email,
+    function submitDelegationDialog(): Promise<string | void> {
+        if (delegationWizardState.value?.mode === "Create") {
+            return createDelegation({
+                nickname: delegationWizardState.value.nickname,
+                email: delegationWizardState.value.email,
                 expiryDate: expiryDateOnly.value,
-                dataSources: invitationWizardState.value.recordTypes?.map(
+                dataSources: delegationWizardState.value.recordTypes?.map(
                     (entryType) => DataSourceUtil.getDataSource(entryType)
                 ),
             }).then((sharingCode) => {
@@ -198,13 +208,13 @@ export const useDelegateStore = defineStore("delegate", () => {
         throw new Error("Invalid invitation dialog state");
     }
 
-    function createInvitation(
+    function createDelegation(
         invitation: CreateDelegationRequest
     ): Promise<string | void> {
         logger.debug("Create invitation");
         delegationsAreLoading.value = true;
         return delegateService
-            .createInvitation(userStore.hdid, invitation)
+            .createDelegation(userStore.hdid, invitation)
             .catch((error: ResultError) => {
                 handleError(error, ErrorType.Create, "sharing-dialog");
             })
@@ -217,7 +227,7 @@ export const useDelegateStore = defineStore("delegate", () => {
         errorKey?: string
     ) {
         logger.error(`Error: ${JSON.stringify(incomingError)}`);
-        setInvitationsError(incomingError);
+        setDelegationsError(incomingError);
         if (incomingError.statusCode === 429) {
             errorKey = errorKey ?? "page";
             if (errorType === ErrorType.Retrieve) {
@@ -237,17 +247,17 @@ export const useDelegateStore = defineStore("delegate", () => {
     return {
         delegations,
         delegationsAreLoading,
-        isInvitationDialogVisible,
+        isDelegationDialogVisible,
         expiryDateDisplay,
         wizardPreviousStep,
         wizardNextStep,
-        invitationWizardState,
-        startNewInvitation,
-        captureInvitationContact,
-        captureInvitationRecordTypes,
-        captureExpiryDate,
-        submitInvitationDialog,
-        wizardToPreviousStep,
-        clearInvitationDialogState,
+        delegationWizardState,
+        startNewDelegation,
+        captureDelegationContact,
+        captureDelegationRecordTypes,
+        captureDelegationExpiry,
+        submitDelegationDialog,
+        moveWizardToPreviousStep,
+        clearDelegationWizardState,
     };
 });

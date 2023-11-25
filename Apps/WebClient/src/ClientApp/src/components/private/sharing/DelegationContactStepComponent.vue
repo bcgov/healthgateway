@@ -10,12 +10,12 @@ import {
 import { computed } from "vue";
 import { ref } from "vue";
 
-import { useDelegateStore } from "@/stores/delegate";
+import { useDelegationStore } from "@/stores/delegation";
 import ValidationUtil from "@/utility/validationUtil";
 
 defineExpose({ saveStep });
 
-const delegateStore = useDelegateStore();
+const delegationStore = useDelegationStore();
 
 const delegateEmail = ref("");
 const delegateNickname = ref("");
@@ -45,24 +45,26 @@ const v$ = useVuelidate(validations, { delegateEmail, delegateNickname });
 
 function saveStep(): void {
     v$.value.$touch();
-    if (v$.value.$invalid) return;
-    delegateStore.captureInvitationContact(
+    if (v$.value.$invalid) {
+        return;
+    }
+    delegationStore.captureDelegationContact(
         delegateEmail.value,
         delegateNickname.value
     );
 }
 
 // INIT
-if (delegateStore.invitationWizardState?.nickname !== undefined) {
-    delegateNickname.value = delegateStore.invitationWizardState.nickname;
+if (delegationStore.delegationWizardState?.nickname !== undefined) {
+    delegateNickname.value = delegationStore.delegationWizardState.nickname;
 }
-if (delegateStore.invitationWizardState?.email !== undefined) {
-    delegateEmail.value = delegateStore.invitationWizardState.email;
+if (delegationStore.delegationWizardState?.email !== undefined) {
+    delegateEmail.value = delegationStore.delegationWizardState.email;
 }
 </script>
 
 <template>
-    <v-row data-testid="invitation-contact-step">
+    <v-row data-testid="delegation-contact-step">
         <v-col cols="12">
             <h5 class="text-h6 font-weight-bold mb-4">Share records with:</h5>
             <p class="text-body-1">

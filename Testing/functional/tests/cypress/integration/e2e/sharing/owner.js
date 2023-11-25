@@ -11,12 +11,12 @@ const validDelegateInvite = {
 };
 
 function testContactStep(testInvite) {
-    cy.get("[data-testid=invitation-contact-step]")
+    cy.get("[data-testid=delegation-contact-step]")
         .should("exist")
         .within(() => {
             // Test empty validation
             cy.document()
-                .find("[data-testid=invitation-dialog-confirm-button]")
+                .find("[data-testid=delegation-dialog-confirm-button]")
                 .click();
 
             cy.get("[data-testid=delegate-email-input]").should(
@@ -37,18 +37,18 @@ function testContactStep(testInvite) {
             );
         });
     // Move to next step
-    cy.get("[data-testid=invitation-dialog-confirm-button]").click();
+    cy.get("[data-testid=delegation-dialog-confirm-button]").click();
 }
 
 function testRecordTypesStep(testInvite) {
-    cy.get("[data-testid=invitation-record-types-step]")
+    cy.get("[data-testid=delegation-record-types-step]")
         .should("exist")
         .within(() => {
             // Test empty validation
             cy.document()
-                .find("[data-testid=invitation-dialog-confirm-button]")
+                .find("[data-testid=delegation-dialog-confirm-button]")
                 .click();
-            cy.get("[data-testid=invitation-record-types-select]").should(
+            cy.get("[data-testid=delegation-record-types-select]").should(
                 "have.class",
                 "v-input--error"
             );
@@ -56,40 +56,40 @@ function testRecordTypesStep(testInvite) {
             // Enter values
             for (var i = 0; i < testInvite.recordTypes.length; i++) {
                 cy.vSelect(
-                    "[data-testid=invitation-record-types-select]",
+                    "[data-testid=delegation-record-types-select]",
                     testInvite.recordTypes[i].name
                 );
             }
         });
     // Move to next step
-    cy.get("[data-testid=invitation-dialog-confirm-button]").click();
+    cy.get("[data-testid=delegation-dialog-confirm-button]").click();
 }
 
 function testExpiryDateStep(testInvite) {
-    cy.get("[data-testid=invitation-expiry-step]")
+    cy.get("[data-testid=delegation-expiry-step]")
         .should("exist")
         .within(() => {
             // Test empty validation
             cy.document()
-                .find("[data-testid=invitation-dialog-confirm-button]")
+                .find("[data-testid=delegation-dialog-confirm-button]")
                 .click();
-            cy.get("[data-testid=invitation-expiry-range]").should(
+            cy.get("[data-testid=delegation-expiry-select]").should(
                 "have.class",
                 "v-input--error"
             );
 
             // Enter values
             cy.vSelect(
-                "[data-testid=invitation-expiry-range]",
+                "[data-testid=delegation-expiry-select]",
                 testInvite.expiryDateRange
             );
         });
     // Move to next step
-    cy.get("[data-testid=invitation-dialog-confirm-button]").click();
+    cy.get("[data-testid=delegation-dialog-confirm-button]").click();
 }
 
 function testReviewStep(testInvite) {
-    cy.get("[data-testid=invitation-review-step]")
+    cy.get("[data-testid=delegation-review-step]")
         .should("exist")
         .within(() => {
             // Validate captured data is reflected
@@ -111,17 +111,17 @@ function testReviewStep(testInvite) {
             }
         });
     // Create the invitation
-    cy.get("[data-testid=invitation-dialog-confirm-button]").click();
+    cy.get("[data-testid=delegation-dialog-confirm-button]").click();
 }
 
 function testSharingCodeStep() {
-    cy.get("[data-testid=invitation-sharing-code-step]")
+    cy.get("[data-testid=delegation-sharing-code-step]")
         .should("exist")
         .within(() => {
             // Validate sharing code is displayed
             cy.get("[data-testid=sharing-code]").should("exist");
         });
-    cy.get("[data-testid=invitation-dialog-confirm-button]").click();
+    cy.get("[data-testid=delegation-dialog-confirm-button]").click();
 }
 
 describe("Sharing by the owner", () => {
@@ -149,13 +149,13 @@ describe("Sharing by the owner", () => {
 
     it("Should be able to invite a delegate to share their records with", () => {
         cy.get("[data-testid=empty-sharing-page]").should("exist");
-        cy.get("[data-testid=start-new-invitation]").click();
-        cy.get("[data-testid=delegation-invitate-dialog]").should("exist");
+        cy.get("[data-testid=start-new-delegation]").click();
+        cy.get("[data-testid=delegation-wizard-dialog]").should("exist");
         testContactStep(validDelegateInvite);
         testRecordTypesStep(validDelegateInvite);
         testExpiryDateStep(validDelegateInvite);
         testReviewStep(validDelegateInvite);
         testSharingCodeStep();
-        cy.get("[data-testid=delegation-invitate-dialog]").should("not.exist");
+        cy.get("[data-testid=delegation-wizard-dialog]").should("not.exist");
     });
 });

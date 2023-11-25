@@ -3,16 +3,22 @@ import { computed } from "vue";
 
 import DisplayFieldComponent from "@/components/common/DisplayFieldComponent.vue";
 import { EntryType, entryTypeMap } from "@/constants/entryType";
-import { useDelegateStore } from "@/stores/delegate";
+import { useDelegationStore } from "@/stores/delegation";
 
 defineExpose({ saveStep });
 
-const delegateStore = useDelegateStore();
+const delegationStore = useDelegationStore();
 
-const currentInvitation = computed(() => delegateStore.invitationWizardState);
+const wizardState = computed(() => delegationStore.delegationWizardState);
+const delegationExpiryDescription = computed(() => {
+    if (wizardState.value?.expiryDate === undefined) {
+        return "Never";
+    }
+    return `${wizardState.value.expiryDateLabel} (${delegationStore.expiryDateDisplay})`;
+});
 
 function saveStep() {
-    delegateStore.submitInvitationDialog();
+    delegationStore.submitDelegationDialog();
 }
 
 function recordTypeName(entryType: EntryType): string {
@@ -21,13 +27,13 @@ function recordTypeName(entryType: EntryType): string {
 </script>
 
 <template>
-    <v-row data-testid="invitation-review-step">
+    <v-row data-testid="delegation-review-step">
         <v-col cols="12">
             <h5 class="text-h6 font-weight-bold">
                 Review the following information:
             </h5>
         </v-col>
-        <v-col v-if="currentInvitation === undefined">
+        <v-col v-if="wizardState === undefined">
             <p class="text-body-1 text-red">
                 You have reached this step in error, please close this dialog
                 and try creating this invitation again.
@@ -38,13 +44,13 @@ function recordTypeName(entryType: EntryType): string {
                 name-class="font-weight-bold"
                 name="Nickname"
                 data-testid="review-nickname"
-                :value="currentInvitation.nickname"
+                :value="wizardState.nickname"
             />
             <DisplayFieldComponent
                 name-class="font-weight-bold"
                 name="Inviting"
                 data-testid="review-email"
-                :value="currentInvitation.email"
+                :value="wizardState.email"
             />
             <DisplayFieldComponent
                 name-class="font-weight-bold"
@@ -52,7 +58,7 @@ function recordTypeName(entryType: EntryType): string {
             >
                 <template #value>
                     <v-chip
-                        v-for="entryType in currentInvitation.recordTypes"
+                        v-for="entryType in wizardState.recordTypes"
                         :key="entryType"
                         class="ml-1"
                         color="primary"
@@ -70,7 +76,7 @@ function recordTypeName(entryType: EntryType): string {
                 name-class="font-weight-bold"
                 name="Expiry Date"
                 data-testid="review-expiry-date"
-                :value="`${currentInvitation.expiryDateRange} (${delegateStore.expiryDateDisplay})`"
+                :value="delegationExpiryDescription"
             />
         </v-col>
         <v-col>

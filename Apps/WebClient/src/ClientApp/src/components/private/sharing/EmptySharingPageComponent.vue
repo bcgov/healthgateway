@@ -2,9 +2,9 @@
 import HgButtonComponent from "@/components/common/HgButtonComponent.vue";
 import TileComponent from "@/components/site/TileComponent.vue";
 import { InfoTile } from "@/models/infoTile";
-import { useDelegateStore } from "@/stores/delegate";
+import { useDelegationStore } from "@/stores/delegation";
 
-const delegateStore = useDelegateStore();
+const delegationStore = useDelegationStore();
 
 const sharingInfoTiles: InfoTile[] = [
     {
@@ -58,8 +58,8 @@ const sharingInfoTiles: InfoTile[] = [
             class="w-100"
             size="large"
             text="Share with Someone"
-            data-testid="start-new-invitation"
-            @click="() => delegateStore.startNewInvitation()"
+            data-testid="start-new-delegation"
+            @click="() => delegationStore.startNewDelegation()"
         />
     </div>
 </template>

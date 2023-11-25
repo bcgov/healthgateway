@@ -1,15 +1,15 @@
 <script setup lang="ts">
 import { computed } from "vue";
 
-import { useDelegateStore } from "@/stores/delegate";
+import { useDelegationStore } from "@/stores/delegation";
 
-const delegateStore = useDelegateStore();
+const delegationStore = useDelegationStore();
 
-const currentInvitation = computed(() => delegateStore.invitationWizardState);
+const currentDelegation = computed(() => delegationStore.delegationWizardState);
 </script>
 
 <template>
-    <v-row v-if="currentInvitation" data-testid="invitation-sharing-code-step">
+    <v-row v-if="currentDelegation" data-testid="delegation-sharing-code-step">
         <v-col cols="12" justify="center">
             <v-icon
                 class="d-block mb-2"
@@ -18,7 +18,7 @@ const currentInvitation = computed(() => delegateStore.invitationWizardState);
                 size="48"
             />
             <h5 class="text-body-1 text-center">
-                An invite has been set to <b>{{ currentInvitation.email }}</b>
+                An invite has been set to <b>{{ currentDelegation.email }}</b>
             </h5>
         </v-col>
         <v-col>
@@ -37,7 +37,7 @@ const currentInvitation = computed(() => delegateStore.invitationWizardState);
                         class="text-h5 pa-2 font-weight-bold border text-center w-100"
                         data-testid="sharing-code"
                     >
-                        {{ currentInvitation.sharingCode }}
+                        {{ currentDelegation.sharingCode }}
                     </h5>
                 </v-col>
             </v-row>

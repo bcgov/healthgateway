@@ -3,11 +3,11 @@ import { computed } from "vue";
 
 import LoadingComponent from "@/components/common/LoadingComponent.vue";
 import PageTitleComponent from "@/components/common/PageTitleComponent.vue";
-import DelegateInvitationDialog from "@/components/private/sharing/DelegateInvitationDialog.vue";
+import DelegationWizardDialog from "@/components/private/sharing/DelegationWizardDialog.vue";
 import EmptySharingPageComponent from "@/components/private/sharing/EmptySharingPageComponent.vue";
 import BreadcrumbComponent from "@/components/site/BreadcrumbComponent.vue";
 import BreadcrumbItem from "@/models/breadcrumbItem";
-import { useDelegateStore } from "@/stores/delegate";
+import { useDelegationStore } from "@/stores/delegation";
 
 const breadcrumbItems: BreadcrumbItem[] = [
     {
@@ -18,12 +18,12 @@ const breadcrumbItems: BreadcrumbItem[] = [
     },
 ];
 
-const delegateStore = useDelegateStore();
+const delegationStore = useDelegationStore();
 
 const delegationsAreLoading = computed(
-    () => delegateStore.delegationsAreLoading
+    () => delegationStore.delegationsAreLoading
 );
-const hasDelegations = computed(() => delegateStore.delegations.length > 0);
+const hasDelegations = computed(() => delegationStore.delegations.length > 0);
 
 // TODO: call for invitations
 </script>
@@ -36,5 +36,5 @@ const hasDelegations = computed(() => delegateStore.delegations.length > 0);
     />
     <PageTitleComponent title="Sharing" />
     <EmptySharingPageComponent v-if="!hasDelegations" class="mb-4" />
-    <DelegateInvitationDialog />
+    <DelegationWizardDialog />
 </template>

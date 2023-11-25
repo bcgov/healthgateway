@@ -6,7 +6,7 @@ import {
     IClinicalDocumentService,
     ICommunicationService,
     IConfigService,
-    IDelegateService,
+    IDelegationService,
     IDependentService,
     IEncounterService,
     IHospitalVisitService,
@@ -35,7 +35,7 @@ import { RestAuthenticationService } from "@/services/restAuthService";
 import { RestClinicalDocumentService } from "@/services/restClinicalDocumentService";
 import { RestCommunicationService } from "@/services/restCommunicationService";
 import { RestConfigService } from "@/services/restConfigService";
-import { RestDelegateService } from "@/services/restDelegateService";
+import { RestDelegationService } from "@/services/restDelegationService";
 import { RestDependentService } from "@/services/restDependentService";
 import { RestEncounterService } from "@/services/restEncounterService";
 import { RestHospitalVisitService } from "@/services/restHospitalVisitService";
@@ -305,10 +305,10 @@ export async function initializeServices(): Promise<void> {
             )
     );
 
-    container.set<IDelegateService>(
+    container.set<IDelegationService>(
         SERVICE_IDENTIFIER.DelegateService,
         (c) =>
-            new RestDelegateService(
+            new RestDelegationService(
                 c.get<ILogger>(SERVICE_IDENTIFIER.Logger),
                 c.get<IHttpDelegate>(DELEGATE_IDENTIFIER.HttpDelegate),
                 configStore.config

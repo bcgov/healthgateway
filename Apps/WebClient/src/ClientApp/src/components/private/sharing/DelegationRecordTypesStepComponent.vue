@@ -4,13 +4,13 @@ import { minLength, required } from "@vuelidate/validators";
 import { computed, ref } from "vue";
 
 import { EntryType, entryTypeMap } from "@/constants/entryType";
-import { useDelegateStore } from "@/stores/delegate";
+import { useDelegationStore } from "@/stores/delegation";
 import ConfigUtil from "@/utility/configUtil";
 import ValidationUtil from "@/utility/validationUtil";
 
 defineExpose({ saveStep });
 
-const delegateStore = useDelegateStore();
+const delegationStore = useDelegationStore();
 
 const selectedRecordTypes = ref<EntryType[]>([]);
 
@@ -33,19 +33,23 @@ const v$ = useVuelidate(validations, {
 
 function saveStep(): void {
     v$.value.$touch();
-    if (v$.value.$invalid) return;
-    delegateStore.captureInvitationRecordTypes(selectedRecordTypes.value);
+    if (v$.value.$invalid) {
+        return;
+    }
+    delegationStore.captureDelegationRecordTypes(selectedRecordTypes.value);
 }
 
 // INIT
-entryTypeOptions = ConfigUtil.enabledDatasets()
-    .map((dataset: EntryType) => {
-        const entryDetails = entryTypeMap.get(dataset);
+entryTypeOptions = [...entryTypeMap]
+    .filter(([_, entryDetails]) =>
+        ConfigUtil.isDatasetEnabled(entryDetails.type)
+    )
+    .map(([_, entryDetails]) => {
         return entryDetails === undefined
             ? undefined
             : {
                   title: entryDetails.name,
-                  value: dataset,
+                  value: entryDetails.type,
               };
     })
     .filter((option) => option !== undefined) as Array<{
@@ -53,14 +57,14 @@ entryTypeOptions = ConfigUtil.enabledDatasets()
     value: EntryType;
 }>;
 
-if (delegateStore.invitationWizardState?.recordTypes !== undefined) {
+if (delegationStore.delegationWizardState?.recordTypes !== undefined) {
     selectedRecordTypes.value =
-        delegateStore.invitationWizardState.recordTypes ?? [];
+        delegationStore.delegationWizardState.recordTypes;
 }
 </script>
 
 <template>
-    <v-row data-testid="invitation-record-types-step">
+    <v-row data-testid="delegation-record-types-step">
         <v-col cols="12">
             <h5 class="text-h6 font-weight-bold mb-4">Health Records:</h5>
             <p class="text-body-1">
@@ -76,7 +80,7 @@ if (delegateStore.invitationWizardState?.recordTypes !== undefined) {
                 chips
                 eager
                 :items="entryTypeOptions"
-                data-testid="invitation-record-types-select"
+                data-testid="delegation-record-types-select"
                 :error-messages="recordTypesErrorMessages"
                 @blur="v$.selectedRecordTypes.$touch()"
             />

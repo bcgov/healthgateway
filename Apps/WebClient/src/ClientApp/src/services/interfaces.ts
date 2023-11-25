@@ -276,9 +276,9 @@ export interface ITrackingService {
     trackEvent(data: EventData): void;
 }
 
-export interface IDelegateService {
-    createInvitation(
+export interface IDelegationService {
+    createDelegation(
         ownerHdid: string,
-        invite: CreateDelegationRequest
+        delegation: CreateDelegationRequest
     ): Promise<string | undefined>;
 }

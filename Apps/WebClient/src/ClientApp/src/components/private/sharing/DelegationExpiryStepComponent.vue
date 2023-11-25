@@ -3,10 +3,10 @@ import useVuelidate from "@vuelidate/core";
 import { required } from "@vuelidate/validators";
 import { computed, ref } from "vue";
 
-import { useDelegateStore } from "@/stores/delegate";
+import { useDelegationStore } from "@/stores/delegation";
 import ValidationUtil from "@/utility/validationUtil";
 
-const dateRangeOptions = [
+const expiryOptions = [
     {
         title: "3 months",
         value: 3,
@@ -27,47 +27,49 @@ const dateRangeOptions = [
 
 defineExpose({ saveStep });
 
-const delegateStore = useDelegateStore();
+const delegationStore = useDelegationStore();
 
-const selectedExpiryRange = ref<number>();
+const selectedExpiry = ref<number>();
 
 const expectedExpiryDate = computed(() => {
-    if (selectedExpiryRange.value === undefined) {
+    if (selectedExpiry.value === undefined) {
         throw new Error(
             "User must seclect expiry date range before calculating expiry date"
         );
     }
-    if (selectedExpiryRange.value === 0) {
+    if (selectedExpiry.value === 0) {
         return undefined;
     }
     const currentDate = new Date();
-    currentDate.setMonth(currentDate.getMonth() + selectedExpiryRange.value);
+    currentDate.setMonth(currentDate.getMonth() + selectedExpiry.value);
     return currentDate;
 });
 
 const selectedDescription = computed(() => {
-    const selectedOption = dateRangeOptions.find(
-        (option) => option.value === selectedExpiryRange.value
+    const selectedOption = expiryOptions.find(
+        (option) => option.value === selectedExpiry.value
     );
     return selectedOption === undefined ? "" : selectedOption.title;
 });
 
 const validations = computed(() => ({
-    selectedExpiryRange: {
+    selectedExpiry: {
         required,
     },
 }));
 
-const expiryDateErrorMessages = computed(() =>
-    ValidationUtil.getErrorMessages(v$.value.selectedExpiryRange)
+const expiryErrorMessages = computed(() =>
+    ValidationUtil.getErrorMessages(v$.value.selectedExpiry)
 );
 
-const v$ = useVuelidate(validations, { selectedExpiryRange });
+const v$ = useVuelidate(validations, { selectedExpiry });
 
 function saveStep() {
     v$.value.$touch();
-    if (v$.value.$invalid || selectedExpiryRange.value === undefined) return;
-    delegateStore.captureExpiryDate(
+    if (v$.value.$invalid || selectedExpiry.value === undefined) {
+        return;
+    }
+    delegationStore.captureDelegationExpiry(
         selectedDescription.value,
         expectedExpiryDate.value
     );
@@ -75,7 +77,7 @@ function saveStep() {
 </script>
 
 <template>
-    <v-row data-testid="invitation-expiry-step">
+    <v-row data-testid="delegation-expiry-step">
         <v-col cols="12">
             <h5 class="text-h6 font-weight-bold mb-4">Expire Access:</h5>
             <p class="text-body-1">
@@ -86,13 +88,13 @@ function saveStep() {
         </v-col>
         <v-col cols="12">
             <v-select
-                v-model="selectedExpiryRange"
+                v-model="selectedExpiry"
                 placeholder="Set expiry date"
                 eager
-                :items="dateRangeOptions"
-                data-testid="invitation-expiry-range"
-                :error-messages="expiryDateErrorMessages"
-                @blur="v$.selectedExpiryRange.$touch()"
+                :items="expiryOptions"
+                data-testid="delegation-expiry-select"
+                :error-messages="expiryErrorMessages"
+                @blur="v$.selectedExpiry.$touch()"
             />
         </v-col>
     </v-row>

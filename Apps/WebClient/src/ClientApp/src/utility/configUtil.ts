@@ -17,16 +17,6 @@ export default abstract class ConfigUtil {
             .featureToggleConfiguration;
     }
 
-    public static enabledDatasets(): EntryType[] {
-        const enabledDatasets = [];
-        for (const entryType in EntryType) {
-            if (ConfigUtil.isDatasetEnabled(entryType as EntryType)) {
-                enabledDatasets.push(entryType as EntryType);
-            }
-        }
-        return enabledDatasets;
-    }
-
     public static isDatasetEnabled(datasetName: EntryType): boolean {
         const config = ConfigUtil.getFeatureConfiguration();
 
