@@ -135,8 +135,8 @@ namespace HealthGateway.WebClient.Server
                         string fileNameToTry = content.File.Name.Substring(0, content.File.Name.Length - 3);
                         if (mimeTypeProvider.TryGetContentType(fileNameToTry, out string? mimeType))
                         {
-                            headers.Add("Content-Encoding", "gzip");
-                            headers["Content-Type"] = mimeType;
+                            headers.Append("Content-Encoding", "gzip");
+                            headers.Append("Content-Type", mimeType);
                         }
                     },
                 });

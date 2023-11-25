@@ -107,11 +107,11 @@
     /// <summary>
     /// Colour settings.
     /// </summary>
-    public IList<Color> Colours { get; } = new List<Color>
-    {
+    private IEnumerable<Color> Colours { get; } =
+    [
         Color.Default,
         Color.Primary,
         Color.Secondary,
         Color.Tertiary,
-    };
+    ];
 }

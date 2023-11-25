@@ -17,7 +17,6 @@ namespace HealthGateway.Admin.Client.Store.VaccineCard
 {
     using Fluxor;
 
-#pragma warning disable CS1591, SA1600
     public static class VaccineCardReducers
     {
         [ReducerMethod(typeof(VaccineCardActions.ResetStateAction))]

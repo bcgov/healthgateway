@@ -29,6 +29,7 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
+    using Microsoft.Extensions.Primitives;
     using Microsoft.Net.Http.Headers;
 
     /// <summary>
@@ -120,8 +121,8 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
             app.Use(
                 async (context, next) =>
                 {
-                    context.Response.Headers.Add("X-Content-Type-Options", "nosniff");
-                    context.Response.Headers.Add("X-Xss-Protection", "1; mode=block");
+                    context.Response.Headers.Append("X-Content-Type-Options", "nosniff");
+                    context.Response.Headers.Append("X-Xss-Protection", "1; mode=block");
                     await next().ConfigureAwait(true);
                 });
 
@@ -229,7 +230,7 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
             app.Use(
                 async (context, next) =>
                 {
-                    context.Response.Headers.Add("Content-Security-Policy", csp);
+                    context.Response.Headers.Append("Content-Security-Policy", csp);
                     await next().ConfigureAwait(true);
                 });
         }
@@ -247,7 +248,7 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
                 app.Use(
                     async (context, next) =>
                     {
-                        context.Response.Headers.Add("Permissions-Policy", policyValue);
+                        context.Response.Headers.Append("Permissions-Policy", policyValue);
                         await next().ConfigureAwait(true);
                     });
             }
@@ -273,7 +274,7 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
                             NoStore = true,
                             MustRevalidate = true,
                         };
-                    context.Response.Headers[HeaderNames.Pragma] = new[] { "no-cache" };
+                    context.Response.Headers[HeaderNames.Pragma] = new StringValues("no-cache");
                     await next().ConfigureAwait(true);
                 });
         }
@@ -286,8 +287,8 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
                 {
                     if (context.File.Name == "service-worker-assets.js")
                     {
-                        context.Context.Response.Headers.Add("Cache-Control", "no-cache, no-store");
-                        context.Context.Response.Headers.Add("Expires", "-1");
+                        context.Context.Response.Headers.Append("Cache-Control", "no-cache, no-store");
+                        context.Context.Response.Headers.Append("Expires", "-1");
                     }
 
                     if (context.File.Name == "blazor.boot.json")
@@ -297,7 +298,7 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
                             context.Context.Response.Headers.Remove("blazor-environment");
                         }
 
-                        context.Context.Response.Headers.Add("blazor-environment", environment.EnvironmentName);
+                        context.Context.Response.Headers.Append("blazor-environment", environment.EnvironmentName);
                     }
                 },
             };

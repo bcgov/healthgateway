@@ -13,13 +13,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-
-#pragma warning disable CS1591
 namespace HealthGateway.Admin.Client.Store.AgentAccess;
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -27,45 +24,31 @@ using Fluxor;
 using HealthGateway.Admin.Client.Api;
 using HealthGateway.Admin.Client.Utils;
 using HealthGateway.Admin.Common.Models;
-using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Logging;
 using Refit;
 
-[SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600:Elements should be documented", Justification = "Accessed only by Fluxor")]
-public class AgentAccessEffects
+public class AgentAccessEffects(ILogger<AgentAccessEffects> logger, IAgentAccessApi api)
 {
-    public AgentAccessEffects(ILogger<AgentAccessEffects> logger, IAgentAccessApi api)
-    {
-        this.Logger = logger;
-        this.Api = api;
-    }
-
-    [Inject]
-    private ILogger<AgentAccessEffects> Logger { get; set; }
-
-    [Inject]
-    private IAgentAccessApi Api { get; set; }
-
     [EffectMethod]
     public async Task HandleAddAction(AgentAccessActions.AddAction action, IDispatcher dispatcher)
     {
-        this.Logger.LogInformation("Adding agent");
+        logger.LogInformation("Adding agent");
         try
         {
-            AdminAgent response = await this.Api.ProvisionAgentAccessAsync(action.Agent).ConfigureAwait(true);
-            this.Logger.LogInformation("Agent added successfully");
+            AdminAgent response = await api.ProvisionAgentAccessAsync(action.Agent).ConfigureAwait(true);
+            logger.LogInformation("Agent added successfully");
             dispatcher.Dispatch(new AgentAccessActions.AddSuccessAction { Data = response });
         }
         catch (ApiException e) when (e.StatusCode == HttpStatusCode.Conflict)
         {
             RequestError error = new() { Message = "User already exists" };
-            this.Logger.LogInformation("Agent already exists");
+            logger.LogInformation("Agent already exists");
             dispatcher.Dispatch(new AgentAccessActions.AddFailureAction { Error = error });
         }
         catch (Exception e) when (e is ApiException or HttpRequestException)
         {
             RequestError error = StoreUtility.FormatRequestError(e);
-            this.Logger.LogError("Error adding agent, reason: {Exception}", e.ToString());
+            logger.LogError("Error adding agent, reason: {Exception}", e.ToString());
             dispatcher.Dispatch(new AgentAccessActions.AddFailureAction { Error = error });
         }
     }
@@ -73,17 +56,17 @@ public class AgentAccessEffects
     [EffectMethod]
     public async Task HandleSearchAction(AgentAccessActions.SearchAction action, IDispatcher dispatcher)
     {
-        this.Logger.LogInformation("Retrieving agents");
+        logger.LogInformation("Retrieving agents");
         try
         {
-            IEnumerable<AdminAgent> response = await this.Api.GetAgentsAsync(action.Query).ConfigureAwait(true);
-            this.Logger.LogInformation("Agents retrieved successfully");
+            IEnumerable<AdminAgent> response = await api.GetAgentsAsync(action.Query).ConfigureAwait(true);
+            logger.LogInformation("Agents retrieved successfully");
             dispatcher.Dispatch(new AgentAccessActions.SearchSuccessAction { Data = response });
         }
         catch (Exception e) when (e is ApiException or HttpRequestException)
         {
             RequestError error = StoreUtility.FormatRequestError(e);
-            this.Logger.LogError(e, "Error retrieving agents, reason: {Exception}", e.ToString());
+            logger.LogError(e, "Error retrieving agents, reason: {Exception}", e.ToString());
             dispatcher.Dispatch(new AgentAccessActions.SearchFailureAction { Error = error });
         }
     }
@@ -91,17 +74,17 @@ public class AgentAccessEffects
     [EffectMethod]
     public async Task HandleUpdateAction(AgentAccessActions.UpdateAction action, IDispatcher dispatcher)
     {
-        this.Logger.LogInformation("Updating agent access");
+        logger.LogInformation("Updating agent access");
         try
         {
-            AdminAgent agent = await this.Api.UpdateAgentAccessAsync(action.Agent).ConfigureAwait(true);
-            this.Logger.LogInformation("Agent access updated successfully");
+            AdminAgent agent = await api.UpdateAgentAccessAsync(action.Agent).ConfigureAwait(true);
+            logger.LogInformation("Agent access updated successfully");
             dispatcher.Dispatch(new AgentAccessActions.UpdateSuccessAction { Data = agent });
         }
         catch (Exception e) when (e is ApiException or HttpRequestException)
         {
             RequestError error = StoreUtility.FormatRequestError(e);
-            this.Logger.LogError("Error updating agent access, reason: {Exception}", e.ToString());
+            logger.LogError("Error updating agent access, reason: {Exception}", e.ToString());
             dispatcher.Dispatch(new AgentAccessActions.UpdateFailureAction { Error = error });
         }
     }
@@ -109,17 +92,17 @@ public class AgentAccessEffects
     [EffectMethod]
     public async Task HandleDeleteAction(AgentAccessActions.DeleteAction action, IDispatcher dispatcher)
     {
-        this.Logger.LogInformation("Removing agent access");
+        logger.LogInformation("Removing agent access");
         try
         {
-            await this.Api.RemoveAgentAccessAsync(action.Id).ConfigureAwait(true);
-            this.Logger.LogInformation("Agent access removed successfully");
+            await api.RemoveAgentAccessAsync(action.Id).ConfigureAwait(true);
+            logger.LogInformation("Agent access removed successfully");
             dispatcher.Dispatch(new AgentAccessActions.DeleteSuccessAction { Data = action.Id });
         }
         catch (Exception e) when (e is ApiException or HttpRequestException)
         {
             RequestError error = StoreUtility.FormatRequestError(e);
-            this.Logger.LogError("Error removing agent access, reason: {Exception}", e.ToString());
+            logger.LogError("Error removing agent access, reason: {Exception}", e.ToString());
             dispatcher.Dispatch(new AgentAccessActions.DeleteFailureAction { Error = error });
         }
     }

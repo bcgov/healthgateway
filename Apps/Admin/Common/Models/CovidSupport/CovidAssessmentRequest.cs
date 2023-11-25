@@ -17,7 +17,6 @@ namespace HealthGateway.Admin.Common.Models.CovidSupport;
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text.Json.Serialization;
 using HealthGateway.Admin.Common.Constants;
 
@@ -132,7 +131,7 @@ public class CovidAssessmentRequest
     /// Gets or sets the lines of the patient's street address.
     /// </summary>
     [JsonPropertyName("streetAddresses")]
-    public IEnumerable<string> StreetAddresses { get; set; } = Enumerable.Empty<string>();
+    public IEnumerable<string> StreetAddresses { get; set; } = [];
 
     /// <summary>
     /// Gets or sets the patient's city.

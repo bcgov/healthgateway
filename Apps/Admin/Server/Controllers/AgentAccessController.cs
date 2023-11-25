@@ -27,29 +27,19 @@ namespace HealthGateway.Admin.Server.Controllers
     /// <summary>
     /// Web API to manage agent access to the admin website.
     /// </summary>
+    /// <param name="agentAccessService">The injected agent access service.</param>
     [ApiController]
     [ApiVersion("1.0")]
     [Route("v{version:apiVersion}/api/[controller]")]
     [Produces("application/json")]
     [Authorize(Roles = "AdminUser")]
-    public class AgentAccessController : ControllerBase
+    public class AgentAccessController(IAgentAccessService agentAccessService) : ControllerBase
     {
-        private readonly IAgentAccessService agentAccessService;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="AgentAccessController"/> class.
-        /// </summary>
-        /// <param name="agentAccessService">The injected agent access service.</param>
-        public AgentAccessController(IAgentAccessService agentAccessService)
-        {
-            this.agentAccessService = agentAccessService;
-        }
-
         /// <summary>
         /// Provisions agent access to the admin website.
         /// </summary>
-        /// <returns>The created agent.</returns>
         /// <param name="agent">The agent model.</param>
+        /// <returns>The created agent.</returns>
         /// <response code="200">Returns the created agent.</response>
         /// <response code="401">The client must authenticate itself to perform the operation.</response>
         /// <response code="403">
@@ -64,7 +54,7 @@ namespace HealthGateway.Admin.Server.Controllers
         [ProducesResponseType(StatusCodes.Status502BadGateway, Type = typeof(ProblemDetails))]
         public async Task<AdminAgent> ProvisionAgentAccess(AdminAgent agent)
         {
-            return await this.agentAccessService.ProvisionAgentAccessAsync(agent).ConfigureAwait(true);
+            return await agentAccessService.ProvisionAgentAccessAsync(agent).ConfigureAwait(true);
         }
 
         /// <summary>
@@ -86,7 +76,7 @@ namespace HealthGateway.Admin.Server.Controllers
         [ProducesResponseType(StatusCodes.Status502BadGateway, Type = typeof(ProblemDetails))]
         public async Task<IEnumerable<AdminAgent>> GetAgents(string query)
         {
-            return await this.agentAccessService.GetAgentsAsync(query).ConfigureAwait(true);
+            return await agentAccessService.GetAgentsAsync(query).ConfigureAwait(true);
         }
 
         /// <summary>
@@ -108,7 +98,7 @@ namespace HealthGateway.Admin.Server.Controllers
         [ProducesResponseType(StatusCodes.Status502BadGateway, Type = typeof(ProblemDetails))]
         public async Task<AdminAgent> UpdateAgentAccess(AdminAgent agent)
         {
-            return await this.agentAccessService.UpdateAgentAccessAsync(agent).ConfigureAwait(true);
+            return await agentAccessService.UpdateAgentAccessAsync(agent).ConfigureAwait(true);
         }
 
         /// <summary>
@@ -130,7 +120,7 @@ namespace HealthGateway.Admin.Server.Controllers
         [ProducesResponseType(StatusCodes.Status502BadGateway, Type = typeof(ProblemDetails))]
         public async Task<IActionResult> RemoveAgentAccess(Guid id)
         {
-            await this.agentAccessService.RemoveAgentAccessAsync(id).ConfigureAwait(true);
+            await agentAccessService.RemoveAgentAccessAsync(id).ConfigureAwait(true);
             return this.Ok();
         }
     }

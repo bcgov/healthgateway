@@ -55,7 +55,7 @@ namespace HealthGateway.Admin.Client.Components.Details
         private PatientSupportResult? Patient =>
             this.PatientSupportState.Value.Result?.SingleOrDefault(x => x.PersonalHealthNumber == this.Phn);
 
-        private string PatientName => StringManipulator.JoinWithoutBlanks(new[] { this.Patient?.PreferredName?.GivenName, this.Patient?.PreferredName?.Surname });
+        private string PatientName => StringManipulator.JoinWithoutBlanks([this.Patient?.PreferredName?.GivenName, this.Patient?.PreferredName?.Surname]);
 
         private Address? MailAddress => this.Patient?.PostalAddress ?? this.Patient?.PhysicalAddress;
 
@@ -66,7 +66,7 @@ namespace HealthGateway.Admin.Client.Components.Details
         private CovidAssessmentDetailsResponse? AssessmentInfo => this.PatientDetailsState.Value.Result?.CovidAssessmentDetails;
 
         private IEnumerable<PreviousAssessmentDetails> AssessmentDetails =>
-            this.AssessmentInfo?.PreviousAssessmentDetailsList?.OrderByDescending(a => a.DateTimeOfAssessment) ?? Enumerable.Empty<PreviousAssessmentDetails>();
+            (this.AssessmentInfo?.PreviousAssessmentDetailsList ?? []).OrderByDescending(a => a.DateTimeOfAssessment);
 
         private bool CanViewCovidDetails => this.UserHasRole(Roles.Support) || this.UserHasRole(Roles.Admin);
 

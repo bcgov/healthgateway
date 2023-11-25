@@ -87,7 +87,7 @@ public class InactiveUserService : IInactiveUserService
         RequestResult<List<AdminUserProfileView>> requestResult = new()
         {
             ResultStatus = ResultType.Success,
-            ResourcePayload = new List<AdminUserProfileView>(),
+            ResourcePayload = [],
             TotalResultCount = 0,
         };
 
@@ -106,8 +106,7 @@ public class InactiveUserService : IInactiveUserService
             TimeZoneInfo localTimezone = DateFormatter.GetLocalTimeZone(this.configuration);
 
             inactiveUsers.AddRange(
-                inactiveProfileResult.Payload.Select(
-                        x => AdminUserProfileMapUtils.ToUiModel(x, this.configuration, this.autoMapper, localTimezone))
+                inactiveProfileResult.Payload.Select(x => AdminUserProfileMapUtils.ToUiModel(x, this.configuration, this.autoMapper, localTimezone))
                     .ToList());
             this.logger.LogDebug("Timezone: {Timezone} - Inactive db admin user profile count: {Count} since {InactiveDays} day(s)...", localTimezone, inactiveUsers.Count, inactiveDays);
 

@@ -33,7 +33,7 @@ namespace HealthGateway.Admin.Client.Components.Support
         /// </summary>
         [Parameter]
         [EditorRequired]
-        public IEnumerable<PatientSupportDependentInfo> Data { get; set; } = Enumerable.Empty<PatientSupportDependentInfo>();
+        public IEnumerable<PatientSupportDependentInfo> Data { get; set; } = [];
 
         /// <summary>
         /// Gets or sets a value indicating whether data is loading.
@@ -50,7 +50,7 @@ namespace HealthGateway.Admin.Client.Components.Support
             {
                 this.Hdid = model.Hdid;
                 this.Phn = model.Phn;
-                this.Name = StringManipulator.JoinWithoutBlanks(new[] { model.FirstName, model.LastName });
+                this.Name = StringManipulator.JoinWithoutBlanks([model.FirstName, model.LastName]);
                 this.Birthdate = DateOnly.FromDateTime(model.Birthdate);
                 this.Address = AddressUtility.GetAddressAsSingleLine(model.PhysicalAddress ?? model.PostalAddress);
                 this.Protected = model.Protected;
