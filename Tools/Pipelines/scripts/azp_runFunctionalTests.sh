@@ -40,8 +40,7 @@ TZ=America/Vancouver npx cypress run \
   --ci-build-id "$buildId" \
   --group "$buildId" \
   --tag "$tags" \
-  --spec "cypress/integration/ui/**/*,cypress/integration/e2e/**/*" \
-  --exclude-files "cypress/integration/e2e/authentication/auth.js" \
+  --spec "cypress/integration/ui/**/*,cypress/integration/e2e/**/!(auth.js)" \
   --headless \
   --browser chrome
 popd
