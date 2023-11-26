@@ -139,7 +139,7 @@ namespace HealthGateway.GatewayApi.Services
 
         private void SendCreateDelegationInviteEmail(string toEmail, string resourceOwnerIdentifier, string inviteKey, string sharingCode)
         {
-            string host = this.httpRequestService.GetHost();
+            string host = this.httpRequestService.GetRefererHost();
             this.logger.LogDebug("Referer Authority Uri: {Host}", host);
 
             Dictionary<string, string> keyValues = new()

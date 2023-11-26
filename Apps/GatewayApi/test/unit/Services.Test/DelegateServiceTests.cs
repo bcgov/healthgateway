@@ -164,7 +164,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             dataProtectionProvider.Setup(p => p.CreateProtector(It.IsAny<string>())).Returns(dataProtector.Object);
 
             Mock<IHttpRequestService> httpRequestService = new();
-            httpRequestService.Setup(s => s.GetHost()).Returns(Host);
+            httpRequestService.Setup(s => s.GetRefererHost()).Returns(Host);
 
             Mock<IEmailQueueService> emailQueueService = new();
             emailQueueService.Setup(s => s.ProcessTemplate(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Dictionary<string, string>>())).Returns(GetEmail());

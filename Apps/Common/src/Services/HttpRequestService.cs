@@ -13,7 +13,7 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.GatewayApi.Services
+namespace HealthGateway.Common.Services
 {
     using System;
     using Microsoft.AspNetCore.Http;
@@ -37,7 +37,7 @@ namespace HealthGateway.GatewayApi.Services
         }
 
         /// <inheritdoc/>
-        public string GetHost()
+        public string GetRefererHost()
         {
             string host = this.httpContextAccessor.HttpContext!.Request
                 .GetTypedHeaders()

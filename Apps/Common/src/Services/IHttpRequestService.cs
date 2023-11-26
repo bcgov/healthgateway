@@ -13,7 +13,7 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.GatewayApi.Services
+namespace HealthGateway.Common.Services
 {
     /// <summary>
     /// The Http Request service.
@@ -24,6 +24,6 @@ namespace HealthGateway.GatewayApi.Services
         /// Gets the referer host of the incoming HTTP request
         /// </summary>
         /// <returns> The referer host of the incoming HTTP request.</returns>
-        string GetHost();
+        string GetRefererHost();
     }
 }
