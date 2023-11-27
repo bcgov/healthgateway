@@ -18,7 +18,7 @@ const delegationExpiryDescription = computed(() => {
 });
 
 function saveStep() {
-    delegationStore.submitDelegationDialog();
+    delegationStore.submitDelegationWizard();
 }
 
 function recordTypeName(entryType: EntryType): string {
@@ -34,7 +34,7 @@ function recordTypeName(entryType: EntryType): string {
             </h5>
         </v-col>
         <v-col v-if="wizardState === undefined">
-            <p class="text-body-1 text-red">
+            <p class="text-body-1 text-error">
                 You have reached this step in error, please close this dialog
                 and try creating this invitation again.
             </p>

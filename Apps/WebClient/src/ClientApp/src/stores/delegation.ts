@@ -94,7 +94,7 @@ export const useDelegationStore = defineStore("delegation", () => {
         return wizardConfiguration[currentStep].previous;
     });
 
-    const isDelegationDialogVisible = computed(
+    const isWizardVisible = computed(
         () => delegationWizardState.value != undefined
     );
 
@@ -190,7 +190,7 @@ export const useDelegationStore = defineStore("delegation", () => {
         };
     }
 
-    function submitDelegationDialog(): Promise<string | void> {
+    function submitDelegationWizard(): Promise<string | void> {
         if (delegationWizardState.value?.mode === "Create") {
             return createDelegation({
                 nickname: delegationWizardState.value.nickname,
@@ -201,7 +201,7 @@ export const useDelegationStore = defineStore("delegation", () => {
                 ),
             }).then((sharingCode) => {
                 if (sharingCode != undefined) {
-                    setWizardSharingCode(sharingCode!);
+                    setWizardSharingCode(sharingCode);
                 }
             });
         }
@@ -247,7 +247,7 @@ export const useDelegationStore = defineStore("delegation", () => {
     return {
         delegations,
         delegationsAreLoading,
-        isDelegationDialogVisible,
+        isWizardVisible,
         expiryDateDisplay,
         wizardPreviousStep,
         wizardNextStep,
@@ -256,7 +256,7 @@ export const useDelegationStore = defineStore("delegation", () => {
         captureDelegationContact,
         captureDelegationRecordTypes,
         captureDelegationExpiry,
-        submitDelegationDialog,
+        submitDelegationWizard,
         moveWizardToPreviousStep,
         clearDelegationWizardState,
     };
