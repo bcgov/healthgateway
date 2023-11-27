@@ -17,9 +17,7 @@
 namespace HealthGateway.IntegrationTests;
 
 using System.Data.Common;
-using System.Reflection;
 using Alba;
-using Alba.Security;
 using DotNet.Testcontainers.Containers;
 using HealthGateway.Database.Context;
 using Microsoft.EntityFrameworkCore;
@@ -38,10 +36,10 @@ public class WebAppFixture : IAsyncLifetime
 
     public IServiceCollection Services => this.testRelatedServices;
 
-    public virtual async Task<IAlbaHost> CreateHost<TStartup>(ITestOutputHelper output, KeyValuePair<string, string?>[]? configurationSettings = null, IEnumerable<IAlbaExtension>? extensions = null)
-        where TStartup : class
+    public virtual async Task<IAlbaHost> CreateHost<TProgram>(ITestOutputHelper output, KeyValuePair<string, string?>[]? configurationSettings = null, IEnumerable<IAlbaExtension>? extensions = null)
+        where TProgram : class
     {
-        IAlbaHost host = await AlbaHost.For<TStartup>(
+        IAlbaHost host = await AlbaHost.For<TProgram>(
             builder =>
             {
                 builder.ConfigureServices(
@@ -84,6 +82,12 @@ public class WebAppFixture : IAsyncLifetime
         if (this.postgreSqlContainer.State != TestcontainersStates.Running)
         {
             await this.postgreSqlContainer.StartAsync();
+
+            DbContextOptionsBuilder<GatewayDbContext> builder = new();
+            builder.UseNpgsql(this.postgreSqlContainer.GetConnectionString(), x => x.MigrationsHistoryTable("__EFMigrationsHistory", "gateway"));
+            using GatewayDbContext dbCtx = new(builder.Options);
+            await MigrateDatabase(dbCtx);
+            await SeedData(dbCtx);
         }
 
         if (this.redisContainer.State != TestcontainersStates.Running)
@@ -96,46 +100,6 @@ public class WebAppFixture : IAsyncLifetime
     {
         await this.postgreSqlContainer.DisposeAsync();
         await this.redisContainer.DisposeAsync();
-    }
-}
-
-[CollectionDefinition("WebAppScenario")]
-public class ScenarioCollection : ICollectionFixture<WebAppFixture>;
-
-[Collection("WebAppScenario")]
-public abstract class ScenarioContextBase<TStartup> : IAsyncLifetime, IClassFixture<WebAppFixture>
-    where TStartup : class
-{
-    private readonly WebAppFixture fixture;
-    private readonly TestConfiguration testConfiguration;
-
-    public IAlbaHost Host { get; private set; } = null!;
-
-    protected ITestOutputHelper Output { get; }
-
-    protected ScenarioContextBase(ITestOutputHelper output, string configSectionName, WebAppFixture fixture)
-    {
-        this.Output = output;
-        this.fixture = fixture;
-        string? secretsPath = Environment.GetEnvironmentVariable("SECRETS_PATH");
-        IConfigurationBuilder configBuilder = new ConfigurationBuilder().AddUserSecrets(Assembly.GetExecutingAssembly());
-        if (!string.IsNullOrEmpty(secretsPath))
-        {
-            configBuilder.AddJsonFile(secretsPath);
-        }
-
-        this.testConfiguration = configBuilder.Build().GetSection(configSectionName).Get<TestConfiguration>()!;
-    }
-
-    public virtual async Task InitializeAsync()
-    {
-        IAlbaExtension authentication = this.CreateClientCredentials(this.testConfiguration.DefaultUserName);
-        this.Host = await this.fixture.CreateHost<TStartup>(this.Output, extensions: new[] { authentication });
-
-        using IServiceScope migrationScope = this.Host.Services.CreateScope();
-        GatewayDbContext dbCtx = migrationScope.ServiceProvider.GetRequiredService<GatewayDbContext>();
-        await MigrateDatabase(dbCtx);
-        await SeedData(dbCtx);
     }
 
     private static async Task MigrateDatabase(GatewayDbContext ctx)
@@ -158,51 +122,4 @@ public abstract class ScenarioContextBase<TStartup> : IAsyncLifetime, IClassFixt
 #pragma warning restore CA2100 // Review SQL queries for security vulnerabilities
         await command.ExecuteNonQueryAsync();
     }
-
-    public async Task DisposeAsync()
-    {
-        await this.Host.DisposeAsync();
-    }
-
-    public TestUser GetTestUser(string userName)
-    {
-        TestUser? user = this.testConfiguration.Users.FirstOrDefault(u => u.UserName == userName);
-        if (user == null)
-        {
-            throw new InvalidOperationException($"User {userName} not found in the test configuration");
-        }
-
-        return user;
-    }
-
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1859:Change return type of method from 'IAlbaExtension' to 'OpenConnectUserPassword'", Justification = "Team decision")]
-    private IAlbaExtension CreateClientCredentials(string userName)
-    {
-        string clientId = this.testConfiguration.ClientId;
-        string clientSecret = this.testConfiguration.ClientSecret;
-        TestUser user = this.GetTestUser(userName);
-        OpenConnectUserPassword userAuth = new()
-        {
-            ClientId = clientId,
-            ClientSecret = clientSecret,
-            UserName = user.UserName,
-            Password = user.Password,
-        };
-
-        return userAuth;
-    }
-}
-
-public record TestUser(string UserName, string Password);
-
-public record TestConfiguration
-{
-    public const string AdminConfigSection = "Admin";
-    public const string WebClientConfigSection = "WebClient";
-
-    public string Authority { get; set; } = null!;
-    public string ClientId { get; set; } = null!;
-    public string ClientSecret { get; set; } = null!;
-    public string DefaultUserName { get; set; } = null!;
-    public IEnumerable<TestUser> Users { get; set; } = Array.Empty<TestUser>();
 }

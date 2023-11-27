@@ -23,7 +23,7 @@ namespace HealthGateway.GatewayApi
     /// The entry point for the project.
     /// </summary>
     [ExcludeFromCodeCoverage]
-    public static class Program
+    public class Program
     {
         /// <summary>
         /// The entry point for the class.
