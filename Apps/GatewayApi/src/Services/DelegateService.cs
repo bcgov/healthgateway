@@ -122,15 +122,12 @@ namespace HealthGateway.GatewayApi.Services
             delegation.ResourceOwnerIdentifier = resourceOwnerIdentifier;
 
             await this.delegationDelegate.UpdateDelegationAsync(delegation);
-            this.SendCreateDelegationInviteEmail(request.Email, resourceOwnerIdentifier, this.CreateInviteKey(delegation.Id.ToString()), sharingCode);
-            return sharingCode;
-        }
 
-        private string CreateInviteKey(string id)
-        {
-            string inviteKey = this.dataProtector.Protect(id);
+            string inviteKey = this.dataProtector.Protect(delegation.Id.ToString());
             this.logger.LogDebug("Invite Key: {InviteKey}", inviteKey);
-            return inviteKey;
+            this.SendCreateDelegationInviteEmail(request.Email, resourceOwnerIdentifier, inviteKey, sharingCode);
+
+            return sharingCode;
         }
 
         private void SendCreateDelegationInviteEmail(string toEmail, string resourceOwnerIdentifier, string inviteKey, string sharingCode)
