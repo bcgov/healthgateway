@@ -836,7 +836,7 @@ namespace HealthGateway.Database.Context
                         Id = Guid.Parse("bb716614-defb-48d0-b243-0796b23c4c35"),
                         Name = "CreateDelegationInvite",
                         From = "HG_Donotreply@gov.bc.ca",
-                        Subject = "Health Gateway Create Delegation Invite",
+                        Subject = "${ResourceOwnerIdentifier} Has Shared Health Records with You on Health Gateway",
                         Body = ReadResource("HealthGateway.Database.Assets.docs.CreateDelegationInvite.html"),
                         Priority = EmailPriority.Standard,
                         EffectiveDate = this.DefaultSeedDate,
