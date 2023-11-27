@@ -44,7 +44,6 @@ namespace HealthGateway.GatewayApi.Services
     {
         private const string DelegationInviteKey = "DelegationInvite";
         private const string ExpiryHoursKey = "ExpiryHours";
-        private const string ExpirationUrlParameter = "expiration";
         private const string DataProtectionPurpose = "CreateDelegationInvite";
 
         private readonly IConfiguration configuration;
@@ -129,12 +128,9 @@ namespace HealthGateway.GatewayApi.Services
 
         private string CreateInviteKey(string id)
         {
-            DateTime expirationTime = DateTime.UtcNow.AddHours(this.delegationInvitationExpiryHours);
-            long expirationTimeTicks = expirationTime.Ticks;
-            string unprotectedInviteKey = $"{id}?{ExpirationUrlParameter}={expirationTimeTicks}";
-            string protectedInviteKey = this.dataProtector.Protect(unprotectedInviteKey);
-            this.logger.LogDebug("Unprotected Invite Key: {UnprotectedInviteKey} \n Protected Invite Key: {ProtectedInviteKey}", unprotectedInviteKey, protectedInviteKey);
-            return protectedInviteKey;
+            string inviteKey = this.dataProtector.Protect(id);
+            this.logger.LogDebug("Invite Key: {InviteKey}", inviteKey);
+            return inviteKey;
         }
 
         private void SendCreateDelegationInviteEmail(string toEmail, string resourceOwnerIdentifier, string inviteKey, string sharingCode)
