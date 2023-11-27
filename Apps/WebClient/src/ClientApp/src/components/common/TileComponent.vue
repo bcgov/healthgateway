@@ -23,6 +23,6 @@ withDefaults(defineProps<Props>(), {
         <h3 class="text-primary text-h5 font-weight-bold mb-2">
             {{ tile.name }}
         </h3>
-        <p class="text-body-1 mb-0">{{ tile.description }}</p>
+        <p class="text-body-1">{{ tile.description }}</p>
     </div>
 </template>

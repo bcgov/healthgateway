@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import HgButtonComponent from "@/components/common/HgButtonComponent.vue";
-import TileComponent from "@/components/site/TileComponent.vue";
+import TileComponent from "@/components/common/TileComponent.vue";
 import { InfoTile } from "@/models/infoTile";
 import { useDelegationStore } from "@/stores/delegation";
 
