@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { computed } from "vue";
 
+import BreadcrumbComponent from "@/components/common/BreadcrumbComponent.vue";
 import LoadingComponent from "@/components/common/LoadingComponent.vue";
 import PageTitleComponent from "@/components/common/PageTitleComponent.vue";
 import DelegationWizardDialog from "@/components/private/sharing/DelegationWizardDialog.vue";
 import EmptySharingPageComponent from "@/components/private/sharing/EmptySharingPageComponent.vue";
-import BreadcrumbComponent from "@/components/site/BreadcrumbComponent.vue";
 import BreadcrumbItem from "@/models/breadcrumbItem";
 import { useDelegationStore } from "@/stores/delegation";
 

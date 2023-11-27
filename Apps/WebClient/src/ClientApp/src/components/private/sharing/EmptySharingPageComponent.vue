@@ -10,21 +10,22 @@ const sharingInfoTiles: InfoTile[] = [
     {
         type: "sharingControl",
         name: "You're in control",
-        description: "Placeholder text",
+        description: "You choose when and what to share.",
         icon: "list-check",
         active: true,
     },
     {
         type: "sharingTransparent",
         name: "Transparent",
-        description: "Placeholder text",
+        description:
+            "Easily see who you are sharing with and what you are sharing.",
         icon: "bell",
         active: true,
     },
     {
         type: "sharingPrivate",
         name: "Private and Secure",
-        description: "Placeholder text",
+        description: "Your data is only shared with those you choose.",
         icon: "lock",
         active: true,
     },
@@ -34,8 +35,11 @@ const sharingInfoTiles: InfoTile[] = [
 <template>
     <div data-testid="empty-sharing-page">
         <v-card class="my-4">
-            <v-card-text class="">
-                <p class="text-body-1">Something goes here</p>
+            <v-card-text>
+                <p class="text-body-1">
+                    Sharing your data with those you trust has never been
+                    easier.
+                </p>
                 <v-row>
                     <v-col
                         v-for="tile in sharingInfoTiles"

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import PageTitleComponent from "@/components/common/PageTitleComponent.vue";
 import ReportsComponent from "@/components/private/reports/ReportsComponent.vue";
-import BreadcrumbComponent from "@/components/site/BreadcrumbComponent.vue";
+import BreadcrumbComponent from "@/components/common/BreadcrumbComponent.vue";
 import BreadcrumbItem from "@/models/breadcrumbItem";
 import { useUserStore } from "@/stores/user";
 

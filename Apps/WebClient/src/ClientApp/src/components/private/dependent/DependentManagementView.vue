@@ -3,7 +3,7 @@ import LoadingComponent from "@/components/common/LoadingComponent.vue";
 import PageTitleComponent from "@/components/common/PageTitleComponent.vue";
 import AddDependentComponent from "@/components/private/dependent/AddDependentComponent.vue";
 import DependentCardComponent from "@/components/private/dependent/DependentCardComponent.vue";
-import BreadcrumbComponent from "@/components/site/BreadcrumbComponent.vue";
+import BreadcrumbComponent from "@/components/common/BreadcrumbComponent.vue";
 import BreadcrumbItem from "@/models/breadcrumbItem";
 import { useDependentStore } from "@/stores/dependent";
 import { useUserStore } from "@/stores/user";
