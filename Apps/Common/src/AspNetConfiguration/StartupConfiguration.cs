@@ -263,5 +263,14 @@ namespace HealthGateway.Common.AspNetConfiguration
         {
             MessageBus.ConfigureMessageBus(services, this.Configuration);
         }
+
+        /// <summary>
+        /// Configures the app to use messaging.
+        /// </summary>
+        /// <param name="services">The service collection provider.</param>
+        public void ConfigureDataProtection(IServiceCollection services)
+        {
+            DataProtection.ConfigureDataProtection(services);
+        }
     }
 }

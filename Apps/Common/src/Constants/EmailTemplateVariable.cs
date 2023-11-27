@@ -44,5 +44,15 @@ namespace HealthGateway.Common.Constants
         /// The host variable for email templates.
         /// </summary>
         public const string Host = "host";
+
+        /// <summary>
+        /// The resource owner identifier variable for email templates.
+        /// </summary>
+        public const string ResourceOwnerIdentifier = "ResourceOwnerIdentifier";
+
+        /// <summary>
+        /// The sharing code variable for email templates.
+        /// </summary>
+        public const string SharingCode = "SharingCode";
     }
 }
