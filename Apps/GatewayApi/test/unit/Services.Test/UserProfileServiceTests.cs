@@ -640,7 +640,6 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 { "referer", "http://localhost/" },
             };
             UserProfileServiceMock mockService = new UserProfileServiceMock(GetIConfigurationRoot(null))
-                .SetupHttpAccessorMockCustomHeaders(headerDictionary)
                 .SetupUserProfileDelegateMockGetAndUpdate(this.hdid, userProfile, userProfileDbResult)
                 .SetupEmailQueueServiceMock(false)
                 .SetupPatientRepository(this.hdid, dataSources);
@@ -681,7 +680,6 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             };
 
             UserProfileServiceMock mockService = new UserProfileServiceMock(GetIConfigurationRoot(null))
-                .SetupHttpAccessorMockCustomHeaders(headerDictionary)
                 .SetupUserProfileDelegateMockGetAndUpdate(this.hdid, userProfile, userProfileDbResult)
                 .SetupEmailQueueServiceMock(false);
 
@@ -721,7 +719,6 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             };
 
             UserProfileServiceMock mockService = new UserProfileServiceMock(GetIConfigurationRoot(null))
-                .SetupHttpAccessorMockCustomHeaders(headerDictionary)
                 .SetupUserProfileDelegateMockGetAndUpdate(this.hdid, userProfile, userProfileDbResult)
                 .SetupEmailQueueServiceMock(false);
 
@@ -768,7 +765,6 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             };
 
             UserProfileServiceMock mockService = new UserProfileServiceMock(GetIConfigurationRoot(null))
-                .SetupHttpAccessorMockCustomHeaders(headerDictionary)
                 .SetupUserProfileDelegateMockGetAndUpdate(this.hdid, userProfile, userProfileDbResult)
                 .SetupEmailQueueServiceMock(false)
                 .SetupPatientRepository(this.hdid, dataSources);
@@ -810,7 +806,6 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             };
 
             UserProfileServiceMock mockService = new UserProfileServiceMock(GetIConfigurationRoot(null))
-                .SetupHttpAccessorMockCustomHeaders(headerDictionary)
                 .SetupUserProfileDelegateMockGetAndUpdate(this.hdid, userProfile, userProfileDbResult)
                 .SetupEmailQueueServiceMock(false);
 
