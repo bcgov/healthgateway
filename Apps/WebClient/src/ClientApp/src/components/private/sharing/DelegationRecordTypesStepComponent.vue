@@ -44,18 +44,10 @@ entryTypeOptions = [...entryTypeMap]
     .filter(([_, entryDetails]) =>
         ConfigUtil.isDatasetEnabled(entryDetails.type)
     )
-    .map(([_, entryDetails]) => {
-        return entryDetails === undefined
-            ? undefined
-            : {
-                  title: entryDetails.name,
-                  value: entryDetails.type,
-              };
-    })
-    .filter((option) => option !== undefined) as Array<{
-    title: string;
-    value: EntryType;
-}>;
+    .map(([_, entryDetails]) => ({
+        title: entryDetails.name,
+        value: entryDetails.type,
+    }));
 
 if (delegationStore.delegationWizardState?.recordTypes !== undefined) {
     selectedRecordTypes.value =

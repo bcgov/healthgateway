@@ -109,7 +109,7 @@ function handleSaveCurrentStep(): void {
                         />
                     </v-toolbar>
                 </v-card-title>
-                <v-card-text v-if="currentStep !== undefined">
+                <v-card-text v-if="currentStep !== undefined" class="pa-4">
                     <v-window v-model="currentStep">
                         <v-window-item
                             :value="DelegationWizardStep.contact"
@@ -151,7 +151,7 @@ function handleSaveCurrentStep(): void {
                         </v-window-item>
                     </v-window>
                 </v-card-text>
-                <v-card-actions class="mt-4 border-t-sm pa-4">
+                <v-card-actions class="border-t-sm pa-4">
                     <v-spacer />
                     <HgButtonComponent
                         v-if="isFirstStep"
