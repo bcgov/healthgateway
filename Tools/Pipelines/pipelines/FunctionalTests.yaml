@@ -27,8 +27,9 @@ jobs:
   - job: "Admin_Seed"
     displayName: "Re-seed DB and PHSA data for Admin"
     pool: 
-      name: "HealthGatewayDev"    
-    condition: eq(variables['Admin'], true)    
+      name: "HGGoldDev"    
+    condition: eq(variables['Admin'], true)
+    timeoutInMinutes: 5
     steps:
     - task: Bash@3
       displayName: 'Re-seed DB and PHSA data for Admin'
@@ -40,14 +41,17 @@ jobs:
         DB_PASSWORD: $(db.password)
         ADMIN_KEYCLOAK_SECRET: $(admin.keycloak.secret)
         PHSA_KEYCLOAK_DEVTOOLS_SECRET: $(phsa.keycloak.devtools.secret)
+        REDIS_PASSWORD: $(redis.pw)
+        REDIS_ENV: $(redis.env)
   - job: "Admin_Tests"
     displayName: "Admin Functional Tests"  
     pool: 
       vmImage: "ubuntu-latest"
     condition: and(succeeded(), eq(variables['Admin'], true))
-    dependsOn: "Admin_Seed"    
+    dependsOn: "Admin_Seed"
     strategy:
       parallel: 9
+    timeoutInMinutes: 15
     steps:
     - task: Bash@3
       displayName: 'Run Admin Functional Tests'
@@ -65,9 +69,10 @@ jobs:
   - job: "HG_Seed"
     displayName: "Re-seed DB and PHSA data for Functional Tests"
     pool: 
-      name: "HealthGatewayDev"
+      name: "HGGoldDev"
     condition: eq(variables['WebClient'], true)
-    dependsOn: "Admin_Tests"     
+    dependsOn: "Admin_Tests"
+    timeoutInMinutes: 5
     steps:
     - task: Bash@3
       displayName: 'Re-seed DB and PHSA data for Functional Tests'
@@ -79,14 +84,17 @@ jobs:
         DB_PASSWORD: $(db.password)
         ADMIN_KEYCLOAK_SECRET: $(admin.keycloak.secret)
         PHSA_KEYCLOAK_DEVTOOLS_SECRET: $(phsa.keycloak.devtools.secret)
+        REDIS_PASSWORD: $(redis.pw)
+        REDIS_ENV: $(redis.env)
   - job: "HG_Functional_Tests"
     displayName: "HG Functional Tests"  
     pool: 
       vmImage: "ubuntu-latest"
     condition: and(succeeded('HG_Seed'), eq(variables['WebClient'], true))
-    dependsOn: "HG_Seed"    
+    dependsOn: "HG_Seed"
     strategy:
       parallel: 9
+    timeoutInMinutes: 15
     steps:
     - task: Bash@3
       displayName: 'Run HG Functional Tests'
