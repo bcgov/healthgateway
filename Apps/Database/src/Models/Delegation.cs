@@ -86,8 +86,7 @@ namespace HealthGateway.Database.Models
         /// <summary>
         /// Gets or sets the expiry date.
         /// </summary>
-        [Required]
-        public DateOnly ExpiryDate { get; set; }
+        public DateOnly? ExpiryDate { get; set; }
 
         /// <summary>
         /// Gets or sets the access for the data sets.

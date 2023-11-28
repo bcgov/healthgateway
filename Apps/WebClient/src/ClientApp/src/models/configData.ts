@@ -72,6 +72,7 @@ export interface FeatureToggleConfiguration {
     covid19: Covid19Settings;
     dependents: DependentsSettings;
     services: ServicesSettings;
+    sharing: SharingSettings;
 }
 
 export interface HomepageSettings {
@@ -119,6 +120,10 @@ export interface DependentsSettings {
 export interface ServicesSettings {
     enabled: boolean;
     services: ServiceSettings[];
+}
+
+export interface SharingSettings {
+    enabled: boolean;
 }
 
 export interface ServiceSettings {

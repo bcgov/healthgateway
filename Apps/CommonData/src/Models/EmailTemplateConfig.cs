@@ -13,36 +13,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.GatewayApi.Models
+namespace HealthGateway.Common.Data.Models
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Collections.Immutable;
-    using HealthGateway.Common.Data.Constants;
-
     /// <summary>
-    /// The CreateDelegationRequest model.
+    /// Model object representing email template configuration.
     /// </summary>
-    public record CreateDelegationRequest
+    public class EmailTemplateConfig
     {
         /// <summary>
-        /// Gets or sets the nickname.
+        /// The section key to use when binding this object.
         /// </summary>
-        public string Nickname { get; set; } = string.Empty;
+        public const string ConfigurationSectionKey = "EmailTemplate";
 
         /// <summary>
-        /// Gets or sets the email.
+        /// Gets the host.
         /// </summary>
-        public string Email { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Gets or sets the expiry date.
-        /// </summary>
-        public DateOnly? ExpiryDate { get; set; }
-
-        /// <summary>
-        /// Gets the access for the data sets.
-        /// </summary>
-        public ISet<DataSource> DataSources { get; init; } = ImmutableHashSet<DataSource>.Empty;
+        public string Host { get; init; } = string.Empty;
     }
 }

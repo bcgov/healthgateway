@@ -5,7 +5,7 @@ import HgButtonComponent from "@/components/common/HgButtonComponent.vue";
 import PageTitleComponent from "@/components/common/PageTitleComponent.vue";
 import NoteDialogComponent from "@/components/private/timeline/NoteDialogComponent.vue";
 import TimelineComponent from "@/components/private/timeline/TimelineComponent.vue";
-import BreadcrumbComponent from "@/components/site/BreadcrumbComponent.vue";
+import BreadcrumbComponent from "@/components/common/BreadcrumbComponent.vue";
 import { EntryType, entryTypeMap } from "@/constants/entryType";
 import BreadcrumbItem from "@/models/breadcrumbItem";
 import { useConfigStore } from "@/stores/config";

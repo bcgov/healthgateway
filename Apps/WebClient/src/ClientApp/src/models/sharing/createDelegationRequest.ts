@@ -1,9 +1,9 @@
 import { DataSource } from "@/constants/dataSource";
 
 /**
- * Represents the request delegate invitation model.
+ * Represents the create new delegation model.
  */
-export interface CreateDelegateInvitationRequest {
+export interface CreateDelegationRequest {
     /**
      * The friendly name of the delegate.
      */

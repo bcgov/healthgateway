@@ -31,18 +31,18 @@ namespace HealthGateway.GatewayApi.Controllers
     [ApiVersion("1.0")]
     [Route("[controller]")]
     [ApiController]
-    public class DelegateController
+    public class DelegationController
     {
-        private readonly IDelegateService delegateService;
+        private readonly IDelegationService delegationService;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DelegateController"/> class.
+        /// Initializes a new instance of the <see cref="DelegationController"/> class.
         /// </summary>
-        /// <param name="delegateService">The injected delegate service.</param>
-        public DelegateController(
-            IDelegateService delegateService)
+        /// <param name="delegationService">The injected delegate service.</param>
+        public DelegationController(
+            IDelegationService delegationService)
         {
-            this.delegateService = delegateService;
+            this.delegationService = delegationService;
         }
 
         /// <summary>
@@ -67,7 +67,7 @@ namespace HealthGateway.GatewayApi.Controllers
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<string> CreateDelegation(string hdid, [FromBody] CreateDelegationRequest request, CancellationToken ct)
         {
-            return await this.delegateService.CreateDelegationAsync(hdid, request, ct);
+            return await this.delegationService.CreateDelegationAsync(hdid, request, ct);
         }
     }
 }

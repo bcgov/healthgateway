@@ -34,7 +34,7 @@ namespace HealthGateway.GatewayApi.Validations
         {
             this.RuleFor(v => v.Nickname).NotEmpty().MaximumLength(20);
             this.RuleFor(v => v.Email).NotEmpty().SetValidator(new EmailValidator());
-            this.RuleFor(v => v.ExpiryDate).SetValidator(new ExpiryDateValidator(referenceDate));
+            this.RuleFor(v => v.ExpiryDate).SetValidator(new OptionalExpiryDateValidator(referenceDate));
             this.RuleFor(v => v.DataSources)
                 .Must(dataSources => dataSources.Count > 0)
                 .WithMessage("DataSources must have at least one item.");

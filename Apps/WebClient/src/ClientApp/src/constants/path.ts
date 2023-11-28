@@ -17,6 +17,7 @@ export enum Path {
     Queue = "/queue",
     Registration = "/registration",
     Reports = "/reports",
+    Sharing = "/sharing",
     Services = "/services",
     TermsOfService = "/termsOfService",
     Timeline = "/timeline",
