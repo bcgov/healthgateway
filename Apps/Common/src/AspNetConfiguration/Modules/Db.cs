@@ -42,6 +42,7 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
             bool isSensitiveDataLoggingEnabled = section.GetValue("Enabled", false);
             logger.LogDebug("Sensitive Data Logging is enabled: {IsSensitiveDataLoggingEnabled}", isSensitiveDataLoggingEnabled);
 
+            services.AddEntityFrameworkNpgsql();
             services.AddSingleton(_ =>
             {
                 NpgsqlDataSourceBuilder dataSourceBuilder = new(configuration.GetConnectionString("GatewayConnection"));
@@ -53,9 +54,10 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
                 (sp, options) =>
                 {
                     var ds = sp.GetRequiredService<NpgsqlDataSource>();
+                    options.UseInternalServiceProvider(sp);
                     options.UseNpgsql(
                         ds,
-                        x => x.MigrationsHistoryTable("__EFMigrationsHistory", "gateway"));
+                        builder => builder.MigrationsHistoryTable("__EFMigrationsHistory", "gateway"));
                     if (isSensitiveDataLoggingEnabled)
                     {
                         options.EnableSensitiveDataLogging();

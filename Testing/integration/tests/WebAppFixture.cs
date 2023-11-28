@@ -84,7 +84,7 @@ public class WebAppFixture : IAsyncLifetime
             await this.postgreSqlContainer.StartAsync();
 
             DbContextOptionsBuilder<GatewayDbContext> builder = new();
-            builder.UseNpgsql(this.postgreSqlContainer.GetConnectionString(), x => x.MigrationsHistoryTable("__EFMigrationsHistory", "gateway"));
+            builder.UseNpgsql(this.postgreSqlContainer.GetConnectionString(), builder => builder.MigrationsHistoryTable("__EFMigrationsHistory", "gateway"));
             using GatewayDbContext dbCtx = new(builder.Options);
             await MigrateDatabase(dbCtx);
             await SeedData(dbCtx);
