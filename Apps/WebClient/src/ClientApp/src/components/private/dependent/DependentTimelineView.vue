@@ -6,7 +6,7 @@ import HgIconButtonComponent from "@/components/common/HgIconButtonComponent.vue
 import LoadingComponent from "@/components/common/LoadingComponent.vue";
 import PageTitleComponent from "@/components/common/PageTitleComponent.vue";
 import TimelineComponent from "@/components/private/timeline/TimelineComponent.vue";
-import BreadcrumbComponent from "@/components/site/BreadcrumbComponent.vue";
+import BreadcrumbComponent from "@/components/common/BreadcrumbComponent.vue";
 import { EntryType, entryTypeMap } from "@/constants/entryType";
 import BreadcrumbItem from "@/models/breadcrumbItem";
 import { Dependent } from "@/models/dependent";

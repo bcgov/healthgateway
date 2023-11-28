@@ -36,7 +36,8 @@ namespace HealthGateway.WebClient.Server.Models
         DatasetSettings[] Datasets,
         Covid19Settings Covid19,
         DependentsSettings Dependents,
-        ServicesSettings Services);
+        ServicesSettings Services,
+        SharingSettings Sharing);
 
     /// <summary>
     /// Settings for the home page.
@@ -121,6 +122,12 @@ namespace HealthGateway.WebClient.Server.Models
     public record ServicesSettings(
         bool Enabled,
         ServiceSetting[] Services);
+
+    /// <summary>
+    /// Setting for sharing feature.
+    /// </summary>
+    /// <param name="Enabled">Toggles sharing feature on or off.</param>
+    public record SharingSettings(bool Enabled);
 
     /// <summary>
     /// Settings for organ donor service feature.

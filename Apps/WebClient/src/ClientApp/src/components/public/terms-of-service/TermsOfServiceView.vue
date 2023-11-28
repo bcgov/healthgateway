@@ -4,7 +4,7 @@ import { ref } from "vue";
 import HtmlTextAreaComponent from "@/components/common/HtmlTextAreaComponent.vue";
 import LoadingComponent from "@/components/common/LoadingComponent.vue";
 import PageTitleComponent from "@/components/common/PageTitleComponent.vue";
-import BreadcrumbComponent from "@/components/site/BreadcrumbComponent.vue";
+import BreadcrumbComponent from "@/components/common/BreadcrumbComponent.vue";
 import { container } from "@/ioc/container";
 import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
 import BreadcrumbItem from "@/models/breadcrumbItem";

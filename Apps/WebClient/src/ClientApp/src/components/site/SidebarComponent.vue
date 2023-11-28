@@ -128,6 +128,17 @@ watch(isSidebarOpen, (value: boolean) => {
                 </template>
             </v-list-item>
             <v-list-item
+                title="Sharing"
+                to="/sharing"
+                data-testid="menu-btn-sharing-link"
+            >
+                <template #prepend>
+                    <div class="nav-list-item-icon mr-8 d-flex justify-center">
+                        <v-icon icon="people-arrows" />
+                    </div>
+                </template>
+            </v-list-item>
+            <v-list-item
                 v-show="userStore.userIsActive"
                 title="Export Records"
                 to="/reports"
