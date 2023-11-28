@@ -7,7 +7,7 @@ import ErrorTranslator from "@/utility/errorTranslator";
 import { IDelegationService, IHttpDelegate, ILogger } from "./interfaces";
 
 export class RestDelegationService implements IDelegationService {
-    private readonly DELEGATE_BASE_URI: string = "Delegate";
+    private readonly DELEGATE_BASE_URI: string = "Delegation";
     private logger;
     private http;
     private baseUri;

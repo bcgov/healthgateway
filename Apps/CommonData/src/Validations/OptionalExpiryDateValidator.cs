@@ -21,18 +21,18 @@ namespace HealthGateway.Common.Data.Validations
     /// <summary>
     /// Validates expiry date.
     /// </summary>
-    public class ExpiryDateValidator : AbstractValidator<DateOnly>
+    public class OptionalExpiryDateValidator : AbstractValidator<DateOnly?>
     {
         private readonly DateOnly referenceDate;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ExpiryDateValidator"/> class.
+        /// Initializes a new instance of the <see cref="OptionalExpiryDateValidator"/> class.
         /// </summary>
         /// <param name="referenceDate">A reference point to validate against.</param>
-        public ExpiryDateValidator(DateOnly referenceDate)
+        public OptionalExpiryDateValidator(DateOnly referenceDate)
         {
             this.referenceDate = referenceDate;
-            this.RuleFor(v => v).NotEmpty().Must(this.IsValidInternal).WithMessage("Invalid date");
+            this.RuleFor(v => v).Must(this.IsValidInternal).WithMessage("Invalid date").When(v => v != null);
         }
 
         /// <summary>
@@ -43,10 +43,10 @@ namespace HealthGateway.Common.Data.Validations
         /// <returns>True if valid, false if not.</returns>
         public static bool IsValid(DateOnly expiryDate, DateOnly referenceDate)
         {
-            return new ExpiryDateValidator(referenceDate).Validate(expiryDate).IsValid;
+            return new OptionalExpiryDateValidator(referenceDate).Validate(expiryDate).IsValid;
         }
 
-        private bool IsValidInternal(DateOnly expiryDate)
+        private bool IsValidInternal(DateOnly? expiryDate)
         {
             bool isValid = expiryDate >= this.referenceDate;
             return isValid;

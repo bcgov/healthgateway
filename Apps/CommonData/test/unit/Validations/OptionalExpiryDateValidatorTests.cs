@@ -26,7 +26,7 @@ namespace HealthGateway.Common.Data.Tests.Validations
     /// <summary>
     /// Validates Expiry Date.
     /// </summary>
-    public class ExpiryDateValidatorTests
+    public class OptionalExpiryDateValidatorTests
     {
         /// <summary>
         /// Tests for expiry date validator.
@@ -42,7 +42,7 @@ namespace HealthGateway.Common.Data.Tests.Validations
             TimeZoneInfo localTimezone = DateFormatter.GetLocalTimeZone(GetConfiguration());
             DateOnly referenceDate = DateOnly.FromDateTime(TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, localTimezone));
             DateOnly expiryDate = referenceDate.AddDays(daysToAdd);
-            bool actual = ExpiryDateValidator.IsValid(expiryDate, referenceDate);
+            bool actual = OptionalExpiryDateValidator.IsValid(expiryDate, referenceDate);
             Assert.True(actual == success);
         }
 
