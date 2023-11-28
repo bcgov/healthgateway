@@ -35,7 +35,6 @@ namespace HealthGateway.GatewayApiTests.Services.Test.Mock
     using HealthGateway.Database.Wrapper;
     using HealthGateway.GatewayApi.Services;
     using HealthGateway.GatewayApiTests.Services.Test.Utils;
-    using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using Moq;
@@ -64,7 +63,6 @@ namespace HealthGateway.GatewayApiTests.Services.Test.Mock
         private Mock<IMessagingVerificationDelegate> messageVerificationDelegateMock = new MessagingVerificationDelegateMock();
         private Mock<IUserPreferenceDelegate> userPreferenceDelegateMock = new();
         private Mock<IEmailQueueService> emailQueueServiceMock = new();
-        private Mock<IHttpContextAccessor> httpContextAccessorMock = new();
         private Mock<IUserProfileDelegate> userProfileDelegateMock = new();
         private Mock<ICryptoDelegate> cryptoDelegateMock = new();
         private Mock<ILegalAgreementDelegate> legalAgreementDelegateMock = new LegalAgreementDelegateMock(
@@ -108,7 +106,6 @@ namespace HealthGateway.GatewayApiTests.Services.Test.Mock
                 this.legalAgreementDelegateMock.Object,
                 this.messageVerificationDelegateMock.Object,
                 this.cryptoDelegateMock.Object,
-                this.httpContextAccessorMock.Object,
                 this.configuration,
                 this.autoMapper,
                 this.authenticationDelegateMock.Object,
@@ -215,17 +212,6 @@ namespace HealthGateway.GatewayApiTests.Services.Test.Mock
         }
 
         /// <summary>
-        /// Setup the <see cref="HttpContextAccessorMock"/> that will be used for by the UserProfileService.
-        /// </summary>
-        /// <param name="headerDictionary">Mocked headers for a request.</param>
-        /// <returns>UserProfileServiceMock.</returns>
-        public UserProfileServiceMock SetupHttpAccessorMockCustomHeaders(IHeaderDictionary headerDictionary)
-        {
-            this.httpContextAccessorMock = new HttpContextAccessorMock(headerDictionary);
-            return this;
-        }
-
-        /// <summary>
         /// Setup the <see cref="LegalAgreementDelegateMock"/> that will be used for by the UserProfileService.
         /// </summary>
         /// <param name="legalAgreement">The mocked legal agreement to be returned.</param>
@@ -310,8 +296,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test.Mock
         {
             this.messageSenderMock.Verify(
                 m => m.SendAsync(
-                    It.Is<IEnumerable<MessageEnvelope>>(
-                        envelopes => envelopes.First().Content is T),
+                    It.Is<IEnumerable<MessageEnvelope>>(envelopes => envelopes.First().Content is T),
                     CancellationToken.None));
             return this;
         }
