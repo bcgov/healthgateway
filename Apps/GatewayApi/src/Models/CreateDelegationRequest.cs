@@ -38,7 +38,7 @@ namespace HealthGateway.GatewayApi.Models
         /// <summary>
         /// Gets or sets the expiry date.
         /// </summary>
-        public DateOnly ExpiryDate { get; set; }
+        public DateOnly? ExpiryDate { get; set; }
 
         /// <summary>
         /// Gets the access for the data sets.

@@ -38,9 +38,9 @@ namespace HealthGateway.GatewayApiTests.Services.Test
     using Xunit;
 
     /// <summary>
-    /// DelegateService's Unit Tests.
+    /// DelegationService's Unit Tests.
     /// </summary>
-    public class DelegateServiceTests
+    public class DelegationServiceTests
     {
         private const string Hdid = "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A";
         private const string Phn = "9735353315";
@@ -108,12 +108,12 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 DataSources = dataSources,
             };
 
-            IDelegateService delegateService = GetDelegateService(patient, GetHash(), delegationDelegate);
+            IDelegationService delegationService = GetDelegateService(patient, GetHash(), delegationDelegate);
 
             if (success)
             {
                 // Act
-                await delegateService.CreateDelegationAsync(Hdid, request);
+                await delegationService.CreateDelegationAsync(Hdid, request);
 
                 // Verify
                 delegationDelegate.Verify(
@@ -126,7 +126,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 // Act
                 async Task Actual()
                 {
-                    await delegateService.CreateDelegationAsync(Hdid, request);
+                    await delegationService.CreateDelegationAsync(Hdid, request);
                 }
 
                 // Verify
@@ -145,7 +145,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             return true;
         }
 
-        private static IDelegateService GetDelegateService(PatientDetails patient, IHash hash, IMock<IDelegationDelegate> delegationDelegate)
+        private static IDelegationService GetDelegateService(PatientDetails patient, IHash hash, IMock<IDelegationDelegate> delegationDelegate)
         {
             Mock<IHashDelegate> hashDelegate = new();
             hashDelegate.Setup(d => d.Hash(It.IsAny<string>())).Returns(hash);
@@ -153,10 +153,10 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             Mock<IPatientDetailsService> patientDataService = new();
             patientDataService.Setup(s => s.GetPatientAsync(It.IsAny<string>(), PatientIdentifierType.Hdid, false, It.IsAny<CancellationToken>())).ReturnsAsync(patient);
 
-            return new DelegateService(
+            return new DelegationService(
                 GetConfiguration(),
                 Mapper,
-                new Mock<ILogger<DelegateService>>().Object,
+                new Mock<ILogger<DelegationService>>().Object,
                 delegationDelegate.Object,
                 hashDelegate.Object,
                 patientDataService.Object);

@@ -22,7 +22,7 @@ namespace HealthGateway.GatewayApi.Services
     /// <summary>
     /// The delegate service.
     /// </summary>
-    public interface IDelegateService
+    public interface IDelegationService
     {
         /// <summary>
         /// Creates a delegation for the given delegator's hdid.
