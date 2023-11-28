@@ -89,5 +89,8 @@
                 "enabled": true
             }
         ]
+    },
+    "sharing": {
+        "enabled": true
     }
 }

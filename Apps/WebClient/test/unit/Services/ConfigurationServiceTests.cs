@@ -115,7 +115,8 @@ namespace HealthGateway.WebClientTests.Services
                         },
                         new Covid19Settings(true, new PublicCovid19Settings(true), new ProofOfVaccinationSettings(false)),
                         new DependentsSettings(true, true, new DatasetSettings[] { new("note", false) }),
-                        new ServicesSettings(true, new ServiceSetting[] { new("organDonorRegistration", true), new("healthConnectRegistry", true) })),
+                        new ServicesSettings(true, new ServiceSetting[] { new("organDonorRegistration", true), new("healthConnectRegistry", true) }),
+                        new SharingSettings(true)),
                 },
                 ServiceEndpoints = new Dictionary<string, Uri>
                 {

@@ -31,7 +31,6 @@ namespace HealthGateway.GatewayApiTests.Services.Test
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Wrapper;
     using HealthGateway.GatewayApi.Services;
-    using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using Moq;
@@ -82,7 +81,6 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 new Mock<IEmailQueueService>().Object,
                 new Mock<INotificationSettingsService>().Object,
                 GetIConfigurationRoot(),
-                new Mock<IHttpContextAccessor>().Object,
                 new Mock<IMessageSender>().Object);
 
             RequestResult<bool> actual = await service.ValidateEmailAsync(HdIdMock, inviteKey, CancellationToken.None);
@@ -134,15 +132,13 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 new Mock<IEmailQueueService>().Object,
                 new Mock<INotificationSettingsService>().Object,
                 GetIConfigurationRoot(configDict),
-                new Mock<IHttpContextAccessor>().Object,
                 mockMessageSender.Object);
 
             RequestResult<bool> actual = await service.ValidateEmailAsync(HdIdMock, inviteKey, CancellationToken.None);
 
             mockMessageSender.Verify(
                 m => m.SendAsync(
-                    It.Is<IEnumerable<MessageEnvelope>>(
-                        envelopes => envelopes.First().Content is NotificationChannelVerifiedEvent),
+                    It.Is<IEnumerable<MessageEnvelope>>(envelopes => envelopes.First().Content is NotificationChannelVerifiedEvent),
                     CancellationToken.None));
 
             Assert.True(actual.ResultStatus == ResultType.Success);
@@ -182,7 +178,6 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 new Mock<IEmailQueueService>().Object,
                 new Mock<INotificationSettingsService>().Object,
                 GetIConfigurationRoot(),
-                new Mock<IHttpContextAccessor>().Object,
                 new Mock<IMessageSender>().Object);
 
             RequestResult<bool> actual = await service.ValidateEmailAsync(HdIdMock, inviteKey, CancellationToken.None);
@@ -228,7 +223,6 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 new Mock<IEmailQueueService>().Object,
                 new Mock<INotificationSettingsService>().Object,
                 GetIConfigurationRoot(),
-                new Mock<IHttpContextAccessor>().Object,
                 new Mock<IMessageSender>().Object);
 
             RequestResult<bool> actual = await service.ValidateEmailAsync(HdIdMock, inviteKey);
@@ -260,7 +254,6 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 new Mock<IEmailQueueService>().Object,
                 new Mock<INotificationSettingsService>().Object,
                 GetIConfigurationRoot(),
-                new Mock<IHttpContextAccessor>().Object,
                 new Mock<IMessageSender>().Object);
 
             RequestResult<bool> actual = await service.ValidateEmailAsync(HdIdMock, inviteKey);
@@ -293,7 +286,6 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 new Mock<IEmailQueueService>().Object,
                 new Mock<INotificationSettingsService>().Object,
                 GetIConfigurationRoot(),
-                new Mock<IHttpContextAccessor>().Object,
                 new Mock<IMessageSender>().Object);
 
             RequestResult<bool> actual = await service.ValidateEmailAsync(HdIdMock, inviteKey);

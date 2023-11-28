@@ -28,6 +28,7 @@ namespace HealthGateway.WebClient.Server.Models
     /// <param name="Covid19">Settings for covid19 features.</param>
     /// <param name="Dependents">Settings for dependents features.</param>
     /// <param name="Services">Settings for services features.</param>
+    /// <param name="Sharing">Settings for sharing features.</param>
     public record FeatureToggleConfiguration(
         HomepageSettings Homepage,
         WaitingQueueSettings WaitingQueue,
@@ -36,7 +37,8 @@ namespace HealthGateway.WebClient.Server.Models
         DatasetSettings[] Datasets,
         Covid19Settings Covid19,
         DependentsSettings Dependents,
-        ServicesSettings Services);
+        ServicesSettings Services,
+        SharingSettings Sharing);
 
     /// <summary>
     /// Settings for the home page.
@@ -51,22 +53,19 @@ namespace HealthGateway.WebClient.Server.Models
     /// Settings for the waiting queue.
     /// </summary>
     /// <param name="Enabled">Toggles the waiting queue feature.</param>
-    public record WaitingQueueSettings(
-        bool Enabled);
+    public record WaitingQueueSettings(bool Enabled);
 
     /// <summary>
     /// Settings for the notification centre.
     /// </summary>
     /// <param name="Enabled">Toggles notification centre.</param>
-    public record NotificationCentreSettings(
-        bool Enabled);
+    public record NotificationCentreSettings(bool Enabled);
 
     /// <summary>
     /// Settings for the timeline.
     /// </summary>
     /// <param name="Comment">Toggles the comment feature.</param>
-    public record TimelineSettings(
-        bool Comment);
+    public record TimelineSettings(bool Comment);
 
     /// <summary>
     /// Settings for the data sets.
@@ -92,15 +91,13 @@ namespace HealthGateway.WebClient.Server.Models
     /// Settings for public covid19 feature.
     /// </summary>
     /// <param name="ShowFederalProofOfVaccination">Toggles federal proof of vaccination.</param>
-    public record PublicCovid19Settings(
-        bool ShowFederalProofOfVaccination);
+    public record PublicCovid19Settings(bool ShowFederalProofOfVaccination);
 
     /// <summary>
     /// Settings for proof of vaccination feature.
     /// </summary>
     /// <param name="ExportPdf">Toggles export of pdf feature.</param>
-    public record ProofOfVaccinationSettings(
-        bool ExportPdf);
+    public record ProofOfVaccinationSettings(bool ExportPdf);
 
     /// <summary>
     /// Settings for dependents features.
@@ -121,6 +118,12 @@ namespace HealthGateway.WebClient.Server.Models
     public record ServicesSettings(
         bool Enabled,
         ServiceSetting[] Services);
+
+    /// <summary>
+    /// Setting for sharing feature.
+    /// </summary>
+    /// <param name="Enabled">Toggles sharing feature on or off.</param>
+    public record SharingSettings(bool Enabled);
 
     /// <summary>
     /// Settings for organ donor service feature.

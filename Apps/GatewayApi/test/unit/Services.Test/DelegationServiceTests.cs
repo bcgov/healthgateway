@@ -18,49 +18,44 @@ namespace HealthGateway.GatewayApiTests.Services.Test
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
     using AutoMapper;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ErrorHandling;
-    using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Data.Utils;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.Models.Cacheable;
-    using HealthGateway.Common.Services;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using HealthGateway.GatewayApi.Models;
     using HealthGateway.GatewayApi.Services;
     using HealthGateway.GatewayApiTests.Services.Test.Utils;
-    using Microsoft.AspNetCore.DataProtection;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using Moq;
     using Xunit;
 
     /// <summary>
-    /// DelegateService's Unit Tests.
+    /// DelegationService's Unit Tests.
     /// </summary>
-    public class DelegateServiceTests
+    public class DelegationServiceTests
     {
         private const string Hdid = "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A";
-        private const string Host = "http://localhost";
         private const string Phn = "9735353315";
-        private const string InviteKey = "ABCDEF";
 
         private const string ValidEmail = "delegator@gateway.ca";
         private const string InvalidEmail = "delegator@gateway";
         private const string ValidNickname = "12345678901234567890"; // 20 characters
         private const string InvalidNickname = "123456789012345678901"; // 21 characters
-        private static readonly HashSet<DataSource> ValidDataSources =
-        [
+        private static readonly HashSet<DataSource> ValidDataSources = new()
+        {
             DataSource.Immunization,
             DataSource.Medication,
-        ];
-        private static readonly HashSet<DataSource> InvalidDataSources = [];
+        };
+
+        private static readonly HashSet<DataSource> InvalidDataSources = new();
         private static readonly IMapper Mapper = MapperUtil.InitializeAutoMapper();
 
         /// <summary>
@@ -113,12 +108,12 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 DataSources = dataSources,
             };
 
-            IDelegateService delegateService = GetDelegateService(patient, GetHash(), delegationDelegate);
+            IDelegationService delegationService = GetDelegateService(patient, GetHash(), delegationDelegate);
 
             if (success)
             {
                 // Act
-                await delegateService.CreateDelegationAsync(Hdid, request);
+                await delegationService.CreateDelegationAsync(Hdid, request);
 
                 // Verify
                 delegationDelegate.Verify(
@@ -131,7 +126,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 // Act
                 async Task Actual()
                 {
-                    await delegateService.CreateDelegationAsync(Hdid, request);
+                    await delegationService.CreateDelegationAsync(Hdid, request);
                 }
 
                 // Verify
@@ -150,7 +145,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             return true;
         }
 
-        private static IDelegateService GetDelegateService(PatientDetails patient, IHash hash, IMock<IDelegationDelegate> delegationDelegate)
+        private static IDelegationService GetDelegateService(PatientDetails patient, IHash hash, IMock<IDelegationDelegate> delegationDelegate)
         {
             Mock<IHashDelegate> hashDelegate = new();
             hashDelegate.Setup(d => d.Hash(It.IsAny<string>())).Returns(hash);
@@ -158,27 +153,12 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             Mock<IPatientDetailsService> patientDataService = new();
             patientDataService.Setup(s => s.GetPatientAsync(It.IsAny<string>(), PatientIdentifierType.Hdid, false, It.IsAny<CancellationToken>())).ReturnsAsync(patient);
 
-            Mock<IDataProtectionProvider> dataProtectionProvider = new();
-            Mock<IDataProtector> dataProtector = new();
-            dataProtector.Setup(p => p.Protect(It.IsAny<byte[]>())).Returns(Encoding.UTF8.GetBytes(InviteKey));
-            dataProtectionProvider.Setup(p => p.CreateProtector(It.IsAny<string>())).Returns(dataProtector.Object);
-
-            Mock<IHttpRequestService> httpRequestService = new();
-            httpRequestService.Setup(s => s.GetRefererHost()).Returns(Host);
-
-            Mock<IEmailQueueService> emailQueueService = new();
-            emailQueueService.Setup(s => s.ProcessTemplate(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Dictionary<string, string>>())).Returns(GetEmail());
-            emailQueueService.Setup(s => s.QueueNewEmail(It.IsAny<Email>(), true));
-
-            return new DelegateService(
+            return new DelegationService(
                 GetConfiguration(),
                 Mapper,
-                new Mock<ILogger<DelegateService>>().Object,
-                dataProtectionProvider.Object,
+                new Mock<ILogger<DelegationService>>().Object,
                 delegationDelegate.Object,
                 hashDelegate.Object,
-                emailQueueService.Object,
-                httpRequestService.Object,
                 patientDataService.Object);
         }
 
@@ -188,22 +168,11 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             {
                 { "TimeZone:UnixTimeZoneId", "America/Vancouver" },
                 { "TimeZone:WindowsTimeZoneId", "Pacific Standard Time" },
-                { "DelegationInvitation:ExpiryHours", "48" },
             };
 
             return new ConfigurationBuilder()
                 .AddInMemoryCollection(configDictionary.ToList())
                 .Build();
-        }
-
-        private static Email GetEmail()
-        {
-            return new()
-            {
-                Id = Guid.NewGuid(),
-                To = "somebody@gob.bc.ca",
-                From = "healthgateway@gov.bc.ca",
-            };
         }
 
         private static IHash GetHash()

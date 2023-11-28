@@ -5,7 +5,7 @@ import LoadingComponent from "@/components/common/LoadingComponent.vue";
 import PageTitleComponent from "@/components/common/PageTitleComponent.vue";
 import AddDependentComponent from "@/components/private/dependent/AddDependentComponent.vue";
 import LegacyDependentCardComponent from "@/components/private/dependent/legacy/LegacyDependentCardComponent.vue";
-import BreadcrumbComponent from "@/components/site/BreadcrumbComponent.vue";
+import BreadcrumbComponent from "@/components/common/BreadcrumbComponent.vue";
 import BreadcrumbItem from "@/models/breadcrumbItem";
 import { useConfigStore } from "@/stores/config";
 import { useDependentStore } from "@/stores/dependent";

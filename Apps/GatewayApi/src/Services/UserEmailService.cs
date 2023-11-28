@@ -33,7 +33,6 @@ namespace HealthGateway.GatewayApi.Services
     using HealthGateway.Common.Models.Events;
     using HealthGateway.Common.Services;
     using HealthGateway.Database.Delegates;
-    using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
 
@@ -43,7 +42,6 @@ namespace HealthGateway.GatewayApi.Services
         private readonly string emailConfigExpirySecondsKey = "EmailVerificationExpirySeconds";
         private readonly IEmailQueueService emailQueueService;
         private readonly int emailVerificationExpirySeconds;
-        private readonly IHttpContextAccessor httpContextAccessor;
         private readonly ILogger logger;
         private readonly int maxVerificationAttempts = 5;
         private readonly IMessagingVerificationDelegate messageVerificationDelegate;
@@ -52,6 +50,7 @@ namespace HealthGateway.GatewayApi.Services
         private readonly string webClientConfigSection = "WebClient";
         private readonly bool notificationsChangeFeedEnabled;
         private readonly IMessageSender messageSender;
+        private readonly EmailTemplateConfig emailTemplateConfig;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UserEmailService"/> class.
@@ -62,7 +61,6 @@ namespace HealthGateway.GatewayApi.Services
         /// <param name="emailQueueService">The email service to queue emails.</param>
         /// <param name="notificationSettingsService">Notification settings delegate.</param>
         /// <param name="configuration">Configuration settings.</param>
-        /// <param name="httpContextAccessor">The injected http context accessor provider.</param>
         /// <param name="messageSender">The message sender.</param>
         public UserEmailService(
             ILogger<UserEmailService> logger,
@@ -71,7 +69,6 @@ namespace HealthGateway.GatewayApi.Services
             IEmailQueueService emailQueueService,
             INotificationSettingsService notificationSettingsService,
             IConfiguration configuration,
-            IHttpContextAccessor httpContextAccessor,
             IMessageSender messageSender)
         {
             this.logger = logger;
@@ -81,11 +78,11 @@ namespace HealthGateway.GatewayApi.Services
             this.notificationSettingsService = notificationSettingsService;
             this.emailVerificationExpirySeconds = configuration.GetSection(this.webClientConfigSection).GetValue(this.emailConfigExpirySecondsKey, 5);
 
-            this.httpContextAccessor = httpContextAccessor;
             this.messageSender = messageSender;
             ChangeFeedOptions? changeFeedConfiguration = configuration.GetSection(ChangeFeedOptions.ChangeFeed)
                 .Get<ChangeFeedOptions>();
             this.notificationsChangeFeedEnabled = changeFeedConfiguration?.Notifications.Enabled ?? false;
+            this.emailTemplateConfig = configuration.GetSection(EmailTemplateConfig.ConfigurationSectionKey).Get<EmailTemplateConfig>() ?? new();
         }
 
         /// <inheritdoc/>
@@ -248,15 +245,10 @@ namespace HealthGateway.GatewayApi.Services
         {
             float verificationExpiryHours = (float)this.emailVerificationExpirySeconds / 3600;
 
-            string hostUrl = this.httpContextAccessor.HttpContext!.Request
-                .GetTypedHeaders()
-                .Referer!
-                .GetLeftPart(UriPartial.Authority);
-
             Dictionary<string, string> keyValues = new()
             {
                 [EmailTemplateVariable.InviteKey] = inviteKey.ToString(),
-                [EmailTemplateVariable.ActivationHost] = hostUrl,
+                [EmailTemplateVariable.ActivationHost] = this.emailTemplateConfig.Host,
                 [EmailTemplateVariable.ExpiryHours] = verificationExpiryHours.ToString("0", CultureInfo.CurrentCulture),
             };
 

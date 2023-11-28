@@ -5,7 +5,7 @@ import LoadingComponent from "@/components/common/LoadingComponent.vue";
 import PageTitleComponent from "@/components/common/PageTitleComponent.vue";
 import ActiveUserProfileComponent from "@/components/private/profile/ActiveUserProfileComponent.vue";
 import InactiveUserProfileComponent from "@/components/private/profile/InactiveUserProfileComponent.vue";
-import BreadcrumbComponent from "@/components/site/BreadcrumbComponent.vue";
+import BreadcrumbComponent from "@/components/common/BreadcrumbComponent.vue";
 import { Loader } from "@/constants/loader";
 import BreadcrumbItem from "@/models/breadcrumbItem";
 import { useLoadingStore } from "@/stores/loading";

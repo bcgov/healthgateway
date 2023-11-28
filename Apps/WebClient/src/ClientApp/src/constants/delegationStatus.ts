@@ -1,4 +1,4 @@
-export enum DelegateInvitationStatus {
+export enum DelegationStatus {
     Pending = "Pending",
     Active = "Active",
     Declined = "Declined",
