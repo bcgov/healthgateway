@@ -64,7 +64,7 @@ namespace HealthGateway.GatewayApi.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        public async Task AssociateDelegation(string hdid, [FromQuery] string encryptedDelegationId, CancellationToken ct)
+        public async Task AssociateDelegation(string hdid, CancellationToken ct, [FromQuery] string encryptedDelegationId = "")
         {
             await this.delegationService.AssociateDelegationAsync(hdid, encryptedDelegationId, ct);
         }

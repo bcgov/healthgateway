@@ -21,15 +21,14 @@ namespace HealthGateway.GatewayApi.Validations
     /// <summary>
     /// Validates associate delegation request.
     /// </summary>
-    public class AssociateDelegationRequestValidator : AbstractValidator<object>
+    public class AssociateDelegationRequestValidator : AbstractValidator<string?>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="AssociateDelegationRequestValidator"/> class.
         /// </summary>
-        /// <param name="encryptedDelegationId">The encrypted delegation id.</param>
-        public AssociateDelegationRequestValidator(string encryptedDelegationId)
+        public AssociateDelegationRequestValidator()
         {
-            this.RuleFor(_ => encryptedDelegationId).NotEmpty().WithMessage("Encrypted Delegation Id must not be empty");
+            this.RuleFor(v => v).NotEmpty().WithMessage("Encrypted Delegation Id must not be empty");
         }
     }
 }

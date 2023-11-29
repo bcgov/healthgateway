@@ -92,7 +92,7 @@ namespace HealthGateway.GatewayApi.Services
         /// <inheritdoc/>
         public async Task AssociateDelegationAsync(string delegateHdid, string encryptedDelegationId, CancellationToken ct = default)
         {
-            ValidationResult validationResult = await new AssociateDelegationRequestValidator(encryptedDelegationId).ValidateAsync(ct, ct);
+            ValidationResult validationResult = await new AssociateDelegationRequestValidator().ValidateAsync(encryptedDelegationId, ct);
             this.HandleValidationResult(validationResult);
 
             Guid delegationId = Guid.Parse(this.dataProtector.Unprotect(encryptedDelegationId));
@@ -103,8 +103,7 @@ namespace HealthGateway.GatewayApi.Services
 
             TimeZoneInfo localTimezone = DateFormatter.GetLocalTimeZone(this.configuration);
             DateTime referenceDate = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, localTimezone);
-            TimeSpan timeDifference = referenceDate - delegation.CreatedDateTime;
-            this.logger.LogDebug("Created Date: {CreatedDate} \n Reference Date: {ReferenceDate} \n Time Difference: {TimeDifference}", delegation.CreatedDateTime, referenceDate, timeDifference);
+            this.logger.LogDebug("Created Date: {CreatedDate} \n Reference Date: {ReferenceDate}", delegation.CreatedDateTime, referenceDate);
 
             validationResult = await new AssociateDelegationValidator(delegateHdid, referenceDate, this.delegationInviteConfig.ExpiryHours).ValidateAsync(delegation, ct);
             this.HandleValidationResult(validationResult);
