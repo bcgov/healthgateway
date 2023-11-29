@@ -104,8 +104,6 @@ namespace HealthGateway.GatewayApi.Services
             TimeZoneInfo localTimezone = DateFormatter.GetLocalTimeZone(this.configuration);
             DateTime referenceDate = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, localTimezone);
             TimeSpan timeDifference = referenceDate - delegation.CreatedDateTime;
-
-            bool validSharingLink = Math.Abs(timeDifference.TotalHours) <= this.delegationInviteConfig.ExpiryHours;
             this.logger.LogDebug("Created Date: {CreatedDate} \n Reference Date: {ReferenceDate} \n Time Difference: {TimeDifference}", delegation.CreatedDateTime, referenceDate, timeDifference);
 
             validationResult = await new AssociateDelegationValidator(hdid, request.ProfileHdid, referenceDate, this.delegationInviteConfig.ExpiryHours).ValidateAsync(delegation, ct);
@@ -171,7 +169,6 @@ namespace HealthGateway.GatewayApi.Services
                 [EmailTemplateVariable.InviteKey] = inviteKey,
                 [EmailTemplateVariable.ActivationHost] = this.emailTemplateConfig.Host,
                 [EmailTemplateVariable.ResourceOwnerIdentifier] = resourceOwnerIdentifier,
-                [EmailTemplateVariable.SharingCode] = sharingCode,
                 [EmailTemplateVariable.ExpiryHours] = this.delegationInviteConfig.ExpiryHours.ToString(CultureInfo.InvariantCulture),
             };
 
