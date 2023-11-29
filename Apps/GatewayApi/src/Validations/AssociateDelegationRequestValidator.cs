@@ -21,7 +21,7 @@ namespace HealthGateway.GatewayApi.Validations
     /// <summary>
     /// Validates associate delegation request.
     /// </summary>
-    public class AssociateDelegationRequestValidator : AbstractValidator<string?>
+    public class AssociateDelegationRequestValidator : AbstractValidator<string>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="AssociateDelegationRequestValidator"/> class.
