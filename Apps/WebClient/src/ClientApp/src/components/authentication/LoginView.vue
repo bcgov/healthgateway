@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
-import { useRoute, useRouter } from "vue-router";
+import { useRouter } from "vue-router";
 
 import HgButtonComponent from "@/components/common/HgButtonComponent.vue";
 import LoadingComponent from "@/components/common/LoadingComponent.vue";
@@ -9,13 +9,11 @@ import { useConfigStore } from "@/stores/config";
 import { useUserStore } from "@/stores/user";
 
 interface Props {
-    isRetry?: boolean;
+    isRetry: boolean;
+    redirectPath: string;
 }
-const props = withDefaults(defineProps<Props>(), {
-    isRetry: false,
-});
+const props = defineProps<Props>();
 
-const route = useRoute();
 const router = useRouter();
 const userStore = useUserStore();
 const authStore = useAuthStore();
@@ -26,25 +24,22 @@ const showError = ref(props.isRetry);
 
 const oidcIsAuthenticated = computed(() => authStore.oidcIsAuthenticated);
 const identityProviders = computed(() => configStore.identityProviders);
-const defaultPath = computed(() =>
-    route.query.redirect ? route.query.redirect.toString() : "/home"
-);
 const hasMultipleProviders = computed(() => identityProviders.value.length > 1);
 
-function signIn(redirectPath: string, idpHint?: string): Promise<void> {
-    return authStore.signIn(redirectPath, idpHint);
+function signIn(idpHint?: string): Promise<void> {
+    return authStore.signIn(props.redirectPath, idpHint);
 }
 
 function redirect(): void {
     if (userStore.userIsRegistered) {
-        router.push({ path: defaultPath.value });
+        router.push({ path: props.redirectPath });
     } else {
         router.push({ path: "/registration" });
     }
 }
 
 function signInAndRedirect(idpHint: string): void {
-    signIn(defaultPath.value, idpHint).then(() => {
+    signIn(idpHint).then(() => {
         // if this code is reached, the user was already signed in
         redirect();
     });

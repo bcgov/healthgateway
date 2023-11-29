@@ -1,6 +1,7 @@
 import {
     createRouter,
     createWebHistory,
+    RouteLocation,
     RouteLocationNormalized,
 } from "vue-router";
 
@@ -210,8 +211,9 @@ const routes = [
         path: Path.Login,
         name: "Login",
         component: LoginView,
-        props: (route: { query: { isRetry: string } }) => ({
+        props: (route: RouteLocation) => ({
             isRetry: route.query.isRetry === "true",
+            redirectPath: route.query.redirect?.toString() ?? "/home",
         }),
         meta: {
             validStates: [UserState.unauthenticated],
@@ -222,6 +224,9 @@ const routes = [
         path: Path.LoginCallback,
         name: "LoginCallback",
         component: LoginCallbackView,
+        props: (route: RouteLocation) => ({
+            redirectPath: route.query.redirect?.toString() ?? "/home",
+        }),
         meta: {
             routeIsOidcCallback: true,
             stateless: true,
@@ -300,6 +305,9 @@ const routes = [
     {
         path: Path.Queue,
         component: QueueView,
+        props: (route: RouteLocation) => ({
+            redirectPath: route.query.redirect?.toString() ?? "/",
+        }),
         meta: {
             stateless: true,
         },
