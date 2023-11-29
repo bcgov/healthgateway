@@ -31,6 +31,7 @@ export const enum Action {
 }
 
 export const enum Actor {
+    Delegate = "Delegate",
     Guardian = "Guardian",
     User = "User",
 }
@@ -98,6 +99,7 @@ export const enum Type {
     Covid19ProofOfVaccination = "COVID-19 Proof of Vaccination",
     OrganDonorRegistration = "Organ Donor Registration",
     PublicCovid19ProofOfVaccination = "Public COVID-19 Proof of Vaccination",
+    AssociateDelegation = "Associate Delegation",
     Recall = "Recall",
     Result = "Result",
 }
