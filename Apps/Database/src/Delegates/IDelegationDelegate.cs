@@ -53,7 +53,7 @@ namespace HealthGateway.Database.Delegates
         /// Retrieves the delegation object in the DB.
         /// </summary>
         /// <param name="id">The id of the delegation to retrieve.</param>
-        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
+        /// <returns>The requested delegation, or null if the delegation could not be found.</returns>
         Task<Delegation?> GetDelegationAsync(Guid id);
 
         /// <summary>
