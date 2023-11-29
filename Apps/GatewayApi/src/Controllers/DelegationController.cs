@@ -45,7 +45,7 @@ namespace HealthGateway.GatewayApi.Controllers
         }
 
         /// <summary>
-        /// Associates user's delegation to a profile.
+        /// Associates a delegation with an invited user.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         /// <param name="hdid">The delegate's hdid.</param>
