@@ -34,7 +34,7 @@ namespace HealthGateway.GatewayApi.Services
         Task AssociateDelegationAsync(string delegateHdid, string encryptedDelegationId, CancellationToken ct = default);
 
         /// <summary>
-        /// Creates a delegation for the given delegator's delegateHdid.
+        /// Creates a delegation for a given delegator.
         /// </summary>
         /// <param name="hdid">The delegator's hdid.</param>
         /// <param name="request">The create delegation request model.</param>
