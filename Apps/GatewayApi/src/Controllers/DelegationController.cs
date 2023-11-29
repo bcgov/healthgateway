@@ -39,10 +39,34 @@ namespace HealthGateway.GatewayApi.Controllers
         /// Initializes a new instance of the <see cref="DelegationController"/> class.
         /// </summary>
         /// <param name="delegationService">The injected delegate service.</param>
-        public DelegationController(
-            IDelegationService delegationService)
+        public DelegationController(IDelegationService delegationService)
         {
             this.delegationService = delegationService;
+        }
+
+        /// <summary>
+        /// Associates a delegation with an invited user.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        /// <param name="hdid">The delegate's hdid.</param>
+        /// <param name="encryptedDelegationId">The encrypted delegation id.</param>
+        /// <param name="ct">cancellation token.</param>
+        /// <response code="200">The delegation is associated with the user.</response>
+        /// <response code="401">the client must authenticate itself to get the requested response.</response>
+        /// <response code="403">
+        /// The client does not have access rights to the content; that is, it is unauthorized, so the server
+        /// is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.
+        /// </response>
+        [HttpPut]
+        [Authorize(Policy = UserProfilePolicy.Write)]
+        [Route("{hdid}/Associate")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        public async Task AssociateDelegation(string hdid, CancellationToken ct, [FromQuery] string encryptedDelegationId = "")
+        {
+            await this.delegationService.AssociateDelegationAsync(hdid, encryptedDelegationId, ct);
         }
 
         /// <summary>

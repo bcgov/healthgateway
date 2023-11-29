@@ -15,6 +15,7 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Database.Delegates
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
@@ -80,6 +81,15 @@ namespace HealthGateway.Database.Delegates
                 .ToListAsync(ct);
             int totalCount = await this.dbContext.Dependent.CountAsync(d => d.Protected, ct);
             return (records, totalCount);
+        }
+
+        /// <inheritdoc/>
+        public async Task<Delegation?> GetDelegationAsync(Guid id, CancellationToken ct)
+        {
+            IQueryable<Delegation> query = this.dbContext.Delegation
+                .Where(d => d.Id == id);
+
+            return await query.SingleOrDefaultAsync(ct);
         }
 
         /// <inheritdoc/>

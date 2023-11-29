@@ -25,7 +25,16 @@ namespace HealthGateway.GatewayApi.Services
     public interface IDelegationService
     {
         /// <summary>
-        /// Creates a delegation for the given delegator's hdid.
+        /// Associates a delegation with a delegate.
+        /// </summary>
+        /// <param name="delegateHdid">The delegate's hdid.</param>
+        /// <param name="encryptedDelegationId">The encrypted delegation id.</param>
+        /// <param name="ct">A cancellation token.</param>
+        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
+        Task AssociateDelegationAsync(string delegateHdid, string encryptedDelegationId, CancellationToken ct = default);
+
+        /// <summary>
+        /// Creates a delegation for a given delegator.
         /// </summary>
         /// <param name="hdid">The delegator's hdid.</param>
         /// <param name="request">The create delegation request model.</param>

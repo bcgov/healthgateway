@@ -18,20 +18,24 @@ namespace HealthGateway.GatewayApiTests.Services.Test
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
     using AutoMapper;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ErrorHandling;
+    using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Data.Utils;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.Models.Cacheable;
+    using HealthGateway.Common.Services;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using HealthGateway.GatewayApi.Models;
     using HealthGateway.GatewayApi.Services;
     using HealthGateway.GatewayApiTests.Services.Test.Utils;
+    using Microsoft.AspNetCore.DataProtection;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using Moq;
@@ -44,18 +48,22 @@ namespace HealthGateway.GatewayApiTests.Services.Test
     {
         private const string Hdid = "P6FFO433A5WPMVTGM7T4ZVWBKCSVNAYGTWTU3J2LWMGUMERKI72A";
         private const string Phn = "9735353315";
+        private const string InviteKey = "ABCDEF";
+        private const string InvalidEmailErrorMessage = "Email address is not valid";
+        private const string InvalidDataSourceErrorMessage = "DataSources must have at least one item.";
+        private const string InvalidNicknameErrorMessage = "Maximum length for Nickname has been exceeded.";
+        private const string InvalidExpiryDateErrorMesage = "Invalid date";
 
         private const string ValidEmail = "delegator@gateway.ca";
         private const string InvalidEmail = "delegator@gateway";
         private const string ValidNickname = "12345678901234567890"; // 20 characters
         private const string InvalidNickname = "123456789012345678901"; // 21 characters
-        private static readonly HashSet<DataSource> ValidDataSources = new()
-        {
+        private static readonly HashSet<DataSource> ValidDataSources =
+        [
             DataSource.Immunization,
             DataSource.Medication,
-        };
-
-        private static readonly HashSet<DataSource> InvalidDataSources = new();
+        ];
+        private static readonly HashSet<DataSource> InvalidDataSources = [];
         private static readonly IMapper Mapper = MapperUtil.InitializeAutoMapper();
 
         /// <summary>
@@ -64,12 +72,12 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         /// <returns>Test cases as arrays of objects.</returns>
         public static IEnumerable<object[]> TestCases()
         {
-            yield return new object[] { ValidEmail, ValidNickname, 1, ValidDataSources, true };
-            yield return new object[] { ValidEmail, ValidNickname, 0, ValidDataSources, true };
-            yield return new object[] { InvalidEmail, ValidNickname, 1, ValidDataSources, false };
-            yield return new object[] { ValidEmail, InvalidNickname, 1, ValidDataSources, false };
-            yield return new object[] { ValidEmail, ValidNickname, -1, ValidDataSources, false };
-            yield return new object[] { ValidEmail, ValidNickname, 1, InvalidDataSources, false };
+            yield return new object[] { ValidEmail, ValidNickname, 1, ValidDataSources, true, string.Empty };
+            yield return new object[] { ValidEmail, ValidNickname, 0, ValidDataSources, true, string.Empty };
+            yield return new object[] { InvalidEmail, ValidNickname, 1, ValidDataSources, false, InvalidEmailErrorMessage };
+            yield return new object[] { ValidEmail, InvalidNickname, 1, ValidDataSources, false, InvalidNicknameErrorMessage };
+            yield return new object[] { ValidEmail, ValidNickname, -1, ValidDataSources, false, InvalidExpiryDateErrorMesage };
+            yield return new object[] { ValidEmail, ValidNickname, 1, InvalidDataSources, false, InvalidDataSourceErrorMessage };
         }
 
         /// <summary>
@@ -80,10 +88,11 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         /// <param name="daysToAdd">Number of days to add to create expiry date from utc now.</param>
         /// <param name="dataSources">Data sources to validate.</param>
         /// <param name="success">The value indicates whether the test should succeed or not.</param>
+        /// <param name="errorMessage">The error message to display when success is false.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Theory]
         [MemberData(nameof(TestCases))]
-        public async Task CreateDelegation(string email, string nickname, int daysToAdd, HashSet<DataSource> dataSources, bool success)
+        public async Task CreateDelegation(string email, string nickname, int daysToAdd, HashSet<DataSource> dataSources, bool success, string errorMessage)
         {
             TimeZoneInfo localTimezone = DateFormatter.GetLocalTimeZone(GetConfiguration());
             Mock<IDelegationDelegate> delegationDelegate = new();
@@ -131,7 +140,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
 
                 // Verify
                 ProblemDetailsException exception = await Assert.ThrowsAsync<ProblemDetailsException>(Actual);
-                Assert.Equal(ErrorMessages.InvalidDelegateInvitationRequest, exception.ProblemDetails!.Detail);
+                Assert.Equal(errorMessage, exception.ProblemDetails!.Detail);
             }
         }
 
@@ -153,12 +162,23 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             Mock<IPatientDetailsService> patientDataService = new();
             patientDataService.Setup(s => s.GetPatientAsync(It.IsAny<string>(), PatientIdentifierType.Hdid, false, It.IsAny<CancellationToken>())).ReturnsAsync(patient);
 
+            Mock<IDataProtectionProvider> dataProtectionProvider = new();
+            Mock<IDataProtector> dataProtector = new();
+            dataProtector.Setup(p => p.Protect(It.IsAny<byte[]>())).Returns(Encoding.UTF8.GetBytes(InviteKey));
+            dataProtectionProvider.Setup(p => p.CreateProtector(It.IsAny<string>())).Returns(dataProtector.Object);
+
+            Mock<IEmailQueueService> emailQueueService = new();
+            emailQueueService.Setup(s => s.ProcessTemplate(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Dictionary<string, string>>())).Returns(GetEmail());
+            emailQueueService.Setup(s => s.QueueNewEmail(It.IsAny<Email>(), true));
+
             return new DelegationService(
                 GetConfiguration(),
                 Mapper,
                 new Mock<ILogger<DelegationService>>().Object,
+                dataProtectionProvider.Object,
                 delegationDelegate.Object,
                 hashDelegate.Object,
+                emailQueueService.Object,
                 patientDataService.Object);
         }
 
@@ -168,11 +188,22 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             {
                 { "TimeZone:UnixTimeZoneId", "America/Vancouver" },
                 { "TimeZone:WindowsTimeZoneId", "Pacific Standard Time" },
+                { "DelegationInvitation:ExpiryHours", "48" },
             };
 
             return new ConfigurationBuilder()
                 .AddInMemoryCollection(configDictionary.ToList())
                 .Build();
+        }
+
+        private static Email GetEmail()
+        {
+            return new()
+            {
+                Id = Guid.NewGuid(),
+                To = "somebody@gob.bc.ca",
+                From = "healthgateway@gov.bc.ca",
+            };
         }
 
         private static IHash GetHash()
