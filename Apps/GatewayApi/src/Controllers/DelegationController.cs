@@ -48,8 +48,8 @@ namespace HealthGateway.GatewayApi.Controllers
         /// Associates user's delegation to a profile.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        /// <param name="hdid">The delegator hdid.</param>
-        /// <param name="request">The associate delegation request model.</param>
+        /// <param name="hdid">The delegate's hdid.</param>
+        /// <param name="encryptedDelegationId">The encrypted delegation id.</param>
         /// <param name="ct">cancellation token.</param>
         /// <response code="200">Returns the sharing code.</response>
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
@@ -64,9 +64,9 @@ namespace HealthGateway.GatewayApi.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        public async Task AssociateDelegation(string hdid, [FromBody] AssociateDelegationRequest request, CancellationToken ct)
+        public async Task AssociateDelegation(string hdid, [FromQuery] string encryptedDelegationId, CancellationToken ct)
         {
-            await this.delegationService.AssociateDelegationAsync(hdid, request, ct);
+            await this.delegationService.AssociateDelegationAsync(hdid, encryptedDelegationId, ct);
         }
 
         /// <summary>

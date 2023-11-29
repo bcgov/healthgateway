@@ -90,13 +90,13 @@ namespace HealthGateway.GatewayApi.Services
         }
 
         /// <inheritdoc/>
-        public async Task AssociateDelegationAsync(string hdid, AssociateDelegationRequest request, CancellationToken ct = default)
+        public async Task AssociateDelegationAsync(string delegateHdid, string encryptedDelegationId, CancellationToken ct = default)
         {
-            ValidationResult validationResult = await new AssociateDelegationRequestValidator().ValidateAsync(request, ct);
+            ValidationResult validationResult = await new AssociateDelegationRequestValidator(encryptedDelegationId).ValidateAsync(ct, ct);
             this.HandleValidationResult(validationResult);
 
-            Guid delegationId = Guid.Parse(this.dataProtector.Unprotect(request.EncryptedDelegationId));
-            this.logger.LogDebug("Delegation Id: {DelegationId} \n Encrypted Delegation Id: {EncryptedDelegationId}", delegationId, request.EncryptedDelegationId);
+            Guid delegationId = Guid.Parse(this.dataProtector.Unprotect(encryptedDelegationId));
+            this.logger.LogDebug("Delegation Id: {DelegationId} \n Encrypted Delegation Id: {EncryptedDelegationId}", delegationId, encryptedDelegationId);
 
             Delegation delegation = await this.delegationDelegate.GetDelegationAsync(delegationId) ?? throw new ProblemDetailsException(
                 ExceptionUtility.CreateProblemDetails(ErrorMessages.DelegationNotFound, HttpStatusCode.NotFound, nameof(DelegationService)));
@@ -106,10 +106,10 @@ namespace HealthGateway.GatewayApi.Services
             TimeSpan timeDifference = referenceDate - delegation.CreatedDateTime;
             this.logger.LogDebug("Created Date: {CreatedDate} \n Reference Date: {ReferenceDate} \n Time Difference: {TimeDifference}", delegation.CreatedDateTime, referenceDate, timeDifference);
 
-            validationResult = await new AssociateDelegationValidator(hdid, request.ProfileHdid, referenceDate, this.delegationInviteConfig.ExpiryHours).ValidateAsync(delegation, ct);
+            validationResult = await new AssociateDelegationValidator(delegateHdid, referenceDate, this.delegationInviteConfig.ExpiryHours).ValidateAsync(delegation, ct);
             this.HandleValidationResult(validationResult);
 
-            delegation.ProfileHdid = request.ProfileHdid;
+            delegation.ProfileHdid = delegateHdid;
             await this.delegationDelegate.UpdateDelegationAsync(delegation);
         }
 

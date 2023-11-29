@@ -17,21 +17,19 @@
 namespace HealthGateway.GatewayApi.Validations
 {
     using FluentValidation;
-    using HealthGateway.Database.Models;
-    using HealthGateway.GatewayApi.Models;
 
     /// <summary>
-    /// Validates <see cref="Delegation"/> instances.
+    /// Validates associate delegation request.
     /// </summary>
-    public class AssociateDelegationRequestValidator : AbstractValidator<AssociateDelegationRequest>
+    public class AssociateDelegationRequestValidator : AbstractValidator<object>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="AssociateDelegationRequestValidator"/> class.
         /// </summary>
-        public AssociateDelegationRequestValidator()
+        /// <param name="encryptedDelegationId">The encrypted delegation id.</param>
+        public AssociateDelegationRequestValidator(string encryptedDelegationId)
         {
-            this.RuleFor(v => v.ProfileHdid).NotEmpty().WithMessage("Profile Hdid must not be empty.");
-            this.RuleFor(v => v.EncryptedDelegationId).NotEmpty().WithMessage("Encrypted Delegation Id must not be empty");
+            this.RuleFor(_ => encryptedDelegationId).NotEmpty().WithMessage("Encrypted Delegation Id must not be empty");
         }
     }
 }

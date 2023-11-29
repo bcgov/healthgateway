@@ -28,17 +28,16 @@ namespace HealthGateway.GatewayApi.Validations
         /// <summary>
         /// Initializes a new instance of the <see cref="AssociateDelegationValidator"/> class.
         /// </summary>
-        /// <param name="hdid">The delegator's hdid.</param>
-        /// <param name="profileHdid">The profile's hdid.</param>
+        /// <param name="delegateHdid">The delegate's hdid.</param>
         /// <param name="referenceDate">A reference point to validate against.</param>
         /// <param name="expiryHours">The number of hours valid before expiring.</param>
-        public AssociateDelegationValidator(string hdid, string profileHdid, DateTime referenceDate, int expiryHours)
+        public AssociateDelegationValidator(string delegateHdid, DateTime referenceDate, int expiryHours)
         {
             this.RuleFor(v => v.CreatedDateTime).SetValidator(new SharingLinkExpirationValidator(referenceDate, expiryHours));
-            this.RuleFor(_ => hdid)
-                .NotEqual(profileHdid)
+            this.RuleFor(v => v.ResourceOwnerHdid)
+                .NotEqual(delegateHdid)
                 .WithMessage("The delegation cannot be associated with oneself.");
-            this.RuleFor(v => v.ProfileHdid).Equal(profileHdid).WithMessage("Delegation has already been associated with another profile.").When(v => v.ProfileHdid != null);
+            this.When(v => v.ProfileHdid != null, () => this.RuleFor(v => v.ProfileHdid).Equal(delegateHdid).WithMessage("Delegation has already been associated with another profile."));
         }
     }
 }
