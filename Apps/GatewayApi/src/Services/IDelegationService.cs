@@ -36,7 +36,7 @@ namespace HealthGateway.GatewayApi.Services
         /// <summary>
         /// Creates a delegation for the given delegator's delegateHdid.
         /// </summary>
-        /// <param name="hdid">The delegator's delegateHdid.</param>
+        /// <param name="hdid">The delegator's hdid.</param>
         /// <param name="request">The create delegation request model.</param>
         /// <param name="ct">A cancellation token.</param>
         /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
