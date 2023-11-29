@@ -98,7 +98,7 @@ namespace HealthGateway.GatewayApi.Services
             Guid delegationId = Guid.Parse(this.dataProtector.Unprotect(encryptedDelegationId));
             this.logger.LogDebug("Delegation Id: {DelegationId} \n Encrypted Delegation Id: {EncryptedDelegationId}", delegationId, encryptedDelegationId);
 
-            Delegation delegation = await this.delegationDelegate.GetDelegationAsync(delegationId) ?? throw new ProblemDetailsException(
+            Delegation delegation = await this.delegationDelegate.GetDelegationAsync(delegationId, ct) ?? throw new ProblemDetailsException(
                 ExceptionUtility.CreateProblemDetails(ErrorMessages.DelegationNotFound, HttpStatusCode.NotFound, nameof(DelegationService)));
 
             TimeZoneInfo localTimezone = DateFormatter.GetLocalTimeZone(this.configuration);

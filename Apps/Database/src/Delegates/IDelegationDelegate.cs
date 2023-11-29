@@ -53,8 +53,9 @@ namespace HealthGateway.Database.Delegates
         /// Retrieves the delegation object in the DB.
         /// </summary>
         /// <param name="id">The id of the delegation to retrieve.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The requested delegation, or null if the delegation could not be found.</returns>
-        Task<Delegation?> GetDelegationAsync(Guid id);
+        Task<Delegation?> GetDelegationAsync(Guid id, CancellationToken ct = default);
 
         /// <summary>
         /// Adds or updates the delegation object to the DB.

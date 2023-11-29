@@ -84,12 +84,12 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public async Task<Delegation?> GetDelegationAsync(Guid id)
+        public async Task<Delegation?> GetDelegationAsync(Guid id, CancellationToken ct)
         {
             IQueryable<Delegation> query = this.dbContext.Delegation
                 .Where(d => d.Id == id);
 
-            return await query.SingleOrDefaultAsync();
+            return await query.SingleOrDefaultAsync(ct);
         }
 
         /// <inheritdoc/>
