@@ -162,7 +162,7 @@ namespace HealthGateway.GatewayApi.Services
 
         private void SendCreateDelegationInviteEmail(string toEmail, string resourceOwnerIdentifier, string inviteKey, string sharingCode)
         {
-            this.logger.LogDebug("Referer Authority Uri: {Host}", this.emailTemplateConfig.Host);
+            this.logger.LogDebug("Host: {Host}", this.emailTemplateConfig.Host);
 
             Dictionary<string, string> keyValues = new()
             {
