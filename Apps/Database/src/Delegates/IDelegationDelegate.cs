@@ -15,6 +15,7 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Database.Delegates
 {
+    using System;
     using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
@@ -47,6 +48,13 @@ namespace HealthGateway.Database.Delegates
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A list of HDID strings.</returns>
         Task<(IList<string> Hdids, int TotalHdids)> GetProtectedDependentHdidsAsync(int page, int pageSize, SortDirection sortDirection, CancellationToken ct);
+
+        /// <summary>
+        /// Retrieves the delegation object in the DB.
+        /// </summary>
+        /// <param name="id">The id of the delegation to retrieve.</param>
+        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
+        Task<Delegation?> GetDelegationAsync(Guid id);
 
         /// <summary>
         /// Adds or updates the delegation object to the DB.

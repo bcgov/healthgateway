@@ -18,26 +18,27 @@ namespace HealthGateway.GatewayApi.Validations
 {
     using System;
     using FluentValidation;
-    using HealthGateway.Common.Data.Validations;
-    using HealthGateway.GatewayApi.Models;
+    using HealthGateway.Database.Models;
 
     /// <summary>
-    /// Validates <see cref="CreateDelegationRequest"/> instances.
+    /// Validates <see cref="Delegation"/> instances.
     /// </summary>
-    public class CreateDelegationRequestValidator : AbstractValidator<CreateDelegationRequest>
+    public class AssociateDelegationValidator : AbstractValidator<Delegation>
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="CreateDelegationRequestValidator"/> class.
+        /// Initializes a new instance of the <see cref="AssociateDelegationValidator"/> class.
         /// </summary>
+        /// <param name="hdid">The delegator's hdid.</param>
+        /// <param name="profileHdid">The profile's hdid.</param>
         /// <param name="referenceDate">A reference point to validate against.</param>
-        public CreateDelegationRequestValidator(DateOnly referenceDate)
+        /// <param name="expiryHours">The number of hours valid before expiring.</param>
+        public AssociateDelegationValidator(string hdid, string profileHdid, DateTime referenceDate, int expiryHours)
         {
-            this.RuleFor(v => v.Nickname).NotEmpty().MaximumLength(20).WithMessage("Maximum length for Nickname has been exceeded.");
-            this.RuleFor(v => v.Email).NotEmpty().SetValidator(new EmailValidator());
-            this.RuleFor(v => v.ExpiryDate).SetValidator(new OptionalExpiryDateValidator(referenceDate));
-            this.RuleFor(v => v.DataSources)
-                .Must(dataSources => dataSources.Count > 0)
-                .WithMessage("DataSources must have at least one item.");
+            this.RuleFor(v => v.CreatedDateTime).SetValidator(new SharingLinkExpirationValidator(referenceDate, expiryHours));
+            this.RuleFor(_ => hdid)
+                .NotEqual(profileHdid)
+                .WithMessage("The delegation cannot be associated with oneself.");
+            this.RuleFor(v => v.ProfileHdid).Equal(profileHdid).WithMessage("Delegation has already been associated with another profile.").When(v => v.ProfileHdid != null);
         }
     }
 }

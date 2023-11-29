@@ -16,28 +16,22 @@
 
 namespace HealthGateway.GatewayApi.Validations
 {
-    using System;
     using FluentValidation;
-    using HealthGateway.Common.Data.Validations;
+    using HealthGateway.Database.Models;
     using HealthGateway.GatewayApi.Models;
 
     /// <summary>
-    /// Validates <see cref="CreateDelegationRequest"/> instances.
+    /// Validates <see cref="Delegation"/> instances.
     /// </summary>
-    public class CreateDelegationRequestValidator : AbstractValidator<CreateDelegationRequest>
+    public class AssociateDelegationRequestValidator : AbstractValidator<AssociateDelegationRequest>
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="CreateDelegationRequestValidator"/> class.
+        /// Initializes a new instance of the <see cref="AssociateDelegationRequestValidator"/> class.
         /// </summary>
-        /// <param name="referenceDate">A reference point to validate against.</param>
-        public CreateDelegationRequestValidator(DateOnly referenceDate)
+        public AssociateDelegationRequestValidator()
         {
-            this.RuleFor(v => v.Nickname).NotEmpty().MaximumLength(20).WithMessage("Maximum length for Nickname has been exceeded.");
-            this.RuleFor(v => v.Email).NotEmpty().SetValidator(new EmailValidator());
-            this.RuleFor(v => v.ExpiryDate).SetValidator(new OptionalExpiryDateValidator(referenceDate));
-            this.RuleFor(v => v.DataSources)
-                .Must(dataSources => dataSources.Count > 0)
-                .WithMessage("DataSources must have at least one item.");
+            this.RuleFor(v => v.ProfileHdid).NotEmpty().WithMessage("Profile Hdid must not be empty.");
+            this.RuleFor(v => v.EncryptedDelegationId).NotEmpty().WithMessage("Encrypted Delegation Id must not be empty");
         }
     }
 }
