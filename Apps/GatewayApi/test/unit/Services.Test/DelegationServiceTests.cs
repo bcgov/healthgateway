@@ -100,7 +100,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         /// <param name="resourceOwnerHdid">The delegation's resource owner hdid.</param>
         /// <param name="delegateHdid">The delegate's hdid.</param>
         /// <param name="profileHdid">The profile hdid stored in Delegation.</param>
-        /// <param name="secondsSinceCreation">The number of seconds since expiration.</param>
+        /// <param name="secondsSinceCreation">The number of seconds since creation.</param>
         /// <param name="success">The value indicates whether the test should succeed or not.</param>
         /// <param name="errorMessage">The error message to display when success is false.</param>
         [Theory]
