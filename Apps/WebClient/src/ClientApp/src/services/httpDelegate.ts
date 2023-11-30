@@ -24,14 +24,6 @@ export class HttpDelegate implements IHttpDelegate {
         };
     }
 
-    public setTicketAuthorizationHeader(accessToken: string): void {
-        this.logger.debug(`Set Ticket authorization header: ${accessToken}`);
-        Axios.defaults.headers.common = {
-            ...Axios.defaults.headers.common,
-            "hg-ticket": `Bearer ${accessToken}`,
-        };
-    }
-
     public getWithCors<T>(
         url: string,
         headers: Dictionary<string> = {}

@@ -1,6 +1,5 @@
 import AddDependentRequest from "@/models/addDependentRequest";
 import { Dictionary } from "@/models/baseTypes";
-import { CheckInRequest } from "@/models/checkInRequest";
 import { ClinicalDocument } from "@/models/clinicalDocument";
 import Communication, { CommunicationType } from "@/models/communication";
 import { ExternalConfiguration } from "@/models/configData";
@@ -29,7 +28,6 @@ import Report from "@/models/report";
 import ReportRequest from "@/models/reportRequest";
 import RequestResult from "@/models/requestResult";
 import { TermsOfService } from "@/models/termsOfService";
-import { Ticket } from "@/models/ticket";
 import { OidcTokenDetails, OidcUserInfo } from "@/models/user";
 import type { UserComment } from "@/models/userComment";
 import UserFeedback from "@/models/userFeedback";
@@ -208,7 +206,6 @@ export interface IDependentService {
 export interface IHttpDelegate {
     unsetAuthorizationHeader(): void;
     setAuthorizationHeader(accessToken: string): void;
-    setTicketAuthorizationHeader(accessToken: string): void;
     getWithCors<T>(url: string, headers?: Dictionary<string>): Promise<T>;
     get<T>(url: string, headers?: Dictionary<string>): Promise<T>;
     post<T>(
@@ -255,12 +252,6 @@ export interface ILogger {
     info(message: string): void;
     verbose(message: string): void;
     debug(message: string): void;
-}
-
-export interface ITicketService {
-    createTicket(room: string): Promise<Ticket | undefined>;
-    checkIn(checkInRequest: CheckInRequest): Promise<Ticket>;
-    removeTicket(checkInRequest: CheckInRequest): Promise<void>;
 }
 
 export interface IPatientDataService {

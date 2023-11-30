@@ -96,7 +96,6 @@ namespace HealthGateway.WebClientTests.Services
                     FeatureToggleFilePath = "Assets/featuretoggleconfig.json",
                     FeatureToggleConfiguration = new FeatureToggleConfiguration(
                         new HomepageSettings(true, true),
-                        new WaitingQueueSettings(true),
                         new NotificationCentreSettings(true),
                         new TimelineSettings(true),
                         new DatasetSettings[]

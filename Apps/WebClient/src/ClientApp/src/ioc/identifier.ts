@@ -18,7 +18,6 @@ type ServiceIdentifier =
     | "PcrTestService"
     | "ReportService"
     | "SpecialAuthorityService"
-    | "TicketService"
     | "TrackingService"
     | "UserCommentService"
     | "UserEmailService"
@@ -52,7 +51,6 @@ export const SERVICE_IDENTIFIER: { [key: string]: ServiceIdentifier } = {
     PcrTestService: "PcrTestService",
     ReportService: "ReportService",
     SpecialAuthorityService: "SpecialAuthorityService",
-    TicketService: "TicketService",
     TrackingService: "TrackingService",
     UserCommentService: "UserCommentService",
     UserEmailService: "UserEmailService",

@@ -65,7 +65,6 @@ export interface WebClientConfiguration {
 // Configuration data to be used by the Health Gateway Webclient.
 export interface FeatureToggleConfiguration {
     homepage: HomepageSettings;
-    waitingQueue: WaitingQueueSettings;
     notificationCentre: NotificationCentreSettings;
     timeline: TimelineSettings;
     datasets: DatasetSettings[];
@@ -77,10 +76,6 @@ export interface FeatureToggleConfiguration {
 export interface HomepageSettings {
     showFederalProofOfVaccination: boolean;
     showRecommendationsLink: boolean;
-}
-
-export interface WaitingQueueSettings {
-    enabled: boolean;
 }
 
 export interface NotificationCentreSettings {
