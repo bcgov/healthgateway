@@ -51,10 +51,10 @@ spec:
           resources:
             limits:
               cpu: {{ (($vars).resources).cpulimit | default "250m" }}
-              memory: {{ (($vars).resources).memlimit | default "512Mi" }}
+              memory: {{ (($vars).resources).memlimit | default "1Gi" }}
             requests:
               cpu: {{ (($vars).resources).cpurequest | default "50m" }}
-              memory: {{ (($vars).resources).memrequest | default "128Mi" }}
+              memory: {{ (($vars).resources).memrequest | default "256Mi" }}
           volumeMounts:
             - mountPath: /opt/az/_work
               name: ephemeral-work
