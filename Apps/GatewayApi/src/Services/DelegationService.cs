@@ -101,8 +101,7 @@ namespace HealthGateway.GatewayApi.Services
             Delegation delegation = await this.delegationDelegate.GetDelegationAsync(delegationId, ct) ?? throw new ProblemDetailsException(
                 ExceptionUtility.CreateProblemDetails(ErrorMessages.DelegationNotFound, HttpStatusCode.NotFound, nameof(DelegationService)));
 
-            TimeZoneInfo localTimezone = DateFormatter.GetLocalTimeZone(this.configuration);
-            DateTime referenceDate = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, localTimezone);
+            DateTime referenceDate = DateTime.UtcNow;
             this.logger.LogDebug("Created Date: {CreatedDate} \n Reference Date: {ReferenceDate}", delegation.CreatedDateTime, referenceDate);
 
             validationResult = await new AssociateDelegationValidator(delegateHdid, referenceDate, this.delegationInviteConfig.ExpiryHours).ValidateAsync(delegation, ct);
