@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, nextTick, onUnmounted, ref, watch } from "vue";
-import { useRoute, useRouter } from "vue-router";
+import { RouteLocationRaw, useRoute, useRouter } from "vue-router";
 
 import HgButtonComponent from "@/components/common/HgButtonComponent.vue";
 import HgIconButtonComponent from "@/components/common/HgIconButtonComponent.vue";
@@ -58,6 +58,9 @@ const isQueuePage = computed(
         route.path.toLowerCase() === "/queue" ||
         route.path.toLowerCase() === "/busy"
 );
+const isSharingInvite = computed(() =>
+    route.path.toLowerCase().startsWith("/sharinginvite")
+);
 const isSidebarButtonShown = computed(
     () =>
         !isOffline.value &&
@@ -113,6 +116,14 @@ const isProfileLinkAvailable = computed(
         isValidIdentityProvider.value &&
         !patientRetrievalFailed.value
 );
+const loginRoute = computed<RouteLocationRaw>(() => ({
+    path: "/login",
+    query: {
+        redirect: isSharingInvite.value
+            ? `/sharing?invite=${route.params["inviteId"]}`
+            : undefined,
+    },
+}));
 const newNotifications = computed(() => notificationStore.newNotifications);
 const hasNewNotifications = computed(
     () => newNotifications.value.length > 0 && !notificationButtonClicked.value
@@ -281,7 +292,7 @@ nextTick(() => {
             inverse
             prepend-icon="fas fa-sign-in-alt"
             data-testid="loginBtn"
-            to="/login"
+            :to="loginRoute"
             text="Log In"
         />
         <HgButtonComponent

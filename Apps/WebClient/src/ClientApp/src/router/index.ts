@@ -114,6 +114,10 @@ const SharingView = () =>
     import(
         /* webpackChunkName: "sharing" */ "@/components/private/sharing/SharingView.vue"
     );
+const SharingInviteView = () =>
+    import(
+        /* webpackChunkName: "sharingInvite" */ "@/components/public/sharing-invite/SharingInviteView.vue"
+    );
 
 export enum UserState {
     offline = "offline",
@@ -316,6 +320,9 @@ const routes = [
         path: Path.Registration,
         name: "Registration",
         component: RegistrationView,
+        props: (route: RouteLocation) => ({
+            redirectPath: route.query.redirect?.toString(),
+        }),
         meta: {
             validStates: [UserState.notRegistered],
             requiresProcessedWaitlistTicket: true,
@@ -338,6 +345,18 @@ const routes = [
             requiredFeaturesEnabled: (config: FeatureToggleConfiguration) =>
                 config.sharing.enabled,
             requiresProcessedWaitlistTicket: true,
+        },
+    },
+    {
+        path: Path.SharingInvite + "/:inviteId",
+        name: "SharingInvite",
+        component: SharingInviteView,
+        props: true,
+        meta: {
+            validStates: [UserState.unauthenticated, UserState.registered],
+            requiredFeaturesEnabled: (config: FeatureToggleConfiguration) =>
+                config.sharing.enabled,
+            requiresProcessedWaitlistTicket: false,
         },
     },
     {

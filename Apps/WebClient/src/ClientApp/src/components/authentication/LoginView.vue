@@ -32,7 +32,7 @@ function signIn(idpHint?: string): Promise<void> {
 
 function redirect(): void {
     if (userStore.userIsRegistered) {
-        router.push({ path: props.redirectPath });
+        router.push(props.redirectPath);
     } else {
         router.push({ path: "/registration" });
     }

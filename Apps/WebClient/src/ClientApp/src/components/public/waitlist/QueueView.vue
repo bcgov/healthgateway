@@ -18,7 +18,7 @@ const ticketIsProcessed = computed(() => waitlistStore.ticketIsProcessed);
 const queuePosition = computed(() => waitlistStore.ticket?.queuePosition);
 
 function redirect(): void {
-    router.push({ path: props.redirectPath });
+    router.push(props.redirectPath);
 }
 
 watch(ticketIsProcessed, (value: boolean) => {

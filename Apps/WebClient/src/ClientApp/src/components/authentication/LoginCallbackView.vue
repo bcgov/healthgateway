@@ -34,7 +34,7 @@ function retrieveNotifications(): void {
 
 function redirect() {
     router
-        .push({ path: props.redirectPath })
+        .push(props.redirectPath)
         .catch((error) => logger.warn(error.message));
 }
 
