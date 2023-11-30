@@ -27,7 +27,7 @@ namespace HealthGateway.GatewayApiTests.Validations
         /// <summary>
         /// Tests for sharing link expiration validator.
         /// </summary>
-        /// <param name="secondsSinceCreation">The number of seconds since expiration.</param>
+        /// <param name="secondsSinceCreation">The number of seconds since creation.</param>
         /// <param name="success">The value indicates whether the test should succeed or not.</param>
         [Theory]
         [InlineData(0, true)] // 0 Hours
