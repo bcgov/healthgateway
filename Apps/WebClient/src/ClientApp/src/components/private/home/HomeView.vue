@@ -16,6 +16,7 @@ import {
     getEntryTypeByModule,
 } from "@/constants/entryType";
 import { ErrorSourceType, ErrorType } from "@/constants/errorType";
+import { Path } from "@/constants/path";
 import { ServiceName } from "@/constants/serviceName";
 import UserPreferenceType from "@/constants/userPreferenceType";
 import { container } from "@/ioc/container";
@@ -236,7 +237,7 @@ function handleClickHealthRecords(): void {
         destination: Destination.Timeline,
         origin: Origin.Home,
     });
-    router.push({ path: "/timeline" });
+    router.push(Path.Timeline);
 }
 
 function handleClickVaccineCard(): void {
@@ -246,7 +247,7 @@ function handleClickVaccineCard(): void {
         destination: Destination.BcVaccineCard,
         origin: Origin.Home,
     });
-    router.push({ path: "/covid19" });
+    router.push(Path.Covid19);
 }
 
 function handleClickOrganDonorCard(): void {
@@ -256,7 +257,7 @@ function handleClickOrganDonorCard(): void {
         destination: Destination.OrganDonorRegistration,
         origin: Origin.Home,
     });
-    router.push({ path: "/services" });
+    router.push(Path.Services);
 }
 
 function showRecommendationsDialog(): void {
@@ -354,7 +355,7 @@ function handleClickQuickLink(index: number): void {
     const builder = TimelineFilterBuilder.create().withEntryTypes(entryTypes);
 
     timelineStore.setFilter(builder);
-    router.push({ path: "/timeline" });
+    router.push(Path.Timeline);
 }
 
 function showSensitiveDocumentDownloadModal(): void {

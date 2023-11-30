@@ -5,6 +5,7 @@ import { useRouter } from "vue-router";
 import HgButtonComponent from "@/components/common/HgButtonComponent.vue";
 import HgIconButtonComponent from "@/components/common/HgIconButtonComponent.vue";
 import { EntryType } from "@/constants/entryType";
+import { Path } from "@/constants/path";
 import { DateWrapper, StringISODateTime } from "@/models/dateWrapper";
 import Notification, { NotificationActionType } from "@/models/notification";
 import { TimelineFilterBuilder } from "@/models/timeline/timelineFilter";
@@ -60,9 +61,9 @@ function handleClickNotificationAction(notification: Notification): void {
     if (entryType) {
         const builder = TimelineFilterBuilder.create().withEntryType(entryType);
         timelineStore.setFilter(builder);
-        router.push({ path: "/timeline" });
+        router.push(Path.Timeline);
     } else if (notification.categoryName === AlertCategory.BctOdr) {
-        router.push({ path: "/services" });
+        router.push(Path.Services);
     } else if (
         notification.actionType === NotificationActionType.InternalLink
     ) {

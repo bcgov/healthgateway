@@ -4,6 +4,7 @@ import { useRouter } from "vue-router";
 
 import HgButtonComponent from "@/components/common/HgButtonComponent.vue";
 import LoadingComponent from "@/components/common/LoadingComponent.vue";
+import { Path } from "@/constants/path";
 import { useAuthStore } from "@/stores/auth";
 import { useConfigStore } from "@/stores/config";
 import { useUserStore } from "@/stores/user";
@@ -34,7 +35,7 @@ function redirect(): void {
     if (userStore.userIsRegistered) {
         router.push(props.redirectPath);
     } else {
-        router.push({ path: "/registration" });
+        router.push(Path.Registration);
     }
 }
 

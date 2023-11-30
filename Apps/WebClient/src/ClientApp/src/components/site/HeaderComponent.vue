@@ -52,12 +52,14 @@ const userIsRegistered = computed(() => userStore.userIsRegistered);
 const userIsActive = computed(() => userStore.userIsActive);
 const patientRetrievalFailed = computed(() => userStore.patientRetrievalFailed);
 const isPcrTest = computed(() =>
-    route.path.toLowerCase().startsWith("/pcrtest")
+    route.path
+        .toLowerCase()
+        .startsWith(Path.PcrTestKitRegistration.toLowerCase())
 );
 const isQueuePage = computed(
     () =>
-        route.path.toLowerCase() === "/queue" ||
-        route.path.toLowerCase() === "/busy"
+        route.path.toLowerCase() === Path.Queue.toLowerCase() ||
+        route.path.toLowerCase() === Path.Busy.toLowerCase()
 );
 const isSharingInvite = computed(() =>
     route.path.toLowerCase().startsWith(Path.SharingInvite.toLowerCase())
@@ -109,7 +111,7 @@ const isLogInButtonShown = computed(
         !isOffline.value &&
         !isPcrTest.value &&
         !isQueuePage.value &&
-        route.path.toLowerCase() !== "/login"
+        route.path.toLowerCase() !== Path.Login.toLowerCase()
 );
 const isProfileLinkAvailable = computed(
     () =>
@@ -173,7 +175,7 @@ function showRating(): void {
 
 function processLogout(): void {
     logger.debug(`redirecting to logout view ...`);
-    router.push({ path: "/logout" });
+    router.push(Path.Logout);
 }
 
 watch(isMobileWidth, (value) => {
@@ -227,7 +229,7 @@ nextTick(() => {
                 @click="toggleSidebar"
             />
         </template>
-        <router-link to="/" class="px-2" style="width: 160px">
+        <router-link :to="Path.Root" class="px-2" style="width: 160px">
             <v-img
                 alt="Go to Health Gateway home page"
                 src="@/assets/images/gov/hg-logo-rev.svg"
@@ -273,7 +275,7 @@ nextTick(() => {
                     <v-divider />
                     <v-list-item
                         v-if="isProfileLinkAvailable"
-                        to="/profile"
+                        :to="Path.Profile"
                         prepend-icon="fas fa-user"
                         data-testid="profileBtn"
                         >Profile</v-list-item
@@ -302,7 +304,7 @@ nextTick(() => {
             inverse
             prepend-icon="fas fa-sign-out-alt"
             data-testid="header-log-out-button"
-            to="/logout"
+            :to="Path.Logout"
         >
             Log Out
         </HgButtonComponent>
