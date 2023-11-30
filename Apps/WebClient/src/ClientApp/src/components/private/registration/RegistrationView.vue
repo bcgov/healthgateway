@@ -26,6 +26,11 @@ import { useErrorStore } from "@/stores/error";
 import { useUserStore } from "@/stores/user";
 import PhoneUtil from "@/utility/phoneUtil";
 
+interface Props {
+    redirectPath?: string;
+}
+const props = defineProps<Props>();
+
 const smsMaskaOptions = {
     mask: "(###) ###-####",
     eager: true,
@@ -175,10 +180,7 @@ function loadTermsOfService(): void {
     loadingTermsOfService.value = true;
     userProfileService
         .getTermsOfService()
-        .then((result) => {
-            logger.debug(`getTermsOfService result: ${JSON.stringify(result)}`);
-            termsOfService.value = result;
-        })
+        .then((result) => (termsOfService.value = result))
         .catch((err: ResultError) => {
             logger.error(err.resultMessage);
             if (err.statusCode === 429) {
@@ -223,10 +225,16 @@ async function onSubmit(): Promise<void> {
             lastLoginDateTimes: [],
         });
 
-        await router.push({
-            path: "home",
-            query: { registration: "success" },
-        });
+        if (props.redirectPath) {
+            await router
+                .push(props.redirectPath)
+                .catch((error) => logger.warn(error.message));
+        } else {
+            await router.push({
+                path: "home",
+                query: { registration: "success" },
+            });
+        }
     } catch {
         logger.error("Error while registering.");
     } finally {

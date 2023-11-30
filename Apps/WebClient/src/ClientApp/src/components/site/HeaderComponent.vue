@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import { computed, nextTick, onUnmounted, ref, watch } from "vue";
-import { useRoute, useRouter } from "vue-router";
+import { RouteLocationRaw, useRoute, useRouter } from "vue-router";
 
 import HgButtonComponent from "@/components/common/HgButtonComponent.vue";
 import HgIconButtonComponent from "@/components/common/HgIconButtonComponent.vue";
 import AppTourComponent from "@/components/private/home/AppTourComponent.vue";
 import RatingComponent from "@/components/site/RatingComponent.vue";
+import { Path } from "@/constants/path";
 import { container } from "@/ioc/container";
 import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
 import { ILogger } from "@/services/interfaces";
@@ -51,12 +52,17 @@ const userIsRegistered = computed(() => userStore.userIsRegistered);
 const userIsActive = computed(() => userStore.userIsActive);
 const patientRetrievalFailed = computed(() => userStore.patientRetrievalFailed);
 const isPcrTest = computed(() =>
-    route.path.toLowerCase().startsWith("/pcrtest")
+    route.path
+        .toLowerCase()
+        .startsWith(Path.PcrTestKitRegistration.toLowerCase())
 );
 const isQueuePage = computed(
     () =>
-        route.path.toLowerCase() === "/queue" ||
-        route.path.toLowerCase() === "/busy"
+        route.path.toLowerCase() === Path.Queue.toLowerCase() ||
+        route.path.toLowerCase() === Path.Busy.toLowerCase()
+);
+const isSharingInvite = computed(() =>
+    route.path.toLowerCase().startsWith(Path.SharingInvite.toLowerCase())
 );
 const isSidebarButtonShown = computed(
     () =>
@@ -105,7 +111,7 @@ const isLogInButtonShown = computed(
         !isOffline.value &&
         !isPcrTest.value &&
         !isQueuePage.value &&
-        route.path.toLowerCase() !== "/login"
+        route.path.toLowerCase() !== Path.Login.toLowerCase()
 );
 const isProfileLinkAvailable = computed(
     () =>
@@ -113,6 +119,14 @@ const isProfileLinkAvailable = computed(
         isValidIdentityProvider.value &&
         !patientRetrievalFailed.value
 );
+const loginRoute = computed<RouteLocationRaw>(() => ({
+    path: Path.Login,
+    query: {
+        redirect: isSharingInvite.value
+            ? `${Path.Sharing}?invite=${route.params["inviteId"]}`
+            : undefined,
+    },
+}));
 const newNotifications = computed(() => notificationStore.newNotifications);
 const hasNewNotifications = computed(
     () => newNotifications.value.length > 0 && !notificationButtonClicked.value
@@ -161,7 +175,7 @@ function showRating(): void {
 
 function processLogout(): void {
     logger.debug(`redirecting to logout view ...`);
-    router.push({ path: "/logout" });
+    router.push(Path.Logout);
 }
 
 watch(isMobileWidth, (value) => {
@@ -215,7 +229,7 @@ nextTick(() => {
                 @click="toggleSidebar"
             />
         </template>
-        <router-link to="/" class="px-2" style="width: 160px">
+        <router-link :to="Path.Root" class="px-2" style="width: 160px">
             <v-img
                 alt="Go to Health Gateway home page"
                 src="@/assets/images/gov/hg-logo-rev.svg"
@@ -261,7 +275,7 @@ nextTick(() => {
                     <v-divider />
                     <v-list-item
                         v-if="isProfileLinkAvailable"
-                        to="/profile"
+                        :to="Path.Profile"
                         prepend-icon="fas fa-user"
                         data-testid="profileBtn"
                         >Profile</v-list-item
@@ -281,7 +295,7 @@ nextTick(() => {
             inverse
             prepend-icon="fas fa-sign-in-alt"
             data-testid="loginBtn"
-            to="/login"
+            :to="loginRoute"
             text="Log In"
         />
         <HgButtonComponent
@@ -290,7 +304,7 @@ nextTick(() => {
             inverse
             prepend-icon="fas fa-sign-out-alt"
             data-testid="header-log-out-button"
-            to="/logout"
+            :to="Path.Logout"
         >
             Log Out
         </HgButtonComponent>

@@ -39,7 +39,7 @@ export default class LoginView extends Vue {
 
     private redirectIfAuthenticated(path: string): void {
         if (this.isAuthenticated) {
-            this.routeHandler.push({ path }).catch((err) => {
+            this.routeHandler.push(path).catch((err) => {
                 if (
                     !isNavigationFailure(err, NavigationFailureType.redirected)
                 ) {

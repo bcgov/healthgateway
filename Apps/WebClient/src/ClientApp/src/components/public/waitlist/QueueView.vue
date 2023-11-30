@@ -1,11 +1,15 @@
 <script setup lang="ts">
 import { computed, watch } from "vue";
-import { useRoute, useRouter } from "vue-router";
+import { useRouter } from "vue-router";
 
 import { useConfigStore } from "@/stores/config";
 import { useWaitlistStore } from "@/stores/waitlist";
 
-const route = useRoute();
+interface Props {
+    redirectPath: string;
+}
+const props = defineProps<Props>();
+
 const router = useRouter();
 const configStore = useConfigStore();
 const waitlistStore = useWaitlistStore();
@@ -14,8 +18,7 @@ const ticketIsProcessed = computed(() => waitlistStore.ticketIsProcessed);
 const queuePosition = computed(() => waitlistStore.ticket?.queuePosition);
 
 function redirect(): void {
-    const path = route.query.redirect ? route.query.redirect.toString() : "/";
-    router.push({ path });
+    router.push(props.redirectPath);
 }
 
 watch(ticketIsProcessed, (value: boolean) => {

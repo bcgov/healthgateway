@@ -1,5 +1,6 @@
 ﻿<script setup lang="ts">
-import { useRoute, useRouter } from "vue-router";
+import { computed, onUnmounted, ref } from "vue";
+import { useRouter } from "vue-router";
 
 import { Path } from "@/constants/path";
 import { container } from "@/ioc/container";
@@ -8,11 +9,12 @@ import { ILogger } from "@/services/interfaces";
 import { useConfigStore } from "@/stores/config";
 
 const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-const route = useRoute();
 const router = useRouter();
 const configStore = useConfigStore();
 
-function getRedirectTimeout() {
+const redirectTimeoutId = ref<ReturnType<typeof setTimeout>>();
+
+const redirectTimeoutLength = computed(() => {
     const configValue = Number(configStore.webConfig?.timeouts.logoutRedirect);
     if (isNaN(configValue) || configValue <= 0) {
         logger.warn(
@@ -21,13 +23,13 @@ function getRedirectTimeout() {
         return 10000;
     }
     return configValue;
-}
+});
 
-setTimeout(() => {
-    if (route.path == Path.LogoutComplete) {
-        router.push({ path: Path.Root });
-    }
-}, getRedirectTimeout());
+onUnmounted(() => clearTimeout(redirectTimeoutId.value));
+
+redirectTimeoutId.value = setTimeout(() => {
+    router.push(Path.Root);
+}, redirectTimeoutLength.value);
 </script>
 
 <template>

@@ -7,6 +7,7 @@ import HtmlTextAreaComponent from "@/components/common/HtmlTextAreaComponent.vue
 import LoadingComponent from "@/components/common/LoadingComponent.vue";
 import PageTitleComponent from "@/components/common/PageTitleComponent.vue";
 import { ErrorSourceType, ErrorType } from "@/constants/errorType";
+import { Path } from "@/constants/path";
 import { container } from "@/ioc/container";
 import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
 import { ResultError } from "@/models/errors";
@@ -59,8 +60,7 @@ function onSubmit(): void {
 }
 
 function redirect(): void {
-    logger.debug("Redirecting to /home");
-    router.push({ path: "/home" });
+    router.push(Path.Home);
 }
 
 // Created hook

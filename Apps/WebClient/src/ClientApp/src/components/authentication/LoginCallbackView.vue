@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import { computed } from "vue";
-import { useRoute, useRouter } from "vue-router";
+import { useRouter } from "vue-router";
 
 import LoadingComponent from "@/components/common/LoadingComponent.vue";
 import { container } from "@/ioc/container";
@@ -10,19 +9,19 @@ import { useAuthStore } from "@/stores/auth";
 import { useNotificationStore } from "@/stores/notification";
 import { useUserStore } from "@/stores/user";
 
+interface Props {
+    redirectPath: string;
+}
+const props = defineProps<Props>();
+
 const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-const route = useRoute();
 const router = useRouter();
 const userStore = useUserStore();
 const authStore = useAuthStore();
 const notificationStore = useNotificationStore();
 
-const defaultPath = computed(() =>
-    route.query.redirect ? route.query.redirect.toString() : "/home"
-);
-
-function signIn(redirectPath: string, idpHint?: string): Promise<void> {
-    return authStore.signIn(redirectPath, idpHint);
+function signIn(idpHint?: string): Promise<void> {
+    return authStore.signIn(props.redirectPath, idpHint);
 }
 
 function clearStorage(): void {
@@ -35,11 +34,11 @@ function retrieveNotifications(): void {
 
 function redirect() {
     router
-        .push({ path: defaultPath.value })
+        .push(props.redirectPath)
         .catch((error) => logger.warn(error.message));
 }
 
-signIn(defaultPath.value)
+signIn()
     .then(() => {
         logger.debug(`signIn for user: ${JSON.stringify(userStore.user)}`);
 

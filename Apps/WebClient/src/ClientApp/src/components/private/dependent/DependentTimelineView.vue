@@ -2,12 +2,13 @@
 import { computed } from "vue";
 import { useRouter } from "vue-router";
 
+import BreadcrumbComponent from "@/components/common/BreadcrumbComponent.vue";
 import HgIconButtonComponent from "@/components/common/HgIconButtonComponent.vue";
 import LoadingComponent from "@/components/common/LoadingComponent.vue";
 import PageTitleComponent from "@/components/common/PageTitleComponent.vue";
 import TimelineComponent from "@/components/private/timeline/TimelineComponent.vue";
-import BreadcrumbComponent from "@/components/common/BreadcrumbComponent.vue";
 import { EntryType, entryTypeMap } from "@/constants/entryType";
+import { Path } from "@/constants/path";
 import BreadcrumbItem from "@/models/breadcrumbItem";
 import { Dependent } from "@/models/dependent";
 import { useDependentStore } from "@/stores/dependent";
@@ -59,7 +60,7 @@ function retrieveDependents(hdid: string, bypassCache: boolean): Promise<void> {
 
 retrieveDependents(userStore.hdid, false).then(() => {
     if (dependent.value === undefined) {
-        router.push({ path: "/unauthorized" });
+        router.push(Path.Unauthorized);
     }
 });
 </script>

@@ -153,8 +153,8 @@ export const beforeEachGuard: NavigationGuard = async (
         requiredFeaturesEnabled
     );
 
-    if (defaultPath === Path.Login) {
-        next({ path: defaultPath, query: { redirect: to.path } });
+    if (defaultPath === Path.Login || defaultPath == Path.Registration) {
+        next({ path: defaultPath, query: { redirect: to.fullPath } });
         return;
     }
 
