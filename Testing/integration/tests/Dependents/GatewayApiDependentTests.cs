@@ -27,7 +27,7 @@ using Xunit.Abstractions;
 using Xunit.Categories;
 
 [IntegrationTest]
-public class GatewayApiDependentTests : ScenarioContextBase<GatewayApi.Startup>
+public class GatewayApiDependentTests : ScenarioContextBase<GatewayApi.Program>
 {
     private readonly DateTime dependentDob = DateTime.Parse("2014-Mar-15", CultureInfo.InstalledUICulture);
     private readonly string dependentPhn = "9874307168";

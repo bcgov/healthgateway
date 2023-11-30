@@ -13,6 +13,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
+
+#pragma warning disable CA1052 // Static holder types should be Static or NotInheritable
+
 namespace HealthGateway.GatewayApi
 {
     using System.Diagnostics.CodeAnalysis;
@@ -23,7 +26,7 @@ namespace HealthGateway.GatewayApi
     /// The entry point for the project.
     /// </summary>
     [ExcludeFromCodeCoverage]
-    public static class Program
+    public class Program
     {
         /// <summary>
         /// The entry point for the class.

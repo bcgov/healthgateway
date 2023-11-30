@@ -27,10 +27,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Xunit.Abstractions;
 using Xunit.Categories;
 
-#pragma warning disable CA1063 // Implement IDisposable Correctly
+#pragma warning disable CA1001 // Types that own disposable fields should be disposable
 
 [IntegrationTest]
-public class MessagingTests : ScenarioContextBase<GatewayApi.Startup>, IDisposable
+public class MessagingTests : ScenarioContextBase<GatewayApi.Program>
 {
     private readonly CancellationTokenSource cts;
     private IMessageReceiver receiver = null!;
@@ -49,25 +49,39 @@ public class MessagingTests : ScenarioContextBase<GatewayApi.Startup>, IDisposab
     public override async Task InitializeAsync()
     {
         await base.InitializeAsync();
-        this.receiver = this.Host.Services.GetRequiredService<IMessageReceiver>();
+        this.receiver = this.TestServices.GetRequiredService<IMessageReceiver>();
 
         GlobalConfiguration.Configuration.UsePostgreSqlStorage(
             c => c.UseNpgsqlConnection(
-                this.Host.Services.GetRequiredService<IConfiguration>().GetConnectionString("GatewayConnection")));
+                this.TestServices.GetRequiredService<IConfiguration>().GetConnectionString("GatewayConnection")));
+    }
+
+    public override async Task DisposeAsync()
+    {
+        await base.DisposeAsync();
+        this.cts.Dispose();
     }
 
     private async Task SendMessages(IEnumerable<IEnumerable<TestMessage>> messageGroups, CancellationToken ct)
     {
-        await Parallel.ForEachAsync(
-            messageGroups,
-            ct,
-            async (messages, ct1) =>
-            {
-                this.Output.WriteLine("sending messages");
-                using IServiceScope scope = this.Host.Services.CreateScope();
-                IMessageSender sender = scope.ServiceProvider.GetRequiredService<IMessageSender>();
-                await sender.SendAsync(messages.Select(m => new MessageEnvelope(m, m.SessionId)), ct1);
-            });
+        IMessageSender sender = this.TestServices.GetRequiredService<IMessageSender>();
+
+        foreach (var messages in messageGroups)
+        {
+            await sender.SendAsync(messages.Select(m => new MessageEnvelope(m, m.SessionId)), ct);
+        }
+
+        // WIP - Yossi still developing approach
+        //await Parallel.ForEachAsync(
+        //    messageGroups,
+        //    ct,
+        //    async (messages, ct1) =>
+        //    {
+        //        this.Output.WriteLine("sending messages");
+        //        //using IServiceScope scope = this.TestServices.CreateScope();
+        //        //IMessageSender sender = scope.ServiceProvider.GetRequiredService<IMessageSender>();
+        //        await sender.SendAsync(messages.Select(m => new MessageEnvelope(m, m.SessionId)), ct1);
+        //    });
     }
 
     private async Task<ConcurrentBag<MessageEnvelope>> ReceiveMessages(CancellationToken ct)
@@ -181,12 +195,6 @@ public class MessagingTests : ScenarioContextBase<GatewayApi.Startup>, IDisposab
         IEnumerable<MessageEnvelope>? deserializedMessage = serialized.Deserialize<IEnumerable<MessageEnvelope>>();
 
         deserializedMessage.ShouldNotBeNull().Count().ShouldBe(envelopes.Length);
-    }
-
-    public void Dispose()
-    {
-        GC.SuppressFinalize(this);
-        this.cts.Dispose();
     }
 
 #pragma warning restore CA1063 // Implement IDisposable Correctly

@@ -50,8 +50,8 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
         /// <param name="configuration">The configuration to use.</param>
         public static void EnableRedis(IServiceCollection services, ILogger logger, IConfiguration configuration)
         {
-            string? connectionString = configuration.GetValue<string>("RedisConnection");
-            if (string.IsNullOrEmpty(connectionString))
+            string? GetRedisConnectionString() => configuration.GetValue<string>("RedisConnection");
+            if (string.IsNullOrEmpty(GetRedisConnectionString()))
             {
                 logger.LogWarning("Redis cache Connection string is null/empty and caching likely broken. Configuring in memory cache instead");
                 services.AddDistributedMemoryCache();
@@ -59,8 +59,8 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
             else
             {
                 logger.LogInformation("Configuring Redis cache");
-                services.AddStackExchangeRedisCache(options => { options.Configuration = connectionString; });
-                services.TryAddSingleton<IConnectionMultiplexer>(_ => ConnectionMultiplexer.Connect(connectionString));
+                services.AddStackExchangeRedisCache(options => { options.Configuration = GetRedisConnectionString(); });
+                services.TryAddSingleton<IConnectionMultiplexer>(_ => ConnectionMultiplexer.Connect(GetRedisConnectionString()));
             }
         }
     }
