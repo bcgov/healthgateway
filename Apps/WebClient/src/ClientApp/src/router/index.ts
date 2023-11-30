@@ -229,7 +229,7 @@ const routes = [
         name: "LoginCallback",
         component: LoginCallbackView,
         props: (route: RouteLocation) => ({
-            redirectPath: route.query.redirect?.toString() ?? "/home",
+            redirectPath: route.query.redirect?.toString() ?? Path.Home,
         }),
         meta: {
             routeIsOidcCallback: true,
@@ -310,7 +310,7 @@ const routes = [
         path: Path.Queue,
         component: QueueView,
         props: (route: RouteLocation) => ({
-            redirectPath: route.query.redirect?.toString() ?? "/",
+            redirectPath: route.query.redirect?.toString() ?? Path.Root,
         }),
         meta: {
             stateless: true,

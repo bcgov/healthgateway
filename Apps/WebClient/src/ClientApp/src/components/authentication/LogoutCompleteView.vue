@@ -28,7 +28,7 @@ const redirectTimeoutLength = computed(() => {
 onUnmounted(() => clearTimeout(redirectTimeoutId.value));
 
 redirectTimeoutId.value = setTimeout(() => {
-    router.push({ path: Path.Root });
+    router.push(Path.Root);
 }, redirectTimeoutLength.value);
 </script>
 
