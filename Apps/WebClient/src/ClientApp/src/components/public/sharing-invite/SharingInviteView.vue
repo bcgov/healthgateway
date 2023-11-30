@@ -3,6 +3,7 @@ import { computed } from "vue";
 import { RouteLocationRaw, useRouter } from "vue-router";
 
 import HgButtonComponent from "@/components/common/HgButtonComponent.vue";
+import { Path } from "@/constants/path";
 import { useAuthStore } from "@/stores/auth";
 import { useUserStore } from "@/stores/user";
 
@@ -16,13 +17,13 @@ const authStore = useAuthStore();
 const userStore = useUserStore();
 
 const oidcIsAuthenticated = computed(() => authStore.oidcIsAuthenticated);
-const invitePath = computed(() => `/sharing?invite=${props.inviteId}`);
+const invitePath = computed(() => `${Path.Sharing}?invite=${props.inviteId}`);
 const loginRoute = computed<RouteLocationRaw>(() => ({
-    path: "/login",
+    path: Path.Login,
     query: { redirect: invitePath.value },
 }));
 const registrationRoute = computed<RouteLocationRaw>(() => ({
-    path: "/registration",
+    path: Path.Registration,
     query: { redirect: invitePath.value },
 }));
 

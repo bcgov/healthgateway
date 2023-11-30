@@ -6,6 +6,7 @@ import HgButtonComponent from "@/components/common/HgButtonComponent.vue";
 import HgIconButtonComponent from "@/components/common/HgIconButtonComponent.vue";
 import AppTourComponent from "@/components/private/home/AppTourComponent.vue";
 import RatingComponent from "@/components/site/RatingComponent.vue";
+import { Path } from "@/constants/path";
 import { container } from "@/ioc/container";
 import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
 import { ILogger } from "@/services/interfaces";
@@ -59,7 +60,7 @@ const isQueuePage = computed(
         route.path.toLowerCase() === "/busy"
 );
 const isSharingInvite = computed(() =>
-    route.path.toLowerCase().startsWith("/sharinginvite")
+    route.path.toLowerCase().startsWith(Path.SharingInvite.toLowerCase())
 );
 const isSidebarButtonShown = computed(
     () =>
@@ -117,10 +118,10 @@ const isProfileLinkAvailable = computed(
         !patientRetrievalFailed.value
 );
 const loginRoute = computed<RouteLocationRaw>(() => ({
-    path: "/login",
+    path: Path.Login,
     query: {
         redirect: isSharingInvite.value
-            ? `/sharing?invite=${route.params["inviteId"]}`
+            ? `${Path.Sharing}?invite=${route.params["inviteId"]}`
             : undefined,
     },
 }));
