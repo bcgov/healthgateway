@@ -26,7 +26,6 @@ namespace HealthGateway.GatewayApiTests.Services.Test
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ErrorHandling;
     using HealthGateway.Common.Data.Models;
-    using HealthGateway.Common.Data.Utils;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.Models.Cacheable;
     using HealthGateway.Common.Services;
@@ -101,24 +100,23 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         /// <param name="resourceOwnerHdid">The delegation's resource owner hdid.</param>
         /// <param name="delegateHdid">The delegate's hdid.</param>
         /// <param name="profileHdid">The profile hdid stored in Delegation.</param>
-        /// <param name="secondsToExpiration">The number of seconds to expiration.</param>
+        /// <param name="secondsSinceCreation">The number of seconds since expiration.</param>
         /// <param name="success">The value indicates whether the test should succeed or not.</param>
         /// <param name="errorMessage">The error message to display when success is false.</param>
         [Theory]
         [InlineData(ResourceOwnerHdid, DelegateHdid, null, 0, true, null)] // 0 Hours
-        [InlineData(ResourceOwnerHdid, DelegateHdid, null, -172800, false, SharingLinkExpirationErrorMesage)] // 48 hours
-        [InlineData(ResourceOwnerHdid, DelegateHdid, null, -172801, false, SharingLinkExpirationErrorMesage)] // 48 hours plus 1 second
+        [InlineData(ResourceOwnerHdid, DelegateHdid, null, 172800, false, SharingLinkExpirationErrorMesage)] // 48 hours
+        [InlineData(ResourceOwnerHdid, DelegateHdid, null, 172801, false, SharingLinkExpirationErrorMesage)] // 48 hours plus 1 second
         [InlineData(ResourceOwnerHdid, ResourceOwnerHdid, null, 0, false, DelegationSelfAssociationErrorMessage)]
         [InlineData(ResourceOwnerHdid, DelegateHdid, ProfileHdid, 0, false, DelegationAlreadyAssociatedErrorMessage)]
-        public async Task AssociateDelegation(string resourceOwnerHdid, string delegateHdid, string? profileHdid, int secondsToExpiration, bool success, string? errorMessage)
+        public async Task AssociateDelegation(string resourceOwnerHdid, string delegateHdid, string? profileHdid, int secondsSinceCreation, bool success, string? errorMessage)
         {
             // Arrange
-            TimeZoneInfo localTimezone = DateFormatter.GetLocalTimeZone(GetConfiguration());
             Mock<IDelegationDelegate> delegationDelegate = new();
             PatientDetails patient = GetPatient();
 
             int expiryHours = int.Parse(ExpiryHours);
-            DateTime createdDateTime = DateTime.UtcNow.AddSeconds(secondsToExpiration);
+            DateTime createdDateTime = DateTime.UtcNow.AddSeconds(-secondsSinceCreation);
 
             Delegation delegation = new()
             {
@@ -129,7 +127,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
 
                 ResourceOwnerIdentifier = $"{patient.PreferredName.GivenName} {patient.PreferredName.Surname[0]}",
                 Nickname = ValidNickname,
-                ExpiryDate = DateOnly.FromDateTime(TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, localTimezone)).AddDays(30),
+                ExpiryDate = DateOnly.FromDateTime(DateTime.UtcNow).AddDays(30),
                 DataSources = ValidDataSources,
             };
 
@@ -195,7 +193,6 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         public async Task CreateDelegation(string email, string nickname, int daysToAdd, HashSet<DataSource> dataSources, bool success, string errorMessage)
         {
             // Arrange
-            TimeZoneInfo localTimezone = DateFormatter.GetLocalTimeZone(GetConfiguration());
             Mock<IDelegationDelegate> delegationDelegate = new();
             PatientDetails patient = GetPatient();
 
@@ -204,7 +201,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 ResourceOwnerHdid = Hdid,
                 ResourceOwnerIdentifier = $"{patient.PreferredName.GivenName} {patient.PreferredName.Surname[0]}",
                 Nickname = nickname,
-                ExpiryDate = DateOnly.FromDateTime(TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, localTimezone)).AddDays(daysToAdd),
+                ExpiryDate = DateOnly.FromDateTime(DateTime.UtcNow).AddDays(daysToAdd),
                 DataSources = dataSources,
             };
 
@@ -212,7 +209,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             {
                 Email = email,
                 Nickname = nickname,
-                ExpiryDate = DateOnly.FromDateTime(TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, localTimezone)).AddDays(daysToAdd),
+                ExpiryDate = DateOnly.FromDateTime(DateTime.UtcNow).AddDays(daysToAdd),
                 DataSources = dataSources,
             };
 

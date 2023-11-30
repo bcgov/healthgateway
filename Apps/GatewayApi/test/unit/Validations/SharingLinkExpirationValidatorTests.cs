@@ -27,18 +27,18 @@ namespace HealthGateway.GatewayApiTests.Validations
         /// <summary>
         /// Tests for sharing link expiration validator.
         /// </summary>
-        /// <param name="secondsToExpiration">The number of seconds to expiration.</param>
+        /// <param name="secondsSinceCreation">The number of seconds since expiration.</param>
         /// <param name="success">The value indicates whether the test should succeed or not.</param>
         [Theory]
         [InlineData(0, true)] // 0 Hours
-        [InlineData(-172800, true)] // 48 hours
-        [InlineData(-172801, false)] // 48 hours plus 1 second
-        public void ValidateSharingLinkExpiration(int secondsToExpiration, bool success)
+        [InlineData(172800, true)] // 48 hours
+        [InlineData(172801, false)] // 48 hours plus 1 second
+        public void ValidateSharingLinkExpiration(int secondsSinceCreation, bool success)
         {
             // Arrange
             int expiryHours = 48;
             DateTime now = DateTime.UtcNow;
-            DateTime expiryDate = now.AddSeconds(secondsToExpiration);
+            DateTime expiryDate = now.AddSeconds(-secondsSinceCreation);
 
             // Act
             bool actual = SharingLinkExpirationValidator.IsValid(expiryDate, now, expiryHours);
