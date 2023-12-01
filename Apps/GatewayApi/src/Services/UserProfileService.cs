@@ -173,7 +173,7 @@ namespace HealthGateway.GatewayApi.Services
                 // Update user year of birth.
                 RequestResult<PatientModel> patientResult = await this.patientService.GetPatient(hdid).ConfigureAwait(true);
                 DateTime? birthDate = patientResult.ResourcePayload?.Birthdate;
-                userProfileDbResult.Payload.YearOfBirth = birthDate?.Year.ToString(CultureInfo.InvariantCulture);
+                userProfileDbResult.Payload.YearOfBirth = birthDate?.Year;
 
                 this.userProfileDelegate.Update(userProfileDbResult.Payload);
                 this.logger.LogDebug("Finished updating user last login and year of birth... {Hdid}", hdid);
@@ -250,7 +250,7 @@ namespace HealthGateway.GatewayApi.Services
                 UpdatedBy = hdid,
                 LastLoginDateTime = jwtAuthTime,
                 EncryptionKey = this.cryptoDelegate.GenerateKey(),
-                YearOfBirth = birthDate?.Year.ToString(CultureInfo.InvariantCulture),
+                YearOfBirth = birthDate?.Year,
                 LastLoginClientCode = this.authenticationDelegate.FetchAuthenticatedUserClientType(),
             };
             DbResult<UserProfile> insertResult = await this.userProfileDelegate.InsertUserProfileAsync(newProfile, !this.accountsChangeFeedEnabled, ct);

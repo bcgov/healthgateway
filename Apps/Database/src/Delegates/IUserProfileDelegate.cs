@@ -167,6 +167,6 @@ namespace HealthGateway.Database.Delegates
         /// <param name="endDateTimeOffset">The end datetime offset to query.</param>
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The counts of logged in users by year of birth.</returns>
-        Task<IDictionary<string, int>> GetLoggedInUserYearOfBirthCountsAsync(DateTimeOffset startDateTimeOffset, DateTimeOffset endDateTimeOffset, CancellationToken ct);
+        Task<IDictionary<int, int>> GetLoggedInUserYearOfBirthCountsAsync(DateTimeOffset startDateTimeOffset, DateTimeOffset endDateTimeOffset, CancellationToken ct);
     }
 }

@@ -86,7 +86,7 @@ namespace HealthGateway.Database.Models
         /// Gets or sets the user's year of birth.
         /// </summary>
         [MaxLength(4)]
-        public string? YearOfBirth { get; set; }
+        public int? YearOfBirth { get; set; }
 
         /// <summary>
         /// Gets or sets the user's last login client.

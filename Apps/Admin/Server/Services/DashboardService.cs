@@ -17,6 +17,7 @@ namespace HealthGateway.Admin.Server.Services
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Admin.Common.Models;
@@ -83,11 +84,13 @@ namespace HealthGateway.Admin.Server.Services
         }
 
         /// <inheritdoc/>
-        public async Task<IDictionary<string, int>> GetYearOfBirthCountsAsync(DateOnly startDateLocal, DateOnly endDateLocal, int timeOffset, CancellationToken ct)
+        public async Task<IDictionary<int, int>> GetAgeCountsAsync(DateOnly startDateLocal, DateOnly endDateLocal, int timeOffset, CancellationToken ct)
         {
             DateTimeOffset startDate = GetStartDateTimeOffset(startDateLocal, timeOffset);
             DateTimeOffset endDate = GetEndDateTimeOffset(endDateLocal, timeOffset);
-            return await userProfileDelegate.GetLoggedInUserYearOfBirthCountsAsync(startDate, endDate, ct);
+            IDictionary<int, int> yearOfBirthCounts = await userProfileDelegate.GetLoggedInUserYearOfBirthCountsAsync(startDate, endDate, ct);
+            int currentYear = DateTime.Today.Year;
+            return new SortedDictionary<int, int>(yearOfBirthCounts.ToDictionary(kvp => currentYear - kvp.Key, kvp => kvp.Value));
         }
 
         private static DateTimeOffset GetStartDateTimeOffset(DateOnly startDateLocal, int timeOffset)
