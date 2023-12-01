@@ -105,7 +105,7 @@ namespace HealthGateway.Admin.Server.Services
             DateTimeOffset startDateOffset = new(startDateLocal.ToDateTime(TimeOnly.MinValue), offsetSpan);
             DateTimeOffset endDateOffset = new(endDateLocal.ToDateTime(TimeOnly.MaxValue), offsetSpan);
 
-            IDictionary<string, int> yobCounts = await userProfileDelegate.GetLoggedInUserYearOfBirthCountsAsync(startDateOffset, endDateOffset, ct);
+            IDictionary<int, int> yobCounts = await userProfileDelegate.GetLoggedInUserYearOfBirthCountsAsync(startDateOffset, endDateOffset, ct);
 
             MemoryStream stream = new();
             await using StreamWriter writer = new(stream, leaveOpen: true);

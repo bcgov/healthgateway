@@ -84,13 +84,13 @@ namespace HealthGateway.Admin.Server.Services
         Task<IDictionary<string, int>> GetRatingsSummaryAsync(DateOnly startDateLocal, DateOnly endDateLocal, int timeOffset, CancellationToken ct = default);
 
         /// <summary>
-        /// Retrieves year of birth counts for users that have logged in between two dates.
+        /// Retrieves age counts for users that have logged in between two dates.
         /// </summary>
         /// <param name="startDateLocal">The local start date to query.</param>
         /// <param name="endDateLocal">The local end date to query.</param>
         /// <param name="timeOffset">The local timezone offset from UTC in minutes.</param>
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
-        /// <returns>A dictionary mapping birth years to user counts.</returns>
-        Task<IDictionary<string, int>> GetYearOfBirthCountsAsync(DateOnly startDateLocal, DateOnly endDateLocal, int timeOffset, CancellationToken ct);
+        /// <returns>A dictionary mapping ages to user counts.</returns>
+        Task<IDictionary<int, int>> GetAgeCountsAsync(DateOnly startDateLocal, DateOnly endDateLocal, int timeOffset, CancellationToken ct);
     }
 }

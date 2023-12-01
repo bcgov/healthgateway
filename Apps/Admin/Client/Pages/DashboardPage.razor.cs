@@ -52,7 +52,7 @@ public partial class DashboardPage : FluxorComponent
 
     private AppLoginCounts AppLoginCounts => this.DashboardState.Value.GetAppLoginCounts.Result ?? new(0, 0);
 
-    private IDictionary<string, int> YearOfBirthCounts => this.DashboardState.Value.YearOfBirthCounts;
+    private IDictionary<int, int> AgeCounts => this.DashboardState.Value.AgeCounts;
 
     private bool DailyUserRegistrationCountsLoading => this.DashboardState.Value.GetDailyUserRegistrationCounts.IsLoading;
 
@@ -66,7 +66,7 @@ public partial class DashboardPage : FluxorComponent
 
     private bool RatingsSummaryLoading => this.DashboardState.Value.GetRatingsSummary.IsLoading;
 
-    private bool YearOfBirthCountsLoading => this.DashboardState.Value.GetYearOfBirthCounts.IsLoading;
+    private bool AgeCountsLoading => this.DashboardState.Value.GetAgeCounts.IsLoading;
 
     private MudDateRangePicker DemographicsDateRangePicker { get; set; } = default!;
 
@@ -90,7 +90,7 @@ public partial class DashboardPage : FluxorComponent
 
     private string RatingSummaryErrorMessage => this.DashboardState.Value.GetRatingsSummary.Error?.Message ?? string.Empty;
 
-    private string YearOfBirthCountsErrorMessage => this.DashboardState.Value.GetYearOfBirthCounts.Error?.Message ?? string.Empty;
+    private string AgeCountsErrorMessage => this.DashboardState.Value.GetAgeCounts.Error?.Message ?? string.Empty;
 
     private IEnumerable<string> ErrorMessages => StringManipulator.ExcludeBlanks(
     [
@@ -100,7 +100,7 @@ public partial class DashboardPage : FluxorComponent
         this.RecurringUsersErrorMessage,
         this.AppLoginCountsErrorMessage,
         this.RatingSummaryErrorMessage,
-        this.YearOfBirthCountsErrorMessage,
+        this.AgeCountsErrorMessage,
     ]);
 
     private DateRange? DemographicsDateRange
@@ -197,7 +197,7 @@ public partial class DashboardPage : FluxorComponent
         DateOnly endDate = DateOnly.FromDateTime(this.DemographicsDateRangeEnd);
         this.Dispatcher.Dispatch(new DashboardActions.GetAppLoginCountsAction { StartDateLocal = startDate, EndDateLocal = endDate, TimeOffset = this.TimeOffset });
         this.Dispatcher.Dispatch(new DashboardActions.GetRatingsSummaryAction { StartDateLocal = startDate, EndDateLocal = endDate, TimeOffset = this.TimeOffset });
-        this.Dispatcher.Dispatch(new DashboardActions.GetYearOfBirthCountsAction { StartDateLocal = startDate, EndDateLocal = endDate, TimeOffset = this.TimeOffset });
+        this.Dispatcher.Dispatch(new DashboardActions.GetAgeCountsAction { StartDateLocal = startDate, EndDateLocal = endDate, TimeOffset = this.TimeOffset });
     }
 
     private void RetrieveUsageData()
@@ -210,18 +210,18 @@ public partial class DashboardPage : FluxorComponent
         this.Dispatcher.Dispatch(new DashboardActions.GetRecurringUserCountAction { Days = this.UniqueDays, StartDateLocal = startDate, EndDateLocal = endDate, TimeOffset = this.TimeOffset });
     }
 
-    private ChartSeries GetYearOfBirthCountSeries()
+    private ChartSeries GetAgeCountSeries()
     {
         return new ChartSeries
         {
-            Name = "Count of Unique Users",
-            Data = this.YearOfBirthCounts.Select(kvp => (double)kvp.Value).ToArray(),
+            Name = "User Age Demographics",
+            Data = this.AgeCounts.Select(kvp => (double)kvp.Value).ToArray(),
         };
     }
 
-    private string[] GetYearOfBirthLabels()
+    private string[] GetAgeLabels()
     {
-        return this.YearOfBirthCounts.Select((kvp, i) => i % 10 == 0 ? kvp.Key : string.Empty).ToArray();
+        return this.AgeCounts.Select((kvp, i) => i % 10 == 0 ? kvp.Key.ToString(CultureInfo.InvariantCulture) : string.Empty).ToArray();
     }
 
     private sealed record DailyDataRow

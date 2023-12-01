@@ -357,6 +357,11 @@ namespace HealthGateway.Database.Context
             modelBuilder.Entity<UserProfile>()
                 .HasIndex(p => p.LastLoginDateTime);
 
+            modelBuilder
+                .Entity<UserProfile>()
+                .Property(e => e.YearOfBirth)
+                .HasConversion<string>();
+
             // Create Foreign keys for User Profile
             modelBuilder.Entity<UserProfile>()
                 .HasOne<UserLoginClientTypeCode>()
@@ -364,6 +369,11 @@ namespace HealthGateway.Database.Context
                 .HasPrincipalKey(k => k.UserLoginClientCode)
                 .HasForeignKey(k => k.LastLoginClientCode)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder
+                .Entity<UserProfileHistory>()
+                .Property(e => e.YearOfBirth)
+                .HasConversion<string>();
 
             // Create Foreign keys for User Profile History
             modelBuilder.Entity<UserProfileHistory>()

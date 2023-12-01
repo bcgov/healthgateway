@@ -60,7 +60,7 @@ namespace HealthGateway.Admin.Tests.Services
         [Fact]
         public async Task ShouldGetYearOfBirthCounts()
         {
-            Dictionary<string, int> getResult = new();
+            Dictionary<int, int> getResult = new();
 
             Mock<IUserProfileDelegate> profileDelegateMock = new();
             profileDelegateMock.Setup(s => s.GetLoggedInUserYearOfBirthCountsAsync(It.IsAny<DateTimeOffset>(), It.IsAny<DateTimeOffset>(), It.IsAny<CancellationToken>())).ReturnsAsync(getResult);

@@ -70,31 +70,21 @@ namespace HealthGateway.Admin.Server.Mappers
             this.Map(m => m.UserProfile!.YearOfBirth).Convert(userProfile => GetAgeCohort(userProfile.Value.UserProfile?.YearOfBirth)).Name("Age Cohort").Index(3);
         }
 
-        private static string GetAgeCohort(string? yearOfBirth)
+        private static string GetAgeCohort(int? yearOfBirth)
         {
-            int yob = int.Parse(yearOfBirth ?? "0", CultureInfo.InvariantCulture);
-
-            switch (yob)
+            yearOfBirth ??= 0;
+            return yearOfBirth switch
             {
-                case 0:
-                    return "0";
-                case <= 1927:
-                    return "1";
-                case <= 1945:
-                    return "2";
-                case <= 1954:
-                    return "3";
-                case <= 1964:
-                    return "4";
-                case <= 1980:
-                    return "5";
-                case <= 1996:
-                    return "6";
-                case <= 2012:
-                    return "7";
-                default:
-                    return "8";
-            }
+                0 => "0",
+                <= 1927 => "1",
+                <= 1945 => "2",
+                <= 1954 => "3",
+                <= 1964 => "4",
+                <= 1980 => "5",
+                <= 1996 => "6",
+                <= 2012 => "7",
+                _ => "8",
+            };
         }
     }
 }

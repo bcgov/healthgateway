@@ -112,19 +112,19 @@
         </MudPaper>
     </MudItem>
     <MudItem xs="12" lg="6">
-        @if (YearOfBirthCountsLoading)
+        @if (AgeCountsLoading)
         {
-            <MudSkeleton data-testid="skeleton-year-of-birth-chart" SkeletonType="SkeletonType.Rectangle" Width="100%" Height="325px" />
+            <MudSkeleton data-testid="skeleton-age-chart" SkeletonType="SkeletonType.Rectangle" Width="100%" Height="325px" />
         }
-        else if (YearOfBirthCountsErrorMessage.Length == 0)
+        else if (AgeCountsErrorMessage.Length == 0)
         {
-            @if (YearOfBirthCounts.Any())
+            @if (AgeCounts.Any())
             {
                 <MudChart
-                    data-testid="year-of-birth-chart"
+                    data-testid="age-chart"
                     ChartType="ChartType.Bar"
-                    ChartSeries="[GetYearOfBirthCountSeries()]"
-                    XAxisLabels="@GetYearOfBirthLabels()"
+                    ChartSeries="[GetAgeCountSeries()]"
+                    XAxisLabels="@GetAgeLabels()"
                     Width="100%"
                     Height="325" />
             }

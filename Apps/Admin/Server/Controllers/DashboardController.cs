@@ -195,13 +195,13 @@ namespace HealthGateway.Admin.Server.Controllers
         }
 
         /// <summary>
-        /// Retrieves year of birth counts for users that have logged in between two dates.
+        /// Retrieves age counts for users that have logged in between two dates.
         /// </summary>
         /// <param name="startDateLocal">The local start date to query.</param>
         /// <param name="endDateLocal">The local end date to query.</param>
         /// <param name="timeOffset">The current timezone offset from the client browser to UTC.</param>
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
-        /// <returns>A dictionary mapping birth years to user counts.</returns>
+        /// <returns>A dictionary mapping ages to user counts.</returns>
         /// <response code="200">Returns a dictionary mapping birth years to user counts.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
         /// <response code="403">
@@ -209,17 +209,17 @@ namespace HealthGateway.Admin.Server.Controllers
         /// is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.
         /// </response>
         [HttpGet]
-        [Route("YearOfBirthCounts")]
+        [Route("AgeCounts")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        public async Task<IDictionary<string, int>> GetYearOfBirthCounts(
+        public async Task<IDictionary<int, int>> GetAgeCounts(
             [FromQuery] DateOnly startDateLocal,
             [FromQuery] DateOnly endDateLocal,
             [FromQuery] int timeOffset,
             CancellationToken ct)
         {
-            return await dashboardService.GetYearOfBirthCountsAsync(startDateLocal, endDateLocal, timeOffset, ct);
+            return await dashboardService.GetAgeCountsAsync(startDateLocal, endDateLocal, timeOffset, ct);
         }
     }
 }

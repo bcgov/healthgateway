@@ -142,21 +142,21 @@ public class DashboardEffects(ILogger<DashboardEffects> logger, IDashboardApi da
     }
 
     [EffectMethod]
-    public async Task HandleGetYearOfBirthCountsAction(DashboardActions.GetYearOfBirthCountsAction action, IDispatcher dispatcher)
+    public async Task HandleGetAgeCountsAction(DashboardActions.GetAgeCountsAction action, IDispatcher dispatcher)
     {
-        logger.LogInformation("Retrieving year of birth counts");
+        logger.LogInformation("Retrieving age counts");
 
         try
         {
-            IDictionary<string, int> response = await dashboardApi.GetYearOfBirthCountsAsync(action.StartDateLocal, action.EndDateLocal, action.TimeOffset).ConfigureAwait(true);
-            logger.LogInformation("Year of birth counts retrieved successfully");
-            dispatcher.Dispatch(new DashboardActions.GetYearOfBirthCountsSuccessAction { Data = response });
+            IDictionary<int, int> response = await dashboardApi.GetAgeCountsAsync(action.StartDateLocal, action.EndDateLocal, action.TimeOffset).ConfigureAwait(true);
+            logger.LogInformation("Age counts retrieved successfully");
+            dispatcher.Dispatch(new DashboardActions.GetAgeCountsSuccessAction { Data = response });
         }
         catch (ApiException ex)
         {
             RequestError error = StoreUtility.FormatRequestError(ex);
-            logger.LogError("Error retrieving year of birth counts, reason: {ErrorMessage}", error.Message);
-            dispatcher.Dispatch(new DashboardActions.GetYearOfBirthCountsFailureAction { Error = error });
+            logger.LogError("Error retrieving age counts, reason: {ErrorMessage}", error.Message);
+            dispatcher.Dispatch(new DashboardActions.GetAgeCountsFailureAction { Error = error });
         }
     }
 }
