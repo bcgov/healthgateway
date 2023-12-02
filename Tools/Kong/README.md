@@ -10,7 +10,7 @@ Grab the environment files (`hg-gold-dev.env`, `hg-gold-test.env`, and `hg-gold-
 
 ## Enabling Access to OpenShift
 
-The helm chart contain network policies to allow Kong access to the API services.
+The helm chart contains network policies to allow Kong access to the API services.
 
 ## Publish Kong Configurations
 
