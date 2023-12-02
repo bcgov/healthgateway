@@ -281,4 +281,6 @@ export interface IDelegationService {
         ownerHdid: string,
         delegation: CreateDelegationRequest
     ): Promise<string | undefined>;
+
+    associateDelegation(delegateHdid: string, inviteId: string): Promise<void>;
 }

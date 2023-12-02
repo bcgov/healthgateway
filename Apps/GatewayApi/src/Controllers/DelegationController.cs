@@ -49,8 +49,8 @@ namespace HealthGateway.GatewayApi.Controllers
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         /// <param name="hdid">The delegate's hdid.</param>
-        /// <param name="encryptedDelegationId">The encrypted delegation id.</param>
         /// <param name="ct">cancellation token.</param>
+        /// <param name="encryptedDelegationId">The encrypted delegation id.</param>
         /// <response code="200">The delegation is associated with the user.</response>
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
         /// <response code="403">

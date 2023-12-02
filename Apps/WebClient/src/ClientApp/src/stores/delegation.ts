@@ -75,8 +75,6 @@ export const useDelegationStore = defineStore("delegation", () => {
     const delegations = ref<Delegation[]>([]);
     const delegationWizardState = ref<DelegationWizardState>();
     const delegationsAreLoading = ref(false);
-    const error = ref<ResultError>();
-    const statusMessage = ref("");
 
     const wizardNextStep = computed(() => {
         const currentStep = delegationWizardState.value?.step;
@@ -115,12 +113,6 @@ export const useDelegationStore = defineStore("delegation", () => {
             delegationWizardState.value?.expiryDate.toISOString()
         ).format("yyyy-MM-dd");
     });
-
-    function setDelegationsError(incomingError: ResultError) {
-        error.value = incomingError;
-        statusMessage.value = incomingError.resultMessage;
-        delegationsAreLoading.value = false;
-    }
 
     function startNewDelegation(): void {
         delegationWizardState.value = {
@@ -221,13 +213,31 @@ export const useDelegationStore = defineStore("delegation", () => {
             .finally(() => (delegationsAreLoading.value = false));
     }
 
+    function associateDelegation(inviteId: string) {
+        logger.debug("Associate invitation");
+        delegationsAreLoading.value = true;
+        return delegateService
+            .associateDelegation(userStore.hdid, inviteId)
+            .catch((error: ResultError) => {
+                if (error.statusCode === 429) {
+                    errorStore.setTooManyRequestsError("page");
+                } else {
+                    errorStore.addCustomError(
+                        error.resultMessage,
+                        ErrorSourceType.Delegate,
+                        error.traceId
+                    );
+                }
+            })
+            .finally(() => (delegationsAreLoading.value = false));
+    }
+
     function handleError(
         incomingError: ResultError,
         errorType: ErrorType,
         errorKey?: string
     ) {
         logger.error(`Error: ${JSON.stringify(incomingError)}`);
-        setDelegationsError(incomingError);
         if (incomingError.statusCode === 429) {
             errorKey = errorKey ?? "page";
             if (errorType === ErrorType.Retrieve) {
@@ -251,13 +261,14 @@ export const useDelegationStore = defineStore("delegation", () => {
         expiryDateDisplay,
         wizardPreviousStep,
         wizardNextStep,
+        moveWizardToPreviousStep,
         delegationWizardState,
         startNewDelegation,
         captureDelegationContact,
         captureDelegationRecordTypes,
         captureDelegationExpiry,
-        submitDelegationWizard,
-        moveWizardToPreviousStep,
         clearDelegationWizardState,
+        submitDelegationWizard,
+        associateDelegation,
     };
 });

@@ -340,6 +340,9 @@ const routes = [
         path: Path.Sharing,
         name: "Sharing",
         component: SharingView,
+        props: (route: RouteLocation) => ({
+            invite: route.query.invite,
+        }),
         meta: {
             validStates: [UserState.registered],
             requiredFeaturesEnabled: (config: FeatureToggleConfiguration) =>
