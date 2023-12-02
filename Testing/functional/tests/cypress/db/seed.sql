@@ -17,6 +17,7 @@ TRUNCATE gateway."Dependent" CASCADE;
 TRUNCATE gateway."AgentAudit" CASCADE;
 TRUNCATE gateway."BlockedAccess" CASCADE;
 TRUNCATE gateway."Outbox" CASCADE;
+TRUNCATE gateway."Delegation" CASCADE;
 
 
 /* Registered HealthGateway User - Keycloak User (healthgateway) */
@@ -1592,4 +1593,48 @@ VALUES (
 		current_timestamp - INTERVAL '2 day', 
 		'System', 
 		current_timestamp - INTERVAL '2 day'
+);
+
+INSERT INTO gateway."Delegation"(
+	"DelegationId", 
+	"Nickname", 
+	"Status", 
+	"SharingCodeHashFunction", 
+	"SharingCodeIterations", 
+	"SharingCodeSalt", 
+	"SharingCodeHash", 
+	"FailedAttempts", 
+	"ExpiryDate", 
+	"DataSources", 
+	"ResourceOwnerHdid", 
+	"ProfileHdid", 
+	"ReasonCode", 
+	"ResourceOwnerIdentifier", 
+	"RemovedByOwner", 
+	"RemovedByDelegate", 
+	"CreatedBy", 
+	"CreatedDateTime", 
+	"UpdatedBy", 
+	"UpdatedDateTime")
+VALUES (
+	'685a3f17-c096-4351-8c8a-f82f2f3273ad',	
+	'Testerson',
+	'Pending',
+	'HmacSha512',
+	21013,	
+	'eOYjP3seE6iU6au702rR7w==',
+	'qgDbEbuHVnN6tkCavjHw3HxKOCvxYLaAajTAu8pu3ncBlkzpcJUCABrKC/+f/i8lSBeIO3YjsvlQqvHAC7+eqg==',
+	0,
+	NOW() + INTERVAL '6 Months',
+	'["Immunization"]',
+	'RD33Y2LJEUZCY2TCMOIECUTKS3E62MEQ62CSUL6Q553IHHBI3AWQ',
+	NULL,
+	'Invited',
+	'BONNET P',	
+	false,	
+	false,	
+	'System',	
+	NOW(),	
+	'System',	
+	NOW()
 );
