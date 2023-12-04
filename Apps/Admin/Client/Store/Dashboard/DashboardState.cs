@@ -30,6 +30,11 @@ using HealthGateway.Admin.Common.Models;
 public record DashboardState
 {
     /// <summary>
+    /// Gets the request state for retrieving all-time counts.
+    /// </summary>
+    public BaseRequestState<AllTimeDashboardCounts> GetAllTimeCounts { get; init; } = new();
+
+    /// <summary>
     /// Gets the request state for retrieving daily counts of user registrations.
     /// </summary>
     public BaseRequestState<IDictionary<DateOnly, int>> GetDailyUserRegistrationCounts { get; init; } = new();

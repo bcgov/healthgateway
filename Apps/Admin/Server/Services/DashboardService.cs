@@ -34,6 +34,13 @@ namespace HealthGateway.Admin.Server.Services
         IRatingDelegate ratingDelegate) : IDashboardService
     {
         /// <inheritdoc/>
+        public async Task<AllTimeDashboardCounts> GetAllTimeCountsAsync(CancellationToken ct = default)
+        {
+            int closedUserProfileCount = await userProfileDelegate.GetClosedUserProfileCount(ct);
+            return new() { ClosedAccounts = closedUserProfileCount };
+        }
+
+        /// <inheritdoc/>
         public async Task<IDictionary<DateOnly, int>> GetDailyUserRegistrationCountsAsync(int timeOffset, CancellationToken ct = default)
         {
             TimeSpan ts = new(0, timeOffset, 0);

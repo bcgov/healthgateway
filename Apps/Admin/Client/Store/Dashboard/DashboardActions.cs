@@ -28,6 +28,21 @@ using HealthGateway.Admin.Common.Models;
 public static class DashboardActions
 {
     /// <summary>
+    /// The action representing the initiation of a retrieval of all-time counts.
+    /// </summary>
+    public record GetAllTimeCountsAction;
+
+    /// <summary>
+    /// The action representing a successful retrieval of all-time counts.
+    /// </summary>
+    public record GetAllTimeCountsSuccessAction : BaseSuccessAction<AllTimeDashboardCounts>;
+
+    /// <summary>
+    /// The action representing a failed retrieval of all-time counts.
+    /// </summary>
+    public record GetAllTimeCountsFailureAction : BaseFailureAction;
+
+    /// <summary>
     /// The action representing the initiation of a retrieval of daily user registration counts.
     /// </summary>
     public record GetDailyUserRegistrationCountsAction
