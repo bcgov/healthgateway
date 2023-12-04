@@ -4,18 +4,13 @@
 
 Read the [GWA API documentation](https://bcgov.github.io/aps-infra-platform/guides/owner-journey/).
 
-Based on reading above documentation you should have the `gwa` command-line application installed locally.
+Based on reading above documentation you should have the `gwa` command-line application installed locally. Install the latest version (at this time it is 2.0.11).
 
-Grab the environment files from Sharepoint (`hg-dev.env`, `hg-test.env`, and `hg-test.env`) and place them in this folder.
+Grab the environment files (`hg-gold-dev.env`, `hg-gold-test.env`, and `hg-gold-prod.env`) and place them in this folder.
 
 ## Enabling Access to OpenShift
 
-To allow Kong to access the OpenShift environments, network policies should be added by running these commands for each environment:
-
-```shell
-oc project [environment]
-oc apply -f network-policies.yaml
-```
+The helm chart contains network policies to allow Kong access to the API services.
 
 ## Publish Kong Configurations
 
