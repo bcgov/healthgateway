@@ -22,6 +22,43 @@ using Fluxor;
 
 public static class DashboardReducers
 {
+    [ReducerMethod(typeof(DashboardActions.GetAllTimeCountsAction))]
+    public static DashboardState ReduceGetAllTimeCountsAction(DashboardState state)
+    {
+        return state with
+        {
+            GetAllTimeCounts = state.GetAllTimeCounts with { IsLoading = true },
+        };
+    }
+
+    [ReducerMethod]
+    public static DashboardState ReduceGetAllTimeCountsSuccessAction(DashboardState state, DashboardActions.GetAllTimeCountsSuccessAction action)
+    {
+        return state with
+        {
+            GetAllTimeCounts = state.GetAllTimeCounts with
+            {
+                Result = action.Data,
+                IsLoading = false,
+                Error = null,
+            },
+        };
+    }
+
+    [ReducerMethod]
+    public static DashboardState ReduceGetAllTimeCountsFailureAction(DashboardState state, DashboardActions.GetAllTimeCountsFailureAction action)
+    {
+        return state with
+        {
+            GetAllTimeCounts = state.GetAllTimeCounts with
+            {
+                Result = null,
+                IsLoading = false,
+                Error = action.Error,
+            },
+        };
+    }
+
     [ReducerMethod(typeof(DashboardActions.GetDailyUserRegistrationCountsAction))]
     public static DashboardState ReduceGetRegisteredUsersAction(DashboardState state)
     {
@@ -300,6 +337,7 @@ public static class DashboardReducers
     {
         return state with
         {
+            GetAllTimeCounts = new(),
             GetDailyUserRegistrationCounts = new(),
             GetDailyUniqueLoginCounts = new(),
             GetDailyDependentRegistrationCounts = new(),

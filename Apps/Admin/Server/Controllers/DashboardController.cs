@@ -37,6 +37,27 @@ namespace HealthGateway.Admin.Server.Controllers
     public class DashboardController(IDashboardService dashboardService)
     {
         /// <summary>
+        /// Retrieves all-time counts.
+        /// </summary>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
+        /// <returns>A model containing the all-time counts.</returns>
+        /// <response code="200">Returns a model containing the all-time counts.</response>
+        /// <response code="401">The client must authenticate itself to get the requested response.</response>
+        /// <response code="403">
+        /// The client does not have access rights to the content; that is, it is unauthorized, so the server
+        /// is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.
+        /// </response>
+        [HttpGet]
+        [Route("AllTimeCounts")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        public async Task<AllTimeDashboardCounts> GetAllTimeCounts(CancellationToken ct)
+        {
+            return await dashboardService.GetAllTimeCountsAsync(ct);
+        }
+
+        /// <summary>
         /// Retrieves the daily counts of user registrations.
         /// </summary>
         /// <param name="timeOffset">The local timezone offset from UTC in minutes.</param>

@@ -28,6 +28,24 @@ using Refit;
 
 public class DashboardEffects(ILogger<DashboardEffects> logger, IDashboardApi dashboardApi)
 {
+    [EffectMethod(typeof(DashboardActions.GetAllTimeCountsAction))]
+    public async Task HandleGetAllTimeCountsAction(IDispatcher dispatcher)
+    {
+        logger.LogInformation("Retrieving all-time counts");
+        try
+        {
+            AllTimeDashboardCounts response = await dashboardApi.GetAllTimeCounts().ConfigureAwait(true);
+            logger.LogInformation("All-time counts retrieved successfully");
+            dispatcher.Dispatch(new DashboardActions.GetAllTimeCountsSuccessAction { Data = response });
+        }
+        catch (ApiException ex)
+        {
+            RequestError error = StoreUtility.FormatRequestError(ex);
+            logger.LogError("Error retrieving all-time counts, reason: {ErrorMessage}", error.Message);
+            dispatcher.Dispatch(new DashboardActions.GetAllTimeCountsFailureAction { Error = error });
+        }
+    }
+
     [EffectMethod]
     public async Task HandleGetDailyUserRegistrationCountsAction(DashboardActions.GetDailyUserRegistrationCountsAction action, IDispatcher dispatcher)
     {

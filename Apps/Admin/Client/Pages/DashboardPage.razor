@@ -53,6 +53,24 @@
             }
         </MudPaper>
     </MudItem>
+    <MudItem xs="12" lg="4">
+        <MudPaper Class="my-2 pa-4" Outlined="true">
+            @if (AllTimeCountsLoading)
+            {
+                <MudSkeleton />
+                <MudSkeleton data-testid="skeleton-closed-accounts" />
+            }
+            else
+            {
+                <MudText Align="Align.Center" Typo="Typo.subtitle1">
+                    Closed Accounts
+                </MudText>
+                <MudText Align="Align.Center" Typo="Typo.subtitle1" data-testid="total-closed-accounts">
+                    @FormatNumber(AllTimeCounts.ClosedAccounts)
+                </MudText>
+            }
+        </MudPaper>
+    </MudItem>
 </MudGrid>
 
 <MudText Class="mt-12" Typo="@Typo.h6">Platform & Demographics</MudText>

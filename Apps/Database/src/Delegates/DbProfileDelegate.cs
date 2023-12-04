@@ -350,6 +350,14 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
+        public async Task<int> GetClosedUserProfileCount(CancellationToken ct)
+        {
+            return await this.dbContext.UserProfileHistory
+                .Where(h => h.Operation == "DELETE" && !this.dbContext.UserProfile.Any(p => p.HdId == h.HdId))
+                .CountAsync(ct);
+        }
+
+        /// <inheritdoc/>
         public async Task<IDictionary<int, int>> GetLoggedInUserYearOfBirthCountsAsync(DateTimeOffset startDateTimeOffset, DateTimeOffset endDateTimeOffset, CancellationToken ct)
         {
             Dictionary<int, int> yobCounts = await this.dbContext.UserProfile

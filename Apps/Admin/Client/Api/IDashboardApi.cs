@@ -28,6 +28,13 @@ using Refit;
 public interface IDashboardApi
 {
     /// <summary>
+    /// Retrieves all-time counts.
+    /// </summary>
+    /// <returns>A model containing the all-time counts.</returns>
+    [Get("/AllTimeCounts")]
+    Task<AllTimeDashboardCounts> GetAllTimeCounts();
+
+    /// <summary>
     /// Retrieves the daily counts of user registrations.
     /// </summary>
     /// <param name="timeOffset">The local timezone offset from UTC in minutes.</param>

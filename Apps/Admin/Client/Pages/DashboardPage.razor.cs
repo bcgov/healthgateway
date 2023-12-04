@@ -42,6 +42,8 @@ public partial class DashboardPage : FluxorComponent
     [Inject]
     private IState<DashboardState> DashboardState { get; set; } = default!;
 
+    private AllTimeDashboardCounts AllTimeCounts => this.DashboardState.Value.GetAllTimeCounts.Result ?? new();
+
     private IDictionary<DateOnly, int> UserRegistrationCounts => this.DashboardState.Value.GetDailyUserRegistrationCounts.Result ?? ImmutableDictionary<DateOnly, int>.Empty;
 
     private IDictionary<DateOnly, int> DailyDependentRegistrationCounts => this.DashboardState.Value.GetDailyDependentRegistrationCounts.Result ?? ImmutableDictionary<DateOnly, int>.Empty;
@@ -53,6 +55,8 @@ public partial class DashboardPage : FluxorComponent
     private AppLoginCounts AppLoginCounts => this.DashboardState.Value.GetAppLoginCounts.Result ?? new(0, 0);
 
     private IDictionary<int, int> AgeCounts => this.DashboardState.Value.AgeCounts;
+
+    private bool AllTimeCountsLoading => this.DashboardState.Value.GetAllTimeCounts.IsLoading;
 
     private bool DailyUserRegistrationCountsLoading => this.DashboardState.Value.GetDailyUserRegistrationCounts.IsLoading;
 
@@ -182,6 +186,7 @@ public partial class DashboardPage : FluxorComponent
     {
         base.OnInitialized();
         this.Dispatcher.Dispatch(new DashboardActions.ResetStateAction());
+        this.Dispatcher.Dispatch(new DashboardActions.GetAllTimeCountsAction());
         this.RetrieveDemographicsData();
         this.RetrieveUsageData();
     }

@@ -27,6 +27,13 @@ namespace HealthGateway.Admin.Server.Services
     public interface IDashboardService
     {
         /// <summary>
+        /// Retrieves all-time counts.
+        /// </summary>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
+        /// <returns>A model containing the all-time counts.</returns>
+        Task<AllTimeDashboardCounts> GetAllTimeCountsAsync(CancellationToken ct = default);
+
+        /// <summary>
         /// Retrieves the daily counts of user registrations.
         /// </summary>
         /// <param name="timeOffset">The local timezone offset from UTC in minutes.</param>
