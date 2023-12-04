@@ -10,7 +10,6 @@ import {
     ILogger,
 } from "@/services/interfaces";
 import { useUserStore } from "@/stores/user";
-import { useWaitlistStore } from "@/stores/waitlist";
 
 export const useAuthStore = defineStore("auth", () => {
     const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
@@ -21,7 +20,6 @@ export const useAuthStore = defineStore("auth", () => {
         DELEGATE_IDENTIFIER.HttpDelegate
     );
     const userStore = useUserStore();
-    const waitlistStore = useWaitlistStore();
 
     const tokenDetails = ref<OidcTokenDetails>();
     const error = ref<unknown>();
@@ -95,7 +93,6 @@ export const useAuthStore = defineStore("auth", () => {
         authService.signOut().then(() => {
             logger.verbose("Successfully signed out");
         });
-        waitlistStore.releaseTicket();
     }
 
     function clearStorage() {

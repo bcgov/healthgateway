@@ -3,9 +3,6 @@
         "showFederalProofOfVaccination": true,
         "showRecommendationsLink": true
     },
-    "waitingQueue": {
-        "enabled": true
-    },
     "notificationCentre": {
         "enabled": true
     },

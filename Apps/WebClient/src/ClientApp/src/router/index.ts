@@ -97,14 +97,6 @@ const ValidateEmailView = () =>
     import(
         /* webpackChunkName: "validateEmail" */ "@/components/private/validate-email/ValidateEmailView.vue"
     );
-const QueueView = () =>
-    import(
-        /* webpackChunkName: "queue" */ "@/components/public/waitlist/QueueView.vue"
-    );
-const QueueFullView = () =>
-    import(
-        /* webpackChunkName: "queueFull" */ "@/components/public/waitlist/QueueFullView.vue"
-    );
 const PcrTestKitRegistrationView = () =>
     import(
         /* webpackChunkName: "pcrTest" */ "@/components/public/pcr-test-kit-registration/PcrTestKitRegistrationView.vue"
@@ -134,7 +126,6 @@ const routes = [
                 UserState.registered,
                 UserState.offline,
             ],
-            requiresProcessedWaitlistTicket: false,
         },
     },
     {
@@ -142,7 +133,6 @@ const routes = [
         component: Covid19View,
         meta: {
             validStates: [UserState.registered],
-            requiresProcessedWaitlistTicket: true,
         },
     },
     {
@@ -152,7 +142,6 @@ const routes = [
             validStates: [UserState.registered],
             requiredFeaturesEnabled: (config: FeatureToggleConfiguration) =>
                 config.dependents.enabled,
-            requiresProcessedWaitlistTicket: true,
         },
     },
     {
@@ -167,7 +156,6 @@ const routes = [
             validStates: [UserState.registered],
             requiredFeaturesEnabled: (config: FeatureToggleConfiguration) =>
                 config.dependents.enabled && config.dependents.timelineEnabled,
-            requiresProcessedWaitlistTicket: true,
         },
     },
     {
@@ -175,7 +163,6 @@ const routes = [
         component: IdirLoggedInView,
         meta: {
             validStates: [UserState.invalidIdentityProvider],
-            requiresProcessedWaitlistTicket: true,
         },
     },
     {
@@ -184,7 +171,6 @@ const routes = [
         component: HomeView,
         meta: {
             validStates: [UserState.registered],
-            requiresProcessedWaitlistTicket: true,
         },
     },
     {
@@ -197,7 +183,6 @@ const routes = [
                 UserState.pendingDeletion,
                 UserState.acceptTermsOfService,
             ],
-            requiresProcessedWaitlistTicket: true,
         },
     },
     {
@@ -209,7 +194,6 @@ const routes = [
         }),
         meta: {
             validStates: [UserState.unauthenticated],
-            requiresProcessedWaitlistTicket: true,
         },
     },
     {
@@ -244,7 +228,6 @@ const routes = [
                 UserState.registered,
                 UserState.pendingDeletion,
             ],
-            requiresProcessedWaitlistTicket: true,
         },
     },
     {
@@ -253,7 +236,6 @@ const routes = [
         component: RegistrationView,
         meta: {
             validStates: [UserState.notRegistered],
-            requiresProcessedWaitlistTicket: true,
         },
     },
     {
@@ -264,7 +246,6 @@ const routes = [
             validStates: [UserState.registered],
             requiredFeaturesEnabled: (config: FeatureToggleConfiguration) =>
                 config.services.enabled,
-            requiresProcessedWaitlistTicket: true,
         },
     },
     {
@@ -272,7 +253,6 @@ const routes = [
         component: PatientRetrievalErrorView,
         meta: {
             validStates: [UserState.noPatient],
-            requiresProcessedWaitlistTicket: true,
         },
     },
     {
@@ -298,7 +278,6 @@ const routes = [
             ],
             requiredFeaturesEnabled: (config: FeatureToggleConfiguration) =>
                 config.covid19.pcrTestEnabled,
-            requiresProcessedWaitlistTicket: true,
         },
     },
     {
@@ -314,7 +293,6 @@ const routes = [
             ],
             requiredFeaturesEnabled: (config: FeatureToggleConfiguration) =>
                 config.covid19.pcrTestEnabled,
-            requiresProcessedWaitlistTicket: true,
         },
     },
     {
@@ -322,7 +300,6 @@ const routes = [
         component: ReportsView,
         meta: {
             validStates: [UserState.registered],
-            requiresProcessedWaitlistTicket: true,
         },
     },
     {
@@ -330,7 +307,6 @@ const routes = [
         component: UserTimelineView,
         meta: {
             validStates: [UserState.registered],
-            requiresProcessedWaitlistTicket: true,
         },
     },
     {
@@ -344,7 +320,6 @@ const routes = [
                 UserState.registered,
                 UserState.pendingDeletion,
             ],
-            requiresProcessedWaitlistTicket: false,
         },
     },
     {
@@ -352,7 +327,6 @@ const routes = [
         component: AcceptTermsOfServiceView,
         meta: {
             validStates: [UserState.acceptTermsOfService],
-            requiresProcessedWaitlistTicket: true,
         },
     },
     {
@@ -361,21 +335,6 @@ const routes = [
         props: true,
         meta: {
             validStates: [UserState.registered],
-            requiresProcessedWaitlistTicket: true,
-        },
-    },
-    {
-        path: Path.Queue,
-        component: QueueView,
-        meta: {
-            stateless: true,
-        },
-    },
-    {
-        path: Path.Busy,
-        component: QueueFullView,
-        meta: {
-            stateless: true,
         },
     },
     {
