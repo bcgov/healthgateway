@@ -161,12 +161,19 @@ namespace HealthGateway.Database.Delegates
         DbResult<IEnumerable<UserProfileHistory>> GetUserProfileHistories(string hdid, int limit);
 
         /// <summary>
+        /// Retrieves the number of user profiles that have been closed and not re-opened.
+        /// </summary>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
+        /// <returns>The number of user profiles that have been closed and not re-opened</returns>
+        Task<int> GetClosedUserProfileCount(CancellationToken ct);
+
+        /// <summary>
         /// Returns the list of logged in user year of birth counts over a date range.
         /// </summary>
         /// <param name="startDateTimeOffset">The start datetime offset to query.</param>
         /// <param name="endDateTimeOffset">The end datetime offset to query.</param>
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The counts of logged in users by year of birth.</returns>
-        Task<IDictionary<string, int>> GetLoggedInUserYearOfBirthCountsAsync(DateTimeOffset startDateTimeOffset, DateTimeOffset endDateTimeOffset, CancellationToken ct);
+        Task<IDictionary<int, int>> GetLoggedInUserYearOfBirthCountsAsync(DateTimeOffset startDateTimeOffset, DateTimeOffset endDateTimeOffset, CancellationToken ct);
     }
 }

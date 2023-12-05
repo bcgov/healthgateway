@@ -11,6 +11,7 @@ describe("Dashboard", () => {
         cy.log("Dashboard test started.");
         cy.get("[data-testid=total-registered-users]").contains(8);
         cy.get("[data-testid=total-dependents]").contains(6);
+        cy.get("[data-testid=total-closed-accounts]").contains(1);
         cy.get("[data-testid=recurring-user-count]").contains(2);
         cy.get("[data-testid=total-mobile-users]").contains(3);
         cy.get("[data-testid=total-web-users]").contains(4);

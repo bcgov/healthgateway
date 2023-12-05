@@ -28,6 +28,21 @@ using HealthGateway.Admin.Common.Models;
 public static class DashboardActions
 {
     /// <summary>
+    /// The action representing the initiation of a retrieval of all-time counts.
+    /// </summary>
+    public record GetAllTimeCountsAction;
+
+    /// <summary>
+    /// The action representing a successful retrieval of all-time counts.
+    /// </summary>
+    public record GetAllTimeCountsSuccessAction : BaseSuccessAction<AllTimeDashboardCounts>;
+
+    /// <summary>
+    /// The action representing a failed retrieval of all-time counts.
+    /// </summary>
+    public record GetAllTimeCountsFailureAction : BaseFailureAction;
+
+    /// <summary>
     /// The action representing the initiation of a retrieval of daily user registration counts.
     /// </summary>
     public record GetDailyUserRegistrationCountsAction
@@ -199,9 +214,9 @@ public static class DashboardActions
     public record GetRatingsSummaryFailureAction : BaseFailureAction;
 
     /// <summary>
-    /// The action representing the initiation of a retrieval of year of birth counts.
+    /// The action representing the initiation of a retrieval of age counts.
     /// </summary>
-    public record GetYearOfBirthCountsAction
+    public record GetAgeCountsAction
     {
         /// <summary>
         /// Gets the local start date to query.
@@ -220,14 +235,14 @@ public static class DashboardActions
     }
 
     /// <summary>
-    /// The action representing a successful retrieval of year of birth counts.
+    /// The action representing a successful retrieval of age counts.
     /// </summary>
-    public record GetYearOfBirthCountsSuccessAction : BaseSuccessAction<IDictionary<string, int>>;
+    public record GetAgeCountsSuccessAction : BaseSuccessAction<IDictionary<int, int>>;
 
     /// <summary>
-    /// The action representing a failed retrieval of year of birth counts.
+    /// The action representing a failed retrieval of age counts.
     /// </summary>
-    public record GetYearOfBirthCountsFailureAction : BaseFailureAction;
+    public record GetAgeCountsFailureAction : BaseFailureAction;
 
     /// <summary>
     /// The action that clears the state.
