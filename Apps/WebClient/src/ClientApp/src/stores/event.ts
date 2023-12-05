@@ -8,8 +8,6 @@ export enum EventName {
     OpenNoteDialog = "openNoteDialog",
     OpenFullscreenTimelineEntry = "openFullscreenTimelineEntry",
     UpdateTimelineEntry = "updateTimelineEntry",
-    RegisterOnBeforeUnloadWaitlistListener = "registerOnBeforeUnloadWaitlistListener",
-    UnregisterOnBeforeUnloadWaitlistListener = "unregisterOnBeforeUnloadWaitlistListener",
 }
 
 export const useEventStore = defineStore("event", () => {

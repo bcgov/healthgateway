@@ -1,7 +1,6 @@
 export enum Path {
     Root = "/",
     AcceptTermsOfService = "/acceptTermsOfService",
-    Busy = "/busy",
     Covid19 = "/covid19",
     Dependents = "/dependents",
     Home = "/home",
@@ -14,7 +13,6 @@ export enum Path {
     PatientRetrievalError = "/patientRetrievalError",
     PcrTestKitRegistration = "/pcrtest",
     Profile = "/profile",
-    Queue = "/queue",
     Registration = "/registration",
     Reports = "/reports",
     Services = "/services",
