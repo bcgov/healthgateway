@@ -16,9 +16,7 @@ import { useAuthStore } from "@/stores/auth";
 const route = useRoute();
 const authStore = useAuthStore();
 
-const hideErrorAlerts = computed(() =>
-    currentPathMatches(Path.Root, Path.Queue, Path.Busy)
-);
+const hideErrorAlerts = computed(() => currentPathMatches(Path.Root));
 const isHeaderVisible = computed(
     () => !currentPathMatches(Path.LoginCallback, Path.VaccineCard)
 );

@@ -53,11 +53,6 @@ const patientRetrievalFailed = computed(() => userStore.patientRetrievalFailed);
 const isPcrTest = computed(() =>
     route.path.toLowerCase().startsWith("/pcrtest")
 );
-const isQueuePage = computed(
-    () =>
-        route.path.toLowerCase() === "/queue" ||
-        route.path.toLowerCase() === "/busy"
-);
 const isSidebarButtonShown = computed(
     () =>
         !isOffline.value &&
@@ -66,7 +61,6 @@ const isSidebarButtonShown = computed(
         userIsRegistered.value &&
         userIsActive.value &&
         !patientRetrievalFailed.value &&
-        !isQueuePage.value &&
         !isPcrTest.value
 );
 const isNotificationCentreAvailable = computed(
@@ -74,7 +68,6 @@ const isNotificationCentreAvailable = computed(
         configStore.webConfig.featureToggleConfiguration.notificationCentre
             .enabled &&
         !isOffline.value &&
-        !isQueuePage.value &&
         !isPcrTest.value &&
         oidcIsAuthenticated.value &&
         isValidIdentityProvider.value &&
@@ -85,7 +78,6 @@ const isNotificationCentreAvailable = computed(
 const isAppTourAvailable = computed(
     () =>
         !isOffline.value &&
-        !isQueuePage.value &&
         !isPcrTest.value &&
         oidcIsAuthenticated.value &&
         isValidIdentityProvider.value &&
@@ -94,7 +86,7 @@ const isAppTourAvailable = computed(
         !patientRetrievalFailed.value
 );
 const isLoggedInMenuShown = computed(
-    () => oidcIsAuthenticated.value && !isPcrTest.value && !isQueuePage.value
+    () => oidcIsAuthenticated.value && !isPcrTest.value
 );
 const isLogOutButtonShown = computed(
     () => oidcIsAuthenticated.value && isPcrTest.value
@@ -104,7 +96,6 @@ const isLogInButtonShown = computed(
         !oidcIsAuthenticated.value &&
         !isOffline.value &&
         !isPcrTest.value &&
-        !isQueuePage.value &&
         route.path.toLowerCase() !== "/login"
 );
 const isProfileLinkAvailable = computed(

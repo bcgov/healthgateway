@@ -14,7 +14,6 @@ export enum Path {
     PatientRetrievalError = "/patientRetrievalError",
     PcrTestKitRegistration = "/pcrtest",
     Profile = "/profile",
-    Queue = "/queue",
     Registration = "/registration",
     Reports = "/reports",
     Services = "/services",
