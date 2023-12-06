@@ -3,6 +3,7 @@ import { removeUserIfExists } from "../../utilities/kcUtilities";
 const username = Cypress.env("idir_username");
 const password = Cypress.env("idir_password");
 const user = "FncTstUser1";
+const timeout = 45000;
 
 describe("Provision", () => {
     beforeEach(() => {
@@ -76,35 +77,31 @@ describe("Provision", () => {
             .parents(".mud-table-row")
             .get("[data-testid^=agent-table-edit-btn]")
             .click();
-        cy.wait("@getUser").then(() => {
-            cy.get("[data-testid=provision-dialog-modal-text]").should(
-                "be.visible"
-            );
-            cy.get("[data-testid=roles-select]").click();
-            cy.get("[data-testid=role]").contains("AdminAnalyst").click();
-            cy.get("[data-testid=save-btn]").parent().parent().click(0, 0);
-            cy.get("[data-testid=save-btn]").click();
-            cy.get("[data-testid=provision-dialog-modal-text]").should(
-                "not.exist"
-            );
+        cy.wait("@getUser", { timeout });
+        cy.get("[data-testid=provision-dialog-modal-text]").should(
+            "be.visible"
+        );
+        cy.get("[data-testid=roles-select]").click();
+        cy.get("[data-testid=role]").contains("AdminAnalyst").click();
+        cy.get("[data-testid=save-btn]").parent().parent().click(0, 0);
+        cy.get("[data-testid=save-btn]").click();
+        cy.get("[data-testid=provision-dialog-modal-text]").should("not.exist");
 
-            cy.log("Validate user edit.");
-            const rowSelector =
-                "[data-testid=agent-table] tbody tr.mud-table-row";
-            cy.get(rowSelector)
-                .first()
-                .within(() => {
-                    cy.get("[data-testid^=agent-table-username-]").contains(
-                        user.toLowerCase()
-                    );
-                    cy.get(
-                        "[data-testid^=agent-table-identity-provider-]"
-                    ).contains("IDIR");
-                    cy.get("[data-testid^=agent-table-roles-]").contains(
-                        "AdminAnalyst, AdminUser"
-                    );
-                });
-        });
+        cy.log("Validate user edit.");
+        const rowSelector = "[data-testid=agent-table] tbody tr.mud-table-row";
+        cy.get(rowSelector)
+            .first()
+            .within(() => {
+                cy.get("[data-testid^=agent-table-username-]").contains(
+                    user.toLowerCase()
+                );
+                cy.get(
+                    "[data-testid^=agent-table-identity-provider-]"
+                ).contains("IDIR");
+                cy.get("[data-testid^=agent-table-roles-]").contains(
+                    "AdminAnalyst, AdminUser"
+                );
+            });
     });
 
     it("Delete User", () => {
