@@ -1,11 +1,6 @@
 <script setup lang="ts">
 import { useVuelidate } from "@vuelidate/core";
-import {
-    email as emailValidator,
-    helpers,
-    requiredIf,
-    sameAs,
-} from "@vuelidate/validators";
+import { helpers, requiredIf, sameAs } from "@vuelidate/validators";
 import { vMaska } from "maska";
 import { computed, Ref, ref } from "vue";
 import { useRouter } from "vue-router";
@@ -101,7 +96,7 @@ const validations = computed(() => ({
             "Both email addresses must match",
             sameAs(email)
         ),
-        email: emailValidator,
+        email: helpers.withMessage("Invalid email", validateEmail),
     },
     accepted: { isChecked: sameAs(true) },
 }));
