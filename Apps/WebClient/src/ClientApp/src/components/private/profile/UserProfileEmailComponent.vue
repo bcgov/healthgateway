@@ -180,7 +180,6 @@ watch(email, (value) => (inputValue.value = value));
     </div>
     <template v-else>
         <div id="emailStatus" data-testid="emailStatus" class="mb-4">
-            <p>{{ email }}</p>
             <DisplayFieldComponent
                 v-if="emailVerified"
                 name="Status"
