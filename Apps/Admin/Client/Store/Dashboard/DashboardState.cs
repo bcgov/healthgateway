@@ -16,7 +16,6 @@
 
 namespace HealthGateway.Admin.Client.Store.Dashboard;
 
-using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using Fluxor;
@@ -32,22 +31,12 @@ public record DashboardState
     /// <summary>
     /// Gets the request state for retrieving all-time counts.
     /// </summary>
-    public BaseRequestState<AllTimeDashboardCounts> GetAllTimeCounts { get; init; } = new();
+    public BaseRequestState<AllTimeCounts> GetAllTimeCounts { get; init; } = new();
 
     /// <summary>
-    /// Gets the request state for retrieving daily counts of user registrations.
+    /// Gets the request state for retrieving daily usage counts.
     /// </summary>
-    public BaseRequestState<IDictionary<DateOnly, int>> GetDailyUserRegistrationCounts { get; init; } = new();
-
-    /// <summary>
-    /// Gets the request state for retrieving daily counts of dependent registrations.
-    /// </summary>
-    public BaseRequestState<IDictionary<DateOnly, int>> GetDailyDependentRegistrationCounts { get; init; } = new();
-
-    /// <summary>
-    /// Gets the request state for retrieving daily counts of unique user logins.
-    /// </summary>
-    public BaseRequestState<IDictionary<DateOnly, int>> GetDailyUniqueLoginCounts { get; init; } = new();
+    public BaseRequestState<DailyUsageCounts> GetDailyUsageCounts { get; init; } = new();
 
     /// <summary>
     /// Gets the request state for retrieving a recurring user count.

@@ -119,19 +119,20 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public async Task<IDictionary<DateOnly, int>> GetDailyDependentRegistrationCountsAsync(TimeSpan offset, CancellationToken ct = default)
+        public async Task<int> GetDependentCountAsync(CancellationToken ct = default)
         {
-            this.logger.LogTrace("Counting resource delegates from DB...");
-            Dictionary<DateOnly, int> dateCount = await this.dbContext.ResourceDelegate
-                .Where(x => x.ReasonCode == ResourceDelegateReason.Guardian)
-                .Select(x => new { x.ProfileHdid, x.ResourceOwnerHdid, createdDate = x.CreatedDateTime.AddMinutes(offset.TotalMinutes).Date })
+            return await this.dbContext.ResourceDelegate.Where(x => x.ReasonCode == ResourceDelegateReason.Guardian).CountAsync(ct);
+        }
+
+        /// <inheritdoc/>
+        public async Task<IDictionary<DateOnly, int>> GetDailyDependentRegistrationCountsAsync(DateTimeOffset startDateTimeOffset, DateTimeOffset endDateTimeOffset, CancellationToken ct = default)
+        {
+            return await this.dbContext.ResourceDelegate
+                .Where(x => x.ReasonCode == ResourceDelegateReason.Guardian && x.CreatedDateTime >= startDateTimeOffset.UtcDateTime && x.CreatedDateTime <= endDateTimeOffset.UtcDateTime)
+                .Select(x => new { x.ProfileHdid, x.ResourceOwnerHdid, createdDate = x.CreatedDateTime.AddMinutes(startDateTimeOffset.TotalOffsetMinutes).Date })
                 .GroupBy(x => x.createdDate)
                 .Select(x => new { createdDate = x.Key, count = x.Count() })
-                .OrderBy(x => x.createdDate)
                 .ToDictionaryAsync(x => DateOnly.FromDateTime(x.createdDate), x => x.count, ct);
-            this.logger.LogTrace("Finished counting resource delegates from DB...");
-
-            return dateCount;
         }
 
         /// <inheritdoc/>

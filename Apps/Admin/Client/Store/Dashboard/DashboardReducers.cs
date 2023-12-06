@@ -59,21 +59,21 @@ public static class DashboardReducers
         };
     }
 
-    [ReducerMethod(typeof(DashboardActions.GetDailyUserRegistrationCountsAction))]
-    public static DashboardState ReduceGetRegisteredUsersAction(DashboardState state)
+    [ReducerMethod(typeof(DashboardActions.GetDailyUsageCountsAction))]
+    public static DashboardState ReduceGetDailyUsageCountsAction(DashboardState state)
     {
         return state with
         {
-            GetDailyUserRegistrationCounts = state.GetDailyUserRegistrationCounts with { IsLoading = true },
+            GetDailyUsageCounts = state.GetDailyUsageCounts with { IsLoading = true },
         };
     }
 
     [ReducerMethod]
-    public static DashboardState ReduceGetDailyUserRegistrationCountsSuccessAction(DashboardState state, DashboardActions.GetDailyUserRegistrationCountsSuccessAction action)
+    public static DashboardState ReduceGetDailyUsageCountsSuccessAction(DashboardState state, DashboardActions.GetDailyUsageCountsSuccessAction action)
     {
         return state with
         {
-            GetDailyUserRegistrationCounts = state.GetDailyUserRegistrationCounts with
+            GetDailyUsageCounts = state.GetDailyUsageCounts with
             {
                 Result = action.Data,
                 IsLoading = false,
@@ -83,85 +83,11 @@ public static class DashboardReducers
     }
 
     [ReducerMethod]
-    public static DashboardState ReduceGetDailyUserRegistrationCountsFailureAction(DashboardState state, DashboardActions.GetDailyUserRegistrationCountsFailureAction action)
+    public static DashboardState GetDailyUsageCountsFailureAction(DashboardState state, DashboardActions.GetDailyUsageCountsFailureAction action)
     {
         return state with
         {
-            GetDailyUserRegistrationCounts = state.GetDailyUserRegistrationCounts with
-            {
-                Result = null,
-                IsLoading = false,
-                Error = action.Error,
-            },
-        };
-    }
-
-    [ReducerMethod(typeof(DashboardActions.GetDailyUniqueLoginCountsAction))]
-    public static DashboardState ReduceGetDailyUniqueLoginCountsAction(DashboardState state)
-    {
-        return state with
-        {
-            GetDailyUniqueLoginCounts = state.GetDailyUniqueLoginCounts with { IsLoading = true },
-        };
-    }
-
-    [ReducerMethod]
-    public static DashboardState ReduceGetDailyUniqueLoginCountsSuccessAction(DashboardState state, DashboardActions.GetDailyUniqueLoginCountsSuccessAction action)
-    {
-        return state with
-        {
-            GetDailyUniqueLoginCounts = state.GetDailyUniqueLoginCounts with
-            {
-                Result = action.Data,
-                IsLoading = false,
-                Error = null,
-            },
-        };
-    }
-
-    [ReducerMethod]
-    public static DashboardState GetDailyUniqueLoginCountsFailureAction(DashboardState state, DashboardActions.GetDailyUniqueLoginCountsFailureAction action)
-    {
-        return state with
-        {
-            GetDailyUniqueLoginCounts = state.GetDailyUniqueLoginCounts with
-            {
-                Result = null,
-                IsLoading = false,
-                Error = action.Error,
-            },
-        };
-    }
-
-    [ReducerMethod(typeof(DashboardActions.GetDailyDependentRegistrationCountsAction))]
-    public static DashboardState ReduceGetDailyDependentRegistrationCountsAction(DashboardState state)
-    {
-        return state with
-        {
-            GetDailyDependentRegistrationCounts = state.GetDailyDependentRegistrationCounts with { IsLoading = true },
-        };
-    }
-
-    [ReducerMethod]
-    public static DashboardState ReduceGetDailyDependentRegistrationCountsSuccessAction(DashboardState state, DashboardActions.GetDailyDependentRegistrationCountsSuccessAction action)
-    {
-        return state with
-        {
-            GetDailyDependentRegistrationCounts = state.GetDailyDependentRegistrationCounts with
-            {
-                Result = action.Data,
-                IsLoading = false,
-                Error = null,
-            },
-        };
-    }
-
-    [ReducerMethod]
-    public static DashboardState ReduceGetDailyDependentRegistrationCountsFailureAction(DashboardState state, DashboardActions.GetDailyDependentRegistrationCountsFailureAction action)
-    {
-        return state with
-        {
-            GetDailyDependentRegistrationCounts = state.GetDailyDependentRegistrationCounts with
+            GetDailyUsageCounts = state.GetDailyUsageCounts with
             {
                 Result = null,
                 IsLoading = false,
@@ -338,9 +264,7 @@ public static class DashboardReducers
         return state with
         {
             GetAllTimeCounts = new(),
-            GetDailyUserRegistrationCounts = new(),
-            GetDailyUniqueLoginCounts = new(),
-            GetDailyDependentRegistrationCounts = new(),
+            GetDailyUsageCounts = new(),
             GetRecurringUserCount = new(),
             GetAppLoginCounts = new(),
             GetRatingsSummary = new(),
