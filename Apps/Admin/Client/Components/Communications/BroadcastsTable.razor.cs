@@ -36,7 +36,7 @@ namespace HealthGateway.Admin.Client.Components.Communications
         /// </summary>
         [Parameter]
         [EditorRequired]
-        public IEnumerable<ExtendedBroadcast> Data { get; set; } = Enumerable.Empty<ExtendedBroadcast>();
+        public IEnumerable<ExtendedBroadcast> Data { get; set; } = [];
 
         /// <summary>
         /// Gets or sets a value indicating whether data is loading.

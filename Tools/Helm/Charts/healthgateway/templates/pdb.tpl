@@ -6,7 +6,7 @@
 {{- $labels := include "standard.labels" $top -}}
 {{- $minAvailable := ($context.scaling).pdbMinAvailable | default ($top.Values.scaling).pdbMinAvailable | required "pdbMinAvailable required" -}}
 {{- $replicas := (kindIs "float64" $context.replicas) | ternary $context.replicas (default ($top.Values.scaling).dcReplicas | required "dcReplicas required") -}}
-{{- if and (ne 0.0 $minAvailable) (ne 0.0 $replicas) -}}
+{{- if and (ne 0.0 $minAvailable) (gt $replicas 1.0) -}}
 kind: PodDisruptionBudget
 apiVersion: policy/v1
 metadata:

@@ -40,7 +40,7 @@ namespace HealthGateway.Admin.Client.Components.Details
         private AuthenticationState? AuthenticationState { get; set; }
 
         private IEnumerable<AgentAction> AgentAuditHistory =>
-            this.PatientDetailsState.Value.AgentActions?.OrderByDescending(a => a.TransactionDateTime) ?? Enumerable.Empty<AgentAction>();
+            (this.PatientDetailsState.Value.AgentActions ?? []).OrderByDescending(a => a.TransactionDateTime);
 
         private bool PatientSupportDetailsLoading => this.PatientDetailsState.Value.IsLoading;
 

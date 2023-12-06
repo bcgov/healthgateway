@@ -42,6 +42,12 @@ namespace HealthGateway.JobScheduler.Listeners
         private const string Channel = "BannerChange";
         private const int SleepDuration = 10000;
 
+        private static readonly JsonSerializerOptions EventSerializerOptions = new()
+        {
+            PropertyNameCaseInsensitive = true,
+            Converters = { new DateTimeConverter(), new JsonStringEnumConverter() },
+        };
+
         private readonly ILogger<BannerListener> logger;
         private readonly IServiceProvider services;
 
@@ -63,7 +69,6 @@ namespace HealthGateway.JobScheduler.Listeners
         /// </summary>
         /// <param name="stoppingToken">The cancellation token to use.</param>
         /// <returns>The task.</returns>
-        [SuppressMessage("Security", "CA2100:Review SQL queries for security vulnerabilities", Justification = "Abstract class property")]
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             this.logger.LogInformation("Banner Listener is starting");
@@ -119,13 +124,7 @@ namespace HealthGateway.JobScheduler.Listeners
         private void ReceiveEvent(object sender, NpgsqlNotificationEventArgs e)
         {
             this.logger.LogDebug("Banner Event received on channel {Channel}", Channel);
-            JsonSerializerOptions options = new()
-            {
-                PropertyNameCaseInsensitive = true,
-            };
-            options.Converters.Add(new DateTimeConverter());
-            options.Converters.Add(new JsonStringEnumConverter());
-            BannerChangeEvent? changeEvent = JsonSerializer.Deserialize<BannerChangeEvent>(e.Payload, options);
+            BannerChangeEvent? changeEvent = JsonSerializer.Deserialize<BannerChangeEvent>(e.Payload, EventSerializerOptions);
             using IServiceScope scope = this.services.CreateScope();
             ICommunicationService cs = scope.ServiceProvider.GetRequiredService<ICommunicationService>();
             this.logger.LogInformation("Banner Event received and being processed");

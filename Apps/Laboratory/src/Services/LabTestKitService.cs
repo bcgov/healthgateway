@@ -71,7 +71,7 @@ namespace HealthGateway.Laboratory.Services
             testKit.ShortCodeFirst = testKit.ShortCodeFirst?.ToUpper(CultureInfo.InvariantCulture);
             testKit.ShortCodeSecond = testKit.ShortCodeSecond?.ToUpper(CultureInfo.InvariantCulture);
 
-            if (!new PublicLabTestKitValidator().Validate(testKit).IsValid)
+            if (!(await new PublicLabTestKitValidator().ValidateAsync(testKit)).IsValid)
             {
                 return RequestResultFactory.ActionRequired<PublicLabTestKit>(ActionType.Validation, "Form data did not pass validation");
             }

@@ -28,33 +28,18 @@ namespace HealthGateway.Admin.Server.Services
     using Serilog;
 
     /// <inheritdoc/>
-    public class AdminReportService : IAdminReportService
+    /// <param name="delegationDelegate">The ResourceDelegate delegate to communicate with DB.</param>
+    /// <param name="blockedAccessDelegate">The BlockedAccess delegate to communicate with DB.</param>
+    /// <param name="patientRepository">The patient repository used to retrieve patient details.</param>
+    /// <param name="logger">Injected Logger.</param>
+    public class AdminReportService(IDelegationDelegate delegationDelegate, IBlockedAccessDelegate blockedAccessDelegate, IPatientRepository patientRepository, ILogger logger) : IAdminReportService
     {
-        private readonly IDelegationDelegate delegationDelegate;
-        private readonly IBlockedAccessDelegate blockedAccessDelegate;
-        private readonly IPatientRepository patientRepository;
-        private readonly ILogger logger;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="AdminReportService"/> class.
-        /// </summary>
-        /// <param name="delegationDelegate">The ResourceDelegate delegate to communicate with DB.</param>
-        /// <param name="blockedAccessDelegate">The BlockedAccess delegate to communicate with DB.</param>
-        /// <param name="patientRepository">The patient repository used to retrieve patient details.</param>
-        /// <param name="logger">Injected Logger.</param>
-        public AdminReportService(IDelegationDelegate delegationDelegate, IBlockedAccessDelegate blockedAccessDelegate, IPatientRepository patientRepository, ILogger logger)
-        {
-            this.delegationDelegate = delegationDelegate;
-            this.blockedAccessDelegate = blockedAccessDelegate;
-            this.patientRepository = patientRepository;
-            this.logger = logger;
-        }
-
         /// <inheritdoc/>
         public async Task<ProtectedDependentReport> GetProtectedDependentsReportAsync(int page, int pageSize, SortDirection sortDirection, CancellationToken ct)
         {
-            (IList<string> Hdids, int TotalHdids) protectedHdids = await this.delegationDelegate.GetProtectedDependentHdidsAsync(page, pageSize, sortDirection, ct);
-            IEnumerable<Task<ProtectedDependentRecord>> tasks = protectedHdids.Hdids
+            (IList<string> hdids, int totalHdids) = await delegationDelegate.GetProtectedDependentHdidsAsync(page, pageSize, sortDirection, ct);
+
+            IEnumerable<Task<ProtectedDependentRecord>> tasks = hdids
                 .Select(
                     async hdid =>
                     {
@@ -62,22 +47,23 @@ namespace HealthGateway.Admin.Server.Services
                         PatientQueryResult? patient = null;
                         try
                         {
-                            patient = await this.patientRepository.Query(query, ct);
+                            patient = await patientRepository.Query(query, ct);
                         }
                         catch (ProblemDetailsException e)
                         {
-                            this.logger.Error($"Error retrieving patient details for hdid {hdid}: {e.Message}");
+                            logger.Error($"Error retrieving patient details for hdid {hdid}: {e.Message}");
                         }
 
                         return new ProtectedDependentRecord(hdid, patient?.Items.SingleOrDefault()?.Phn);
                     });
-            return new ProtectedDependentReport(await Task.WhenAll(tasks), new ReportMetadata(protectedHdids.TotalHdids, page, pageSize));
+
+            return new(await Task.WhenAll(tasks), new(totalHdids, page, pageSize));
         }
 
         /// <inheritdoc/>
         public async Task<IEnumerable<BlockedAccessRecord>> GetBlockedAccessReportAsync(CancellationToken ct)
         {
-            IList<BlockedAccess> records = await this.blockedAccessDelegate.GetAllAsync(ct);
+            IList<BlockedAccess> records = await blockedAccessDelegate.GetAllAsync(ct);
             return records
                 .Where(r => r.DataSources.Count > 0)
                 .Select(r => new BlockedAccessRecord(r.Hdid, r.DataSources.ToList()));

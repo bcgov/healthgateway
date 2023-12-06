@@ -26,47 +26,33 @@ using HealthGateway.Admin.Client.Utils;
 using HealthGateway.Common.Data.Constants;
 using HealthGateway.Common.Data.Models;
 using HealthGateway.Common.Data.ViewModels;
-using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Logging;
 using Refit;
 
-#pragma warning disable CS1591, SA1600
-public class BroadcastsEffects
+public class BroadcastsEffects(ILogger<BroadcastsEffects> logger, IBroadcastsApi api)
 {
-    public BroadcastsEffects(ILogger<BroadcastsEffects> logger, IBroadcastsApi api)
-    {
-        this.Logger = logger;
-        this.Api = api;
-    }
-
-    [Inject]
-    private ILogger<BroadcastsEffects> Logger { get; set; }
-
-    [Inject]
-    private IBroadcastsApi Api { get; set; }
-
     [EffectMethod]
     public async Task HandleAddAction(BroadcastsActions.AddAction action, IDispatcher dispatcher)
     {
-        this.Logger.LogInformation("Adding broadcast");
+        logger.LogInformation("Adding broadcast");
         try
         {
-            RequestResult<Broadcast> response = await this.Api.AddAsync(action.Broadcast).ConfigureAwait(true);
+            RequestResult<Broadcast> response = await api.AddAsync(action.Broadcast).ConfigureAwait(true);
             if (response is { ResourcePayload: { }, ResultStatus: ResultType.Success })
             {
-                this.Logger.LogInformation("Broadcast added successfully!");
+                logger.LogInformation("Broadcast added successfully!");
                 dispatcher.Dispatch(new BroadcastsActions.AddSuccessAction { Data = response });
                 return;
             }
 
             RequestError error = StoreUtility.FormatRequestError(null, response.ResultError);
-            this.Logger.LogError("Error adding broadcast, reason: {ErrorMessage}", error.Message);
+            logger.LogError("Error adding broadcast, reason: {ErrorMessage}", error.Message);
             dispatcher.Dispatch(new BroadcastsActions.AddFailureAction { Error = error });
         }
         catch (Exception e) when (e is ApiException or HttpRequestException)
         {
             RequestError error = StoreUtility.FormatRequestError(e);
-            this.Logger.LogError("Error adding broadcast, reason: {Exception}", e.ToString());
+            logger.LogError("Error adding broadcast, reason: {Exception}", e.ToString());
             dispatcher.Dispatch(new BroadcastsActions.AddFailureAction { Error = error });
         }
     }
@@ -74,25 +60,25 @@ public class BroadcastsEffects
     [EffectMethod(typeof(BroadcastsActions.LoadAction))]
     public async Task HandleLoadAction(IDispatcher dispatcher)
     {
-        this.Logger.LogInformation("Loading broadcasts");
+        logger.LogInformation("Loading broadcasts");
         try
         {
-            RequestResult<IEnumerable<Broadcast>> response = await this.Api.GetAllAsync().ConfigureAwait(true);
+            RequestResult<IEnumerable<Broadcast>> response = await api.GetAllAsync().ConfigureAwait(true);
             if (response is { ResourcePayload: { }, ResultStatus: ResultType.Success })
             {
-                this.Logger.LogInformation("Broadcasts loaded successfully!");
+                logger.LogInformation("Broadcasts loaded successfully!");
                 dispatcher.Dispatch(new BroadcastsActions.LoadSuccessAction { Data = response });
                 return;
             }
 
             RequestError error = StoreUtility.FormatRequestError(null, response.ResultError);
-            this.Logger.LogError("Error loading broadcasts, reason: {ErrorMessage}", error.Message);
+            logger.LogError("Error loading broadcasts, reason: {ErrorMessage}", error.Message);
             dispatcher.Dispatch(new BroadcastsActions.LoadFailureAction { Error = error });
         }
         catch (Exception e) when (e is ApiException or HttpRequestException)
         {
             RequestError error = StoreUtility.FormatRequestError(e);
-            this.Logger.LogError("Error loading broadcasts, reason: {Exception}", e.ToString());
+            logger.LogError("Error loading broadcasts, reason: {Exception}", e.ToString());
             dispatcher.Dispatch(new BroadcastsActions.LoadFailureAction { Error = error });
         }
     }
@@ -100,25 +86,25 @@ public class BroadcastsEffects
     [EffectMethod]
     public async Task HandleUpdateAction(BroadcastsActions.UpdateAction action, IDispatcher dispatcher)
     {
-        this.Logger.LogInformation("Updating broadcast");
+        logger.LogInformation("Updating broadcast");
         try
         {
-            RequestResult<Broadcast> response = await this.Api.UpdateAsync(action.Broadcast).ConfigureAwait(true);
+            RequestResult<Broadcast> response = await api.UpdateAsync(action.Broadcast).ConfigureAwait(true);
             if (response is { ResourcePayload: { }, ResultStatus: ResultType.Success })
             {
-                this.Logger.LogInformation("Broadcast updated successfully!");
+                logger.LogInformation("Broadcast updated successfully!");
                 dispatcher.Dispatch(new BroadcastsActions.UpdateSuccessAction { Data = response });
                 return;
             }
 
             RequestError error = StoreUtility.FormatRequestError(null, response.ResultError);
-            this.Logger.LogError("Error updating broadcast, reason: {ErrorMessage}", error.Message);
+            logger.LogError("Error updating broadcast, reason: {ErrorMessage}", error.Message);
             dispatcher.Dispatch(new BroadcastsActions.UpdateFailureAction { Error = error });
         }
         catch (Exception e) when (e is ApiException or HttpRequestException)
         {
             RequestError error = StoreUtility.FormatRequestError(e);
-            this.Logger.LogError("Error updating broadcasts, reason: {Exception}", e.ToString());
+            logger.LogError("Error updating broadcasts, reason: {Exception}", e.ToString());
             dispatcher.Dispatch(new BroadcastsActions.UpdateFailureAction { Error = error });
         }
     }
@@ -126,25 +112,25 @@ public class BroadcastsEffects
     [EffectMethod]
     public async Task HandleDeleteAction(BroadcastsActions.DeleteAction action, IDispatcher dispatcher)
     {
-        this.Logger.LogInformation("Deleting broadcast");
+        logger.LogInformation("Deleting broadcast");
         try
         {
-            RequestResult<Broadcast> response = await this.Api.DeleteAsync(action.Broadcast).ConfigureAwait(true);
+            RequestResult<Broadcast> response = await api.DeleteAsync(action.Broadcast).ConfigureAwait(true);
             if (response is { ResourcePayload: { }, ResultStatus: ResultType.Success })
             {
-                this.Logger.LogInformation("Broadcast deleted successfully!");
+                logger.LogInformation("Broadcast deleted successfully!");
                 dispatcher.Dispatch(new BroadcastsActions.DeleteSuccessAction { Data = response });
                 return;
             }
 
             RequestError error = StoreUtility.FormatRequestError(null, response.ResultError);
-            this.Logger.LogError("Error deleting broadcast, reason: {ErrorMessage}", error.Message);
+            logger.LogError("Error deleting broadcast, reason: {ErrorMessage}", error.Message);
             dispatcher.Dispatch(new BroadcastsActions.DeleteFailureAction { Error = error });
         }
         catch (Exception e) when (e is ApiException or HttpRequestException)
         {
             RequestError error = StoreUtility.FormatRequestError(e);
-            this.Logger.LogError("Error deleting broadcast, reason: {Exception}", e.ToString());
+            logger.LogError("Error deleting broadcast, reason: {Exception}", e.ToString());
             dispatcher.Dispatch(new BroadcastsActions.DeleteFailureAction { Error = error });
         }
     }

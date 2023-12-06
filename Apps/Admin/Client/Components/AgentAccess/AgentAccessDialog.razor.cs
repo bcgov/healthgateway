@@ -40,19 +40,19 @@ public partial class AgentAccessDialog : FluxorComponent
     [Parameter]
     public AdminAgent Agent { get; set; } = default!;
 
-    private static List<KeycloakIdentityProvider> IdentityProviders => new()
-    {
+    private static List<KeycloakIdentityProvider> IdentityProviders =>
+    [
         KeycloakIdentityProvider.Idir,
         KeycloakIdentityProvider.PhsaAzure,
-    };
+    ];
 
-    private static List<IdentityAccessRole> AccessRoles => new()
-    {
+    private static List<IdentityAccessRole> AccessRoles =>
+    [
         IdentityAccessRole.AdminUser,
         IdentityAccessRole.AdminReviewer,
         IdentityAccessRole.SupportUser,
         IdentityAccessRole.AdminAnalyst,
-    };
+    ];
 
     [CascadingParameter]
     private MudDialogInstance MudDialog { get; set; } = default!;

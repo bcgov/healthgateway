@@ -21,7 +21,6 @@ namespace HealthGateway.WebClient.Server.Models
     /// Configuration data to be used by Health Gateway web client.
     /// </summary>
     /// <param name="Homepage">Settings for the home page.</param>
-    /// <param name="WaitingQueue">Settings for the waiting queue.</param>
     /// <param name="NotificationCentre">Settings for the notification centre.</param>
     /// <param name="Timeline">Settings for the timeline.</param>
     /// <param name="Datasets">Settings for the data sets.</param>
@@ -30,7 +29,6 @@ namespace HealthGateway.WebClient.Server.Models
     /// <param name="Services">Settings for services features.</param>
     public record FeatureToggleConfiguration(
         HomepageSettings Homepage,
-        WaitingQueueSettings WaitingQueue,
         NotificationCentreSettings NotificationCentre,
         TimelineSettings Timeline,
         DatasetSettings[] Datasets,
@@ -46,13 +44,6 @@ namespace HealthGateway.WebClient.Server.Models
     public record HomepageSettings(
         bool ShowFederalProofOfVaccination,
         bool ShowRecommendationsLink);
-
-    /// <summary>
-    /// Settings for the waiting queue.
-    /// </summary>
-    /// <param name="Enabled">Toggles the waiting queue feature.</param>
-    public record WaitingQueueSettings(
-        bool Enabled);
 
     /// <summary>
     /// Settings for the notification centre.

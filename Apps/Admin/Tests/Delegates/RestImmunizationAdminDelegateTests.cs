@@ -131,7 +131,7 @@ namespace HealthGateway.Admin.Tests.Delegates
             return new()
             {
                 Blocked = blocked ?? false,
-                Doses = { vaccineDoseResponse },
+                Doses = [vaccineDoseResponse],
                 VaccineStatusResult = vaccineStatusResult,
                 ContainsInvalidDoses = invalidDoses ?? false,
             };

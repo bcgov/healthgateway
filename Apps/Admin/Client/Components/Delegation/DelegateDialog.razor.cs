@@ -88,7 +88,7 @@ public partial class DelegateDialog : FluxorComponent
     {
         public ResultModel(ExtendedDelegateInfo model)
         {
-            this.Name = StringManipulator.JoinWithoutBlanks(new[] { model.FirstName, model.LastName });
+            this.Name = StringManipulator.JoinWithoutBlanks([model.FirstName, model.LastName]);
             this.Address = AddressUtility.GetAddressAsSingleLine(model.PhysicalAddress ?? model.PostalAddress);
             this.DateOfBirth = model.Birthdate;
         }

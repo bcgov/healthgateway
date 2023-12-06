@@ -19,31 +19,17 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Fluxor;
 using HealthGateway.Admin.Client.Api;
-using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Logging;
 
-#pragma warning disable CS1591, SA1600
-public class AnalyticsEffects
+public class AnalyticsEffects(ILogger<AnalyticsEffects> logger, IAnalyticsApi analyticsApi)
 {
-    public AnalyticsEffects(ILogger<AnalyticsEffects> logger, IAnalyticsApi analyticsApi)
-    {
-        this.Logger = logger;
-        this.AnalyticsApi = analyticsApi;
-    }
-
-    [Inject]
-    private ILogger<AnalyticsEffects> Logger { get; set; }
-
-    [Inject]
-    private IAnalyticsApi AnalyticsApi { get; set; }
-
     [EffectMethod]
     public async Task HandleLoadAction(AnalyticsActions.LoadUserProfilesAction action, IDispatcher dispatcher)
     {
-        this.Logger.LogInformation("Loading user profile report");
+        logger.LogInformation("Loading user profile report");
 
-        HttpResponseMessage response = await this.AnalyticsApi.GetUserProfilesAsync(action.StartDate, action.EndDate).ConfigureAwait(true);
-        this.Logger.LogInformation("User profiles report exported successfully!");
+        HttpResponseMessage response = await analyticsApi.GetUserProfilesAsync(action.StartDate, action.EndDate).ConfigureAwait(true);
+        logger.LogInformation("User profiles report exported successfully!");
         if (response.IsSuccessStatusCode)
         {
             dispatcher.Dispatch(new AnalyticsActions.LoadSuccessAction { Data = response.Content });
@@ -55,17 +41,17 @@ public class AnalyticsEffects
             Message = "Error exporting user profile report",
         };
 
-        this.Logger.LogError("{ErrorMessage}", error.Message);
+        logger.LogError("{ErrorMessage}", error.Message);
         dispatcher.Dispatch(new AnalyticsActions.LoadFailureAction { Error = error });
     }
 
     [EffectMethod]
     public async Task HandleLoadAction(AnalyticsActions.LoadCommentsAction action, IDispatcher dispatcher)
     {
-        this.Logger.LogInformation("Loading comments report");
+        logger.LogInformation("Loading comments report");
 
-        HttpResponseMessage response = await this.AnalyticsApi.GetCommentsAsync(action.StartDate, action.EndDate).ConfigureAwait(true);
-        this.Logger.LogInformation("Comments report exported successfully!");
+        HttpResponseMessage response = await analyticsApi.GetCommentsAsync(action.StartDate, action.EndDate).ConfigureAwait(true);
+        logger.LogInformation("Comments report exported successfully!");
         if (response.IsSuccessStatusCode)
         {
             dispatcher.Dispatch(new AnalyticsActions.LoadSuccessAction { Data = response.Content });
@@ -77,17 +63,17 @@ public class AnalyticsEffects
             Message = "Error exporting comments report.",
         };
 
-        this.Logger.LogError("{ErrorMessage}", error.Message);
+        logger.LogError("{ErrorMessage}", error.Message);
         dispatcher.Dispatch(new AnalyticsActions.LoadFailureAction { Error = error });
     }
 
     [EffectMethod]
     public async Task HandleLoadAction(AnalyticsActions.LoadNotesAction action, IDispatcher dispatcher)
     {
-        this.Logger.LogInformation("Loading notes report");
+        logger.LogInformation("Loading notes report");
 
-        HttpResponseMessage response = await this.AnalyticsApi.GetNotesAsync(action.StartDate, action.EndDate).ConfigureAwait(true);
-        this.Logger.LogInformation("Notes report exported successfully!");
+        HttpResponseMessage response = await analyticsApi.GetNotesAsync(action.StartDate, action.EndDate).ConfigureAwait(true);
+        logger.LogInformation("Notes report exported successfully!");
         if (response.IsSuccessStatusCode)
         {
             dispatcher.Dispatch(new AnalyticsActions.LoadSuccessAction { Data = response.Content });
@@ -99,17 +85,17 @@ public class AnalyticsEffects
             Message = "Error exporting notes report.",
         };
 
-        this.Logger.LogError("{ErrorMessage}", error.Message);
+        logger.LogError("{ErrorMessage}", error.Message);
         dispatcher.Dispatch(new AnalyticsActions.LoadFailureAction { Error = error });
     }
 
     [EffectMethod]
     public async Task HandleLoadAction(AnalyticsActions.LoadRatingsAction action, IDispatcher dispatcher)
     {
-        this.Logger.LogInformation("Loading ratings report");
+        logger.LogInformation("Loading ratings report");
 
-        HttpResponseMessage response = await this.AnalyticsApi.GetRatingsAsync(action.StartDate, action.EndDate).ConfigureAwait(true);
-        this.Logger.LogInformation("Ratings report exported successfully!");
+        HttpResponseMessage response = await analyticsApi.GetRatingsAsync(action.StartDate, action.EndDate).ConfigureAwait(true);
+        logger.LogInformation("Ratings report exported successfully!");
         if (response.IsSuccessStatusCode)
         {
             dispatcher.Dispatch(new AnalyticsActions.LoadSuccessAction { Data = response.Content });
@@ -121,17 +107,17 @@ public class AnalyticsEffects
             Message = "Error exporting rating report.",
         };
 
-        this.Logger.LogError("{ErrorMessage}", error.Message);
+        logger.LogError("{ErrorMessage}", error.Message);
         dispatcher.Dispatch(new AnalyticsActions.LoadFailureAction { Error = error });
     }
 
     [EffectMethod]
     public async Task HandleLoadAction(AnalyticsActions.LoadInactiveUsersAction action, IDispatcher dispatcher)
     {
-        this.Logger.LogInformation("Loading inactive users report");
+        logger.LogInformation("Loading inactive users report");
 
-        HttpResponseMessage response = await this.AnalyticsApi.GetInactiveUsersAsync(action.InactiveDays, action.TimeOffset).ConfigureAwait(true);
-        this.Logger.LogInformation("Inactive users report exported successfully!");
+        HttpResponseMessage response = await analyticsApi.GetInactiveUsersAsync(action.InactiveDays, action.TimeOffset).ConfigureAwait(true);
+        logger.LogInformation("Inactive users report exported successfully!");
         if (response.IsSuccessStatusCode)
         {
             dispatcher.Dispatch(new AnalyticsActions.LoadSuccessAction { Data = response.Content });
@@ -143,17 +129,17 @@ public class AnalyticsEffects
             Message = "Error exporting inactive users report.",
         };
 
-        this.Logger.LogError("{ErrorMessage}", error.Message);
+        logger.LogError("{ErrorMessage}", error.Message);
         dispatcher.Dispatch(new AnalyticsActions.LoadFailureAction { Error = error });
     }
 
     [EffectMethod]
     public async Task HandleLoadAction(AnalyticsActions.LoadUserFeedbackAction action, IDispatcher dispatcher)
     {
-        this.Logger.LogInformation("Loading user feedback report");
+        logger.LogInformation("Loading user feedback report");
 
-        HttpResponseMessage response = await this.AnalyticsApi.GetUserFeedbackAsync().ConfigureAwait(true);
-        this.Logger.LogInformation("User Feedback report exported successfully!");
+        HttpResponseMessage response = await analyticsApi.GetUserFeedbackAsync().ConfigureAwait(true);
+        logger.LogInformation("User Feedback report exported successfully!");
         if (response.IsSuccessStatusCode)
         {
             dispatcher.Dispatch(new AnalyticsActions.LoadSuccessAction { Data = response.Content });
@@ -165,17 +151,17 @@ public class AnalyticsEffects
             Message = "Error exporting user feedback report.",
         };
 
-        this.Logger.LogError("{ErrorMessage}", error.Message);
+        logger.LogError("{ErrorMessage}", error.Message);
         dispatcher.Dispatch(new AnalyticsActions.LoadFailureAction { Error = error });
     }
 
     [EffectMethod]
     public async Task HandleLoadAction(AnalyticsActions.LoadYearOfBirthCountsAction action, IDispatcher dispatcher)
     {
-        this.Logger.LogInformation("Loading year of birth counts report");
+        logger.LogInformation("Loading year of birth counts report");
 
-        HttpResponseMessage response = await this.AnalyticsApi.GetYearOfBirthCountsAsync(action.StartDateLocal, action.EndDateLocal, action.TimeOffset).ConfigureAwait(true);
-        this.Logger.LogInformation("Year of birth counts report exported successfully!");
+        HttpResponseMessage response = await analyticsApi.GetYearOfBirthCountsAsync(action.StartDateLocal, action.EndDateLocal, action.TimeOffset).ConfigureAwait(true);
+        logger.LogInformation("Year of birth counts report exported successfully!");
         if (response.IsSuccessStatusCode)
         {
             dispatcher.Dispatch(new AnalyticsActions.LoadSuccessAction { Data = response.Content });
@@ -187,7 +173,7 @@ public class AnalyticsEffects
             Message = "Error exporting year of birth counts report.",
         };
 
-        this.Logger.LogError("{ErrorMessage}", error.Message);
+        logger.LogError("{ErrorMessage}", error.Message);
         dispatcher.Dispatch(new AnalyticsActions.LoadFailureAction { Error = error });
     }
 }

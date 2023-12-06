@@ -28,22 +28,33 @@ namespace HealthGateway.Admin.Server.Controllers
     /// <summary>
     /// Web API for the Admin dashboard.
     /// </summary>
+    /// <param name="dashboardService">The injected dashboard service.</param>
     [ApiController]
     [ApiVersion("1.0")]
     [Route("v{version:apiVersion}/api/[controller]")]
     [Produces("application/json")]
     [Authorize(Roles = "AdminUser,AdminReviewer,AdminAnalyst")]
-    public class DashboardController
+    public class DashboardController(IDashboardService dashboardService)
     {
-        private readonly IDashboardService dashboardService;
-
         /// <summary>
-        /// Initializes a new instance of the <see cref="DashboardController"/> class.
+        /// Retrieves all-time counts.
         /// </summary>
-        /// <param name="dashboardService">The injected dashboard service.</param>
-        public DashboardController(IDashboardService dashboardService)
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
+        /// <returns>A model containing the all-time counts.</returns>
+        /// <response code="200">Returns a model containing the all-time counts.</response>
+        /// <response code="401">The client must authenticate itself to get the requested response.</response>
+        /// <response code="403">
+        /// The client does not have access rights to the content; that is, it is unauthorized, so the server
+        /// is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.
+        /// </response>
+        [HttpGet]
+        [Route("AllTimeCounts")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        public async Task<AllTimeDashboardCounts> GetAllTimeCounts(CancellationToken ct)
         {
-            this.dashboardService = dashboardService;
+            return await dashboardService.GetAllTimeCountsAsync(ct);
         }
 
         /// <summary>
@@ -65,7 +76,7 @@ namespace HealthGateway.Admin.Server.Controllers
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<IDictionary<DateOnly, int>> GetDailyUserRegistrationCounts([FromQuery] int timeOffset, CancellationToken ct)
         {
-            return await this.dashboardService.GetDailyUserRegistrationCountsAsync(timeOffset, ct);
+            return await dashboardService.GetDailyUserRegistrationCountsAsync(timeOffset, ct);
         }
 
         /// <summary>
@@ -87,7 +98,7 @@ namespace HealthGateway.Admin.Server.Controllers
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<IDictionary<DateOnly, int>> GetDailyDependentRegistrationCounts([FromQuery] int timeOffset, CancellationToken ct)
         {
-            return await this.dashboardService.GetDailyDependentRegistrationCountsAsync(timeOffset, ct);
+            return await dashboardService.GetDailyDependentRegistrationCountsAsync(timeOffset, ct);
         }
 
         /// <summary>
@@ -115,7 +126,7 @@ namespace HealthGateway.Admin.Server.Controllers
             [FromQuery] int timeOffset,
             CancellationToken ct)
         {
-            return await this.dashboardService.GetDailyUniqueLoginCountsAsync(startDateLocal, endDateLocal, timeOffset, ct);
+            return await dashboardService.GetDailyUniqueLoginCountsAsync(startDateLocal, endDateLocal, timeOffset, ct);
         }
 
         /// <summary>
@@ -145,7 +156,7 @@ namespace HealthGateway.Admin.Server.Controllers
             [FromQuery] int timeOffset,
             CancellationToken ct)
         {
-            return await this.dashboardService.GetRecurringUserCountAsync(days, startDateLocal, endDateLocal, timeOffset, ct);
+            return await dashboardService.GetRecurringUserCountAsync(days, startDateLocal, endDateLocal, timeOffset, ct);
         }
 
         /// <summary>
@@ -173,7 +184,7 @@ namespace HealthGateway.Admin.Server.Controllers
             [FromQuery] int timeOffset,
             CancellationToken ct)
         {
-            return await this.dashboardService.GetAppLoginCountsAsync(startDateLocal, endDateLocal, timeOffset, ct);
+            return await dashboardService.GetAppLoginCountsAsync(startDateLocal, endDateLocal, timeOffset, ct);
         }
 
         /// <summary>
@@ -201,17 +212,17 @@ namespace HealthGateway.Admin.Server.Controllers
             [FromQuery] int timeOffset,
             CancellationToken ct)
         {
-            return await this.dashboardService.GetRatingsSummaryAsync(startDateLocal, endDateLocal, timeOffset, ct);
+            return await dashboardService.GetRatingsSummaryAsync(startDateLocal, endDateLocal, timeOffset, ct);
         }
 
         /// <summary>
-        /// Retrieves year of birth counts for users that have logged in between two dates.
+        /// Retrieves age counts for users that have logged in between two dates.
         /// </summary>
         /// <param name="startDateLocal">The local start date to query.</param>
         /// <param name="endDateLocal">The local end date to query.</param>
         /// <param name="timeOffset">The current timezone offset from the client browser to UTC.</param>
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
-        /// <returns>A dictionary mapping birth years to user counts.</returns>
+        /// <returns>A dictionary mapping ages to user counts.</returns>
         /// <response code="200">Returns a dictionary mapping birth years to user counts.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
         /// <response code="403">
@@ -219,17 +230,17 @@ namespace HealthGateway.Admin.Server.Controllers
         /// is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.
         /// </response>
         [HttpGet]
-        [Route("YearOfBirthCounts")]
+        [Route("AgeCounts")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        public async Task<IDictionary<string, int>> GetYearOfBirthCounts(
+        public async Task<IDictionary<int, int>> GetAgeCounts(
             [FromQuery] DateOnly startDateLocal,
             [FromQuery] DateOnly endDateLocal,
             [FromQuery] int timeOffset,
             CancellationToken ct)
         {
-            return await this.dashboardService.GetYearOfBirthCountsAsync(startDateLocal, endDateLocal, timeOffset, ct);
+            return await dashboardService.GetAgeCountsAsync(startDateLocal, endDateLocal, timeOffset, ct);
         }
     }
 }

@@ -350,9 +350,17 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public async Task<IDictionary<string, int>> GetLoggedInUserYearOfBirthCountsAsync(DateTimeOffset startDateTimeOffset, DateTimeOffset endDateTimeOffset, CancellationToken ct)
+        public async Task<int> GetClosedUserProfileCount(CancellationToken ct)
         {
-            Dictionary<string, int> yobCount = await this.dbContext.UserProfile
+            return await this.dbContext.UserProfileHistory
+                .Where(h => h.Operation == "DELETE" && !this.dbContext.UserProfile.Any(p => p.HdId == h.HdId))
+                .CountAsync(ct);
+        }
+
+        /// <inheritdoc/>
+        public async Task<IDictionary<int, int>> GetLoggedInUserYearOfBirthCountsAsync(DateTimeOffset startDateTimeOffset, DateTimeOffset endDateTimeOffset, CancellationToken ct)
+        {
+            Dictionary<int, int> yobCounts = await this.dbContext.UserProfile
                 .Select(x => new { x.HdId, x.LastLoginDateTime, x.YearOfBirth })
                 .Concat(
                     this.dbContext.UserProfileHistory.Select(x => new { x.HdId, x.LastLoginDateTime, x.YearOfBirth }))
@@ -361,9 +369,9 @@ namespace HealthGateway.Database.Delegates
                 .Distinct()
                 .GroupBy(x => x.YearOfBirth)
                 .Select(x => new { yearOfBirth = x.Key, count = x.Count() })
-                .ToDictionaryAsync(x => x.yearOfBirth!, x => x.count, ct);
+                .ToDictionaryAsync(x => x.yearOfBirth!.Value, x => x.count, ct);
 
-            return new SortedDictionary<string, int>(yobCount);
+            return new SortedDictionary<int, int>(yobCounts);
         }
     }
 }

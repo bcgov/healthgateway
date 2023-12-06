@@ -23,7 +23,6 @@ using Fluxor;
 using HealthGateway.Admin.Client.Models;
 using HealthGateway.Common.Data.Models;
 
-#pragma warning disable CS1591, SA1600
 public static class BroadcastsReducers
 {
     [ReducerMethod(typeof(BroadcastsActions.LoadAction))]

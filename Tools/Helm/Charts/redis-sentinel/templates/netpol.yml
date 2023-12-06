@@ -22,5 +22,8 @@ spec:
         - podSelector:
             matchLabels: {}
       ports:
+        - port: {{ .Values.redisPort }}
+          protocol: TCP
         - port: {{ .Values.sentinelPort }}
           protocol: TCP
+          

@@ -197,14 +197,6 @@ variable "client_hg_seq" {
   description = "Health Gateway Seq Administration Access"
 }
 
-variable "client_hg_tickets" {
-  type = object({
-    id             = optional(string, "hg-tickets")
-    token_lifespan = number
-  })
-  description = "Health Gateway Ticket System for Web Queue"
-}
-
 locals {
   development = var.environment.name == "Development"
 }

@@ -50,7 +50,7 @@ namespace HealthGateway.Database.Delegates
         public IList<DrugProduct> GetDrugProductsByDin(IList<string> drugIdentifiers)
         {
             this.logger.LogDebug("Getting list of drug products from DB");
-            IList<string> uniqueDrugIdentifers = drugIdentifiers.Distinct().ToList();
+            List<string> uniqueDrugIdentifers = drugIdentifiers.Distinct().ToList();
             IList<DrugProduct> retVal = this.dbContext.DrugProduct
                 .Include(c => c.Company)
                 .Include(a => a.ActiveIngredient)
@@ -68,7 +68,7 @@ namespace HealthGateway.Database.Delegates
         public IList<PharmaCareDrug> GetPharmaCareDrugsByDin(IList<string> drugIdentifiers)
         {
             this.logger.LogDebug("Getting list of pharmacare drug products from DB");
-            IList<string> uniqueDrugIdentifiers = drugIdentifiers.Distinct().ToList();
+            List<string> uniqueDrugIdentifiers = drugIdentifiers.Distinct().ToList();
             DateTime now = DateTime.UtcNow;
             IList<PharmaCareDrug> retVal = this.dbContext.PharmaCareDrug
                 .Where(dp => uniqueDrugIdentifiers.Contains(dp.DinPin) && now > dp.EffectiveDate && now <= dp.EndDate)

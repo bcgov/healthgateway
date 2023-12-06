@@ -27,35 +27,24 @@ namespace HealthGateway.Admin.Client.Store.PatientDetails
     using Microsoft.Extensions.Logging;
     using Refit;
 
-#pragma warning disable CS1591, SA1600
-    public class PatientDetailsEffects
+    public class PatientDetailsEffects(ILogger<PatientDetailsEffects> logger, ISupportApi supportApi)
     {
-        public PatientDetailsEffects(ILogger<PatientDetailsEffects> logger, ISupportApi supportApi)
-        {
-            this.Logger = logger;
-            this.SupportApi = supportApi;
-        }
-
-        private ILogger<PatientDetailsEffects> Logger { get; }
-
-        private ISupportApi SupportApi { get; }
-
         [EffectMethod]
         public async Task HandleLoadAction(PatientDetailsActions.LoadAction action, IDispatcher dispatcher)
         {
-            this.Logger.LogInformation("Loading patient details");
+            logger.LogInformation("Loading patient details");
 
             try
             {
-                PatientSupportDetails response = await this.SupportApi.GetPatientSupportDetailsAsync(action.QueryType, action.QueryString, action.RefreshVaccineDetails).ConfigureAwait(true);
-                this.Logger.LogInformation("Patient details loaded successfully!");
+                PatientSupportDetails response = await supportApi.GetPatientSupportDetailsAsync(action.QueryType, action.QueryString, action.RefreshVaccineDetails).ConfigureAwait(true);
+                logger.LogInformation("Patient details loaded successfully!");
                 dispatcher.Dispatch(new PatientDetailsActions.LoadSuccessAction { Data = response });
             }
             catch (Exception e) when (e is ApiException or HttpRequestException)
             {
-                this.Logger.LogError("Error loading patient details...{Error}", e);
+                logger.LogError("Error loading patient details...{Error}", e);
                 RequestError error = StoreUtility.FormatRequestError(e);
-                this.Logger.LogError("Error loading patient details, reason: {ErrorMessage}", error.Message);
+                logger.LogError("Error loading patient details, reason: {ErrorMessage}", error.Message);
                 dispatcher.Dispatch(new PatientDetailsActions.LoadFailureAction { Error = error });
             }
         }
@@ -63,16 +52,16 @@ namespace HealthGateway.Admin.Client.Store.PatientDetails
         [EffectMethod]
         public async Task HandleBlockAccessAction(PatientDetailsActions.BlockAccessAction action, IDispatcher dispatcher)
         {
-            this.Logger.LogInformation("Blocking access");
+            logger.LogInformation("Blocking access");
             try
             {
                 BlockAccessRequest request = new(action.DataSources, action.Reason);
-                await this.SupportApi.BlockAccessAsync(action.Hdid, request).ConfigureAwait(true);
+                await supportApi.BlockAccessAsync(action.Hdid, request).ConfigureAwait(true);
                 dispatcher.Dispatch(new PatientDetailsActions.BlockAccessSuccessAction { Hdid = action.Hdid });
             }
             catch (Exception e) when (e is ApiException or HttpRequestException)
             {
-                this.Logger.LogError("Error blocking access: {Exception}", e.ToString());
+                logger.LogError("Error blocking access: {Exception}", e.ToString());
                 RequestError error = StoreUtility.FormatRequestError(e);
                 dispatcher.Dispatch(new PatientDetailsActions.BlockAccessFailureAction { Error = error });
             }
@@ -81,7 +70,7 @@ namespace HealthGateway.Admin.Client.Store.PatientDetails
         [EffectMethod]
         public Task HandleBlockSuccessAction(PatientDetailsActions.BlockAccessSuccessAction action, IDispatcher dispatcher)
         {
-            this.Logger.LogInformation("Reload the patient's data for details page");
+            logger.LogInformation("Reload the patient's data for details page");
             dispatcher.Dispatch(
                 new PatientDetailsActions.LoadAction
                 {
@@ -95,15 +84,15 @@ namespace HealthGateway.Admin.Client.Store.PatientDetails
         [EffectMethod]
         public async Task HandleSubmitCovid19TreatmentAssessmentAction(PatientDetailsActions.SubmitCovid19TreatmentAssessmentAction action, IDispatcher dispatcher)
         {
-            this.Logger.LogInformation("Submitting COVID-19 treatment assessment");
+            logger.LogInformation("Submitting COVID-19 treatment assessment");
             try
             {
-                await this.SupportApi.SubmitCovidAssessment(action.Request).ConfigureAwait(true);
+                await supportApi.SubmitCovidAssessment(action.Request).ConfigureAwait(true);
                 dispatcher.Dispatch(new PatientDetailsActions.SubmitCovid19TreatmentAssessmentSuccessAction { Phn = action.Phn });
             }
             catch (Exception e) when (e is ApiException or HttpRequestException)
             {
-                this.Logger.LogError("Error submitting COVID-19 treatment assessment: {Exception}", e.ToString());
+                logger.LogError("Error submitting COVID-19 treatment assessment: {Exception}", e.ToString());
                 RequestError error = StoreUtility.FormatRequestError(e);
                 dispatcher.Dispatch(new PatientDetailsActions.SubmitCovid19TreatmentAssessmentFailureAction { Error = error });
             }
@@ -112,7 +101,7 @@ namespace HealthGateway.Admin.Client.Store.PatientDetails
         [EffectMethod]
         public Task HandleSubmitCovid19TreatmentAssessmentSuccessAction(PatientDetailsActions.SubmitCovid19TreatmentAssessmentSuccessAction action, IDispatcher dispatcher)
         {
-            this.Logger.LogInformation("Reload the patient's data for details page");
+            logger.LogInformation("Reload the patient's data for details page");
             dispatcher.Dispatch(
                 new PatientDetailsActions.LoadAction
                 {

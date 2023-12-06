@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { computed, ref, watch } from "vue";
-import { useRoute } from "vue-router";
 
 import FeedbackComponent from "@/components/site/FeedbackComponent.vue";
 import { useAppStore } from "@/stores/app";
@@ -9,7 +8,6 @@ import { useConfigStore } from "@/stores/config";
 import { useNavigationStore } from "@/stores/navigation";
 import { useUserStore } from "@/stores/user";
 
-const route = useRoute();
 const appStore = useAppStore();
 const authStore = useAuthStore();
 const configStore = useConfigStore();
@@ -27,11 +25,6 @@ const isDependentEnabled = computed(
 const isServicesEnabled = computed(
     () => configStore.webConfig.featureToggleConfiguration.services.enabled
 );
-const isQueuePage = computed(
-    () =>
-        route.path.toLowerCase() === "/queue" ||
-        route.path.toLowerCase() === "/busy"
-);
 const isSidebarAvailable = computed(
     () =>
         !configStore.isOffline &&
@@ -39,8 +32,7 @@ const isSidebarAvailable = computed(
         userStore.isValidIdentityProvider &&
         userStore.userIsRegistered &&
         userStore.userIsActive &&
-        !userStore.patientRetrievalFailed &&
-        !isQueuePage.value
+        !userStore.patientRetrievalFailed
 );
 
 const visibleOnMobile = computed({

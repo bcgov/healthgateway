@@ -1,0 +1,27 @@
+{
+  "solution": {
+    "path": "HealthGateway.sln",
+    "projects": [
+      "AccountDataAccess\\src\\AccountDataAccess.csproj",
+      "AdminWebClient\\src\\AdminWebClient.csproj",
+      "Admin\\Client\\Admin.Client.csproj",
+      "Admin\\Common\\Admin.Common.csproj",
+      "Admin\\Server\\Admin.Server.csproj",
+      "ClinicalDocument\\src\\ClinicalDocument.csproj",
+      "CommonData\\src\\Common.Data.csproj",
+      "CommonUi\\src\\Common.Ui.csproj",
+      "Common\\src\\Common.csproj",
+      "DBMaintainer\\DBMaintainer.csproj",
+      "Database\\src\\Database.csproj",
+      "Encounter\\src\\Encounter.csproj",
+      "GatewayApi\\src\\GatewayApi.csproj",
+      "Immunization\\src\\Immunization.csproj",
+      "JobScheduler\\src\\JobScheduler.csproj",
+      "Laboratory\\src\\Laboratory.csproj",
+      "Medication\\src\\Medication.csproj",
+      "PatientDataAccess\\src\\PatientDataAccess.csproj",
+      "Patient\\src\\Patient.csproj",
+      "WebClient\\src\\WebClient.csproj",
+    ]
+  }
+}

@@ -3,6 +3,7 @@ import { removeUserIfExists } from "../../utilities/kcUtilities";
 const username = Cypress.env("idir_username");
 const password = Cypress.env("idir_password");
 const user = "FncTstUser1";
+const timeout = 45000;
 
 describe("Provision", () => {
     beforeEach(() => {
@@ -68,6 +69,7 @@ describe("Provision", () => {
     });
 
     it("Edit User", () => {
+        cy.intercept("GET", `**/AgentAccess/?query=${user}`).as("getUser");
         cy.get("[data-testid=query-input]").clear().type(user);
         cy.get("[data-testid=search-btn]").click();
         cy.get("[data-testid^=agent-table-username-]")
@@ -75,6 +77,7 @@ describe("Provision", () => {
             .parents(".mud-table-row")
             .get("[data-testid^=agent-table-edit-btn]")
             .click();
+        cy.wait("@getUser", { timeout });
         cy.get("[data-testid=provision-dialog-modal-text]").should(
             "be.visible"
         );

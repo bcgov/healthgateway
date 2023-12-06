@@ -46,7 +46,6 @@ namespace HealthGateway.GatewayApi.Services
     using HealthGateway.GatewayApi.MapUtils;
     using HealthGateway.GatewayApi.Models;
     using HealthGateway.GatewayApi.Validations;
-    using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using PatientModel = HealthGateway.Common.Models.PatientModel;
@@ -63,7 +62,6 @@ namespace HealthGateway.GatewayApi.Services
         private readonly IMapper autoMapper;
         private readonly ICryptoDelegate cryptoDelegate;
         private readonly IEmailQueueService emailQueueService;
-        private readonly IHttpContextAccessor httpContextAccessor;
         private readonly ILegalAgreementDelegate legalAgreementDelegate;
         private readonly ILogger logger;
         private readonly IMessagingVerificationDelegate messageVerificationDelegate;
@@ -79,6 +77,7 @@ namespace HealthGateway.GatewayApi.Services
         private readonly bool accountsChangeFeedEnabled;
         private readonly bool notificationsChangeFeedEnabled;
         private readonly IMessageSender messageSender;
+        private readonly EmailTemplateConfig emailTemplateConfig;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UserProfileService"/> class.
@@ -94,7 +93,6 @@ namespace HealthGateway.GatewayApi.Services
         /// <param name="legalAgreementDelegate">The terms of service delegate.</param>
         /// <param name="messageVerificationDelegate">The message verification delegate.</param>
         /// <param name="cryptoDelegate">Injected Crypto delegate.</param>
-        /// <param name="httpContextAccessor">The injected http context accessor provider.</param>
         /// <param name="configuration">The injected configuration provider.</param>
         /// <param name="autoMapper">The inject automapper provider.</param>
         /// <param name="authenticationDelegate">The injected authentication delegate.</param>
@@ -114,7 +112,6 @@ namespace HealthGateway.GatewayApi.Services
             ILegalAgreementDelegate legalAgreementDelegate,
             IMessagingVerificationDelegate messageVerificationDelegate,
             ICryptoDelegate cryptoDelegate,
-            IHttpContextAccessor httpContextAccessor,
             IConfiguration configuration,
             IMapper autoMapper,
             IAuthenticationDelegate authenticationDelegate,
@@ -134,7 +131,6 @@ namespace HealthGateway.GatewayApi.Services
             this.legalAgreementDelegate = legalAgreementDelegate;
             this.messageVerificationDelegate = messageVerificationDelegate;
             this.cryptoDelegate = cryptoDelegate;
-            this.httpContextAccessor = httpContextAccessor;
             this.userProfileHistoryRecordLimit = configuration.GetSection(WebClientConfigSection)
                 .GetValue(UserProfileHistoryRecordLimitKey, 4);
             this.minPatientAge = configuration.GetSection(WebClientConfigSection).GetValue(MinPatientAgeKey, 12);
@@ -147,6 +143,7 @@ namespace HealthGateway.GatewayApi.Services
             ChangeFeedOptions? changeFeedConfiguration = configuration.GetSection(ChangeFeedOptions.ChangeFeed).Get<ChangeFeedOptions>();
             this.accountsChangeFeedEnabled = changeFeedConfiguration?.Accounts.Enabled ?? false;
             this.notificationsChangeFeedEnabled = changeFeedConfiguration?.Notifications.Enabled ?? false;
+            this.emailTemplateConfig = configuration.GetSection(EmailTemplateConfig.ConfigurationSectionKey).Get<EmailTemplateConfig>() ?? new();
         }
 
         /// <inheritdoc/>
@@ -176,7 +173,7 @@ namespace HealthGateway.GatewayApi.Services
                 // Update user year of birth.
                 RequestResult<PatientModel> patientResult = await this.patientService.GetPatient(hdid).ConfigureAwait(true);
                 DateTime? birthDate = patientResult.ResourcePayload?.Birthdate;
-                userProfileDbResult.Payload.YearOfBirth = birthDate?.Year.ToString(CultureInfo.InvariantCulture);
+                userProfileDbResult.Payload.YearOfBirth = birthDate?.Year;
 
                 this.userProfileDelegate.Update(userProfileDbResult.Payload);
                 this.logger.LogDebug("Finished updating user last login and year of birth... {Hdid}", hdid);
@@ -253,7 +250,7 @@ namespace HealthGateway.GatewayApi.Services
                 UpdatedBy = hdid,
                 LastLoginDateTime = jwtAuthTime,
                 EncryptionKey = this.cryptoDelegate.GenerateKey(),
-                YearOfBirth = birthDate?.Year.ToString(CultureInfo.InvariantCulture),
+                YearOfBirth = birthDate?.Year,
                 LastLoginClientCode = this.authenticationDelegate.FetchAuthenticatedUserClientType(),
             };
             DbResult<UserProfile> insertResult = await this.userProfileDelegate.InsertUserProfileAsync(newProfile, !this.accountsChangeFeedEnabled, ct);
@@ -483,13 +480,7 @@ namespace HealthGateway.GatewayApi.Services
 
         private void QueueEmail(string toEmail, string templateName)
         {
-            string activationHost = this.httpContextAccessor.HttpContext!.Request
-                .GetTypedHeaders()
-                .Referer!
-                .GetLeftPart(UriPartial.Authority);
-            string hostUrl = activationHost;
-
-            Dictionary<string, string> keyValues = new() { [EmailTemplateVariable.Host] = hostUrl };
+            Dictionary<string, string> keyValues = new() { [EmailTemplateVariable.Host] = this.emailTemplateConfig.Host };
             this.emailQueueService.QueueNewEmail(toEmail, templateName, keyValues);
         }
 
@@ -510,7 +501,7 @@ namespace HealthGateway.GatewayApi.Services
             }
 
             // Validate UserProfile inputs
-            ValidationResult profileValidationResult = new UserProfileValidator().Validate(createProfileRequest.Profile);
+            ValidationResult profileValidationResult = await new UserProfileValidator().ValidateAsync(createProfileRequest.Profile);
             if (!profileValidationResult.IsValid)
             {
                 this.logger.LogWarning("Profile inputs have failed validation for {Hdid}", createProfileRequest.Profile.HdId);
@@ -526,7 +517,7 @@ namespace HealthGateway.GatewayApi.Services
             DateTime? latestTourChangeDateTime = this.GetLatestTourChangeDateTime();
             UserProfileModel userProfileModel = UserProfileMapUtils.CreateFromDbModel(userProfile, termsOfServiceId, this.autoMapper);
             userProfileModel.HasTourUpdated = profileHistoryCollection != null &&
-                                              profileHistoryCollection.Any() &&
+                                              profileHistoryCollection.Length != 0 &&
                                               latestTourChangeDateTime != null &&
                                               profileHistoryCollection.Max(x => x.LastLoginDateTime) < latestTourChangeDateTime;
             userProfileModel.BlockedDataSources = this.patientRepository.GetDataSources(userProfile.HdId).Result;

@@ -5,8 +5,6 @@ VisualStudioVersion = 15.0.28010.2003
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdminWebClientTests", "test\unit\AdminWebClientTests.csproj", "{838A0BD5-3E14-440B-B8B3-86EF086F6D42}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AdminWebClientTestsFunctional", "test\functional\api\AdminWebClientTestsFunctional.csproj", "{A7B597DB-8DD1-4FCC-BECF-E9BFFCAF6E4F}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common", "..\Common\src\Common.csproj", "{68F8A36B-D28A-48C2-BC55-639CF7E4BEF9}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdminWebClient", "src\AdminWebClient.csproj", "{166AF82A-D8E0-4E45-894E-7A9F0914876A}"

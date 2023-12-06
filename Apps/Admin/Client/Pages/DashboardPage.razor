@@ -1,8 +1,8 @@
 @page "/dashboard"
 @layout MainLayout
 @attribute [Authorize(Roles = $"{Roles.Admin},{Roles.Reviewer},{Roles.Analyst}")]
-@using HealthGateway.Admin.Client.Store.Dashboard
 @using HealthGateway.Admin.Client.Components.Dashboard
+@using HealthGateway.Admin.Client.Store.Dashboard
 @inherits Fluxor.Blazor.Web.Components.FluxorComponent
 
 <PageTitle>Health Gateway Admin Dashboard</PageTitle>
@@ -49,6 +49,24 @@
                 </MudText>
                 <MudText Align="Align.Center" Typo="Typo.subtitle1" data-testid="total-dependents">
                     @FormatNumber(TotalDependents)
+                </MudText>
+            }
+        </MudPaper>
+    </MudItem>
+    <MudItem xs="12" lg="4">
+        <MudPaper Class="my-2 pa-4" Outlined="true">
+            @if (AllTimeCountsLoading)
+            {
+                <MudSkeleton />
+                <MudSkeleton data-testid="skeleton-closed-accounts" />
+            }
+            else
+            {
+                <MudText Align="Align.Center" Typo="Typo.subtitle1">
+                    Closed Accounts
+                </MudText>
+                <MudText Align="Align.Center" Typo="Typo.subtitle1" data-testid="total-closed-accounts">
+                    @FormatNumber(AllTimeCounts.ClosedAccounts)
                 </MudText>
             }
         </MudPaper>
@@ -112,21 +130,21 @@
         </MudPaper>
     </MudItem>
     <MudItem xs="12" lg="6">
-        @if (YearOfBirthCountsLoading)
+        @if (AgeCountsLoading)
         {
-            <MudSkeleton data-testid="skeleton-year-of-birth-chart" SkeletonType="SkeletonType.Rectangle" Width="100%" Height="325px" />
+            <MudSkeleton data-testid="skeleton-age-chart" SkeletonType="SkeletonType.Rectangle" Width="100%" Height="325px" />
         }
-        else if (YearOfBirthCountsErrorMessage.Length == 0)
+        else if (AgeCountsErrorMessage.Length == 0)
         {
-            @if (YearOfBirthCounts.Any())
+            @if (AgeCounts.Any())
             {
                 <MudChart
-                    data-testid="year-of-birth-chart"
+                    data-testid="age-chart"
                     ChartType="ChartType.Bar"
-                    ChartSeries="@(new List<ChartSeries> { GetYearOfBirthCountSeries() })"
-                    XAxisLabels="@GetYearOfBirthLabels()"
+                    ChartSeries="[GetAgeCountSeries()]"
+                    XAxisLabels="@GetAgeLabels()"
                     Width="100%"
-                    Height="325" />
+                    Height="295" />
             }
             else
             {
@@ -241,7 +259,7 @@
                 <MudTd data-testid="daily-data-dependents" DataLabel="Dependents">@FormatNumber(context.DependentRegistrations)</MudTd>
             </RowTemplate>
             <PagerContent>
-                <MudTablePager PageSizeOptions="new[]{10, 25, 50, 100, 200}" />
+                <MudTablePager PageSizeOptions="[10, 25, 50, 100, 200]" />
             </PagerContent>
         </MudTable>
     </MudItem>

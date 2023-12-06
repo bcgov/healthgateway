@@ -30,12 +30,12 @@
     /// <summary>
     /// Alert severity.
     /// </summary>
-    public IList<(Severity severity, string message)> Severities { get; } = new List<(Severity severity, string message)>
-    {
-        (Severity.Normal,"The reactor type is RBMK-1000"),
-        (Severity.Info,"The reactor was fired up successfully"),
-        (Severity.Success,"The reactor is running at optimum temperature"),
-        (Severity.Warning,"The reactor temperature exceeds the optimal range"),
-        (Severity.Error,"Meltdown is imminent"),
-    };
+    private IEnumerable<(Severity severity, string message)> Severities { get; } =
+    [
+        (Severity.Normal, "The reactor type is RBMK-1000"),
+        (Severity.Info, "The reactor was fired up successfully"),
+        (Severity.Success, "The reactor is running at optimum temperature"),
+        (Severity.Warning, "The reactor temperature exceeds the optimal range"),
+        (Severity.Error, "Meltdown is imminent"),
+    ];
 }

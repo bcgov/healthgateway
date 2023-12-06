@@ -17,7 +17,6 @@ namespace HealthGateway.Admin.Client.Components.Delegation
 {
     using System;
     using System.Collections.Generic;
-    using System.Linq;
     using System.Threading.Tasks;
     using Fluxor;
     using Fluxor.Blazor.Web.Components;
@@ -51,7 +50,7 @@ namespace HealthGateway.Admin.Client.Components.Delegation
 
         private bool InEditMode => this.DelegationState.Value.InEditMode;
 
-        private IEnumerable<DependentRow> Rows => new List<DependentInfo> { this.Data }.Select(d => new DependentRow(d));
+        private IEnumerable<DependentRow> Rows => [new DependentRow(this.Data)];
 
         private void SetEditMode(bool enabled)
         {
@@ -106,7 +105,7 @@ namespace HealthGateway.Admin.Client.Components.Delegation
         {
             public DependentRow(DependentInfo model)
             {
-                this.Name = StringManipulator.JoinWithoutBlanks(new[] { model.FirstName, model.LastName });
+                this.Name = StringManipulator.JoinWithoutBlanks([model.FirstName, model.LastName]);
                 this.DateOfBirth = model.Birthdate;
                 this.Address = AddressUtility.GetAddressAsSingleLine(model.PhysicalAddress ?? model.PostalAddress);
                 this.Protected = model.Protected;

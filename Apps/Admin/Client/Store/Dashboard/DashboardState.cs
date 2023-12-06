@@ -30,6 +30,11 @@ using HealthGateway.Admin.Common.Models;
 public record DashboardState
 {
     /// <summary>
+    /// Gets the request state for retrieving all-time counts.
+    /// </summary>
+    public BaseRequestState<AllTimeDashboardCounts> GetAllTimeCounts { get; init; } = new();
+
+    /// <summary>
     /// Gets the request state for retrieving daily counts of user registrations.
     /// </summary>
     public BaseRequestState<IDictionary<DateOnly, int>> GetDailyUserRegistrationCounts { get; init; } = new();
@@ -60,12 +65,12 @@ public record DashboardState
     public BaseRequestState<IDictionary<string, int>> GetRatingsSummary { get; init; } = new();
 
     /// <summary>
-    /// Gets the request state for retrieving year of birth counts.
+    /// Gets the request state for retrieving age counts.
     /// </summary>
-    public BaseRequestState<IDictionary<string, int>> GetYearOfBirthCounts { get; init; } = new();
+    public BaseRequestState<IDictionary<int, int>> GetAgeCounts { get; init; } = new();
 
     /// <summary>
-    /// Gets year of birth counts associated with the most recent query.
+    /// Gets age counts associated with the most recent query.
     /// </summary>
-    public IDictionary<string, int> YearOfBirthCounts { get; init; } = ImmutableDictionary<string, int>.Empty;
+    public IDictionary<int, int> AgeCounts { get; init; } = ImmutableDictionary<int, int>.Empty;
 }

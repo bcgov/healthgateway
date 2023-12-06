@@ -102,7 +102,7 @@ namespace HealthGateway.Medication.Services
 
                 if (protectiveWord != null)
                 {
-                    ValidationResult? protectiveWordValidation = new ProtectiveWordValidator().Validate(protectiveWord);
+                    ValidationResult? protectiveWordValidation = await new ProtectiveWordValidator().ValidateAsync(protectiveWord);
                     if (!protectiveWordValidation.IsValid)
                     {
                         this.logger.LogInformation("Invalid protective word. {Hdid}", hdid);

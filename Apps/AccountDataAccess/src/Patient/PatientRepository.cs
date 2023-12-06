@@ -133,7 +133,7 @@ namespace HealthGateway.AccountDataAccess.Patient
 
             // commit to the database if change feed is disabled; if change feed enabled, commit will happen when message sender is called
             // this is temporary and will be changed when we introduce a proper unit of work to manage transactions.
-            if (sources.Any())
+            if (sources.Count != 0)
             {
                 blockedAccess.DataSources = sources;
                 blockedAccess.CreatedDateTime = DateTime.UtcNow;
@@ -159,6 +159,7 @@ namespace HealthGateway.AccountDataAccess.Patient
         }
 
         /// <inheritdoc/>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1863:Use 'CompositeFormat'", Justification = "Team decision")]
         public async Task<IEnumerable<DataSource>> GetDataSources(string hdid, CancellationToken ct = default)
         {
             string blockedAccessCacheKey = string.Format(CultureInfo.InvariantCulture, ICacheProvider.BlockedAccessCachePrefixKey, hdid);

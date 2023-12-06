@@ -7,7 +7,7 @@
 // commands please read more here:
 // https://on.cypress.io/custom-commands
 // ***********************************************
-const { AuthMethod } = require("./constants");
+const { AuthMethod, localDevUri } = require("./constants");
 const { globalStorage } = require("./globalStorage");
 require("cy-verify-downloads").addCustomCommand();
 
@@ -321,9 +321,9 @@ Cypress.Commands.add("getTokens", (username, password) => {
 
 Cypress.Commands.add("readConfig", () => {
     cy.log(`Reading Environment Configuration`);
-    let baseWebClientUrl = Cypress.env("baseWebClientUrl");
-    if (!baseWebClientUrl) {
-        baseWebClientUrl = Cypress.config("baseUrl");
+    let baseWebClientUrl = Cypress.config("baseUrl");
+    if (baseWebClientUrl == localDevUri) {
+        baseWebClientUrl = Cypress.env("baseWebClientUrl");
     }
 
     return cy

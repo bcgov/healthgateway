@@ -571,6 +571,46 @@ VALUES (
 	'Web'
 );
 
+INSERT INTO gateway."UserProfileHistory"(
+    "UserProfileHistoryId",
+    "CreatedBy",
+    "CreatedDateTime",
+    "UpdatedBy",
+    "UpdatedDateTime",
+    "UserProfileId",
+    "AcceptedTermsOfService",
+    "Email",
+    "ClosedDateTime",
+    "IdentityManagementId",
+    "LastLoginDateTime",
+    "Operation",
+    "OperationDateTime",
+    "EncryptionKey",
+    "SMSNumber",
+    "TermsOfServiceId",
+    "YearOfBirth",
+    "LastLoginClientCode")
+VALUES (
+    'd139c62d-c899-43fb-84f2-45c654ca3270',
+    'System',
+    '2023-09-29 19:11:01.637456 +00:00',
+    'System',
+    '2023-10-04 19:40:02.282833 +00:00',
+    'UF3PZJUD45R7GJFWEVZ6USVANSIRGXOZK7JZI2XBYTG5P4CBAUAA',
+    null,
+    null,
+    '2023-10-31 19:40:02.282237 +00:00',
+    'b5a687c7-2915-4d3f-bb14-a3cf0504a2b2',
+    '2023-10-31 19:39:28.000000 +00:00',
+    'DELETE',
+    '2023-12-01 19:41:29.067450 +00:00',
+    'CwqU7+gCkL3jMWWcUpq80Oh42QejXOwI+Ov0tmsVWBI=',
+    null,
+    '2fab66e7-37c9-4b03-ba25-e8fad604dc7f',
+    '1994',
+    'Web'
+);
+
 INSERT INTO gateway."Rating"(
 	"RatingId", 
 	"CreatedBy", 

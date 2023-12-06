@@ -216,12 +216,12 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
                 return false;
             }
 
-            if (path.EndsWith("*", StringComparison.InvariantCultureIgnoreCase))
+            if (path.EndsWith('*'))
             {
                 return requestPath.Value!.StartsWith(path.Replace("*", string.Empty, StringComparison.InvariantCultureIgnoreCase), StringComparison.InvariantCultureIgnoreCase);
             }
 
-            if (path.StartsWith("*", StringComparison.InvariantCultureIgnoreCase))
+            if (path.StartsWith('*'))
             {
                 return requestPath.Value!.EndsWith(path.Replace("*", string.Empty, StringComparison.InvariantCultureIgnoreCase), StringComparison.InvariantCultureIgnoreCase);
             }

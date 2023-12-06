@@ -12,17 +12,11 @@ import NotificationCentreComponent from "@/components/site/NotificationCentreCom
 import SidebarComponent from "@/components/site/SidebarComponent.vue";
 import { Path } from "@/constants/path";
 import { useAuthStore } from "@/stores/auth";
-import { EventName, useEventStore } from "@/stores/event";
-import { useWaitlistStore } from "@/stores/waitlist";
 
 const route = useRoute();
-const eventStore = useEventStore();
-const waitlistStore = useWaitlistStore();
 const authStore = useAuthStore();
 
-const hideErrorAlerts = computed(() =>
-    currentPathMatches(Path.Root, Path.Queue, Path.Busy)
-);
+const hideErrorAlerts = computed(() => currentPathMatches(Path.Root));
 const isHeaderVisible = computed(
     () => !currentPathMatches(Path.LoginCallback, Path.VaccineCard)
 );
@@ -47,14 +41,6 @@ function currentPathMatches(...paths: string[]): boolean {
         (path) => route.path.toLowerCase() === path.toLowerCase()
     );
 }
-
-eventStore.subscribe(EventName.RegisterOnBeforeUnloadWaitlistListener, () => {
-    window.addEventListener("beforeunload", waitlistStore.releaseTicket);
-});
-eventStore.subscribe(EventName.UnregisterOnBeforeUnloadWaitlistListener, () => {
-    window.removeEventListener("beforeunload", waitlistStore.releaseTicket);
-});
-eventStore.emit(EventName.RegisterOnBeforeUnloadWaitlistListener);
 </script>
 
 <template>

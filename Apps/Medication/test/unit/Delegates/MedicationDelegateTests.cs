@@ -331,8 +331,9 @@ namespace HealthGateway.MedicationTests.Delegates
         /// <summary>
         /// SetProtectiveWord - Not Implemented Exception.
         /// </summary>
+        /// <returns>The asynchronous unit test.</returns>
         [Fact]
-        public void SetProtectiveWordNotImplemented()
+        public async Task SetProtectiveWordNotImplemented()
         {
             Mock<ICacheProvider> mockCacheProvider = new();
             Mock<IHashDelegate> mockHashDelegate = new();
@@ -343,7 +344,7 @@ namespace HealthGateway.MedicationTests.Delegates
                 mockCacheProvider.Object,
                 mockHashDelegate.Object);
 
-            Assert.ThrowsAsync<NotImplementedException>(
+            await Assert.ThrowsAsync<NotImplementedException>(
                 async () => await
                     medStatementDelegate.SetProtectiveWordAsync(
                         string.Empty,
@@ -356,8 +357,9 @@ namespace HealthGateway.MedicationTests.Delegates
         /// <summary>
         /// DeleteProtectiveWord - Not Implemented Exception.
         /// </summary>
+        /// <returns>The asynchronous unit test.</returns>
         [Fact]
-        public void DeleteProtectiveWordNotImplemented()
+        public async Task DeleteProtectiveWordNotImplemented()
         {
             Mock<ICacheProvider> mockCacheProvider = new();
             Mock<IHashDelegate> mockHashDelegate = new();
@@ -368,7 +370,7 @@ namespace HealthGateway.MedicationTests.Delegates
                 mockCacheProvider.Object,
                 mockHashDelegate.Object);
 
-            Assert.ThrowsAsync<NotImplementedException>(
+            await Assert.ThrowsAsync<NotImplementedException>(
                 async () => await
                     medStatementDelegate.DeleteProtectiveWordAsync(
                         string.Empty,

@@ -1,19 +1,20 @@
 <Project>
     <PropertyGroup>
-        <TargetFramework>net7.0</TargetFramework>
+        <TargetFramework>net8.0</TargetFramework>
         <Nullable>enable</Nullable>
-        <LangVersion>11.0</LangVersion>
+        <LangVersion>12.0</LangVersion>
         <AnalysisMode>AllEnabledByDefault</AnalysisMode>
         <WarningLevel>4</WarningLevel>
         <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
-        <NoWarn>CA1848, S2094</NoWarn>
+        <NoWarn>CS8974</NoWarn>
+        <AccelerateBuildsInVisualStudio>true</AccelerateBuildsInVisualStudio>
     </PropertyGroup>
     <ItemGroup>
-        <PackageReference Include="Microsoft.CodeAnalysis" Version="4.7.0" ExcludeAssets="All"/>
-        <PackageReference Include="SonarAnalyzer.CSharp" Version="9.12.0.78982">
+        <PackageReference Include="Microsoft.CodeAnalysis" Version="4.8.0" ExcludeAssets="All" />
+        <!-- <PackageReference Include="SonarAnalyzer.CSharp" Version="9.12.0.78982">
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
             <PrivateAssets>all</PrivateAssets>
-        </PackageReference>
+        </PackageReference> -->
         <PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.435">
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
             <PrivateAssets>all</PrivateAssets>

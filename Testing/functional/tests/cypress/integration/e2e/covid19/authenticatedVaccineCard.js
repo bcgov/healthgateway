@@ -1,6 +1,13 @@
 const { AuthMethod } = require("../../../support/constants");
 const covid19Url = "/covid19";
 
+function validateOnCovid19Page() {
+    cy.url().should("include", covid19Url);
+    cy.get(
+        "[data-testid=breadcrumb-covid-19].v-breadcrumbs-item--active"
+    ).should("be.visible");
+}
+
 describe("Authenticated Vaccine Card", () => {
     it("Validate Partially Vaccinated and PDF download", () => {
         cy.intercept("GET", "**/AuthenticatedVaccineStatus?hdid=*").as(
@@ -30,6 +37,9 @@ describe("Authenticated Vaccine Card", () => {
             AuthMethod.KeyCloak,
             covid19Url
         );
+
+        // Check before wait on intercept
+        validateOnCovid19Page();
 
         // Wait for request to complete
         cy.wait("@getVaccinationStatus").then(() => {
@@ -136,6 +146,9 @@ describe("Authenticated Vaccine Card", () => {
             AuthMethod.KeyCloak,
             covid19Url
         );
+
+        // Check before wait on intercept
+        validateOnCovid19Page();
 
         cy.wait("@getVaccinationStatus").then(() => {
             cy.get("[data-testid=statusNotFound]").should("be.visible");

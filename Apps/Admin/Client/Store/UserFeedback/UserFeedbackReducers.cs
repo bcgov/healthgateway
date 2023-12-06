@@ -23,7 +23,6 @@ using Fluxor;
 using HealthGateway.Admin.Client.Models;
 using HealthGateway.Admin.Common.Models;
 
-#pragma warning disable CS1591, SA1600
 public static class UserFeedbackReducers
 {
     [ReducerMethod(typeof(UserFeedbackActions.LoadAction))]
