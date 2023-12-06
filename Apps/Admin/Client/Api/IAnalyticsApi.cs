@@ -26,64 +26,56 @@ using Refit;
 public interface IAnalyticsApi
 {
     /// <summary>
-    /// Retrieves a list of User Profiles created inclusively between UTC dates if provided.
+    /// Retrieves user profiles.
     /// </summary>
-    /// <param name="startDate">The optional start date for the data.</param>
-    /// <param name="endDate">The optional end date for the data.</param>
-    /// <returns>HttpResponseMessage.</returns>
+    /// <returns>A CSV of user profiles.</returns>
     [Get("/GetUserProfiles")]
-    Task<HttpResponseMessage> GetUserProfilesAsync(DateTime? startDate = null, DateTime? endDate = null);
+    Task<HttpResponseMessage> GetUserProfilesAsync();
 
     /// <summary>
-    /// Retrieves a list of Comments inclusively between UTC dates if provided.
+    /// Retrieves user comment metadata.
     /// </summary>
-    /// <param name="startDate">The optional start date for the data.</param>
-    /// <param name="endDate">The optional end date for the data.</param>
-    /// <returns>HttpResponseMessage.</returns>
+    /// <returns>A CSV of user comment metadata.</returns>
     [Get("/GetComments")]
-    Task<HttpResponseMessage> GetCommentsAsync(DateTime? startDate = null, DateTime? endDate = null);
+    Task<HttpResponseMessage> GetCommentsAsync();
 
     /// <summary>
-    /// Retrieves a list of Notes inclusively between UTC dates if provided.
+    /// Retrieves user note metadata.
     /// </summary>
-    /// <param name="startDate">The optional start date for the data.</param>
-    /// <param name="endDate">The optional end date for the data.</param>
-    /// <returns>HttpResponseMessage.</returns>
+    /// <returns>A CSV of user note metadata.</returns>
     [Get("/GetNotes")]
-    Task<HttpResponseMessage> GetNotesAsync(DateTime? startDate = null, DateTime? endDate = null);
+    Task<HttpResponseMessage> GetNotesAsync();
 
     /// <summary>
-    /// Retrieves a list of Ratings inclusively between UTC dates if provided.
+    /// Retrieves ratings.
     /// </summary>
-    /// <param name="startDate">The optional start date for the data.</param>
-    /// <param name="endDate">The optional end date for the data.</param>
-    /// <returns>HttpResponseMessage.</returns>
+    /// <returns>A CSV of ratings.</returns>
     [Get("/GetRatings")]
-    Task<HttpResponseMessage> GetRatingsAsync(DateTime? startDate = null, DateTime? endDate = null);
+    Task<HttpResponseMessage> GetRatingsAsync();
 
     /// <summary>
-    /// Retrieves a list of inactive users created exclusive of the days inactive.
+    /// Retrieves inactive users.
     /// </summary>
     /// <param name="inactiveDays">The days inactive to filter the users last login.</param>
     /// <param name="timeOffset">The offset from the client browser to UTC.</param>
-    /// <returns>HttpResponseMessage.</returns>
+    /// <returns>A CSV of inactive users.</returns>
     [Get("/GetInactiveUsers")]
     Task<HttpResponseMessage> GetInactiveUsersAsync(int inactiveDays, int timeOffset);
 
     /// <summary>
-    /// Retrieves a list of User Feedback.
+    /// Retrieves user feedback.
     /// </summary>
-    /// <returns>HttpResponseMessage.</returns>
+    /// <returns>A CSV of user feedback.</returns>
     [Get("/GetUserFeedback")]
     Task<HttpResponseMessage> GetUserFeedbackAsync();
 
     /// <summary>
-    /// Retrieves a list of year of birth counts for time period.
+    /// Retrieves year of birth counts.
     /// </summary>
     /// <param name="startDateLocal">The local start date to query.</param>
     /// <param name="endDateLocal">The local end date to query.</param>
     /// <param name="timeOffset">The offset from the client browser to UTC.</param>
-    /// <returns>HttpResponseMessage.</returns>
+    /// <returns>A CSV of year of birth counts.</returns>
     [Get("/GetYearOfBirthCounts")]
     Task<HttpResponseMessage> GetYearOfBirthCountsAsync(DateOnly startDateLocal, DateOnly endDateLocal, int timeOffset);
 }
