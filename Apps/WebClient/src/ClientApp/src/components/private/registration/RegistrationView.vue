@@ -93,7 +93,7 @@ const validations = computed(() => ({
     },
     email: {
         required: requiredIf(isEmailChecked),
-        email: emailValidator,
+        email: helpers.withMessage("Invalid email", validateEmail),
     },
     emailConfirmation: {
         required: requiredIf(isEmailChecked),
@@ -132,6 +132,10 @@ const v$ = useVuelidate(validations, {
     emailConfirmation,
     accepted,
 });
+
+function validateEmail(emailAddress: string): boolean {
+    return ValidationRegEx.Email.test(emailAddress);
+}
 
 function loadUserData(): void {
     if (userStore.oidcUserInfo === undefined) {

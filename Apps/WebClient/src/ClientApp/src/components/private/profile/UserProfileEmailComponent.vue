@@ -1,11 +1,6 @@
 <script setup lang="ts">
 import useVuelidate from "@vuelidate/core";
-import {
-    email as emailValidator,
-    helpers,
-    not,
-    sameAs,
-} from "@vuelidate/validators";
+import { helpers, not, sameAs } from "@vuelidate/validators";
 import { computed, ref, watch } from "vue";
 
 import DisplayFieldComponent from "@/components/common/DisplayFieldComponent.vue";
@@ -13,6 +8,7 @@ import HgButtonComponent from "@/components/common/HgButtonComponent.vue";
 import SectionHeaderComponent from "@/components/common/SectionHeaderComponent.vue";
 import { ErrorSourceType, ErrorType } from "@/constants/errorType";
 import { Loader } from "@/constants/loader";
+import ValidationRegEx from "@/constants/validationRegEx";
 import { container } from "@/ioc/container";
 import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
 import { isTooManyRequestsError } from "@/models/errors";
@@ -48,11 +44,19 @@ const validations = computed(() => ({
             "New email must be different from the previous one",
             not(sameAs(email))
         ),
-        email: helpers.withMessage("Valid email is required", emailValidator),
+        email: helpers.withMessage("Valid email is required", validateEmail),
     },
 }));
 
 const v$ = useVuelidate(validations, { inputValue });
+
+function validateEmail(emailAddress: string): boolean {
+    return (
+        !emailAddress ||
+        emailAddress.length == 0 ||
+        ValidationRegEx.Email.test(emailAddress)
+    );
+}
 
 function makeEmailEditable(): void {
     isEmailEditable.value = true;
