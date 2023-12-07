@@ -42,9 +42,7 @@ namespace HealthGateway.Database.Delegates
         /// </summary>
         /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="dbContext">The context to be used when accessing the database.</param>
-        public DbProfileDelegate(
-            ILogger<DbProfileDelegate> logger,
-            GatewayDbContext dbContext)
+        public DbProfileDelegate(ILogger<DbProfileDelegate> logger, GatewayDbContext dbContext)
         {
             this.logger = logger;
             this.dbContext = dbContext;
@@ -239,13 +237,13 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public async Task<IDictionary<DateOnly, int>> GetDailyUserRegistrationCountsAsync(TimeSpan offset, CancellationToken ct = default)
+        public async Task<IDictionary<DateOnly, int>> GetDailyUserRegistrationCountsAsync(DateTimeOffset startDateTimeOffset, DateTimeOffset endDateTimeOffset, CancellationToken ct = default)
         {
             return await this.dbContext.UserProfile
-                .Select(x => new { x.HdId, createdDate = x.CreatedDateTime.AddMinutes(offset.TotalMinutes).Date })
+                .Where(u => u.CreatedDateTime >= startDateTimeOffset.UtcDateTime && u.CreatedDateTime <= endDateTimeOffset.UtcDateTime)
+                .Select(x => new { x.HdId, createdDate = x.CreatedDateTime.AddMinutes(startDateTimeOffset.TotalOffsetMinutes).Date })
                 .GroupBy(x => x.createdDate)
                 .Select(x => new { createdDate = x.Key, count = x.Count() })
-                .OrderBy(x => x.createdDate)
                 .ToDictionaryAsync(x => DateOnly.FromDateTime(x.createdDate), x => x.count, ct);
         }
 
@@ -286,7 +284,6 @@ namespace HealthGateway.Database.Delegates
                         g.Key.LastLoginDate,
                         Count = g.Select(t => t.HdId).Distinct().Count(),
                     })
-                .OrderBy(r => r.LastLoginDate)
                 .ToDictionaryAsync(x => DateOnly.FromDateTime(x.LastLoginDate), x => x.Count, ct);
         }
 
@@ -350,7 +347,13 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public async Task<int> GetClosedUserProfileCount(CancellationToken ct)
+        public async Task<int> GetUserProfileCount(CancellationToken ct = default)
+        {
+            return await this.dbContext.UserProfile.CountAsync(ct);
+        }
+
+        /// <inheritdoc/>
+        public async Task<int> GetClosedUserProfileCount(CancellationToken ct = default)
         {
             return await this.dbContext.UserProfileHistory
                 .Where(h => h.Operation == "DELETE" && !this.dbContext.UserProfile.Any(p => p.HdId == h.HdId))
@@ -358,7 +361,7 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public async Task<IDictionary<int, int>> GetLoggedInUserYearOfBirthCountsAsync(DateTimeOffset startDateTimeOffset, DateTimeOffset endDateTimeOffset, CancellationToken ct)
+        public async Task<IDictionary<int, int>> GetLoggedInUserYearOfBirthCountsAsync(DateTimeOffset startDateTimeOffset, DateTimeOffset endDateTimeOffset, CancellationToken ct = default)
         {
             Dictionary<int, int> yobCounts = await this.dbContext.UserProfile
                 .Select(x => new { x.HdId, x.LastLoginDateTime, x.YearOfBirth })

@@ -34,32 +34,36 @@ namespace HealthGateway.Admin.Server.Services
         IRatingDelegate ratingDelegate) : IDashboardService
     {
         /// <inheritdoc/>
-        public async Task<AllTimeDashboardCounts> GetAllTimeCountsAsync(CancellationToken ct = default)
+        public async Task<AllTimeCounts> GetAllTimeCountsAsync(CancellationToken ct = default)
         {
+            int userProfileCount = await userProfileDelegate.GetUserProfileCount(ct);
+            int dependentCount = await dependentDelegate.GetDependentCountAsync(ct);
             int closedUserProfileCount = await userProfileDelegate.GetClosedUserProfileCount(ct);
-            return new() { ClosedAccounts = closedUserProfileCount };
+
+            return new()
+            {
+                RegisteredUsers = userProfileCount,
+                Dependents = dependentCount,
+                ClosedAccounts = closedUserProfileCount,
+            };
         }
 
         /// <inheritdoc/>
-        public async Task<IDictionary<DateOnly, int>> GetDailyUserRegistrationCountsAsync(int timeOffset, CancellationToken ct = default)
-        {
-            TimeSpan ts = new(0, timeOffset, 0);
-            return await userProfileDelegate.GetDailyUserRegistrationCountsAsync(ts, ct);
-        }
-
-        /// <inheritdoc/>
-        public async Task<IDictionary<DateOnly, int>> GetDailyDependentRegistrationCountsAsync(int timeOffset, CancellationToken ct = default)
-        {
-            TimeSpan ts = new(0, timeOffset, 0);
-            return await dependentDelegate.GetDailyDependentRegistrationCountsAsync(ts, ct);
-        }
-
-        /// <inheritdoc/>
-        public async Task<IDictionary<DateOnly, int>> GetDailyUniqueLoginCountsAsync(DateOnly startDateLocal, DateOnly endDateLocal, int timeOffset, CancellationToken ct = default)
+        public async Task<DailyUsageCounts> GetDailyUsageCountsAsync(DateOnly startDateLocal, DateOnly endDateLocal, int timeOffset, CancellationToken ct = default)
         {
             DateTimeOffset startDateTimeOffset = GetStartDateTimeOffset(startDateLocal, timeOffset);
             DateTimeOffset endDateTimeOffset = GetEndDateTimeOffset(endDateLocal, timeOffset);
-            return await userProfileDelegate.GetDailyUniqueLoginCountsAsync(startDateTimeOffset, endDateTimeOffset, ct);
+
+            IDictionary<DateOnly, int> userRegistrationCounts = await userProfileDelegate.GetDailyUserRegistrationCountsAsync(startDateTimeOffset, endDateTimeOffset, ct);
+            IDictionary<DateOnly, int> userLoginCounts = await userProfileDelegate.GetDailyUniqueLoginCountsAsync(startDateTimeOffset, endDateTimeOffset, ct);
+            IDictionary<DateOnly, int> dependentRegistrationCounts = await dependentDelegate.GetDailyDependentRegistrationCountsAsync(startDateTimeOffset, endDateTimeOffset, ct);
+
+            return new()
+            {
+                UserRegistrations = new SortedDictionary<DateOnly, int>(userRegistrationCounts),
+                UserLogins = new SortedDictionary<DateOnly, int>(userLoginCounts),
+                DependentRegistrations = new SortedDictionary<DateOnly, int>(dependentRegistrationCounts),
+            };
         }
 
         /// <inheritdoc/>
@@ -91,7 +95,7 @@ namespace HealthGateway.Admin.Server.Services
         }
 
         /// <inheritdoc/>
-        public async Task<IDictionary<int, int>> GetAgeCountsAsync(DateOnly startDateLocal, DateOnly endDateLocal, int timeOffset, CancellationToken ct)
+        public async Task<IDictionary<int, int>> GetAgeCountsAsync(DateOnly startDateLocal, DateOnly endDateLocal, int timeOffset, CancellationToken ct = default)
         {
             DateTimeOffset startDate = GetStartDateTimeOffset(startDateLocal, timeOffset);
             DateTimeOffset endDate = GetEndDateTimeOffset(endDateLocal, timeOffset);

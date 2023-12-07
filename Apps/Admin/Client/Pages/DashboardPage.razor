@@ -19,7 +19,7 @@
 <MudGrid Class="mt-6">
     <MudItem xs="12" lg="4">
         <MudPaper Class="my-2 pa-4" Outlined="true">
-            @if (DailyUserRegistrationCountsLoading)
+            @if (AllTimeCountsLoading)
             {
                 <MudSkeleton />
                 <MudSkeleton data-testid="skeleton-registered-users" />
@@ -30,14 +30,14 @@
                     Registered Users
                 </MudText>
                 <MudText Align="Align.Center" Typo="Typo.subtitle1" data-testid="total-registered-users">
-                    @FormatNumber(TotalRegisteredUsers)
+                    @FormatNumber(AllTimeCounts.RegisteredUsers)
                 </MudText>
             }
         </MudPaper>
     </MudItem>
     <MudItem xs="12" lg="4">
         <MudPaper Class="my-2 pa-4" Outlined="true">
-            @if (DailyDependentRegistrationCountsLoading)
+            @if (AllTimeCountsLoading)
             {
                 <MudSkeleton />
                 <MudSkeleton data-testid="skeleton-dependents" />
@@ -48,7 +48,7 @@
                     Dependents
                 </MudText>
                 <MudText Align="Align.Center" Typo="Typo.subtitle1" data-testid="total-dependents">
-                    @FormatNumber(TotalDependents)
+                    @FormatNumber(AllTimeCounts.Dependents)
                 </MudText>
             }
         </MudPaper>
@@ -221,7 +221,7 @@
     </MudItem>
     <MudItem xs="12">
         <MudTable Class="mt-3"
-                  Loading="@(DailyUserRegistrationCountsLoading || DailyUniqueLoginCountsLoading || DailyDependentRegistrationCountsLoading)"
+                  Loading="@DailyUsageCountsLoading"
                   Items="@TableData"
                   AllowUnsorted="false"
                   HorizontalScrollbar="true"
@@ -242,7 +242,7 @@
                     </MudTableSortLabel>
                 </MudTh>
                 <MudTh>
-                    <MudTableSortLabel SortBy="new Func<DailyDataRow, object>(x => x.UniqueLogins)">
+                    <MudTableSortLabel SortBy="new Func<DailyDataRow, object>(x => x.UserLogins)">
                         Logged In
                     </MudTableSortLabel>
                 </MudTh>
@@ -255,7 +255,7 @@
             <RowTemplate>
                 <MudTd data-testid="daily-data-date" DataLabel="Date">@context.Date.ToString("yyyy-MM-dd")</MudTd>
                 <MudTd data-testid="daily-data-total-registered-users" DataLabel="Registered">@FormatNumber(context.UserRegistrations)</MudTd>
-                <MudTd data-testid="daily-data-total-logged-in-users" DataLabel="Logged In">@FormatNumber(context.UniqueLogins)</MudTd>
+                <MudTd data-testid="daily-data-total-logged-in-users" DataLabel="Logged In">@FormatNumber(context.UserLogins)</MudTd>
                 <MudTd data-testid="daily-data-dependents" DataLabel="Dependents">@FormatNumber(context.DependentRegistrations)</MudTd>
             </RowTemplate>
             <PagerContent>

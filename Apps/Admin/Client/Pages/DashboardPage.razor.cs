@@ -17,7 +17,6 @@ namespace HealthGateway.Admin.Client.Pages;
 
 using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Globalization;
 using System.Linq;
 using Fluxor;
@@ -42,13 +41,9 @@ public partial class DashboardPage : FluxorComponent
     [Inject]
     private IState<DashboardState> DashboardState { get; set; } = default!;
 
-    private AllTimeDashboardCounts AllTimeCounts => this.DashboardState.Value.GetAllTimeCounts.Result ?? new();
+    private AllTimeCounts AllTimeCounts => this.DashboardState.Value.GetAllTimeCounts.Result ?? new();
 
-    private IDictionary<DateOnly, int> UserRegistrationCounts => this.DashboardState.Value.GetDailyUserRegistrationCounts.Result ?? ImmutableDictionary<DateOnly, int>.Empty;
-
-    private IDictionary<DateOnly, int> DailyDependentRegistrationCounts => this.DashboardState.Value.GetDailyDependentRegistrationCounts.Result ?? ImmutableDictionary<DateOnly, int>.Empty;
-
-    private IDictionary<DateOnly, int> DailyUniqueLoginCounts => this.DashboardState.Value.GetDailyUniqueLoginCounts.Result ?? ImmutableDictionary<DateOnly, int>.Empty;
+    private DailyUsageCounts DailyUsageCounts => this.DashboardState.Value.GetDailyUsageCounts.Result ?? new();
 
     private int RecurringUserCount => this.DashboardState.Value.GetRecurringUserCount.Result ?? 0;
 
@@ -58,11 +53,7 @@ public partial class DashboardPage : FluxorComponent
 
     private bool AllTimeCountsLoading => this.DashboardState.Value.GetAllTimeCounts.IsLoading;
 
-    private bool DailyUserRegistrationCountsLoading => this.DashboardState.Value.GetDailyUserRegistrationCounts.IsLoading;
-
-    private bool DailyDependentRegistrationCountsLoading => this.DashboardState.Value.GetDailyDependentRegistrationCounts.IsLoading;
-
-    private bool DailyUniqueLoginCountsLoading => this.DashboardState.Value.GetDailyUniqueLoginCounts.IsLoading;
+    private bool DailyUsageCountsLoading => this.DashboardState.Value.GetDailyUsageCounts.IsLoading;
 
     private bool RecurringUserCountLoading => this.DashboardState.Value.GetRecurringUserCount.IsLoading;
 
@@ -82,28 +73,15 @@ public partial class DashboardPage : FluxorComponent
 
     private int CurrentUniqueDays { get; set; } = 3;
 
-    private string RegisteredUsersErrorMessage => this.DashboardState.Value.GetDailyUserRegistrationCounts.Error?.Message ?? string.Empty;
-
-    private string LoggedInUsersErrorMessage => this.DashboardState.Value.GetDailyUniqueLoginCounts.Error?.Message ?? string.Empty;
-
-    private string DependentsErrorMessage => this.DashboardState.Value.GetDailyDependentRegistrationCounts.Error?.Message ?? string.Empty;
-
-    private string RecurringUsersErrorMessage => this.DashboardState.Value.GetRecurringUserCount.Error?.Message ?? string.Empty;
-
-    private string AppLoginCountsErrorMessage => this.DashboardState.Value.GetAppLoginCounts.Error?.Message ?? string.Empty;
-
-    private string RatingSummaryErrorMessage => this.DashboardState.Value.GetRatingsSummary.Error?.Message ?? string.Empty;
-
     private string AgeCountsErrorMessage => this.DashboardState.Value.GetAgeCounts.Error?.Message ?? string.Empty;
 
     private IEnumerable<string> ErrorMessages => StringManipulator.ExcludeBlanks(
     [
-        this.RegisteredUsersErrorMessage,
-        this.DependentsErrorMessage,
-        this.LoggedInUsersErrorMessage,
-        this.RecurringUsersErrorMessage,
-        this.AppLoginCountsErrorMessage,
-        this.RatingSummaryErrorMessage,
+        this.DashboardState.Value.GetAllTimeCounts.Error?.Message,
+        this.DashboardState.Value.GetDailyUsageCounts.Error?.Message,
+        this.DashboardState.Value.GetRecurringUserCount.Error?.Message,
+        this.DashboardState.Value.GetAppLoginCounts.Error?.Message,
+        this.DashboardState.Value.GetRatingsSummary.Error?.Message,
         this.AgeCountsErrorMessage,
     ]);
 
@@ -157,26 +135,21 @@ public partial class DashboardPage : FluxorComponent
 
     private int TimeOffset { get; } = (int)TimeZoneInfo.Local.GetUtcOffset(DateTime.Now).TotalMinutes;
 
-    private int TotalRegisteredUsers => this.UserRegistrationCounts.Sum(r => r.Value);
-
-    private int TotalDependents => this.DailyDependentRegistrationCounts.Sum(r => r.Value);
-
     private IEnumerable<DailyDataRow> TableData
     {
         get
         {
-            return this.UserRegistrationCounts.Select(kvp => new DailyDataRow { Date = kvp.Key, UserRegistrations = kvp.Value })
-                .Concat(this.DailyUniqueLoginCounts.Select(kvp => new DailyDataRow { Date = kvp.Key, UniqueLogins = kvp.Value }))
-                .Concat(this.DailyDependentRegistrationCounts.Select(kvp => new DailyDataRow { Date = kvp.Key, DependentRegistrations = kvp.Value }))
-                .Where(r => this.UsageDateRangeStart <= r.Date.ToDateTime(TimeOnly.MaxValue) && r.Date.ToDateTime(TimeOnly.MinValue) <= this.UsageDateRangeEnd)
-                .GroupBy(r => r.Date)
+            return this.DailyUsageCounts.UserRegistrations.Select(x => new DailyDataRow { Date = x.Key, UserRegistrations = x.Value })
+                .Concat(this.DailyUsageCounts.UserLogins.Select(x => new DailyDataRow { Date = x.Key, UserLogins = x.Value }))
+                .Concat(this.DailyUsageCounts.DependentRegistrations.Select(x => new DailyDataRow { Date = x.Key, DependentRegistrations = x.Value }))
+                .GroupBy(x => x.Date)
                 .Select(
-                    group => new DailyDataRow
+                    g => new DailyDataRow
                     {
-                        Date = group.Key,
-                        UserRegistrations = group.Sum(r => r.UserRegistrations),
-                        DependentRegistrations = group.Sum(r => r.DependentRegistrations),
-                        UniqueLogins = group.Sum(r => r.UniqueLogins),
+                        Date = g.Key,
+                        UserRegistrations = g.Sum(x => x.UserRegistrations),
+                        UserLogins = g.Sum(x => x.UserLogins),
+                        DependentRegistrations = g.Sum(x => x.DependentRegistrations),
                     });
         }
     }
@@ -209,9 +182,7 @@ public partial class DashboardPage : FluxorComponent
     {
         DateOnly startDate = DateOnly.FromDateTime(this.UsageDateRangeStart);
         DateOnly endDate = DateOnly.FromDateTime(this.UsageDateRangeEnd);
-        this.Dispatcher.Dispatch(new DashboardActions.GetDailyUserRegistrationCountsAction { TimeOffset = this.TimeOffset });
-        this.Dispatcher.Dispatch(new DashboardActions.GetDailyDependentRegistrationCountsAction { TimeOffset = this.TimeOffset });
-        this.Dispatcher.Dispatch(new DashboardActions.GetDailyUniqueLoginCountsAction { StartDateLocal = startDate, EndDateLocal = endDate, TimeOffset = this.TimeOffset });
+        this.Dispatcher.Dispatch(new DashboardActions.GetDailyUsageCountsAction { StartDateLocal = startDate, EndDateLocal = endDate, TimeOffset = this.TimeOffset });
         this.Dispatcher.Dispatch(new DashboardActions.GetRecurringUserCountAction { Days = this.UniqueDays, StartDateLocal = startDate, EndDateLocal = endDate, TimeOffset = this.TimeOffset });
     }
 
@@ -242,9 +213,9 @@ public partial class DashboardPage : FluxorComponent
         public int UserRegistrations { get; init; }
 
         /// <summary>
-        /// Gets the unique login count.
+        /// Gets the user login count.
         /// </summary>
-        public int UniqueLogins { get; init; }
+        public int UserLogins { get; init; }
 
         /// <summary>
         /// Gets the dependent registration count.

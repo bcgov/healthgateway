@@ -16,7 +16,6 @@
 
 namespace HealthGateway.Admin.Client.Store.Dashboard;
 
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Fluxor;
@@ -34,7 +33,7 @@ public class DashboardEffects(ILogger<DashboardEffects> logger, IDashboardApi da
         logger.LogInformation("Retrieving all-time counts");
         try
         {
-            AllTimeDashboardCounts response = await dashboardApi.GetAllTimeCounts().ConfigureAwait(true);
+            AllTimeCounts response = await dashboardApi.GetAllTimeCounts().ConfigureAwait(true);
             logger.LogInformation("All-time counts retrieved successfully");
             dispatcher.Dispatch(new DashboardActions.GetAllTimeCountsSuccessAction { Data = response });
         }
@@ -47,58 +46,21 @@ public class DashboardEffects(ILogger<DashboardEffects> logger, IDashboardApi da
     }
 
     [EffectMethod]
-    public async Task HandleGetDailyUserRegistrationCountsAction(DashboardActions.GetDailyUserRegistrationCountsAction action, IDispatcher dispatcher)
+    public async Task HandleGetDailyUsageCountsAction(DashboardActions.GetDailyUsageCountsAction action, IDispatcher dispatcher)
     {
-        logger.LogInformation("Retrieving daily user registration counts");
+        logger.LogInformation("Retrieving daily usage counts");
+
         try
         {
-            IDictionary<DateOnly, int> response = await dashboardApi.GetDailyUserRegistrationCountsAsync(action.TimeOffset).ConfigureAwait(true);
-            logger.LogInformation("Daily user registration counts retrieved successfully");
-            dispatcher.Dispatch(new DashboardActions.GetDailyUserRegistrationCountsSuccessAction { Data = response });
+            DailyUsageCounts response = await dashboardApi.GetDailyUsageCountsAsync(action.StartDateLocal, action.EndDateLocal, action.TimeOffset).ConfigureAwait(true);
+            logger.LogInformation("Daily usage counts retrieved successfully");
+            dispatcher.Dispatch(new DashboardActions.GetDailyUsageCountsSuccessAction { Data = response });
         }
         catch (ApiException ex)
         {
             RequestError error = StoreUtility.FormatRequestError(ex);
-            logger.LogError("Error retrieving daily user registration counts, reason: {ErrorMessage}", error.Message);
-            dispatcher.Dispatch(new DashboardActions.GetDailyUserRegistrationCountsFailureAction { Error = error });
-        }
-    }
-
-    [EffectMethod]
-    public async Task HandleGetDailyDependentRegistrationCountsAction(DashboardActions.GetDailyDependentRegistrationCountsAction action, IDispatcher dispatcher)
-    {
-        logger.LogInformation("Retrieving daily dependent registration counts");
-
-        try
-        {
-            IDictionary<DateOnly, int> response = await dashboardApi.GetDailyDependentRegistrationCountsAsync(action.TimeOffset).ConfigureAwait(true);
-            logger.LogInformation("Daily dependent registration counts retrieved successfully");
-            dispatcher.Dispatch(new DashboardActions.GetDailyDependentRegistrationCountsSuccessAction { Data = response });
-        }
-        catch (ApiException ex)
-        {
-            RequestError error = StoreUtility.FormatRequestError(ex);
-            logger.LogError("Error retrieving daily dependent registration counts, reason: {ErrorMessage}", error.Message);
-            dispatcher.Dispatch(new DashboardActions.GetDailyDependentRegistrationCountsFailureAction { Error = error });
-        }
-    }
-
-    [EffectMethod]
-    public async Task HandleGetDailyUniqueLoginCountsAction(DashboardActions.GetDailyUniqueLoginCountsAction action, IDispatcher dispatcher)
-    {
-        logger.LogInformation("Retrieving daily unique login counts");
-
-        try
-        {
-            IDictionary<DateOnly, int> response = await dashboardApi.GetDailyUniqueLoginCountsAsync(action.StartDateLocal, action.EndDateLocal, action.TimeOffset).ConfigureAwait(true);
-            logger.LogInformation("Daily unique login counts retrieved successfully");
-            dispatcher.Dispatch(new DashboardActions.GetDailyUniqueLoginCountsSuccessAction { Data = response });
-        }
-        catch (ApiException ex)
-        {
-            RequestError error = StoreUtility.FormatRequestError(ex);
-            logger.LogError("Error retrieving daily unique login counts, reason: {ErrorMessage}", error.Message);
-            dispatcher.Dispatch(new DashboardActions.GetDailyUniqueLoginCountsFailureAction { Error = error });
+            logger.LogError("Error retrieving daily usage counts, reason: {ErrorMessage}", error.Message);
+            dispatcher.Dispatch(new DashboardActions.GetDailyUsageCountsFailureAction { Error = error });
         }
     }
 
