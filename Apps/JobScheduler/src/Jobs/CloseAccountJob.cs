@@ -75,6 +75,7 @@ namespace HealthGateway.JobScheduler.Jobs
         /// <param name="keycloakAdminApi">The Keycloak admin API.</param>
         /// <param name="dbContext">The db context to use.</param>
         /// <param name="messageSender">The message sender.</param>
+#pragma warning disable S107 // The number of DI parameters should be ignored
         public CloseAccountJob(
             IConfiguration configuration,
             ILogger<CloseAccountJob> logger,
