@@ -66,192 +66,189 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
             services.AddScoped<IAuthorizationHandler, PersonalAccessHandler>();
             services.AddScoped<IAuthorizationHandler, SystemDelegatedAccessHandler>();
 
-            services.AddAuthorization(
-                options =>
+            AuthorizationBuilder authBuilder = services.AddAuthorizationBuilder();
+            authBuilder.AddPolicy(
+                    UserPolicy.UserOnly,
+                    policy =>
+                    {
+                        policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
+                        policy.RequireAuthenticatedUser();
+                        policy.Requirements.Add(new UserRequirement(false));
+                    })
+                .AddPolicy(
+                    UserPolicy.Read,
+                    policy =>
+                    {
+                        policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
+                        policy.RequireAuthenticatedUser();
+                        policy.Requirements.Add(new UserRequirement(true));
+                    })
+                .AddPolicy(
+                    UserPolicy.Write,
+                    policy =>
+                    {
+                        policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
+                        policy.RequireAuthenticatedUser();
+                        policy.Requirements.Add(new UserRequirement(true));
+                    });
+
+            // System-Delegated Policies
+            authBuilder.AddPolicy(
+                SystemDelegatedPatientPolicy.Read,
+                policy => { policy.Requirements.Add(new GeneralFhirRequirement(FhirResource.Patient, FhirAccessType.Read)); });
+
+            // User Profile Policies
+            authBuilder.AddPolicy(
+                    UserProfilePolicy.Read,
+                    policy =>
+                    {
+                        policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
+                        policy.RequireAuthenticatedUser();
+                        policy.Requirements.Add(new PersonalFhirRequirement(FhirResource.UserProfile, FhirAccessType.Read));
+                    })
+                .AddPolicy(
+                    UserProfilePolicy.Write,
+                    policy =>
+                    {
+                        policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
+                        policy.RequireAuthenticatedUser();
+                        policy.Requirements.Add(new PersonalFhirRequirement(FhirResource.UserProfile, FhirAccessType.Write));
+                    });
+
+            // Patient Policies
+            authBuilder.AddPolicy(
+                    PatientPolicy.Read,
+                    policy =>
+                    {
+                        policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
+                        policy.RequireAuthenticatedUser();
+                        policy.Requirements.Add(
+                            new PersonalFhirRequirement(
+                                FhirResource.Patient,
+                                FhirAccessType.Read,
+                                supportsUserDelegation: true));
+                    })
+                .AddPolicy(
+                    PatientPolicy.Write,
+                    policy =>
+                    {
+                        policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
+                        policy.RequireAuthenticatedUser();
+                        policy.Requirements.Add(new PersonalFhirRequirement(FhirResource.Patient, FhirAccessType.Write));
+                    });
+
+            // Immunization Policies
+            authBuilder.AddPolicy(
+                    ImmunizationPolicy.Read,
+                    policy =>
+                    {
+                        policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
+                        policy.RequireAuthenticatedUser();
+                        policy.Requirements.Add(
+                            new PersonalFhirRequirement(
+                                FhirResource.Immunization,
+                                FhirAccessType.Read,
+                                FhirSubjectLookupMethod.Parameter,
+                                supportsUserDelegation: true));
+                    })
+                .AddPolicy(
+                    ImmunizationPolicy.Write,
+                    policy =>
+                    {
+                        policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
+                        policy.RequireAuthenticatedUser();
+                        policy.Requirements.Add(new PersonalFhirRequirement(FhirResource.Immunization, FhirAccessType.Write));
+                    });
+
+            // Laboratory/Observation Policies
+            authBuilder.AddPolicy(
+                    LaboratoryPolicy.Read,
+                    policy =>
+                    {
+                        policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
+                        policy.RequireAuthenticatedUser();
+                        policy.Requirements.Add(
+                            new PersonalFhirRequirement(
+                                FhirResource.Observation,
+                                FhirAccessType.Read,
+                                FhirSubjectLookupMethod.Parameter,
+                                supportsUserDelegation: true));
+                    })
+                .AddPolicy(
+                    LaboratoryPolicy.Write,
+                    policy =>
+                    {
+                        policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
+                        policy.RequireAuthenticatedUser();
+                        policy.Requirements.Add(new PersonalFhirRequirement(FhirResource.Observation, FhirAccessType.Write));
+                    });
+
+            // MedicationStatement Policies
+            authBuilder.AddPolicy(
+                    MedicationPolicy.MedicationStatementRead,
+                    policy =>
+                    {
+                        policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
+                        policy.RequireAuthenticatedUser();
+                        policy.Requirements.Add(new PersonalFhirRequirement(FhirResource.MedicationStatement, FhirAccessType.Read, supportsUserDelegation: true));
+                    })
+                .AddPolicy(
+                    MedicationPolicy.MedicationStatementWrite,
+                    policy =>
+                    {
+                        policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
+                        policy.RequireAuthenticatedUser();
+                        policy.Requirements.Add(new PersonalFhirRequirement(FhirResource.MedicationStatement, FhirAccessType.Write));
+                    });
+
+            // MedicationRequest Policies
+            authBuilder.AddPolicy(
+                    MedicationPolicy.MedicationRequestRead,
+                    policy =>
+                    {
+                        policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
+                        policy.RequireAuthenticatedUser();
+                        policy.Requirements.Add(new PersonalFhirRequirement(FhirResource.MedicationRequest, FhirAccessType.Read, supportsUserDelegation: true));
+                    })
+                .AddPolicy(
+                    MedicationPolicy.MedicationRequestWrite,
+                    policy =>
+                    {
+                        policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
+                        policy.RequireAuthenticatedUser();
+                        policy.Requirements.Add(new PersonalFhirRequirement(FhirResource.MedicationRequest, FhirAccessType.Write));
+                    });
+
+            // Encounter Policies
+            authBuilder.AddPolicy(
+                    EncounterPolicy.Read,
+                    policy =>
+                    {
+                        policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
+                        policy.RequireAuthenticatedUser();
+                        policy.Requirements.Add(new PersonalFhirRequirement(FhirResource.Encounter, FhirAccessType.Read, supportsUserDelegation: true));
+                    })
+                .AddPolicy(
+                    EncounterPolicy.Write,
+                    policy =>
+                    {
+                        policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
+                        policy.RequireAuthenticatedUser();
+                        policy.Requirements.Add(new PersonalFhirRequirement(FhirResource.Encounter, FhirAccessType.Write));
+                    });
+
+            // Clinical Document Policies
+            authBuilder.AddPolicy(
+                ClinicalDocumentPolicy.Read,
+                policy =>
                 {
-                    // User Policies this should be removed when migrated to UserProfilePolicy
-                    options.AddPolicy(
-                        UserPolicy.UserOnly,
-                        policy =>
-                        {
-                            policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
-                            policy.RequireAuthenticatedUser();
-                            policy.Requirements.Add(new UserRequirement(false));
-                        });
-                    options.AddPolicy(
-                        UserPolicy.Read,
-                        policy =>
-                        {
-                            policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
-                            policy.RequireAuthenticatedUser();
-                            policy.Requirements.Add(new UserRequirement(true));
-                        });
-                    options.AddPolicy(
-                        UserPolicy.Write,
-                        policy =>
-                        {
-                            policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
-                            policy.RequireAuthenticatedUser();
-                            policy.Requirements.Add(new UserRequirement(true));
-                        });
-
-                    // System-Delegated Policies
-                    options.AddPolicy(
-                        SystemDelegatedPatientPolicy.Read,
-                        policy => { policy.Requirements.Add(new GeneralFhirRequirement(FhirResource.Patient, FhirAccessType.Read)); });
-
-                    // User Profile Policies
-                    options.AddPolicy(
-                        UserProfilePolicy.Read,
-                        policy =>
-                        {
-                            policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
-                            policy.RequireAuthenticatedUser();
-                            policy.Requirements.Add(new PersonalFhirRequirement(FhirResource.UserProfile, FhirAccessType.Read));
-                        });
-                    options.AddPolicy(
-                        UserProfilePolicy.Write,
-                        policy =>
-                        {
-                            policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
-                            policy.RequireAuthenticatedUser();
-                            policy.Requirements.Add(new PersonalFhirRequirement(FhirResource.UserProfile, FhirAccessType.Write));
-                        });
-
-                    // Patient Policies
-                    options.AddPolicy(
-                        PatientPolicy.Read,
-                        policy =>
-                        {
-                            policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
-                            policy.RequireAuthenticatedUser();
-                            policy.Requirements.Add(
-                                new PersonalFhirRequirement(
-                                    FhirResource.Patient,
-                                    FhirAccessType.Read,
-                                    supportsUserDelegation: true));
-                        });
-                    options.AddPolicy(
-                        PatientPolicy.Write,
-                        policy =>
-                        {
-                            policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
-                            policy.RequireAuthenticatedUser();
-                            policy.Requirements.Add(new PersonalFhirRequirement(FhirResource.Patient, FhirAccessType.Write));
-                        });
-
-                    // Immunization Policies
-                    options.AddPolicy(
-                        ImmunizationPolicy.Read,
-                        policy =>
-                        {
-                            policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
-                            policy.RequireAuthenticatedUser();
-                            policy.Requirements.Add(
-                                new PersonalFhirRequirement(
-                                    FhirResource.Immunization,
-                                    FhirAccessType.Read,
-                                    FhirSubjectLookupMethod.Parameter,
-                                    supportsUserDelegation: true));
-                        });
-                    options.AddPolicy(
-                        ImmunizationPolicy.Write,
-                        policy =>
-                        {
-                            policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
-                            policy.RequireAuthenticatedUser();
-                            policy.Requirements.Add(new PersonalFhirRequirement(FhirResource.Immunization, FhirAccessType.Write));
-                        });
-
-                    // Laboratory/Observation Policies
-                    options.AddPolicy(
-                        LaboratoryPolicy.Read,
-                        policy =>
-                        {
-                            policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
-                            policy.RequireAuthenticatedUser();
-                            policy.Requirements.Add(
-                                new PersonalFhirRequirement(
-                                    FhirResource.Observation,
-                                    FhirAccessType.Read,
-                                    FhirSubjectLookupMethod.Parameter,
-                                    supportsUserDelegation: true));
-                        });
-                    options.AddPolicy(
-                        LaboratoryPolicy.Write,
-                        policy =>
-                        {
-                            policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
-                            policy.RequireAuthenticatedUser();
-                            policy.Requirements.Add(new PersonalFhirRequirement(FhirResource.Observation, FhirAccessType.Write));
-                        });
-
-                    // MedicationStatement Policies
-                    options.AddPolicy(
-                        MedicationPolicy.MedicationStatementRead,
-                        policy =>
-                        {
-                            policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
-                            policy.RequireAuthenticatedUser();
-                            policy.Requirements.Add(new PersonalFhirRequirement(FhirResource.MedicationStatement, FhirAccessType.Read, supportsUserDelegation: true));
-                        });
-                    options.AddPolicy(
-                        MedicationPolicy.MedicationStatementWrite,
-                        policy =>
-                        {
-                            policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
-                            policy.RequireAuthenticatedUser();
-                            policy.Requirements.Add(new PersonalFhirRequirement(FhirResource.MedicationStatement, FhirAccessType.Write));
-                        });
-
-                    // MedicationRequest Policies
-                    options.AddPolicy(
-                        MedicationPolicy.MedicationRequestRead,
-                        policy =>
-                        {
-                            policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
-                            policy.RequireAuthenticatedUser();
-                            policy.Requirements.Add(new PersonalFhirRequirement(FhirResource.MedicationRequest, FhirAccessType.Read, supportsUserDelegation: true));
-                        });
-                    options.AddPolicy(
-                        MedicationPolicy.MedicationRequestWrite,
-                        policy =>
-                        {
-                            policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
-                            policy.RequireAuthenticatedUser();
-                            policy.Requirements.Add(new PersonalFhirRequirement(FhirResource.MedicationRequest, FhirAccessType.Write));
-                        });
-
-                    // Encounter Policies
-                    options.AddPolicy(
-                        EncounterPolicy.Read,
-                        policy =>
-                        {
-                            policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
-                            policy.RequireAuthenticatedUser();
-                            policy.Requirements.Add(new PersonalFhirRequirement(FhirResource.Encounter, FhirAccessType.Read, supportsUserDelegation: true));
-                        });
-                    options.AddPolicy(
-                        EncounterPolicy.Write,
-                        policy =>
-                        {
-                            policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
-                            policy.RequireAuthenticatedUser();
-                            policy.Requirements.Add(new PersonalFhirRequirement(FhirResource.Encounter, FhirAccessType.Write));
-                        });
-
-                    options.AddPolicy(
-                        ClinicalDocumentPolicy.Read,
-                        policy =>
-                        {
-                            policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
-                            policy.RequireAuthenticatedUser();
-                            policy.Requirements.Add(
-                                new PersonalFhirRequirement(
-                                    FhirResource.ClinicalDocuments,
-                                    FhirAccessType.Read,
-                                    supportsUserDelegation: true));
-                        });
+                    policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
+                    policy.RequireAuthenticatedUser();
+                    policy.Requirements.Add(
+                        new PersonalFhirRequirement(
+                            FhirResource.ClinicalDocuments,
+                            FhirAccessType.Read,
+                            supportsUserDelegation: true));
                 });
         }
 

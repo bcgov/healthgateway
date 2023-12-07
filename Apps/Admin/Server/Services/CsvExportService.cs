@@ -115,7 +115,7 @@ namespace HealthGateway.Admin.Server.Services
             return stream;
         }
 
-        private static Stream GetStream<TModel, TMap>(IEnumerable<TModel> obj)
+        private static MemoryStream GetStream<TModel, TMap>(IEnumerable<TModel> obj)
             where TMap : ClassMap
         {
             MemoryStream stream = new();
