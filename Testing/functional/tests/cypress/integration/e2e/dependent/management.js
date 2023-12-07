@@ -397,7 +397,7 @@ describe("dependents - dashboard", () => {
         });
         cy.get("[data-testid=confirmDeleteBtn]").click();
 
-        cy.log("Validating Immunization tab - module disabled");
+        cy.log("Validating Immunization tab - dataset disabled");
         cy.get(`[data-testid=immunization-tab-${validDependent.hdid}]`).should(
             "not.exist"
         );

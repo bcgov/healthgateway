@@ -252,7 +252,7 @@ describe("Public PcrTest Registration Submission with no valid PHN", () => {
     });
 });
 
-describe("Public PcrTest Registration Submission Module Disabled", () => {
+describe("Public PcrTest Registration with Feature Disabled", () => {
     beforeEach(() => {
         cy.configureSettings({});
         cy.logout();
@@ -282,7 +282,7 @@ describe("Public PcrTest Registration with Test Kit Id", () => {
     });
 });
 
-describe("Public PcrTest Registration with Test Kit Id with Disable Module", () => {
+describe("Public PcrTest Registration with Test Kit Id with Feature Disabled", () => {
     beforeEach(() => {
         cy.configureSettings({});
         cy.logout();

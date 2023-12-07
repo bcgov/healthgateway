@@ -41,7 +41,7 @@ export class RestVaccinationStatusService implements IVaccinationStatusService {
     ): Promise<RequestResult<VaccinationStatus>> {
         if (!this.isEnabled) {
             return Promise.reject(
-                ErrorTranslator.moduleDisabledError(ServiceCode.Immunization)
+                ErrorTranslator.featureDisabledError(ServiceCode.Immunization)
             );
         }
 
@@ -73,7 +73,7 @@ export class RestVaccinationStatusService implements IVaccinationStatusService {
     ): Promise<RequestResult<CovidVaccineRecord>> {
         if (!this.isEnabled) {
             return Promise.reject(
-                ErrorTranslator.moduleDisabledError(ServiceCode.Immunization)
+                ErrorTranslator.featureDisabledError(ServiceCode.Immunization)
             );
         }
 
@@ -103,7 +103,7 @@ export class RestVaccinationStatusService implements IVaccinationStatusService {
     ): Promise<RequestResult<VaccinationStatus>> {
         if (!this.isEnabled) {
             return Promise.reject(
-                ErrorTranslator.moduleDisabledError(ServiceCode.Immunization)
+                ErrorTranslator.featureDisabledError(ServiceCode.Immunization)
             );
         }
 
@@ -127,7 +127,7 @@ export class RestVaccinationStatusService implements IVaccinationStatusService {
     ): Promise<RequestResult<CovidVaccineRecord>> {
         if (!this.isEnabled) {
             return Promise.reject(
-                ErrorTranslator.moduleDisabledError(ServiceCode.Immunization)
+                ErrorTranslator.featureDisabledError(ServiceCode.Immunization)
             );
         }
 

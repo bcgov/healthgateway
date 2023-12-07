@@ -92,7 +92,7 @@ describe("Disabling health connect services", () => {
         cy.get(healthConnectAddQuickLinkChipSelector).should("not.exist");
     };
 
-    it("Should not show quick link and settings when services module is disabled", () => {
+    it("Should not show quick link and settings when health connect service is disabled", () => {
         cy.configureSettings({
             datasets: [
                 {
@@ -112,7 +112,7 @@ describe("Disabling health connect services", () => {
         testQuickLinkNotPresent(cy);
     });
 
-    it("Should not show quick link and settings when services.healthConnectRegistry module is disabled", () => {
+    it("Should not show quick link and settings when health connect service is disabled", () => {
         cy.configureSettings({
             datasets: [
                 {

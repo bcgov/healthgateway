@@ -46,8 +46,6 @@ export interface WebClientConfiguration {
     timeouts: TimeOutsConfiguration;
     // Gets or sets the ExternalURLs used by the Webclient.
     externalURLs: Dictionary<string>;
-    // Gets or sets the Module state.
-    modules: Dictionary<boolean>;
     // Gets or sets the FeatureToggleConfiguration state.
     featureToggleConfiguration: FeatureToggleConfiguration;
     // Gets or sets the hours for deletion.
