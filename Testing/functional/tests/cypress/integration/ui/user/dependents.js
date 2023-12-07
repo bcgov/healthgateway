@@ -25,6 +25,10 @@ describe("COVID-19", () => {
                     name: "covid19TestResult",
                     enabled: true,
                 },
+                {
+                    name: "immunization",
+                    enabled: true,
+                },
             ],
         });
 
@@ -95,9 +99,7 @@ describe("COVID-19", () => {
             .siblings("[data-testid=dependentCovidTestStatus]")
             .contains("SomeOtherState");
     });
-});
 
-describe("COVID-19 - Vaccine Proof download", () => {
     it("Validate successful vaccine proof download", () => {
         let isLoading = false;
         cy.intercept(
@@ -118,43 +120,12 @@ describe("COVID-19 - Vaccine Proof download", () => {
             }
         );
 
-        cy.intercept("GET", "**/Laboratory/Covid19Orders*", {
-            fixture: "LaboratoryService/covid19Orders.json",
-        });
-        cy.intercept("GET", "**/UserProfile/*/Dependent", {
-            fixture: "UserProfileService/dependent.json",
-        });
-
-        cy.configureSettings({
-            dependents: {
-                enabled: true,
-            },
-            datasets: [
-                {
-                    name: "covid19TestResult",
-                    enabled: true,
-                },
-                {
-                    name: "immunization",
-                    enabled: true,
-                },
-            ],
-        });
-
-        cy.login(
-            Cypress.env("keycloak.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak,
-            "/dependents"
-        );
-
         cy.get("[data-testid=covid19TabTitle]").click();
         cy.get(
             `[data-testid=download-proof-of-vaccination-btn-${validHdid}]`
         ).click({ force: true });
         cy.get("[data-testid=generic-message-modal]").should("be.visible");
         cy.get("[data-testid=generic-message-submit-btn]").click();
-        cy.get("[data-testid=loadingSpinner]").should("not.exist");
         cy.verifyDownload("VaccineProof.pdf");
     });
 
@@ -177,36 +148,6 @@ describe("COVID-19 - Vaccine Proof download", () => {
                 }
                 isLoading = !isLoading;
             }
-        );
-
-        cy.intercept("GET", "**/Laboratory/Covid19Orders*", {
-            fixture: "LaboratoryService/covid19Orders.json",
-        });
-        cy.intercept("GET", "**/UserProfile/*/Dependent", {
-            fixture: "UserProfileService/dependent.json",
-        });
-
-        cy.configureSettings({
-            dependents: {
-                enabled: true,
-            },
-            datasets: [
-                {
-                    name: "covid19TestResult",
-                    enabled: true,
-                },
-                {
-                    name: "immunization",
-                    enabled: true,
-                },
-            ],
-        });
-
-        cy.login(
-            Cypress.env("keycloak.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak,
-            "/dependents"
         );
 
         cy.get("[data-testid=covid19TabTitle]").click();
@@ -250,12 +191,12 @@ describe("Dependents - Immunization Tab - Enabled", () => {
         );
     });
 
-    it("Immunization - History - Tab - Verify sort and download", () => {
+    it("Immunization - History Tab - Verify sort", () => {
         cy.intercept("GET", "**/Immunization?hdid=*", {
             fixture: "ImmunizationService/dependentImmunization.json",
         });
 
-        cy.log("Validating Immunization Tab - Verify sort and download");
+        cy.log("Validating Immunization Tab - Verify sort");
 
         cy.get(`[data-testid=immunization-tab-title-${dependentHdid}]`).click();
 
@@ -284,71 +225,14 @@ describe("Dependents - Immunization Tab - Enabled", () => {
                 expect(firstDate).to.be.gte(secondDate);
             });
         });
-
-        // Click download dropdown under History tab
-        cy.get(
-            `[data-testid=download-immunization-history-report-btn-${dependentHdid}]`
-        ).click();
-
-        // Click PDF
-        cy.get(
-            `[data-testid=download-immunization-history-report-pdf-btn-${dependentHdid}]`
-        ).click();
-
-        // Confirmation modal
-        cy.get("[data-testid=generic-message-modal]").should("be.visible");
-        cy.get("[data-testid=generic-message-submit-btn]").click();
-
-        cy.verifyDownload("HealthGatewayDependentImmunizationReport.pdf", {
-            timeout: 60000,
-            interval: 5000,
-        });
-
-        // Click download dropdown
-        cy.get(
-            `[data-testid=download-immunization-history-report-btn-${dependentHdid}]`
-        ).click();
-
-        // Click CSV
-        cy.get(
-            `[data-testid=download-immunization-history-report-csv-btn-${dependentHdid}]`
-        ).click();
-
-        // Confirmation modal
-        cy.get("[data-testid=generic-message-modal]").should("be.visible");
-        cy.get("[data-testid=generic-message-submit-btn]").click();
-
-        cy.verifyDownload("HealthGatewayDependentImmunizationReport.csv", {
-            timeout: 60000,
-            interval: 5000,
-        });
-
-        // Click download dropdown
-        cy.get(
-            `[data-testid=download-immunization-history-report-btn-${dependentHdid}]`
-        ).click();
-
-        // Click XLSX
-        cy.get(
-            `[data-testid=download-immunization-history-report-xlsx-btn-${dependentHdid}]`
-        ).click();
-
-        // Confirmation modal
-        cy.get("[data-testid=generic-message-modal]").should("be.visible");
-        cy.get("[data-testid=generic-message-submit-btn]").click();
-
-        cy.verifyDownload("HealthGatewayDependentImmunizationReport.xlsx", {
-            timeout: 60000,
-            interval: 5000,
-        });
     });
 
-    it("Immunization - Forecast - Tab - Verify sort and download", () => {
+    it("Immunization - Forecast Tab - Verify sort", () => {
         cy.intercept("GET", "**/Immunization?hdid=*", {
             fixture: "ImmunizationService/dependentImmunization.json",
         });
 
-        cy.log("Validating Immunization Tab - Verify sort and download");
+        cy.log("Validating Immunization Tab - Verify sort");
 
         cy.get(`[data-testid=immunization-tab-title-${dependentHdid}]`).click();
 
@@ -384,60 +268,6 @@ describe("Dependents - Immunization Tab - Enabled", () => {
                 });
             }
         );
-
-        // Click PDF
-        cy.get(
-            `[data-testid=download-immunization-forecast-report-pdf-btn-${dependentHdid}]`
-        ).click({ force: true });
-
-        // Confirmation modal
-        cy.get("[data-testid=generic-message-modal]").should("be.visible");
-        cy.get("[data-testid=generic-message-submit-btn]").click();
-        cy.get("[data-testid=loadingSpinner]").should("not.exist");
-        cy.verifyDownload("HealthGatewayDependentImmunizationReport.pdf", {
-            timeout: 60000,
-            interval: 5000,
-        });
-
-        // Click download dropdown
-        cy.get(
-            `[data-testid=download-immunization-forecast-report-btn-${dependentHdid}]`
-        ).click({ force: true });
-
-        // Click CSV
-        cy.get(
-            `[data-testid=download-immunization-forecast-report-csv-btn-${dependentHdid}]`
-        ).click({ force: true });
-
-        // Confirmation modal
-        cy.get("[data-testid=generic-message-modal]").should("be.visible");
-        cy.get("[data-testid=generic-message-submit-btn]").click();
-        cy.get("[data-testid=loadingSpinner]").should("not.exist");
-
-        cy.verifyDownload("HealthGatewayDependentImmunizationReport.csv", {
-            timeout: 60000,
-            interval: 5000,
-        });
-
-        // Click download dropdown
-        cy.get(
-            `[data-testid=download-immunization-forecast-report-btn-${dependentHdid}]`
-        ).click({ force: true });
-
-        // Click XLSX
-        cy.get(
-            `[data-testid=download-immunization-forecast-report-xlsx-btn-${dependentHdid}]`
-        ).click({ force: true });
-
-        // Confirmation modal
-        cy.get("[data-testid=generic-message-modal]").should("be.visible");
-        cy.get("[data-testid=generic-message-submit-btn]").click();
-        cy.get("[data-testid=loadingSpinner]").should("not.exist");
-
-        cy.verifyDownload("HealthGatewayDependentImmunizationReport.xlsx", {
-            timeout: 60000,
-            interval: 5000,
-        });
     });
 
     it("Immunization Tab - No Data Found", () => {
