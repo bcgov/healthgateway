@@ -148,7 +148,7 @@ public static class DateFormatter
     }
 
     /// <summary>
-    /// Gets local time offset from utc.
+    /// Gets the local time offset for a UTC datetime.
     /// </summary>
     /// <param name="configuration">The configuration to use.</param>
     /// <param name="utcDateTime">The UTC datetime to derive offset from.</param>
