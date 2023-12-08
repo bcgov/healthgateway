@@ -25,6 +25,7 @@ namespace HealthGateway.GatewayApi
     /// <summary>
     /// The entry point for the project.
     /// </summary>
+#pragma warning disable S1118 // This is not a utility class and breaks integration tests when set to static
     [ExcludeFromCodeCoverage]
     public class Program
     {
