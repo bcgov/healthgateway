@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import { onBeforeUnmount } from "vue";
-import { computed, ref } from "vue";
+import { computed, onBeforeUnmount, ref } from "vue";
 
 interface Props {
     text?: string;
