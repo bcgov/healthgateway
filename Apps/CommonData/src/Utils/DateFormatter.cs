@@ -151,7 +151,7 @@ public static class DateFormatter
     /// Gets local time offset from utc.
     /// </summary>
     /// <param name="configuration">The configuration to use.</param>
-    /// <param name="utcDateTime">The utc date time to derive offset from.</param>
+    /// <param name="utcDateTime">The UTC datetime to derive offset from.</param>
     /// <returns>TimeSpan object representing local timezone.</returns>
     public static TimeSpan GetLocalTimeOffset(IConfiguration configuration, DateTime utcDateTime)
     {
