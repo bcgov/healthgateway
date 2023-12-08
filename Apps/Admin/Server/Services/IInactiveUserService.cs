@@ -29,8 +29,7 @@ namespace HealthGateway.Admin.Server.Services
         /// Returns inactive users exclusive of the days inactive.
         /// </summary>
         /// <param name="inactiveDays">The days inactive to filter the users last login.</param>
-        /// <param name="timeOffset">The clients offset to get to UTC.</param>
         /// <returns>returns a Request Result of List.</returns>
-        Task<RequestResult<List<AdminUserProfileView>>> GetInactiveUsers(int inactiveDays, int timeOffset);
+        Task<RequestResult<List<AdminUserProfileView>>> GetInactiveUsers(int inactiveDays);
     }
 }

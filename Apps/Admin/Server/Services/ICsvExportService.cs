@@ -61,9 +61,8 @@ namespace HealthGateway.Admin.Server.Services
         /// Retrieves a stream of inactive users in CSV format exclusive of the days inactive.
         /// </summary>
         /// <param name="inactiveDays">The days inactive to filter the users last login.</param>
-        /// <param name="timeOffset">The clients offset to get to UTC.</param>
         /// <returns>returns a stream representing a CSV of inactive users.</returns>
-        Task<Stream> GetInactiveUsers(int inactiveDays, int timeOffset);
+        Task<Stream> GetInactiveUsers(int inactiveDays);
 
         /// <summary>
         /// Retrieves a stream of UserFeedback in CSV format.
@@ -76,9 +75,8 @@ namespace HealthGateway.Admin.Server.Services
         /// </summary>
         /// <param name="startDateLocal">The local start date to query.</param>
         /// <param name="endDateLocal">The local end date to query.</param>
-        /// <param name="timeOffset">The current timezone offset from the client browser to UTC.</param>
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>Return the counts of logged in users by year of birth for time range.</returns>
-        Task<Stream> GetYearOfBirthCountsAsync(DateOnly startDateLocal, DateOnly endDateLocal, int timeOffset, CancellationToken ct);
+        Task<Stream> GetYearOfBirthCountsAsync(DateOnly startDateLocal, DateOnly endDateLocal, CancellationToken ct);
     }
 }

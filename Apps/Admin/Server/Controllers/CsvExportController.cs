@@ -60,7 +60,6 @@ namespace HealthGateway.Admin.Server.Controllers
         /// Retrieves inactive users.
         /// </summary>
         /// <param name="inactiveDays">The days inactive to filter the users last login.</param>
-        /// <param name="timeOffset">The offset from the client browser to UTC.</param>
         /// <returns>A CSV of inactive users.</returns>
         /// <response code="200">Returns a CSV of inactive users.</response>
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
@@ -71,9 +70,9 @@ namespace HealthGateway.Admin.Server.Controllers
         [HttpGet]
         [Route("GetInactiveUsers")]
         [Produces("text/csv")]
-        public async Task<IActionResult> GetInactiveAdminUser(int inactiveDays, int timeOffset)
+        public async Task<IActionResult> GetInactiveAdminUser(int inactiveDays)
         {
-            return SendContentResponse("InactiveUsers", await dataExportService.GetInactiveUsers(inactiveDays, timeOffset).ConfigureAwait(true));
+            return SendContentResponse("InactiveUsers", await dataExportService.GetInactiveUsers(inactiveDays).ConfigureAwait(true));
         }
 
         /// <summary>
@@ -159,7 +158,6 @@ namespace HealthGateway.Admin.Server.Controllers
         /// </summary>
         /// <param name="startDateLocal">The starting date to get the user counts in the client's local time.</param>
         /// <param name="endDateLocal">The ending date for the query in the client's local time.</param>
-        /// <param name="timeOffset">The current timezone offset from the client browser to UTC.</param>
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A CSV of year of birth counts.</returns>
         /// <response code="200">Returns a CSV of year of birth counts.</response>
@@ -171,9 +169,9 @@ namespace HealthGateway.Admin.Server.Controllers
         [HttpGet]
         [Route("GetYearOfBirthCounts")]
         [Produces("text/csv")]
-        public async Task<FileStreamResult> GetYearOfBirthCounts([FromQuery] DateOnly startDateLocal, [FromQuery] DateOnly endDateLocal, [FromQuery] int timeOffset, CancellationToken ct)
+        public async Task<FileStreamResult> GetYearOfBirthCounts([FromQuery] DateOnly startDateLocal, [FromQuery] DateOnly endDateLocal, CancellationToken ct)
         {
-            Stream stream = await dataExportService.GetYearOfBirthCountsAsync(startDateLocal, endDateLocal, timeOffset, ct);
+            Stream stream = await dataExportService.GetYearOfBirthCountsAsync(startDateLocal, endDateLocal, ct);
             return SendContentResponse("YearOfBirthCounts", stream);
         }
 

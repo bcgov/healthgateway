@@ -147,6 +147,18 @@ public static class DateFormatter
                 : GetConfigurationValue<string>(configuration, UnixTzKey));
     }
 
+    /// <summary>
+    /// Gets local time offset from utc.
+    /// </summary>
+    /// <param name="configuration">The configuration to use.</param>
+    /// <param name="utcDateTime">The utc date time to derive offset from.</param>
+    /// <returns>TimeZoneInfo object representing local timezone.</returns>
+    public static TimeSpan GetLocalTimeOffset(IConfiguration configuration, DateTime utcDateTime)
+    {
+        TimeZoneInfo localTimeZone = GetLocalTimeZone(configuration);
+        return localTimeZone.GetUtcOffset(utcDateTime);
+    }
+
     private static T GetConfigurationValue<T>(IConfiguration cfg, string key)
     {
         return cfg.GetValue<T>(key)!;
