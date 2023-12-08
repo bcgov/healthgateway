@@ -39,8 +39,6 @@ namespace HealthGateway.Admin.Server.Controllers
         /// <summary>
         /// Retrieves user profiles.
         /// </summary>
-        /// <param name="startDate">The optional start date for the data.</param>
-        /// <param name="endDate">The optional end date for the data.</param>
         /// <returns>A CSV of user profiles.</returns>
         /// <response code="200">Returns a CSV of user profiles.</response>
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
@@ -51,9 +49,9 @@ namespace HealthGateway.Admin.Server.Controllers
         [HttpGet]
         [Route("GetUserProfiles")]
         [Produces("text/csv")]
-        public IActionResult GetUserProfiles(DateTime? startDate = null, DateTime? endDate = null)
+        public IActionResult GetUserProfiles()
         {
-            return SendContentResponse("UserProfiles", dataExportService.GetUserProfiles(startDate, endDate));
+            return SendContentResponse("UserProfiles", dataExportService.GetUserProfiles());
         }
 
         /// <summary>
@@ -78,8 +76,6 @@ namespace HealthGateway.Admin.Server.Controllers
         /// <summary>
         /// Retrieves user comment metadata.
         /// </summary>
-        /// <param name="startDate">The optional start date for the data.</param>
-        /// <param name="endDate">The optional end date for the data.</param>
         /// <returns>A CSV of user comment metadata.</returns>
         /// <response code="200">Returns a CSV of user comment metadata.</response>
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
@@ -90,16 +86,14 @@ namespace HealthGateway.Admin.Server.Controllers
         [HttpGet]
         [Route("GetComments")]
         [Produces("text/csv")]
-        public IActionResult GetComments(DateTime? startDate = null, DateTime? endDate = null)
+        public IActionResult GetComments()
         {
-            return SendContentResponse("Comments", dataExportService.GetComments(startDate, endDate));
+            return SendContentResponse("Comments", dataExportService.GetComments());
         }
 
         /// <summary>
         /// Retrieves user note metadata.
         /// </summary>
-        /// <param name="startDate">The optional start date for the data.</param>
-        /// <param name="endDate">The optional end date for the data.</param>
         /// <returns>A CSV of user note metadata.</returns>
         /// <response code="200">Returns a CSV of user note metadata.</response>
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
@@ -110,16 +104,14 @@ namespace HealthGateway.Admin.Server.Controllers
         [HttpGet]
         [Route("GetNotes")]
         [Produces("text/csv")]
-        public IActionResult GetNotes(DateTime? startDate = null, DateTime? endDate = null)
+        public IActionResult GetNotes()
         {
-            return SendContentResponse("Notes", dataExportService.GetNotes(startDate, endDate));
+            return SendContentResponse("Notes", dataExportService.GetNotes());
         }
 
         /// <summary>
         /// Retrieves ratings.
         /// </summary>
-        /// <param name="startDate">The optional start date for the data.</param>
-        /// <param name="endDate">The optional end date for the data.</param>
         /// <returns>A CSV of ratings.</returns>
         /// <response code="200">Returns a CSV of ratings.</response>
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
@@ -130,9 +122,9 @@ namespace HealthGateway.Admin.Server.Controllers
         [HttpGet]
         [Route("GetRatings")]
         [Produces("text/csv")]
-        public IActionResult GetRatings(DateTime? startDate = null, DateTime? endDate = null)
+        public IActionResult GetRatings()
         {
-            return SendContentResponse("Ratings", dataExportService.GetRatings(startDate, endDate));
+            return SendContentResponse("Ratings", dataExportService.GetRatings());
         }
 
         /// <summary>

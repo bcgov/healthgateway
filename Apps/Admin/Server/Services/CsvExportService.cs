@@ -55,28 +55,28 @@ namespace HealthGateway.Admin.Server.Services
         private const int Page = 0;
 
         /// <inheritdoc/>
-        public Stream GetComments(DateTime? startDate, DateTime? endDate)
+        public Stream GetComments()
         {
             DbResult<IEnumerable<Comment>> comments = commentDelegate.GetAll(Page, PageSize);
             return GetStream<Comment, CommentCsvMap>(comments.Payload);
         }
 
         /// <inheritdoc/>
-        public Stream GetNotes(DateTime? startDate, DateTime? endDate)
+        public Stream GetNotes()
         {
             DbResult<IEnumerable<Note>> notes = noteDelegate.GetAll(Page, PageSize);
             return GetStream<Note, NoteCsvMap>(notes.Payload);
         }
 
         /// <inheritdoc/>
-        public Stream GetUserProfiles(DateTime? startDate, DateTime? endDate)
+        public Stream GetUserProfiles()
         {
             DbResult<IEnumerable<UserProfile>> profiles = userProfileDelegate.GetAll(Page, PageSize);
             return GetStream<UserProfile, UserProfileCsvMap>(profiles.Payload);
         }
 
         /// <inheritdoc/>
-        public Stream GetRatings(DateTime? startDate, DateTime? endDate)
+        public Stream GetRatings()
         {
             DbResult<IEnumerable<Rating>> profiles = ratingDelegate.GetAll(Page, PageSize);
             return GetStream<Rating, UserProfileCsvMap>(profiles.Payload);
