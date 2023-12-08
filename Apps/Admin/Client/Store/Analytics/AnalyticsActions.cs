@@ -28,22 +28,22 @@ public static class AnalyticsActions
     /// <summary>
     /// The action representing the initiation of a user profiles load.
     /// </summary>
-    public record LoadUserProfilesAction : BaseAnalyticsLoadAction;
+    public record LoadUserProfilesAction;
 
     /// <summary>
     /// The action representing the initiation of a comments load.
     /// </summary>
-    public record LoadCommentsAction : BaseAnalyticsLoadAction;
+    public record LoadCommentsAction;
 
     /// <summary>
     /// The action representing the initiation of a notes load.
     /// </summary>
-    public record LoadNotesAction : BaseAnalyticsLoadAction;
+    public record LoadNotesAction;
 
     /// <summary>
     /// The action representing the initiation of a ratings load.
     /// </summary>
-    public record LoadRatingsAction : BaseAnalyticsLoadAction;
+    public record LoadRatingsAction;
 
     /// <summary>
     /// The action representing the initiation of an inactive users load.
