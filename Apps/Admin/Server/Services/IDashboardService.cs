@@ -38,10 +38,9 @@ namespace HealthGateway.Admin.Server.Services
         /// </summary>
         /// <param name="startDateLocal">The local start date to query.</param>
         /// <param name="endDateLocal">The local end date to query.</param>
-        /// <param name="timeOffset">The local timezone offset from UTC in minutes.</param>
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A model containing daily usage counts.</returns>
-        Task<DailyUsageCounts> GetDailyUsageCountsAsync(DateOnly startDateLocal, DateOnly endDateLocal, int timeOffset, CancellationToken ct = default);
+        Task<DailyUsageCounts> GetDailyUsageCountsAsync(DateOnly startDateLocal, DateOnly endDateLocal, CancellationToken ct = default);
 
         /// <summary>
         /// Retrieves a count of recurring users over a date range.
@@ -49,39 +48,35 @@ namespace HealthGateway.Admin.Server.Services
         /// <param name="dayCount">Minimum number of days users must have logged in within the period to count as recurring.</param>
         /// <param name="startDateLocal">The local start date to query.</param>
         /// <param name="endDateLocal">The local end date to query.</param>
-        /// <param name="timeOffset">The local timezone offset from UTC in minutes.</param>
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A count of recurring users.</returns>
-        Task<int> GetRecurringUserCountAsync(int dayCount, DateOnly startDateLocal, DateOnly endDateLocal, int timeOffset, CancellationToken ct = default);
+        Task<int> GetRecurringUserCountAsync(int dayCount, DateOnly startDateLocal, DateOnly endDateLocal, CancellationToken ct = default);
 
         /// <summary>
         /// Retrieves unique app login counts over a date range.
         /// </summary>
         /// <param name="startDateLocal">The local start date to query.</param>
         /// <param name="endDateLocal">The local end date to query.</param>
-        /// <param name="timeOffset">The local timezone offset from UTC in minutes.</param>
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The login counts for Health Gateway applications.</returns>
-        Task<AppLoginCounts> GetAppLoginCountsAsync(DateOnly startDateLocal, DateOnly endDateLocal, int timeOffset, CancellationToken ct = default);
+        Task<AppLoginCounts> GetAppLoginCountsAsync(DateOnly startDateLocal, DateOnly endDateLocal, CancellationToken ct = default);
 
         /// <summary>
         /// Retrieves app ratings over a date range.
         /// </summary>
         /// <param name="startDateLocal">The local start date to query.</param>
         /// <param name="endDateLocal">The local end date to query.</param>
-        /// <param name="timeOffset">The local timezone offset from UTC in minutes.</param>
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A dictionary pairing the ratings with the counts.</returns>
-        Task<IDictionary<string, int>> GetRatingsSummaryAsync(DateOnly startDateLocal, DateOnly endDateLocal, int timeOffset, CancellationToken ct = default);
+        Task<IDictionary<string, int>> GetRatingsSummaryAsync(DateOnly startDateLocal, DateOnly endDateLocal, CancellationToken ct = default);
 
         /// <summary>
         /// Retrieves age counts for users that have logged in between two dates.
         /// </summary>
         /// <param name="startDateLocal">The local start date to query.</param>
         /// <param name="endDateLocal">The local end date to query.</param>
-        /// <param name="timeOffset">The local timezone offset from UTC in minutes.</param>
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A dictionary mapping ages to user counts.</returns>
-        Task<IDictionary<int, int>> GetAgeCountsAsync(DateOnly startDateLocal, DateOnly endDateLocal, int timeOffset, CancellationToken ct = default);
+        Task<IDictionary<int, int>> GetAgeCountsAsync(DateOnly startDateLocal, DateOnly endDateLocal, CancellationToken ct = default);
     }
 }

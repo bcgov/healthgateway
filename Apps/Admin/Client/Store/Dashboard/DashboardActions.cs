@@ -56,11 +56,6 @@ public static class DashboardActions
         /// Gets the local end date to query.
         /// </summary>
         public required DateOnly EndDateLocal { get; init; }
-
-        /// <summary>
-        /// Gets the local timezone offset from UTC in minutes.
-        /// </summary>
-        public required int TimeOffset { get; init; }
     }
 
     /// <summary>
@@ -92,11 +87,6 @@ public static class DashboardActions
         /// Gets the local end date to query.
         /// </summary>
         public required DateOnly EndDateLocal { get; init; }
-
-        /// <summary>
-        /// Gets the local timezone offset from UTC in minutes.
-        /// </summary>
-        public required int TimeOffset { get; init; }
     }
 
     /// <summary>
@@ -123,11 +113,6 @@ public static class DashboardActions
         /// Gets the local end date to query.
         /// </summary>
         public required DateOnly EndDateLocal { get; init; }
-
-        /// <summary>
-        /// Gets the local timezone offset from UTC in minutes.
-        /// </summary>
-        public required int TimeOffset { get; init; }
     }
 
     /// <summary>
@@ -154,11 +139,6 @@ public static class DashboardActions
         /// Gets the local end date to query.
         /// </summary>
         public required DateOnly EndDateLocal { get; init; }
-
-        /// <summary>
-        /// Gets the local timezone offset from UTC in minutes.
-        /// </summary>
-        public required int TimeOffset { get; init; }
     }
 
     /// <summary>
@@ -185,11 +165,6 @@ public static class DashboardActions
         /// Gets the local end date to query.
         /// </summary>
         public required DateOnly EndDateLocal { get; init; }
-
-        /// <summary>
-        /// Gets the local timezone offset from UTC in minutes.
-        /// </summary>
-        public required int TimeOffset { get; init; }
     }
 
     /// <summary>
