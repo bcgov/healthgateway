@@ -128,12 +128,9 @@ public partial class DashboardPage : FluxorComponent
                     Days = value,
                     StartDateLocal = DateOnly.FromDateTime(this.UsageDateRangeStart),
                     EndDateLocal = DateOnly.FromDateTime(this.UsageDateRangeEnd),
-                    TimeOffset = this.TimeOffset,
                 });
         }
     }
-
-    private int TimeOffset { get; } = (int)TimeZoneInfo.Local.GetUtcOffset(DateTime.Now).TotalMinutes;
 
     private IEnumerable<DailyDataRow> TableData
     {
@@ -173,17 +170,17 @@ public partial class DashboardPage : FluxorComponent
     {
         DateOnly startDate = DateOnly.FromDateTime(this.DemographicsDateRangeStart);
         DateOnly endDate = DateOnly.FromDateTime(this.DemographicsDateRangeEnd);
-        this.Dispatcher.Dispatch(new DashboardActions.GetAppLoginCountsAction { StartDateLocal = startDate, EndDateLocal = endDate, TimeOffset = this.TimeOffset });
-        this.Dispatcher.Dispatch(new DashboardActions.GetRatingsSummaryAction { StartDateLocal = startDate, EndDateLocal = endDate, TimeOffset = this.TimeOffset });
-        this.Dispatcher.Dispatch(new DashboardActions.GetAgeCountsAction { StartDateLocal = startDate, EndDateLocal = endDate, TimeOffset = this.TimeOffset });
+        this.Dispatcher.Dispatch(new DashboardActions.GetAppLoginCountsAction { StartDateLocal = startDate, EndDateLocal = endDate });
+        this.Dispatcher.Dispatch(new DashboardActions.GetRatingsSummaryAction { StartDateLocal = startDate, EndDateLocal = endDate });
+        this.Dispatcher.Dispatch(new DashboardActions.GetAgeCountsAction { StartDateLocal = startDate, EndDateLocal = endDate });
     }
 
     private void RetrieveUsageData()
     {
         DateOnly startDate = DateOnly.FromDateTime(this.UsageDateRangeStart);
         DateOnly endDate = DateOnly.FromDateTime(this.UsageDateRangeEnd);
-        this.Dispatcher.Dispatch(new DashboardActions.GetDailyUsageCountsAction { StartDateLocal = startDate, EndDateLocal = endDate, TimeOffset = this.TimeOffset });
-        this.Dispatcher.Dispatch(new DashboardActions.GetRecurringUserCountAction { Days = this.UniqueDays, StartDateLocal = startDate, EndDateLocal = endDate, TimeOffset = this.TimeOffset });
+        this.Dispatcher.Dispatch(new DashboardActions.GetDailyUsageCountsAction { StartDateLocal = startDate, EndDateLocal = endDate });
+        this.Dispatcher.Dispatch(new DashboardActions.GetRecurringUserCountAction { Days = this.UniqueDays, StartDateLocal = startDate, EndDateLocal = endDate });
     }
 
     private ChartSeries GetAgeCountSeries()

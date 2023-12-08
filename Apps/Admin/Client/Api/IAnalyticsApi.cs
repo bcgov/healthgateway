@@ -57,10 +57,9 @@ public interface IAnalyticsApi
     /// Retrieves inactive users.
     /// </summary>
     /// <param name="inactiveDays">The days inactive to filter the users last login.</param>
-    /// <param name="timeOffset">The offset from the client browser to UTC.</param>
     /// <returns>A CSV of inactive users.</returns>
     [Get("/GetInactiveUsers")]
-    Task<HttpResponseMessage> GetInactiveUsersAsync(int inactiveDays, int timeOffset);
+    Task<HttpResponseMessage> GetInactiveUsersAsync(int inactiveDays);
 
     /// <summary>
     /// Retrieves user feedback.
@@ -74,8 +73,7 @@ public interface IAnalyticsApi
     /// </summary>
     /// <param name="startDateLocal">The local start date to query.</param>
     /// <param name="endDateLocal">The local end date to query.</param>
-    /// <param name="timeOffset">The offset from the client browser to UTC.</param>
     /// <returns>A CSV of year of birth counts.</returns>
     [Get("/GetYearOfBirthCounts")]
-    Task<HttpResponseMessage> GetYearOfBirthCountsAsync(DateOnly startDateLocal, DateOnly endDateLocal, int timeOffset);
+    Task<HttpResponseMessage> GetYearOfBirthCountsAsync(DateOnly startDateLocal, DateOnly endDateLocal);
 }

@@ -16,7 +16,10 @@
 namespace HealthGateway.Common.Data.Tests.Utils
 {
     using System;
+    using System.Collections.Generic;
+    using System.Linq;
     using HealthGateway.Common.Data.Utils;
+    using Microsoft.Extensions.Configuration;
     using Xunit;
 
     /// <summary>
@@ -175,6 +178,41 @@ namespace HealthGateway.Common.Data.Tests.Utils
             // Assert
             Assert.Equal(expectedDateTime, actualDateTime);
             Assert.Equal(expected, actual);
+        }
+
+        /// <summary>
+        /// Should get local time zone.
+        /// </summary>
+        /// <param name="unixLocalTimeZone">The local time zone configuration for unix.</param>
+        /// <param name="windowsLocalTimeZone">The local time zone configuration for windows.</param>
+        /// <param name="expectedHoursOffset">The local time span offset from UTC.</param>
+        [Theory]
+        [InlineData("America/Vancouver", "Pacific Standard Time", -8)]
+        [InlineData("America/Toronto", "Eastern Standard Time", -5)]
+        public void ShouldGetLocalOffset(string unixLocalTimeZone, string windowsLocalTimeZone, int expectedHoursOffset)
+        {
+            // Arrange
+            DateTime utcDate = new(2010, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+            TimeSpan expectedLocalTimeOffset = TimeSpan.FromHours(expectedHoursOffset);
+
+            // Act
+            TimeSpan actualLocalTimeOffset = DateFormatter.GetLocalTimeOffset(GetIConfigurationRoot(unixLocalTimeZone, windowsLocalTimeZone), utcDate);
+
+            // Assert
+            Assert.Equal(expectedLocalTimeOffset, actualLocalTimeOffset);
+        }
+
+        private static IConfigurationRoot GetIConfigurationRoot(string unixLocalTimeZone, string windowsLocalTimeZone)
+        {
+            Dictionary<string, string?> myConfiguration = new()
+            {
+                { "TimeZone:UnixTimeZoneId", unixLocalTimeZone },
+                { "TimeZone:WindowsTimeZoneId", windowsLocalTimeZone },
+            };
+
+            return new ConfigurationBuilder()
+                .AddInMemoryCollection(myConfiguration.ToList())
+                .Build();
         }
     }
 }

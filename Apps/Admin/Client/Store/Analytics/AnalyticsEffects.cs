@@ -116,7 +116,7 @@ public class AnalyticsEffects(ILogger<AnalyticsEffects> logger, IAnalyticsApi an
     {
         logger.LogInformation("Loading inactive users report");
 
-        HttpResponseMessage response = await analyticsApi.GetInactiveUsersAsync(action.InactiveDays, action.TimeOffset).ConfigureAwait(true);
+        HttpResponseMessage response = await analyticsApi.GetInactiveUsersAsync(action.InactiveDays).ConfigureAwait(true);
         logger.LogInformation("Inactive users report exported successfully!");
         if (response.IsSuccessStatusCode)
         {
@@ -160,7 +160,7 @@ public class AnalyticsEffects(ILogger<AnalyticsEffects> logger, IAnalyticsApi an
     {
         logger.LogInformation("Loading year of birth counts report");
 
-        HttpResponseMessage response = await analyticsApi.GetYearOfBirthCountsAsync(action.StartDateLocal, action.EndDateLocal, action.TimeOffset).ConfigureAwait(true);
+        HttpResponseMessage response = await analyticsApi.GetYearOfBirthCountsAsync(action.StartDateLocal, action.EndDateLocal).ConfigureAwait(true);
         logger.LogInformation("Year of birth counts report exported successfully!");
         if (response.IsSuccessStatusCode)
         {

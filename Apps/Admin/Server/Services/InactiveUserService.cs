@@ -80,7 +80,7 @@ public class InactiveUserService : IInactiveUserService
     }
 
     /// <inheritdoc/>
-    public async Task<RequestResult<List<AdminUserProfileView>>> GetInactiveUsers(int inactiveDays, int timeOffset)
+    public async Task<RequestResult<List<AdminUserProfileView>>> GetInactiveUsers(int inactiveDays)
     {
         List<AdminUserProfileView> inactiveUsers = new();
 
@@ -94,17 +94,16 @@ public class InactiveUserService : IInactiveUserService
         this.logger.LogDebug("Getting inactive users past {InactiveDays} day(s) from last login....", inactiveDays);
 
         // Inactive admin user profiles from DB
-        TimeSpan timeSpan = new(0, timeOffset, 0);
-        DbResult<IEnumerable<AdminUserProfile>> inactiveProfileResult = this.adminUserProfileDelegate.GetInactiveAdminUserProfiles(inactiveDays, timeSpan);
+        TimeZoneInfo localTimezone = DateFormatter.GetLocalTimeZone(this.configuration);
+        TimeSpan localTimeOffset = DateFormatter.GetLocalTimeOffset(this.configuration, DateTime.UtcNow);
+        DbResult<IEnumerable<AdminUserProfile>> inactiveProfileResult = this.adminUserProfileDelegate.GetInactiveAdminUserProfiles(inactiveDays, localTimeOffset);
 
         // Active admin user profiles from DB
-        DbResult<IEnumerable<AdminUserProfile>> activeProfileResult = this.adminUserProfileDelegate.GetActiveAdminUserProfiles(inactiveDays, timeSpan);
+        DbResult<IEnumerable<AdminUserProfile>> activeProfileResult = this.adminUserProfileDelegate.GetActiveAdminUserProfiles(inactiveDays, localTimeOffset);
 
         // Compare inactive users in DB to users in Keycloak
         if (inactiveProfileResult.Status == DbStatusCode.Read && activeProfileResult.Status == DbStatusCode.Read)
         {
-            TimeZoneInfo localTimezone = DateFormatter.GetLocalTimeZone(this.configuration);
-
             inactiveUsers.AddRange(
                 inactiveProfileResult.Payload.Select(x => AdminUserProfileMapUtils.ToUiModel(x, this.configuration, this.autoMapper, localTimezone))
                     .ToList());

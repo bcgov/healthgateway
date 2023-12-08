@@ -54,11 +54,6 @@ public static class AnalyticsActions
         /// Gets the minimum number of days since the user's last login that would qualify the user as inactive.
         /// </summary>
         public required int InactiveDays { get; init; }
-
-        /// <summary>
-        /// Gets the offset from the client browser to UTC.
-        /// </summary>
-        public required int TimeOffset { get; init; }
     }
 
     /// <summary>
@@ -80,11 +75,6 @@ public static class AnalyticsActions
         /// Gets the end date in local time.
         /// </summary>
         public required DateOnly EndDateLocal { get; init; }
-
-        /// <summary>
-        /// Gets the offset from the client browser to UTC.
-        /// </summary>
-        public required int TimeOffset { get; init; }
     }
 
     /// <summary>

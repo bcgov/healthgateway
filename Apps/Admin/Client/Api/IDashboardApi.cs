@@ -39,10 +39,9 @@ public interface IDashboardApi
     /// </summary>
     /// <param name="startDateLocal">The local start date to query.</param>
     /// <param name="endDateLocal">The local end date to query.</param>
-    /// <param name="timeOffset">The local timezone offset from UTC in minutes.</param>
     /// <returns>A model containing daily usage counts.</returns>
     [Get("/DailyUsageCounts")]
-    Task<DailyUsageCounts> GetDailyUsageCountsAsync(DateOnly startDateLocal, DateOnly endDateLocal, int timeOffset);
+    Task<DailyUsageCounts> GetDailyUsageCountsAsync(DateOnly startDateLocal, DateOnly endDateLocal);
 
     /// <summary>
     /// Retrieves a count of recurring users over a date range.
@@ -50,38 +49,34 @@ public interface IDashboardApi
     /// <param name="days">Minimum number of days users must have logged in within the period to count as recurring.</param>
     /// <param name="startDateLocal">The local start date to query.</param>
     /// <param name="endDateLocal">The local end date to query.</param>
-    /// <param name="timeOffset">The local timezone offset from UTC in minutes.</param>
     /// <returns>A count of recurring users.</returns>
     [Get("/RecurringUserCount")]
-    Task<int> GetRecurringUserCountAsync(int days, DateOnly startDateLocal, DateOnly endDateLocal, int timeOffset);
+    Task<int> GetRecurringUserCountAsync(int days, DateOnly startDateLocal, DateOnly endDateLocal);
 
     /// <summary>
     /// Retrieves unique app login counts over a date range.
     /// </summary>
     /// <param name="startDateLocal">The local start date to query.</param>
     /// <param name="endDateLocal">The local end date to query.</param>
-    /// <param name="timeOffset">The local timezone offset from UTC in minutes.</param>
     /// <returns>The login counts for Health Gateway applications.</returns>
     [Get("/AppLoginCounts")]
-    Task<AppLoginCounts> GetAppLoginCountsAsync(DateOnly startDateLocal, DateOnly endDateLocal, int timeOffset);
+    Task<AppLoginCounts> GetAppLoginCountsAsync(DateOnly startDateLocal, DateOnly endDateLocal);
 
     /// <summary>
     /// Retrieves the ratings summary.
     /// </summary>
     /// <param name="startDateLocal">The local start date to query.</param>
     /// <param name="endDateLocal">The local end date to query.</param>
-    /// <param name="timeOffset">The local timezone offset from UTC in minutes.</param>
     /// <returns>A dictionary pairing the ratings with the counts.</returns>
     [Get("/Ratings/Summary")]
-    Task<IDictionary<string, int>> GetRatingsSummaryAsync(DateOnly startDateLocal, DateOnly endDateLocal, int timeOffset);
+    Task<IDictionary<string, int>> GetRatingsSummaryAsync(DateOnly startDateLocal, DateOnly endDateLocal);
 
     /// <summary>
     /// Retrieves age counts for users that have logged in between two dates.
     /// </summary>
     /// <param name="startDateLocal">The local start date to query.</param>
     /// <param name="endDateLocal">The local end date to query.</param>
-    /// <param name="timeOffset">The local timezone offset from UTC in minutes.</param>
     /// <returns>A dictionary mapping ages to user counts.</returns>
     [Get("/AgeCounts")]
-    Task<IDictionary<int, int>> GetAgeCountsAsync(DateOnly startDateLocal, DateOnly endDateLocal, int timeOffset);
+    Task<IDictionary<int, int>> GetAgeCountsAsync(DateOnly startDateLocal, DateOnly endDateLocal);
 }
