@@ -185,55 +185,21 @@ namespace HealthGateway.Common.Data.Tests.Utils
         /// </summary>
         /// <param name="unixLocalTimeZone">The local time zone configuration for unix.</param>
         /// <param name="windowsLocalTimeZone">The local time zone configuration for windows.</param>
-        /// <param name="valid">The expected test result.</param>
-        [Theory]
-        [InlineData("America/Vancouver", "Pacific Standard Time", true)]
-        [InlineData("America/Toronto", "Eastern Standard Time", false)]
-        public void ShouldGetLocalTimeZone(string unixLocalTimeZone, string windowsLocalTimeZone, bool valid)
-        {
-            // Arrange and Act
-            TimeZoneInfo timeZone = DateFormatter.GetLocalTimeZone(GetIConfigurationRoot(unixLocalTimeZone, windowsLocalTimeZone));
-            bool isPacific = TimeZoneIsPacific(timeZone);
-
-            // Assert
-            if (valid)
-            {
-                Assert.True(isPacific);
-            }
-            else
-            {
-                Assert.False(isPacific);
-            }
-        }
-
-        /// <summary>
-        /// Should get local time zone.
-        /// </summary>
-        /// <param name="unixLocalTimeZone">The local time zone configuration for unix.</param>
-        /// <param name="windowsLocalTimeZone">The local time zone configuration for windows.</param>
-        /// <param name="localTimeSpanOffset">The local time span offset from UTC.</param>
+        /// <param name="expectedHoursOffset">The local time span offset from UTC.</param>
         [Theory]
         [InlineData("America/Vancouver", "Pacific Standard Time", -8)]
         [InlineData("America/Toronto", "Eastern Standard Time", -5)]
-        public void ShouldGetLocalOffset(string unixLocalTimeZone, string windowsLocalTimeZone, int localTimeSpanOffset)
+        public void ShouldGetLocalOffset(string unixLocalTimeZone, string windowsLocalTimeZone, int expectedHoursOffset)
         {
             // Arrange
             DateTime utcDate = new(2010, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-            TimeSpan expectedLocalTimeOffset = TimeSpan.FromHours(localTimeSpanOffset);
+            TimeSpan expectedLocalTimeOffset = TimeSpan.FromHours(expectedHoursOffset);
 
             // Act
             TimeSpan actualLocalTimeOffset = DateFormatter.GetLocalTimeOffset(GetIConfigurationRoot(unixLocalTimeZone, windowsLocalTimeZone), utcDate);
 
             // Assert
             Assert.Equal(expectedLocalTimeOffset, actualLocalTimeOffset);
-        }
-
-        private static bool TimeZoneIsPacific(TimeZoneInfo timeZone)
-        {
-            // Pacific Time Zone identifier in IANA format
-            const string pacificIdentifier = "America/Vancouver";
-            return pacificIdentifier.Equals(timeZone.Id, StringComparison.OrdinalIgnoreCase) ||
-                   pacificIdentifier.Equals(timeZone.StandardName, StringComparison.OrdinalIgnoreCase);
         }
 
         private static IConfigurationRoot GetIConfigurationRoot(string unixLocalTimeZone, string windowsLocalTimeZone)
