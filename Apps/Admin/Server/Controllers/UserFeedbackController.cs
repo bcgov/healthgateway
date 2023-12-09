@@ -17,6 +17,8 @@
 namespace HealthGateway.Admin.Server.Controllers
 {
     using System.Collections.Generic;
+    using System.Threading;
+    using System.Threading.Tasks;
     using HealthGateway.Admin.Common.Models;
     using HealthGateway.Admin.Server.Services;
     using HealthGateway.Common.Data.ViewModels;
@@ -37,6 +39,7 @@ namespace HealthGateway.Admin.Server.Controllers
         /// <summary>
         /// Retrieves a list of user feedbacks.
         /// </summary>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The list of user feedbacks.</returns>
         /// <response code="200">Returns the list of user feedbacks.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
@@ -45,9 +48,9 @@ namespace HealthGateway.Admin.Server.Controllers
         /// is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.
         /// </response>
         [HttpGet]
-        public RequestResult<IList<UserFeedbackView>> GetFeedbackList()
+        public async Task<RequestResult<IList<UserFeedbackView>>> GetFeedbackList(CancellationToken ct)
         {
-            return feedbackService.GetUserFeedback();
+            return await feedbackService.GetUserFeedbackAsync(ct);
         }
 
         /// <summary>

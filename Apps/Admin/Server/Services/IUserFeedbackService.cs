@@ -17,6 +17,8 @@ namespace HealthGateway.Admin.Server.Services
 {
     using System;
     using System.Collections.Generic;
+    using System.Threading;
+    using System.Threading.Tasks;
     using HealthGateway.Admin.Common.Models;
     using HealthGateway.Common.Data.ViewModels;
 
@@ -28,8 +30,9 @@ namespace HealthGateway.Admin.Server.Services
         /// <summary>
         /// Retrieves the user feedback.
         /// </summary>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A list of user feedback wrapped in a request result.</returns>
-        RequestResult<IList<UserFeedbackView>> GetUserFeedback();
+        Task<RequestResult<IList<UserFeedbackView>>> GetUserFeedbackAsync(CancellationToken ct = default);
 
         /// <summary>
         /// Updates the user feedback.

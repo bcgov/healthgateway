@@ -18,6 +18,8 @@ namespace HealthGateway.Admin.Server.Services
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading;
+    using System.Threading.Tasks;
     using AutoMapper;
     using HealthGateway.Admin.Common.Models;
     using HealthGateway.Admin.Server.MapUtils;
@@ -44,23 +46,23 @@ namespace HealthGateway.Admin.Server.Services
         IMapper autoMapper) : IUserFeedbackService
     {
         /// <inheritdoc/>
-        public RequestResult<IList<UserFeedbackView>> GetUserFeedback()
+        public async Task<RequestResult<IList<UserFeedbackView>>> GetUserFeedbackAsync(CancellationToken ct = default)
         {
             logger.LogTrace("Retrieving user feedback...");
-            DbResult<IList<UserFeedback>> userFeedbackResult = feedbackDelegate.GetAllUserFeedbackEntries();
+            IList<UserFeedback> userFeedback = await feedbackDelegate.GetAllUserFeedbackEntriesAsync(ct: ct);
 
             logger.LogTrace("Retrieving user emails...");
-            List<string> hdids = userFeedbackResult.Payload
+            List<string> hdids = userFeedback
                 .Where(f => f.UserProfileId != null)
                 .Select(f => f.UserProfileId!)
                 .Distinct()
                 .ToList();
-            DbResult<List<UserProfile>> userProfileResult = userProfileDelegate.GetUserProfiles(hdids);
-            Dictionary<string, string?> profileEmails = userProfileResult.Payload.ToDictionary(p => p.HdId, p => p.Email);
+            IList<UserProfile> userProfiles = await userProfileDelegate.GetUserProfilesAsync(hdids, ct);
+            Dictionary<string, string?> profileEmails = userProfiles.ToDictionary(p => p.HdId, p => p.Email);
 
             RequestResult<IList<UserFeedbackView>> result = new()
             {
-                ResourcePayload = userFeedbackResult.Payload.Select(
+                ResourcePayload = userFeedback.Select(
                         p =>
                         {
                             string? hdid = p.UserProfileId;
@@ -74,7 +76,7 @@ namespace HealthGateway.Admin.Server.Services
                         })
                     .ToList(),
                 ResultStatus = ResultType.Success,
-                TotalResultCount = userFeedbackResult.Payload.Count,
+                TotalResultCount = userFeedback.Count,
             };
 
             return result;
