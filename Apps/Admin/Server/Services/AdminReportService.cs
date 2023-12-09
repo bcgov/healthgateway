@@ -35,7 +35,7 @@ namespace HealthGateway.Admin.Server.Services
     public class AdminReportService(IDelegationDelegate delegationDelegate, IBlockedAccessDelegate blockedAccessDelegate, IPatientRepository patientRepository, ILogger logger) : IAdminReportService
     {
         /// <inheritdoc/>
-        public async Task<ProtectedDependentReport> GetProtectedDependentsReportAsync(int page, int pageSize, SortDirection sortDirection, CancellationToken ct)
+        public async Task<ProtectedDependentReport> GetProtectedDependentsReportAsync(int page, int pageSize, SortDirection sortDirection, CancellationToken ct = default)
         {
             (IList<string> hdids, int totalHdids) = await delegationDelegate.GetProtectedDependentHdidsAsync(page, pageSize, sortDirection, ct);
 
@@ -61,7 +61,7 @@ namespace HealthGateway.Admin.Server.Services
         }
 
         /// <inheritdoc/>
-        public async Task<IEnumerable<BlockedAccessRecord>> GetBlockedAccessReportAsync(CancellationToken ct)
+        public async Task<IEnumerable<BlockedAccessRecord>> GetBlockedAccessReportAsync(CancellationToken ct = default)
         {
             IList<BlockedAccess> records = await blockedAccessDelegate.GetAllAsync(ct);
             return records
