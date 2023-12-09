@@ -16,6 +16,7 @@
 namespace HealthGateway.Common.Api
 {
     using System.Collections.Generic;
+    using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.Models.PHSA;
     using Refit;
@@ -28,33 +29,37 @@ namespace HealthGateway.Common.Api
         /// <summary>
         /// Retrieves broadcasts.
         /// </summary>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A response containing the collection of broadcasts.</returns>
         [Get("/system-broadcasts")]
-        Task<IEnumerable<BroadcastResponse>> GetBroadcastsAsync();
+        Task<IEnumerable<BroadcastResponse>> GetBroadcastsAsync(CancellationToken ct);
 
         /// <summary>
         /// Creates a broadcast.
         /// </summary>
         /// <param name="request">The broadcast to create.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A response containing the broadcast that was created.</returns>
         [Post("/system-broadcasts")]
-        Task<BroadcastResponse> CreateBroadcastAsync([Body] BroadcastRequest request);
+        Task<BroadcastResponse> CreateBroadcastAsync([Body] BroadcastRequest request, CancellationToken ct);
 
         /// <summary>
         /// Updates a broadcast.
         /// </summary>
         /// <param name="id">The id of the broadcast that is being updated.</param>
         /// <param name="request">The broadcast values to update.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A response containing the broadcast that was updated.</returns>
         [Put("/system-broadcasts/{id}")]
-        Task<BroadcastResponse> UpdateBroadcastAsync(string id, [Body] BroadcastRequest request);
+        Task<BroadcastResponse> UpdateBroadcastAsync(string id, [Body] BroadcastRequest request, CancellationToken ct);
 
         /// <summary>
         /// Deletes a broadcast.
         /// </summary>
         /// <param name="id">The id of the broadcast that is being deleted.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A response indicating success or failure.</returns>
         [Delete("/system-broadcasts/{id}")]
-        Task DeleteBroadcastAsync(string id);
+        Task DeleteBroadcastAsync(string id, CancellationToken ct);
     }
 }
