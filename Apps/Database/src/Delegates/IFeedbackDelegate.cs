@@ -17,6 +17,8 @@ namespace HealthGateway.Database.Delegates
 {
     using System;
     using System.Collections.Generic;
+    using System.Threading;
+    using System.Threading.Tasks;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
 
@@ -67,7 +69,8 @@ namespace HealthGateway.Database.Delegates
         /// Fetches the UserFeedback with FeedbackTag associations from the database.
         /// </summary>
         /// <param name="includeUserProfile">Indicates whether user profile should be included in the returned user feedback.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A DB result which encapsulates the return objects and status.</returns>
-        DbResult<IList<UserFeedback>> GetAllUserFeedbackEntries(bool includeUserProfile = false);
+        Task<IList<UserFeedback>> GetAllUserFeedbackEntriesAsync(bool includeUserProfile = false, CancellationToken ct = default);
     }
 }

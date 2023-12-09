@@ -19,6 +19,8 @@ namespace HealthGateway.Database.Delegates
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using System.Linq;
+    using System.Threading;
+    using System.Threading.Tasks;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Context;
     using HealthGateway.Database.Models;
@@ -154,32 +156,21 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public DbResult<IList<UserFeedback>> GetAllUserFeedbackEntries(bool includeUserProfile = false)
+        public async Task<IList<UserFeedback>> GetAllUserFeedbackEntriesAsync(bool includeUserProfile = false, CancellationToken ct = default)
         {
             this.logger.LogTrace("Getting all user feedback entries - includeUserProfile: {IncludeUserProfile}", includeUserProfile);
+
+            IQueryable<UserFeedback> query = this.dbContext.UserFeedback;
             if (includeUserProfile)
             {
-                return new()
-                {
-                    Payload = this.dbContext.UserFeedback
-                        .Include(f => f.UserProfile)
-                        .Include(f => f.Tags)
-                        .ThenInclude(t => t.AdminTag)
-                        .OrderByDescending(f => f.CreatedDateTime)
-                        .ToList(),
-                    Status = DbStatusCode.Read,
-                };
+                query = query.Include(f => f.UserProfile);
             }
 
-            return new()
-            {
-                Payload = this.dbContext.UserFeedback
-                    .Include(f => f.Tags)
-                    .ThenInclude(t => t.AdminTag)
-                    .OrderByDescending(f => f.CreatedDateTime)
-                    .ToList(),
-                Status = DbStatusCode.Read,
-            };
+            return await query
+                .Include(f => f.Tags)
+                .ThenInclude(t => t.AdminTag)
+                .OrderByDescending(f => f.CreatedDateTime)
+                .ToListAsync(ct);
         }
     }
 }

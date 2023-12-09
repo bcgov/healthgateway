@@ -20,6 +20,8 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text.Json;
+using System.Threading;
+using System.Threading.Tasks;
 using HealthGateway.Database.Constants;
 using HealthGateway.Database.Context;
 using HealthGateway.Database.Models;
@@ -39,9 +41,7 @@ public class DbAdminUserProfileDelegate : IAdminUserProfileDelegate
     /// </summary>
     /// <param name="logger">Injected Logger Provider.</param>
     /// <param name="dbContext">The context to be used when accessing the database.</param>
-    public DbAdminUserProfileDelegate(
-        ILogger<DbAdminUserProfileDelegate> logger,
-        GatewayDbContext dbContext)
+    public DbAdminUserProfileDelegate(ILogger<DbAdminUserProfileDelegate> logger, GatewayDbContext dbContext)
     {
         this.logger = logger;
         this.dbContext = dbContext;
@@ -70,42 +70,27 @@ public class DbAdminUserProfileDelegate : IAdminUserProfileDelegate
     }
 
     /// <inheritdoc/>
-    public DbResult<IEnumerable<AdminUserProfile>> GetActiveAdminUserProfiles(int activeDays, TimeSpan timeOffset)
+    public async Task<IList<AdminUserProfile>> GetActiveAdminUserProfilesAsync(int activeDays, TimeSpan timeOffset, CancellationToken ct = default)
     {
         this.logger.LogTrace("Retrieving all the active admin user profiles since {ActiveDays} day(s) ago...", activeDays);
-
-        DbResult<IEnumerable<AdminUserProfile>> result = new()
-        {
-            Payload = this.dbContext.AdminUserProfile
-                .Where(profile => profile.LastLoginDateTime.AddMinutes(timeOffset.TotalMinutes).Date >=
-                                    DateTime.UtcNow.AddMinutes(timeOffset.TotalMinutes).AddDays(-activeDays).Date)
-                .OrderByDescending(profile => profile.LastLoginDateTime)
-                .ToList(),
-            Status = DbStatusCode.Read,
-        };
-
-        this.logger.LogTrace("Finished retrieving {Count} active admin user profiles since {ActiveDays} day(s) ago...", result.Payload.Count(), activeDays);
-        return result;
+        return await this.dbContext.AdminUserProfile
+            .Where(
+                profile => profile.LastLoginDateTime.AddMinutes(timeOffset.TotalMinutes).Date >=
+                           DateTime.UtcNow.AddMinutes(timeOffset.TotalMinutes).AddDays(-activeDays).Date)
+            .OrderByDescending(profile => profile.LastLoginDateTime)
+            .ToListAsync(ct);
     }
 
     /// <inheritdoc/>
-    public DbResult<IEnumerable<AdminUserProfile>> GetInactiveAdminUserProfiles(int inactiveDays, TimeSpan timeOffset)
+    public async Task<IList<AdminUserProfile>> GetInactiveAdminUserProfilesAsync(int inactiveDays, TimeSpan timeOffset, CancellationToken ct = default)
     {
         this.logger.LogTrace("Retrieving all the inactive admin user profiles for the past {InactiveDays} day(s)...", inactiveDays);
-
-        DbResult<IEnumerable<AdminUserProfile>> result = new()
-        {
-            Payload = this.dbContext.AdminUserProfile
-                .Where(
-                    profile => profile.LastLoginDateTime.AddMinutes(timeOffset.TotalMinutes).Date <=
-                                DateTime.UtcNow.AddMinutes(timeOffset.TotalMinutes).AddDays(-inactiveDays).Date)
-                .OrderByDescending(profile => profile.LastLoginDateTime)
-                .ToList(),
-            Status = DbStatusCode.Read,
-        };
-
-        this.logger.LogTrace("Finished retrieving {Count} inactive admin user profiles for the past {InactiveDays} day(s)...", result.Payload.Count(), inactiveDays);
-        return result;
+        return await this.dbContext.AdminUserProfile
+            .Where(
+                profile =>
+                    profile.LastLoginDateTime.AddMinutes(timeOffset.TotalMinutes).Date <= DateTime.UtcNow.AddMinutes(timeOffset.TotalMinutes).AddDays(-inactiveDays).Date)
+            .OrderByDescending(profile => profile.LastLoginDateTime)
+            .ToListAsync(ct);
     }
 
     /// <inheritdoc/>

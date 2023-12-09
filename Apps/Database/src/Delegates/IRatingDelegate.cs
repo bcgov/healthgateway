@@ -39,8 +39,9 @@ namespace HealthGateway.Database.Delegates
         /// </summary>
         /// <param name="page">The starting offset for the query.</param>
         /// <param name="pageSize">The maximum amount of rows to return.</param>
-        /// <returns>A list of Ratings wrapped in a DBResult.</returns>
-        DbResult<IEnumerable<Rating>> GetAll(int page, int pageSize);
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
+        /// <returns>A list of Ratings.</returns>
+        Task<IList<Rating>> GetAllAsync(int page, int pageSize, CancellationToken ct = default);
 
         /// <summary>
         /// Gets the ratings summary.
