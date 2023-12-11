@@ -140,6 +140,16 @@ variable "client_pcare" {
   description = "Primary Care client configuration"
 }
 
+variable "client_icarus" {
+  type = object({
+    id              = optional(string, "pcare")
+    valid_redirects = list(string)
+    web_origins     = list(string)
+    token_lifespan  = number
+  })
+  description = "Health Gateway Salesforce client configuration"
+}
+
 variable "client_hg_phsa" {
   type = object({
     id              = optional(string, "hg-phsa")
