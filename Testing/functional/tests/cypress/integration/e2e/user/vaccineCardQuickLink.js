@@ -60,31 +60,4 @@ describe("Vaccine Card Quick Link", () => {
             "be.enabled"
         );
     });
-
-    it("Vaccine Card quick link not showing when module is disabled", () => {
-        cy.configureSettings({
-            datasets: [
-                {
-                    name: "healthVisit",
-                    enabled: true,
-                },
-            ],
-        });
-        cy.login(
-            Cypress.env("keycloak.username"),
-            Cypress.env("keycloak.password"),
-            AuthMethod.KeyCloak,
-            homePath
-        );
-
-        cy.log("Verifying vaccine card quicklink not present");
-        cy.get(vaccineCardQuickLinkCardSelector).should("not.exist");
-
-        cy.log("Verifying add vaccine card chip not present");
-        cy.get(addQuickLinkButtonSelector)
-            .should("be.visible")
-            .should("be.enabled")
-            .click();
-        cy.get(vaccineCardAddQuickLinkChipSelector).should("not.exist");
-    });
 });

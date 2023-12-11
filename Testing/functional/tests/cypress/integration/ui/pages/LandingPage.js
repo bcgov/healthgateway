@@ -129,7 +129,7 @@ describe("Landing Page", () => {
         cy.get("[data-testid=footer]").should("not.exist");
     });
 
-    it("Validate clinical doc tile when module enabled", () => {
+    it("Validate clinical doc tile when dataset enabled", () => {
         cy.configureSettings({
             datasets: [
                 {
@@ -144,7 +144,7 @@ describe("Landing Page", () => {
         );
     });
 
-    it("Validate no clinical doc tile when module not enabled", () => {
+    it("Validate no clinical doc tile when dataset disabled", () => {
         cy.configureSettings({
             datasets: [
                 {
