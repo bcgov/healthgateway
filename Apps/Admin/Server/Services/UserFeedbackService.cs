@@ -83,7 +83,7 @@ namespace HealthGateway.Admin.Server.Services
         }
 
         /// <inheritdoc/>
-        public RequestResult<UserFeedbackView> UpdateFeedbackReview(UserFeedbackView feedback)
+        public async Task<RequestResult<UserFeedbackView>> UpdateFeedbackReviewAsync(UserFeedbackView feedback, CancellationToken ct = default)
         {
             logger.LogTrace("Updating user feedback...");
 
@@ -94,10 +94,10 @@ namespace HealthGateway.Admin.Server.Services
 
             feedbackDelegate.UpdateUserFeedback(autoMapper.Map<UserFeedback>(feedback));
 
-            DbResult<UserFeedback> userFeedbackResult = feedbackDelegate.GetUserFeedbackWithFeedbackTags(feedback.Id);
+            DbResult<UserFeedback> userFeedbackResult = await feedbackDelegate.GetUserFeedbackWithFeedbackTagsAsync(feedback.Id, ct);
             if (userFeedbackResult.Status == DbStatusCode.Read)
             {
-                string email = this.GetUserEmail(userFeedbackResult.Payload.UserProfileId);
+                string email = await this.GetUserEmail(userFeedbackResult.Payload.UserProfileId);
                 result.ResourcePayload = UserFeedbackMapUtils.ToUiModel(userFeedbackResult.Payload, email, autoMapper);
                 result.ResultStatus = ResultType.Success;
             }
@@ -106,13 +106,13 @@ namespace HealthGateway.Admin.Server.Services
         }
 
         /// <inheritdoc/>
-        public RequestResult<IList<AdminTagView>> GetAllTags()
+        public async Task<RequestResult<IList<AdminTagView>>> GetAllTagsAsync(CancellationToken ct = default)
         {
             logger.LogTrace("Retrieving admin tags");
-            DbResult<IEnumerable<AdminTag>> adminTags = adminTagDelegate.GetAll();
+            IEnumerable<AdminTag> adminTags = await adminTagDelegate.GetAllAsync(ct);
 
             logger.LogDebug("Finished retrieving admin tags");
-            IList<AdminTagView> adminTagViews = autoMapper.Map<IList<AdminTagView>>(adminTags.Payload);
+            IList<AdminTagView> adminTagViews = autoMapper.Map<IList<AdminTagView>>(adminTags);
             return new RequestResult<IList<AdminTagView>>
             {
                 ResourcePayload = adminTagViews,
@@ -122,7 +122,7 @@ namespace HealthGateway.Admin.Server.Services
         }
 
         /// <inheritdoc/>
-        public RequestResult<AdminTagView> CreateTag(string tagName)
+        public async Task<RequestResult<AdminTagView>> CreateTagAsync(string tagName, CancellationToken ct = default)
         {
             RequestResult<AdminTagView> retVal = new()
             {
@@ -130,7 +130,7 @@ namespace HealthGateway.Admin.Server.Services
             };
 
             logger.LogTrace("Creating new admin tag... {TagName}", tagName);
-            DbResult<AdminTag> tagResult = adminTagDelegate.Add(new() { Name = tagName });
+            DbResult<AdminTag> tagResult = await adminTagDelegate.AddAsync(new() { Name = tagName }, true, ct);
             if (tagResult.Status == DbStatusCode.Created)
             {
                 retVal.ResultStatus = ResultType.Success;
@@ -145,7 +145,7 @@ namespace HealthGateway.Admin.Server.Services
         }
 
         /// <inheritdoc/>
-        public RequestResult<AdminTagView> DeleteTag(AdminTagView tag)
+        public async Task<RequestResult<AdminTagView>> DeleteTagAsync(AdminTagView tag, CancellationToken ct = default)
         {
             RequestResult<AdminTagView> retVal = new()
             {
@@ -153,7 +153,7 @@ namespace HealthGateway.Admin.Server.Services
             };
 
             logger.LogTrace("Deleting admin tag... {TagName}", tag.Name);
-            DbResult<AdminTag> tagResult = adminTagDelegate.Delete(autoMapper.Map<AdminTag>(tag));
+            DbResult<AdminTag> tagResult = await adminTagDelegate.DeleteAsync(autoMapper.Map<AdminTag>(tag), true, ct);
             if (tagResult.Status == DbStatusCode.Deleted)
             {
                 retVal.ResultStatus = ResultType.Success;
@@ -168,7 +168,7 @@ namespace HealthGateway.Admin.Server.Services
         }
 
         /// <inheritdoc/>
-        public RequestResult<UserFeedbackView> AssociateFeedbackTags(Guid userFeedbackId, IList<Guid> adminTagIds)
+        public async Task<RequestResult<UserFeedbackView>> AssociateFeedbackTagsAsync(Guid userFeedbackId, IList<Guid> adminTagIds, CancellationToken ct = default)
         {
             logger.LogTrace("Adding admin tags {AdminTagIds} to feedback {Feedback}", adminTagIds, userFeedbackId.ToString());
 
@@ -177,8 +177,8 @@ namespace HealthGateway.Admin.Server.Services
                 ResultStatus = ResultType.Error,
             };
 
-            DbResult<UserFeedback> userFeedbackResult = feedbackDelegate.GetUserFeedbackWithFeedbackTags(userFeedbackId);
-            DbResult<IEnumerable<AdminTag>> adminTagResult = adminTagDelegate.GetAdminTags(adminTagIds);
+            DbResult<UserFeedback> userFeedbackResult = await feedbackDelegate.GetUserFeedbackWithFeedbackTagsAsync(userFeedbackId, ct);
+            DbResult<IEnumerable<AdminTag>> adminTagResult = await adminTagDelegate.GetAdminTagsAsync(adminTagIds, ct);
 
             if (userFeedbackResult.Status == DbStatusCode.Read && adminTagResult.Status == DbStatusCode.Read)
             {
@@ -200,7 +200,7 @@ namespace HealthGateway.Admin.Server.Services
 
                 if (savedUserFeedbackResult.Status == DbStatusCode.Updated)
                 {
-                    string email = this.GetUserEmail(userFeedback.UserProfileId);
+                    string email = await this.GetUserEmail(userFeedback.UserProfileId);
                     result.ResourcePayload = UserFeedbackMapUtils.ToUiModel(userFeedback, email, autoMapper);
                     result.ResultStatus = ResultType.Success;
                 }
@@ -223,15 +223,15 @@ namespace HealthGateway.Admin.Server.Services
             return result;
         }
 
-        private string GetUserEmail(string? hdid)
+        private async Task<string> GetUserEmail(string? hdid)
         {
             string email = string.Empty;
             if (hdid != null)
             {
-                DbResult<UserProfile> userProfileResult = userProfileDelegate.GetUserProfile(hdid);
-                if (userProfileResult.Status == DbStatusCode.Read)
+                UserProfile? userProfile = await userProfileDelegate.GetUserProfileAsync(hdid);
+                if (userProfile != null)
                 {
-                    email = userProfileResult.Payload.Email ?? string.Empty;
+                    email = userProfile.Email ?? string.Empty;
                 }
             }
 

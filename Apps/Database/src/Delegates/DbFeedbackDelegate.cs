@@ -130,14 +130,14 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public DbResult<UserFeedback> GetUserFeedbackWithFeedbackTags(Guid feedbackId)
+        public async Task<DbResult<UserFeedback>> GetUserFeedbackWithFeedbackTagsAsync(Guid feedbackId, CancellationToken ct = default)
         {
             this.logger.LogTrace("Getting user feedback with associations from DB {FeedbackId}", feedbackId);
-            UserFeedback? feedback = this.dbContext.UserFeedback
+            UserFeedback? feedback = await this.dbContext.UserFeedback
                 .Where(f => f.Id == feedbackId)
                 .Include(f => f.Tags)
                 .ThenInclude(t => t.AdminTag)
-                .SingleOrDefault();
+                .SingleOrDefaultAsync(ct);
 
             DbResult<UserFeedback> result = new();
             if (feedback != null)

@@ -174,7 +174,7 @@ namespace HealthGateway.Database.Delegates
         /// <inheritdoc/>
         public async Task<UserProfile?> GetUserProfileAsync(string hdid)
         {
-            return await this.dbContext.UserProfile.FindAsync(hdid).ConfigureAwait(true);
+            return await this.dbContext.UserProfile.FindAsync(hdid);
         }
 
         /// <inheritdoc/>
