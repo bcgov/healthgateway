@@ -142,7 +142,7 @@ variable "client_pcare" {
 
 variable "client_icarus" {
   type = object({
-    id              = optional(string, "pcare")
+    id              = optional(string, "icarus")
     valid_redirects = list(string)
     web_origins     = list(string)
     token_lifespan  = number
