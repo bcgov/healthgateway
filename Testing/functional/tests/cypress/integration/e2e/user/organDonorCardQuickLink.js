@@ -90,7 +90,7 @@ describe("Disabling organ donor services", () => {
         cy.get(organDonorAddQuickLinkChipSelector).should("not.exist");
     };
 
-    it("Should not show quick link and settings when services module is disabled", () => {
+    it("Should not show quick link and settings when organ donor service is disabled", () => {
         cy.configureSettings({
             datasets: [
                 {
@@ -110,7 +110,7 @@ describe("Disabling organ donor services", () => {
         testOrganDonorNotPresent(cy);
     });
 
-    it("Should not show quick link and settings when services.organDonor module is disabled", () => {
+    it("Should not show quick link and settings when organ donor service is disabled", () => {
         cy.configureSettings({
             datasets: [
                 {

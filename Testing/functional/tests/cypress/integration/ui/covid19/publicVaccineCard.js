@@ -192,8 +192,8 @@ describe("Public Vaccine Card Downloads", () => {
     });
 });
 
-describe("Public Vaccine Card Downloads When PublicVaccineDownloadPdf Disabled", () => {
-    it("Save Image When PublicVaccineDownloadPdf Disabled", () => {
+describe("Public Vaccine Card Downloads When showFederalProofOfVaccination Disabled", () => {
+    it("Save Image When showFederalProofOfVaccination Disabled", () => {
         cy.configureSettings({
             datasets: [
                 {
