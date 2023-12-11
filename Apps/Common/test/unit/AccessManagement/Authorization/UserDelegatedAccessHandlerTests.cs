@@ -20,6 +20,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
     using System.Globalization;
     using System.Linq;
     using System.Security.Claims;
+    using System.Threading;
     using HealthGateway.Common.AccessManagement.Authorization.Claims;
     using HealthGateway.Common.AccessManagement.Authorization.Handlers;
     using HealthGateway.Common.AccessManagement.Authorization.Requirements;
@@ -205,7 +206,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
 
             Mock<IPatientService> mockPatientService = new();
             mockPatientService
-                .Setup(s => s.GetPatient(this.resourceHdid, PatientIdentifierType.Hdid, false))
+                .Setup(s => s.GetPatient(this.resourceHdid, PatientIdentifierType.Hdid, false, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(getPatientResult);
 
             UserDelegatedAccessHandler authHandler = new(
@@ -247,7 +248,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
 
             Mock<IPatientService> mockPatientService = new();
             mockPatientService
-                .Setup(s => s.GetPatient(this.resourceHdid, PatientIdentifierType.Hdid, false))
+                .Setup(s => s.GetPatient(this.resourceHdid, PatientIdentifierType.Hdid, false, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(getPatientResult);
 
             UserDelegatedAccessHandler authHandler = new(

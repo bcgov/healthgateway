@@ -387,7 +387,7 @@ namespace HealthGateway.Admin.Tests.Services
             };
 
             Mock<IPatientService> patientService = new();
-            patientService.Setup(p => p.GetPatient(It.IsAny<string>(), It.IsAny<PatientIdentifierType>(), false)).ReturnsAsync(patientResult);
+            patientService.Setup(p => p.GetPatient(It.IsAny<string>(), It.IsAny<PatientIdentifierType>(), false, It.IsAny<CancellationToken>())).ReturnsAsync(patientResult);
 
             IDelegationService delegationService = new DelegationService(
                 this.configuration,
@@ -724,11 +724,12 @@ namespace HealthGateway.Admin.Tests.Services
                 ResultError = new RequestResultError { ResultMessage = "Client Registry did not find any records", ErrorCode = "Admin.ServerServer-CE-CR" },
             };
 
-            patientService.Setup(p => p.GetPatient(It.IsAny<string>(), It.IsAny<PatientIdentifierType>(), false)).ReturnsAsync(patientErrorResult);
-            patientService.Setup(p => p.GetPatient(ProtectedDelegateHdid1, PatientIdentifierType.Hdid, false)).ReturnsAsync(patientResult1);
-            patientService.Setup(p => p.GetPatient(ProtectedDelegateHdid2, PatientIdentifierType.Hdid, false)).ReturnsAsync(patientResult2);
-            patientService.Setup(p => p.GetPatient(dependentResult.ResourcePayload!.PersonalHealthNumber, PatientIdentifierType.Phn, false)).ReturnsAsync(dependentResult);
-            patientService.Setup(p => p.GetPatient(delegateResult.ResourcePayload!.HdId, PatientIdentifierType.Hdid, false)).ReturnsAsync(delegateResult);
+            patientService.Setup(p => p.GetPatient(It.IsAny<string>(), It.IsAny<PatientIdentifierType>(), false, It.IsAny<CancellationToken>())).ReturnsAsync(patientErrorResult);
+            patientService.Setup(p => p.GetPatient(ProtectedDelegateHdid1, PatientIdentifierType.Hdid, false, It.IsAny<CancellationToken>())).ReturnsAsync(patientResult1);
+            patientService.Setup(p => p.GetPatient(ProtectedDelegateHdid2, PatientIdentifierType.Hdid, false, It.IsAny<CancellationToken>())).ReturnsAsync(patientResult2);
+            patientService.Setup(p => p.GetPatient(dependentResult.ResourcePayload!.PersonalHealthNumber, PatientIdentifierType.Phn, false, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(dependentResult);
+            patientService.Setup(p => p.GetPatient(delegateResult.ResourcePayload!.HdId, PatientIdentifierType.Hdid, false, It.IsAny<CancellationToken>())).ReturnsAsync(delegateResult);
 
             ResourceDelegateQueryResult result = new()
             {
@@ -791,7 +792,7 @@ namespace HealthGateway.Admin.Tests.Services
         private DelegationService GetDelegationService(RequestResult<PatientModel> patient)
         {
             Mock<IPatientService> patientService = new();
-            patientService.Setup(p => p.GetPatient(It.IsAny<string>(), PatientIdentifierType.Phn, false)).ReturnsAsync(patient);
+            patientService.Setup(p => p.GetPatient(It.IsAny<string>(), PatientIdentifierType.Phn, false, It.IsAny<CancellationToken>())).ReturnsAsync(patient);
             return new(
                 this.configuration,
                 patientService.Object,

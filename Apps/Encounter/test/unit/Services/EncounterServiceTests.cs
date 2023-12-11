@@ -133,7 +133,7 @@ namespace HealthGateway.EncounterTests.Services
             mockMspDelegate.Setup(s => s.GetMspVisitHistoryAsync(It.IsAny<OdrHistoryQuery>(), It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(delegateResult);
 
             Mock<IPatientService> mockPatientService = new();
-            mockPatientService.Setup(s => s.GetPatient(It.IsAny<string>(), It.IsAny<PatientIdentifierType>(), false)).ReturnsAsync(this.patientResult);
+            mockPatientService.Setup(s => s.GetPatient(It.IsAny<string>(), It.IsAny<PatientIdentifierType>(), false, It.IsAny<CancellationToken>())).ReturnsAsync(this.patientResult);
 
             Mock<IHttpContextAccessor> mockHttpContextAccessor = new();
             mockHttpContextAccessor.Setup(x => x.HttpContext).Returns(this.GetHttpContext());
@@ -191,7 +191,7 @@ namespace HealthGateway.EncounterTests.Services
             mockMspDelegate.Setup(s => s.GetMspVisitHistoryAsync(It.IsAny<OdrHistoryQuery>(), It.IsAny<string>(), It.IsAny<string>())).Returns(Task.FromResult(delegateResult));
 
             Mock<IPatientService> mockPatientService = new();
-            mockPatientService.Setup(s => s.GetPatient(It.IsAny<string>(), It.IsAny<PatientIdentifierType>(), false)).Returns(Task.FromResult(this.patientResult));
+            mockPatientService.Setup(s => s.GetPatient(It.IsAny<string>(), It.IsAny<PatientIdentifierType>(), false, It.IsAny<CancellationToken>())).Returns(Task.FromResult(this.patientResult));
 
             Mock<IHttpContextAccessor> mockHttpContextAccessor = new();
             mockHttpContextAccessor.Setup(x => x.HttpContext).Returns(this.GetHttpContext());
@@ -243,7 +243,7 @@ namespace HealthGateway.EncounterTests.Services
             };
 
             Mock<IPatientService> mockPatientService = new();
-            mockPatientService.Setup(s => s.GetPatient(It.IsAny<string>(), It.IsAny<PatientIdentifierType>(), false)).Returns(Task.FromResult(errorPatientResult));
+            mockPatientService.Setup(s => s.GetPatient(It.IsAny<string>(), It.IsAny<PatientIdentifierType>(), false, It.IsAny<CancellationToken>())).Returns(Task.FromResult(errorPatientResult));
 
             Mock<IHttpContextAccessor> mockHttpContextAccessor = new();
             mockHttpContextAccessor.Setup(x => x.HttpContext).Returns(this.GetHttpContext());
