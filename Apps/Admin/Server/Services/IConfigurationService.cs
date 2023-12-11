@@ -16,6 +16,7 @@
 
 namespace HealthGateway.Admin.Server.Services
 {
+    using System.Threading;
     using HealthGateway.Admin.Common.Models;
 
     /// <summary>
@@ -26,7 +27,8 @@ namespace HealthGateway.Admin.Server.Services
         /// <summary>
         /// Creates and returns Configuration data for clients.
         /// </summary>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The Config object containing configuration elements useful for client consumption.</returns>
-        ExternalConfiguration GetConfiguration();
+        ExternalConfiguration GetConfiguration(CancellationToken ct = default);
     }
 }

@@ -15,6 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Admin.Server.Controllers
 {
+    using System.Threading;
     using HealthGateway.Admin.Common.Models;
     using HealthGateway.Admin.Server.Services;
     using Microsoft.AspNetCore.Mvc;
@@ -32,11 +33,12 @@ namespace HealthGateway.Admin.Server.Controllers
         /// Returns the external Health Gateway configuration.
         /// </summary>
         /// <param name="configurationService">The injected configuration provider.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The Health Gateway Configuration.</returns>
         [HttpGet]
-        public ExternalConfiguration Index([FromServices] IConfigurationService configurationService)
+        public ExternalConfiguration Index([FromServices] IConfigurationService configurationService, CancellationToken ct)
         {
-            ExternalConfiguration externalConfig = configurationService.GetConfiguration();
+            ExternalConfiguration externalConfig = configurationService.GetConfiguration(ct);
             externalConfig.ClientIp = this.HttpContext.Connection.RemoteIpAddress?.MapToIPv4().ToString();
             return externalConfig;
         }
