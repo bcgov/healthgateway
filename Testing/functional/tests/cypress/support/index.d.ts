@@ -10,7 +10,7 @@ declare namespace Cypress {
         getTokens(username: string, password: string): void;
         readConfig(): Chainable<any>;
         checkTimelineHasLoaded(): void;
-        configureSettings(settings: any, modules?: string[]): Chainable<any>;
+        configureSettings(settings: any): Chainable<any>;
         setupDownloads(): void;
         restoreAuthCookies(): void;
         vSelect(): void;

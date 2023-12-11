@@ -44,10 +44,10 @@ export default abstract class ErrorTranslator {
         };
     }
 
-    public static moduleDisabledError(service: ServiceCode): ResultError {
+    public static featureDisabledError(service: ServiceCode): ResultError {
         return {
             errorCode: "ClientApp-I-" + service,
-            resultMessage: "Module Disabled",
+            resultMessage: "Feature Disabled",
             traceId: "",
         };
     }

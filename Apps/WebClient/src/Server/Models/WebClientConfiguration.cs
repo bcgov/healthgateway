@@ -43,12 +43,6 @@ namespace HealthGateway.WebClient.Server.Models
         public Dictionary<string, Uri> ExternalUrLs { get; set; } = new();
 
         /// <summary>
-        /// Gets or sets the state for each of our modules.
-        /// </summary>
-        [SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "Team decision")]
-        public Dictionary<string, bool> Modules { get; set; } = new();
-
-        /// <summary>
         /// Gets or sets the FeatureToggleFilePath.
         /// </summary>
         public string FeatureToggleFilePath { get; set; } = string.Empty;
