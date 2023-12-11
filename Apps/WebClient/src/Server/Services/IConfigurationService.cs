@@ -16,6 +16,8 @@
 
 namespace HealthGateway.WebClient.Server.Services
 {
+    using System.Threading;
+    using System.Threading.Tasks;
     using HealthGateway.WebClient.Server.Models;
 
     /// <summary>
@@ -26,13 +28,15 @@ namespace HealthGateway.WebClient.Server.Services
         /// <summary>
         /// Creates and returns Configuration data for clients.
         /// </summary>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The Config object containing configuration elements useful for client consumption.</returns>
-        ExternalConfiguration GetConfiguration();
+        Task<ExternalConfiguration> GetConfigurationAsync(CancellationToken ct = default);
 
         /// <summary>
         /// Creates and returns mobile Configuration.
         /// </summary>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The Mobile Configuration.</returns>
-        MobileConfiguration GetMobileConfiguration();
+        Task<MobileConfiguration> GetMobileConfigurationAsync(CancellationToken ct = default);
     }
 }

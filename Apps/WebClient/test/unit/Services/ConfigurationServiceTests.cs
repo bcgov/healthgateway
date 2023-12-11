@@ -17,6 +17,7 @@ namespace HealthGateway.WebClientTests.Services
 {
     using System;
     using System.Collections.Generic;
+    using System.Threading.Tasks;
     using DeepEqual.Syntax;
     using HealthGateway.WebClient.Server.Models;
     using HealthGateway.WebClient.Server.Services;
@@ -51,8 +52,9 @@ namespace HealthGateway.WebClientTests.Services
         /// <summary>
         /// GetConfiguration - Happy Path.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void TestGetConfig()
+        public async Task TestGetConfig()
         {
             ExternalConfiguration expectedResult = new()
             {
@@ -123,7 +125,7 @@ namespace HealthGateway.WebClientTests.Services
                     },
                 },
             };
-            ExternalConfiguration actualResult = this.service.GetConfiguration();
+            ExternalConfiguration actualResult = await this.service.GetConfigurationAsync();
 
             expectedResult.ShouldDeepEqual(actualResult);
         }
@@ -131,8 +133,9 @@ namespace HealthGateway.WebClientTests.Services
         /// <summary>
         /// GetMobileConfiguration - Happy Path.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void TestGetMobileConfiguration()
+        public async Task TestGetMobileConfiguration()
         {
             MobileConfiguration expectedResult = new(
                 true,
@@ -178,7 +181,7 @@ namespace HealthGateway.WebClientTests.Services
                 },
             };
 
-            MobileConfiguration actualResult = this.service.GetMobileConfiguration();
+            MobileConfiguration actualResult = await this.service.GetMobileConfigurationAsync();
 
             expectedResult.ShouldDeepEqual(actualResult);
         }

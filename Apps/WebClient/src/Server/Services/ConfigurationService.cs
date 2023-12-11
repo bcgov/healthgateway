@@ -16,9 +16,12 @@
 namespace HealthGateway.WebClient.Server.Services
 {
     using System;
+    using System.Diagnostics.CodeAnalysis;
     using System.IO;
     using System.Linq;
     using System.Text.Json;
+    using System.Threading;
+    using System.Threading.Tasks;
     using HealthGateway.WebClient.Server.Models;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
@@ -28,10 +31,9 @@ namespace HealthGateway.WebClient.Server.Services
     /// </summary>
     public class ConfigurationService : IConfigurationService
     {
-        private static readonly JsonSerializerOptions SerializerOptions = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
-        private readonly ExternalConfiguration config;
+        private static readonly JsonSerializerOptions SerializerOptions = new() { PropertyNameCaseInsensitive = true };
+        private readonly IConfiguration configuration;
         private readonly ILogger logger;
-        private readonly MobileConfiguration mobileConfig;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ConfigurationService"/> class.
@@ -41,46 +43,57 @@ namespace HealthGateway.WebClient.Server.Services
         public ConfigurationService(ILogger<ConfigurationService> logger, IConfiguration configuration)
         {
             this.logger = logger;
-            this.config = configuration.Get<ExternalConfiguration>() ?? new();
+            this.configuration = configuration;
+        }
 
-            if (!string.IsNullOrEmpty(this.config.WebClient.FeatureToggleFilePath))
-            {
-                string fileContent = File.ReadAllText(this.config.WebClient.FeatureToggleFilePath);
-                this.config.WebClient.FeatureToggleConfiguration = JsonSerializer.Deserialize<FeatureToggleConfiguration>(
-                    fileContent,
-                    SerializerOptions);
-            }
+        /// <inheritdoc/>
+        public async Task<ExternalConfiguration> GetConfigurationAsync(CancellationToken ct = default)
+        {
+            ExternalConfiguration externalConfig = this.configuration.Get<ExternalConfiguration>() ?? new();
+            externalConfig.WebClient.FeatureToggleConfiguration =
+                await this.ReadFeatureToggleConfigurationAsync(externalConfig.WebClient.FeatureToggleFilePath, ct);
 
-            this.mobileConfig = configuration.GetSection("MobileConfiguration").Get<MobileConfiguration>() ?? new();
-            FeatureToggleConfiguration? featureToggleConfig = this.config.WebClient.FeatureToggleConfiguration;
+            return externalConfig;
+        }
+
+        /// <inheritdoc/>
+        public async Task<MobileConfiguration> GetMobileConfigurationAsync(CancellationToken ct = default)
+        {
+            ExternalConfiguration externalConfig = this.configuration.Get<ExternalConfiguration>() ?? new();
+            MobileConfiguration mobileConfig = this.configuration.GetSection("MobileConfiguration").Get<MobileConfiguration>() ?? new();
+            FeatureToggleConfiguration? featureToggleConfig = await this.ReadFeatureToggleConfigurationAsync(externalConfig.WebClient.FeatureToggleFilePath, ct);
+
             if (featureToggleConfig != null)
             {
-                this.mobileConfig.Datasets = featureToggleConfig.Datasets.Where(d => d.Enabled).Select(d => d.Name);
+                mobileConfig.Datasets = featureToggleConfig.Datasets.Where(d => d.Enabled).Select(d => d.Name);
                 if (featureToggleConfig.Dependents.Enabled)
                 {
-                    this.mobileConfig.DependentDatasets = this.mobileConfig.Datasets
+                    mobileConfig.DependentDatasets = mobileConfig.Datasets
                         .Where(d => !Array.Exists(featureToggleConfig.Dependents.Datasets, dd => dd.Name == d && !dd.Enabled));
                 }
 
                 if (featureToggleConfig.Services.Enabled)
                 {
-                    this.mobileConfig.Services = featureToggleConfig.Services.Services.Where(s => s.Enabled).Select(s => s.Name);
+                    mobileConfig.Services = featureToggleConfig.Services.Services.Where(s => s.Enabled).Select(s => s.Name);
                 }
             }
+
+            return mobileConfig;
         }
 
-        /// <inheritdoc/>
-        public ExternalConfiguration GetConfiguration()
+        [SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "Team decision")]
+        private async Task<FeatureToggleConfiguration?> ReadFeatureToggleConfigurationAsync(string path, CancellationToken ct)
         {
-            this.logger.LogTrace("Getting configuration data...");
-            return this.config;
-        }
-
-        /// <inheritdoc/>
-        public MobileConfiguration GetMobileConfiguration()
-        {
-            this.logger.LogTrace("Getting mobile configuration data...");
-            return this.mobileConfig;
+            try
+            {
+                string fileContent = await File.ReadAllTextAsync(path, ct);
+                return JsonSerializer.Deserialize<FeatureToggleConfiguration>(fileContent, SerializerOptions);
+            }
+            catch (Exception e)
+            {
+                this.logger.LogError(e, "Unable to read feature toggle configuration from path {Path}", path);
+                return null;
+            }
         }
     }
 }
