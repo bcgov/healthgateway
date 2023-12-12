@@ -74,7 +74,7 @@ namespace HealthGateway.Common.Delegates.PHSA
 
             try
             {
-                IEnumerable<KeyValuePair<string, string>> formData = this.FormParameters(accessToken);
+                Dictionary<string, string> formData = this.FormParameters(accessToken);
                 using FormUrlEncodedContent content = new(formData);
                 content.Headers.Clear();
                 content.Headers.Add(@"Content-Type", @"application/x-www-form-urlencoded");
@@ -99,7 +99,7 @@ namespace HealthGateway.Common.Delegates.PHSA
         /// <summary>
         /// Gets the form parameters to swap tokens.
         /// </summary>
-        private IEnumerable<KeyValuePair<string, string>> FormParameters(string accessToken)
+        private Dictionary<string, string> FormParameters(string accessToken)
         {
             return new Dictionary<string, string>
             {

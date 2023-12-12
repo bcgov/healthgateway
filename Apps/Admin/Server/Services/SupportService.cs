@@ -56,6 +56,7 @@ namespace HealthGateway.Admin.Server.Services
     /// <param name="auditRepository">The injected audit repository.</param>
     /// <param name="cacheProvider">The injected cache provider.</param>
     /// <param name="logger">The injected logger provider.</param>
+#pragma warning disable S107 // The number of DI parameters should be ignored
     public class SupportService(
         IMapper autoMapper,
         IMessagingVerificationDelegate messagingVerificationDelegate,
