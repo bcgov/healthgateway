@@ -31,7 +31,7 @@
         "vuetify": "^3.3.23"
     },
     "devDependencies": {
-        "@babel/types": "^7.23.5",
+        "@babel/types": "^7.23.6",
         "@fortawesome/fontawesome-svg-core": "^6.5.1",
         "@fortawesome/free-regular-svg-icons": "^6.5.1",
         "@fortawesome/free-solid-svg-icons": "^6.5.1",
