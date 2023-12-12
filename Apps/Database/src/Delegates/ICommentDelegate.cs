@@ -16,6 +16,8 @@
 namespace HealthGateway.Database.Delegates
 {
     using System.Collections.Generic;
+    using System.Threading;
+    using System.Threading.Tasks;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
 
@@ -64,11 +66,12 @@ namespace HealthGateway.Database.Delegates
         DbResult<IEnumerable<Comment>> GetAll(string hdId);
 
         /// <summary>
-        /// Gets a list of all the comments ordered by the CreatedDateTime in assending order.
+        /// Gets a list of all the comments ordered by the CreatedDateTime in ascending order.
         /// </summary>
         /// <param name="page">The starting offset for the query.</param>
         /// <param name="pageSize">The maximum amount of rows to return.</param>
-        /// <returns>A list of comments wrapped in a DBResult.</returns>
-        DbResult<IEnumerable<Comment>> GetAll(int page, int pageSize);
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
+        /// <returns>A list of comments.</returns>
+        Task<IList<Comment>> GetAllAsync(int page, int pageSize, CancellationToken ct = default);
     }
 }

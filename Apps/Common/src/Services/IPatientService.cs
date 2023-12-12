@@ -15,6 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Common.Services
 {
+    using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.ViewModels;
@@ -45,7 +46,12 @@ namespace HealthGateway.Common.Services
         /// <param name="identifier">The patient identifier.</param>
         /// <param name="identifierType">The type of identifier being passed in.</param>
         /// <param name="disableIdValidation">Disables the validation on HDID/PHN when true.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The patient model.</returns>
-        Task<RequestResult<PatientModel>> GetPatient(string identifier, PatientIdentifierType identifierType = PatientIdentifierType.Hdid, bool disableIdValidation = false);
+        Task<RequestResult<PatientModel>> GetPatient(
+            string identifier,
+            PatientIdentifierType identifierType = PatientIdentifierType.Hdid,
+            bool disableIdValidation = false,
+            CancellationToken ct = default);
     }
 }

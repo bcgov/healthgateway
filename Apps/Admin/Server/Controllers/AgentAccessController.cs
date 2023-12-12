@@ -17,6 +17,7 @@ namespace HealthGateway.Admin.Server.Controllers
 {
     using System;
     using System.Collections.Generic;
+    using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Admin.Common.Models;
     using HealthGateway.Admin.Server.Services;
@@ -39,6 +40,7 @@ namespace HealthGateway.Admin.Server.Controllers
         /// Provisions agent access to the admin website.
         /// </summary>
         /// <param name="agent">The agent model.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The created agent.</returns>
         /// <response code="200">Returns the created agent.</response>
         /// <response code="401">The client must authenticate itself to perform the operation.</response>
@@ -52,15 +54,16 @@ namespace HealthGateway.Admin.Server.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status502BadGateway, Type = typeof(ProblemDetails))]
-        public async Task<AdminAgent> ProvisionAgentAccess(AdminAgent agent)
+        public async Task<AdminAgent> ProvisionAgentAccess(AdminAgent agent, CancellationToken ct)
         {
-            return await agentAccessService.ProvisionAgentAccessAsync(agent).ConfigureAwait(true);
+            return await agentAccessService.ProvisionAgentAccessAsync(agent, ct);
         }
 
         /// <summary>
         /// Retrieves agents with access to the admin website that match the query.
         /// </summary>
         /// <param name="query">The query string to match agents against.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The collection of matching agents.</returns>
         /// <response code="200">Returns the collection of matching agents.</response>
         /// <response code="401">The client must authenticate itself to get the requested resource.</response>
@@ -74,15 +77,16 @@ namespace HealthGateway.Admin.Server.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status502BadGateway, Type = typeof(ProblemDetails))]
-        public async Task<IEnumerable<AdminAgent>> GetAgents(string query)
+        public async Task<IEnumerable<AdminAgent>> GetAgents(string query, CancellationToken ct)
         {
-            return await agentAccessService.GetAgentsAsync(query).ConfigureAwait(true);
+            return await agentAccessService.GetAgentsAsync(query, ct: ct);
         }
 
         /// <summary>
         /// Updates agent access to the admin website.
         /// </summary>
         /// <param name="agent">The agent model.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The updated agent.</returns>
         /// <response code="200">Returns the updated agent.</response>
         /// <response code="401">The client must authenticate itself to perform the operation.</response>
@@ -96,15 +100,16 @@ namespace HealthGateway.Admin.Server.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status502BadGateway, Type = typeof(ProblemDetails))]
-        public async Task<AdminAgent> UpdateAgentAccess(AdminAgent agent)
+        public async Task<AdminAgent> UpdateAgentAccess(AdminAgent agent, CancellationToken ct)
         {
-            return await agentAccessService.UpdateAgentAccessAsync(agent).ConfigureAwait(true);
+            return await agentAccessService.UpdateAgentAccessAsync(agent, ct);
         }
 
         /// <summary>
         /// Removes an agent's access to the admin website.
         /// </summary>
         /// <param name="id">The unique identifier of the agent whose access should be terminated.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>An empty result.</returns>
         /// <response code="200">The agent no longer has access to the admin website.</response>
         /// <response code="401">The client must authenticate itself to perform the operation.</response>
@@ -118,9 +123,9 @@ namespace HealthGateway.Admin.Server.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status502BadGateway, Type = typeof(ProblemDetails))]
-        public async Task<IActionResult> RemoveAgentAccess(Guid id)
+        public async Task<IActionResult> RemoveAgentAccess(Guid id, CancellationToken ct)
         {
-            await agentAccessService.RemoveAgentAccessAsync(id).ConfigureAwait(true);
+            await agentAccessService.RemoveAgentAccessAsync(id, ct);
             return this.Ok();
         }
     }

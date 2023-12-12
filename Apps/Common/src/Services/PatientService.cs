@@ -18,6 +18,7 @@ namespace HealthGateway.Common.Services
     using System;
     using System.Diagnostics;
     using System.Net;
+    using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.CacheProviders;
     using HealthGateway.Common.Constants;
@@ -113,11 +114,15 @@ namespace HealthGateway.Common.Services
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResult<PatientModel>> GetPatient(string identifier, PatientIdentifierType identifierType = PatientIdentifierType.Hdid, bool disableIdValidation = false)
+        public async Task<RequestResult<PatientModel>> GetPatient(
+            string identifier,
+            PatientIdentifierType identifierType = PatientIdentifierType.Hdid,
+            bool disableIdValidation = false,
+            CancellationToken ct = default)
         {
             using Activity? activity = Source.StartActivity();
 
-            RequestResult<PatientModel> patient = await this.GetPatientInternal(identifier, identifierType, disableIdValidation).ConfigureAwait(true);
+            RequestResult<PatientModel> patient = await this.GetPatientInternal(identifier, identifierType, disableIdValidation, ct);
 
             activity?.Stop();
             return patient;
@@ -133,15 +138,19 @@ namespace HealthGateway.Common.Services
             return $"{PatientCacheDomain}:HDID:{hdid}";
         }
 
-        private async Task<RequestResult<PatientModel>> GetPatientInternal(string identifier, PatientIdentifierType identifierType = PatientIdentifierType.Hdid, bool disableIdValidation = false)
+        private async Task<RequestResult<PatientModel>> GetPatientInternal(
+            string identifier,
+            PatientIdentifierType identifierType = PatientIdentifierType.Hdid,
+            bool disableIdValidation = false,
+            CancellationToken ct = default)
         {
             PatientModel? patient = this.GetFromCache(identifier, identifierType);
             if (patient == null)
             {
                 RequestResult<PatientModel> patientResult = identifierType switch
                 {
-                    PatientIdentifierType.Hdid => await this.GetPatientByHdid(identifier, disableIdValidation).ConfigureAwait(true),
-                    PatientIdentifierType.Phn => await this.GetPatientByPhn(identifier, disableIdValidation).ConfigureAwait(true),
+                    PatientIdentifierType.Hdid => await this.GetPatientByHdid(identifier, disableIdValidation, ct),
+                    PatientIdentifierType.Phn => await this.GetPatientByPhn(identifier, disableIdValidation, ct),
                     _ => throw new NotImplementedException(),
                 };
                 if (patientResult.ResultStatus != ResultType.Success)
@@ -158,24 +167,24 @@ namespace HealthGateway.Common.Services
             return RequestResultFactory.Success(patient);
         }
 
-        private async Task<RequestResult<PatientModel>> GetPatientByPhn(string phn, bool disableIdValidation)
+        private async Task<RequestResult<PatientModel>> GetPatientByPhn(string phn, bool disableIdValidation, CancellationToken ct)
         {
             if (!PhnValidator.IsValid(phn))
             {
                 return RequestResultFactory.ActionRequired<PatientModel>(ActionType.Validation, $"PHN' {phn}' is invalid");
             }
 
-            return await this.patientDelegate.GetDemographicsByPhnAsync(phn, disableIdValidation).ConfigureAwait(true);
+            return await this.patientDelegate.GetDemographicsByPhnAsync(phn, disableIdValidation, ct);
         }
 
-        private async Task<RequestResult<PatientModel>> GetPatientByHdid(string hdid, bool disableIdValidation)
+        private async Task<RequestResult<PatientModel>> GetPatientByHdid(string hdid, bool disableIdValidation, CancellationToken ct)
         {
             if (string.IsNullOrEmpty(hdid))
             {
                 return RequestResultFactory.ActionRequired<PatientModel>(ActionType.Validation, $"HDID '{hdid}' is invalid");
             }
 
-            return await this.patientDelegate.GetDemographicsByHdidAsync(hdid, disableIdValidation).ConfigureAwait(true);
+            return await this.patientDelegate.GetDemographicsByHdidAsync(hdid, disableIdValidation, ct);
         }
 
         /// <summary>

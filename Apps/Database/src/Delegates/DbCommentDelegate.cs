@@ -18,6 +18,8 @@ namespace HealthGateway.Database.Delegates
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using System.Linq;
+    using System.Threading;
+    using System.Threading.Tasks;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Context;
     using HealthGateway.Database.Models;
@@ -160,14 +162,10 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public DbResult<IEnumerable<Comment>> GetAll(int page, int pageSize)
+        public async Task<IList<Comment>> GetAllAsync(int page, int pageSize, CancellationToken ct = default)
         {
             this.logger.LogTrace("Retrieving all the comments for the page #{Page} with pageSize: {PageSize}...", page, pageSize);
-            return DbDelegateHelper.GetPagedDbResult(
-                this.dbContext.Comment
-                    .OrderBy(comment => comment.CreatedDateTime),
-                page,
-                pageSize);
+            return await DbDelegateHelper.GetPagedDbResultAsync(this.dbContext.Comment.OrderBy(comment => comment.CreatedDateTime), page, pageSize, ct);
         }
     }
 }

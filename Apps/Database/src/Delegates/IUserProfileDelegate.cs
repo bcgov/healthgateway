@@ -78,8 +78,9 @@ namespace HealthGateway.Database.Delegates
         /// Fetches UserProfiles from the database.
         /// </summary>
         /// <param name="hdIds">The unique profile keys to find.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A DB result which encapsulates the return object and status.</returns>
-        DbResult<List<UserProfile>> GetUserProfiles(IList<string> hdIds);
+        Task<IList<UserProfile>> GetUserProfilesAsync(IList<string> hdIds, CancellationToken ct = default);
 
         /// <summary>
         /// Fetches UserProfile from the database.
@@ -131,8 +132,9 @@ namespace HealthGateway.Database.Delegates
         /// </summary>
         /// <param name="page">The page to request.</param>
         /// <param name="pageSize">The amount of records to retrieve in 1 request.</param>
-        /// <returns>A list of UserProfiles wrapped in a DBResult.</returns>
-        DbResult<IEnumerable<UserProfile>> GetAll(int page, int pageSize);
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
+        /// <returns>A list of UserProfiles.</returns>
+        Task<IList<UserProfile>> GetAllAsync(int page, int pageSize, CancellationToken ct = default);
 
         /// <summary>
         /// Retrieves a count of recurring users over a date range.

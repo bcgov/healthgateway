@@ -19,6 +19,7 @@ namespace HealthGateway.Admin.Server.Services
     using System.Collections.Generic;
     using System.Linq;
     using System.Net;
+    using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Admin.Common.Constants;
     using HealthGateway.Admin.Common.Models;
@@ -50,10 +51,7 @@ namespace HealthGateway.Admin.Server.Services
         /// <param name="authDelegate">The OAuth2 authentication service.</param>
         /// <param name="keycloakAdminApi">The keycloak api to access identity access.</param>
         /// <param name="logger">Injected Logger Provider.</param>
-        public AgentAccessService(
-            IAuthenticationDelegate authDelegate,
-            IKeycloakAdminApi keycloakAdminApi,
-            ILogger<AgentAccessService> logger)
+        public AgentAccessService(IAuthenticationDelegate authDelegate, IKeycloakAdminApi keycloakAdminApi, ILogger<AgentAccessService> logger)
         {
             this.authDelegate = authDelegate;
             this.keycloakAdminApi = keycloakAdminApi;
@@ -62,15 +60,14 @@ namespace HealthGateway.Admin.Server.Services
         }
 
         /// <inheritdoc/>
-        public async Task<AdminAgent> ProvisionAgentAccessAsync(AdminAgent agent)
+        public async Task<AdminAgent> ProvisionAgentAccessAsync(AdminAgent agent, CancellationToken ct = default)
         {
             JwtModel jwtModel = this.authDelegate.AuthenticateAsSystem(this.tokenUri, this.tokenRequest);
 
             agent.Roles.Remove(IdentityAccessRole.Unknown);
 
-            List<RoleRepresentation> realmRoles = await this.keycloakAdminApi.GetRealmRolesAsync(jwtModel.AccessToken).ConfigureAwait(true);
-            IEnumerable<RoleRepresentation> roles = realmRoles
-                .Where(r => agent.Roles.Contains(GetIdentityAccessRole(r)));
+            List<RoleRepresentation> realmRoles = await this.keycloakAdminApi.GetRealmRolesAsync(jwtModel.AccessToken, ct);
+            IEnumerable<RoleRepresentation> roles = realmRoles.Where(r => agent.Roles.Contains(GetIdentityAccessRole(r)));
 
             UserRepresentation user = new()
             {
@@ -80,7 +77,7 @@ namespace HealthGateway.Admin.Server.Services
 
             try
             {
-                await this.keycloakAdminApi.AddUserAsync(user, jwtModel.AccessToken).ConfigureAwait(true);
+                await this.keycloakAdminApi.AddUserAsync(user, jwtModel.AccessToken, ct);
             }
             catch (ApiException e)
             {
@@ -94,9 +91,9 @@ namespace HealthGateway.Admin.Server.Services
                 throw;
             }
 
-            List<UserRepresentation> getUserResponse = await this.keycloakAdminApi.GetUsersByUsernameAsync(user.Username, jwtModel.AccessToken).ConfigureAwait(true);
+            List<UserRepresentation> getUserResponse = await this.keycloakAdminApi.GetUsersByUsernameAsync(user.Username, jwtModel.AccessToken, ct);
             UserRepresentation createdUser = getUserResponse[0];
-            await this.keycloakAdminApi.AddUserRolesAsync(createdUser.UserId.GetValueOrDefault(), roles, jwtModel.AccessToken).ConfigureAwait(true);
+            await this.keycloakAdminApi.AddUserRolesAsync(createdUser.UserId.GetValueOrDefault(), roles, jwtModel.AccessToken, ct);
 
             string[] splitString = createdUser.Username.Split('@');
             if (splitString.Length != 2)
@@ -119,11 +116,11 @@ namespace HealthGateway.Admin.Server.Services
         }
 
         /// <inheritdoc/>
-        public async Task<IEnumerable<AdminAgent>> GetAgentsAsync(string searchString, int? resultLimit = 25)
+        public async Task<IEnumerable<AdminAgent>> GetAgentsAsync(string searchString, int? resultLimit = 25, CancellationToken ct = default)
         {
             const int firstRecord = 0;
             JwtModel jwtModel = this.authDelegate.AuthenticateAsSystem(this.tokenUri, this.tokenRequest);
-            List<UserRepresentation> users = await this.keycloakAdminApi.GetUsersSearchAsync(searchString, firstRecord, resultLimit.GetValueOrDefault(), jwtModel.AccessToken).ConfigureAwait(true);
+            List<UserRepresentation> users = await this.keycloakAdminApi.GetUsersSearchAsync(searchString, firstRecord, resultLimit.GetValueOrDefault(), jwtModel.AccessToken, ct);
 
             List<AdminAgent> adminAgents = [];
             foreach (UserRepresentation user in users)
@@ -140,9 +137,7 @@ namespace HealthGateway.Admin.Server.Services
                 KeycloakIdentityProvider identityProvider = EnumUtility.ToEnumOrDefault<KeycloakIdentityProvider>(identityProviderName, true);
                 if (identityProvider != KeycloakIdentityProvider.Unknown)
                 {
-                    List<RoleRepresentation> userRoles = await this.keycloakAdminApi
-                        .GetUserRolesAsync(user.UserId.GetValueOrDefault(), jwtModel.AccessToken)
-                        .ConfigureAwait(true);
+                    List<RoleRepresentation> userRoles = await this.keycloakAdminApi.GetUserRolesAsync(user.UserId.GetValueOrDefault(), jwtModel.AccessToken, ct);
 
                     adminAgents.Add(
                         new()
@@ -159,14 +154,14 @@ namespace HealthGateway.Admin.Server.Services
         }
 
         /// <inheritdoc/>
-        public async Task<AdminAgent> UpdateAgentAccessAsync(AdminAgent agent)
+        public async Task<AdminAgent> UpdateAgentAccessAsync(AdminAgent agent, CancellationToken ct = default)
         {
             JwtModel jwtModel = this.authDelegate.AuthenticateAsSystem(this.tokenUri, this.tokenRequest);
 
             agent.Roles.Remove(IdentityAccessRole.Unknown);
 
-            List<RoleRepresentation> realmRoles = await this.keycloakAdminApi.GetRealmRolesAsync(jwtModel.AccessToken).ConfigureAwait(true);
-            List<RoleRepresentation> userRoles = await this.keycloakAdminApi.GetUserRolesAsync(agent.Id, jwtModel.AccessToken).ConfigureAwait(true);
+            List<RoleRepresentation> realmRoles = await this.keycloakAdminApi.GetRealmRolesAsync(jwtModel.AccessToken, ct);
+            List<RoleRepresentation> userRoles = await this.keycloakAdminApi.GetUserRolesAsync(agent.Id, jwtModel.AccessToken, ct);
 
             List<RoleRepresentation> rolesToDelete = userRoles
                 .Where(r => GetIdentityAccessRole(r) != IdentityAccessRole.Unknown)
@@ -180,23 +175,23 @@ namespace HealthGateway.Admin.Server.Services
 
             if (rolesToDelete.Count > 0)
             {
-                await this.keycloakAdminApi.DeleteUserRolesAsync(agent.Id, rolesToDelete, jwtModel.AccessToken).ConfigureAwait(true);
+                await this.keycloakAdminApi.DeleteUserRolesAsync(agent.Id, rolesToDelete, jwtModel.AccessToken, ct);
             }
 
             if (rolesToAdd.Count > 0)
             {
-                await this.keycloakAdminApi.AddUserRolesAsync(agent.Id, rolesToAdd, jwtModel.AccessToken).ConfigureAwait(true);
+                await this.keycloakAdminApi.AddUserRolesAsync(agent.Id, rolesToAdd, jwtModel.AccessToken, ct);
             }
 
             return agent;
         }
 
         /// <inheritdoc/>
-        public async Task RemoveAgentAccessAsync(Guid agentId)
+        public async Task RemoveAgentAccessAsync(Guid agentId, CancellationToken ct = default)
         {
             JwtModel jwtModel = this.authDelegate.AuthenticateAsSystem(this.tokenUri, this.tokenRequest);
 
-            await this.keycloakAdminApi.DeleteUserAsync(agentId, jwtModel.AccessToken).ConfigureAwait(true);
+            await this.keycloakAdminApi.DeleteUserAsync(agentId, jwtModel.AccessToken, ct);
         }
 
         private static IdentityAccessRole GetIdentityAccessRole(RoleRepresentation r)

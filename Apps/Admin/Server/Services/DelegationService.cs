@@ -131,12 +131,12 @@ namespace HealthGateway.Admin.Server.Services
         }
 
         /// <inheritdoc/>
-        public async Task<DelegateInfo> GetDelegateInformationAsync(string phn)
+        public async Task<DelegateInfo> GetDelegateInformationAsync(string phn, CancellationToken ct = default)
         {
-            RequestResult<PatientModel> delegatePatientResult = await patientService.GetPatient(phn, PatientIdentifierType.Phn);
+            RequestResult<PatientModel> delegatePatientResult = await patientService.GetPatient(phn, PatientIdentifierType.Phn, false, ct);
             this.ValidatePatientResult(delegatePatientResult);
 
-            ValidationResult? validationResults = await new DelegatePatientValidator(this.minDelegateAge).ValidateAsync(delegatePatientResult.ResourcePayload);
+            ValidationResult? validationResults = await new DelegatePatientValidator(this.minDelegateAge).ValidateAsync(delegatePatientResult.ResourcePayload, ct);
             if (!validationResults.IsValid)
             {
                 throw new ProblemDetailsException(ExceptionUtility.CreateProblemDetails($"Delegate age is below {this.minDelegateAge}", HttpStatusCode.BadRequest, nameof(DelegationService)));

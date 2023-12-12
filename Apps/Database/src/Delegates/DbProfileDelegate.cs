@@ -174,21 +174,16 @@ namespace HealthGateway.Database.Delegates
         /// <inheritdoc/>
         public async Task<UserProfile?> GetUserProfileAsync(string hdid)
         {
-            return await this.dbContext.UserProfile.FindAsync(hdid).ConfigureAwait(true);
+            return await this.dbContext.UserProfile.FindAsync(hdid);
         }
 
         /// <inheritdoc/>
-        public DbResult<List<UserProfile>> GetUserProfiles(IList<string> hdIds)
+        public async Task<IList<UserProfile>> GetUserProfilesAsync(IList<string> hdIds, CancellationToken ct = default)
         {
             this.logger.LogTrace("Getting user profiles from DB...");
-            DbResult<List<UserProfile>> result = new();
-            result.Payload = this.dbContext.UserProfile
+            return await this.dbContext.UserProfile
                 .Where(p => hdIds.Contains(p.HdId))
-                .ToList();
-
-            result.Status = DbStatusCode.Read;
-            this.logger.LogDebug("Finished getting user profiles from DB");
-            return result;
+                .ToListAsync(ct);
         }
 
         /// <inheritdoc/>
@@ -288,14 +283,10 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public DbResult<IEnumerable<UserProfile>> GetAll(int page, int pageSize)
+        public async Task<IList<UserProfile>> GetAllAsync(int page, int pageSize, CancellationToken ct = default)
         {
             this.logger.LogTrace("Retrieving all the user profiles for the page #{Page} with pageSize: {PageSize}...", page, pageSize);
-            return DbDelegateHelper.GetPagedDbResult(
-                this.dbContext.UserProfile
-                    .OrderBy(userProfile => userProfile.CreatedDateTime),
-                page,
-                pageSize);
+            return await DbDelegateHelper.GetPagedDbResultAsync(this.dbContext.UserProfile.OrderBy(userProfile => userProfile.CreatedDateTime), page, pageSize, ct);
         }
 
         /// <inheritdoc/>

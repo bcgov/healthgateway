@@ -16,6 +16,8 @@
 namespace HealthGateway.Admin.Server.Services
 {
     using System.Collections.Generic;
+    using System.Threading;
+    using System.Threading.Tasks;
     using AutoMapper;
     using HealthGateway.Admin.Common.Models;
     using HealthGateway.Common.Data.Constants;
@@ -33,14 +35,14 @@ namespace HealthGateway.Admin.Server.Services
     public class CommunicationService(ILogger<CommunicationService> logger, ICommunicationDelegate communicationDelegate, IMapper autoMapper) : ICommunicationService
     {
         /// <inheritdoc/>
-        public RequestResult<Communication> Add(Communication communication)
+        public async Task<RequestResult<Communication>> AddAsync(Communication communication, CancellationToken ct = default)
         {
             logger.LogTrace("Communication received: {Id)}", communication.Id.ToString());
 
             if (communication.EffectiveDateTime < communication.ExpiryDateTime)
             {
                 logger.LogTrace("Adding communication... {Id)}", communication.Id.ToString());
-                DbResult<Database.Models.Communication> dbResult = communicationDelegate.Add(autoMapper.Map<Database.Models.Communication>(communication));
+                DbResult<Database.Models.Communication> dbResult = await communicationDelegate.AddAsync(autoMapper.Map<Database.Models.Communication>(communication), ct: ct);
                 return new RequestResult<Communication>
                 {
                     ResourcePayload = autoMapper.Map<Communication>(dbResult.Payload),
@@ -68,13 +70,13 @@ namespace HealthGateway.Admin.Server.Services
         }
 
         /// <inheritdoc/>
-        public RequestResult<Communication> Update(Communication communication)
+        public async Task<RequestResult<Communication>> UpdateAsync(Communication communication, CancellationToken ct = default)
         {
             if (communication.EffectiveDateTime < communication.ExpiryDateTime)
             {
                 logger.LogTrace("Updating communication... {Id)}", communication.Id.ToString());
 
-                DbResult<Database.Models.Communication> dbResult = communicationDelegate.Update(autoMapper.Map<Database.Models.Communication>(communication));
+                DbResult<Database.Models.Communication> dbResult = await communicationDelegate.UpdateAsync(autoMapper.Map<Database.Models.Communication>(communication), ct: ct);
                 return new RequestResult<Communication>
                 {
                     ResourcePayload = autoMapper.Map<Communication>(dbResult.Payload),
@@ -102,27 +104,20 @@ namespace HealthGateway.Admin.Server.Services
         }
 
         /// <inheritdoc/>
-        public RequestResult<IEnumerable<Communication>> GetAll()
+        public async Task<RequestResult<IEnumerable<Communication>>> GetAllAsync(CancellationToken ct = default)
         {
             logger.LogTrace("Getting communication entries...");
-            DbResult<IEnumerable<Database.Models.Communication>> dbResult = communicationDelegate.GetAll();
-            RequestResult<IEnumerable<Communication>> requestResult = new()
+            IList<Database.Models.Communication> communications = await communicationDelegate.GetAllAsync(ct);
+            return new()
             {
-                ResourcePayload = autoMapper.Map<IEnumerable<Communication>>(dbResult.Payload),
-                ResultStatus = dbResult.Status == DbStatusCode.Read ? ResultType.Success : ResultType.Error,
-                ResultError = dbResult.Status == DbStatusCode.Read
-                    ? null
-                    : new RequestResultError
-                    {
-                        ResultMessage = dbResult.Message,
-                        ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database),
-                    },
+                ResourcePayload = autoMapper.Map<IEnumerable<Communication>>(communications),
+                ResultStatus = ResultType.Success,
+                ResultError = null,
             };
-            return requestResult;
         }
 
         /// <inheritdoc/>
-        public RequestResult<Communication> Delete(Communication communication)
+        public async Task<RequestResult<Communication>> DeleteAsync(Communication communication, CancellationToken ct = default)
         {
             if (communication.CommunicationStatusCode == CommunicationStatus.Processed)
             {
@@ -138,7 +133,7 @@ namespace HealthGateway.Admin.Server.Services
                 };
             }
 
-            DbResult<Database.Models.Communication> dbResult = communicationDelegate.Delete(autoMapper.Map<Database.Models.Communication>(communication));
+            DbResult<Database.Models.Communication> dbResult = await communicationDelegate.DeleteAsync(autoMapper.Map<Database.Models.Communication>(communication), ct: ct);
             RequestResult<Communication> result = new()
             {
                 ResourcePayload = autoMapper.Map<Communication>(dbResult.Payload),

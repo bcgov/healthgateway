@@ -17,6 +17,8 @@ namespace HealthGateway.Database.Delegates;
 
 using System;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using HealthGateway.Database.Models;
 using HealthGateway.Database.Wrapper;
 
@@ -37,16 +39,18 @@ public interface IAdminUserProfileDelegate
     /// </summary>
     /// <param name="activeDays">Users active within the last X days".</param>
     /// <param name="timeOffset">The clients offset to get to UTC.</param>
-    /// <returns>An IEnumerable of AdminUserProfile objects wrapped in a DBResult.</returns>
-    DbResult<IEnumerable<AdminUserProfile>> GetActiveAdminUserProfiles(int activeDays, TimeSpan timeOffset);
+    /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
+    /// <returns>An IEnumerable of AdminUserProfile objects.</returns>
+    Task<IList<AdminUserProfile>> GetActiveAdminUserProfilesAsync(int activeDays, TimeSpan timeOffset, CancellationToken ct = default);
 
     /// <summary>
     /// Returns Inactive AdminUserProfile objects from the database.
     /// </summary>
     /// <param name="inactiveDays">Users inactive for at least X days.</param>
     /// <param name="timeOffset">The clients offset to get to UTC.</param>
-    /// <returns>An IEnumerable of AdminUserProfile objects wrapped in a DBResult.</returns>
-    DbResult<IEnumerable<AdminUserProfile>> GetInactiveAdminUserProfiles(int inactiveDays, TimeSpan timeOffset);
+    /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
+    /// <returns>An IEnumerable of AdminUserProfile objects.</returns>
+    Task<IList<AdminUserProfile>> GetInactiveAdminUserProfilesAsync(int inactiveDays, TimeSpan timeOffset, CancellationToken ct = default);
 
     /// <summary>
     /// Creates an AdminUserProfile object in the database.

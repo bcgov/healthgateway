@@ -17,6 +17,8 @@ namespace HealthGateway.Database.Delegates
 {
     using System;
     using System.Collections.Generic;
+    using System.Threading;
+    using System.Threading.Tasks;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
 
@@ -75,11 +77,12 @@ namespace HealthGateway.Database.Delegates
         DbResult<Note> DeleteNote(Note note, bool commit = true);
 
         /// <summary>
-        /// Gets a list of all the notes ordered by the CreatedDateTime in assending order.
+        /// Gets a list of all the notes ordered by the CreatedDateTime in ascending order.
         /// </summary>
         /// <param name="page">The starting offset for the query.</param>
         /// <param name="pageSize">The maximum amount of rows to return.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A list of Notes wrapped in a DBResult.</returns>
-        DbResult<IEnumerable<Note>> GetAll(int page, int pageSize);
+        Task<IList<Note>> GetAllAsync(int page, int pageSize, CancellationToken ct = default);
     }
 }

@@ -18,6 +18,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Net;
     using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.Constants;
@@ -200,7 +201,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 (await Should.ThrowAsync<ProblemDetailsException>(async () => await service.AddDependentAsync(this.mockParentHdid, addDependentRequest)))
                 .ShouldNotBeNull();
 
-            exception.ProblemDetails!.StatusCode.ShouldBe(System.Net.HttpStatusCode.InternalServerError);
+            exception.ProblemDetails!.StatusCode.ShouldBe(HttpStatusCode.InternalServerError);
         }
 
         /// <summary>
@@ -479,7 +480,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 },
             };
 
-            mockPatientService.Setup(s => s.GetPatient(It.IsAny<string>(), It.IsAny<PatientIdentifierType>(), false)).Returns(Task.FromResult(patientResult));
+            mockPatientService.Setup(s => s.GetPatient(It.IsAny<string>(), It.IsAny<PatientIdentifierType>(), false, It.IsAny<CancellationToken>())).Returns(Task.FromResult(patientResult));
 
             Mock<IMessageSender> mockMessageSender = new();
             mockMessageSender.Setup(s => s.SendAsync(It.IsAny<IEnumerable<MessageEnvelope>>(), It.IsAny<CancellationToken>()));
@@ -536,7 +537,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 },
             };
 
-            mockPatientService.Setup(s => s.GetPatient(It.IsAny<string>(), It.IsAny<PatientIdentifierType>(), false)).Returns(Task.FromResult(patientResult));
+            mockPatientService.Setup(s => s.GetPatient(It.IsAny<string>(), It.IsAny<PatientIdentifierType>(), false, It.IsAny<CancellationToken>())).Returns(Task.FromResult(patientResult));
 
             ResourceDelegate expectedDbDependent = new() { ProfileHdid = this.mockParentHdid, ResourceOwnerHdid = this.mockHdId };
 

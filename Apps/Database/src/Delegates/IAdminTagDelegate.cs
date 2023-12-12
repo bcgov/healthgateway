@@ -17,6 +17,8 @@ namespace HealthGateway.Database.Delegates
 {
     using System;
     using System.Collections.Generic;
+    using System.Threading;
+    using System.Threading.Tasks;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
 
@@ -30,28 +32,32 @@ namespace HealthGateway.Database.Delegates
         /// </summary>
         /// <param name="tag">The admin tag to be added to the database.</param>
         /// <param name="commit">if true the transaction is persisted immediately.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>An admin tag wrapped in a DBResult.</returns>
-        DbResult<AdminTag> Add(AdminTag tag, bool commit = true);
+        Task<DbResult<AdminTag>> AddAsync(AdminTag tag, bool commit = true, CancellationToken ct = default);
 
         /// <summary>
         /// Delete the given admin tag.
         /// </summary>
         /// <param name="tag">The admin tag to be deleted in the database.</param>
         /// <param name="commit">if true the transaction is persisted immediately.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>An admin tag wrapped in a DBResult.</returns>
-        DbResult<AdminTag> Delete(AdminTag tag, bool commit = true);
+        Task<DbResult<AdminTag>> DeleteAsync(AdminTag tag, bool commit = true, CancellationToken ct = default);
 
         /// <summary>
         /// Gets a list of admin tags ordered by the name ascending.
         /// </summary>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>An IEnumerable of AdminTag wrapped in a DBResult.</returns>
-        DbResult<IEnumerable<AdminTag>> GetAll();
+        Task<IEnumerable<AdminTag>> GetAllAsync(CancellationToken ct = default);
 
         /// <summary>
         /// Gets a list of admin tags by ids.
         /// </summary>
         /// <param name="adminTagIds">The admin tag ids to search on.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>An IEnumerable of AdminTag wrapped in a DBResult.</returns>
-        DbResult<IEnumerable<AdminTag>> GetAdminTags(ICollection<Guid> adminTagIds);
+        Task<DbResult<IEnumerable<AdminTag>>> GetAdminTagsAsync(ICollection<Guid> adminTagIds, CancellationToken ct = default);
     }
 }

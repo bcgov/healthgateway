@@ -13,13 +13,14 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Common.Services
+namespace HealthGateway.Admin.Server.Services
 {
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.Linq;
     using System.Net.Http;
+    using System.Threading;
     using System.Threading.Tasks;
     using AutoMapper;
     using FluentValidation.Results;
@@ -56,7 +57,7 @@ namespace HealthGateway.Common.Services
         private static ActivitySource Source { get; } = new(nameof(BroadcastService));
 
         /// <inheritdoc/>
-        public async Task<RequestResult<Broadcast>> CreateBroadcastAsync(Broadcast broadcast)
+        public async Task<RequestResult<Broadcast>> CreateBroadcastAsync(Broadcast broadcast, CancellationToken ct = default)
         {
             using Activity? activity = Source.StartActivity();
             this.logger.LogDebug("Creating broadcast");
@@ -68,7 +69,7 @@ namespace HealthGateway.Common.Services
 
             try
             {
-                ValidationResult? validationResults = await new BroadcastValidator().ValidateAsync(broadcast).ConfigureAwait(true);
+                ValidationResult? validationResults = await new BroadcastValidator().ValidateAsync(broadcast, ct);
                 if (!validationResults.IsValid)
                 {
                     requestResult.ResultError = new()
@@ -80,7 +81,7 @@ namespace HealthGateway.Common.Services
                 else
                 {
                     BroadcastRequest broadcastRequest = this.autoMapper.Map<BroadcastRequest>(broadcast);
-                    BroadcastResponse response = await this.systemBroadcastApi.CreateBroadcastAsync(broadcastRequest).ConfigureAwait(true);
+                    BroadcastResponse response = await this.systemBroadcastApi.CreateBroadcastAsync(broadcastRequest, ct);
                     requestResult.ResultStatus = ResultType.Success;
                     requestResult.ResourcePayload = this.autoMapper.Map<Broadcast>(response);
                     requestResult.TotalResultCount = 1;
@@ -101,7 +102,7 @@ namespace HealthGateway.Common.Services
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResult<IEnumerable<Broadcast>>> GetBroadcastsAsync()
+        public async Task<RequestResult<IEnumerable<Broadcast>>> GetBroadcastsAsync(CancellationToken ct = default)
         {
             using Activity? activity = Source.StartActivity();
             this.logger.LogDebug("Retrieving broadcasts");
@@ -113,7 +114,7 @@ namespace HealthGateway.Common.Services
 
             try
             {
-                IEnumerable<BroadcastResponse> response = await this.systemBroadcastApi.GetBroadcastsAsync().ConfigureAwait(true);
+                IEnumerable<BroadcastResponse> response = await this.systemBroadcastApi.GetBroadcastsAsync(ct);
                 requestResult.ResultStatus = ResultType.Success;
                 requestResult.ResourcePayload = this.autoMapper.Map<List<Broadcast>>(response);
                 requestResult.TotalResultCount = requestResult.ResourcePayload.Count();
@@ -133,7 +134,7 @@ namespace HealthGateway.Common.Services
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResult<Broadcast>> UpdateBroadcastAsync(Broadcast broadcast)
+        public async Task<RequestResult<Broadcast>> UpdateBroadcastAsync(Broadcast broadcast, CancellationToken ct = default)
         {
             using Activity? activity = Source.StartActivity();
             this.logger.LogDebug("Updating broadcast for id: {Id}", broadcast.Id.ToString());
@@ -145,7 +146,7 @@ namespace HealthGateway.Common.Services
 
             try
             {
-                ValidationResult? validationResults = await new BroadcastValidator().ValidateAsync(broadcast).ConfigureAwait(true);
+                ValidationResult? validationResults = await new BroadcastValidator().ValidateAsync(broadcast, ct);
                 if (!validationResults.IsValid)
                 {
                     requestResult.ResultError = new()
@@ -157,7 +158,7 @@ namespace HealthGateway.Common.Services
                 else
                 {
                     BroadcastRequest broadcastRequest = this.autoMapper.Map<BroadcastRequest>(broadcast);
-                    BroadcastResponse response = await this.systemBroadcastApi.UpdateBroadcastAsync(broadcast.Id.ToString(), broadcastRequest).ConfigureAwait(true);
+                    BroadcastResponse response = await this.systemBroadcastApi.UpdateBroadcastAsync(broadcast.Id.ToString(), broadcastRequest, ct);
                     requestResult.ResultStatus = ResultType.Success;
                     requestResult.ResourcePayload = this.autoMapper.Map<Broadcast>(response);
                     requestResult.TotalResultCount = 1;
@@ -178,7 +179,7 @@ namespace HealthGateway.Common.Services
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResult<Broadcast>> DeleteBroadcastAsync(Broadcast broadcast)
+        public async Task<RequestResult<Broadcast>> DeleteBroadcastAsync(Broadcast broadcast, CancellationToken ct = default)
         {
             using Activity? activity = Source.StartActivity();
             this.logger.LogDebug("Deleting broadcast for id: {Id}", broadcast.Id.ToString());
@@ -190,7 +191,7 @@ namespace HealthGateway.Common.Services
 
             try
             {
-                await this.systemBroadcastApi.DeleteBroadcastAsync(broadcast.Id.ToString()).ConfigureAwait(true);
+                await this.systemBroadcastApi.DeleteBroadcastAsync(broadcast.Id.ToString(), ct);
                 requestResult.ResultStatus = ResultType.Success;
                 requestResult.ResourcePayload = broadcast;
                 requestResult.TotalResultCount = 1;

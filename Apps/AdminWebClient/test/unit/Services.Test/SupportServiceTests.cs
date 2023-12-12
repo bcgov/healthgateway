@@ -385,7 +385,7 @@ namespace HealthGateway.AdminWebClientTests.Services.Test
             Mock<IPatientService> mockPatientService = new();
             if (patientResult != null)
             {
-                mockPatientService.Setup(p => p.GetPatient(It.IsAny<string>(), It.IsAny<PatientIdentifierType>(), false)).ReturnsAsync(patientResult);
+                mockPatientService.Setup(p => p.GetPatient(It.IsAny<string>(), It.IsAny<PatientIdentifierType>(), false, It.IsAny<CancellationToken>())).ReturnsAsync(patientResult);
             }
 
             Mock<IUserProfileDelegate> mockUserProfileDelegate = new();
