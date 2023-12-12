@@ -296,7 +296,7 @@ dotnet_diagnostic.ca1828.severity = warning
 dotnet_diagnostic.ca1829.severity = warning
 
 # CA1848: For improved performance, use the LoggerMessage delegates
-dotnet_diagnostic.ca1848.severity = suggestion
+dotnet_diagnostic.ca1848.severity = none
 
 # CA1859: Use concrete types when possible for improved performance
 dotnet_diagnostic.ca1859.severity = suggestion

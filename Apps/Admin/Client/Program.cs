@@ -142,7 +142,7 @@ namespace HealthGateway.Admin.Client
                 .ConfigureHttpClient(c => c.BaseAddress = address);
         }
 
-        private static DelegatingHandler ConfigureAuthorization(IServiceProvider serviceProvider, string address)
+        private static AuthorizationMessageHandler ConfigureAuthorization(IServiceProvider serviceProvider, string address)
         {
             return serviceProvider.GetRequiredService<AuthorizationMessageHandler>()
                 .ConfigureHandler([address]);

@@ -75,6 +75,7 @@ namespace HealthGateway.GatewayApi.Services
         /// <param name="userProfileDelegate">The profile delegate to interact with the DB.</param>
         /// <param name="messageSender">The message sender.</param>
         /// <param name="autoMapper">The inject automapper provider.</param>
+#pragma warning disable S107 // The number of DI parameters should be ignored
         public DependentService(
             IConfiguration configuration,
             ILogger<DependentService> logger,

@@ -64,7 +64,7 @@ namespace HealthGateway.Admin.Server
             WebApplicationBuilder builder = ProgramConfiguration.CreateWebAppBuilder(args);
 
             IServiceCollection services = builder.Services;
-            IConfiguration configuration = builder.Configuration;
+            ConfigurationManager configuration = builder.Configuration;
             ILogger logger = ProgramConfiguration.GetInitialLogger(configuration);
             IWebHostEnvironment environment = builder.Environment;
 
@@ -124,7 +124,7 @@ namespace HealthGateway.Admin.Server
             await app.RunAsync().ConfigureAwait(true);
         }
 
-        private static void AddModules(IServiceCollection services, IConfiguration configuration, ILogger logger, IWebHostEnvironment environment)
+        private static void AddModules(IServiceCollection services, ConfigurationManager configuration, ILogger logger, IWebHostEnvironment environment)
         {
             HttpWeb.ConfigureForwardHeaders(services, logger, configuration);
             Db.ConfigureDatabaseServices(services, logger, configuration);
@@ -141,7 +141,7 @@ namespace HealthGateway.Admin.Server
             Utility.ConfigureTracing(services, logger, configuration);
         }
 
-        private static void AddServices(IServiceCollection services, IConfiguration configuration)
+        private static void AddServices(IServiceCollection services, ConfigurationManager configuration)
         {
             services.AddTransient<IBroadcastService, BroadcastService>();
             services.AddTransient<IConfigurationService, ConfigurationService>();

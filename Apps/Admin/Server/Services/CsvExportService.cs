@@ -113,7 +113,7 @@ namespace HealthGateway.Admin.Server.Services
             return stream;
         }
 
-        private static async Task<Stream> GetStreamAsync<TModel, TMap>(IEnumerable<TModel> obj, CancellationToken ct)
+        private static async Task<MemoryStream> GetStreamAsync<TModel, TMap>(IEnumerable<TModel> obj, CancellationToken ct)
             where TMap : ClassMap
         {
             MemoryStream stream = new();

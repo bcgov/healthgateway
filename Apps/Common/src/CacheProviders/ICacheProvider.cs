@@ -16,6 +16,7 @@
 namespace HealthGateway.Common.CacheProviders
 {
     using System;
+    using System.Text;
     using System.Threading.Tasks;
 
     /// <summary>
@@ -26,7 +27,7 @@ namespace HealthGateway.Common.CacheProviders
         /// <summary>
         /// Key used to store cache for blocked access.
         /// </summary>
-        public const string BlockedAccessCachePrefixKey = "BlockedAccess:Hdid:{0}";
+        public static readonly CompositeFormat BlockedAccessCachePrefixKey = CompositeFormat.Parse("BlockedAccess:Hdid:{0}");
 
         /// <summary>
         /// Retrieves an item from the cache if available.

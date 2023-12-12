@@ -49,6 +49,7 @@ namespace HealthGateway.Admin.Server.Services
     /// <param name="messageSender">The change feed message sender</param>
     /// <param name="auditRepository">The injected agent audit repository.</param>
     /// <param name="autoMapper">The injected automapper provider.</param>
+#pragma warning disable S107 // The number of DI parameters should be ignored
     public class DelegationService(
         IConfiguration configuration,
         IPatientService patientService,

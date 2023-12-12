@@ -84,7 +84,7 @@ resource "keycloak_authentication_execution_config" "icarus_idp_redirector_execu
   execution_id = keycloak_authentication_execution.icarus_idp_redirector_execution.id
   alias        = "icarus-idp-redirector-config"
   config = {
-    defaultProvider = "icarus"
+    defaultProvider = "bcsc"
   }
 }
 resource "keycloak_authentication_execution" "icarus_execution1" {
