@@ -33,8 +33,9 @@ namespace HealthGateway.GatewayApi.Services
         /// <param name="hdid">The users HDID.</param>
         /// <param name="page">The page of data to fetch indexed from 0.</param>
         /// <param name="pageSize">The amount of records per page.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A List of dependents wrapped in a RequestResult.</returns>
-        Task<RequestResult<IEnumerable<DependentModel>>> GetDependentsAsync(string hdid, int page = 0, int pageSize = 25);
+        Task<RequestResult<IEnumerable<DependentModel>>> GetDependentsAsync(string hdid, int page = 0, int pageSize = 25, CancellationToken ct = default);
 
         /// <summary>
         /// Gets all the dependents for the given date range.
@@ -51,7 +52,7 @@ namespace HealthGateway.GatewayApi.Services
         /// </summary>
         /// <param name="delegateHdid">The HdId of the Delegate (parent or guardian).</param>
         /// <param name="addDependentRequest">The request to create a User Delegate model.</param>
-        /// <param name="ct">A cancellation token.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A dependent model wrapped in a RequestResult.</returns>
         Task<RequestResult<DependentModel>> AddDependentAsync(string delegateHdid, AddDependentRequest addDependentRequest, CancellationToken ct = default);
 
@@ -59,7 +60,7 @@ namespace HealthGateway.GatewayApi.Services
         /// Removes a dependent delegate relation.
         /// </summary>
         /// <param name="dependent">The dependent model to be deleted.</param>
-        /// <param name="ct">A cancellation token.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A dependent model wrapped in a RequestResult.</returns>
         Task<RequestResult<DependentModel>> RemoveAsync(DependentModel dependent, CancellationToken ct = default);
     }

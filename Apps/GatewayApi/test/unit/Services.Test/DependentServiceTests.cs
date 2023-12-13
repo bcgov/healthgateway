@@ -70,7 +70,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         {
             IDependentService service = this.SetupMockForGetDependents();
 
-            RequestResult<IEnumerable<DependentModel>> actualResult = await service.GetDependentsAsync(this.mockParentHdid);
+            RequestResult<IEnumerable<DependentModel>> actualResult = await service.GetDependentsAsync(this.mockParentHdid, 0, 25, It.IsAny<CancellationToken>());
 
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             Assert.Equal(10, actualResult.TotalResultCount);
@@ -459,7 +459,8 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             };
 
             Mock<IResourceDelegateDelegate> mockDependentDelegate = new();
-            mockDependentDelegate.Setup(s => s.Get(this.mockParentHdid, It.IsAny<int>(), It.IsAny<int>())).Returns(mockResourceDelegateResult);
+            mockDependentDelegate.Setup(s => s.GetAsync(this.mockParentHdid, It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(this.GenerateMockResourceDelegatesList().ToList());
             mockDependentDelegate.Setup(s => s.Get(this.fromDate, this.toDate, It.IsAny<int>(), It.IsAny<int>())).Returns(mockResourceDelegateResult);
             mockDependentDelegate.Setup(s => s.GetTotalDelegateCountsAsync(It.IsAny<IEnumerable<string>>())).ReturnsAsync(mockDelegateCountsResult);
 

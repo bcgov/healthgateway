@@ -49,6 +49,16 @@ namespace HealthGateway.Database.Delegates
         DbResult<IEnumerable<ResourceDelegate>> Get(string delegateId, int page = 0, int pageSize = 500);
 
         /// <summary>
+        /// Gets the list of Resource Delegate records for a specific delegate Id from the database.
+        /// </summary>
+        /// <param name="delegateId">The resource delegate to create.</param>
+        /// <param name="page">The page to start at.</param>
+        /// <param name="pageSize">The amount of rows to fetch per call.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
+        /// <returns>A list of resourceDelegates wrapped in a DBResult.</returns>
+        Task<IList<ResourceDelegate>> GetAsync(string delegateId, int page = 0, int pageSize = 500, CancellationToken ct = default);
+
+        /// <summary>
         /// Gets the list of Resource Delegate records for a date range from the database.
         /// </summary>
         /// <param name="fromDate">The from date.</param>

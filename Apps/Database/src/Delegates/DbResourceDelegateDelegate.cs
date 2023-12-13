@@ -102,6 +102,19 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
+        public async Task<IList<ResourceDelegate>> GetAsync(string delegateId, int page = 0, int pageSize = 500, CancellationToken ct = default)
+        {
+            this.logger.LogTrace("Getting resource delegates from DB... {DelegateId}", delegateId);
+            return await DbDelegateHelper.GetPagedDbResultAsync(
+                this.dbContext.ResourceDelegate
+                    .Where(resourceDelegate => resourceDelegate.ProfileHdid == delegateId)
+                    .OrderBy(resourceDelegate => resourceDelegate.CreatedDateTime),
+                page,
+                pageSize,
+                ct);
+        }
+
+        /// <inheritdoc/>
         public DbResult<IEnumerable<ResourceDelegate>> Get(DateTime fromDate, DateTime? toDate, int page, int pageSize)
         {
             this.logger.LogTrace("Getting resource delegates from DB for date...{FromDate}", fromDate);

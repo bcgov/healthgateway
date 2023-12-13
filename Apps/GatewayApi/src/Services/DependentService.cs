@@ -149,7 +149,7 @@ namespace HealthGateway.GatewayApi.Services
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResult<IEnumerable<DependentModel>>> GetDependentsAsync(string hdid, int page = 0, int pageSize = 25)
+        public async Task<RequestResult<IEnumerable<DependentModel>>> GetDependentsAsync(string hdid, int page = 0, int pageSize = 25, CancellationToken ct = default)
         {
             RequestResult<IEnumerable<DependentModel>> result = new()
             {
@@ -157,17 +157,17 @@ namespace HealthGateway.GatewayApi.Services
             };
 
             // Get Dependents from database
-            DbResult<IEnumerable<ResourceDelegate>> dbResourceDelegates = this.resourceDelegateDelegate.Get(hdid, page, pageSize);
+            IList<ResourceDelegate> resourceDelegates = await this.resourceDelegateDelegate.GetAsync(hdid, page, pageSize, ct);
 
-            DbResult<Dictionary<string, int>> totalDelegateCounts = await this.resourceDelegateDelegate.GetTotalDelegateCountsAsync(dbResourceDelegates.Payload.Select(d => d.ResourceOwnerHdid));
+            DbResult<Dictionary<string, int>> totalDelegateCounts = await this.resourceDelegateDelegate.GetTotalDelegateCountsAsync(resourceDelegates.Select(d => d.ResourceOwnerHdid));
 
             // Get Dependents Details from Patient service
             List<DependentModel> dependentModels = new();
             StringBuilder resultErrorMessage = new();
-            foreach (ResourceDelegate resourceDelegate in dbResourceDelegates.Payload)
+            foreach (ResourceDelegate resourceDelegate in resourceDelegates)
             {
                 this.logger.LogDebug("Getting dependent details for Dependent hdid: {DependentHdid}", resourceDelegate.ResourceOwnerHdid);
-                RequestResult<PatientModel> patientResult = await this.patientService.GetPatient(resourceDelegate.ResourceOwnerHdid);
+                RequestResult<PatientModel> patientResult = await this.patientService.GetPatient(resourceDelegate.ResourceOwnerHdid, PatientIdentifierType.Hdid, false, ct);
 
                 if (patientResult.ResourcePayload != null)
                 {
@@ -237,7 +237,7 @@ namespace HealthGateway.GatewayApi.Services
         /// <inheritdoc/>
         public async Task<RequestResult<DependentModel>> RemoveAsync(DependentModel dependent, CancellationToken ct = default)
         {
-            ResourceDelegate? resourceDelegate = this.resourceDelegateDelegate.Get(dependent.DelegateId).Payload.FirstOrDefault(d => d.ResourceOwnerHdid == dependent.OwnerId);
+            ResourceDelegate? resourceDelegate = (await this.resourceDelegateDelegate.GetAsync(dependent.DelegateId, 0, 500, ct)).FirstOrDefault(d => d.ResourceOwnerHdid == dependent.OwnerId);
             if (resourceDelegate == null)
             {
                 throw new ProblemDetailsException(ExceptionUtility.CreateNotFoundError($"Dependent {dependent.OwnerId} not found for delegate {dependent.DelegateId}"));
