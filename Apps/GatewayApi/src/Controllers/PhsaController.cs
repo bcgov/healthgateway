@@ -18,8 +18,10 @@ namespace HealthGateway.GatewayApi.Controllers
 {
     using System;
     using System.Collections.Generic;
+    using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.AccessManagement.Authorization.Policy;
+    using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.GatewayApi.Models;
     using HealthGateway.GatewayApi.Services;
@@ -77,6 +79,7 @@ namespace HealthGateway.GatewayApi.Controllers
         /// <param name="toDateUtc">The to date in Utc.</param>
         /// <param name="page">The page number. Defaults to 0.</param>
         /// <param name="pageSize">The page size. Max 5000.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <response code="200">Returns the list of dependents.</response>
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
         /// <response code="403">
@@ -86,19 +89,21 @@ namespace HealthGateway.GatewayApi.Controllers
         [HttpGet]
         [Authorize(Policy = SystemDelegatedPatientPolicy.Read)]
         [Route("dependents")]
-        public ActionResult<RequestResult<IEnumerable<GetDependentResponse>>> GetAll(
+        public async Task<ActionResult<RequestResult<IEnumerable<GetDependentResponse>>>> GetAll(
             [FromQuery] DateTime fromDateUtc,
             [FromQuery] DateTime? toDateUtc,
             [FromQuery] int page = 0,
-            [FromQuery] int pageSize = 5000)
+            [FromQuery] int pageSize = 5000,
+            CancellationToken ct = default)
         {
-            return this.dependentService.GetDependents(fromDateUtc, toDateUtc, page, pageSize);
+            return await this.dependentService.GetDependentsAsync(fromDateUtc, toDateUtc, page, pageSize, ct);
         }
 
         /// <summary>
         /// Gets a json of patient record.
         /// </summary>
         /// <param name="hdid">The patient hdid.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The patient record.</returns>
         /// <response code="200">Returns the patient record.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
@@ -117,9 +122,9 @@ namespace HealthGateway.GatewayApi.Controllers
         [ProducesResponseType(StatusCodes.Status502BadGateway)]
         [Route("patients/{hdid}")]
         [Authorize(Policy = SystemDelegatedPatientPolicy.Read)]
-        public async Task<ActionResult<PatientDetails>> GetPatient(string hdid)
+        public async Task<ActionResult<PatientDetails>> GetPatient(string hdid, CancellationToken ct)
         {
-            return await this.patientDetailsService.GetPatientAsync(hdid).ConfigureAwait(true);
+            return await this.patientDetailsService.GetPatientAsync(hdid, PatientIdentifierType.Hdid, false, ct);
         }
     }
 }

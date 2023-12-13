@@ -207,21 +207,17 @@ namespace HealthGateway.GatewayApi.Services
         }
 
         /// <inheritdoc/>
-        public RequestResult<IEnumerable<GetDependentResponse>> GetDependents(DateTime fromDateUtc, DateTime? toDateUtc, int page, int pageSize)
+        public async Task<RequestResult<IEnumerable<GetDependentResponse>>> GetDependentsAsync(DateTime fromDateUtc, DateTime? toDateUtc, int page, int pageSize, CancellationToken ct = default)
         {
-            DbResult<IEnumerable<ResourceDelegate>> dbResourceDelegates = this.resourceDelegateDelegate.Get(
+            IList<ResourceDelegate> resourceDelegates = await this.resourceDelegateDelegate.GetAsync(
                 fromDateUtc,
                 toDateUtc,
                 page,
-                pageSize);
-
-            if (dbResourceDelegates.Status != DbStatusCode.Read)
-            {
-                return RequestResultFactory.ServiceError<IEnumerable<GetDependentResponse>>(ErrorType.CommunicationInternal, ServiceType.Database, dbResourceDelegates.Message);
-            }
+                pageSize,
+                ct);
 
             IEnumerable<GetDependentResponse> getDependentResponses =
-                dbResourceDelegates.Payload
+                resourceDelegates
                     .Select(
                         g => new GetDependentResponse
                         {

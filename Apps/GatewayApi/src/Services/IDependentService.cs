@@ -44,8 +44,9 @@ namespace HealthGateway.GatewayApi.Services
         /// <param name="toDateUtc">The to date time in Utc.</param>
         /// <param name="page">The page of data to fetch indexed from 0.</param>
         /// <param name="pageSize">The amount of records per page.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A List of dependents wrapped in a RequestResult.</returns>
-        RequestResult<IEnumerable<GetDependentResponse>> GetDependents(DateTime fromDateUtc, DateTime? toDateUtc, int page, int pageSize);
+        Task<RequestResult<IEnumerable<GetDependentResponse>>> GetDependentsAsync(DateTime fromDateUtc, DateTime? toDateUtc, int page, int pageSize, CancellationToken ct = default);
 
         /// <summary>
         /// Add a dependent to the given hdId of the delegate (parent or guardian).

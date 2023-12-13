@@ -89,12 +89,13 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         /// <summary>
         /// GetDependents by date - Happy Path.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void GetDependentsByDate()
+        public async Task GetDependentsByDate()
         {
             IDependentService service = this.SetupMockForGetDependents();
 
-            RequestResult<IEnumerable<GetDependentResponse>> actualResult = service.GetDependents(this.fromDate, this.toDate, 0, 5000);
+            RequestResult<IEnumerable<GetDependentResponse>> actualResult = await service.GetDependentsAsync(this.fromDate, this.toDate, 0, 5000, It.IsAny<CancellationToken>());
 
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             Assert.Equal(10, actualResult.TotalResultCount);
@@ -398,7 +399,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 .Build();
         }
 
-        private IEnumerable<ResourceDelegate> GenerateMockResourceDelegatesList()
+        private IList<ResourceDelegate> GenerateMockResourceDelegatesList()
         {
             List<ResourceDelegate> resourceDelegates = new();
 
@@ -447,11 +448,6 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         private IDependentService SetupMockForGetDependents(RequestResult<PatientModel>? patientResult = null)
         {
             // (1) Setup ResourceDelegateDelegate's mock
-            DbResult<IEnumerable<ResourceDelegate>> mockResourceDelegateResult = new()
-            {
-                Status = DbStatusCode.Read,
-                Payload = this.GenerateMockResourceDelegatesList(),
-            };
             DbResult<Dictionary<string, int>> mockDelegateCountsResult = new()
             {
                 Status = DbStatusCode.Read,
@@ -460,8 +456,9 @@ namespace HealthGateway.GatewayApiTests.Services.Test
 
             Mock<IResourceDelegateDelegate> mockDependentDelegate = new();
             mockDependentDelegate.Setup(s => s.GetAsync(this.mockParentHdid, It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(this.GenerateMockResourceDelegatesList().ToList());
-            mockDependentDelegate.Setup(s => s.Get(this.fromDate, this.toDate, It.IsAny<int>(), It.IsAny<int>())).Returns(mockResourceDelegateResult);
+                .ReturnsAsync(this.GenerateMockResourceDelegatesList());
+            mockDependentDelegate.Setup(s => s.GetAsync(this.fromDate, this.toDate, It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(this.GenerateMockResourceDelegatesList());
             mockDependentDelegate.Setup(s => s.GetTotalDelegateCountsAsync(It.IsAny<IEnumerable<string>>())).ReturnsAsync(mockDelegateCountsResult);
 
             // (2) Setup PatientDelegate's mock

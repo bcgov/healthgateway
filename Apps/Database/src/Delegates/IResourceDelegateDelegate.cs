@@ -65,9 +65,10 @@ namespace HealthGateway.Database.Delegates
         /// <param name="toDate">The to date.</param>
         /// <param name="page">The page to start at.</param>
         /// <param name="pageSize">The amount of rows to fetch per call.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A list of resourceDelegates wrapped in a DBResult.</returns>
         [SuppressMessage("Naming", "CA1716:Identifiers should not match keywords", Justification = "Team decision")]
-        DbResult<IEnumerable<ResourceDelegate>> Get(DateTime fromDate, DateTime? toDate, int page, int pageSize);
+        Task<IList<ResourceDelegate>> GetAsync(DateTime fromDate, DateTime? toDate, int page, int pageSize, CancellationToken ct = default);
 
         /// <summary>
         /// Retrieves a count of all dependents.
