@@ -41,40 +41,45 @@ namespace HealthGateway.Database.Delegates
         /// <param name="hdId">The users health identifier id.</param>
         /// <param name="offset">The starting offset for the query.</param>
         /// <param name="pageSize">The maximum amount of rows to return.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A list of Notes wrapped in a DBResult.</returns>
-        DbResult<IList<Note>> GetNotes(string hdId, int offset = 0, int pageSize = 500);
+        Task<DbResult<IList<Note>>> GetNotesAsync(string hdId, int offset = 0, int pageSize = 500, CancellationToken ct = default);
 
         /// <summary>
         /// Add the given note.
         /// </summary>
         /// <param name="note">The note to be added to the backend.</param>
         /// <param name="commit">if true the transaction is persisted immediately.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A Note wrapped in a DBResult.</returns>
-        DbResult<Note> AddNote(Note note, bool commit = true);
+        Task<DbResult<Note>> AddNoteAsync(Note note, bool commit = true, CancellationToken ct = default);
 
         /// <summary>
         /// Update the supplied note.
         /// </summary>
         /// <param name="note">The note to be updated in the backend.</param>
         /// <param name="commit">if true the transaction is persisted immediately.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A Note wrapped in a DBResult.</returns>
-        DbResult<Note> UpdateNote(Note note, bool commit = true);
+        Task<DbResult<Note>> UpdateNoteAsync(Note note, bool commit = true, CancellationToken ct = default);
 
         /// <summary>
         /// Update the list of suplied notes.
         /// </summary>
         /// <param name="notes">The notes to be updated in the backend.</param>
         /// <param name="commit">if true the transaction is persisted immediately.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A List of Notes wrapped in a DBResult.</returns>
-        DbResult<IEnumerable<Note>> BatchUpdate(IEnumerable<Note> notes, bool commit = true);
+        Task<DbResult<IEnumerable<Note>>> BatchUpdateAsync(IEnumerable<Note> notes, bool commit = true, CancellationToken ct = default);
 
         /// <summary>
         /// Deletes the supplied note.
         /// </summary>
         /// <param name="note">The note to be deleted in the backend.</param>
         /// <param name="commit">if true the transaction is persisted immediately.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A Note wrapped in a DBResult.</returns>
-        DbResult<Note> DeleteNote(Note note, bool commit = true);
+        Task<DbResult<Note>> DeleteNoteAsync(Note note, bool commit = true, CancellationToken ct = default);
 
         /// <summary>
         /// Gets a list of all the notes ordered by the CreatedDateTime in ascending order.

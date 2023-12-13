@@ -17,6 +17,8 @@ namespace HealthGateway.GatewayApi.Services
 {
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading;
+    using System.Threading.Tasks;
     using AutoMapper;
     using HealthGateway.AccountDataAccess.Patient;
     using HealthGateway.Common.Data.Constants;
@@ -69,10 +71,10 @@ namespace HealthGateway.GatewayApi.Services
         }
 
         /// <inheritdoc/>
-        public RequestResult<UserNote> CreateNote(UserNote userNote)
+        public async Task<RequestResult<UserNote>> CreateNoteAsync(UserNote userNote, CancellationToken ct = default)
         {
-            UserProfile profile = this.profileDelegate.GetUserProfile(userNote.HdId).Payload;
-            string? key = profile.EncryptionKey;
+            UserProfile? profile = await this.profileDelegate.GetUserProfileAsync(userNote.HdId);
+            string? key = profile?.EncryptionKey;
             if (key == null)
             {
                 this.logger.LogError("User does not have a key: {HdId}", userNote.HdId);
@@ -81,7 +83,7 @@ namespace HealthGateway.GatewayApi.Services
 
             Note note = NoteMapUtils.ToDbModel(userNote, this.cryptoDelegate, key, this.autoMapper);
 
-            DbResult<Note> dbNote = this.noteDelegate.AddNote(note);
+            DbResult<Note> dbNote = await this.noteDelegate.AddNoteAsync(note, true, ct);
 
             if (dbNote.Status != DbStatusCode.Created)
             {
@@ -92,9 +94,9 @@ namespace HealthGateway.GatewayApi.Services
         }
 
         /// <inheritdoc/>
-        public RequestResult<IEnumerable<UserNote>> GetNotes(string hdId, int page = 0, int pageSize = 500)
+        public async Task<RequestResult<IEnumerable<UserNote>>> GetNotesAsync(string hdId, int page = 0, int pageSize = 500, CancellationToken ct = default)
         {
-            if (!this.patientRepository.CanAccessDataSourceAsync(hdId, DataSource.Note).Result)
+            if (!await this.patientRepository.CanAccessDataSourceAsync(hdId, DataSource.Note, ct))
             {
                 return new RequestResult<IEnumerable<UserNote>>
                 {
@@ -105,17 +107,17 @@ namespace HealthGateway.GatewayApi.Services
             }
 
             int offset = page * pageSize;
-            DbResult<IList<Note>> dbNotes = this.noteDelegate.GetNotes(hdId, offset, pageSize);
+            DbResult<IList<Note>> dbNotes = await this.noteDelegate.GetNotesAsync(hdId, offset, pageSize, ct);
 
-            UserProfile profile = this.profileDelegate.GetUserProfile(hdId).Payload;
-            string? key = profile.EncryptionKey;
+            UserProfile? profile = await this.profileDelegate.GetUserProfileAsync(hdId);
+            string? key = profile?.EncryptionKey;
 
             // If there is no key yet, generate one and store it in the profile. Only valid while not all profiles have a encryption key.
             if (key == null)
             {
                 this.logger.LogInformation("First time note retrieval with key for user {Hdid}", hdId);
-                key = this.EncryptFirstTime(profile, dbNotes.Payload);
-                dbNotes = this.noteDelegate.GetNotes(hdId, offset, pageSize);
+                key = await this.EncryptFirstTimeAsync(profile, dbNotes.Payload, ct);
+                dbNotes = await this.noteDelegate.GetNotesAsync(hdId, offset, pageSize, ct);
             }
 
             if (dbNotes.Status != DbStatusCode.Read)
@@ -131,10 +133,10 @@ namespace HealthGateway.GatewayApi.Services
         }
 
         /// <inheritdoc/>
-        public RequestResult<UserNote> UpdateNote(UserNote userNote)
+        public async Task<RequestResult<UserNote>> UpdateNoteAsync(UserNote userNote, CancellationToken ct = default)
         {
-            UserProfile profile = this.profileDelegate.GetUserProfile(userNote.HdId).Payload;
-            string? key = profile.EncryptionKey;
+            UserProfile? profile = await this.profileDelegate.GetUserProfileAsync(userNote.HdId);
+            string? key = profile?.EncryptionKey;
             if (key == null)
             {
                 this.logger.LogError("User does not have a key: {HdId}", userNote.HdId);
@@ -142,7 +144,7 @@ namespace HealthGateway.GatewayApi.Services
             }
 
             Note note = NoteMapUtils.ToDbModel(userNote, this.cryptoDelegate, key, this.autoMapper);
-            DbResult<Note> dbResult = this.noteDelegate.UpdateNote(note);
+            DbResult<Note> dbResult = await this.noteDelegate.UpdateNoteAsync(note, true, ct);
 
             if (dbResult.Status != DbStatusCode.Updated)
             {
@@ -153,10 +155,10 @@ namespace HealthGateway.GatewayApi.Services
         }
 
         /// <inheritdoc/>
-        public RequestResult<UserNote> DeleteNote(UserNote userNote)
+        public async Task<RequestResult<UserNote>> DeleteNoteAsync(UserNote userNote, CancellationToken ct = default)
         {
-            UserProfile profile = this.profileDelegate.GetUserProfile(userNote.HdId).Payload;
-            string? key = profile.EncryptionKey;
+            UserProfile? profile = await this.profileDelegate.GetUserProfileAsync(userNote.HdId);
+            string? key = profile?.EncryptionKey;
             if (key == null)
             {
                 this.logger.LogError("User does not have a key: {Hdid}", userNote.HdId);
@@ -164,7 +166,7 @@ namespace HealthGateway.GatewayApi.Services
             }
 
             Note note = NoteMapUtils.ToDbModel(userNote, this.cryptoDelegate, key, this.autoMapper);
-            DbResult<Note> dbResult = this.noteDelegate.DeleteNote(note);
+            DbResult<Note> dbResult = await this.noteDelegate.DeleteNoteAsync(note, true, ct);
 
             if (dbResult.Status != DbStatusCode.Deleted)
             {
@@ -174,7 +176,7 @@ namespace HealthGateway.GatewayApi.Services
             return RequestResultFactory.Success(NoteMapUtils.CreateFromDbModel(dbResult.Payload, this.cryptoDelegate, key, this.autoMapper));
         }
 
-        private string EncryptFirstTime(UserProfile profile, IList<Note> dbNotes)
+        private async Task<string> EncryptFirstTimeAsync(UserProfile profile, IList<Note> dbNotes, CancellationToken ct)
         {
             string key = this.cryptoDelegate.GenerateKey();
             profile.EncryptionKey = key;
@@ -185,7 +187,7 @@ namespace HealthGateway.GatewayApi.Services
                 note.Text = this.cryptoDelegate.Encrypt(key, note.Text ?? string.Empty);
             }
 
-            this.noteDelegate.BatchUpdate(dbNotes);
+            await this.noteDelegate.BatchUpdateAsync(dbNotes, true, ct);
             return key;
         }
     }
