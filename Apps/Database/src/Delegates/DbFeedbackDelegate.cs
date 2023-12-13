@@ -49,14 +49,14 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public DbResult<UserFeedback> InsertUserFeedback(UserFeedback feedback)
+        public async Task<DbResult<UserFeedback>> InsertUserFeedbackAsync(UserFeedback feedback, CancellationToken ct = default)
         {
             this.logger.LogTrace("Inserting user feedback to DB...");
             DbResult<UserFeedback> result = new();
-            this.dbContext.Add(feedback);
+            await this.dbContext.AddAsync(feedback, ct);
             try
             {
-                this.dbContext.SaveChanges();
+                await this.dbContext.SaveChangesAsync(ct);
                 result.Status = DbStatusCode.Created;
             }
             catch (DbUpdateException e)

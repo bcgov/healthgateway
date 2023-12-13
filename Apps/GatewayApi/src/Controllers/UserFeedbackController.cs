@@ -15,6 +15,8 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.GatewayApi.Controllers
 {
+    using System.Threading;
+    using System.Threading.Tasks;
     using HealthGateway.Common.AccessManagement.Authorization.Policy;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Database.Constants;
@@ -51,6 +53,7 @@ namespace HealthGateway.GatewayApi.Controllers
         /// <returns>The http status.</returns>
         /// <param name="hdid">The user hdid.</param>
         /// <param name="userFeedback">The user feedback model.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <response code="200">The user feedback record was saved.</response>
         /// <response code="400">The user feedback object is invalid.</response>
         /// <response code="409">The user feedback was already inserted.</response>
@@ -62,7 +65,7 @@ namespace HealthGateway.GatewayApi.Controllers
         [HttpPost]
         [Route("{hdid}")]
         [Authorize(Policy = UserProfilePolicy.Write)]
-        public IActionResult CreateUserFeedback(string hdid, [FromBody] UserFeedback? userFeedback)
+        public async Task<IActionResult> CreateUserFeedback(string hdid, [FromBody] UserFeedback? userFeedback, CancellationToken ct = default)
         {
             if (userFeedback == null)
             {
@@ -72,7 +75,7 @@ namespace HealthGateway.GatewayApi.Controllers
             userFeedback.UserProfileId = hdid;
             userFeedback.CreatedBy = hdid;
             userFeedback.UpdatedBy = hdid;
-            DbResult<UserFeedback> result = this.userFeedbackService.CreateUserFeedback(userFeedback);
+            DbResult<UserFeedback> result = await this.userFeedbackService.CreateUserFeedbackAsync(userFeedback, ct);
             if (result.Status != DbStatusCode.Created)
             {
                 return new ConflictResult();
@@ -85,6 +88,7 @@ namespace HealthGateway.GatewayApi.Controllers
         /// Saves the rating model.
         /// </summary>
         /// <param name="rating">The rating to be saved.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The saved rating wrapped in a request result.</returns>
         /// <response code="200">Returns the saved rating json.</response>
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
@@ -94,9 +98,9 @@ namespace HealthGateway.GatewayApi.Controllers
         /// </response>
         [HttpPost]
         [Route("Rating")]
-        public RequestResult<Rating> CreateRating(Rating rating)
+        public async Task<RequestResult<Rating>> CreateRating(Rating rating, CancellationToken ct)
         {
-            return this.userFeedbackService.CreateRating(rating);
+            return await this.userFeedbackService.CreateRatingAsync(rating, ct);
         }
     }
 }

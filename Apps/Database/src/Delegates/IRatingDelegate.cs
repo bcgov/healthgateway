@@ -31,8 +31,9 @@ namespace HealthGateway.Database.Delegates
         /// Creates a Rating object in the database.
         /// </summary>
         /// <param name="rating">The rating to create.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A DB result which encapsulates the return object and status.</returns>
-        DbResult<Rating> InsertRating(Rating rating);
+        Task<DbResult<Rating>> InsertRatingAsync(Rating rating, CancellationToken ct = default);
 
         /// <summary>
         /// Gets a paged list of Ratings from the database.

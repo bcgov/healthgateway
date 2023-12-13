@@ -15,6 +15,8 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.GatewayApi.Services
 {
+    using System.Threading;
+    using System.Threading.Tasks;
     using Hangfire;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.Models;
@@ -60,24 +62,21 @@ namespace HealthGateway.GatewayApi.Services
         }
 
         /// <inheritdoc/>
-        public DbResult<UserFeedback> CreateUserFeedback(UserFeedback userFeedback)
+        public async Task<DbResult<UserFeedback>> CreateUserFeedbackAsync(UserFeedback userFeedback, CancellationToken ct = default)
         {
             this.logger.LogTrace("Creating user feedback...");
-            DbResult<UserFeedback> retVal = this.feedbackDelegate.InsertUserFeedback(userFeedback);
-            DbResult<UserProfile> dbResult = this.profileDelegate.GetUserProfile(userFeedback.UserProfileId);
-            if (dbResult.Status == DbStatusCode.Read)
+            DbResult<UserFeedback> retVal = await this.feedbackDelegate.InsertUserFeedbackAsync(userFeedback, ct);
+            UserProfile? userProfile = await this.profileDelegate.GetUserProfileAsync(userFeedback.UserProfileId);
+            string? clientEmail = userProfile?.Email;
+            if (!string.IsNullOrWhiteSpace(clientEmail))
             {
-                string? clientEmail = dbResult.Payload.Email;
-                if (!string.IsNullOrWhiteSpace(clientEmail))
+                this.logger.LogTrace("Queueing Admin Feedback job");
+                ClientFeedback clientFeedback = new()
                 {
-                    this.logger.LogTrace("Queueing Admin Feedback job");
-                    ClientFeedback clientFeedback = new()
-                    {
-                        UserFeedbackId = userFeedback.Id,
-                        Email = clientEmail,
-                    };
-                    this.jobClient.Enqueue<IAdminFeedbackJob>(j => j.SendEmail(clientFeedback));
-                }
+                    UserFeedbackId = userFeedback.Id,
+                    Email = clientEmail,
+                };
+                this.jobClient.Enqueue<IAdminFeedbackJob>(j => j.SendEmail(clientFeedback));
             }
 
             this.logger.LogDebug("Finished creating user feedback");
@@ -85,10 +84,10 @@ namespace HealthGateway.GatewayApi.Services
         }
 
         /// <inheritdoc/>
-        public RequestResult<Rating> CreateRating(Rating rating)
+        public async Task<RequestResult<Rating>> CreateRatingAsync(Rating rating, CancellationToken ct = default)
         {
             this.logger.LogTrace("Creating rating...");
-            DbResult<Rating> dbRating = this.ratingDelegate.InsertRating(rating);
+            DbResult<Rating> dbRating = await this.ratingDelegate.InsertRatingAsync(rating, ct);
             this.logger.LogDebug("Finished creating user feedback");
 
             RequestResult<Rating> result = new()

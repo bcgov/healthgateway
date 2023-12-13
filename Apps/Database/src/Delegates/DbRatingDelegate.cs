@@ -50,14 +50,14 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public DbResult<Rating> InsertRating(Rating rating)
+        public async Task<DbResult<Rating>> InsertRatingAsync(Rating rating, CancellationToken ct = default)
         {
             this.logger.LogTrace("Inserting rating to DB");
             DbResult<Rating> result = new();
-            this.dbContext.Add(rating);
+            await this.dbContext.AddAsync(rating, ct);
             try
             {
-                this.dbContext.SaveChanges();
+                await this.dbContext.SaveChangesAsync(ct);
                 result.Status = DbStatusCode.Created;
             }
             catch (DbUpdateException e)

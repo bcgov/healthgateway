@@ -16,6 +16,8 @@
 namespace HealthGateway.GatewayApiTests.Services.Test
 {
     using System;
+    using System.Threading;
+    using System.Threading.Tasks;
     using DeepEqual.Syntax;
     using Hangfire;
     using HealthGateway.Common.Data.Constants;
@@ -38,8 +40,9 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         /// <summary>
         /// CreateRating - Happy Path.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void ShouldCreateRating()
+        public async Task ShouldCreateRating()
         {
             Rating expectedRating = new()
             {
@@ -54,7 +57,8 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             };
 
             Mock<IRatingDelegate> ratingDelegateMock = new();
-            ratingDelegateMock.Setup(s => s.InsertRating(It.Is<Rating>(r => r.RatingValue == expectedRating.RatingValue && r.Skip == expectedRating.Skip))).Returns(insertResult);
+            ratingDelegateMock.Setup(s => s.InsertRatingAsync(It.Is<Rating>(r => r.RatingValue == expectedRating.RatingValue && r.Skip == expectedRating.Skip), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(insertResult);
 
             Mock<IBackgroundJobClient> mockJobclient = new();
             Mock<IUserProfileDelegate> mockProfileDelegate = new();
@@ -66,7 +70,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 mockProfileDelegate.Object,
                 mockJobclient.Object);
 
-            RequestResult<Rating> actualResult = service.CreateRating(expectedRating);
+            RequestResult<Rating> actualResult = await service.CreateRatingAsync(expectedRating);
 
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             expectedRating.ShouldDeepEqual(actualResult.ResourcePayload);
@@ -75,8 +79,9 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         /// <summary>
         /// CreateRating - Database Error.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void ShouldCreateRatingWithError()
+        public async Task ShouldCreateRatingWithError()
         {
             Rating expectedRating = new()
             {
@@ -91,7 +96,8 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             };
 
             Mock<IRatingDelegate> ratingDelegateMock = new();
-            ratingDelegateMock.Setup(s => s.InsertRating(It.Is<Rating>(r => r.RatingValue == expectedRating.RatingValue && r.Skip == expectedRating.Skip))).Returns(insertResult);
+            ratingDelegateMock.Setup(s => s.InsertRatingAsync(It.Is<Rating>(r => r.RatingValue == expectedRating.RatingValue && r.Skip == expectedRating.Skip), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(insertResult);
 
             Mock<IBackgroundJobClient> mockJobclient = new();
             Mock<IUserProfileDelegate> mockProfileDelegate = new();
@@ -103,7 +109,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 mockProfileDelegate.Object,
                 mockJobclient.Object);
 
-            RequestResult<Rating> actualResult = service.CreateRating(expectedRating);
+            RequestResult<Rating> actualResult = await service.CreateRatingAsync(expectedRating);
 
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
         }
@@ -111,8 +117,9 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         /// <summary>
         /// CreateUserFeedBack - Happy Path.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void ShouldCreateUserFeedback()
+        public async Task ShouldCreateUserFeedback()
         {
             UserFeedback expectedUserFeedback = new()
             {
@@ -142,11 +149,12 @@ namespace HealthGateway.GatewayApiTests.Services.Test
 
             Mock<IFeedbackDelegate> userFeedbackDelegateMock = new();
             userFeedbackDelegateMock.Setup(
-                    s => s.InsertUserFeedback(
+                    s => s.InsertUserFeedbackAsync(
                         It.Is<UserFeedback>(
                             r => r.Comment == expectedUserFeedback.Comment && r.Id == expectedUserFeedback.Id && r.UserProfileId == expectedUserFeedback.UserProfileId &&
-                                 r.IsSatisfied == expectedUserFeedback.IsSatisfied && r.IsReviewed == expectedUserFeedback.IsReviewed)))
-                .Returns(insertResult);
+                                 r.IsSatisfied == expectedUserFeedback.IsSatisfied && r.IsReviewed == expectedUserFeedback.IsReviewed),
+                        It.IsAny<CancellationToken>()))
+                .ReturnsAsync(insertResult);
 
             Mock<IBackgroundJobClient> mockJobclient = new();
             Mock<IUserProfileDelegate> mockProfileDelegate = new();
@@ -159,7 +167,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 mockProfileDelegate.Object,
                 mockJobclient.Object);
 
-            DbResult<UserFeedback> actualResult = service.CreateUserFeedback(expectedUserFeedback);
+            DbResult<UserFeedback> actualResult = await service.CreateUserFeedbackAsync(expectedUserFeedback);
 
             Assert.Equal(DbStatusCode.Created, actualResult.Status);
             expectedUserFeedback.ShouldDeepEqual(actualResult.Payload);

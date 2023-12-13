@@ -31,8 +31,9 @@ namespace HealthGateway.Database.Delegates
         /// Creates a UserFeedback object in the database.
         /// </summary>
         /// <param name="feedback">The feedback to create.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A DB result which encapsulates the return object and status.</returns>
-        DbResult<UserFeedback> InsertUserFeedback(UserFeedback feedback);
+        Task<DbResult<UserFeedback>> InsertUserFeedbackAsync(UserFeedback feedback, CancellationToken ct = default);
 
         /// <summary>
         /// Updates the UserFeedback object in the DB.

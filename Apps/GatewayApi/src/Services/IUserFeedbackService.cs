@@ -15,6 +15,8 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.GatewayApi.Services
 {
+    using System.Threading;
+    using System.Threading.Tasks;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
@@ -28,14 +30,16 @@ namespace HealthGateway.GatewayApi.Services
         /// Saves the user feedback to the database.
         /// </summary>
         /// <param name="userFeedback">The user feedback model to be saved.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The wrapped user feedback.</returns>
-        DbResult<UserFeedback> CreateUserFeedback(UserFeedback userFeedback);
+        Task<DbResult<UserFeedback>> CreateUserFeedbackAsync(UserFeedback userFeedback, CancellationToken ct = default);
 
         /// <summary>
         /// Saves the rating to the database.
         /// </summary>
         /// <param name="rating">The rating model to be saved.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The wrapped rating.</returns>
-        RequestResult<Rating> CreateRating(Rating rating);
+        Task<RequestResult<Rating>> CreateRatingAsync(Rating rating, CancellationToken ct = default);
     }
 }
