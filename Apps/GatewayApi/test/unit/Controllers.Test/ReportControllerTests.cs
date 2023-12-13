@@ -15,6 +15,8 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.GatewayApiTests.Controllers.Test
 {
+    using System.Threading;
+    using System.Threading.Tasks;
     using DeepEqual.Syntax;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.Models;
@@ -33,8 +35,9 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
         /// <summary>
         /// Successfully Generate a Report - Happy Path scenario.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void ShouldGetReport()
+        public async Task ShouldGetReport()
         {
             ReportRequestModel request = new()
             {
@@ -53,10 +56,10 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
             };
 
             Mock<IReportService> reportServiceMock = new();
-            reportServiceMock.Setup(s => s.GetReport(request)).Returns(expectedResult);
+            reportServiceMock.Setup(s => s.GetReportAsync(request, It.IsAny<CancellationToken>())).ReturnsAsync(expectedResult);
 
             ReportController controller = new(reportServiceMock.Object);
-            RequestResult<ReportModel> actualResult = controller.GenerateReport(request);
+            RequestResult<ReportModel> actualResult = await controller.GenerateReport(request, It.IsAny<CancellationToken>());
 
             expectedResult.ShouldDeepEqual(actualResult);
         }

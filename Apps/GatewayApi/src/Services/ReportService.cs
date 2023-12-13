@@ -19,6 +19,7 @@ namespace HealthGateway.GatewayApi.Services
     using System.Globalization;
     using System.IO;
     using System.Reflection;
+    using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Data.ViewModels;
@@ -45,7 +46,7 @@ namespace HealthGateway.GatewayApi.Services
         }
 
         /// <inheritdoc/>
-        public RequestResult<ReportModel> GetReport(ReportRequestModel reportRequest)
+        public async Task<RequestResult<ReportModel>> GetReportAsync(ReportRequestModel reportRequest, CancellationToken ct = default)
         {
             this.logger.LogTrace("New report request type: {Type} and template: {Template}", reportRequest.Type, reportRequest.Template);
 
@@ -66,7 +67,7 @@ namespace HealthGateway.GatewayApi.Services
                 },
             };
 
-            RequestResult<ReportModel> retVal = Task.Run(async () => await this.cdogsDelegate.GenerateReportAsync(cdogsRequest).ConfigureAwait(true)).Result;
+            RequestResult<ReportModel> retVal = await this.cdogsDelegate.GenerateReportAsync(cdogsRequest);
             this.logger.LogTrace("Finished generating report: {ReportFileName}", retVal.ResourcePayload?.FileName);
             return retVal;
         }
