@@ -17,6 +17,8 @@ namespace HealthGateway.GatewayApi.Services
 {
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading;
+    using System.Threading.Tasks;
     using AutoMapper;
     using FluentValidation.Results;
     using HealthGateway.Common.Data.Models;
@@ -60,17 +62,17 @@ namespace HealthGateway.GatewayApi.Services
         }
 
         /// <inheritdoc/>
-        public RequestResult<UserComment> Add(UserComment userComment)
+        public async Task<RequestResult<UserComment>> AddAsync(UserComment userComment, CancellationToken ct = default)
         {
-            ValidationResult validationResult = new UserCommentValidator().Validate(userComment);
+            ValidationResult validationResult = await new UserCommentValidator().ValidateAsync(userComment, ct);
 
             if (!validationResult.IsValid)
             {
                 return RequestResultFactory.Error<UserComment>(ErrorType.InvalidState, validationResult.Errors);
             }
 
-            UserProfile profile = this.profileDelegate.GetUserProfile(userComment.UserProfileId).Payload;
-            string? key = profile.EncryptionKey;
+            UserProfile? profile = await this.profileDelegate.GetUserProfileAsync(userComment.UserProfileId);
+            string? key = profile?.EncryptionKey;
             if (key == null)
             {
                 this.logger.LogError("User does not have a key: {UserProfileId}", userComment.UserProfileId);
@@ -89,10 +91,10 @@ namespace HealthGateway.GatewayApi.Services
         }
 
         /// <inheritdoc/>
-        public RequestResult<IEnumerable<UserComment>> GetEntryComments(string hdId, string parentEntryId)
+        public async Task<RequestResult<IEnumerable<UserComment>>> GetEntryCommentsAsync(string hdId, string parentEntryId, CancellationToken ct = default)
         {
-            UserProfile profile = this.profileDelegate.GetUserProfile(hdId).Payload;
-            string? key = profile.EncryptionKey;
+            UserProfile? profile = await this.profileDelegate.GetUserProfileAsync(hdId);
+            string? key = profile?.EncryptionKey;
 
             // Check that the key has been set
             if (key == null)
@@ -116,10 +118,10 @@ namespace HealthGateway.GatewayApi.Services
         }
 
         /// <inheritdoc/>
-        public RequestResult<IDictionary<string, IEnumerable<UserComment>>> GetProfileComments(string hdId)
+        public async Task<RequestResult<IDictionary<string, IEnumerable<UserComment>>>> GetProfileCommentsAsync(string hdId, CancellationToken ct = default)
         {
-            UserProfile profile = this.profileDelegate.GetUserProfile(hdId).Payload;
-            string? key = profile.EncryptionKey;
+            UserProfile? profile = await this.profileDelegate.GetUserProfileAsync(hdId);
+            string? key = profile?.EncryptionKey;
 
             // Check that the key has been set
             if (key == null)
@@ -145,17 +147,17 @@ namespace HealthGateway.GatewayApi.Services
         }
 
         /// <inheritdoc/>
-        public RequestResult<UserComment> Update(UserComment userComment)
+        public async Task<RequestResult<UserComment>> UpdateAsync(UserComment userComment, CancellationToken ct = default)
         {
-            ValidationResult validationResult = new UserCommentValidator().Validate(userComment);
+            ValidationResult validationResult = await new UserCommentValidator().ValidateAsync(userComment);
 
             if (!validationResult.IsValid)
             {
                 return RequestResultFactory.Error<UserComment>(ErrorType.InvalidState, validationResult.Errors);
             }
 
-            UserProfile profile = this.profileDelegate.GetUserProfile(userComment.UserProfileId).Payload;
-            string? key = profile.EncryptionKey;
+            UserProfile? profile = await this.profileDelegate.GetUserProfileAsync(userComment.UserProfileId);
+            string? key = profile?.EncryptionKey;
             if (key == null)
             {
                 this.logger.LogError("User does not have a key: {UserProfileId}", userComment.UserProfileId);
@@ -174,17 +176,17 @@ namespace HealthGateway.GatewayApi.Services
         }
 
         /// <inheritdoc/>
-        public RequestResult<UserComment> Delete(UserComment userComment)
+        public async Task<RequestResult<UserComment>> DeleteAsync(UserComment userComment, CancellationToken ct = default)
         {
-            ValidationResult validationResult = new UserCommentValidator().Validate(userComment);
+            ValidationResult validationResult = await new UserCommentValidator().ValidateAsync(userComment);
 
             if (!validationResult.IsValid)
             {
                 return RequestResultFactory.Error<UserComment>(ErrorType.InvalidState, validationResult.Errors);
             }
 
-            UserProfile profile = this.profileDelegate.GetUserProfile(userComment.UserProfileId).Payload;
-            string? key = profile.EncryptionKey;
+            UserProfile? profile = await this.profileDelegate.GetUserProfileAsync(userComment.UserProfileId);
+            string? key = profile?.EncryptionKey;
             if (key == null)
             {
                 this.logger.LogError("User does not have a key: {UserProfileId}", userComment.UserProfileId);

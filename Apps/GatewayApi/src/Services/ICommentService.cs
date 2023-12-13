@@ -16,6 +16,8 @@
 namespace HealthGateway.GatewayApi.Services
 {
     using System.Collections.Generic;
+    using System.Threading;
+    using System.Threading.Tasks;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.GatewayApi.Models;
 
@@ -28,37 +30,42 @@ namespace HealthGateway.GatewayApi.Services
         /// Adds a UserComment in the backend.
         /// </summary>
         /// <param name="userComment">The UserComment to be created.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A UserComment wrapped in a RequestResult.</returns>
-        RequestResult<UserComment> Add(UserComment userComment);
+        Task<RequestResult<UserComment>> AddAsync(UserComment userComment, CancellationToken ct = default);
 
         /// <summary>
         /// Gets a list of UserComment for the given hdId and event id.
         /// </summary>
         /// <param name="hdId">The users HDID.</param>
         /// <param name="parentEntryId">The parent entry id.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A List of UserComment wrapped in a RequestResult.</returns>
-        RequestResult<IEnumerable<UserComment>> GetEntryComments(string hdId, string parentEntryId);
+        Task<RequestResult<IEnumerable<UserComment>>> GetEntryCommentsAsync(string hdId, string parentEntryId, CancellationToken ct = default);
 
         /// <summary>
         /// Gets a list of UserComment for the given hdId.
         /// </summary>
         /// <param name="hdId">The users HDID.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A List of UserComment wrapped in a RequestResult.</returns>
-        RequestResult<IDictionary<string, IEnumerable<UserComment>>> GetProfileComments(string hdId);
+        Task<RequestResult<IDictionary<string, IEnumerable<UserComment>>>> GetProfileCommentsAsync(string hdId, CancellationToken ct = default);
 
         /// <summary>
         /// Updates the given UserComment in the backend.
         /// Any changes to HDID will be ignored.
         /// </summary>
         /// <param name="userComment">The UserComment to update.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The updated UserComment.</returns>
-        RequestResult<UserComment> Update(UserComment userComment);
+        Task<RequestResult<UserComment>> UpdateAsync(UserComment userComment, CancellationToken ct = default);
 
         /// <summary>
         /// Deletes the given UserComment from the backend.
         /// </summary>
         /// <param name="userComment">The Comment to be deleted.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The deleted Comment wrapped in a RequestResult.</returns>
-        RequestResult<UserComment> Delete(UserComment userComment);
+        Task<RequestResult<UserComment>> DeleteAsync(UserComment userComment, CancellationToken ct = default);
     }
 }

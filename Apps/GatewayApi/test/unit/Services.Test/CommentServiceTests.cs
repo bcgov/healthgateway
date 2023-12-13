@@ -19,6 +19,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
     using System.Collections.Generic;
     using System.Globalization;
     using System.Linq;
+    using System.Threading.Tasks;
     using AutoMapper;
     using DeepEqual.Syntax;
     using HealthGateway.Common.Data.Constants;
@@ -48,10 +49,12 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         /// <summary>
         /// GetComments - Happy Path.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void ShouldGetComments()
+        public async Task ShouldGetComments()
         {
-            (RequestResult<IEnumerable<UserComment>> actualResult, List<UserComment> userCommentList) = this.ExecuteGetComments("abc");
+            (Task<RequestResult<IEnumerable<UserComment>>> task, List<UserComment> userCommentList) = this.ExecuteGetComments("abc");
+            RequestResult<IEnumerable<UserComment>> actualResult = await task;
 
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             userCommentList.ShouldDeepEqual(actualResult.ResourcePayload);
@@ -60,10 +63,12 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         /// <summary>
         /// GetComments - Database error.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void ShouldGetCommentsWithDbError()
+        public async Task ShouldGetCommentsWithDbError()
         {
-            (RequestResult<IEnumerable<UserComment>> actualResult, _) = this.ExecuteGetComments("abc", DbStatusCode.Error);
+            (Task<RequestResult<IEnumerable<UserComment>>> task, _) = this.ExecuteGetComments("abc", DbStatusCode.Error);
+            RequestResult<IEnumerable<UserComment>> actualResult = await task;
 
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
             Assert.True(actualResult.ResultError?.ErrorCode.EndsWith("-CI-DB", StringComparison.InvariantCulture));
@@ -72,10 +77,12 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         /// <summary>
         /// InsertComment - Happy Path.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void ShouldInsertComment()
+        public async Task ShouldInsertComment()
         {
-            (RequestResult<UserComment> actualResult, UserComment createdRecord) = this.ExecuteInsertComment();
+            (Task<RequestResult<UserComment>> task, UserComment createdRecord) = this.ExecuteInsertComment();
+            RequestResult<UserComment> actualResult = await task;
 
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             createdRecord.ShouldDeepEqual(actualResult.ResourcePayload);
@@ -84,10 +91,12 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         /// <summary>
         /// InsertComment - Database Error.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void ShouldInsertCommentWithDbError()
+        public async Task ShouldInsertCommentWithDbError()
         {
-            (RequestResult<UserComment> actualResult, _) = this.ExecuteInsertComment(DbStatusCode.Error);
+            (Task<RequestResult<UserComment>> task, _) = this.ExecuteInsertComment(DbStatusCode.Error);
+            RequestResult<UserComment> actualResult = await task;
 
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
             Assert.NotNull(actualResult.ResultError);
@@ -96,10 +105,12 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         /// <summary>
         /// UpdateComment - Happy Path.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void ShouldUpdateComment()
+        public async Task ShouldUpdateComment()
         {
-            (RequestResult<UserComment> actualResult, UserComment updatedRecord) = this.ExecuteUpdateComment();
+            (Task<RequestResult<UserComment>> task, UserComment updatedRecord) = this.ExecuteUpdateComment();
+            RequestResult<UserComment> actualResult = await task;
 
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             updatedRecord.ShouldDeepEqual(actualResult.ResourcePayload);
@@ -108,10 +119,12 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         /// <summary>
         /// UpdateComment - Database Error.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void ShouldUpdateCommentWithDbError()
+        public async Task ShouldUpdateCommentWithDbError()
         {
-            (RequestResult<UserComment> actualResult, _) = this.ExecuteUpdateComment(DbStatusCode.Error);
+            (Task<RequestResult<UserComment>> task, _) = this.ExecuteUpdateComment(DbStatusCode.Error);
+            RequestResult<UserComment> actualResult = await task;
 
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
             Assert.NotNull(actualResult.ResultError);
@@ -120,10 +133,12 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         /// <summary>
         /// DeleteComment - Happy Path.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void ShouldDeleteComment()
+        public async Task ShouldDeleteComment()
         {
-            (RequestResult<UserComment> actualResult, UserComment deletedRecord) = this.ExecuteDeleteComment();
+            (Task<RequestResult<UserComment>> task, UserComment deletedRecord) = this.ExecuteDeleteComment();
+            RequestResult<UserComment> actualResult = await task;
 
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             deletedRecord.ShouldDeepEqual(actualResult.ResourcePayload);
@@ -132,10 +147,12 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         /// <summary>
         /// DeleteComment - Database Error.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void ShouldDeleteCommentWithDbError()
+        public async Task ShouldDeleteCommentWithDbError()
         {
-            (RequestResult<UserComment> actualResult, _) = this.ExecuteDeleteComment(DbStatusCode.Error);
+            (Task<RequestResult<UserComment>> task, _) = this.ExecuteDeleteComment(DbStatusCode.Error);
+            RequestResult<UserComment> actualResult = await task;
 
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
             Assert.NotNull(actualResult.ResultError);
@@ -144,14 +161,15 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         /// <summary>
         /// GetComments - No Encryption key error.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void ShouldGetCommentsWithNoKeyError()
+        public async Task ShouldGetCommentsWithNoKeyError()
         {
             string? encryptionKey = null;
             DbResult<UserProfile> profileDbResult = new()
             {
                 Payload = new UserProfile
-                { EncryptionKey = encryptionKey },
+                    { EncryptionKey = encryptionKey },
             };
 
             Mock<IUserProfileDelegate> profileDelegateMock = new();
@@ -164,7 +182,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 new Mock<ICryptoDelegate>().Object,
                 MapperUtil.InitializeAutoMapper());
 
-            RequestResult<IEnumerable<UserComment>> actualResult = service.GetEntryComments(this.hdid, this.parentEntryId);
+            RequestResult<IEnumerable<UserComment>> actualResult = await service.GetEntryCommentsAsync(this.hdid, this.parentEntryId);
 
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
         }
@@ -172,14 +190,15 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         /// <summary>
         /// InsertComment - No Encryption key error.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void ShouldInsertCommentWithNoKeyError()
+        public async Task ShouldInsertCommentWithNoKeyError()
         {
             string? encryptionKey = null;
             DbResult<UserProfile> profileDbResult = new()
             {
                 Payload = new UserProfile
-                { EncryptionKey = encryptionKey },
+                    { EncryptionKey = encryptionKey },
             };
 
             Mock<IUserProfileDelegate> profileDelegateMock = new();
@@ -201,7 +220,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 new Mock<ICryptoDelegate>().Object,
                 MapperUtil.InitializeAutoMapper());
 
-            RequestResult<UserComment> actualResult = service.Add(userComment);
+            RequestResult<UserComment> actualResult = await service.AddAsync(userComment);
 
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
         }
@@ -209,14 +228,15 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         /// <summary>
         /// UpdateComment - No Encryption key error.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void ShouldUpdateCommentWithNoKeyError()
+        public async Task ShouldUpdateCommentWithNoKeyError()
         {
             string? encryptionKey = null;
             DbResult<UserProfile> profileDbResult = new()
             {
                 Payload = new UserProfile
-                { EncryptionKey = encryptionKey },
+                    { EncryptionKey = encryptionKey },
             };
 
             Mock<IUserProfileDelegate> profileDelegateMock = new();
@@ -238,7 +258,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 new Mock<ICryptoDelegate>().Object,
                 MapperUtil.InitializeAutoMapper());
 
-            RequestResult<UserComment> actualResult = service.Update(userComment);
+            RequestResult<UserComment> actualResult = await service.UpdateAsync(userComment);
 
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
         }
@@ -246,14 +266,15 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         /// <summary>
         /// DeleteComment - No Encryption key error.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void ShouldDeleteCommentWithNoKeyError()
+        public async Task ShouldDeleteCommentWithNoKeyError()
         {
             string? encryptionKey = null;
             DbResult<UserProfile> profileDbResult = new()
             {
                 Payload = new UserProfile
-                { EncryptionKey = encryptionKey },
+                    { EncryptionKey = encryptionKey },
             };
 
             Mock<IUserProfileDelegate> profileDelegateMock = new();
@@ -275,22 +296,19 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 new Mock<ICryptoDelegate>().Object,
                 MapperUtil.InitializeAutoMapper());
 
-            RequestResult<UserComment> actualResult = service.Delete(userComment);
+            RequestResult<UserComment> actualResult = await service.DeleteAsync(userComment);
 
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
         }
 
-        private (RequestResult<UserComment> ActualResult, UserComment UserComment) ExecuteDeleteComment(DbStatusCode dBStatusCode = DbStatusCode.Deleted)
+        private (Task<RequestResult<UserComment>> ActualResult, UserComment UserComment) ExecuteDeleteComment(DbStatusCode dBStatusCode = DbStatusCode.Deleted)
         {
             string encryptionKey = "abc";
-            DbResult<UserProfile> profileDbResult = new()
-            {
-                Payload = new UserProfile
-                { EncryptionKey = encryptionKey },
-            };
+            UserProfile userProfile = new()
+                { EncryptionKey = encryptionKey };
 
             Mock<IUserProfileDelegate> profileDelegateMock = new();
-            profileDelegateMock.Setup(s => s.GetUserProfile(this.hdid)).Returns(profileDbResult);
+            profileDelegateMock.Setup(s => s.GetUserProfileAsync(this.hdid)).ReturnsAsync(userProfile);
 
             Mock<ICryptoDelegate> cryptoDelegateMock = new();
             cryptoDelegateMock.Setup(s => s.Encrypt(It.IsAny<string>(), It.IsAny<string>())).Returns((string key, string text) => text + key);
@@ -323,21 +341,18 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 cryptoDelegateMock.Object,
                 autoMapper);
 
-            RequestResult<UserComment> actualResult = service.Delete(userComment);
+            Task<RequestResult<UserComment>> actualResult = service.DeleteAsync(userComment);
             return (actualResult, userComment);
         }
 
-        private (RequestResult<UserComment> ActualResult, UserComment UserComment) ExecuteUpdateComment(DbStatusCode dBStatusCode = DbStatusCode.Updated)
+        private (Task<RequestResult<UserComment>> ActualResult, UserComment UserComment) ExecuteUpdateComment(DbStatusCode dBStatusCode = DbStatusCode.Updated)
         {
             string encryptionKey = "abc";
-            DbResult<UserProfile> profileDbResult = new()
-            {
-                Payload = new UserProfile
-                { EncryptionKey = encryptionKey },
-            };
+            UserProfile userProfile = new()
+                { EncryptionKey = encryptionKey };
 
             Mock<IUserProfileDelegate> profileDelegateMock = new();
-            profileDelegateMock.Setup(s => s.GetUserProfile(this.hdid)).Returns(profileDbResult);
+            profileDelegateMock.Setup(s => s.GetUserProfileAsync(this.hdid)).ReturnsAsync(userProfile);
 
             Mock<ICryptoDelegate> cryptoDelegateMock = new();
             cryptoDelegateMock.Setup(s => s.Encrypt(It.IsAny<string>(), It.IsAny<string>())).Returns((string key, string text) => text + key);
@@ -371,22 +386,19 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 cryptoDelegateMock.Object,
                 autoMapper);
 
-            RequestResult<UserComment> actualResult = service.Update(userComment);
+            Task<RequestResult<UserComment>> actualResult = service.UpdateAsync(userComment);
             return (actualResult, userComment);
         }
 
-        private (RequestResult<IEnumerable<UserComment>> ActualResult, List<UserComment> UserCommentList) ExecuteGetComments(
+        private (Task<RequestResult<IEnumerable<UserComment>>> ActualResult, List<UserComment> UserCommentList) ExecuteGetComments(
             string? encryptionKey = null,
             DbStatusCode dbResultStatus = DbStatusCode.Read)
         {
-            DbResult<UserProfile> profileDbResult = new()
-            {
-                Payload = new UserProfile
-                { EncryptionKey = encryptionKey },
-            };
+            UserProfile userProfile = new()
+                { EncryptionKey = encryptionKey };
 
             Mock<IUserProfileDelegate> profileDelegateMock = new();
-            profileDelegateMock.Setup(s => s.GetUserProfile(this.hdid)).Returns(profileDbResult);
+            profileDelegateMock.Setup(s => s.GetUserProfileAsync(this.hdid)).ReturnsAsync(userProfile);
 
             Mock<ICryptoDelegate> cryptoDelegateMock = new();
             cryptoDelegateMock.Setup(s => s.Encrypt(It.IsAny<string>(), It.IsAny<string>())).Returns((string key, string text) => text + key);
@@ -430,22 +442,19 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 cryptoDelegateMock.Object,
                 autoMapper);
 
-            RequestResult<IEnumerable<UserComment>> actualResult = service.GetEntryComments(this.hdid, this.parentEntryId);
+            Task<RequestResult<IEnumerable<UserComment>>> actualResult = service.GetEntryCommentsAsync(this.hdid, this.parentEntryId);
 
             return (actualResult, userCommentList);
         }
 
-        private (RequestResult<UserComment> ActualResult, UserComment UserComment) ExecuteInsertComment(DbStatusCode dBStatusCode = DbStatusCode.Created)
+        private (Task<RequestResult<UserComment>> ActualResult, UserComment UserComment) ExecuteInsertComment(DbStatusCode dBStatusCode = DbStatusCode.Created)
         {
             string encryptionKey = "abc";
-            DbResult<UserProfile> profileDbResult = new()
-            {
-                Payload = new UserProfile
-                { EncryptionKey = encryptionKey },
-            };
+            UserProfile userProfile = new()
+                { EncryptionKey = encryptionKey };
 
             Mock<IUserProfileDelegate> profileDelegateMock = new();
-            profileDelegateMock.Setup(s => s.GetUserProfile(this.hdid)).Returns(profileDbResult);
+            profileDelegateMock.Setup(s => s.GetUserProfileAsync(this.hdid)).ReturnsAsync(userProfile);
 
             Mock<ICryptoDelegate> cryptoDelegateMock = new();
             cryptoDelegateMock.Setup(s => s.Encrypt(It.IsAny<string>(), It.IsAny<string>())).Returns((string key, string text) => text + key);
@@ -478,7 +487,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 cryptoDelegateMock.Object,
                 autoMapper);
 
-            RequestResult<UserComment> actualResult = service.Add(userComment);
+            Task<RequestResult<UserComment>> actualResult = service.AddAsync(userComment);
             return (actualResult, userComment);
         }
     }
