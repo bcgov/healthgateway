@@ -15,6 +15,8 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.GatewayApi.Controllers
 {
+    using System.Threading;
+    using System.Threading.Tasks;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Services;
@@ -44,13 +46,14 @@ namespace HealthGateway.GatewayApi.Controllers
         /// Gets the latest active communication.
         /// </summary>
         /// <param name="communicationType">The communication type to retrieve.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The active communication or null if not found.</returns>
         /// <response code="200">Returns the communication json.</response>
         [HttpGet]
         [Route("{communicationType}")]
-        public RequestResult<Communication?> Get(CommunicationType communicationType = CommunicationType.Banner)
+        public async Task<RequestResult<Communication?>> Get(CommunicationType communicationType = CommunicationType.Banner, CancellationToken ct = default)
         {
-            return this.communicationService.GetActiveCommunication(communicationType);
+            return await this.communicationService.GetActiveCommunicationAsync(communicationType, ct);
         }
     }
 }

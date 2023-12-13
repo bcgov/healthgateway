@@ -16,6 +16,8 @@
 namespace HealthGateway.CommonTests.Services
 {
     using System;
+    using System.Threading;
+    using System.Threading.Tasks;
     using DeepEqual.Syntax;
     using HealthGateway.Common.CacheProviders;
     using HealthGateway.Common.Data.Constants;
@@ -23,10 +25,8 @@ namespace HealthGateway.CommonTests.Services
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Services;
     using HealthGateway.CommonTests.Utils;
-    using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
-    using HealthGateway.Database.Wrapper;
     using Microsoft.Extensions.Caching.Distributed;
     using Microsoft.Extensions.Caching.Memory;
     using Microsoft.Extensions.Logging;
@@ -58,6 +58,7 @@ namespace HealthGateway.CommonTests.Services
         /// </summary>
         /// <param name="scenario">The scenario the test is executing.</param>
         /// <param name="communicationType">The type of Communication to retrieve.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Theory]
         [InlineData(Scenario.Active, CommunicationType.Banner)]
         [InlineData(Scenario.Future, CommunicationType.Banner)]
@@ -65,7 +66,7 @@ namespace HealthGateway.CommonTests.Services
         [InlineData(Scenario.Future, CommunicationType.InApp)]
         [InlineData(Scenario.Active, CommunicationType.Mobile)]
         [InlineData(Scenario.Future, CommunicationType.Mobile)]
-        public void ShouldGetActiveCommunicationFromCache(Scenario scenario, CommunicationType communicationType)
+        public async Task ShouldGetActiveCommunicationFromCache(Scenario scenario, CommunicationType communicationType)
         {
             Communication communication = new()
             {
@@ -89,7 +90,7 @@ namespace HealthGateway.CommonTests.Services
                 communicationDelegateMock.Object,
                 this.cacheProvider);
 
-            RequestResult<Communication?> actualResult = service.GetActiveCommunication(communicationType);
+            RequestResult<Communication?> actualResult = await service.GetActiveCommunicationAsync(communicationType);
 
             switch (scenario)
             {
@@ -107,22 +108,23 @@ namespace HealthGateway.CommonTests.Services
         /// <summary>
         /// Get the communication data directly from the DB.
         /// </summary>
-        /// <param name="dbStatusCode">The status returned from the DB Delegate.</param>
+        /// <param name="communicationExists">Indicates whether there is a communication record or not in the database.</param>
         /// <param name="communicationType">The type of Communication to retrieve.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Theory]
-        [InlineData(DbStatusCode.Read, CommunicationType.Banner)]
-        [InlineData(DbStatusCode.NotFound, CommunicationType.Banner)]
-        [InlineData(DbStatusCode.Error, CommunicationType.Banner)]
-        [InlineData(DbStatusCode.Read, CommunicationType.InApp)]
-        [InlineData(DbStatusCode.NotFound, CommunicationType.InApp)]
-        [InlineData(DbStatusCode.Error, CommunicationType.InApp)]
-        [InlineData(DbStatusCode.Read, CommunicationType.Mobile)]
-        [InlineData(DbStatusCode.NotFound, CommunicationType.Mobile)]
-        [InlineData(DbStatusCode.Error, CommunicationType.Mobile)]
-        public void ShouldGetActiveCommunicationFromDb(DbStatusCode dbStatusCode, CommunicationType communicationType)
+        [InlineData(true, CommunicationType.Banner)]
+        [InlineData(false, CommunicationType.Banner)]
+        //[InlineData(DbStatusCode.Error, CommunicationType.Banner)]
+        [InlineData(true, CommunicationType.InApp)]
+        [InlineData(false, CommunicationType.InApp)]
+        //[InlineData(DbStatusCode.Error, CommunicationType.InApp)]
+        [InlineData(true, CommunicationType.Mobile)]
+        [InlineData(false, CommunicationType.Mobile)]
+        //[InlineData(DbStatusCode.Error, CommunicationType.Mobile)]
+        public async Task ShouldGetActiveCommunicationFromDb(bool communicationExists, CommunicationType communicationType)
         {
             Communication? communication = null;
-            if (dbStatusCode == DbStatusCode.Read)
+            if (communicationExists)
             {
                 communication = new()
                 {
@@ -133,40 +135,26 @@ namespace HealthGateway.CommonTests.Services
                 };
             }
 
-            DbResult<Communication?> dbResult = new()
-            {
-                Status = dbStatusCode,
-                Payload = communication,
-            };
-
             Mock<ICommunicationDelegate> communicationDelegateMock = new();
-            communicationDelegateMock.Setup(s => s.GetNext(It.IsAny<CommunicationType>())).Returns(dbResult);
+            communicationDelegateMock.Setup(s => s.GetNextAsync(It.IsAny<CommunicationType>(), It.IsAny<CancellationToken>())).ReturnsAsync(communication);
 
             ICommunicationService service = new CommunicationService(
                 new Mock<ILogger<CommunicationService>>().Object,
                 communicationDelegateMock.Object,
                 this.cacheProvider);
 
-            RequestResult<Communication?> actualResult = service.GetActiveCommunication(communicationType);
+            RequestResult<Communication?> actualResult = await service.GetActiveCommunicationAsync(communicationType);
 
-            if (dbStatusCode is DbStatusCode.Read or DbStatusCode.NotFound)
+            Assert.NotNull(actualResult);
+            Assert.Equal(ResultType.Success, actualResult.ResultStatus);
+            if (communicationExists)
             {
-                Assert.NotNull(actualResult);
-                Assert.Equal(ResultType.Success, actualResult.ResultStatus);
-                if (dbStatusCode == DbStatusCode.Read)
-                {
-                    Assert.True(dbResult.Payload.IsDeepEqual(actualResult.ResourcePayload));
-                    Assert.Equal(1, actualResult.TotalResultCount);
-                }
-                else
-                {
-                    Assert.Equal(0, actualResult.TotalResultCount);
-                }
+                Assert.True(communication.IsDeepEqual(actualResult.ResourcePayload));
+                Assert.Equal(1, actualResult.TotalResultCount);
             }
             else
             {
-                Assert.Equal(ResultType.Error, actualResult.ResultStatus);
-                Assert.EndsWith("-CI-DB", actualResult.ResultError?.ErrorCode, StringComparison.InvariantCulture);
+                Assert.Equal(0, actualResult.TotalResultCount);
             }
         }
 
@@ -284,14 +272,15 @@ namespace HealthGateway.CommonTests.Services
         /// <summary>
         /// Validates that GetActiveBanner throws an exception when the wrong Communication types are passed in.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void ShouldThrowException()
+        public async Task ShouldThrowException()
         {
             ICommunicationService service = new CommunicationService(
                 new Mock<ILogger<CommunicationService>>().Object,
                 new Mock<ICommunicationDelegate>().Object,
                 new Mock<ICacheProvider>().Object);
-            Assert.Throws<NotImplementedException>(() => service.GetActiveCommunication(CommunicationType.Email));
+            await Assert.ThrowsAsync<NotImplementedException>(() => service.GetActiveCommunicationAsync(CommunicationType.Email));
         }
 
         private static RequestResult<Communication?> GetCommResult(Communication? communication, ResultType resultStatus)
