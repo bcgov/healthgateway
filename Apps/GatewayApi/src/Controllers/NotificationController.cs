@@ -17,6 +17,7 @@ namespace HealthGateway.GatewayApi.Controllers
 {
     using System;
     using System.Collections.Generic;
+    using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.AccessManagement.Authorization.Policy;
     using HealthGateway.GatewayApi.Models;
@@ -49,6 +50,7 @@ namespace HealthGateway.GatewayApi.Controllers
         /// Gets all notifications for a user.
         /// </summary>
         /// <param name="hdid">The HDID of the user.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The collection of notifications.</returns>
         /// <response code="200">Returns the collection of notifications.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
@@ -62,9 +64,9 @@ namespace HealthGateway.GatewayApi.Controllers
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<WebAlert>))]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        public async Task<IActionResult> Get(string hdid)
+        public async Task<IActionResult> Get(string hdid, CancellationToken ct)
         {
-            IList<WebAlert> notifications = await this.webAlertService.GetWebAlertsAsync(hdid).ConfigureAwait(true);
+            IList<WebAlert> notifications = await this.webAlertService.GetWebAlertsAsync(hdid, ct);
             return this.Ok(notifications);
         }
 
@@ -73,6 +75,7 @@ namespace HealthGateway.GatewayApi.Controllers
         /// </summary>
         /// <returns>An empty result.</returns>
         /// <param name="hdid">The HDID of the user.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <response code="200">The notifications were dismissed.</response>
         /// <response code="401">The client must authenticate itself to perform the operation.</response>
         /// <response code="403">
@@ -85,9 +88,9 @@ namespace HealthGateway.GatewayApi.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        public async Task<IActionResult> DismissAll(string hdid)
+        public async Task<IActionResult> DismissAll(string hdid, CancellationToken ct)
         {
-            await this.webAlertService.DismissWebAlertsAsync(hdid).ConfigureAwait(true);
+            await this.webAlertService.DismissWebAlertsAsync(hdid, ct);
             return this.Ok();
         }
 
@@ -97,6 +100,7 @@ namespace HealthGateway.GatewayApi.Controllers
         /// <returns>An empty result.</returns>
         /// <param name="hdid">The HDID of the user.</param>
         /// <param name="id">The ID of the notification to be dismissed.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <response code="200">The notification was dismissed.</response>
         /// <response code="401">The client must authenticate itself to perform the operation.</response>
         /// <response code="403">
@@ -109,9 +113,9 @@ namespace HealthGateway.GatewayApi.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        public async Task<IActionResult> Dismiss(string hdid, Guid id)
+        public async Task<IActionResult> Dismiss(string hdid, Guid id, CancellationToken ct)
         {
-            await this.webAlertService.DismissWebAlertAsync(hdid, id).ConfigureAwait(true);
+            await this.webAlertService.DismissWebAlertAsync(hdid, id, ct);
             return this.Ok();
         }
     }
