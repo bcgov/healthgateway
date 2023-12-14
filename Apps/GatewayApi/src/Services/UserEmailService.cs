@@ -33,6 +33,7 @@ namespace HealthGateway.GatewayApi.Services
     using HealthGateway.Common.Models.Events;
     using HealthGateway.Common.Services;
     using HealthGateway.Database.Delegates;
+    using HealthGateway.GatewayApi.Validations;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
 
@@ -198,6 +199,17 @@ namespace HealthGateway.GatewayApi.Services
                 throw new ProblemDetailsException(
                     ExceptionUtility.CreateProblemDetails(
                         $"User profile not found for hdid {hdid}",
+                        HttpStatusCode.BadRequest,
+                        nameof(UserSmsService)));
+            }
+
+            bool result = string.IsNullOrWhiteSpace(emailAddress)
+                          || (await new OptionalEmailAddressValidator().ValidateAsync(emailAddress, ct))?.IsValid == true;
+            if (!result)
+            {
+                throw new ProblemDetailsException(
+                    ExceptionUtility.CreateProblemDetails(
+                        $"Invalid email address {emailAddress}",
                         HttpStatusCode.BadRequest,
                         nameof(UserSmsService)));
             }
