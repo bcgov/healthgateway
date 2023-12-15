@@ -116,6 +116,11 @@ namespace HealthGateway.Common.Constants
         public const string VaccinationStatusUnknown = "Vaccination status is unknown.";
 
         /// <summary>
+        /// Error message to return when delegate user profile not found.
+        /// </summary>
+        public const string DelegateUserProfileNotFound = "Delegate user profile not found.";
+
+        /// <summary>
         /// Error message to return when unable to get vaccine proof.
         /// </summary>
         public const string CannotGetVaccineProof = "Unable to obtain Vaccine Proof.";

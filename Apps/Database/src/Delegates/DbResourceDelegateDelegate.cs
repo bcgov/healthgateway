@@ -50,7 +50,7 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public DbResult<ResourceDelegate> Insert(ResourceDelegate resourceDelegate, bool commit)
+        public async Task<DbResult<ResourceDelegate>> InsertAsync(ResourceDelegate resourceDelegate, bool commit, CancellationToken ct = default)
         {
             this.logger.LogTrace("Inserting resource delegate to DB...");
             DbResult<ResourceDelegate> result = new()
@@ -59,12 +59,12 @@ namespace HealthGateway.Database.Delegates
                 Status = DbStatusCode.Deferred,
             };
 
-            this.dbContext.Add(resourceDelegate);
+            await this.dbContext.AddAsync(resourceDelegate, ct);
             if (commit)
             {
                 try
                 {
-                    this.dbContext.SaveChanges();
+                    await this.dbContext.SaveChangesAsync(ct);
                     result.Status = DbStatusCode.Created;
                 }
                 catch (DbUpdateException e)
@@ -147,7 +147,7 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public async Task<DbResult<Dictionary<string, int>>> GetTotalDelegateCountsAsync(IEnumerable<string> dependentHdids)
+        public async Task<DbResult<Dictionary<string, int>>> GetTotalDelegateCountsAsync(IEnumerable<string> dependentHdids, CancellationToken ct = default)
         {
             this.logger.LogTrace("Getting total delegate counts from DB...");
             string[] dependentArray = dependentHdids.ToArray();
@@ -156,7 +156,7 @@ namespace HealthGateway.Database.Delegates
                 Payload = await this.dbContext.ResourceDelegate
                     .Where(d => dependentArray.Contains(d.ResourceOwnerHdid))
                     .GroupBy(d => d.ResourceOwnerHdid)
-                    .ToDictionaryAsync(g => g.Key, g => g.Count())
+                    .ToDictionaryAsync(g => g.Key, g => g.Count(), ct)
                     .ConfigureAwait(true),
                 Status = DbStatusCode.Read,
             };

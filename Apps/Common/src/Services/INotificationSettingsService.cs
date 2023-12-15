@@ -15,6 +15,8 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Common.Services
 {
+    using System.Threading;
+    using System.Threading.Tasks;
     using HealthGateway.Common.Models;
 
     /// <summary>
@@ -28,5 +30,14 @@ namespace HealthGateway.Common.Services
         /// </summary>
         /// <param name="notificationSettings">The Notification Settings Request object.</param>
         void QueueNotificationSettings(NotificationSettingsRequest notificationSettings);
+
+        /// <summary>
+        /// Queues pushing the Notification Settings to PHSA using our batch system.
+        /// Will use access_token acquired from system account authenication.
+        /// </summary>
+        /// <param name="notificationSettings">The Notification Settings Request object.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        Task QueueNotificationSettingsAsync(NotificationSettingsRequest notificationSettings, CancellationToken ct = default);
     }
 }

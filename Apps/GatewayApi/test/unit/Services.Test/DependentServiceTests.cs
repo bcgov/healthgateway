@@ -353,19 +353,14 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                     {
                         Status = DbStatusCode.Deleted,
                     });
-            mockDependentDelegate.Setup(s => s.Get(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>()))
-                .Returns(
-                    new DbResult<IEnumerable<ResourceDelegate>>
-                    {
-                        Status = DbStatusCode.Deferred,
-                        Payload = new[] { new ResourceDelegate { ProfileHdid = this.mockParentHdid, ResourceOwnerHdid = this.mockHdId } },
-                    });
+            mockDependentDelegate.Setup(s => s.GetAsync(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new[] { new ResourceDelegate { ProfileHdid = this.mockParentHdid, ResourceOwnerHdid = this.mockHdId } });
 
             Mock<IUserProfileDelegate> mockUserProfileDelegate = new();
             mockUserProfileDelegate.Setup(s => s.GetUserProfile(this.mockParentHdid))
                 .Returns(new DbResult<UserProfile> { Payload = new UserProfile() });
             Mock<INotificationSettingsService> mockNotificationSettingsService = new();
-            mockNotificationSettingsService.Setup(s => s.QueueNotificationSettings(It.IsAny<NotificationSettingsRequest>()));
+            mockNotificationSettingsService.Setup(s => s.QueueNotificationSettingsAsync(It.IsAny<NotificationSettingsRequest>(), It.IsAny<CancellationToken>()));
 
             Mock<IMessageSender> mockMessageSender = new();
             mockMessageSender.Setup(s => s.SendAsync(It.IsAny<IEnumerable<MessageEnvelope>>(), It.IsAny<CancellationToken>())).Verifiable();
@@ -459,7 +454,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 .ReturnsAsync(this.GenerateMockResourceDelegatesList());
             mockDependentDelegate.Setup(s => s.GetAsync(this.fromDate, this.toDate, It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(this.GenerateMockResourceDelegatesList());
-            mockDependentDelegate.Setup(s => s.GetTotalDelegateCountsAsync(It.IsAny<IEnumerable<string>>())).ReturnsAsync(mockDelegateCountsResult);
+            mockDependentDelegate.Setup(s => s.GetTotalDelegateCountsAsync(It.IsAny<IEnumerable<string>>(), It.IsAny<CancellationToken>())).ReturnsAsync(mockDelegateCountsResult);
 
             // (2) Setup PatientDelegate's mock
             Mock<IPatientService> mockPatientService = new();
@@ -548,24 +543,27 @@ namespace HealthGateway.GatewayApiTests.Services.Test
 
             Mock<IResourceDelegateDelegate> mockDependentDelegate = new();
             mockDependentDelegate.Setup(
-                    s => s.Insert(It.Is<ResourceDelegate>(r => r.ProfileHdid == expectedDbDependent.ProfileHdid && r.ResourceOwnerHdid == expectedDbDependent.ResourceOwnerHdid), It.IsAny<bool>()))
-                .Returns(insertResult);
+                    s => s.InsertAsync(
+                        It.Is<ResourceDelegate>(r => r.ProfileHdid == expectedDbDependent.ProfileHdid && r.ResourceOwnerHdid == expectedDbDependent.ResourceOwnerHdid),
+                        It.IsAny<bool>(),
+                        It.IsAny<CancellationToken>()))
+                .ReturnsAsync(insertResult);
             DbResult<Dictionary<string, int>> mockDelegateCountsResult = new()
             {
                 Status = DbStatusCode.Read,
                 Payload = this.GenerateMockDelegateCounts(true),
             };
-            mockDependentDelegate.Setup(s => s.GetTotalDelegateCountsAsync(It.IsAny<IEnumerable<string>>())).ReturnsAsync(mockDelegateCountsResult);
+            mockDependentDelegate.Setup(s => s.GetTotalDelegateCountsAsync(It.IsAny<IEnumerable<string>>(), It.IsAny<CancellationToken>())).ReturnsAsync(mockDelegateCountsResult);
 
             Mock<IDelegationDelegate> delegationDelegate = new();
             delegationDelegate.Setup(s => s.GetDependentAsync(this.mockHdId, true, CancellationToken.None)).ReturnsAsync(dependent);
 
             Mock<IUserProfileDelegate> mockUserProfileDelegate = new();
-            mockUserProfileDelegate.Setup(s => s.GetUserProfile(this.mockParentHdid))
-                .Returns(new DbResult<UserProfile> { Payload = new UserProfile() });
+            mockUserProfileDelegate.Setup(s => s.GetUserProfileAsync(this.mockParentHdid))
+                .ReturnsAsync(new UserProfile());
 
             Mock<INotificationSettingsService> mockNotificationSettingsService = new();
-            mockNotificationSettingsService.Setup(s => s.QueueNotificationSettings(It.IsAny<NotificationSettingsRequest>()));
+            mockNotificationSettingsService.Setup(s => s.QueueNotificationSettingsAsync(It.IsAny<NotificationSettingsRequest>(), It.IsAny<CancellationToken>()));
 
             Mock<IMessageSender> mockMessageSender = new();
             mockMessageSender.Setup(s => s.SendAsync(It.IsAny<IEnumerable<MessageEnvelope>>(), It.IsAny<CancellationToken>()));

@@ -35,8 +35,9 @@ namespace HealthGateway.Database.Delegates
         /// </summary>
         /// <param name="resourceDelegate">The resource delegate to create.</param>
         /// <param name="commit">Indicates if the transaction should be persisted immediately.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A DB result which encapsulates the return record and status.</returns>
-        DbResult<ResourceDelegate> Insert(ResourceDelegate resourceDelegate, bool commit);
+        Task<DbResult<ResourceDelegate>> InsertAsync(ResourceDelegate resourceDelegate, bool commit, CancellationToken ct = default);
 
         /// <summary>
         /// Gets the list of Resource Delegate records for a specific delegate Id from the database.
@@ -90,8 +91,9 @@ namespace HealthGateway.Database.Delegates
         /// Gets the total number of delegates associated with each specified dependent from the database.
         /// </summary>
         /// <param name="dependentHdids">The HDIDs corresponding to the dependents whose total delegate counts should be retrieved.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A dictionary that associates dependent HDIDs with their total number of delegates, wrapped in a DBResult.</returns>
-        Task<DbResult<Dictionary<string, int>>> GetTotalDelegateCountsAsync(IEnumerable<string> dependentHdids);
+        Task<DbResult<Dictionary<string, int>>> GetTotalDelegateCountsAsync(IEnumerable<string> dependentHdids, CancellationToken ct = default);
 
         /// <summary>
         /// Deletes a Resource Delegate record in the database.
