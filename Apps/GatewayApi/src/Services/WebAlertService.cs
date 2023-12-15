@@ -60,7 +60,7 @@ namespace HealthGateway.GatewayApi.Services
         {
             using Activity? activity = Source.StartActivity();
             this.logger.LogDebug("Retrieving web alerts from PHSA");
-            Guid pid = await this.GetPersonalAccountPidByHdid(hdid, ct) ?? throw new InvalidOperationException($"No pid found for hdid {hdid}");
+            Guid pid = await this.GetPersonalAccountPidByHdidAsync(hdid, ct) ?? throw new InvalidOperationException($"No pid found for hdid {hdid}");
 
             IList<PhsaWebAlert> phsaWebAlerts = await this.webAlertApi.GetWebAlertsAsync(pid, ct);
             IList<WebAlert> webAlerts = this.autoMapper.Map<IEnumerable<PhsaWebAlert>, IList<WebAlert>>(
@@ -75,7 +75,7 @@ namespace HealthGateway.GatewayApi.Services
         {
             using Activity? activity = Source.StartActivity();
             this.logger.LogDebug("Sending request to dismiss web alerts to PHSA");
-            Guid pid = await this.GetPersonalAccountPidByHdid(hdid, ct) ?? throw new InvalidOperationException($"No pid found for hdid {hdid}");
+            Guid pid = await this.GetPersonalAccountPidByHdidAsync(hdid, ct) ?? throw new InvalidOperationException($"No pid found for hdid {hdid}");
 
             await this.webAlertApi.DeleteWebAlertsAsync(pid, ct);
             this.logger.LogDebug("Finished sending request to dismiss web alerts to PHSA");
@@ -86,13 +86,13 @@ namespace HealthGateway.GatewayApi.Services
         {
             using Activity? activity = Source.StartActivity();
             this.logger.LogDebug("Sending request to dismiss web alert to PHSA");
-            Guid pid = await this.GetPersonalAccountPidByHdid(hdid, ct) ?? throw new InvalidOperationException($"No pid found for hdid {hdid}");
+            Guid pid = await this.GetPersonalAccountPidByHdidAsync(hdid, ct) ?? throw new InvalidOperationException($"No pid found for hdid {hdid}");
 
             await this.webAlertApi.DeleteWebAlertAsync(pid, webAlertId, ct);
             this.logger.LogDebug("Finished sending request to dismiss web alert to PHSA");
         }
 
-        private async Task<Guid?> GetPersonalAccountPidByHdid(string hdid, CancellationToken ct)
+        private async Task<Guid?> GetPersonalAccountPidByHdidAsync(string hdid, CancellationToken ct)
         {
             return (await this.personalAccountsService.GetPatientAccountAsync(hdid, ct)).PatientIdentity.Pid;
         }
