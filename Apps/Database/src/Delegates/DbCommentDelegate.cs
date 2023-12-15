@@ -50,20 +50,20 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public DbResult<IList<Comment>> GetByParentEntry(string hdId, string parentEntryId)
+        public async Task<DbResult<IList<Comment>>> GetByParentEntryAsync(string hdId, string parentEntryId, CancellationToken ct = default)
         {
             this.logger.LogTrace("Getting Comments for user {HdId} and entry id {ParentEntryId}...", hdId, parentEntryId);
             DbResult<IList<Comment>> result = new();
-            result.Payload = this.dbContext.Comment
+            result.Payload = await this.dbContext.Comment
                 .Where(p => p.UserProfileId == hdId && p.ParentEntryId == parentEntryId)
                 .OrderBy(o => o.CreatedDateTime)
-                .ToList();
+                .ToListAsync(ct);
             result.Status = DbStatusCode.Read;
             return result;
         }
 
         /// <inheritdoc/>
-        public DbResult<Comment> Add(Comment comment, bool commit = true)
+        public async Task<DbResult<Comment>> AddAsync(Comment comment, bool commit = true, CancellationToken ct = default)
         {
             this.logger.LogTrace("Adding Note to DB...");
             DbResult<Comment> result = new()
@@ -71,12 +71,12 @@ namespace HealthGateway.Database.Delegates
                 Payload = comment,
                 Status = DbStatusCode.Deferred,
             };
-            this.dbContext.Comment.Add(comment);
+            await this.dbContext.Comment.AddAsync(comment, ct);
             if (commit)
             {
                 try
                 {
-                    this.dbContext.SaveChanges();
+                    await this.dbContext.SaveChangesAsync(ct);
                     result.Status = DbStatusCode.Created;
                 }
                 catch (DbUpdateException e)
@@ -92,7 +92,7 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public DbResult<Comment> Update(Comment comment, bool commit = true)
+        public async Task<DbResult<Comment>> UpdateAsync(Comment comment, bool commit = true, CancellationToken ct = default)
         {
             this.logger.LogTrace("Updating Comment in DB...");
             DbResult<Comment> result = new()
@@ -106,7 +106,7 @@ namespace HealthGateway.Database.Delegates
             {
                 try
                 {
-                    this.dbContext.SaveChanges();
+                    await this.dbContext.SaveChangesAsync(ct);
                     result.Status = DbStatusCode.Updated;
                 }
                 catch (DbUpdateConcurrencyException e)
@@ -121,7 +121,7 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public DbResult<Comment> Delete(Comment comment, bool commit = true)
+        public async Task<DbResult<Comment>> DeleteAsync(Comment comment, bool commit = true, CancellationToken ct = default)
         {
             this.logger.LogTrace("Deleting Comment from DB...");
             DbResult<Comment> result = new()
@@ -134,7 +134,7 @@ namespace HealthGateway.Database.Delegates
             {
                 try
                 {
-                    this.dbContext.SaveChanges();
+                    await this.dbContext.SaveChangesAsync(ct);
                     result.Status = DbStatusCode.Deleted;
                 }
                 catch (DbUpdateConcurrencyException e)
@@ -149,14 +149,14 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public DbResult<IEnumerable<Comment>> GetAll(string hdId)
+        public async Task<DbResult<IEnumerable<Comment>>> GetAllAsync(string hdId, CancellationToken ct = default)
         {
             this.logger.LogTrace("Getting Comments for user {HdId}...", hdId);
             DbResult<IEnumerable<Comment>> result = new();
-            result.Payload = this.dbContext.Comment
+            result.Payload = await this.dbContext.Comment
                 .Where(p => p.UserProfileId == hdId)
                 .OrderBy(o => o.CreatedDateTime)
-                .ToList();
+                .ToListAsync(ct);
             result.Status = DbStatusCode.Read;
             return result;
         }

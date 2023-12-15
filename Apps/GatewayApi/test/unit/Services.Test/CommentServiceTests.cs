@@ -19,6 +19,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
     using System.Collections.Generic;
     using System.Globalization;
     using System.Linq;
+    using System.Threading;
     using System.Threading.Tasks;
     using AutoMapper;
     using DeepEqual.Syntax;
@@ -332,7 +333,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             };
 
             Mock<ICommentDelegate> commentDelegateMock = new();
-            commentDelegateMock.Setup(s => s.Delete(It.Is<Comment>(x => x.Text == comment.Text), true)).Returns(deleteResult);
+            commentDelegateMock.Setup(s => s.DeleteAsync(It.Is<Comment>(x => x.Text == comment.Text), true, It.IsAny<CancellationToken>())).ReturnsAsync(deleteResult);
 
             ICommentService service = new CommentService(
                 new Mock<ILogger<CommentService>>().Object,
@@ -377,7 +378,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             };
 
             Mock<ICommentDelegate> commentDelegateMock = new();
-            commentDelegateMock.Setup(s => s.Update(It.Is<Comment>(x => x.Text == comment.Text), true)).Returns(updateResult);
+            commentDelegateMock.Setup(s => s.UpdateAsync(It.Is<Comment>(x => x.Text == comment.Text), true, It.IsAny<CancellationToken>())).ReturnsAsync(updateResult);
 
             ICommentService service = new CommentService(
                 new Mock<ILogger<CommentService>>().Object,
@@ -433,7 +434,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             };
 
             Mock<ICommentDelegate> commentDelegateMock = new();
-            commentDelegateMock.Setup(s => s.GetByParentEntry(this.hdid, this.parentEntryId)).Returns(commentsDbResult);
+            commentDelegateMock.Setup(s => s.GetByParentEntryAsync(this.hdid, this.parentEntryId, It.IsAny<CancellationToken>())).ReturnsAsync(commentsDbResult);
 
             ICommentService service = new CommentService(
                 new Mock<ILogger<CommentService>>().Object,
@@ -478,7 +479,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             };
 
             Mock<ICommentDelegate> commentDelegateMock = new();
-            commentDelegateMock.Setup(s => s.Add(It.Is<Comment>(x => x.Text == comment.Text), true)).Returns(insertResult);
+            commentDelegateMock.Setup(s => s.AddAsync(It.Is<Comment>(x => x.Text == comment.Text), true, It.IsAny<CancellationToken>())).ReturnsAsync(insertResult);
 
             ICommentService service = new CommentService(
                 new Mock<ILogger<CommentService>>().Object,
