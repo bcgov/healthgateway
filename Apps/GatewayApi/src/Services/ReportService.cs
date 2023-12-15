@@ -67,7 +67,7 @@ namespace HealthGateway.GatewayApi.Services
                 },
             };
 
-            RequestResult<ReportModel> retVal = await this.cdogsDelegate.GenerateReportAsync(cdogsRequest);
+            RequestResult<ReportModel> retVal = await this.cdogsDelegate.GenerateReportAsync(cdogsRequest, ct);
             this.logger.LogTrace("Finished generating report: {ReportFileName}", retVal.ResourcePayload?.FileName);
             return retVal;
         }

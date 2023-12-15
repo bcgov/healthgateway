@@ -16,6 +16,7 @@
 namespace HealthGateway.GatewayApiTests.Services.Test
 {
     using System.Text.Json;
+    using System.Threading;
     using System.Threading.Tasks;
     using DeepEqual.Syntax;
     using HealthGateway.Common.Data.Constants;
@@ -69,7 +70,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             };
 
             Mock<ICDogsDelegate> cdogsDelegateMock = new();
-            cdogsDelegateMock.Setup(s => s.GenerateReportAsync(It.Is<CDogsRequestModel>(r => r.Options.ReportName == reportName))).ReturnsAsync(expectedResult);
+            cdogsDelegateMock.Setup(s => s.GenerateReportAsync(It.Is<CDogsRequestModel>(r => r.Options.ReportName == reportName), It.IsAny<CancellationToken>())).ReturnsAsync(expectedResult);
 
             IReportService service = new ReportService(
                 new Mock<ILogger<ReportService>>().Object,

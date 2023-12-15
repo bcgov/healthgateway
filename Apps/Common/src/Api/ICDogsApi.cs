@@ -16,6 +16,7 @@
 namespace HealthGateway.Common.Api
 {
     using System.Net.Http;
+    using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.Models.CDogs;
     using Refit;
@@ -29,8 +30,9 @@ namespace HealthGateway.Common.Api
         /// Generates a document.
         /// </summary>
         /// <param name="request">Model containing an inline template and set of substitution variables.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>HttpResponseMessage containing the raw binary-encoded PDF that was generated.</returns>
         [Post("/api/v2/template/render")]
-        Task<HttpResponseMessage> GenerateDocumentAsync([Body] CDogsRequestModel request);
+        Task<HttpResponseMessage> GenerateDocumentAsync([Body] CDogsRequestModel request, CancellationToken ct = default);
     }
 }
