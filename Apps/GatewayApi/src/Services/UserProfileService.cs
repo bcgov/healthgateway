@@ -100,6 +100,7 @@ namespace HealthGateway.GatewayApi.Services
         /// <param name="cacheProvider">The injected cache provider.</param>
         /// <param name="patientRepository">The injected patient repository.</param>
         /// <param name="messageSender">The message sender.</param>
+#pragma warning disable S107 // The number of DI parameters should be ignored
         public UserProfileService(
             ILogger<UserProfileService> logger,
             IPatientService patientService,

@@ -39,8 +39,6 @@ namespace HealthGateway.Admin.Server.Controllers
         /// <summary>
         /// Retrieves user profiles.
         /// </summary>
-        /// <param name="startDate">The optional start date for the data.</param>
-        /// <param name="endDate">The optional end date for the data.</param>
         /// <returns>A CSV of user profiles.</returns>
         /// <response code="200">Returns a CSV of user profiles.</response>
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
@@ -51,16 +49,15 @@ namespace HealthGateway.Admin.Server.Controllers
         [HttpGet]
         [Route("GetUserProfiles")]
         [Produces("text/csv")]
-        public IActionResult GetUserProfiles(DateTime? startDate = null, DateTime? endDate = null)
+        public IActionResult GetUserProfiles()
         {
-            return SendContentResponse("UserProfiles", dataExportService.GetUserProfiles(startDate, endDate));
+            return SendContentResponse("UserProfiles", dataExportService.GetUserProfiles());
         }
 
         /// <summary>
         /// Retrieves inactive users.
         /// </summary>
         /// <param name="inactiveDays">The days inactive to filter the users last login.</param>
-        /// <param name="timeOffset">The offset from the client browser to UTC.</param>
         /// <returns>A CSV of inactive users.</returns>
         /// <response code="200">Returns a CSV of inactive users.</response>
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
@@ -71,16 +68,14 @@ namespace HealthGateway.Admin.Server.Controllers
         [HttpGet]
         [Route("GetInactiveUsers")]
         [Produces("text/csv")]
-        public async Task<IActionResult> GetInactiveAdminUser(int inactiveDays, int timeOffset)
+        public async Task<IActionResult> GetInactiveAdminUser(int inactiveDays)
         {
-            return SendContentResponse("InactiveUsers", await dataExportService.GetInactiveUsers(inactiveDays, timeOffset).ConfigureAwait(true));
+            return SendContentResponse("InactiveUsers", await dataExportService.GetInactiveUsers(inactiveDays).ConfigureAwait(true));
         }
 
         /// <summary>
         /// Retrieves user comment metadata.
         /// </summary>
-        /// <param name="startDate">The optional start date for the data.</param>
-        /// <param name="endDate">The optional end date for the data.</param>
         /// <returns>A CSV of user comment metadata.</returns>
         /// <response code="200">Returns a CSV of user comment metadata.</response>
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
@@ -91,16 +86,14 @@ namespace HealthGateway.Admin.Server.Controllers
         [HttpGet]
         [Route("GetComments")]
         [Produces("text/csv")]
-        public IActionResult GetComments(DateTime? startDate = null, DateTime? endDate = null)
+        public IActionResult GetComments()
         {
-            return SendContentResponse("Comments", dataExportService.GetComments(startDate, endDate));
+            return SendContentResponse("Comments", dataExportService.GetComments());
         }
 
         /// <summary>
         /// Retrieves user note metadata.
         /// </summary>
-        /// <param name="startDate">The optional start date for the data.</param>
-        /// <param name="endDate">The optional end date for the data.</param>
         /// <returns>A CSV of user note metadata.</returns>
         /// <response code="200">Returns a CSV of user note metadata.</response>
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
@@ -111,16 +104,14 @@ namespace HealthGateway.Admin.Server.Controllers
         [HttpGet]
         [Route("GetNotes")]
         [Produces("text/csv")]
-        public IActionResult GetNotes(DateTime? startDate = null, DateTime? endDate = null)
+        public IActionResult GetNotes()
         {
-            return SendContentResponse("Notes", dataExportService.GetNotes(startDate, endDate));
+            return SendContentResponse("Notes", dataExportService.GetNotes());
         }
 
         /// <summary>
         /// Retrieves ratings.
         /// </summary>
-        /// <param name="startDate">The optional start date for the data.</param>
-        /// <param name="endDate">The optional end date for the data.</param>
         /// <returns>A CSV of ratings.</returns>
         /// <response code="200">Returns a CSV of ratings.</response>
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
@@ -131,9 +122,9 @@ namespace HealthGateway.Admin.Server.Controllers
         [HttpGet]
         [Route("GetRatings")]
         [Produces("text/csv")]
-        public IActionResult GetRatings(DateTime? startDate = null, DateTime? endDate = null)
+        public IActionResult GetRatings()
         {
-            return SendContentResponse("Ratings", dataExportService.GetRatings(startDate, endDate));
+            return SendContentResponse("Ratings", dataExportService.GetRatings());
         }
 
         /// <summary>
@@ -159,7 +150,6 @@ namespace HealthGateway.Admin.Server.Controllers
         /// </summary>
         /// <param name="startDateLocal">The starting date to get the user counts in the client's local time.</param>
         /// <param name="endDateLocal">The ending date for the query in the client's local time.</param>
-        /// <param name="timeOffset">The current timezone offset from the client browser to UTC.</param>
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A CSV of year of birth counts.</returns>
         /// <response code="200">Returns a CSV of year of birth counts.</response>
@@ -171,9 +161,9 @@ namespace HealthGateway.Admin.Server.Controllers
         [HttpGet]
         [Route("GetYearOfBirthCounts")]
         [Produces("text/csv")]
-        public async Task<FileStreamResult> GetYearOfBirthCounts([FromQuery] DateOnly startDateLocal, [FromQuery] DateOnly endDateLocal, [FromQuery] int timeOffset, CancellationToken ct)
+        public async Task<FileStreamResult> GetYearOfBirthCounts([FromQuery] DateOnly startDateLocal, [FromQuery] DateOnly endDateLocal, CancellationToken ct)
         {
-            Stream stream = await dataExportService.GetYearOfBirthCountsAsync(startDateLocal, endDateLocal, timeOffset, ct);
+            Stream stream = await dataExportService.GetYearOfBirthCountsAsync(startDateLocal, endDateLocal, ct);
             return SendContentResponse("YearOfBirthCounts", stream);
         }
 

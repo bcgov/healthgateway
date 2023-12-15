@@ -36,6 +36,7 @@ namespace HealthGateway.GatewayApi.Controllers
     [ApiVersion("1.0")]
     [Route("UserProfile")]
     [ApiController]
+#pragma warning disable ASP0018 // hdid is a valid route parameter without being consumed in the method body
     public class DependentController
     {
         private readonly ILogger logger;

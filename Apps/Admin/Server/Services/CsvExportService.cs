@@ -27,12 +27,15 @@ namespace HealthGateway.Admin.Server.Services
     using HealthGateway.Admin.Server.Models;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.Models;
+    using HealthGateway.Common.Data.Utils;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
+    using Microsoft.Extensions.Configuration;
 
     /// <inheritdoc/>
+    /// <param name="configuration">The configuration to use.</param>
     /// <param name="noteDelegate">The note delegate to interact with the DB.</param>
     /// <param name="userProfileDelegate">The user profile delegate to interact with the DB.</param>
     /// <param name="commentDelegate">The comment delegate to interact with the DB.</param>
@@ -40,6 +43,7 @@ namespace HealthGateway.Admin.Server.Services
     /// <param name="inactiveUserService">The inactive user service to get match db and keycloak inactive users.</param>
     /// <param name="feedbackDelegate">The feedback delegate to interact with the DB.</param>
     public class CsvExportService(
+        IConfiguration configuration,
         INoteDelegate noteDelegate,
         IUserProfileDelegate userProfileDelegate,
         ICommentDelegate commentDelegate,
@@ -51,37 +55,37 @@ namespace HealthGateway.Admin.Server.Services
         private const int Page = 0;
 
         /// <inheritdoc/>
-        public Stream GetComments(DateTime? startDate, DateTime? endDate)
+        public Stream GetComments()
         {
             DbResult<IEnumerable<Comment>> comments = commentDelegate.GetAll(Page, PageSize);
             return GetStream<Comment, CommentCsvMap>(comments.Payload);
         }
 
         /// <inheritdoc/>
-        public Stream GetNotes(DateTime? startDate, DateTime? endDate)
+        public Stream GetNotes()
         {
             DbResult<IEnumerable<Note>> notes = noteDelegate.GetAll(Page, PageSize);
             return GetStream<Note, NoteCsvMap>(notes.Payload);
         }
 
         /// <inheritdoc/>
-        public Stream GetUserProfiles(DateTime? startDate, DateTime? endDate)
+        public Stream GetUserProfiles()
         {
             DbResult<IEnumerable<UserProfile>> profiles = userProfileDelegate.GetAll(Page, PageSize);
             return GetStream<UserProfile, UserProfileCsvMap>(profiles.Payload);
         }
 
         /// <inheritdoc/>
-        public Stream GetRatings(DateTime? startDate, DateTime? endDate)
+        public Stream GetRatings()
         {
             DbResult<IEnumerable<Rating>> profiles = ratingDelegate.GetAll(Page, PageSize);
             return GetStream<Rating, UserProfileCsvMap>(profiles.Payload);
         }
 
         /// <inheritdoc/>
-        public async Task<Stream> GetInactiveUsers(int inactiveDays, int timeOffset)
+        public async Task<Stream> GetInactiveUsers(int inactiveDays)
         {
-            RequestResult<List<AdminUserProfileView>> inactiveUsersResult = await inactiveUserService.GetInactiveUsers(inactiveDays, timeOffset).ConfigureAwait(true);
+            RequestResult<List<AdminUserProfileView>> inactiveUsersResult = await inactiveUserService.GetInactiveUsers(inactiveDays).ConfigureAwait(true);
 
             if (inactiveUsersResult.ResultStatus == ResultType.Success)
             {
@@ -99,11 +103,11 @@ namespace HealthGateway.Admin.Server.Services
         }
 
         /// <inheritdoc/>
-        public async Task<Stream> GetYearOfBirthCountsAsync(DateOnly startDateLocal, DateOnly endDateLocal, int timeOffset, CancellationToken ct)
+        public async Task<Stream> GetYearOfBirthCountsAsync(DateOnly startDateLocal, DateOnly endDateLocal, CancellationToken ct)
         {
-            TimeSpan offsetSpan = TimeSpan.FromMinutes(timeOffset);
-            DateTimeOffset startDateOffset = new(startDateLocal.ToDateTime(TimeOnly.MinValue), offsetSpan);
-            DateTimeOffset endDateOffset = new(endDateLocal.ToDateTime(TimeOnly.MaxValue), offsetSpan);
+            TimeSpan localTimeOffset = DateFormatter.GetLocalTimeOffset(configuration, DateTime.UtcNow);
+            DateTimeOffset startDateOffset = new(startDateLocal.ToDateTime(TimeOnly.MinValue), localTimeOffset);
+            DateTimeOffset endDateOffset = new(endDateLocal.ToDateTime(TimeOnly.MaxValue), localTimeOffset);
 
             IDictionary<int, int> yobCounts = await userProfileDelegate.GetLoggedInUserYearOfBirthCountsAsync(startDateOffset, endDateOffset, ct);
 
@@ -115,7 +119,7 @@ namespace HealthGateway.Admin.Server.Services
             return stream;
         }
 
-        private static Stream GetStream<TModel, TMap>(IEnumerable<TModel> obj)
+        private static MemoryStream GetStream<TModel, TMap>(IEnumerable<TModel> obj)
             where TMap : ClassMap
         {
             MemoryStream stream = new();

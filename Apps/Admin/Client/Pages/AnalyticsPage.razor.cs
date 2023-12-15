@@ -51,8 +51,6 @@ public partial class AnalyticsPage : FluxorComponent
 
     private DateOnly EndDate { get; set; } = DateOnly.FromDateTime(DateTime.Now);
 
-    private int TimeOffset { get; } = (int)TimeZoneInfo.Local.GetUtcOffset(DateTime.UtcNow).TotalMinutes;
-
     private DateRange DateRange { get; set; } = new(DateTime.Now.AddDays(-30).Date, DateTime.Now.Date);
 
     private DateRange SelectedDateRange
@@ -126,7 +124,7 @@ public partial class AnalyticsPage : FluxorComponent
     {
         this.ResetAnalyticsState();
         this.ReportName = "InactiveUsers";
-        this.Dispatcher.Dispatch(new AnalyticsActions.LoadInactiveUsersAction { InactiveDays = this.InactiveDays, TimeOffset = this.TimeOffset });
+        this.Dispatcher.Dispatch(new AnalyticsActions.LoadInactiveUsersAction { InactiveDays = this.InactiveDays });
     }
 
     private void GetUserFeedbackData()
@@ -140,7 +138,7 @@ public partial class AnalyticsPage : FluxorComponent
     {
         this.ResetAnalyticsState();
         this.ReportName = YearOfBirthReportName;
-        this.Dispatcher.Dispatch(new AnalyticsActions.LoadYearOfBirthCountsAction { StartDateLocal = this.StartDate, EndDateLocal = this.EndDate, TimeOffset = this.TimeOffset });
+        this.Dispatcher.Dispatch(new AnalyticsActions.LoadYearOfBirthCountsAction { StartDateLocal = this.StartDate, EndDateLocal = this.EndDate });
     }
 
     private void DownloadAnalyticsReport(AnalyticsActions.LoadSuccessAction action)

@@ -28,22 +28,22 @@ public static class AnalyticsActions
     /// <summary>
     /// The action representing the initiation of a user profiles load.
     /// </summary>
-    public record LoadUserProfilesAction : BaseAnalyticsLoadAction;
+    public record LoadUserProfilesAction;
 
     /// <summary>
     /// The action representing the initiation of a comments load.
     /// </summary>
-    public record LoadCommentsAction : BaseAnalyticsLoadAction;
+    public record LoadCommentsAction;
 
     /// <summary>
     /// The action representing the initiation of a notes load.
     /// </summary>
-    public record LoadNotesAction : BaseAnalyticsLoadAction;
+    public record LoadNotesAction;
 
     /// <summary>
     /// The action representing the initiation of a ratings load.
     /// </summary>
-    public record LoadRatingsAction : BaseAnalyticsLoadAction;
+    public record LoadRatingsAction;
 
     /// <summary>
     /// The action representing the initiation of an inactive users load.
@@ -54,11 +54,6 @@ public static class AnalyticsActions
         /// Gets the minimum number of days since the user's last login that would qualify the user as inactive.
         /// </summary>
         public required int InactiveDays { get; init; }
-
-        /// <summary>
-        /// Gets the offset from the client browser to UTC.
-        /// </summary>
-        public required int TimeOffset { get; init; }
     }
 
     /// <summary>
@@ -80,11 +75,6 @@ public static class AnalyticsActions
         /// Gets the end date in local time.
         /// </summary>
         public required DateOnly EndDateLocal { get; init; }
-
-        /// <summary>
-        /// Gets the offset from the client browser to UTC.
-        /// </summary>
-        public required int TimeOffset { get; init; }
     }
 
     /// <summary>

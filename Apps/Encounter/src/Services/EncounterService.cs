@@ -63,6 +63,7 @@ namespace HealthGateway.Encounter.Services
         /// <param name="patientRepository">The injected patient repository provider.</param>
         /// <param name="configuration">The injected configuration provider.</param>
         /// <param name="autoMapper">The injected automapper provider.</param>
+#pragma warning disable S107 // The number of DI parameters should be ignored
         public EncounterService(
             ILogger<EncounterService> logger,
             IHttpContextAccessor httpAccessor,

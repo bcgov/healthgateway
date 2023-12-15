@@ -35,7 +35,7 @@ public static class DashboardActions
     /// <summary>
     /// The action representing a successful retrieval of all-time counts.
     /// </summary>
-    public record GetAllTimeCountsSuccessAction : BaseSuccessAction<AllTimeDashboardCounts>;
+    public record GetAllTimeCountsSuccessAction : BaseSuccessAction<AllTimeCounts>;
 
     /// <summary>
     /// The action representing a failed retrieval of all-time counts.
@@ -43,51 +43,9 @@ public static class DashboardActions
     public record GetAllTimeCountsFailureAction : BaseFailureAction;
 
     /// <summary>
-    /// The action representing the initiation of a retrieval of daily user registration counts.
+    /// The action representing the initiation of a retrieval of daily usage counts.
     /// </summary>
-    public record GetDailyUserRegistrationCountsAction
-    {
-        /// <summary>
-        /// Gets the local timezone offset from UTC in minutes.
-        /// </summary>
-        public required int TimeOffset { get; init; }
-    }
-
-    /// <summary>
-    /// The action representing a successful retrieval of daily user registration counts.
-    /// </summary>
-    public record GetDailyUserRegistrationCountsSuccessAction : BaseSuccessAction<IDictionary<DateOnly, int>>;
-
-    /// <summary>
-    /// The action representing a failed retrieval of daily user registration counts.
-    /// </summary>
-    public record GetDailyUserRegistrationCountsFailureAction : BaseFailureAction;
-
-    /// <summary>
-    /// The action representing the initiation of a retrieval of daily dependent registration counts.
-    /// </summary>
-    public record GetDailyDependentRegistrationCountsAction
-    {
-        /// <summary>
-        /// Gets the local timezone offset from UTC in minutes.
-        /// </summary>
-        public required int TimeOffset { get; init; }
-    }
-
-    /// <summary>
-    /// The action representing a successful retrieval of daily dependent registration counts.
-    /// </summary>
-    public record GetDailyDependentRegistrationCountsSuccessAction : BaseSuccessAction<IDictionary<DateOnly, int>>;
-
-    /// <summary>
-    /// The action representing a failed retrieval of daily dependent registration counts.
-    /// </summary>
-    public record GetDailyDependentRegistrationCountsFailureAction : BaseFailureAction;
-
-    /// <summary>
-    /// The action representing the initiation of a retrieval of daily unique login counts.
-    /// </summary>
-    public record GetDailyUniqueLoginCountsAction
+    public record GetDailyUsageCountsAction
     {
         /// <summary>
         /// Gets the local start date to query.
@@ -98,22 +56,17 @@ public static class DashboardActions
         /// Gets the local end date to query.
         /// </summary>
         public required DateOnly EndDateLocal { get; init; }
-
-        /// <summary>
-        /// Gets the local timezone offset from UTC in minutes.
-        /// </summary>
-        public required int TimeOffset { get; init; }
     }
 
     /// <summary>
-    /// The action representing a successful retrieval of daily unique login counts.
+    /// The action representing a successful retrieval of daily usage counts.
     /// </summary>
-    public record GetDailyUniqueLoginCountsSuccessAction : BaseSuccessAction<IDictionary<DateOnly, int>>;
+    public record GetDailyUsageCountsSuccessAction : BaseSuccessAction<DailyUsageCounts>;
 
     /// <summary>
-    /// The action representing a failed retrieval of daily unique login counts.
+    /// The action representing a failed retrieval of daily usage counts.
     /// </summary>
-    public record GetDailyUniqueLoginCountsFailureAction : BaseFailureAction;
+    public record GetDailyUsageCountsFailureAction : BaseFailureAction;
 
     /// <summary>
     /// The action representing the initiation of a retrieval of a recurring user count.
@@ -134,11 +87,6 @@ public static class DashboardActions
         /// Gets the local end date to query.
         /// </summary>
         public required DateOnly EndDateLocal { get; init; }
-
-        /// <summary>
-        /// Gets the local timezone offset from UTC in minutes.
-        /// </summary>
-        public required int TimeOffset { get; init; }
     }
 
     /// <summary>
@@ -165,11 +113,6 @@ public static class DashboardActions
         /// Gets the local end date to query.
         /// </summary>
         public required DateOnly EndDateLocal { get; init; }
-
-        /// <summary>
-        /// Gets the local timezone offset from UTC in minutes.
-        /// </summary>
-        public required int TimeOffset { get; init; }
     }
 
     /// <summary>
@@ -196,11 +139,6 @@ public static class DashboardActions
         /// Gets the local end date to query.
         /// </summary>
         public required DateOnly EndDateLocal { get; init; }
-
-        /// <summary>
-        /// Gets the local timezone offset from UTC in minutes.
-        /// </summary>
-        public required int TimeOffset { get; init; }
     }
 
     /// <summary>
@@ -227,11 +165,6 @@ public static class DashboardActions
         /// Gets the local end date to query.
         /// </summary>
         public required DateOnly EndDateLocal { get; init; }
-
-        /// <summary>
-        /// Gets the local timezone offset from UTC in minutes.
-        /// </summary>
-        public required int TimeOffset { get; init; }
     }
 
     /// <summary>

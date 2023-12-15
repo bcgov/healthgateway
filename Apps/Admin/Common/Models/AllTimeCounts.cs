@@ -18,8 +18,14 @@ namespace HealthGateway.Admin.Common.Models
     /// <summary>
     /// Model containing all-time counts for the admin dashboard.
     /// </summary>
-    public record AllTimeDashboardCounts
+    public record AllTimeCounts
     {
+        /// <summary>Gets the number of registered Health Gateway users.</summary>
+        public int RegisteredUsers { get; init; }
+
+        /// <summary>Gets the number of dependent registrations in Health Gateway.</summary>
+        public int Dependents { get; init; }
+
         /// <summary>Gets the number of closed Health Gateway accounts.</summary>
         public int ClosedAccounts { get; init; }
     }

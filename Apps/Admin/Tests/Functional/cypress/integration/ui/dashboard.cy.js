@@ -21,28 +21,30 @@ describe("Dashboard", () => {
     beforeEach(() => {
         cy.log(`"Today" is ${utcDate.toISOString()}`);
 
-        cy.intercept("GET", "**/Dashboard/RegisteredCount*", {
+        cy.intercept("GET", "**/Dashboard/AllTimeCounts*", {
             body: {
-                [getPastDate(120)]: 1,
-                [getPastDate(2)]: 1,
-                [getPastDate(1)]: 2,
-                [getPastDate(0)]: 2,
+                registeredUsers: 6,
+                dependents: 2,
+                closedAccounts: 1,
             },
         });
 
-        cy.intercept("GET", "**/Dashboard/LoggedInCount*", {
+        cy.intercept("GET", "**/Dashboard/DailyUsageCounts*", {
             body: {
-                [getPastDate(120)]: 1,
-                [getPastDate(3)]: 1,
-                [getPastDate(2)]: 3,
-                [getPastDate(1)]: 2,
-                [getPastDate(0)]: 6,
-            },
-        });
-
-        cy.intercept("GET", "**/Dashboard/DependentCount*", {
-            body: {
-                [getPastDate(0)]: 2,
+                userRegistrations: {
+                    [getPastDate(2)]: 1,
+                    [getPastDate(1)]: 2,
+                    [getPastDate(0)]: 2,
+                },
+                userLogins: {
+                    [getPastDate(3)]: 1,
+                    [getPastDate(2)]: 3,
+                    [getPastDate(1)]: 2,
+                    [getPastDate(0)]: 6,
+                },
+                dependentRegistrations: {
+                    [getPastDate(0)]: 2,
+                },
             },
         });
 

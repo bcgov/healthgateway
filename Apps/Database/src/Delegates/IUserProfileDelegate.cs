@@ -109,20 +109,21 @@ namespace HealthGateway.Database.Delegates
         DbResult<List<UserProfile>> GetClosedProfiles(DateTime filterDateTime, int page = 0, int pageSize = 500);
 
         /// <summary>
-        /// Retrieves the daily counts of user registrations.
-        /// </summary>
-        /// <param name="offset">The clients offset to get to UTC.</param>
-        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
-        /// <returns>The daily counts of user registrations by date.</returns>
-        Task<IDictionary<DateOnly, int>> GetDailyUserRegistrationCountsAsync(TimeSpan offset, CancellationToken ct = default);
-
-        /// <summary>
-        /// Retrieves the daily counts of unique user logins over a date range.
+        /// Retrieves daily counts of user registrations over a date range.
         /// </summary>
         /// <param name="startDateTimeOffset">The start datetime offset to query.</param>
         /// <param name="endDateTimeOffset">The end datetime offset to query.</param>
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
-        /// <returns>The number of unique user logins by date.</returns>
+        /// <returns>The daily counts of user registrations by date.</returns>
+        Task<IDictionary<DateOnly, int>> GetDailyUserRegistrationCountsAsync(DateTimeOffset startDateTimeOffset, DateTimeOffset endDateTimeOffset, CancellationToken ct = default);
+
+        /// <summary>
+        /// Retrieves daily counts of unique user logins over a date range.
+        /// </summary>
+        /// <param name="startDateTimeOffset">The start datetime offset to query.</param>
+        /// <param name="endDateTimeOffset">The end datetime offset to query.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
+        /// <returns>The daily counts of unique user logins by date.</returns>
         Task<IDictionary<DateOnly, int>> GetDailyUniqueLoginCountsAsync(DateTimeOffset startDateTimeOffset, DateTimeOffset endDateTimeOffset, CancellationToken ct = default);
 
         /// <summary>
@@ -161,11 +162,18 @@ namespace HealthGateway.Database.Delegates
         DbResult<IEnumerable<UserProfileHistory>> GetUserProfileHistories(string hdid, int limit);
 
         /// <summary>
+        /// Retrieves a count of user profiles.
+        /// </summary>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
+        /// <returns>The number of user profiles.</returns>
+        Task<int> GetUserProfileCount(CancellationToken ct = default);
+
+        /// <summary>
         /// Retrieves the number of user profiles that have been closed and not re-opened.
         /// </summary>
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The number of user profiles that have been closed and not re-opened</returns>
-        Task<int> GetClosedUserProfileCount(CancellationToken ct);
+        Task<int> GetClosedUserProfileCount(CancellationToken ct = default);
 
         /// <summary>
         /// Returns the list of logged in user year of birth counts over a date range.
@@ -174,6 +182,6 @@ namespace HealthGateway.Database.Delegates
         /// <param name="endDateTimeOffset">The end datetime offset to query.</param>
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The counts of logged in users by year of birth.</returns>
-        Task<IDictionary<int, int>> GetLoggedInUserYearOfBirthCountsAsync(DateTimeOffset startDateTimeOffset, DateTimeOffset endDateTimeOffset, CancellationToken ct);
+        Task<IDictionary<int, int>> GetLoggedInUserYearOfBirthCountsAsync(DateTimeOffset startDateTimeOffset, DateTimeOffset endDateTimeOffset, CancellationToken ct = default);
     }
 }

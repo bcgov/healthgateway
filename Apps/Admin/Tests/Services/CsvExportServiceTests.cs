@@ -74,6 +74,7 @@ namespace HealthGateway.Admin.Tests.Services
                 MapperUtil.InitializeAutoMapper());
 
             ICsvExportService service = new CsvExportService(
+                this.configuration,
                 new Mock<INoteDelegate>().Object,
                 profileDelegateMock.Object,
                 new Mock<ICommentDelegate>().Object,
@@ -83,9 +84,8 @@ namespace HealthGateway.Admin.Tests.Services
 
             DateOnly startDateLocal = DateOnly.FromDateTime(DateTime.Now.AddDays(-30));
             DateOnly endDateLocal = DateOnly.FromDateTime(DateTime.Now);
-            const int timeOffset = -300;
 
-            Stream yobCounts = await service.GetYearOfBirthCountsAsync(startDateLocal, endDateLocal, timeOffset, CancellationToken.None);
+            Stream yobCounts = await service.GetYearOfBirthCountsAsync(startDateLocal, endDateLocal, CancellationToken.None);
 
             Assert.NotNull(yobCounts);
         }
@@ -150,13 +150,12 @@ namespace HealthGateway.Admin.Tests.Services
         {
             Dictionary<string, string?> myConfiguration = new()
             {
+                { "TimeZone:UnixTimeZoneId", "America/Vancouver" },
+                { "TimeZone:WindowsTimeZoneId", "Pacific Standard Time" },
                 { "EnabledRoles", "[ \"AdminUser\", \"AdminReviewer\", \"SupportUser\" ]" },
             };
 
             return new ConfigurationBuilder()
-                .AddJsonFile("appsettings.json", true)
-                .AddJsonFile("appsettings.Development.json", true)
-                .AddJsonFile("appsettings.local.json", true)
                 .AddInMemoryCollection(myConfiguration.ToList())
                 .Build();
         }
