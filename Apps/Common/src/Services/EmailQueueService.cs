@@ -17,10 +17,14 @@ namespace HealthGateway.Common.Services
 {
     using System;
     using System.Collections.Generic;
+    using System.Threading;
+    using System.Threading.Tasks;
     using Hangfire;
     using HealthGateway.Common.Constants;
+    using HealthGateway.Common.Data.ErrorHandling;
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Data.Utils;
+    using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Jobs;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
@@ -65,15 +69,36 @@ namespace HealthGateway.Common.Services
         }
 
         /// <inheritdoc/>
+        public async Task QueueNewEmailAsync(string toEmail, string templateName, bool shouldCommit = true, CancellationToken ct = default)
+        {
+            Dictionary<string, string> keyValues = new();
+            await this.QueueNewEmailAsync(toEmail, templateName, keyValues, shouldCommit, ct);
+        }
+
+        /// <inheritdoc/>
         public void QueueNewEmail(string toEmail, string templateName, Dictionary<string, string> keyValues, bool shouldCommit = true)
         {
             this.QueueNewEmail(toEmail, this.GetEmailTemplate(templateName), keyValues, shouldCommit);
         }
 
         /// <inheritdoc/>
+        public async Task QueueNewEmailAsync(string toEmail, string templateName, Dictionary<string, string> keyValues, bool shouldCommit = true, CancellationToken ct = default)
+        {
+            EmailTemplate? emailTemplate = await this.GetEmailTemplateAsync(templateName, ct) ?? throw new ProblemDetailsException(
+                ExceptionUtility.CreateServerError($"{ServiceType.Database}:{ErrorType.CommunicationInternal}", ErrorMessages.EmailTemplateNotFound));
+            await this.QueueNewEmailAsync(toEmail, emailTemplate, keyValues, shouldCommit, ct);
+        }
+
+        /// <inheritdoc/>
         public void QueueNewEmail(string toEmail, EmailTemplate emailTemplate, Dictionary<string, string> keyValues, bool shouldCommit = true)
         {
             this.QueueNewEmail(this.ProcessTemplate(toEmail, emailTemplate, keyValues), shouldCommit);
+        }
+
+        /// <inheritdoc/>
+        public async Task QueueNewEmailAsync(string toEmail, EmailTemplate emailTemplate, Dictionary<string, string> keyValues, bool shouldCommit = true, CancellationToken ct = default)
+        {
+            await this.QueueNewEmailAsync(this.ProcessTemplate(toEmail, emailTemplate, keyValues), shouldCommit, ct);
         }
 
         /// <inheritdoc/>
@@ -88,6 +113,28 @@ namespace HealthGateway.Common.Services
             if (email.Id == Guid.Empty)
             {
                 this.emailDelegate.InsertEmail(email, shouldCommit);
+            }
+
+            if (shouldCommit)
+            {
+                this.jobClient.Enqueue<IEmailJob>(j => j.SendEmail(email.Id));
+            }
+
+            this.logger.LogDebug("Finished queueing email. {Id}", email.Id);
+        }
+
+        /// <inheritdoc/>
+        public async Task QueueNewEmailAsync(Email email, bool shouldCommit = true, CancellationToken ct = default)
+        {
+            if (string.IsNullOrWhiteSpace(email.To))
+            {
+                throw new ArgumentNullException(nameof(email), "Email To cannot be null or whitespace");
+            }
+
+            this.logger.LogTrace("Queueing email...");
+            if (email.Id == Guid.Empty)
+            {
+                await this.emailDelegate.InsertEmailAsync(email, shouldCommit, ct);
             }
 
             if (shouldCommit)
@@ -128,6 +175,15 @@ namespace HealthGateway.Common.Services
         {
             this.logger.LogTrace("Getting email template... {TemplateName}", templateName);
             EmailTemplate retVal = this.emailDelegate.GetEmailTemplate(templateName);
+            this.logger.LogDebug("Finished getting email template");
+            return retVal;
+        }
+
+        /// <inheritdoc/>
+        public async Task<EmailTemplate?> GetEmailTemplateAsync(string templateName, CancellationToken ct = default)
+        {
+            this.logger.LogTrace("Getting email template... {TemplateName}", templateName);
+            EmailTemplate? retVal = await this.emailDelegate.GetEmailTemplateAsync(templateName, ct);
             this.logger.LogDebug("Finished getting email template");
             return retVal;
         }

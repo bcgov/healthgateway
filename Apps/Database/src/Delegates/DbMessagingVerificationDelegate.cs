@@ -88,6 +88,21 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
+        public async Task<MessagingVerification?> GetLastByInviteKeyAsync(Guid inviteKey, CancellationToken ct = default)
+        {
+            this.logger.LogTrace("Getting email message verification from DB... {InviteKey}", inviteKey);
+            MessagingVerification? retVal = await this.dbContext
+                .MessagingVerification
+                .Include(email => email.Email)
+                .Where(p => p.InviteKey == inviteKey && p.VerificationType == MessagingVerificationType.Email)
+                .OrderByDescending(mv => mv.CreatedDateTime)
+                .FirstOrDefaultAsync(ct);
+
+            this.logger.LogDebug("Finished getting email message verification from DB");
+            return retVal;
+        }
+
+        /// <inheritdoc/>
         public IEnumerable<MessagingVerification> GetAllEmail()
         {
             this.logger.LogTrace("Getting all email message verifications from DB...");
@@ -125,6 +140,26 @@ namespace HealthGateway.Database.Delegates
                 .FirstOrDefault();
 
             if (retVal != null && retVal.Deleted)
+            {
+                return null;
+            }
+
+            this.logger.LogDebug("Finished getting messaging verification from DB");
+            return retVal;
+        }
+
+        /// <inheritdoc/>
+        public async Task<MessagingVerification?> GetLastForUserAsync(string hdid, string messagingVerificationType, CancellationToken ct = default)
+        {
+            this.logger.LogTrace("Getting last messaging verification from DB for user... {HdId}", hdid);
+            MessagingVerification? retVal = await this.dbContext
+                .MessagingVerification
+                .Include(email => email.Email)
+                .Where(p => p.UserProfileId == hdid && p.VerificationType == messagingVerificationType)
+                .OrderByDescending(p => p.UpdatedDateTime)
+                .FirstOrDefaultAsync(ct);
+
+            if (retVal is { Deleted: true })
             {
                 return null;
             }

@@ -34,13 +34,20 @@ namespace HealthGateway.GatewayApiTests.Services.Test.Mock
         /// <param name="userProfile">user profile.</param>
         /// <param name="userProfileData">user profile data.</param>
         /// <param name="hdid">hdid.</param>
-        /// <param name="userProfileHistoryData">user profile history.</param>
+        /// <param name="userProfileHistoryList">list of user profile history.</param>
         /// <param name="limit">limit.</param>
-        public UserProfileDelegateMock(UserProfile userProfile, DbResult<UserProfile> userProfileData, string hdid, DbResult<IEnumerable<UserProfileHistory>> userProfileHistoryData, int limit)
+        /// <param name="updatedUserProfileResult">updated user profile result.</param>
+        public UserProfileDelegateMock(
+            UserProfile userProfile,
+            DbResult<UserProfile> userProfileData,
+            string hdid,
+            IList<UserProfileHistory> userProfileHistoryList,
+            int limit,
+            DbResult<UserProfile> updatedUserProfileResult)
         {
-            this.Setup(s => s.GetUserProfile(hdid)).Returns(userProfileData);
-            this.Setup(s => s.Update(userProfile, true)).Returns(userProfileData);
-            this.Setup(s => s.GetUserProfileHistories(hdid, limit)).Returns(userProfileHistoryData);
+            this.Setup(s => s.GetUserProfileAsync(hdid)).ReturnsAsync(userProfileData.Payload);
+            this.Setup(s => s.UpdateAsync(userProfile, true, It.IsAny<CancellationToken>())).ReturnsAsync(updatedUserProfileResult);
+            this.Setup(s => s.GetUserProfileHistoryListAsync(hdid, limit, It.IsAny<CancellationToken>())).ReturnsAsync(userProfileHistoryList);
         }
 
         /// <summary>
@@ -64,8 +71,8 @@ namespace HealthGateway.GatewayApiTests.Services.Test.Mock
         /// <param name="userProfileUpdateDbResult">Optional update result.</param>
         public UserProfileDelegateMock(string hdid, UserProfile userProfile, DbResult<UserProfile> userProfileDbResult, bool commit = true, DbResult<UserProfile>? userProfileUpdateDbResult = null)
         {
-            this.Setup(s => s.GetUserProfile(hdid)).Returns(userProfileDbResult);
-            this.Setup(s => s.Update(userProfile, commit)).Returns(userProfileUpdateDbResult ?? userProfileDbResult);
+            this.Setup(s => s.GetUserProfileAsync(hdid)).ReturnsAsync(userProfileDbResult.Payload);
+            this.Setup(s => s.UpdateAsync(userProfile, commit, It.IsAny<CancellationToken>())).ReturnsAsync(userProfileUpdateDbResult ?? userProfileDbResult);
         }
     }
 }

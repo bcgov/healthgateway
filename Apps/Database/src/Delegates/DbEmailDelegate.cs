@@ -19,6 +19,8 @@ namespace HealthGateway.Database.Delegates
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using System.Linq;
+    using System.Threading;
+    using System.Threading.Tasks;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Database.Constants;
@@ -94,6 +96,20 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
+        public async Task<Guid> InsertEmailAsync(Email email, bool shouldCommit = true, CancellationToken ct = default)
+        {
+            this.logger.LogTrace("Inserting email to DB..");
+            await this.dbContext.AddAsync(email, ct);
+            if (shouldCommit)
+            {
+                await this.dbContext.SaveChangesAsync(ct);
+            }
+
+            this.logger.LogDebug("Finished inserting email to DB. {Email}", email.Id);
+            return email.Id;
+        }
+
+        /// <inheritdoc/>
         public void UpdateEmail(Email email)
         {
             this.logger.LogTrace("Updating email {Email} in DB... ", email.Id);
@@ -112,6 +128,15 @@ namespace HealthGateway.Database.Delegates
             this.logger.LogDebug("Finished getting email {TemplateName} template from DB", templateName);
 
             return retVal;
+        }
+
+        /// <inheritdoc/>
+        public async Task<EmailTemplate?> GetEmailTemplateAsync(string templateName, CancellationToken ct)
+        {
+            this.logger.LogTrace("Getting email template {TemplateName} from DB... ", templateName);
+            return await this.dbContext
+                .EmailTemplate
+                .FirstOrDefaultAsync(p => p.Name == templateName, ct);
         }
 
         /// <inheritdoc/>

@@ -26,14 +26,14 @@ namespace HealthGateway.Common.Services
     {
         /// <summary>
         /// Queues pushing the Notification Settings to PHSA using our batch system.
-        /// Will use access_token acquired from system account authenication.
+        /// Will use access_token acquired from system account authentication.
         /// </summary>
         /// <param name="notificationSettings">The Notification Settings Request object.</param>
         void QueueNotificationSettings(NotificationSettingsRequest notificationSettings);
 
         /// <summary>
         /// Queues pushing the Notification Settings to PHSA using our batch system.
-        /// Will use access_token acquired from system account authenication.
+        /// Will use access_token acquired from system account authentication.
         /// </summary>
         /// <param name="notificationSettings">The Notification Settings Request object.</param>
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>

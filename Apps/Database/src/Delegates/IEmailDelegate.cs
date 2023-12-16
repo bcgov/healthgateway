@@ -17,6 +17,8 @@ namespace HealthGateway.Database.Delegates
 {
     using System;
     using System.Collections.Generic;
+    using System.Threading;
+    using System.Threading.Tasks;
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
@@ -58,6 +60,15 @@ namespace HealthGateway.Database.Delegates
         Guid InsertEmail(Email email, bool shouldCommit = true);
 
         /// <summary>
+        /// Inserts an email using a populated Email object.
+        /// </summary>
+        /// <param name="email">The populated email to save.</param>
+        /// <param name="shouldCommit">If true, the record will be written to the DB immediately.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
+        /// <returns>Returns the guid of the saved email.</returns>
+        Task<Guid> InsertEmailAsync(Email email, bool shouldCommit = true, CancellationToken ct = default);
+
+        /// <summary>
         /// Updates an email using a populated Email object.
         /// </summary>
         /// <param name="email">The populated email to save.</param>
@@ -69,6 +80,14 @@ namespace HealthGateway.Database.Delegates
         /// <param name="templateName">The name of the template.</param>
         /// <returns>The populated Email template or null if not found.</returns>
         EmailTemplate GetEmailTemplate(string templateName);
+
+        /// <summary>
+        /// Looks up an Email Template in the database.
+        /// </summary>
+        /// <param name="templateName">The name of the template.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
+        /// <returns>The populated Email template or null if not found.</returns>
+        Task<EmailTemplate?> GetEmailTemplateAsync(string templateName, CancellationToken ct = default);
 
         /// <summary>
         /// Gets a list of emails ordered by the create datetime descending.

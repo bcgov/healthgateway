@@ -15,10 +15,10 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.GatewayApiTests.Services.Test.Mock
 {
+    using System.Threading;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Database.Delegates;
-    using HealthGateway.Database.Wrapper;
     using Moq;
 
     /// <summary>
@@ -32,10 +32,9 @@ namespace HealthGateway.GatewayApiTests.Services.Test.Mock
         /// <param name="termsOfService">terms of service.</param>
         public LegalAgreementDelegateMock(LegalAgreement termsOfService)
         {
-            this.Setup(s => s.GetActiveByAgreementType(LegalAgreementType.TermsOfService))
-                .Returns(
-                    new DbResult<LegalAgreement>
-                        { Payload = termsOfService });
+            this.Setup(s => s.GetActiveByAgreementTypeAsync(LegalAgreementType.TermsOfService, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(
+                    termsOfService);
         }
     }
 }

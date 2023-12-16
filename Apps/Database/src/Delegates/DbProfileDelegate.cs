@@ -116,6 +116,54 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
+        public async Task<DbResult<UserProfile>> UpdateAsync(UserProfile profile, bool commit = true, CancellationToken ct = default)
+        {
+            this.logger.LogTrace("Updating user profile in DB");
+            UserProfile? userProfile = await this.GetUserProfileAsync(profile.HdId);
+            DbResult<UserProfile> result = new();
+
+            if (userProfile != null)
+            {
+                // Copy certain attributes into the fetched User Profile
+                userProfile.Email = profile.Email;
+                userProfile.TermsOfServiceId = profile.TermsOfServiceId;
+                userProfile.UpdatedBy = profile.UpdatedBy;
+                userProfile.Version = profile.Version;
+                userProfile.YearOfBirth = profile.YearOfBirth;
+                userProfile.LastLoginClientCode = profile.LastLoginClientCode;
+                result.Status = DbStatusCode.Deferred;
+
+                if (commit)
+                {
+                    try
+                    {
+                        await this.dbContext.SaveChangesAsync(ct);
+                        result.Status = DbStatusCode.Updated;
+                    }
+                    catch (DbUpdateConcurrencyException e)
+                    {
+                        result.Status = DbStatusCode.Concurrency;
+                        result.Message = e.Message;
+                    }
+                    catch (DbUpdateException e)
+                    {
+                        this.logger.LogError("Unable to update UserProfile to DB {Exception}", e.ToString());
+                        result.Status = DbStatusCode.Error;
+                        result.Message = e.Message;
+                    }
+                }
+            }
+            else
+            {
+                this.logger.LogInformation("Unable to find User to update for HDID {HdId}", profile.HdId);
+                result.Status = DbStatusCode.NotFound;
+            }
+
+            this.logger.LogDebug("Finished updating user profile in DB");
+            return result;
+        }
+
+        /// <inheritdoc/>
         public DbResult<UserProfile> UpdateComplete(UserProfile profile, bool commit = true)
         {
             DbResult<UserProfile> result = new()
@@ -326,15 +374,13 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public DbResult<IEnumerable<UserProfileHistory>> GetUserProfileHistories(string hdid, int limit)
+        public async Task<IList<UserProfileHistory>> GetUserProfileHistoryListAsync(string hdid, int limit, CancellationToken ct = default)
         {
-            DbResult<IEnumerable<UserProfileHistory>> result = new();
-            result.Payload = this.dbContext.UserProfileHistory
+            return await this.dbContext.UserProfileHistory
                 .Where(p => p.HdId == hdid)
                 .OrderByDescending(p => p.LastLoginDateTime)
-                .Take(limit);
-            result.Status = DbStatusCode.Read;
-            return result;
+                .Take(limit)
+                .ToListAsync(ct);
         }
 
         /// <inheritdoc/>

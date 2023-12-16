@@ -43,6 +43,14 @@ namespace HealthGateway.Database.Delegates
         MessagingVerification? GetLastByInviteKey(Guid inviteKey);
 
         /// <summary>
+        /// Gets the last Email Message Verification by the Invite key.
+        /// </summary>
+        /// <param name="inviteKey">The users inviteKey as emailed.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
+        /// <returns>The message verification that was fetched.</returns>
+        Task<MessagingVerification?> GetLastByInviteKeyAsync(Guid inviteKey, CancellationToken ct = default);
+
+        /// <summary>
         /// Gets the last Messaging Verification for the user base on type and users HDID.
         /// Defaults to MessagingVerificationType.Email.
         /// </summary>
@@ -50,6 +58,16 @@ namespace HealthGateway.Database.Delegates
         /// <param name="messagingVerificationType">The type to query.</param>
         /// <returns>The  message verification that was fetched.</returns>
         MessagingVerification? GetLastForUser(string hdid, string messagingVerificationType);
+
+        /// <summary>
+        /// Gets the last Messaging Verification for the user base on type and users HDID.
+        /// Defaults to MessagingVerificationType.Email.
+        /// </summary>
+        /// <param name="hdid">The users hdid.</param>
+        /// <param name="messagingVerificationType">The type to query.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
+        /// <returns>The  message verification that was fetched.</returns>
+        Task<MessagingVerification?> GetLastForUserAsync(string hdid, string messagingVerificationType, CancellationToken ct = default);
 
         /// <summary>
         /// Updates a MessagingVerification using a populated model object.
