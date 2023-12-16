@@ -6,10 +6,16 @@ This directory contains a Helm chart to deploy Health Gateway services in OpenSh
 
 Before using this chart, you'll need to obtain the latest copy of the environment configuration files and place them in `envs` folder.
 
-To install or upgrade:
+To upgrade an existing environment:
 
 ```sh
-helm -n [license plate]-[env] upgrade [env] . --install -f envs/[env]/values[_dr].yaml
+helm -n [license plate]-[env] upgrade [env] . -f envs/[env]/values[_dr].yaml
+```
+
+To install a new environment:
+
+```sh
+helm -n [license plate]-[env] install [env] . -f envs/[env]/values[_dr].yaml
 ```
 
 -   env can be dev, test or prod
