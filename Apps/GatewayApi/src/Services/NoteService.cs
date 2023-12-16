@@ -22,6 +22,7 @@ namespace HealthGateway.GatewayApi.Services
     using AutoMapper;
     using HealthGateway.AccountDataAccess.Patient;
     using HealthGateway.Common.Data.Constants;
+    using HealthGateway.Common.Data.ErrorHandling;
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Delegates;
@@ -83,7 +84,7 @@ namespace HealthGateway.GatewayApi.Services
 
             Note note = NoteMapUtils.ToDbModel(userNote, this.cryptoDelegate, key, this.autoMapper);
 
-            DbResult<Note> dbNote = await this.noteDelegate.AddNoteAsync(note, true, ct);
+            DbResult<Note> dbNote = await this.noteDelegate.AddNoteAsync(note, ct: ct);
 
             if (dbNote.Status != DbStatusCode.Created)
             {
@@ -144,7 +145,7 @@ namespace HealthGateway.GatewayApi.Services
             }
 
             Note note = NoteMapUtils.ToDbModel(userNote, this.cryptoDelegate, key, this.autoMapper);
-            DbResult<Note> dbResult = await this.noteDelegate.UpdateNoteAsync(note, true, ct);
+            DbResult<Note> dbResult = await this.noteDelegate.UpdateNoteAsync(note, ct: ct);
 
             if (dbResult.Status != DbStatusCode.Updated)
             {
@@ -166,7 +167,7 @@ namespace HealthGateway.GatewayApi.Services
             }
 
             Note note = NoteMapUtils.ToDbModel(userNote, this.cryptoDelegate, key, this.autoMapper);
-            DbResult<Note> dbResult = await this.noteDelegate.DeleteNoteAsync(note, true, ct);
+            DbResult<Note> dbResult = await this.noteDelegate.DeleteNoteAsync(note, ct: ct);
 
             if (dbResult.Status != DbStatusCode.Deleted)
             {
@@ -180,14 +181,26 @@ namespace HealthGateway.GatewayApi.Services
         {
             string key = this.cryptoDelegate.GenerateKey();
             profile.EncryptionKey = key;
-            this.profileDelegate.Update(profile, false);
+            DbResult<UserProfile> userProfileUpdateResult = await this.profileDelegate.UpdateAsync(profile, false, ct);
+            if (userProfileUpdateResult.Status != DbStatusCode.Deferred)
+            {
+                throw new ProblemDetailsException(
+                    ExceptionUtility.CreateServerError($"{ServiceType.Database}:{ErrorType.CommunicationInternal}", userProfileUpdateResult.Message));
+            }
+
             foreach (Note note in dbNotes)
             {
                 note.Title = this.cryptoDelegate.Encrypt(key, note.Title ?? string.Empty);
                 note.Text = this.cryptoDelegate.Encrypt(key, note.Text ?? string.Empty);
             }
 
-            await this.noteDelegate.BatchUpdateAsync(dbNotes, true, ct);
+            DbResult<IEnumerable<Note>> batchUpdateResult = await this.noteDelegate.BatchUpdateAsync(dbNotes, ct: ct);
+            if (batchUpdateResult.Status != DbStatusCode.Updated)
+            {
+                throw new ProblemDetailsException(
+                    ExceptionUtility.CreateServerError($"{ServiceType.Database}:{ErrorType.CommunicationInternal}", batchUpdateResult.Message));
+            }
+
             return key;
         }
     }

@@ -311,6 +311,10 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 { EncryptionKey = encryptionKey };
             Mock<IUserProfileDelegate> profileDelegateMock = new();
             profileDelegateMock.Setup(s => s.GetUserProfileAsync(this.hdid)).ReturnsAsync(userProfile);
+            profileDelegateMock.Setup(s => s.UpdateAsync(It.IsAny<UserProfile>(), false, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(
+                    new DbResult<UserProfile>
+                        { Status = DbStatusCode.Deferred, Payload = userProfile });
 
             Mock<ICryptoDelegate> cryptoDelegateMock = new();
             cryptoDelegateMock.Setup(s => s.GenerateKey()).Returns(() => "Y1FmVGpXblpxNHQ3dyF6JUMqRi1KYU5kUmdVa1hwMnM=");
@@ -358,6 +362,10 @@ namespace HealthGateway.GatewayApiTests.Services.Test
 
             Mock<INoteDelegate> noteDelegateMock = new();
             noteDelegateMock.Setup(s => s.GetNotesAsync(this.hdid, 0, 500, It.IsAny<CancellationToken>())).ReturnsAsync(notesDbResult);
+            noteDelegateMock.Setup(s => s.BatchUpdateAsync(It.IsAny<IEnumerable<Note>>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(
+                    new DbResult<IEnumerable<Note>>
+                        { Status = DbStatusCode.Updated });
 
             Mock<IPatientRepository> patientRepository = new();
             patientRepository.Setup(p => p.CanAccessDataSourceAsync(It.IsAny<string>(), It.IsAny<DataSource>(), It.IsAny<CancellationToken>())).ReturnsAsync(canAccessDataSource);
