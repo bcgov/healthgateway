@@ -15,7 +15,6 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Database.Delegates
 {
-    using System;
     using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
@@ -27,14 +26,6 @@ namespace HealthGateway.Database.Delegates
     /// </summary>
     public interface INoteDelegate
     {
-        /// <summary>
-        /// Gets a note from the DB using the noteId.
-        /// </summary>
-        /// <param name="noteId">The Note ID to retrieve.</param>
-        /// <param name="hdid">The user hdid.</param>
-        /// <returns>The note wrapped in a DBResult.</returns>
-        DbResult<Note> GetNote(Guid noteId, string hdid);
-
         /// <summary>
         /// Gets a list of notes ordered by the journal datetime for the given HdId.
         /// </summary>
@@ -64,7 +55,7 @@ namespace HealthGateway.Database.Delegates
         Task<DbResult<Note>> UpdateNoteAsync(Note note, bool commit = true, CancellationToken ct = default);
 
         /// <summary>
-        /// Update the list of suplied notes.
+        /// Update the list of supplied notes.
         /// </summary>
         /// <param name="notes">The notes to be updated in the backend.</param>
         /// <param name="commit">if true the transaction is persisted immediately.</param>

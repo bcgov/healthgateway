@@ -15,7 +15,6 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Database.Delegates
 {
-    using System;
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using System.Linq;
@@ -48,23 +47,6 @@ namespace HealthGateway.Database.Delegates
         {
             this.logger = logger;
             this.dbContext = dbContext;
-        }
-
-        /// <inheritdoc/>
-        public DbResult<Note> GetNote(Guid noteId, string hdid)
-        {
-            DbResult<Note> result = new()
-            {
-                Status = DbStatusCode.NotFound,
-            };
-            Note? note = this.dbContext.Note.Find(noteId, hdid);
-            if (note != null)
-            {
-                result.Payload = note;
-                result.Status = DbStatusCode.Read;
-            }
-
-            return result;
         }
 
         /// <inheritdoc/>

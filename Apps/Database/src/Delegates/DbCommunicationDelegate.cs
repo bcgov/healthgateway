@@ -52,26 +52,6 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public DbResult<Communication?> GetNext(CommunicationType communicationType)
-        {
-            this.logger.LogTrace("Getting next non-expired Communication from DB...");
-            Communication? communication = this.dbContext.Communication
-                .Where(
-                    c => c.CommunicationTypeCode == communicationType &&
-                         c.CommunicationStatusCode == CommunicationStatus.New &&
-                         DateTime.UtcNow < c.ExpiryDateTime)
-                .OrderBy(c => c.EffectiveDateTime)
-                .FirstOrDefault();
-            DbResult<Communication?> result = new()
-            {
-                Status = communication != null ? DbStatusCode.Read : DbStatusCode.NotFound,
-                Payload = communication,
-            };
-
-            return result;
-        }
-
-        /// <inheritdoc/>
         public async Task<Communication?> GetNextAsync(CommunicationType communicationType, CancellationToken ct = default)
         {
             this.logger.LogTrace("Getting next non-expired Communication from DB...");
@@ -82,36 +62,6 @@ namespace HealthGateway.Database.Delegates
                          DateTime.UtcNow < c.ExpiryDateTime)
                 .OrderBy(c => c.EffectiveDateTime)
                 .FirstOrDefaultAsync(ct);
-        }
-
-        /// <inheritdoc/>
-        public DbResult<Communication> Add(Communication communication, bool commit = true)
-        {
-            this.logger.LogTrace("Adding Communication to DB...");
-            DbResult<Communication> result = new()
-            {
-                Payload = communication,
-                Status = DbStatusCode.Deferred,
-            };
-
-            this.dbContext.Communication.Add(communication);
-            if (commit)
-            {
-                try
-                {
-                    this.dbContext.SaveChanges();
-                    result.Status = DbStatusCode.Created;
-                }
-                catch (DbUpdateException e)
-                {
-                    this.logger.LogError("Unable to save Communication to DB {Exception}", e.ToString());
-                    result.Status = DbStatusCode.Error;
-                    result.Message = IsUniqueConstraintDbError(e) ? BannerCommunicationOverlapMessage : e.Message;
-                }
-            }
-
-            this.logger.LogDebug("Finished adding Communication in DB");
-            return result;
         }
 
         /// <inheritdoc/>
@@ -145,59 +95,12 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public DbResult<IEnumerable<Communication>> GetAll()
-        {
-            this.logger.LogTrace("Getting all communication entries...");
-            DbResult<IEnumerable<Communication>> result = new();
-            result.Payload = this.dbContext.Communication
-                .OrderBy(o => o.CreatedDateTime)
-                .ToList();
-            result.Status = DbStatusCode.Read;
-            return result;
-        }
-
-        /// <inheritdoc/>
         public async Task<IList<Communication>> GetAllAsync(CancellationToken ct = default)
         {
             this.logger.LogTrace("Getting all communication entries...");
             return await this.dbContext.Communication
                 .OrderBy(o => o.CreatedDateTime)
                 .ToListAsync(ct);
-        }
-
-        /// <inheritdoc/>
-        public DbResult<Communication> Update(Communication communication, bool commit = true)
-        {
-            this.logger.LogTrace("Updating Communication in DB...");
-            DbResult<Communication> result = new()
-            {
-                Payload = communication,
-                Status = DbStatusCode.Deferred,
-            };
-            this.dbContext.Communication.Update(communication);
-            if (commit)
-            {
-                try
-                {
-                    this.dbContext.SaveChanges();
-                    result.Status = DbStatusCode.Updated;
-                }
-                catch (DbUpdateConcurrencyException e)
-                {
-                    this.logger.LogError("Unable to update Communication to DB {Exception}", e.ToString());
-                    result.Status = DbStatusCode.Concurrency;
-                    result.Message = e.Message;
-                }
-                catch (DbUpdateException e)
-                {
-                    this.logger.LogError("Unable to update Communication to DB {Exception}", e.ToString());
-                    result.Status = DbStatusCode.Error;
-                    result.Message = IsUniqueConstraintDbError(e) ? BannerCommunicationOverlapMessage : e.Message;
-                }
-            }
-
-            this.logger.LogDebug("Finished updating Communication in DB");
-            return result;
         }
 
         /// <inheritdoc/>
@@ -232,34 +135,6 @@ namespace HealthGateway.Database.Delegates
             }
 
             this.logger.LogDebug("Finished updating Communication in DB");
-            return result;
-        }
-
-        /// <inheritdoc/>
-        public DbResult<Communication> Delete(Communication communication, bool commit = true)
-        {
-            this.logger.LogTrace("Deleting Communication from DB...");
-            DbResult<Communication> result = new()
-            {
-                Payload = communication,
-                Status = DbStatusCode.Deferred,
-            };
-            this.dbContext.Communication.Remove(communication);
-            if (commit)
-            {
-                try
-                {
-                    this.dbContext.SaveChanges();
-                    result.Status = DbStatusCode.Deleted;
-                }
-                catch (DbUpdateException e)
-                {
-                    result.Status = DbStatusCode.Error;
-                    result.Message = e.Message;
-                }
-            }
-
-            this.logger.LogDebug("Finished deleting Communication in DB");
             return result;
         }
 

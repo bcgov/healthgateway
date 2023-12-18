@@ -73,21 +73,6 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public MessagingVerification? GetLastByInviteKey(Guid inviteKey)
-        {
-            this.logger.LogTrace("Getting email message verification from DB... {InviteKey}", inviteKey);
-            MessagingVerification? retVal = this.dbContext
-                .MessagingVerification
-                .Include(email => email.Email)
-                .Where(p => p.InviteKey == inviteKey && p.VerificationType == MessagingVerificationType.Email)
-                .OrderByDescending(mv => mv.CreatedDateTime)
-                .FirstOrDefault();
-
-            this.logger.LogDebug("Finished getting email message verification from DB");
-            return retVal;
-        }
-
-        /// <inheritdoc/>
         public async Task<MessagingVerification?> GetLastByInviteKeyAsync(Guid inviteKey, CancellationToken ct = default)
         {
             this.logger.LogTrace("Getting email message verification from DB... {InviteKey}", inviteKey);
@@ -103,19 +88,6 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public IEnumerable<MessagingVerification> GetAllEmail()
-        {
-            this.logger.LogTrace("Getting all email message verifications from DB...");
-            IEnumerable<MessagingVerification> retVal = this.dbContext
-                .MessagingVerification
-                .Where(p => p.VerificationType == MessagingVerificationType.Email)
-                .ToList();
-
-            this.logger.LogDebug("Finished getting all email message verifications from DB");
-            return retVal;
-        }
-
-        /// <inheritdoc/>
         public async Task UpdateAsync(MessagingVerification messageVerification, bool commit = true, CancellationToken ct = default)
         {
             this.logger.LogTrace("Updating email message verification in DB...");
@@ -126,26 +98,6 @@ namespace HealthGateway.Database.Delegates
             }
 
             this.logger.LogDebug("Finished updating email message verification {Id} in DB", messageVerification.Id);
-        }
-
-        /// <inheritdoc/>
-        public MessagingVerification? GetLastForUser(string hdid, string messagingVerificationType)
-        {
-            this.logger.LogTrace("Getting last messaging verification from DB for user... {HdId}", hdid);
-            MessagingVerification? retVal = this.dbContext
-                .MessagingVerification
-                .Include(email => email.Email)
-                .Where(p => p.UserProfileId == hdid && p.VerificationType == messagingVerificationType)
-                .OrderByDescending(p => p.UpdatedDateTime)
-                .FirstOrDefault();
-
-            if (retVal != null && retVal.Deleted)
-            {
-                return null;
-            }
-
-            this.logger.LogDebug("Finished getting messaging verification from DB");
-            return retVal;
         }
 
         /// <inheritdoc/>

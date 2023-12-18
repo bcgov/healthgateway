@@ -47,30 +47,9 @@ namespace HealthGateway.Database.Delegates
         /// </summary>
         /// <param name="profile">The profile to update.</param>
         /// <param name="commit">if true the transaction is persisted immediately.</param>
-        /// <returns>A DB result which encapsulates the return object and status.</returns>
-        DbResult<UserProfile> Update(UserProfile profile, bool commit = true);
-
-        /// <summary>
-        /// Updates select attributes of the UserProfile object in the DB.
-        /// This method re-reads the UserProfile to ensure all other attributes are not overwritten.
-        /// Version must be set or a Concurrency exception will occur.
-        /// UpdatedDateTime will overridden by our framework.
-        /// </summary>
-        /// <param name="profile">The profile to update.</param>
-        /// <param name="commit">if true the transaction is persisted immediately.</param>
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A DB result which encapsulates the return object and status.</returns>
         Task<DbResult<UserProfile>> UpdateAsync(UserProfile profile, bool commit = true, CancellationToken ct = default);
-
-        /// <summary>
-        /// Updates the specified UserProfile object in the DB.
-        /// Version must be set or a Concurrency exception will occur.
-        /// UpdatedDateTime will overridden by our framework.
-        /// </summary>
-        /// <param name="profile">The profile to update.</param>
-        /// <param name="commit">if true the transaction is persisted immediately.</param>
-        /// <returns>A DB result which encapsulates the return object and status.</returns>
-        public DbResult<UserProfile> UpdateComplete(UserProfile profile, bool commit = true);
 
         /// <summary>
         /// Fetches the UserProfile from the database.
