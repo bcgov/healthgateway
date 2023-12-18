@@ -201,15 +201,15 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             };
 
             Mock<IMessagingVerificationDelegate> messagingVerificationDelegate = new();
-            messagingVerificationDelegate.Setup(s => s.GetLastForUser(It.IsAny<string>(), It.IsAny<string>()))
-                .Returns(expectedResult);
-            messagingVerificationDelegate.Setup(s => s.GetLastByInviteKey(It.IsAny<Guid>())).Returns(expectedResult);
+            messagingVerificationDelegate.Setup(s => s.GetLastForUserAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(expectedResult);
+            messagingVerificationDelegate.Setup(s => s.GetLastByInviteKeyAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(expectedResult);
 
             Mock<IUserProfileDelegate> userProfileDelegate = new();
             UserProfile userProfile = new();
             userProfileDelegate.Setup(s => s.GetUserProfileAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(userProfile);
-            userProfileDelegate.Setup(s => s.Update(It.IsAny<UserProfile>(), It.IsAny<bool>()))
-                .Returns(new DbResult<UserProfile>());
+            userProfileDelegate.Setup(s => s.UpdateAsync(It.IsAny<UserProfile>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new DbResult<UserProfile>());
 
             IUserEmailService service = new UserEmailService(
                 new Mock<ILogger<UserEmailService>>().Object,
@@ -238,7 +238,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             };
 
             Mock<IMessagingVerificationDelegate> messagingVerificationDelegate = new();
-            messagingVerificationDelegate.Setup(s => s.GetLastByInviteKey(It.IsAny<Guid>())).Returns(expectedResult);
+            messagingVerificationDelegate.Setup(s => s.GetLastByInviteKeyAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(expectedResult);
 
             Mock<IUserProfileDelegate> userProfileDelegate = new();
 
@@ -269,9 +269,9 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             };
 
             Mock<IMessagingVerificationDelegate> messagingVerificationDelegate = new();
-            messagingVerificationDelegate.Setup(s => s.GetLastByInviteKey(It.IsAny<Guid>())).Returns(expectedResult);
-            messagingVerificationDelegate.Setup(s => s.GetLastForUser(It.IsAny<string>(), It.IsAny<string>()))
-                .Returns(expectedResult);
+            messagingVerificationDelegate.Setup(s => s.GetLastByInviteKeyAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(expectedResult);
+            messagingVerificationDelegate.Setup(s => s.GetLastForUserAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(expectedResult);
             Mock<IUserProfileDelegate> userProfileDelegate = new();
 
             IUserEmailService service = new UserEmailService(

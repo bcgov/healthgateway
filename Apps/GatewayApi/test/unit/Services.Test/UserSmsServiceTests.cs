@@ -153,13 +153,13 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             };
 
             Mock<IMessagingVerificationDelegate> messagingVerificationDelegate = new();
-            messagingVerificationDelegate.Setup(s => s.GetLastForUser(It.IsAny<string>(), It.IsAny<string>())).Returns(expectedResult);
+            messagingVerificationDelegate.Setup(s => s.GetLastForUserAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(expectedResult);
 
             Mock<IUserProfileDelegate> userProfileDelegate = new();
             UserProfile userProfileMock = new();
 
             userProfileDelegate.Setup(s => s.GetUserProfileAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(userProfileMock);
-            userProfileDelegate.Setup(s => s.Update(It.IsAny<UserProfile>(), It.IsAny<bool>())).Returns(new DbResult<UserProfile>());
+            userProfileDelegate.Setup(s => s.UpdateAsync(It.IsAny<UserProfile>(), It.IsAny<bool>(), It.IsAny<CancellationToken>())).ReturnsAsync(new DbResult<UserProfile>());
 
             IUserSmsService service = new UserSmsService(
                 new Mock<ILogger<UserSmsService>>().Object,
@@ -191,12 +191,12 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             };
 
             Mock<IMessagingVerificationDelegate> messagingVerificationDelegate = new();
-            messagingVerificationDelegate.Setup(s => s.GetLastForUser(It.IsAny<string>(), It.IsAny<string>())).Returns(expectedResult);
+            messagingVerificationDelegate.Setup(s => s.GetLastForUserAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(expectedResult);
 
             Mock<IUserProfileDelegate> userProfileDelegate = new();
             UserProfile userProfileMock = new();
             userProfileDelegate.Setup(s => s.GetUserProfileAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(userProfileMock);
-            userProfileDelegate.Setup(s => s.Update(It.IsAny<UserProfile>(), It.IsAny<bool>())).Returns(new DbResult<UserProfile>());
+            userProfileDelegate.Setup(s => s.UpdateAsync(It.IsAny<UserProfile>(), It.IsAny<bool>(), It.IsAny<CancellationToken>())).ReturnsAsync(new DbResult<UserProfile>());
 
             IUserSmsService service = new UserSmsService(
                 new Mock<ILogger<UserSmsService>>().Object,
