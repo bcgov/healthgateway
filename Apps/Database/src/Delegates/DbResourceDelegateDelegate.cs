@@ -165,7 +165,7 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public DbResult<ResourceDelegate> Delete(ResourceDelegate resourceDelegate, bool commit)
+        public async Task<DbResult<ResourceDelegate>> DeleteAsync(ResourceDelegate resourceDelegate, bool commit, CancellationToken ct = default)
         {
             this.logger.LogTrace("Deleting resourceDelegate from DB...");
             DbResult<ResourceDelegate> result = new()
@@ -178,7 +178,7 @@ namespace HealthGateway.Database.Delegates
             {
                 try
                 {
-                    this.dbContext.SaveChanges();
+                    await this.dbContext.SaveChangesAsync(ct);
                     result.Status = DbStatusCode.Deleted;
                 }
                 catch (DbUpdateConcurrencyException e)

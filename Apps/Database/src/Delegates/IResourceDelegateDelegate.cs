@@ -100,8 +100,9 @@ namespace HealthGateway.Database.Delegates
         /// </summary>
         /// <param name="resourceDelegate">The model to be deleted.</param>
         /// <param name="commit">Indicates if the transaction should be persisted immediately.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A DB result which encapsulates the return record and status.</returns>
-        DbResult<ResourceDelegate> Delete(ResourceDelegate resourceDelegate, bool commit);
+        Task<DbResult<ResourceDelegate>> DeleteAsync(ResourceDelegate resourceDelegate, bool commit, CancellationToken ct = default);
 
         /// <summary>
         /// Finds a Resource Delegate record in the database.

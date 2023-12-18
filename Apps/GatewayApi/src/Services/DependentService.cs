@@ -241,7 +241,7 @@ namespace HealthGateway.GatewayApi.Services
 
             // commit to the database if change feed is disabled; if change feed enabled, commit will happen when message sender is called
             // this is temporary and will be changed when we introduce a proper unit of work to manage transactionality.
-            DbResult<ResourceDelegate> dbDependent = this.resourceDelegateDelegate.Delete(resourceDelegate, !this.dependentsChangeFeedEnabled);
+            DbResult<ResourceDelegate> dbDependent = await this.resourceDelegateDelegate.DeleteAsync(resourceDelegate, !this.dependentsChangeFeedEnabled, ct);
             if (dbDependent.Status == DbStatusCode.Error)
             {
                 throw new ProblemDetailsException(ExceptionUtility.CreateServerError($"{ServiceType.Database}:{ErrorType.CommunicationInternal}", dbDependent.Message));

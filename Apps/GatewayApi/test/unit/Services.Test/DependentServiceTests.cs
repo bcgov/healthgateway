@@ -347,8 +347,9 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         {
             DependentModel delegateModel = new() { OwnerId = this.mockHdId, DelegateId = this.mockParentHdid };
             Mock<IResourceDelegateDelegate> mockDependentDelegate = new();
-            mockDependentDelegate.Setup(s => s.Delete(It.Is<ResourceDelegate>(d => d.ResourceOwnerHdid == this.mockHdId && d.ProfileHdid == this.mockParentHdid), It.IsAny<bool>()))
-                .Returns(
+            mockDependentDelegate.Setup(
+                    s => s.DeleteAsync(It.Is<ResourceDelegate>(d => d.ResourceOwnerHdid == this.mockHdId && d.ProfileHdid == this.mockParentHdid), It.IsAny<bool>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(
                     new DbResult<ResourceDelegate>
                     {
                         Status = DbStatusCode.Deleted,
