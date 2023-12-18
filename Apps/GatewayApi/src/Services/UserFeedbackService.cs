@@ -66,7 +66,7 @@ namespace HealthGateway.GatewayApi.Services
         {
             this.logger.LogTrace("Creating user feedback...");
             DbResult<UserFeedback> retVal = await this.feedbackDelegate.InsertUserFeedbackAsync(userFeedback, ct);
-            UserProfile? userProfile = await this.profileDelegate.GetUserProfileAsync(userFeedback.UserProfileId);
+            UserProfile? userProfile = await this.profileDelegate.GetUserProfileAsync(userFeedback.UserProfileId, ct);
             string? clientEmail = userProfile?.Email;
             if (!string.IsNullOrWhiteSpace(clientEmail))
             {

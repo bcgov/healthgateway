@@ -86,7 +86,7 @@ namespace HealthGateway.GatewayApi.Services
             RequestResult<bool> retVal = new() { ResourcePayload = false, ResultStatus = ResultType.Success };
             MessagingVerification? smsVerification = await this.messageVerificationDelegate.GetLastForUserAsync(hdid, MessagingVerificationType.Sms, ct);
 
-            UserProfile? userProfile = await this.profileDelegate.GetUserProfileAsync(hdid);
+            UserProfile? userProfile = await this.profileDelegate.GetUserProfileAsync(hdid, ct);
             if (userProfile != null &&
                 smsVerification is { Validated: false, Deleted: false, VerificationAttempts: < MaxVerificationAttempts } &&
                 smsVerification.UserProfileId == hdid &&
@@ -150,7 +150,7 @@ namespace HealthGateway.GatewayApi.Services
                         nameof(UserSmsService)));
             }
 
-            UserProfile? userProfile = await this.profileDelegate.GetUserProfileAsync(hdid);
+            UserProfile? userProfile = await this.profileDelegate.GetUserProfileAsync(hdid, ct);
             if (userProfile == null)
             {
                 throw new ProblemDetailsException(

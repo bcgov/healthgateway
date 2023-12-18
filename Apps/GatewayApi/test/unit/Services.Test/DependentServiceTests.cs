@@ -559,7 +559,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             delegationDelegate.Setup(s => s.GetDependentAsync(this.mockHdId, true, CancellationToken.None)).ReturnsAsync(dependent);
 
             Mock<IUserProfileDelegate> mockUserProfileDelegate = new();
-            mockUserProfileDelegate.Setup(s => s.GetUserProfileAsync(this.mockParentHdid))
+            mockUserProfileDelegate.Setup(s => s.GetUserProfileAsync(this.mockParentHdid, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new UserProfile());
 
             Mock<INotificationSettingsService> mockNotificationSettingsService = new();

@@ -70,7 +70,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
 
             Mock<IUserProfileDelegate> userProfileDelegate = new();
             UserProfile userProfileMock = new();
-            userProfileDelegate.Setup(s => s.GetUserProfileAsync(It.IsAny<string>())).ReturnsAsync(userProfileMock);
+            userProfileDelegate.Setup(s => s.GetUserProfileAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(userProfileMock);
             userProfileDelegate.Setup(s => s.UpdateAsync(It.IsAny<UserProfile>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new DbResult<UserProfile>());
 
@@ -114,7 +114,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
 
             Mock<IUserProfileDelegate> userProfileDelegate = new();
             UserProfile userProfileMock = new();
-            userProfileDelegate.Setup(s => s.GetUserProfileAsync(It.IsAny<string>())).ReturnsAsync(userProfileMock);
+            userProfileDelegate.Setup(s => s.GetUserProfileAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(userProfileMock);
             userProfileDelegate.Setup(s => s.UpdateAsync(It.IsAny<UserProfile>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new DbResult<UserProfile>());
             Mock<IMessageSender> mockMessageSender = new();
@@ -167,7 +167,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
 
             Mock<IUserProfileDelegate> userProfileDelegate = new();
             UserProfile userProfileMock = new();
-            userProfileDelegate.Setup(s => s.GetUserProfileAsync(It.IsAny<string>())).ReturnsAsync(userProfileMock);
+            userProfileDelegate.Setup(s => s.GetUserProfileAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(userProfileMock);
             userProfileDelegate.Setup(s => s.UpdateAsync(It.IsAny<UserProfile>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new DbResult<UserProfile>());
 

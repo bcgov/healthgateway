@@ -309,7 +309,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 { EncryptionKey = encryptionKey };
 
             Mock<IUserProfileDelegate> profileDelegateMock = new();
-            profileDelegateMock.Setup(s => s.GetUserProfileAsync(this.hdid)).ReturnsAsync(userProfile);
+            profileDelegateMock.Setup(s => s.GetUserProfileAsync(this.hdid, It.IsAny<CancellationToken>())).ReturnsAsync(userProfile);
 
             Mock<ICryptoDelegate> cryptoDelegateMock = new();
             cryptoDelegateMock.Setup(s => s.Encrypt(It.IsAny<string>(), It.IsAny<string>())).Returns((string key, string text) => text + key);
@@ -353,7 +353,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 { EncryptionKey = encryptionKey };
 
             Mock<IUserProfileDelegate> profileDelegateMock = new();
-            profileDelegateMock.Setup(s => s.GetUserProfileAsync(this.hdid)).ReturnsAsync(userProfile);
+            profileDelegateMock.Setup(s => s.GetUserProfileAsync(this.hdid, It.IsAny<CancellationToken>())).ReturnsAsync(userProfile);
 
             Mock<ICryptoDelegate> cryptoDelegateMock = new();
             cryptoDelegateMock.Setup(s => s.Encrypt(It.IsAny<string>(), It.IsAny<string>())).Returns((string key, string text) => text + key);
@@ -399,7 +399,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 { EncryptionKey = encryptionKey };
 
             Mock<IUserProfileDelegate> profileDelegateMock = new();
-            profileDelegateMock.Setup(s => s.GetUserProfileAsync(this.hdid)).ReturnsAsync(userProfile);
+            profileDelegateMock.Setup(s => s.GetUserProfileAsync(this.hdid, It.IsAny<CancellationToken>())).ReturnsAsync(userProfile);
 
             Mock<ICryptoDelegate> cryptoDelegateMock = new();
             cryptoDelegateMock.Setup(s => s.Encrypt(It.IsAny<string>(), It.IsAny<string>())).Returns((string key, string text) => text + key);
@@ -455,7 +455,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 { EncryptionKey = encryptionKey };
 
             Mock<IUserProfileDelegate> profileDelegateMock = new();
-            profileDelegateMock.Setup(s => s.GetUserProfileAsync(this.hdid)).ReturnsAsync(userProfile);
+            profileDelegateMock.Setup(s => s.GetUserProfileAsync(this.hdid, It.IsAny<CancellationToken>())).ReturnsAsync(userProfile);
 
             Mock<ICryptoDelegate> cryptoDelegateMock = new();
             cryptoDelegateMock.Setup(s => s.Encrypt(It.IsAny<string>(), It.IsAny<string>())).Returns((string key, string text) => text + key);

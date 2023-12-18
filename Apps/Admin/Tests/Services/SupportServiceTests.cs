@@ -931,7 +931,7 @@ namespace HealthGateway.Admin.Tests.Services
         private static Mock<IUserProfileDelegate> GetUserProfileDelegateMock(UserProfile? profile = null, IList<UserProfile>? profiles = null)
         {
             Mock<IUserProfileDelegate> mock = new();
-            mock.Setup(u => u.GetUserProfileAsync(It.IsAny<string>())).ReturnsAsync(profile);
+            mock.Setup(u => u.GetUserProfileAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(profile);
             mock.Setup(u => u.GetUserProfilesAsync(It.IsAny<UserQueryType>(), It.IsAny<string>())).ReturnsAsync(profiles ?? []);
             return mock;
         }

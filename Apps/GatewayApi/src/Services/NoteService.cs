@@ -74,7 +74,7 @@ namespace HealthGateway.GatewayApi.Services
         /// <inheritdoc/>
         public async Task<RequestResult<UserNote>> CreateNoteAsync(UserNote userNote, CancellationToken ct = default)
         {
-            UserProfile? profile = await this.profileDelegate.GetUserProfileAsync(userNote.HdId);
+            UserProfile? profile = await this.profileDelegate.GetUserProfileAsync(userNote.HdId, ct);
             string? key = profile?.EncryptionKey;
             if (key == null)
             {
@@ -110,7 +110,7 @@ namespace HealthGateway.GatewayApi.Services
             int offset = page * pageSize;
             DbResult<IList<Note>> dbNotes = await this.noteDelegate.GetNotesAsync(hdId, offset, pageSize, ct);
 
-            UserProfile? profile = await this.profileDelegate.GetUserProfileAsync(hdId);
+            UserProfile? profile = await this.profileDelegate.GetUserProfileAsync(hdId, ct);
             string? key = profile?.EncryptionKey;
 
             // If there is no key yet, generate one and store it in the profile. Only valid while not all profiles have a encryption key.
@@ -136,7 +136,7 @@ namespace HealthGateway.GatewayApi.Services
         /// <inheritdoc/>
         public async Task<RequestResult<UserNote>> UpdateNoteAsync(UserNote userNote, CancellationToken ct = default)
         {
-            UserProfile? profile = await this.profileDelegate.GetUserProfileAsync(userNote.HdId);
+            UserProfile? profile = await this.profileDelegate.GetUserProfileAsync(userNote.HdId, ct);
             string? key = profile?.EncryptionKey;
             if (key == null)
             {
@@ -158,7 +158,7 @@ namespace HealthGateway.GatewayApi.Services
         /// <inheritdoc/>
         public async Task<RequestResult<UserNote>> DeleteNoteAsync(UserNote userNote, CancellationToken ct = default)
         {
-            UserProfile? profile = await this.profileDelegate.GetUserProfileAsync(userNote.HdId);
+            UserProfile? profile = await this.profileDelegate.GetUserProfileAsync(userNote.HdId, ct);
             string? key = profile?.EncryptionKey;
             if (key == null)
             {

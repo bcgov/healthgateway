@@ -91,7 +91,7 @@ namespace HealthGateway.GatewayApi.Services
         {
             this.logger.LogTrace("Validating email... {InviteKey}", inviteKey);
             MessagingVerification? matchingVerification = await this.messageVerificationDelegate.GetLastByInviteKeyAsync(inviteKey, ct);
-            UserProfile? userProfile = await this.profileDelegate.GetUserProfileAsync(hdid);
+            UserProfile? userProfile = await this.profileDelegate.GetUserProfileAsync(hdid, ct);
             if (userProfile == null ||
                 matchingVerification == null ||
                 matchingVerification.UserProfileId != hdid ||
@@ -193,7 +193,7 @@ namespace HealthGateway.GatewayApi.Services
         {
             this.logger.LogTrace("Updating user email...");
 
-            UserProfile? userProfile = await this.profileDelegate.GetUserProfileAsync(hdid);
+            UserProfile? userProfile = await this.profileDelegate.GetUserProfileAsync(hdid, ct);
             if (userProfile == null)
             {
                 throw new ProblemDetailsException(

@@ -119,7 +119,7 @@ namespace HealthGateway.Database.Delegates
         public async Task<DbResult<UserProfile>> UpdateAsync(UserProfile profile, bool commit = true, CancellationToken ct = default)
         {
             this.logger.LogTrace("Updating user profile in DB");
-            UserProfile? userProfile = await this.GetUserProfileAsync(profile.HdId);
+            UserProfile? userProfile = await this.GetUserProfileAsync(profile.HdId, ct);
             DbResult<UserProfile> result = new();
 
             if (userProfile != null)
@@ -220,9 +220,9 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public async Task<UserProfile?> GetUserProfileAsync(string hdid)
+        public async Task<UserProfile?> GetUserProfileAsync(string hdid, CancellationToken ct = default)
         {
-            return await this.dbContext.UserProfile.FindAsync(hdid);
+            return await this.dbContext.UserProfile.FindAsync(new object[] { hdid }, ct);
         }
 
         /// <inheritdoc/>

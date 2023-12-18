@@ -83,8 +83,9 @@ namespace HealthGateway.Database.Delegates
         /// Fetches a UserProfile from the database by HDID.
         /// </summary>
         /// <param name="hdid">The unique profile key to find.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The matching UserProfile, or null if not found.</returns>
-        Task<UserProfile?> GetUserProfileAsync(string hdid);
+        Task<UserProfile?> GetUserProfileAsync(string hdid, CancellationToken ct = default);
 
         /// <summary>
         /// Fetches UserProfiles from the database.

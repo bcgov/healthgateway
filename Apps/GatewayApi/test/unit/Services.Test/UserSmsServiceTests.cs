@@ -67,7 +67,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
 
             Mock<IUserProfileDelegate> userProfileDelegate = new();
             UserProfile userProfileMock = new();
-            userProfileDelegate.Setup(s => s.GetUserProfileAsync(It.IsAny<string>())).ReturnsAsync(userProfileMock);
+            userProfileDelegate.Setup(s => s.GetUserProfileAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(userProfileMock);
             userProfileDelegate.Setup(s => s.UpdateAsync(It.IsAny<UserProfile>(), It.IsAny<bool>(), It.IsAny<CancellationToken>())).ReturnsAsync(new DbResult<UserProfile>());
 
             IUserSmsService service = new UserSmsService(
@@ -104,7 +104,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
 
             Mock<IUserProfileDelegate> userProfileDelegate = new();
             UserProfile userProfileMock = new();
-            userProfileDelegate.Setup(s => s.GetUserProfileAsync(It.IsAny<string>())).ReturnsAsync(userProfileMock);
+            userProfileDelegate.Setup(s => s.GetUserProfileAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(userProfileMock);
             userProfileDelegate.Setup(s => s.UpdateAsync(It.IsAny<UserProfile>(), It.IsAny<bool>(), It.IsAny<CancellationToken>())).ReturnsAsync(new DbResult<UserProfile>());
 
             string changeFeedKey = $"{ChangeFeedOptions.ChangeFeed}:Notifications:Enabled";
@@ -158,7 +158,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             Mock<IUserProfileDelegate> userProfileDelegate = new();
             UserProfile userProfileMock = new();
 
-            userProfileDelegate.Setup(s => s.GetUserProfileAsync(It.IsAny<string>())).ReturnsAsync(userProfileMock);
+            userProfileDelegate.Setup(s => s.GetUserProfileAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(userProfileMock);
             userProfileDelegate.Setup(s => s.Update(It.IsAny<UserProfile>(), It.IsAny<bool>())).Returns(new DbResult<UserProfile>());
 
             IUserSmsService service = new UserSmsService(
@@ -195,7 +195,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
 
             Mock<IUserProfileDelegate> userProfileDelegate = new();
             UserProfile userProfileMock = new();
-            userProfileDelegate.Setup(s => s.GetUserProfileAsync(It.IsAny<string>())).ReturnsAsync(userProfileMock);
+            userProfileDelegate.Setup(s => s.GetUserProfileAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(userProfileMock);
             userProfileDelegate.Setup(s => s.Update(It.IsAny<UserProfile>(), It.IsAny<bool>())).Returns(new DbResult<UserProfile>());
 
             IUserSmsService service = new UserSmsService(
