@@ -141,12 +141,6 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 Email = "mock@email.com",
             };
 
-            DbResult<UserProfile> profileResult = new()
-            {
-                Payload = profile,
-                Status = DbStatusCode.Read,
-            };
-
             Mock<IFeedbackDelegate> userFeedbackDelegateMock = new();
             userFeedbackDelegateMock.Setup(
                     s => s.InsertUserFeedbackAsync(
@@ -158,7 +152,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
 
             Mock<IBackgroundJobClient> mockJobclient = new();
             Mock<IUserProfileDelegate> mockProfileDelegate = new();
-            mockProfileDelegate.Setup(s => s.GetUserProfile(It.Is<string>(hdid => hdid == expectedUserFeedback.UserProfileId))).Returns(profileResult);
+            mockProfileDelegate.Setup(s => s.GetUserProfileAsync(It.Is<string>(hdid => hdid == expectedUserFeedback.UserProfileId), It.IsAny<CancellationToken>())).ReturnsAsync(profile);
 
             IUserFeedbackService service = new UserFeedbackService(
                 new Mock<ILogger<UserFeedbackService>>().Object,

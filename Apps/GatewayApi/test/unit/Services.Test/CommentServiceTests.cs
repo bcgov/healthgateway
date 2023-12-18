@@ -167,14 +167,13 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         public async Task ShouldGetCommentsWithNoKeyError()
         {
             string? encryptionKey = null;
-            DbResult<UserProfile> profileDbResult = new()
+            UserProfile userProfile = new()
             {
-                Payload = new UserProfile
-                    { EncryptionKey = encryptionKey },
+                EncryptionKey = encryptionKey,
             };
 
             Mock<IUserProfileDelegate> profileDelegateMock = new();
-            profileDelegateMock.Setup(s => s.GetUserProfile(this.hdid)).Returns(profileDbResult);
+            profileDelegateMock.Setup(s => s.GetUserProfileAsync(this.hdid, It.IsAny<CancellationToken>())).ReturnsAsync(userProfile);
 
             ICommentService service = new CommentService(
                 new Mock<ILogger<CommentService>>().Object,
@@ -196,14 +195,13 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         public async Task ShouldInsertCommentWithNoKeyError()
         {
             string? encryptionKey = null;
-            DbResult<UserProfile> profileDbResult = new()
+            UserProfile userProfile = new()
             {
-                Payload = new UserProfile
-                    { EncryptionKey = encryptionKey },
+                EncryptionKey = encryptionKey,
             };
 
             Mock<IUserProfileDelegate> profileDelegateMock = new();
-            profileDelegateMock.Setup(s => s.GetUserProfile(this.hdid)).Returns(profileDbResult);
+            profileDelegateMock.Setup(s => s.GetUserProfileAsync(this.hdid, It.IsAny<CancellationToken>())).ReturnsAsync(userProfile);
 
             UserComment userComment = new()
             {
@@ -234,14 +232,13 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         public async Task ShouldUpdateCommentWithNoKeyError()
         {
             string? encryptionKey = null;
-            DbResult<UserProfile> profileDbResult = new()
+            UserProfile userProfile = new()
             {
-                Payload = new UserProfile
-                    { EncryptionKey = encryptionKey },
+                EncryptionKey = encryptionKey,
             };
 
             Mock<IUserProfileDelegate> profileDelegateMock = new();
-            profileDelegateMock.Setup(s => s.GetUserProfile(this.hdid)).Returns(profileDbResult);
+            profileDelegateMock.Setup(s => s.GetUserProfileAsync(this.hdid, It.IsAny<CancellationToken>())).ReturnsAsync(userProfile);
 
             UserComment userComment = new()
             {
@@ -272,14 +269,13 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         public async Task ShouldDeleteCommentWithNoKeyError()
         {
             string? encryptionKey = null;
-            DbResult<UserProfile> profileDbResult = new()
+            UserProfile userProfile = new()
             {
-                Payload = new UserProfile
-                    { EncryptionKey = encryptionKey },
+                EncryptionKey = encryptionKey,
             };
 
             Mock<IUserProfileDelegate> profileDelegateMock = new();
-            profileDelegateMock.Setup(s => s.GetUserProfile(this.hdid)).Returns(profileDbResult);
+            profileDelegateMock.Setup(s => s.GetUserProfileAsync(this.hdid, It.IsAny<CancellationToken>())).ReturnsAsync(userProfile);
 
             UserComment userComment = new()
             {

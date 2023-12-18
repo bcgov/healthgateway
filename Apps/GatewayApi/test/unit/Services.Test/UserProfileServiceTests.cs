@@ -36,7 +36,6 @@ namespace HealthGateway.GatewayApiTests.Services.Test
     using HealthGateway.GatewayApiTests.Services.Test.Constants;
     using HealthGateway.GatewayApiTests.Services.Test.Mock;
     using HealthGateway.GatewayApiTests.Services.Test.Utils;
-    using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Configuration;
     using Moq;
     using Xunit;
@@ -122,14 +121,13 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 Value = true.ToString(),
             };
 
-            List<UserPreference> userPreferences = new()
-                { dbUserPreference };
+            List<UserPreference> userPreferences = [dbUserPreference];
 
-            HashSet<DataSource> dataSources = new()
-            {
+            HashSet<DataSource> dataSources =
+            [
                 DataSource.Immunization,
                 DataSource.Medication,
-            };
+            ];
 
             UserProfileModel expected = UserProfileMapUtils.CreateFromDbModel(userProfile, Guid.Empty, MapperUtil.InitializeAutoMapper());
             UserProfileServiceMock mockService = new(GetIConfigurationRoot(null));
@@ -177,11 +175,11 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 Email = "unit.test@hgw.ca",
             };
 
-            HashSet<DataSource> dataSources = new()
-            {
+            HashSet<DataSource> dataSources =
+            [
                 DataSource.Immunization,
                 DataSource.Medication,
-            };
+            ];
 
             DbResult<UserProfile> readProfileDbResult = new()
             {
@@ -235,11 +233,11 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 Email = "unit.test@hgw.ca",
             };
 
-            HashSet<DataSource> dataSources = new()
-            {
+            HashSet<DataSource> dataSources =
+            [
                 DataSource.Immunization,
                 DataSource.Medication,
-            };
+            ];
 
             PatientModel patientModel = new()
             {
@@ -294,11 +292,11 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 Email = "unit.test@hgw.ca",
             };
 
-            HashSet<DataSource> dataSources = new()
-            {
+            HashSet<DataSource> dataSources =
+            [
                 DataSource.Immunization,
                 DataSource.Medication,
-            };
+            ];
 
             PatientModel patientModel = new()
             {
@@ -597,11 +595,11 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 TermsOfServiceId = this.termsOfServiceGuid,
             };
 
-            HashSet<DataSource> dataSources = new()
-            {
+            HashSet<DataSource> dataSources =
+            [
                 DataSource.Immunization,
                 DataSource.Medication,
-            };
+            ];
 
             DbResult<UserProfile> userProfileDbResult = new()
             {
@@ -615,10 +613,6 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 Status = DbStatusCode.Updated,
             };
 
-            IHeaderDictionary headerDictionary = new HeaderDictionary
-            {
-                { "referer", "http://localhost/" },
-            };
             UserProfileServiceMock mockService = new UserProfileServiceMock(GetIConfigurationRoot(null))
                 .SetupUserProfileDelegateMockGetAndUpdate(this.hdid, userProfile, userProfileDbResult, userProfileDbResultUpdate: userProfileUpdateDbResult)
                 .SetupEmailQueueServiceMock(false)
@@ -653,11 +647,6 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             {
                 Payload = userProfile,
                 Status = DbStatusCode.Read,
-            };
-
-            IHeaderDictionary headerDictionary = new HeaderDictionary
-            {
-                { "referer", "http://localhost/" },
             };
 
             UserProfileServiceMock mockService = new UserProfileServiceMock(GetIConfigurationRoot(null))
@@ -701,11 +690,6 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 Status = DbStatusCode.Updated,
             };
 
-            IHeaderDictionary headerDictionary = new HeaderDictionary
-            {
-                { "referer", "http://localhost/" },
-            };
-
             UserProfileServiceMock mockService = new UserProfileServiceMock(GetIConfigurationRoot(null))
                 .SetupUserProfileDelegateMockGetAndUpdate(this.hdid, userProfile, userProfileDbResult, userProfileDbResultUpdate: userProfileUpdateDbResult)
                 .SetupEmailQueueServiceMock(false);
@@ -736,21 +720,16 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 Email = "unit.test@hgw.ca",
             };
 
-            HashSet<DataSource> dataSources = new()
-            {
+            HashSet<DataSource> dataSources =
+            [
                 DataSource.Immunization,
                 DataSource.Medication,
-            };
+            ];
 
             DbResult<UserProfile> userProfileDbResult = new()
             {
                 Payload = userProfile,
                 Status = DbStatusCode.Read,
-            };
-
-            IHeaderDictionary headerDictionary = new HeaderDictionary
-            {
-                { "referer", "http://localhost/" },
             };
 
             UserProfileServiceMock mockService = new UserProfileServiceMock(GetIConfigurationRoot(null))
@@ -788,11 +767,6 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             {
                 Payload = userProfile,
                 Status = DbStatusCode.Read,
-            };
-
-            IHeaderDictionary headerDictionary = new HeaderDictionary
-            {
-                { "referer", "http://localhost/" },
             };
 
             UserProfileServiceMock mockService = new UserProfileServiceMock(GetIConfigurationRoot(null))

@@ -234,14 +234,13 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         public async Task ShouldUpdateNoteWithNoKeyError()
         {
             string? encryptionKey = null;
-            DbResult<UserProfile> profileDbResult = new()
+            UserProfile userProfile = new()
             {
-                Payload = new UserProfile
-                    { EncryptionKey = encryptionKey },
+                EncryptionKey = encryptionKey,
             };
 
             Mock<IUserProfileDelegate> profileDelegateMock = new();
-            profileDelegateMock.Setup(s => s.GetUserProfile(this.hdid)).Returns(profileDbResult);
+            profileDelegateMock.Setup(s => s.GetUserProfileAsync(this.hdid, It.IsAny<CancellationToken>())).ReturnsAsync(userProfile);
 
             UserNote userNote = new()
             {
@@ -272,14 +271,13 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         public async Task ShouldDeleteNoteWithNoKeyError()
         {
             string? encryptionKey = null;
-            DbResult<UserProfile> profileDbResult = new()
+            UserProfile userProfile = new()
             {
-                Payload = new UserProfile
-                    { EncryptionKey = encryptionKey },
+                EncryptionKey = encryptionKey,
             };
 
             Mock<IUserProfileDelegate> profileDelegateMock = new();
-            profileDelegateMock.Setup(s => s.GetUserProfile(this.hdid)).Returns(profileDbResult);
+            profileDelegateMock.Setup(s => s.GetUserProfileAsync(this.hdid, It.IsAny<CancellationToken>())).ReturnsAsync(userProfile);
 
             UserNote userNote = new()
             {

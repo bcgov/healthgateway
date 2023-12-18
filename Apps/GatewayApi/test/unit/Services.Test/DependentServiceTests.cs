@@ -357,8 +357,8 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 .ReturnsAsync(new[] { new ResourceDelegate { ProfileHdid = this.mockParentHdid, ResourceOwnerHdid = this.mockHdId } });
 
             Mock<IUserProfileDelegate> mockUserProfileDelegate = new();
-            mockUserProfileDelegate.Setup(s => s.GetUserProfile(this.mockParentHdid))
-                .Returns(new DbResult<UserProfile> { Payload = new UserProfile() });
+            mockUserProfileDelegate.Setup(s => s.GetUserProfileAsync(this.mockParentHdid, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new UserProfile());
             Mock<INotificationSettingsService> mockNotificationSettingsService = new();
             mockNotificationSettingsService.Setup(s => s.QueueNotificationSettingsAsync(It.IsAny<NotificationSettingsRequest>(), It.IsAny<CancellationToken>()));
 

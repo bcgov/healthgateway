@@ -16,6 +16,7 @@
 namespace HealthGateway.GatewayApiTests.Services.Test.Mock
 {
     using System.Collections.Generic;
+    using System.Threading;
     using HealthGateway.Common.Services;
     using Moq;
 
@@ -30,7 +31,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test.Mock
         /// <param name="shouldCommit">check if allowing to commit.</param>
         public EmailQueueServiceMock(bool shouldCommit)
         {
-            this.Setup(s => s.QueueNewEmail(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Dictionary<string, string>>(), shouldCommit));
+            this.Setup(s => s.QueueNewEmailAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Dictionary<string, string>>(), shouldCommit, It.IsAny<CancellationToken>()));
         }
     }
 }
