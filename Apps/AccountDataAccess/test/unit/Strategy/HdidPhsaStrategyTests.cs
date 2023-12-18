@@ -36,6 +36,7 @@ namespace AccountDataAccessTest.Strategy
         private const string Hdid = "abc123";
         private const string Phn = "9735353315";
         private const string Gender = "Male";
+        private const string PhsaHdidNotFound = "phsa123NotFound";
 
         private static readonly IMapper Mapper = MapperUtil.InitializeAutoMapper();
 
@@ -86,6 +87,27 @@ namespace AccountDataAccessTest.Strategy
 
             // Verify
             expectedPatient.ShouldDeepEqual(actual);
+        }
+
+        /// <summary>
+        /// Get patient identity by hdid throws not found api exception.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
+        [Fact]
+        public async Task ShouldGetPatientIdentityByHdidThrowsNotFoundApiException()
+        {
+            // Arrange
+            PatientIdentity? patientIdentity = null;
+
+            PatientRequest request = new(PhsaHdidNotFound, false);
+
+            HdidPhsaStrategy hdidAllStrategy = GetHdidPhsaStrategy(patientIdentity);
+
+            // Act
+            PatientModel? actual = await hdidAllStrategy.GetPatientAsync(request);
+
+            // Verify
+            Assert.Null(actual);
         }
 
         private static HdidPhsaStrategy GetHdidPhsaStrategy(
