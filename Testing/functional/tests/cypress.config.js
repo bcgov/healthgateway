@@ -45,7 +45,7 @@ module.exports = defineConfig({
         setupNodeEvents(on, _config) {
             on("task", verifyDownloadTasks);
         },
-        baseUrl: "https://dev.healthgateway.gov.bc.ca",
+        baseUrl: "https://dev-k.healthgateway.gov.bc.ca",
         specPattern: "cypress/integration/**/*.{js,jsx,ts,tsx}",
     },
 });
