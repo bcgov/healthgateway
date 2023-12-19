@@ -21,6 +21,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authentication
     using System.Linq;
     using System.Net;
     using System.Net.Http;
+    using System.Security.Claims;
     using System.Text.Json;
     using System.Threading;
     using System.Threading.Tasks;
@@ -28,6 +29,8 @@ namespace HealthGateway.CommonTests.AccessManagement.Authentication
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.AccessManagement.Authentication.Models;
     using HealthGateway.Common.CacheProviders;
+    using HealthGateway.Common.Data.Constants;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Caching.Distributed;
     using Microsoft.Extensions.Caching.Memory;
     using Microsoft.Extensions.Configuration;
@@ -77,17 +80,17 @@ namespace HealthGateway.CommonTests.AccessManagement.Authentication
             };
 
             string json = """
-{
-    "access_token": "token",
-    "expires_in": 500,
-    "refresh_expires_in": 0,
-    "refresh_token": "refresh_token",
-    "token_type": "bearer",
-    "not-before-policy": 25,
-    "session_state": "session_state",
-    "scope": "scope"
-}
-""";
+                          {
+                              "access_token": "token",
+                              "expires_in": 500,
+                              "refresh_expires_in": 0,
+                              "refresh_token": "refresh_token",
+                              "token_type": "bearer",
+                              "not-before-policy": 25,
+                              "session_state": "session_state",
+                              "scope": "scope"
+                          }
+                          """;
             JwtModel? expected = JsonSerializer.Deserialize<JwtModel>(json);
             using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
             ILogger<AuthenticationDelegate> logger = loggerFactory.CreateLogger<AuthenticationDelegate>();
@@ -176,17 +179,17 @@ namespace HealthGateway.CommonTests.AccessManagement.Authentication
                 ClientSecret = "SOME_SECRET",
             };
             string json = """
-{
-    "access_token": "token",
-    "expires_in": 500,
-    "refresh_expires_in": 0,
-    "refresh_token": "refresh_token",
-    "token_type": "bearer",
-    "not-before-policy": 25,
-    "session_state": "session_state",
-    "scope": "scope"
-}
-""";
+                          {
+                              "access_token": "token",
+                              "expires_in": 500,
+                              "refresh_expires_in": 0,
+                              "refresh_token": "refresh_token",
+                              "token_type": "bearer",
+                              "not-before-policy": 25,
+                              "session_state": "session_state",
+                              "scope": "scope"
+                          }
+                          """;
             JwtModel? expected = JsonSerializer.Deserialize<JwtModel>(json);
             using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
             ILogger<AuthenticationDelegate> logger = loggerFactory.CreateLogger<AuthenticationDelegate>();
@@ -212,6 +215,39 @@ namespace HealthGateway.CommonTests.AccessManagement.Authentication
             IAuthenticationDelegate authDelegate = new AuthenticationDelegate(logger, mockHttpClientFactory.Object, CreateConfiguration(extraConfig), new Mock<ICacheProvider>().Object, null);
             JwtModel actualModel = authDelegate.AuthenticateAsSystem(tokenUri, tokenRequest);
             expected.ShouldDeepEqual(actualModel);
+        }
+
+        [Theory]
+        [InlineData("hg", UserLoginClientType.Web)]
+        [InlineData("hg-mobile", UserLoginClientType.Mobile)]
+        [InlineData("should-be-null", null)]
+        public void ShouldBeAbleToDetermineLoginClientType(string clientAzp, UserLoginClientType? clientType)
+        {
+            using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
+            ILogger<AuthenticationDelegate> logger = loggerFactory.CreateLogger<AuthenticationDelegate>();
+            Mock<IHttpClientFactory> mockHttpClientFactory = new();
+            Mock<ICacheProvider> mockCacheProvider = new();
+
+            HttpContext httpContext = new DefaultHttpContext
+            {
+                User = new ClaimsPrincipal(
+                    new ClaimsIdentity(
+                        new Claim[]
+                        {
+                            new("azp", clientAzp),
+                        },
+                        "token")),
+            };
+            Mock<IHttpContextAccessor> mockHttpContextAccessor = new();
+            mockHttpContextAccessor.Setup(s => s.HttpContext).Returns(httpContext);
+            AuthenticationDelegate authDelegate = new(
+                logger,
+                mockHttpClientFactory.Object,
+                CreateConfiguration(new Dictionary<string, string?>()),
+                mockCacheProvider.Object,
+                mockHttpContextAccessor.Object);
+            UserLoginClientType? result = authDelegate.FetchAuthenticatedUserClientType();
+            Assert.Equal(clientType, result);
         }
 
         private static IConfiguration CreateConfiguration(Dictionary<string, string?> configParams)
