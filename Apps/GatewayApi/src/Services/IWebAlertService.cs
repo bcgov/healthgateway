@@ -17,6 +17,7 @@ namespace HealthGateway.GatewayApi.Services
 {
     using System;
     using System.Collections.Generic;
+    using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.GatewayApi.Models;
 
@@ -29,22 +30,25 @@ namespace HealthGateway.GatewayApi.Services
         /// Gets all web alerts for a user.
         /// </summary>
         /// <param name="hdid">The HDID of the user.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The list of web alerts for the user.</returns>
-        Task<IList<WebAlert>> GetWebAlertsAsync(string hdid);
+        Task<IList<WebAlert>> GetWebAlertsAsync(string hdid, CancellationToken ct = default);
 
         /// <summary>
         /// Dismisses all web alert for a user.
         /// </summary>
         /// <param name="hdid">The HDID of the user.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        Task DismissWebAlertsAsync(string hdid);
+        Task DismissWebAlertsAsync(string hdid, CancellationToken ct = default);
 
         /// <summary>
         /// Dismisses a web alert for a user.
         /// </summary>
         /// <param name="hdid">The HDID of the user.</param>
         /// <param name="webAlertId">The ID of the web alert to be dismissed.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        Task DismissWebAlertAsync(string hdid, Guid webAlertId);
+        Task DismissWebAlertAsync(string hdid, Guid webAlertId, CancellationToken ct = default);
     }
 }

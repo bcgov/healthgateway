@@ -92,12 +92,12 @@ namespace HealthGateway.Admin.Server.Services
                 ResultStatus = ResultType.Error,
             };
 
-            feedbackDelegate.UpdateUserFeedback(autoMapper.Map<UserFeedback>(feedback));
+            await feedbackDelegate.UpdateUserFeedbackAsync(autoMapper.Map<UserFeedback>(feedback), ct);
 
             DbResult<UserFeedback> userFeedbackResult = await feedbackDelegate.GetUserFeedbackWithFeedbackTagsAsync(feedback.Id, ct);
             if (userFeedbackResult.Status == DbStatusCode.Read)
             {
-                string email = await this.GetUserEmail(userFeedbackResult.Payload.UserProfileId);
+                string email = await this.GetUserEmailAsync(userFeedbackResult.Payload.UserProfileId, ct);
                 result.ResourcePayload = UserFeedbackMapUtils.ToUiModel(userFeedbackResult.Payload, email, autoMapper);
                 result.ResultStatus = ResultType.Success;
             }
@@ -196,11 +196,11 @@ namespace HealthGateway.Admin.Server.Services
                         userFeedbackTag.UserFeedbackId);
                 }
 
-                DbResult<UserFeedback> savedUserFeedbackResult = feedbackDelegate.UpdateUserFeedbackWithTagAssociations(userFeedback);
+                DbResult<UserFeedback> savedUserFeedbackResult = await feedbackDelegate.UpdateUserFeedbackWithTagAssociationsAsync(userFeedback, ct);
 
                 if (savedUserFeedbackResult.Status == DbStatusCode.Updated)
                 {
-                    string email = await this.GetUserEmail(userFeedback.UserProfileId);
+                    string email = await this.GetUserEmailAsync(userFeedback.UserProfileId, ct);
                     result.ResourcePayload = UserFeedbackMapUtils.ToUiModel(userFeedback, email, autoMapper);
                     result.ResultStatus = ResultType.Success;
                 }
@@ -223,12 +223,12 @@ namespace HealthGateway.Admin.Server.Services
             return result;
         }
 
-        private async Task<string> GetUserEmail(string? hdid)
+        private async Task<string> GetUserEmailAsync(string? hdid, CancellationToken ct)
         {
             string email = string.Empty;
             if (hdid != null)
             {
-                UserProfile? userProfile = await userProfileDelegate.GetUserProfileAsync(hdid);
+                UserProfile? userProfile = await userProfileDelegate.GetUserProfileAsync(hdid, ct);
                 if (userProfile != null)
                 {
                     email = userProfile.Email ?? string.Empty;

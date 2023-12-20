@@ -64,6 +64,7 @@ namespace HealthGateway.GatewayApi.Controllers
         /// </summary>
         /// <returns>The list of dependent model wrapped in a request result.</returns>
         /// <param name="hdid">The owner hdid.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <response code="200">Returns the list of dependents.</response>
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
         /// <response code="403">
@@ -73,9 +74,9 @@ namespace HealthGateway.GatewayApi.Controllers
         [HttpGet]
         [Authorize(Policy = UserProfilePolicy.Read)]
         [Route("{hdid}/[controller]")]
-        public async Task<RequestResult<IEnumerable<DependentModel>>> GetAll(string hdid)
+        public async Task<RequestResult<IEnumerable<DependentModel>>> GetAll(string hdid, CancellationToken ct)
         {
-            return await this.dependentService.GetDependentsAsync(hdid);
+            return await this.dependentService.GetDependentsAsync(hdid, 0, 25, ct);
         }
 
         /// <summary>
@@ -83,7 +84,7 @@ namespace HealthGateway.GatewayApi.Controllers
         /// </summary>
         /// <returns>The http status.</returns>
         /// <param name="addDependentRequest">The Register Dependent request model.</param>
-        /// <param name="ct">A cancellation token.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <response code="200">The Dependent record was saved.</response>
         /// <response code="400">The Dependent was already inserted.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
@@ -115,7 +116,7 @@ namespace HealthGateway.GatewayApi.Controllers
         /// <param name="hdid">The Delegate hdid.</param>
         /// <param name="dependentHdid">The Dependent hdid.</param>
         /// <param name="dependent">The dependent model object to be deleted.</param>
-        /// <param name="ct">A cancellation token.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <response code="200">The Dependent record was deleted.</response>
         /// <response code="400">The request is invalid.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>

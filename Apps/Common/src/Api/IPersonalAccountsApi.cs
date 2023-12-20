@@ -15,6 +15,7 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Common.Api
 {
+    using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.Models.PHSA;
     using Refit;
@@ -28,9 +29,10 @@ namespace HealthGateway.Common.Api
         /// Retrieves the Personal Account by HDID.
         /// </summary>
         /// <param name="hdid">The HDID to lookup.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The Personal Account matching the id.</returns>
         [Get("/personal-accounts/hdid/{hdid}")]
-        Task<PersonalAccount> AccountLookupByHdidAsync(string hdid);
+        Task<PersonalAccount> AccountLookupByHdidAsync(string hdid, CancellationToken ct = default);
 
         /// <summary>
         /// Retrieves the Personal Account by PID.

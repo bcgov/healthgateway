@@ -31,8 +31,9 @@ namespace HealthGateway.Database.Delegates
         /// Creates a UserFeedback object in the database.
         /// </summary>
         /// <param name="feedback">The feedback to create.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A DB result which encapsulates the return object and status.</returns>
-        DbResult<UserFeedback> InsertUserFeedback(UserFeedback feedback);
+        Task<DbResult<UserFeedback>> InsertUserFeedbackAsync(UserFeedback feedback, CancellationToken ct = default);
 
         /// <summary>
         /// Updates the UserFeedback object in the DB.
@@ -40,7 +41,9 @@ namespace HealthGateway.Database.Delegates
         /// UpdatedDateTime will overridden by our framework.
         /// </summary>
         /// <param name="feedback">The feedback to update.</param>
-        void UpdateUserFeedback(UserFeedback feedback);
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
+        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
+        Task UpdateUserFeedbackAsync(UserFeedback feedback, CancellationToken ct = default);
 
         /// <summary>
         /// Updates the UserFeedback object including user feedback tag associations in the DB.
@@ -48,8 +51,9 @@ namespace HealthGateway.Database.Delegates
         /// UpdatedDateTime will overridden by our framework.
         /// </summary>
         /// <param name="feedback">The feedback to update.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A DB result which encapsulates the return object and status.</returns>
-        DbResult<UserFeedback> UpdateUserFeedbackWithTagAssociations(UserFeedback feedback);
+        Task<DbResult<UserFeedback>> UpdateUserFeedbackWithTagAssociationsAsync(UserFeedback feedback, CancellationToken ct = default);
 
         /// <summary>
         /// Fetches the UserFeedback from the database.

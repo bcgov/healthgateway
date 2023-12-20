@@ -18,6 +18,7 @@ namespace HealthGateway.Common.Services
     using System;
     using System.Diagnostics;
     using System.Net.Http;
+    using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.Api;
     using HealthGateway.Common.CacheProviders;
@@ -68,7 +69,7 @@ namespace HealthGateway.Common.Services
         private static ActivitySource Source { get; } = new(nameof(PersonalAccountsService));
 
         /// <inheritdoc/>
-        public async Task<PersonalAccount> GetPatientAccountAsync(string hdid)
+        public async Task<PersonalAccount> GetPatientAccountAsync(string hdid, CancellationToken ct = default)
         {
             PersonalAccount? account = this.GetFromCache(hdid);
             if (account is not null)
@@ -76,7 +77,7 @@ namespace HealthGateway.Common.Services
                 return account;
             }
 
-            account = await this.personalAccountsApi.AccountLookupByHdidAsync(hdid).ConfigureAwait(true);
+            account = await this.personalAccountsApi.AccountLookupByHdidAsync(hdid, ct);
             this.PutCache(hdid, account);
             return account;
         }

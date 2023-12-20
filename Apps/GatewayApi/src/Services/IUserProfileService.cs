@@ -32,8 +32,9 @@ namespace HealthGateway.GatewayApi.Services
         /// </summary>
         /// <param name="hdid">The requested user hdid.</param>
         /// <param name="jwtAuthTime">The date of last jwt authorization time.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The wrapped user profile.</returns>
-        Task<RequestResult<UserProfileModel>> GetUserProfile(string hdid, DateTime jwtAuthTime);
+        Task<RequestResult<UserProfileModel>> GetUserProfileAsync(string hdid, DateTime jwtAuthTime, CancellationToken ct = default);
 
         /// <summary>
         /// Saves the user profile to the database.
@@ -41,72 +42,81 @@ namespace HealthGateway.GatewayApi.Services
         /// <param name="createProfileRequest">The request to create a user profile model.</param>
         /// <param name="jwtAuthTime">The date of last jwt authorization time.</param>
         /// <param name="jwtEmailAddress">The email address contained by the jwt.</param>
-        /// <param name="ct">A cancellation token.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The wrapped user profile.</returns>
-        Task<RequestResult<UserProfileModel>> CreateUserProfile(CreateUserRequest createProfileRequest, DateTime jwtAuthTime, string? jwtEmailAddress, CancellationToken ct = default);
+        Task<RequestResult<UserProfileModel>> CreateUserProfileAsync(CreateUserRequest createProfileRequest, DateTime jwtAuthTime, string? jwtEmailAddress, CancellationToken ct = default);
 
         /// <summary>
         /// Closed the user profile.
         /// </summary>
         /// <param name="hdid">The requested user hdid.</param>
         /// <param name="userId">The user id.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The wrapped user profile.</returns>
-        RequestResult<UserProfileModel> CloseUserProfile(string hdid, Guid userId);
+        Task<RequestResult<UserProfileModel>> CloseUserProfileAsync(string hdid, Guid userId, CancellationToken ct = default);
 
         /// <summary>
         /// Recovers the user profile.
         /// </summary>
         /// <param name="hdid">The requested user hdid.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The wrapped user profile.</returns>
-        RequestResult<UserProfileModel> RecoverUserProfile(string hdid);
+        Task<RequestResult<UserProfileModel>> RecoverUserProfileAsync(string hdid, CancellationToken ct = default);
 
         /// <summary>
         /// Gets the most recent active terms of service.
         /// </summary>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The wrapped terms of service.</returns>
-        RequestResult<TermsOfServiceModel> GetActiveTermsOfService();
+        Task<RequestResult<TermsOfServiceModel>> GetActiveTermsOfServiceAsync(CancellationToken ct = default);
 
         /// <summary>
         /// Updates a User Preference in the backend.
         /// </summary>
         /// <param name="userPreferenceModel">The user preference to update.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A userPreference wrapped in a RequestResult.</returns>
-        RequestResult<UserPreferenceModel> UpdateUserPreference(UserPreferenceModel userPreferenceModel);
+        Task<RequestResult<UserPreferenceModel>> UpdateUserPreferenceAsync(UserPreferenceModel userPreferenceModel, CancellationToken ct = default);
 
         /// <summary>
         /// Create a User Preference in the backend.
         /// </summary>
         /// <param name="userPreferenceModel">The user preference to create.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A userPreference wrapped in a RequestResult.</returns>
-        RequestResult<UserPreferenceModel> CreateUserPreference(UserPreferenceModel userPreferenceModel);
+        Task<RequestResult<UserPreferenceModel>> CreateUserPreferenceAsync(UserPreferenceModel userPreferenceModel, CancellationToken ct = default);
 
         /// <summary>
         /// Gets the user preference model.
         /// </summary>
         /// <param name="hdid">The requested user hdid.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The wrapped user reference.</returns>
-        RequestResult<Dictionary<string, UserPreferenceModel>> GetUserPreferences(string hdid);
+        Task<RequestResult<Dictionary<string, UserPreferenceModel>>> GetUserPreferencesAsync(string hdid, CancellationToken ct = default);
 
         /// <summary>
         /// Gets a value indicating if the patient age is valid for registration.
         /// </summary>
         /// <param name="hdid">The requested user hdid.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A boolean result.</returns>
-        Task<RequestResult<bool>> ValidateMinimumAge(string hdid);
+        Task<RequestResult<bool>> ValidateMinimumAgeAsync(string hdid, CancellationToken ct = default);
 
         /// <summary>
         /// Updates the user profile and sets the accepted terms of service to the supplied value.
         /// </summary>
         /// <param name="hdid">The users hdid.</param>
         /// <param name="termsOfServiceId">The terms of service id accepted.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A user profile model wrapped in a RequestResult.</returns>
-        RequestResult<UserProfileModel> UpdateAcceptedTerms(string hdid, Guid termsOfServiceId);
+        Task<RequestResult<UserProfileModel>> UpdateAcceptedTermsAsync(string hdid, Guid termsOfServiceId, CancellationToken ct = default);
 
         /// <summary>
         /// Validates a phone number against the system wide accepted number validation logic.
         /// </summary>
         /// <param name="phoneNumber">This should be a phone number without a mask.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>True if the phone number is valid.</returns>
-        bool IsPhoneNumberValid(string phoneNumber);
+        Task<bool> IsPhoneNumberValid(string phoneNumber, CancellationToken ct = default);
     }
 }

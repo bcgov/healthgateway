@@ -17,6 +17,7 @@ namespace HealthGateway.GatewayApi.Api
 {
     using System;
     using System.Collections.Generic;
+    using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.GatewayApi.Models.Phsa;
     using Refit;
@@ -30,25 +31,28 @@ namespace HealthGateway.GatewayApi.Api
         /// Retrieves all web alerts for a patient.
         /// </summary>
         /// <param name="pid">The patient's pid.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The collection of web alerts for the specified patient.</returns>
         [Get("/personal-accounts/{pid}/web-alerts")]
-        Task<IList<PhsaWebAlert>> GetWebAlertsAsync(Guid pid);
+        Task<IList<PhsaWebAlert>> GetWebAlertsAsync(Guid pid, CancellationToken ct = default);
 
         /// <summary>
         /// Dismisses all web alerts for a patient.
         /// </summary>
         /// <param name="pid">The patient's pid.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A task representing the asynchronous operation.</returns>
         [Delete("/personal-accounts/{pid}/web-alerts")]
-        Task DeleteWebAlertsAsync(Guid pid);
+        Task DeleteWebAlertsAsync(Guid pid, CancellationToken ct = default);
 
         /// <summary>
         /// Dismisses a web alert for a patient.
         /// </summary>
         /// <param name="pid">The patient's pid.</param>
         /// <param name="id">The ID of the web alert to be deleted.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A task representing the asynchronous operation.</returns>
         [Delete("/personal-accounts/{pid}/web-alerts/{id}")]
-        Task DeleteWebAlertAsync(Guid pid, Guid id);
+        Task DeleteWebAlertAsync(Guid pid, Guid id, CancellationToken ct = default);
     }
 }

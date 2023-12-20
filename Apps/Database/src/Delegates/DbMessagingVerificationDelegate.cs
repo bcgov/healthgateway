@@ -73,30 +73,17 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public MessagingVerification? GetLastByInviteKey(Guid inviteKey)
+        public async Task<MessagingVerification?> GetLastByInviteKeyAsync(Guid inviteKey, CancellationToken ct = default)
         {
             this.logger.LogTrace("Getting email message verification from DB... {InviteKey}", inviteKey);
-            MessagingVerification? retVal = this.dbContext
+            MessagingVerification? retVal = await this.dbContext
                 .MessagingVerification
                 .Include(email => email.Email)
                 .Where(p => p.InviteKey == inviteKey && p.VerificationType == MessagingVerificationType.Email)
                 .OrderByDescending(mv => mv.CreatedDateTime)
-                .FirstOrDefault();
+                .FirstOrDefaultAsync(ct);
 
             this.logger.LogDebug("Finished getting email message verification from DB");
-            return retVal;
-        }
-
-        /// <inheritdoc/>
-        public IEnumerable<MessagingVerification> GetAllEmail()
-        {
-            this.logger.LogTrace("Getting all email message verifications from DB...");
-            IEnumerable<MessagingVerification> retVal = this.dbContext
-                .MessagingVerification
-                .Where(p => p.VerificationType == MessagingVerificationType.Email)
-                .ToList();
-
-            this.logger.LogDebug("Finished getting all email message verifications from DB");
             return retVal;
         }
 
@@ -114,17 +101,17 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public MessagingVerification? GetLastForUser(string hdid, string messagingVerificationType)
+        public async Task<MessagingVerification?> GetLastForUserAsync(string hdid, string messagingVerificationType, CancellationToken ct = default)
         {
             this.logger.LogTrace("Getting last messaging verification from DB for user... {HdId}", hdid);
-            MessagingVerification? retVal = this.dbContext
+            MessagingVerification? retVal = await this.dbContext
                 .MessagingVerification
                 .Include(email => email.Email)
                 .Where(p => p.UserProfileId == hdid && p.VerificationType == messagingVerificationType)
                 .OrderByDescending(p => p.UpdatedDateTime)
-                .FirstOrDefault();
+                .FirstOrDefaultAsync(ct);
 
-            if (retVal != null && retVal.Deleted)
+            if (retVal is { Deleted: true })
             {
                 return null;
             }

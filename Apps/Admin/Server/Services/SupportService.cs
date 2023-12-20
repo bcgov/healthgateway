@@ -241,7 +241,7 @@ namespace HealthGateway.Admin.Server.Services
                 : patient?.Hdid;
             UserProfile? profile = hdid == null
                 ? null
-                : await userProfileDelegate.GetUserProfileAsync(hdid);
+                : await userProfileDelegate.GetUserProfileAsync(hdid, ct);
 
             if (patient == null && profile == null)
             {

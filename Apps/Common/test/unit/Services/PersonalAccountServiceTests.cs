@@ -19,6 +19,7 @@ namespace HealthGateway.CommonTests.Services
     using System.Collections.Generic;
     using System.Linq;
     using System.Net.Http;
+    using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.Api;
     using HealthGateway.Common.CacheProviders;
@@ -137,11 +138,12 @@ namespace HealthGateway.CommonTests.Services
             Mock<IPersonalAccountsApi> personalAccountsApiMock = new();
             if (!throwException)
             {
-                personalAccountsApiMock.Setup(p => p.AccountLookupByHdidAsync(It.IsAny<string>())).ReturnsAsync(content);
+                personalAccountsApiMock.Setup(p => p.AccountLookupByHdidAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(content);
             }
             else
             {
-                personalAccountsApiMock.Setup(p => p.AccountLookupByHdidAsync(It.IsAny<string>())).ThrowsAsync(new HttpRequestException("Unit Test HTTP Request Exception"));
+                personalAccountsApiMock.Setup(p => p.AccountLookupByHdidAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+                    .ThrowsAsync(new HttpRequestException("Unit Test HTTP Request Exception"));
             }
 
             return new PersonalAccountsService(

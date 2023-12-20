@@ -16,6 +16,8 @@
 namespace HealthGateway.GatewayApi.Controllers
 {
     using System.Collections.Generic;
+    using System.Threading;
+    using System.Threading.Tasks;
     using HealthGateway.Common.AccessManagement.Authorization.Policy;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Filters;
@@ -53,6 +55,7 @@ namespace HealthGateway.GatewayApi.Controllers
         /// <returns>The http status.</returns>
         /// <param name="hdid">The user hdid.</param>
         /// <param name="note">The patient note request model.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <response code="200">The note record was saved.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
         /// <response code="403">
@@ -62,12 +65,12 @@ namespace HealthGateway.GatewayApi.Controllers
         [HttpPost]
         [Route("{hdid}")]
         [Authorize(Policy = UserProfilePolicy.Write)]
-        public RequestResult<UserNote> CreateNote(string hdid, [FromBody] UserNote note)
+        public async Task<RequestResult<UserNote>> CreateNote(string hdid, [FromBody] UserNote note, CancellationToken ct)
         {
             note.HdId = hdid;
             note.CreatedBy = hdid;
             note.UpdatedBy = hdid;
-            return this.noteService.CreateNote(note);
+            return await this.noteService.CreateNoteAsync(note, ct);
         }
 
         /// <summary>
@@ -76,6 +79,7 @@ namespace HealthGateway.GatewayApi.Controllers
         /// <returns>The updated Note wrapped in a RequestResult.</returns>
         /// <param name="hdid">The user hdid.</param>
         /// <param name="note">The patient note.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <response code="200">The note was saved.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
         /// <response code="403">
@@ -85,10 +89,10 @@ namespace HealthGateway.GatewayApi.Controllers
         [HttpPut]
         [Route("{hdid}")]
         [Authorize(Policy = UserProfilePolicy.Write)]
-        public RequestResult<UserNote> UpdateNote(string hdid, [FromBody] UserNote note)
+        public async Task<RequestResult<UserNote>> UpdateNote(string hdid, [FromBody] UserNote note, CancellationToken ct)
         {
             note.UpdatedBy = hdid;
-            return this.noteService.UpdateNote(note);
+            return await this.noteService.UpdateNoteAsync(note, ct);
         }
 
         /// <summary>
@@ -96,6 +100,7 @@ namespace HealthGateway.GatewayApi.Controllers
         /// </summary>
         /// <returns>The deleted Note wrapped in a RequestResult.</returns>
         /// <param name="note">The patient note.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <response code="200">The note was deleted.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
         /// <response code="403">
@@ -105,9 +110,9 @@ namespace HealthGateway.GatewayApi.Controllers
         [HttpDelete]
         [Route("{hdid}")]
         [Authorize(Policy = UserProfilePolicy.Write)]
-        public RequestResult<UserNote> DeleteNote([FromBody] UserNote note)
+        public async Task<RequestResult<UserNote>> DeleteNote([FromBody] UserNote note, CancellationToken ct)
         {
-            return this.noteService.DeleteNote(note);
+            return await this.noteService.DeleteNoteAsync(note, ct);
         }
 
         /// <summary>
@@ -115,6 +120,7 @@ namespace HealthGateway.GatewayApi.Controllers
         /// </summary>
         /// <returns>The list of notes model wrapped in a request result.</returns>
         /// <param name="hdid">The user hdid.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <response code="200">Returns the list of notes.</response>
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
         /// <response code="403">
@@ -124,9 +130,9 @@ namespace HealthGateway.GatewayApi.Controllers
         [HttpGet]
         [Route("{hdid}")]
         [Authorize(Policy = UserProfilePolicy.Read)]
-        public RequestResult<IEnumerable<UserNote>> GetAll(string hdid)
+        public async Task<RequestResult<IEnumerable<UserNote>>> GetAll(string hdid, CancellationToken ct)
         {
-            return this.noteService.GetNotes(hdid);
+            return await this.noteService.GetNotesAsync(hdid, 0, 500, ct);
         }
     }
 }

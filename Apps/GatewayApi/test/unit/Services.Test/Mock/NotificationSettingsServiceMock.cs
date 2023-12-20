@@ -15,6 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.GatewayApiTests.Services.Test.Mock
 {
+    using System.Threading;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Services;
     using Moq;
@@ -29,7 +30,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test.Mock
         /// </summary>
         public NotificationSettingsServiceMock()
         {
-            this.Setup(s => s.QueueNotificationSettings(It.IsAny<NotificationSettingsRequest>()));
+            this.Setup(s => s.QueueNotificationSettingsAsync(It.IsAny<NotificationSettingsRequest>(), It.IsAny<CancellationToken>()));
         }
     }
 }

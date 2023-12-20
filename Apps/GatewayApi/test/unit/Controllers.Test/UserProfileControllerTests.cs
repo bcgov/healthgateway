@@ -102,7 +102,7 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
             Mock<IHttpContextAccessor> httpContextAccessorMock = CreateValidHttpContext(this.token, this.userId, this.hdid);
 
             Mock<IUserProfileService> userProfileServiceMock = new();
-            userProfileServiceMock.Setup(s => s.CreateUserProfile(createUserRequest, It.IsAny<DateTime>(), It.IsAny<string>(), CancellationToken.None)).ReturnsAsync(expected);
+            userProfileServiceMock.Setup(s => s.CreateUserProfileAsync(createUserRequest, It.IsAny<DateTime>(), It.IsAny<string>(), CancellationToken.None)).ReturnsAsync(expected);
             Mock<IUserEmailService> emailServiceMock = new();
             Mock<IUserSmsService> smsServiceMock = new();
 
@@ -144,7 +144,7 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
             Mock<IHttpContextAccessor> httpContextAccessorMock = CreateValidHttpContext(this.token, this.userId, this.hdid);
 
             Mock<IUserProfileService> userProfileServiceMock = new();
-            userProfileServiceMock.Setup(s => s.CreateUserProfile(createUserRequest, It.IsAny<DateTime>(), It.IsAny<string>(), CancellationToken.None)).ReturnsAsync(expected);
+            userProfileServiceMock.Setup(s => s.CreateUserProfileAsync(createUserRequest, It.IsAny<DateTime>(), It.IsAny<string>(), CancellationToken.None)).ReturnsAsync(expected);
             Mock<IUserEmailService> emailServiceMock = new();
             Mock<IUserSmsService> smsServiceMock = new();
 
@@ -170,7 +170,7 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
             Mock<IHttpContextAccessor> httpContextAccessorMock = CreateValidHttpContext(this.token, this.userId, this.hdid);
 
             Mock<IUserProfileService> userProfileServiceMock = new();
-            userProfileServiceMock.Setup(s => s.ValidateMinimumAge(this.hdid)).ReturnsAsync(expected);
+            userProfileServiceMock.Setup(s => s.ValidateMinimumAgeAsync(this.hdid, It.IsAny<CancellationToken>())).ReturnsAsync(expected);
 
             UserProfileController controller = new(
                 userProfileServiceMock.Object,
@@ -179,7 +179,7 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
                 new Mock<IUserSmsService>().Object,
                 new Mock<IAuthenticationDelegate>().Object);
 
-            RequestResult<bool> actualResult = await controller.Validate(this.hdid);
+            RequestResult<bool> actualResult = await controller.Validate(this.hdid, It.IsAny<CancellationToken>());
 
             Assert.Equal(expected, actualResult);
         }
@@ -187,8 +187,9 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
         /// <summary>
         /// CreateUserPreference - Happy Path.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void ShouldCreateUserPreference()
+        public async Task ShouldCreateUserPreference()
         {
             UserPreferenceModel userPref = new()
             {
@@ -197,7 +198,7 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
                 Value = "Body value",
             };
 
-            ActionResult<RequestResult<UserPreferenceModel>> actualResult = this.CreateUserPreference(userPref);
+            ActionResult<RequestResult<UserPreferenceModel>> actualResult = await this.CreateUserPreference(userPref);
 
             RequestResult<UserPreferenceModel>? reqResult = actualResult.Value;
             Assert.NotNull(reqResult);
@@ -210,10 +211,11 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
         /// <summary>
         /// CreateUserPreference - Bad Request.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void ShouldCreateUserPreferenceWithBadRequestResultError()
+        public async Task ShouldCreateUserPreferenceWithBadRequestResultError()
         {
-            ActionResult<RequestResult<UserPreferenceModel>> actualResult = this.CreateUserPreference(null);
+            ActionResult<RequestResult<UserPreferenceModel>> actualResult = await this.CreateUserPreference(null);
 
             Assert.IsType<BadRequestResult>(actualResult.Result);
         }
@@ -221,8 +223,9 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
         /// <summary>
         /// UpdateUserPreference - Happy Path.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void ShouldUpdateUserPreference()
+        public async Task ShouldUpdateUserPreference()
         {
             UserPreferenceModel userPref = new()
             {
@@ -231,7 +234,7 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
                 Value = "Body value",
             };
 
-            ActionResult<RequestResult<UserPreferenceModel>> actualResult = this.UpdateUserPreference(userPref);
+            ActionResult<RequestResult<UserPreferenceModel>> actualResult = await this.UpdateUserPreference(userPref);
 
             RequestResult<UserPreferenceModel>? reqResult = actualResult.Value;
             Assert.NotNull(reqResult);
@@ -241,10 +244,11 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
         /// <summary>
         /// UpdateUserPreference - Bad Request.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void ShouldUpdateUserPreferenceWithBadRequestResultError()
+        public async Task ShouldUpdateUserPreferenceWithBadRequestResultError()
         {
-            ActionResult<RequestResult<UserPreferenceModel>> actualResult = this.UpdateUserPreference(null);
+            ActionResult<RequestResult<UserPreferenceModel>> actualResult = await this.UpdateUserPreference(null);
 
             Assert.IsType<BadRequestResult>(actualResult.Result);
         }
@@ -252,8 +256,9 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
         /// <summary>
         /// UpdateUserPreference - Bad Request (Empty Preference).
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void ShouldUpdateUserPreferenceWithEmptyPreferenceError()
+        public async Task ShouldUpdateUserPreferenceWithEmptyPreferenceError()
         {
             UserPreferenceModel userPref = new()
             {
@@ -264,7 +269,7 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
                 Value = "Body value",
             };
 
-            ActionResult<RequestResult<UserPreferenceModel>> actualResult = this.UpdateUserPreference(userPref);
+            ActionResult<RequestResult<UserPreferenceModel>> actualResult = await this.UpdateUserPreference(userPref);
 
             Assert.IsType<BadRequestResult>(actualResult.Result);
         }
@@ -272,8 +277,9 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
         /// <summary>
         /// UpdateUserPreference - Forbidden Request.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void ShouldUpdateUserPreferenceWithForbidResultError()
+        public async Task ShouldUpdateUserPreferenceWithForbidResultError()
         {
             UserPreferenceModel userPref = new()
             {
@@ -282,7 +288,7 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
                 Value = "Body value",
             };
 
-            ActionResult<RequestResult<UserPreferenceModel>> actualResult = this.UpdateUserPreference(userPref);
+            ActionResult<RequestResult<UserPreferenceModel>> actualResult = await this.UpdateUserPreference(userPref);
 
             Assert.IsType<ForbidResult>(actualResult.Result);
         }
@@ -290,8 +296,9 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
         /// <summary>
         /// GetLastTermsOfService - Happy Path.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void ShouldGetLastTermsOfService()
+        public async Task ShouldGetLastTermsOfService()
         {
             // Setup
             TermsOfServiceModel termsOfService = new()
@@ -307,7 +314,7 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
             };
 
             Mock<IUserProfileService> userProfileServiceMock = new();
-            userProfileServiceMock.Setup(s => s.GetActiveTermsOfService()).Returns(expectedResult);
+            userProfileServiceMock.Setup(s => s.GetActiveTermsOfServiceAsync(It.IsAny<CancellationToken>())).ReturnsAsync(expectedResult);
 
             Mock<IHttpContextAccessor> httpContextAccessorMock = CreateValidHttpContext(this.token, this.userId, this.hdid);
             Mock<IUserEmailService> emailServiceMock = new();
@@ -320,7 +327,7 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
                 smsServiceMock.Object,
                 new Mock<IAuthenticationDelegate>().Object);
 
-            RequestResult<TermsOfServiceModel> actualResult = service.GetLastTermsOfService();
+            RequestResult<TermsOfServiceModel> actualResult = await service.GetLastTermsOfService(It.IsAny<CancellationToken>());
             expectedResult.ShouldDeepEqual(actualResult);
         }
 
@@ -495,8 +502,9 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
         /// <summary>
         /// Validates the controller update terms of service method.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void ShouldUpdateTerms()
+        public async Task ShouldUpdateTerms()
         {
             RequestResult<UserProfileModel> expected = new()
             {
@@ -504,7 +512,7 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
             };
             Mock<IHttpContextAccessor> httpContextAccessorMock = CreateValidHttpContext(this.token, this.userId, this.hdid);
             Mock<IUserProfileService> userProfileServiceMock = new();
-            userProfileServiceMock.Setup(s => s.UpdateAcceptedTerms(this.hdid, It.IsAny<Guid>())).Returns(expected);
+            userProfileServiceMock.Setup(s => s.UpdateAcceptedTermsAsync(this.hdid, It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(expected);
 
             UserProfileController controller = new(
                 userProfileServiceMock.Object,
@@ -513,7 +521,7 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
                 new Mock<IUserSmsService>().Object,
                 new Mock<IAuthenticationDelegate>().Object);
 
-            RequestResult<UserProfileModel> actualResult = controller.UpdateAcceptedTerms(this.hdid, Guid.Empty);
+            RequestResult<UserProfileModel> actualResult = await controller.UpdateAcceptedTerms(this.hdid, Guid.Empty, It.IsAny<CancellationToken>());
             expected.ShouldDeepEqual(actualResult);
         }
 
@@ -583,24 +591,24 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
             Mock<IHttpContextAccessor> httpContextAccessorMock = CreateValidHttpContext(this.token, this.userId, this.hdid);
 
             Mock<IUserProfileService> userProfileServiceMock = new();
-            userProfileServiceMock.Setup(s => s.GetUserProfile(this.hdid, It.IsAny<DateTime>())).Returns(Task.FromResult(expected));
-            userProfileServiceMock.Setup(s => s.GetActiveTermsOfService()).Returns(new RequestResult<TermsOfServiceModel>());
-            userProfileServiceMock.Setup(s => s.GetUserPreferences(this.hdid))
-                .Returns(new RequestResult<Dictionary<string, UserPreferenceModel>> { ResourcePayload = userPreferencePayloadMock });
+            userProfileServiceMock.Setup(s => s.GetUserProfileAsync(this.hdid, It.IsAny<DateTime>(), It.IsAny<CancellationToken>())).ReturnsAsync(expected);
+            userProfileServiceMock.Setup(s => s.GetActiveTermsOfServiceAsync(It.IsAny<CancellationToken>())).ReturnsAsync(new RequestResult<TermsOfServiceModel>());
+            userProfileServiceMock.Setup(s => s.GetUserPreferencesAsync(this.hdid, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new RequestResult<Dictionary<string, UserPreferenceModel>> { ResourcePayload = userPreferencePayloadMock });
 
             Mock<IUserEmailService> emailServiceMock = new();
             Mock<IUserSmsService> smsServiceMock = new();
 
-            UserProfileController service = new(
+            UserProfileController controller = new(
                 userProfileServiceMock.Object,
                 httpContextAccessorMock.Object,
                 emailServiceMock.Object,
                 smsServiceMock.Object,
                 new Mock<IAuthenticationDelegate>().Object);
-            return await service.GetUserProfile(this.hdid);
+            return await controller.GetUserProfile(this.hdid, It.IsAny<CancellationToken>());
         }
 
-        private ActionResult<RequestResult<UserPreferenceModel>> UpdateUserPreference(UserPreferenceModel? userPref)
+        private async Task<ActionResult<RequestResult<UserPreferenceModel>>> UpdateUserPreference(UserPreferenceModel? userPref)
         {
             // Setup
             Mock<IHttpContextAccessor> httpContextAccessorMock = CreateValidHttpContext(this.token, this.userId, this.hdid);
@@ -612,21 +620,21 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
                 ResultStatus = ResultType.Success,
             };
 
-            userProfileServiceMock.Setup(s => s.UpdateUserPreference(userPref)).Returns(requestResult);
+            userProfileServiceMock.Setup(s => s.UpdateUserPreferenceAsync(userPref, It.IsAny<CancellationToken>())).ReturnsAsync(requestResult);
 
             Mock<IUserEmailService> emailServiceMock = new();
             Mock<IUserSmsService> smsServiceMock = new();
 
-            UserProfileController service = new(
+            UserProfileController controller = new(
                 userProfileServiceMock.Object,
                 httpContextAccessorMock.Object,
                 emailServiceMock.Object,
                 smsServiceMock.Object,
                 new Mock<IAuthenticationDelegate>().Object);
-            return service.UpdateUserPreference(this.hdid, userPref);
+            return await controller.UpdateUserPreference(this.hdid, userPref, It.IsAny<CancellationToken>());
         }
 
-        private ActionResult<RequestResult<UserPreferenceModel>> CreateUserPreference(UserPreferenceModel? userPref)
+        private async Task<ActionResult<RequestResult<UserPreferenceModel>>> CreateUserPreference(UserPreferenceModel? userPref)
         {
             // Setup
             Mock<IHttpContextAccessor> httpContextAccessorMock = CreateValidHttpContext(this.token, this.userId, this.hdid);
@@ -638,18 +646,18 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
                 ResultStatus = ResultType.Success,
             };
 
-            userProfileServiceMock.Setup(s => s.CreateUserPreference(userPref)).Returns(requestResult);
+            userProfileServiceMock.Setup(s => s.CreateUserPreferenceAsync(userPref, It.IsAny<CancellationToken>())).ReturnsAsync(requestResult);
 
             Mock<IUserEmailService> emailServiceMock = new();
             Mock<IUserSmsService> smsServiceMock = new();
 
-            UserProfileController service = new(
+            UserProfileController controller = new(
                 userProfileServiceMock.Object,
                 httpContextAccessorMock.Object,
                 emailServiceMock.Object,
                 smsServiceMock.Object,
                 new Mock<IAuthenticationDelegate>().Object);
-            return service.CreateUserPreference(this.hdid, userPref);
+            return await controller.CreateUserPreference(this.hdid, userPref, It.IsAny<CancellationToken>());
         }
     }
 }

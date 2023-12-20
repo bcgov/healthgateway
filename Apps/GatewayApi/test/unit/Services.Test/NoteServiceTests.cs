@@ -20,6 +20,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
     using System.Globalization;
     using System.Linq;
     using System.Threading;
+    using System.Threading.Tasks;
     using AutoMapper;
     using DeepEqual.Syntax;
     using HealthGateway.AccountDataAccess.Patient;
@@ -51,10 +52,12 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         /// <summary>
         /// GetNotes - Happy Path.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void ShouldGetNotes()
+        public async Task ShouldGetNotes()
         {
-            (RequestResult<IEnumerable<UserNote>> actualResult, List<UserNote> userNoteList) = this.ExecuteGetNotes("abc");
+            (Task<RequestResult<IEnumerable<UserNote>>> task, List<UserNote> userNoteList) = this.ExecuteGetNotes("abc");
+            RequestResult<IEnumerable<UserNote>> actualResult = await task;
 
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             actualResult.ResourcePayload.ShouldDeepEqual(userNoteList);
@@ -63,10 +66,12 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         /// <summary>
         /// GetNotes - Blocked Access.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void ShouldGetNotesGivenBlockedAccess()
+        public async Task ShouldGetNotesGivenBlockedAccess()
         {
-            (RequestResult<IEnumerable<UserNote>> actualResult, _) = this.ExecuteGetNotes("abc", DbStatusCode.Error, false);
+            (Task<RequestResult<IEnumerable<UserNote>>> task, _) = this.ExecuteGetNotes("abc", DbStatusCode.Error, false);
+            RequestResult<IEnumerable<UserNote>> actualResult = await task;
 
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             Assert.Empty(actualResult.ResourcePayload);
@@ -75,10 +80,12 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         /// <summary>
         /// GetNotes - Database Error.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void ShouldGetNotesWithDbError()
+        public async Task ShouldGetNotesWithDbError()
         {
-            (RequestResult<IEnumerable<UserNote>> actualResult, _) = this.ExecuteGetNotes("abc", DbStatusCode.Error);
+            (Task<RequestResult<IEnumerable<UserNote>>> task, _) = this.ExecuteGetNotes("abc", DbStatusCode.Error);
+            RequestResult<IEnumerable<UserNote>> actualResult = await task;
 
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
             Assert.True(actualResult.ResultError?.ErrorCode.EndsWith("-CI-DB", StringComparison.InvariantCulture));
@@ -87,10 +94,12 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         /// <summary>
         /// GetNotes - Happy Path with No Existing Encryption Key.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void ShouldGetNotesWithProfileKeyNotSet()
+        public async Task ShouldGetNotesWithProfileKeyNotSet()
         {
-            (RequestResult<IEnumerable<UserNote>> actualResult, List<UserNote> userNoteList) = this.ExecuteGetNotes();
+            (Task<RequestResult<IEnumerable<UserNote>>> task, List<UserNote> userNoteList) = this.ExecuteGetNotes();
+            RequestResult<IEnumerable<UserNote>> actualResult = await task;
 
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             actualResult.ResourcePayload.ShouldDeepEqual(userNoteList);
@@ -99,11 +108,13 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         /// <summary>
         /// InsertNote - Happy Path.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void ShouldInsertNote()
+        public async Task ShouldInsertNote()
         {
-            (RequestResult<UserNote> actualResult, UserNote userNote) = this.ExecuteCreateNote();
+            (Task<RequestResult<UserNote>> task, UserNote userNote) = this.ExecuteCreateNote();
 
+            RequestResult<UserNote> actualResult = await task;
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             Assert.Null(actualResult.ResultError);
             userNote.ShouldDeepEqual(actualResult.ResourcePayload);
@@ -112,10 +123,12 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         /// <summary>
         /// InsertNote - Database Error.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void ShouldInsertNoteWithDbError()
+        public async Task ShouldInsertNoteWithDbError()
         {
-            (RequestResult<UserNote> actualResult, _) = this.ExecuteCreateNote(DbStatusCode.Error);
+            (Task<RequestResult<UserNote>> task, _) = this.ExecuteCreateNote(DbStatusCode.Error);
+            RequestResult<UserNote> actualResult = await task;
 
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
             Assert.Equal(ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database), actualResult.ResultError?.ErrorCode);
@@ -124,10 +137,12 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         /// <summary>
         /// UpdateNote - Happy Path.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void ShouldUpdateNote()
+        public async Task ShouldUpdateNote()
         {
-            (RequestResult<UserNote> actualResult, UserNote userNote) = this.ExecuteUpdateNote();
+            (Task<RequestResult<UserNote>> task, UserNote userNote) = this.ExecuteUpdateNote();
+            RequestResult<UserNote> actualResult = await task;
 
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             userNote.ShouldDeepEqual(actualResult.ResourcePayload);
@@ -136,10 +151,12 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         /// <summary>
         /// UpdateNote - Database Error.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void ShouldUpdateNoteWithDbError()
+        public async Task ShouldUpdateNoteWithDbError()
         {
-            (RequestResult<UserNote> actualResult, _) = this.ExecuteUpdateNote(DbStatusCode.Error);
+            (Task<RequestResult<UserNote>> task, _) = this.ExecuteUpdateNote(DbStatusCode.Error);
+            RequestResult<UserNote> actualResult = await task;
 
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
             Assert.Equal(ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database), actualResult.ResultError?.ErrorCode);
@@ -148,10 +165,12 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         /// <summary>
         /// DeleteNote - Happy Path.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void ShouldDeleteNote()
+        public async Task ShouldDeleteNote()
         {
-            (RequestResult<UserNote> actualResult, UserNote userNote) = this.ExecuteDeleteNote();
+            (Task<RequestResult<UserNote>> task, UserNote userNote) = this.ExecuteDeleteNote();
+            RequestResult<UserNote> actualResult = await task;
 
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             Assert.Null(actualResult.ResultError);
@@ -161,10 +180,12 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         /// <summary>
         /// DeleteNote - Database Error.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void ShouldDeleteNoteWithDbError()
+        public async Task ShouldDeleteNoteWithDbError()
         {
-            (RequestResult<UserNote> actualResult, _) = this.ExecuteDeleteNote(DbStatusCode.Error);
+            (Task<RequestResult<UserNote>> task, _) = this.ExecuteDeleteNote(DbStatusCode.Error);
+            RequestResult<UserNote> actualResult = await task;
 
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
             Assert.NotNull(actualResult.ResultError);
@@ -173,18 +194,16 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         /// <summary>
         /// InsertNote - No Encryption Key Error.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void ShouldInsertNoteWithNoKeyError()
+        public async Task ShouldInsertNoteWithNoKeyError()
         {
             string? encryptionKey = null;
-            DbResult<UserProfile> profileDbResult = new()
-            {
-                Payload = new UserProfile
-                { EncryptionKey = encryptionKey },
-            };
+            UserProfile? userProfile = new()
+                { EncryptionKey = encryptionKey };
 
             Mock<IUserProfileDelegate> profileDelegateMock = new();
-            profileDelegateMock.Setup(s => s.GetUserProfile(this.hdid)).Returns(profileDbResult);
+            profileDelegateMock.Setup(s => s.GetUserProfileAsync(this.hdid, It.IsAny<CancellationToken>())).ReturnsAsync(userProfile);
 
             UserNote userNote = new()
             {
@@ -202,7 +221,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 new Mock<IPatientRepository>().Object,
                 this.autoMapper);
 
-            RequestResult<UserNote> actualResult = service.CreateNote(userNote);
+            RequestResult<UserNote> actualResult = await service.CreateNoteAsync(userNote);
 
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
         }
@@ -210,18 +229,18 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         /// <summary>
         /// UpdateNote - No Encryption Key Error.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void ShouldUpdateNoteWithNoKeyError()
+        public async Task ShouldUpdateNoteWithNoKeyError()
         {
             string? encryptionKey = null;
-            DbResult<UserProfile> profileDbResult = new()
+            UserProfile userProfile = new()
             {
-                Payload = new UserProfile
-                { EncryptionKey = encryptionKey },
+                EncryptionKey = encryptionKey,
             };
 
             Mock<IUserProfileDelegate> profileDelegateMock = new();
-            profileDelegateMock.Setup(s => s.GetUserProfile(this.hdid)).Returns(profileDbResult);
+            profileDelegateMock.Setup(s => s.GetUserProfileAsync(this.hdid, It.IsAny<CancellationToken>())).ReturnsAsync(userProfile);
 
             UserNote userNote = new()
             {
@@ -239,7 +258,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 new Mock<IPatientRepository>().Object,
                 this.autoMapper);
 
-            RequestResult<UserNote> actualResult = service.UpdateNote(userNote);
+            RequestResult<UserNote> actualResult = await service.UpdateNoteAsync(userNote);
 
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
         }
@@ -247,18 +266,18 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         /// <summary>
         /// DeleteNote - No Encryption Key Error.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void ShouldDeleteNoteWithNoKeyError()
+        public async Task ShouldDeleteNoteWithNoKeyError()
         {
             string? encryptionKey = null;
-            DbResult<UserProfile> profileDbResult = new()
+            UserProfile userProfile = new()
             {
-                Payload = new UserProfile
-                { EncryptionKey = encryptionKey },
+                EncryptionKey = encryptionKey,
             };
 
             Mock<IUserProfileDelegate> profileDelegateMock = new();
-            profileDelegateMock.Setup(s => s.GetUserProfile(this.hdid)).Returns(profileDbResult);
+            profileDelegateMock.Setup(s => s.GetUserProfileAsync(this.hdid, It.IsAny<CancellationToken>())).ReturnsAsync(userProfile);
 
             UserNote userNote = new()
             {
@@ -276,23 +295,24 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 new Mock<IPatientRepository>().Object,
                 this.autoMapper);
 
-            RequestResult<UserNote> actualResult = service.DeleteNote(userNote);
+            RequestResult<UserNote> actualResult = await service.DeleteNoteAsync(userNote);
 
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
         }
 
-        private (RequestResult<IEnumerable<UserNote>> ActualResult, List<UserNote> ExpectedPayload) ExecuteGetNotes(
+        private (Task<RequestResult<IEnumerable<UserNote>>> ActualResult, List<UserNote> ExpectedPayload) ExecuteGetNotes(
             string? encryptionKey = null,
             DbStatusCode notesDbResultStatus = DbStatusCode.Read,
             bool canAccessDataSource = true)
         {
-            DbResult<UserProfile> profileDbResult = new()
-            {
-                Payload = new UserProfile { EncryptionKey = encryptionKey },
-            };
-
+            UserProfile userProfile = new()
+                { EncryptionKey = encryptionKey };
             Mock<IUserProfileDelegate> profileDelegateMock = new();
-            profileDelegateMock.Setup(s => s.GetUserProfile(this.hdid)).Returns(profileDbResult);
+            profileDelegateMock.Setup(s => s.GetUserProfileAsync(this.hdid, It.IsAny<CancellationToken>())).ReturnsAsync(userProfile);
+            profileDelegateMock.Setup(s => s.UpdateAsync(It.IsAny<UserProfile>(), false, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(
+                    new DbResult<UserProfile>
+                        { Status = DbStatusCode.Deferred, Payload = userProfile });
 
             Mock<ICryptoDelegate> cryptoDelegateMock = new();
             cryptoDelegateMock.Setup(s => s.GenerateKey()).Returns(() => "Y1FmVGpXblpxNHQ3dyF6JUMqRi1KYU5kUmdVa1hwMnM=");
@@ -339,7 +359,11 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             };
 
             Mock<INoteDelegate> noteDelegateMock = new();
-            noteDelegateMock.Setup(s => s.GetNotes(this.hdid, 0, 500)).Returns(notesDbResult);
+            noteDelegateMock.Setup(s => s.GetNotesAsync(this.hdid, 0, 500, It.IsAny<CancellationToken>())).ReturnsAsync(notesDbResult);
+            noteDelegateMock.Setup(s => s.BatchUpdateAsync(It.IsAny<IEnumerable<Note>>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(
+                    new DbResult<IEnumerable<Note>>
+                        { Status = DbStatusCode.Updated });
 
             Mock<IPatientRepository> patientRepository = new();
             patientRepository.Setup(p => p.CanAccessDataSourceAsync(It.IsAny<string>(), It.IsAny<DataSource>(), It.IsAny<CancellationToken>())).ReturnsAsync(canAccessDataSource);
@@ -352,22 +376,18 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 patientRepository.Object,
                 this.autoMapper);
 
-            RequestResult<IEnumerable<UserNote>> actualResult = service.GetNotes(this.hdid);
+            Task<RequestResult<IEnumerable<UserNote>>> actualResult = service.GetNotesAsync(this.hdid);
 
             return (actualResult, expectedPayload);
         }
 
-        private (RequestResult<UserNote> ActualResult, UserNote UserNote) ExecuteCreateNote(DbStatusCode dBStatusCode = DbStatusCode.Created)
+        private (Task<RequestResult<UserNote>> ActualResult, UserNote UserNote) ExecuteCreateNote(DbStatusCode dBStatusCode = DbStatusCode.Created)
         {
             string encryptionKey = "abc";
-            DbResult<UserProfile> profileDbResult = new()
-            {
-                Payload = new UserProfile
-                { EncryptionKey = encryptionKey },
-            };
-
+            UserProfile userProfile = new()
+                { EncryptionKey = encryptionKey };
             Mock<IUserProfileDelegate> profileDelegateMock = new();
-            profileDelegateMock.Setup(s => s.GetUserProfile(this.hdid)).Returns(profileDbResult);
+            profileDelegateMock.Setup(s => s.GetUserProfileAsync(this.hdid, It.IsAny<CancellationToken>())).ReturnsAsync(userProfile);
 
             Mock<ICryptoDelegate> cryptoDelegateMock = new();
             cryptoDelegateMock.Setup(s => s.Encrypt(It.IsAny<string>(), It.IsAny<string>())).Returns((string key, string text) => text + key);
@@ -390,7 +410,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             };
 
             Mock<INoteDelegate> noteDelegateMock = new();
-            noteDelegateMock.Setup(s => s.AddNote(It.Is<Note>(x => x.Text == note.Text), true)).Returns(insertResult);
+            noteDelegateMock.Setup(s => s.AddNoteAsync(It.Is<Note>(x => x.Text == note.Text), true, It.IsAny<CancellationToken>())).ReturnsAsync(insertResult);
 
             INoteService service = new NoteService(
                 new Mock<ILogger<NoteService>>().Object,
@@ -400,21 +420,18 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 new Mock<IPatientRepository>().Object,
                 this.autoMapper);
 
-            RequestResult<UserNote> actualResult = service.CreateNote(userNote);
+            Task<RequestResult<UserNote>> actualResult = service.CreateNoteAsync(userNote);
             return (actualResult, userNote);
         }
 
-        private (RequestResult<UserNote> ActualResult, UserNote UserNote) ExecuteUpdateNote(DbStatusCode dBStatusCode = DbStatusCode.Updated)
+        private (Task<RequestResult<UserNote>> ActualResult, UserNote UserNote) ExecuteUpdateNote(DbStatusCode dBStatusCode = DbStatusCode.Updated)
         {
             string encryptionKey = "abc";
-            DbResult<UserProfile> profileDbResult = new()
-            {
-                Payload = new UserProfile
-                { EncryptionKey = encryptionKey },
-            };
+            UserProfile userProfile = new()
+                { EncryptionKey = encryptionKey };
 
             Mock<IUserProfileDelegate> profileDelegateMock = new();
-            profileDelegateMock.Setup(s => s.GetUserProfile(this.hdid)).Returns(profileDbResult);
+            profileDelegateMock.Setup(s => s.GetUserProfileAsync(this.hdid, It.IsAny<CancellationToken>())).ReturnsAsync(userProfile);
 
             Mock<ICryptoDelegate> cryptoDelegateMock = new();
             cryptoDelegateMock.Setup(s => s.Encrypt(It.IsAny<string>(), It.IsAny<string>())).Returns((string key, string text) => text + key);
@@ -437,7 +454,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             };
 
             Mock<INoteDelegate> noteDelegateMock = new();
-            noteDelegateMock.Setup(s => s.UpdateNote(It.Is<Note>(x => x.Text == note.Text), true)).Returns(updateResult);
+            noteDelegateMock.Setup(s => s.UpdateNoteAsync(It.Is<Note>(x => x.Text == note.Text), true, It.IsAny<CancellationToken>())).ReturnsAsync(updateResult);
 
             INoteService service = new NoteService(
                 new Mock<ILogger<NoteService>>().Object,
@@ -447,21 +464,18 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 new Mock<IPatientRepository>().Object,
                 this.autoMapper);
 
-            RequestResult<UserNote> actualResult = service.UpdateNote(userNote);
+            Task<RequestResult<UserNote>> actualResult = service.UpdateNoteAsync(userNote);
             return (actualResult, userNote);
         }
 
-        private (RequestResult<UserNote> ActualResult, UserNote UserNote) ExecuteDeleteNote(DbStatusCode dBStatusCode = DbStatusCode.Deleted)
+        private (Task<RequestResult<UserNote>> ActualResult, UserNote UserNote) ExecuteDeleteNote(DbStatusCode dBStatusCode = DbStatusCode.Deleted)
         {
             string encryptionKey = "abc";
-            DbResult<UserProfile> profileDbResult = new()
-            {
-                Payload = new UserProfile
-                { EncryptionKey = encryptionKey },
-            };
+            UserProfile? userProfile = new()
+                { EncryptionKey = encryptionKey };
 
             Mock<IUserProfileDelegate> profileDelegateMock = new();
-            profileDelegateMock.Setup(s => s.GetUserProfile(this.hdid)).Returns(profileDbResult);
+            profileDelegateMock.Setup(s => s.GetUserProfileAsync(this.hdid, It.IsAny<CancellationToken>())).ReturnsAsync(userProfile);
 
             Mock<ICryptoDelegate> cryptoDelegateMock = new();
             cryptoDelegateMock.Setup(s => s.Encrypt(It.IsAny<string>(), It.IsAny<string>())).Returns((string key, string text) => text + key);
@@ -484,7 +498,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             };
 
             Mock<INoteDelegate> noteDelegateMock = new();
-            noteDelegateMock.Setup(s => s.DeleteNote(It.Is<Note>(x => x.Text == note.Text), true)).Returns(deleteResult);
+            noteDelegateMock.Setup(s => s.DeleteNoteAsync(It.Is<Note>(x => x.Text == note.Text), true, It.IsAny<CancellationToken>())).ReturnsAsync(deleteResult);
 
             INoteService service = new NoteService(
                 new Mock<ILogger<NoteService>>().Object,
@@ -494,7 +508,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 new Mock<IPatientRepository>().Object,
                 this.autoMapper);
 
-            RequestResult<UserNote> actualResult = service.DeleteNote(userNote);
+            Task<RequestResult<UserNote>> actualResult = service.DeleteNoteAsync(userNote);
             return (actualResult, userNote);
         }
     }

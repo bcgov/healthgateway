@@ -17,6 +17,7 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
 {
     using System;
     using System.Collections.Generic;
+    using System.Threading;
     using System.Threading.Tasks;
     using DeepEqual.Syntax;
     using HealthGateway.Common.Data.Constants;
@@ -51,7 +52,7 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
                 ResourcePayload = expectedDependents,
                 ResultStatus = ResultType.Success,
             };
-            dependentServiceMock.Setup(s => s.GetDependentsAsync(this.hdid, It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(expectedResult);
+            dependentServiceMock.Setup(s => s.GetDependentsAsync(this.hdid, It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>())).ReturnsAsync(expectedResult);
 
             PhsaController phsaController = new(
                 dependentServiceMock.Object,
@@ -65,8 +66,9 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
         /// <summary>
         /// GetDependents by date - Happy path scenario.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void ShouldGetDependentsByDate()
+        public async Task ShouldGetDependentsByDate()
         {
             Mock<IDependentService> dependentServiceMock = new();
             IEnumerable<GetDependentResponse> expectedDependents = GetMockDependentResponses();
@@ -75,12 +77,17 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
                 ResourcePayload = expectedDependents,
                 ResultStatus = ResultType.Success,
             };
-            dependentServiceMock.Setup(s => s.GetDependents(this.fromDate, this.toDate, 0, 5000)).Returns(expectedResult);
+            dependentServiceMock.Setup(s => s.GetDependentsAsync(this.fromDate, this.toDate, It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>())).ReturnsAsync(expectedResult);
 
             PhsaController phsaController = new(
                 dependentServiceMock.Object,
                 new Mock<IPatientDetailsService>().Object);
-            ActionResult<RequestResult<IEnumerable<GetDependentResponse>>> actualResult = phsaController.GetAll(this.fromDate, this.toDate);
+            ActionResult<RequestResult<IEnumerable<GetDependentResponse>>> actualResult = await phsaController.GetAll(
+                this.fromDate,
+                this.toDate,
+                It.IsAny<int>(),
+                It.IsAny<int>(),
+                It.IsAny<CancellationToken>());
 
             RequestResult<IEnumerable<GetDependentResponse>>? actualRequestResult = actualResult.Value;
             expectedResult.ShouldDeepEqual(actualRequestResult);

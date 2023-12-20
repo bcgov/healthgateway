@@ -49,14 +49,14 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public DbResult<UserFeedback> InsertUserFeedback(UserFeedback feedback)
+        public async Task<DbResult<UserFeedback>> InsertUserFeedbackAsync(UserFeedback feedback, CancellationToken ct = default)
         {
             this.logger.LogTrace("Inserting user feedback to DB...");
             DbResult<UserFeedback> result = new();
-            this.dbContext.Add(feedback);
+            await this.dbContext.AddAsync(feedback, ct);
             try
             {
-                this.dbContext.SaveChanges();
+                await this.dbContext.SaveChangesAsync(ct);
                 result.Status = DbStatusCode.Created;
             }
             catch (DbUpdateException e)
@@ -70,7 +70,7 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public void UpdateUserFeedback(UserFeedback feedback)
+        public async Task UpdateUserFeedbackAsync(UserFeedback feedback, CancellationToken ct = default)
         {
             this.logger.LogTrace("Updating the user feedback in DB...");
             this.dbContext.Update(feedback);
@@ -78,16 +78,16 @@ namespace HealthGateway.Database.Delegates
             // Disallow updates to UserProfileId
             this.dbContext.Entry(feedback).Property(p => p.UserProfileId).IsModified = false;
 
-            this.dbContext.SaveChanges();
+            await this.dbContext.SaveChangesAsync(ct);
 
             // Reload the entry after saving to retrieve the actual UserProfileId value
-            this.dbContext.Entry(feedback).Reload();
+            await this.dbContext.Entry(feedback).ReloadAsync(ct);
 
             this.logger.LogDebug("Finished updating feedback in DB...");
         }
 
         /// <inheritdoc/>
-        public DbResult<UserFeedback> UpdateUserFeedbackWithTagAssociations(UserFeedback feedback)
+        public async Task<DbResult<UserFeedback>> UpdateUserFeedbackWithTagAssociationsAsync(UserFeedback feedback, CancellationToken ct = default)
         {
             this.logger.LogTrace("Updating the user feedback id {UserFeedbackId} with {NumberOfAssociations} admin tag association in DB", feedback.Id, feedback.Tags.Count);
             this.dbContext.Update(feedback);
@@ -95,7 +95,7 @@ namespace HealthGateway.Database.Delegates
 
             try
             {
-                this.dbContext.SaveChanges();
+                await this.dbContext.SaveChangesAsync(ct);
                 result.Status = DbStatusCode.Updated;
                 result.Payload = feedback;
             }
