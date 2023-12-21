@@ -4,7 +4,7 @@ const { isFileExist, findFiles } = require("cy-verify-downloads");
 module.exports = defineConfig({
     projectId: "rccf87",
     e2e: {
-        baseUrl: "https://dev-admin-k.healthgateway.gov.bc.ca",
+        baseUrl: "https://dev-admin.healthgateway.gov.bc.ca",
         defaultCommandTimeout: 30000,
         blockHosts: ["spt.apps.gov.bc.ca"],
         specPattern: "cypress/integration/**/*.cy.{js,jsx,ts,tsx}",
