@@ -45,11 +45,7 @@ export default abstract class ErrorTranslator {
     }
 
     public static featureDisabledError(service: ServiceCode): ResultError {
-        return new ResultError(
-            "ClientApp-I-" + service,
-            "Feature Disabled",
-            ""
-        );
+        return new ResultError("ClientApp-I-" + service, "Feature Disabled");
     }
 
     private static getErrorTitle(

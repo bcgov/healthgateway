@@ -213,7 +213,7 @@ export const useUserStore = defineStore("user", () => {
         errorSource: ErrorSourceType
     ) {
         logger.error(`Error: ${JSON.stringify(resultError)}`);
-        setUserError(resultError.resultMessage);
+        setUserError(resultError.message);
 
         if (resultError.statusCode === 429) {
             const errorKey = "page";
@@ -252,7 +252,7 @@ export const useUserStore = defineStore("user", () => {
                 setProfileUserData(userProfile);
             })
             .catch((resultError: ResultError) => {
-                setUserError(resultError.resultMessage);
+                setUserError(resultError.message);
                 throw resultError;
             });
     }
@@ -265,7 +265,7 @@ export const useUserStore = defineStore("user", () => {
                 setProfileUserData(userProfile);
             })
             .catch((resultError: ResultError) => {
-                setUserError(resultError.resultMessage);
+                setUserError(resultError.message);
                 throw resultError;
             });
     }
@@ -283,7 +283,7 @@ export const useUserStore = defineStore("user", () => {
                 }
             })
             .catch((resultError: ResultError) => {
-                setUserError(resultError.resultMessage);
+                setUserError(resultError.message);
                 throw resultError;
             });
     }
@@ -316,7 +316,7 @@ export const useUserStore = defineStore("user", () => {
                 }
             })
             .catch((resultError: ResultError) => {
-                setUserError(resultError.resultMessage);
+                setUserError(resultError.message);
                 throw resultError;
             });
     }
@@ -378,7 +378,7 @@ export const useUserStore = defineStore("user", () => {
             .closeAccount(user.value.hdid)
             .then(retrieveProfile)
             .catch((resultError: ResultError) => {
-                setUserError(resultError.resultMessage);
+                setUserError(resultError.message);
                 throw resultError;
             });
     }
@@ -388,7 +388,7 @@ export const useUserStore = defineStore("user", () => {
             .recoverAccount(user.value.hdid)
             .then(retrieveProfile)
             .catch((resultError: ResultError) => {
-                setUserError(resultError.resultMessage);
+                setUserError(resultError.message);
                 throw resultError;
             });
     }

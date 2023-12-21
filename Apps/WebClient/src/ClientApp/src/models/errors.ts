@@ -13,7 +13,9 @@ export interface CustomBannerError {
 }
 
 export class HttpError extends Error {
+    // The HTTP status code returned by the request.
     statusCode?: number;
+
     constructor(message: string, statusCode?: number) {
         super(message);
         this.statusCode = statusCode;
@@ -21,8 +23,6 @@ export class HttpError extends Error {
 }
 
 export class ResultError extends Error {
-    // The result message associated with the request. Will always be populated when ResultType is Error.
-    resultMessage: string;
     // The error code associated with the request. Will always be populated when ResultType is Error.
     errorCode: string;
     // The trace ID associated with the request.
@@ -35,12 +35,11 @@ export class ResultError extends Error {
     constructor(
         errorCode: string,
         resultMessage: string,
-        traceId: string,
+        traceId: string = "",
         statusCode?: number
     ) {
         super(resultMessage);
         this.errorCode = errorCode;
-        this.resultMessage = resultMessage;
         this.traceId = traceId;
         this.statusCode = statusCode;
     }

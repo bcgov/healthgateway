@@ -38,7 +38,7 @@ export const useNoteStore = defineStore("note", () => {
     function handleError(resultError: ResultError, errorType: ErrorType): void {
         logger.error(`ERROR: ${JSON.stringify(resultError)}`);
         error.value = resultError;
-        statusMessage.value = resultError.resultMessage;
+        statusMessage.value = resultError.message;
         status.value = LoadStatus.ERROR;
 
         if (resultError.statusCode === 429) {

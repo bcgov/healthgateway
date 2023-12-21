@@ -99,14 +99,15 @@ export class RestPatientDataService implements IPatientDataService {
                 patientDataTypeToEntryTypeMap.get(patientDataType);
 
             if (serviceName && !ConfigUtil.isServiceEnabled(serviceName)) {
-                throw {
-                    resultMessage: `Service ${serviceName} is not enabled`,
-                } as ResultError;
+                throw new ResultError(
+                    "someCode",
+                    `Service ${serviceName} is not enabled`
+                );
             }
 
             if (datasetName && !ConfigUtil.isDatasetEnabled(datasetName)) {
                 throw {
-                    resultMessage: `Dataset ${datasetName} is not enabled`,
+                    message: `Dataset ${datasetName} is not enabled`,
                 } as ResultError;
             }
         }

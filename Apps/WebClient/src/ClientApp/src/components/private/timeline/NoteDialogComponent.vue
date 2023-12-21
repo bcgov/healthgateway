@@ -113,7 +113,7 @@ function updateNote(): void {
                 if (error.statusCode === 429) {
                     errorStore.setTooManyRequestsError("noteDialog");
                 } else {
-                    errorMessage.value = error.resultMessage;
+                    errorMessage.value = error.message;
                 }
             })
     );
@@ -141,7 +141,7 @@ function createNote(): void {
                 if (err.statusCode === 429) {
                     errorStore.setTooManyRequestsError("noteDialog");
                 } else {
-                    errorMessage.value = err.resultMessage;
+                    errorMessage.value = err.message;
                 }
             })
     );

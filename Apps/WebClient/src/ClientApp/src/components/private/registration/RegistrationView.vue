@@ -179,7 +179,7 @@ function loadTermsOfService(): void {
             termsOfService.value = result;
         })
         .catch((err: ResultError) => {
-            logger.error(err.resultMessage);
+            logger.error(err.message);
             if (err.statusCode === 429) {
                 errorStore.setTooManyRequestsWarning("page");
             } else {

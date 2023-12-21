@@ -170,7 +170,7 @@ export const useVaccinationStatusPublicStore = defineStore(
 
                 if (error.actionCode === ActionType.DataMismatch) {
                     customBannerError.title = "Data Mismatch";
-                    customBannerError.description = error.resultMessage;
+                    customBannerError.description = error.message;
                 }
                 setVaccinationStatusError(customBannerError);
             }

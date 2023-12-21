@@ -351,7 +351,7 @@ function handleError(err: ResultError, domain: string): void {
     if (err.statusCode === 429) {
         errorStore.setTooManyRequestsError("page");
     } else if (err.actionCode == ActionType.Processed) {
-        errorMessage.value = err.resultMessage;
+        errorMessage.value = err.message;
     } else {
         errorStore.addCustomError(
             "Unable to register test kit",
