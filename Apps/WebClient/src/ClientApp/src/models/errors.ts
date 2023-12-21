@@ -12,12 +12,15 @@ export interface CustomBannerError {
     detail?: string;
 }
 
-export interface HttpError {
-    message: string;
+export class HttpError extends Error {
     statusCode?: number;
+    constructor(message: string, statusCode?: number) {
+        super(message);
+        this.statusCode = statusCode;
+    }
 }
 
-export interface ResultError {
+export class ResultError extends Error {
     // The result message associated with the request. Will always be populated when ResultType is Error.
     resultMessage: string;
     // The error code associated with the request. Will always be populated when ResultType is Error.
@@ -28,6 +31,19 @@ export interface ResultError {
     actionCode?: ActionType;
     // The HTTP status code returned by the request.
     statusCode?: number;
+
+    constructor(
+        errorCode: string,
+        resultMessage: string,
+        traceId: string,
+        statusCode?: number
+    ) {
+        super(resultMessage);
+        this.errorCode = errorCode;
+        this.resultMessage = resultMessage;
+        this.traceId = traceId;
+        this.statusCode = statusCode;
+    }
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
