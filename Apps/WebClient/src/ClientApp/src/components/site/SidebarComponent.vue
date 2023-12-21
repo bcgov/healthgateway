@@ -137,7 +137,7 @@ watch(isSidebarOpen, (value: boolean) => {
                 title="Feedback"
                 data-testid="menu-btn-feedback-link"
                 class="bg-info"
-                @click.stop="feedbackDialog?.showDialog"
+                @click.stop="feedbackDialog?.showDialog()"
             >
                 <template #prepend>
                     <div class="nav-list-item-icon mr-8 d-flex justify-center">
