@@ -165,7 +165,7 @@ function addDependent(): void {
                 if (err.statusCode === 429) {
                     setTooManyRequestsError("addDependentDialog");
                 } else {
-                    errorMessage.value = err.resultMessage;
+                    errorMessage.value = err.message;
                     errorType.value = err.actionCode ?? null;
                 }
             })

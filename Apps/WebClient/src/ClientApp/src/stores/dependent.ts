@@ -57,7 +57,7 @@ export const useDependentStore = defineStore("dependent", () => {
 
     function setDependentsError(incomingError: ResultError) {
         error.value = incomingError;
-        statusMessage.value = incomingError.resultMessage;
+        statusMessage.value = incomingError.message;
         status.value = LoadStatus.ERROR;
     }
 
