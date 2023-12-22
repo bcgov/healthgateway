@@ -62,23 +62,10 @@ namespace HealthGateway.Common.Services
         }
 
         /// <inheritdoc/>
-        public void QueueNewEmail(string toEmail, string templateName, bool shouldCommit = true)
-        {
-            Dictionary<string, string> keyValues = new();
-            this.QueueNewEmail(toEmail, templateName, keyValues, shouldCommit);
-        }
-
-        /// <inheritdoc/>
         public async Task QueueNewEmailAsync(string toEmail, string templateName, bool shouldCommit = true, CancellationToken ct = default)
         {
             Dictionary<string, string> keyValues = new();
             await this.QueueNewEmailAsync(toEmail, templateName, keyValues, shouldCommit, ct);
-        }
-
-        /// <inheritdoc/>
-        public void QueueNewEmail(string toEmail, string templateName, Dictionary<string, string> keyValues, bool shouldCommit = true)
-        {
-            this.QueueNewEmail(toEmail, this.GetEmailTemplate(templateName), keyValues, shouldCommit);
         }
 
         /// <inheritdoc/>
@@ -90,93 +77,33 @@ namespace HealthGateway.Common.Services
         }
 
         /// <inheritdoc/>
-        public void QueueNewEmail(string toEmail, EmailTemplate emailTemplate, Dictionary<string, string> keyValues, bool shouldCommit = true)
-        {
-            this.QueueNewEmail(this.ProcessTemplate(toEmail, emailTemplate, keyValues), shouldCommit);
-        }
-
-        /// <inheritdoc/>
         public async Task QueueNewEmailAsync(string toEmail, EmailTemplate emailTemplate, Dictionary<string, string> keyValues, bool shouldCommit = true, CancellationToken ct = default)
         {
             await this.QueueNewEmailAsync(this.ProcessTemplate(toEmail, emailTemplate, keyValues), shouldCommit, ct);
         }
 
         /// <inheritdoc/>
-        public void QueueNewEmail(Email email, bool shouldCommit = true)
-        {
-            if (string.IsNullOrWhiteSpace(email.To))
-            {
-                throw new ArgumentNullException(nameof(email), "Email To cannot be null or whitespace");
-            }
-
-            this.logger.LogTrace("Queueing email...");
-            if (email.Id == Guid.Empty)
-            {
-                this.emailDelegate.InsertEmail(email, shouldCommit);
-            }
-
-            if (shouldCommit)
-            {
-                this.jobClient.Enqueue<IEmailJob>(j => j.SendEmail(email.Id));
-            }
-
-            this.logger.LogDebug("Finished queueing email. {Id}", email.Id);
-        }
-
-        /// <inheritdoc/>
         public async Task QueueNewEmailAsync(Email email, bool shouldCommit = true, CancellationToken ct = default)
         {
+            Guid emailId = email.Id;
+
             if (string.IsNullOrWhiteSpace(email.To))
             {
                 throw new ArgumentNullException(nameof(email), "Email To cannot be null or whitespace");
             }
 
             this.logger.LogTrace("Queueing email...");
-            if (email.Id == Guid.Empty)
+            if (emailId == Guid.Empty)
             {
-                await this.emailDelegate.InsertEmailAsync(email, shouldCommit, ct);
+                emailId = await this.emailDelegate.InsertEmailAsync(email, shouldCommit, ct);
             }
 
             if (shouldCommit)
             {
-                this.jobClient.Enqueue<IEmailJob>(j => j.SendEmail(email.Id));
+                this.jobClient.Enqueue<IEmailJob>(j => j.SendEmailAsync(emailId, ct));
             }
 
             this.logger.LogDebug("Finished queueing email. {Id}", email.Id);
-        }
-
-        /// <inheritdoc/>
-        public void CloneAndQueue(Guid emailId, bool shouldCommit = true)
-        {
-            Email? oldEmail = this.emailDelegate.GetEmail(emailId);
-            if (oldEmail != null)
-            {
-                Email email = new()
-                {
-                    From = oldEmail.From,
-                    To = oldEmail.To,
-                    Subject = oldEmail.Subject,
-                    Body = oldEmail.Body,
-                    FormatCode = oldEmail.FormatCode,
-                    Priority = oldEmail.Priority,
-                    Personalization = oldEmail.Personalization,
-                    Template = oldEmail.Template,
-                };
-                this.QueueNewEmail(email, shouldCommit);
-            }
-            else
-            {
-                throw new ArgumentException($"emailID: {emailId} was not found in the DB", nameof(emailId));
-            }
-        }
-
-        /// <inheritdoc/>
-        public EmailTemplate GetEmailTemplate(string templateName)
-        {
-            this.logger.LogTrace("Getting email template... {TemplateName}", templateName);
-            EmailTemplate retVal = this.emailDelegate.GetEmailTemplate(templateName);
-            this.logger.LogDebug("Finished getting email template");
-            return retVal;
         }
 
         /// <inheritdoc/>
@@ -186,12 +113,6 @@ namespace HealthGateway.Common.Services
             EmailTemplate? retVal = await this.emailDelegate.GetEmailTemplateAsync(templateName, ct);
             this.logger.LogDebug("Finished getting email template");
             return retVal;
-        }
-
-        /// <inheritdoc/>
-        public Email ProcessTemplate(string toEmail, string templateName, Dictionary<string, string> keyValues)
-        {
-            return this.ProcessTemplate(toEmail, this.GetEmailTemplate(templateName), keyValues);
         }
 
         /// <inheritdoc/>
