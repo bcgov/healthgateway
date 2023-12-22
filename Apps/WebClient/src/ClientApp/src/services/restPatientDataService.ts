@@ -100,15 +100,16 @@ export class RestPatientDataService implements IPatientDataService {
 
             if (serviceName && !ConfigUtil.isServiceEnabled(serviceName)) {
                 throw new ResultError(
-                    "someCode",
+                    ServiceCode.PatientData,
                     `Service ${serviceName} is not enabled`
                 );
             }
 
             if (datasetName && !ConfigUtil.isDatasetEnabled(datasetName)) {
-                throw {
-                    message: `Dataset ${datasetName} is not enabled`,
-                } as ResultError;
+                throw new ResultError(
+                    ServiceCode.PatientData,
+                    `Dataset ${datasetName} is not enabled`
+                );
             }
         }
     }
