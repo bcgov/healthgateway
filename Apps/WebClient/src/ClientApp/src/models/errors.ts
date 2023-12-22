@@ -23,6 +23,8 @@ export class HttpError extends Error {
 }
 
 export class ResultError extends Error {
+    // API's ResultMessage mapping property. This should be treated as private and the message should be mapped to and preferred.
+    resultMessage?: string;
     // The error code associated with the request. Will always be populated when ResultType is Error.
     errorCode: string;
     // The trace ID associated with the request.
@@ -42,6 +44,19 @@ export class ResultError extends Error {
         this.errorCode = errorCode;
         this.traceId = traceId;
         this.statusCode = statusCode;
+    }
+
+    public static fromApiResultError(apiResultError: ResultError): ResultError {
+        const resultError = new ResultError(
+            apiResultError.errorCode,
+            apiResultError.resultMessage ??
+                apiResultError.message ??
+                "Unknown API Error",
+            apiResultError.traceId,
+            apiResultError.statusCode
+        );
+        resultError.actionCode = apiResultError.actionCode;
+        return resultError;
     }
 }
 
