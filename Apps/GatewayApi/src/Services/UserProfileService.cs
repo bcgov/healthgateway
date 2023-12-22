@@ -493,7 +493,7 @@ namespace HealthGateway.GatewayApi.Services
         private async Task<UserProfileModel> BuildUserProfileModelAsync(UserProfile userProfile, UserProfileHistory[]? profileHistoryCollection = null, CancellationToken ct = default)
         {
             Guid? termsOfServiceId = (await this.legalAgreementDelegate.GetActiveByAgreementTypeAsync(LegalAgreementType.TermsOfService, ct))?.Id;
-            DateTime? latestTourChangeDateTime = this.GetLatestTourChangeDateTime();
+            DateTime? latestTourChangeDateTime = await this.GetLatestTourChangeDateTimeAsync(ct);
             UserProfileModel userProfileModel = UserProfileMapUtils.CreateFromDbModel(userProfile, termsOfServiceId, this.autoMapper);
             userProfileModel.HasTourUpdated = profileHistoryCollection != null &&
                                               profileHistoryCollection.Length != 0 &&
@@ -503,17 +503,21 @@ namespace HealthGateway.GatewayApi.Services
             return userProfileModel;
         }
 
-        private DateTime? GetLatestTourChangeDateTime()
+        private async Task<DateTime?> GetLatestTourChangeDateTimeAsync(CancellationToken ct)
         {
-            return this.cacheProvider.GetOrSet<DateTime?>(
+            return await this.cacheProvider.GetOrSetAsync(
                 $"{TourApplicationSettings.Application}:{TourApplicationSettings.Component}:{TourApplicationSettings.LatestChangeDateTime}",
-                () =>
+                async () =>
                 {
-                    ApplicationSetting? applicationSetting = this.applicationSettingsDelegate.GetApplicationSetting(
+                    ApplicationSetting? applicationSetting = await this.applicationSettingsDelegate.GetApplicationSettingAsync(
                         TourApplicationSettings.Application,
                         TourApplicationSettings.Component,
-                        TourApplicationSettings.LatestChangeDateTime);
-                    return applicationSetting?.Value != null ? DateTime.Parse(applicationSetting.Value, CultureInfo.InvariantCulture).ToUniversalTime() : null;
+                        TourApplicationSettings.LatestChangeDateTime,
+                        ct);
+
+                    return applicationSetting?.Value != null
+                        ? DateTime.Parse(applicationSetting.Value, CultureInfo.InvariantCulture).ToUniversalTime()
+                        : (DateTime?)null;
                 },
                 TimeSpan.FromMinutes(30));
         }

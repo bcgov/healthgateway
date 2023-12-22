@@ -19,6 +19,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test.Mock
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
+    using System.Threading.Tasks;
     using AutoMapper;
     using HealthGateway.AccountDataAccess.Patient;
     using HealthGateway.Common.AccessManagement.Authentication;
@@ -126,11 +127,11 @@ namespace HealthGateway.GatewayApiTests.Services.Test.Mock
         public UserProfileServiceMock SetupGetOrSetCache<T>(T returnValue, string cacheKeyPattern)
         {
             this.cacheProviderMock.Setup(
-                    cp => cp.GetOrSet(
+                    cp => cp.GetOrSetAsync(
                         It.Is<string>(key => key.Contains(cacheKeyPattern)),
-                        It.IsAny<Func<T>>(),
+                        It.IsAny<Func<Task<T>>>(),
                         It.IsAny<TimeSpan?>()))
-                .Returns(returnValue);
+                .ReturnsAsync(returnValue);
             return this;
         }
 

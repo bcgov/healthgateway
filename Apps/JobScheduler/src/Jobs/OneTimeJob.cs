@@ -16,6 +16,8 @@
 namespace HealthGateway.JobScheduler.Jobs
 {
     using System;
+    using System.Threading;
+    using System.Threading.Tasks;
     using Hangfire;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Context;
@@ -67,8 +69,10 @@ namespace HealthGateway.JobScheduler.Jobs
         /// <summary>
         /// Reads the configuration and will instantiate and run the class a single time.
         /// </summary>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
+        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
         [DisableConcurrentExecution(ConcurrencyTimeout)]
-        public void Process()
+        public async Task ProcessAsync(CancellationToken ct = default)
         {
             this.logger.LogInformation("OneTimeJob Starting");
             string? className = this.jobConfig.GetValue<string>(OneTimeClassKey);
@@ -78,16 +82,17 @@ namespace HealthGateway.JobScheduler.Jobs
                 if (taskType != null)
                 {
                     this.logger.LogInformation("OneTimeJob will invoke {Name}", taskType.Name);
-                    ApplicationSetting? hasRunAppSetting = this.applicationSettingsDelegate.GetApplicationSetting(
+                    ApplicationSetting? hasRunAppSetting = await this.applicationSettingsDelegate.GetApplicationSettingAsync(
                         ApplicationType.JobScheduler,
                         this.GetType().Name,
-                        className);
+                        className,
+                        ct);
                     if (hasRunAppSetting == null)
                     {
                         this.logger.LogInformation("OneTimeJob is invoking {ClassName}", className);
                         Type? type = Type.GetType(className);
                         IOneTimeTask task = (IOneTimeTask)ActivatorUtilities.CreateInstance(this.serviceProvider, type);
-                        task.Run();
+                        await task.RunAsync(ct);
                         this.logger.LogInformation("OneTimeJob is marking class {Name} as invoked", taskType.Name);
                         hasRunAppSetting = new ApplicationSetting
                         {
@@ -96,9 +101,9 @@ namespace HealthGateway.JobScheduler.Jobs
                             Key = className,
                             Value = true.ToString(),
                         };
-                        this.applicationSettingsDelegate.AddApplicationSetting(hasRunAppSetting);
+                        await this.applicationSettingsDelegate.AddApplicationSettingAsync(hasRunAppSetting, ct);
                         this.logger.LogInformation("OneTimeJob is commiting DB changes");
-                        this.dbContext.SaveChanges();
+                        await this.dbContext.SaveChangesAsync(ct);
                     }
                     else
                     {
