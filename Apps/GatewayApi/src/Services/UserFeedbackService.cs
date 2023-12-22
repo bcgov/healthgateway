@@ -76,7 +76,7 @@ namespace HealthGateway.GatewayApi.Services
                     UserFeedbackId = userFeedback.Id,
                     Email = clientEmail,
                 };
-                this.jobClient.Enqueue<IAdminFeedbackJob>(j => j.SendEmail(clientFeedback));
+                this.jobClient.Enqueue<IAdminFeedbackJob>(j => j.SendEmailAsync(clientFeedback, ct));
             }
 
             this.logger.LogDebug("Finished creating user feedback");

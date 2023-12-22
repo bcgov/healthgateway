@@ -109,24 +109,10 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public DbResult<UserFeedback> GetUserFeedback(Guid feedbackId)
+        public async Task<UserFeedback?> GetUserFeedbackAsync(Guid feedbackId, CancellationToken ct = default)
         {
             this.logger.LogTrace("Getting user feedback from DB... {FeedbackId}", feedbackId);
-            UserFeedback? feedback = this.dbContext.UserFeedback.Find(feedbackId);
-            DbResult<UserFeedback> result = new();
-            if (feedback != null)
-            {
-                result.Payload = feedback;
-                result.Status = DbStatusCode.Read;
-            }
-            else
-            {
-                this.logger.LogInformation("Unable to find feedback using ID: {FeedbackId}", feedbackId);
-                result.Status = DbStatusCode.NotFound;
-            }
-
-            this.logger.LogDebug("Finished getting user feedback from DB...");
-            return result;
+            return await this.dbContext.UserFeedback.FindAsync(new object[] { feedbackId }, ct);
         }
 
         /// <inheritdoc/>

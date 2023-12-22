@@ -59,8 +59,9 @@ namespace HealthGateway.Database.Delegates
         /// Fetches the UserFeedback from the database.
         /// </summary>
         /// <param name="feedbackId">The unique feedback id to find.</param>
-        /// <returns>A DB result which encapsulates the return object and status.</returns>
-        DbResult<UserFeedback> GetUserFeedback(Guid feedbackId);
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
+        /// <returns>The matching feedback, or null if not found..</returns>
+        Task<UserFeedback?> GetUserFeedbackAsync(Guid feedbackId, CancellationToken ct = default);
 
         /// <summary>
         /// Fetches the UserFeedback with FeedbackTag associations from the database.
