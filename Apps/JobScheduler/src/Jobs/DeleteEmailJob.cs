@@ -15,6 +15,8 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.JobScheduler.Jobs
 {
+    using System.Threading;
+    using System.Threading.Tasks;
     using Hangfire;
     using HealthGateway.Database.Delegates;
     using Microsoft.Extensions.Configuration;
@@ -52,11 +54,13 @@ namespace HealthGateway.JobScheduler.Jobs
         /// <summary>
         /// Deletes a configurable amount of emails (DeleteMaxRows) after a configurable amount of time in days (DeleteAfterDays).
         /// </summary>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
+        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
         [DisableConcurrentExecution(ConcurrencyTimeout)]
-        public void DeleteOldEmails()
+        public async Task DeleteOldEmailsAsync(CancellationToken ct = default)
         {
             this.logger.LogInformation("Delete job running: Delete emails {DeleteAfterDays} days old and limit to {DeleteMaxRows} deleted", this.deleteAfterDays, this.deleteMaxRows);
-            int count = this.emailDelegate.Delete(this.deleteAfterDays, this.deleteMaxRows);
+            int count = await this.emailDelegate.DeleteAsync(this.deleteAfterDays, this.deleteMaxRows, ct: ct);
             this.logger.LogInformation("Delete job finished after removing {Count} records", count);
         }
     }

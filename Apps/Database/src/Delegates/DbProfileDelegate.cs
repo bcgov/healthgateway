@@ -189,18 +189,15 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public DbResult<List<UserProfile>> GetClosedProfiles(DateTime filterDateTime, int page = 0, int pageSize = 500)
+        public async Task<List<UserProfile>> GetClosedProfilesAsync(DateTime filterDateTime, int page = 0, int pageSize = 500, CancellationToken ct = default)
         {
-            DbResult<List<UserProfile>> result = new();
             int offset = page * pageSize;
-            result.Payload = this.dbContext.UserProfile
+            return await this.dbContext.UserProfile
                 .Where(p => p.ClosedDateTime != null && p.ClosedDateTime < filterDateTime)
                 .OrderBy(o => o.ClosedDateTime)
                 .Skip(offset)
                 .Take(pageSize)
-                .ToList();
-            result.Status = DbStatusCode.Read;
-            return result;
+                .ToListAsync(ct);
         }
 
         /// <inheritdoc/>

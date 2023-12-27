@@ -18,6 +18,8 @@ namespace HealthGateway.CommonTests.Services
     using System;
     using System.Collections.Generic;
     using System.Text.Json;
+    using System.Threading;
+    using System.Threading.Tasks;
     using Hangfire;
     using Hangfire.Common;
     using Hangfire.States;
@@ -40,8 +42,9 @@ namespace HealthGateway.CommonTests.Services
         /// <summary>
         /// QueueNotificationSettings - Happy Path.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
         [Fact]
-        public void ShouldQueue()
+        public async Task ShouldQueue()
         {
             NotificationSettingsRequest nsr = new()
             {
@@ -57,18 +60,15 @@ namespace HealthGateway.CommonTests.Services
             Mock<ILogger<NotificationSettingsService>> mockLogger = new();
             Mock<IBackgroundJobClient> mockJobClient = new();
             Mock<IResourceDelegateDelegate> mockResourceDelegateDelegate = new();
-            DbResult<IEnumerable<ResourceDelegate>> dbResult = new()
-            {
-                Payload = new List<ResourceDelegate>(),
-            };
-            mockResourceDelegateDelegate.Setup(s => s.Get(nsr.SubjectHdid, 0, 500)).Returns(dbResult);
+            List<ResourceDelegate> resourceDelegates = new();
+            mockResourceDelegateDelegate.Setup(s => s.GetAsync(nsr.SubjectHdid, 0, 500, It.IsAny<CancellationToken>())).ReturnsAsync(resourceDelegates);
             INotificationSettingsService service = new NotificationSettingsService(
                 mockLogger.Object,
                 mockJobClient.Object,
                 mockResourceDelegateDelegate.Object);
 
             string expectedJobParm = JsonSerializer.Serialize(nsr);
-            service.QueueNotificationSettings(nsr);
+            await service.QueueNotificationSettingsAsync(nsr);
 
             mockJobClient.Verify(
                 x => x.Create(
@@ -79,8 +79,10 @@ namespace HealthGateway.CommonTests.Services
         /// <summary>
         /// QueueNotificationSettings - InvalidOperationException.
         /// </summary>
+        /// ///
+        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
         [Fact]
-        public void ShouldThrowIfNoVerification()
+        public async Task ShouldThrowIfNoVerification()
         {
             NotificationSettingsRequest nsr = new()
             {
@@ -114,14 +116,15 @@ namespace HealthGateway.CommonTests.Services
 
             Assert.True(nsr.SmsVerificationCode == null);
 
-            Assert.Throws<InvalidOperationException>(() => service.QueueNotificationSettings(nsr));
+            await Assert.ThrowsAsync<InvalidOperationException>(async () => await service.QueueNotificationSettingsAsync(nsr));
         }
 
         /// <summary>
         /// QueueNotificationSettings - Happy Path (Queue Verification).
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
         [Fact]
-        public void ShouldQueueVerifications()
+        public async Task ShouldQueueVerifications()
         {
             string verificationCode = "123456";
             NotificationSettingsRequest nsr = new()
@@ -138,24 +141,21 @@ namespace HealthGateway.CommonTests.Services
             Mock<ILogger<NotificationSettingsService>> mockLogger = new();
             Mock<IBackgroundJobClient> mockJobClient = new();
             Mock<IResourceDelegateDelegate> mockResourceDelegateDelegate = new();
-            DbResult<IEnumerable<ResourceDelegate>> dbResult = new()
-            {
-                Payload = new List<ResourceDelegate>
+            List<ResourceDelegate> resourceDelegates =
+            [
+                new()
                 {
-                    new()
-                    {
-                        ProfileHdid = Hdid,
-                    },
+                    ProfileHdid = Hdid,
                 },
-            };
-            mockResourceDelegateDelegate.Setup(s => s.Get(nsr.SubjectHdid, 0, 500)).Returns(dbResult);
+            ];
+            mockResourceDelegateDelegate.Setup(s => s.GetAsync(nsr.SubjectHdid, 0, 500, It.IsAny<CancellationToken>())).ReturnsAsync(resourceDelegates);
 
             INotificationSettingsService service = new NotificationSettingsService(
                 mockLogger.Object,
                 mockJobClient.Object,
                 mockResourceDelegateDelegate.Object);
 
-            service.QueueNotificationSettings(nsr);
+            await service.QueueNotificationSettingsAsync(nsr);
 
             mockJobClient.Verify(
                 x => x.Create(

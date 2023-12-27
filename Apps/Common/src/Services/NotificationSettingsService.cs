@@ -25,7 +25,6 @@ namespace HealthGateway.Common.Services
     using HealthGateway.Common.Models;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
-    using HealthGateway.Database.Wrapper;
     using Microsoft.Extensions.Logging;
 
     /// <summary>
@@ -51,47 +50,6 @@ namespace HealthGateway.Common.Services
             this.logger = logger;
             this.jobClient = jobClient;
             this.resourceDelegateDelegate = resourceDelegateDelegate;
-        }
-
-        /// <inheritdoc/>
-        public void QueueNotificationSettings(NotificationSettingsRequest notificationSettings)
-        {
-            if (notificationSettings.SmsEnabled && !notificationSettings.SmsVerified && string.IsNullOrEmpty(notificationSettings.SmsVerificationCode))
-            {
-                throw new InvalidOperationException();
-            }
-
-            this.logger.LogTrace("Queueing Notification Settings push to PHSA...");
-            string json = JsonSerializer.Serialize(notificationSettings);
-            this.jobClient.Enqueue<INotificationSettingsJob>(j => j.PushNotificationSettings(json));
-
-            // Update the notification settings for any dependents
-            DbResult<IEnumerable<ResourceDelegate>> dbResult = this.resourceDelegateDelegate.Get(notificationSettings.SubjectHdid);
-            foreach (ResourceDelegate resourceDelegate in dbResult.Payload)
-            {
-                this.logger.LogDebug("Queueing Dependent Notification Settings");
-                NotificationSettingsRequest dependentNotificationSettings = new()
-                {
-                    SubjectHdid = resourceDelegate.ResourceOwnerHdid,
-                    EmailAddress = notificationSettings.EmailAddress,
-                    EmailEnabled = notificationSettings.EmailEnabled,
-                    EmailScope = notificationSettings.EmailScope,
-                };
-
-                // Only populate SMS number if it has been verified
-                if (notificationSettings.SmsVerified)
-                {
-                    dependentNotificationSettings.SmsNumber = notificationSettings.SmsNumber;
-                    dependentNotificationSettings.SmsEnabled = notificationSettings.SmsEnabled;
-                    dependentNotificationSettings.SmsScope = notificationSettings.SmsScope;
-                    dependentNotificationSettings.SmsVerified = notificationSettings.SmsVerified;
-                }
-
-                string delegateJson = JsonSerializer.Serialize(dependentNotificationSettings);
-                this.jobClient.Enqueue<INotificationSettingsJob>(j => j.PushNotificationSettings(delegateJson));
-            }
-
-            this.logger.LogDebug("Finished queueing Notification Settings push");
         }
 
         /// <inheritdoc/>

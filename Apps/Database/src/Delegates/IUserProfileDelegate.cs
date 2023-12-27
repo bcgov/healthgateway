@@ -98,8 +98,9 @@ namespace HealthGateway.Database.Delegates
         /// <param name="filterDateTime">The profiles must be closed and earlier than this date.</param>
         /// <param name="page">The page to request, defaults to 0.</param>
         /// <param name="pageSize">The amount of records to retrieve in 1 request, defaults to 500.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A list of matching UserProfiles wrapped in a DBResult.</returns>
-        DbResult<List<UserProfile>> GetClosedProfiles(DateTime filterDateTime, int page = 0, int pageSize = 500);
+        Task<List<UserProfile>> GetClosedProfilesAsync(DateTime filterDateTime, int page = 0, int pageSize = 500, CancellationToken ct = default);
 
         /// <summary>
         /// Retrieves daily counts of user registrations over a date range.

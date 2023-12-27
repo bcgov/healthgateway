@@ -17,6 +17,7 @@ namespace HealthGateway.JobScheduler.Utils
 {
     using System;
     using System.Linq.Expressions;
+    using System.Threading.Tasks;
     using Hangfire;
     using HealthGateway.Common.Data.Utils;
     using HealthGateway.DBMaintainer.Apps;
@@ -42,16 +43,16 @@ namespace HealthGateway.JobScheduler.Utils
         }
 
         /// <summary>
-        /// Schedules a Drug Load job, looking up the cron schedule and the jobid from configuration.
+        /// Schedules an async job, looking up the cron schedule and the jobid from configuration.
         /// </summary>
-        /// <typeparam name="T">The class of Drug Load Program to schedule.</typeparam>
+        /// <typeparam name="T">The class of program to schedule.</typeparam>
         /// <param name="cfg">The Configuration to use.</param>
         /// <param name="key">The key to lookup Job configuration.</param>
-        /// <param name="methodCall">The expression to run on the class.</param>
-        public static void ScheduleJob<T>(IConfiguration cfg, string key, Expression<Action<T>> methodCall)
+        /// <param name="methodCall">The async expression to run on the class.</param>
+        public static void ScheduleJobAsync<T>(IConfiguration cfg, string key, Expression<Func<T, Task>> methodCall)
         {
             JobConfiguration jc = GetJobConfiguration(cfg, key);
-            ScheduleJob(jc, DateFormatter.GetLocalTimeZone(cfg), methodCall);
+            ScheduleJobAsync(jc, DateFormatter.GetLocalTimeZone(cfg), methodCall);
         }
 
         /// <summary>
@@ -61,7 +62,7 @@ namespace HealthGateway.JobScheduler.Utils
         /// <param name="cfg">The Job Configuration to use.</param>
         /// <param name="tz">The timezone to schedule the job in.</param>
         /// <param name="methodCall">The expression to run on the class.</param>
-        public static void ScheduleJob<T>(JobConfiguration cfg, TimeZoneInfo tz, Expression<Action<T>> methodCall)
+        private static void ScheduleJob<T>(JobConfiguration cfg, TimeZoneInfo tz, Expression<Action<T>> methodCall)
         {
             RecurringJobOptions recurringJobOptions = new()
             {
@@ -70,6 +71,29 @@ namespace HealthGateway.JobScheduler.Utils
             };
 
             RecurringJob.AddOrUpdate(cfg.Id, methodCall, cfg.Schedule, recurringJobOptions);
+            if (cfg.Immediate)
+            {
+                BackgroundJob.Schedule(methodCall, TimeSpan.FromSeconds(cfg.Delay));
+            }
+        }
+
+        /// <summary>
+        /// Schedules a generic async job, according to the Job Configuration.
+        /// </summary>
+        /// <typeparam name="T">The class of program to schedule.</typeparam>
+        /// <param name="cfg">The Job Configuration to use.</param>
+        /// <param name="tz">The timezone to schedule the job in.</param>
+        /// <param name="methodCall">The async expression to run on the class.</param>
+        private static void ScheduleJobAsync<T>(JobConfiguration cfg, TimeZoneInfo tz, Expression<Func<T, Task>> methodCall)
+        {
+            RecurringJobOptions recurringJobOptions = new()
+            {
+                TimeZone = tz,
+                MisfireHandling = MisfireHandlingMode.Relaxed,
+            };
+
+            RecurringJob.AddOrUpdate(cfg.Id, methodCall, cfg.Schedule, recurringJobOptions);
+
             if (cfg.Immediate)
             {
                 BackgroundJob.Schedule(methodCall, TimeSpan.FromSeconds(cfg.Delay));

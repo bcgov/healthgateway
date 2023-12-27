@@ -16,6 +16,8 @@
 namespace HealthGateway.Common.Jobs
 {
     using System;
+    using System.Threading;
+    using System.Threading.Tasks;
 
     /// <summary>
     /// A Job to send emails.
@@ -26,6 +28,8 @@ namespace HealthGateway.Common.Jobs
         /// Sends an email immediately if Priority is standard or higher.
         /// </summary>
         /// <param name="emailId">The stored emailId to send.</param>
-        void SendEmail(Guid emailId);
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
+        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
+        Task SendEmailAsync(Guid emailId, CancellationToken ct = default);
     }
 }

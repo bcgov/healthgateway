@@ -33,6 +33,7 @@ namespace HealthGateway.GatewayApi.Services
     using HealthGateway.Common.Models.Events;
     using HealthGateway.Common.Services;
     using HealthGateway.Database.Delegates;
+    using HealthGateway.Database.Models;
     using HealthGateway.GatewayApi.Validations;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
@@ -264,12 +265,15 @@ namespace HealthGateway.GatewayApi.Services
                 [EmailTemplateVariable.ExpiryHours] = verificationExpiryHours.ToString("0", CultureInfo.CurrentCulture),
             };
 
+            EmailTemplate? emailTemplate = await this.emailQueueService.GetEmailTemplateAsync(EmailTemplateName.RegistrationTemplate, ct) ?? throw new ProblemDetailsException(
+                ExceptionUtility.CreateServerError($"{ServiceType.Database}:{ErrorType.CommunicationInternal}", ErrorMessages.EmailTemplateNotFound));
+
             MessagingVerification messageVerification = new()
             {
                 InviteKey = inviteKey,
                 UserProfileId = hdid,
                 ExpireDate = DateTime.UtcNow.AddSeconds(this.emailVerificationExpirySeconds),
-                Email = this.emailQueueService.ProcessTemplate(toEmail, EmailTemplateName.RegistrationTemplate, keyValues),
+                Email = this.emailQueueService.ProcessTemplate(toEmail, emailTemplate, keyValues),
                 EmailAddress = toEmail,
             };
 
