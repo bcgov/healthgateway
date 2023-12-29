@@ -6,7 +6,7 @@
   <ItemGroup>
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
     <PackageReference Include="Azure.Messaging.ServiceBus" Version="7.17.1" />
-    <PackageReference Include="Hangfire.AspNetCore" Version="1.8.6" />
+    <PackageReference Include="Hangfire.AspNetCore" Version="1.8.7" />
     <PackageReference Include="Hangfire.PostgreSql" Version="1.20.5" />
     <PackageReference Include="Hellang.Middleware.ProblemDetails" Version="6.5.1" />
     <PackageReference Include="Macross.Json.Extensions" Version="3.0.0" />
