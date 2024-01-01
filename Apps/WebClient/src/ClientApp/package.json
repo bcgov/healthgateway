@@ -41,7 +41,7 @@
         "@types/node": "^18.19.3",
         "@types/throttle-debounce": "^5.0.2",
         "@types/webfontloader": "^1.6.38",
-        "@vitejs/plugin-vue": "^4.6.0",
+        "@vitejs/plugin-vue": "^4.6.2",
         "@vue/eslint-config-prettier": "^7.1.0",
         "@vue/eslint-config-typescript": "^11.0.0",
         "eslint": "^8.56.0",
