@@ -19,15 +19,15 @@ namespace HealthGateway.Medication.Services
     using HealthGateway.Medication.Models;
 
     /// <summary>
-    /// The Medication data service.
+    /// The medication service.
     /// </summary>
     public interface IMedicationService
     {
         /// <summary>
-        /// Gets the medications that match the DIN.
+        /// Gets medication information matching the requested drug identifiers.
         /// </summary>
-        /// <param name="medicationDinList">The ip address of the request.</param>
-        /// <returns>A List of MedicationStatement models.</returns>
-        IDictionary<string, MedicationInformation> GetMedications(IList<string> medicationDinList);
+        /// <param name="drugIdentifiers">The list of drug identifiers to retrieve.</param>
+        /// <returns>A dictionary mapping drug identifiers to medication information.</returns>
+        IDictionary<string, MedicationInformation> GetMedications(IList<string> drugIdentifiers);
     }
 }

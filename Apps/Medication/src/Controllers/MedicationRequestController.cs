@@ -25,7 +25,7 @@ namespace HealthGateway.Medication.Controllers
     using Microsoft.AspNetCore.Mvc;
 
     /// <summary>
-    /// Controller that handles requets for Medication Requests.
+    /// Controller that handles requests for medication requests.
     /// </summary>
     [ApiVersion("1.0")]
     [Route("[controller]")]
@@ -34,26 +34,26 @@ namespace HealthGateway.Medication.Controllers
     public class MedicationRequestController : ControllerBase
     {
         /// <summary>
-        /// The medication request data service.
+        /// The medication request service.
         /// </summary>
         private readonly IMedicationRequestService medicationRequestService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MedicationRequestController"/> class.
         /// </summary>
-        /// <param name="medicationRequestService">The injected medication request data service.</param>
+        /// <param name="medicationRequestService">The injected medication request service.</param>
         public MedicationRequestController(IMedicationRequestService medicationRequestService)
         {
             this.medicationRequestService = medicationRequestService;
         }
 
         /// <summary>
-        /// Gets a json of medication request.
+        /// Gets medication requests.
         /// </summary>
-        /// <returns>The medication statement records.</returns>
-        /// <param name="hdid">The patient hdid.</param>
-        /// <response code="200">Returns the medication statement bundle.</response>
-        /// <response code="401">the client must authenticate itself to get the requested response.</response>
+        /// <returns>The list of medication requests wrapped in a request result.</returns>
+        /// <param name="hdid">The patient's HDID.</param>
+        /// <response code="200">Returns the list of medication requests wrapped in a request result.</response>
+        /// <response code="401">The client must authenticate itself to get the requested response.</response>
         /// <response code="403">
         /// The client does not have access rights to the content; that is, it is unauthorized, so the server
         /// is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.
@@ -64,7 +64,7 @@ namespace HealthGateway.Medication.Controllers
         [Authorize(Policy = MedicationPolicy.MedicationRequestRead)]
         public async Task<RequestResult<IList<MedicationRequest>>> GetMedicationRequests(string hdid)
         {
-            return await this.medicationRequestService.GetMedicationRequests(hdid).ConfigureAwait(true);
+            return await this.medicationRequestService.GetMedicationRequestsAsync(hdid).ConfigureAwait(true);
         }
     }
 }

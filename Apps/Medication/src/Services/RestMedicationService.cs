@@ -38,9 +38,9 @@ namespace HealthGateway.Medication.Services
         }
 
         /// <inheritdoc/>
-        public IDictionary<string, MedicationInformation> GetMedications(IList<string> medicationDinList)
+        public IDictionary<string, MedicationInformation> GetMedications(IList<string> drugIdentifiers)
         {
-            IList<DrugProduct> drugProducts = this.drugLookupDelegate.GetDrugProductsByDin(medicationDinList);
+            IList<DrugProduct> drugProducts = this.drugLookupDelegate.GetDrugProductsByDin(drugIdentifiers);
 
             Dictionary<string, MedicationInformation> drugs = drugProducts.ToDictionary(
                 m => m.DrugIdentificationNumber,
@@ -54,7 +54,7 @@ namespace HealthGateway.Medication.Services
                     },
                 });
 
-            IList<PharmaCareDrug> pharmaCareDrugs = this.drugLookupDelegate.GetPharmaCareDrugsByDin(medicationDinList);
+            IList<PharmaCareDrug> pharmaCareDrugs = this.drugLookupDelegate.GetPharmaCareDrugsByDin(drugIdentifiers);
 
             foreach (PharmaCareDrug pharmaDrug in pharmaCareDrugs)
             {

@@ -84,16 +84,16 @@ namespace HealthGateway.Medication.Services
         private static ActivitySource Source { get; } = new(nameof(RestMedicationStatementService));
 
         /// <inheritdoc/>
-        public async Task<RequestResult<IList<MedicationStatementHistory>>> GetMedicationStatementsHistory(string hdid, string? protectiveWord)
+        public async Task<RequestResult<IList<MedicationStatement>>> GetMedicationStatementsAsync(string hdid, string? protectiveWord)
         {
             using (Source.StartActivity())
             {
                 if (!await this.patientRepository.CanAccessDataSourceAsync(hdid, DataSource.Medication).ConfigureAwait(true))
                 {
-                    return new RequestResult<IList<MedicationStatementHistory>>
+                    return new RequestResult<IList<MedicationStatement>>
                     {
                         ResultStatus = ResultType.Success,
-                        ResourcePayload = new List<MedicationStatementHistory>(),
+                        ResourcePayload = new List<MedicationStatement>(),
                         TotalResultCount = 0,
                     };
                 }
@@ -106,7 +106,7 @@ namespace HealthGateway.Medication.Services
                     if (!protectiveWordValidation.IsValid)
                     {
                         this.logger.LogInformation("Invalid protective word. {Hdid}", hdid);
-                        return RequestResultFactory.ActionRequired<IList<MedicationStatementHistory>>(ActionType.Protected, protectiveWordValidation.Errors);
+                        return RequestResultFactory.ActionRequired<IList<MedicationStatement>>(ActionType.Protected, protectiveWordValidation.Errors);
                     }
                 }
 
@@ -114,7 +114,7 @@ namespace HealthGateway.Medication.Services
                 RequestResult<PatientModel> patientResult = await this.patientService.GetPatient(hdid).ConfigureAwait(true);
                 if (patientResult.ResultStatus != ResultType.Success || patientResult.ResourcePayload == null)
                 {
-                    return RequestResultFactory.Error<IList<MedicationStatementHistory>>(patientResult.ResultError);
+                    return RequestResultFactory.Error<IList<MedicationStatement>>(patientResult.ResultError);
                 }
 
                 PatientModel patient = patientResult.ResourcePayload;
@@ -131,15 +131,15 @@ namespace HealthGateway.Medication.Services
 
                 if (response.ResultStatus == ResultType.ActionRequired)
                 {
-                    return RequestResultFactory.ActionRequired<IList<MedicationStatementHistory>>(ActionType.Protected, response.ResultError?.ResultMessage);
+                    return RequestResultFactory.ActionRequired<IList<MedicationStatement>>(ActionType.Protected, response.ResultError?.ResultMessage);
                 }
 
                 if (response.ResultStatus != ResultType.Success || response.ResourcePayload == null)
                 {
-                    return RequestResultFactory.Error<IList<MedicationStatementHistory>>(response.ResultError);
+                    return RequestResultFactory.Error<IList<MedicationStatement>>(response.ResultError);
                 }
 
-                IList<MedicationStatementHistory>? payload = this.autoMapper.Map<IList<MedicationStatementHistory>>(response.ResourcePayload.Results);
+                IList<MedicationStatement>? payload = this.autoMapper.Map<IList<MedicationStatement>>(response.ResourcePayload.Results);
                 this.PopulateMedicationSummary(payload.Select(r => r.MedicationSummary).ToList());
 
                 return RequestResultFactory.Success(payload, response.TotalResultCount, response.PageIndex, response.PageSize);

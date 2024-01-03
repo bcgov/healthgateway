@@ -21,15 +21,15 @@ namespace HealthGateway.Medication.Services
     using HealthGateway.Medication.Models;
 
     /// <summary>
-    /// Defines the medication request service interface.
+    /// The medication request service.
     /// </summary>
     public interface IMedicationRequestService
     {
         /// <summary>
-        /// Gets the patient medication request.
+        /// Gets medication requests.
         /// </summary>
-        /// <param name="hdid">The hdid to retrieve records for.</param>
-        /// <returns>A RequestResult with MedicationHistory models as payload.</returns>
-        Task<RequestResult<IList<MedicationRequest>>> GetMedicationRequests(string hdid);
+        /// <param name="hdid">The patient's HDID.</param>
+        /// <returns>A list of medication requests wrapped in a RequestResult.</returns>
+        Task<RequestResult<IList<MedicationRequest>>> GetMedicationRequestsAsync(string hdid);
     }
 }

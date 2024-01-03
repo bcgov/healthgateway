@@ -4,7 +4,7 @@ import { ServiceCode } from "@/constants/serviceCodes";
 import { Dictionary } from "@/models/baseTypes";
 import { ExternalConfiguration } from "@/models/configData";
 import { HttpError } from "@/models/errors";
-import MedicationStatementHistory from "@/models/medicationStatementHistory";
+import MedicationStatement from "@/models/medicationStatement";
 import RequestResult from "@/models/requestResult";
 import {
     IHttpDelegate,
@@ -32,10 +32,10 @@ export class RestMedicationService implements IMedicationService {
         this.isEnabled = ConfigUtil.isDatasetEnabled(EntryType.Medication);
     }
 
-    public getPatientMedicationStatementHistory(
+    public getPatientMedicationStatements(
         hdid: string,
         protectiveWord?: string
-    ): Promise<RequestResult<MedicationStatementHistory[]>> {
+    ): Promise<RequestResult<MedicationStatement[]>> {
         const headers: Dictionary<string> = {};
         if (protectiveWord) {
             headers["protectiveWord"] = protectiveWord;
@@ -52,13 +52,13 @@ export class RestMedicationService implements IMedicationService {
         }
 
         return this.http
-            .get<RequestResult<MedicationStatementHistory[]>>(
+            .get<RequestResult<MedicationStatement[]>>(
                 `${this.baseUri}${this.BASE_URI}/${hdid}`,
                 headers
             )
             .catch((err: HttpError) => {
                 this.logger.error(
-                    `Error in RestMedicationService.getPatientMedicationStatementHistory()`
+                    `Error in RestMedicationService.getPatientMedicationStatements()`
                 );
                 throw ErrorTranslator.internalNetworkError(
                     err,

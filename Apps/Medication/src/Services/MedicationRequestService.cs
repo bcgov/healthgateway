@@ -51,7 +51,7 @@ namespace HealthGateway.Medication.Services
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResult<IList<MedicationRequest>>> GetMedicationRequests(string hdid)
+        public async Task<RequestResult<IList<MedicationRequest>>> GetMedicationRequestsAsync(string hdid)
         {
             if (!await this.patientRepository.CanAccessDataSourceAsync(hdid, DataSource.SpecialAuthorityRequest).ConfigureAwait(true))
             {

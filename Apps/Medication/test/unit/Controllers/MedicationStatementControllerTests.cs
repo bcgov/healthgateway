@@ -42,10 +42,10 @@ namespace HealthGateway.MedicationTests.Controllers
         {
             // Setup
             string hdid = "EXTRIOYFPNX35TWEBUAJ3DNFDFXSYTBC6J4M76GYE3HC5ER2NKWQ";
-            RequestResult<IList<MedicationStatementHistory>> expectedResult = new()
+            RequestResult<IList<MedicationStatement>> expectedResult = new()
             {
                 ResultStatus = ResultType.Success,
-                ResourcePayload = new List<MedicationStatementHistory>
+                ResourcePayload = new List<MedicationStatement>
                 {
                     new()
                     {
@@ -89,12 +89,12 @@ namespace HealthGateway.MedicationTests.Controllers
 
             Mock<IMedicationStatementService> svcMock = new();
             svcMock
-                .Setup(s => s.GetMedicationStatementsHistory(hdid, null))
+                .Setup(s => s.GetMedicationStatementsAsync(hdid, null))
                 .ReturnsAsync(expectedResult);
             MedicationStatementController controller = new(svcMock.Object);
 
             // Act
-            RequestResult<IList<MedicationStatementHistory>> actual = await controller.GetMedicationStatements(hdid);
+            RequestResult<IList<MedicationStatement>> actual = await controller.GetMedicationStatements(hdid);
 
             // Verify
             Assert.NotNull(actual);

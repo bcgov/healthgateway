@@ -88,7 +88,7 @@ namespace HealthGateway.MedicationTests.Services
                 patientRepository.Object);
 
             // Test
-            RequestResult<IList<MedicationRequest>> response = await service.GetMedicationRequests(hdid);
+            RequestResult<IList<MedicationRequest>> response = await service.GetMedicationRequestsAsync(hdid);
 
             // Verify
             Assert.Equal(ResultType.Success, response.ResultStatus);
@@ -133,7 +133,7 @@ namespace HealthGateway.MedicationTests.Services
                 patientRepository.Object);
 
             // Test
-            RequestResult<IList<MedicationRequest>> response = await service.GetMedicationRequests(hdid);
+            RequestResult<IList<MedicationRequest>> response = await service.GetMedicationRequestsAsync(hdid);
 
             // Verify
             Assert.Equal(ResultType.Error, response.ResultStatus);
@@ -178,7 +178,7 @@ namespace HealthGateway.MedicationTests.Services
                 patientRepository.Object);
 
             // Test
-            RequestResult<IList<MedicationRequest>> response = await service.GetMedicationRequests(hdid);
+            RequestResult<IList<MedicationRequest>> response = await service.GetMedicationRequestsAsync(hdid);
 
             // Verify
             Assert.Equal(ResultType.Error, response.ResultStatus);
