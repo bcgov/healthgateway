@@ -8,7 +8,7 @@ import { container } from "@/ioc/container";
 import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
 import { MedicationState } from "@/models/datasetState";
 import { ResultError } from "@/models/errors";
-import MedicationStatementHistory from "@/models/medicationStatementHistory";
+import MedicationStatement from "@/models/medicationStatement";
 import RequestResult from "@/models/requestResult";
 import { LoadStatus } from "@/models/storeOperations";
 import { Action, Dataset, Text } from "@/plugins/extensions";
@@ -34,7 +34,7 @@ export const useMedicationStore = defineStore("medication", () => {
         SERVICE_IDENTIFIER.MedicationService
     );
     const datasetMapUtil = new DatasetMapUtils<
-        MedicationStatementHistory[],
+        MedicationStatement[],
         MedicationState
     >(defaultMedicationState);
 
@@ -68,7 +68,7 @@ export const useMedicationStore = defineStore("medication", () => {
 
     function setMedications(
         hdid: string,
-        medicationResult: RequestResult<MedicationStatementHistory[]>
+        medicationResult: RequestResult<MedicationStatement[]>
     ): void {
         if (medicationResult.resultStatus == ResultType.Success) {
             datasetMapUtil.setStateData(
@@ -125,13 +125,13 @@ export const useMedicationStore = defineStore("medication", () => {
     function retrieveMedications(
         hdid: string,
         protectiveWord?: string
-    ): Promise<RequestResult<MedicationStatementHistory[]>> {
+    ): Promise<RequestResult<MedicationStatement[]>> {
         const trackingService = container.get<ITrackingService>(
             SERVICE_IDENTIFIER.TrackingService
         );
         if (getMedicationState(hdid).status === LoadStatus.LOADED) {
             logger.debug("Medications found stored, not querying!");
-            const medicationsData: MedicationStatementHistory[] =
+            const medicationsData: MedicationStatement[] =
                 medications(hdid);
             return Promise.resolve({
                 pageIndex: 0,
@@ -145,7 +145,7 @@ export const useMedicationStore = defineStore("medication", () => {
         logger.debug("Retrieving medications");
         datasetMapUtil.setStateRequested(medicationMap.value, hdid);
         return medicationService
-            .getPatientMedicationStatementHistory(hdid, protectiveWord)
+            .getPatientMedicationStatements(hdid, protectiveWord)
             .then((result) => {
                 if (result.resultStatus === ResultType.Error) {
                     throw result.resultError;

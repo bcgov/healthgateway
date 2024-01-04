@@ -17,6 +17,8 @@ namespace HealthGateway.MedicationTests.Controllers
 {
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading;
+    using System.Threading.Tasks;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Database.Models;
     using HealthGateway.Medication.Controllers;
@@ -33,33 +35,35 @@ namespace HealthGateway.MedicationTests.Controllers
         /// <summary>
         /// GetMedications - Not Found.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void ShouldNotGetSingleMedication()
+        public async Task ShouldNotGetSingleMedication()
         {
             // Setup
             Mock<IMedicationService> serviceMock = new();
-            serviceMock.Setup(s => s.GetMedications(It.IsAny<List<string>>())).Returns(new Dictionary<string, MedicationInformation>());
+            serviceMock.Setup(s => s.GetMedicationsAsync(It.IsAny<List<string>>(), It.IsAny<CancellationToken>())).ReturnsAsync(new Dictionary<string, MedicationInformation>());
 
-            string drugIdentifier = "000001";
+            const string drugIdentifier = "000001";
             string paddedDin = drugIdentifier.PadLeft(8, '0');
             MedicationController controller = new(serviceMock.Object);
 
             // Act
-            RequestResult<MedicationInformation> actual = controller.GetMedication(drugIdentifier);
+            RequestResult<MedicationInformation> actual = await controller.GetMedication(drugIdentifier);
 
             // Verify
-            serviceMock.Verify(s => s.GetMedications(new List<string> { paddedDin }), Times.Once());
-            Assert.True(actual.TotalResultCount == 0);
+            serviceMock.Verify(s => s.GetMedicationsAsync(new List<string> { paddedDin }, default), Times.Once());
+            Assert.Equal(0, actual.TotalResultCount);
         }
 
         /// <summary>
         /// GetMedications - Happy Path.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void ShouldGetSingleMedication()
+        public async Task ShouldGetSingleMedication()
         {
             // Setup
-            string drugIdentifier = "00000001";
+            const string drugIdentifier = "00000001";
             Dictionary<string, MedicationInformation> expectedResult = new()
             {
                 {
@@ -79,39 +83,40 @@ namespace HealthGateway.MedicationTests.Controllers
             };
 
             Mock<IMedicationService> serviceMock = new();
-            serviceMock.Setup(s => s.GetMedications(It.IsAny<List<string>>())).Returns(expectedResult);
+            serviceMock.Setup(s => s.GetMedicationsAsync(It.IsAny<List<string>>(), It.IsAny<CancellationToken>())).ReturnsAsync(expectedResult);
 
             string paddedDin = drugIdentifier.PadLeft(8, '0');
             MedicationController controller = new(serviceMock.Object);
 
             // Act
-            RequestResult<MedicationInformation> actual = controller.GetMedication(drugIdentifier);
+            RequestResult<MedicationInformation> actual = await controller.GetMedication(drugIdentifier);
 
             // Verify
-            serviceMock.Verify(s => s.GetMedications(new List<string> { paddedDin }), Times.Once());
-            Assert.True(actual.TotalResultCount == 1);
+            serviceMock.Verify(s => s.GetMedicationsAsync(new List<string> { paddedDin }, default), Times.Once());
+            Assert.Equal(1, actual.TotalResultCount);
         }
 
         /// <summary>
         /// GetMedications - Happy Path (Multiple).
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void ShouldGetMultipleMedications()
+        public async Task ShouldGetMultipleMedications()
         {
             // Setup
             Mock<IMedicationService> serviceMock = new();
-            serviceMock.Setup(s => s.GetMedications(It.IsAny<List<string>>())).Returns(new Dictionary<string, MedicationInformation>());
+            serviceMock.Setup(s => s.GetMedicationsAsync(It.IsAny<List<string>>(), It.IsAny<CancellationToken>())).ReturnsAsync(new Dictionary<string, MedicationInformation>());
 
             List<string> drugIdentifiers = new() { "000001", "000003", "000003" };
             List<string> paddedDinList = drugIdentifiers.Select(x => x.PadLeft(8, '0')).ToList();
             MedicationController controller = new(serviceMock.Object);
 
             // Act
-            RequestResult<IDictionary<string, MedicationInformation>> actual = controller.GetMedications(drugIdentifiers);
+            RequestResult<IDictionary<string, MedicationInformation>> actual = await controller.GetMedications(drugIdentifiers);
 
             // Verify
-            serviceMock.Verify(s => s.GetMedications(paddedDinList), Times.Once());
-            Assert.True(actual.ResourcePayload?.Count == 0);
+            serviceMock.Verify(s => s.GetMedicationsAsync(paddedDinList, default), Times.Once());
+            Assert.Equal(0, actual.ResourcePayload?.Count);
         }
     }
 }

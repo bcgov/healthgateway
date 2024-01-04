@@ -16,18 +16,21 @@
 namespace HealthGateway.Medication.Services
 {
     using System.Collections.Generic;
+    using System.Threading;
+    using System.Threading.Tasks;
     using HealthGateway.Medication.Models;
 
     /// <summary>
-    /// The Medication data service.
+    /// The medication service.
     /// </summary>
     public interface IMedicationService
     {
         /// <summary>
-        /// Gets the medications that match the DIN.
+        /// Gets medication information matching the requested drug identifiers.
         /// </summary>
-        /// <param name="medicationDinList">The ip address of the request.</param>
-        /// <returns>A List of MedicationStatement models.</returns>
-        IDictionary<string, MedicationInformation> GetMedications(IList<string> medicationDinList);
+        /// <param name="drugIdentifiers">The list of drug identifiers to retrieve.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
+        /// <returns>A dictionary mapping drug identifiers to medication information.</returns>
+        Task<IDictionary<string, MedicationInformation>> GetMedicationsAsync(IList<string> drugIdentifiers, CancellationToken ct = default);
     }
 }

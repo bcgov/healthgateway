@@ -33,7 +33,7 @@ namespace HealthGateway.MedicationTests.Utils
             MapperConfiguration config = new(
                 cfg =>
                 {
-                    cfg.AddProfile(new MedicationStatementHistoryProfile());
+                    cfg.AddProfile(new MedicationStatementProfile());
                     cfg.AddProfile(new PharmacyProfile());
                     cfg.AddProfile(new SpecialAuthorityRequestProfile());
                 });

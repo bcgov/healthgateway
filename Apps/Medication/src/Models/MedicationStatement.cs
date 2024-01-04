@@ -18,17 +18,17 @@ namespace HealthGateway.Medication.Models
     using System;
 
     /// <summary>
-    /// The medications statement data model.
+    /// The medication statement data model.
     /// </summary>
-    public class MedicationStatementHistory
+    public class MedicationStatement
     {
         /// <summary>
-        /// Gets or sets the brand name of the  medication.
+        /// Gets or sets the brand name of the medication.
         /// </summary>
         public string PrescriptionIdentifier { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the Prescription status.
+        /// Gets or sets the prescription status.
         /// </summary>
         public char PrescriptionStatus { get; set; }
 
@@ -38,7 +38,7 @@ namespace HealthGateway.Medication.Models
         public DateTime DispensedDate { get; set; }
 
         /// <summary>
-        /// Gets or sets the Surname of the Practitioner who prescribed the medication.
+        /// Gets or sets the surname of the practitioner who prescribed the medication.
         /// </summary>
         public string PractitionerSurname { get; set; } = string.Empty;
 
@@ -53,17 +53,17 @@ namespace HealthGateway.Medication.Models
         public DateTime? DateEntered { get; set; }
 
         /// <summary>
-        /// Gets or sets the pharmacy id.
+        /// Gets or sets the pharmacy ID.
         /// </summary>
         public string PharmacyId { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the medication for the current MedicationStatementHistory.
+        /// Gets or sets the medication summary.
         /// </summary>
         public MedicationSummary MedicationSummary { get; set; } = new();
 
         /// <summary>
-        /// Gets or sets the dispensing pharmacy for the current MedicationStatementHistory.
+        /// Gets or sets the dispensing pharmacy.
         /// </summary>
         public Pharmacy DispensingPharmacy { get; set; } = new();
     }

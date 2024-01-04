@@ -20,6 +20,7 @@ namespace HealthGateway.Medication.Services
     using System.Diagnostics;
     using System.Globalization;
     using System.Linq;
+    using System.Threading;
     using System.Threading.Tasks;
     using AutoMapper;
     using FluentValidation.Results;
@@ -49,7 +50,7 @@ namespace HealthGateway.Medication.Services
         private readonly IDrugLookupDelegate drugLookupDelegate;
         private readonly IHttpContextAccessor httpContextAccessor;
         private readonly ILogger logger;
-        private readonly IMedStatementDelegate medicationStatementDelegate;
+        private readonly IMedicationStatementDelegate medicationStatementDelegate;
         private readonly IPatientService patientService;
         private readonly IPatientRepository patientRepository;
 
@@ -68,7 +69,7 @@ namespace HealthGateway.Medication.Services
             IHttpContextAccessor httpAccessor,
             IPatientService patientService,
             IDrugLookupDelegate drugLookupDelegate,
-            IMedStatementDelegate medicationStatementDelegate,
+            IMedicationStatementDelegate medicationStatementDelegate,
             IPatientRepository patientRepository,
             IMapper autoMapper)
         {
@@ -84,16 +85,16 @@ namespace HealthGateway.Medication.Services
         private static ActivitySource Source { get; } = new(nameof(RestMedicationStatementService));
 
         /// <inheritdoc/>
-        public async Task<RequestResult<IList<MedicationStatementHistory>>> GetMedicationStatementsHistory(string hdid, string? protectiveWord)
+        public async Task<RequestResult<IList<MedicationStatement>>> GetMedicationStatementsAsync(string hdid, string? protectiveWord, CancellationToken ct = default)
         {
             using (Source.StartActivity())
             {
-                if (!await this.patientRepository.CanAccessDataSourceAsync(hdid, DataSource.Medication).ConfigureAwait(true))
+                if (!await this.patientRepository.CanAccessDataSourceAsync(hdid, DataSource.Medication, ct))
                 {
-                    return new RequestResult<IList<MedicationStatementHistory>>
+                    return new RequestResult<IList<MedicationStatement>>
                     {
                         ResultStatus = ResultType.Success,
-                        ResourcePayload = new List<MedicationStatementHistory>(),
+                        ResourcePayload = new List<MedicationStatement>(),
                         TotalResultCount = 0,
                     };
                 }
@@ -102,19 +103,19 @@ namespace HealthGateway.Medication.Services
 
                 if (protectiveWord != null)
                 {
-                    ValidationResult? protectiveWordValidation = await new ProtectiveWordValidator().ValidateAsync(protectiveWord);
+                    ValidationResult? protectiveWordValidation = await new ProtectiveWordValidator().ValidateAsync(protectiveWord, ct);
                     if (!protectiveWordValidation.IsValid)
                     {
                         this.logger.LogInformation("Invalid protective word. {Hdid}", hdid);
-                        return RequestResultFactory.ActionRequired<IList<MedicationStatementHistory>>(ActionType.Protected, protectiveWordValidation.Errors);
+                        return RequestResultFactory.ActionRequired<IList<MedicationStatement>>(ActionType.Protected, protectiveWordValidation.Errors);
                     }
                 }
 
                 // Retrieve the phn
-                RequestResult<PatientModel> patientResult = await this.patientService.GetPatient(hdid).ConfigureAwait(true);
+                RequestResult<PatientModel> patientResult = await this.patientService.GetPatient(hdid, ct: ct);
                 if (patientResult.ResultStatus != ResultType.Success || patientResult.ResourcePayload == null)
                 {
-                    return RequestResultFactory.Error<IList<MedicationStatementHistory>>(patientResult.ResultError);
+                    return RequestResultFactory.Error<IList<MedicationStatement>>(patientResult.ResultError);
                 }
 
                 PatientModel patient = patientResult.ResourcePayload;
@@ -127,26 +128,26 @@ namespace HealthGateway.Medication.Services
                 };
                 string ipv4Address = this.httpContextAccessor.HttpContext?.Connection.RemoteIpAddress?.MapToIPv4().ToString() ?? "Unknown";
                 RequestResult<MedicationHistoryResponse> response =
-                    await this.medicationStatementDelegate.GetMedicationStatementsAsync(historyQuery, protectiveWord, hdid, ipv4Address).ConfigureAwait(true);
+                    await this.medicationStatementDelegate.GetMedicationStatementsAsync(historyQuery, protectiveWord, hdid, ipv4Address, ct);
 
                 if (response.ResultStatus == ResultType.ActionRequired)
                 {
-                    return RequestResultFactory.ActionRequired<IList<MedicationStatementHistory>>(ActionType.Protected, response.ResultError?.ResultMessage);
+                    return RequestResultFactory.ActionRequired<IList<MedicationStatement>>(ActionType.Protected, response.ResultError?.ResultMessage);
                 }
 
                 if (response.ResultStatus != ResultType.Success || response.ResourcePayload == null)
                 {
-                    return RequestResultFactory.Error<IList<MedicationStatementHistory>>(response.ResultError);
+                    return RequestResultFactory.Error<IList<MedicationStatement>>(response.ResultError);
                 }
 
-                IList<MedicationStatementHistory>? payload = this.autoMapper.Map<IList<MedicationStatementHistory>>(response.ResourcePayload.Results);
-                this.PopulateMedicationSummary(payload.Select(r => r.MedicationSummary).ToList());
+                IList<MedicationStatement>? payload = this.autoMapper.Map<IList<MedicationStatement>>(response.ResourcePayload.Results);
+                await this.PopulateMedicationSummary(payload.Select(r => r.MedicationSummary).ToList(), ct);
 
                 return RequestResultFactory.Success(payload, response.TotalResultCount, response.PageIndex, response.PageSize);
             }
         }
 
-        private void PopulateMedicationSummary(List<MedicationSummary> medSummaries)
+        private async Task PopulateMedicationSummary(List<MedicationSummary> medSummaries, CancellationToken ct = default)
         {
             using (Source.StartActivity())
             {
@@ -161,7 +162,7 @@ namespace HealthGateway.Medication.Services
                     uniqueDrugIdentifiers.Count);
 
                 // Retrieve the brand names using the Federal data
-                IList<DrugProduct> drugProducts = this.drugLookupDelegate.GetDrugProductsByDin(uniqueDrugIdentifiers);
+                IList<DrugProduct> drugProducts = await this.drugLookupDelegate.GetDrugProductsByDinAsync(uniqueDrugIdentifiers, ct);
                 Dictionary<string, DrugProduct> drugProductsDict = drugProducts.ToDictionary(pcd => pcd.DrugIdentificationNumber, pcd => pcd);
                 Dictionary<string, PharmaCareDrug> provincialDict = new();
                 if (uniqueDrugIdentifiers.Count > drugProductsDict.Count)
@@ -170,7 +171,7 @@ namespace HealthGateway.Medication.Services
                     List<string> notFoundDins = uniqueDrugIdentifiers.Where(din => !drugProductsDict.ContainsKey(din)).ToList();
 
                     // Retrieve the brand names using the provincial data
-                    IList<PharmaCareDrug> pharmaCareDrugs = this.drugLookupDelegate.GetPharmaCareDrugsByDin(notFoundDins);
+                    IList<PharmaCareDrug> pharmaCareDrugs = await this.drugLookupDelegate.GetPharmaCareDrugsByDinAsync(notFoundDins, ct);
                     provincialDict = pharmaCareDrugs.ToDictionary(dp => dp.DinPin, dp => dp);
                 }
 

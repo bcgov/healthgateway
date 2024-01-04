@@ -15,6 +15,7 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Medication.Api
 {
+    using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Medication.Models.ODR;
     using Refit;
@@ -28,16 +29,18 @@ namespace HealthGateway.Medication.Api
         /// Gets the Medication History for the supplied request.
         /// </summary>
         /// <param name="request">The request to query.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The MedicationHistory.</returns>
         [Post("/patientProfile")]
-        Task<MedicationHistory> GetMedicationHistoryAsync(MedicationHistory request);
+        Task<MedicationHistory> GetMedicationHistoryAsync(MedicationHistory request, CancellationToken ct = default);
 
         /// <summary>
         /// Gets the Protective Word.
         /// </summary>
         /// <param name="request">The protective word request.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The ProtectiveWord.</returns>
         [Post("/maintainProtectiveWord")]
-        Task<ProtectiveWord> GetProtectiveWordAsync(ProtectiveWord request);
+        Task<ProtectiveWord> GetProtectiveWordAsync(ProtectiveWord request, CancellationToken ct = default);
     }
 }

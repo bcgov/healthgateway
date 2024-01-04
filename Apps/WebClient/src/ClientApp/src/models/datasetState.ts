@@ -4,7 +4,7 @@ import { ResultError } from "@/models/errors";
 import { ImmunizationEvent, Recommendation } from "@/models/immunizationModel";
 import { Covid19LaboratoryOrder, LaboratoryOrder } from "@/models/laboratory";
 import MedicationRequest from "@/models/medicationRequest";
-import MedicationStatementHistory from "@/models/medicationStatementHistory";
+import MedicationStatement from "@/models/medicationStatement";
 import {
     PatientData,
     PatientDataFile,
@@ -37,7 +37,7 @@ export interface LabResultState extends DatasetState<LaboratoryOrder[]> {
     queued: boolean;
 }
 export interface MedicationState
-    extends DatasetState<MedicationStatementHistory[]> {
+    extends DatasetState<MedicationStatement[]> {
     protectiveWordAttempts: number;
 }
 export type SpecialAuthorityRequestState = DatasetState<MedicationRequest[]>;

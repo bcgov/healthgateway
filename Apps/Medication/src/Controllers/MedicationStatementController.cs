@@ -16,6 +16,7 @@
 namespace HealthGateway.Medication.Controllers
 {
     using System.Collections.Generic;
+    using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.AccessManagement.Authorization.Policy;
     using HealthGateway.Common.Data.ViewModels;
@@ -34,27 +35,28 @@ namespace HealthGateway.Medication.Controllers
     public class MedicationStatementController : ControllerBase
     {
         /// <summary>
-        /// The medication statement data service.
+        /// The medication statement service.
         /// </summary>
         private readonly IMedicationStatementService medicationStatementService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MedicationStatementController"/> class.
         /// </summary>
-        /// <param name="medicationStatementService">The injected medication data service.</param>
+        /// <param name="medicationStatementService">The injected medication statement service.</param>
         public MedicationStatementController(IMedicationStatementService medicationStatementService)
         {
             this.medicationStatementService = medicationStatementService;
         }
 
         /// <summary>
-        /// Gets a json of medication record.
+        /// Gets medication statements.
         /// </summary>
-        /// <returns>The medication statement records.</returns>
-        /// <param name="hdid">The patient hdid.</param>
-        /// <param name="protectiveWord">The clients protective word for Pharmanet.</param>
-        /// <response code="200">Returns the medication statement bundle.</response>
-        /// <response code="401">the client must authenticate itself to get the requested response.</response>
+        /// <returns>The list of medication statements wrapped in a request result.</returns>
+        /// <param name="hdid">The patient's HDID.</param>
+        /// <param name="protectiveWord">The client's protective word for PharmaNet.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
+        /// <response code="200">Returns the list of medication statements wrapped in a request result.</response>
+        /// <response code="401">The client must authenticate itself to get the requested response.</response>
         /// <response code="403">
         /// The client does not have access rights to the content; that is, it is unauthorized, so the server
         /// is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.
@@ -63,9 +65,9 @@ namespace HealthGateway.Medication.Controllers
         [Produces("application/json")]
         [Route("{hdid}")]
         [Authorize(Policy = MedicationPolicy.MedicationStatementRead)]
-        public async Task<RequestResult<IList<MedicationStatementHistory>>> GetMedicationStatements(string hdid, [FromHeader] string? protectiveWord = null)
+        public async Task<RequestResult<IList<MedicationStatement>>> GetMedicationStatements(string hdid, [FromHeader] string? protectiveWord = null, CancellationToken ct = default)
         {
-            return await this.medicationStatementService.GetMedicationStatementsHistory(hdid, protectiveWord).ConfigureAwait(true);
+            return await this.medicationStatementService.GetMedicationStatementsAsync(hdid, protectiveWord, ct);
         }
     }
 }

@@ -18,6 +18,8 @@ namespace HealthGateway.MedicationTests.Services
     using System;
     using System.Collections.Generic;
     using System.Globalization;
+    using System.Threading;
+    using System.Threading.Tasks;
     using DeepEqual.Syntax;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
@@ -35,28 +37,30 @@ namespace HealthGateway.MedicationTests.Services
         /// <summary>
         /// GetMedications - Happy Path.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void ShouldGetMedications()
+        public async Task ShouldGetMedications()
         {
             DateTime loadDate = DateTime.Parse("2020/09/29", CultureInfo.CurrentCulture);
-            string din = "00000000";
-            List<DrugProduct> fedData = new()
-            {
+            const string din = "00000000";
+
+            List<DrugProduct> fedData =
+            [
                 new DrugProduct
                 {
                     DrugIdentificationNumber = din,
                     UpdatedDateTime = loadDate,
                 },
-            };
+            ];
 
-            List<PharmaCareDrug> provData = new()
-            {
+            List<PharmaCareDrug> provData =
+            [
                 new PharmaCareDrug
                 {
                     DinPin = din,
                     UpdatedDateTime = loadDate,
                 },
-            };
+            ];
 
             Dictionary<string, MedicationInformation> expected = new()
             {
@@ -80,34 +84,36 @@ namespace HealthGateway.MedicationTests.Services
             };
 
             Mock<IDrugLookupDelegate> mockDelegate = new();
-            mockDelegate.Setup(s => s.GetDrugProductsByDin(It.IsAny<List<string>>())).Returns(fedData);
-            mockDelegate.Setup(s => s.GetPharmaCareDrugsByDin(It.IsAny<List<string>>())).Returns(provData);
+            mockDelegate.Setup(s => s.GetDrugProductsByDinAsync(It.IsAny<List<string>>(), It.IsAny<CancellationToken>())).ReturnsAsync(fedData);
+            mockDelegate.Setup(s => s.GetPharmaCareDrugsByDinAsync(It.IsAny<List<string>>(), It.IsAny<CancellationToken>())).ReturnsAsync(provData);
 
             using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
 
             IMedicationService service = new RestMedicationService(mockDelegate.Object);
-            IDictionary<string, MedicationInformation> actual = service.GetMedications(new List<string>());
+            IDictionary<string, MedicationInformation> actual = await service.GetMedicationsAsync(new List<string>());
             actual.ShouldDeepEqual(expected);
         }
 
         /// <summary>
         /// GetMedications - Happy Path (No Federal).
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void ShouldGetMedicationsNoFederal()
+        public async Task ShouldGetMedicationsNoFederal()
         {
             DateTime loadDate = DateTime.Parse("2020/09/29", CultureInfo.CurrentCulture);
-            string din = "00000000";
-            List<DrugProduct> fedData = new();
+            const string din = "00000000";
 
-            List<PharmaCareDrug> provData = new()
-            {
+            List<DrugProduct> fedData = [];
+
+            List<PharmaCareDrug> provData =
+            [
                 new PharmaCareDrug
                 {
                     DinPin = din,
                     UpdatedDateTime = loadDate,
                 },
-            };
+            ];
 
             Dictionary<string, MedicationInformation> expected = new()
             {
@@ -127,13 +133,13 @@ namespace HealthGateway.MedicationTests.Services
             };
 
             Mock<IDrugLookupDelegate> mockDelegate = new();
-            mockDelegate.Setup(s => s.GetDrugProductsByDin(It.IsAny<List<string>>())).Returns(fedData);
-            mockDelegate.Setup(s => s.GetPharmaCareDrugsByDin(It.IsAny<List<string>>())).Returns(provData);
+            mockDelegate.Setup(s => s.GetDrugProductsByDinAsync(It.IsAny<List<string>>(), It.IsAny<CancellationToken>())).ReturnsAsync(fedData);
+            mockDelegate.Setup(s => s.GetPharmaCareDrugsByDinAsync(It.IsAny<List<string>>(), It.IsAny<CancellationToken>())).ReturnsAsync(provData);
 
             using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
 
             IMedicationService service = new RestMedicationService(mockDelegate.Object);
-            IDictionary<string, MedicationInformation> actual = service.GetMedications(new List<string>());
+            IDictionary<string, MedicationInformation> actual = await service.GetMedicationsAsync(new List<string>());
             actual.ShouldDeepEqual(expected);
         }
     }

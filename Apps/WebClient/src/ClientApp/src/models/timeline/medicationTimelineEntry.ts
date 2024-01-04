@@ -1,7 +1,7 @@
 import { EntryType } from "@/constants/entryType";
 import MedicationSummary from "@/models//medicationSummary";
 import { DateWrapper } from "@/models/dateWrapper";
-import MedicationStatementHistory from "@/models/medicationStatementHistory";
+import MedicationStatement from "@/models/medicationStatement";
 import Pharmacy from "@/models/pharmacy";
 import TimelineEntry from "@/models/timeline/timelineEntry";
 import { UserComment } from "@/models/userComment";
@@ -22,7 +22,7 @@ export default class MedicationTimelineEntry extends TimelineEntry {
     private getComments: (entyId: string) => UserComment[] | null;
 
     public constructor(
-        model: MedicationStatementHistory,
+        model: MedicationStatement,
         getComments: (entyId: string) => UserComment[] | null
     ) {
         super(

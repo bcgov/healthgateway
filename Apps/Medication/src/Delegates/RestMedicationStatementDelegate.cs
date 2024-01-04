@@ -19,6 +19,7 @@ namespace HealthGateway.Medication.Delegates
     using System.Diagnostics;
     using System.Diagnostics.CodeAnalysis;
     using System.Net.Http;
+    using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.CacheProviders;
     using HealthGateway.Common.Constants;
@@ -39,7 +40,7 @@ namespace HealthGateway.Medication.Delegates
     /// <summary>
     /// ODR Implementation for Rest Medication Statements.
     /// </summary>
-    public class RestMedStatementDelegate : IMedStatementDelegate
+    public class RestMedicationStatementDelegate : IMedicationStatementDelegate
     {
         private const string ProtectiveWordCacheDomain = "ProtectiveWord";
         private readonly ICacheProvider cacheProvider;
@@ -50,15 +51,15 @@ namespace HealthGateway.Medication.Delegates
         private readonly OdrConfig odrConfig;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="RestMedStatementDelegate"/> class.
+        /// Initializes a new instance of the <see cref="RestMedicationStatementDelegate"/> class.
         /// </summary>
         /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="odrApi">The injected medication statement api.</param>
         /// <param name="configuration">The injected configuration provider.</param>
         /// <param name="cacheProvider">The provider responsible for caching.</param>
         /// <param name="hashDelegate">The delegate responsible for hashing.</param>
-        public RestMedStatementDelegate(
-            ILogger<RestMedStatementDelegate> logger,
+        public RestMedicationStatementDelegate(
+            ILogger<RestMedicationStatementDelegate> logger,
             IOdrApi odrApi,
             IConfiguration configuration,
             ICacheProvider cacheProvider,
@@ -72,24 +73,29 @@ namespace HealthGateway.Medication.Delegates
             configuration.Bind(OdrConfig.OdrConfigSectionKey, this.odrConfig);
         }
 
-        private static ActivitySource Source { get; } = new(nameof(RestMedStatementDelegate));
+        private static ActivitySource Source { get; } = new(nameof(RestMedicationStatementDelegate));
 
         /// <inheritdoc/>
         [SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "Catch all required")]
         [SuppressMessage("ReSharper", "ExplicitCallerInfoArgument", Justification = "Team decision")]
-        public async Task<RequestResult<MedicationHistoryResponse>> GetMedicationStatementsAsync(OdrHistoryQuery query, string? protectiveWord, string hdid, string ipAddress)
+        public async Task<RequestResult<MedicationHistoryResponse>> GetMedicationStatementsAsync(
+            OdrHistoryQuery query,
+            string? protectiveWord,
+            string hdid,
+            string ipAddress,
+            CancellationToken ct = default)
         {
             using (Source.StartActivity())
             {
                 RequestResult<MedicationHistoryResponse> retVal = new();
                 try
                 {
-                    bool validProtectiveWord = await this.ValidateProtectiveWordAsync(query.Phn, protectiveWord, hdid, ipAddress).ConfigureAwait(true);
+                    bool validProtectiveWord = await this.ValidateProtectiveWordAsync(query.Phn, protectiveWord, hdid, ipAddress, ct);
                     if (validProtectiveWord)
                     {
                         using (Source.StartActivity("ODRQuery"))
                         {
-                            this.logger.LogTrace("Getting medication statements... {Phn}", query.Phn.Substring(0, 3));
+                            this.logger.LogTrace("Getting medication statements... {Phn}", query.Phn[..3]);
                             MedicationHistory request = new()
                             {
                                 Id = Guid.NewGuid(),
@@ -98,7 +104,7 @@ namespace HealthGateway.Medication.Delegates
                                 Query = query,
                             };
 
-                            MedicationHistory medicationHistory = await this.odrApi.GetMedicationHistoryAsync(request).ConfigureAwait(true);
+                            MedicationHistory medicationHistory = await this.odrApi.GetMedicationHistoryAsync(request, ct);
                             retVal.ResultStatus = ResultType.Success;
                             retVal.ResourcePayload = medicationHistory.Response;
                             this.logger.LogDebug("Finished getting medication statements");
@@ -126,21 +132,17 @@ namespace HealthGateway.Medication.Delegates
             }
         }
 
-        /// <inheritdoc/>
-        public Task<bool> SetProtectiveWordAsync(string phn, string newProtectiveWord, string protectiveWord, string hdid, string ipAddress)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <inheritdoc/>
-        public Task<bool> DeleteProtectiveWordAsync(string phn, string protectiveWord, string hdid, string ipAddress)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <inheritdoc/>
+        /// <summary>
+        /// Validates the protective word.
+        /// </summary>
+        /// <param name="phn">The PHN to query.</param>
+        /// <param name="protectiveWord">The protective word to validate.</param>
+        /// <param name="hdid">The HDID of the user querying.</param>
+        /// <param name="ipAddress">The IP of the user querying.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
+        /// <returns>True if the supplied protective word matches the user's stored protective word.</returns>
         [SuppressMessage("ReSharper", "ExplicitCallerInfoArgument", Justification = "Team decision")]
-        public async Task<bool> ValidateProtectiveWordAsync(string phn, string? protectiveWord, string hdid, string ipAddress)
+        private async Task<bool> ValidateProtectiveWordAsync(string phn, string? protectiveWord, string hdid, string ipAddress, CancellationToken ct = default)
         {
             using (Source.StartActivity())
             {
@@ -151,7 +153,7 @@ namespace HealthGateway.Medication.Delegates
                     this.logger.LogDebug("Attempting to fetch Protective Word from Cache");
                     using (Source.StartActivity("GetCacheObject"))
                     {
-                        cacheHash = await this.cacheProvider.GetItemAsync<HmacHash>($"{ProtectiveWordCacheDomain}:{hdid}").ConfigureAwait(true);
+                        cacheHash = await this.cacheProvider.GetItemAsync<HmacHash>($"{ProtectiveWordCacheDomain}:{hdid}", ct);
                     }
                 }
 
@@ -160,13 +162,13 @@ namespace HealthGateway.Medication.Delegates
                     this.logger.LogDebug("Unable to find Protective Word in Cache, fetching from source");
 
                     // The hash isn't in the cache, get Protective word hash from source
-                    IHash hash = await this.GetProtectiveWord(phn, hdid, ipAddress).ConfigureAwait(true);
+                    IHash hash = await this.GetProtectiveWordAsync(phn, hdid, ipAddress, ct);
                     if (this.odrConfig.CacheTtl > 0)
                     {
                         this.logger.LogDebug("Storing a copy of the Protective Word in the Cache");
                         using (Source.StartActivity("CacheObject"))
                         {
-                            this.cacheProvider.AddItem($"{ProtectiveWordCacheDomain}:{hdid}", hash, TimeSpan.FromMinutes(this.odrConfig.CacheTtl));
+                            await this.cacheProvider.AddItemAsync($"{ProtectiveWordCacheDomain}:{hdid}", hash, TimeSpan.FromMinutes(this.odrConfig.CacheTtl), ct);
                         }
                     }
 
@@ -188,12 +190,13 @@ namespace HealthGateway.Medication.Delegates
         /// <param name="phn">The PHN to query.</param>
         /// <param name="hdid">The HDID of the user querying.</param>
         /// <param name="ipAddress">The IP of the user querying.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The hash of the protective word response or null if not set.</returns>
-        private async Task<IHash> GetProtectiveWord(string phn, string hdid, string ipAddress)
+        private async Task<IHash> GetProtectiveWordAsync(string phn, string hdid, string ipAddress, CancellationToken ct = default)
         {
             using (Source.StartActivity())
             {
-                this.logger.LogTrace("Getting Protective word for {Phn}", phn.Substring(0, 3));
+                this.logger.LogTrace("Getting Protective word for {Phn}", phn[..3]);
                 ProtectiveWord request = new()
                 {
                     Id = Guid.NewGuid(),
@@ -206,9 +209,9 @@ namespace HealthGateway.Medication.Delegates
                     },
                 };
 
-                ProtectiveWord protectiveWord = await this.odrApi.GetProtectiveWordAsync(request).ConfigureAwait(true);
+                ProtectiveWord protectiveWord = await this.odrApi.GetProtectiveWordAsync(request, ct);
                 IHash retVal = this.hashDelegate.Hash(protectiveWord.QueryResponse.Value);
-                this.logger.LogDebug("Finished getting Protective Word {Phn}", phn.Substring(0, 3));
+                this.logger.LogDebug("Finished getting Protective Word {Phn}", phn[..3]);
                 return retVal;
             }
         }
