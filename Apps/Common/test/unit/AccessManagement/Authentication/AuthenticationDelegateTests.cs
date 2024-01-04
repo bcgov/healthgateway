@@ -17,7 +17,6 @@ namespace HealthGateway.CommonTests.AccessManagement.Authentication
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics.CodeAnalysis;
     using System.Linq;
     using System.Net;
     using System.Net.Http;
@@ -57,7 +56,6 @@ namespace HealthGateway.CommonTests.AccessManagement.Authentication
         /// AuthenticateAsUser - Happy Path.
         /// </summary>
         [Fact]
-        [SuppressMessage("Maintainability", "CA1506:Avoid excessive class coupling", Justification = "Team decision")]
         public void ShouldAuthenticateAsUser()
         {
             Uri tokenUri = new("http://testsite");
@@ -122,7 +120,6 @@ namespace HealthGateway.CommonTests.AccessManagement.Authentication
         /// AuthenticateAsUser - Happy Path.
         /// </summary>
         [Fact]
-        [SuppressMessage("Maintainability", "CA1506:Avoid excessive class coupling", Justification = "Team decision")]
         public void ShouldNotAuthenticatedAsUser()
         {
             Uri tokenUri = new("http://testsite");
@@ -165,7 +162,6 @@ namespace HealthGateway.CommonTests.AccessManagement.Authentication
         /// <summary>
         /// AuthenticateAsSystem - Happy Path.
         /// </summary>
-        [SuppressMessage("Maintainability", "CA1506:Avoid excessive class coupling", Justification = "Deferred Refactor")]
         [Fact]
         public void ShouldAuthenticateAsSystem()
         {

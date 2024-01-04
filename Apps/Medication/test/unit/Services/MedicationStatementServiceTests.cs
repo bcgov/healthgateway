@@ -17,7 +17,6 @@ namespace HealthGateway.MedicationTests.Services
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics.CodeAnalysis;
     using System.Globalization;
     using System.Net;
     using System.Security.Claims;
@@ -248,7 +247,6 @@ namespace HealthGateway.MedicationTests.Services
         [Theory]
         [InlineData(true)]
         [InlineData(false)]
-        [SuppressMessage("Maintainability", "CA1506:Avoid excessive class coupling", Justification = "Team decision")]
         public async Task ShouldGetMedications(bool canAccessDataSource)
         {
             Mock<IHttpContextAccessor> httpContextAccessorMock = this.GetHttpContextAccessorMock();
