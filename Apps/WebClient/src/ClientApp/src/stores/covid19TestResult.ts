@@ -142,7 +142,16 @@ export const useCovid19TestResultStore = defineStore(
                             retrieveCovid19TestResults(hdid);
                         }, payload.retryin);
                     } else {
-                        throw result.resultError;
+                        if (result.resultError) {
+                            throw ResultError.fromResultErrorDetails(
+                                result.resultError
+                            );
+                        }
+                        logger.warn(
+                            `COVID-19 test results retrieval failed! ${JSON.stringify(
+                                result
+                            )}`
+                        );
                     }
                     return result;
                 })

@@ -128,7 +128,9 @@ export const useClinicalDocumentStore = defineStore("clinicalDocument", () => {
                     );
                 } else {
                     if (result.resultError) {
-                        throw result.resultError;
+                        throw ResultError.fromResultErrorDetails(
+                            result.resultError
+                        );
                     }
                     logger.warn(
                         `Clinical documents retrieval failed! ${JSON.stringify(
@@ -160,7 +162,9 @@ export const useClinicalDocumentStore = defineStore("clinicalDocument", () => {
                     setFile(fileId, payload);
                 } else {
                     if (result.resultError) {
-                        throw result.resultError;
+                        throw ResultError.fromResultErrorDetails(
+                            result.resultError
+                        );
                     }
                     logger.warn(
                         `Clinical document file retrieval failed! ${JSON.stringify(

@@ -226,7 +226,14 @@ export const useVaccinationStatusPublicStore = defineStore(
                             );
                         }, payload.retryin);
                     } else {
-                        throw result.resultError;
+                        throw result.resultError
+                            ? ResultError.fromResultErrorDetails(
+                                  result.resultError
+                              )
+                            : new ResultError(
+                                  "VaccinationStatusStore",
+                                  "Unknown API error on retrieve vaccination status"
+                              );
                     }
                 })
                 .catch((error: ResultError) => {
@@ -268,7 +275,14 @@ export const useVaccinationStatusPublicStore = defineStore(
                             );
                         }, payload.retryin);
                     } else {
-                        throw result.resultError;
+                        throw result.resultError
+                            ? ResultError.fromResultErrorDetails(
+                                  result.resultError
+                              )
+                            : new ResultError(
+                                  "VaccinationStatusStore",
+                                  "Unknown API error on retrieve vaccination record"
+                              );
                     }
                 })
                 .catch((error: ResultError) => {

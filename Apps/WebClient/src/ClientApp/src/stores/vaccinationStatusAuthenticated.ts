@@ -275,7 +275,9 @@ export const useVaccinationStatusAuthenticatedStore = defineStore(
                             }, payload.retryin);
                         } else {
                             if (result.resultError) {
-                                throw result.resultError;
+                                throw ResultError.fromResultErrorDetails(
+                                    result.resultError
+                                );
                             }
                             logger.warn(
                                 `Authenticated vaccination status retrieval failed! ${JSON.stringify(
@@ -322,7 +324,9 @@ export const useVaccinationStatusAuthenticatedStore = defineStore(
                         }, payload.retryin);
                     } else {
                         if (result.resultError) {
-                            throw result.resultError;
+                            throw ResultError.fromResultErrorDetails(
+                                result.resultError
+                            );
                         }
                         logger.warn(
                             `Authenticated vaccination record retrieval failed! ${JSON.stringify(

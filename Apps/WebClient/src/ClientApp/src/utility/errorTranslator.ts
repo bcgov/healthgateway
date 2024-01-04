@@ -34,12 +34,13 @@ export default abstract class ErrorTranslator {
 
     public static internalNetworkError(
         error: HttpError,
-        service: ServiceCode
+        service: ServiceCode,
+        traceId?: string
     ): ResultError {
         return new ResultError(
             "ClientApp-CI-" + service,
             error.message,
-            "",
+            traceId ?? "",
             error.statusCode
         );
     }

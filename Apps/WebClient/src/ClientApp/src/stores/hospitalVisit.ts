@@ -173,10 +173,17 @@ export const useHospitalVisitStore = defineStore("hospitalVisit", () => {
                     }, payload.retryin);
                 } else {
                     if (result.resultError) {
-                        throw result.resultError;
+                        throw ResultError.fromResultErrorDetails(
+                            result.resultError
+                        );
                     }
-                    logger.warn(`Hospital Visits retrieval failed.`);
+                    logger.warn(
+                        `Hospital visits retrieval failed! ${JSON.stringify(
+                            result
+                        )}`
+                    );
                 }
+
                 return result;
             })
             .catch((resultError: ResultError) => {

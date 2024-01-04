@@ -22,9 +22,21 @@ export class HttpError extends Error {
     }
 }
 
-export class ResultError extends Error {
+// HG API binding interface for ErrorResult model
+export interface ResultErrorDetails {
     // API's ResultMessage mapping property. This should be treated as private and the message should be mapped to and preferred.
     resultMessage?: string;
+    // The error code associated with the request. Will always be populated when ResultType is Error.
+    errorCode: string;
+    // The trace ID associated with the request.
+    traceId: string;
+    // The action code that will be set when ResultType is ActionRequired.
+    actionCode?: ActionType;
+    // The HTTP status code returned by the request.
+    statusCode?: number;
+}
+
+export class ResultError extends Error {
     // The error code associated with the request. Will always be populated when ResultType is Error.
     errorCode: string;
     // The trace ID associated with the request.
@@ -46,12 +58,12 @@ export class ResultError extends Error {
         this.statusCode = statusCode;
     }
 
-    public static fromApiResultError(apiResultError: ResultError): ResultError {
+    public static fromResultErrorDetails(
+        apiResultError: ResultErrorDetails
+    ): ResultError {
         const resultError = new ResultError(
             apiResultError.errorCode,
-            apiResultError.resultMessage ??
-                apiResultError.message ??
-                "Unknown API Error",
+            apiResultError.resultMessage ?? "Unknown API Error",
             apiResultError.traceId,
             apiResultError.statusCode
         );

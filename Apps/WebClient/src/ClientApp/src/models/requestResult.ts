@@ -1,5 +1,5 @@
 import { ResultType } from "@/constants/resulttype";
-import { ResultError } from "@/models/errors";
+import { ResultErrorDetails } from "@/models/errors";
 
 export default interface RequestResult<T> {
     // The request resource payload
@@ -13,5 +13,5 @@ export default interface RequestResult<T> {
     //The status of the request
     resultStatus: ResultType;
     // The result error associated to the request (could be empty)
-    resultError?: ResultError;
+    resultError?: ResultErrorDetails;
 }

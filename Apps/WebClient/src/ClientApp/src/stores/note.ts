@@ -85,7 +85,9 @@ export const useNoteStore = defineStore("note", () => {
                         }
                     } else {
                         if (result.resultError) {
-                            throw result.resultError;
+                            throw ResultError.fromResultErrorDetails(
+                                result.resultError
+                            );
                         }
                         logger.warn(
                             `Notes retrieval failed! ${JSON.stringify(result)}`
