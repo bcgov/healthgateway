@@ -74,11 +74,7 @@ export class ResultError extends Error {
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function instanceOfResultError(object: any): object is ResultError {
-    return (
-        "errorCode" in object &&
-        "traceId" in object &&
-        "resultMessage" in object
-    );
+    return "errorCode" in object && "traceId" in object && "message" in object;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
