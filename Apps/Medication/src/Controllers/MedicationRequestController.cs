@@ -16,6 +16,7 @@
 namespace HealthGateway.Medication.Controllers
 {
     using System.Collections.Generic;
+    using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.AccessManagement.Authorization.Policy;
     using HealthGateway.Common.Data.ViewModels;
@@ -52,6 +53,7 @@ namespace HealthGateway.Medication.Controllers
         /// </summary>
         /// <returns>The list of medication requests wrapped in a request result.</returns>
         /// <param name="hdid">The patient's HDID.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <response code="200">Returns the list of medication requests wrapped in a request result.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
         /// <response code="403">
@@ -62,9 +64,9 @@ namespace HealthGateway.Medication.Controllers
         [Produces("application/json")]
         [Route("{hdid}")]
         [Authorize(Policy = MedicationPolicy.MedicationRequestRead)]
-        public async Task<RequestResult<IList<MedicationRequest>>> GetMedicationRequests(string hdid)
+        public async Task<RequestResult<IList<MedicationRequest>>> GetMedicationRequests(string hdid, CancellationToken ct = default)
         {
-            return await this.medicationRequestService.GetMedicationRequestsAsync(hdid).ConfigureAwait(true);
+            return await this.medicationRequestService.GetMedicationRequestsAsync(hdid, ct);
         }
     }
 }

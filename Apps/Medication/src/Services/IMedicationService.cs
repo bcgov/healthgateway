@@ -16,6 +16,8 @@
 namespace HealthGateway.Medication.Services
 {
     using System.Collections.Generic;
+    using System.Threading;
+    using System.Threading.Tasks;
     using HealthGateway.Medication.Models;
 
     /// <summary>
@@ -27,7 +29,8 @@ namespace HealthGateway.Medication.Services
         /// Gets medication information matching the requested drug identifiers.
         /// </summary>
         /// <param name="drugIdentifiers">The list of drug identifiers to retrieve.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A dictionary mapping drug identifiers to medication information.</returns>
-        IDictionary<string, MedicationInformation> GetMedications(IList<string> drugIdentifiers);
+        Task<IDictionary<string, MedicationInformation>> GetMedicationsAsync(IList<string> drugIdentifiers, CancellationToken ct = default);
     }
 }

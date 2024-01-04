@@ -17,6 +17,7 @@ namespace HealthGateway.Common.CacheProviders
 {
     using System;
     using System.Text;
+    using System.Threading;
     using System.Threading.Tasks;
 
     /// <summary>
@@ -66,9 +67,10 @@ namespace HealthGateway.Common.CacheProviders
         /// Retrieves an item from the cache if available.
         /// </summary>
         /// <param name="key">The key to lookup.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <typeparam name="T">The return class type.</typeparam>
         /// <returns>The cache item serialized as T.</returns>
-        Task<T?> GetItemAsync<T>(string key);
+        Task<T?> GetItemAsync<T>(string key, CancellationToken ct = default);
 
         /// <summary>
         /// Adds an item to the cache.
@@ -76,16 +78,18 @@ namespace HealthGateway.Common.CacheProviders
         /// <param name="key">The cache key.</param>
         /// <param name="value">The cache value.</param>
         /// <param name="expiry">The expiry timespan of the cache item.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <typeparam name="T">The class type to cache.</typeparam>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        Task AddItemAsync<T>(string key, T value, TimeSpan? expiry = null);
+        Task AddItemAsync<T>(string key, T value, TimeSpan? expiry = null, CancellationToken ct = default);
 
         /// <summary>
         /// Removes an item from the cache.
         /// </summary>
         /// <param name="key">The key to remove.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        Task RemoveItemAsync(string key);
+        Task RemoveItemAsync(string key, CancellationToken ct = default);
 
         /// <summary>
         /// Gets or sets a value in the cache.
@@ -93,8 +97,9 @@ namespace HealthGateway.Common.CacheProviders
         /// <param name="key">The cache key.</param>
         /// <param name="valueGetter">A function to generate the value to cache if cache miss.</param>
         /// <param name="expiry">The expiry timespan of the cache item.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <typeparam name="T">The class type to cache.</typeparam>
         /// <returns>The cache item serialized as T.</returns>
-        Task<T?> GetOrSetAsync<T>(string key, Func<Task<T>> valueGetter, TimeSpan? expiry = null);
+        Task<T?> GetOrSetAsync<T>(string key, Func<Task<T>> valueGetter, TimeSpan? expiry = null, CancellationToken ct = default);
     }
 }

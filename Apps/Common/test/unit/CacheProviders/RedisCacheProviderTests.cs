@@ -46,7 +46,7 @@ namespace HealthGateway.CommonTests.CacheProviders
             Mock<ILogger<RedisCacheProvider>> mockLogger = new();
             ICacheProvider cacheProvider = new RedisCacheProvider(mockLogger.Object, this.connectionMultiplexer);
 
-            string key = "key";
+            const string key = "key";
             cacheProvider.AddItem(key, "value", TimeSpan.FromMilliseconds(5000));
 
             Assert.True(this.connectionMultiplexer.GetDatabase().KeyExists(key));
@@ -62,7 +62,7 @@ namespace HealthGateway.CommonTests.CacheProviders
             Mock<ILogger<RedisCacheProvider>> mockLogger = new();
             ICacheProvider cacheProvider = new RedisCacheProvider(mockLogger.Object, this.connectionMultiplexer);
 
-            string key = "key";
+            const string key = "key";
             await cacheProvider.AddItemAsync(key, "value", TimeSpan.FromMilliseconds(5000));
 
             Assert.True(await this.connectionMultiplexer.GetDatabase().KeyExistsAsync(key));
@@ -77,7 +77,7 @@ namespace HealthGateway.CommonTests.CacheProviders
             Mock<ILogger<RedisCacheProvider>> mockLogger = new();
             ICacheProvider cacheProvider = new RedisCacheProvider(mockLogger.Object, this.connectionMultiplexer);
 
-            string key = "key";
+            const string key = "key";
             cacheProvider.AddItem(key, "value", TimeSpan.FromMilliseconds(100));
             Thread.Sleep(101);
 
@@ -90,15 +90,15 @@ namespace HealthGateway.CommonTests.CacheProviders
         [Fact]
         public void GetItemFromCache()
         {
-            string key = "key";
-            string value = "value";
+            const string key = "key";
+            const string value = "value";
             this.connectionMultiplexer!.GetDatabase().StringSet(key, JsonSerializer.Serialize(value));
 
             Mock<ILogger<RedisCacheProvider>> mockLogger = new();
             ICacheProvider cacheProvider = new RedisCacheProvider(mockLogger.Object, this.connectionMultiplexer);
             string? cacheItem = cacheProvider.GetItem<string>(key);
 
-            Assert.True(value == cacheItem);
+            Assert.Equal(value, cacheItem);
         }
 
         /// <summary>
@@ -108,8 +108,8 @@ namespace HealthGateway.CommonTests.CacheProviders
         [Fact]
         public async Task GetItemFromCacheAsync()
         {
-            string key = "key";
-            string value = "value";
+            const string key = "key";
+            const string value = "value";
             await this.connectionMultiplexer!.GetDatabase().StringSetAsync(key, JsonSerializer.Serialize(value));
             Mock<ILogger<RedisCacheProvider>> mockLogger = new();
             ICacheProvider cacheProvider = new RedisCacheProvider(mockLogger.Object, this.connectionMultiplexer);
@@ -123,8 +123,8 @@ namespace HealthGateway.CommonTests.CacheProviders
         [Fact]
         public void RemoveItemFromCache()
         {
-            string key = "key";
-            string value = "value";
+            const string key = "key";
+            const string value = "value";
             this.connectionMultiplexer!.GetDatabase().StringSet(key, JsonSerializer.Serialize(value));
 
             Mock<ILogger<RedisCacheProvider>> mockLogger = new();
@@ -141,8 +141,8 @@ namespace HealthGateway.CommonTests.CacheProviders
         [Fact]
         public async Task RemoveItemFromCacheAsync()
         {
-            string key = "key";
-            string value = "value";
+            const string key = "key";
+            const string value = "value";
             await this.connectionMultiplexer!.GetDatabase().StringSetAsync(key, JsonSerializer.Serialize(value));
 
             Mock<ILogger<RedisCacheProvider>> mockLogger = new();
@@ -158,8 +158,8 @@ namespace HealthGateway.CommonTests.CacheProviders
         [Fact]
         public void ShouldGetOrSet()
         {
-            string key = "key";
-            string value = "value";
+            const string key = "key";
+            const string value = "value";
             Mock<ILogger<RedisCacheProvider>> mockLogger = new();
             ICacheProvider cacheProvider = new RedisCacheProvider(mockLogger.Object, this.connectionMultiplexer);
 
@@ -182,8 +182,8 @@ namespace HealthGateway.CommonTests.CacheProviders
         [Fact]
         public async Task ShouldGetOrSetAsync()
         {
-            string key = "key";
-            string value = "value";
+            const string key = "key";
+            const string value = "value";
             Mock<ILogger<RedisCacheProvider>> mockLogger = new();
             ICacheProvider cacheProvider = new RedisCacheProvider(mockLogger.Object, this.connectionMultiplexer);
 

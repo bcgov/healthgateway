@@ -465,7 +465,8 @@ namespace AccountDataAccessTest
                     p => p.GetOrSetAsync(
                         blockedAccessCacheKey,
                         It.IsAny<Func<Task<IEnumerable<DataSource>>>>(),
-                        It.IsAny<TimeSpan>()))
+                        It.IsAny<TimeSpan>(),
+                        It.IsAny<CancellationToken>()))
                 .ReturnsAsync(blockedAccess.DataSources);
 
             PatientRepository patientRepository = new(

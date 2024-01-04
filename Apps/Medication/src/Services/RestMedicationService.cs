@@ -17,6 +17,8 @@ namespace HealthGateway.Medication.Services
 {
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading;
+    using System.Threading.Tasks;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using HealthGateway.Medication.Models;
@@ -38,9 +40,9 @@ namespace HealthGateway.Medication.Services
         }
 
         /// <inheritdoc/>
-        public IDictionary<string, MedicationInformation> GetMedications(IList<string> drugIdentifiers)
+        public async Task<IDictionary<string, MedicationInformation>> GetMedicationsAsync(IList<string> drugIdentifiers, CancellationToken ct = default)
         {
-            IList<DrugProduct> drugProducts = this.drugLookupDelegate.GetDrugProductsByDin(drugIdentifiers);
+            IList<DrugProduct> drugProducts = await this.drugLookupDelegate.GetDrugProductsByDinAsync(drugIdentifiers, ct);
 
             Dictionary<string, MedicationInformation> drugs = drugProducts.ToDictionary(
                 m => m.DrugIdentificationNumber,
@@ -54,8 +56,7 @@ namespace HealthGateway.Medication.Services
                     },
                 });
 
-            IList<PharmaCareDrug> pharmaCareDrugs = this.drugLookupDelegate.GetPharmaCareDrugsByDin(drugIdentifiers);
-
+            IList<PharmaCareDrug> pharmaCareDrugs = await this.drugLookupDelegate.GetPharmaCareDrugsByDinAsync(drugIdentifiers, ct);
             foreach (PharmaCareDrug pharmaDrug in pharmaCareDrugs)
             {
                 if (!drugs.TryGetValue(pharmaDrug.DinPin, out MedicationInformation? drug))

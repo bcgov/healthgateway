@@ -173,7 +173,8 @@ namespace HealthGateway.AccountDataAccess.Patient
                     Task<IEnumerable<DataSource>> dataSources = this.blockedAccessDelegate.GetDataSourcesAsync(hdid);
                     return dataSources;
                 },
-                TimeSpan.FromMinutes(this.blockedAccessCacheTtl)) ?? Array.Empty<DataSource>();
+                TimeSpan.FromMinutes(this.blockedAccessCacheTtl),
+                ct) ?? Array.Empty<DataSource>();
         }
 
         private static string GetStrategy(string? hdid, PatientDetailSource source)

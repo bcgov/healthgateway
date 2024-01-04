@@ -18,6 +18,7 @@ namespace HealthGateway.MedicationTests.Controllers
     using System;
     using System.Collections.Generic;
     using System.Globalization;
+    using System.Threading;
     using System.Threading.Tasks;
     using DeepEqual.Syntax;
     using HealthGateway.Common.Data.Constants;
@@ -89,7 +90,7 @@ namespace HealthGateway.MedicationTests.Controllers
 
             Mock<IMedicationStatementService> svcMock = new();
             svcMock
-                .Setup(s => s.GetMedicationStatementsAsync(hdid, null))
+                .Setup(s => s.GetMedicationStatementsAsync(hdid, null, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(expectedResult);
             MedicationStatementController controller = new(svcMock.Object);
 

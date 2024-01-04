@@ -16,6 +16,7 @@
 namespace HealthGateway.Medication.Services
 {
     using System.Collections.Generic;
+    using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Medication.Models;
@@ -29,7 +30,8 @@ namespace HealthGateway.Medication.Services
         /// Gets medication requests.
         /// </summary>
         /// <param name="hdid">The patient's HDID.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A list of medication requests wrapped in a RequestResult.</returns>
-        Task<RequestResult<IList<MedicationRequest>>> GetMedicationRequestsAsync(string hdid);
+        Task<RequestResult<IList<MedicationRequest>>> GetMedicationRequestsAsync(string hdid, CancellationToken ct = default);
     }
 }

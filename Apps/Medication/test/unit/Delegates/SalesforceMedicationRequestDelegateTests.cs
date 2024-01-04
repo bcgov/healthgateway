@@ -19,6 +19,7 @@ namespace HealthGateway.MedicationTests.Delegates
     using System.Collections.Generic;
     using System.Net.Http;
     using System.Text.Json;
+    using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.AccessManagement.Authentication.Models;
@@ -35,9 +36,9 @@ namespace HealthGateway.MedicationTests.Delegates
     using Xunit;
 
     /// <summary>
-    /// SalesforceDelegate's Unit Tests.
+    /// SalesforceMedicationRequestDelegate's Unit Tests.
     /// </summary>
-    public class SalesforceDelegateTests
+    public class SalesforceMedicationRequestDelegateTests
     {
         /// <summary>
         /// GetMedicationRequests - Happy Path.
@@ -91,11 +92,11 @@ namespace HealthGateway.MedicationTests.Delegates
             ResponseWrapper? result = JsonSerializer.Deserialize<ResponseWrapper>(jsonStr);
             Mock<ISpecialAuthorityApi> mockSpecialAuthorityApi = new();
             mockSpecialAuthorityApi
-                .Setup(s => s.GetSpecialAuthorityRequestsAsync(It.IsAny<string>(), It.IsAny<string>()))
+                .Setup(s => s.GetSpecialAuthorityRequestsAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(result!);
 
             // Setup class to be tested
-            IMedicationRequestDelegate medDelegate = new SalesforceDelegate(
+            IMedicationRequestDelegate medDelegate = new SalesforceMedicationRequestDelegate(
                 CreateLogger(),
                 mockSpecialAuthorityApi.Object,
                 configuration,
@@ -157,7 +158,7 @@ namespace HealthGateway.MedicationTests.Delegates
                 .Returns(() => new JwtModel());
 
             // Setup class to be tested
-            IMedicationRequestDelegate medDelegate = new SalesforceDelegate(
+            IMedicationRequestDelegate medDelegate = new SalesforceMedicationRequestDelegate(
                 CreateLogger(),
                 new Mock<ISpecialAuthorityApi>().Object,
                 configuration,
@@ -225,11 +226,11 @@ namespace HealthGateway.MedicationTests.Delegates
             // Setup response
             Mock<ISpecialAuthorityApi> mockSpecialAuthorityApi = new();
             mockSpecialAuthorityApi
-                .Setup(s => s.GetSpecialAuthorityRequestsAsync(It.IsAny<string>(), It.IsAny<string>()))
+                .Setup(s => s.GetSpecialAuthorityRequestsAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .ThrowsAsync(new HttpRequestException("A Test Exception"));
 
             // Setup class to be tested
-            IMedicationRequestDelegate medDelegate = new SalesforceDelegate(
+            IMedicationRequestDelegate medDelegate = new SalesforceMedicationRequestDelegate(
                 CreateLogger(),
                 mockSpecialAuthorityApi.Object,
                 configuration,
@@ -255,10 +256,10 @@ namespace HealthGateway.MedicationTests.Delegates
                 .Build();
         }
 
-        private static ILogger<SalesforceDelegate> CreateLogger()
+        private static ILogger<SalesforceMedicationRequestDelegate> CreateLogger()
         {
             using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
-            return loggerFactory.CreateLogger<SalesforceDelegate>();
+            return loggerFactory.CreateLogger<SalesforceMedicationRequestDelegate>();
         }
 
         private static JwtModel CreateJwtModel(string json)

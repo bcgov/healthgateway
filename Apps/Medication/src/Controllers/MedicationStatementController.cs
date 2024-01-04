@@ -16,6 +16,7 @@
 namespace HealthGateway.Medication.Controllers
 {
     using System.Collections.Generic;
+    using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.AccessManagement.Authorization.Policy;
     using HealthGateway.Common.Data.ViewModels;
@@ -53,6 +54,7 @@ namespace HealthGateway.Medication.Controllers
         /// <returns>The list of medication statements wrapped in a request result.</returns>
         /// <param name="hdid">The patient's HDID.</param>
         /// <param name="protectiveWord">The client's protective word for PharmaNet.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <response code="200">Returns the list of medication statements wrapped in a request result.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
         /// <response code="403">
@@ -63,9 +65,9 @@ namespace HealthGateway.Medication.Controllers
         [Produces("application/json")]
         [Route("{hdid}")]
         [Authorize(Policy = MedicationPolicy.MedicationStatementRead)]
-        public async Task<RequestResult<IList<MedicationStatement>>> GetMedicationStatements(string hdid, [FromHeader] string? protectiveWord = null)
+        public async Task<RequestResult<IList<MedicationStatement>>> GetMedicationStatements(string hdid, [FromHeader] string? protectiveWord = null, CancellationToken ct = default)
         {
-            return await this.medicationStatementService.GetMedicationStatementsAsync(hdid, protectiveWord).ConfigureAwait(true);
+            return await this.medicationStatementService.GetMedicationStatementsAsync(hdid, protectiveWord, ct);
         }
     }
 }

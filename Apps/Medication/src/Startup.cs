@@ -96,9 +96,9 @@ namespace HealthGateway.Medication
             // Add delegates
             services.AddTransient<IDrugLookupDelegate, DbDrugLookupDelegate>();
             services.AddTransient<IAuthenticationDelegate, AuthenticationDelegate>();
-            services.AddTransient<IMedStatementDelegate, RestMedStatementDelegate>();
+            services.AddTransient<IMedicationStatementDelegate, RestMedicationStatementDelegate>();
             services.AddTransient<IHashDelegate, HmacHashDelegate>();
-            services.AddTransient<IMedicationRequestDelegate, SalesforceDelegate>();
+            services.AddTransient<IMedicationRequestDelegate, SalesforceMedicationRequestDelegate>();
 
             // Add API Clients
             Config sfConfig = new();

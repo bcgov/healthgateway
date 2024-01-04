@@ -17,6 +17,8 @@ namespace HealthGateway.Medication.Controllers
 {
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading;
+    using System.Threading.Tasks;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Medication.Models;
@@ -53,15 +55,16 @@ namespace HealthGateway.Medication.Controllers
         /// </summary>
         /// <returns>Medication information wrapped in a RequestResult.</returns>
         /// <param name="drugIdentifier">The drug identifier to retrieve.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <response code="200">Returns medication information wrapped in a RequestResult.</response>
         [HttpGet]
         [Produces("application/json")]
         [Route("{drugIdentifier}")]
-        public RequestResult<MedicationInformation> GetMedication(string drugIdentifier)
+        public async Task<RequestResult<MedicationInformation>> GetMedication(string drugIdentifier, CancellationToken ct = default)
         {
             // The database requires the dins to be the same size and padded with zeroes on the left
             string paddedDin = drugIdentifier.PadLeft(8, '0');
-            IDictionary<string, MedicationInformation> medications = this.medicationService.GetMedications(new List<string> { paddedDin });
+            IDictionary<string, MedicationInformation> medications = await this.medicationService.GetMedicationsAsync(new List<string> { paddedDin }, ct);
 
             medications.TryGetValue(paddedDin, out MedicationInformation? medication);
             RequestResult<MedicationInformation> result = new()
@@ -81,14 +84,15 @@ namespace HealthGateway.Medication.Controllers
         /// </summary>
         /// <returns>A dictionary mapping drug identifiers to medication information wrapped in a RequestResult.</returns>
         /// <param name="drugIdentifiers">The list of drug identifiers to retrieve.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <response code="200">Returns a list of medication information wrapped in a RequestResult.</response>
         [HttpGet("")]
         [Produces("application/json")]
-        public RequestResult<IDictionary<string, MedicationInformation>> GetMedications([FromQuery] IList<string> drugIdentifiers)
+        public async Task<RequestResult<IDictionary<string, MedicationInformation>>> GetMedications([FromQuery] IList<string> drugIdentifiers, CancellationToken ct = default)
         {
             // The database requires the dins to be the same size and padded with zeroes on the left
             IList<string> paddedDrugIdentifiers = drugIdentifiers.Select(x => x.PadLeft(8, '0')).ToList();
-            IDictionary<string, MedicationInformation> medications = this.medicationService.GetMedications(paddedDrugIdentifiers);
+            IDictionary<string, MedicationInformation> medications = await this.medicationService.GetMedicationsAsync(paddedDrugIdentifiers, ct);
 
             RequestResult<IDictionary<string, MedicationInformation>> result = new()
             {
