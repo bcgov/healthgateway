@@ -166,15 +166,13 @@ namespace HealthGateway.AccountDataAccess.Patient
             string message = $"Getting item from cache for key: {blockedAccessCacheKey}";
             this.logger.LogDebug("{Message}", message);
 
-            return await this.cacheProvider.GetOrSetAsync(
+            IEnumerable<DataSource>? dataSources = await this.cacheProvider.GetOrSetAsync(
                 blockedAccessCacheKey,
-                () =>
-                {
-                    Task<IEnumerable<DataSource>> dataSources = this.blockedAccessDelegate.GetDataSourcesAsync(hdid);
-                    return dataSources;
-                },
+                () => this.blockedAccessDelegate.GetDataSourcesAsync(hdid),
                 TimeSpan.FromMinutes(this.blockedAccessCacheTtl),
-                ct) ?? Array.Empty<DataSource>();
+                ct);
+
+            return dataSources ?? [];
         }
 
         private static string GetStrategy(string? hdid, PatientDetailSource source)
