@@ -173,9 +173,7 @@ export const useHospitalVisitStore = defineStore("hospitalVisit", () => {
                     }, payload.retryin);
                 } else {
                     if (result.resultError) {
-                        throw ResultError.fromResultErrorDetails(
-                            result.resultError
-                        );
+                        throw ResultError.fromModel(result.resultError);
                     }
                     logger.warn(
                         `Hospital visits retrieval failed! ${JSON.stringify(

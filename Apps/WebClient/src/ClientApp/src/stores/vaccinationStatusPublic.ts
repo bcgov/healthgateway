@@ -227,9 +227,7 @@ export const useVaccinationStatusPublicStore = defineStore(
                         }, payload.retryin);
                     } else {
                         throw result.resultError
-                            ? ResultError.fromResultErrorDetails(
-                                  result.resultError
-                              )
+                            ? ResultError.fromModel(result.resultError)
                             : new ResultError(
                                   "VaccinationStatusStore",
                                   "Unknown API error on retrieve vaccination status"
@@ -276,9 +274,7 @@ export const useVaccinationStatusPublicStore = defineStore(
                         }, payload.retryin);
                     } else {
                         throw result.resultError
-                            ? ResultError.fromResultErrorDetails(
-                                  result.resultError
-                              )
+                            ? ResultError.fromModel(result.resultError)
                             : new ResultError(
                                   "VaccinationStatusStore",
                                   "Unknown API error on retrieve vaccination record"

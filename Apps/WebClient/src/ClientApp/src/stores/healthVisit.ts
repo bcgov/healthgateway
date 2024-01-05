@@ -114,9 +114,7 @@ export const useHealthVisitStore = defineStore("healthVisit", () => {
                     );
                 } else {
                     if (result.resultError) {
-                        throw ResultError.fromResultErrorDetails(
-                            result.resultError
-                        );
+                        throw ResultError.fromModel(result.resultError);
                     }
                     logger.warn(
                         `Health visits retrieval failed! ${JSON.stringify(

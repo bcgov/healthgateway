@@ -155,7 +155,7 @@ export const useImmunizationStore = defineStore("immunization", () => {
                     return result.resourcePayload;
                 } else {
                     throw result.resultError
-                        ? ResultError.fromResultErrorDetails(result.resultError)
+                        ? ResultError.fromModel(result.resultError)
                         : new ResultError(
                               "ImmunizationStore",
                               "Unknown API error on retrieve immunizations"

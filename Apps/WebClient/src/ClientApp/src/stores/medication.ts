@@ -96,9 +96,7 @@ export const useMedicationStore = defineStore("medication", () => {
             );
         } else {
             const resultError = medicationResult.resultError
-                ? ResultError.fromResultErrorDetails(
-                      medicationResult.resultError
-                  )
+                ? ResultError.fromModel(medicationResult.resultError)
                 : new ResultError(
                       "MedicationStore",
                       "Unknown API error when settings medications."
@@ -157,7 +155,7 @@ export const useMedicationStore = defineStore("medication", () => {
             .then((result) => {
                 if (result.resultStatus === ResultType.Error) {
                     throw result.resultError
-                        ? ResultError.fromResultErrorDetails(result.resultError)
+                        ? ResultError.fromModel(result.resultError)
                         : new ResultError(
                               "MedicationStore",
                               "Unknown API error when retrieving medications."

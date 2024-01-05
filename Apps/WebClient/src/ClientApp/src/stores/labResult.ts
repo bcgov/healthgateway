@@ -163,9 +163,7 @@ export const useLabResultStore = defineStore("labResult", () => {
                     }, payload.retryin);
                 } else {
                     if (result.resultError) {
-                        throw ResultError.fromResultErrorDetails(
-                            result.resultError
-                        );
+                        throw ResultError.fromModel(result.resultError);
                     }
                     logger.warn(
                         `Laboratory results retrieval failed! ${JSON.stringify(

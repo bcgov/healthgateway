@@ -79,9 +79,7 @@ export const useSpecialAuthorityRequestStore = defineStore(
                 );
             } else {
                 const errorResult = requestResults.resultError
-                    ? ResultError.fromResultErrorDetails(
-                          requestResults.resultError
-                      )
+                    ? ResultError.fromModel(requestResults.resultError)
                     : new ResultError(
                           "SpecialAuthorityStore",
                           "Set Special Authority Error"
@@ -149,9 +147,7 @@ export const useSpecialAuthorityRequestStore = defineStore(
                 .then((result) => {
                     if (result.resultStatus === ResultType.Error) {
                         throw result.resultError
-                            ? ResultError.fromResultErrorDetails(
-                                  result.resultError
-                              )
+                            ? ResultError.fromModel(result.resultError)
                             : new ResultError(
                                   "SpecialAuthorityStore",
                                   "Unknown API error when retrieving special authority requests."

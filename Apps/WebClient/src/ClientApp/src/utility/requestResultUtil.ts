@@ -7,7 +7,7 @@ export default abstract class RequestResultUtil {
         if (requestResult.resultStatus === ResultType.Success) {
             return requestResult.resourcePayload;
         } else if (requestResult.resultError) {
-            throw ResultError.fromResultErrorDetails(requestResult.resultError);
+            throw ResultError.fromModel(requestResult.resultError);
         } else {
             throw new ResultError("RequestResultUtil", "Unknown API Error");
         }

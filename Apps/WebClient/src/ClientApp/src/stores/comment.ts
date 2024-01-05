@@ -123,9 +123,7 @@ export const useCommentStore = defineStore("comment", () => {
                         setComments(result.resourcePayload);
                     } else {
                         if (result.resultError) {
-                            throw ResultError.fromResultErrorDetails(
-                                result.resultError
-                            );
+                            throw ResultError.fromModel(result.resultError);
                         }
                         logger.warn(
                             `Comments retrieval failed! ${JSON.stringify(

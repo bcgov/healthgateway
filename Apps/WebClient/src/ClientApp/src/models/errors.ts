@@ -1,4 +1,5 @@
 import { ActionType } from "@/constants/actionType";
+import { ResultErrorDetails } from "@/models/requestResult";
 
 export interface BannerError {
     title: string;
@@ -22,26 +23,12 @@ export class HttpError extends Error {
     }
 }
 
-// HG API binding interface for ErrorResult model
-export interface ResultErrorDetails {
-    // Message that will always be populated when ResultType is Error.
-    resultMessage?: string;
-    // Code that will always be populated when ResultType is Error.
-    errorCode: string;
-    // The trace ID associated with the request.
-    traceId: string;
-    // The action code that will be set when ResultType is ActionRequired.
-    actionCode?: ActionType;
-    // The HTTP status code returned by the request.
-    statusCode?: number;
-}
-
 export class ResultError extends Error {
     // Code associated with the error.
     errorCode: string;
     // The trace ID associated with the request.
     traceId: string;
-    // The action code that will be set when ResultType is ActionRequired.
+    // The action code.
     actionCode?: ActionType;
     // The HTTP status code returned by the request.
     statusCode?: number;
@@ -58,9 +45,12 @@ export class ResultError extends Error {
         this.statusCode = statusCode;
     }
 
-    public static fromResultErrorDetails(
-        apiResultError: ResultErrorDetails
-    ): ResultError {
+    /**
+     * Transform the API model into a ResultError type which is a throwable JS Error object.
+     * @param apiResultError Error model returned by the HealthGateway API
+     * @returns
+     */
+    public static fromModel(apiResultError: ResultErrorDetails): ResultError {
         const resultError = new ResultError(
             apiResultError.errorCode,
             apiResultError.resultMessage ?? "Unknown API Error",

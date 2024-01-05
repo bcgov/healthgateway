@@ -143,9 +143,7 @@ export const useCovid19TestResultStore = defineStore(
                         }, payload.retryin);
                     } else {
                         if (result.resultError) {
-                            throw ResultError.fromResultErrorDetails(
-                                result.resultError
-                            );
+                            throw ResultError.fromModel(result.resultError);
                         }
                         logger.warn(
                             `COVID-19 test results retrieval failed! ${JSON.stringify(
