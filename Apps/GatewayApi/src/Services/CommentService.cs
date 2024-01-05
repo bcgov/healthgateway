@@ -103,7 +103,7 @@ namespace HealthGateway.GatewayApi.Services
                 return RequestResultFactory.ServiceError<IEnumerable<UserComment>>(ErrorType.InvalidState, ServiceType.Database, "Profile Key not set");
             }
 
-            DbResult<IList<Comment>> dbComments = await this.commentDelegate.GetByParentEntryAsync(hdId, parentEntryId, ct);
+            DbResult<IEnumerable<Comment>> dbComments = await this.commentDelegate.GetByParentEntryAsync(hdId, parentEntryId, ct);
 
             if (dbComments.Status != DbStatusCode.Read)
             {
@@ -112,9 +112,9 @@ namespace HealthGateway.GatewayApi.Services
 
             return RequestResultFactory.Success(
                 dbComments.Payload.Select(c => CommentMapUtils.CreateFromDbModel(c, this.cryptoDelegate, key, this.autoMapper)),
-                dbComments.Payload.Count,
+                dbComments.Payload.Count(),
                 0,
-                dbComments.Payload.Count);
+                dbComments.Payload.Count());
         }
 
         /// <inheritdoc/>
