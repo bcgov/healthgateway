@@ -25,10 +25,10 @@ namespace HealthGateway.GatewayApiTests.Services.Test
     using DeepEqual.Syntax;
     using HealthGateway.AccountDataAccess.Patient;
     using HealthGateway.Common.Data.Constants;
+    using HealthGateway.Common.Data.ErrorHandling;
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Delegates;
-    using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
@@ -46,470 +46,349 @@ namespace HealthGateway.GatewayApiTests.Services.Test
     /// </summary>
     public class NoteServiceTests
     {
+        private const string EncryptionKey = "abc";
+        private const string Hdid = "1234567890123456789012345678901234567890123456789012";
         private readonly IMapper autoMapper = MapperUtil.InitializeAutoMapper();
-        private readonly string hdid = "1234567890123456789012345678901234567890123456789012";
 
         /// <summary>
         /// GetNotes - Happy Path.
         /// </summary>
+        /// <param name="notesDbStatusCode">The db status code for get notes.</param>
+        /// <param name="updateProfileDbStatusCode">The db status code for update user profile.</param>
+        /// <param name="updateNotesBatchDbStatusCode">The db status code for update notes batch.</param>
+        /// <param name="encryptionKey">The encryption key used to encrypt and decrypt.</param>
+        /// <param name="canAccessDataSource">The value indicates whether the health visit data source can be accessed or not.</param>
+        /// <param name="exceptionThrown">The bool value indicating whether problem details exception was thrown or not.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
-        public async Task ShouldGetNotes()
+        [Theory]
+        [InlineData(DbStatusCode.Read, DbStatusCode.Deferred, null, EncryptionKey, true, false)]
+        [InlineData(DbStatusCode.Read, DbStatusCode.Deferred, DbStatusCode.Updated, null, true, false)]
+        [InlineData(DbStatusCode.Error, DbStatusCode.Deferred, DbStatusCode.Updated, null, true, false)]
+        [InlineData(DbStatusCode.Read, DbStatusCode.Deferred, DbStatusCode.Error, null, true, true)]
+        [InlineData(DbStatusCode.Read, DbStatusCode.Error, null, null, true, true)]
+        [InlineData(null, null, null, null, false, false)]
+        public async Task ShouldGetNotes(
+            DbStatusCode? notesDbStatusCode,
+            DbStatusCode? updateProfileDbStatusCode,
+            DbStatusCode? updateNotesBatchDbStatusCode,
+            string? encryptionKey,
+            bool canAccessDataSource,
+            bool exceptionThrown)
         {
-            (Task<RequestResult<IEnumerable<UserNote>>> task, List<UserNote> userNoteList) = this.ExecuteGetNotes("abc");
-            RequestResult<IEnumerable<UserNote>> actualResult = await task;
-
-            Assert.Equal(ResultType.Success, actualResult.ResultStatus);
-            actualResult.ResourcePayload.ShouldDeepEqual(userNoteList);
-        }
-
-        /// <summary>
-        /// GetNotes - Blocked Access.
-        /// </summary>
-        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
-        public async Task ShouldGetNotesGivenBlockedAccess()
-        {
-            (Task<RequestResult<IEnumerable<UserNote>>> task, _) = this.ExecuteGetNotes("abc", DbStatusCode.Error, false);
-            RequestResult<IEnumerable<UserNote>> actualResult = await task;
-
-            Assert.Equal(ResultType.Success, actualResult.ResultStatus);
-            Assert.Empty(actualResult.ResourcePayload);
-        }
-
-        /// <summary>
-        /// GetNotes - Database Error.
-        /// </summary>
-        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
-        public async Task ShouldGetNotesWithDbError()
-        {
-            (Task<RequestResult<IEnumerable<UserNote>>> task, _) = this.ExecuteGetNotes("abc", DbStatusCode.Error);
-            RequestResult<IEnumerable<UserNote>> actualResult = await task;
-
-            Assert.Equal(ResultType.Error, actualResult.ResultStatus);
-            Assert.True(actualResult.ResultError?.ErrorCode.EndsWith("-CI-DB", StringComparison.InvariantCulture));
-        }
-
-        /// <summary>
-        /// GetNotes - Happy Path with No Existing Encryption Key.
-        /// </summary>
-        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
-        public async Task ShouldGetNotesWithProfileKeyNotSet()
-        {
-            (Task<RequestResult<IEnumerable<UserNote>>> task, List<UserNote> userNoteList) = this.ExecuteGetNotes();
-            RequestResult<IEnumerable<UserNote>> actualResult = await task;
-
-            Assert.Equal(ResultType.Success, actualResult.ResultStatus);
-            actualResult.ResourcePayload.ShouldDeepEqual(userNoteList);
-        }
-
-        /// <summary>
-        /// InsertNote - Happy Path.
-        /// </summary>
-        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
-        public async Task ShouldInsertNote()
-        {
-            (Task<RequestResult<UserNote>> task, UserNote userNote) = this.ExecuteCreateNote();
-
-            RequestResult<UserNote> actualResult = await task;
-            Assert.Equal(ResultType.Success, actualResult.ResultStatus);
-            Assert.Null(actualResult.ResultError);
-            userNote.ShouldDeepEqual(actualResult.ResourcePayload);
-        }
-
-        /// <summary>
-        /// InsertNote - Database Error.
-        /// </summary>
-        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
-        public async Task ShouldInsertNoteWithDbError()
-        {
-            (Task<RequestResult<UserNote>> task, _) = this.ExecuteCreateNote(DbStatusCode.Error);
-            RequestResult<UserNote> actualResult = await task;
-
-            Assert.Equal(ResultType.Error, actualResult.ResultStatus);
-            Assert.Equal(ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database), actualResult.ResultError?.ErrorCode);
-        }
-
-        /// <summary>
-        /// UpdateNote - Happy Path.
-        /// </summary>
-        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
-        public async Task ShouldUpdateNote()
-        {
-            (Task<RequestResult<UserNote>> task, UserNote userNote) = this.ExecuteUpdateNote();
-            RequestResult<UserNote> actualResult = await task;
-
-            Assert.Equal(ResultType.Success, actualResult.ResultStatus);
-            userNote.ShouldDeepEqual(actualResult.ResourcePayload);
-        }
-
-        /// <summary>
-        /// UpdateNote - Database Error.
-        /// </summary>
-        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
-        public async Task ShouldUpdateNoteWithDbError()
-        {
-            (Task<RequestResult<UserNote>> task, _) = this.ExecuteUpdateNote(DbStatusCode.Error);
-            RequestResult<UserNote> actualResult = await task;
-
-            Assert.Equal(ResultType.Error, actualResult.ResultStatus);
-            Assert.Equal(ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database), actualResult.ResultError?.ErrorCode);
-        }
-
-        /// <summary>
-        /// DeleteNote - Happy Path.
-        /// </summary>
-        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
-        public async Task ShouldDeleteNote()
-        {
-            (Task<RequestResult<UserNote>> task, UserNote userNote) = this.ExecuteDeleteNote();
-            RequestResult<UserNote> actualResult = await task;
-
-            Assert.Equal(ResultType.Success, actualResult.ResultStatus);
-            Assert.Null(actualResult.ResultError);
-            userNote.ShouldDeepEqual(actualResult.ResourcePayload);
-        }
-
-        /// <summary>
-        /// DeleteNote - Database Error.
-        /// </summary>
-        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
-        public async Task ShouldDeleteNoteWithDbError()
-        {
-            (Task<RequestResult<UserNote>> task, _) = this.ExecuteDeleteNote(DbStatusCode.Error);
-            RequestResult<UserNote> actualResult = await task;
-
-            Assert.Equal(ResultType.Error, actualResult.ResultStatus);
-            Assert.NotNull(actualResult.ResultError);
-        }
-
-        /// <summary>
-        /// InsertNote - No Encryption Key Error.
-        /// </summary>
-        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
-        public async Task ShouldInsertNoteWithNoKeyError()
-        {
-            string? encryptionKey = null;
-            UserProfile? userProfile = new()
-                { EncryptionKey = encryptionKey };
-
-            Mock<IUserProfileDelegate> profileDelegateMock = new();
-            profileDelegateMock.Setup(s => s.GetUserProfileAsync(this.hdid, It.IsAny<CancellationToken>())).ReturnsAsync(userProfile);
-
-            UserNote userNote = new()
-            {
-                HdId = this.hdid,
-                Title = "Deleted Note",
-                Text = "Deleted Note text",
-                CreatedDateTime = DateTime.Parse("2020-01-01", CultureInfo.InvariantCulture),
-            };
-
-            INoteService service = new NoteService(
-                new Mock<ILogger<NoteService>>().Object,
-                new Mock<INoteDelegate>().Object,
-                profileDelegateMock.Object,
-                new Mock<ICryptoDelegate>().Object,
-                new Mock<IPatientRepository>().Object,
-                this.autoMapper);
-
-            RequestResult<UserNote> actualResult = await service.CreateNoteAsync(userNote);
-
-            Assert.Equal(ResultType.Error, actualResult.ResultStatus);
-        }
-
-        /// <summary>
-        /// UpdateNote - No Encryption Key Error.
-        /// </summary>
-        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
-        public async Task ShouldUpdateNoteWithNoKeyError()
-        {
-            string? encryptionKey = null;
-            UserProfile userProfile = new()
-            {
-                EncryptionKey = encryptionKey,
-            };
-
-            Mock<IUserProfileDelegate> profileDelegateMock = new();
-            profileDelegateMock.Setup(s => s.GetUserProfileAsync(this.hdid, It.IsAny<CancellationToken>())).ReturnsAsync(userProfile);
-
-            UserNote userNote = new()
-            {
-                HdId = this.hdid,
-                Title = "Deleted Note",
-                Text = "Deleted Note text",
-                CreatedDateTime = DateTime.Parse("2020-01-01", CultureInfo.InvariantCulture),
-            };
-
-            INoteService service = new NoteService(
-                new Mock<ILogger<NoteService>>().Object,
-                new Mock<INoteDelegate>().Object,
-                profileDelegateMock.Object,
-                new Mock<ICryptoDelegate>().Object,
-                new Mock<IPatientRepository>().Object,
-                this.autoMapper);
-
-            RequestResult<UserNote> actualResult = await service.UpdateNoteAsync(userNote);
-
-            Assert.Equal(ResultType.Error, actualResult.ResultStatus);
-        }
-
-        /// <summary>
-        /// DeleteNote - No Encryption Key Error.
-        /// </summary>
-        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
-        public async Task ShouldDeleteNoteWithNoKeyError()
-        {
-            string? encryptionKey = null;
-            UserProfile userProfile = new()
-            {
-                EncryptionKey = encryptionKey,
-            };
-
-            Mock<IUserProfileDelegate> profileDelegateMock = new();
-            profileDelegateMock.Setup(s => s.GetUserProfileAsync(this.hdid, It.IsAny<CancellationToken>())).ReturnsAsync(userProfile);
-
-            UserNote userNote = new()
-            {
-                HdId = this.hdid,
-                Title = "Deleted Note",
-                Text = "Deleted Note text",
-                CreatedDateTime = DateTime.Parse("2020-01-01", CultureInfo.InvariantCulture),
-            };
-
-            INoteService service = new NoteService(
-                new Mock<ILogger<NoteService>>().Object,
-                new Mock<INoteDelegate>().Object,
-                profileDelegateMock.Object,
-                new Mock<ICryptoDelegate>().Object,
-                new Mock<IPatientRepository>().Object,
-                this.autoMapper);
-
-            RequestResult<UserNote> actualResult = await service.DeleteNoteAsync(userNote);
-
-            Assert.Equal(ResultType.Error, actualResult.ResultStatus);
-        }
-
-        private (Task<RequestResult<IEnumerable<UserNote>>> ActualResult, List<UserNote> ExpectedPayload) ExecuteGetNotes(
-            string? encryptionKey = null,
-            DbStatusCode notesDbResultStatus = DbStatusCode.Read,
-            bool canAccessDataSource = true)
-        {
-            UserProfile userProfile = new()
-                { EncryptionKey = encryptionKey };
-            Mock<IUserProfileDelegate> profileDelegateMock = new();
-            profileDelegateMock.Setup(s => s.GetUserProfileAsync(this.hdid, It.IsAny<CancellationToken>())).ReturnsAsync(userProfile);
-            profileDelegateMock.Setup(s => s.UpdateAsync(It.IsAny<UserProfile>(), false, It.IsAny<CancellationToken>()))
-                .ReturnsAsync(
-                    new DbResult<UserProfile>
-                        { Status = DbStatusCode.Deferred, Payload = userProfile });
-
-            Mock<ICryptoDelegate> cryptoDelegateMock = new();
-            cryptoDelegateMock.Setup(s => s.GenerateKey()).Returns(() => "Y1FmVGpXblpxNHQ3dyF6JUMqRi1KYU5kUmdVa1hwMnM=");
-            cryptoDelegateMock.Setup(s => s.Encrypt(It.IsAny<string>(), It.IsAny<string>()))
-                .Returns(
-                    (string key, string text) => text + key);
-
-            cryptoDelegateMock.Setup(s => s.Decrypt(It.IsAny<string>(), It.IsAny<string>()))
-                .Returns(
-                    (string key, string text) => text.Remove(text.Length - key.Length));
-
-            List<UserNote> expectedPayload = new()
-            {
+            // Arrange
+            List<UserNote> expected =
+            [
                 new UserNote
                 {
-                    HdId = this.hdid,
+                    HdId = Hdid,
                     Title = "First Note",
                     Text = "First Note text",
                     CreatedDateTime = DateTime.Parse("2020-01-01", CultureInfo.InvariantCulture),
                 },
+
                 new UserNote
                 {
-                    HdId = this.hdid,
+                    HdId = Hdid,
                     Title = "Second Note",
                     Text = "Second Note text",
                     CreatedDateTime = DateTime.Parse("2020-02-02", CultureInfo.InvariantCulture),
                 },
-            };
+            ];
 
-            IList<Note> dbNotes = expectedPayload.Select(n => this.autoMapper.Map<UserNote, Note>(n)).ToList();
+            IList<Note> notes = expected.Select(n => this.autoMapper.Map<UserNote, Note>(n)).ToList();
+
             if (encryptionKey != null)
             {
-                foreach (Note note in dbNotes)
+                foreach (Note note in notes)
                 {
-                    note.Title = cryptoDelegateMock.Object.Encrypt(encryptionKey, note.Title);
-                    note.Text = cryptoDelegateMock.Object.Encrypt(encryptionKey, note.Text);
+                    note.Title = GetCryptoDelegateMock().Object.Encrypt(encryptionKey, note.Title);
+                    note.Text = GetCryptoDelegateMock().Object.Encrypt(encryptionKey, note.Text);
                 }
             }
 
-            DbResult<IList<Note>> notesDbResult = new()
+            DbResult<IList<Note>>? notesDbResult = notesDbStatusCode != null
+                ? new()
+                {
+                    Payload = notes,
+                    Status = notesDbStatusCode.Value,
+                }
+                : null;
+
+            UserProfile userProfile = new()
             {
-                Payload = dbNotes,
-                Status = notesDbResultStatus,
+                EncryptionKey = encryptionKey,
             };
 
-            Mock<INoteDelegate> noteDelegateMock = new();
-            noteDelegateMock.Setup(s => s.GetNotesAsync(this.hdid, 0, 500, It.IsAny<CancellationToken>())).ReturnsAsync(notesDbResult);
-            noteDelegateMock.Setup(s => s.BatchUpdateAsync(It.IsAny<IEnumerable<Note>>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(
-                    new DbResult<IEnumerable<Note>>
-                        { Status = DbStatusCode.Updated });
+            DbResult<UserProfile>? updateProfileDbResult = updateProfileDbStatusCode != null
+                ? new()
+                {
+                    Payload = userProfile,
+                    Status = updateProfileDbStatusCode.Value,
+                }
+                : null;
 
-            Mock<IPatientRepository> patientRepository = new();
-            patientRepository.Setup(p => p.CanAccessDataSourceAsync(It.IsAny<string>(), It.IsAny<DataSource>(), It.IsAny<CancellationToken>())).ReturnsAsync(canAccessDataSource);
+            DbResult<IEnumerable<Note>>? notesBatchUpdateDbResult = updateNotesBatchDbStatusCode != null
+                ? new()
+                {
+                    Payload = notes,
+                    Status = updateNotesBatchDbStatusCode.Value,
+                }
+                : null;
 
-            INoteService service = new NoteService(
-                new Mock<ILogger<NoteService>>().Object,
-                noteDelegateMock.Object,
-                profileDelegateMock.Object,
-                cryptoDelegateMock.Object,
-                patientRepository.Object,
-                this.autoMapper);
+            NoteService service = GetNoteService(
+                userProfile: userProfile,
+                updateProfileDbResult: updateProfileDbResult,
+                notesDbResult: notesDbResult,
+                notesBatchUpdateDbResult: notesBatchUpdateDbResult,
+                canAccessDataSource: canAccessDataSource);
 
-            Task<RequestResult<IEnumerable<UserNote>>> actualResult = service.GetNotesAsync(this.hdid);
+            if (exceptionThrown)
+            {
+                // Act and Assert
+                await Assert.ThrowsAsync<ProblemDetailsException>(() => service.GetNotesAsync(Hdid));
+            }
+            else
+            {
+                // Act
+                RequestResult<IEnumerable<UserNote>> actual = await service.GetNotesAsync(Hdid);
 
-            return (actualResult, expectedPayload);
+                // Assert
+                switch ((canAccessDataSource, notesDbStatusCode))
+                {
+                    case (true, DbStatusCode.Read):
+                        Assert.Equal(ResultType.Success, actual.ResultStatus);
+                        expected.ShouldDeepEqual(actual.ResourcePayload);
+                        break;
+
+                    case (true, _):
+                        Assert.Equal(ResultType.Error, actual.ResultStatus);
+                        Assert.NotNull(actual.ResultError);
+                        break;
+
+                    case (false, _):
+                        Assert.Equal(ResultType.Success, actual.ResultStatus);
+                        Assert.Empty(actual.ResourcePayload);
+                        break;
+                }
+            }
         }
 
-        private (Task<RequestResult<UserNote>> ActualResult, UserNote UserNote) ExecuteCreateNote(DbStatusCode dBStatusCode = DbStatusCode.Created)
+        /// <summary>
+        /// InsertNote.
+        /// </summary>
+        /// <param name="dbStatusCode">The status code for the DbResult.</param>
+        /// <param name="encryptionKey">The encryption key used to encrypt and decrypt.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+        [Theory]
+        [InlineData(DbStatusCode.Created, EncryptionKey)]
+        [InlineData(DbStatusCode.Error, EncryptionKey)]
+        [InlineData(DbStatusCode.Error, null)]
+        public async Task ShouldInsertNote(DbStatusCode? dbStatusCode, string? encryptionKey)
         {
-            string encryptionKey = "abc";
-            UserProfile userProfile = new()
-                { EncryptionKey = encryptionKey };
-            Mock<IUserProfileDelegate> profileDelegateMock = new();
-            profileDelegateMock.Setup(s => s.GetUserProfileAsync(this.hdid, It.IsAny<CancellationToken>())).ReturnsAsync(userProfile);
-
-            Mock<ICryptoDelegate> cryptoDelegateMock = new();
-            cryptoDelegateMock.Setup(s => s.Encrypt(It.IsAny<string>(), It.IsAny<string>())).Returns((string key, string text) => text + key);
-            cryptoDelegateMock.Setup(s => s.Decrypt(It.IsAny<string>(), It.IsAny<string>())).Returns((string key, string text) => text.Remove(text.Length - key.Length));
-
-            UserNote userNote = new()
+            // Arrange
+            UserNote expected = new()
             {
-                HdId = this.hdid,
+                HdId = Hdid,
                 Title = "Inserted Note",
                 Text = "Inserted Note text",
                 CreatedDateTime = DateTime.Parse("2020-01-01", CultureInfo.InvariantCulture),
             };
 
-            Note note = NoteMapUtils.ToDbModel(userNote, cryptoDelegateMock.Object, encryptionKey, this.autoMapper);
+            Note note = NoteMapUtils.ToDbModel(expected, GetCryptoDelegateMock().Object, encryptionKey, this.autoMapper);
 
-            DbResult<Note> insertResult = new()
-            {
-                Payload = note,
-                Status = dBStatusCode,
-            };
+            DbResult<Note>? noteDbResult = dbStatusCode != null
+                ? new()
+                {
+                    Payload = note,
+                    Status = dbStatusCode.Value,
+                }
+                : null;
 
-            Mock<INoteDelegate> noteDelegateMock = new();
-            noteDelegateMock.Setup(s => s.AddNoteAsync(It.Is<Note>(x => x.Text == note.Text), true, It.IsAny<CancellationToken>())).ReturnsAsync(insertResult);
-
-            INoteService service = new NoteService(
-                new Mock<ILogger<NoteService>>().Object,
-                noteDelegateMock.Object,
-                profileDelegateMock.Object,
-                cryptoDelegateMock.Object,
-                new Mock<IPatientRepository>().Object,
-                this.autoMapper);
-
-            Task<RequestResult<UserNote>> actualResult = service.CreateNoteAsync(userNote);
-            return (actualResult, userNote);
-        }
-
-        private (Task<RequestResult<UserNote>> ActualResult, UserNote UserNote) ExecuteUpdateNote(DbStatusCode dBStatusCode = DbStatusCode.Updated)
-        {
-            string encryptionKey = "abc";
             UserProfile userProfile = new()
                 { EncryptionKey = encryptionKey };
 
-            Mock<IUserProfileDelegate> profileDelegateMock = new();
-            profileDelegateMock.Setup(s => s.GetUserProfileAsync(this.hdid, It.IsAny<CancellationToken>())).ReturnsAsync(userProfile);
+            NoteService service = GetNoteService(userProfile: userProfile, noteDbResult: noteDbResult);
 
-            Mock<ICryptoDelegate> cryptoDelegateMock = new();
-            cryptoDelegateMock.Setup(s => s.Encrypt(It.IsAny<string>(), It.IsAny<string>())).Returns((string key, string text) => text + key);
-            cryptoDelegateMock.Setup(s => s.Decrypt(It.IsAny<string>(), It.IsAny<string>())).Returns((string key, string text) => text.Remove(text.Length - key.Length));
+            // Act
+            RequestResult<UserNote> actual = await service.CreateNoteAsync(expected);
 
-            UserNote userNote = new()
+            // Assert
+            if (dbStatusCode == DbStatusCode.Created)
             {
-                HdId = this.hdid,
+                Assert.Equal(ResultType.Success, actual.ResultStatus);
+                Assert.Null(actual.ResultError);
+                expected.ShouldDeepEqual(actual.ResourcePayload);
+            }
+            else
+            {
+                Assert.Equal(ResultType.Error, actual.ResultStatus);
+                Assert.NotNull(actual.ResultError);
+            }
+        }
+
+        /// <summary>
+        /// UpdateNote.
+        /// </summary>
+        /// <param name="dbStatusCode">The status code for the DbResult.</param>
+        /// <param name="encryptionKey">The encryption key used to encrypt and decrypt.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+        [Theory]
+        [InlineData(DbStatusCode.Updated, EncryptionKey)]
+        [InlineData(DbStatusCode.Error, EncryptionKey)]
+        [InlineData(DbStatusCode.Error, null)]
+        public async Task ShouldUpdateNote(DbStatusCode? dbStatusCode, string? encryptionKey)
+        {
+            // Arrange
+            UserNote expected = new()
+            {
+                HdId = Hdid,
                 Title = "Updated Note",
                 Text = "Updated Note text",
                 CreatedDateTime = DateTime.Parse("2020-01-01", CultureInfo.InvariantCulture),
             };
 
-            Note note = NoteMapUtils.ToDbModel(userNote, cryptoDelegateMock.Object, encryptionKey, this.autoMapper);
+            Note note = NoteMapUtils.ToDbModel(expected, GetCryptoDelegateMock().Object, encryptionKey, this.autoMapper);
 
-            DbResult<Note> updateResult = new()
-            {
-                Payload = note,
-                Status = dBStatusCode,
-            };
+            DbResult<Note>? noteDbResult = dbStatusCode != null
+                ? new()
+                {
+                    Payload = note,
+                    Status = dbStatusCode.Value,
+                }
+                : null;
 
-            Mock<INoteDelegate> noteDelegateMock = new();
-            noteDelegateMock.Setup(s => s.UpdateNoteAsync(It.Is<Note>(x => x.Text == note.Text), true, It.IsAny<CancellationToken>())).ReturnsAsync(updateResult);
-
-            INoteService service = new NoteService(
-                new Mock<ILogger<NoteService>>().Object,
-                noteDelegateMock.Object,
-                profileDelegateMock.Object,
-                cryptoDelegateMock.Object,
-                new Mock<IPatientRepository>().Object,
-                this.autoMapper);
-
-            Task<RequestResult<UserNote>> actualResult = service.UpdateNoteAsync(userNote);
-            return (actualResult, userNote);
-        }
-
-        private (Task<RequestResult<UserNote>> ActualResult, UserNote UserNote) ExecuteDeleteNote(DbStatusCode dBStatusCode = DbStatusCode.Deleted)
-        {
-            string encryptionKey = "abc";
-            UserProfile? userProfile = new()
+            UserProfile userProfile = new()
                 { EncryptionKey = encryptionKey };
 
-            Mock<IUserProfileDelegate> profileDelegateMock = new();
-            profileDelegateMock.Setup(s => s.GetUserProfileAsync(this.hdid, It.IsAny<CancellationToken>())).ReturnsAsync(userProfile);
+            NoteService service = GetNoteService(userProfile: userProfile, noteDbResult: noteDbResult);
 
-            Mock<ICryptoDelegate> cryptoDelegateMock = new();
-            cryptoDelegateMock.Setup(s => s.Encrypt(It.IsAny<string>(), It.IsAny<string>())).Returns((string key, string text) => text + key);
-            cryptoDelegateMock.Setup(s => s.Decrypt(It.IsAny<string>(), It.IsAny<string>())).Returns((string key, string text) => text.Remove(text.Length - key.Length));
+            // Act
+            RequestResult<UserNote> actual = await service.UpdateNoteAsync(expected);
 
-            UserNote userNote = new()
+            // Assert
+            if (dbStatusCode == DbStatusCode.Updated)
             {
-                HdId = this.hdid,
+                Assert.Equal(ResultType.Success, actual.ResultStatus);
+                Assert.Null(actual.ResultError);
+                expected.ShouldDeepEqual(actual.ResourcePayload);
+            }
+            else
+            {
+                Assert.Equal(ResultType.Error, actual.ResultStatus);
+                Assert.NotNull(actual.ResultError);
+            }
+        }
+
+        /// <summary>
+        /// DeleteNote.
+        /// </summary>
+        /// <param name="dbStatusCode">The status code for the DbResult.</param>
+        /// <param name="encryptionKey">The encryption key used to encrypt and decrypt.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+        [Theory]
+        [InlineData(DbStatusCode.Deleted, EncryptionKey)]
+        [InlineData(DbStatusCode.Error, EncryptionKey)]
+        [InlineData(DbStatusCode.Error, null)]
+        public async Task ShouldDeleteNote(DbStatusCode? dbStatusCode, string? encryptionKey)
+        {
+            // Arrange
+            UserNote expected = new()
+            {
+                HdId = Hdid,
                 Title = "Deleted Note",
                 Text = "Deleted Note text",
                 CreatedDateTime = DateTime.Parse("2020-01-01", CultureInfo.InvariantCulture),
             };
 
-            Note note = NoteMapUtils.ToDbModel(userNote, cryptoDelegateMock.Object, encryptionKey, this.autoMapper);
+            Note note = NoteMapUtils.ToDbModel(expected, GetCryptoDelegateMock().Object, encryptionKey, this.autoMapper);
 
-            DbResult<Note> deleteResult = new()
+            DbResult<Note>? noteDbResult = dbStatusCode != null
+                ? new()
+                {
+                    Payload = note,
+                    Status = dbStatusCode.Value,
+                }
+                : null;
+
+            UserProfile userProfile = new()
+                { EncryptionKey = encryptionKey };
+
+            NoteService service = GetNoteService(userProfile: userProfile, noteDbResult: noteDbResult);
+
+            // Act
+            RequestResult<UserNote> actual = await service.DeleteNoteAsync(expected);
+
+            // Assert
+            if (dbStatusCode == DbStatusCode.Deleted)
             {
-                Payload = note,
-                Status = dBStatusCode,
-            };
+                Assert.Equal(ResultType.Success, actual.ResultStatus);
+                Assert.Null(actual.ResultError);
+                expected.ShouldDeepEqual(actual.ResourcePayload);
+            }
+            else
+            {
+                Assert.Equal(ResultType.Error, actual.ResultStatus);
+                Assert.NotNull(actual.ResultError);
+            }
+        }
 
-            Mock<INoteDelegate> noteDelegateMock = new();
-            noteDelegateMock.Setup(s => s.DeleteNoteAsync(It.Is<Note>(x => x.Text == note.Text), true, It.IsAny<CancellationToken>())).ReturnsAsync(deleteResult);
+        private static Mock<ICryptoDelegate> GetCryptoDelegateMock()
+        {
+            Mock<ICryptoDelegate> cryptoDelegateMock = new();
+            cryptoDelegateMock.Setup(s => s.GenerateKey()).Returns(() => "Y1FmVGpXblpxNHQ3dyF6JUMqRi1KYU5kUmdVa1hwMnM=");
+            cryptoDelegateMock.Setup(s => s.Encrypt(It.IsAny<string>(), It.IsAny<string>())).Returns((string key, string text) => text + key);
+            cryptoDelegateMock.Setup(s => s.Decrypt(It.IsAny<string>(), It.IsAny<string>())).Returns((string key, string text) => text.Remove(text.Length - key.Length));
+            return cryptoDelegateMock;
+        }
 
-            INoteService service = new NoteService(
+        private static NoteService GetNoteService(
+            Mock<IUserProfileDelegate>? profileDelegateMock = null,
+            UserProfile? userProfile = null,
+            DbResult<UserProfile>? updateProfileDbResult = null,
+            Mock<INoteDelegate>? noteDelegateMock = null,
+            DbResult<Note>? noteDbResult = null,
+            DbResult<IList<Note>>? notesDbResult = null,
+            DbResult<IEnumerable<Note>>? notesBatchUpdateDbResult = null,
+            bool canAccessDataSource = true)
+        {
+            profileDelegateMock ??= new();
+
+            if (updateProfileDbResult != null)
+            {
+                profileDelegateMock.Setup(s => s.UpdateAsync(It.IsAny<UserProfile>(), false, It.IsAny<CancellationToken>()))
+                    .ReturnsAsync(updateProfileDbResult);
+            }
+
+            profileDelegateMock.Setup(s => s.GetUserProfileAsync(Hdid, It.IsAny<CancellationToken>())).ReturnsAsync(userProfile);
+
+            noteDelegateMock ??= new();
+            if (noteDbResult != null)
+            {
+                noteDelegateMock.Setup(s => s.AddNoteAsync(It.Is<Note>(x => x.Text == noteDbResult.Payload.Text), true, It.IsAny<CancellationToken>())).ReturnsAsync(noteDbResult);
+                noteDelegateMock.Setup(s => s.UpdateNoteAsync(It.Is<Note>(x => x.Text == noteDbResult.Payload.Text), true, It.IsAny<CancellationToken>())).ReturnsAsync(noteDbResult);
+                noteDelegateMock.Setup(s => s.DeleteNoteAsync(It.Is<Note>(x => x.Text == noteDbResult.Payload.Text), true, It.IsAny<CancellationToken>())).ReturnsAsync(noteDbResult);
+            }
+
+            if (notesDbResult != null)
+            {
+                noteDelegateMock.Setup(s => s.GetNotesAsync(Hdid, 0, 500, It.IsAny<CancellationToken>())).ReturnsAsync(notesDbResult);
+            }
+
+            if (notesBatchUpdateDbResult != null)
+            {
+                noteDelegateMock.Setup(s => s.BatchUpdateAsync(It.IsAny<IEnumerable<Note>>(), It.IsAny<bool>(), It.IsAny<CancellationToken>())).ReturnsAsync(notesBatchUpdateDbResult);
+            }
+
+            Mock<IPatientRepository> patientRepository = new();
+            patientRepository.Setup(p => p.CanAccessDataSourceAsync(It.IsAny<string>(), It.IsAny<DataSource>(), It.IsAny<CancellationToken>())).ReturnsAsync(canAccessDataSource);
+
+            return new NoteService(
                 new Mock<ILogger<NoteService>>().Object,
                 noteDelegateMock.Object,
                 profileDelegateMock.Object,
-                cryptoDelegateMock.Object,
-                new Mock<IPatientRepository>().Object,
-                this.autoMapper);
-
-            Task<RequestResult<UserNote>> actualResult = service.DeleteNoteAsync(userNote);
-            return (actualResult, userNote);
+                GetCryptoDelegateMock().Object,
+                patientRepository.Object,
+                MapperUtil.InitializeAutoMapper());
         }
     }
 }

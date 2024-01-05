@@ -25,6 +25,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Messaging;
+    using HealthGateway.Common.Models;
     using HealthGateway.Common.Models.Events;
     using HealthGateway.Common.Services;
     using HealthGateway.Database.Delegates;
@@ -41,106 +42,77 @@ namespace HealthGateway.GatewayApiTests.Services.Test
     public class UserEmailServiceTests
     {
         private const string HdIdMock = "hdIdMock";
+        private const string InvalidHdidMock = "Does not match Hdid Mock";
 
         /// <summary>
         /// ValidateEmailAsync - Happy path scenario.
         /// </summary>
+        /// <param name="changeFeedEnabled">
+        /// The bool value indicating whether change feed on notifications is enabled or not.
+        /// </param>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
-        public async Task ValidateEmail()
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public async Task ValidateEmail(bool changeFeedEnabled)
         {
+            // Arrange
             Guid inviteKey = Guid.NewGuid();
-            MessagingVerification expectedResult = new()
+            MessagingVerification verificationByInviteKey = new()
             {
                 UserProfileId = HdIdMock,
                 VerificationAttempts = 0,
                 InviteKey = inviteKey,
                 ExpireDate = DateTime.Now.AddDays(1),
+                Validated = false,
                 Email = new Email
                 {
                     To = "fakeemail@healthgateway.gov.bc.ca",
                 },
             };
 
-            Mock<IMessagingVerificationDelegate> messagingVerificationDelegate = new();
-            messagingVerificationDelegate.Setup(s => s.GetLastForUserAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(expectedResult);
-            messagingVerificationDelegate.Setup(s => s.GetLastByInviteKeyAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(expectedResult);
-
-            Mock<IUserProfileDelegate> userProfileDelegate = new();
             UserProfile userProfileMock = new();
-            userProfileDelegate.Setup(s => s.GetUserProfileAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(userProfileMock);
-            userProfileDelegate.Setup(s => s.UpdateAsync(It.IsAny<UserProfile>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new DbResult<UserProfile>());
+            Mock<IMessagingVerificationDelegate> messagingVerificationDelegateMock = new();
+            Mock<IUserProfileDelegate> userProfileDelegateMock = new();
+            Mock<INotificationSettingsService> notificationSettingsServiceMock = new();
+            Mock<IMessageSender> messageSenderMock = new();
 
-            IUserEmailService service = new UserEmailService(
-                new Mock<ILogger<UserEmailService>>().Object,
-                messagingVerificationDelegate.Object,
-                userProfileDelegate.Object,
-                new Mock<IEmailQueueService>().Object,
-                new Mock<INotificationSettingsService>().Object,
-                GetIConfigurationRoot(),
-                new Mock<IMessageSender>().Object);
+            IUserEmailService service = GetUserEmailService(
+                userProfileMock,
+                verificationByInviteKey,
+                messagingVerificationDelegateMock,
+                userProfileDelegateMock: userProfileDelegateMock,
+                notificationSettingsServiceMock: notificationSettingsServiceMock,
+                messageSenderMock: messageSenderMock,
+                changeFeedEnabled: changeFeedEnabled);
 
-            RequestResult<bool> actual = await service.ValidateEmailAsync(HdIdMock, inviteKey, CancellationToken.None);
-            Assert.True(actual.ResultStatus == ResultType.Success);
-        }
-
-        /// <summary>
-        /// Validate that email validation with change feed enabled sends notification through message bus.
-        /// </summary>
-        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
-        public async Task ValidateEmailWithChangeFeed()
-        {
-            Guid inviteKey = Guid.NewGuid();
-            MessagingVerification expectedResult = new()
-            {
-                UserProfileId = HdIdMock,
-                VerificationAttempts = 0,
-                InviteKey = inviteKey,
-                ExpireDate = DateTime.Now.AddDays(1),
-                Email = new Email
-                {
-                    To = "fakeemail@healthgateway.gov.bc.ca",
-                },
-            };
-
-            Mock<IMessagingVerificationDelegate> messagingVerificationDelegate = new();
-            messagingVerificationDelegate.Setup(s => s.GetLastForUserAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(expectedResult);
-            messagingVerificationDelegate.Setup(s => s.GetLastByInviteKeyAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(expectedResult);
-
-            Mock<IUserProfileDelegate> userProfileDelegate = new();
-            UserProfile userProfileMock = new();
-            userProfileDelegate.Setup(s => s.GetUserProfileAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(userProfileMock);
-            userProfileDelegate.Setup(s => s.UpdateAsync(It.IsAny<UserProfile>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new DbResult<UserProfile>());
-            Mock<IMessageSender> mockMessageSender = new();
-
-            string changeFeedKey = $"{ChangeFeedOptions.ChangeFeed}:Notifications:Enabled";
-            Dictionary<string, string?> configDict = new()
-            {
-                { changeFeedKey, "true" },
-            };
-
-            IUserEmailService service = new UserEmailService(
-                new Mock<ILogger<UserEmailService>>().Object,
-                messagingVerificationDelegate.Object,
-                userProfileDelegate.Object,
-                new Mock<IEmailQueueService>().Object,
-                new Mock<INotificationSettingsService>().Object,
-                GetIConfigurationRoot(configDict),
-                mockMessageSender.Object);
-
+            // Act
             RequestResult<bool> actual = await service.ValidateEmailAsync(HdIdMock, inviteKey, CancellationToken.None);
 
-            mockMessageSender.Verify(
+            // Assert
+            Assert.Equal(ResultType.Success, actual.ResultStatus);
+
+            messagingVerificationDelegateMock
+                .Verify(
+                    s => s.UpdateAsync(It.IsAny<MessagingVerification>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()),
+                    Times.Once);
+
+            userProfileDelegateMock
+                .Verify(
+                    s => s.UpdateAsync(It.IsAny<UserProfile>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()),
+                    Times.Once);
+
+            notificationSettingsServiceMock
+                .Verify(
+                    s => s.QueueNotificationSettingsAsync(It.IsAny<NotificationSettingsRequest>(), It.IsAny<CancellationToken>()),
+                    Times.Once);
+
+            messageSenderMock.Verify(
                 m => m.SendAsync(
-                    It.Is<IEnumerable<MessageEnvelope>>(envelopes => envelopes.First().Content is NotificationChannelVerifiedEvent),
-                    CancellationToken.None));
-
-            Assert.True(actual.ResultStatus == ResultType.Success);
+                    It.Is<IEnumerable<MessageEnvelope>>(
+                        envelopes => envelopes.First().Content is NotificationChannelVerifiedEvent),
+                    CancellationToken.None),
+                changeFeedEnabled ? Times.Once : Times.Never);
         }
 
         /// <summary>
@@ -150,8 +122,9 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         [Fact]
         public async Task ValidateEmailTooManyAttempts()
         {
+            // Arrange
             Guid inviteKey = Guid.NewGuid();
-            MessagingVerification expectedResult = new()
+            MessagingVerification verificationByInviteKey = new()
             {
                 UserProfileId = HdIdMock,
                 VerificationAttempts = 1000000000,
@@ -159,27 +132,13 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 ExpireDate = DateTime.Now.AddDays(1),
             };
 
-            Mock<IMessagingVerificationDelegate> messagingVerificationDelegate = new();
-            messagingVerificationDelegate.Setup(s => s.GetLastForUserAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(expectedResult);
-            messagingVerificationDelegate.Setup(s => s.GetLastByInviteKeyAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(expectedResult);
+            UserProfile userProfile = new();
+            IUserEmailService service = GetUserEmailService(userProfile, verificationByInviteKey);
 
-            Mock<IUserProfileDelegate> userProfileDelegate = new();
-            UserProfile userProfileMock = new();
-            userProfileDelegate.Setup(s => s.GetUserProfileAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(userProfileMock);
-            userProfileDelegate.Setup(s => s.UpdateAsync(It.IsAny<UserProfile>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new DbResult<UserProfile>());
+            // Act
+            RequestResult<bool> actual = await service.ValidateEmailAsync(HdIdMock, inviteKey);
 
-            IUserEmailService service = new UserEmailService(
-                new Mock<ILogger<UserEmailService>>().Object,
-                messagingVerificationDelegate.Object,
-                userProfileDelegate.Object,
-                new Mock<IEmailQueueService>().Object,
-                new Mock<INotificationSettingsService>().Object,
-                GetIConfigurationRoot(),
-                new Mock<IMessageSender>().Object);
-
-            RequestResult<bool> actual = await service.ValidateEmailAsync(HdIdMock, inviteKey, CancellationToken.None);
+            // Assert
             Assert.True(actual.ResultStatus == ResultType.ActionRequired);
         }
 
@@ -190,112 +149,138 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         [Fact]
         public async Task ValidateEmailAlreadyValidated()
         {
+            // Arrange
             Guid inviteKey = Guid.NewGuid();
-            MessagingVerification expectedResult = new()
+            MessagingVerification verificationByInviteKey = new()
             {
                 UserProfileId = HdIdMock,
                 VerificationAttempts = 0,
                 InviteKey = inviteKey,
                 ExpireDate = DateTime.Now.AddDays(1),
                 Validated = true,
+                Deleted = false,
             };
 
-            Mock<IMessagingVerificationDelegate> messagingVerificationDelegate = new();
-            messagingVerificationDelegate.Setup(s => s.GetLastForUserAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(expectedResult);
-            messagingVerificationDelegate.Setup(s => s.GetLastByInviteKeyAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(expectedResult);
-
-            Mock<IUserProfileDelegate> userProfileDelegate = new();
             UserProfile userProfile = new();
-            userProfileDelegate.Setup(s => s.GetUserProfileAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(userProfile);
-            userProfileDelegate.Setup(s => s.UpdateAsync(It.IsAny<UserProfile>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()))
+            IUserEmailService service = GetUserEmailService(userProfile, verificationByInviteKey);
+
+            // Act
+            RequestResult<bool> actual = await service.ValidateEmailAsync(HdIdMock, inviteKey);
+
+            // Assert
+            Assert.Equal(ResultType.Error, actual.ResultStatus);
+        }
+
+        /// <summary>
+        /// ValidateEmailAsync - invalid invite.
+        /// </summary>
+        /// <param name="hdid">The hdid associated with the verification by invite key..</param>
+        /// <param name="validated">The last verification for user Validated value.</param>
+        /// <param name="deleted">The last verification's Deleted value.</param>
+        /// <param name="userProfileExists">
+        /// The bool value indicating whether a user profile associated with the messaging
+        /// verification exists.
+        /// </param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+        [Theory]
+        [InlineData(HdIdMock, true, true, true)]
+        [InlineData(HdIdMock, false, true, true)]
+        [InlineData(InvalidHdidMock, true, false, true)]
+        [InlineData(InvalidHdidMock, false, false, true)]
+        [InlineData(null, true, false, true)]
+        [InlineData(null, false, false, true)]
+        [InlineData(HdIdMock, true, false, false)]
+        [InlineData(HdIdMock, false, false, false)]
+        public async Task InvalidInviteLastSent(string? hdid, bool validated, bool deleted, bool userProfileExists)
+        {
+            // Arrange
+            const string invalidHdid = "doesn't match";
+            Guid inviteKey = Guid.NewGuid();
+            MessagingVerification? verificationByInviteKey = hdid != null
+                ? new()
+                {
+                    UserProfileId = hdid,
+                    Deleted = deleted,
+                }
+                : null;
+
+            MessagingVerification? lastVerificationForUser = new()
+            {
+                UserProfileId = HdIdMock,
+                Validated = validated,
+            };
+
+            UserProfile? userProfile = userProfileExists ? new() { HdId = HdIdMock } : null;
+
+            Mock<IMessagingVerificationDelegate> messagingVerificationDelegateMock = new();
+            IUserEmailService service = GetUserEmailService(userProfile, verificationByInviteKey, messagingVerificationDelegateMock, lastVerificationForUser);
+
+            // Act
+            RequestResult<bool> actual = await service.ValidateEmailAsync(HdIdMock, inviteKey);
+
+            // Assert
+            Assert.Equal(ResultType.Error, actual.ResultStatus);
+
+            // Verify
+            if (validated)
+            {
+                messagingVerificationDelegateMock
+                    .Verify(
+                        s => s.UpdateAsync(It.IsAny<MessagingVerification>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()),
+                        Times.Never);
+            }
+            else
+            {
+                messagingVerificationDelegateMock
+                    .Verify(
+                        s => s.UpdateAsync(It.IsAny<MessagingVerification>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()),
+                        Times.Once);
+            }
+        }
+
+        private static IUserEmailService GetUserEmailService(
+            UserProfile? userProfile,
+            MessagingVerification? verificationByInviteKey,
+            Mock<IMessagingVerificationDelegate>? messagingVerificationDelegateMock = null,
+            MessagingVerification? lastVerificationForUser = null,
+            Mock<IUserProfileDelegate>? userProfileDelegateMock = null,
+            Mock<INotificationSettingsService>? notificationSettingsServiceMock = null,
+            Mock<IMessageSender>? messageSenderMock = null,
+            bool changeFeedEnabled = false)
+        {
+            messagingVerificationDelegateMock ??= new();
+            messagingVerificationDelegateMock.Setup(s => s.GetLastByInviteKeyAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(verificationByInviteKey);
+            messagingVerificationDelegateMock.Setup(s => s.GetLastForUserAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(lastVerificationForUser);
+
+            userProfileDelegateMock ??= new();
+            userProfileDelegateMock.Setup(u => u.GetUserProfileAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(userProfile);
+            userProfileDelegateMock.Setup(s => s.UpdateAsync(It.IsAny<UserProfile>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new DbResult<UserProfile>());
 
-            IUserEmailService service = new UserEmailService(
-                new Mock<ILogger<UserEmailService>>().Object,
-                messagingVerificationDelegate.Object,
-                userProfileDelegate.Object,
-                new Mock<IEmailQueueService>().Object,
-                new Mock<INotificationSettingsService>().Object,
-                GetIConfigurationRoot(),
-                new Mock<IMessageSender>().Object);
+            notificationSettingsServiceMock ??= new();
+            messageSenderMock ??= new();
 
-            RequestResult<bool> actual = await service.ValidateEmailAsync(HdIdMock, inviteKey);
-            Assert.True(actual.ResultStatus == ResultType.Error);
+            return new UserEmailService(
+                new Mock<ILogger<UserEmailService>>().Object,
+                messagingVerificationDelegateMock.Object,
+                userProfileDelegateMock.Object,
+                new Mock<IEmailQueueService>().Object,
+                notificationSettingsServiceMock.Object,
+                GetConfiguration(changeFeedEnabled),
+                messageSenderMock.Object);
         }
 
-        /// <summary>
-        /// ValidateEmailAsync - Happy path scenario.
-        /// </summary>
-        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
-        public async Task InvalidInvite()
+        private static IConfiguration GetConfiguration(bool changeFeedEnabled)
         {
-            Guid inviteKey = Guid.NewGuid();
-            MessagingVerification expectedResult = new()
+            const string changeFeedKey = $"{ChangeFeedOptions.ChangeFeed}:Notifications:Enabled";
+            Dictionary<string, string?> myConfiguration = new()
             {
-                UserProfileId = "doesn't match",
+                { changeFeedKey, changeFeedEnabled.ToString() },
             };
-
-            Mock<IMessagingVerificationDelegate> messagingVerificationDelegate = new();
-            messagingVerificationDelegate.Setup(s => s.GetLastByInviteKeyAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(expectedResult);
-
-            Mock<IUserProfileDelegate> userProfileDelegate = new();
-
-            IUserEmailService service = new UserEmailService(
-                new Mock<ILogger<UserEmailService>>().Object,
-                messagingVerificationDelegate.Object,
-                userProfileDelegate.Object,
-                new Mock<IEmailQueueService>().Object,
-                new Mock<INotificationSettingsService>().Object,
-                GetIConfigurationRoot(),
-                new Mock<IMessageSender>().Object);
-
-            RequestResult<bool> actual = await service.ValidateEmailAsync(HdIdMock, inviteKey);
-            Assert.True(actual.ResultStatus == ResultType.Error);
-        }
-
-        /// <summary>
-        /// ValidateEmailAsync - Happy path scenario.
-        /// </summary>
-        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
-        public async Task InvalidInviteLastSent()
-        {
-            Guid inviteKey = Guid.NewGuid();
-            MessagingVerification expectedResult = new()
-            {
-                UserProfileId = "doesn't match",
-            };
-
-            Mock<IMessagingVerificationDelegate> messagingVerificationDelegate = new();
-            messagingVerificationDelegate.Setup(s => s.GetLastByInviteKeyAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(expectedResult);
-            messagingVerificationDelegate.Setup(s => s.GetLastForUserAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(expectedResult);
-            Mock<IUserProfileDelegate> userProfileDelegate = new();
-
-            IUserEmailService service = new UserEmailService(
-                new Mock<ILogger<UserEmailService>>().Object,
-                messagingVerificationDelegate.Object,
-                userProfileDelegate.Object,
-                new Mock<IEmailQueueService>().Object,
-                new Mock<INotificationSettingsService>().Object,
-                GetIConfigurationRoot(),
-                new Mock<IMessageSender>().Object);
-
-            RequestResult<bool> actual = await service.ValidateEmailAsync(HdIdMock, inviteKey);
-            Assert.True(actual.ResultStatus == ResultType.Error);
-        }
-
-        private static IConfigurationRoot GetIConfigurationRoot(Dictionary<string, string?>? testConfigExtension = null)
-        {
-            testConfigExtension ??= new Dictionary<string, string?>();
 
             return new ConfigurationBuilder()
-                .AddJsonFile("appsettings.json", true)
-                .AddJsonFile("appsettings.Development.json", true)
-                .AddJsonFile("appsettings.local.json", true)
-                .AddInMemoryCollection(testConfigExtension.ToList())
+                .AddInMemoryCollection(myConfiguration.ToList())
                 .Build();
         }
     }
