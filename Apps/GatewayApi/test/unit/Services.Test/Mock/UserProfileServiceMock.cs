@@ -130,7 +130,8 @@ namespace HealthGateway.GatewayApiTests.Services.Test.Mock
                     cp => cp.GetOrSetAsync(
                         It.Is<string>(key => key.Contains(cacheKeyPattern)),
                         It.IsAny<Func<Task<T>>>(),
-                        It.IsAny<TimeSpan?>()))
+                        It.IsAny<TimeSpan?>(),
+                        It.IsAny<CancellationToken>()))
                 .ReturnsAsync(returnValue);
             return this;
         }

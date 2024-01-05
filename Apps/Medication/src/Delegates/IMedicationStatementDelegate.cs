@@ -15,23 +15,26 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Medication.Delegates
 {
-    using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.Data.ViewModels;
-    using HealthGateway.Medication.Models;
+    using HealthGateway.Common.Models.ODR;
+    using HealthGateway.Medication.Models.ODR;
 
     /// <summary>
-    /// Interface to retrieve Medication Requests.
+    /// Interface to retrieve medication statements.
     /// </summary>
-    public interface IMedicationRequestDelegate
+    public interface IMedicationStatementDelegate
     {
         /// <summary>
-        /// Returns a set of MedicationRequests for the given phn.
+        /// Gets medication statements.
         /// </summary>
-        /// <param name="phn">The PHN of the user querying.</param>
+        /// <param name="query">The medication statement query to execute against the ODR.</param>
+        /// <param name="protectiveWord">The protective word to validate.</param>
+        /// <param name="hdid">The HDID of the user querying.</param>
+        /// <param name="ipAddress">The IP of the user querying.</param>
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
-        /// <returns>The MedicationRequest result.</returns>
-        Task<RequestResult<IList<MedicationRequest>>> GetMedicationRequestsAsync(string phn, CancellationToken ct = default);
+        /// <returns>The medication history response wrapped in a RequestResult.</returns>
+        Task<RequestResult<MedicationHistoryResponse>> GetMedicationStatementsAsync(OdrHistoryQuery query, string? protectiveWord, string hdid, string ipAddress, CancellationToken ct = default);
     }
 }

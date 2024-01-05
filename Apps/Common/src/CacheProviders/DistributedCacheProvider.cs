@@ -17,6 +17,7 @@
 namespace HealthGateway.Common.CacheProviders
 {
     using System;
+    using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.Utils;
     using Microsoft.Extensions.Caching.Distributed;
@@ -79,32 +80,32 @@ namespace HealthGateway.Common.CacheProviders
         }
 
         /// <inheritdoc/>
-        public async Task<T?> GetItemAsync<T>(string key)
+        public async Task<T?> GetItemAsync<T>(string key, CancellationToken ct = default)
         {
-            return (await this.cache.GetAsync(this.KeyGen(key)).ConfigureAwait(true)).Deserialize<T?>();
+            return (await this.cache.GetAsync(this.KeyGen(key), ct)).Deserialize<T?>();
         }
 
         /// <inheritdoc/>
-        public async Task AddItemAsync<T>(string key, T value, TimeSpan? expiry = null)
+        public async Task AddItemAsync<T>(string key, T value, TimeSpan? expiry = null, CancellationToken ct = default)
         {
-            await this.cache.SetAsync(this.KeyGen(key), value.Serialize(), new DistributedCacheEntryOptions { AbsoluteExpirationRelativeToNow = expiry }).ConfigureAwait(true);
+            await this.cache.SetAsync(this.KeyGen(key), value.Serialize(), new DistributedCacheEntryOptions { AbsoluteExpirationRelativeToNow = expiry }, ct);
         }
 
         /// <inheritdoc/>
-        public async Task RemoveItemAsync(string key)
+        public async Task RemoveItemAsync(string key, CancellationToken ct = default)
         {
-            await this.cache.RemoveAsync(key).ConfigureAwait(true);
+            await this.cache.RemoveAsync(key, ct);
         }
 
         /// <inheritdoc/>
-        public async Task<T?> GetOrSetAsync<T>(string key, Func<Task<T>> valueGetter, TimeSpan? expiry = null)
+        public async Task<T?> GetOrSetAsync<T>(string key, Func<Task<T>> valueGetter, TimeSpan? expiry = null, CancellationToken ct = default)
         {
-            T? value = await this.GetItemAsync<T>(key).ConfigureAwait(true);
+            T? value = await this.GetItemAsync<T>(key, ct);
             if (value == null)
             {
                 // cache miss
-                value = await valueGetter().ConfigureAwait(true);
-                await this.AddItemAsync(key, value, expiry).ConfigureAwait(true);
+                value = await valueGetter();
+                await this.AddItemAsync(key, value, expiry, ct);
             }
 
             return value;

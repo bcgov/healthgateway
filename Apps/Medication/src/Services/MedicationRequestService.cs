@@ -16,6 +16,7 @@
 namespace HealthGateway.Medication.Services
 {
     using System.Collections.Generic;
+    using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.AccountDataAccess.Patient;
     using HealthGateway.Common.Data.Constants;
@@ -51,9 +52,9 @@ namespace HealthGateway.Medication.Services
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResult<IList<MedicationRequest>>> GetMedicationRequests(string hdid)
+        public async Task<RequestResult<IList<MedicationRequest>>> GetMedicationRequestsAsync(string hdid, CancellationToken ct = default)
         {
-            if (!await this.patientRepository.CanAccessDataSourceAsync(hdid, DataSource.SpecialAuthorityRequest).ConfigureAwait(true))
+            if (!await this.patientRepository.CanAccessDataSourceAsync(hdid, DataSource.SpecialAuthorityRequest, ct))
             {
                 return new RequestResult<IList<MedicationRequest>>
                 {
@@ -64,11 +65,11 @@ namespace HealthGateway.Medication.Services
             }
 
             // Retrieve the phn
-            RequestResult<PatientModel> patientResult = await this.patientService.GetPatient(hdid).ConfigureAwait(true);
+            RequestResult<PatientModel> patientResult = await this.patientService.GetPatient(hdid, ct: ct);
             if (patientResult.ResultStatus == ResultType.Success && patientResult.ResourcePayload != null)
             {
                 PatientModel patient = patientResult.ResourcePayload;
-                RequestResult<IList<MedicationRequest>> delegateResult = await this.medicationRequestDelegate.GetMedicationRequestsAsync(patient.PersonalHealthNumber).ConfigureAwait(true);
+                RequestResult<IList<MedicationRequest>> delegateResult = await this.medicationRequestDelegate.GetMedicationRequestsAsync(patient.PersonalHealthNumber, ct);
                 if (delegateResult.ResultStatus == ResultType.Success)
                 {
                     return new RequestResult<IList<MedicationRequest>>

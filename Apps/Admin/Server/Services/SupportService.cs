@@ -182,7 +182,7 @@ namespace HealthGateway.Admin.Server.Services
             string blockedAccessCacheKey = string.Format(CultureInfo.InvariantCulture, ICacheProvider.BlockedAccessCachePrefixKey, hdid);
             string message = $"Removing item for key: {blockedAccessCacheKey} from cache";
             logger.LogDebug("{Message}", message);
-            await cacheProvider.RemoveItemAsync(blockedAccessCacheKey);
+            await cacheProvider.RemoveItemAsync(blockedAccessCacheKey, ct);
 
             return await patientRepository.GetDataSources(hdid, ct);
         }

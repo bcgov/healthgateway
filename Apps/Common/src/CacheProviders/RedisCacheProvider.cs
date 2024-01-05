@@ -16,7 +16,9 @@
 namespace HealthGateway.Common.CacheProviders
 {
     using System;
+    using System.Diagnostics.CodeAnalysis;
     using System.Text.Json;
+    using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.Extensions.Logging;
     using StackExchange.Redis;
@@ -44,7 +46,7 @@ namespace HealthGateway.Common.CacheProviders
         public T? GetItem<T>(string key)
         {
             T? cacheItem = default;
-            string? cacheJson = this.GetItem(key);
+            string? cacheJson = this.GetItemJson(key);
             if (cacheJson != null)
             {
                 cacheItem = JsonSerializer.Deserialize<T>(cacheJson);
@@ -56,10 +58,7 @@ namespace HealthGateway.Common.CacheProviders
         /// <inheritdoc/>
         public void AddItem<T>(string key, T value, TimeSpan? expiry = null)
         {
-            this.Add(
-                key,
-                value == null ? JsonSerializer.Serialize(value, typeof(T)) : JsonSerializer.Serialize(value, value.GetType()),
-                expiry);
+            this.connectionMultiplexer.GetDatabase().StringSet(key, Serialize(value), expiry, flags: CommandFlags.FireAndForget);
         }
 
         /// <inheritdoc/>
@@ -85,50 +84,70 @@ namespace HealthGateway.Common.CacheProviders
         }
 
         /// <inheritdoc/>
-        public async Task<T?> GetItemAsync<T>(string key)
+        public async Task<T?> GetItemAsync<T>(string key, CancellationToken ct = default)
         {
-            await Task.CompletedTask.ConfigureAwait(true);
-            return this.GetItem<T?>(key);
+            T? cacheItem = default;
+            string? cacheJson = await this.GetItemJsonAsync(key, ct);
+            if (cacheJson != null)
+            {
+                cacheItem = JsonSerializer.Deserialize<T>(cacheJson);
+            }
+
+            return cacheItem;
         }
 
         /// <inheritdoc/>
-        public async Task AddItemAsync<T>(string key, T value, TimeSpan? expiry = null)
+        public async Task AddItemAsync<T>(string key, T value, TimeSpan? expiry = null, CancellationToken ct = default)
         {
-            await Task.CompletedTask.ConfigureAwait(true);
-            this.AddItem(key, value, expiry);
+            await this.connectionMultiplexer.GetDatabase().StringSetAsync(key, Serialize(value), expiry, flags: CommandFlags.FireAndForget);
         }
 
         /// <inheritdoc/>
-        public async Task RemoveItemAsync(string key)
+        public async Task RemoveItemAsync(string key, CancellationToken ct = default)
         {
-            await Task.CompletedTask.ConfigureAwait(true);
-            this.RemoveItem(key);
+            await this.connectionMultiplexer.GetDatabase().KeyDeleteAsync(key, CommandFlags.FireAndForget);
         }
 
         /// <inheritdoc/>
-        public async Task<T?> GetOrSetAsync<T>(string key, Func<Task<T>> valueGetter, TimeSpan? expiry = null)
+        public async Task<T?> GetOrSetAsync<T>(string key, Func<Task<T>> valueGetter, TimeSpan? expiry = null, CancellationToken ct = default)
         {
-            T? item = await this.GetItemAsync<T>(key).ConfigureAwait(true);
+            T? item = await this.GetItemAsync<T>(key, ct);
             if (item == null)
             {
-                item = await valueGetter().ConfigureAwait(true);
-                await this.AddItemAsync(key, item, expiry).ConfigureAwait(true);
+                item = await valueGetter();
+                await this.AddItemAsync(key, item, expiry, ct);
             }
 
             return item;
         }
 
-        private void Add(string key, string value, TimeSpan? expiry = null)
+        private static string Serialize<T>(T value)
         {
-            this.connectionMultiplexer.GetDatabase().StringSet(key, value, expiry, flags: CommandFlags.FireAndForget);
+            return value == null ? JsonSerializer.Serialize(value, typeof(T)) : JsonSerializer.Serialize(value, value.GetType());
         }
 
-        private string? GetItem(string key)
+        private string? GetItemJson(string key)
         {
             string? cacheStr = null;
             try
             {
                 cacheStr = this.connectionMultiplexer.GetDatabase().StringGet(key);
+            }
+            catch (RedisTimeoutException e)
+            {
+                this.logger.LogInformation("Unable to retrieve cache key {Key}\n{Exception}", key, e.ToString());
+            }
+
+            return cacheStr;
+        }
+
+        [SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "Team decision")]
+        private async Task<string?> GetItemJsonAsync(string key, CancellationToken ct = default)
+        {
+            string? cacheStr = null;
+            try
+            {
+                cacheStr = await this.connectionMultiplexer.GetDatabase().StringGetAsync(key);
             }
             catch (RedisTimeoutException e)
             {

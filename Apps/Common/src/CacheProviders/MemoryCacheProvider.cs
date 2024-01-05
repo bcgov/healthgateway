@@ -16,6 +16,7 @@
 namespace HealthGateway.Common.CacheProviders
 {
     using System;
+    using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.Extensions.Caching.Memory;
 
@@ -75,34 +76,34 @@ namespace HealthGateway.Common.CacheProviders
         }
 
         /// <inheritdoc/>
-        public async Task<T?> GetItemAsync<T>(string key)
+        public async Task<T?> GetItemAsync<T>(string key, CancellationToken ct = default)
         {
-            await Task.CompletedTask.ConfigureAwait(true);
+            await Task.CompletedTask;
             return this.GetItem<T?>(key);
         }
 
         /// <inheritdoc/>
-        public async Task AddItemAsync<T>(string key, T value, TimeSpan? expiry = null)
+        public async Task AddItemAsync<T>(string key, T value, TimeSpan? expiry = null, CancellationToken ct = default)
         {
-            await Task.CompletedTask.ConfigureAwait(true);
+            await Task.CompletedTask;
             this.AddItem(key, value, expiry);
         }
 
         /// <inheritdoc/>
-        public async Task RemoveItemAsync(string key)
+        public async Task RemoveItemAsync(string key, CancellationToken ct = default)
         {
-            await Task.CompletedTask.ConfigureAwait(true);
+            await Task.CompletedTask;
             this.RemoveItem(key);
         }
 
         /// <inheritdoc/>
-        public async Task<T?> GetOrSetAsync<T>(string key, Func<Task<T>> valueGetter, TimeSpan? expiry = null)
+        public async Task<T?> GetOrSetAsync<T>(string key, Func<Task<T>> valueGetter, TimeSpan? expiry = null, CancellationToken ct = default)
         {
-            T? item = await this.GetItemAsync<T>(key).ConfigureAwait(true);
+            T? item = await this.GetItemAsync<T>(key, ct);
             if (item == null)
             {
-                item = await valueGetter().ConfigureAwait(true);
-                await this.AddItemAsync(key, item, expiry).ConfigureAwait(true);
+                item = await valueGetter();
+                await this.AddItemAsync(key, item, expiry, ct);
             }
 
             return item;

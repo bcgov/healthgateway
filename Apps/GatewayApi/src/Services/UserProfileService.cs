@@ -519,7 +519,8 @@ namespace HealthGateway.GatewayApi.Services
                         ? DateTime.Parse(applicationSetting.Value, CultureInfo.InvariantCulture).ToUniversalTime()
                         : (DateTime?)null;
                 },
-                TimeSpan.FromMinutes(30));
+                TimeSpan.FromMinutes(30),
+                ct);
         }
 
         private async Task<RequestResult<UserProfileModel>> HandleUpdateUserProfileResult(DbResult<UserProfile> result, string emailTemplateName, CancellationToken ct)
