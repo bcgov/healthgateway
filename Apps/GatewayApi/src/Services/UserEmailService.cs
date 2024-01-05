@@ -41,11 +41,12 @@ namespace HealthGateway.GatewayApi.Services
     /// <inheritdoc/>
     public class UserEmailService : IUserEmailService
     {
+        private const int MaxVerificationAttempts = 5;
+
         private readonly string emailConfigExpirySecondsKey = "EmailVerificationExpirySeconds";
         private readonly IEmailQueueService emailQueueService;
         private readonly int emailVerificationExpirySeconds;
         private readonly ILogger logger;
-        private readonly int maxVerificationAttempts = 5;
         private readonly IMessagingVerificationDelegate messageVerificationDelegate;
         private readonly INotificationSettingsService notificationSettingsService;
         private readonly IUserProfileDelegate profileDelegate;
@@ -120,7 +121,7 @@ namespace HealthGateway.GatewayApi.Services
                 };
             }
 
-            if (matchingVerification.VerificationAttempts >= this.maxVerificationAttempts ||
+            if (matchingVerification.VerificationAttempts >= MaxVerificationAttempts ||
                 matchingVerification.ExpireDate < DateTime.UtcNow)
             {
                 this.logger.LogDebug("Email verification expired");
