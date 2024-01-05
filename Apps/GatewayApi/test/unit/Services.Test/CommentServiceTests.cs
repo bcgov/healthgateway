@@ -83,7 +83,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 },
             ];
 
-            DbResult<IEnumerable<Comment>>? dbResult = dbStatusCode != null
+            DbResult<IList<Comment>>? dbResult = dbStatusCode != null
                 ? new()
                 {
                     Payload = comments,
@@ -94,7 +94,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             Mock<ICryptoDelegate> cryptoDelegateMock = GetCryptoDelegateMock();
             List<UserComment> expected = comments.Select(c => CommentMapUtils.CreateFromDbModel(c, cryptoDelegateMock.Object, EncryptionKey, MapperUtil.InitializeAutoMapper())).ToList();
 
-            CommentService service = GetCommentService(encryptionKey, commentsDbResult: dbResult);
+            CommentService service = GetCommentService(encryptionKey, parentEntryCommentsDbResult: dbResult);
 
             // Act
             RequestResult<IEnumerable<UserComment>> actual = await service.GetEntryCommentsAsync(Hdid, ParentEntryId);
@@ -150,7 +150,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             IEnumerable<UserComment> userComments = comments.Select(c => CommentMapUtils.CreateFromDbModel(c, cryptoDelegateMock.Object, EncryptionKey, MapperUtil.InitializeAutoMapper()));
             IDictionary<string, IEnumerable<UserComment>> expected = userComments.GroupBy(x => x.ParentEntryId).ToDictionary(g => g.Key, g => g.AsEnumerable());
 
-            CommentService service = GetCommentService(encryptionKey, commentsDbResult: dbResult);
+            CommentService service = GetCommentService(encryptionKey, allCommentsDbResult: dbResult);
 
             // Act
             RequestResult<IDictionary<string, IEnumerable<UserComment>>> actual = await service.GetProfileCommentsAsync(Hdid);
@@ -341,7 +341,11 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             return cryptoDelegateMock;
         }
 
-        private static CommentService GetCommentService(string? encryptionKey, DbResult<Comment>? commentDbResult = null, DbResult<IEnumerable<Comment>>? commentsDbResult = null)
+        private static CommentService GetCommentService(
+            string? encryptionKey,
+            DbResult<Comment>? commentDbResult = null,
+            DbResult<IList<Comment>>? parentEntryCommentsDbResult = null,
+            DbResult<IEnumerable<Comment>>? allCommentsDbResult = null)
         {
             UserProfile userProfile = new()
                 { EncryptionKey = encryptionKey };
@@ -359,10 +363,14 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 commentDelegateMock.Setup(s => s.DeleteAsync(It.Is<Comment>(x => x.Text == commentDbResult.Payload.Text), true, It.IsAny<CancellationToken>())).ReturnsAsync(commentDbResult);
             }
 
-            if (commentsDbResult != null)
+            if (parentEntryCommentsDbResult != null)
             {
-                commentDelegateMock.Setup(s => s.GetByParentEntryAsync(Hdid, ParentEntryId, It.IsAny<CancellationToken>())).ReturnsAsync(commentsDbResult);
-                commentDelegateMock.Setup(s => s.GetAllAsync(Hdid, It.IsAny<CancellationToken>())).ReturnsAsync(commentsDbResult);
+                commentDelegateMock.Setup(s => s.GetByParentEntryAsync(Hdid, ParentEntryId, It.IsAny<CancellationToken>())).ReturnsAsync(parentEntryCommentsDbResult);
+            }
+
+            if (allCommentsDbResult != null)
+            {
+                commentDelegateMock.Setup(s => s.GetAllAsync(Hdid, It.IsAny<CancellationToken>())).ReturnsAsync(allCommentsDbResult);
             }
 
             return new CommentService(

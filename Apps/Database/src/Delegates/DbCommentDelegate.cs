@@ -50,10 +50,10 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public async Task<DbResult<IEnumerable<Comment>>> GetByParentEntryAsync(string hdId, string parentEntryId, CancellationToken ct = default)
+        public async Task<DbResult<IList<Comment>>> GetByParentEntryAsync(string hdId, string parentEntryId, CancellationToken ct = default)
         {
             this.logger.LogTrace("Getting Comments for user {HdId} and entry id {ParentEntryId}...", hdId, parentEntryId);
-            DbResult<IEnumerable<Comment>> result = new();
+            DbResult<IList<Comment>> result = new();
             result.Payload = await this.dbContext.Comment
                 .Where(p => p.UserProfileId == hdId && p.ParentEntryId == parentEntryId)
                 .OrderBy(o => o.CreatedDateTime)
