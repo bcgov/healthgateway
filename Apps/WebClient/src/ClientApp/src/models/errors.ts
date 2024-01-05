@@ -24,9 +24,9 @@ export class HttpError extends Error {
 
 // HG API binding interface for ErrorResult model
 export interface ResultErrorDetails {
-    // API's ResultMessage mapping property. This should be treated as private and the message should be mapped to and preferred.
+    // Message that will always be populated when ResultType is Error.
     resultMessage?: string;
-    // The error code associated with the request. Will always be populated when ResultType is Error.
+    // Code that will always be populated when ResultType is Error.
     errorCode: string;
     // The trace ID associated with the request.
     traceId: string;
@@ -37,7 +37,7 @@ export interface ResultErrorDetails {
 }
 
 export class ResultError extends Error {
-    // The error code associated with the request. Will always be populated when ResultType is Error.
+    // Code associated with the error.
     errorCode: string;
     // The trace ID associated with the request.
     traceId: string;
