@@ -81,7 +81,7 @@ namespace HealthGateway.MedicationTests.Delegates
             Mock<IAuthenticationDelegate> mockAuthenticationDelegate = new();
             mockAuthenticationDelegate
                 .Setup(
-                    s => s.AuthenticateAsUser(
+                    s => s.AuthenticateUser(
                         It.Is<Uri>(x => x.ToString() == tokenUri.ToString()),
                         It.Is<ClientCredentialsTokenRequest>(x => x.ClientId == tokenRequest.ClientId),
                         true))
@@ -151,7 +151,7 @@ namespace HealthGateway.MedicationTests.Delegates
             Mock<IAuthenticationDelegate> mockAuthenticationDelegate = new();
             mockAuthenticationDelegate
                 .Setup(
-                    s => s.AuthenticateAsUser(
+                    s => s.AuthenticateUser(
                         It.Is<Uri>(x => x.ToString() == tokenUri.ToString()),
                         It.Is<ClientCredentialsTokenRequest>(x => x.ClientId == tokenRequest.ClientId),
                         true))
@@ -217,7 +217,7 @@ namespace HealthGateway.MedicationTests.Delegates
             Mock<IAuthenticationDelegate> mockAuthenticationDelegate = new();
             mockAuthenticationDelegate
                 .Setup(
-                    s => s.AuthenticateAsUser(
+                    s => s.AuthenticateUser(
                         It.Is<Uri>(x => x.ToString() == tokenUri.ToString()),
                         It.Is<ClientCredentialsTokenRequest>(x => x.ClientId == tokenRequest.ClientId),
                         true))

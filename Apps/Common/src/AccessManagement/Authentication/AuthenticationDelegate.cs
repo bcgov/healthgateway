@@ -96,17 +96,9 @@ namespace HealthGateway.Common.AccessManagement.Authentication
         }
 
         /// <inheritdoc/>
-        public JwtModel AuthenticateAsUser(Uri tokenUri, ClientCredentialsTokenRequest tokenRequest, bool cacheEnabled = false)
-        {
-            (JwtModel jwtModel, _) = this.AuthenticateUser(tokenUri, tokenRequest, cacheEnabled);
-            return jwtModel;
-        }
-
-        /// <inheritdoc/>
-        public (JwtModel JwtModel, bool Cached) AuthenticateUser(Uri tokenUri, ClientCredentialsTokenRequest tokenRequest, bool cacheEnabled)
+        public JwtModel AuthenticateUser(Uri tokenUri, ClientCredentialsTokenRequest tokenRequest, bool cacheEnabled = false)
         {
             string cacheKey = $"{tokenUri}:{tokenRequest.Audience}:{tokenRequest.ClientId}:{tokenRequest.Username}";
-            bool cached = false;
             this.logger.LogDebug("Attempting to fetch token from cache");
             JwtModel? jwtModel = null;
             if (cacheEnabled && this.tokenCacheMinutes > 0)
@@ -140,10 +132,9 @@ namespace HealthGateway.Common.AccessManagement.Authentication
             else
             {
                 this.logger.LogDebug("Auth token found in cache");
-                cached = true;
             }
 
-            return (jwtModel, cached);
+            return jwtModel;
         }
 
         /// <inheritdoc/>

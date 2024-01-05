@@ -82,7 +82,7 @@ namespace HealthGateway.Medication.Delegates
                     ResultStatus = ResultType.Error,
                 };
 
-                string? accessToken = this.authDelegate.AuthenticateAsUser(this.salesforceConfig.TokenUri, this.salesforceConfig.ClientAuthentication, true).AccessToken;
+                string? accessToken = this.authDelegate.AuthenticateUser(this.salesforceConfig.TokenUri, this.salesforceConfig.ClientAuthentication, true).AccessToken;
                 if (string.IsNullOrEmpty(accessToken))
                 {
                     this.logger.LogError("Authenticated as User System access token is null or empty, Error:\n{AccessToken}", accessToken);
