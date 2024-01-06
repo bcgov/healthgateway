@@ -95,10 +95,16 @@ export const useMedicationStore = defineStore("medication", () => {
                 }
             );
         } else {
+            const resultError = medicationResult.resultError
+                ? ResultError.fromModel(medicationResult.resultError)
+                : new ResultError(
+                      "MedicationStore",
+                      "Unknown API error when settings medications."
+                  );
             datasetMapUtil.setStateError(
                 medicationMap.value,
                 hdid,
-                medicationResult.resultError,
+                resultError,
                 "Error returned from the medications call"
             );
         }
@@ -148,7 +154,12 @@ export const useMedicationStore = defineStore("medication", () => {
             .getPatientMedicationStatementHistory(hdid, protectiveWord)
             .then((result) => {
                 if (result.resultStatus === ResultType.Error) {
-                    throw result.resultError;
+                    throw result.resultError
+                        ? ResultError.fromModel(result.resultError)
+                        : new ResultError(
+                              "MedicationStore",
+                              "Unknown API error when retrieving medications."
+                          );
                 }
 
                 if (
