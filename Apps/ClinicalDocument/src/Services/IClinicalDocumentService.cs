@@ -16,6 +16,7 @@
 namespace HealthGateway.ClinicalDocument.Services
 {
     using System.Collections.Generic;
+    using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.ClinicalDocument.Models;
     using HealthGateway.Common.Data.Models.PHSA;
@@ -30,15 +31,17 @@ namespace HealthGateway.ClinicalDocument.Services
         /// Gets the collection of clinical document records associated with the given HDID.
         /// </summary>
         /// <param name="hdid">The subject's HDID.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The collection of clinical document records.</returns>
-        Task<RequestResult<IEnumerable<ClinicalDocumentRecord>>> GetRecordsAsync(string hdid);
+        Task<RequestResult<IEnumerable<ClinicalDocumentRecord>>> GetRecordsAsync(string hdid, CancellationToken ct = default);
 
         /// <summary>
         /// Gets a specific clinical document file associated with the given HDID and file ID.
         /// </summary>
         /// <param name="hdid">The subject's HDID.</param>
         /// <param name="fileId">The ID of the file to fetch.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The specified clinical document file.</returns>
-        Task<RequestResult<EncodedMedia>> GetFileAsync(string hdid, string fileId);
+        Task<RequestResult<EncodedMedia>> GetFileAsync(string hdid, string fileId, CancellationToken ct = default);
     }
 }

@@ -40,17 +40,23 @@ namespace HealthGateway.CommonTests.Services
         private const string PersonalAccountsErrorMessage = "Error with request for Personal Accounts";
 
         /// <summary>
-        /// Get Personal Account.
+        /// Get Personal Account Result.
         /// </summary>
+        /// <param name="useCache">The value indicates whether cache should be used or not.</param>
+        /// <param name="cacheToLive">The number of minutes cache lives.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
-        public async Task ShouldGetPatientAccount()
+        [Theory]
+        [InlineData(true, null)]
+        [InlineData(false, "90")]
+        [InlineData(false, "0")]
+        public async Task ShouldGetPatientAccountResult(bool useCache, string? cacheToLive)
         {
             // Arrange
             Guid id = Guid.NewGuid();
             PersonalAccount expectedPersonalAccount = GetPatientAccount(id);
 
-            IPersonalAccountsService personalAccountsServiceService = GetPersonalAccountsService(expectedPersonalAccount, false, false);
+            Mock<ICacheProvider> cacheProviderMock = new();
+            IPersonalAccountsService personalAccountsServiceService = GetPersonalAccountsService(expectedPersonalAccount, useCache, false, cacheProviderMock, cacheToLive);
 
             // Act
             RequestResult<PersonalAccount> actualResult = await personalAccountsServiceService.GetPatientAccountResultAsync(It.IsAny<string>());
@@ -59,28 +65,11 @@ namespace HealthGateway.CommonTests.Services
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             Assert.NotNull(actualResult.ResourcePayload);
             Assert.Equal(id, actualResult.ResourcePayload?.Id);
-        }
 
-        /// <summary>
-        /// Get Personal Account - from cache.
-        /// </summary>
-        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
-        public async Task ShouldGetPatientAccountUseCache()
-        {
-            // Arrange
-            Guid id = Guid.NewGuid();
-            PersonalAccount expectedPersonalAccount = GetPatientAccount(id);
-
-            IPersonalAccountsService personalAccountsServiceService = GetPersonalAccountsService(expectedPersonalAccount, true, false);
-
-            // Act
-            RequestResult<PersonalAccount> actualResult = await personalAccountsServiceService.GetPatientAccountResultAsync(It.IsAny<string>());
-
-            // Assert
-            Assert.Equal(ResultType.Success, actualResult.ResultStatus);
-            Assert.NotNull(actualResult.ResourcePayload);
-            Assert.Equal(id, actualResult.ResourcePayload?.Id);
+            cacheProviderMock
+                .Verify(
+                    s => s.AddItemAsync(It.IsAny<string>(), It.IsAny<PersonalAccount>(), It.IsAny<TimeSpan?>(), It.IsAny<CancellationToken>()),
+                    cacheToLive is "90" ? Times.Once : Times.Never);
         }
 
         /// <summary>
@@ -104,14 +93,11 @@ namespace HealthGateway.CommonTests.Services
             Assert.Equal(PersonalAccountsErrorMessage, actualResult.ResultError?.ResultMessage);
         }
 
-        private static IConfigurationRoot GetIConfigurationRoot()
+        private static IConfigurationRoot GetIConfigurationRoot(string cacheToLive = "90")
         {
             Dictionary<string, string?> configuration = new()
             {
-                { "TokenSwap:BaseUrl", "http://localhost" },
-                { "TokenSwap:ClientId", "healthgateway" },
-                { "TokenSwap:ClientSecret", "client-secret" },
-                { "TokenSwap:GrantType", "healthdata.read" },
+                { "PhsaV2:PersonalAccountsCacheTtl", cacheToLive },
             };
 
             return new ConfigurationBuilder()
@@ -130,10 +116,15 @@ namespace HealthGateway.CommonTests.Services
             };
         }
 
-        private static IPersonalAccountsService GetPersonalAccountsService(PersonalAccount content, bool useCache, bool throwException)
+        private static IPersonalAccountsService GetPersonalAccountsService(
+            PersonalAccount content,
+            bool useCache,
+            bool throwException,
+            Mock<ICacheProvider>? cacheProviderMock = null,
+            string? cacheToLive = null)
         {
-            Mock<ICacheProvider> cacheProviderMock = new();
-            cacheProviderMock.Setup(p => p.GetItem<PersonalAccount>(It.IsAny<string>())).Returns(useCache ? content : null);
+            cacheProviderMock ??= new();
+            cacheProviderMock.Setup(p => p.GetItemAsync<PersonalAccount>(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(useCache ? content : null);
 
             Mock<IPersonalAccountsApi> personalAccountsApiMock = new();
             if (!throwException)
@@ -148,7 +139,7 @@ namespace HealthGateway.CommonTests.Services
 
             return new PersonalAccountsService(
                 new Mock<ILogger<PersonalAccountsService>>().Object,
-                GetIConfigurationRoot(),
+                GetIConfigurationRoot(cacheToLive),
                 cacheProviderMock.Object,
                 personalAccountsApiMock.Object);
         }
