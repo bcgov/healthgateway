@@ -44,448 +44,341 @@ namespace HealthGateway.GatewayApiTests.Services.Test
     /// </summary>
     public class CommentServiceTests
     {
-        private readonly string hdid = "1234567890123456789012345678901234567890123456789012";
-        private readonly string parentEntryId = "123456789";
+        private const string EncryptionKey = "abc";
+        private const string Hdid = "1234567890123456789012345678901234567890123456789012";
+        private const string ParentEntryId = "123456789";
 
         /// <summary>
-        /// GetComments - Happy Path.
+        /// GetEntryComments.
         /// </summary>
+        /// <param name="dbStatusCode">The status code for the DbResult.</param>
+        /// <param name="encryptionKey">The encryption key used to encrypt and decrypt.</param>
+        /// <param name="success">The bool value indicating whether test case is successful or not.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
-        public async Task ShouldGetComments()
+        [Theory]
+        [InlineData(DbStatusCode.Read, EncryptionKey, true)]
+        [InlineData(DbStatusCode.Error, EncryptionKey, false)]
+        [InlineData(null, null, false)]
+        public async Task ShouldGetEntryComments(DbStatusCode? dbStatusCode, string? encryptionKey, bool success)
         {
-            (Task<RequestResult<IEnumerable<UserComment>>> task, List<UserComment> userCommentList) = this.ExecuteGetComments("abc");
-            RequestResult<IEnumerable<UserComment>> actualResult = await task;
-
-            Assert.Equal(ResultType.Success, actualResult.ResultStatus);
-            userCommentList.ShouldDeepEqual(actualResult.ResourcePayload);
-        }
-
-        /// <summary>
-        /// GetComments - Database error.
-        /// </summary>
-        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
-        public async Task ShouldGetCommentsWithDbError()
-        {
-            (Task<RequestResult<IEnumerable<UserComment>>> task, _) = this.ExecuteGetComments("abc", DbStatusCode.Error);
-            RequestResult<IEnumerable<UserComment>> actualResult = await task;
-
-            Assert.Equal(ResultType.Error, actualResult.ResultStatus);
-            Assert.True(actualResult.ResultError?.ErrorCode.EndsWith("-CI-DB", StringComparison.InvariantCulture));
-        }
-
-        /// <summary>
-        /// InsertComment - Happy Path.
-        /// </summary>
-        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
-        public async Task ShouldInsertComment()
-        {
-            (Task<RequestResult<UserComment>> task, UserComment createdRecord) = this.ExecuteInsertComment();
-            RequestResult<UserComment> actualResult = await task;
-
-            Assert.Equal(ResultType.Success, actualResult.ResultStatus);
-            createdRecord.ShouldDeepEqual(actualResult.ResourcePayload);
-        }
-
-        /// <summary>
-        /// InsertComment - Database Error.
-        /// </summary>
-        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
-        public async Task ShouldInsertCommentWithDbError()
-        {
-            (Task<RequestResult<UserComment>> task, _) = this.ExecuteInsertComment(DbStatusCode.Error);
-            RequestResult<UserComment> actualResult = await task;
-
-            Assert.Equal(ResultType.Error, actualResult.ResultStatus);
-            Assert.NotNull(actualResult.ResultError);
-        }
-
-        /// <summary>
-        /// UpdateComment - Happy Path.
-        /// </summary>
-        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
-        public async Task ShouldUpdateComment()
-        {
-            (Task<RequestResult<UserComment>> task, UserComment updatedRecord) = this.ExecuteUpdateComment();
-            RequestResult<UserComment> actualResult = await task;
-
-            Assert.Equal(ResultType.Success, actualResult.ResultStatus);
-            updatedRecord.ShouldDeepEqual(actualResult.ResourcePayload);
-        }
-
-        /// <summary>
-        /// UpdateComment - Database Error.
-        /// </summary>
-        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
-        public async Task ShouldUpdateCommentWithDbError()
-        {
-            (Task<RequestResult<UserComment>> task, _) = this.ExecuteUpdateComment(DbStatusCode.Error);
-            RequestResult<UserComment> actualResult = await task;
-
-            Assert.Equal(ResultType.Error, actualResult.ResultStatus);
-            Assert.NotNull(actualResult.ResultError);
-        }
-
-        /// <summary>
-        /// DeleteComment - Happy Path.
-        /// </summary>
-        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
-        public async Task ShouldDeleteComment()
-        {
-            (Task<RequestResult<UserComment>> task, UserComment deletedRecord) = this.ExecuteDeleteComment();
-            RequestResult<UserComment> actualResult = await task;
-
-            Assert.Equal(ResultType.Success, actualResult.ResultStatus);
-            deletedRecord.ShouldDeepEqual(actualResult.ResourcePayload);
-        }
-
-        /// <summary>
-        /// DeleteComment - Database Error.
-        /// </summary>
-        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
-        public async Task ShouldDeleteCommentWithDbError()
-        {
-            (Task<RequestResult<UserComment>> task, _) = this.ExecuteDeleteComment(DbStatusCode.Error);
-            RequestResult<UserComment> actualResult = await task;
-
-            Assert.Equal(ResultType.Error, actualResult.ResultStatus);
-            Assert.NotNull(actualResult.ResultError);
-        }
-
-        /// <summary>
-        /// GetComments - No Encryption key error.
-        /// </summary>
-        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
-        public async Task ShouldGetCommentsWithNoKeyError()
-        {
-            string? encryptionKey = null;
-            UserProfile userProfile = new()
-            {
-                EncryptionKey = encryptionKey,
-            };
-
-            Mock<IUserProfileDelegate> profileDelegateMock = new();
-            profileDelegateMock.Setup(s => s.GetUserProfileAsync(this.hdid, It.IsAny<CancellationToken>())).ReturnsAsync(userProfile);
-
-            ICommentService service = new CommentService(
-                new Mock<ILogger<CommentService>>().Object,
-                new Mock<ICommentDelegate>().Object,
-                profileDelegateMock.Object,
-                new Mock<ICryptoDelegate>().Object,
-                MapperUtil.InitializeAutoMapper());
-
-            RequestResult<IEnumerable<UserComment>> actualResult = await service.GetEntryCommentsAsync(this.hdid, this.parentEntryId);
-
-            Assert.Equal(ResultType.Error, actualResult.ResultStatus);
-        }
-
-        /// <summary>
-        /// InsertComment - No Encryption key error.
-        /// </summary>
-        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
-        public async Task ShouldInsertCommentWithNoKeyError()
-        {
-            string? encryptionKey = null;
-            UserProfile userProfile = new()
-            {
-                EncryptionKey = encryptionKey,
-            };
-
-            Mock<IUserProfileDelegate> profileDelegateMock = new();
-            profileDelegateMock.Setup(s => s.GetUserProfileAsync(this.hdid, It.IsAny<CancellationToken>())).ReturnsAsync(userProfile);
-
-            UserComment userComment = new()
-            {
-                UserProfileId = this.hdid,
-                ParentEntryId = this.parentEntryId,
-                Text = "Deleted Comment",
-                EntryTypeCode = CommentEntryType.Medication,
-                CreatedDateTime = DateTime.Parse("2020-01-01", CultureInfo.InvariantCulture),
-            };
-
-            ICommentService service = new CommentService(
-                new Mock<ILogger<CommentService>>().Object,
-                new Mock<ICommentDelegate>().Object,
-                profileDelegateMock.Object,
-                new Mock<ICryptoDelegate>().Object,
-                MapperUtil.InitializeAutoMapper());
-
-            RequestResult<UserComment> actualResult = await service.AddAsync(userComment);
-
-            Assert.Equal(ResultType.Error, actualResult.ResultStatus);
-        }
-
-        /// <summary>
-        /// UpdateComment - No Encryption key error.
-        /// </summary>
-        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
-        public async Task ShouldUpdateCommentWithNoKeyError()
-        {
-            string? encryptionKey = null;
-            UserProfile userProfile = new()
-            {
-                EncryptionKey = encryptionKey,
-            };
-
-            Mock<IUserProfileDelegate> profileDelegateMock = new();
-            profileDelegateMock.Setup(s => s.GetUserProfileAsync(this.hdid, It.IsAny<CancellationToken>())).ReturnsAsync(userProfile);
-
-            UserComment userComment = new()
-            {
-                UserProfileId = this.hdid,
-                ParentEntryId = this.parentEntryId,
-                Text = "Deleted Comment",
-                EntryTypeCode = CommentEntryType.Medication,
-                CreatedDateTime = DateTime.Parse("2020-01-01", CultureInfo.InvariantCulture),
-            };
-
-            ICommentService service = new CommentService(
-                new Mock<ILogger<CommentService>>().Object,
-                new Mock<ICommentDelegate>().Object,
-                profileDelegateMock.Object,
-                new Mock<ICryptoDelegate>().Object,
-                MapperUtil.InitializeAutoMapper());
-
-            RequestResult<UserComment> actualResult = await service.UpdateAsync(userComment);
-
-            Assert.Equal(ResultType.Error, actualResult.ResultStatus);
-        }
-
-        /// <summary>
-        /// DeleteComment - No Encryption key error.
-        /// </summary>
-        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
-        public async Task ShouldDeleteCommentWithNoKeyError()
-        {
-            string? encryptionKey = null;
-            UserProfile userProfile = new()
-            {
-                EncryptionKey = encryptionKey,
-            };
-
-            Mock<IUserProfileDelegate> profileDelegateMock = new();
-            profileDelegateMock.Setup(s => s.GetUserProfileAsync(this.hdid, It.IsAny<CancellationToken>())).ReturnsAsync(userProfile);
-
-            UserComment userComment = new()
-            {
-                UserProfileId = this.hdid,
-                ParentEntryId = this.parentEntryId,
-                Text = "Deleted Comment",
-                EntryTypeCode = CommentEntryType.Medication,
-                CreatedDateTime = DateTime.Parse("2020-01-01", CultureInfo.InvariantCulture),
-            };
-
-            ICommentService service = new CommentService(
-                new Mock<ILogger<CommentService>>().Object,
-                new Mock<ICommentDelegate>().Object,
-                profileDelegateMock.Object,
-                new Mock<ICryptoDelegate>().Object,
-                MapperUtil.InitializeAutoMapper());
-
-            RequestResult<UserComment> actualResult = await service.DeleteAsync(userComment);
-
-            Assert.Equal(ResultType.Error, actualResult.ResultStatus);
-        }
-
-        private (Task<RequestResult<UserComment>> ActualResult, UserComment UserComment) ExecuteDeleteComment(DbStatusCode dBStatusCode = DbStatusCode.Deleted)
-        {
-            string encryptionKey = "abc";
-            UserProfile userProfile = new()
-                { EncryptionKey = encryptionKey };
-
-            Mock<IUserProfileDelegate> profileDelegateMock = new();
-            profileDelegateMock.Setup(s => s.GetUserProfileAsync(this.hdid, It.IsAny<CancellationToken>())).ReturnsAsync(userProfile);
-
-            Mock<ICryptoDelegate> cryptoDelegateMock = new();
-            cryptoDelegateMock.Setup(s => s.Encrypt(It.IsAny<string>(), It.IsAny<string>())).Returns((string key, string text) => text + key);
-            cryptoDelegateMock.Setup(s => s.Decrypt(It.IsAny<string>(), It.IsAny<string>())).Returns((string key, string text) => text.Remove(text.Length - key.Length));
-
-            UserComment userComment = new()
-            {
-                UserProfileId = this.hdid,
-                ParentEntryId = this.parentEntryId,
-                Text = "Deleted Comment",
-                EntryTypeCode = CommentEntryType.Medication,
-                CreatedDateTime = DateTime.Parse("2020-01-01", CultureInfo.InvariantCulture),
-            };
-            IMapper autoMapper = MapperUtil.InitializeAutoMapper();
-            Comment comment = CommentMapUtils.ToDbModel(userComment, cryptoDelegateMock.Object, encryptionKey, autoMapper);
-
-            DbResult<Comment> deleteResult = new()
-            {
-                Payload = comment,
-                Status = dBStatusCode,
-            };
-
-            Mock<ICommentDelegate> commentDelegateMock = new();
-            commentDelegateMock.Setup(s => s.DeleteAsync(It.Is<Comment>(x => x.Text == comment.Text), true, It.IsAny<CancellationToken>())).ReturnsAsync(deleteResult);
-
-            ICommentService service = new CommentService(
-                new Mock<ILogger<CommentService>>().Object,
-                commentDelegateMock.Object,
-                profileDelegateMock.Object,
-                cryptoDelegateMock.Object,
-                autoMapper);
-
-            Task<RequestResult<UserComment>> actualResult = service.DeleteAsync(userComment);
-            return (actualResult, userComment);
-        }
-
-        private (Task<RequestResult<UserComment>> ActualResult, UserComment UserComment) ExecuteUpdateComment(DbStatusCode dBStatusCode = DbStatusCode.Updated)
-        {
-            string encryptionKey = "abc";
-            UserProfile userProfile = new()
-                { EncryptionKey = encryptionKey };
-
-            Mock<IUserProfileDelegate> profileDelegateMock = new();
-            profileDelegateMock.Setup(s => s.GetUserProfileAsync(this.hdid, It.IsAny<CancellationToken>())).ReturnsAsync(userProfile);
-
-            Mock<ICryptoDelegate> cryptoDelegateMock = new();
-            cryptoDelegateMock.Setup(s => s.Encrypt(It.IsAny<string>(), It.IsAny<string>())).Returns((string key, string text) => text + key);
-            cryptoDelegateMock.Setup(s => s.Decrypt(It.IsAny<string>(), It.IsAny<string>())).Returns((string key, string text) => text.Remove(text.Length - key.Length));
-
-            UserComment userComment = new()
-            {
-                UserProfileId = this.hdid,
-                ParentEntryId = this.parentEntryId,
-                Text = "Updated Comment",
-                EntryTypeCode = CommentEntryType.Medication,
-                CreatedDateTime = DateTime.Parse("2020-01-01", CultureInfo.InvariantCulture),
-            };
-
-            IMapper autoMapper = MapperUtil.InitializeAutoMapper();
-            Comment comment = CommentMapUtils.ToDbModel(userComment, cryptoDelegateMock.Object, encryptionKey, autoMapper);
-
-            DbResult<Comment> updateResult = new()
-            {
-                Payload = comment,
-                Status = dBStatusCode,
-            };
-
-            Mock<ICommentDelegate> commentDelegateMock = new();
-            commentDelegateMock.Setup(s => s.UpdateAsync(It.Is<Comment>(x => x.Text == comment.Text), true, It.IsAny<CancellationToken>())).ReturnsAsync(updateResult);
-
-            ICommentService service = new CommentService(
-                new Mock<ILogger<CommentService>>().Object,
-                commentDelegateMock.Object,
-                profileDelegateMock.Object,
-                cryptoDelegateMock.Object,
-                autoMapper);
-
-            Task<RequestResult<UserComment>> actualResult = service.UpdateAsync(userComment);
-            return (actualResult, userComment);
-        }
-
-        private (Task<RequestResult<IEnumerable<UserComment>>> ActualResult, List<UserComment> UserCommentList) ExecuteGetComments(
-            string? encryptionKey = null,
-            DbStatusCode dbResultStatus = DbStatusCode.Read)
-        {
-            UserProfile userProfile = new()
-                { EncryptionKey = encryptionKey };
-
-            Mock<IUserProfileDelegate> profileDelegateMock = new();
-            profileDelegateMock.Setup(s => s.GetUserProfileAsync(this.hdid, It.IsAny<CancellationToken>())).ReturnsAsync(userProfile);
-
-            Mock<ICryptoDelegate> cryptoDelegateMock = new();
-            cryptoDelegateMock.Setup(s => s.Encrypt(It.IsAny<string>(), It.IsAny<string>())).Returns((string key, string text) => text + key);
-            cryptoDelegateMock.Setup(s => s.Decrypt(It.IsAny<string>(), It.IsAny<string>())).Returns((string key, string text) => text.Remove(text.Length - key.Length));
-
-            List<Comment> commentList = new()
-            {
+            // Arrange
+            List<Comment> comments =
+            [
                 new Comment
                 {
-                    UserProfileId = this.hdid,
-                    ParentEntryId = this.parentEntryId,
+                    UserProfileId = Hdid,
+                    ParentEntryId = ParentEntryId,
                     Text = "First Comment",
                     EntryTypeCode = CommentEntryType.Medication,
                     CreatedDateTime = DateTime.Parse("2020-01-01", CultureInfo.InvariantCulture),
                 },
+
                 new Comment
                 {
-                    UserProfileId = this.hdid,
-                    ParentEntryId = this.parentEntryId,
+                    UserProfileId = Hdid,
+                    ParentEntryId = ParentEntryId,
                     Text = "Second Comment",
                     EntryTypeCode = CommentEntryType.Medication,
                     CreatedDateTime = DateTime.Parse("2020-02-02", CultureInfo.InvariantCulture),
                 },
-            };
-            IMapper autoMapper = MapperUtil.InitializeAutoMapper();
-            List<UserComment> userCommentList = commentList.Select(c => CommentMapUtils.CreateFromDbModel(c, cryptoDelegateMock.Object, encryptionKey, autoMapper)).ToList();
+            ];
 
-            DbResult<IList<Comment>> commentsDbResult = new()
+            DbResult<IList<Comment>>? dbResult = dbStatusCode != null
+                ? new()
+                {
+                    Payload = comments,
+                    Status = dbStatusCode.Value,
+                }
+                : null;
+
+            Mock<ICryptoDelegate> cryptoDelegateMock = GetCryptoDelegateMock();
+            List<UserComment> expected = comments.Select(c => CommentMapUtils.CreateFromDbModel(c, cryptoDelegateMock.Object, EncryptionKey, MapperUtil.InitializeAutoMapper())).ToList();
+
+            CommentService service = GetCommentService(encryptionKey, parentEntryCommentsDbResult: dbResult);
+
+            // Act
+            RequestResult<IEnumerable<UserComment>> actual = await service.GetEntryCommentsAsync(Hdid, ParentEntryId);
+
+            // Assert
+            if (success)
             {
-                Payload = commentList,
-                Status = dbResultStatus,
-            };
-
-            Mock<ICommentDelegate> commentDelegateMock = new();
-            commentDelegateMock.Setup(s => s.GetByParentEntryAsync(this.hdid, this.parentEntryId, It.IsAny<CancellationToken>())).ReturnsAsync(commentsDbResult);
-
-            ICommentService service = new CommentService(
-                new Mock<ILogger<CommentService>>().Object,
-                commentDelegateMock.Object,
-                profileDelegateMock.Object,
-                cryptoDelegateMock.Object,
-                autoMapper);
-
-            Task<RequestResult<IEnumerable<UserComment>>> actualResult = service.GetEntryCommentsAsync(this.hdid, this.parentEntryId);
-
-            return (actualResult, userCommentList);
+                Assert.Equal(ResultType.Success, actual.ResultStatus);
+                expected.ShouldDeepEqual(actual.ResourcePayload);
+            }
+            else
+            {
+                Assert.Equal(ResultType.Error, actual.ResultStatus);
+                Assert.NotNull(actual.ResultError);
+            }
         }
 
-        private (Task<RequestResult<UserComment>> ActualResult, UserComment UserComment) ExecuteInsertComment(DbStatusCode dBStatusCode = DbStatusCode.Created)
+        /// <summary>
+        /// GetProfileComments.
+        /// </summary>
+        /// <param name="dbStatusCode">The status code for the DbResult.</param>
+        /// <param name="encryptionKey">The encryption key used to encrypt and decrypt.</param>
+        /// <param name="success">The bool value indicating whether test case is successful or not.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+        [Theory]
+        [InlineData(DbStatusCode.Read, EncryptionKey, true)]
+        [InlineData(DbStatusCode.Error, EncryptionKey, false)]
+        [InlineData(null, null, false)]
+        public async Task ShouldGetProfileComments(DbStatusCode? dbStatusCode, string? encryptionKey, bool success)
         {
-            string encryptionKey = "abc";
+            // Arrange
+            List<Comment> comments =
+            [
+                new Comment
+                {
+                    UserProfileId = Hdid,
+                    ParentEntryId = ParentEntryId,
+                    Text = "First Comment",
+                    EntryTypeCode = CommentEntryType.Medication,
+                    CreatedDateTime = DateTime.Parse("2020-01-01", CultureInfo.InvariantCulture),
+                },
+            ];
+
+            DbResult<IEnumerable<Comment>>? dbResult = dbStatusCode != null
+                ? new()
+                {
+                    Payload = comments,
+                    Status = dbStatusCode.Value,
+                }
+                : null;
+
+            Mock<ICryptoDelegate> cryptoDelegateMock = GetCryptoDelegateMock();
+            IEnumerable<UserComment> userComments = comments.Select(c => CommentMapUtils.CreateFromDbModel(c, cryptoDelegateMock.Object, EncryptionKey, MapperUtil.InitializeAutoMapper()));
+            IDictionary<string, IEnumerable<UserComment>> expected = userComments.GroupBy(x => x.ParentEntryId).ToDictionary(g => g.Key, g => g.AsEnumerable());
+
+            CommentService service = GetCommentService(encryptionKey, allCommentsDbResult: dbResult);
+
+            // Act
+            RequestResult<IDictionary<string, IEnumerable<UserComment>>> actual = await service.GetProfileCommentsAsync(Hdid);
+
+            // Assert
+            if (success)
+            {
+                Assert.Equal(ResultType.Success, actual.ResultStatus);
+                expected.ShouldDeepEqual(actual.ResourcePayload);
+            }
+            else
+            {
+                Assert.Equal(ResultType.Error, actual.ResultStatus);
+                Assert.NotNull(actual.ResultError);
+            }
+        }
+
+        /// <summary>
+        /// InsertComment.
+        /// </summary>
+        /// <param name="dbStatusCode">The status code for the DbResult.</param>
+        /// <param name="encryptionKey">The encryption key used to encrypt and decrypt.</param>
+        /// <param name="hdid">The hdid associated with the comment.</param>
+        /// <param name="text">The text associated with the comment.</param>
+        /// <param name="success">The bool value indicating whether test case is successful or not.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+        [Theory]
+        [InlineData(DbStatusCode.Created, EncryptionKey, Hdid, "Inserted Comment", true)]
+        [InlineData(DbStatusCode.Error, EncryptionKey, Hdid, "Inserted Comment", false)]
+        [InlineData(null, null, Hdid, null, false)]
+        [InlineData(null, null, null, "Inserted Comment", false)]
+        public async Task ShouldInsertComment(DbStatusCode? dbStatusCode, string? encryptionKey, string? hdid, string? text, bool success)
+        {
+            // Arrange
+            UserComment expected = new()
+            {
+                UserProfileId = hdid!,
+                ParentEntryId = ParentEntryId,
+                Text = text!,
+                EntryTypeCode = CommentEntryType.Medication,
+                CreatedDateTime = DateTime.Parse("2020-01-01", CultureInfo.InvariantCulture),
+            };
+
+            Mock<ICryptoDelegate> cryptoDelegateMock = GetCryptoDelegateMock();
+            Comment comment = CommentMapUtils.ToDbModel(expected, cryptoDelegateMock.Object, EncryptionKey, MapperUtil.InitializeAutoMapper());
+
+            DbResult<Comment>? dbResult = dbStatusCode != null
+                ? new()
+                {
+                    Payload = comment,
+                    Status = dbStatusCode.Value,
+                }
+                : null;
+
+            CommentService service = GetCommentService(encryptionKey, dbResult);
+
+            // Act
+            RequestResult<UserComment> actual = await service.AddAsync(expected);
+
+            // Assert
+            if (success)
+            {
+                Assert.Equal(ResultType.Success, actual.ResultStatus);
+                expected.ShouldDeepEqual(actual.ResourcePayload);
+            }
+            else
+            {
+                Assert.Equal(ResultType.Error, actual.ResultStatus);
+                Assert.NotNull(actual.ResultError);
+            }
+        }
+
+        /// <summary>
+        /// UpdateComment.
+        /// </summary>
+        /// <param name="dbStatusCode">The status code for the DbResult.</param>
+        /// <param name="encryptionKey">The encryption key used to encrypt and decrypt.</param>
+        /// <param name="hdid">The hdid associated with the comment.</param>
+        /// <param name="text">The text associated with the comment.</param>
+        /// <param name="success">The bool value indicating whether test case is successful or not.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+        [Theory]
+        [InlineData(DbStatusCode.Updated, EncryptionKey, Hdid, "Updated Comment", true)]
+        [InlineData(DbStatusCode.Error, EncryptionKey, Hdid, "Updated Comment", false)]
+        [InlineData(null, null, Hdid, null, false)]
+        [InlineData(null, null, null, "Updated Comment", false)]
+        public async Task ShouldUpdateComment(DbStatusCode? dbStatusCode, string? encryptionKey, string? hdid, string? text, bool success)
+        {
+            // Arrange
+            UserComment expected = new()
+            {
+                UserProfileId = hdid!,
+                ParentEntryId = ParentEntryId,
+                Text = text!,
+                EntryTypeCode = CommentEntryType.Medication,
+                CreatedDateTime = DateTime.Parse("2020-01-01", CultureInfo.InvariantCulture),
+            };
+
+            Mock<ICryptoDelegate> cryptoDelegateMock = GetCryptoDelegateMock();
+            Comment comment = CommentMapUtils.ToDbModel(expected, cryptoDelegateMock.Object, EncryptionKey, MapperUtil.InitializeAutoMapper());
+
+            DbResult<Comment>? dbResult = dbStatusCode != null
+                ? new()
+                {
+                    Payload = comment,
+                    Status = dbStatusCode.Value,
+                }
+                : null;
+
+            CommentService service = GetCommentService(encryptionKey, dbResult);
+
+            // Act
+            RequestResult<UserComment> actual = await service.UpdateAsync(expected);
+
+            // Assert
+            if (success)
+            {
+                Assert.Equal(ResultType.Success, actual.ResultStatus);
+                expected.ShouldDeepEqual(actual.ResourcePayload);
+            }
+            else
+            {
+                Assert.Equal(ResultType.Error, actual.ResultStatus);
+                Assert.NotNull(actual.ResultError);
+            }
+        }
+
+        /// <summary>
+        /// DeleteComment.
+        /// </summary>
+        /// <param name="dbStatusCode">The status code for the DbResult.</param>
+        /// <param name="encryptionKey">The encryption key used to encrypt and decrypt.</param>
+        /// <param name="hdid">The hdid associated with the comment.</param>
+        /// <param name="text">The text associated with the comment.</param>
+        /// <param name="success">The bool value indicating whether test case is successful or not.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+        [Theory]
+        [InlineData(DbStatusCode.Deleted, EncryptionKey, Hdid, "Deleted Comment", true)]
+        [InlineData(DbStatusCode.Error, EncryptionKey, Hdid, "Deleted Comment", false)]
+        [InlineData(null, null, Hdid, null, false)]
+        [InlineData(null, null, null, "Deleted Comment", false)]
+        public async Task ShouldDeleteComment(DbStatusCode? dbStatusCode, string? encryptionKey, string? hdid, string? text, bool success)
+        {
+            // Arrange
+            UserComment expected = new()
+            {
+                UserProfileId = hdid!,
+                ParentEntryId = ParentEntryId,
+                Text = text!,
+                EntryTypeCode = CommentEntryType.Medication,
+                CreatedDateTime = DateTime.Parse("2020-01-01", CultureInfo.InvariantCulture),
+            };
+
+            Mock<ICryptoDelegate> cryptoDelegateMock = GetCryptoDelegateMock();
+            Comment comment = CommentMapUtils.ToDbModel(expected, cryptoDelegateMock.Object, EncryptionKey, MapperUtil.InitializeAutoMapper());
+
+            DbResult<Comment>? dbResult = dbStatusCode != null
+                ? new()
+                {
+                    Payload = comment,
+                    Status = dbStatusCode.Value,
+                }
+                : null;
+
+            CommentService service = GetCommentService(encryptionKey, dbResult);
+
+            // Act
+            RequestResult<UserComment> actual = await service.DeleteAsync(expected);
+
+            // Assert
+            if (success)
+            {
+                Assert.Equal(ResultType.Success, actual.ResultStatus);
+                expected.ShouldDeepEqual(actual.ResourcePayload);
+            }
+            else
+            {
+                Assert.Equal(ResultType.Error, actual.ResultStatus);
+                Assert.NotNull(actual.ResultError);
+            }
+        }
+
+        private static Mock<ICryptoDelegate> GetCryptoDelegateMock()
+        {
+            Mock<ICryptoDelegate> cryptoDelegateMock = new();
+            cryptoDelegateMock.Setup(s => s.Encrypt(It.IsAny<string>(), It.IsAny<string>())).Returns((string key, string text) => text + key);
+            cryptoDelegateMock.Setup(s => s.Decrypt(It.IsAny<string>(), It.IsAny<string>())).Returns((string key, string text) => text.Remove(text.Length - key.Length));
+            return cryptoDelegateMock;
+        }
+
+        private static CommentService GetCommentService(
+            string? encryptionKey,
+            DbResult<Comment>? commentDbResult = null,
+            DbResult<IList<Comment>>? parentEntryCommentsDbResult = null,
+            DbResult<IEnumerable<Comment>>? allCommentsDbResult = null)
+        {
             UserProfile userProfile = new()
                 { EncryptionKey = encryptionKey };
 
             Mock<IUserProfileDelegate> profileDelegateMock = new();
-            profileDelegateMock.Setup(s => s.GetUserProfileAsync(this.hdid, It.IsAny<CancellationToken>())).ReturnsAsync(userProfile);
-
-            Mock<ICryptoDelegate> cryptoDelegateMock = new();
-            cryptoDelegateMock.Setup(s => s.Encrypt(It.IsAny<string>(), It.IsAny<string>())).Returns((string key, string text) => text + key);
-            cryptoDelegateMock.Setup(s => s.Decrypt(It.IsAny<string>(), It.IsAny<string>())).Returns((string key, string text) => text.Remove(text.Length - key.Length));
-
-            UserComment userComment = new()
-            {
-                UserProfileId = this.hdid,
-                ParentEntryId = this.parentEntryId,
-                Text = "Inserted Comment",
-                EntryTypeCode = CommentEntryType.Medication,
-                CreatedDateTime = DateTime.Parse("2020-01-01", CultureInfo.InvariantCulture),
-            };
-            IMapper autoMapper = MapperUtil.InitializeAutoMapper();
-            Comment comment = CommentMapUtils.ToDbModel(userComment, cryptoDelegateMock.Object, encryptionKey, autoMapper);
-
-            DbResult<Comment> insertResult = new()
-            {
-                Payload = comment,
-                Status = dBStatusCode,
-            };
+            profileDelegateMock.Setup(s => s.GetUserProfileAsync(Hdid, It.IsAny<CancellationToken>())).ReturnsAsync(userProfile);
 
             Mock<ICommentDelegate> commentDelegateMock = new();
-            commentDelegateMock.Setup(s => s.AddAsync(It.Is<Comment>(x => x.Text == comment.Text), true, It.IsAny<CancellationToken>())).ReturnsAsync(insertResult);
+            IMapper autoMapper = MapperUtil.InitializeAutoMapper();
 
-            ICommentService service = new CommentService(
+            if (commentDbResult != null)
+            {
+                commentDelegateMock.Setup(s => s.AddAsync(It.Is<Comment>(x => x.Text == commentDbResult.Payload.Text), true, It.IsAny<CancellationToken>())).ReturnsAsync(commentDbResult);
+                commentDelegateMock.Setup(s => s.UpdateAsync(It.Is<Comment>(x => x.Text == commentDbResult.Payload.Text), true, It.IsAny<CancellationToken>())).ReturnsAsync(commentDbResult);
+                commentDelegateMock.Setup(s => s.DeleteAsync(It.Is<Comment>(x => x.Text == commentDbResult.Payload.Text), true, It.IsAny<CancellationToken>())).ReturnsAsync(commentDbResult);
+            }
+
+            if (parentEntryCommentsDbResult != null)
+            {
+                commentDelegateMock.Setup(s => s.GetByParentEntryAsync(Hdid, ParentEntryId, It.IsAny<CancellationToken>())).ReturnsAsync(parentEntryCommentsDbResult);
+            }
+
+            if (allCommentsDbResult != null)
+            {
+                commentDelegateMock.Setup(s => s.GetAllAsync(Hdid, It.IsAny<CancellationToken>())).ReturnsAsync(allCommentsDbResult);
+            }
+
+            return new CommentService(
                 new Mock<ILogger<CommentService>>().Object,
                 commentDelegateMock.Object,
                 profileDelegateMock.Object,
-                cryptoDelegateMock.Object,
+                GetCryptoDelegateMock().Object,
                 autoMapper);
-
-            Task<RequestResult<UserComment>> actualResult = service.AddAsync(userComment);
-            return (actualResult, userComment);
         }
     }
 }

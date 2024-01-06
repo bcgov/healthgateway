@@ -32,7 +32,7 @@ namespace HealthGateway.Database.Delegates
         /// <param name="hdId">The users health identifier id.</param>
         /// <param name="parentEntryId">The parent entry id.</param>
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
-        /// <returns>An IEnumerable of Comments wrapped in a DBResult.</returns>
+        /// <returns>An IList of Comments wrapped in a DBResult.</returns>
         Task<DbResult<IList<Comment>>> GetByParentEntryAsync(string hdId, string parentEntryId, CancellationToken ct = default);
 
         /// <summary>
