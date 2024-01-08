@@ -234,7 +234,7 @@ namespace HealthGateway.ClinicalDocumentTests.Services
                     .ThrowsAsync(new HttpRequestException("Unit Test HTTP Request Exception"));
             }
 
-            PatientIdentity? patientIdentity = new()
+            PatientIdentity patientIdentity = new()
             {
                 Pid = Guid.NewGuid(),
             };
