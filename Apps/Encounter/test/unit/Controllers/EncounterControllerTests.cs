@@ -122,7 +122,7 @@ namespace HealthGateway.EncounterTests.Controllers
             EncounterController controller = new(new Mock<ILogger<EncounterController>>().Object, svcMock.Object);
 
             // Act
-            RequestResult<HospitalVisitResult> actual = await controller.GetHospitalVisits(Hdid, It.IsAny<CancellationToken>());
+            RequestResult<HospitalVisitResult> actual = await controller.GetHospitalVisits(Hdid, default);
 
             // Verify
             Assert.True(actual != null && actual.ResultStatus == ResultType.Success);
