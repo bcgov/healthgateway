@@ -56,10 +56,10 @@ namespace HealthGateway.CommonTests.Services
             PersonalAccount expectedPersonalAccount = GetPatientAccount(id);
 
             Mock<ICacheProvider> cacheProviderMock = new();
-            IPersonalAccountsService personalAccountsServiceService = GetPersonalAccountsService(expectedPersonalAccount, useCache, false, cacheProviderMock, cacheToLive);
+            IPersonalAccountsService personalAccountsService = GetPersonalAccountsService(expectedPersonalAccount, useCache, false, cacheProviderMock, cacheToLive);
 
             // Act
-            RequestResult<PersonalAccount> actualResult = await personalAccountsServiceService.GetPatientAccountResultAsync(It.IsAny<string>());
+            RequestResult<PersonalAccount> actualResult = await personalAccountsService.GetPatientAccountResultAsync(It.IsAny<string>());
 
             // Assert
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
@@ -83,10 +83,10 @@ namespace HealthGateway.CommonTests.Services
             Guid id = Guid.NewGuid();
             PersonalAccount expectedPersonalAccount = GetPatientAccount(id);
 
-            IPersonalAccountsService personalAccountsServiceService = GetPersonalAccountsService(expectedPersonalAccount, false, true);
+            IPersonalAccountsService personalAccountsService = GetPersonalAccountsService(expectedPersonalAccount, false, true);
 
             // Act
-            RequestResult<PersonalAccount> actualResult = await personalAccountsServiceService.GetPatientAccountResultAsync(It.IsAny<string>());
+            RequestResult<PersonalAccount> actualResult = await personalAccountsService.GetPatientAccountResultAsync(It.IsAny<string>());
 
             // Assert
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
