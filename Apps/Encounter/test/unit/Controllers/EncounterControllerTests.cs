@@ -19,6 +19,7 @@ namespace HealthGateway.EncounterTests.Controllers
     using System.Collections.Generic;
     using System.Globalization;
     using System.Linq;
+    using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ViewModels;
@@ -76,15 +77,15 @@ namespace HealthGateway.EncounterTests.Controllers
             };
 
             Mock<IEncounterService> svcMock = new();
-            svcMock.Setup(s => s.GetEncounters(Hdid)).ReturnsAsync(expectedRequestResult);
+            svcMock.Setup(s => s.GetEncountersAsync(Hdid, It.IsAny<CancellationToken>())).ReturnsAsync(expectedRequestResult);
 
             EncounterController controller = new(new Mock<ILogger<EncounterController>>().Object, svcMock.Object);
 
             // Act
-            RequestResult<IEnumerable<EncounterModel>> actual = await controller.GetEncounters(Hdid);
+            RequestResult<IEnumerable<EncounterModel>> actual = await controller.GetEncounters(Hdid, It.IsAny<CancellationToken>());
 
             // Verify
-            Assert.True(actual != null && actual.ResultStatus == ResultType.Success);
+            Assert.True(actual is { ResultStatus: ResultType.Success });
 
             Assert.Equal(2, actual.ResourcePayload?.Count());
             Assert.Equal(2, actual.TotalResultCount);
@@ -116,12 +117,12 @@ namespace HealthGateway.EncounterTests.Controllers
             };
 
             Mock<IEncounterService> svcMock = new();
-            svcMock.Setup(s => s.GetHospitalVisits(Hdid)).ReturnsAsync(expectedRequestResult);
+            svcMock.Setup(s => s.GetHospitalVisitsAsync(Hdid, It.IsAny<CancellationToken>())).ReturnsAsync(expectedRequestResult);
 
             EncounterController controller = new(new Mock<ILogger<EncounterController>>().Object, svcMock.Object);
 
             // Act
-            RequestResult<HospitalVisitResult> actual = await controller.GetHospitalVisits(Hdid);
+            RequestResult<HospitalVisitResult> actual = await controller.GetHospitalVisits(Hdid, It.IsAny<CancellationToken>());
 
             // Verify
             Assert.True(actual != null && actual.ResultStatus == ResultType.Success);
