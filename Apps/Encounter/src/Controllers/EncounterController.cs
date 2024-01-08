@@ -78,7 +78,7 @@ namespace HealthGateway.Encounter.Controllers
         public async Task<RequestResult<IEnumerable<EncounterModel>>> GetEncounters(string hdid, CancellationToken ct)
         {
             this.logger.LogDebug("Getting encounter records from controller... {Hdid}", hdid);
-            RequestResult<IEnumerable<EncounterModel>> result = await this.service.GetEncountersAsync(hdid);
+            RequestResult<IEnumerable<EncounterModel>> result = await this.service.GetEncountersAsync(hdid, ct);
 
             this.logger.LogDebug("Finished getting encounter records from controller... {Hdid}", hdid);
             return result;
@@ -104,7 +104,7 @@ namespace HealthGateway.Encounter.Controllers
         public async Task<RequestResult<HospitalVisitResult>> GetHospitalVisits(string hdid, CancellationToken ct)
         {
             this.logger.LogDebug("Getting hospital visit records from controller... {Hdid}", hdid);
-            RequestResult<HospitalVisitResult> result = await this.service.GetHospitalVisitsAsync(hdid);
+            RequestResult<HospitalVisitResult> result = await this.service.GetHospitalVisitsAsync(hdid, ct);
 
             this.logger.LogDebug("Finished getting hospital visit records from controller... {Hdid}", hdid);
             return result;
