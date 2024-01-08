@@ -16,6 +16,7 @@
 namespace HealthGateway.ClinicalDocument.Api
 {
     using System;
+    using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.ClinicalDocument.Models.PHSA;
     using HealthGateway.Common.Data.Models.PHSA;
@@ -30,17 +31,19 @@ namespace HealthGateway.ClinicalDocument.Api
         /// Retrieves clinical document records by patient identifier.
         /// </summary>
         /// <param name="pid">The patient id to get clinical document records.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The clinical document records for the patient identifier.</returns>
         [Get("/patient/{pid}/health-data?Categories=4")]
-        Task<PhsaHealthDataResponse> GetClinicalDocumentRecordsAsync(string pid);
+        Task<PhsaHealthDataResponse> GetClinicalDocumentRecordsAsync(string pid, CancellationToken ct);
 
         /// <summary>
         /// Retrieves clinical document file by patient identifier and file id.
         /// </summary>
         /// <param name="pid">The patient id to get a clinical document file.</param>
         /// <param name="id">The file id to get a clinical document file.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The clinical document file for the patient identifier and file id.</returns>
         [Get("/patient/{pid}/file/{id}")]
-        Task<EncodedMedia> GetClinicalDocumentFileAsync(Guid pid, string id);
+        Task<EncodedMedia> GetClinicalDocumentFileAsync(Guid pid, string id, CancellationToken ct);
     }
 }
