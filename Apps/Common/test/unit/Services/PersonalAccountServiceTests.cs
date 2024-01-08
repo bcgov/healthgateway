@@ -40,7 +40,7 @@ namespace HealthGateway.CommonTests.Services
         private const string PersonalAccountsErrorMessage = "Error with request for Personal Accounts";
 
         /// <summary>
-        /// Get Personal Account Result.
+        /// Get Patient Account Result.
         /// </summary>
         /// <param name="useCache">The value indicates whether cache should be used or not.</param>
         /// <param name="cacheToLive">The number of minutes cache lives.</param>
