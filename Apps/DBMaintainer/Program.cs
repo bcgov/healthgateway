@@ -45,10 +45,10 @@ namespace HealthGateway.DBMaintainer
             FedDrugDbApp? fedDrugApp = host.Services.GetService<FedDrugDbApp>();
             if (fedDrugApp != null)
             {
-                fedDrugApp.Process("FedApprovedDatabase");
-                fedDrugApp.Process("FedMarketedDatabase");
-                fedDrugApp.Process("FedCancelledDatabase");
-                fedDrugApp.Process("FedDormantDatabase");
+                fedDrugApp.ProcessAsync("FedApprovedDatabase");
+                fedDrugApp.ProcessAsync("FedMarketedDatabase");
+                fedDrugApp.ProcessAsync("FedCancelledDatabase");
+                fedDrugApp.ProcessAsync("FedDormantDatabase");
             }
             else
             {
@@ -59,7 +59,7 @@ namespace HealthGateway.DBMaintainer
             BcpProvDrugDbApp? bcDrugApp = host.Services.GetService<BcpProvDrugDbApp>();
             if (bcDrugApp != null)
             {
-                bcDrugApp.Process("PharmaCareDrugFile");
+                bcDrugApp.ProcessAsync("PharmaCareDrugFile");
             }
             else
             {
@@ -92,8 +92,8 @@ namespace HealthGateway.DBMaintainer
                         Console.WriteLine("Configuring Services...");
                         services.AddDbContextPool<GatewayDbContext>(
                             options => options.UseNpgsql(
-                            hostContext.Configuration.GetConnectionString("GatewayConnection"),
-                            x => x.MigrationsHistoryTable("__EFMigrationsHistory", "gateway")));
+                                hostContext.Configuration.GetConnectionString("GatewayConnection"),
+                                x => x.MigrationsHistoryTable("__EFMigrationsHistory", "gateway")));
 
                         // Add HTTP Client
                         services.AddHttpClient();

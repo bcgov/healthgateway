@@ -20,10 +20,12 @@ namespace HealthGateway.DBMaintainer.Apps
     using System.IO;
     using System.IO.Compression;
     using System.Linq;
+    using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Database.Context;
     using HealthGateway.Database.Models;
     using HealthGateway.DBMaintainer.FileDownload;
+    using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
 
@@ -76,7 +78,7 @@ namespace HealthGateway.DBMaintainer.Apps
         protected GatewayDbContext DrugDbContext { get; set; }
 
         /// <inheritdoc/>
-        public virtual void Process(string configSectionName)
+        public virtual async Task ProcessAsync(string configSectionName, CancellationToken ct = default)
         {
             this.Logger.LogInformation("Reading configuration for section {ConfigSectionName}", configSectionName);
             IConfigurationSection section = this.Configuration.GetSection(configSectionName);
@@ -86,13 +88,13 @@ namespace HealthGateway.DBMaintainer.Apps
             this.Logger.LogInformation("Program Type = {ProgramType}", programType);
             string? targetFolder = this.Configuration.GetSection(configSectionName).GetValue<string>("TargetFolder");
 
-            FileDownload downloadedFile = this.DownloadFile(source, targetFolder);
-            if (!this.FileProcessed(downloadedFile))
+            FileDownload downloadedFile = await this.DownloadFileAsync(source, targetFolder, ct);
+            if (!await this.FileProcessedAsync(downloadedFile, ct))
             {
                 string sourceFolder = this.ExtractFiles(downloadedFile);
                 this.Logger.LogInformation("File has not been processed - Attempting to process");
                 downloadedFile.ProgramCode = programType;
-                this.ProcessDownload(sourceFolder, downloadedFile);
+                await this.ProcessDownloadAsync(sourceFolder, downloadedFile, ct);
                 this.RemoveExtractedFiles(sourceFolder);
             }
             else
@@ -116,16 +118,20 @@ namespace HealthGateway.DBMaintainer.Apps
         /// </summary>
         /// <param name="sourceFolder">The source folder.</param>
         /// <param name="downloadedFile">The file download to process.</param>
-        protected abstract void ProcessDownload(string sourceFolder, FileDownload downloadedFile);
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        protected abstract Task ProcessDownloadAsync(string sourceFolder, FileDownload downloadedFile, CancellationToken ct = default);
 
         /// <summary>
         /// Adds the processed file to the DB to ensure we don't process again.
         /// </summary>
         /// <param name="downloadedFile">The FileDownload to add to the DB.</param>
-        protected void AddFileToDb(FileDownload downloadedFile)
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        protected async Task AddFileToDbAsync(FileDownload downloadedFile, CancellationToken ct = default)
         {
             this.Logger.LogInformation("Marking file with hash {Hash} as processed in DB", downloadedFile.Hash);
-            this.DrugDbContext.FileDownload.Add(downloadedFile);
+            await this.DrugDbContext.FileDownload.AddAsync(downloadedFile, ct);
         }
 
         /// <summary>
@@ -147,11 +153,14 @@ namespace HealthGateway.DBMaintainer.Apps
         /// </summary>
         /// <param name="source">The URI of a file to download.</param>
         /// <param name="targetFolder">The location to store the file.</param>
+        /// <param name="ct">
+        /// <see cref="CancellationToken"/> to manage the async request.
+        /// </param>
         /// <returns>A FileDownload object.</returns>
-        protected FileDownload DownloadFile(Uri source, string targetFolder)
+        protected async Task<FileDownload> DownloadFileAsync(Uri source, string targetFolder, CancellationToken ct = default)
         {
             this.Logger.LogInformation("Downloading file from {Source} to {TargetFolder}", source, targetFolder);
-            return Task.Run(async () => await this.DownloadService.GetFileFromUrl(source, targetFolder, true).ConfigureAwait(true)).Result;
+            return await this.DownloadService.GetFileFromUrl(source, targetFolder, true);
         }
 
         /// <summary>
@@ -161,15 +170,15 @@ namespace HealthGateway.DBMaintainer.Apps
         /// <returns>The path to the unzipped folder.</returns>
         protected string ExtractFiles(FileDownload downloadedFile)
         {
-            if (downloadedFile.LocalFilePath != null && downloadedFile.Name != null)
+            if (downloadedFile is { LocalFilePath: not null, Name: not null })
             {
                 string filename = Path.Combine(downloadedFile.LocalFilePath, downloadedFile.Name);
                 this.Logger.LogInformation("Extracting zip file: {Filename}", filename);
-                string unzipedPath = Path.Combine(downloadedFile.LocalFilePath, Path.GetFileNameWithoutExtension(downloadedFile.Name));
-                ZipFile.ExtractToDirectory(filename, unzipedPath);
+                string unzippedPath = Path.Combine(downloadedFile.LocalFilePath, Path.GetFileNameWithoutExtension(downloadedFile.Name));
+                ZipFile.ExtractToDirectory(filename, unzippedPath);
                 this.Logger.LogInformation("Deleting Zip file");
                 File.Delete(filename);
-                return unzipedPath;
+                return unzippedPath;
             }
 
             throw new ArgumentNullException(
@@ -191,10 +200,11 @@ namespace HealthGateway.DBMaintainer.Apps
         /// Confirms if the downloadedFile has been processed previously.
         /// </summary>
         /// <param name="downloadedFile">The file to verify.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>True if the file has been previously processed.</returns>
-        protected bool FileProcessed(FileDownload downloadedFile)
+        protected async Task<bool> FileProcessedAsync(FileDownload downloadedFile, CancellationToken ct = default)
         {
-            return this.DrugDbContext.FileDownload.Any(p => p.Hash == downloadedFile.Hash);
+            return await this.DrugDbContext.FileDownload.AnyAsync(p => p.Hash == downloadedFile.Hash, ct);
         }
     }
 }
