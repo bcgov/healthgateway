@@ -141,7 +141,7 @@ namespace HealthGateway.ClinicalDocumentTests.Services
                 if (personalAccountExists)
                 {
                     // Act
-                    RequestResult<EncodedMedia> actualResult = await clinicalDocumentService.GetFileAsync(It.IsAny<string>(), It.IsAny<string>());
+                    RequestResult<EncodedMedia> actualResult = await clinicalDocumentService.GetFileAsync(string.Empty, string.Empty);
 
                     // Assert
                     Assert.Equal(personalAccountResultType, actualResult.ResultStatus);
