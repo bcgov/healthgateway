@@ -20,6 +20,7 @@ namespace HealthGateway.EncounterTests.Delegates
     using System.Linq;
     using System.Net;
     using System.Net.Http;
+    using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ViewModels;
@@ -98,7 +99,7 @@ namespace HealthGateway.EncounterTests.Delegates
             };
 
             Mock<IMspVisitApi> mockMspVisitApi = new();
-            mockMspVisitApi.Setup(s => s.GetMspVisitsAsync(It.IsAny<MspVisitHistory>())).ReturnsAsync(mockResponse);
+            mockMspVisitApi.Setup(s => s.GetMspVisitsAsync(It.IsAny<MspVisitHistory>(), It.IsAny<CancellationToken>())).ReturnsAsync(mockResponse);
 
             IMspVisitDelegate mspVisitDelegate = new RestMspVisitDelegate(
                 new Mock<ILogger<RestMspVisitDelegate>>().Object,
@@ -133,7 +134,7 @@ namespace HealthGateway.EncounterTests.Delegates
             // Arrange
             ApiException mockException = MockRefitExceptionHelper.CreateApiException(HttpStatusCode.Unauthorized, HttpMethod.Post);
             Mock<IMspVisitApi> mockMspVisitApi = new();
-            mockMspVisitApi.Setup(s => s.GetMspVisitsAsync(It.IsAny<MspVisitHistory>())).ThrowsAsync(mockException);
+            mockMspVisitApi.Setup(s => s.GetMspVisitsAsync(It.IsAny<MspVisitHistory>(), It.IsAny<CancellationToken>())).ThrowsAsync(mockException);
             IMspVisitDelegate mspVisitDelegate = new RestMspVisitDelegate(new Mock<ILogger<RestMspVisitDelegate>>().Object, mockMspVisitApi.Object);
 
             // Act
@@ -164,7 +165,7 @@ namespace HealthGateway.EncounterTests.Delegates
             // Arrange
             HttpRequestException mockException = MockRefitExceptionHelper.CreateHttpRequestException("Internal Server Error", HttpStatusCode.InternalServerError);
             Mock<IMspVisitApi> mockMspVisitApi = new();
-            mockMspVisitApi.Setup(s => s.GetMspVisitsAsync(It.IsAny<MspVisitHistory>())).ThrowsAsync(mockException);
+            mockMspVisitApi.Setup(s => s.GetMspVisitsAsync(It.IsAny<MspVisitHistory>(), It.IsAny<CancellationToken>())).ThrowsAsync(mockException);
             IMspVisitDelegate mspVisitDelegate = new RestMspVisitDelegate(new Mock<ILogger<RestMspVisitDelegate>>().Object, mockMspVisitApi.Object);
 
             // Act

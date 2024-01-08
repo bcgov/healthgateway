@@ -15,6 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Encounter.Api
 {
+    using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Encounter.Models.ODR;
     using Refit;
@@ -28,8 +29,9 @@ namespace HealthGateway.Encounter.Api
         /// Returns a list of msp visits.
         /// </summary>
         /// <param name="request">The Encounter request to execute against ODR.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The Encounter Model response wrapped in an Api Response.</returns>
         [Post("/mspVisits")]
-        Task<MspVisitHistory> GetMspVisitsAsync(MspVisitHistory request);
+        Task<MspVisitHistory> GetMspVisitsAsync(MspVisitHistory request, CancellationToken ct);
     }
 }

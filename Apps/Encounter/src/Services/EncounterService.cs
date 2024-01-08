@@ -20,6 +20,7 @@ namespace HealthGateway.Encounter.Services
     using System.Diagnostics;
     using System.Linq;
     using System.Net;
+    using System.Threading;
     using System.Threading.Tasks;
     using AutoMapper;
     using HealthGateway.AccountDataAccess.Patient;
@@ -94,7 +95,7 @@ namespace HealthGateway.Encounter.Services
         private static ActivitySource Source { get; } = new(nameof(EncounterService));
 
         /// <inheritdoc/>
-        public async Task<RequestResult<IEnumerable<EncounterModel>>> GetEncounters(string hdid)
+        public async Task<RequestResult<IEnumerable<EncounterModel>>> GetEncountersAsync(string hdid, CancellationToken ct = default)
         {
             using Activity? activity = Source.StartActivity();
 
@@ -103,7 +104,7 @@ namespace HealthGateway.Encounter.Services
 
             RequestResult<IEnumerable<EncounterModel>> result = new();
 
-            if (!await this.patientRepository.CanAccessDataSourceAsync(hdid, DataSource.HealthVisit).ConfigureAwait(true))
+            if (!await this.patientRepository.CanAccessDataSourceAsync(hdid, DataSource.HealthVisit, ct))
             {
                 result.ResultStatus = ResultType.Success;
                 result.ResourcePayload = Enumerable.Empty<EncounterModel>();
@@ -112,7 +113,7 @@ namespace HealthGateway.Encounter.Services
             }
 
             // Retrieve the phn
-            RequestResult<PatientModel> patientResult = await this.patientService.GetPatient(hdid).ConfigureAwait(true);
+            RequestResult<PatientModel> patientResult = await this.patientService.GetPatient(hdid, ct: ct);
             if (patientResult is { ResultStatus: ResultType.Success, ResourcePayload: not null })
             {
                 PatientModel patient = patientResult.ResourcePayload;
@@ -125,7 +126,7 @@ namespace HealthGateway.Encounter.Services
                 };
                 IPAddress address = this.httpContextAccessor.HttpContext!.Connection.RemoteIpAddress!;
                 string ipv4Address = address.MapToIPv4().ToString();
-                RequestResult<MspVisitHistoryResponse> response = await this.mspVisitDelegate.GetMspVisitHistoryAsync(mspHistoryQuery, hdid, ipv4Address).ConfigureAwait(true);
+                RequestResult<MspVisitHistoryResponse> response = await this.mspVisitDelegate.GetMspVisitHistoryAsync(mspHistoryQuery, hdid, ipv4Address, ct);
                 result.ResultStatus = response.ResultStatus;
                 result.ResultError = response.ResultError;
                 if (response.ResultStatus == ResultType.Success)
@@ -159,7 +160,7 @@ namespace HealthGateway.Encounter.Services
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResult<HospitalVisitResult>> GetHospitalVisits(string hdid)
+        public async Task<RequestResult<HospitalVisitResult>> GetHospitalVisitsAsync(string hdid, CancellationToken ct = default)
         {
             using (Source.StartActivity())
             {
@@ -170,7 +171,7 @@ namespace HealthGateway.Encounter.Services
                     TotalResultCount = 0,
                 };
 
-                if (!await this.patientRepository.CanAccessDataSourceAsync(hdid, DataSource.HospitalVisit).ConfigureAwait(true))
+                if (!await this.patientRepository.CanAccessDataSourceAsync(hdid, DataSource.HospitalVisit, ct))
                 {
                     result.ResultStatus = ResultType.Success;
                     result.ResourcePayload.HospitalVisits = Enumerable.Empty<HospitalVisitModel>();
