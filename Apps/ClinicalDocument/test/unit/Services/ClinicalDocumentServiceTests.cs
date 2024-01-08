@@ -158,7 +158,7 @@ namespace HealthGateway.ClinicalDocumentTests.Services
                 else
                 {
                     // Act and Assert
-                    await Assert.ThrowsAsync<InvalidOperationException>(() => clinicalDocumentService.GetFileAsync(It.IsAny<string>(), It.IsAny<string>()));
+                    await Assert.ThrowsAsync<InvalidOperationException>(() => clinicalDocumentService.GetFileAsync(string.Empty, string.Empty));
                 }
             }
             else
