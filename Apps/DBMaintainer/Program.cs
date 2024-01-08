@@ -18,6 +18,7 @@ namespace HealthGateway.DBMaintainer
     using System;
     using System.Diagnostics.CodeAnalysis;
     using System.IO;
+    using System.Threading.Tasks;
     using HealthGateway.Database.Context;
     using HealthGateway.DBMaintainer.Apps;
     using HealthGateway.DBMaintainer.FileDownload;
@@ -37,7 +38,8 @@ namespace HealthGateway.DBMaintainer
         /// Main entry point.
         /// </summary>
         /// <param name="args">The set of command line arguments.</param>
-        public static void Main(string[] args)
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        public static async Task Main(string[] args)
         {
             IHost host = CreateWebHostBuilder(args).Build();
 
@@ -45,10 +47,10 @@ namespace HealthGateway.DBMaintainer
             FedDrugDbApp? fedDrugApp = host.Services.GetService<FedDrugDbApp>();
             if (fedDrugApp != null)
             {
-                fedDrugApp.ProcessAsync("FedApprovedDatabase");
-                fedDrugApp.ProcessAsync("FedMarketedDatabase");
-                fedDrugApp.ProcessAsync("FedCancelledDatabase");
-                fedDrugApp.ProcessAsync("FedDormantDatabase");
+                await fedDrugApp.ProcessAsync("FedApprovedDatabase");
+                await fedDrugApp.ProcessAsync("FedMarketedDatabase");
+                await fedDrugApp.ProcessAsync("FedCancelledDatabase");
+                await fedDrugApp.ProcessAsync("FedDormantDatabase");
             }
             else
             {
@@ -59,7 +61,7 @@ namespace HealthGateway.DBMaintainer
             BcpProvDrugDbApp? bcDrugApp = host.Services.GetService<BcpProvDrugDbApp>();
             if (bcDrugApp != null)
             {
-                bcDrugApp.ProcessAsync("PharmaCareDrugFile");
+                await bcDrugApp.ProcessAsync("PharmaCareDrugFile");
             }
             else
             {
