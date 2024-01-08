@@ -82,7 +82,7 @@ namespace HealthGateway.EncounterTests.Controllers
             EncounterController controller = new(new Mock<ILogger<EncounterController>>().Object, svcMock.Object);
 
             // Act
-            RequestResult<IEnumerable<EncounterModel>> actual = await controller.GetEncounters(Hdid, It.IsAny<CancellationToken>());
+            RequestResult<IEnumerable<EncounterModel>> actual = await controller.GetEncounters(Hdid, default);
 
             // Verify
             Assert.True(actual is { ResultStatus: ResultType.Success });
