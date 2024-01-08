@@ -164,7 +164,7 @@ namespace HealthGateway.ClinicalDocumentTests.Services
             else
             {
                 // Act
-                RequestResult<EncodedMedia> actualResult = await clinicalDocumentService.GetFileAsync(It.IsAny<string>(), It.IsAny<string>());
+                RequestResult<EncodedMedia> actualResult = await clinicalDocumentService.GetFileAsync(string.Empty, string.Empty);
 
                 // Assert
                 Assert.Equal(ResultType.Success, actualResult.ResultStatus);
