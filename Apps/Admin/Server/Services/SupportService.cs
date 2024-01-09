@@ -150,7 +150,7 @@ namespace HealthGateway.Admin.Server.Services
 
         private async Task<PatientModel> GetPatientAsync(PatientDetailsQuery query, CancellationToken ct = default)
         {
-            PatientModel? patient = (await patientRepository.Query(query, ct)).Items.SingleOrDefault();
+            PatientModel? patient = (await patientRepository.QueryAsync(query, ct)).Items.SingleOrDefault();
             return patient ?? throw new ProblemDetailsException(ExceptionUtility.CreateProblemDetails(ErrorMessages.ClientRegistryRecordsNotFound, HttpStatusCode.NotFound, nameof(SupportService)));
         }
 

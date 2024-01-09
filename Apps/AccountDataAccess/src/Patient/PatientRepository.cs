@@ -17,6 +17,7 @@ namespace HealthGateway.AccountDataAccess.Patient
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.Globalization;
     using System.Linq;
     using System.Threading;
@@ -85,7 +86,7 @@ namespace HealthGateway.AccountDataAccess.Patient
         }
 
         /// <inheritdoc/>
-        public async Task<PatientQueryResult> Query(PatientQuery query, CancellationToken ct = default)
+        public async Task<PatientQueryResult> QueryAsync(PatientQuery query, CancellationToken ct = default)
         {
             return query switch
             {
@@ -159,7 +160,7 @@ namespace HealthGateway.AccountDataAccess.Patient
         }
 
         /// <inheritdoc/>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1863:Use 'CompositeFormat'", Justification = "Team decision")]
+        [SuppressMessage("Performance", "CA1863:Use 'CompositeFormat'", Justification = "Team decision")]
         public async Task<IEnumerable<DataSource>> GetDataSources(string hdid, CancellationToken ct = default)
         {
             string blockedAccessCacheKey = string.Format(CultureInfo.InvariantCulture, ICacheProvider.BlockedAccessCachePrefixKey, hdid);

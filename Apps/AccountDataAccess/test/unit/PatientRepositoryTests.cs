@@ -75,7 +75,7 @@ namespace AccountDataAccessTest
             PatientRepository patientRepository = GetPatientRepository(patient, patientDetailsQuery);
 
             // Act
-            PatientQueryResult result = await patientRepository.Query(patientDetailsQuery, CancellationToken.None);
+            PatientQueryResult result = await patientRepository.QueryAsync(patientDetailsQuery, CancellationToken.None);
 
             // Verify
             Assert.Equal(Phn, result.Items.SingleOrDefault()?.Phn);
@@ -100,7 +100,7 @@ namespace AccountDataAccessTest
             PatientRepository patientRepository = GetPatientRepository(patient, patientDetailsQuery);
 
             // Act
-            PatientQueryResult result = await patientRepository.Query(patientDetailsQuery, CancellationToken.None);
+            PatientQueryResult result = await patientRepository.QueryAsync(patientDetailsQuery, CancellationToken.None);
 
             // Verify
             Assert.Equal(Phn, result.Items.SingleOrDefault()?.Phn);
@@ -129,7 +129,7 @@ namespace AccountDataAccessTest
             PatientRepository patientRepository = GetPatientRepository(patient, patientDetailsQuery, patientResult, cachedPatient);
 
             // Act
-            PatientQueryResult result = await patientRepository.Query(patientDetailsQuery, CancellationToken.None);
+            PatientQueryResult result = await patientRepository.QueryAsync(patientDetailsQuery, CancellationToken.None);
 
             // Verify
             Assert.Equal(Phn, result.Items.SingleOrDefault()?.Phn);
@@ -172,7 +172,7 @@ namespace AccountDataAccessTest
             PatientRepository patientRepository = GetPatientRepository(patient, patientDetailsQuery, patientIdentity, cachedPatient);
 
             // Act
-            PatientQueryResult actual = await patientRepository.Query(patientDetailsQuery, CancellationToken.None);
+            PatientQueryResult actual = await patientRepository.QueryAsync(patientDetailsQuery, CancellationToken.None);
 
             // Verify
             expectedPatient.ShouldDeepEqual(actual.Items.SingleOrDefault());
@@ -195,7 +195,7 @@ namespace AccountDataAccessTest
             PatientRepository patientRepository = GetPatientRepository(patient, patientDetailsQuery, patientIdentity, cachedPatient);
 
             // Act
-            PatientQueryResult actual = await patientRepository.Query(patientDetailsQuery, CancellationToken.None);
+            PatientQueryResult actual = await patientRepository.QueryAsync(patientDetailsQuery, CancellationToken.None);
 
             // Verify
             Assert.Null(actual.Items.SingleOrDefault());
@@ -223,7 +223,7 @@ namespace AccountDataAccessTest
             // Act
             async Task Actual()
             {
-                await patientRepository.Query(patientQuery, CancellationToken.None);
+                await patientRepository.QueryAsync(patientQuery, CancellationToken.None);
             }
 
             // Verify

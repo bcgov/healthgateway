@@ -104,7 +104,7 @@ namespace HealthGateway.Admin.Server.Services
         private async Task<PatientModel> GetPatientAsync(string phn, CancellationToken ct = default)
         {
             PatientDetailsQuery query = new(phn, Source: PatientDetailSource.Empi, UseCache: true);
-            PatientModel? patient = (await patientRepository.Query(query, ct).ConfigureAwait(true)).Items.SingleOrDefault();
+            PatientModel? patient = (await patientRepository.QueryAsync(query, ct)).Items.SingleOrDefault();
             if (patient == null)
             {
                 throw new ProblemDetailsException(ExceptionUtility.CreateProblemDetails(ErrorMessages.ClientRegistryRecordsNotFound, HttpStatusCode.NotFound, nameof(CovidSupportService)));

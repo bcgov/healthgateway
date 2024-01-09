@@ -53,7 +53,7 @@ namespace HealthGateway.AccountDataAccess.Patient
         /// <param name="query">The query.</param>
         /// <param name="ct">The cancellation token.</param>
         /// <returns>The patient model wrapped in a patient query result object.</returns>
-        Task<PatientQueryResult> Query(PatientQuery query, CancellationToken ct = default);
+        Task<PatientQueryResult> QueryAsync(PatientQuery query, CancellationToken ct = default);
 
         /// <summary>
         /// Returns true if data source can be accessed and false if it cannot.
