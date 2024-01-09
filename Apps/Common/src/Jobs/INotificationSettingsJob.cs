@@ -15,6 +15,8 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Common.Jobs
 {
+    using System.Threading.Tasks;
+
     /// <summary>
     /// A Job to send/retry pushing Notification Settings to PHSA.
     /// </summary>
@@ -24,6 +26,7 @@ namespace HealthGateway.Common.Jobs
         /// Sends an email immediately if Priority is standard or higher.
         /// </summary>
         /// <param name="notificationSettingsJson">The Notification settings serialized to send to PHSA.</param>
-        void PushNotificationSettings(string notificationSettingsJson);
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        Task PushNotificationSettingsAsync(string notificationSettingsJson);
     }
 }

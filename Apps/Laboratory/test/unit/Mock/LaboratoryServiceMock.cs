@@ -144,8 +144,8 @@ namespace HealthGateway.LaboratoryTests.Mock
                 AccessToken = token,
             };
             Mock<IAuthenticationDelegate> mockAuthDelegate = new();
-            mockAuthDelegate.Setup(s => s.AuthenticateAsSystem(It.IsAny<ClientCredentialsRequest>(), It.IsAny<bool>())).Returns(jwt);
-            mockAuthDelegate.Setup(s => s.FetchAuthenticatedUserToken()).Returns(token);
+            mockAuthDelegate.Setup(s => s.AuthenticateAsSystemAsync(It.IsAny<ClientCredentialsRequest>(), It.IsAny<bool>(), It.IsAny<CancellationToken>())).ReturnsAsync(jwt);
+            mockAuthDelegate.Setup(s => s.FetchAuthenticatedUserTokenAsync()).ReturnsAsync(token);
             return mockAuthDelegate.Object;
         }
     }

@@ -105,7 +105,7 @@ public class InactiveUserService : IInactiveUserService
         this.logger.LogDebug("Timezone: {Timezone} - Inactive db admin user profile count: {Count} since {InactiveDays} day(s)...", localTimezone, inactiveUsers.Count, inactiveDays);
 
         // Get admin and support users from keycloak
-        JwtModel jwtModel = this.authDelegate.AuthenticateAsSystem(this.clientCredentialsRequest);
+        JwtModel jwtModel = await this.authDelegate.AuthenticateAsSystemAsync(this.clientCredentialsRequest, ct: ct);
         try
         {
             const int firstRecord = 0;

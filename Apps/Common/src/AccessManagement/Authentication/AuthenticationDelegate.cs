@@ -21,6 +21,8 @@ namespace HealthGateway.Common.AccessManagement.Authentication
     using System.Net.Http.Json;
     using System.Security.Claims;
     using System.Text.Json;
+    using System.Threading;
+    using System.Threading.Tasks;
     using HealthGateway.Common.AccessManagement.Authentication.Models;
     using HealthGateway.Common.CacheProviders;
     using HealthGateway.Common.Data.Constants;
@@ -69,27 +71,27 @@ namespace HealthGateway.Common.AccessManagement.Authentication
         }
 
         /// <inheritdoc/>
-        public JwtModel AuthenticateAsSystem(ClientCredentialsRequest request, bool cacheEnabled = true)
+        public async Task<JwtModel> AuthenticateAsSystemAsync(ClientCredentialsRequest request, bool cacheEnabled = true, CancellationToken ct = default)
         {
             JwtModel? jwtModel;
 
             if (cacheEnabled)
             {
                 string cacheKey = $"{request.TokenUri}:{request.Parameters.Audience}:{request.Parameters.ClientId}";
-                jwtModel = this.cacheProvider.GetItem<JwtModel>(cacheKey);
+                jwtModel = await this.cacheProvider.GetItemAsync<JwtModel>(cacheKey, ct);
                 if (jwtModel is null)
                 {
-                    jwtModel = this.GetSystemToken(request);
+                    jwtModel = await this.GetSystemTokenAsync(request, ct);
                     if (jwtModel.ExpiresIn is not null)
                     {
                         int expiry = jwtModel.ExpiresIn.Value - 10;
-                        this.cacheProvider.AddItem(cacheKey, jwtModel, TimeSpan.FromSeconds(expiry));
+                        await this.cacheProvider.AddItemAsync(cacheKey, jwtModel, TimeSpan.FromSeconds(expiry), ct);
                     }
                 }
             }
             else
             {
-                jwtModel = this.GetSystemToken(request);
+                jwtModel = await this.GetSystemTokenAsync(request, ct);
             }
 
             this.logger.LogDebug("Authenticating Service... {ClientId}", request.Parameters.ClientId);
@@ -97,7 +99,7 @@ namespace HealthGateway.Common.AccessManagement.Authentication
         }
 
         /// <inheritdoc/>
-        public JwtModel AuthenticateUser(ClientCredentialsRequest request, bool cacheEnabled = false)
+        public async Task<JwtModel> AuthenticateUserAsync(ClientCredentialsRequest request, bool cacheEnabled = false, CancellationToken ct = default)
         {
             JwtModel? jwtModel = null;
 
@@ -105,13 +107,13 @@ namespace HealthGateway.Common.AccessManagement.Authentication
             if (cacheEnabled && this.tokenCacheMinutes > 0)
             {
                 this.logger.LogDebug("Attempting to fetch token from cache");
-                jwtModel = this.cacheProvider.GetItem<JwtModel>(cacheKey);
+                jwtModel = await this.cacheProvider.GetItemAsync<JwtModel>(cacheKey, ct);
             }
 
             if (jwtModel == null)
             {
                 this.logger.LogInformation("JWT Model not found in cache - Authenticating Direct Grant as User: {Username}", request.Parameters.Username);
-                jwtModel = this.ResourceOwnerPasswordGrant(request);
+                jwtModel = await this.ResourceOwnerPasswordGrantAsync(request, ct);
 
                 if (jwtModel == null)
                 {
@@ -122,7 +124,7 @@ namespace HealthGateway.Common.AccessManagement.Authentication
                 if (cacheEnabled && this.tokenCacheMinutes > 0)
                 {
                     this.logger.LogDebug("Attempting to store Access token in cache");
-                    this.cacheProvider.AddItem(cacheKey, jwtModel, TimeSpan.FromMinutes(this.tokenCacheMinutes));
+                    await this.cacheProvider.AddItemAsync(cacheKey, jwtModel, TimeSpan.FromMinutes(this.tokenCacheMinutes), ct);
                 }
                 else
                 {
@@ -151,10 +153,10 @@ namespace HealthGateway.Common.AccessManagement.Authentication
         }
 
         /// <inheritdoc/>
-        public string? FetchAuthenticatedUserToken()
+        public async Task<string?> FetchAuthenticatedUserTokenAsync()
         {
             HttpContext? httpContext = this.httpContextAccessor?.HttpContext;
-            return httpContext.GetTokenAsync("access_token").GetAwaiter().GetResult();
+            return await httpContext.GetTokenAsync("access_token");
         }
 
         /// <inheritdoc/>
@@ -193,14 +195,14 @@ namespace HealthGateway.Common.AccessManagement.Authentication
             return user?.FindFirst("preferred_username")?.Value;
         }
 
-        private JwtModel GetSystemToken(ClientCredentialsRequest request)
+        private async Task<JwtModel> GetSystemTokenAsync(ClientCredentialsRequest request, CancellationToken ct)
         {
-            JwtModel? jwtModel = this.ClientCredentialsGrant(request);
+            JwtModel? jwtModel = await this.ClientCredentialsGrantAsync(request, ct);
             this.logger.LogDebug("Finished authenticating Service. {ClientId}", request.Parameters.ClientId);
             return jwtModel ?? throw new InvalidOperationException("Auth failure - JwtModel cannot be null");
         }
 
-        private JwtModel? ClientCredentialsGrant(ClientCredentialsRequest request)
+        private async Task<JwtModel?> ClientCredentialsGrantAsync(ClientCredentialsRequest request, CancellationToken ct)
         {
             ClientCredentialsRequestParameters parameters = request.Parameters;
             IEnumerable<KeyValuePair<string?, string?>> oauthParams = new[]
@@ -211,10 +213,10 @@ namespace HealthGateway.Common.AccessManagement.Authentication
                 new KeyValuePair<string?, string?>("grant_type", "client_credentials"),
             };
             using FormUrlEncodedContent content = new(oauthParams);
-            return this.Authenticate(request.TokenUri, content);
+            return await this.AuthenticateAsync(request.TokenUri, content, ct);
         }
 
-        private JwtModel? ResourceOwnerPasswordGrant(ClientCredentialsRequest request)
+        private async Task<JwtModel?> ResourceOwnerPasswordGrantAsync(ClientCredentialsRequest request, CancellationToken ct)
         {
             ClientCredentialsRequestParameters parameters = request.Parameters;
             IEnumerable<KeyValuePair<string?, string?>> oauthParams = new[]
@@ -229,10 +231,10 @@ namespace HealthGateway.Common.AccessManagement.Authentication
             };
 
             using FormUrlEncodedContent content = new(oauthParams);
-            return this.Authenticate(request.TokenUri, content);
+            return await this.AuthenticateAsync(request.TokenUri, content, ct);
         }
 
-        private JwtModel? Authenticate(Uri tokenUri, FormUrlEncodedContent content)
+        private async Task<JwtModel?> AuthenticateAsync(Uri tokenUri, FormUrlEncodedContent content, CancellationToken ct)
         {
             JwtModel? authModel = null;
             try
@@ -240,9 +242,9 @@ namespace HealthGateway.Common.AccessManagement.Authentication
                 using HttpClient client = this.httpClientFactory.CreateClient();
                 content.Headers.Clear();
                 content.Headers.Add("Content-Type", "application/x-www-form-urlencoded");
-                HttpResponseMessage response = client.PostAsync(tokenUri, content).GetAwaiter().GetResult();
+                HttpResponseMessage response = await client.PostAsync(tokenUri, content, ct);
                 response.EnsureSuccessStatusCode();
-                authModel = response.Content.ReadFromJsonAsync<JwtModel>().GetAwaiter().GetResult();
+                authModel = await response.Content.ReadFromJsonAsync<JwtModel>(cancellationToken: ct);
             }
             catch (Exception e) when (e is HttpRequestException or InvalidOperationException or JsonException)
             {

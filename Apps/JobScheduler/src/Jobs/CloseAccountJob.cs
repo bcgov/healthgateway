@@ -137,7 +137,7 @@ namespace HealthGateway.JobScheduler.Jobs
                         await this.emailService.QueueNewEmailAsync(profile.Email!, this.emailTemplate, false, ct);
                     }
 
-                    JwtModel jwtModel = this.authDelegate.AuthenticateAsSystem(this.clientCredentialsRequest);
+                    JwtModel jwtModel = await this.authDelegate.AuthenticateAsSystemAsync(this.clientCredentialsRequest, ct: ct);
 
                     try
                     {

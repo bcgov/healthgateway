@@ -81,10 +81,11 @@ namespace HealthGateway.MedicationTests.Delegates
             Mock<IAuthenticationDelegate> mockAuthenticationDelegate = new();
             mockAuthenticationDelegate
                 .Setup(
-                    s => s.AuthenticateUser(
-                        It.Is<ClientCredentialsRequest>(x => x.TokenUri.ToString() == tokenUri.ToString() && x.Parameters.ClientId == requestParameters.ClientId),
-                        true))
-                .Returns(() => authorizationJwt);
+                    s => s.AuthenticateUserAsync(
+                        It.IsAny<ClientCredentialsRequest>(),
+                        true,
+                        It.IsAny<CancellationToken>()))
+                .ReturnsAsync(authorizationJwt);
 
             string jsonStr =
                 "{\"items\":[{\"requestStatus\":\"Approved\",\"requestedDate\":\"2020-11-13T00:00:00.000Z\",\"referenceNumber\":\"00001046\",\"prescriberLastName\":\"Provider\",\"prescriberFirstName\":\"Test\",\"patientLastName\":null,\"patientIdentifier\":null,\"patientFirstName\":null,\"expiryDate\":null,\"effectiveDate\":null,\"drugName\":\"rabeprazole 10, 20 mg   NB4\"},{\"requestStatus\":\"Approved\",\"requestedDate\":\"2020-11-15T00:00:00.000Z\",\"referenceNumber\":\"00001048\",\"prescriberLastName\":null,\"prescriberFirstName\":null,\"patientLastName\":null,\"patientIdentifier\":null,\"patientFirstName\":null,\"expiryDate\":null,\"effectiveDate\":\"2021-02-17\",\"drugName\":\"abatacept w/e name here\"},{\"requestStatus\":\"Received\",\"requestedDate\":\"2020-11-15T00:00:00.000Z\",\"referenceNumber\":\"00001047\",\"prescriberLastName\":null,\"prescriberFirstName\":null,\"patientLastName\":null,\"patientIdentifier\":null,\"patientFirstName\":null,\"expiryDate\":null,\"effectiveDate\":null,\"drugName\":\"depakote sprinkle cap 125mg   (SAP)\"}]}";
@@ -150,10 +151,11 @@ namespace HealthGateway.MedicationTests.Delegates
             Mock<IAuthenticationDelegate> mockAuthenticationDelegate = new();
             mockAuthenticationDelegate
                 .Setup(
-                    s => s.AuthenticateUser(
-                        It.Is<ClientCredentialsRequest>(x => x.TokenUri.ToString() == tokenUri.ToString() && x.Parameters.ClientId == requestParameters.ClientId),
-                        true))
-                .Returns(() => new JwtModel());
+                    s => s.AuthenticateUserAsync(
+                        It.IsAny<ClientCredentialsRequest>(),
+                        true,
+                        It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new JwtModel());
 
             // Setup class to be tested
             IMedicationRequestDelegate medDelegate = new SalesforceMedicationRequestDelegate(
@@ -215,10 +217,11 @@ namespace HealthGateway.MedicationTests.Delegates
             Mock<IAuthenticationDelegate> mockAuthenticationDelegate = new();
             mockAuthenticationDelegate
                 .Setup(
-                    s => s.AuthenticateUser(
-                        It.Is<ClientCredentialsRequest>(x => x.TokenUri.ToString() == tokenUri.ToString() && x.Parameters.ClientId == requestParameters.ClientId),
-                        true))
-                .Returns(() => authorizationJwt);
+                    s => s.AuthenticateUserAsync(
+                        It.IsAny<ClientCredentialsRequest>(),
+                        true,
+                        It.IsAny<CancellationToken>()))
+                .ReturnsAsync(authorizationJwt);
 
             // Setup response
             Mock<ISpecialAuthorityApi> mockSpecialAuthorityApi = new();

@@ -80,7 +80,7 @@ namespace HealthGateway.Common.Services
 
             if (cachedAccessToken == null)
             {
-                string? accessToken = this.authenticationDelegate.FetchAuthenticatedUserToken();
+                string? accessToken = await this.authenticationDelegate.FetchAuthenticatedUserTokenAsync();
 
                 if (accessToken != null)
                 {

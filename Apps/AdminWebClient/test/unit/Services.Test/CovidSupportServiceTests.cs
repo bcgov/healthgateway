@@ -19,6 +19,7 @@ namespace HealthGateway.AdminWebClientTests.Services.Test
     using System.Collections.Generic;
     using System.Linq;
     using System.Net.Http;
+    using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Admin.Api;
     using HealthGateway.Admin.Delegates;
@@ -144,7 +145,7 @@ namespace HealthGateway.AdminWebClientTests.Services.Test
                 AccessToken = AccessToken,
             };
 
-            mockAuthDelegate.Setup(s => s.AuthenticateAsSystem(It.IsAny<ClientCredentialsRequest>(), It.IsAny<bool>())).Returns(jwt);
+            mockAuthDelegate.Setup(s => s.AuthenticateAsSystemAsync(It.IsAny<ClientCredentialsRequest>(), It.IsAny<bool>(), It.IsAny<CancellationToken>())).ReturnsAsync(jwt);
             IImmunizationAdminApi immunizationAdminApi = RestService.For<IImmunizationAdminApi>(httpClient);
             ICovidSupportService mockCovidSupportService = new CovidSupportService(
                 new Mock<ILogger<CovidSupportService>>().Object,
@@ -168,7 +169,7 @@ namespace HealthGateway.AdminWebClientTests.Services.Test
                 AccessToken = AccessToken,
             };
 
-            mockAuthDelegate.Setup(s => s.AuthenticateAsSystem(It.IsAny<ClientCredentialsRequest>(), It.IsAny<bool>())).Returns(jwt);
+            mockAuthDelegate.Setup(s => s.AuthenticateAsSystemAsync(It.IsAny<ClientCredentialsRequest>(), It.IsAny<bool>(), It.IsAny<CancellationToken>())).ReturnsAsync(jwt);
 
             Mock<IImmunizationAdminApi> mockAdminDelegate = new();
             if (!throwException)
@@ -208,7 +209,7 @@ namespace HealthGateway.AdminWebClientTests.Services.Test
                 AccessToken = AccessToken,
             };
 
-            mockAuthDelegate.Setup(s => s.AuthenticateAsSystem(It.IsAny<ClientCredentialsRequest>(), It.IsAny<bool>())).Returns(jwt);
+            mockAuthDelegate.Setup(s => s.AuthenticateAsSystemAsync(It.IsAny<ClientCredentialsRequest>(), It.IsAny<bool>(), It.IsAny<CancellationToken>())).ReturnsAsync(jwt);
 
             Mock<IImmunizationAdminApi> mockAdminDelegate = new();
             if (!throwException)

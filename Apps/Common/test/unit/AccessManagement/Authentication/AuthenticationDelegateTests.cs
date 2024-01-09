@@ -75,15 +75,16 @@ namespace HealthGateway.CommonTests.AccessManagement.Authentication
         /// <summary>
         /// AuthenticateAsUser - Happy Path (disabled cache).
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void ShouldAuthenticateAsUserDisabledCache()
+        public async Task ShouldAuthenticateAsUserDisabledCache()
         {
             JwtModel? expected = JsonSerializer.Deserialize<JwtModel>(UserJson);
             Mock<ICacheProvider> mockCacheProvider = CreateCacheProvider();
             using HttpResponseMessage httpResponseMessage = new();
             IAuthenticationDelegate authDelegate = CreateAuthenticationDelegate(CreateHttpClientFactory(UserJson, httpResponseMessage), mockCacheProvider);
 
-            JwtModel actualModel = authDelegate.AuthenticateUser(UserClientCredentialsRequest);
+            JwtModel actualModel = await authDelegate.AuthenticateUserAsync(UserClientCredentialsRequest);
 
             expected.ShouldDeepEqual(actualModel);
             mockCacheProvider.Verify(v => v.GetItem<JwtModel>(It.IsAny<string>()), Times.Never());
@@ -93,57 +94,61 @@ namespace HealthGateway.CommonTests.AccessManagement.Authentication
         /// <summary>
         /// AuthenticateAsUser - Happy Path (empty cache).
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void ShouldAuthenticateAsUserEmptyCache()
+        public async Task ShouldAuthenticateAsUserEmptyCache()
         {
             JwtModel? expected = JsonSerializer.Deserialize<JwtModel>(UserJson);
             Mock<ICacheProvider> mockCacheProvider = CreateCacheProvider();
             using HttpResponseMessage httpResponseMessage = new();
             IAuthenticationDelegate authDelegate = CreateAuthenticationDelegate(CreateHttpClientFactory(UserJson, httpResponseMessage), mockCacheProvider);
 
-            JwtModel actualModel = authDelegate.AuthenticateUser(UserClientCredentialsRequest, true);
+            JwtModel actualModel = await authDelegate.AuthenticateUserAsync(UserClientCredentialsRequest, true);
 
             expected.ShouldDeepEqual(actualModel);
-            mockCacheProvider.Verify(v => v.GetItem<JwtModel>(It.IsAny<string>()), Times.Exactly(1));
-            mockCacheProvider.Verify(v => v.AddItem(It.IsAny<string>(), It.IsAny<JwtModel>(), It.IsAny<TimeSpan?>()), Times.Exactly(1));
+            mockCacheProvider.Verify(v => v.GetItemAsync<JwtModel>(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Exactly(1));
+            mockCacheProvider.Verify(v => v.AddItemAsync(It.IsAny<string>(), It.IsAny<JwtModel>(), It.IsAny<TimeSpan?>(), It.IsAny<CancellationToken>()), Times.Exactly(1));
         }
 
         /// <summary>
         /// AuthenticateAsUser - Happy Path (populated cache).
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void ShouldAuthenticateAsUserPopulatedCache()
+        public async Task ShouldAuthenticateAsUserPopulatedCache()
         {
             JwtModel? expected = JsonSerializer.Deserialize<JwtModel>(UserJson);
             Mock<ICacheProvider> mockCacheProvider = CreateCacheProvider(expected);
             using HttpResponseMessage httpResponseMessage = new();
             IAuthenticationDelegate authDelegate = CreateAuthenticationDelegate(CreateHttpClientFactory(UserJson, httpResponseMessage), mockCacheProvider);
 
-            JwtModel actualModel = authDelegate.AuthenticateUser(UserClientCredentialsRequest, true);
+            JwtModel actualModel = await authDelegate.AuthenticateUserAsync(UserClientCredentialsRequest, true);
 
             expected.ShouldDeepEqual(actualModel);
-            mockCacheProvider.Verify(v => v.GetItem<JwtModel>(It.IsAny<string>()), Times.Exactly(1));
-            mockCacheProvider.Verify(v => v.AddItem(It.IsAny<string>(), It.IsAny<JwtModel>(), It.IsAny<TimeSpan?>()), Times.Never());
+            mockCacheProvider.Verify(v => v.GetItemAsync<JwtModel>(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Exactly(1));
+            mockCacheProvider.Verify(v => v.AddItemAsync(It.IsAny<string>(), It.IsAny<JwtModel>(), It.IsAny<TimeSpan?>(), It.IsAny<CancellationToken>()), Times.Never());
         }
 
         /// <summary>
         /// AuthenticateAsUser - Unhappy Path.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void ShouldNotAuthenticateAsUser()
+        public async Task ShouldNotAuthenticateAsUser()
         {
             const string json = "Bad JSON";
             using HttpResponseMessage httpResponseMessage = new();
             IAuthenticationDelegate authDelegate = CreateAuthenticationDelegate(CreateHttpClientFactory(json, httpResponseMessage), CreateCacheProvider());
 
-            Assert.Throws<InvalidOperationException>(() => authDelegate.AuthenticateUser(UserClientCredentialsRequest));
+            await Assert.ThrowsAsync<InvalidOperationException>(() => authDelegate.AuthenticateUserAsync(UserClientCredentialsRequest));
         }
 
         /// <summary>
         /// AuthenticateAsSystem - Happy Path.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void ShouldAuthenticateAsSystem()
+        public async Task ShouldAuthenticateAsSystem()
         {
             const string json =
                 """
@@ -162,7 +167,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authentication
             using HttpResponseMessage httpResponseMessage = new();
             IAuthenticationDelegate authDelegate = CreateAuthenticationDelegate(CreateHttpClientFactory(json, httpResponseMessage), CreateCacheProvider(expected));
 
-            JwtModel actualModel = authDelegate.AuthenticateAsSystem(SystemClientCredentialsRequest);
+            JwtModel actualModel = await authDelegate.AuthenticateAsSystemAsync(SystemClientCredentialsRequest);
 
             expected.ShouldDeepEqual(actualModel);
         }
@@ -198,7 +203,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authentication
         private static Mock<ICacheProvider> CreateCacheProvider(JwtModel? cachedValue = null)
         {
             Mock<ICacheProvider> mockCacheProvider = new();
-            mockCacheProvider.Setup(s => s.GetItem<JwtModel>(It.IsAny<string>())).Returns(cachedValue);
+            mockCacheProvider.Setup(s => s.GetItemAsync<JwtModel>(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(cachedValue);
             return mockCacheProvider;
         }
 

@@ -167,7 +167,7 @@ namespace HealthGateway.Admin.Delegates
         [SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "<Team Decision>")]
         private async Task<RequestResult<PhsaResult<VaccineDetailsResponse>>> ProcessResponse(CovidImmunizationsRequest request)
         {
-            string? bearerToken = this.authenticationDelegate.FetchAuthenticatedUserToken();
+            string? bearerToken = await this.authenticationDelegate.FetchAuthenticatedUserTokenAsync();
             if (bearerToken != null)
             {
                 RequestResult<PhsaResult<VaccineDetailsResponse>> retVal = new()

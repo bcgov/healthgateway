@@ -888,7 +888,7 @@ namespace HealthGateway.Admin.Tests.Services
         private static Mock<IAuthenticationDelegate> GetAuthenticationDelegateMock(string? accessToken)
         {
             Mock<IAuthenticationDelegate> mock = new();
-            mock.Setup(d => d.FetchAuthenticatedUserToken()).Returns(accessToken);
+            mock.Setup(d => d.FetchAuthenticatedUserTokenAsync()).ReturnsAsync(accessToken);
             return mock;
         }
 

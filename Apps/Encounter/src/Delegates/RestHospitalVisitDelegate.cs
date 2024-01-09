@@ -70,7 +70,7 @@ namespace HealthGateway.Encounter.Delegates
             using Activity? activity = Source.StartActivity();
             this.logger.LogDebug("Getting hospital visits for hdid: {Hdid}", hdid);
 
-            string? accessToken = this.authenticationDelegate.FetchAuthenticatedUserToken();
+            string? accessToken = await this.authenticationDelegate.FetchAuthenticatedUserTokenAsync();
 
             try
             {

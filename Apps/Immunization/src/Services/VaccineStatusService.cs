@@ -220,8 +220,8 @@ namespace HealthGateway.Immunization.Services
                 return RequestResultFactory.Error<VaccineStatus>(ErrorType.InvalidState, validationResults.Errors);
             }
 
-            string? accessToken = this.authDelegate.AuthenticateAsSystem(this.clientCredentialsRequest).AccessToken;
-            RequestResult<VaccineStatus> retVal = await this.GetVaccineStatusFromDelegateAsync(query, accessToken, phn, ct);
+            JwtModel jwtModel = await this.authDelegate.AuthenticateAsSystemAsync(this.clientCredentialsRequest, ct: ct);
+            RequestResult<VaccineStatus> retVal = await this.GetVaccineStatusFromDelegateAsync(query, jwtModel.AccessToken, phn, ct);
 
             return retVal;
         }
@@ -229,7 +229,7 @@ namespace HealthGateway.Immunization.Services
         private async Task<RequestResult<VaccineStatus>> GetAuthenticatedVaccineStatusWithOptionalProofAsync(string hdid, bool includeVaccineProof, CancellationToken ct)
         {
             // Gets the current user access token and pass it along to PHSA
-            string? bearerToken = this.authDelegate.FetchAuthenticatedUserToken();
+            string? bearerToken = await this.authDelegate.FetchAuthenticatedUserTokenAsync();
 
             VaccineStatusQuery query = new()
             {

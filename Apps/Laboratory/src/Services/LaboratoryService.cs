@@ -93,7 +93,7 @@ namespace HealthGateway.Laboratory.Services
                 };
             }
 
-            string? accessToken = this.authenticationDelegate.FetchAuthenticatedUserToken();
+            string? accessToken = await this.authenticationDelegate.FetchAuthenticatedUserTokenAsync();
             if (accessToken == null)
             {
                 this.logger.LogCritical(IsNullOrEmptyTokenErrorMessage);
@@ -148,7 +148,7 @@ namespace HealthGateway.Laboratory.Services
                 };
             }
 
-            string? accessToken = this.authenticationDelegate.FetchAuthenticatedUserToken();
+            string? accessToken = await this.authenticationDelegate.FetchAuthenticatedUserTokenAsync();
             if (string.IsNullOrEmpty(accessToken))
             {
                 this.logger.LogCritical(IsNullOrEmptyTokenErrorMessage);
@@ -191,7 +191,7 @@ namespace HealthGateway.Laboratory.Services
         /// <inheritdoc/>
         public async Task<RequestResult<LaboratoryReport>> GetLabReportAsync(string id, string hdid, bool isCovid19, CancellationToken ct = default)
         {
-            string? accessToken = this.authenticationDelegate.FetchAuthenticatedUserToken();
+            string? accessToken = await this.authenticationDelegate.FetchAuthenticatedUserTokenAsync();
             if (string.IsNullOrEmpty(accessToken))
             {
                 this.logger.LogCritical(IsNullOrEmptyTokenErrorMessage);

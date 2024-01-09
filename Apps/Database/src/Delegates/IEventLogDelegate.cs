@@ -15,6 +15,8 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Database.Delegates
 {
+    using System.Threading;
+    using System.Threading.Tasks;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
 
@@ -24,11 +26,12 @@ namespace HealthGateway.Database.Delegates
     public interface IEventLogDelegate
     {
         /// <summary>
-        /// Writes an eventlog entry to the DB.
+        /// Writes an event log entry to the DB.
         /// </summary>
         /// <param name="eventLog">The event to write.</param>
         /// <param name="commit">If true, the records will be deleted from the DB immediately.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A DB result which encapsulates the return objects and status.</returns>
-        DbResult<EventLog> WriteEventLog(EventLog eventLog, bool commit = true);
+        Task<DbResult<EventLog>> WriteEventLogAsync(EventLog eventLog, bool commit = true, CancellationToken ct = default);
     }
 }

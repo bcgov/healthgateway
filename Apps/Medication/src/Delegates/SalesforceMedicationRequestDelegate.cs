@@ -82,7 +82,7 @@ namespace HealthGateway.Medication.Delegates
                 {
                     ResultStatus = ResultType.Error,
                 };
-                string? accessToken = this.authDelegate.AuthenticateUser(this.clientCredentialsRequest, true).AccessToken;
+                string? accessToken = (await this.authDelegate.AuthenticateUserAsync(this.clientCredentialsRequest, true, ct)).AccessToken;
                 if (string.IsNullOrEmpty(accessToken))
                 {
                     this.logger.LogError("Authenticated as User System access token is null or empty, Error:\n{AccessToken}", accessToken);

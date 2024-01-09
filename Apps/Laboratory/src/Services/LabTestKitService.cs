@@ -76,8 +76,8 @@ namespace HealthGateway.Laboratory.Services
             }
 
             // Use a system token
-            string? accessToken = this.authenticationDelegate.AuthenticateAsSystem(this.clientCredentialsRequest).AccessToken;
-            if (accessToken == null)
+            JwtModel jwtModel = await this.authenticationDelegate.AuthenticateAsSystemAsync(this.clientCredentialsRequest, ct: ct);
+            if (jwtModel.AccessToken == null)
             {
                 this.logger.LogError("Unable to acquire authentication token");
                 return RequestResultFactory.ServiceError<PublicLabTestKit>(ErrorType.CommunicationExternal, ServiceType.Keycloak, "Unable to acquire authentication token");
@@ -86,7 +86,7 @@ namespace HealthGateway.Laboratory.Services
             try
             {
                 string ipAddress = this.httpContextAccessor?.HttpContext?.Connection.RemoteIpAddress?.MapToIPv4().ToString() ?? "0.0.0.0";
-                HttpResponseMessage response = await this.labTestKitApi.RegisterLabTestAsync(testKit, accessToken, ipAddress, ct);
+                HttpResponseMessage response = await this.labTestKitApi.RegisterLabTestAsync(testKit, jwtModel.AccessToken, ipAddress, ct);
                 return ProcessResponse(testKit, response.StatusCode);
             }
             catch (HttpRequestException e)
@@ -99,7 +99,7 @@ namespace HealthGateway.Laboratory.Services
         /// <inheritdoc/>
         public async Task<RequestResult<LabTestKit>> RegisterLabTestKitAsync(string hdid, LabTestKit testKit, CancellationToken ct = default)
         {
-            string? accessToken = this.authenticationDelegate.FetchAuthenticatedUserToken();
+            string? accessToken = await this.authenticationDelegate.FetchAuthenticatedUserTokenAsync();
 
             try
             {

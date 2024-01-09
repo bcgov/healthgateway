@@ -148,7 +148,7 @@ namespace HealthGateway.CommonTests.Services
             };
 
             Mock<IAuthenticationDelegate> mockAuthenticationDelegate = new();
-            mockAuthenticationDelegate.Setup(a => a.FetchAuthenticatedUserToken()).Returns(isAccessTokenFound ? AccessToken : null);
+            mockAuthenticationDelegate.Setup(a => a.FetchAuthenticatedUserTokenAsync()).ReturnsAsync(isAccessTokenFound ? AccessToken : null);
             mockAuthenticationDelegate.Setup(a => a.FetchAuthenticatedUserId()).Returns(UserId);
 
             Mock<ITokenSwapDelegate> mockTokenSwapDelegate = new();

@@ -15,6 +15,8 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Common.AccessManagement.Authentication
 {
+    using System.Threading;
+    using System.Threading.Tasks;
     using HealthGateway.Common.AccessManagement.Authentication.Models;
     using HealthGateway.Common.Data.Constants;
 
@@ -30,16 +32,18 @@ namespace HealthGateway.Common.AccessManagement.Authentication
         /// </summary>
         /// <param name="request">Client credentials grant request information.</param>
         /// <param name="cacheEnabled">if true caches the result.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>An instance of the <see cref="JwtModel"/> class.</returns>
-        JwtModel AuthenticateAsSystem(ClientCredentialsRequest request, bool cacheEnabled = true);
+        Task<JwtModel> AuthenticateAsSystemAsync(ClientCredentialsRequest request, bool cacheEnabled = true, CancellationToken ct = default);
 
         /// <summary>
         /// Authenticates a resource owner user with direct grant, no user intervention.
         /// </summary>
         /// <param name="request">Client credentials grant request information.</param>
         /// <param name="cacheEnabled">If true, caches the result.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>An instance of the <see cref="JwtModel"/> class.</returns>
-        JwtModel AuthenticateUser(ClientCredentialsRequest request, bool cacheEnabled = false);
+        Task<JwtModel> AuthenticateUserAsync(ClientCredentialsRequest request, bool cacheEnabled = false, CancellationToken ct = default);
 
         /// <summary>
         /// Retrieves the information needed for a client credentials grant request.
@@ -52,7 +56,7 @@ namespace HealthGateway.Common.AccessManagement.Authentication
         /// Fetches the access token for the authenticated user from the http context.
         /// </summary>
         /// <returns>The access token for the user.</returns>
-        string? FetchAuthenticatedUserToken();
+        Task<string?> FetchAuthenticatedUserTokenAsync();
 
         /// <summary>
         /// Fetches the HDID for the authenticated user from the http context.
