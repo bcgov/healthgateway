@@ -16,6 +16,7 @@
 namespace HealthGateway.AccountDataAccess.Patient.Strategy
 {
     using System.Net;
+    using System.Threading;
     using System.Threading.Tasks;
     using AutoMapper;
     using HealthGateway.AccountDataAccess.Patient.Api;
@@ -54,15 +55,15 @@ namespace HealthGateway.AccountDataAccess.Patient.Strategy
         }
 
         /// <inheritdoc/>
-        public override async Task<PatientModel?> GetPatientAsync(PatientRequest request)
+        public override async Task<PatientModel?> GetPatientAsync(PatientRequest request, CancellationToken ct = default)
         {
-            PatientModel? patient = request.UseCache ? this.GetFromCache(request.Identifier, PatientIdentifierType.Phn) : null;
+            PatientModel? patient = request.UseCache ? await this.GetFromCacheAsync(request.Identifier, PatientIdentifierType.Phn, ct) : null;
 
             if (patient == null)
             {
                 try
                 {
-                    PatientIdentity result = await this.patientIdentityApi.GetPatientIdentityAsync(request.Identifier).ConfigureAwait(true);
+                    PatientIdentity result = await this.patientIdentityApi.GetPatientIdentityAsync(request.Identifier);
                     patient = this.mapper.Map<PatientModel>(result);
                 }
                 catch (ApiException e) when (e.StatusCode == HttpStatusCode.NotFound)
@@ -71,7 +72,7 @@ namespace HealthGateway.AccountDataAccess.Patient.Strategy
                 }
             }
 
-            this.CachePatient(patient, request.DisabledValidation);
+            await this.CachePatientAsync(patient, request.DisabledValidation, ct);
             return patient;
         }
     }

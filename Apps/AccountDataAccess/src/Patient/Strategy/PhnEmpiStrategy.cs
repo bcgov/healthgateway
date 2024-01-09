@@ -15,6 +15,7 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.AccountDataAccess.Patient.Strategy
 {
+    using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.CacheProviders;
     using HealthGateway.Common.Constants;
@@ -48,7 +49,7 @@ namespace HealthGateway.AccountDataAccess.Patient.Strategy
         }
 
         /// <inheritdoc/>
-        public override async Task<PatientModel?> GetPatientAsync(PatientRequest request)
+        public override async Task<PatientModel?> GetPatientAsync(PatientRequest request, CancellationToken ct = default)
         {
             if (!PhnValidator.IsValid(request.Identifier))
             {
@@ -56,10 +57,10 @@ namespace HealthGateway.AccountDataAccess.Patient.Strategy
                 throw new ProblemDetailsException(ExceptionUtility.CreateValidationError(nameof(PhnEmpiStrategy), ErrorMessages.PhnInvalid));
             }
 
-            PatientModel? patient = (request.UseCache ? this.GetFromCache(request.Identifier, PatientIdentifierType.Phn) : null) ??
-                                    await this.clientRegistriesDelegate.GetDemographicsAsync(OidType.Phn, request.Identifier, request.DisabledValidation).ConfigureAwait(true);
+            PatientModel? patient = (request.UseCache ? await this.GetFromCacheAsync(request.Identifier, PatientIdentifierType.Phn, ct) : null) ??
+                                    await this.clientRegistriesDelegate.GetDemographicsAsync(OidType.Phn, request.Identifier, request.DisabledValidation, ct);
 
-            this.CachePatient(patient, request.DisabledValidation);
+            await this.CachePatientAsync(patient, request.DisabledValidation, ct);
             return patient;
         }
     }

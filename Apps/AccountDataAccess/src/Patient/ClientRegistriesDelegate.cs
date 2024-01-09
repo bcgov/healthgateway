@@ -22,6 +22,7 @@ namespace HealthGateway.AccountDataAccess.Patient
     using System.Globalization;
     using System.Linq;
     using System.Net;
+    using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.ErrorHandling;
@@ -59,7 +60,7 @@ namespace HealthGateway.AccountDataAccess.Patient
         private static ActivitySource Source { get; } = new(nameof(ClientRegistriesDelegate));
 
         /// <inheritdoc/>
-        public async Task<PatientModel?> GetDemographicsAsync(OidType type, string identifier, bool disableIdValidation = false)
+        public async Task<PatientModel?> GetDemographicsAsync(OidType type, string identifier, bool disableIdValidation = false, CancellationToken ct = default)
         {
             this.logger.LogDebug("Getting patient for type: {Type} and value: {Identifier} started", type, identifier);
             using Activity? activity = Source.StartActivity();
@@ -68,7 +69,7 @@ namespace HealthGateway.AccountDataAccess.Patient
             HCIM_IN_GetDemographicsRequest request = CreateRequest(type, identifier);
 
             // Perform the request
-            HCIM_IN_GetDemographicsResponse1 reply = await this.clientRegistriesClient.HCIM_IN_GetDemographicsAsync(request).ConfigureAwait(true);
+            HCIM_IN_GetDemographicsResponse1 reply = await this.clientRegistriesClient.HCIM_IN_GetDemographicsAsync(request);
             return this.ParseResponse(reply, disableIdValidation);
         }
 

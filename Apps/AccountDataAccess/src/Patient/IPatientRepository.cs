@@ -51,7 +51,7 @@ namespace HealthGateway.AccountDataAccess.Patient
         /// Gets the patient record.
         /// </summary>
         /// <param name="query">The query.</param>
-        /// <param name="ct">The cancellation token.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The patient model wrapped in a patient query result object.</returns>
         Task<PatientQueryResult> QueryAsync(PatientQuery query, CancellationToken ct = default);
 
@@ -60,7 +60,7 @@ namespace HealthGateway.AccountDataAccess.Patient
         /// </summary>
         /// <param name="hdid">The hdid to query on.</param>
         /// <param name="dataSource">The data source to check.</param>
-        /// <param name="ct">The cancellation token.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The blocked access or null if not found.</returns>
         Task<bool> CanAccessDataSourceAsync(string hdid, DataSource dataSource, CancellationToken ct = default);
 
@@ -68,7 +68,7 @@ namespace HealthGateway.AccountDataAccess.Patient
         /// Gets the blocked access record.
         /// </summary>
         /// <param name="hdid">The hdid to query on.</param>
-        /// <param name="ct">The cancellation token.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The blocked access or null if not found.</returns>
         Task<BlockedAccess?> GetBlockedAccessRecordsAsync(string hdid, CancellationToken ct = default);
 
@@ -76,7 +76,7 @@ namespace HealthGateway.AccountDataAccess.Patient
         /// Gets the blocked access's data sources for the hdid.
         /// </summary>
         /// <param name="hdid">The hdid to query on.</param>
-        /// <param name="ct">The cancellation token.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A list of blocked access data source values.</returns>
         Task<IEnumerable<DataSource>> GetDataSourcesAsync(string hdid, CancellationToken ct = default);
 
@@ -84,7 +84,7 @@ namespace HealthGateway.AccountDataAccess.Patient
         /// Block access to data sources associated with the hdid.
         /// </summary>
         /// <param name="command">The command details used to block access.</param>
-        /// <param name="ct">The cancellation token.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The agent audit entry created from the operation.</returns>
         Task BlockAccessAsync(BlockAccessCommand command, CancellationToken ct = default);
     }

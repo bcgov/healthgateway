@@ -90,7 +90,7 @@ namespace HealthGateway.AccountDataAccess.Patient
         {
             return query switch
             {
-                PatientDetailsQuery q => await this.Handle(q, ct).ConfigureAwait(true),
+                PatientDetailsQuery q => await this.HandleAsync(q, ct),
 
                 _ => throw new NotImplementedException($"{query.GetType().FullName}"),
             };
@@ -180,11 +180,11 @@ namespace HealthGateway.AccountDataAccess.Patient
         {
             string prefix = "HealthGateway.AccountDataAccess.Patient.Strategy.";
             string type = hdid != null ? "Hdid" : "Phn";
-            string suffix = "Strategy";
+            const string suffix = "Strategy";
             return $"{prefix}{type}{source}{suffix}";
         }
 
-        private async Task<PatientQueryResult> Handle(PatientDetailsQuery query, CancellationToken ct)
+        private async Task<PatientQueryResult> HandleAsync(PatientDetailsQuery query, CancellationToken ct)
         {
             this.logger.LogDebug("Patient details query source: {Source} - cache: {Cache}", query.Source, query.UseCache);
 
@@ -198,10 +198,10 @@ namespace HealthGateway.AccountDataAccess.Patient
                 throw new InvalidOperationException("Must specify either Hdid or Phn to query patient details");
             }
 
-            return await this.GetPatient(query).ConfigureAwait(true);
+            return await this.GetPatientAsync(query, ct: ct);
         }
 
-        private async Task<PatientQueryResult> GetPatient(PatientDetailsQuery query, bool disabledValidation = false)
+        private async Task<PatientQueryResult> GetPatientAsync(PatientDetailsQuery query, bool disabledValidation = false, CancellationToken ct = default)
         {
             PatientRequest patientRequest = new(
                 query.Hdid ?? query.Phn,
@@ -214,7 +214,7 @@ namespace HealthGateway.AccountDataAccess.Patient
             // Get the appropriate strategy from factory to query patient
             PatientQueryStrategy patientQueryStrategy = this.patientQueryFactory.GetPatientQueryStrategy(strategy);
             PatientQueryContext context = new(patientQueryStrategy);
-            PatientModel? patient = await context.GetPatientAsync(patientRequest).ConfigureAwait(true);
+            PatientModel? patient = await context.GetPatientAsync(patientRequest, ct);
             return new PatientQueryResult(new[] { patient! });
         }
     }

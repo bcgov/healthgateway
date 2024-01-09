@@ -15,6 +15,7 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.AccountDataAccess.Patient.Strategy
 {
+    using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.CacheProviders;
     using HealthGateway.Common.Constants;
@@ -46,12 +47,12 @@ namespace HealthGateway.AccountDataAccess.Patient.Strategy
         }
 
         /// <inheritdoc/>
-        public override async Task<PatientModel?> GetPatientAsync(PatientRequest request)
+        public override async Task<PatientModel?> GetPatientAsync(PatientRequest request, CancellationToken ct = default)
         {
-            PatientModel? patient = (request.UseCache ? this.GetFromCache(request.Identifier, PatientIdentifierType.Hdid) : null) ??
-                                    await this.clientRegistriesDelegate.GetDemographicsAsync(OidType.Hdid, request.Identifier, request.DisabledValidation).ConfigureAwait(true);
+            PatientModel? patient = (request.UseCache ? await this.GetFromCacheAsync(request.Identifier, PatientIdentifierType.Hdid, ct) : null) ??
+                                    await this.clientRegistriesDelegate.GetDemographicsAsync(OidType.Hdid, request.Identifier, request.DisabledValidation, ct);
 
-            this.CachePatient(patient, request.DisabledValidation);
+            await this.CachePatientAsync(patient, request.DisabledValidation, ct);
             return patient;
         }
     }

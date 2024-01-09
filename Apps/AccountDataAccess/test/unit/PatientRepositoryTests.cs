@@ -508,12 +508,12 @@ namespace AccountDataAccessTest
             ServiceCollection serviceCollection = new();
 
             Mock<ICacheProvider> cacheProvider = new();
-            cacheProvider.Setup(p => p.GetItem<PatientModel>($"{PatientCacheDomain}:HDID:{patientDetailsQuery.Hdid}")).Returns(cachedPatient);
+            cacheProvider.Setup(p => p.GetItemAsync<PatientModel>($"{PatientCacheDomain}:HDID:{patientDetailsQuery.Hdid}", It.IsAny<CancellationToken>())).ReturnsAsync(cachedPatient);
 
             Mock<IClientRegistriesDelegate> clientRegistriesDelegate = new();
-            clientRegistriesDelegate.Setup(p => p.GetDemographicsAsync(OidType.Hdid, patientDetailsQuery.Hdid, false)).ReturnsAsync(patient);
-            clientRegistriesDelegate.Setup(p => p.GetDemographicsAsync(OidType.Phn, patientDetailsQuery.Phn, false)).ReturnsAsync(patient);
-            clientRegistriesDelegate.Setup(p => p.GetDemographicsAsync(OidType.Hdid, PhsaHdid, false))
+            clientRegistriesDelegate.Setup(p => p.GetDemographicsAsync(OidType.Hdid, patientDetailsQuery.Hdid, false, It.IsAny<CancellationToken>())).ReturnsAsync(patient);
+            clientRegistriesDelegate.Setup(p => p.GetDemographicsAsync(OidType.Phn, patientDetailsQuery.Phn, false, It.IsAny<CancellationToken>())).ReturnsAsync(patient);
+            clientRegistriesDelegate.Setup(p => p.GetDemographicsAsync(OidType.Hdid, PhsaHdid, false, It.IsAny<CancellationToken>()))
                 .Throws(new CommunicationException("Unit test PHSA get patient identity."));
 
             HdidEmpiStrategy hdidEmpiStrategy = new(
