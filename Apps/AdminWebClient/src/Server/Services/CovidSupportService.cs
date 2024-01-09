@@ -104,7 +104,7 @@ namespace HealthGateway.Admin.Services
         /// <inheritdoc/>
         public async Task<RequestResult<CovidInformation>> GetCovidInformation(string phn, bool refresh)
         {
-            RequestResult<PatientModel> patientResult = await this.patientService.GetPatientAsync(phn, PatientIdentifierType.Phn, true).ConfigureAwait(true);
+            RequestResult<PatientModel> patientResult = await this.patientService.GetPatientAsync(phn, PatientIdentifierType.Phn, true);
 
             if (patientResult.ResultStatus != ResultType.Success)
             {
@@ -133,7 +133,7 @@ namespace HealthGateway.Admin.Services
         /// <inheritdoc/>
         public async Task<RequestResult<bool>> MailVaccineCardAsync(MailDocumentRequest request)
         {
-            RequestResult<PatientModel> patientResult = await this.patientService.GetPatientAsync(request.PersonalHealthNumber, PatientIdentifierType.Phn, true).ConfigureAwait(true);
+            RequestResult<PatientModel> patientResult = await this.patientService.GetPatientAsync(request.PersonalHealthNumber, PatientIdentifierType.Phn, true);
 
             if (patientResult.ResultStatus != ResultType.Success)
             {
@@ -209,7 +209,7 @@ namespace HealthGateway.Admin.Services
             this.logger.LogDebug("Retrieving vaccine record");
             this.logger.LogTrace("For PHN: {Phn}", phn);
 
-            RequestResult<PatientModel> patientResult = await this.patientService.GetPatientAsync(phn, PatientIdentifierType.Phn, true).ConfigureAwait(true);
+            RequestResult<PatientModel> patientResult = await this.patientService.GetPatientAsync(phn, PatientIdentifierType.Phn, true);
 
             if (patientResult.ResultStatus != ResultType.Success)
             {

@@ -131,7 +131,7 @@ namespace HealthGateway.Admin.Services
 
         private void PopulatePatientSupportDetails(RequestResult<IEnumerable<PatientSupportDetails>> result, PatientIdentifierType patientIdentifierType, string queryString)
         {
-            RequestResult<PatientModel> patientResult = Task.Run(async () => await this.patientService.GetPatientAsync(queryString, patientIdentifierType).ConfigureAwait(true)).Result;
+            RequestResult<PatientModel> patientResult = Task.Run(async () => await this.patientService.GetPatientAsync(queryString, patientIdentifierType)).Result;
             if (patientResult.ResultStatus == ResultType.Success && patientResult.ResourcePayload != null)
             {
                 List<PatientSupportDetails> patients = new();
@@ -164,7 +164,7 @@ namespace HealthGateway.Admin.Services
 
         private async Task PopulatePatientSupportDetails(RequestResult<IEnumerable<PatientSupportDetails>> result, UserQueryType queryType, string queryString)
         {
-            IEnumerable<UserProfile> profiles = await this.userProfileDelegate.GetUserProfilesAsync(queryType, queryString).ConfigureAwait(true);
+            IEnumerable<UserProfile> profiles = await this.userProfileDelegate.GetUserProfilesAsync(queryType, queryString);
             result.ResourcePayload = this.autoMapper.Map<IEnumerable<PatientSupportDetails>>(profiles);
             result.ResultStatus = ResultType.Success;
         }
