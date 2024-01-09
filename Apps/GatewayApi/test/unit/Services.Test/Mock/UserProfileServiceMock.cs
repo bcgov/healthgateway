@@ -281,7 +281,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test.Mock
         public UserProfileServiceMock SetupPatientServiceMockCustomPatient(string hdid, PatientModel patient)
         {
             this.patientServiceMock
-                .Setup(s => s.GetPatient(hdid, PatientIdentifierType.Hdid, false, It.IsAny<CancellationToken>()))
+                .Setup(s => s.GetPatientAsync(hdid, PatientIdentifierType.Hdid, false, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(
                     new RequestResult<PatientModel>
                     {

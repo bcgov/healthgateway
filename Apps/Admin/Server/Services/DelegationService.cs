@@ -73,7 +73,7 @@ namespace HealthGateway.Admin.Server.Services
         public async Task<DelegationInfo> GetDelegationInformationAsync(string phn, CancellationToken ct = default)
         {
             // Get dependent patient information
-            RequestResult<PatientModel> dependentPatientResult = await patientService.GetPatient(phn, PatientIdentifierType.Phn, ct: ct);
+            RequestResult<PatientModel> dependentPatientResult = await patientService.GetPatientAsync(phn, PatientIdentifierType.Phn, ct: ct);
             this.ValidatePatientResult(dependentPatientResult);
 
             ValidationResult? validationResults = await new DependentPatientValidator(this.maxDependentAge).ValidateAsync(dependentPatientResult.ResourcePayload, ct).ConfigureAwait(true);
@@ -95,7 +95,7 @@ namespace HealthGateway.Admin.Server.Services
                 List<DelegateInfo> delegates = new();
                 foreach (ResourceDelegate resourceDelegate in dbResourceDelegates)
                 {
-                    RequestResult<PatientModel> delegatePatientResult = await patientService.GetPatient(resourceDelegate.ProfileHdid, ct: ct);
+                    RequestResult<PatientModel> delegatePatientResult = await patientService.GetPatientAsync(resourceDelegate.ProfileHdid, ct: ct);
                     this.ValidatePatientResult(delegatePatientResult);
 
                     DelegateInfo delegateInfo = autoMapper.Map<DelegateInfo>(delegatePatientResult.ResourcePayload);
@@ -112,7 +112,7 @@ namespace HealthGateway.Admin.Server.Services
 
                     foreach (AllowedDelegation allowedDelegation in dependent.AllowedDelegations.Where(ad => delegates.TrueForAll(d => d.Hdid != ad.DelegateHdId)))
                     {
-                        RequestResult<PatientModel> delegatePatientResult = await patientService.GetPatient(allowedDelegation.DelegateHdId, ct: ct);
+                        RequestResult<PatientModel> delegatePatientResult = await patientService.GetPatientAsync(allowedDelegation.DelegateHdId, ct: ct);
 
                         DelegateInfo delegateInfo = autoMapper.Map<DelegateInfo>(delegatePatientResult.ResourcePayload);
                         delegateInfo.DelegationStatus = DelegationStatus.Allowed;
@@ -134,7 +134,7 @@ namespace HealthGateway.Admin.Server.Services
         /// <inheritdoc/>
         public async Task<DelegateInfo> GetDelegateInformationAsync(string phn, CancellationToken ct = default)
         {
-            RequestResult<PatientModel> delegatePatientResult = await patientService.GetPatient(phn, PatientIdentifierType.Phn, false, ct);
+            RequestResult<PatientModel> delegatePatientResult = await patientService.GetPatientAsync(phn, PatientIdentifierType.Phn, false, ct);
             this.ValidatePatientResult(delegatePatientResult);
 
             ValidationResult? validationResults = await new DelegatePatientValidator(this.minDelegateAge).ValidateAsync(delegatePatientResult.ResourcePayload, ct);

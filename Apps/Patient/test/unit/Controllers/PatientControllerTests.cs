@@ -75,7 +75,7 @@ namespace HealthGateway.PatientTests.Controllers
             };
 
             // Act
-            RequestResult<PatientModel> actualResult = await patientController.GetPatient("123");
+            RequestResult<PatientModel> actualResult = await patientController.GetPatient("123", default);
 
             // Assert
             expectedResult.ShouldDeepEqual(actualResult);
@@ -92,7 +92,7 @@ namespace HealthGateway.PatientTests.Controllers
             PatientController patientController = CreatePatientController();
 
             // Act
-            ActionResult<PatientDetails> actualResult = await patientController.GetPatientV2(MockedHdid);
+            ActionResult<PatientDetails> actualResult = await patientController.GetPatientV2(MockedHdid, default);
 
             // Assert
             OkObjectResult ok = actualResult.Result.ShouldBeOfType<OkObjectResult>();
@@ -167,7 +167,7 @@ namespace HealthGateway.PatientTests.Controllers
             PatientDetails patientDetails = GetPatientModelV2();
 
             patientServiceV2.Setup(x => x.GetPatientAsync(It.IsAny<string>(), PatientIdentifierType.Hdid, false, new CancellationToken(false))).ReturnsAsync(patientDetails);
-            patientServiceV1.Setup(x => x.GetPatient(It.IsAny<string>(), PatientIdentifierType.Hdid, false, It.IsAny<CancellationToken>())).ReturnsAsync(requestResult);
+            patientServiceV1.Setup(x => x.GetPatientAsync(It.IsAny<string>(), PatientIdentifierType.Hdid, false, It.IsAny<CancellationToken>())).ReturnsAsync(requestResult);
             return new(patientServiceV1.Object, patientServiceV2.Object);
         }
     }

@@ -144,7 +144,7 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Handlers
                 return false;
             }
 
-            RequestResult<PatientModel> patientResult = Task.Run(async () => await this.patientService.GetPatient(resourceHdid).ConfigureAwait(true)).Result;
+            RequestResult<PatientModel> patientResult = Task.Run(async () => await this.patientService.GetPatientAsync(resourceHdid).ConfigureAwait(true)).Result;
 
             return patientResult.ResourcePayload!.Birthdate.AddYears(this.maxDependentAge.Value) < DateTime.Now;
         }

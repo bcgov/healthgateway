@@ -35,7 +35,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test.Mock
         /// <param name="patientModel">patient model.</param>
         public PatientServiceMock(string hdid, PatientModel patientModel)
         {
-            this.Setup(s => s.GetPatient(hdid, PatientIdentifierType.Hdid, false, It.IsAny<CancellationToken>()))
+            this.Setup(s => s.GetPatientAsync(hdid, PatientIdentifierType.Hdid, false, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(
                     new RequestResult<PatientModel>
                     {

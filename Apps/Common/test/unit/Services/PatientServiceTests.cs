@@ -134,7 +134,7 @@ namespace HealthGateway.CommonTests.Services
                 new Mock<ICacheProvider>().Object);
 
             // Act
-            RequestResult<PatientModel> actual = await service.GetPatient(Phn, PatientIdentifierType.Phn);
+            RequestResult<PatientModel> actual = await service.GetPatientAsync(Phn, PatientIdentifierType.Phn);
 
             // Verify
             Assert.Equal(ResultType.Success, actual.ResultStatus);
@@ -174,7 +174,7 @@ namespace HealthGateway.CommonTests.Services
                 new Mock<ICacheProvider>().Object);
 
             // Act
-            RequestResult<PatientModel> actual = await service.GetPatient("abc123", PatientIdentifierType.Phn);
+            RequestResult<PatientModel> actual = await service.GetPatientAsync("abc123", PatientIdentifierType.Phn);
 
             // Verify
             Assert.Equal(ResultType.ActionRequired, actual.ResultStatus);
@@ -214,7 +214,7 @@ namespace HealthGateway.CommonTests.Services
                 patientDelegateMock.Object,
                 new Mock<ICacheProvider>().Object);
 
-            await Assert.ThrowsAsync<NotImplementedException>(() => service.GetPatient("abc123", (PatientIdentifierType)23));
+            await Assert.ThrowsAsync<NotImplementedException>(() => service.GetPatientAsync("abc123", (PatientIdentifierType)23));
         }
 
         private static RequestResult<string> GetPatientPhn(Dictionary<string, string?> configDictionary, bool returnNullPatientResult)
@@ -290,7 +290,7 @@ namespace HealthGateway.CommonTests.Services
                 cacheProviderMock.Object);
 
             // Act
-            RequestResult<PatientModel> actual = Task.Run(async () => await service.GetPatient(identifierType == PatientIdentifierType.Hdid ? Hdid : Phn, identifierType)).Result;
+            RequestResult<PatientModel> actual = Task.Run(async () => await service.GetPatientAsync(identifierType == PatientIdentifierType.Hdid ? Hdid : Phn, identifierType)).Result;
 
             // Verify
             Assert.Equal(ResultType.Success, actual.ResultStatus);

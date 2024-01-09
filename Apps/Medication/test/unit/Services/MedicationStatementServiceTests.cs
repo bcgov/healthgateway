@@ -131,7 +131,7 @@ namespace HealthGateway.MedicationTests.Services
         {
             Mock<IHttpContextAccessor> httpContextAccessorMock = this.GetHttpContextAccessorMock();
             Mock<IPatientService> patientServiceMock = new();
-            patientServiceMock.Setup(s => s.GetPatient(this.hdid, PatientIdentifierType.Hdid, false, It.IsAny<CancellationToken>()))
+            patientServiceMock.Setup(s => s.GetPatientAsync(this.hdid, PatientIdentifierType.Hdid, false, It.IsAny<CancellationToken>()))
                 .Returns(
                     Task.FromResult(
                         new RequestResult<PatientModel>
@@ -193,7 +193,7 @@ namespace HealthGateway.MedicationTests.Services
             Mock<IHttpContextAccessor> httpContextAccessorMock = this.GetHttpContextAccessorMock();
 
             Mock<IPatientService> patientDelegateMock = new();
-            patientDelegateMock.Setup(s => s.GetPatient(this.hdid, PatientIdentifierType.Hdid, false, It.IsAny<CancellationToken>()))
+            patientDelegateMock.Setup(s => s.GetPatientAsync(this.hdid, PatientIdentifierType.Hdid, false, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(
                     new RequestResult<PatientModel>
                     {
@@ -254,7 +254,7 @@ namespace HealthGateway.MedicationTests.Services
             Mock<IHttpContextAccessor> httpContextAccessorMock = this.GetHttpContextAccessorMock();
 
             Mock<IPatientService> patientDelegateMock = new();
-            patientDelegateMock.Setup(s => s.GetPatient(this.hdid, PatientIdentifierType.Hdid, false, It.IsAny<CancellationToken>()))
+            patientDelegateMock.Setup(s => s.GetPatientAsync(this.hdid, PatientIdentifierType.Hdid, false, It.IsAny<CancellationToken>()))
                 .Returns(
                     Task.FromResult(
                         new RequestResult<PatientModel>
@@ -350,7 +350,7 @@ namespace HealthGateway.MedicationTests.Services
             Mock<IHttpContextAccessor> httpContextAccessorMock = this.GetHttpContextAccessorMock();
 
             Mock<IPatientService> patientDelegateMock = new();
-            patientDelegateMock.Setup(s => s.GetPatient(this.hdid, PatientIdentifierType.Hdid, false, It.IsAny<CancellationToken>()))
+            patientDelegateMock.Setup(s => s.GetPatientAsync(this.hdid, PatientIdentifierType.Hdid, false, It.IsAny<CancellationToken>()))
                 .Returns(
                     Task.FromResult(
                         new RequestResult<PatientModel>
@@ -429,7 +429,7 @@ namespace HealthGateway.MedicationTests.Services
         {
             Mock<IHttpContextAccessor> httpContextAccessorMock = this.GetHttpContextAccessorMock();
             Mock<IPatientService> patientDelegateMock = new();
-            patientDelegateMock.Setup(s => s.GetPatient(this.hdid, PatientIdentifierType.Hdid, false, It.IsAny<CancellationToken>()))
+            patientDelegateMock.Setup(s => s.GetPatientAsync(this.hdid, PatientIdentifierType.Hdid, false, It.IsAny<CancellationToken>()))
                 .Returns(
                     Task.FromResult(
                         new RequestResult<PatientModel>
@@ -511,7 +511,7 @@ namespace HealthGateway.MedicationTests.Services
             Mock<IHttpContextAccessor> httpContextAccessorMock = this.GetHttpContextAccessorMock();
 
             Mock<IPatientService> patientDelegateMock = new();
-            patientDelegateMock.Setup(s => s.GetPatient(this.hdid, PatientIdentifierType.Hdid, false, It.IsAny<CancellationToken>()))
+            patientDelegateMock.Setup(s => s.GetPatientAsync(this.hdid, PatientIdentifierType.Hdid, false, It.IsAny<CancellationToken>()))
                 .Returns(
                     Task.FromResult(
                         new RequestResult<PatientModel>
@@ -568,7 +568,7 @@ namespace HealthGateway.MedicationTests.Services
         {
             Mock<IHttpContextAccessor> httpContextAccessorMock = this.GetHttpContextAccessorMock();
             Mock<IPatientService> patientDelegateMock = new();
-            patientDelegateMock.Setup(s => s.GetPatient(this.hdid, PatientIdentifierType.Hdid, false, It.IsAny<CancellationToken>()))
+            patientDelegateMock.Setup(s => s.GetPatientAsync(this.hdid, PatientIdentifierType.Hdid, false, It.IsAny<CancellationToken>()))
                 .Returns(
                     Task.FromResult(
                         new RequestResult<PatientModel>
