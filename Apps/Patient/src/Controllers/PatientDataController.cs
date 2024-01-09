@@ -50,7 +50,7 @@ namespace HealthGateway.Patient.Controllers
         /// </summary>
         /// <param name="hdid">The patient hdid.</param>
         /// <param name="patientDataTypes">array of data types to query.</param>
-        /// <param name="ct">cancellation token.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>object with an array of patient data information.</returns>
         [HttpGet("{hdid}")]
         [Authorize(policy: PatientPolicy.Read)]
@@ -79,7 +79,7 @@ namespace HealthGateway.Patient.Controllers
         /// </summary>
         /// <param name="hdid">The patient hdid.</param>
         /// <param name="fileId">The file id.</param>
-        /// <param name="ct">cancellation token.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The patient file.</returns>
         [HttpGet("{hdid}/file/{fileId}")]
         [Authorize(policy: PatientPolicy.Read)]
