@@ -154,7 +154,7 @@ namespace HealthGateway.AccountDataAccess.Patient
         }
 
         /// <inheritdoc/>
-        public async Task<BlockedAccess?> GetBlockedAccessRecords(string hdid, CancellationToken ct = default)
+        public async Task<BlockedAccess?> GetBlockedAccessRecordsAsync(string hdid, CancellationToken ct = default)
         {
             return await this.blockedAccessDelegate.GetBlockedAccessAsync(hdid).ConfigureAwait(true);
         }

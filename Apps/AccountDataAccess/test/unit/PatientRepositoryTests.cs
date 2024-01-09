@@ -352,7 +352,7 @@ namespace AccountDataAccessTest
             PatientRepository patientRepository = GetPatientRepository(blockedAccess);
 
             // Act
-            BlockedAccess? actual = await patientRepository.GetBlockedAccessRecords(hdid);
+            BlockedAccess? actual = await patientRepository.GetBlockedAccessRecordsAsync(hdid);
 
             // Verify
             blockedAccess.ShouldDeepEqual(actual);

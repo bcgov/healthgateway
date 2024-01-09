@@ -70,7 +70,7 @@ namespace HealthGateway.AccountDataAccess.Patient
         /// <param name="hdid">The hdid to query on.</param>
         /// <param name="ct">The cancellation token.</param>
         /// <returns>The blocked access or null if not found.</returns>
-        Task<BlockedAccess?> GetBlockedAccessRecords(string hdid, CancellationToken ct = default);
+        Task<BlockedAccess?> GetBlockedAccessRecordsAsync(string hdid, CancellationToken ct = default);
 
         /// <summary>
         /// Gets the blocked access's data sources for the hdid.
