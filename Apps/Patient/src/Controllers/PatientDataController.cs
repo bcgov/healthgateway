@@ -71,7 +71,7 @@ namespace HealthGateway.Patient.Controllers
                 throw new ProblemDetailsException(ExceptionUtility.CreateValidationError(nameof(patientDataTypes), "Must have at least one data type"));
             }
 
-            return await this.patientDataService.Query(new PatientDataQuery(hdid, patientDataTypes), ct).ConfigureAwait(true);
+            return await this.patientDataService.QueryAsync(new PatientDataQuery(hdid, patientDataTypes), ct).ConfigureAwait(true);
         }
 
         /// <summary>
@@ -101,7 +101,7 @@ namespace HealthGateway.Patient.Controllers
                 throw new ProblemDetailsException(ExceptionUtility.CreateValidationError(nameof(fileId), "File id is missing"));
             }
 
-            return await this.patientDataService.Query(new PatientFileQuery(hdid, fileId), ct).ConfigureAwait(true) ??
+            return await this.patientDataService.QueryAsync(new PatientFileQuery(hdid, fileId), ct).ConfigureAwait(true) ??
                    throw new ProblemDetailsException(ExceptionUtility.CreateNotFoundError($"file {fileId} not found"));
         }
     }
