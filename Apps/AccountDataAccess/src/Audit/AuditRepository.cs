@@ -38,9 +38,9 @@ namespace HealthGateway.AccountDataAccess.Audit
         }
 
         /// <inheritdoc/>
-        public async Task<IEnumerable<AgentAudit>> Handle(AgentAuditQuery query, CancellationToken ct = default)
+        public async Task<IEnumerable<AgentAudit>> HandleAsync(AgentAuditQuery query, CancellationToken ct = default)
         {
-            return await this.agentAuditDelegate.GetAgentAuditsAsync(query.Hdid, query.Group, ct).ConfigureAwait(true);
+            return await this.agentAuditDelegate.GetAgentAuditsAsync(query.Hdid, query.Group, ct);
         }
     }
 }

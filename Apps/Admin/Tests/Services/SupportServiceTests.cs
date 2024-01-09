@@ -879,7 +879,7 @@ namespace HealthGateway.Admin.Tests.Services
 
             foreach ((AgentAuditQuery query, IEnumerable<AgentAudit> agentAudits) in pairs)
             {
-                mock.Setup(p => p.Handle(query, It.IsAny<CancellationToken>())).ReturnsAsync(agentAudits);
+                mock.Setup(p => p.HandleAsync(query, It.IsAny<CancellationToken>())).ReturnsAsync(agentAudits);
             }
 
             return mock;

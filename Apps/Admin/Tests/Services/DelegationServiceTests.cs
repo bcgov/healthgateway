@@ -745,7 +745,7 @@ namespace HealthGateway.Admin.Tests.Services
             delegationDelegate.Setup(p => p.GetDependentAsync(DependentHdid, true, CancellationToken.None)).ReturnsAsync(protectedDependent);
 
             Mock<IAuditRepository> agentAuditRepository = new();
-            agentAuditRepository.Setup(p => p.Handle(It.IsAny<AgentAuditQuery>(), It.IsAny<CancellationToken>()))
+            agentAuditRepository.Setup(p => p.HandleAsync(It.IsAny<AgentAuditQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(agentAudits);
 
             return new DelegationService(

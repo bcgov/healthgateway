@@ -189,8 +189,8 @@ namespace HealthGateway.Admin.Server.Services
 
         private async Task<IEnumerable<AgentAction>> GetAgentActionsAsync(string hdid, CancellationToken ct)
         {
-            IEnumerable<AgentAudit> audits = await auditRepository.Handle(new(hdid), ct);
-            return audits.Select(audit => autoMapper.Map<AgentAudit, AgentAction>(audit));
+            IEnumerable<AgentAudit> audits = await auditRepository.HandleAsync(new(hdid), ct);
+            return audits.Select(autoMapper.Map<AgentAudit, AgentAction>);
         }
 
         private async Task<IEnumerable<PatientSupportDependentInfo>> GetAllDependentInfoAsync(string delegateHdid, CancellationToken ct)

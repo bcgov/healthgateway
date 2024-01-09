@@ -124,7 +124,7 @@ namespace HealthGateway.Admin.Server.Services
 
                 // Get agent audits
                 AgentAuditQuery agentAuditQuery = new(dependentPatientInfo.HdId, AuditGroup.Dependent);
-                IEnumerable<AgentAudit> agentAudits = await auditRepository.Handle(agentAuditQuery, ct).ConfigureAwait(true);
+                IEnumerable<AgentAudit> agentAudits = await auditRepository.HandleAsync(agentAuditQuery, ct);
                 delegationInfo.AgentActions = agentAudits.Select(a => autoMapper.Map<AgentAction>(a));
             }
 
