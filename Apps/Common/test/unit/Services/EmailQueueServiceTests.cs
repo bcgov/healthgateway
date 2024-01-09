@@ -36,11 +36,13 @@ namespace HealthGateway.CommonTests.Services
     /// <summary>
     /// EmailQueueService's Unit Tests.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
     public class EmailQueueServiceTests
     {
         /// <summary>
         /// QueueNewEmail - Happy Path.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
         public async Task ShouldQueueEmail()
         {

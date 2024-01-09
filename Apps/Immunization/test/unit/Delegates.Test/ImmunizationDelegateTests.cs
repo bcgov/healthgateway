@@ -21,6 +21,7 @@ namespace HealthGateway.ImmunizationTests.Delegates.Test
     using System.Linq;
     using System.Net;
     using System.Net.Http;
+    using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.Data.Constants;
@@ -182,14 +183,14 @@ namespace HealthGateway.ImmunizationTests.Delegates.Test
             Mock<IImmunizationApi> mockImmunizationApi = new();
             if (!throwException)
             {
-                mockImmunizationApi.Setup(s => s.GetImmunizationAsync(It.IsAny<string>(), AccessToken))
+                mockImmunizationApi.Setup(s => s.GetImmunizationAsync(It.IsAny<string>(), AccessToken, It.IsAny<CancellationToken>()))
                     .ReturnsAsync(response);
             }
             else
             {
                 mockImmunizationApi.Setup(
                         s =>
-                            s.GetImmunizationAsync(It.IsAny<string>(), AccessToken))
+                            s.GetImmunizationAsync(It.IsAny<string>(), AccessToken, It.IsAny<CancellationToken>()))
                     .ThrowsAsync(new HttpRequestException("Unit Test HTTP Request Exception"));
             }
 
@@ -214,14 +215,14 @@ namespace HealthGateway.ImmunizationTests.Delegates.Test
             Mock<IImmunizationApi> mockImmunizationApi = new();
             if (!throwException)
             {
-                mockImmunizationApi.Setup(s => s.GetImmunizationsAsync(It.IsAny<string>(), It.IsAny<int?>(), AccessToken))
+                mockImmunizationApi.Setup(s => s.GetImmunizationsAsync(It.IsAny<string>(), It.IsAny<int?>(), AccessToken, It.IsAny<CancellationToken>()))
                     .ReturnsAsync(response);
             }
             else
             {
                 mockImmunizationApi.Setup(
                         s =>
-                            s.GetImmunizationsAsync(It.IsAny<string>(), It.IsAny<int?>(), AccessToken))
+                            s.GetImmunizationsAsync(It.IsAny<string>(), It.IsAny<int?>(), AccessToken, It.IsAny<CancellationToken>()))
                     .ThrowsAsync(new HttpRequestException("Unit Test HTTP Request Exception"));
             }
 

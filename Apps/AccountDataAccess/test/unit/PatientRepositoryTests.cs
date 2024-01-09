@@ -290,7 +290,7 @@ namespace AccountDataAccessTest
                         It.Is<IEnumerable<MessageEnvelope>>(
                             me => AssertDataSourcesBlockedEvent(
                                 blockedAccess,
-                                me.Select(envelope => envelope.Content as DataSourcesBlockedEvent)!.First())),
+                                me.Select(envelope => envelope.Content as DataSourcesBlockedEvent).First())),
                         It.IsAny<CancellationToken>()));
             }
         }

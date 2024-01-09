@@ -16,6 +16,7 @@
 
 namespace HealthGateway.IntegrationTests;
 
+using System.Data;
 using System.Data.Common;
 using Alba;
 using DotNet.Testcontainers.Containers;
@@ -84,7 +85,7 @@ public class WebAppFixture : IAsyncLifetime
             await this.postgreSqlContainer.StartAsync();
 
             DbContextOptionsBuilder<GatewayDbContext> builder = new();
-            builder.UseNpgsql(this.postgreSqlContainer.GetConnectionString(), builder => builder.MigrationsHistoryTable("__EFMigrationsHistory", "gateway"));
+            builder.UseNpgsql(this.postgreSqlContainer.GetConnectionString(), optionsBuilder => optionsBuilder.MigrationsHistoryTable("__EFMigrationsHistory", "gateway"));
             using GatewayDbContext dbCtx = new(builder.Options);
             await MigrateDatabase(dbCtx);
             await SeedData(dbCtx);
@@ -110,7 +111,7 @@ public class WebAppFixture : IAsyncLifetime
     private static async Task SeedData(GatewayDbContext ctx)
     {
         DbConnection conn = ctx.Database.GetDbConnection();
-        if (conn.State != System.Data.ConnectionState.Open)
+        if (conn.State != ConnectionState.Open)
         {
             await conn.OpenAsync();
         }

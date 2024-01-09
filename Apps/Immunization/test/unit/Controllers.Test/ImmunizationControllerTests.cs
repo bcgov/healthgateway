@@ -17,6 +17,7 @@ namespace HealthGateway.ImmunizationTests.Controllers.Test
 {
     using System;
     using System.Collections.Generic;
+    using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ViewModels;
@@ -86,12 +87,12 @@ namespace HealthGateway.ImmunizationTests.Controllers.Test
             };
 
             Mock<IImmunizationService> svcMock = new();
-            svcMock.Setup(s => s.GetImmunizations(It.IsAny<string>())).ReturnsAsync(expectedRequestResult);
+            svcMock.Setup(s => s.GetImmunizationsAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(expectedRequestResult);
 
             ImmunizationController controller = new(new Mock<ILogger<ImmunizationController>>().Object, svcMock.Object);
 
             // Act
-            RequestResult<ImmunizationResult> actual = await controller.GetImmunizations(this.hdid);
+            RequestResult<ImmunizationResult> actual = await controller.GetImmunizations(this.hdid, default);
 
             // Verify
             Assert.True(actual.ResultStatus == ResultType.Success);
@@ -133,12 +134,12 @@ namespace HealthGateway.ImmunizationTests.Controllers.Test
 
             string immunizationId = "test_immunization_id";
             Mock<IImmunizationService> svcMock = new();
-            svcMock.Setup(s => s.GetImmunization(immunizationId)).ReturnsAsync(expectedRequestResult);
+            svcMock.Setup(s => s.GetImmunizationAsync(immunizationId, It.IsAny<CancellationToken>())).ReturnsAsync(expectedRequestResult);
 
             ImmunizationController controller = new(new Mock<ILogger<ImmunizationController>>().Object, svcMock.Object);
 
             // Act
-            RequestResult<ImmunizationEvent> actual = await controller.GetImmunization(this.hdid, immunizationId);
+            RequestResult<ImmunizationEvent> actual = await controller.GetImmunization(this.hdid, immunizationId, default);
 
             // Verify
             Assert.True(actual != null && actual.ResultStatus == ResultType.Success);

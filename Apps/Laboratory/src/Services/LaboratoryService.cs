@@ -155,7 +155,7 @@ namespace HealthGateway.Laboratory.Services
                 return RequestResultFactory.Error<LaboratoryOrderResult>(UnauthorizedResultError());
             }
 
-            RequestResult<PhsaResult<PhsaLaboratorySummary>> delegateResult = await this.laboratoryDelegate.GetLaboratorySummaryAsync(hdid, accessToken);
+            RequestResult<PhsaResult<PhsaLaboratorySummary>> delegateResult = await this.laboratoryDelegate.GetLaboratorySummaryAsync(hdid, accessToken, ct);
 
             PhsaLoadState? loadState = delegateResult.ResourcePayload?.LoadState;
             if (loadState != null && loadState.RefreshInProgress)
@@ -198,7 +198,7 @@ namespace HealthGateway.Laboratory.Services
                 return RequestResultFactory.Error<LaboratoryReport>(UnauthorizedResultError());
             }
 
-            return await this.laboratoryDelegate.GetLabReportAsync(id, hdid, accessToken, isCovid19);
+            return await this.laboratoryDelegate.GetLabReportAsync(id, hdid, accessToken, isCovid19, ct);
         }
 
         private static RequestResultError UnauthorizedResultError()

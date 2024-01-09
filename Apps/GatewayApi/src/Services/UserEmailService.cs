@@ -266,7 +266,7 @@ namespace HealthGateway.GatewayApi.Services
                 [EmailTemplateVariable.ExpiryHours] = verificationExpiryHours.ToString("0", CultureInfo.CurrentCulture),
             };
 
-            EmailTemplate? emailTemplate = await this.emailQueueService.GetEmailTemplateAsync(EmailTemplateName.RegistrationTemplate, ct) ?? throw new ProblemDetailsException(
+            EmailTemplate emailTemplate = await this.emailQueueService.GetEmailTemplateAsync(EmailTemplateName.RegistrationTemplate, ct) ?? throw new ProblemDetailsException(
                 ExceptionUtility.CreateServerError($"{ServiceType.Database}:{ErrorType.CommunicationInternal}", ErrorMessages.EmailTemplateNotFound));
 
             MessagingVerification messageVerification = new()

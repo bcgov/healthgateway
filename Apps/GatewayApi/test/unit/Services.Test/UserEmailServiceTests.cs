@@ -194,7 +194,6 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         public async Task InvalidInviteLastSent(string? hdid, bool validated, bool deleted, bool userProfileExists)
         {
             // Arrange
-            const string invalidHdid = "doesn't match";
             Guid inviteKey = Guid.NewGuid();
             MessagingVerification? verificationByInviteKey = hdid != null
                 ? new()
@@ -204,7 +203,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 }
                 : null;
 
-            MessagingVerification? lastVerificationForUser = new()
+            MessagingVerification lastVerificationForUser = new()
             {
                 UserProfileId = HdIdMock,
                 Validated = validated,

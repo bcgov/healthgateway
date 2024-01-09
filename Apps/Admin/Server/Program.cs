@@ -35,7 +35,6 @@ namespace HealthGateway.Admin.Server
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.MapProfiles;
     using HealthGateway.Common.Models.PHSA;
-    using HealthGateway.Common.Services;
     using HealthGateway.Common.Utils.Phsa;
     using HealthGateway.Database.Delegates;
     using Microsoft.AspNetCore.Builder;

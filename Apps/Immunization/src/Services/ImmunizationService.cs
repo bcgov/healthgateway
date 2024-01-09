@@ -16,6 +16,7 @@
 namespace HealthGateway.Immunization.Services
 {
     using System.Collections.Generic;
+    using System.Threading;
     using System.Threading.Tasks;
     using AutoMapper;
     using HealthGateway.AccountDataAccess.Patient;
@@ -50,9 +51,9 @@ namespace HealthGateway.Immunization.Services
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResult<ImmunizationEvent>> GetImmunization(string immunizationId)
+        public async Task<RequestResult<ImmunizationEvent>> GetImmunizationAsync(string immunizationId, CancellationToken ct = default)
         {
-            RequestResult<PhsaResult<ImmunizationViewResponse>> delegateResult = await this.immunizationDelegate.GetImmunizationAsync(immunizationId).ConfigureAwait(true);
+            RequestResult<PhsaResult<ImmunizationViewResponse>> delegateResult = await this.immunizationDelegate.GetImmunizationAsync(immunizationId, ct);
             if (delegateResult.ResultStatus == ResultType.Success)
             {
                 return new RequestResult<ImmunizationEvent>
@@ -73,9 +74,9 @@ namespace HealthGateway.Immunization.Services
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResult<ImmunizationResult>> GetImmunizations(string hdid)
+        public async Task<RequestResult<ImmunizationResult>> GetImmunizationsAsync(string hdid, CancellationToken ct = default)
         {
-            if (!await this.patientRepository.CanAccessDataSourceAsync(hdid, DataSource.Immunization).ConfigureAwait(true))
+            if (!await this.patientRepository.CanAccessDataSourceAsync(hdid, DataSource.Immunization, ct))
             {
                 return new RequestResult<ImmunizationResult>
                 {
@@ -85,7 +86,7 @@ namespace HealthGateway.Immunization.Services
                 };
             }
 
-            RequestResult<PhsaResult<ImmunizationResponse>> delegateResult = await this.immunizationDelegate.GetImmunizationsAsync(hdid).ConfigureAwait(true);
+            RequestResult<PhsaResult<ImmunizationResponse>> delegateResult = await this.immunizationDelegate.GetImmunizationsAsync(hdid, ct);
             if (delegateResult.ResultStatus == ResultType.Success)
             {
                 return new RequestResult<ImmunizationResult>
