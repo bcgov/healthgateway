@@ -114,13 +114,10 @@ namespace HealthGateway.CommonTests.Services
         [Theory]
         [InlineData(true, CommunicationType.Banner)]
         [InlineData(false, CommunicationType.Banner)]
-        //[InlineData(DbStatusCode.Error, CommunicationType.Banner)]
         [InlineData(true, CommunicationType.InApp)]
         [InlineData(false, CommunicationType.InApp)]
-        //[InlineData(DbStatusCode.Error, CommunicationType.InApp)]
         [InlineData(true, CommunicationType.Mobile)]
         [InlineData(false, CommunicationType.Mobile)]
-        //[InlineData(DbStatusCode.Error, CommunicationType.Mobile)]
         public async Task ShouldGetActiveCommunicationFromDb(bool communicationExists, CommunicationType communicationType)
         {
             Communication? communication = null;
