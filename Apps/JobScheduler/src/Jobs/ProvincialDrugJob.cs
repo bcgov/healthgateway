@@ -15,6 +15,8 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.JobScheduler.Jobs
 {
+    using System.Threading;
+    using System.Threading.Tasks;
     using Hangfire;
     using HealthGateway.Database.Context;
     using HealthGateway.DBMaintainer.Apps;
@@ -53,10 +55,10 @@ namespace HealthGateway.JobScheduler.Jobs
 
         /// <inheritdoc/>
         [DisableConcurrentExecution(ConcurrencyTimeout)]
-        public override void Process(string configSectionName)
+        public override async Task ProcessAsync(string configSectionName, CancellationToken ct = default)
         {
             this.Logger.LogDebug("Finished processing provincial drug files {ConfigSectionName}", configSectionName);
-            base.Process(configSectionName);
+            await base.ProcessAsync(configSectionName, ct);
             this.Logger.LogDebug("Finished processing provincial drug files {ConfigSectionName}", configSectionName);
         }
     }

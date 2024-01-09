@@ -16,6 +16,7 @@
 namespace HealthGateway.DBMaintainer.FileDownload
 {
     using System;
+    using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Database.Models;
 
@@ -28,9 +29,10 @@ namespace HealthGateway.DBMaintainer.FileDownload
         /// Service to download a file specified by the supplied URL.
         /// </summary>
         /// <param name="fileUrl">The url of the file to be downloaded.</param>
-        /// <param name="targetFolder">Target folder once the download is suscessfull.</param>
-        /// <param name="isRelativePath">True if the target folder is a lrelative path.</param>
+        /// <param name="targetFolder">Target folder once the download is successful.</param>
+        /// <param name="isRelativePath">True if the target folder is a relative path.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The DownloadedFile.</returns>
-        Task<FileDownload> GetFileFromUrl(Uri fileUrl, string targetFolder, bool isRelativePath);
+        Task<FileDownload> GetFileFromUrlAsync(Uri fileUrl, string targetFolder, bool isRelativePath, CancellationToken ct = default);
     }
 }

@@ -16,6 +16,8 @@
 namespace HealthGateway.DBMaintainer.Parsers
 {
     using System.Collections.Generic;
+    using System.Threading;
+    using System.Threading.Tasks;
     using HealthGateway.Database.Models;
 
     /// <summary>
@@ -27,8 +29,9 @@ namespace HealthGateway.DBMaintainer.Parsers
         /// Parses the drug file.
         /// </summary>
         /// <param name="filename">The file to parse.</param>
-        /// <param name="filedownload">The related download file to associate with.</param>
-        /// <returns>a list of pharmacare durgs.</returns>
-        IList<PharmaCareDrug> ParsePharmaCareDrugFile(string filename, FileDownload filedownload);
+        /// <param name="fileDownload">The related download file to associate with.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request</param>
+        /// <returns>a list of PharmaCare drugs.</returns>
+        Task<IList<PharmaCareDrug>> ParsePharmaCareDrugFileAsync(string filename, FileDownload fileDownload, CancellationToken ct = default);
     }
 }
