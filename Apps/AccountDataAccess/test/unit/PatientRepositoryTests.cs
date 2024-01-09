@@ -383,7 +383,7 @@ namespace AccountDataAccessTest
             PatientRepository patientRepository = GetPatientRepository(blockedAccess);
 
             // Act
-            IEnumerable<DataSource> actual = await patientRepository.GetDataSources(hdid);
+            IEnumerable<DataSource> actual = await patientRepository.GetDataSourcesAsync(hdid);
 
             // Verify
             dataSources.ShouldDeepEqual(actual);

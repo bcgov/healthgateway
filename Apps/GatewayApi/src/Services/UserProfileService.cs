@@ -499,7 +499,7 @@ namespace HealthGateway.GatewayApi.Services
                                               profileHistoryCollection.Length != 0 &&
                                               latestTourChangeDateTime != null &&
                                               profileHistoryCollection.Max(x => x.LastLoginDateTime) < latestTourChangeDateTime;
-            userProfileModel.BlockedDataSources = await this.patientRepository.GetDataSources(userProfile.HdId, ct);
+            userProfileModel.BlockedDataSources = await this.patientRepository.GetDataSourcesAsync(userProfile.HdId, ct);
             return userProfileModel;
         }
 

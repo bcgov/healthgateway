@@ -915,7 +915,7 @@ namespace HealthGateway.Admin.Tests.Services
 
             if (dataSources != null)
             {
-                mock.Setup(s => s.GetDataSources(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(dataSources);
+                mock.Setup(s => s.GetDataSourcesAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(dataSources);
             }
 
             return mock;

@@ -184,7 +184,7 @@ namespace HealthGateway.Admin.Server.Services
             logger.LogDebug("{Message}", message);
             await cacheProvider.RemoveItemAsync(blockedAccessCacheKey, ct);
 
-            return await patientRepository.GetDataSources(hdid, ct);
+            return await patientRepository.GetDataSourcesAsync(hdid, ct);
         }
 
         private async Task<IEnumerable<AgentAction>> GetAgentActionsAsync(string hdid, CancellationToken ct)

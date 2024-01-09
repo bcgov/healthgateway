@@ -99,7 +99,7 @@ namespace HealthGateway.AccountDataAccess.Patient
         /// <inheritdoc/>
         public async Task<bool> CanAccessDataSourceAsync(string hdid, DataSource dataSource, CancellationToken ct = default)
         {
-            IEnumerable<DataSource> blockedDataSources = await this.GetDataSources(hdid, ct);
+            IEnumerable<DataSource> blockedDataSources = await this.GetDataSourcesAsync(hdid, ct);
             this.logger.LogDebug("Blocked data sources for hdid: {Hdid} - {DataSources}", hdid, blockedDataSources);
 
             return !blockedDataSources.Contains(dataSource);
@@ -161,7 +161,7 @@ namespace HealthGateway.AccountDataAccess.Patient
 
         /// <inheritdoc/>
         [SuppressMessage("Performance", "CA1863:Use 'CompositeFormat'", Justification = "Team decision")]
-        public async Task<IEnumerable<DataSource>> GetDataSources(string hdid, CancellationToken ct = default)
+        public async Task<IEnumerable<DataSource>> GetDataSourcesAsync(string hdid, CancellationToken ct = default)
         {
             string blockedAccessCacheKey = string.Format(CultureInfo.InvariantCulture, ICacheProvider.BlockedAccessCachePrefixKey, hdid);
             string message = $"Getting item from cache for key: {blockedAccessCacheKey}";
