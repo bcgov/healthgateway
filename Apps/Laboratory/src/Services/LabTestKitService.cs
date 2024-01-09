@@ -19,6 +19,7 @@ namespace HealthGateway.Laboratory.Services
     using System.Globalization;
     using System.Net;
     using System.Net.Http;
+    using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.AccessManagement.Authentication.Models;
@@ -66,12 +67,12 @@ namespace HealthGateway.Laboratory.Services
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResult<PublicLabTestKit>> RegisterLabTestKitAsync(PublicLabTestKit testKit)
+        public async Task<RequestResult<PublicLabTestKit>> RegisterLabTestKitAsync(PublicLabTestKit testKit, CancellationToken ct = default)
         {
             testKit.ShortCodeFirst = testKit.ShortCodeFirst?.ToUpper(CultureInfo.InvariantCulture);
             testKit.ShortCodeSecond = testKit.ShortCodeSecond?.ToUpper(CultureInfo.InvariantCulture);
 
-            if (!(await new PublicLabTestKitValidator().ValidateAsync(testKit)).IsValid)
+            if (!(await new PublicLabTestKitValidator().ValidateAsync(testKit, ct)).IsValid)
             {
                 return RequestResultFactory.ActionRequired<PublicLabTestKit>(ActionType.Validation, "Form data did not pass validation");
             }
@@ -87,7 +88,7 @@ namespace HealthGateway.Laboratory.Services
             try
             {
                 string ipAddress = this.httpContextAccessor?.HttpContext?.Connection.RemoteIpAddress?.MapToIPv4().ToString() ?? "0.0.0.0";
-                HttpResponseMessage response = await this.labTestKitApi.RegisterLabTestAsync(testKit, accessToken, ipAddress).ConfigureAwait(true);
+                HttpResponseMessage response = await this.labTestKitApi.RegisterLabTestAsync(testKit, accessToken, ipAddress, ct);
                 return ProcessResponse(testKit, response.StatusCode);
             }
             catch (HttpRequestException e)
@@ -98,13 +99,13 @@ namespace HealthGateway.Laboratory.Services
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResult<LabTestKit>> RegisterLabTestKitAsync(string hdid, LabTestKit testKit)
+        public async Task<RequestResult<LabTestKit>> RegisterLabTestKitAsync(string hdid, LabTestKit testKit, CancellationToken ct = default)
         {
             string? accessToken = this.authenticationDelegate.FetchAuthenticatedUserToken();
 
             try
             {
-                HttpResponseMessage response = await this.labTestKitApi.RegisterLabTestAsync(hdid, testKit, accessToken).ConfigureAwait(true);
+                HttpResponseMessage response = await this.labTestKitApi.RegisterLabTestAsync(hdid, testKit, accessToken, ct);
                 return ProcessResponse(testKit, response.StatusCode);
             }
             catch (HttpRequestException e)

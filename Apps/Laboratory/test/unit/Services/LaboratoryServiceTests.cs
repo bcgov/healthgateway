@@ -85,7 +85,7 @@ namespace HealthGateway.LaboratoryTests.Services
 
             ILaboratoryService service = new LaboratoryServiceMock(delegateResult, Token, canAccessDataSource).LaboratoryServiceMockInstance();
 
-            RequestResult<Covid19OrderResult> actualResult = await service.GetCovid19Orders(Hdid);
+            RequestResult<Covid19OrderResult> actualResult = await service.GetCovid19OrdersAsync(Hdid);
 
             if (expectedResultType == ResultType.Success)
             {
@@ -195,7 +195,7 @@ namespace HealthGateway.LaboratoryTests.Services
             ILaboratoryService service = new LaboratoryServiceMock(delegateResult, Token, canAccessDataSource).LaboratoryServiceMockInstance();
 
             // Act
-            RequestResult<LaboratoryOrderResult> actualResult = await service.GetLaboratoryOrders(Hdid);
+            RequestResult<LaboratoryOrderResult> actualResult = await service.GetLaboratoryOrdersAsync(Hdid);
 
             // Assert
             if (expectedResultType == ResultType.Success)
@@ -257,7 +257,7 @@ namespace HealthGateway.LaboratoryTests.Services
             ILaboratoryService service = new LaboratoryServiceMock(delegateResult, Token).LaboratoryServiceMockInstance();
 
             // Act
-            RequestResult<LaboratoryOrderResult> actualResult = await service.GetLaboratoryOrders(Hdid);
+            RequestResult<LaboratoryOrderResult> actualResult = await service.GetLaboratoryOrdersAsync(Hdid);
 
             // Assert
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
@@ -294,7 +294,7 @@ namespace HealthGateway.LaboratoryTests.Services
             ILaboratoryService service = new LaboratoryServiceMock(delegateResult, Token).LaboratoryServiceMockInstance();
 
             // Act
-            RequestResult<LaboratoryOrderResult> actualResult = await service.GetLaboratoryOrders(Hdid);
+            RequestResult<LaboratoryOrderResult> actualResult = await service.GetLaboratoryOrdersAsync(Hdid);
 
             // Assert
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
@@ -326,7 +326,7 @@ namespace HealthGateway.LaboratoryTests.Services
 
             ILaboratoryService service = new LaboratoryServiceMock(delegateResult, Token).LaboratoryServiceMockInstance();
 
-            RequestResult<LaboratoryReport> actualResult = await service.GetLabReport("ReportId", string.Empty, true);
+            RequestResult<LaboratoryReport> actualResult = await service.GetLabReportAsync("ReportId", string.Empty, true);
 
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             Assert.Equal(MockedReportContent, actualResult.ResourcePayload!.Report);

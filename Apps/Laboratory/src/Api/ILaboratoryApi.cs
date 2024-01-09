@@ -16,6 +16,7 @@
 namespace HealthGateway.Laboratory.Api
 {
     using System.Collections.Generic;
+    using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Laboratory.Models;
@@ -34,9 +35,10 @@ namespace HealthGateway.Laboratory.Api
         /// <param name="subjectHdid">The Hdid to query COVID-19 results.</param>
         /// <param name="limit">The Limit to query COVID-19 results.</param>
         /// <param name="token">The bearer token to authorize the call.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The list of COVID-19 Orders available for the user identified by the bearer token.</returns>
         [Get("/api/v1/LabOrders?subjectHdid={subjectHdid}&limit={limit}")]
-        Task<PhsaResult<List<PhsaCovid19Order>>> GetCovid19OrdersAsync(string subjectHdid, string limit, [Authorize] string token);
+        Task<PhsaResult<List<PhsaCovid19Order>>> GetCovid19OrdersAsync(string subjectHdid, string limit, [Authorize] string token, CancellationToken ct);
 
         /// <summary>
         /// Returns the laboratory report for the provided laboratory order.
@@ -44,9 +46,10 @@ namespace HealthGateway.Laboratory.Api
         /// <param name="id">The id of the laboratory report to return.</param>
         /// <param name="subjectHdid">The Hdid to query the laboratory report.</param>
         /// <param name="token">The bearer token to authorize the call.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The laboratory report identified by the id and query parameters.</returns>
         [Get("/api/v1/LabOrders/{id}/LabReportDocument?subjectHdid={subjectHdid}")]
-        Task<LaboratoryReport> GetLaboratoryReportAsync(string id, string subjectHdid, [Authorize] string token);
+        Task<LaboratoryReport> GetLaboratoryReportAsync(string id, string subjectHdid, [Authorize] string token, CancellationToken ct);
 
         /// <summary>
         /// Returns the plis pdf document for the provided laboratory order.
@@ -54,17 +57,19 @@ namespace HealthGateway.Laboratory.Api
         /// <param name="id">The id of the plis pdf document to return.</param>
         /// <param name="subjectHdid">The Hdid to query the plis pdf document.</param>
         /// <param name="token">The bearer token to authorize the call.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The plis pdf document identified by the id and query parameters.</returns>
         [Get("/api/v1/Lab/Plis/{id}/LabReportDocument?subjectHdid={subjectHdid}")]
-        Task<LaboratoryReport> GetPlisLaboratoryReportAsync(string id, string subjectHdid, [Authorize] string token);
+        Task<LaboratoryReport> GetPlisLaboratoryReportAsync(string id, string subjectHdid, [Authorize] string token, CancellationToken ct);
 
         /// <summary>
         /// Returns the provincial lab information system laboratory summary belonging to the authenticated user.
         /// </summary>
         /// <param name="subjectHdid">The Hdid to query the plis laboratory summary.</param>
         /// <param name="token">The bearer token to authorize the call.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The plis laboratory summary identified by the query parameters.</returns>
         [Get("/api/v1/Lab/Plis/LabSummary?subjectHdid={subjectHdid}")]
-        Task<PhsaResult<PhsaLaboratorySummary>> GetPlisLaboratorySummaryAsync(string subjectHdid, [Authorize] string token);
+        Task<PhsaResult<PhsaLaboratorySummary>> GetPlisLaboratorySummaryAsync(string subjectHdid, [Authorize] string token, CancellationToken ct);
     }
 }

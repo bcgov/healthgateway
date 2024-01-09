@@ -16,6 +16,7 @@
 namespace HealthGateway.LaboratoryTests.Mock
 {
     using System.Collections.Generic;
+    using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Models.PHSA;
@@ -35,7 +36,7 @@ namespace HealthGateway.LaboratoryTests.Mock
         /// <param name="delegateResult">List of COVID-19 Orders.</param>
         public LaboratoryDelegateMock(RequestResult<PhsaResult<List<PhsaCovid19Order>>> delegateResult)
         {
-            this.Setup(s => s.GetCovid19Orders(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>())).Returns(Task.FromResult(delegateResult));
+            this.Setup(s => s.GetCovid19OrdersAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult(delegateResult));
         }
 
         /// <summary>
@@ -45,7 +46,7 @@ namespace HealthGateway.LaboratoryTests.Mock
         /// <param name="isCovid19">Indicates whether the COVID-19 report should be returned.</param>
         public LaboratoryDelegateMock(RequestResult<LaboratoryReport> delegateResult, bool isCovid19 = true)
         {
-            this.Setup(s => s.GetLabReport(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), isCovid19)).Returns(Task.FromResult(delegateResult));
+            this.Setup(s => s.GetLabReportAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), isCovid19, It.IsAny<CancellationToken>())).Returns(Task.FromResult(delegateResult));
         }
 
         /// <summary>
@@ -54,7 +55,7 @@ namespace HealthGateway.LaboratoryTests.Mock
         /// <param name="delegateResult">List of Laboratory Orders.</param>
         public LaboratoryDelegateMock(RequestResult<PhsaResult<PhsaLaboratorySummary>> delegateResult)
         {
-            this.Setup(s => s.GetLaboratorySummary(It.IsAny<string>(), It.IsAny<string>())).Returns(Task.FromResult(delegateResult));
+            this.Setup(s => s.GetLaboratorySummaryAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult(delegateResult));
         }
     }
 }

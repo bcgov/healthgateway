@@ -16,6 +16,7 @@
 namespace HealthGateway.Laboratory.Delegates
 {
     using System.Collections.Generic;
+    using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Models.PHSA;
@@ -34,8 +35,9 @@ namespace HealthGateway.Laboratory.Delegates
         /// <param name="bearerToken">The security token representing the authenticated user.</param>
         /// <param name="hdid">The requested hdid.</param>
         /// <param name="pageIndex">The page index to return.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The list of COVID-19 Orders available for the user identified by the bearerToken.</returns>
-        Task<RequestResult<PhsaResult<List<PhsaCovid19Order>>>> GetCovid19Orders(string bearerToken, string hdid, int pageIndex = 0);
+        Task<RequestResult<PhsaResult<List<PhsaCovid19Order>>>> GetCovid19OrdersAsync(string bearerToken, string hdid, int pageIndex = 0, CancellationToken ct = default);
 
         /// <summary>
         /// Gets the Lab report in binary format for the supplied id belonging to the authenticated user.
@@ -44,15 +46,17 @@ namespace HealthGateway.Laboratory.Delegates
         /// <param name="hdid">The requested HDID which owns the reportId.</param>
         /// <param name="bearerToken">The security token representing the authenticated user.</param>
         /// <param name="isCovid19">Indicates whether the COVID-19 report should be returned..</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A base64 encoded PDF.</returns>
-        Task<RequestResult<LaboratoryReport>> GetLabReport(string id, string hdid, string bearerToken, bool isCovid19);
+        Task<RequestResult<LaboratoryReport>> GetLabReportAsync(string id, string hdid, string bearerToken, bool isCovid19, CancellationToken ct = default);
 
         /// <summary>
         /// Gets the Provincial Lab Information System Lab Summary belonging to the authenticated user.
         /// </summary>
         /// <param name="hdid">The requested hdid.</param>
         /// <param name="bearerToken">The security token representing the authenticated user.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>Returns a summary of Provincial Lab Information System Lab Orders.</returns>
-        Task<RequestResult<PhsaResult<PhsaLaboratorySummary>>> GetLaboratorySummary(string hdid, string bearerToken);
+        Task<RequestResult<PhsaResult<PhsaLaboratorySummary>>> GetLaboratorySummaryAsync(string hdid, string bearerToken, CancellationToken ct = default);
     }
 }
