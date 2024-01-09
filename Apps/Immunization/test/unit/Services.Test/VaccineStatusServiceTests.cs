@@ -285,9 +285,9 @@ namespace HealthGateway.ImmunizationTests.Services.Test
             };
 
             Mock<IVaccineStatusDelegate> mockDelegate = new();
-            mockDelegate.Setup(s => s.GetVaccineStatusAsync(It.IsAny<string>(), It.IsAny<bool>(), this.accessToken, It.IsAny<CancellationToken>())).Returns(Task.FromResult(delegateResult));
+            mockDelegate.Setup(s => s.GetVaccineStatusAsync(It.IsAny<string>(), It.IsAny<bool>(), this.accessToken, It.IsAny<CancellationToken>())).ReturnsAsync(delegateResult);
             mockDelegate.Setup(s => s.GetVaccineStatusPublicAsync(It.IsAny<VaccineStatusQuery>(), this.accessToken, It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .Returns(Task.FromResult(delegateResult));
+                .ReturnsAsync(delegateResult);
 
             Mock<IAuthenticationDelegate> mockAuthDelegate = new();
             mockAuthDelegate.Setup(s => s.AuthenticateAsSystem(It.IsAny<Uri>(), It.IsAny<ClientCredentialsTokenRequest>(), It.IsAny<bool>())).Returns(jwtModel);
