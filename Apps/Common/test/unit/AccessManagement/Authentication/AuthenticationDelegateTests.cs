@@ -50,20 +50,26 @@ namespace HealthGateway.CommonTests.AccessManagement.Authentication
             }
             """;
 
-        private static readonly Uri TokenUri = new("http://testsite");
-
-        private static readonly ClientCredentialsTokenRequest UserTokenRequest = new()
+        private static readonly ClientCredentialsRequest UserClientCredentialsRequest = new()
         {
-            ClientId = "CLIENT_ID",
-            ClientSecret = "SOME_SECRET",
-            Username = "A_USERNAME",
-            Password = "SOME_PASSWORD",
+            TokenUri = new("http://testsite"),
+            Parameters = new()
+            {
+                ClientId = "CLIENT_ID",
+                ClientSecret = "SOME_SECRET",
+                Username = "A_USERNAME",
+                Password = "SOME_PASSWORD",
+            },
         };
 
-        private static readonly ClientCredentialsTokenRequest SystemTokenRequest = new()
+        private static readonly ClientCredentialsRequest SystemClientCredentialsRequest = new()
         {
-            ClientId = "CLIENT_ID",
-            ClientSecret = "SOME_SECRET",
+            TokenUri = new("http://testsite"),
+            Parameters = new()
+            {
+                ClientId = "CLIENT_ID",
+                ClientSecret = "SOME_SECRET",
+            },
         };
 
         /// <summary>
@@ -77,7 +83,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authentication
             using HttpResponseMessage httpResponseMessage = new();
             IAuthenticationDelegate authDelegate = CreateAuthenticationDelegate(CreateHttpClientFactory(UserJson, httpResponseMessage), mockCacheProvider);
 
-            JwtModel actualModel = authDelegate.AuthenticateUser(TokenUri, UserTokenRequest);
+            JwtModel actualModel = authDelegate.AuthenticateUser(UserClientCredentialsRequest);
 
             expected.ShouldDeepEqual(actualModel);
             mockCacheProvider.Verify(v => v.GetItem<JwtModel>(It.IsAny<string>()), Times.Never());
@@ -95,7 +101,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authentication
             using HttpResponseMessage httpResponseMessage = new();
             IAuthenticationDelegate authDelegate = CreateAuthenticationDelegate(CreateHttpClientFactory(UserJson, httpResponseMessage), mockCacheProvider);
 
-            JwtModel actualModel = authDelegate.AuthenticateUser(TokenUri, UserTokenRequest, true);
+            JwtModel actualModel = authDelegate.AuthenticateUser(UserClientCredentialsRequest, true);
 
             expected.ShouldDeepEqual(actualModel);
             mockCacheProvider.Verify(v => v.GetItem<JwtModel>(It.IsAny<string>()), Times.Exactly(1));
@@ -113,7 +119,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authentication
             using HttpResponseMessage httpResponseMessage = new();
             IAuthenticationDelegate authDelegate = CreateAuthenticationDelegate(CreateHttpClientFactory(UserJson, httpResponseMessage), mockCacheProvider);
 
-            JwtModel actualModel = authDelegate.AuthenticateUser(TokenUri, UserTokenRequest, true);
+            JwtModel actualModel = authDelegate.AuthenticateUser(UserClientCredentialsRequest, true);
 
             expected.ShouldDeepEqual(actualModel);
             mockCacheProvider.Verify(v => v.GetItem<JwtModel>(It.IsAny<string>()), Times.Exactly(1));
@@ -130,7 +136,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authentication
             using HttpResponseMessage httpResponseMessage = new();
             IAuthenticationDelegate authDelegate = CreateAuthenticationDelegate(CreateHttpClientFactory(json, httpResponseMessage), CreateCacheProvider());
 
-            Assert.Throws<InvalidOperationException>(() => authDelegate.AuthenticateUser(TokenUri, UserTokenRequest));
+            Assert.Throws<InvalidOperationException>(() => authDelegate.AuthenticateUser(UserClientCredentialsRequest));
         }
 
         /// <summary>
@@ -156,7 +162,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authentication
             using HttpResponseMessage httpResponseMessage = new();
             IAuthenticationDelegate authDelegate = CreateAuthenticationDelegate(CreateHttpClientFactory(json, httpResponseMessage), CreateCacheProvider(expected));
 
-            JwtModel actualModel = authDelegate.AuthenticateAsSystem(TokenUri, SystemTokenRequest);
+            JwtModel actualModel = authDelegate.AuthenticateAsSystem(SystemClientCredentialsRequest);
 
             expected.ShouldDeepEqual(actualModel);
         }

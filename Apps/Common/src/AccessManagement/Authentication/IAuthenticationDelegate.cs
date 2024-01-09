@@ -15,7 +15,6 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Common.AccessManagement.Authentication
 {
-    using System;
     using HealthGateway.Common.AccessManagement.Authentication.Models;
     using HealthGateway.Common.Data.Constants;
 
@@ -29,27 +28,25 @@ namespace HealthGateway.Common.AccessManagement.Authentication
         /// <summary>
         /// Authenticates as a 'system admin account' concept, using OAuth 2.0 Client Credentials Grant.
         /// </summary>
-        /// <param name="tokenUri">Uri to request the the token from.</param>
-        /// <param name="tokenRequest">Token request configuration.</param>
+        /// <param name="request">Client credentials grant request information.</param>
         /// <param name="cacheEnabled">if true caches the result.</param>
-        /// <returns>An instance fo the <see cref="JwtModel"/> class.</returns>
-        JwtModel AuthenticateAsSystem(Uri tokenUri, ClientCredentialsTokenRequest tokenRequest, bool cacheEnabled = true);
+        /// <returns>An instance of the <see cref="JwtModel"/> class.</returns>
+        JwtModel AuthenticateAsSystem(ClientCredentialsRequest request, bool cacheEnabled = true);
 
         /// <summary>
         /// Authenticates a resource owner user with direct grant, no user intervention.
         /// </summary>
-        /// <param name="tokenUri">Uri to request the the token from.</param>
-        /// <param name="tokenRequest">Token request configuration.</param>
+        /// <param name="request">Client credentials grant request information.</param>
         /// <param name="cacheEnabled">If true, caches the result.</param>
         /// <returns>An instance of the <see cref="JwtModel"/> class.</returns>
-        JwtModel AuthenticateUser(Uri tokenUri, ClientCredentialsTokenRequest tokenRequest, bool cacheEnabled = false);
+        JwtModel AuthenticateUser(ClientCredentialsRequest request, bool cacheEnabled = false);
 
         /// <summary>
-        /// Retrieves the Token Uri and Client Credentials Token request from configuration.
+        /// Retrieves the information needed for a client credentials grant request.
         /// </summary>
-        /// <param name="section">The section name to use.</param>
-        /// <returns>The tokenUri and ClientCredentialTokenRequest.</returns>
-        (Uri TokenUri, ClientCredentialsTokenRequest TokenRequest) GetClientCredentialsAuth(string section);
+        /// <param name="section">The configuration section name to use.</param>
+        /// <returns>Model containing token URI and parameters for client credentials grant.</returns>
+        ClientCredentialsRequest GetClientCredentialsRequestFromConfig(string section);
 
         /// <summary>
         /// Fetches the access token for the authenticated user from the http context.

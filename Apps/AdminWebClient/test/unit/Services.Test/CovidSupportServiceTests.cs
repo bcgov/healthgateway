@@ -144,7 +144,7 @@ namespace HealthGateway.AdminWebClientTests.Services.Test
                 AccessToken = AccessToken,
             };
 
-            mockAuthDelegate.Setup(s => s.AuthenticateAsSystem(It.IsAny<Uri>(), It.IsAny<ClientCredentialsTokenRequest>(), It.IsAny<bool>())).Returns(jwt);
+            mockAuthDelegate.Setup(s => s.AuthenticateAsSystem(It.IsAny<ClientCredentialsRequest>(), It.IsAny<bool>())).Returns(jwt);
             IImmunizationAdminApi immunizationAdminApi = RestService.For<IImmunizationAdminApi>(httpClient);
             ICovidSupportService mockCovidSupportService = new CovidSupportService(
                 new Mock<ILogger<CovidSupportService>>().Object,
@@ -168,7 +168,7 @@ namespace HealthGateway.AdminWebClientTests.Services.Test
                 AccessToken = AccessToken,
             };
 
-            mockAuthDelegate.Setup(s => s.AuthenticateAsSystem(It.IsAny<Uri>(), It.IsAny<ClientCredentialsTokenRequest>(), It.IsAny<bool>())).Returns(jwt);
+            mockAuthDelegate.Setup(s => s.AuthenticateAsSystem(It.IsAny<ClientCredentialsRequest>(), It.IsAny<bool>())).Returns(jwt);
 
             Mock<IImmunizationAdminApi> mockAdminDelegate = new();
             if (!throwException)
@@ -208,7 +208,7 @@ namespace HealthGateway.AdminWebClientTests.Services.Test
                 AccessToken = AccessToken,
             };
 
-            mockAuthDelegate.Setup(s => s.AuthenticateAsSystem(It.IsAny<Uri>(), It.IsAny<ClientCredentialsTokenRequest>(), It.IsAny<bool>())).Returns(jwt);
+            mockAuthDelegate.Setup(s => s.AuthenticateAsSystem(It.IsAny<ClientCredentialsRequest>(), It.IsAny<bool>())).Returns(jwt);
 
             Mock<IImmunizationAdminApi> mockAdminDelegate = new();
             if (!throwException)

@@ -43,8 +43,7 @@ namespace HealthGateway.JobScheduler.Jobs
         private readonly bool jobEnabled;
         private readonly ILogger<NotificationSettingsJob> logger;
         private readonly INotificationSettingsDelegate notificationSettingsDelegate;
-        private readonly ClientCredentialsTokenRequest tokenRequest;
-        private readonly Uri tokenUri;
+        private readonly ClientCredentialsRequest clientCredentialsRequest;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NotificationSettingsJob"/> class.
@@ -66,7 +65,7 @@ namespace HealthGateway.JobScheduler.Jobs
             this.authDelegate = authDelegate;
             this.eventLogDelegate = eventLogDelegate;
             this.jobEnabled = configuration.GetSection(JobConfigKey).GetValue(JobEnabledKey, true);
-            (this.tokenUri, this.tokenRequest) = this.authDelegate.GetClientCredentialsAuth(AuthConfigSectionName);
+            this.clientCredentialsRequest = this.authDelegate.GetClientCredentialsRequestFromConfig(AuthConfigSectionName);
         }
 
         /// <inheritdoc/>
@@ -87,7 +86,7 @@ namespace HealthGateway.JobScheduler.Jobs
                 throw new FormatException("Unable to deserialize JSON Notification Settings");
             }
 
-            string? accessToken = this.authDelegate.AuthenticateAsSystem(this.tokenUri, this.tokenRequest).AccessToken;
+            string? accessToken = this.authDelegate.AuthenticateAsSystem(this.clientCredentialsRequest).AccessToken;
             if (string.IsNullOrEmpty(accessToken))
             {
                 this.logger.LogError("Authenticated as User System access token is null or empty, Error:\n{AccessToken}", accessToken);

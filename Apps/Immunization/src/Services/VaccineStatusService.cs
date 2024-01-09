@@ -52,9 +52,7 @@ namespace HealthGateway.Immunization.Services
         private readonly IHttpContextAccessor? httpContextAccessor;
         private readonly ILogger<VaccineStatusService> logger;
         private readonly PhsaConfig phsaConfig;
-        private readonly ClientCredentialsTokenRequest tokenRequest;
-        private readonly Uri tokenUri;
-
+        private readonly ClientCredentialsRequest clientCredentialsRequest;
         private readonly IVaccineStatusDelegate vaccineStatusDelegate;
 
         /// <summary>
@@ -78,7 +76,7 @@ namespace HealthGateway.Immunization.Services
             this.vaccineStatusDelegate = vaccineStatusDelegate;
             this.autoMapper = autoMapper;
 
-            (this.tokenUri, this.tokenRequest) = this.authDelegate.GetClientCredentialsAuth(AuthConfigSectionName);
+            this.clientCredentialsRequest = this.authDelegate.GetClientCredentialsRequestFromConfig(AuthConfigSectionName);
 
             this.phsaConfig = new();
             configuration.Bind(PhsaConfigSectionKey, this.phsaConfig);
@@ -222,7 +220,7 @@ namespace HealthGateway.Immunization.Services
                 return RequestResultFactory.Error<VaccineStatus>(ErrorType.InvalidState, validationResults.Errors);
             }
 
-            string? accessToken = this.authDelegate.AuthenticateAsSystem(this.tokenUri, this.tokenRequest).AccessToken;
+            string? accessToken = this.authDelegate.AuthenticateAsSystem(this.clientCredentialsRequest).AccessToken;
             RequestResult<VaccineStatus> retVal = await this.GetVaccineStatusFromDelegateAsync(query, accessToken, phn, ct);
 
             return retVal;

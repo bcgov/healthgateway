@@ -15,7 +15,6 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Laboratory.Services
 {
-    using System;
     using System.Globalization;
     using System.Net;
     using System.Net.Http;
@@ -43,8 +42,7 @@ namespace HealthGateway.Laboratory.Services
         private readonly ILabTestKitApi labTestKitApi;
         private readonly ILogger<LabTestKitService> logger;
         private readonly IHttpContextAccessor? httpContextAccessor;
-        private readonly ClientCredentialsTokenRequest tokenRequest;
-        private readonly Uri tokenUri;
+        private readonly ClientCredentialsRequest clientCredentialsRequest;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LabTestKitService"/> class.
@@ -63,7 +61,7 @@ namespace HealthGateway.Laboratory.Services
             this.authenticationDelegate = authenticationDelegate;
             this.labTestKitApi = labTestKitApi;
             this.httpContextAccessor = httpContextAccessor;
-            (this.tokenUri, this.tokenRequest) = this.authenticationDelegate.GetClientCredentialsAuth(AuthConfigSectionName);
+            this.clientCredentialsRequest = this.authenticationDelegate.GetClientCredentialsRequestFromConfig(AuthConfigSectionName);
         }
 
         /// <inheritdoc/>
@@ -78,7 +76,7 @@ namespace HealthGateway.Laboratory.Services
             }
 
             // Use a system token
-            string? accessToken = this.authenticationDelegate.AuthenticateAsSystem(this.tokenUri, this.tokenRequest).AccessToken;
+            string? accessToken = this.authenticationDelegate.AuthenticateAsSystem(this.clientCredentialsRequest).AccessToken;
             if (accessToken == null)
             {
                 this.logger.LogError("Unable to acquire authentication token");

@@ -55,7 +55,7 @@ namespace HealthGateway.MedicationTests.Delegates
             // Setup Configuration
             string endpoint = "https://test-endpoint";
             Uri tokenUri = new("https://localhost");
-            ClientCredentialsTokenRequest tokenRequest = new()
+            ClientCredentialsRequestParameters requestParameters = new()
             {
                 ClientId = "TEST_CLIENTID",
                 ClientSecret = "TEST_CLIENT_SECRET",
@@ -66,10 +66,10 @@ namespace HealthGateway.MedicationTests.Delegates
             {
                 new("Salesforce:Endpoint", endpoint),
                 new("Salesforce:TokenUri", tokenUri.ToString()),
-                new("Salesforce:ClientAuthentication:ClientId", tokenRequest.ClientId),
-                new("Salesforce:ClientAuthentication:ClientSecret", tokenRequest.ClientSecret),
-                new("Salesforce:ClientAuthentication:Username", tokenRequest.Username),
-                new("Salesforce:ClientAuthentication:Password", tokenRequest.Password),
+                new("Salesforce:ClientAuthentication:ClientId", requestParameters.ClientId),
+                new("Salesforce:ClientAuthentication:ClientSecret", requestParameters.ClientSecret),
+                new("Salesforce:ClientAuthentication:Username", requestParameters.Username),
+                new("Salesforce:ClientAuthentication:Password", requestParameters.Password),
             };
             IConfiguration configuration = CreateConfiguration(configurationParams);
 
@@ -82,8 +82,7 @@ namespace HealthGateway.MedicationTests.Delegates
             mockAuthenticationDelegate
                 .Setup(
                     s => s.AuthenticateUser(
-                        It.Is<Uri>(x => x.ToString() == tokenUri.ToString()),
-                        It.Is<ClientCredentialsTokenRequest>(x => x.ClientId == tokenRequest.ClientId),
+                        It.Is<ClientCredentialsRequest>(x => x.TokenUri.ToString() == tokenUri.ToString() && x.Parameters.ClientId == requestParameters.ClientId),
                         true))
                 .Returns(() => authorizationJwt);
 
@@ -129,7 +128,7 @@ namespace HealthGateway.MedicationTests.Delegates
             // Setup Configuration
             string endpoint = "https://test-endpoint";
             Uri tokenUri = new("https://localhost");
-            ClientCredentialsTokenRequest tokenRequest = new()
+            ClientCredentialsRequestParameters requestParameters = new()
             {
                 ClientId = "TEST_CLIENTID",
                 ClientSecret = "TEST_CLIENT_SECRET",
@@ -140,10 +139,10 @@ namespace HealthGateway.MedicationTests.Delegates
             {
                 new("Salesforce:Endpoint", endpoint),
                 new("Salesforce:TokenUri", tokenUri.ToString()),
-                new("Salesforce:ClientAuthentication:ClientId", tokenRequest.ClientId),
-                new("Salesforce:ClientAuthentication:ClientSecret", tokenRequest.ClientSecret),
-                new("Salesforce:ClientAuthentication:Username", tokenRequest.Username),
-                new("Salesforce:ClientAuthentication:Password", tokenRequest.Password),
+                new("Salesforce:ClientAuthentication:ClientId", requestParameters.ClientId),
+                new("Salesforce:ClientAuthentication:ClientSecret", requestParameters.ClientSecret),
+                new("Salesforce:ClientAuthentication:Username", requestParameters.Username),
+                new("Salesforce:ClientAuthentication:Password", requestParameters.Password),
             };
             IConfiguration configuration = CreateConfiguration(configurationParams);
 
@@ -152,8 +151,7 @@ namespace HealthGateway.MedicationTests.Delegates
             mockAuthenticationDelegate
                 .Setup(
                     s => s.AuthenticateUser(
-                        It.Is<Uri>(x => x.ToString() == tokenUri.ToString()),
-                        It.Is<ClientCredentialsTokenRequest>(x => x.ClientId == tokenRequest.ClientId),
+                        It.Is<ClientCredentialsRequest>(x => x.TokenUri.ToString() == tokenUri.ToString() && x.Parameters.ClientId == requestParameters.ClientId),
                         true))
                 .Returns(() => new JwtModel());
 
@@ -191,7 +189,7 @@ namespace HealthGateway.MedicationTests.Delegates
             // Setup Configuration
             string endpoint = "https://test-endpoint";
             Uri tokenUri = new("https://localhost");
-            ClientCredentialsTokenRequest tokenRequest = new()
+            ClientCredentialsRequestParameters requestParameters = new()
             {
                 ClientId = "TEST_CLIENTID",
                 ClientSecret = "TEST_CLIENT_SECRET",
@@ -202,10 +200,10 @@ namespace HealthGateway.MedicationTests.Delegates
             {
                 new("Salesforce:Endpoint", endpoint),
                 new("Salesforce:TokenUri", tokenUri.ToString()),
-                new("Salesforce:ClientAuthentication:ClientId", tokenRequest.ClientId),
-                new("Salesforce:ClientAuthentication:ClientSecret", tokenRequest.ClientSecret),
-                new("Salesforce:ClientAuthentication:Username", tokenRequest.Username),
-                new("Salesforce:ClientAuthentication:Password", tokenRequest.Password),
+                new("Salesforce:ClientAuthentication:ClientId", requestParameters.ClientId),
+                new("Salesforce:ClientAuthentication:ClientSecret", requestParameters.ClientSecret),
+                new("Salesforce:ClientAuthentication:Username", requestParameters.Username),
+                new("Salesforce:ClientAuthentication:Password", requestParameters.Password),
             };
             IConfiguration configuration = CreateConfiguration(configurationParams);
 
@@ -218,8 +216,7 @@ namespace HealthGateway.MedicationTests.Delegates
             mockAuthenticationDelegate
                 .Setup(
                     s => s.AuthenticateUser(
-                        It.Is<Uri>(x => x.ToString() == tokenUri.ToString()),
-                        It.Is<ClientCredentialsTokenRequest>(x => x.ClientId == tokenRequest.ClientId),
+                        It.Is<ClientCredentialsRequest>(x => x.TokenUri.ToString() == tokenUri.ToString() && x.Parameters.ClientId == requestParameters.ClientId),
                         true))
                 .Returns(() => authorizationJwt);
 
