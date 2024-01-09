@@ -15,6 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Immunization.Delegates
 {
+    using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Models.PHSA;
@@ -28,15 +29,17 @@ namespace HealthGateway.Immunization.Delegates
         /// Returns the matching immunization for the given id.
         /// </summary>
         /// <param name="immunizationId">The id of the immunization to retrieve.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The immunization that matches the given id.</returns>
-        Task<RequestResult<PhsaResult<ImmunizationViewResponse>>> GetImmunizationAsync(string immunizationId);
+        Task<RequestResult<PhsaResult<ImmunizationViewResponse>>> GetImmunizationAsync(string immunizationId, CancellationToken ct = default);
 
         /// <summary>
         /// Returns a PHSA Result including the load state and a List of Immunizations for the authenticated user.
         /// It has a collection of one or more Immunizations.
         /// </summary>
         /// <param name="hdid">The hdid patient id.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The PhsaResult including the load state and the list of Immunizations available for the user hdid.</returns>
-        Task<RequestResult<PhsaResult<ImmunizationResponse>>> GetImmunizationsAsync(string hdid);
+        Task<RequestResult<PhsaResult<ImmunizationResponse>>> GetImmunizationsAsync(string hdid, CancellationToken ct = default);
     }
 }

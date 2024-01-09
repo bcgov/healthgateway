@@ -19,6 +19,7 @@ namespace HealthGateway.ImmunizationTests.Delegates.Test
     using System.Globalization;
     using System.Net;
     using System.Net.Http;
+    using System.Threading;
     using System.Threading.Tasks;
     using DeepEqual.Syntax;
     using HealthGateway.Common.Data.Constants;
@@ -60,7 +61,8 @@ namespace HealthGateway.ImmunizationTests.Delegates.Test
 
             Mock<IImmunizationApi> mockImmunizationApi = new(MockBehavior.Strict);
             Mock<IImmunizationPublicApi> mockImmunizationPublicApi = new();
-            mockImmunizationPublicApi.Setup(a => a.GetVaccineStatusAsync(It.IsAny<VaccineStatusQuery>(), this.accessToken, It.IsAny<string>())).ReturnsAsync(expectedPayload);
+            mockImmunizationPublicApi.Setup(a => a.GetVaccineStatusAsync(It.IsAny<VaccineStatusQuery>(), this.accessToken, It.IsAny<string>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(expectedPayload);
 
             using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
             IVaccineStatusDelegate vaccineStatusDelegate = new RestVaccineStatusDelegate(
@@ -75,7 +77,7 @@ namespace HealthGateway.ImmunizationTests.Delegates.Test
             };
 
             RequestResult<PhsaResult<VaccineStatusResult>> actualResult =
-                await vaccineStatusDelegate.GetVaccineStatusPublic(query, this.accessToken, string.Empty);
+                await vaccineStatusDelegate.GetVaccineStatusPublicAsync(query, this.accessToken, string.Empty);
 
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             expectedPayload.ShouldDeepEqual(actualResult.ResourcePayload);
@@ -92,7 +94,7 @@ namespace HealthGateway.ImmunizationTests.Delegates.Test
 
             Mock<IImmunizationApi> mockImmunizationApi = new(MockBehavior.Strict);
             Mock<IImmunizationPublicApi> mockImmunizationPublicApi = new();
-            mockImmunizationPublicApi.Setup(a => a.GetVaccineStatusAsync(It.IsAny<VaccineStatusQuery>(), this.accessToken, It.IsAny<string>()))
+            mockImmunizationPublicApi.Setup(a => a.GetVaccineStatusAsync(It.IsAny<VaccineStatusQuery>(), this.accessToken, It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .ThrowsAsync(new HttpRequestException(null, null, HttpStatusCode.BadRequest));
 
             using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
@@ -108,7 +110,7 @@ namespace HealthGateway.ImmunizationTests.Delegates.Test
             };
 
             RequestResult<PhsaResult<VaccineStatusResult>> actualResult =
-                await vaccineStatusDelegate.GetVaccineStatusPublic(query, this.accessToken, string.Empty);
+                await vaccineStatusDelegate.GetVaccineStatusPublicAsync(query, this.accessToken, string.Empty);
 
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
             expectedError.ShouldDeepEqual(actualResult.ResultError);
@@ -126,7 +128,8 @@ namespace HealthGateway.ImmunizationTests.Delegates.Test
 
             Mock<IImmunizationApi> mockImmunizationApi = new(MockBehavior.Strict);
             Mock<IImmunizationPublicApi> mockImmunizationPublicApi = new();
-            mockImmunizationPublicApi.Setup(a => a.GetVaccineStatusAsync(It.IsAny<VaccineStatusQuery>(), this.accessToken, It.IsAny<string>())).ReturnsAsync(expectedPayload);
+            mockImmunizationPublicApi.Setup(a => a.GetVaccineStatusAsync(It.IsAny<VaccineStatusQuery>(), this.accessToken, It.IsAny<string>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(expectedPayload);
 
             using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
             IVaccineStatusDelegate vaccineStatusDelegate = new RestVaccineStatusDelegate(
@@ -141,7 +144,7 @@ namespace HealthGateway.ImmunizationTests.Delegates.Test
             };
 
             RequestResult<PhsaResult<VaccineStatusResult>> actualResult =
-                await vaccineStatusDelegate.GetVaccineStatusPublic(query, this.accessToken, string.Empty);
+                await vaccineStatusDelegate.GetVaccineStatusPublicAsync(query, this.accessToken, string.Empty);
 
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
             expectedError.ShouldDeepEqual(actualResult.ResultError);
@@ -164,7 +167,7 @@ namespace HealthGateway.ImmunizationTests.Delegates.Test
             };
 
             Mock<IImmunizationApi> mockImmunizationApi = new();
-            mockImmunizationApi.Setup(a => a.GetVaccineStatusAsync(this.hdId, It.IsAny<bool>(), this.accessToken)).ReturnsAsync(expectedPayload);
+            mockImmunizationApi.Setup(a => a.GetVaccineStatusAsync(this.hdId, It.IsAny<bool>(), this.accessToken, It.IsAny<CancellationToken>())).ReturnsAsync(expectedPayload);
             Mock<IImmunizationPublicApi> mockImmunizationPublicApi = new(MockBehavior.Strict);
 
             using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
@@ -174,7 +177,7 @@ namespace HealthGateway.ImmunizationTests.Delegates.Test
                 mockImmunizationPublicApi.Object);
 
             RequestResult<PhsaResult<VaccineStatusResult>> actualResult =
-                await vaccineStatusDelegate.GetVaccineStatus(this.hdId, true, this.accessToken);
+                await vaccineStatusDelegate.GetVaccineStatusAsync(this.hdId, true, this.accessToken);
 
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             expectedPayload.ShouldDeepEqual(actualResult.ResourcePayload);
@@ -191,7 +194,7 @@ namespace HealthGateway.ImmunizationTests.Delegates.Test
             RequestResultError expectedError = GetRequestResultError();
 
             Mock<IImmunizationApi> mockImmunizationApi = new();
-            mockImmunizationApi.Setup(a => a.GetVaccineStatusAsync(this.hdId, It.IsAny<bool>(), this.accessToken)).ReturnsAsync(expectedPayload);
+            mockImmunizationApi.Setup(a => a.GetVaccineStatusAsync(this.hdId, It.IsAny<bool>(), this.accessToken, It.IsAny<CancellationToken>())).ReturnsAsync(expectedPayload);
             Mock<IImmunizationPublicApi> mockImmunizationPublicApi = new(MockBehavior.Strict);
 
             using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
@@ -201,7 +204,7 @@ namespace HealthGateway.ImmunizationTests.Delegates.Test
                 mockImmunizationPublicApi.Object);
 
             RequestResult<PhsaResult<VaccineStatusResult>> actualResult =
-                await vaccineStatusDelegate.GetVaccineStatus(this.hdId, true, this.accessToken);
+                await vaccineStatusDelegate.GetVaccineStatusAsync(this.hdId, true, this.accessToken);
 
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
             expectedError.ShouldDeepEqual(actualResult.ResultError);
@@ -217,7 +220,7 @@ namespace HealthGateway.ImmunizationTests.Delegates.Test
             RequestResultError expectedError = GetRequestResultError();
 
             Mock<IImmunizationApi> mockImmunizationApi = new();
-            mockImmunizationApi.Setup(a => a.GetVaccineStatusAsync(this.hdId, It.IsAny<bool>(), this.accessToken))
+            mockImmunizationApi.Setup(a => a.GetVaccineStatusAsync(this.hdId, It.IsAny<bool>(), this.accessToken, It.IsAny<CancellationToken>()))
                 .ThrowsAsync(new HttpRequestException(null, null, HttpStatusCode.BadRequest));
             Mock<IImmunizationPublicApi> mockImmunizationPublicApi = new(MockBehavior.Strict);
 
@@ -228,7 +231,7 @@ namespace HealthGateway.ImmunizationTests.Delegates.Test
                 mockImmunizationPublicApi.Object);
 
             RequestResult<PhsaResult<VaccineStatusResult>> actualResult =
-                await vaccineStatusDelegate.GetVaccineStatus(this.hdId, true, this.accessToken);
+                await vaccineStatusDelegate.GetVaccineStatusAsync(this.hdId, true, this.accessToken);
 
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
             expectedError.ShouldDeepEqual(actualResult.ResultError);

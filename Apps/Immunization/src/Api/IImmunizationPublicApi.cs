@@ -15,6 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Immunization.Api;
 
+using System.Threading;
 using System.Threading.Tasks;
 using HealthGateway.Common.Data.Models.PHSA;
 using HealthGateway.Common.Models.PHSA;
@@ -31,6 +32,7 @@ public interface IImmunizationPublicApi
     /// <param name="query">The model containing details of the request.</param>
     /// <param name="token">The bearer token to authorize the call.</param>
     /// <param name="clientIp">The ip of the client calling the service.</param>
+    /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
     /// <returns>
     /// A PhsaResult containing the vaccine status of a given patient.
     /// </returns>
@@ -38,5 +40,6 @@ public interface IImmunizationPublicApi
     Task<PhsaResult<VaccineStatusResult>> GetVaccineStatusAsync(
         VaccineStatusQuery query,
         [Authorize] string token,
-        [Header("X-Forwarded-For")] string clientIp);
+        [Header("X-Forwarded-For")] string clientIp,
+        CancellationToken ct);
 }
