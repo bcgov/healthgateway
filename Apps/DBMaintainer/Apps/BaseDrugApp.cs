@@ -160,7 +160,7 @@ namespace HealthGateway.DBMaintainer.Apps
         protected async Task<FileDownload> DownloadFileAsync(Uri source, string targetFolder, CancellationToken ct = default)
         {
             this.Logger.LogInformation("Downloading file from {Source} to {TargetFolder}", source, targetFolder);
-            return await this.DownloadService.GetFileFromUrl(source, targetFolder, true);
+            return await this.DownloadService.GetFileFromUrlAsync(source, targetFolder, true, ct);
         }
 
         /// <summary>

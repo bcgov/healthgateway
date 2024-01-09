@@ -109,7 +109,7 @@ namespace HealthGateway.DBMaintainer.Apps
             this.Logger.LogInformation("Parsing Provincial PharmaCare file");
             this.RemoveOldFiles(downloadedFile);
             await this.AddFileToDbAsync(downloadedFile, ct);
-            await this.DrugDbContext.AddRangeAsync(this.Parser.ParsePharmaCareDrugFile(files[0], downloadedFile), ct);
+            await this.DrugDbContext.AddRangeAsync(this.Parser.ParsePharmaCareDrugFileAsync(files[0], downloadedFile, ct), ct);
             this.Logger.LogInformation("Saving PharmaCare Drugs");
             await this.DrugDbContext.SaveChangesAsync(ct);
         }
@@ -194,7 +194,7 @@ namespace HealthGateway.DBMaintainer.Apps
             await this.AddFileToDbAsync(pharmacyAssessmentFileDownload, ct);
 
             this.Logger.LogInformation("Parsing Provincial PharmaCare Drug file");
-            IList<PharmaCareDrug> pharmaCareDrugs = this.Parser.ParsePharmaCareDrugFile(pharmaCareDrugFile, pharmaCareDrugFileDownload);
+            IList<PharmaCareDrug> pharmaCareDrugs = await this.Parser.ParsePharmaCareDrugFileAsync(pharmaCareDrugFile, pharmaCareDrugFileDownload, ct);
 
             this.Logger.LogInformation("Parsing Pharmacy Assessment file");
             IEnumerable<PharmacyAssessment> pharmacyAssessments = this.pharmacyAssessmentParser.ParsePharmacyAssessmentFile(pharmacyAssessmentFile, pharmacyAssessmentFileDownload);
