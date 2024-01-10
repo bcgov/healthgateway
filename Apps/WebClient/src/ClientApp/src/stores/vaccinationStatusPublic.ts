@@ -170,7 +170,7 @@ export const useVaccinationStatusPublicStore = defineStore(
 
                 if (error.actionCode === ActionType.DataMismatch) {
                     customBannerError.title = "Data Mismatch";
-                    customBannerError.description = error.resultMessage;
+                    customBannerError.description = error.message;
                 }
                 setVaccinationStatusError(customBannerError);
             }
@@ -226,7 +226,12 @@ export const useVaccinationStatusPublicStore = defineStore(
                             );
                         }, payload.retryin);
                     } else {
-                        throw result.resultError;
+                        throw result.resultError
+                            ? ResultError.fromModel(result.resultError)
+                            : new ResultError(
+                                  "VaccinationStatusStore",
+                                  "Unknown API error on retrieve vaccination status"
+                              );
                     }
                 })
                 .catch((error: ResultError) => {
@@ -268,7 +273,12 @@ export const useVaccinationStatusPublicStore = defineStore(
                             );
                         }, payload.retryin);
                     } else {
-                        throw result.resultError;
+                        throw result.resultError
+                            ? ResultError.fromModel(result.resultError)
+                            : new ResultError(
+                                  "VaccinationStatusStore",
+                                  "Unknown API error on retrieve vaccination record"
+                              );
                     }
                 })
                 .catch((error: ResultError) => {

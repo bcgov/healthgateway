@@ -24,12 +24,12 @@ resource "keycloak_openid_client_default_scopes" "icarus_client_default_scopes" 
   default_scopes = [
     "profile",
     "web-origins",
-    "email"
-    # keycloak_openid_client_scope.audience_scope.name,
-    # keycloak_openid_client_scope.immunization_read_scope.name,
-    # keycloak_openid_client_scope.laboratory_read_scope.name,
-    # keycloak_openid_client_scope.notification_read_scope.name,
-    # keycloak_openid_client_scope.patient_read_scope.name
+    "email",
+    keycloak_openid_client_scope.audience_scope.name,
+    keycloak_openid_client_scope.immunization_read_scope.name,
+    keycloak_openid_client_scope.laboratory_read_scope.name,
+    keycloak_openid_client_scope.notification_read_scope.name,
+    keycloak_openid_client_scope.patient_read_scope.name
   ]
 }
 resource "keycloak_openid_client_optional_scopes" "icarus_client_optional_scopes" {

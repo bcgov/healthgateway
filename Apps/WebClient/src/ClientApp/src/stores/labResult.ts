@@ -161,6 +161,15 @@ export const useLabResultStore = defineStore("labResult", () => {
                         logger.info(`Re-querying for lab results`);
                         retrieveLabResults(hdid);
                     }, payload.retryin);
+                } else {
+                    if (result.resultError) {
+                        throw ResultError.fromModel(result.resultError);
+                    }
+                    logger.warn(
+                        `Laboratory results retrieval failed! ${JSON.stringify(
+                            result
+                        )}`
+                    );
                 }
                 return result;
             })

@@ -63,7 +63,7 @@ export const useNotificationStore = defineStore("notification", () => {
 
     function setNotificationError(incomingError: ResultError) {
         error.value = incomingError;
-        statusMessage.value = incomingError.resultMessage;
+        statusMessage.value = incomingError.message;
         status.value = LoadStatus.ERROR;
     }
 
