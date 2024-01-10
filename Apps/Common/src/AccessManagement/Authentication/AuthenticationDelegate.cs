@@ -21,6 +21,8 @@ namespace HealthGateway.Common.AccessManagement.Authentication
     using System.Net.Http.Json;
     using System.Security.Claims;
     using System.Text.Json;
+    using System.Threading;
+    using System.Threading.Tasks;
     using HealthGateway.Common.AccessManagement.Authentication.Models;
     using HealthGateway.Common.CacheProviders;
     using HealthGateway.Common.Data.Constants;
@@ -69,99 +71,92 @@ namespace HealthGateway.Common.AccessManagement.Authentication
         }
 
         /// <inheritdoc/>
-        public JwtModel AuthenticateAsSystem(Uri tokenUri, ClientCredentialsTokenRequest tokenRequest, bool cacheEnabled = true)
+        public async Task<JwtModel> AuthenticateAsSystemAsync(ClientCredentialsRequest request, bool cacheEnabled = true, CancellationToken ct = default)
         {
             JwtModel? jwtModel;
-            string cacheKey = $"{tokenUri}:{tokenRequest.Audience}:{tokenRequest.ClientId}";
+
             if (cacheEnabled)
             {
-                jwtModel = this.cacheProvider.GetItem<JwtModel>(cacheKey);
+                string cacheKey = $"{request.TokenUri}:{request.Parameters.Audience}:{request.Parameters.ClientId}";
+                jwtModel = await this.cacheProvider.GetItemAsync<JwtModel>(cacheKey, ct);
                 if (jwtModel is null)
                 {
-                    jwtModel = this.GetSystemToken(tokenUri, tokenRequest);
+                    jwtModel = await this.GetSystemTokenAsync(request, ct);
                     if (jwtModel.ExpiresIn is not null)
                     {
                         int expiry = jwtModel.ExpiresIn.Value - 10;
-                        this.cacheProvider.AddItem(cacheKey, jwtModel, TimeSpan.FromSeconds(expiry));
+                        await this.cacheProvider.AddItemAsync(cacheKey, jwtModel, TimeSpan.FromSeconds(expiry), ct);
                     }
                 }
             }
             else
             {
-                jwtModel = this.GetSystemToken(tokenUri, tokenRequest);
+                jwtModel = await this.GetSystemTokenAsync(request, ct);
             }
 
-            this.logger.LogDebug("Authenticating Service... {ClientId}", tokenRequest.ClientId);
+            this.logger.LogDebug("Authenticating Service... {ClientId}", request.Parameters.ClientId);
             return jwtModel;
         }
 
         /// <inheritdoc/>
-        public JwtModel AuthenticateAsUser(Uri tokenUri, ClientCredentialsTokenRequest tokenRequest, bool cacheEnabled = false)
+        public async Task<JwtModel> AuthenticateUserAsync(ClientCredentialsRequest request, bool cacheEnabled = false, CancellationToken ct = default)
         {
-            (JwtModel jwtModel, _) = this.AuthenticateUser(tokenUri, tokenRequest, cacheEnabled);
-            return jwtModel;
-        }
-
-        /// <inheritdoc/>
-        public (JwtModel JwtModel, bool Cached) AuthenticateUser(Uri tokenUri, ClientCredentialsTokenRequest tokenRequest, bool cacheEnabled)
-        {
-            string cacheKey = $"{tokenUri}:{tokenRequest.Audience}:{tokenRequest.ClientId}:{tokenRequest.Username}";
-            bool cached = false;
-            this.logger.LogDebug("Attempting to fetch token from cache");
             JwtModel? jwtModel = null;
+
+            string cacheKey = $"{request.TokenUri}:{request.Parameters.Audience}:{request.Parameters.ClientId}:{request.Parameters.Username}";
             if (cacheEnabled && this.tokenCacheMinutes > 0)
             {
-                jwtModel = this.cacheProvider.GetItem<JwtModel>(cacheKey);
+                this.logger.LogDebug("Attempting to fetch token from cache");
+                jwtModel = await this.cacheProvider.GetItemAsync<JwtModel>(cacheKey, ct);
             }
 
             if (jwtModel == null)
             {
-                this.logger.LogInformation("JWT Model not found in cache - Authenticating Direct Grant as User: {Username}", tokenRequest.Username);
-                jwtModel = this.ResourceOwnerPasswordGrant(tokenUri, tokenRequest);
+                this.logger.LogInformation("JWT Model not found in cache - Authenticating Direct Grant as User: {Username}", request.Parameters.Username);
+                jwtModel = await this.ResourceOwnerPasswordGrantAsync(request, ct);
 
                 if (jwtModel == null)
                 {
-                    this.logger.LogCritical("Unable to authenticate to as {Username} to {TokenUri}", tokenRequest.Username, tokenUri);
+                    this.logger.LogCritical("Unable to authenticate to as {Username} to {TokenUri}", request.Parameters.Username, request.TokenUri);
                     throw new InvalidOperationException("Auth failure - JwtModel cannot be null");
                 }
 
                 if (cacheEnabled && this.tokenCacheMinutes > 0)
                 {
                     this.logger.LogDebug("Attempting to store Access token in cache");
-                    this.cacheProvider.AddItem(cacheKey, jwtModel, TimeSpan.FromMinutes(this.tokenCacheMinutes));
+                    await this.cacheProvider.AddItemAsync(cacheKey, jwtModel, TimeSpan.FromMinutes(this.tokenCacheMinutes), ct);
                 }
                 else
                 {
                     this.logger.LogDebug("Caching is not configured or has been disabled");
                 }
 
-                this.logger.LogInformation("Finished authenticating User: {Username}", tokenRequest.Username);
+                this.logger.LogInformation("Finished authenticating User: {Username}", request.Parameters.Username);
             }
             else
             {
                 this.logger.LogDebug("Auth token found in cache");
-                cached = true;
             }
 
-            return (jwtModel, cached);
+            return jwtModel;
         }
 
         /// <inheritdoc/>
-        public (Uri TokenUri, ClientCredentialsTokenRequest TokenRequest) GetClientCredentialsAuth(string section)
+        public ClientCredentialsRequest GetClientCredentialsRequestFromConfig(string section)
         {
             IConfigurationSection configSection = this.configuration.GetSection(section);
-            Uri tokenUri = configSection.GetValue<Uri>(@"TokenUri") ??
+            Uri tokenUri = configSection.GetValue<Uri>("TokenUri") ??
                            throw new ArgumentNullException(nameof(section), $"{section} does not contain a valid TokenUri");
-            ClientCredentialsTokenRequest tokenRequest = new();
-            configSection.Bind(tokenRequest); // Client ID, Client Secret, Audience, Scope
-            return (tokenUri, tokenRequest);
+            ClientCredentialsRequestParameters parameters = new();
+            configSection.Bind(parameters); // Client ID, Client Secret, Audience, Scope
+            return new() { TokenUri = tokenUri, Parameters = parameters };
         }
 
         /// <inheritdoc/>
-        public string? FetchAuthenticatedUserToken()
+        public async Task<string?> FetchAuthenticatedUserTokenAsync()
         {
             HttpContext? httpContext = this.httpContextAccessor?.HttpContext;
-            return httpContext.GetTokenAsync("access_token").GetAwaiter().GetResult();
+            return await httpContext.GetTokenAsync("access_token");
         }
 
         /// <inheritdoc/>
@@ -200,56 +195,56 @@ namespace HealthGateway.Common.AccessManagement.Authentication
             return user?.FindFirst("preferred_username")?.Value;
         }
 
-        private JwtModel GetSystemToken(Uri tokenUri, ClientCredentialsTokenRequest tokenRequest)
+        private async Task<JwtModel> GetSystemTokenAsync(ClientCredentialsRequest request, CancellationToken ct)
         {
-            JwtModel? jwtModel = this.ClientCredentialsGrant(tokenUri, tokenRequest);
-            this.logger.LogDebug("Finished authenticating Service. {ClientId}", tokenRequest.ClientId);
+            JwtModel? jwtModel = await this.ClientCredentialsGrantAsync(request, ct);
+            this.logger.LogDebug("Finished authenticating Service. {ClientId}", request.Parameters.ClientId);
             return jwtModel ?? throw new InvalidOperationException("Auth failure - JwtModel cannot be null");
         }
 
-        private JwtModel? ClientCredentialsGrant(Uri tokenUri, ClientCredentialsTokenRequest tokenRequest)
+        private async Task<JwtModel?> ClientCredentialsGrantAsync(ClientCredentialsRequest request, CancellationToken ct)
         {
+            ClientCredentialsRequestParameters parameters = request.Parameters;
             IEnumerable<KeyValuePair<string?, string?>> oauthParams = new[]
             {
-                new KeyValuePair<string?, string?>(@"client_id", tokenRequest.ClientId),
-                new KeyValuePair<string?, string?>(@"client_secret", tokenRequest.ClientSecret),
-                new KeyValuePair<string?, string?>(@"audience", tokenRequest.Audience),
-                new KeyValuePair<string?, string?>(@"grant_type", @"client_credentials"),
+                new KeyValuePair<string?, string?>("client_id", parameters.ClientId),
+                new KeyValuePair<string?, string?>("client_secret", parameters.ClientSecret),
+                new KeyValuePair<string?, string?>("audience", parameters.Audience),
+                new KeyValuePair<string?, string?>("grant_type", "client_credentials"),
             };
             using FormUrlEncodedContent content = new(oauthParams);
-            return this.Authenticate(tokenUri, content);
+            return await this.AuthenticateAsync(request.TokenUri, content, ct);
         }
 
-        private JwtModel? ResourceOwnerPasswordGrant(Uri tokenUri, ClientCredentialsTokenRequest tokenRequest)
+        private async Task<JwtModel?> ResourceOwnerPasswordGrantAsync(ClientCredentialsRequest request, CancellationToken ct)
         {
+            ClientCredentialsRequestParameters parameters = request.Parameters;
             IEnumerable<KeyValuePair<string?, string?>> oauthParams = new[]
             {
-                new KeyValuePair<string?, string?>(@"client_id", tokenRequest.ClientId),
-                new KeyValuePair<string?, string?>(@"client_secret", tokenRequest.ClientSecret),
-                new KeyValuePair<string?, string?>(@"grant_type", @"password"),
-                new KeyValuePair<string?, string?>(@"audience", tokenRequest.Audience),
-                new KeyValuePair<string?, string?>(@"scope", tokenRequest.Scope),
-                new KeyValuePair<string?, string?>(@"username", tokenRequest.Username),
-                new KeyValuePair<string?, string?>(@"password", tokenRequest.Password),
+                new KeyValuePair<string?, string?>("client_id", parameters.ClientId),
+                new KeyValuePair<string?, string?>("client_secret", parameters.ClientSecret),
+                new KeyValuePair<string?, string?>("grant_type", "password"),
+                new KeyValuePair<string?, string?>("audience", parameters.Audience),
+                new KeyValuePair<string?, string?>("scope", parameters.Scope),
+                new KeyValuePair<string?, string?>("username", parameters.Username),
+                new KeyValuePair<string?, string?>("password", parameters.Password),
             };
 
             using FormUrlEncodedContent content = new(oauthParams);
-            return this.Authenticate(tokenUri, content);
+            return await this.AuthenticateAsync(request.TokenUri, content, ct);
         }
 
-        private JwtModel? Authenticate(Uri tokenUri, FormUrlEncodedContent content)
+        private async Task<JwtModel?> AuthenticateAsync(Uri tokenUri, FormUrlEncodedContent content, CancellationToken ct)
         {
             JwtModel? authModel = null;
             try
             {
-                using (HttpClient client = this.httpClientFactory.CreateClient())
-                {
-                    content.Headers.Clear();
-                    content.Headers.Add(@"Content-Type", @"application/x-www-form-urlencoded");
-                    HttpResponseMessage response = client.PostAsync(tokenUri, content).GetAwaiter().GetResult();
-                    response.EnsureSuccessStatusCode();
-                    authModel = response.Content.ReadFromJsonAsync<JwtModel>().GetAwaiter().GetResult();
-                }
+                using HttpClient client = this.httpClientFactory.CreateClient();
+                content.Headers.Clear();
+                content.Headers.Add("Content-Type", "application/x-www-form-urlencoded");
+                HttpResponseMessage response = await client.PostAsync(tokenUri, content, ct);
+                response.EnsureSuccessStatusCode();
+                authModel = await response.Content.ReadFromJsonAsync<JwtModel>(cancellationToken: ct);
             }
             catch (Exception e) when (e is HttpRequestException or InvalidOperationException or JsonException)
             {

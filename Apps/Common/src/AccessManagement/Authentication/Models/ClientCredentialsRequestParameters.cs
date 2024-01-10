@@ -18,9 +18,9 @@ namespace HealthGateway.Common.AccessManagement.Authentication.Models
     using System.Text.Json.Serialization;
 
     /// <summary>
-    /// OAuth2 OIDC Client Credentials Grant Token request information.
+    /// Parameters for the OAuth2 OIDC client credentials grant request.
     /// </summary>
-    public class ClientCredentialsTokenRequest
+    public class ClientCredentialsRequestParameters
     {
         /// <summary>
         /// Gets or sets a unique identifier of the target API you want to access.
@@ -47,13 +47,13 @@ namespace HealthGateway.Common.AccessManagement.Authentication.Models
         public string ClientSecret { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the resource owner username for OAuth 2 Rsource Owner Password Grant.
+        /// Gets or sets the resource owner username for OAuth 2 Resource Owner Password Grant.
         /// </summary>
         [JsonPropertyName("username")]
         public string Username { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the resource owner password for OAuth 2 Rsource Owner Password Grant.
+        /// Gets or sets the resource owner password for OAuth 2 Resource Owner Password Grant.
         /// </summary>
         [JsonPropertyName("password")]
         public string Password { get; set; } = string.Empty;

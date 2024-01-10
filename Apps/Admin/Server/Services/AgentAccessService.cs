@@ -42,8 +42,7 @@ namespace HealthGateway.Admin.Server.Services
         private readonly IAuthenticationDelegate authDelegate;
         private readonly IKeycloakAdminApi keycloakAdminApi;
         private readonly ILogger logger;
-        private readonly ClientCredentialsTokenRequest tokenRequest;
-        private readonly Uri tokenUri;
+        private readonly ClientCredentialsRequest clientCredentialsRequest;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AgentAccessService"/> class.
@@ -56,13 +55,13 @@ namespace HealthGateway.Admin.Server.Services
             this.authDelegate = authDelegate;
             this.keycloakAdminApi = keycloakAdminApi;
             this.logger = logger;
-            (this.tokenUri, this.tokenRequest) = this.authDelegate.GetClientCredentialsAuth(AuthConfigSectionName);
+            this.clientCredentialsRequest = this.authDelegate.GetClientCredentialsRequestFromConfig(AuthConfigSectionName);
         }
 
         /// <inheritdoc/>
         public async Task<AdminAgent> ProvisionAgentAccessAsync(AdminAgent agent, CancellationToken ct = default)
         {
-            JwtModel jwtModel = this.authDelegate.AuthenticateAsSystem(this.tokenUri, this.tokenRequest);
+            JwtModel jwtModel = await this.authDelegate.AuthenticateAsSystemAsync(this.clientCredentialsRequest, ct: ct);
 
             agent.Roles.Remove(IdentityAccessRole.Unknown);
 
@@ -119,7 +118,7 @@ namespace HealthGateway.Admin.Server.Services
         public async Task<IEnumerable<AdminAgent>> GetAgentsAsync(string searchString, int? resultLimit = 25, CancellationToken ct = default)
         {
             const int firstRecord = 0;
-            JwtModel jwtModel = this.authDelegate.AuthenticateAsSystem(this.tokenUri, this.tokenRequest);
+            JwtModel jwtModel = await this.authDelegate.AuthenticateAsSystemAsync(this.clientCredentialsRequest, ct: ct);
             List<UserRepresentation> users = await this.keycloakAdminApi.GetUsersSearchAsync(searchString, firstRecord, resultLimit.GetValueOrDefault(), jwtModel.AccessToken, ct);
 
             List<AdminAgent> adminAgents = [];
@@ -156,7 +155,7 @@ namespace HealthGateway.Admin.Server.Services
         /// <inheritdoc/>
         public async Task<AdminAgent> UpdateAgentAccessAsync(AdminAgent agent, CancellationToken ct = default)
         {
-            JwtModel jwtModel = this.authDelegate.AuthenticateAsSystem(this.tokenUri, this.tokenRequest);
+            JwtModel jwtModel = await this.authDelegate.AuthenticateAsSystemAsync(this.clientCredentialsRequest, ct: ct);
 
             agent.Roles.Remove(IdentityAccessRole.Unknown);
 
@@ -189,7 +188,7 @@ namespace HealthGateway.Admin.Server.Services
         /// <inheritdoc/>
         public async Task RemoveAgentAccessAsync(Guid agentId, CancellationToken ct = default)
         {
-            JwtModel jwtModel = this.authDelegate.AuthenticateAsSystem(this.tokenUri, this.tokenRequest);
+            JwtModel jwtModel = await this.authDelegate.AuthenticateAsSystemAsync(this.clientCredentialsRequest, ct: ct);
 
             await this.keycloakAdminApi.DeleteUserAsync(agentId, jwtModel.AccessToken, ct);
         }

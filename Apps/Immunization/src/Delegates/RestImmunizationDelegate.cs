@@ -73,7 +73,7 @@ namespace HealthGateway.Immunization.Delegates
             this.logger.LogDebug("Getting immunization {ImmunizationId}", immunizationId);
 
             RequestResult<PhsaResult<ImmunizationViewResponse>> requestResult = InitializeResult<ImmunizationViewResponse>();
-            string? accessToken = this.authenticationDelegate.FetchAuthenticatedUserToken();
+            string? accessToken = await this.authenticationDelegate.FetchAuthenticatedUserTokenAsync();
 
             try
             {
@@ -103,7 +103,7 @@ namespace HealthGateway.Immunization.Delegates
             this.logger.LogDebug("Getting immunizations for hdid: {Hdid}", hdid);
 
             RequestResult<PhsaResult<ImmunizationResponse>> requestResult = InitializeResult<ImmunizationResponse>();
-            string? accessToken = this.authenticationDelegate.FetchAuthenticatedUserToken();
+            string? accessToken = await this.authenticationDelegate.FetchAuthenticatedUserTokenAsync();
 
             try
             {

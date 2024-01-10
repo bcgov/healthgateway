@@ -48,8 +48,7 @@ public class InactiveUserService : IInactiveUserService
     private readonly IMapper autoMapper;
     private readonly IKeycloakAdminApi keycloakAdminApi;
     private readonly ILogger logger;
-    private readonly ClientCredentialsTokenRequest tokenRequest;
-    private readonly Uri tokenUri;
+    private readonly ClientCredentialsRequest clientCredentialsRequest;
     private readonly IConfiguration configuration;
 
     /// <summary>
@@ -75,7 +74,7 @@ public class InactiveUserService : IInactiveUserService
         this.logger = logger;
         this.configuration = configuration;
         this.autoMapper = autoMapper;
-        (this.tokenUri, this.tokenRequest) = this.authDelegate.GetClientCredentialsAuth(AuthConfigSectionName);
+        this.clientCredentialsRequest = this.authDelegate.GetClientCredentialsRequestFromConfig(AuthConfigSectionName);
     }
 
     /// <inheritdoc/>
@@ -106,7 +105,7 @@ public class InactiveUserService : IInactiveUserService
         this.logger.LogDebug("Timezone: {Timezone} - Inactive db admin user profile count: {Count} since {InactiveDays} day(s)...", localTimezone, inactiveUsers.Count, inactiveDays);
 
         // Get admin and support users from keycloak
-        JwtModel jwtModel = this.authDelegate.AuthenticateAsSystem(this.tokenUri, this.tokenRequest);
+        JwtModel jwtModel = await this.authDelegate.AuthenticateAsSystemAsync(this.clientCredentialsRequest, ct: ct);
         try
         {
             const int firstRecord = 0;

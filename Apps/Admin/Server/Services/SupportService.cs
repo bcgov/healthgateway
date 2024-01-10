@@ -90,7 +90,7 @@ namespace HealthGateway.Admin.Server.Services
                 query.IncludeCovidDetails ? this.GetVaccineDetails(patient, query.RefreshVaccineDetails) : null;
 
             Task<CovidAssessmentDetailsResponse>? getCovidAssessmentDetails =
-                query.IncludeCovidDetails ? immunizationAdminApi.GetCovidAssessmentDetails(new() { Phn = patient.Phn }, this.GetAccessToken()) : null;
+                query.IncludeCovidDetails ? immunizationAdminApi.GetCovidAssessmentDetails(new() { Phn = patient.Phn }, await this.GetAccessTokenAsync()) : null;
 
             IEnumerable<MessagingVerificationModel>? messagingVerifications =
                 query.IncludeMessagingVerifications ? await this.GetMessagingVerificationsAsync(patient.Hdid, ct) : null;
@@ -215,20 +215,20 @@ namespace HealthGateway.Admin.Server.Services
             return dependentInfo;
         }
 
-        private Task<VaccineDetails> GetVaccineDetails(PatientModel patient, bool refresh)
+        private async Task<VaccineDetails> GetVaccineDetails(PatientModel patient, bool refresh)
         {
             if (!string.IsNullOrEmpty(patient.Phn) && patient.Birthdate != DateTime.MinValue)
             {
-                return immunizationAdminDelegate.GetVaccineDetailsWithRetries(patient.Phn, this.GetAccessToken(), refresh);
+                return await immunizationAdminDelegate.GetVaccineDetailsWithRetries(patient.Phn, await this.GetAccessTokenAsync(), refresh);
             }
 
             logger.LogError("Patient PHN {PersonalHealthNumber} or DOB {Birthdate}) are invalid", patient.Phn, patient.Birthdate);
             throw new ProblemDetailsException(ExceptionUtility.CreateProblemDetails(ErrorMessages.PhnOrDateAndBirthInvalid, HttpStatusCode.BadRequest, nameof(SupportService)));
         }
 
-        private string GetAccessToken()
+        private async Task<string> GetAccessTokenAsync()
         {
-            string? accessToken = authenticationDelegate.FetchAuthenticatedUserToken();
+            string? accessToken = await authenticationDelegate.FetchAuthenticatedUserTokenAsync();
             return accessToken ?? throw new ProblemDetailsException(ExceptionUtility.CreateProblemDetails(ErrorMessages.CannotFindAccessToken, HttpStatusCode.Unauthorized, nameof(SupportService)));
         }
 

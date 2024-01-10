@@ -41,7 +41,6 @@ namespace HealthGateway.ImmunizationTests.Services.Test
     /// <summary>
     /// ImmunizationService's Unit Tests.
     /// </summary>
-    [SuppressMessage("Design", "CA1506:Avoid excessive class coupling", Justification = "Unit Test")]
     [SuppressMessage("Major Code Smell", "S125:Sections of code should not be commented out", Justification = "Ignore broken tests")]
     public class ImmunizationServiceTests
     {
@@ -177,7 +176,6 @@ namespace HealthGateway.ImmunizationTests.Services.Test
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        [SuppressMessage("Maintainability", "CA1506:Avoid excessive class coupling", Justification = "Team decision")]
         public async Task ShouldGetRecommendation()
         {
             ImmunizationRecommendationResponse immzRecommendationResponse = this.GetImmzRecommendationResponse();

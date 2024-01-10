@@ -23,6 +23,7 @@ namespace HealthGateway.Medication.Delegates
     using System.Threading.Tasks;
     using AutoMapper;
     using HealthGateway.Common.AccessManagement.Authentication;
+    using HealthGateway.Common.AccessManagement.Authentication.Models;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Delegates;
@@ -44,7 +45,7 @@ namespace HealthGateway.Medication.Delegates
         private readonly ISpecialAuthorityApi specialAuthorityApi;
 
         private readonly ILogger logger;
-        private readonly Config salesforceConfig;
+        private readonly ClientCredentialsRequest clientCredentialsRequest;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SalesforceMedicationRequestDelegate"/> class.
@@ -66,8 +67,8 @@ namespace HealthGateway.Medication.Delegates
             this.authDelegate = authDelegate;
             this.autoMapper = autoMapper;
 
-            this.salesforceConfig = new Config();
-            configuration.Bind(Config.SalesforceConfigSectionKey, this.salesforceConfig);
+            Config config = configuration.GetValue<Config>(Config.SalesforceConfigSectionKey) ?? new();
+            this.clientCredentialsRequest = new() { TokenUri = config.TokenUri, Parameters = config.ClientAuthentication };
         }
 
         private static ActivitySource Source { get; } = new(nameof(ClientRegistriesDelegate));
@@ -81,8 +82,7 @@ namespace HealthGateway.Medication.Delegates
                 {
                     ResultStatus = ResultType.Error,
                 };
-
-                string? accessToken = this.authDelegate.AuthenticateAsUser(this.salesforceConfig.TokenUri, this.salesforceConfig.ClientAuthentication, true).AccessToken;
+                string? accessToken = (await this.authDelegate.AuthenticateUserAsync(this.clientCredentialsRequest, true, ct)).AccessToken;
                 if (string.IsNullOrEmpty(accessToken))
                 {
                     this.logger.LogError("Authenticated as User System access token is null or empty, Error:\n{AccessToken}", accessToken);

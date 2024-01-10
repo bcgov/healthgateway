@@ -236,7 +236,7 @@ namespace HealthGateway.Admin.Services
         /// <inheritdoc/>
         public async Task<RequestResult<CovidAssessmentResponse>> SubmitCovidAssessmentAsync(CovidAssessmentRequest request)
         {
-            string? accessToken = this.authenticationDelegate.FetchAuthenticatedUserToken();
+            string? accessToken = await this.authenticationDelegate.FetchAuthenticatedUserTokenAsync();
             try
             {
                 CovidAssessmentResponse response = await this.immunizationAdminApi.SubmitCovidAssessment(request, accessToken).ConfigureAwait(true);
@@ -257,7 +257,7 @@ namespace HealthGateway.Admin.Services
                 return RequestResultFactory.ActionRequired<CovidAssessmentDetailsResponse>(ActionType.Validation, "Form data did not pass validation");
             }
 
-            string? accessToken = this.authenticationDelegate.FetchAuthenticatedUserToken();
+            string? accessToken = await this.authenticationDelegate.FetchAuthenticatedUserTokenAsync();
             try
             {
                 CovidAssessmentDetailsResponse response = await this.immunizationAdminApi.GetCovidAssessmentDetails(new CovidAssessmentDetailsRequest { Phn = phn }, accessToken).ConfigureAwait(true);

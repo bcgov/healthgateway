@@ -52,9 +52,7 @@ namespace HealthGateway.Immunization.Services
         private readonly IHttpContextAccessor? httpContextAccessor;
         private readonly ILogger<VaccineStatusService> logger;
         private readonly PhsaConfig phsaConfig;
-        private readonly ClientCredentialsTokenRequest tokenRequest;
-        private readonly Uri tokenUri;
-
+        private readonly ClientCredentialsRequest clientCredentialsRequest;
         private readonly IVaccineStatusDelegate vaccineStatusDelegate;
 
         /// <summary>
@@ -78,7 +76,7 @@ namespace HealthGateway.Immunization.Services
             this.vaccineStatusDelegate = vaccineStatusDelegate;
             this.autoMapper = autoMapper;
 
-            (this.tokenUri, this.tokenRequest) = this.authDelegate.GetClientCredentialsAuth(AuthConfigSectionName);
+            this.clientCredentialsRequest = this.authDelegate.GetClientCredentialsRequestFromConfig(AuthConfigSectionName);
 
             this.phsaConfig = new();
             configuration.Bind(PhsaConfigSectionKey, this.phsaConfig);
@@ -222,8 +220,8 @@ namespace HealthGateway.Immunization.Services
                 return RequestResultFactory.Error<VaccineStatus>(ErrorType.InvalidState, validationResults.Errors);
             }
 
-            string? accessToken = this.authDelegate.AuthenticateAsSystem(this.tokenUri, this.tokenRequest).AccessToken;
-            RequestResult<VaccineStatus> retVal = await this.GetVaccineStatusFromDelegateAsync(query, accessToken, phn, ct);
+            JwtModel jwtModel = await this.authDelegate.AuthenticateAsSystemAsync(this.clientCredentialsRequest, ct: ct);
+            RequestResult<VaccineStatus> retVal = await this.GetVaccineStatusFromDelegateAsync(query, jwtModel.AccessToken, phn, ct);
 
             return retVal;
         }
@@ -231,7 +229,7 @@ namespace HealthGateway.Immunization.Services
         private async Task<RequestResult<VaccineStatus>> GetAuthenticatedVaccineStatusWithOptionalProofAsync(string hdid, bool includeVaccineProof, CancellationToken ct)
         {
             // Gets the current user access token and pass it along to PHSA
-            string? bearerToken = this.authDelegate.FetchAuthenticatedUserToken();
+            string? bearerToken = await this.authDelegate.FetchAuthenticatedUserTokenAsync();
 
             VaccineStatusQuery query = new()
             {

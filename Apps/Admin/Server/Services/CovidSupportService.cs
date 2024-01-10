@@ -66,7 +66,7 @@ namespace HealthGateway.Admin.Server.Services
         public async Task MailVaccineCardAsync(MailDocumentRequest request, CancellationToken ct = default)
         {
             PatientModel patient = await this.GetPatientAsync(request.PersonalHealthNumber, ct).ConfigureAwait(true);
-            VaccineStatusResult vaccineStatusResult = await this.GetVaccineStatusResult(request.PersonalHealthNumber, patient.Birthdate, this.GetAccessToken()).ConfigureAwait(true);
+            VaccineStatusResult vaccineStatusResult = await this.GetVaccineStatusResult(request.PersonalHealthNumber, patient.Birthdate, await this.GetAccessTokenAsync()).ConfigureAwait(true);
             VaccinationStatus vaccinationStatus = this.GetVaccinationStatus(vaccineStatusResult);
             await this.SendVaccineProofRequest(vaccinationStatus, vaccineStatusResult.QrCode.Data, request.MailAddress).ConfigureAwait(true);
         }
@@ -75,7 +75,7 @@ namespace HealthGateway.Admin.Server.Services
         public async Task<ReportModel> RetrieveVaccineRecordAsync(string phn, CancellationToken ct = default)
         {
             PatientModel patient = await this.GetPatientAsync(phn, ct).ConfigureAwait(true);
-            VaccineStatusResult vaccineStatusResult = await this.GetVaccineStatusResult(phn, patient.Birthdate, this.GetAccessToken()).ConfigureAwait(true);
+            VaccineStatusResult vaccineStatusResult = await this.GetVaccineStatusResult(phn, patient.Birthdate, await this.GetAccessTokenAsync()).ConfigureAwait(true);
             VaccinationStatus vaccinationStatus = this.GetVaccinationStatus(vaccineStatusResult);
             VaccineProofResponse vaccineProofResponse = await this.GetVaccineProof(vaccinationStatus, vaccineStatusResult.QrCode.Data).ConfigureAwait(true);
             return await this.GetVaccineProofReport(vaccineProofResponse.AssetUri).ConfigureAwait(true);
@@ -84,15 +84,15 @@ namespace HealthGateway.Admin.Server.Services
         /// <inheritdoc/>
         public async Task<CovidAssessmentResponse> SubmitCovidAssessmentAsync(CovidAssessmentRequest request, CancellationToken ct = default)
         {
-            string accessToken = this.GetAccessToken();
+            string accessToken = await this.GetAccessTokenAsync();
 
             request.Submitted = DateTime.UtcNow;
             return await immunizationAdminApi.SubmitCovidAssessment(request, accessToken).ConfigureAwait(true);
         }
 
-        private string GetAccessToken()
+        private async Task<string> GetAccessTokenAsync()
         {
-            string? accessToken = authenticationDelegate.FetchAuthenticatedUserToken();
+            string? accessToken = await authenticationDelegate.FetchAuthenticatedUserTokenAsync();
             if (accessToken == null)
             {
                 throw new ProblemDetailsException(ExceptionUtility.CreateProblemDetails(ErrorMessages.CannotFindAccessToken, HttpStatusCode.Unauthorized, nameof(CovidSupportService)));

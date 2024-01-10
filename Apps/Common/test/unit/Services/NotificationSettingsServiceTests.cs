@@ -23,6 +23,7 @@ namespace HealthGateway.CommonTests.Services
     using Hangfire;
     using Hangfire.Common;
     using Hangfire.States;
+    using HealthGateway.Common.Jobs;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Services;
     using HealthGateway.Database.Delegates;
@@ -67,12 +68,12 @@ namespace HealthGateway.CommonTests.Services
                 mockJobClient.Object,
                 mockResourceDelegateDelegate.Object);
 
-            string expectedJobParm = JsonSerializer.Serialize(nsr);
+            string expectedJobParam = JsonSerializer.Serialize(nsr);
             await service.QueueNotificationSettingsAsync(nsr);
 
             mockJobClient.Verify(
                 x => x.Create(
-                    It.Is<Job>(job => job.Method.Name == "PushNotificationSettings" && (string)job.Args[0] == expectedJobParm),
+                    It.Is<Job>(job => job.Method.Name == nameof(INotificationSettingsJob.PushNotificationSettingsAsync) && (string)job.Args[0] == expectedJobParam),
                     It.IsAny<EnqueuedState>()));
         }
 
@@ -159,7 +160,7 @@ namespace HealthGateway.CommonTests.Services
 
             mockJobClient.Verify(
                 x => x.Create(
-                    It.Is<Job>(job => job.Method.Name == "PushNotificationSettings" && job.Args[0] is string),
+                    It.Is<Job>(job => job.Method.Name == nameof(INotificationSettingsJob.PushNotificationSettingsAsync) && job.Args[0] is string),
                     It.IsAny<EnqueuedState>()));
         }
     }

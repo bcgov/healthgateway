@@ -17,6 +17,7 @@ namespace HealthGateway.JobScheduler.Jobs
 {
     using System;
     using System.Text.Json;
+    using System.Threading.Tasks;
     using Hangfire;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.AccessManagement.Authentication.Models;
@@ -43,8 +44,7 @@ namespace HealthGateway.JobScheduler.Jobs
         private readonly bool jobEnabled;
         private readonly ILogger<NotificationSettingsJob> logger;
         private readonly INotificationSettingsDelegate notificationSettingsDelegate;
-        private readonly ClientCredentialsTokenRequest tokenRequest;
-        private readonly Uri tokenUri;
+        private readonly ClientCredentialsRequest clientCredentialsRequest;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NotificationSettingsJob"/> class.
@@ -66,12 +66,12 @@ namespace HealthGateway.JobScheduler.Jobs
             this.authDelegate = authDelegate;
             this.eventLogDelegate = eventLogDelegate;
             this.jobEnabled = configuration.GetSection(JobConfigKey).GetValue(JobEnabledKey, true);
-            (this.tokenUri, this.tokenRequest) = this.authDelegate.GetClientCredentialsAuth(AuthConfigSectionName);
+            this.clientCredentialsRequest = this.authDelegate.GetClientCredentialsRequestFromConfig(AuthConfigSectionName);
         }
 
         /// <inheritdoc/>
         [DisableConcurrentExecution(ConcurrencyTimeout)]
-        public void PushNotificationSettings(string notificationSettingsJson)
+        public async Task PushNotificationSettingsAsync(string notificationSettingsJson)
         {
             this.logger.LogDebug("Queueing Notification Settings push to PHSA...");
             if (!this.jobEnabled)
@@ -87,14 +87,14 @@ namespace HealthGateway.JobScheduler.Jobs
                 throw new FormatException("Unable to deserialize JSON Notification Settings");
             }
 
-            string? accessToken = this.authDelegate.AuthenticateAsSystem(this.tokenUri, this.tokenRequest).AccessToken;
+            string? accessToken = (await this.authDelegate.AuthenticateAsSystemAsync(this.clientCredentialsRequest)).AccessToken;
             if (string.IsNullOrEmpty(accessToken))
             {
                 this.logger.LogError("Authenticated as User System access token is null or empty, Error:\n{AccessToken}", accessToken);
                 throw new FormatException($"Authenticated as User System access token is null or empty, Error:\n{accessToken}");
             }
 
-            RequestResult<NotificationSettingsResponse> retVal = this.notificationSettingsDelegate.SetNotificationSettingsAsync(notificationSettings, accessToken).GetAwaiter().GetResult();
+            RequestResult<NotificationSettingsResponse> retVal = await this.notificationSettingsDelegate.SetNotificationSettingsAsync(notificationSettings, accessToken);
             if (retVal.ResultStatus == ResultType.ActionRequired)
             {
                 EventLog eventLog = new()
@@ -103,7 +103,7 @@ namespace HealthGateway.JobScheduler.Jobs
                     EventName = "SMS Rejected",
                     EventDescription = notificationSettings.SmsNumber ?? string.Empty,
                 };
-                this.eventLogDelegate.WriteEventLog(eventLog);
+                await this.eventLogDelegate.WriteEventLogAsync(eventLog);
             }
             else
             {

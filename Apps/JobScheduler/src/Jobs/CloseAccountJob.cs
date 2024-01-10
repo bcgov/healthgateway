@@ -58,8 +58,7 @@ namespace HealthGateway.JobScheduler.Jobs
         private readonly ILogger<CloseAccountJob> logger;
         private readonly IUserProfileDelegate profileDelegate;
         private readonly int profilesPageSize;
-        private readonly ClientCredentialsTokenRequest tokenRequest;
-        private readonly Uri tokenUri;
+        private readonly ClientCredentialsRequest clientCredentialsRequest;
         private readonly IKeycloakAdminApi keycloakAdminApi;
         private readonly IMessageSender messageSender;
         private readonly bool accountsChangeFeedEnabled;
@@ -97,7 +96,7 @@ namespace HealthGateway.JobScheduler.Jobs
             this.hoursBeforeDeletion = configuration.GetValue<int>($"{JobKey}:{HoursDeletionKey}") * -1;
             this.emailTemplate = configuration.GetValue<string>($"{JobKey}:{EmailTemplateKey}") ??
                                  throw new ArgumentNullException(nameof(configuration), $"{JobKey}:{EmailTemplateKey} is null");
-            (this.tokenUri, this.tokenRequest) = this.authDelegate.GetClientCredentialsAuth(AuthConfigSectionName);
+            this.clientCredentialsRequest = this.authDelegate.GetClientCredentialsRequestFromConfig(AuthConfigSectionName);
             ChangeFeedOptions? changeFeedConfiguration = configuration.GetSection(ChangeFeedOptions.ChangeFeed).Get<ChangeFeedOptions>();
             this.accountsChangeFeedEnabled = changeFeedConfiguration?.Accounts.Enabled ?? false;
         }
@@ -138,7 +137,7 @@ namespace HealthGateway.JobScheduler.Jobs
                         await this.emailService.QueueNewEmailAsync(profile.Email!, this.emailTemplate, false, ct);
                     }
 
-                    JwtModel jwtModel = this.authDelegate.AuthenticateAsSystem(this.tokenUri, this.tokenRequest);
+                    JwtModel jwtModel = await this.authDelegate.AuthenticateAsSystemAsync(this.clientCredentialsRequest, ct: ct);
 
                     try
                     {
