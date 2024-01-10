@@ -96,7 +96,7 @@ namespace AccountDataAccessTest.Strategy
             cacheProvider.Setup(p => p.GetItem<PatientModel>($"{PatientCacheDomain}:HDID:{Hdid}")).Returns(cachedPatient);
 
             Mock<IPatientIdentityApi> patientIdentityApi = new();
-            patientIdentityApi.Setup(p => p.GetPatientIdentityAsync(Hdid))!.ReturnsAsync(patientIdentity);
+            patientIdentityApi.Setup(p => p.GetPatientIdentityAsync(Hdid, It.IsAny<CancellationToken>()))!.ReturnsAsync(patientIdentity);
 
             HdidPhsaStrategy hdidPhsaStrategy = new(
                 GetConfiguration(),

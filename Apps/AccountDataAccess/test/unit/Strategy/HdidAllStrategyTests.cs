@@ -156,7 +156,7 @@ namespace AccountDataAccessTest.Strategy
                 .Throws(new CommunicationException("Unit test PHSA get patient identity."));
 
             Mock<IPatientIdentityApi> patientIdentityApi = new();
-            patientIdentityApi.Setup(p => p.GetPatientIdentityAsync(PhsaHdid))!.ReturnsAsync(patientIdentity);
+            patientIdentityApi.Setup(p => p.GetPatientIdentityAsync(PhsaHdid, It.IsAny<CancellationToken>()))!.ReturnsAsync(patientIdentity);
 
             HdidAllStrategy hdidAllStrategy = new(
                 GetConfiguration(),
