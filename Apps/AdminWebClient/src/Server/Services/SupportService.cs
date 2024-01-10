@@ -34,6 +34,7 @@ namespace HealthGateway.Admin.Services
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Wrapper;
     using Microsoft.IdentityModel.Tokens;
+    using UserProfile = HealthGateway.Common.Data.Models.UserProfile;
 
     /// <inheritdoc/>
     public class SupportService : ISupportService
@@ -130,11 +131,11 @@ namespace HealthGateway.Admin.Services
 
         private void PopulatePatientSupportDetails(RequestResult<IEnumerable<PatientSupportDetails>> result, PatientIdentifierType patientIdentifierType, string queryString)
         {
-            RequestResult<PatientModel> patientResult = Task.Run(async () => await this.patientService.GetPatient(queryString, patientIdentifierType).ConfigureAwait(true)).Result;
+            RequestResult<PatientModel> patientResult = Task.Run(async () => await this.patientService.GetPatientAsync(queryString, patientIdentifierType)).Result;
             if (patientResult.ResultStatus == ResultType.Success && patientResult.ResourcePayload != null)
             {
                 List<PatientSupportDetails> patients = new();
-                DbResult<Common.Data.Models.UserProfile> dbResult = this.userProfileDelegate.GetUserProfile(patientResult.ResourcePayload.HdId);
+                DbResult<UserProfile> dbResult = this.userProfileDelegate.GetUserProfile(patientResult.ResourcePayload.HdId);
                 if (dbResult.Status == DbStatusCode.Read)
                 {
                     PatientSupportDetails patientSupportDetails = PatientSupportDetailsMapUtils.ToUiModel(dbResult.Payload, patientResult.ResourcePayload, this.autoMapper);
@@ -163,7 +164,7 @@ namespace HealthGateway.Admin.Services
 
         private async Task PopulatePatientSupportDetails(RequestResult<IEnumerable<PatientSupportDetails>> result, UserQueryType queryType, string queryString)
         {
-            IEnumerable<Common.Data.Models.UserProfile> profiles = await this.userProfileDelegate.GetUserProfilesAsync(queryType, queryString).ConfigureAwait(true);
+            IEnumerable<UserProfile> profiles = await this.userProfileDelegate.GetUserProfilesAsync(queryType, queryString);
             result.ResourcePayload = this.autoMapper.Map<IEnumerable<PatientSupportDetails>>(profiles);
             result.ResultStatus = ResultType.Success;
         }

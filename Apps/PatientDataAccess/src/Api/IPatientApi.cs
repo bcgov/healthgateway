@@ -59,7 +59,7 @@ namespace HealthGateway.PatientDataAccess.Api
     internal interface IPatientApi
     {
         [Get("/patient/{pid}/file/{fileId}")]
-        Task<FileResult?> GetFile(Guid pid, string fileId, CancellationToken ct);
+        Task<FileResult?> GetFileAsync(Guid pid, string fileId, CancellationToken ct);
 
         [Get("/patient/{pid}/health-options")]
         Task<HealthOptionsResult?> GetHealthOptionsAsync(Guid pid, [Query(CollectionFormat.Multi)] string[] categories, CancellationToken ct);

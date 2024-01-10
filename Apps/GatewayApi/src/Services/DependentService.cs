@@ -167,7 +167,7 @@ namespace HealthGateway.GatewayApi.Services
             foreach (ResourceDelegate resourceDelegate in resourceDelegates)
             {
                 this.logger.LogDebug("Getting dependent details for Dependent hdid: {DependentHdid}", resourceDelegate.ResourceOwnerHdid);
-                RequestResult<PatientModel> patientResult = await this.patientService.GetPatient(resourceDelegate.ResourceOwnerHdid, ct: ct);
+                RequestResult<PatientModel> patientResult = await this.patientService.GetPatientAsync(resourceDelegate.ResourceOwnerHdid, ct: ct);
 
                 if (patientResult.ResourcePayload != null)
                 {
@@ -332,7 +332,7 @@ namespace HealthGateway.GatewayApi.Services
 
         private async Task<RequestResult<PatientModel>> GetDependentAsPatientAsync(string phn, CancellationToken ct)
         {
-            return await this.patientService.GetPatient(phn, PatientIdentifierType.Phn, ct: ct);
+            return await this.patientService.GetPatientAsync(phn, PatientIdentifierType.Phn, ct: ct);
         }
 
         private async Task UpdateNotificationSettingsAsync(string dependentHdid, string delegateHdid, bool isDelete = false, CancellationToken ct = default)

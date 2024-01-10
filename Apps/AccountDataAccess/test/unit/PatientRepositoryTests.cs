@@ -75,7 +75,7 @@ namespace AccountDataAccessTest
             PatientRepository patientRepository = GetPatientRepository(patient, patientDetailsQuery);
 
             // Act
-            PatientQueryResult result = await patientRepository.Query(patientDetailsQuery, CancellationToken.None);
+            PatientQueryResult result = await patientRepository.QueryAsync(patientDetailsQuery, CancellationToken.None);
 
             // Verify
             Assert.Equal(Phn, result.Items.SingleOrDefault()?.Phn);
@@ -100,7 +100,7 @@ namespace AccountDataAccessTest
             PatientRepository patientRepository = GetPatientRepository(patient, patientDetailsQuery);
 
             // Act
-            PatientQueryResult result = await patientRepository.Query(patientDetailsQuery, CancellationToken.None);
+            PatientQueryResult result = await patientRepository.QueryAsync(patientDetailsQuery, CancellationToken.None);
 
             // Verify
             Assert.Equal(Phn, result.Items.SingleOrDefault()?.Phn);
@@ -129,7 +129,7 @@ namespace AccountDataAccessTest
             PatientRepository patientRepository = GetPatientRepository(patient, patientDetailsQuery, patientResult, cachedPatient);
 
             // Act
-            PatientQueryResult result = await patientRepository.Query(patientDetailsQuery, CancellationToken.None);
+            PatientQueryResult result = await patientRepository.QueryAsync(patientDetailsQuery, CancellationToken.None);
 
             // Verify
             Assert.Equal(Phn, result.Items.SingleOrDefault()?.Phn);
@@ -172,7 +172,7 @@ namespace AccountDataAccessTest
             PatientRepository patientRepository = GetPatientRepository(patient, patientDetailsQuery, patientIdentity, cachedPatient);
 
             // Act
-            PatientQueryResult actual = await patientRepository.Query(patientDetailsQuery, CancellationToken.None);
+            PatientQueryResult actual = await patientRepository.QueryAsync(patientDetailsQuery, CancellationToken.None);
 
             // Verify
             expectedPatient.ShouldDeepEqual(actual.Items.SingleOrDefault());
@@ -195,7 +195,7 @@ namespace AccountDataAccessTest
             PatientRepository patientRepository = GetPatientRepository(patient, patientDetailsQuery, patientIdentity, cachedPatient);
 
             // Act
-            PatientQueryResult actual = await patientRepository.Query(patientDetailsQuery, CancellationToken.None);
+            PatientQueryResult actual = await patientRepository.QueryAsync(patientDetailsQuery, CancellationToken.None);
 
             // Verify
             Assert.Null(actual.Items.SingleOrDefault());
@@ -223,7 +223,7 @@ namespace AccountDataAccessTest
             // Act
             async Task Actual()
             {
-                await patientRepository.Query(patientQuery, CancellationToken.None);
+                await patientRepository.QueryAsync(patientQuery, CancellationToken.None);
             }
 
             // Verify
@@ -352,7 +352,7 @@ namespace AccountDataAccessTest
             PatientRepository patientRepository = GetPatientRepository(blockedAccess);
 
             // Act
-            BlockedAccess? actual = await patientRepository.GetBlockedAccessRecords(hdid);
+            BlockedAccess? actual = await patientRepository.GetBlockedAccessRecordsAsync(hdid);
 
             // Verify
             blockedAccess.ShouldDeepEqual(actual);
@@ -383,7 +383,7 @@ namespace AccountDataAccessTest
             PatientRepository patientRepository = GetPatientRepository(blockedAccess);
 
             // Act
-            IEnumerable<DataSource> actual = await patientRepository.GetDataSources(hdid);
+            IEnumerable<DataSource> actual = await patientRepository.GetDataSourcesAsync(hdid);
 
             // Verify
             dataSources.ShouldDeepEqual(actual);
@@ -508,12 +508,12 @@ namespace AccountDataAccessTest
             ServiceCollection serviceCollection = new();
 
             Mock<ICacheProvider> cacheProvider = new();
-            cacheProvider.Setup(p => p.GetItem<PatientModel>($"{PatientCacheDomain}:HDID:{patientDetailsQuery.Hdid}")).Returns(cachedPatient);
+            cacheProvider.Setup(p => p.GetItemAsync<PatientModel>($"{PatientCacheDomain}:HDID:{patientDetailsQuery.Hdid}", It.IsAny<CancellationToken>())).ReturnsAsync(cachedPatient);
 
             Mock<IClientRegistriesDelegate> clientRegistriesDelegate = new();
-            clientRegistriesDelegate.Setup(p => p.GetDemographicsAsync(OidType.Hdid, patientDetailsQuery.Hdid, false)).ReturnsAsync(patient);
-            clientRegistriesDelegate.Setup(p => p.GetDemographicsAsync(OidType.Phn, patientDetailsQuery.Phn, false)).ReturnsAsync(patient);
-            clientRegistriesDelegate.Setup(p => p.GetDemographicsAsync(OidType.Hdid, PhsaHdid, false))
+            clientRegistriesDelegate.Setup(p => p.GetDemographicsAsync(OidType.Hdid, patientDetailsQuery.Hdid, false, It.IsAny<CancellationToken>())).ReturnsAsync(patient);
+            clientRegistriesDelegate.Setup(p => p.GetDemographicsAsync(OidType.Phn, patientDetailsQuery.Phn, false, It.IsAny<CancellationToken>())).ReturnsAsync(patient);
+            clientRegistriesDelegate.Setup(p => p.GetDemographicsAsync(OidType.Hdid, PhsaHdid, false, It.IsAny<CancellationToken>()))
                 .Throws(new CommunicationException("Unit test PHSA get patient identity."));
 
             HdidEmpiStrategy hdidEmpiStrategy = new(
@@ -531,8 +531,9 @@ namespace AccountDataAccessTest
             serviceCollection.AddScoped<PhnEmpiStrategy>(_ => phnEmpiStrategy);
 
             Mock<IPatientIdentityApi> patientIdentityApi = new();
-            patientIdentityApi.Setup(p => p.GetPatientIdentityAsync(PhsaHdid))!.ReturnsAsync(patientIdentity);
-            patientIdentityApi.Setup(p => p.GetPatientIdentityAsync(PhsaHdidNotFound)).Throws(MockRefitExceptionHelper.CreateApiException(HttpStatusCode.NotFound, HttpMethod.Get));
+            patientIdentityApi.Setup(p => p.GetPatientIdentityAsync(PhsaHdid, It.IsAny<CancellationToken>()))!.ReturnsAsync(patientIdentity);
+            patientIdentityApi.Setup(p => p.GetPatientIdentityAsync(PhsaHdidNotFound, It.IsAny<CancellationToken>()))
+                .Throws(MockRefitExceptionHelper.CreateApiException(HttpStatusCode.NotFound, HttpMethod.Get));
 
             HdidAllStrategy hdidAllStrategy = new(
                 GetConfiguration(),

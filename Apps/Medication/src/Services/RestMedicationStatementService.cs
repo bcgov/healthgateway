@@ -112,7 +112,7 @@ namespace HealthGateway.Medication.Services
                 }
 
                 // Retrieve the phn
-                RequestResult<PatientModel> patientResult = await this.patientService.GetPatient(hdid, ct: ct);
+                RequestResult<PatientModel> patientResult = await this.patientService.GetPatientAsync(hdid, ct: ct);
                 if (patientResult.ResultStatus != ResultType.Success || patientResult.ResourcePayload == null)
                 {
                     return RequestResultFactory.Error<IList<MedicationStatement>>(patientResult.ResultError);

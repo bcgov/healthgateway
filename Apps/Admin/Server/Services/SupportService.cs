@@ -150,7 +150,7 @@ namespace HealthGateway.Admin.Server.Services
 
         private async Task<PatientModel> GetPatientAsync(PatientDetailsQuery query, CancellationToken ct = default)
         {
-            PatientModel? patient = (await patientRepository.Query(query, ct)).Items.SingleOrDefault();
+            PatientModel? patient = (await patientRepository.QueryAsync(query, ct)).Items.SingleOrDefault();
             return patient ?? throw new ProblemDetailsException(ExceptionUtility.CreateProblemDetails(ErrorMessages.ClientRegistryRecordsNotFound, HttpStatusCode.NotFound, nameof(SupportService)));
         }
 
@@ -184,13 +184,13 @@ namespace HealthGateway.Admin.Server.Services
             logger.LogDebug("{Message}", message);
             await cacheProvider.RemoveItemAsync(blockedAccessCacheKey, ct);
 
-            return await patientRepository.GetDataSources(hdid, ct);
+            return await patientRepository.GetDataSourcesAsync(hdid, ct);
         }
 
         private async Task<IEnumerable<AgentAction>> GetAgentActionsAsync(string hdid, CancellationToken ct)
         {
-            IEnumerable<AgentAudit> audits = await auditRepository.Handle(new(hdid), ct);
-            return audits.Select(audit => autoMapper.Map<AgentAudit, AgentAction>(audit));
+            IEnumerable<AgentAudit> audits = await auditRepository.HandleAsync(new(hdid), ct);
+            return audits.Select(autoMapper.Map<AgentAudit, AgentAction>);
         }
 
         private async Task<IEnumerable<PatientSupportDependentInfo>> GetAllDependentInfoAsync(string delegateHdid, CancellationToken ct)

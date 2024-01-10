@@ -777,7 +777,7 @@ namespace HealthGateway.Admin.Tests.Services
             foreach ((PatientDetailsQuery query, PatientModel? patient) in pairs)
             {
                 PatientQueryResult result = new(patient == null ? [] : [patient]);
-                mock.Setup(p => p.Query(query, It.IsAny<CancellationToken>())).ReturnsAsync(result);
+                mock.Setup(p => p.QueryAsync(query, It.IsAny<CancellationToken>())).ReturnsAsync(result);
             }
 
             return mock;

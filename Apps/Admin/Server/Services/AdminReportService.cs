@@ -47,7 +47,7 @@ namespace HealthGateway.Admin.Server.Services
                         PatientQueryResult? patient = null;
                         try
                         {
-                            patient = await patientRepository.Query(query, ct);
+                            patient = await patientRepository.QueryAsync(query, ct);
                         }
                         catch (ProblemDetailsException e)
                         {

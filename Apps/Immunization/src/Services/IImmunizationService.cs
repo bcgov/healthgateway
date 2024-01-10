@@ -35,7 +35,7 @@ namespace HealthGateway.Immunization.Services
         Task<RequestResult<ImmunizationEvent>> GetImmunizationAsync(string immunizationId, CancellationToken ct = default);
 
         /// <summary>
-        /// Gets the ImmunizationResult inluding load state and a list of immunization records.
+        /// Gets the ImmunizationResult including load state and a list of immunization records.
         /// </summary>
         /// <param name="hdid">The hdid patient id.</param>
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>

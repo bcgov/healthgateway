@@ -879,7 +879,7 @@ namespace HealthGateway.Admin.Tests.Services
 
             foreach ((AgentAuditQuery query, IEnumerable<AgentAudit> agentAudits) in pairs)
             {
-                mock.Setup(p => p.Handle(query, It.IsAny<CancellationToken>())).ReturnsAsync(agentAudits);
+                mock.Setup(p => p.HandleAsync(query, It.IsAny<CancellationToken>())).ReturnsAsync(agentAudits);
             }
 
             return mock;
@@ -910,12 +910,12 @@ namespace HealthGateway.Admin.Tests.Services
             foreach ((PatientDetailsQuery query, PatientModel? patient) in pairs)
             {
                 PatientQueryResult result = new(patient == null ? [] : [patient]);
-                mock.Setup(p => p.Query(query, It.IsAny<CancellationToken>())).ReturnsAsync(result);
+                mock.Setup(p => p.QueryAsync(query, It.IsAny<CancellationToken>())).ReturnsAsync(result);
             }
 
             if (dataSources != null)
             {
-                mock.Setup(s => s.GetDataSources(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(dataSources);
+                mock.Setup(s => s.GetDataSourcesAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(dataSources);
             }
 
             return mock;

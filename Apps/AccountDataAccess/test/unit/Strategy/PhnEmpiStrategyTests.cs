@@ -99,7 +99,7 @@ namespace AccountDataAccessTest.Strategy
             cacheProvider.Setup(p => p.GetItem<PatientModel>($"{PatientCacheDomain}:PHN:{Phn}")).Returns(cachedPatient);
 
             Mock<IClientRegistriesDelegate> clientRegistriesDelegate = new();
-            clientRegistriesDelegate.Setup(p => p.GetDemographicsAsync(OidType.Phn, Phn, false)).ReturnsAsync(patient);
+            clientRegistriesDelegate.Setup(p => p.GetDemographicsAsync(OidType.Phn, Phn, false, It.IsAny<CancellationToken>())).ReturnsAsync(patient);
 
             PhnEmpiStrategy phnEmpiStrategy = new(
                 GetConfiguration(),

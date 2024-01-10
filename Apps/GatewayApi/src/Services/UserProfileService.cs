@@ -170,7 +170,7 @@ namespace HealthGateway.GatewayApi.Services
                 userProfile.LastLoginClientCode = this.authenticationDelegate.FetchAuthenticatedUserClientType();
 
                 // Update user year of birth.
-                RequestResult<PatientModel> patientResult = await this.patientService.GetPatient(hdid, ct: ct);
+                RequestResult<PatientModel> patientResult = await this.patientService.GetPatientAsync(hdid, ct: ct);
                 DateTime? birthDate = patientResult.ResourcePayload?.Birthdate;
                 userProfile.YearOfBirth = birthDate?.Year;
 
@@ -235,7 +235,7 @@ namespace HealthGateway.GatewayApi.Services
 
             string hdid = createProfileRequest.Profile.HdId;
 
-            RequestResult<PatientModel> patientResult = await this.patientService.GetPatient(hdid, ct: ct);
+            RequestResult<PatientModel> patientResult = await this.patientService.GetPatientAsync(hdid, ct: ct);
             DateTime? birthDate = patientResult.ResourcePayload?.Birthdate;
 
             // Create profile
@@ -418,7 +418,7 @@ namespace HealthGateway.GatewayApi.Services
                 return RequestResultFactory.Success(true);
             }
 
-            RequestResult<PatientModel> patientResult = await this.patientService.GetPatient(hdid, ct: ct);
+            RequestResult<PatientModel> patientResult = await this.patientService.GetPatientAsync(hdid, ct: ct);
 
             if (patientResult.ResultStatus != ResultType.Success || patientResult.ResourcePayload == null)
             {
@@ -499,7 +499,7 @@ namespace HealthGateway.GatewayApi.Services
                                               profileHistoryCollection.Length != 0 &&
                                               latestTourChangeDateTime != null &&
                                               profileHistoryCollection.Max(x => x.LastLoginDateTime) < latestTourChangeDateTime;
-            userProfileModel.BlockedDataSources = await this.patientRepository.GetDataSources(userProfile.HdId, ct);
+            userProfileModel.BlockedDataSources = await this.patientRepository.GetDataSourcesAsync(userProfile.HdId, ct);
             return userProfileModel;
         }
 

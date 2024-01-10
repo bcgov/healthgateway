@@ -48,7 +48,7 @@ namespace HealthGateway.Common.Services
         /// <param name="disableIdValidation">Disables the validation on HDID/PHN when true.</param>
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The patient model.</returns>
-        Task<RequestResult<PatientModel>> GetPatient(
+        Task<RequestResult<PatientModel>> GetPatientAsync(
             string identifier,
             PatientIdentifierType identifierType = PatientIdentifierType.Hdid,
             bool disableIdValidation = false,

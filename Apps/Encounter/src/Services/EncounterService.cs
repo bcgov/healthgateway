@@ -113,7 +113,7 @@ namespace HealthGateway.Encounter.Services
             }
 
             // Retrieve the phn
-            RequestResult<PatientModel> patientResult = await this.patientService.GetPatient(hdid, ct: ct);
+            RequestResult<PatientModel> patientResult = await this.patientService.GetPatientAsync(hdid, ct: ct);
             if (patientResult is { ResultStatus: ResultType.Success, ResourcePayload: not null })
             {
                 PatientModel patient = patientResult.ResourcePayload;
