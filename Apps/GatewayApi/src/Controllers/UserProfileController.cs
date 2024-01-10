@@ -28,7 +28,6 @@ namespace HealthGateway.GatewayApi.Controllers
     using HealthGateway.Common.Utils;
     using HealthGateway.GatewayApi.Models;
     using HealthGateway.GatewayApi.Services;
-    using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
@@ -236,7 +235,7 @@ namespace HealthGateway.GatewayApi.Controllers
             HttpContext? httpContext = this.httpContextAccessor.HttpContext;
             if (httpContext != null)
             {
-                string? accessToken = await httpContext.GetTokenAsync("access_token").ConfigureAwait(true);
+                string? accessToken = await this.authenticationDelegate.FetchAuthenticatedUserTokenAsync();
 
                 if (accessToken != null)
                 {

@@ -23,6 +23,7 @@ namespace HealthGateway.Admin.Services
     using System.Text.Json;
     using System.Threading.Tasks;
     using HealthGateway.Admin.Models;
+    using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.Utils;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
@@ -47,6 +48,7 @@ namespace HealthGateway.Admin.Services
         private readonly IHttpContextAccessor httpContextAccessor;
         private readonly string[] enabledRoles;
         private readonly IAdminUserProfileDelegate profileDelegate;
+        private readonly IAuthenticationDelegate authenticationDelegate;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AuthenticationService"/> class.
@@ -55,12 +57,19 @@ namespace HealthGateway.Admin.Services
         /// <param name="configuration">Injected Configuration Provider.</param>
         /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="profileDelegate">Injected Admin User Profile Delegate Provider.</param>
-        public AuthenticationService(ILogger<AuthenticationService> logger, IHttpContextAccessor httpContextAccessor, IConfiguration configuration, IAdminUserProfileDelegate profileDelegate)
+        /// <param name="authenticationDelegate">Injected authentication delegate.</param>
+        public AuthenticationService(
+            ILogger<AuthenticationService> logger,
+            IHttpContextAccessor httpContextAccessor,
+            IConfiguration configuration,
+            IAdminUserProfileDelegate profileDelegate,
+            IAuthenticationDelegate authenticationDelegate)
         {
             this.logger = logger;
             this.httpContextAccessor = httpContextAccessor;
-            this.enabledRoles = configuration.GetSection("EnabledRoles").Get<string[]>() ?? Array.Empty<string>();
+            this.enabledRoles = configuration.GetSection("EnabledRoles").Get<string[]>() ?? [];
             this.profileDelegate = profileDelegate;
+            this.authenticationDelegate = authenticationDelegate;
         }
 
         /// <summary>
@@ -84,7 +93,7 @@ namespace HealthGateway.Admin.Services
                 List<string> userRoles = user.Claims.Where(c => c.Type == ClaimTypes.Role).Select(role => role.Value).ToList();
                 authData.Roles = this.enabledRoles.Intersect(userRoles).ToList();
                 authData.IsAuthorized = authData.Roles.Count > 0;
-                authData.Token = Task.Run(async () => await this.httpContextAccessor.HttpContext.GetTokenAsync("access_token").ConfigureAwait(true)).Result ?? string.Empty;
+                authData.Token = Task.Run(async () => await this.authenticationDelegate.FetchAuthenticatedUserTokenAsync().ConfigureAwait(true)).Result ?? string.Empty;
             }
 
             return authData;

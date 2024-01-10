@@ -38,7 +38,6 @@ namespace HealthGateway.Admin.Services
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Common.Services;
-    using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
@@ -142,7 +141,7 @@ namespace HealthGateway.Admin.Services
             }
 
             // Gets the current user (IDIR) access token and pass it along to PHSA
-            string? bearerToken = await this.httpContextAccessor.HttpContext!.GetTokenAsync("access_token").ConfigureAwait(true);
+            string? bearerToken = await this.authenticationDelegate.FetchAuthenticatedUserTokenAsync();
 
             if (bearerToken == null)
             {
@@ -218,7 +217,7 @@ namespace HealthGateway.Admin.Services
             }
 
             // Gets the current user (IDIR) access token and pass it along to PHSA
-            string? bearerToken = await this.httpContextAccessor.HttpContext!.GetTokenAsync("access_token").ConfigureAwait(true);
+            string? bearerToken = await this.authenticationDelegate.FetchAuthenticatedUserTokenAsync();
 
             if (bearerToken == null)
             {
