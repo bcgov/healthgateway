@@ -53,15 +53,14 @@ namespace HealthGateway.Patient.Services
 
             Guid pid = await this.ResolvePidFromHdidAsync(query.Hdid, ct);
             HealthQuery healthQuery = new(pid, unblockedPatientDataTypes.Select(t => this.mapper.Map<HealthCategory>(t)));
-            PatientDataQueryResult result = await this.patientDataRepository.Query(healthQuery, ct)
-                .ConfigureAwait(true);
+            PatientDataQueryResult result = await this.patientDataRepository.QueryAsync(healthQuery, ct);
             return new PatientDataResponse(result.Items.Select(i => this.mapper.Map<PatientData>(i)));
         }
 
         public async Task<PatientFileResponse?> QueryAsync(PatientFileQuery query, CancellationToken ct)
         {
             Guid pid = await this.ResolvePidFromHdidAsync(query.Hdid, ct);
-            PatientFile? file = (await this.patientDataRepository.Query(new PatientDataAccess.PatientFileQuery(pid, query.FileId), ct)).Items.OfType<PatientFile>()
+            PatientFile? file = (await this.patientDataRepository.QueryAsync(new PatientDataAccess.PatientFileQuery(pid, query.FileId), ct)).Items.OfType<PatientFile>()
                 .FirstOrDefault();
 
             return file != null

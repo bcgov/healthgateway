@@ -51,12 +51,12 @@ namespace HealthGateway.PatientDataAccess
         /// <param name="ct">The cancellation token.</param>
         /// <returns>The query result.</returns>
         /// <exception cref="NotImplementedException">Thrown if query is not implemented.</exception>
-        public async Task<PatientDataQueryResult> Query(PatientDataQuery query, CancellationToken ct)
+        public async Task<PatientDataQueryResult> QueryAsync(PatientDataQuery query, CancellationToken ct)
         {
             return query switch
             {
-                HealthQuery q => await this.Handle(q, ct).ConfigureAwait(true),
-                PatientFileQuery q => await this.Handle(q, ct).ConfigureAwait(true),
+                HealthQuery q => await this.HandleAsync(q, ct),
+                PatientFileQuery q => await this.HandleAsync(q, ct),
                 _ => throw new NotImplementedException($"{query.GetType().Name} doesn't have a handler"),
             };
         }
@@ -85,23 +85,23 @@ namespace HealthGateway.PatientDataAccess
             return new(fileId, Convert.FromBase64String(file.Data!), file.MediaType ?? string.Empty);
         }
 
-        private async Task<PatientDataQueryResult> Handle(HealthQuery query, CancellationToken ct)
+        private async Task<PatientDataQueryResult> HandleAsync(HealthQuery query, CancellationToken ct)
         {
-            List<Task<IEnumerable<HealthData>>> tasks = new()
-            {
-                this.HandleServiceQuery(query, ct),
-                this.HandleDataQuery(query, ct),
-            };
+            List<Task<IEnumerable<HealthData>>> tasks =
+            [
+                this.HandleServiceQueryAsync(query, ct),
+                this.HandleDataQueryAsync(query, ct),
+            ];
 
-            IEnumerable<IEnumerable<HealthData>> results = await Task.WhenAll(tasks).ConfigureAwait(true);
+            IEnumerable<IEnumerable<HealthData>> results = await Task.WhenAll(tasks);
             return new PatientDataQueryResult(results.SelectMany(r => r));
         }
 
-        private async Task<PatientDataQueryResult> Handle(PatientFileQuery query, CancellationToken ct)
+        private async Task<PatientDataQueryResult> HandleAsync(PatientFileQuery query, CancellationToken ct)
         {
             try
             {
-                FileResult? fileResult = await this.patientApi.GetFile(query.Pid, query.FileId, ct).ConfigureAwait(true);
+                FileResult? fileResult = await this.patientApi.GetFileAsync(query.Pid, query.FileId, ct);
                 IEnumerable<PatientFile> mappedFiles = new[] { fileResult }
                     .Where(f => f?.Data != null)
                     .Select(f => Map(query.FileId, f!));
@@ -114,7 +114,7 @@ namespace HealthGateway.PatientDataAccess
             }
         }
 
-        private async Task<IEnumerable<HealthData>> HandleServiceQuery(HealthQuery query, CancellationToken ct)
+        private async Task<IEnumerable<HealthData>> HandleServiceQueryAsync(HealthQuery query, CancellationToken ct)
         {
             string[] categories = query.Categories
                 .Select(MapHealthOptionsCategories)
@@ -124,7 +124,7 @@ namespace HealthGateway.PatientDataAccess
 
             if (categories.Length != 0)
             {
-                HealthOptionsResult results = await this.patientApi.GetHealthOptionsAsync(query.Pid, categories, ct).ConfigureAwait(true) ??
+                HealthOptionsResult results = await this.patientApi.GetHealthOptionsAsync(query.Pid, categories, ct) ??
                                               new(new HealthOptionsMetadata(), Array.Empty<HealthOptionsData>());
 
                 return results.Data.Select(this.Map);
@@ -133,7 +133,7 @@ namespace HealthGateway.PatientDataAccess
             return Array.Empty<HealthData>();
         }
 
-        private async Task<IEnumerable<HealthData>> HandleDataQuery(HealthQuery query, CancellationToken ct)
+        private async Task<IEnumerable<HealthData>> HandleDataQueryAsync(HealthQuery query, CancellationToken ct)
         {
             string[] categories = query.Categories
                 .Select(MapHealthDataCategories)
@@ -143,7 +143,7 @@ namespace HealthGateway.PatientDataAccess
 
             if (categories.Length != 0)
             {
-                HealthDataResult results = await this.patientApi.GetHealthDataAsync(query.Pid, categories, ct).ConfigureAwait(true) ??
+                HealthDataResult results = await this.patientApi.GetHealthDataAsync(query.Pid, categories, ct) ??
                                            new(new HealthDataMetadata(), Array.Empty<HealthDataEntry>());
 
                 return results.Data.Select(this.Map);
