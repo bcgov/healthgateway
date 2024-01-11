@@ -123,7 +123,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
 
             List<UserPreference> userPreferences = [dbUserPreference];
 
-            HashSet<DataSource> dataSources =
+            IList<DataSource> dataSources =
             [
                 DataSource.Immunization,
                 DataSource.Medication,
@@ -175,7 +175,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 Email = "unit.test@hgw.ca",
             };
 
-            HashSet<DataSource> dataSources =
+            IList<DataSource> dataSources =
             [
                 DataSource.Immunization,
                 DataSource.Medication,
@@ -233,7 +233,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 Email = "unit.test@hgw.ca",
             };
 
-            HashSet<DataSource> dataSources =
+            IList<DataSource> dataSources =
             [
                 DataSource.Immunization,
                 DataSource.Medication,
@@ -292,7 +292,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 Email = "unit.test@hgw.ca",
             };
 
-            HashSet<DataSource> dataSources =
+            IList<DataSource> dataSources =
             [
                 DataSource.Immunization,
                 DataSource.Medication,
@@ -595,7 +595,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 TermsOfServiceId = this.termsOfServiceGuid,
             };
 
-            HashSet<DataSource> dataSources =
+            IList<DataSource> dataSources =
             [
                 DataSource.Immunization,
                 DataSource.Medication,
@@ -720,7 +720,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 Email = "unit.test@hgw.ca",
             };
 
-            HashSet<DataSource> dataSources =
+            IList<DataSource> dataSources =
             [
                 DataSource.Immunization,
                 DataSource.Medication,

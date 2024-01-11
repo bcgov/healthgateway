@@ -19,6 +19,7 @@ namespace HealthGateway.ClinicalDocument.Controllers
     using System.Diagnostics.CodeAnalysis;
     using System.Threading;
     using System.Threading.Tasks;
+    using Asp.Versioning;
     using HealthGateway.ClinicalDocument.Models;
     using HealthGateway.ClinicalDocument.Services;
     using HealthGateway.Common.AccessManagement.Authorization.Policy;

@@ -16,7 +16,7 @@
 namespace HealthGateway.Common.Swagger
 {
     using System.Diagnostics.CodeAnalysis;
-    using Microsoft.AspNetCore.Mvc;
+    using Asp.Versioning;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Options;
     using Swashbuckle.AspNetCore.Swagger;
@@ -36,20 +36,22 @@ namespace HealthGateway.Common.Swagger
         /// <returns>IServiceCollection.</returns>
         public static IServiceCollection AddApiVersionWithExplorer(this IServiceCollection services)
         {
-            return services
-                .AddVersionedApiExplorer(
-                    options =>
-                    {
-                        options.GroupNameFormat = "'v'VVV";
-                        options.SubstituteApiVersionInUrl = true;
-                    })
+            services
                 .AddApiVersioning(
                     options =>
                     {
                         options.AssumeDefaultVersionWhenUnspecified = true;
                         options.ReportApiVersions = true;
                         options.DefaultApiVersion = new ApiVersion(1, 0);
+                    })
+                .AddApiExplorer(
+                    options =>
+                    {
+                        options.GroupNameFormat = "'v'VVV";
+                        options.SubstituteApiVersionInUrl = true;
                     });
+
+            return services;
         }
 
         /// <summary>
