@@ -17,6 +17,7 @@ namespace HealthGateway.JobScheduler.Jobs
 {
     using System;
     using System.Text.Json;
+    using System.Threading;
     using System.Threading.Tasks;
     using Hangfire;
     using HealthGateway.Common.AccessManagement.Authentication;
@@ -71,7 +72,7 @@ namespace HealthGateway.JobScheduler.Jobs
 
         /// <inheritdoc/>
         [DisableConcurrentExecution(ConcurrencyTimeout)]
-        public async Task PushNotificationSettingsAsync(string notificationSettingsJson)
+        public async Task PushNotificationSettingsAsync(string notificationSettingsJson, CancellationToken ct = default)
         {
             this.logger.LogDebug("Queueing Notification Settings push to PHSA...");
             if (!this.jobEnabled)
@@ -87,14 +88,14 @@ namespace HealthGateway.JobScheduler.Jobs
                 throw new FormatException("Unable to deserialize JSON Notification Settings");
             }
 
-            string? accessToken = (await this.authDelegate.AuthenticateAsSystemAsync(this.clientCredentialsRequest)).AccessToken;
+            string? accessToken = (await this.authDelegate.AuthenticateAsSystemAsync(this.clientCredentialsRequest, ct: ct)).AccessToken;
             if (string.IsNullOrEmpty(accessToken))
             {
                 this.logger.LogError("Authenticated as User System access token is null or empty, Error:\n{AccessToken}", accessToken);
                 throw new FormatException($"Authenticated as User System access token is null or empty, Error:\n{accessToken}");
             }
 
-            RequestResult<NotificationSettingsResponse> retVal = await this.notificationSettingsDelegate.SetNotificationSettingsAsync(notificationSettings, accessToken);
+            RequestResult<NotificationSettingsResponse> retVal = await this.notificationSettingsDelegate.SetNotificationSettingsAsync(notificationSettings, accessToken, ct);
             if (retVal.ResultStatus == ResultType.ActionRequired)
             {
                 EventLog eventLog = new()
@@ -103,7 +104,7 @@ namespace HealthGateway.JobScheduler.Jobs
                     EventName = "SMS Rejected",
                     EventDescription = notificationSettings.SmsNumber ?? string.Empty,
                 };
-                await this.eventLogDelegate.WriteEventLogAsync(eventLog);
+                await this.eventLogDelegate.WriteEventLogAsync(eventLog, ct: ct);
             }
             else
             {

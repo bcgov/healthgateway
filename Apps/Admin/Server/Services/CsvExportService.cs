@@ -97,7 +97,7 @@ namespace HealthGateway.Admin.Server.Services
         }
 
         /// <inheritdoc/>
-        public async Task<Stream> GetYearOfBirthCountsAsync(DateOnly startDateLocal, DateOnly endDateLocal, CancellationToken ct)
+        public async Task<Stream> GetYearOfBirthCountsAsync(DateOnly startDateLocal, DateOnly endDateLocal, CancellationToken ct = default)
         {
             TimeSpan localTimeOffset = DateFormatter.GetLocalTimeOffset(configuration, DateTime.UtcNow);
             DateTimeOffset startDateOffset = new(startDateLocal.ToDateTime(TimeOnly.MinValue), localTimeOffset);

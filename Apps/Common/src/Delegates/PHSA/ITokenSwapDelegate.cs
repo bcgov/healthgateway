@@ -15,6 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Common.Delegates.PHSA
 {
+    using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Models.PHSA;
@@ -28,7 +29,8 @@ namespace HealthGateway.Common.Delegates.PHSA
         /// Gets an access token from PHSA with an authenticated Health Gateway access token.
         /// </summary>
         /// <param name="accessToken">The access token to swap with PHSA.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The newly swapped access token wrapped in a token swap response object.</returns>
-        Task<RequestResult<TokenSwapResponse>> SwapToken(string accessToken);
+        Task<RequestResult<TokenSwapResponse>> SwapTokenAsync(string accessToken, CancellationToken ct = default);
     }
 }

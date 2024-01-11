@@ -51,7 +51,7 @@ namespace HealthGateway.PatientDataAccess
         /// <param name="ct">The cancellation token.</param>
         /// <returns>The query result.</returns>
         /// <exception cref="NotImplementedException">Thrown if query is not implemented.</exception>
-        public async Task<PatientDataQueryResult> QueryAsync(PatientDataQuery query, CancellationToken ct)
+        public async Task<PatientDataQueryResult> QueryAsync(PatientDataQuery query, CancellationToken ct = default)
         {
             return query switch
             {

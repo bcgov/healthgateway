@@ -19,6 +19,7 @@ namespace HealthGateway.Common.Delegates.PHSA
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.Net.Http;
+    using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.Api;
     using HealthGateway.Common.Data.Constants;
@@ -63,7 +64,7 @@ namespace HealthGateway.Common.Delegates.PHSA
         private static ActivitySource Source { get; } = new(nameof(RestTokenSwapDelegate));
 
         /// <inheritdoc/>
-        public async Task<RequestResult<TokenSwapResponse>> SwapToken(string accessToken)
+        public async Task<RequestResult<TokenSwapResponse>> SwapTokenAsync(string accessToken, CancellationToken ct = default)
         {
             using Activity? activity = Source.StartActivity();
             RequestResult<TokenSwapResponse> requestResult = new()
@@ -77,8 +78,8 @@ namespace HealthGateway.Common.Delegates.PHSA
                 Dictionary<string, string> formData = this.FormParameters(accessToken);
                 using FormUrlEncodedContent content = new(formData);
                 content.Headers.Clear();
-                content.Headers.Add(@"Content-Type", @"application/x-www-form-urlencoded");
-                TokenSwapResponse response = await this.tokenSwapApi.SwapTokenAsync(content).ConfigureAwait(true);
+                content.Headers.Add("Content-Type", "application/x-www-form-urlencoded");
+                TokenSwapResponse response = await this.tokenSwapApi.SwapTokenAsync(content, ct);
                 requestResult.ResultStatus = ResultType.Success;
                 requestResult.ResourcePayload = response;
                 requestResult.TotalResultCount = 1;

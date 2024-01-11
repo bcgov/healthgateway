@@ -43,7 +43,7 @@ namespace HealthGateway.Patient.Services
             this.mapper = mapper;
         }
 
-        public async Task<PatientDataResponse> QueryAsync(PatientDataQuery query, CancellationToken ct)
+        public async Task<PatientDataResponse> QueryAsync(PatientDataQuery query, CancellationToken ct = default)
         {
             IList<PatientDataType> unblockedPatientDataTypes = await this.GetUnblockedPatientDataTypesAsync(query.Hdid, query.PatientDataTypes, ct);
             if (!unblockedPatientDataTypes.Any())
@@ -57,7 +57,7 @@ namespace HealthGateway.Patient.Services
             return new PatientDataResponse(result.Items.Select(i => this.mapper.Map<PatientData>(i)));
         }
 
-        public async Task<PatientFileResponse?> QueryAsync(PatientFileQuery query, CancellationToken ct)
+        public async Task<PatientFileResponse?> QueryAsync(PatientFileQuery query, CancellationToken ct = default)
         {
             Guid pid = await this.ResolvePidFromHdidAsync(query.Hdid, ct);
             PatientFile? file = (await this.patientDataRepository.QueryAsync(new PatientDataAccess.PatientFileQuery(pid, query.FileId), ct)).Items.OfType<PatientFile>()

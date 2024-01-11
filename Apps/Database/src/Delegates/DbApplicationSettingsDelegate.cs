@@ -15,7 +15,6 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Database.Delegates
 {
-    using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using System.Linq;
     using System.Threading;
@@ -48,12 +47,6 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public void DeleteApplicationSetting(ApplicationSetting appSetting)
-        {
-            this.dbContext.Remove(appSetting);
-        }
-
-        /// <inheritdoc/>
         public async Task<ApplicationSetting?> GetApplicationSettingAsync(string application, string component, string key, CancellationToken ct = default)
         {
             this.logger.LogTrace("Getting application setting for {Application}/{Component}/{Key} from DB...", application, component, key);
@@ -69,33 +62,11 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public IList<ApplicationSetting> GetApplicationSettings(string application, string component)
-        {
-            this.logger.LogTrace("Getting application setting for {Application}/{Component} from DB...", application, component);
-            IList<ApplicationSetting> retVal = this.dbContext.ApplicationSetting
-                .Where(
-                    p => p.Application == application &&
-                         p.Component == component)
-                .ToList();
-            this.logger.LogDebug("Finished getting application setting for {Application}/{Component} from DB...", application, component);
-
-            return retVal;
-        }
-
-        /// <inheritdoc/>
-        public async Task AddApplicationSettingAsync(ApplicationSetting appSetting, CancellationToken ct = default)
+        public void AddApplicationSetting(ApplicationSetting appSetting)
         {
             this.logger.LogTrace("Adding {Application}/{Component}/{Key} to {Value}", appSetting.Application, appSetting.Component, appSetting.Key, appSetting.Value);
-            await this.dbContext.ApplicationSetting.AddAsync(appSetting, ct);
+            this.dbContext.ApplicationSetting.Add(appSetting);
             this.logger.LogTrace("Finished Adding {Application}/{Component}/{Key} to {Value}", appSetting.Application, appSetting.Component, appSetting.Key, appSetting.Value);
-        }
-
-        /// <inheritdoc/>
-        public void UpdateApplicationSetting(ApplicationSetting appSetting)
-        {
-            this.logger.LogTrace("Updating {Application}/{Component}/{Key} to {Value}", appSetting.Application, appSetting.Component, appSetting.Key, appSetting.Value);
-            this.dbContext.ApplicationSetting.Update(appSetting);
-            this.logger.LogTrace("Finished updating {Application}/{Component}/{Key} to {Value}", appSetting.Application, appSetting.Component, appSetting.Key, appSetting.Value);
         }
     }
 }

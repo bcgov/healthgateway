@@ -117,6 +117,6 @@ namespace HealthGateway.GatewayApi.Services
         /// <param name="phoneNumber">This should be a phone number without a mask.</param>
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>True if the phone number is valid.</returns>
-        Task<bool> IsPhoneNumberValid(string phoneNumber, CancellationToken ct = default);
+        Task<bool> IsPhoneNumberValidAsync(string phoneNumber, CancellationToken ct = default);
     }
 }

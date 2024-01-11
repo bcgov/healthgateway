@@ -17,10 +17,10 @@ namespace HealthGateway.Admin.Services
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics.Contracts;
     using System.Linq;
     using System.Security.Claims;
     using System.Text.Json;
+    using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Admin.Models;
     using HealthGateway.Common.AccessManagement.Authentication;
@@ -29,7 +29,6 @@ namespace HealthGateway.Admin.Services
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
-    using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.Authentication.Cookies;
     using Microsoft.AspNetCore.Authentication.OpenIdConnect;
     using Microsoft.AspNetCore.Http;
@@ -72,11 +71,8 @@ namespace HealthGateway.Admin.Services
             this.authenticationDelegate = authenticationDelegate;
         }
 
-        /// <summary>
-        /// Authenticates the request based on the current context.
-        /// </summary>
-        /// <returns>The AuthData containing the token and user information.</returns>
-        public AuthenticationData GetAuthenticationData()
+        /// <inheritdoc/>
+        public async Task<AuthenticationData> GetAuthenticationDataAsync(CancellationToken ct = default)
         {
             AuthenticationData authData = new();
             ClaimsPrincipal? user = this.httpContextAccessor.HttpContext?.User;
@@ -93,45 +89,24 @@ namespace HealthGateway.Admin.Services
                 List<string> userRoles = user.Claims.Where(c => c.Type == ClaimTypes.Role).Select(role => role.Value).ToList();
                 authData.Roles = this.enabledRoles.Intersect(userRoles).ToList();
                 authData.IsAuthorized = authData.Roles.Count > 0;
-                authData.Token = Task.Run(async () => await this.authenticationDelegate.FetchAuthenticatedUserTokenAsync().ConfigureAwait(true)).Result ?? string.Empty;
+                authData.Token = await this.authenticationDelegate.FetchAuthenticatedUserTokenAsync(ct) ?? string.Empty;
             }
 
             return authData;
         }
 
-        /// <summary>
-        /// Clears the authorization data from the context.
-        /// </summary>
-        /// <returns>The signout confirmation followed by the redirect uri.</returns>
+        /// <inheritdoc/>
         public SignOutResult Logout()
         {
             this.logger.LogTrace("Logging out user");
             return new SignOutResult(new[] { CookieAuthenticationDefaults.AuthenticationScheme, OpenIdConnectDefaults.AuthenticationScheme });
         }
 
-        /// <summary>
-        /// Returns the authentication properties with the populated hint and redirect URL.
-        /// </summary>
-        /// <returns> The AuthenticationProperties.</returns>
-        /// <param name="redirectPath">The URI to redirect to after logon.</param>
-        public AuthenticationProperties GetAuthenticationProperties(string redirectPath)
-        {
-            this.logger.LogDebug("Getting Authentication properties with redirectPath={RedirectPath}", redirectPath);
-            Contract.Requires(redirectPath != null);
-
-            AuthenticationProperties authProps = new()
-            {
-                RedirectUri = redirectPath,
-            };
-
-            return authProps;
-        }
-
         /// <inheritdoc/>
-        public void SetLastLoginDateTime()
+        public async Task SetLastLoginDateTimeAsync(CancellationToken ct = default)
         {
             ClaimsPrincipal? user = this.httpContextAccessor.HttpContext?.User;
-            AuthenticationData authData = this.GetAuthenticationData();
+            AuthenticationData authData = await this.GetAuthenticationDataAsync(ct);
             if (authData is not { IsAuthenticated: true, User: not null } || user == null)
             {
                 return;
@@ -139,7 +114,7 @@ namespace HealthGateway.Admin.Services
 
             DateTime jwtAuthTime = ClaimsPrincipalReader.GetAuthDateTime(user);
 
-            DbResult<AdminUserProfile> result = this.profileDelegate.GetAdminUserProfile(username: authData.User.Id);
+            DbResult<AdminUserProfile> result = await this.profileDelegate.GetAdminUserProfileAsync(authData.User.Id, ct);
             if (result.Status == DbStatusCode.NotFound)
             {
                 // Create profile
@@ -149,7 +124,7 @@ namespace HealthGateway.Admin.Services
                     Username = authData.User.Id,
                     LastLoginDateTime = jwtAuthTime,
                 };
-                DbResult<AdminUserProfile> insertResult = this.profileDelegate.Add(newProfile);
+                DbResult<AdminUserProfile> insertResult = await this.profileDelegate.AddAsync(newProfile, ct);
                 if (insertResult.Status == DbStatusCode.Error)
                 {
                     this.logger.LogError("Unable to add admin user profile to DB.... {Result}", JsonSerializer.Serialize(insertResult));
@@ -159,7 +134,7 @@ namespace HealthGateway.Admin.Services
             {
                 // Update profile
                 result.Payload.LastLoginDateTime = jwtAuthTime;
-                DbResult<AdminUserProfile> updateResult = this.profileDelegate.Update(result.Payload);
+                DbResult<AdminUserProfile> updateResult = await this.profileDelegate.UpdateAsync(result.Payload, ct: ct);
                 if (updateResult.Status == DbStatusCode.Error)
                 {
                     this.logger.LogError("Unable to update admin user profile to DB... {Result}", JsonSerializer.Serialize(updateResult));

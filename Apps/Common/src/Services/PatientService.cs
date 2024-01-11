@@ -72,7 +72,7 @@ namespace HealthGateway.Common.Services
         private static ActivitySource Source { get; } = new(nameof(PatientService));
 
         /// <inheritdoc/>
-        public async Task<RequestResult<string>> GetPatientPhn(string hdid)
+        public async Task<RequestResult<string>> GetPatientPhnAsync(string hdid, CancellationToken ct = default)
         {
             using Activity? activity = Source.StartActivity();
             RequestResult<string> retVal = new()
@@ -84,7 +84,7 @@ namespace HealthGateway.Common.Services
                 },
                 ResultStatus = ResultType.Error,
             };
-            RequestResult<PatientModel> patientResult = await this.GetPatientAsync(hdid);
+            RequestResult<PatientModel> patientResult = await this.GetPatientAsync(hdid, ct: ct);
             retVal.ResultError = patientResult.ResultError;
             retVal.ResultStatus = patientResult.ResultStatus;
             if (patientResult.ResultStatus == ResultType.Success && patientResult.ResourcePayload != null)
@@ -97,10 +97,10 @@ namespace HealthGateway.Common.Services
         }
 
         /// <inheritdoc/>
-        public async Task<string> GetPatientHdid(string phn)
+        public async Task<string> GetPatientHdidAsync(string phn, CancellationToken ct = default)
         {
             using Activity? activity = Source.StartActivity();
-            RequestResult<PatientModel> patientResult = await this.GetPatientAsync(phn, PatientIdentifierType.Phn);
+            RequestResult<PatientModel> patientResult = await this.GetPatientAsync(phn, PatientIdentifierType.Phn, ct: ct);
             if (patientResult.ResultStatus != ResultType.Success || patientResult.ResourcePayload == null)
             {
                 throw new ProblemDetailsException(

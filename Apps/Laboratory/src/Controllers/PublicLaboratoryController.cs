@@ -16,6 +16,7 @@
 namespace HealthGateway.Laboratory.Controllers
 {
     using System.Diagnostics.CodeAnalysis;
+    using System.Threading;
     using System.Threading.Tasks;
     using Asp.Versioning;
     using HealthGateway.Common.Data.ViewModels;
@@ -53,8 +54,9 @@ namespace HealthGateway.Laboratory.Controllers
         /// <summary>
         /// Registers a lab test for a public user.
         /// </summary>
-        /// <param name="labTestKit">The labTestKit to register.</param>
-        /// <returns>A LabTestKit  Result object wrapped in a request result.</returns>
+        /// <param name="labTestKit">The lab test kit to register.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
+        /// <returns>The lab test kit wrapped in a request result.</returns>
         /// <response code="200">The LabTestKit was processed.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
         /// <response code="403">
@@ -65,9 +67,9 @@ namespace HealthGateway.Laboratory.Controllers
         [HttpPost]
         [Produces("application/json")]
         [Route("LabTestKit")]
-        public async Task<RequestResult<PublicLabTestKit>> AddLabTestKit([FromBody] PublicLabTestKit labTestKit)
+        public async Task<RequestResult<PublicLabTestKit>> AddLabTestKit([FromBody] PublicLabTestKit labTestKit, CancellationToken ct)
         {
-            return await this.labTestKitService.RegisterLabTestKitAsync(labTestKit).ConfigureAwait(true);
+            return await this.labTestKitService.RegisterLabTestKitAsync(labTestKit, ct);
         }
     }
 }

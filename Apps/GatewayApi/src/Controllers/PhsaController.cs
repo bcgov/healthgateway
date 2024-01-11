@@ -58,6 +58,7 @@ namespace HealthGateway.GatewayApi.Controllers
         /// </summary>
         /// <returns>The list of dependent model wrapped in a request result.</returns>
         /// <param name="hdid">The owner hdid.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <response code="200">Returns the list of dependents.</response>
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
         /// <response code="403">
@@ -67,9 +68,9 @@ namespace HealthGateway.GatewayApi.Controllers
         [HttpGet]
         [Authorize(Policy = SystemDelegatedPatientPolicy.Read)]
         [Route("dependents/{hdid}")]
-        public async Task<ActionResult<RequestResult<IEnumerable<DependentModel>>>> GetAll(string hdid)
+        public async Task<ActionResult<RequestResult<IEnumerable<DependentModel>>>> GetAll(string hdid, CancellationToken ct)
         {
-            return await this.dependentService.GetDependentsAsync(hdid).ConfigureAwait(true);
+            return await this.dependentService.GetDependentsAsync(hdid, ct: ct);
         }
 
         /// <summary>

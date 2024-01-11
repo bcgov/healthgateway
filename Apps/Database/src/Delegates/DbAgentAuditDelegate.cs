@@ -55,7 +55,7 @@ namespace HealthGateway.Database.Delegates
                 dbQuery = dbQuery.Where(d => d.GroupCode == group);
             }
 
-            return await dbQuery.ToListAsync(ct).ConfigureAwait(true);
+            return await dbQuery.ToListAsync(ct);
         }
     }
 }

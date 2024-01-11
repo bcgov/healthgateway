@@ -31,6 +31,6 @@ namespace HealthGateway.AccountDataAccess.Patient.Api
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The patient identity matching the id.</returns>
         [Get("/patient-identity/hdid/{hdid}")]
-        Task<PatientIdentity> GetPatientIdentityAsync(string hdid, CancellationToken ct);
+        Task<PatientIdentity> GetPatientIdentityAsync(string hdid, CancellationToken ct = default);
     }
 }

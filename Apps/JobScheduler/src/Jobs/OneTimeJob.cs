@@ -101,7 +101,7 @@ namespace HealthGateway.JobScheduler.Jobs
                             Key = className,
                             Value = true.ToString(),
                         };
-                        await this.applicationSettingsDelegate.AddApplicationSettingAsync(hasRunAppSetting, ct);
+                        this.applicationSettingsDelegate.AddApplicationSetting(hasRunAppSetting);
                         this.logger.LogInformation("OneTimeJob is commiting DB changes");
                         await this.dbContext.SaveChangesAsync(ct);
                     }

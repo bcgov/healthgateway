@@ -22,7 +22,7 @@ namespace HealthGateway.Database.Delegates
     using HealthGateway.Database.Wrapper;
 
     /// <summary>
-    /// Operations to be performaed for Notes.
+    /// Operations to be performed for Notes.
     /// </summary>
     public interface INoteDelegate
     {

@@ -45,11 +45,10 @@ namespace HealthGateway.Common.Filters
         /// <inheritdoc/>
         public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
         {
-            AuditEvent auditEvent = new();
-            auditEvent.AuditEventDateTime = DateTime.UtcNow;
+            AuditEvent auditEvent = new() { AuditEventDateTime = DateTime.UtcNow };
 
             // Executes the action (Controller method)
-            await next().ConfigureAwait(true);
+            await next();
 
             // Check for ignored controllers
             if (context.Controller.GetType().GetCustomAttributes(typeof(IgnoreAuditAttribute), true).Length > 0)
@@ -74,7 +73,7 @@ namespace HealthGateway.Common.Filters
             // Write the event
             this.auditService.PopulateWithHttpContext(context.HttpContext, auditEvent);
             auditEvent.CreatedDateTime = DateTime.UtcNow;
-            this.auditService.WriteAuditEvent(auditEvent);
+            await this.auditService.WriteAuditEventAsync(auditEvent);
         }
     }
 }

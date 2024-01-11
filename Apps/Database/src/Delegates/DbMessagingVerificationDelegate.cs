@@ -62,7 +62,7 @@ namespace HealthGateway.Database.Delegates
                 throw new ArgumentException("SMSNumber/SMSValidationCode cannot be null or empty when verification type is SMS");
             }
 
-            await this.dbContext.AddAsync(messageVerification, ct);
+            this.dbContext.Add(messageVerification);
             if (commit)
             {
                 await this.dbContext.SaveChangesAsync(ct);
@@ -137,8 +137,7 @@ namespace HealthGateway.Database.Delegates
                 .Include(mv => mv.Email)
                 .OrderByDescending(mv => mv.CreatedDateTime)
                 .AsNoTracking()
-                .ToListAsync(ct)
-                .ConfigureAwait(true);
+                .ToListAsync(ct);
         }
     }
 }

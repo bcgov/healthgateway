@@ -56,7 +56,7 @@ namespace HealthGateway.Database.Delegates
                 Payload = userPreference,
                 Status = DbStatusCode.Deferred,
             };
-            await this.dbContext.UserPreference.AddAsync(userPreference, ct);
+            this.dbContext.UserPreference.Add(userPreference);
 
             if (commit)
             {

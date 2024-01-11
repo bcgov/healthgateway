@@ -34,7 +34,7 @@ public interface IImmunizationApi
     /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
     /// <returns>A PhsaResult containing the immunization that matches the given ID.</returns>
     [Get("/api/v1/Immunizations/{ImmunizationId}")]
-    Task<PhsaResult<ImmunizationViewResponse>> GetImmunizationAsync(string immunizationId, [Authorize] string token, CancellationToken ct);
+    Task<PhsaResult<ImmunizationViewResponse>> GetImmunizationAsync(string immunizationId, [Authorize] string token, CancellationToken ct = default);
 
     /// <summary>
     /// Retrieves a PhsaResult containing the immunizations and recommendations of a given patient.
@@ -47,7 +47,7 @@ public interface IImmunizationApi
     /// A PhsaResult containing the immunizations and recommendations of a given patient.
     /// </returns>
     [Get("/api/v1/Immunizations?subjectHdid={subjectHdid}&limit={limit}")]
-    Task<PhsaResult<ImmunizationResponse>> GetImmunizationsAsync(string subjectHdid, int? limit, [Authorize] string token, CancellationToken ct);
+    Task<PhsaResult<ImmunizationResponse>> GetImmunizationsAsync(string subjectHdid, int? limit, [Authorize] string token, CancellationToken ct = default);
 
     /// <summary>
     /// Retrieves a PhsaResult containing the vaccine status of a given patient.
@@ -60,5 +60,5 @@ public interface IImmunizationApi
     /// A PhsaResult containing the vaccine status of a given patient.
     /// </returns>
     [Post("/api/v1/Immunizations/VaccineStatusIndicator?subjectHdid={subjectHdid}&federalPvc={federalPvc}")]
-    Task<PhsaResult<VaccineStatusResult>> GetVaccineStatusAsync(string subjectHdid, bool federalPvc, [Authorize] string token, CancellationToken ct);
+    Task<PhsaResult<VaccineStatusResult>> GetVaccineStatusAsync(string subjectHdid, bool federalPvc, [Authorize] string token, CancellationToken ct = default);
 }

@@ -18,6 +18,7 @@ namespace HealthGateway.Admin.Delegates
     using System;
     using System.Diagnostics;
     using System.Net.Http;
+    using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Admin.Api;
     using HealthGateway.Common.Data.Constants;
@@ -59,7 +60,7 @@ namespace HealthGateway.Admin.Delegates
         private static ActivitySource Source { get; } = new(nameof(RestVaccineStatusDelegate));
 
         /// <inheritdoc/>
-        public async Task<RequestResult<PhsaResult<VaccineStatusResult>>> GetVaccineStatusWithRetries(string phn, DateTime dateOfBirth, string accessToken)
+        public async Task<RequestResult<PhsaResult<VaccineStatusResult>>> GetVaccineStatusWithRetriesAsync(string phn, DateTime dateOfBirth, string accessToken, CancellationToken ct = default)
         {
             using Activity? activity = Source.StartActivity();
             RequestResult<PhsaResult<VaccineStatusResult>> retVal = new()
@@ -73,7 +74,7 @@ namespace HealthGateway.Admin.Delegates
             bool refreshInProgress;
             do
             {
-                response = await this.GetVaccineStatus(phn, dateOfBirth, accessToken).ConfigureAwait(true);
+                response = await this.GetVaccineStatusAsync(phn, dateOfBirth, accessToken, ct);
 
                 refreshInProgress = response.ResultStatus == ResultType.Success &&
                                     response.ResourcePayload != null &&
@@ -83,7 +84,7 @@ namespace HealthGateway.Admin.Delegates
                 if (refreshInProgress && attemptCount <= this.phsaConfig.MaxRetries)
                 {
                     this.logger.LogDebug("Refresh in progress, trying again....");
-                    await Task.Delay(Math.Max(response.ResourcePayload!.LoadState.BackOffMilliseconds, this.phsaConfig.BackOffMilliseconds)).ConfigureAwait(true);
+                    await Task.Delay(Math.Max(response.ResourcePayload!.LoadState.BackOffMilliseconds, this.phsaConfig.BackOffMilliseconds), ct);
                 }
             }
             while (refreshInProgress && attemptCount <= this.phsaConfig.MaxRetries);
@@ -109,7 +110,7 @@ namespace HealthGateway.Admin.Delegates
             return retVal;
         }
 
-        private async Task<RequestResult<PhsaResult<VaccineStatusResult>>> GetVaccineStatus(string phn, DateTime dateOfBirth, string accessToken)
+        private async Task<RequestResult<PhsaResult<VaccineStatusResult>>> GetVaccineStatusAsync(string phn, DateTime dateOfBirth, string accessToken, CancellationToken ct)
         {
             using Activity? activity = Source.StartActivity();
             this.logger.LogDebug("Getting vaccine status for PHN {PersonalHealthNumber}, DoB {DateOfBirth}", phn, dateOfBirth);
@@ -127,7 +128,7 @@ namespace HealthGateway.Admin.Delegates
                     DateOfBirth = dateOfBirth,
                 };
 
-                PhsaResult<VaccineStatusResult> phsaResult = await this.immunizationAdminApi.GetVaccineStatus(query, accessToken).ConfigureAwait(true);
+                PhsaResult<VaccineStatusResult> phsaResult = await this.immunizationAdminApi.GetVaccineStatusAsync(query, accessToken, ct);
 
                 if (phsaResult.Result != null)
                 {

@@ -161,7 +161,7 @@ namespace HealthGateway.JobScheduler.Jobs
                     Personalization = email.Personalization,
                     Reference = email.Id.ToString("D"),
                 };
-                EmailResponse response = await this.notifyApi.SendEmail(emailRequest);
+                EmailResponse response = await this.notifyApi.SendEmailAsync(emailRequest, ct);
                 email.NotificationId = response.Id;
                 email.EmailStatusCode = EmailStatus.Processed;
                 email.SentDateTime = DateTime.UtcNow;

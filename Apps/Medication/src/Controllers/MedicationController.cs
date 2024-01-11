@@ -61,7 +61,7 @@ namespace HealthGateway.Medication.Controllers
         [HttpGet]
         [Produces("application/json")]
         [Route("{drugIdentifier}")]
-        public async Task<RequestResult<MedicationInformation>> GetMedication(string drugIdentifier, CancellationToken ct = default)
+        public async Task<RequestResult<MedicationInformation>> GetMedication(string drugIdentifier, CancellationToken ct)
         {
             // The database requires the dins to be the same size and padded with zeroes on the left
             string paddedDin = drugIdentifier.PadLeft(8, '0');
@@ -89,7 +89,7 @@ namespace HealthGateway.Medication.Controllers
         /// <response code="200">Returns a list of medication information wrapped in a RequestResult.</response>
         [HttpGet("")]
         [Produces("application/json")]
-        public async Task<RequestResult<IDictionary<string, MedicationInformation>>> GetMedications([FromQuery] IList<string> drugIdentifiers, CancellationToken ct = default)
+        public async Task<RequestResult<IDictionary<string, MedicationInformation>>> GetMedications([FromQuery] IList<string> drugIdentifiers, CancellationToken ct)
         {
             // The database requires the dins to be the same size and padded with zeroes on the left
             IList<string> paddedDrugIdentifiers = drugIdentifiers.Select(x => x.PadLeft(8, '0')).ToList();

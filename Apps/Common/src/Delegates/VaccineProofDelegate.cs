@@ -25,6 +25,7 @@ namespace HealthGateway.Common.Delegates
     using System.Net.Mime;
     using System.Text;
     using System.Text.Json;
+    using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.Constants;
@@ -73,7 +74,7 @@ namespace HealthGateway.Common.Delegates
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResult<VaccineProofResponse>> MailAsync(VaccineProofTemplate vaccineProofTemplate, VaccineProofRequest request, Address address)
+        public async Task<RequestResult<VaccineProofResponse>> MailAsync(VaccineProofTemplate vaccineProofTemplate, VaccineProofRequest request, Address address, CancellationToken ct = default)
         {
             RequestResult<VaccineProofResponse> retVal = new()
             {
@@ -104,7 +105,7 @@ namespace HealthGateway.Common.Delegates
 
             using StringContent httpContent = new(JsonSerializer.Serialize(vaccineProofQuery), Encoding.UTF8, MediaTypeNames.Application.Json);
 
-            RequestResult<BcmpJobStatusResult> requestResult = await this.PostAsync<BcmpJobStatusResult>(endpointString, httpContent).ConfigureAwait(true);
+            RequestResult<BcmpJobStatusResult> requestResult = await this.PostAsync<BcmpJobStatusResult>(endpointString, httpContent, ct);
             BcmpJobStatusResult? jobStatusResult = requestResult.ResourcePayload;
             if (jobStatusResult != null)
             {
@@ -132,7 +133,7 @@ namespace HealthGateway.Common.Delegates
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResult<VaccineProofResponse>> GenerateAsync(VaccineProofTemplate vaccineProofTemplate, VaccineProofRequest request)
+        public async Task<RequestResult<VaccineProofResponse>> GenerateAsync(VaccineProofTemplate vaccineProofTemplate, VaccineProofRequest request, CancellationToken ct = default)
         {
             RequestResult<VaccineProofResponse> retVal = new()
             {
@@ -155,7 +156,7 @@ namespace HealthGateway.Common.Delegates
             string payload = JsonSerializer.Serialize(vaccineProofQuery);
             using StringContent httpContent = new(payload, Encoding.UTF8, MediaTypeNames.Application.Json);
 
-            RequestResult<BcmpJobStatusResult> requestResult = await this.PostAsync<BcmpJobStatusResult>(endpointString, httpContent).ConfigureAwait(true);
+            RequestResult<BcmpJobStatusResult> requestResult = await this.PostAsync<BcmpJobStatusResult>(endpointString, httpContent, ct);
             BcmpJobStatusResult? jobStatusResult = requestResult.ResourcePayload;
             if (jobStatusResult != null)
             {
@@ -185,7 +186,7 @@ namespace HealthGateway.Common.Delegates
 
         /// <inheritdoc/>
         [SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "Prevent exception propagation")]
-        public async Task<RequestResult<ReportModel>> GetAssetAsync(Uri assetUri)
+        public async Task<RequestResult<ReportModel>> GetAssetAsync(Uri assetUri, CancellationToken ct = default)
         {
             RequestResult<ReportModel> retVal = new()
             {
@@ -199,11 +200,11 @@ namespace HealthGateway.Common.Delegates
 
             try
             {
-                HttpResponseMessage response = await client.GetAsync(assetUri).ConfigureAwait(true);
+                HttpResponseMessage response = await client.GetAsync(assetUri, ct);
                 switch (response.StatusCode)
                 {
                     case HttpStatusCode.OK:
-                        byte[] payload = await response.Content.ReadAsByteArrayAsync().ConfigureAwait(true);
+                        byte[] payload = await response.Content.ReadAsByteArrayAsync(ct);
                         if (payload.Length > 0)
                         {
                             this.logger.LogTrace("Response: {Response}", response);
@@ -252,7 +253,7 @@ namespace HealthGateway.Common.Delegates
         }
 
         // ReSharper disable once CognitiveComplexity
-        private async Task<RequestResult<T>> PostAsync<T>(string endpointString, StringContent httpContent)
+        private async Task<RequestResult<T>> PostAsync<T>(string endpointString, StringContent httpContent, CancellationToken ct)
             where T : class
         {
             RequestResult<T> retVal = new()
@@ -267,8 +268,8 @@ namespace HealthGateway.Common.Delegates
             Uri endpoint = new(endpointString);
             try
             {
-                HttpResponseMessage response = await client.PostAsync(endpoint, httpContent).ConfigureAwait(true);
-                string payload = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
+                HttpResponseMessage response = await client.PostAsync(endpoint, httpContent, ct);
+                string payload = await response.Content.ReadAsStringAsync(ct);
                 this.logger.LogTrace("Response: {Response}", response);
                 switch (response.StatusCode)
                 {

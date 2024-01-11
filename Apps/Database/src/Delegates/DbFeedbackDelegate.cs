@@ -53,7 +53,7 @@ namespace HealthGateway.Database.Delegates
         {
             this.logger.LogTrace("Inserting user feedback to DB...");
             DbResult<UserFeedback> result = new();
-            await this.dbContext.AddAsync(feedback, ct);
+            this.dbContext.Add(feedback);
             try
             {
                 await this.dbContext.SaveChangesAsync(ct);
@@ -112,7 +112,7 @@ namespace HealthGateway.Database.Delegates
         public async Task<UserFeedback?> GetUserFeedbackAsync(Guid feedbackId, CancellationToken ct = default)
         {
             this.logger.LogTrace("Getting user feedback from DB... {FeedbackId}", feedbackId);
-            return await this.dbContext.UserFeedback.FindAsync(new object[] { feedbackId }, ct);
+            return await this.dbContext.UserFeedback.FindAsync([feedbackId], ct);
         }
 
         /// <inheritdoc/>

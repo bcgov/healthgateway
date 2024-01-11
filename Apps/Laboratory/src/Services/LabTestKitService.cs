@@ -99,7 +99,7 @@ namespace HealthGateway.Laboratory.Services
         /// <inheritdoc/>
         public async Task<RequestResult<LabTestKit>> RegisterLabTestKitAsync(string hdid, LabTestKit testKit, CancellationToken ct = default)
         {
-            string? accessToken = await this.authenticationDelegate.FetchAuthenticatedUserTokenAsync();
+            string? accessToken = await this.authenticationDelegate.FetchAuthenticatedUserTokenAsync(ct);
 
             try
             {

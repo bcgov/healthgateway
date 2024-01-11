@@ -16,6 +16,7 @@
 namespace HealthGateway.JobScheduler.Api
 {
     using System;
+    using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.JobScheduler.Models.Notify;
     using Refit;
@@ -29,24 +30,27 @@ namespace HealthGateway.JobScheduler.Api
         /// Sends an SMS using the GC Notify service.
         /// </summary>
         /// <param name="smsRequest">The SMS request to send.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The SMS Response.</returns>
         [Post("/v2/notifications/sms")]
-        Task<SmsResponse> SendSms(SmsRequest smsRequest);
+        Task<SmsResponse> SendSmsAsync(SmsRequest smsRequest, CancellationToken ct = default);
 
         /// <summary>
         /// Sends an Email using the GC Notify service.
         /// </summary>
         /// <param name="emailRequest">The Email request to send.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The Email Response.</returns>
         [Post("/v2/notifications/email")]
-        Task<EmailResponse> SendEmail(EmailRequest emailRequest);
+        Task<EmailResponse> SendEmailAsync(EmailRequest emailRequest, CancellationToken ct = default);
 
         /// <summary>
         /// Gets the status of a notification.
         /// </summary>
         /// <param name="notificationId">The id of the notification to query.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The status of the notification.</returns>
         [Get("/v2/notifications/{notificationId}")]
-        Task<NotificationStatus> GetStatus(Guid notificationId);
+        Task<NotificationStatus> GetStatusAsync(Guid notificationId, CancellationToken ct = default);
     }
 }
