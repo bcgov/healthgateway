@@ -33,7 +33,7 @@ namespace AccountDataAccessTest
         /// <summary>
         /// GetDemographics by PHN - happy path.
         /// </summary>
-        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
         public async Task ShouldGetDemographicsByPhn()
         {

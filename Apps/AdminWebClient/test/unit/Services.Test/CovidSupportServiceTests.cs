@@ -32,7 +32,6 @@ namespace HealthGateway.AdminWebClientTests.Services.Test
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Delegates;
     using HealthGateway.Common.Services;
-    using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using Moq;
@@ -146,14 +145,13 @@ namespace HealthGateway.AdminWebClientTests.Services.Test
             };
 
             mockAuthDelegate.Setup(s => s.AuthenticateAsSystemAsync(It.IsAny<ClientCredentialsRequest>(), It.IsAny<bool>(), It.IsAny<CancellationToken>())).ReturnsAsync(jwt);
-            mockAuthDelegate.Setup(s => s.FetchAuthenticatedUserTokenAsync()).ReturnsAsync(AccessToken);
+            mockAuthDelegate.Setup(s => s.FetchAuthenticatedUserTokenAsync(It.IsAny<CancellationToken>())).ReturnsAsync(AccessToken);
             IImmunizationAdminApi immunizationAdminApi = RestService.For<IImmunizationAdminApi>(httpClient);
             ICovidSupportService mockCovidSupportService = new CovidSupportService(
                 new Mock<ILogger<CovidSupportService>>().Object,
                 new Mock<IPatientService>().Object,
                 new Mock<IImmunizationAdminDelegate>().Object,
                 new Mock<IVaccineStatusDelegate>().Object,
-                new Mock<IHttpContextAccessor>().Object,
                 GetIConfigurationRoot(),
                 new Mock<IVaccineProofDelegate>().Object,
                 immunizationAdminApi,
@@ -171,21 +169,21 @@ namespace HealthGateway.AdminWebClientTests.Services.Test
             };
 
             mockAuthDelegate.Setup(s => s.AuthenticateAsSystemAsync(It.IsAny<ClientCredentialsRequest>(), It.IsAny<bool>(), It.IsAny<CancellationToken>())).ReturnsAsync(jwt);
-            mockAuthDelegate.Setup(s => s.FetchAuthenticatedUserTokenAsync()).ReturnsAsync(AccessToken);
+            mockAuthDelegate.Setup(s => s.FetchAuthenticatedUserTokenAsync(It.IsAny<CancellationToken>())).ReturnsAsync(AccessToken);
 
             Mock<IImmunizationAdminApi> mockAdminDelegate = new();
             if (!throwException)
             {
                 mockAdminDelegate.Setup(
                         s =>
-                            s.SubmitCovidAssessment(It.IsAny<CovidAssessmentRequest>(), It.IsAny<string>()))
+                            s.SubmitCovidAssessmentAsync(It.IsAny<CovidAssessmentRequest>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
                     .ReturnsAsync(response);
             }
             else
             {
                 mockAdminDelegate.Setup(
                         s =>
-                            s.SubmitCovidAssessment(It.IsAny<CovidAssessmentRequest>(), It.IsAny<string>()))
+                            s.SubmitCovidAssessmentAsync(It.IsAny<CovidAssessmentRequest>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
                     .ThrowsAsync(new HttpRequestException("Unit Test HTTP Request Exception"));
             }
 
@@ -194,7 +192,6 @@ namespace HealthGateway.AdminWebClientTests.Services.Test
                 new Mock<IPatientService>().Object,
                 new Mock<IImmunizationAdminDelegate>().Object,
                 new Mock<IVaccineStatusDelegate>().Object,
-                new Mock<IHttpContextAccessor>().Object,
                 GetIConfigurationRoot(),
                 new Mock<IVaccineProofDelegate>().Object,
                 mockAdminDelegate.Object,
@@ -212,21 +209,21 @@ namespace HealthGateway.AdminWebClientTests.Services.Test
             };
 
             mockAuthDelegate.Setup(s => s.AuthenticateAsSystemAsync(It.IsAny<ClientCredentialsRequest>(), It.IsAny<bool>(), It.IsAny<CancellationToken>())).ReturnsAsync(jwt);
-            mockAuthDelegate.Setup(s => s.FetchAuthenticatedUserTokenAsync()).ReturnsAsync(AccessToken);
+            mockAuthDelegate.Setup(s => s.FetchAuthenticatedUserTokenAsync(It.IsAny<CancellationToken>())).ReturnsAsync(AccessToken);
 
             Mock<IImmunizationAdminApi> mockAdminDelegate = new();
             if (!throwException)
             {
                 mockAdminDelegate.Setup(
                         s =>
-                            s.GetCovidAssessmentDetails(It.IsAny<CovidAssessmentDetailsRequest>(), It.IsAny<string>()))
+                            s.GetCovidAssessmentDetailsAsync(It.IsAny<CovidAssessmentDetailsRequest>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
                     .ReturnsAsync(response);
             }
             else
             {
                 mockAdminDelegate.Setup(
                         s =>
-                            s.GetCovidAssessmentDetails(It.IsAny<CovidAssessmentDetailsRequest>(), It.IsAny<string>()))
+                            s.GetCovidAssessmentDetailsAsync(It.IsAny<CovidAssessmentDetailsRequest>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
                     .ThrowsAsync(new HttpRequestException("Unit Test HTTP Request Exception"));
             }
 
@@ -235,7 +232,6 @@ namespace HealthGateway.AdminWebClientTests.Services.Test
                 new Mock<IPatientService>().Object,
                 new Mock<IImmunizationAdminDelegate>().Object,
                 new Mock<IVaccineStatusDelegate>().Object,
-                new Mock<IHttpContextAccessor>().Object,
                 GetIConfigurationRoot(),
                 new Mock<IVaccineProofDelegate>().Object,
                 mockAdminDelegate.Object,

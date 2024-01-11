@@ -174,7 +174,7 @@ namespace HealthGateway.ImmunizationTests.Delegates.Test
         private static IImmunizationDelegate GetImmunizationDelegate(PhsaResult<ImmunizationViewResponse> response, HttpStatusCode statusCode, bool throwException)
         {
             Mock<IAuthenticationDelegate> mockAuthDelegate = new();
-            mockAuthDelegate.Setup(s => s.FetchAuthenticatedUserTokenAsync()).ReturnsAsync(AccessToken);
+            mockAuthDelegate.Setup(s => s.FetchAuthenticatedUserTokenAsync(It.IsAny<CancellationToken>())).ReturnsAsync(AccessToken);
 
             Mock<IApiResponse<PhsaResult<ImmunizationViewResponse>>> mockApiResponse = new();
             mockApiResponse.Setup(s => s.Content).Returns(response);
@@ -206,7 +206,7 @@ namespace HealthGateway.ImmunizationTests.Delegates.Test
         private static IImmunizationDelegate GetImmunizationDelegate(PhsaResult<ImmunizationResponse> response, HttpStatusCode statusCode, bool throwException)
         {
             Mock<IAuthenticationDelegate> mockAuthDelegate = new();
-            mockAuthDelegate.Setup(s => s.FetchAuthenticatedUserTokenAsync()).ReturnsAsync(AccessToken);
+            mockAuthDelegate.Setup(s => s.FetchAuthenticatedUserTokenAsync(It.IsAny<CancellationToken>())).ReturnsAsync(AccessToken);
 
             Mock<IApiResponse<PhsaResult<ImmunizationResponse>>> mockApiResponse = new();
             mockApiResponse.Setup(s => s.Content).Returns(response);

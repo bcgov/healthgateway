@@ -441,7 +441,7 @@ namespace HealthGateway.EncounterTests.Services
             bool canAccessDataSource = true)
         {
             Mock<IHospitalVisitDelegate> mockHospitalVisitDelegate = new();
-            mockHospitalVisitDelegate.Setup(d => d.GetHospitalVisitsAsync(It.IsAny<string>())).Returns(Task.FromResult(hospitalVisitResult));
+            mockHospitalVisitDelegate.Setup(d => d.GetHospitalVisitsAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult(hospitalVisitResult));
 
             Mock<IPatientRepository> patientRepository = new();
             patientRepository.Setup(p => p.CanAccessDataSourceAsync(It.IsAny<string>(), It.IsAny<DataSource>(), It.IsAny<CancellationToken>())).ReturnsAsync(canAccessDataSource);

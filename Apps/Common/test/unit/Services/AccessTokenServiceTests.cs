@@ -17,6 +17,7 @@ namespace HealthGateway.CommonTests.Services
 {
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.CacheProviders;
@@ -62,7 +63,7 @@ namespace HealthGateway.CommonTests.Services
             IAccessTokenService accessTokenService = GetAccessTokenService(expectedTokenSwapResponse, true, false);
 
             // Act
-            RequestResult<TokenSwapResponse> actualResult = await accessTokenService.GetPhsaAccessToken();
+            RequestResult<TokenSwapResponse> actualResult = await accessTokenService.GetPhsaAccessTokenAsync();
 
             // Assert
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
@@ -89,7 +90,7 @@ namespace HealthGateway.CommonTests.Services
             IAccessTokenService accessTokenService = GetAccessTokenService(expectedTokenSwapResponse, true, true);
 
             // Act
-            RequestResult<TokenSwapResponse> actualResult = await accessTokenService.GetPhsaAccessToken();
+            RequestResult<TokenSwapResponse> actualResult = await accessTokenService.GetPhsaAccessTokenAsync();
 
             // Assert
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
@@ -116,7 +117,7 @@ namespace HealthGateway.CommonTests.Services
             IAccessTokenService accessTokenService = GetAccessTokenService(expectedTokenSwapResponse, false, true);
 
             // Act
-            RequestResult<TokenSwapResponse> actualResult = await accessTokenService.GetPhsaAccessToken();
+            RequestResult<TokenSwapResponse> actualResult = await accessTokenService.GetPhsaAccessTokenAsync();
 
             // Assert
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
@@ -148,11 +149,11 @@ namespace HealthGateway.CommonTests.Services
             };
 
             Mock<IAuthenticationDelegate> mockAuthenticationDelegate = new();
-            mockAuthenticationDelegate.Setup(a => a.FetchAuthenticatedUserTokenAsync()).ReturnsAsync(isAccessTokenFound ? AccessToken : null);
+            mockAuthenticationDelegate.Setup(a => a.FetchAuthenticatedUserTokenAsync(It.IsAny<CancellationToken>())).ReturnsAsync(isAccessTokenFound ? AccessToken : null);
             mockAuthenticationDelegate.Setup(a => a.FetchAuthenticatedUserId()).Returns(UserId);
 
             Mock<ITokenSwapDelegate> mockTokenSwapDelegate = new();
-            mockTokenSwapDelegate.Setup(s => s.SwapToken(It.IsAny<string>())).ReturnsAsync(requestResult);
+            mockTokenSwapDelegate.Setup(s => s.SwapTokenAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(requestResult);
 
             Mock<ICacheProvider> cacheProviderMock = new();
             cacheProviderMock.Setup(p => p.GetItem<TokenSwapResponse>(It.IsAny<string>())).Returns(useCache ? response : null);

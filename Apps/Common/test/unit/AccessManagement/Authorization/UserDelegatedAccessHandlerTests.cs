@@ -21,6 +21,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
     using System.Linq;
     using System.Security.Claims;
     using System.Threading;
+    using System.Threading.Tasks;
     using HealthGateway.Common.AccessManagement.Authorization.Claims;
     using HealthGateway.Common.AccessManagement.Authorization.Handlers;
     using HealthGateway.Common.AccessManagement.Authorization.Requirements;
@@ -55,8 +56,9 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
         /// <summary>
         /// Handle Auth - Unknown Requirement Error.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void UnknownRequirement()
+        public async Task UnknownRequirement()
         {
             ClaimsPrincipal claimsPrincipal = this.GetClaimsPrincipal();
             Mock<IHttpContextAccessor> httpContextAccessorMock = this.GetHttpContextAccessorMock(claimsPrincipal);
@@ -75,7 +77,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
 
             AuthorizationHandlerContext context = new(requirements, claimsPrincipal, null);
 
-            authHandler.HandleAsync(context);
+            await authHandler.HandleAsync(context);
 
             Assert.False(context.HasSucceeded);
             Assert.False(context.HasFailed);
@@ -84,8 +86,9 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
         /// <summary>
         /// Handle Auth - Read Write No Resource Error.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void ReadWriteNoResource()
+        public async Task ReadWriteNoResource()
         {
             ClaimsPrincipal claimsPrincipal = this.GetClaimsPrincipal();
 
@@ -119,7 +122,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
 
             AuthorizationHandlerContext context = new(requirements, claimsPrincipal, null);
 
-            authHandler.HandleAsync(context);
+            await authHandler.HandleAsync(context);
 
             Assert.False(context.HasSucceeded);
             Assert.False(context.HasFailed);
@@ -128,8 +131,9 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
         /// <summary>
         /// Handle Auth - Delegation Disabled Error.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void ShouldNotAuthPatientReadAsUserDelegationDisabled()
+        public async Task ShouldNotAuthPatientReadAsUserDelegationDisabled()
         {
             ClaimsPrincipal claimsPrincipal = this.GetClaimsPrincipal();
             Mock<IHttpContextAccessor> httpContextAccessorMock = this.GetHttpContextAccessorMock(claimsPrincipal);
@@ -148,7 +152,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
 
             AuthorizationHandlerContext context = new(requirements, claimsPrincipal, null);
 
-            authHandler.HandleAsync(context);
+            await authHandler.HandleAsync(context);
 
             Assert.False(context.HasSucceeded);
             Assert.False(context.HasFailed);
@@ -157,8 +161,9 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
         /// <summary>
         /// Handle Auth - Non-owner Error.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void ShouldNotAuthPatientReadAsOwner()
+        public async Task ShouldNotAuthPatientReadAsOwner()
         {
             ClaimsPrincipal claimsPrincipal = this.GetClaimsPrincipal();
             Mock<IHttpContextAccessor> httpContextAccessorMock = this.GetHttpContextAccessorMock(claimsPrincipal);
@@ -176,7 +181,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
 
             AuthorizationHandlerContext context = new(requirements, claimsPrincipal, null);
 
-            authHandler.HandleAsync(context);
+            await authHandler.HandleAsync(context);
 
             Assert.False(context.HasSucceeded);
             Assert.False(context.HasFailed);
@@ -185,8 +190,9 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
         /// <summary>
         /// Handle Auth - User-Delegated Happy Path.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void ShouldAuthResourceDelegate()
+        public async Task ShouldAuthResourceDelegate()
         {
             PatientModel patientModel = new()
             {
@@ -202,7 +208,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
                 loggerFactory.CreateLogger<UserDelegatedAccessHandler>();
 
             Mock<IResourceDelegateDelegate> mockDependentDelegate = new();
-            mockDependentDelegate.Setup(s => s.Exists(this.resourceHdid, this.hdid)).Returns(true);
+            mockDependentDelegate.Setup(s => s.ExistsAsync(this.resourceHdid, this.hdid, It.IsAny<CancellationToken>())).ReturnsAsync(true);
 
             Mock<IPatientService> mockPatientService = new();
             mockPatientService
@@ -219,7 +225,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
 
             AuthorizationHandlerContext context = new(requirements, claimsPrincipal, null);
 
-            authHandler.HandleAsync(context);
+            await authHandler.HandleAsync(context);
 
             Assert.True(context.HasSucceeded);
             Assert.False(context.HasFailed);
@@ -228,8 +234,9 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
         /// <summary>
         /// Handle Auth - User-Delegated Expired Error.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void ShouldNotAuthExpiredDelegate()
+        public async Task ShouldNotAuthExpiredDelegate()
         {
             PatientModel patientModel = new()
             {
@@ -244,7 +251,7 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
             ILogger<UserDelegatedAccessHandler> logger = loggerFactory.CreateLogger<UserDelegatedAccessHandler>();
 
             Mock<IResourceDelegateDelegate> mockDependentDelegate = new();
-            mockDependentDelegate.Setup(s => s.Exists(this.resourceHdid, this.hdid)).Returns(true);
+            mockDependentDelegate.Setup(s => s.ExistsAsync(this.resourceHdid, this.hdid, It.IsAny<CancellationToken>())).ReturnsAsync(true);
 
             Mock<IPatientService> mockPatientService = new();
             mockPatientService
@@ -257,11 +264,11 @@ namespace HealthGateway.CommonTests.AccessManagement.Authorization
                 httpContextAccessorMock.Object,
                 mockPatientService.Object,
                 mockDependentDelegate.Object);
-            PersonalFhirRequirement[] requirements = { new(FhirResource.Observation, FhirAccessType.Read, supportsUserDelegation: true) };
+            PersonalFhirRequirement[] requirements = [new(FhirResource.Observation, FhirAccessType.Read, supportsUserDelegation: true)];
 
             AuthorizationHandlerContext context = new(requirements, claimsPrincipal, null);
 
-            authHandler.HandleAsync(context);
+            await authHandler.HandleAsync(context);
 
             Assert.False(context.HasSucceeded);
             Assert.False(context.HasFailed);

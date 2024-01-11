@@ -349,7 +349,7 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
                 new Mock<IUserSmsService>().Object,
                 new Mock<IAuthenticationDelegate>().Object);
 
-            bool actualResult = await controller.UpdateUserEmail(this.hdid, "emailadd@hgw.ca");
+            bool actualResult = await controller.UpdateUserEmail(this.hdid, "emailadd@hgw.ca", default);
 
             Assert.True(actualResult);
         }
@@ -372,7 +372,7 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
             emailServiceMock.Setup(s => s.ValidateEmailAsync(It.IsAny<string>(), It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(requestResult);
 
             Mock<IAuthenticationDelegate> mockAuthenticationDelegate = new();
-            mockAuthenticationDelegate.Setup(s => s.FetchAuthenticatedUserTokenAsync()).ReturnsAsync(this.token);
+            mockAuthenticationDelegate.Setup(s => s.FetchAuthenticatedUserTokenAsync(It.IsAny<CancellationToken>())).ReturnsAsync(this.token);
 
             Mock<IHttpContextAccessor> httpContextAccessorMock = CreateValidHttpContext(this.token, this.userId, this.hdid);
             UserProfileController controller = new(
@@ -403,7 +403,7 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
             emailServiceMock.Setup(s => s.ValidateEmailAsync(It.IsAny<string>(), It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(requestResult);
 
             Mock<IAuthenticationDelegate> mockAuthenticationDelegate = new();
-            mockAuthenticationDelegate.Setup(s => s.FetchAuthenticatedUserTokenAsync()).ReturnsAsync(this.token);
+            mockAuthenticationDelegate.Setup(s => s.FetchAuthenticatedUserTokenAsync(It.IsAny<CancellationToken>())).ReturnsAsync(this.token);
 
             Mock<IHttpContextAccessor> httpContextAccessorMock = CreateValidHttpContext(this.token, this.userId, this.hdid);
             UserProfileController controller = new(
@@ -435,7 +435,7 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
                 smsServiceMock.Object,
                 new Mock<IAuthenticationDelegate>().Object);
 
-            bool actualResult = await controller.UpdateUserSmsNumberAsync(this.hdid, "250 123 456");
+            bool actualResult = await controller.UpdateUserSmsNumberAsync(this.hdid, "250 123 456", default);
             Assert.True(actualResult);
         }
 

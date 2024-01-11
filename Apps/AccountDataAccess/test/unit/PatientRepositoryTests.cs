@@ -59,7 +59,7 @@ namespace AccountDataAccessTest
         /// <summary>
         /// GetDemographics by PHN - happy path.
         /// </summary>
-        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
         public async Task ShouldGetDemographicsByPhn()
         {
@@ -84,7 +84,7 @@ namespace AccountDataAccessTest
         /// <summary>
         /// GetDemographics by Hdid - happy path.
         /// </summary>
-        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
         public async Task ShouldGetDemographicsByHdid()
         {
@@ -109,7 +109,7 @@ namespace AccountDataAccessTest
         /// <summary>
         /// GetDemographics by Hdid - using cache.
         /// </summary>
-        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
         public async Task ShouldGetDemographicsByHdidUsingCache()
         {
@@ -138,7 +138,7 @@ namespace AccountDataAccessTest
         /// <summary>
         /// Get patient identity by hdid.
         /// </summary>
-        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
         public async Task ShouldGetPatientIdentityByHdid()
         {
@@ -181,7 +181,7 @@ namespace AccountDataAccessTest
         /// <summary>
         /// Get patient identity by hdid throws not found api exception.
         /// </summary>
-        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
         public async Task ShouldGetPatientIdentityThrowsNotFoundApiException()
         {
@@ -238,7 +238,7 @@ namespace AccountDataAccessTest
         /// The value indicates whether blocked data sources change feed should be enabled
         /// or not.
         /// </param>
-        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Theory]
         [InlineData(true)]
         [InlineData(false)]
@@ -281,7 +281,8 @@ namespace AccountDataAccessTest
                 d => d.UpdateBlockedAccessAsync(
                     It.Is<BlockedAccess>(ba => AssertBlockedAccess(blockedAccess, ba)),
                     It.Is<AgentAudit>(aa => AssertAgentAudit(audit, aa)),
-                    commit));
+                    commit,
+                    It.IsAny<CancellationToken>()));
 
             if (blockedDataSourcesEnabled)
             {
@@ -300,7 +301,7 @@ namespace AccountDataAccessTest
         /// </summary>
         /// <param name="dataSource">The data source to check for access.</param>
         /// <param name="canAccessDataSource">The value indicates whether the data source can be accessed or not.</param>
-        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Theory]
         [InlineData(DataSource.Note, true)]
         [InlineData(DataSource.Medication, false)]
@@ -333,7 +334,7 @@ namespace AccountDataAccessTest
         /// <summary>
         /// Get blocked access by hdid.
         /// </summary>
-        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
         public async Task ShouldGetBlockedAccessByHdid()
         {
@@ -361,7 +362,7 @@ namespace AccountDataAccessTest
         /// <summary>
         /// Get data sources by hdid.
         /// </summary>
-        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
         public async Task ShouldGetDataSourcesByHdid()
         {
@@ -444,8 +445,8 @@ namespace AccountDataAccessTest
             Mock<IMessageSender>? messageSender = null)
         {
             blockedAccessDelegate ??= new();
-            blockedAccessDelegate.Setup(p => p.GetBlockedAccessAsync(It.IsAny<string>())).ReturnsAsync(blockedAccess);
-            blockedAccessDelegate.Setup(p => p.GetDataSourcesAsync(It.IsAny<string>())).ReturnsAsync(blockedAccess.DataSources);
+            blockedAccessDelegate.Setup(p => p.GetBlockedAccessAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(blockedAccess);
+            blockedAccessDelegate.Setup(p => p.GetDataSourcesAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(blockedAccess.DataSources);
 
             bool changeFeedEnabled = blockedDataSourcesEnabled ?? false;
             messageSender ??= new();

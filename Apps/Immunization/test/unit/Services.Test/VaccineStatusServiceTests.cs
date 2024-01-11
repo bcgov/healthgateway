@@ -114,7 +114,7 @@ namespace HealthGateway.ImmunizationTests.Services.Test
 
             Mock<IAuthenticationDelegate> mockAuthDelegate = new();
             mockAuthDelegate.Setup(s => s.AuthenticateAsSystemAsync(It.IsAny<ClientCredentialsRequest>(), It.IsAny<bool>(), It.IsAny<CancellationToken>())).ReturnsAsync(jwtModel);
-            mockAuthDelegate.Setup(s => s.FetchAuthenticatedUserTokenAsync()).ReturnsAsync(this.accessToken);
+            mockAuthDelegate.Setup(s => s.FetchAuthenticatedUserTokenAsync(It.IsAny<CancellationToken>())).ReturnsAsync(this.accessToken);
 
             IVaccineStatusService service = new VaccineStatusService(
                 this.configuration,
@@ -200,7 +200,7 @@ namespace HealthGateway.ImmunizationTests.Services.Test
 
             Mock<IAuthenticationDelegate> mockAuthDelegate = new();
             mockAuthDelegate.Setup(s => s.AuthenticateAsSystemAsync(It.IsAny<ClientCredentialsRequest>(), It.IsAny<bool>(), It.IsAny<CancellationToken>())).ReturnsAsync(jwtModel);
-            mockAuthDelegate.Setup(s => s.FetchAuthenticatedUserTokenAsync()).ReturnsAsync(this.accessToken);
+            mockAuthDelegate.Setup(s => s.FetchAuthenticatedUserTokenAsync(It.IsAny<CancellationToken>())).ReturnsAsync(this.accessToken);
             IVaccineStatusService service = new VaccineStatusService(
                 this.configuration,
                 new Mock<ILogger<VaccineStatusService>>().Object,
@@ -291,7 +291,7 @@ namespace HealthGateway.ImmunizationTests.Services.Test
 
             Mock<IAuthenticationDelegate> mockAuthDelegate = new();
             mockAuthDelegate.Setup(s => s.AuthenticateAsSystemAsync(It.IsAny<ClientCredentialsRequest>(), It.IsAny<bool>(), It.IsAny<CancellationToken>())).ReturnsAsync(jwtModel);
-            mockAuthDelegate.Setup(s => s.FetchAuthenticatedUserTokenAsync()).ReturnsAsync(this.accessToken);
+            mockAuthDelegate.Setup(s => s.FetchAuthenticatedUserTokenAsync(It.IsAny<CancellationToken>())).ReturnsAsync(this.accessToken);
 
             IVaccineStatusService service = new VaccineStatusService(
                 this.configuration,
@@ -384,7 +384,7 @@ namespace HealthGateway.ImmunizationTests.Services.Test
 
             Mock<IAuthenticationDelegate> mockAuthDelegate = new();
             mockAuthDelegate.Setup(s => s.AuthenticateAsSystemAsync(It.IsAny<ClientCredentialsRequest>(), It.IsAny<bool>(), It.IsAny<CancellationToken>())).ReturnsAsync(jwtModel);
-            mockAuthDelegate.Setup(s => s.FetchAuthenticatedUserTokenAsync()).ReturnsAsync(this.accessToken);
+            mockAuthDelegate.Setup(s => s.FetchAuthenticatedUserTokenAsync(It.IsAny<CancellationToken>())).ReturnsAsync(this.accessToken);
 
             IVaccineStatusService service = new VaccineStatusService(
                 this.configuration,
@@ -481,7 +481,7 @@ namespace HealthGateway.ImmunizationTests.Services.Test
 
             Mock<IAuthenticationDelegate> mockAuthDelegate = new();
             mockAuthDelegate.Setup(s => s.AuthenticateAsSystemAsync(It.IsAny<ClientCredentialsRequest>(), It.IsAny<bool>(), It.IsAny<CancellationToken>())).ReturnsAsync(jwtModel);
-            mockAuthDelegate.Setup(s => s.FetchAuthenticatedUserTokenAsync()).ReturnsAsync(this.accessToken);
+            mockAuthDelegate.Setup(s => s.FetchAuthenticatedUserTokenAsync(It.IsAny<CancellationToken>())).ReturnsAsync(this.accessToken);
 
             IVaccineStatusService service = new VaccineStatusService(
                 this.configuration,

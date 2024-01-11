@@ -47,7 +47,7 @@ namespace AccountDataAccessTest.Strategy
         /// GetPatientAsync by hdid - happy path.
         /// </summary>
         /// <param name="useCache">The value indicates whether cache should be used or not.</param>
-        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Theory]
         [InlineData(false)]
         [InlineData(true)]
@@ -79,7 +79,7 @@ namespace AccountDataAccessTest.Strategy
         /// <summary>
         /// Get patient identity by hdid.
         /// </summary>
-        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
         public async Task ShouldGetPatientIdentityByHdid()
         {
@@ -122,7 +122,7 @@ namespace AccountDataAccessTest.Strategy
         /// <summary>
         /// Get patient identity by hdid throws not found api exception.
         /// </summary>
-        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
         public async Task ShouldGetPatientIdentityByHdidThrowsNotFoundApiException()
         {

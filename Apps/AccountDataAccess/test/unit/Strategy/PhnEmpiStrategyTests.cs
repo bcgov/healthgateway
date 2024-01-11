@@ -39,7 +39,7 @@ namespace AccountDataAccessTest.Strategy
         /// GetPatientAsync by phn - happy path.
         /// </summary>
         /// <param name="useCache">The value indicates whether cache should be used or not.</param>
-        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Theory]
         [InlineData(false)]
         [InlineData(true)]
@@ -69,7 +69,7 @@ namespace AccountDataAccessTest.Strategy
         /// <summary>
         /// Get patient by phn  throws not found due to invalid phn.
         /// </summary>
-        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
         public async Task ShouldGetPatientThrowsBadRequestException()
         {
