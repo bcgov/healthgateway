@@ -16,6 +16,7 @@
 namespace HealthGateway.Immunization.Controllers
 {
     using System.Threading.Tasks;
+    using Asp.Versioning;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Filters;
     using HealthGateway.Immunization.Models;

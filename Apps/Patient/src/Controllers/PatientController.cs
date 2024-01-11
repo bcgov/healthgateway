@@ -16,6 +16,7 @@
 namespace HealthGateway.Patient.Controllers
 {
     using System.Threading.Tasks;
+    using Asp.Versioning;
     using HealthGateway.Common.AccessManagement.Authorization.Policy;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Models;
@@ -100,7 +101,7 @@ namespace HealthGateway.Patient.Controllers
         [Authorize(Policy = PatientPolicy.Read)]
         public async Task<ActionResult<PatientDetails>> GetPatientV2(string hdid)
         {
-            var patientDetails = await this.serviceV2.GetPatientAsync(hdid).ConfigureAwait(true);
+            PatientDetails patientDetails = await this.serviceV2.GetPatientAsync(hdid).ConfigureAwait(true);
             return this.Ok(patientDetails);
         }
     }

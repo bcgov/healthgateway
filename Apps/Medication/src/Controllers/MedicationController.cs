@@ -17,6 +17,7 @@ namespace HealthGateway.Medication.Controllers
 {
     using System.Collections.Generic;
     using System.Linq;
+    using Asp.Versioning;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Medication.Models;

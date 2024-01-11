@@ -15,6 +15,7 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Admin.Controllers
 {
+    using Asp.Versioning;
     using HealthGateway.Admin.Models;
     using HealthGateway.Admin.Services;
     using HealthGateway.Common.AccessManagement.Authorization.Admin;
