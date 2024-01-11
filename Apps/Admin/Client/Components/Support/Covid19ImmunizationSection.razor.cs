@@ -110,15 +110,15 @@ namespace HealthGateway.Admin.Client.Components.Support
             base.Dispose(disposing);
         }
 
-        private async Task DownloadReport(ReportModel? report)
+        private async Task DownloadReportAsync(ReportModel? report)
         {
             if (report != null)
             {
-                await this.JsRuntime.InvokeAsync<object>("saveAsFile", report.FileName, report.Data).ConfigureAwait(true);
+                await this.JsRuntime.InvokeAsync<object>("saveAsFile", report.FileName, report.Data);
             }
         }
 
-        private async Task OpenMailVaccineCardAddressConfirmationDialog()
+        private async Task OpenMailVaccineCardAddressConfirmationDialogAsync()
         {
             const string title = "Confirm Address";
             DialogParameters parameters = new()
@@ -138,9 +138,8 @@ namespace HealthGateway.Admin.Client.Components.Support
                 .ShowAsync<MailVaccineCardAddressConfirmationDialog>(
                     title,
                     parameters,
-                    options)
-                .ConfigureAwait(true);
-            await dialog.Result.ConfigureAwait(true);
+                    options);
+            await dialog.Result;
         }
 
         private void DisplayMailVaccineCardSuccessful(VaccineCardActions.MailVaccineCardSuccessAction action)
@@ -150,7 +149,7 @@ namespace HealthGateway.Admin.Client.Components.Support
 
         private void PrintVaccineCard(VaccineCardActions.PrintVaccineCardSuccessAction action)
         {
-            Task.Run(async () => await this.DownloadReport(this.VaccineCardStateData).ConfigureAwait(true));
+            Task.Run(async () => await this.DownloadReportAsync(this.VaccineCardStateData));
         }
 
         private void ResetVaccineCardState()

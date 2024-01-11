@@ -30,7 +30,7 @@
 <MudTable
     Class="mt-4"
     T="ProtectedDependentRecord"
-    ServerData="@GetProtectedDependentsTableData"
+    ServerData="@GetProtectedDependentsTableDataAsync"
     AllowUnsorted="@false"
     Striped="@true"
     Dense="@true"
@@ -73,7 +73,7 @@
     Striped="@true"
     Dense="@true"
     RowsPerPage="20"
-    OnRowClick="@HandleBlockedAccessRowClick"
+    OnRowClick="@HandleBlockedAccessRowClickAsync"
     RowClass="cursor-pointer"
     data-testid="blocked-access-table">
     <ColGroup>

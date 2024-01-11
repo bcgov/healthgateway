@@ -143,7 +143,7 @@ public partial class AnalyticsPage : FluxorComponent
 
     private void DownloadAnalyticsReport(AnalyticsActions.LoadSuccessAction action)
     {
-        Task.Run(async () => await this.DownloadReport(this.AnalyticsStateData).ConfigureAwait(true));
+        Task.Run(async () => await this.DownloadReportAsync(this.AnalyticsStateData));
     }
 
     private void ResetAnalyticsState()
@@ -151,13 +151,13 @@ public partial class AnalyticsPage : FluxorComponent
         this.Dispatcher.Dispatch(new AnalyticsActions.ResetStateAction());
     }
 
-    private async Task DownloadReport(HttpContent content)
+    private async Task DownloadReportAsync(HttpContent content)
     {
-        byte[] fileBytes = await content.ReadAsByteArrayAsync().ConfigureAwait(true);
+        byte[] fileBytes = await content.ReadAsByteArrayAsync();
         string fileName = this.ReportName == YearOfBirthReportName
             ? $"{this.ReportName}_export_{this.StartDate.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}_to_{this.EndDate.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}.csv"
             : $"{this.ReportName}_export_{DateTime.Now.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}.csv";
 
-        await this.JsRuntime.InvokeAsync<object>("saveAsFile", fileName, Convert.ToBase64String(fileBytes)).ConfigureAwait(true);
+        await this.JsRuntime.InvokeAsync<object>("saveAsFile", fileName, Convert.ToBase64String(fileBytes));
     }
 }

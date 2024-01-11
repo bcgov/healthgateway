@@ -35,7 +35,7 @@ namespace HealthGateway.Admin.Client.Store.AdminReport
             logger.LogInformation("Retrieving users with blocked data sources");
             try
             {
-                IEnumerable<BlockedAccessRecord> report = await adminReportApi.GetBlockedAccessReport().ConfigureAwait(true);
+                IEnumerable<BlockedAccessRecord> report = await adminReportApi.GetBlockedAccessReportAsync();
                 dispatcher.Dispatch(new AdminReportActions.GetBlockedAccessSuccessAction { Data = report });
             }
             catch (Exception e) when (e is ApiException or HttpRequestException)

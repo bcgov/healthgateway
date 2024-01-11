@@ -49,7 +49,7 @@ public partial class LoginPage : ComponentBase
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
-        AuthenticationState authState = await this.AuthenticationStateProvider.GetAuthenticationStateAsync().ConfigureAwait(true);
+        AuthenticationState authState = await this.AuthenticationStateProvider.GetAuthenticationStateAsync();
         if (authState.User.Identity is { IsAuthenticated: true })
         {
             this.NavigationManager.NavigateTo(this.ReturnPath ?? "/", replace: true);

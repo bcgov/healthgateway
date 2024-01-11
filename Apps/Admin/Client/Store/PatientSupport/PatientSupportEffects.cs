@@ -36,7 +36,7 @@ namespace HealthGateway.Admin.Client.Store.PatientSupport
 
             try
             {
-                IList<PatientSupportResult> response = await supportApi.GetPatientsAsync(action.QueryType, action.QueryString).ConfigureAwait(true);
+                IList<PatientSupportResult> response = await supportApi.GetPatientsAsync(action.QueryType, action.QueryString);
                 logger.LogInformation("Patients loaded successfully!");
                 dispatcher.Dispatch(new PatientSupportActions.LoadSuccessAction { Data = response, ShouldNavigateToPatientDetails = action.ShouldNavigateToPatientDetails });
             }

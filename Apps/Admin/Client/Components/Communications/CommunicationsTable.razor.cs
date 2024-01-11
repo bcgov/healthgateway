@@ -69,13 +69,13 @@ namespace HealthGateway.Admin.Client.Components.Communications
             ExtendedCommunication? communication = this.Data.FirstOrDefault(c => c.Id == id);
             if (communication != null)
             {
-                await this.OnEditCallback.InvokeAsync(communication).ConfigureAwait(true);
+                await this.OnEditCallback.InvokeAsync(communication);
             }
         }
 
-        private async Task DeleteCommunication(Guid id)
+        private async Task DeleteCommunicationAsync(Guid id)
         {
-            bool? delete = await this.DeleteConfirmation.Show().ConfigureAwait(true);
+            bool? delete = await this.DeleteConfirmation.Show();
             if (delete is true)
             {
                 ExtendedCommunication? communication = this.Data.FirstOrDefault(c => c.Id == id);

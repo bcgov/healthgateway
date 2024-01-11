@@ -39,7 +39,7 @@ public class UserFeedbackEffects(ILogger<UserFeedbackEffects> logger, IUserFeedb
 
         try
         {
-            RequestResult<IEnumerable<UserFeedbackView>> response = await api.GetAllAsync().ConfigureAwait(true);
+            RequestResult<IEnumerable<UserFeedbackView>> response = await api.GetAllAsync();
             if (response is { ResourcePayload: { }, ResultStatus: ResultType.Success })
             {
                 logger.LogInformation("User feedback loaded successfully!");
@@ -70,7 +70,7 @@ public class UserFeedbackEffects(ILogger<UserFeedbackEffects> logger, IUserFeedb
 
         try
         {
-            RequestResult<UserFeedbackView> response = await api.UpdateAsync(action.UserFeedbackView).ConfigureAwait(true);
+            RequestResult<UserFeedbackView> response = await api.UpdateAsync(action.UserFeedbackView);
             if (response is { ResourcePayload: { }, ResultStatus: ResultType.Success })
             {
                 logger.LogInformation("User feedback updated successfully!");
@@ -101,7 +101,7 @@ public class UserFeedbackEffects(ILogger<UserFeedbackEffects> logger, IUserFeedb
 
         try
         {
-            RequestResult<UserFeedbackView> response = await api.AssociateTagsAsync(action.TagIds, action.FeedbackId).ConfigureAwait(true);
+            RequestResult<UserFeedbackView> response = await api.AssociateTagsAsync(action.TagIds, action.FeedbackId);
             if (response is { ResourcePayload: { }, ResultStatus: ResultType.Success })
             {
                 logger.LogInformation("Tags associated to user feedback successfully!");

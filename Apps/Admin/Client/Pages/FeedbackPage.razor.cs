@@ -131,7 +131,7 @@ public partial class FeedbackPage : FluxorComponent
         this.Snackbar.Add($"Tag \"{action.Data.ResourcePayload?.Name}\" added.", Severity.Success);
         this.AddTagModel.Clear();
         this.StateHasChanged();
-        Task.Run(async () => await this.AddTagNameInput.FocusAsync().ConfigureAwait(true));
+        Task.Run(async () => await this.AddTagNameInput.FocusAsync());
     }
 
     private void HandleTagDeleteSuccessful(TagActions.DeleteSuccessAction action)
@@ -200,7 +200,7 @@ public partial class FeedbackPage : FluxorComponent
         }
     }
 
-    private async Task NavigateToSupport(string hdid)
+    private async Task NavigateToSupportAsync(string hdid)
     {
         await StoreUtility.LoadPatientSupportAction(this.Dispatcher, this.JsRuntime, PatientQueryType.Hdid, hdid);
         this.ActionSubscriber.SubscribeToAction<PatientSupportActions.LoadSuccessAction>(this, this.NavigateToPatientDetails);
