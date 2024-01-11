@@ -16,6 +16,7 @@
 namespace HealthGateway.Admin.Controllers
 {
     using System.Threading.Tasks;
+    using Asp.Versioning;
     using HealthGateway.Admin.Services;
     using HealthGateway.Common.Data.Constants;
     using Microsoft.AspNetCore.Authorization;

@@ -16,6 +16,7 @@
 namespace HealthGateway.Admin.Server.Controllers
 {
     using System.Collections.Generic;
+    using Asp.Versioning;
     using HealthGateway.Admin.Common.Models;
     using HealthGateway.Admin.Server.Services;
     using HealthGateway.Common.Data.ViewModels;

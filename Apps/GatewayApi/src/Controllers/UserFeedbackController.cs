@@ -15,6 +15,7 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.GatewayApi.Controllers
 {
+    using Asp.Versioning;
     using HealthGateway.Common.AccessManagement.Authorization.Policy;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Database.Constants;

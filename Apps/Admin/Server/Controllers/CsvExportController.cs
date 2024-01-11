@@ -19,6 +19,7 @@ namespace HealthGateway.Admin.Server.Controllers
     using System.IO;
     using System.Threading;
     using System.Threading.Tasks;
+    using Asp.Versioning;
     using HealthGateway.Admin.Server.Services;
     using HealthGateway.Common.Utils;
     using Microsoft.AspNetCore.Authorization;

@@ -15,6 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.WebClient.Server.Controllers
 {
+    using Asp.Versioning;
     using HealthGateway.WebClient.Server.Models;
     using HealthGateway.WebClient.Server.Services;
     using Microsoft.AspNetCore.Mvc;

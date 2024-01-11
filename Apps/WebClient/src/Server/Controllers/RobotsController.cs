@@ -47,6 +47,7 @@ namespace HealthGateway.WebClient.Server.Controllers
         /// <returns>The robots text file.</returns>
         [Route("robots.txt")]
         [Produces(MediaTypeNames.Text.Plain)]
+        [ApiExplorerSettings(IgnoreApi = true)]
         public ActionResult Robots()
         {
             ContentResult result = new()
