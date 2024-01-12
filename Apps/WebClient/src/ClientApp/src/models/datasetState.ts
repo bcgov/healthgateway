@@ -36,8 +36,7 @@ export interface ImmunizationDatasetState
 export interface LabResultState extends DatasetState<LaboratoryOrder[]> {
     queued: boolean;
 }
-export interface MedicationState
-    extends DatasetState<MedicationStatement[]> {
+export interface MedicationState extends DatasetState<MedicationStatement[]> {
     protectiveWordAttempts: number;
 }
 export type SpecialAuthorityRequestState = DatasetState<MedicationRequest[]>;

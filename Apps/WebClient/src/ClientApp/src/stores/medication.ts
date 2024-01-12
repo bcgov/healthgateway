@@ -137,8 +137,7 @@ export const useMedicationStore = defineStore("medication", () => {
         );
         if (getMedicationState(hdid).status === LoadStatus.LOADED) {
             logger.debug("Medications found stored, not querying!");
-            const medicationsData: MedicationStatement[] =
-                medications(hdid);
+            const medicationsData: MedicationStatement[] = medications(hdid);
             return Promise.resolve({
                 pageIndex: 0,
                 pageSize: 0,
