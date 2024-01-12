@@ -31,7 +31,7 @@ namespace HealthGateway.Patient.Services
         /// <param name="identifier">The patient identifier.</param>
         /// <param name="identifierType">The type of identifier being passed in.</param>
         /// <param name="disableIdValidation">Disables the validation on HDID/PHN when true.</param>
-        /// <param name="ct">The cancellation token.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The patient model.</returns>
         Task<PatientDetails> GetPatientAsync(
             string identifier,

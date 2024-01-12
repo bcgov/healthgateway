@@ -879,7 +879,7 @@ namespace HealthGateway.Admin.Tests.Services
 
             foreach ((AgentAuditQuery query, IEnumerable<AgentAudit> agentAudits) in pairs)
             {
-                mock.Setup(p => p.Handle(query, It.IsAny<CancellationToken>())).ReturnsAsync(agentAudits);
+                mock.Setup(p => p.HandleAsync(query, It.IsAny<CancellationToken>())).ReturnsAsync(agentAudits);
             }
 
             return mock;
@@ -888,7 +888,7 @@ namespace HealthGateway.Admin.Tests.Services
         private static Mock<IAuthenticationDelegate> GetAuthenticationDelegateMock(string? accessToken)
         {
             Mock<IAuthenticationDelegate> mock = new();
-            mock.Setup(d => d.FetchAuthenticatedUserToken()).Returns(accessToken);
+            mock.Setup(d => d.FetchAuthenticatedUserTokenAsync(It.IsAny<CancellationToken>())).ReturnsAsync(accessToken);
             return mock;
         }
 
@@ -910,12 +910,12 @@ namespace HealthGateway.Admin.Tests.Services
             foreach ((PatientDetailsQuery query, PatientModel? patient) in pairs)
             {
                 PatientQueryResult result = new(patient == null ? [] : [patient]);
-                mock.Setup(p => p.Query(query, It.IsAny<CancellationToken>())).ReturnsAsync(result);
+                mock.Setup(p => p.QueryAsync(query, It.IsAny<CancellationToken>())).ReturnsAsync(result);
             }
 
             if (dataSources != null)
             {
-                mock.Setup(s => s.GetDataSources(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(dataSources);
+                mock.Setup(s => s.GetDataSourcesAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(dataSources);
             }
 
             return mock;
@@ -924,29 +924,29 @@ namespace HealthGateway.Admin.Tests.Services
         private static Mock<IResourceDelegateDelegate> GetResourceDelegateDelegateMock(ResourceDelegateQuery query, ResourceDelegateQueryResult result)
         {
             Mock<IResourceDelegateDelegate> mock = new();
-            mock.Setup(d => d.SearchAsync(query)).ReturnsAsync(result);
+            mock.Setup(d => d.SearchAsync(query, It.IsAny<CancellationToken>())).ReturnsAsync(result);
             return mock;
         }
 
         private static Mock<IUserProfileDelegate> GetUserProfileDelegateMock(UserProfile? profile = null, IList<UserProfile>? profiles = null)
         {
             Mock<IUserProfileDelegate> mock = new();
-            mock.Setup(u => u.GetUserProfileAsync(It.IsAny<string>())).ReturnsAsync(profile);
-            mock.Setup(u => u.GetUserProfilesAsync(It.IsAny<UserQueryType>(), It.IsAny<string>())).ReturnsAsync(profiles ?? []);
+            mock.Setup(u => u.GetUserProfileAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(profile);
+            mock.Setup(u => u.GetUserProfilesAsync(It.IsAny<UserQueryType>(), It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(profiles ?? []);
             return mock;
         }
 
         private static Mock<IImmunizationAdminDelegate> GetImmunizationAdminDelegateMock(VaccineDetails details)
         {
             Mock<IImmunizationAdminDelegate> mock = new();
-            mock.Setup(d => d.GetVaccineDetailsWithRetries(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>())).ReturnsAsync(details);
+            mock.Setup(d => d.GetVaccineDetailsWithRetriesAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<CancellationToken>())).ReturnsAsync(details);
             return mock;
         }
 
         private static Mock<IImmunizationAdminApi> GetImmunizationAdminApiMock(CovidAssessmentDetailsResponse response)
         {
             Mock<IImmunizationAdminApi> mock = new();
-            mock.Setup(d => d.GetCovidAssessmentDetails(It.IsAny<CovidAssessmentDetailsRequest>(), It.IsAny<string>())).ReturnsAsync(response);
+            mock.Setup(d => d.GetCovidAssessmentDetailsAsync(It.IsAny<CovidAssessmentDetailsRequest>(), It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(response);
             return mock;
         }
 

@@ -760,14 +760,14 @@ namespace HealthGateway.Admin.Tests.Services
         private static Mock<IAuthenticationDelegate> GetAuthenticationDelegateMock(string? accessToken)
         {
             Mock<IAuthenticationDelegate> mock = new();
-            mock.Setup(d => d.FetchAuthenticatedUserToken()).Returns(accessToken);
+            mock.Setup(d => d.FetchAuthenticatedUserTokenAsync(It.IsAny<CancellationToken>())).ReturnsAsync(accessToken);
             return mock;
         }
 
         private static Mock<IImmunizationAdminApi> GetImmunizationAdminApiMock(CovidAssessmentResponse response)
         {
             Mock<IImmunizationAdminApi> mock = new();
-            mock.Setup(d => d.SubmitCovidAssessment(It.IsAny<CovidAssessmentRequest>(), It.IsAny<string>())).ReturnsAsync(response);
+            mock.Setup(d => d.SubmitCovidAssessmentAsync(It.IsAny<CovidAssessmentRequest>(), It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(response);
             return mock;
         }
 
@@ -777,7 +777,7 @@ namespace HealthGateway.Admin.Tests.Services
             foreach ((PatientDetailsQuery query, PatientModel? patient) in pairs)
             {
                 PatientQueryResult result = new(patient == null ? [] : [patient]);
-                mock.Setup(p => p.Query(query, It.IsAny<CancellationToken>())).ReturnsAsync(result);
+                mock.Setup(p => p.QueryAsync(query, It.IsAny<CancellationToken>())).ReturnsAsync(result);
             }
 
             return mock;
@@ -787,12 +787,12 @@ namespace HealthGateway.Admin.Tests.Services
         {
             Mock<IVaccineProofDelegate> mock = new();
 
-            mock.Setup(d => d.MailAsync(It.IsAny<VaccineProofTemplate>(), It.IsAny<VaccineProofRequest>(), It.IsAny<Address>())).ReturnsAsync(vaccineProofResponse);
-            mock.Setup(d => d.GenerateAsync(It.IsAny<VaccineProofTemplate>(), It.IsAny<VaccineProofRequest>())).ReturnsAsync(vaccineProofResponse);
+            mock.Setup(d => d.MailAsync(It.IsAny<VaccineProofTemplate>(), It.IsAny<VaccineProofRequest>(), It.IsAny<Address>(), It.IsAny<CancellationToken>())).ReturnsAsync(vaccineProofResponse);
+            mock.Setup(d => d.GenerateAsync(It.IsAny<VaccineProofTemplate>(), It.IsAny<VaccineProofRequest>(), It.IsAny<CancellationToken>())).ReturnsAsync(vaccineProofResponse);
 
             if (reportModelResponse != null)
             {
-                mock.Setup(d => d.GetAssetAsync(It.IsAny<Uri>())).ReturnsAsync(reportModelResponse);
+                mock.Setup(d => d.GetAssetAsync(It.IsAny<Uri>(), It.IsAny<CancellationToken>())).ReturnsAsync(reportModelResponse);
             }
 
             return mock;
@@ -804,18 +804,18 @@ namespace HealthGateway.Admin.Tests.Services
 
             if (response == null)
             {
-                mock.Setup(d => d.GetVaccineStatusWithRetries(It.IsAny<string>(), It.IsAny<DateTime>(), It.IsAny<string>()))
+                mock.Setup(d => d.GetVaccineStatusWithRetriesAsync(It.IsAny<string>(), It.IsAny<DateTime>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
                     .Throws(
                         new ProblemDetailsException(ExceptionUtility.CreateProblemDetails(ErrorMessages.MaximumRetryAttemptsReached, HttpStatusCode.BadRequest, nameof(RestVaccineStatusDelegate))));
             }
             else if (response.Result == null)
             {
-                mock.Setup(d => d.GetVaccineStatusWithRetries(It.IsAny<string>(), It.IsAny<DateTime>(), It.IsAny<string>()))
+                mock.Setup(d => d.GetVaccineStatusWithRetriesAsync(It.IsAny<string>(), It.IsAny<DateTime>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
                     .Throws(new ProblemDetailsException(ExceptionUtility.CreateProblemDetails(ErrorMessages.CannotGetVaccineStatus, HttpStatusCode.BadRequest, nameof(RestVaccineStatusDelegate))));
             }
             else
             {
-                mock.Setup(d => d.GetVaccineStatusWithRetries(It.IsAny<string>(), It.IsAny<DateTime>(), It.IsAny<string>())).ReturnsAsync(response);
+                mock.Setup(d => d.GetVaccineStatusWithRetriesAsync(It.IsAny<string>(), It.IsAny<DateTime>(), It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(response);
             }
 
             return mock;

@@ -31,7 +31,7 @@ namespace HealthGateway.Admin.Client.Api
         /// </summary>
         /// <returns>A collection of <see cref="BlockedAccessRecord"/> records.</returns>
         [Get("/BlockedAccess")]
-        Task<IEnumerable<BlockedAccessRecord>> GetBlockedAccessReport();
+        Task<IEnumerable<BlockedAccessRecord>> GetBlockedAccessReportAsync();
 
         /// <summary>
         /// Retrieves a collection of user HDIDs that have dependents.
@@ -41,6 +41,6 @@ namespace HealthGateway.Admin.Client.Api
         /// <param name="sortDirection">The sort direction for the records in the protected dependents report.</param>
         /// <returns>Collection of user HDIDs that have dependents attached.</returns>
         [Get("/ProtectedDependents")]
-        Task<ProtectedDependentReport> GetProtectedDependentsReport(int? page = 0, int? pageSize = 25, SortDirection? sortDirection = SortDirection.Ascending);
+        Task<ProtectedDependentReport> GetProtectedDependentsReportAsync(int? page = 0, int? pageSize = 25, SortDirection? sortDirection = SortDirection.Ascending);
     }
 }

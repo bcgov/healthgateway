@@ -16,6 +16,7 @@
 namespace HealthGateway.Common.Api
 {
     using System.Net.Http;
+    using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.Models.PHSA;
     using Refit;
@@ -29,8 +30,9 @@ namespace HealthGateway.Common.Api
         /// Api that swaps an authenticated Health Gateway access token for a PHSA access token.
         /// </summary>
         /// <param name="content">Encoded content used to swap for a PHSA access token.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The newly swapped access token.</returns>
         [Post("/connect/token")]
-        Task<TokenSwapResponse> SwapTokenAsync([Body(BodySerializationMethod.UrlEncoded)] FormUrlEncodedContent content);
+        Task<TokenSwapResponse> SwapTokenAsync([Body(BodySerializationMethod.UrlEncoded)] FormUrlEncodedContent content, CancellationToken ct = default);
     }
 }

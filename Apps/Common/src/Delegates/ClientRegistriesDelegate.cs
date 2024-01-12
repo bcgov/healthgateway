@@ -21,6 +21,7 @@ namespace HealthGateway.Common.Delegates
     using System.Globalization;
     using System.Linq;
     using System.ServiceModel;
+    using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.Constants;
@@ -70,7 +71,7 @@ namespace HealthGateway.Common.Delegates
         private string ClientIp => this.httpContextAccessor.HttpContext?.Connection.RemoteIpAddress?.MapToIPv4().ToString() ?? "Unknown";
 
         /// <inheritdoc/>
-        public async Task<RequestResult<PatientModel>> GetDemographicsByHdidAsync(string hdid, bool disableIdValidation = false)
+        public async Task<RequestResult<PatientModel>> GetDemographicsByHdidAsync(string hdid, bool disableIdValidation = false, CancellationToken ct = default)
         {
             using (Source.StartActivity())
             {
@@ -79,7 +80,7 @@ namespace HealthGateway.Common.Delegates
                 try
                 {
                     // Perform the request
-                    HCIM_IN_GetDemographicsResponse1 reply = await this.clientRegistriesClient.HCIM_IN_GetDemographicsAsync(request).ConfigureAwait(true);
+                    HCIM_IN_GetDemographicsResponse1 reply = await this.clientRegistriesClient.HCIM_IN_GetDemographicsAsync(request);
                     return this.ParseResponse(reply, disableIdValidation);
                 }
                 catch (CommunicationException e)
@@ -99,7 +100,7 @@ namespace HealthGateway.Common.Delegates
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResult<PatientModel>> GetDemographicsByPhnAsync(string phn, bool disableIdValidation = false)
+        public async Task<RequestResult<PatientModel>> GetDemographicsByPhnAsync(string phn, bool disableIdValidation = false, CancellationToken ct = default)
         {
             using (Source.StartActivity())
             {
@@ -108,7 +109,7 @@ namespace HealthGateway.Common.Delegates
                 try
                 {
                     // Perform the request
-                    HCIM_IN_GetDemographicsResponse1 reply = await this.clientRegistriesClient.HCIM_IN_GetDemographicsAsync(request).ConfigureAwait(true);
+                    HCIM_IN_GetDemographicsResponse1 reply = await this.clientRegistriesClient.HCIM_IN_GetDemographicsAsync(request);
                     return this.ParseResponse(reply, disableIdValidation);
                 }
                 catch (CommunicationException e)

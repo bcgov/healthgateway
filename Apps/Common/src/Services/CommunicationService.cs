@@ -16,15 +16,16 @@
 namespace HealthGateway.Common.Services
 {
     using System;
+    using System.Diagnostics.CodeAnalysis;
+    using System.Threading;
+    using System.Threading.Tasks;
     using HealthGateway.Common.CacheProviders;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Models;
-    using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
-    using HealthGateway.Database.Wrapper;
     using Microsoft.Extensions.Logging;
 
     /// <inheritdoc/>
@@ -66,26 +67,27 @@ namespace HealthGateway.Common.Services
         }
 
         /// <inheritdoc/>
-        public RequestResult<Communication?> GetActiveCommunication(CommunicationType communicationType)
+        [SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "Team decision")]
+        public async Task<RequestResult<Communication?>> GetActiveCommunicationAsync(CommunicationType communicationType, CancellationToken ct = default)
         {
             RequestResult<Communication?>? cacheEntry = this.GetCommunicationFromCache(communicationType);
             if (cacheEntry == null)
             {
                 this.logger.LogInformation("Active Communication not found in cache, getting from DB...");
-                DbResult<Communication?> dbResult = this.communicationDelegate.GetNext(communicationType);
-                if (dbResult.Status is DbStatusCode.Read or DbStatusCode.NotFound)
+                try
                 {
-                    cacheEntry = this.AddCommunicationToCache(dbResult.Payload, communicationType);
+                    Communication? communication = await this.communicationDelegate.GetNextAsync(communicationType, ct);
+                    cacheEntry = this.AddCommunicationToCache(communication, communicationType);
                 }
-                else
+                catch (Exception e)
                 {
-                    this.logger.LogInformation("Error getting Communication from DB {Message}", dbResult.Message);
+                    this.logger.LogError("Error getting Communication from DB {Error}", e.ToString());
                     cacheEntry = new()
                     {
                         ResultStatus = ResultType.Error,
                         ResultError = new()
                         {
-                            ResultMessage = dbResult.Message,
+                            ResultMessage = e.Message,
                             ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationInternal, ServiceType.Database),
                         },
                     };

@@ -17,15 +17,15 @@ namespace HealthGateway.JobScheduler.Jobs
 {
     using System;
     using System.Collections.Generic;
+    using System.Threading;
+    using System.Threading.Tasks;
     using Hangfire;
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Jobs;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Services;
-    using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
-    using HealthGateway.Database.Wrapper;
     using MailKit.Net.Smtp;
     using MailKit.Security;
     using Microsoft.Extensions.Configuration;
@@ -69,18 +69,17 @@ namespace HealthGateway.JobScheduler.Jobs
 
         /// <inheritdoc/>
         [DisableConcurrentExecution(ConcurrencyTimeout)]
-        public void SendEmail(ClientFeedback clientFeedback)
+        public async Task SendEmailAsync(ClientFeedback clientFeedback, CancellationToken ct = default)
         {
-            DbResult<UserFeedback> dbResult = this.feedBackDelegate.GetUserFeedback(clientFeedback.UserFeedbackId);
-            if (dbResult.Status == DbStatusCode.Read)
+            UserFeedback? feedback = await this.feedBackDelegate.GetUserFeedbackAsync(clientFeedback.UserFeedbackId, ct);
+            if (feedback != null)
             {
-                UserFeedback feedback = dbResult.Payload;
                 this.logger.LogDebug("Sending Email...");
                 using SmtpClient smtpClient = new();
-                smtpClient.Connect(this.host, this.port, SecureSocketOptions.None);
-                using MimeMessage message = this.PrepareMessage(clientFeedback.Email, feedback);
-                smtpClient.Send(message);
-                smtpClient.Disconnect(true);
+                await smtpClient.ConnectAsync(this.host, this.port, SecureSocketOptions.None, ct);
+                using MimeMessage message = await this.PrepareMessageAsync(clientFeedback.Email, feedback, ct);
+                await smtpClient.SendAsync(message, ct);
+                await smtpClient.DisconnectAsync(true, ct);
                 this.logger.LogDebug("Finished Sending Email...");
             }
             else
@@ -90,9 +89,9 @@ namespace HealthGateway.JobScheduler.Jobs
             }
         }
 
-        private MimeMessage PrepareMessage(string userEmail, UserFeedback feedback)
+        private async Task<MimeMessage> PrepareMessageAsync(string userEmail, UserFeedback feedback, CancellationToken ct)
         {
-            EmailTemplate template = this.emailService.GetEmailTemplate(FeedbackTemplateName);
+            EmailTemplate? template = await this.emailService.GetEmailTemplateAsync(FeedbackTemplateName, ct);
             if (template == null)
             {
                 this.logger.LogCritical($"Email template {FeedbackTemplateName} is null");

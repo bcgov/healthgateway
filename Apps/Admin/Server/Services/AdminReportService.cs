@@ -35,7 +35,7 @@ namespace HealthGateway.Admin.Server.Services
     public class AdminReportService(IDelegationDelegate delegationDelegate, IBlockedAccessDelegate blockedAccessDelegate, IPatientRepository patientRepository, ILogger logger) : IAdminReportService
     {
         /// <inheritdoc/>
-        public async Task<ProtectedDependentReport> GetProtectedDependentsReportAsync(int page, int pageSize, SortDirection sortDirection, CancellationToken ct)
+        public async Task<ProtectedDependentReport> GetProtectedDependentsReportAsync(int page, int pageSize, SortDirection sortDirection, CancellationToken ct = default)
         {
             (IList<string> hdids, int totalHdids) = await delegationDelegate.GetProtectedDependentHdidsAsync(page, pageSize, sortDirection, ct);
 
@@ -47,11 +47,11 @@ namespace HealthGateway.Admin.Server.Services
                         PatientQueryResult? patient = null;
                         try
                         {
-                            patient = await patientRepository.Query(query, ct);
+                            patient = await patientRepository.QueryAsync(query, ct);
                         }
                         catch (ProblemDetailsException e)
                         {
-                            logger.Error($"Error retrieving patient details for hdid {hdid}: {e.Message}");
+                            logger.Error("Error retrieving patient details for hdid {Hdid}: {EMessage}", hdid, e.Message);
                         }
 
                         return new ProtectedDependentRecord(hdid, patient?.Items.SingleOrDefault()?.Phn);
@@ -61,7 +61,7 @@ namespace HealthGateway.Admin.Server.Services
         }
 
         /// <inheritdoc/>
-        public async Task<IEnumerable<BlockedAccessRecord>> GetBlockedAccessReportAsync(CancellationToken ct)
+        public async Task<IEnumerable<BlockedAccessRecord>> GetBlockedAccessReportAsync(CancellationToken ct = default)
         {
             IList<BlockedAccess> records = await blockedAccessDelegate.GetAllAsync(ct);
             return records

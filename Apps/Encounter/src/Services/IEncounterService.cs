@@ -16,6 +16,7 @@
 namespace HealthGateway.Encounter.Services
 {
     using System.Collections.Generic;
+    using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Encounter.Models;
@@ -30,14 +31,16 @@ namespace HealthGateway.Encounter.Services
         /// Gets a list of Encounters.
         /// </summary>
         /// <param name="hdid">The health directed id for the subject.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>Returns a list of claims.</returns>
-        Task<RequestResult<IEnumerable<EncounterModel>>> GetEncounters(string hdid);
+        Task<RequestResult<IEnumerable<EncounterModel>>> GetEncountersAsync(string hdid, CancellationToken ct = default);
 
         /// <summary>
         /// Gets a list of Hospital Visits.
         /// </summary>
         /// <param name="hdid">The health directed id for the subject.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>Returns the hospital visit result.</returns>
-        Task<RequestResult<HospitalVisitResult>> GetHospitalVisits(string hdid);
+        Task<RequestResult<HospitalVisitResult>> GetHospitalVisitsAsync(string hdid, CancellationToken ct = default);
     }
 }

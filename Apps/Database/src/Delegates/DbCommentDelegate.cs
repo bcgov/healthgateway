@@ -18,6 +18,8 @@ namespace HealthGateway.Database.Delegates
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using System.Linq;
+    using System.Threading;
+    using System.Threading.Tasks;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Context;
     using HealthGateway.Database.Models;
@@ -48,20 +50,20 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public DbResult<IList<Comment>> GetByParentEntry(string hdId, string parentEntryId)
+        public async Task<DbResult<IList<Comment>>> GetByParentEntryAsync(string hdId, string parentEntryId, CancellationToken ct = default)
         {
             this.logger.LogTrace("Getting Comments for user {HdId} and entry id {ParentEntryId}...", hdId, parentEntryId);
             DbResult<IList<Comment>> result = new();
-            result.Payload = this.dbContext.Comment
+            result.Payload = await this.dbContext.Comment
                 .Where(p => p.UserProfileId == hdId && p.ParentEntryId == parentEntryId)
                 .OrderBy(o => o.CreatedDateTime)
-                .ToList();
+                .ToListAsync(ct);
             result.Status = DbStatusCode.Read;
             return result;
         }
 
         /// <inheritdoc/>
-        public DbResult<Comment> Add(Comment comment, bool commit = true)
+        public async Task<DbResult<Comment>> AddAsync(Comment comment, bool commit = true, CancellationToken ct = default)
         {
             this.logger.LogTrace("Adding Note to DB...");
             DbResult<Comment> result = new()
@@ -74,7 +76,7 @@ namespace HealthGateway.Database.Delegates
             {
                 try
                 {
-                    this.dbContext.SaveChanges();
+                    await this.dbContext.SaveChangesAsync(ct);
                     result.Status = DbStatusCode.Created;
                 }
                 catch (DbUpdateException e)
@@ -90,7 +92,7 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public DbResult<Comment> Update(Comment comment, bool commit = true)
+        public async Task<DbResult<Comment>> UpdateAsync(Comment comment, bool commit = true, CancellationToken ct = default)
         {
             this.logger.LogTrace("Updating Comment in DB...");
             DbResult<Comment> result = new()
@@ -104,7 +106,7 @@ namespace HealthGateway.Database.Delegates
             {
                 try
                 {
-                    this.dbContext.SaveChanges();
+                    await this.dbContext.SaveChangesAsync(ct);
                     result.Status = DbStatusCode.Updated;
                 }
                 catch (DbUpdateConcurrencyException e)
@@ -119,7 +121,7 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public DbResult<Comment> Delete(Comment comment, bool commit = true)
+        public async Task<DbResult<Comment>> DeleteAsync(Comment comment, bool commit = true, CancellationToken ct = default)
         {
             this.logger.LogTrace("Deleting Comment from DB...");
             DbResult<Comment> result = new()
@@ -132,7 +134,7 @@ namespace HealthGateway.Database.Delegates
             {
                 try
                 {
-                    this.dbContext.SaveChanges();
+                    await this.dbContext.SaveChangesAsync(ct);
                     result.Status = DbStatusCode.Deleted;
                 }
                 catch (DbUpdateConcurrencyException e)
@@ -147,27 +149,23 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public DbResult<IEnumerable<Comment>> GetAll(string hdId)
+        public async Task<DbResult<IEnumerable<Comment>>> GetAllAsync(string hdId, CancellationToken ct = default)
         {
             this.logger.LogTrace("Getting Comments for user {HdId}...", hdId);
             DbResult<IEnumerable<Comment>> result = new();
-            result.Payload = this.dbContext.Comment
+            result.Payload = await this.dbContext.Comment
                 .Where(p => p.UserProfileId == hdId)
                 .OrderBy(o => o.CreatedDateTime)
-                .ToList();
+                .ToListAsync(ct);
             result.Status = DbStatusCode.Read;
             return result;
         }
 
         /// <inheritdoc/>
-        public DbResult<IEnumerable<Comment>> GetAll(int page, int pageSize)
+        public async Task<IList<Comment>> GetAllAsync(int page, int pageSize, CancellationToken ct = default)
         {
             this.logger.LogTrace("Retrieving all the comments for the page #{Page} with pageSize: {PageSize}...", page, pageSize);
-            return DbDelegateHelper.GetPagedDbResult(
-                this.dbContext.Comment
-                    .OrderBy(comment => comment.CreatedDateTime),
-                page,
-                pageSize);
+            return await DbDelegateHelper.GetPagedDbResultAsync(this.dbContext.Comment.OrderBy(comment => comment.CreatedDateTime), page, pageSize, ct);
         }
     }
 }

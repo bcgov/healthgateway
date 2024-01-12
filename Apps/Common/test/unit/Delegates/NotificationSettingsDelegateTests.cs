@@ -18,6 +18,7 @@ namespace HealthGateway.CommonTests.Delegates
     using System.Collections.Generic;
     using System.Net;
     using System.Net.Http;
+    using System.Threading;
     using System.Threading.Tasks;
     using DeepEqual.Syntax;
     using HealthGateway.Common.Api;
@@ -56,7 +57,7 @@ namespace HealthGateway.CommonTests.Delegates
 
             Mock<ILogger<RestNotificationSettingsDelegate>> mockLogger = new();
             Mock<INotificationSettingsApi> mockNotificationSettingsApi = new();
-            mockNotificationSettingsApi.Setup(s => s.SetNotificationSettingsAsync(It.IsAny<NotificationSettingsRequest>(), It.IsAny<string>(), It.IsAny<string>()))
+            mockNotificationSettingsApi.Setup(s => s.SetNotificationSettingsAsync(It.IsAny<NotificationSettingsRequest>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(response);
 
             RestNotificationSettingsDelegate notificationSettingsDelegate = new(mockLogger.Object, mockNotificationSettingsApi.Object);
@@ -87,7 +88,7 @@ namespace HealthGateway.CommonTests.Delegates
 
             Mock<ILogger<RestNotificationSettingsDelegate>> mockLogger = new();
             Mock<INotificationSettingsApi> mockNotificationSettingsApi = new();
-            mockNotificationSettingsApi.Setup(s => s.SetNotificationSettingsAsync(It.IsAny<NotificationSettingsRequest>(), It.IsAny<string>(), It.IsAny<string>()))
+            mockNotificationSettingsApi.Setup(s => s.SetNotificationSettingsAsync(It.IsAny<NotificationSettingsRequest>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .ThrowsAsync(new HttpRequestException(null, null, HttpStatusCode.BadRequest));
 
             RestNotificationSettingsDelegate notificationSettingsDelegate = new(mockLogger.Object, mockNotificationSettingsApi.Object);
@@ -123,7 +124,7 @@ namespace HealthGateway.CommonTests.Delegates
             using HttpResponseMessage responseMessage = new(HttpStatusCode.NotFound);
             ApiException apiException = await ApiException.Create(requestMessage, HttpMethod.Put, responseMessage, new());
 
-            mockNotificationSettingsApi.Setup(s => s.SetNotificationSettingsAsync(It.IsAny<NotificationSettingsRequest>(), It.IsAny<string>(), It.IsAny<string>()))
+            mockNotificationSettingsApi.Setup(s => s.SetNotificationSettingsAsync(It.IsAny<NotificationSettingsRequest>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .ThrowsAsync(apiException);
 
             RestNotificationSettingsDelegate notificationSettingsDelegate = new(mockLogger.Object, mockNotificationSettingsApi.Object);

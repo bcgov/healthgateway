@@ -17,6 +17,7 @@ namespace HealthGateway.JobScheduler
 {
     using System;
     using System.Collections.Generic;
+    using System.Threading;
     using Hangfire;
     using Hangfire.Dashboard;
     using Hangfire.PostgreSql;
@@ -183,16 +184,16 @@ namespace HealthGateway.JobScheduler
                 });
 
             // Schedule Health Gateway Jobs
-            BackgroundJob.Enqueue<DbMigrationsJob>(j => j.Migrate());
-            SchedulerHelper.ScheduleJob<EmailJob>(this.configuration, "ResendEmails", j => j.SendEmails());
-            SchedulerHelper.ScheduleDrugLoadJob<FedDrugJob>(this.configuration, "FedApprovedDatabase");
-            SchedulerHelper.ScheduleDrugLoadJob<FedDrugJob>(this.configuration, "FedMarketedDatabase");
-            SchedulerHelper.ScheduleDrugLoadJob<FedDrugJob>(this.configuration, "FedCancelledDatabase");
-            SchedulerHelper.ScheduleDrugLoadJob<FedDrugJob>(this.configuration, "FedDormantDatabase");
-            SchedulerHelper.ScheduleDrugLoadJob<ProvincialDrugJob>(this.configuration, "PharmaCareDrugFile");
-            SchedulerHelper.ScheduleJob<CloseAccountJob>(this.configuration, "CloseAccounts", j => j.Process());
-            SchedulerHelper.ScheduleJob<OneTimeJob>(this.configuration, "OneTime", j => j.Process());
-            SchedulerHelper.ScheduleJob<DeleteEmailJob>(this.configuration, "DeleteEmailJob", j => j.DeleteOldEmails());
+            BackgroundJob.Enqueue<DbMigrationsJob>(j => j.MigrateAsync(CancellationToken.None));
+            SchedulerHelper.ScheduleDrugLoadJobAsync<FedDrugJob>(this.configuration, "FedApprovedDatabase", CancellationToken.None);
+            SchedulerHelper.ScheduleDrugLoadJobAsync<FedDrugJob>(this.configuration, "FedMarketedDatabase", CancellationToken.None);
+            SchedulerHelper.ScheduleDrugLoadJobAsync<FedDrugJob>(this.configuration, "FedCancelledDatabase", CancellationToken.None);
+            SchedulerHelper.ScheduleDrugLoadJobAsync<FedDrugJob>(this.configuration, "FedDormantDatabase", CancellationToken.None);
+            SchedulerHelper.ScheduleDrugLoadJobAsync<ProvincialDrugJob>(this.configuration, "PharmaCareDrugFile", CancellationToken.None);
+            SchedulerHelper.ScheduleJobAsync<EmailJob>(this.configuration, "ResendEmails", j => j.SendEmailsAsync(CancellationToken.None));
+            SchedulerHelper.ScheduleJobAsync<CloseAccountJob>(this.configuration, "CloseAccounts", j => j.ProcessAsync(CancellationToken.None));
+            SchedulerHelper.ScheduleJobAsync<OneTimeJob>(this.configuration, "OneTime", j => j.ProcessAsync(CancellationToken.None));
+            SchedulerHelper.ScheduleJobAsync<DeleteEmailJob>(this.configuration, "DeleteEmailJob", j => j.DeleteOldEmailsAsync(CancellationToken.None));
         }
     }
 }

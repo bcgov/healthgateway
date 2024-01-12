@@ -17,8 +17,11 @@ namespace HealthGateway.JobScheduler.Tasks
 {
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading;
+    using System.Threading.Tasks;
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Database.Context;
+    using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
 
@@ -51,31 +54,36 @@ namespace HealthGateway.JobScheduler.Tasks
         }
 
         /// <inheritdoc/>
-        public void Run()
+        public async Task RunAsync(CancellationToken ct = default)
         {
             this.logger.LogInformation("Performing Task {Name} started", this.GetType().Name);
 
             IQueryable<Email> query = this.dbContext.Email.Where(
                 email => this.dbContext.MessagingVerification.Any(msgVerification => msgVerification.EmailId == email.Id && msgVerification.EmailAddress == null));
 
-            List<Email> emails = query.Take(this.batchSize).ToList();
+            List<Email> emails = await query.Take(this.batchSize).ToListAsync(ct);
             this.logger.LogInformation("The number of emails to copy from Email.To to MessagingVerification.EmailAddress: {Emails}", emails.Count);
             int processed = 0;
 
             while (emails.Count > 0)
             {
-                emails.ForEach(
-                    email =>
+                IEnumerable<Task> tasks = emails.Select(
+                    async email =>
                     {
-                        List<MessagingVerification> verifications = this.dbContext.MessagingVerification.Where(mv => mv.EmailId == email.Id).ToList();
+                        List<MessagingVerification> verifications = await this.dbContext.MessagingVerification
+                            .Where(mv => mv.EmailId == email.Id)
+                            .ToListAsync(ct);
+
                         verifications.ForEach(v => v.EmailAddress = email.To);
                         processed++;
                     });
 
-                this.dbContext.SaveChanges();
+                await Task.WhenAll(tasks);
+
+                await this.dbContext.SaveChangesAsync(ct);
                 this.logger.LogInformation("Saved message verification changes after {Processed} email(s) processed", processed);
 
-                emails = query.Take(this.batchSize).ToList();
+                emails = await query.Take(this.batchSize).ToListAsync(ct);
                 this.logger.LogInformation("The number of emails to copy from Email.To to MessagingVerification.EmailAddress: {Emails}", emails.Count);
             }
 

@@ -3,23 +3,23 @@ import MedicationSummary from "@/models/medicationSummary";
 import Pharmacy from "@/models/pharmacy";
 
 // Medication statement model
-export default interface MedicationStatementHistory {
-    // The medication statement identifier.
+export default interface MedicationStatement {
+    // Brand name of the medication.
     prescriptionIdentifier: string;
-    // Medication statement prescription status.
+    // Prescription status.
     prescriptionStatus?: string;
     // Date the medication statement was dispensed.
     dispensedDate: StringISODate;
-    // Surname of the Practitioner who issued the medication statement.
+    // Surname of the practitioner who prescribed the medication.
     practitionerSurname?: string;
-    // Drug medication discontinued date, if applicable.
+    // Directions as prescribed.
     directions?: string;
-    // Date the medication statement was entered.
+    // Date the medication was entered.
     dateEntered?: StringISODate;
-    // The medication of this MedicationStatement.
+    // Medication summary.
     medicationSummary: MedicationSummary;
-    // The pharmacy where the medication was filled.
+    // Pharmacy ID.
     pharmacyId?: string;
-    // Gets or sets the dispensing pharmacy for the current MedicationStatementHistory.
+    // Dispensing pharmacy.
     dispensingPharmacy: Pharmacy;
 }

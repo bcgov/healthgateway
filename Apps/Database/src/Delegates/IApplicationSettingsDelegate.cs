@@ -15,7 +15,8 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Database.Delegates
 {
-    using System.Collections.Generic;
+    using System.Threading;
+    using System.Threading.Tasks;
     using HealthGateway.Database.Models;
 
     /// <summary>
@@ -29,33 +30,14 @@ namespace HealthGateway.Database.Delegates
         /// <param name="application">The name of the application.</param>
         /// <param name="component">The name of the component.</param>
         /// <param name="key">The name of the key.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The fetched application setting.</returns>
-        ApplicationSetting? GetApplicationSetting(string application, string component, string key);
+        Task<ApplicationSetting?> GetApplicationSettingAsync(string application, string component, string key, CancellationToken ct = default);
 
         /// <summary>
-        /// Gets all of the application settings for a given Component.
+        /// Prepares a new application setting to be inserted.
         /// </summary>
-        /// <param name="application">The name of the application.</param>
-        /// <param name="component">The name of the component.</param>
-        /// <returns>The list of application settings fetched.</returns>
-        IList<ApplicationSetting> GetApplicationSettings(string application, string component);
-
-        /// <summary>
-        /// Inserts a new application setting.
-        /// </summary>
-        /// <param name="appSetting">The application setting to insert or update.</param>
+        /// <param name="appSetting">The application setting to insert.</param>
         void AddApplicationSetting(ApplicationSetting appSetting);
-
-        /// <summary>
-        /// Deletes an application setting.
-        /// </summary>
-        /// <param name="appSetting">The application setting to insert or update.</param>
-        void DeleteApplicationSetting(ApplicationSetting appSetting);
-
-        /// <summary>
-        /// Updates an application setting.
-        /// </summary>
-        /// <param name="appSetting">The application setting to insert or update.</param>
-        void UpdateApplicationSetting(ApplicationSetting appSetting);
     }
 }

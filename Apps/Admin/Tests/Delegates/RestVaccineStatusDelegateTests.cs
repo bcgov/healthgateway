@@ -19,6 +19,7 @@ namespace HealthGateway.Admin.Tests.Delegates
     using System.Collections.Generic;
     using System.Globalization;
     using System.Linq;
+    using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Admin.Server.Api;
     using HealthGateway.Admin.Server.Delegates;
@@ -69,7 +70,7 @@ namespace HealthGateway.Admin.Tests.Delegates
             // Act
             async Task Actual()
             {
-                await vaccineStatusDelegate.GetVaccineStatusWithRetries(Phn, Birthdate, AccessToken);
+                await vaccineStatusDelegate.GetVaccineStatusWithRetriesAsync(Phn, Birthdate, AccessToken);
             }
 
             // Verify
@@ -103,7 +104,7 @@ namespace HealthGateway.Admin.Tests.Delegates
             IVaccineStatusDelegate vaccineStatusDelegate = CreateVaccineStatusDelegate(immunizationAdminApiMock);
 
             // Act
-            PhsaResult<VaccineStatusResult> actual = await vaccineStatusDelegate.GetVaccineStatusWithRetries(Phn, Birthdate, AccessToken);
+            PhsaResult<VaccineStatusResult> actual = await vaccineStatusDelegate.GetVaccineStatusWithRetriesAsync(Phn, Birthdate, AccessToken);
 
             // Assert
             Assert.NotNull(actual.Result);
@@ -125,7 +126,7 @@ namespace HealthGateway.Admin.Tests.Delegates
         private static Mock<IImmunizationAdminApi> GetImmunizationAdminApiMock(PhsaResult<VaccineStatusResult> response)
         {
             Mock<IImmunizationAdminApi> mock = new();
-            mock.Setup(d => d.GetVaccineStatus(It.IsAny<VaccineStatusQuery>(), It.IsAny<string>())).ReturnsAsync(response);
+            mock.Setup(d => d.GetVaccineStatusAsync(It.IsAny<VaccineStatusQuery>(), It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(response);
             return mock;
         }
 

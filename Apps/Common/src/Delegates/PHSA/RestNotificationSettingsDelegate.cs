@@ -19,6 +19,7 @@ namespace HealthGateway.Common.Delegates.PHSA
     using System.Diagnostics;
     using System.Net;
     using System.Net.Http;
+    using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.Api;
     using HealthGateway.Common.Data.Constants;
@@ -52,7 +53,10 @@ namespace HealthGateway.Common.Delegates.PHSA
         private static ActivitySource Source { get; } = new(nameof(RestNotificationSettingsDelegate));
 
         /// <inheritdoc/>
-        public async Task<RequestResult<NotificationSettingsResponse>> SetNotificationSettingsAsync(NotificationSettingsRequest notificationSettings, string bearerToken)
+        public async Task<RequestResult<NotificationSettingsResponse>> SetNotificationSettingsAsync(
+            NotificationSettingsRequest notificationSettings,
+            string bearerToken,
+            CancellationToken ct = default)
         {
             using Activity? activity = Source.StartActivity();
             RequestResult<NotificationSettingsResponse> retVal = new()
@@ -66,8 +70,7 @@ namespace HealthGateway.Common.Delegates.PHSA
             try
             {
                 NotificationSettingsResponse notificationSettingsResponse = await this.notificationSettingsApi
-                    .SetNotificationSettingsAsync(notificationSettings, notificationSettings.SubjectHdid, bearerToken)
-                    .ConfigureAwait(true);
+                    .SetNotificationSettingsAsync(notificationSettings, notificationSettings.SubjectHdid, bearerToken, ct);
 
                 retVal.ResultStatus = ResultType.Success;
                 retVal.TotalResultCount = 1;

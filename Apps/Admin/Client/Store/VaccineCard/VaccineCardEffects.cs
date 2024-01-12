@@ -41,7 +41,7 @@ namespace HealthGateway.Admin.Client.Store.VaccineCard
                     MailAddress = action.MailAddress,
                 };
 
-                await supportApi.MailVaccineCard(request).ConfigureAwait(true);
+                await supportApi.MailVaccineCardAsync(request);
                 dispatcher.Dispatch(new VaccineCardActions.MailVaccineCardSuccessAction());
             }
             catch (Exception e) when (e is ApiException or HttpRequestException)
@@ -58,7 +58,7 @@ namespace HealthGateway.Admin.Client.Store.VaccineCard
             logger.LogInformation("Retrieving vaccine card");
             try
             {
-                ReportModel report = await supportApi.RetrieveVaccineRecord(action.Phn).ConfigureAwait(true);
+                ReportModel report = await supportApi.RetrieveVaccineRecordAsync(action.Phn);
                 dispatcher.Dispatch(new VaccineCardActions.PrintVaccineCardSuccessAction { Data = report });
             }
             catch (Exception e) when (e is ApiException or HttpRequestException)

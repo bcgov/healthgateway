@@ -28,7 +28,7 @@ public class AnalyticsEffects(ILogger<AnalyticsEffects> logger, IAnalyticsApi an
     {
         logger.LogInformation("Loading user profile report");
 
-        HttpResponseMessage response = await analyticsApi.GetUserProfilesAsync().ConfigureAwait(true);
+        HttpResponseMessage response = await analyticsApi.GetUserProfilesAsync();
         logger.LogInformation("User profiles report exported successfully!");
         if (response.IsSuccessStatusCode)
         {
@@ -50,7 +50,7 @@ public class AnalyticsEffects(ILogger<AnalyticsEffects> logger, IAnalyticsApi an
     {
         logger.LogInformation("Loading comments report");
 
-        HttpResponseMessage response = await analyticsApi.GetCommentsAsync().ConfigureAwait(true);
+        HttpResponseMessage response = await analyticsApi.GetCommentsAsync();
         logger.LogInformation("Comments report exported successfully!");
         if (response.IsSuccessStatusCode)
         {
@@ -72,7 +72,7 @@ public class AnalyticsEffects(ILogger<AnalyticsEffects> logger, IAnalyticsApi an
     {
         logger.LogInformation("Loading notes report");
 
-        HttpResponseMessage response = await analyticsApi.GetNotesAsync().ConfigureAwait(true);
+        HttpResponseMessage response = await analyticsApi.GetNotesAsync();
         logger.LogInformation("Notes report exported successfully!");
         if (response.IsSuccessStatusCode)
         {
@@ -94,7 +94,7 @@ public class AnalyticsEffects(ILogger<AnalyticsEffects> logger, IAnalyticsApi an
     {
         logger.LogInformation("Loading ratings report");
 
-        HttpResponseMessage response = await analyticsApi.GetRatingsAsync().ConfigureAwait(true);
+        HttpResponseMessage response = await analyticsApi.GetRatingsAsync();
         logger.LogInformation("Ratings report exported successfully!");
         if (response.IsSuccessStatusCode)
         {
@@ -116,7 +116,7 @@ public class AnalyticsEffects(ILogger<AnalyticsEffects> logger, IAnalyticsApi an
     {
         logger.LogInformation("Loading inactive users report");
 
-        HttpResponseMessage response = await analyticsApi.GetInactiveUsersAsync(action.InactiveDays).ConfigureAwait(true);
+        HttpResponseMessage response = await analyticsApi.GetInactiveUsersAsync(action.InactiveDays);
         logger.LogInformation("Inactive users report exported successfully!");
         if (response.IsSuccessStatusCode)
         {
@@ -138,7 +138,7 @@ public class AnalyticsEffects(ILogger<AnalyticsEffects> logger, IAnalyticsApi an
     {
         logger.LogInformation("Loading user feedback report");
 
-        HttpResponseMessage response = await analyticsApi.GetUserFeedbackAsync().ConfigureAwait(true);
+        HttpResponseMessage response = await analyticsApi.GetUserFeedbackAsync();
         logger.LogInformation("User Feedback report exported successfully!");
         if (response.IsSuccessStatusCode)
         {
@@ -160,7 +160,7 @@ public class AnalyticsEffects(ILogger<AnalyticsEffects> logger, IAnalyticsApi an
     {
         logger.LogInformation("Loading year of birth counts report");
 
-        HttpResponseMessage response = await analyticsApi.GetYearOfBirthCountsAsync(action.StartDateLocal, action.EndDateLocal).ConfigureAwait(true);
+        HttpResponseMessage response = await analyticsApi.GetYearOfBirthCountsAsync(action.StartDateLocal, action.EndDateLocal);
         logger.LogInformation("Year of birth counts report exported successfully!");
         if (response.IsSuccessStatusCode)
         {

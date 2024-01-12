@@ -13,26 +13,28 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.Admin.Server.Delegates
+namespace HealthGateway.Medication.Delegates
 {
     using System.Threading;
     using System.Threading.Tasks;
-    using HealthGateway.Admin.Common.Models.CovidSupport;
+    using HealthGateway.Common.Data.ViewModels;
+    using HealthGateway.Common.Models.ODR;
+    using HealthGateway.Medication.Models.ODR;
 
     /// <summary>
-    /// Provides access to Administrative Immunization data.
+    /// Interface to retrieve medication statements.
     /// </summary>
-    public interface IImmunizationAdminDelegate
+    public interface IMedicationStatementDelegate
     {
         /// <summary>
-        /// Gets the vaccine details for the provided patient, retrying multiple times if there is a refresh in progress.
-        /// The patient must have the PHN and DOB provided.
+        /// Gets medication statements.
         /// </summary>
-        /// <param name="phn">The phn to query for vaccine details.</param>
-        /// <param name="accessToken">The connection access token.</param>
-        /// <param name="refresh">Whether the call should force cached data to be refreshed.</param>
+        /// <param name="query">The medication statement query to execute against the ODR.</param>
+        /// <param name="protectiveWord">The protective word to validate.</param>
+        /// <param name="hdid">The HDID of the user querying.</param>
+        /// <param name="ipAddress">The IP of the user querying.</param>
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
-        /// <returns>The wrapped vaccine details.</returns>
-        Task<VaccineDetails> GetVaccineDetailsWithRetriesAsync(string phn, string accessToken, bool refresh = false, CancellationToken ct = default);
+        /// <returns>The medication history response wrapped in a RequestResult.</returns>
+        Task<RequestResult<MedicationHistoryResponse>> GetMedicationStatementsAsync(OdrHistoryQuery query, string? protectiveWord, string hdid, string ipAddress, CancellationToken ct = default);
     }
 }

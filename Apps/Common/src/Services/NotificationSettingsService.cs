@@ -18,12 +18,13 @@ namespace HealthGateway.Common.Services
     using System;
     using System.Collections.Generic;
     using System.Text.Json;
+    using System.Threading;
+    using System.Threading.Tasks;
     using Hangfire;
     using HealthGateway.Common.Jobs;
     using HealthGateway.Common.Models;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
-    using HealthGateway.Database.Wrapper;
     using Microsoft.Extensions.Logging;
 
     /// <summary>
@@ -52,7 +53,7 @@ namespace HealthGateway.Common.Services
         }
 
         /// <inheritdoc/>
-        public void QueueNotificationSettings(NotificationSettingsRequest notificationSettings)
+        public async Task QueueNotificationSettingsAsync(NotificationSettingsRequest notificationSettings, CancellationToken ct = default)
         {
             if (notificationSettings.SmsEnabled && !notificationSettings.SmsVerified && string.IsNullOrEmpty(notificationSettings.SmsVerificationCode))
             {
@@ -61,11 +62,11 @@ namespace HealthGateway.Common.Services
 
             this.logger.LogTrace("Queueing Notification Settings push to PHSA...");
             string json = JsonSerializer.Serialize(notificationSettings);
-            this.jobClient.Enqueue<INotificationSettingsJob>(j => j.PushNotificationSettings(json));
+            this.jobClient.Enqueue<INotificationSettingsJob>(j => j.PushNotificationSettingsAsync(json, ct));
 
             // Update the notification settings for any dependents
-            DbResult<IEnumerable<ResourceDelegate>> dbResult = this.resourceDelegateDelegate.Get(notificationSettings.SubjectHdid);
-            foreach (ResourceDelegate resourceDelegate in dbResult.Payload)
+            IEnumerable<ResourceDelegate> resourceDelegates = await this.resourceDelegateDelegate.GetAsync(notificationSettings.SubjectHdid, 0, 500, ct);
+            foreach (ResourceDelegate resourceDelegate in resourceDelegates)
             {
                 this.logger.LogDebug("Queueing Dependent Notification Settings");
                 NotificationSettingsRequest dependentNotificationSettings = new()
@@ -86,7 +87,7 @@ namespace HealthGateway.Common.Services
                 }
 
                 string delegateJson = JsonSerializer.Serialize(dependentNotificationSettings);
-                this.jobClient.Enqueue<INotificationSettingsJob>(j => j.PushNotificationSettings(delegateJson));
+                this.jobClient.Enqueue<INotificationSettingsJob>(j => j.PushNotificationSettingsAsync(delegateJson, ct));
             }
 
             this.logger.LogDebug("Finished queueing Notification Settings push");

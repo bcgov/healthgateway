@@ -17,6 +17,7 @@ namespace HealthGateway.ClinicalDocument.Controllers
 {
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
+    using System.Threading;
     using System.Threading.Tasks;
     using Asp.Versioning;
     using HealthGateway.ClinicalDocument.Models;
@@ -58,6 +59,7 @@ namespace HealthGateway.ClinicalDocument.Controllers
         /// Gets the collection of clinical document records associated with the given HDID.
         /// </summary>
         /// <param name="hdid">The subject's HDID.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The collection of clinical document records.</returns>
         /// <response code="200">Returns the collection of clinical document records.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
@@ -70,10 +72,10 @@ namespace HealthGateway.ClinicalDocument.Controllers
         [Produces("application/json")]
         [Route("{hdid}")]
         [Authorize(Policy = ClinicalDocumentPolicy.Read)]
-        public async Task<RequestResult<IEnumerable<ClinicalDocumentRecord>>> GetRecords(string hdid)
+        public async Task<RequestResult<IEnumerable<ClinicalDocumentRecord>>> GetRecords(string hdid, CancellationToken ct)
         {
             this.logger.LogDebug("Getting clinical document records for HDID: {Hdid}", hdid);
-            RequestResult<IEnumerable<ClinicalDocumentRecord>> result = await this.clinicalDocumentService.GetRecordsAsync(hdid).ConfigureAwait(true);
+            RequestResult<IEnumerable<ClinicalDocumentRecord>> result = await this.clinicalDocumentService.GetRecordsAsync(hdid, ct);
             this.logger.LogDebug("Finished getting clinical document records for HDID: {Hdid}", hdid);
             return result;
         }
@@ -83,6 +85,7 @@ namespace HealthGateway.ClinicalDocument.Controllers
         /// </summary>
         /// <param name="hdid">The subject's HDID.</param>
         /// <param name="fileId">The ID of the file to fetch.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The specified clinical document file.</returns>
         /// <response code="200">Returns the specified clinical document file.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
@@ -95,10 +98,10 @@ namespace HealthGateway.ClinicalDocument.Controllers
         [Produces("application/json")]
         [Route("{hdid}/file/{fileId}")]
         [Authorize(Policy = ClinicalDocumentPolicy.Read)]
-        public async Task<RequestResult<EncodedMedia>> GetFile(string hdid, string fileId)
+        public async Task<RequestResult<EncodedMedia>> GetFile(string hdid, string fileId, CancellationToken ct)
         {
             this.logger.LogDebug("Getting clinical document file for Hdid: {Hdid} with file ID: {FileId}", hdid, fileId);
-            RequestResult<EncodedMedia> result = await this.clinicalDocumentService.GetFileAsync(hdid, fileId).ConfigureAwait(true);
+            RequestResult<EncodedMedia> result = await this.clinicalDocumentService.GetFileAsync(hdid, fileId, ct);
             this.logger.LogDebug("Finished getting clinical document file for Hdid: {Hdid} with file ID: {FileId}", hdid, fileId);
             return result;
         }

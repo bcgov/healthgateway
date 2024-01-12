@@ -15,6 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Admin.Delegates
 {
+    using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Admin.Models.CovidSupport;
     using HealthGateway.Common.Data.ViewModels;
@@ -31,7 +32,8 @@ namespace HealthGateway.Admin.Delegates
         /// </summary>
         /// <param name="patient">The patient to query for vaccine details.</param>
         /// <param name="refresh">Whether the call should force cached data to be refreshed.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The wrapped vaccine details.</returns>
-        Task<RequestResult<VaccineDetails>> GetVaccineDetailsWithRetries(PatientModel patient, bool refresh);
+        Task<RequestResult<VaccineDetails>> GetVaccineDetailsWithRetriesAsync(PatientModel patient, bool refresh, CancellationToken ct = default);
     }
 }

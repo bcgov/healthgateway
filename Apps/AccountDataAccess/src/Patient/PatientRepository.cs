@@ -17,6 +17,7 @@ namespace HealthGateway.AccountDataAccess.Patient
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.Globalization;
     using System.Linq;
     using System.Threading;
@@ -85,11 +86,11 @@ namespace HealthGateway.AccountDataAccess.Patient
         }
 
         /// <inheritdoc/>
-        public async Task<PatientQueryResult> Query(PatientQuery query, CancellationToken ct = default)
+        public async Task<PatientQueryResult> QueryAsync(PatientQuery query, CancellationToken ct = default)
         {
             return query switch
             {
-                PatientDetailsQuery q => await this.Handle(q, ct).ConfigureAwait(true),
+                PatientDetailsQuery q => await this.HandleAsync(q, ct),
 
                 _ => throw new NotImplementedException($"{query.GetType().FullName}"),
             };
@@ -98,7 +99,7 @@ namespace HealthGateway.AccountDataAccess.Patient
         /// <inheritdoc/>
         public async Task<bool> CanAccessDataSourceAsync(string hdid, DataSource dataSource, CancellationToken ct = default)
         {
-            IEnumerable<DataSource> blockedDataSources = await this.GetDataSources(hdid, ct);
+            IEnumerable<DataSource> blockedDataSources = await this.GetDataSourcesAsync(hdid, ct);
             this.logger.LogDebug("Blocked data sources for hdid: {Hdid} - {DataSources}", hdid, blockedDataSources);
 
             return !blockedDataSources.Contains(dataSource);
@@ -121,7 +122,7 @@ namespace HealthGateway.AccountDataAccess.Patient
                 UpdatedBy = authenticatedUserId,
             };
 
-            BlockedAccess blockedAccess = await this.blockedAccessDelegate.GetBlockedAccessAsync(command.Hdid).ConfigureAwait(true) ?? new()
+            BlockedAccess blockedAccess = await this.blockedAccessDelegate.GetBlockedAccessAsync(command.Hdid, ct) ?? new()
             {
                 Hdid = command.Hdid,
                 CreatedBy = authenticatedUserId,
@@ -138,11 +139,11 @@ namespace HealthGateway.AccountDataAccess.Patient
                 blockedAccess.DataSources = sources;
                 blockedAccess.CreatedDateTime = DateTime.UtcNow;
                 blockedAccess.UpdatedDateTime = DateTime.UtcNow;
-                await this.blockedAccessDelegate.UpdateBlockedAccessAsync(blockedAccess, agentAudit, !this.blockedDataSourcesChangeFeedEnabled);
+                await this.blockedAccessDelegate.UpdateBlockedAccessAsync(blockedAccess, agentAudit, !this.blockedDataSourcesChangeFeedEnabled, ct);
             }
             else
             {
-                await this.blockedAccessDelegate.DeleteBlockedAccessAsync(blockedAccess, agentAudit, !this.blockedDataSourcesChangeFeedEnabled);
+                await this.blockedAccessDelegate.DeleteBlockedAccessAsync(blockedAccess, agentAudit, !this.blockedDataSourcesChangeFeedEnabled, ct);
             }
 
             if (this.blockedDataSourcesChangeFeedEnabled)
@@ -153,38 +154,37 @@ namespace HealthGateway.AccountDataAccess.Patient
         }
 
         /// <inheritdoc/>
-        public async Task<BlockedAccess?> GetBlockedAccessRecords(string hdid, CancellationToken ct = default)
+        public async Task<BlockedAccess?> GetBlockedAccessRecordsAsync(string hdid, CancellationToken ct = default)
         {
-            return await this.blockedAccessDelegate.GetBlockedAccessAsync(hdid).ConfigureAwait(true);
+            return await this.blockedAccessDelegate.GetBlockedAccessAsync(hdid, ct);
         }
 
         /// <inheritdoc/>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1863:Use 'CompositeFormat'", Justification = "Team decision")]
-        public async Task<IEnumerable<DataSource>> GetDataSources(string hdid, CancellationToken ct = default)
+        [SuppressMessage("Performance", "CA1863:Use 'CompositeFormat'", Justification = "Team decision")]
+        public async Task<IEnumerable<DataSource>> GetDataSourcesAsync(string hdid, CancellationToken ct = default)
         {
             string blockedAccessCacheKey = string.Format(CultureInfo.InvariantCulture, ICacheProvider.BlockedAccessCachePrefixKey, hdid);
             string message = $"Getting item from cache for key: {blockedAccessCacheKey}";
             this.logger.LogDebug("{Message}", message);
 
-            return await this.cacheProvider.GetOrSetAsync(
+            IEnumerable<DataSource>? dataSources = await this.cacheProvider.GetOrSetAsync(
                 blockedAccessCacheKey,
-                () =>
-                {
-                    Task<IEnumerable<DataSource>> dataSources = this.blockedAccessDelegate.GetDataSourcesAsync(hdid);
-                    return dataSources;
-                },
-                TimeSpan.FromMinutes(this.blockedAccessCacheTtl)) ?? Array.Empty<DataSource>();
+                () => this.blockedAccessDelegate.GetDataSourcesAsync(hdid, ct),
+                TimeSpan.FromMinutes(this.blockedAccessCacheTtl),
+                ct);
+
+            return dataSources ?? [];
         }
 
         private static string GetStrategy(string? hdid, PatientDetailSource source)
         {
             string prefix = "HealthGateway.AccountDataAccess.Patient.Strategy.";
             string type = hdid != null ? "Hdid" : "Phn";
-            string suffix = "Strategy";
+            const string suffix = "Strategy";
             return $"{prefix}{type}{source}{suffix}";
         }
 
-        private async Task<PatientQueryResult> Handle(PatientDetailsQuery query, CancellationToken ct)
+        private async Task<PatientQueryResult> HandleAsync(PatientDetailsQuery query, CancellationToken ct)
         {
             this.logger.LogDebug("Patient details query source: {Source} - cache: {Cache}", query.Source, query.UseCache);
 
@@ -198,10 +198,10 @@ namespace HealthGateway.AccountDataAccess.Patient
                 throw new InvalidOperationException("Must specify either Hdid or Phn to query patient details");
             }
 
-            return await this.GetPatient(query).ConfigureAwait(true);
+            return await this.GetPatientAsync(query, ct: ct);
         }
 
-        private async Task<PatientQueryResult> GetPatient(PatientDetailsQuery query, bool disabledValidation = false)
+        private async Task<PatientQueryResult> GetPatientAsync(PatientDetailsQuery query, bool disabledValidation = false, CancellationToken ct = default)
         {
             PatientRequest patientRequest = new(
                 query.Hdid ?? query.Phn,
@@ -214,7 +214,7 @@ namespace HealthGateway.AccountDataAccess.Patient
             // Get the appropriate strategy from factory to query patient
             PatientQueryStrategy patientQueryStrategy = this.patientQueryFactory.GetPatientQueryStrategy(strategy);
             PatientQueryContext context = new(patientQueryStrategy);
-            PatientModel? patient = await context.GetPatientAsync(patientRequest).ConfigureAwait(true);
+            PatientModel? patient = await context.GetPatientAsync(patientRequest, ct);
             return new PatientQueryResult(new[] { patient! });
         }
     }

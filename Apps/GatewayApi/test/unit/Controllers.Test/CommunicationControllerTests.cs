@@ -15,6 +15,8 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.GatewayApiTests.Controllers.Test
 {
+    using System.Threading;
+    using System.Threading.Tasks;
     using DeepEqual.Syntax;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ViewModels;
@@ -32,8 +34,9 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
         /// <summary>
         /// Successfully Create Comment - Happy Path scenario.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void ShouldGetCommunication()
+        public async Task ShouldGetCommunication()
         {
             RequestResult<Communication?> expectedResult = new()
             {
@@ -46,10 +49,10 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
             };
 
             Mock<ICommunicationService> communicationServiceMock = new();
-            communicationServiceMock.Setup(s => s.GetActiveCommunication(CommunicationType.Banner)).Returns(expectedResult);
+            communicationServiceMock.Setup(s => s.GetActiveCommunicationAsync(CommunicationType.Banner, It.IsAny<CancellationToken>())).Returns(Task.FromResult(expectedResult));
 
             CommunicationController controller = new(communicationServiceMock.Object);
-            RequestResult<Communication?> actualResult = controller.Get();
+            RequestResult<Communication?> actualResult = await controller.Get();
 
             expectedResult.ShouldDeepEqual(actualResult);
         }

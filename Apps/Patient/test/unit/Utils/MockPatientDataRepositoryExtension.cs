@@ -35,7 +35,7 @@ namespace HealthGateway.PatientTests.Utils
         {
             repo
                 .Setup(
-                    o => o.Query(
+                    o => o.QueryAsync(
                         It.Is<T>(q => predicate(q)),
                         It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new PatientDataQueryResult(data));

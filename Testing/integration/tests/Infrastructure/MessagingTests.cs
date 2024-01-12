@@ -87,7 +87,7 @@ public class MessagingTests : ScenarioContextBase<GatewayApi.Program>
     private async Task<ConcurrentBag<MessageEnvelope>> ReceiveMessages(CancellationToken ct)
     {
         ConcurrentBag<MessageEnvelope> receivedMessages = new();
-        await this.receiver.Subscribe(
+        await this.receiver.SubscribeAsync(
             async (_, messages) => await Task.Run(
                 () =>
                 {

@@ -19,6 +19,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Security.Claims;
+using System.Threading;
+using HealthGateway.Common.AccessManagement.Authentication;
 using HealthGateway.Database.Constants;
 using HealthGateway.Database.Delegates;
 using HealthGateway.Database.Models;
@@ -62,7 +64,7 @@ public class AuthenticationServiceTests
         };
 
         Mock<IAdminUserProfileDelegate> profileDelegateMock = new();
-        profileDelegateMock.Setup(s => s.GetAdminUserProfile(It.IsAny<string>())).Returns(getResult);
+        profileDelegateMock.Setup(s => s.GetAdminUserProfileAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(getResult);
 
         DbResult<AdminUserProfile> insertResult = new()
         {
@@ -72,20 +74,24 @@ public class AuthenticationServiceTests
                 Username = "username",
             },
         };
-        profileDelegateMock.Setup(s => s.Add(It.IsAny<AdminUserProfile>())).Returns(insertResult);
+        profileDelegateMock.Setup(s => s.AddAsync(It.IsAny<AdminUserProfile>(), It.IsAny<CancellationToken>())).ReturnsAsync(insertResult);
+
+        Mock<IAuthenticationDelegate> mockAuthenticationDelegate = new();
+        mockAuthenticationDelegate.Setup(s => s.FetchAuthenticatedUserTokenAsync(It.IsAny<CancellationToken>())).ReturnsAsync(this.accessToken);
 
         IAuthenticationService service = new AuthenticationService(
             new Mock<ILogger<AuthenticationService>>().Object,
             this.GetHttpContextAccessor().Object,
             this.configuration,
-            profileDelegateMock.Object);
+            profileDelegateMock.Object,
+            mockAuthenticationDelegate.Object);
 
         // Act
-        service.SetLastLoginDateTime();
+        service.SetLastLoginDateTimeAsync();
 
         // Assert
-        profileDelegateMock.Verify(m => m.Add(It.IsAny<AdminUserProfile>()), Times.Once);
-        profileDelegateMock.Verify(m => m.Update(It.IsAny<AdminUserProfile>(), true), Times.Never);
+        profileDelegateMock.Verify(m => m.AddAsync(It.IsAny<AdminUserProfile>(), It.IsAny<CancellationToken>()), Times.Once);
+        profileDelegateMock.Verify(m => m.UpdateAsync(It.IsAny<AdminUserProfile>(), true, It.IsAny<CancellationToken>()), Times.Never);
     }
 
     /// <summary>
@@ -107,27 +113,31 @@ public class AuthenticationServiceTests
         };
 
         Mock<IAdminUserProfileDelegate> profileDelegateMock = new();
-        profileDelegateMock.Setup(s => s.GetAdminUserProfile(It.IsAny<string>())).Returns(getResult);
+        profileDelegateMock.Setup(s => s.GetAdminUserProfileAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(getResult);
 
         DbResult<AdminUserProfile> updateResult = new()
         {
             Status = DbStatusCode.Updated,
             Payload = profile,
         };
-        profileDelegateMock.Setup(s => s.Update(It.IsAny<AdminUserProfile>(), true)).Returns(updateResult);
+        profileDelegateMock.Setup(s => s.UpdateAsync(It.IsAny<AdminUserProfile>(), true, It.IsAny<CancellationToken>())).ReturnsAsync(updateResult);
+
+        Mock<IAuthenticationDelegate> mockAuthenticationDelegate = new();
+        mockAuthenticationDelegate.Setup(s => s.FetchAuthenticatedUserTokenAsync(It.IsAny<CancellationToken>())).ReturnsAsync(this.accessToken);
 
         IAuthenticationService service = new AuthenticationService(
             new Mock<ILogger<AuthenticationService>>().Object,
             this.GetHttpContextAccessor().Object,
             this.configuration,
-            profileDelegateMock.Object);
+            profileDelegateMock.Object,
+            mockAuthenticationDelegate.Object);
 
         // Act
-        service.SetLastLoginDateTime();
+        service.SetLastLoginDateTimeAsync();
 
         // Assert
-        profileDelegateMock.Verify(m => m.Add(It.IsAny<AdminUserProfile>()), Times.Never);
-        profileDelegateMock.Verify(m => m.Update(It.IsAny<AdminUserProfile>(), true), Times.Once);
+        profileDelegateMock.Verify(m => m.AddAsync(It.IsAny<AdminUserProfile>(), It.IsAny<CancellationToken>()), Times.Never);
+        profileDelegateMock.Verify(m => m.UpdateAsync(It.IsAny<AdminUserProfile>(), true, It.IsAny<CancellationToken>()), Times.Once);
     }
 
     private static IConfigurationRoot GetIConfigurationRoot()

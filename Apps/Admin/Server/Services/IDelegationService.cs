@@ -37,8 +37,9 @@ namespace HealthGateway.Admin.Server.Services
         /// Retrieves information about a potential delegate.
         /// </summary>
         /// <param name="phn">The phn to query on.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>Information about the potential delegate.</returns>
-        Task<DelegateInfo> GetDelegateInformationAsync(string phn);
+        Task<DelegateInfo> GetDelegateInformationAsync(string phn, CancellationToken ct = default);
 
         /// <summary>
         /// Protects the dependent and if necessary creates the allowed delegation(s) and keeps the resource delegates

@@ -69,13 +69,13 @@ namespace HealthGateway.Admin.Client.Components.Communications
             ExtendedBroadcast? broadcast = this.Data.FirstOrDefault(c => c.Id == id);
             if (broadcast != null)
             {
-                await this.OnEditCallback.InvokeAsync(broadcast).ConfigureAwait(true);
+                await this.OnEditCallback.InvokeAsync(broadcast);
             }
         }
 
-        private async Task DeleteBroadcast(Guid id)
+        private async Task DeleteBroadcastAsync(Guid id)
         {
-            bool? delete = await this.DeleteConfirmation.Show().ConfigureAwait(true);
+            bool? delete = await this.DeleteConfirmation.Show();
             if (delete is true)
             {
                 ExtendedBroadcast? broadcast = this.Data.FirstOrDefault(c => c.Id == id);

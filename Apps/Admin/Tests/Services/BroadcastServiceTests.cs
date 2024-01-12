@@ -13,20 +13,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //-------------------------------------------------------------------------
-namespace HealthGateway.CommonTests.Services
+namespace HealthGateway.Admin.Tests.Services
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Net.Http;
     using System.Threading.Tasks;
+    using HealthGateway.Admin.Server.Services;
+    using HealthGateway.Admin.Tests.Utils;
     using HealthGateway.Common.Api;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Models.PHSA;
-    using HealthGateway.Common.Services;
-    using HealthGateway.CommonTests.Utils;
     using Microsoft.Extensions.Logging;
     using Moq;
     using Xunit;
@@ -346,17 +346,17 @@ namespace HealthGateway.CommonTests.Services
 
             if (!throwException)
             {
-                mockSystemBroadcastApi.Setup(s => s.GetBroadcastsAsync()).ReturnsAsync(apiGetResponse);
-                mockSystemBroadcastApi.Setup(s => s.UpdateBroadcastAsync(It.IsAny<string>(), It.IsAny<BroadcastRequest>())).ReturnsAsync(response);
-                mockSystemBroadcastApi.Setup(s => s.CreateBroadcastAsync(It.IsAny<BroadcastRequest>())).ReturnsAsync(response);
-                mockSystemBroadcastApi.Setup(s => s.DeleteBroadcastAsync(It.IsAny<string>())).Returns(Task.CompletedTask);
+                mockSystemBroadcastApi.Setup(s => s.GetBroadcastsAsync(default)).ReturnsAsync(apiGetResponse);
+                mockSystemBroadcastApi.Setup(s => s.UpdateBroadcastAsync(It.IsAny<string>(), It.IsAny<BroadcastRequest>(), default)).ReturnsAsync(response);
+                mockSystemBroadcastApi.Setup(s => s.CreateBroadcastAsync(It.IsAny<BroadcastRequest>(), default)).ReturnsAsync(response);
+                mockSystemBroadcastApi.Setup(s => s.DeleteBroadcastAsync(It.IsAny<string>(), default)).Returns(Task.CompletedTask);
             }
             else
             {
-                mockSystemBroadcastApi.Setup(s => s.GetBroadcastsAsync()).ThrowsAsync(new HttpRequestException(string.Empty));
-                mockSystemBroadcastApi.Setup(s => s.UpdateBroadcastAsync(It.IsAny<string>(), It.IsAny<BroadcastRequest>())).ThrowsAsync(new HttpRequestException(string.Empty));
-                mockSystemBroadcastApi.Setup(s => s.CreateBroadcastAsync(It.IsAny<BroadcastRequest>())).ThrowsAsync(new HttpRequestException(string.Empty));
-                mockSystemBroadcastApi.Setup(s => s.DeleteBroadcastAsync(It.IsAny<string>())).ThrowsAsync(new HttpRequestException(string.Empty));
+                mockSystemBroadcastApi.Setup(s => s.GetBroadcastsAsync(default)).ThrowsAsync(new HttpRequestException(string.Empty));
+                mockSystemBroadcastApi.Setup(s => s.UpdateBroadcastAsync(It.IsAny<string>(), It.IsAny<BroadcastRequest>(), default)).ThrowsAsync(new HttpRequestException(string.Empty));
+                mockSystemBroadcastApi.Setup(s => s.CreateBroadcastAsync(It.IsAny<BroadcastRequest>(), default)).ThrowsAsync(new HttpRequestException(string.Empty));
+                mockSystemBroadcastApi.Setup(s => s.DeleteBroadcastAsync(It.IsAny<string>(), default)).ThrowsAsync(new HttpRequestException(string.Empty));
             }
 
             return new BroadcastService(

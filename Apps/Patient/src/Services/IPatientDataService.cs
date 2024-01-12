@@ -34,17 +34,17 @@ namespace HealthGateway.Patient.Services
         /// Query data services.
         /// </summary>
         /// <param name="query">The query message.</param>
-        /// <param name="ct">The cancellation token.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The Response message.</returns>
-        Task<PatientDataResponse> Query(PatientDataQuery query, CancellationToken ct);
+        Task<PatientDataResponse> QueryAsync(PatientDataQuery query, CancellationToken ct = default);
 
         /// <summary>
         /// Query patient files.
         /// </summary>
         /// <param name="query">The query.</param>
-        /// <param name="ct">The cancellation token.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>Patient file or null if not found.</returns>
-        Task<PatientFileResponse?> Query(PatientFileQuery query, CancellationToken ct);
+        Task<PatientFileResponse?> QueryAsync(PatientFileQuery query, CancellationToken ct = default);
     }
 
     /// <summary>

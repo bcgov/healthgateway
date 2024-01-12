@@ -20,6 +20,7 @@ namespace HealthGateway.ClinicalDocument.Services
     using System.Diagnostics;
     using System.Linq;
     using System.Net.Http;
+    using System.Threading;
     using System.Threading.Tasks;
     using AutoMapper;
     using HealthGateway.AccountDataAccess.Patient;
@@ -69,9 +70,9 @@ namespace HealthGateway.ClinicalDocument.Services
         private static ActivitySource Source { get; } = new(nameof(ClinicalDocumentService));
 
         /// <inheritdoc/>
-        public async Task<RequestResult<IEnumerable<ClinicalDocumentRecord>>> GetRecordsAsync(string hdid)
+        public async Task<RequestResult<IEnumerable<ClinicalDocumentRecord>>> GetRecordsAsync(string hdid, CancellationToken ct = default)
         {
-            if (!await this.patientRepository.CanAccessDataSourceAsync(hdid, DataSource.ClinicalDocument).ConfigureAwait(true))
+            if (!await this.patientRepository.CanAccessDataSourceAsync(hdid, DataSource.ClinicalDocument, ct))
             {
                 return new()
                 {
@@ -90,13 +91,13 @@ namespace HealthGateway.ClinicalDocument.Services
             this.logger.LogDebug("Getting clinical documents for hdid: {Hdid}", hdid);
             try
             {
-                RequestResult<PersonalAccount> patientAccountResponse = await this.personalAccountsService.GetPatientAccountResultAsync(hdid).ConfigureAwait(true);
+                RequestResult<PersonalAccount> patientAccountResponse = await this.personalAccountsService.GetPatientAccountResultAsync(hdid, ct);
                 if (patientAccountResponse.ResultStatus == ResultType.Success)
                 {
                     string? pid = patientAccountResponse.ResourcePayload?.PatientIdentity.Pid.ToString();
                     this.logger.LogDebug("PID Fetched: {Pid}", pid);
                     PhsaHealthDataResponse apiResponse =
-                        await this.clinicalDocumentsApi.GetClinicalDocumentRecordsAsync(pid).ConfigureAwait(true);
+                        await this.clinicalDocumentsApi.GetClinicalDocumentRecordsAsync(pid, ct);
 
                     IList<ClinicalDocumentRecord> clinicalDocuments = this.autoMapper.Map<IList<ClinicalDocumentRecord>>(apiResponse.Data);
                     requestResult.ResultStatus = ResultType.Success;
@@ -124,9 +125,9 @@ namespace HealthGateway.ClinicalDocument.Services
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResult<EncodedMedia>> GetFileAsync(string hdid, string fileId)
+        public async Task<RequestResult<EncodedMedia>> GetFileAsync(string hdid, string fileId, CancellationToken ct = default)
         {
-            if (!await this.patientRepository.CanAccessDataSourceAsync(hdid, DataSource.ClinicalDocument).ConfigureAwait(true))
+            if (!await this.patientRepository.CanAccessDataSourceAsync(hdid, DataSource.ClinicalDocument, ct))
             {
                 return new()
                 {
@@ -144,12 +145,12 @@ namespace HealthGateway.ClinicalDocument.Services
             this.logger.LogDebug("Getting clinical document file for hdid: {Hdid}", hdid);
             try
             {
-                RequestResult<PersonalAccount> response = await this.personalAccountsService.GetPatientAccountResultAsync(hdid).ConfigureAwait(true);
+                RequestResult<PersonalAccount> response = await this.personalAccountsService.GetPatientAccountResultAsync(hdid, ct);
                 if (response.ResultStatus == ResultType.Success)
                 {
                     Guid pid = response.ResourcePayload?.PatientIdentity.Pid ?? throw new InvalidOperationException($"Pid not found for hdid {hdid}");
                     this.logger.LogDebug("PID Fetched: {Pid}", pid);
-                    EncodedMedia apiResponse = await this.clinicalDocumentsApi.GetClinicalDocumentFileAsync(pid, fileId).ConfigureAwait(true);
+                    EncodedMedia apiResponse = await this.clinicalDocumentsApi.GetClinicalDocumentFileAsync(pid, fileId, ct);
 
                     requestResult.ResultStatus = ResultType.Success;
                     requestResult.ResourcePayload = apiResponse;

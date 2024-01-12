@@ -41,7 +41,6 @@ namespace HealthGateway.ImmunizationTests.Services.Test
     /// <summary>
     /// ImmunizationService's Unit Tests.
     /// </summary>
-    [SuppressMessage("Design", "CA1506:Avoid excessive class coupling", Justification = "Unit Test")]
     [SuppressMessage("Major Code Smell", "S125:Sections of code should not be commented out", Justification = "Ignore broken tests")]
     public class ImmunizationServiceTests
     {
@@ -101,14 +100,14 @@ namespace HealthGateway.ImmunizationTests.Services.Test
                 TotalResultCount = delegateResult.TotalResultCount,
             };
 
-            mockDelegate.Setup(s => s.GetImmunizationsAsync(It.IsAny<string>())).ReturnsAsync(delegateResult);
+            mockDelegate.Setup(s => s.GetImmunizationsAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(delegateResult);
 
             Mock<IPatientRepository> patientRepository = new();
             patientRepository.Setup(p => p.CanAccessDataSourceAsync(It.IsAny<string>(), It.IsAny<DataSource>(), It.IsAny<CancellationToken>())).ReturnsAsync(canAccessDataSource);
 
             IImmunizationService service = new ImmunizationService(mockDelegate.Object, patientRepository.Object, this.autoMapper);
 
-            RequestResult<ImmunizationResult> actualResult = await service.GetImmunizations(It.IsAny<string>());
+            RequestResult<ImmunizationResult> actualResult = await service.GetImmunizationsAsync(It.IsAny<string>());
 
             if (canAccessDataSource)
             {
@@ -160,14 +159,14 @@ namespace HealthGateway.ImmunizationTests.Services.Test
                 TotalResultCount = delegateResult.TotalResultCount,
             };
 
-            mockDelegate.Setup(s => s.GetImmunizationAsync(It.IsAny<string>())).Returns(Task.FromResult(delegateResult));
+            mockDelegate.Setup(s => s.GetImmunizationAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult(delegateResult));
 
             Mock<IPatientRepository> patientRepository = new();
             patientRepository.Setup(p => p.CanAccessDataSourceAsync(It.IsAny<string>(), It.IsAny<DataSource>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
 
             IImmunizationService service = new ImmunizationService(mockDelegate.Object, patientRepository.Object, this.autoMapper);
 
-            RequestResult<ImmunizationEvent> actualResult = await service.GetImmunization("immz_id");
+            RequestResult<ImmunizationEvent> actualResult = await service.GetImmunizationAsync("immz_id");
 
             expectedResult.ShouldDeepEqual(actualResult);
         }
@@ -177,7 +176,6 @@ namespace HealthGateway.ImmunizationTests.Services.Test
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        [SuppressMessage("Maintainability", "CA1506:Avoid excessive class coupling", Justification = "Team decision")]
         public async Task ShouldGetRecommendation()
         {
             ImmunizationRecommendationResponse immzRecommendationResponse = this.GetImmzRecommendationResponse();
@@ -195,14 +193,14 @@ namespace HealthGateway.ImmunizationTests.Services.Test
                 TotalResultCount = delegateResult.TotalResultCount,
             };
 
-            mockDelegate.Setup(s => s.GetImmunizationsAsync(It.IsAny<string>())).Returns(Task.FromResult(delegateResult));
+            mockDelegate.Setup(s => s.GetImmunizationsAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult(delegateResult));
 
             Mock<IPatientRepository> patientRepository = new();
             patientRepository.Setup(p => p.CanAccessDataSourceAsync(It.IsAny<string>(), It.IsAny<DataSource>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
 
             IImmunizationService service = new ImmunizationService(mockDelegate.Object, patientRepository.Object, this.autoMapper);
 
-            RequestResult<ImmunizationResult> actualResult = await service.GetImmunizations(It.IsAny<string>());
+            RequestResult<ImmunizationResult> actualResult = await service.GetImmunizationsAsync(It.IsAny<string>());
 
             expectedResult.ShouldDeepEqual(actualResult);
             Assert.Single(expectedResult.ResourcePayload.Recommendations);
@@ -246,14 +244,14 @@ namespace HealthGateway.ImmunizationTests.Services.Test
                 ResultError = delegateResult.ResultError,
             };
 
-            mockDelegate.Setup(s => s.GetImmunizationsAsync(It.IsAny<string>())).Returns(Task.FromResult(delegateResult));
+            mockDelegate.Setup(s => s.GetImmunizationsAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult(delegateResult));
 
             Mock<IPatientRepository> patientRepository = new();
             patientRepository.Setup(p => p.CanAccessDataSourceAsync(It.IsAny<string>(), It.IsAny<DataSource>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
 
             IImmunizationService service = new ImmunizationService(mockDelegate.Object, patientRepository.Object, this.autoMapper);
 
-            RequestResult<ImmunizationResult> actualResult = await service.GetImmunizations(It.IsAny<string>());
+            RequestResult<ImmunizationResult> actualResult = await service.GetImmunizationsAsync(It.IsAny<string>());
 
             expectedResult.ShouldDeepEqual(actualResult);
         }

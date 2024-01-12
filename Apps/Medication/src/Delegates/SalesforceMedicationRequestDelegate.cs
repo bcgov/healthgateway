@@ -19,9 +19,11 @@ namespace HealthGateway.Medication.Delegates
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.Net.Http;
+    using System.Threading;
     using System.Threading.Tasks;
     using AutoMapper;
     using HealthGateway.Common.AccessManagement.Authentication;
+    using HealthGateway.Common.AccessManagement.Authentication.Models;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Delegates;
@@ -34,27 +36,27 @@ namespace HealthGateway.Medication.Delegates
     using Refit;
 
     /// <summary>
-    /// Salesforce Implementation that retrieves Medication Requests.
+    /// Salesforce implementation that retrieves medication requests.
     /// </summary>
-    public class SalesforceDelegate : IMedicationRequestDelegate
+    public class SalesforceMedicationRequestDelegate : IMedicationRequestDelegate
     {
         private readonly IAuthenticationDelegate authDelegate;
         private readonly IMapper autoMapper;
         private readonly ISpecialAuthorityApi specialAuthorityApi;
 
         private readonly ILogger logger;
-        private readonly Config salesforceConfig;
+        private readonly ClientCredentialsRequest clientCredentialsRequest;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SalesforceDelegate"/> class.
+        /// Initializes a new instance of the <see cref="SalesforceMedicationRequestDelegate"/> class.
         /// </summary>
         /// <param name="logger">Injected Logger Provider.</param>
         /// <param name="specialAuthorityApi">The injected special authority api.</param>
         /// <param name="configuration">The injected configuration provider.</param>
         /// <param name="authDelegate">The delegate responsible authentication.</param>
         /// <param name="autoMapper">The injected automapper provider.</param>
-        public SalesforceDelegate(
-            ILogger<SalesforceDelegate> logger,
+        public SalesforceMedicationRequestDelegate(
+            ILogger<SalesforceMedicationRequestDelegate> logger,
             ISpecialAuthorityApi specialAuthorityApi,
             IConfiguration configuration,
             IAuthenticationDelegate authDelegate,
@@ -65,14 +67,14 @@ namespace HealthGateway.Medication.Delegates
             this.authDelegate = authDelegate;
             this.autoMapper = autoMapper;
 
-            this.salesforceConfig = new Config();
-            configuration.Bind(Config.SalesforceConfigSectionKey, this.salesforceConfig);
+            Config config = configuration.GetSection(Config.SalesforceConfigSectionKey).Get<Config>() ?? new();
+            this.clientCredentialsRequest = new() { TokenUri = config.TokenUri, Parameters = config.ClientAuthentication };
         }
 
         private static ActivitySource Source { get; } = new(nameof(ClientRegistriesDelegate));
 
         /// <inheritdoc/>
-        public async Task<RequestResult<IList<MedicationRequest>>> GetMedicationRequestsAsync(string phn)
+        public async Task<RequestResult<IList<MedicationRequest>>> GetMedicationRequestsAsync(string phn, CancellationToken ct = default)
         {
             using (Source.StartActivity())
             {
@@ -80,8 +82,7 @@ namespace HealthGateway.Medication.Delegates
                 {
                     ResultStatus = ResultType.Error,
                 };
-
-                string? accessToken = this.authDelegate.AuthenticateAsUser(this.salesforceConfig.TokenUri, this.salesforceConfig.ClientAuthentication, true).AccessToken;
+                string? accessToken = (await this.authDelegate.AuthenticateUserAsync(this.clientCredentialsRequest, true, ct)).AccessToken;
                 if (string.IsNullOrEmpty(accessToken))
                 {
                     this.logger.LogError("Authenticated as User System access token is null or empty, Error:\n{AccessToken}", accessToken);
@@ -96,7 +97,7 @@ namespace HealthGateway.Medication.Delegates
 
                 try
                 {
-                    ResponseWrapper replyWrapper = await this.specialAuthorityApi.GetSpecialAuthorityRequestsAsync(phn, accessToken).ConfigureAwait(true);
+                    ResponseWrapper replyWrapper = await this.specialAuthorityApi.GetSpecialAuthorityRequestsAsync(phn, accessToken, ct);
                     retVal.ResourcePayload = this.autoMapper.Map<IEnumerable<SpecialAuthorityRequest>, IList<MedicationRequest>>(replyWrapper.Items);
                     retVal.TotalResultCount = retVal.ResourcePayload?.Count;
                     retVal.PageSize = retVal.ResourcePayload?.Count;
@@ -107,7 +108,7 @@ namespace HealthGateway.Medication.Delegates
                 {
                     retVal.ResultError = new RequestResultError
                     {
-                        ResultMessage = $"Error while retrieving Medication Requests",
+                        ResultMessage = "Error while retrieving Medication Requests",
                         ErrorCode = ErrorTranslator.ServiceError(ErrorType.CommunicationExternal, ServiceType.Sf),
                     };
                     this.logger.LogError("Unexpected exception in GetMedicationRequestsAsync {Exception}", e.ToString());

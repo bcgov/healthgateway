@@ -38,7 +38,7 @@ namespace HealthGateway.Admin.Client.Components.Site
         /// <inheritdoc/>
         protected override async Task OnInitializedAsync()
         {
-            await base.OnInitializedAsync().ConfigureAwait(true);
+            await base.OnInitializedAsync();
             this.timer.Elapsed += this.CountdownTimerTick;
             this.timer.AutoReset = true;
             this.timer.Start();

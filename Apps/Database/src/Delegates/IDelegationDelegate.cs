@@ -46,8 +46,9 @@ namespace HealthGateway.Database.Delegates
         /// <param name="resourceDelegatesToRemove">The resource delegates to remove.</param>
         /// <param name="agentAudit">The agent audit to create.</param>
         /// <param name="commit">Should commit, default to true.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
-        Task UpdateDelegationAsync(Dependent dependent, IEnumerable<ResourceDelegate> resourceDelegatesToRemove, AgentAudit agentAudit, bool commit = true);
+        Task UpdateDelegationAsync(Dependent dependent, IEnumerable<ResourceDelegate> resourceDelegatesToRemove, AgentAudit agentAudit, bool commit = true, CancellationToken ct = default);
 
         /// <summary>
         /// Retrieve all user HDIDs of protected dependents from the database.
@@ -57,6 +58,6 @@ namespace HealthGateway.Database.Delegates
         /// <param name="sortDirection">The sort direction for the records in the protected dependents report.</param>
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A list of HDID strings.</returns>
-        Task<(IList<string> Hdids, int TotalHdids)> GetProtectedDependentHdidsAsync(int page, int pageSize, SortDirection sortDirection, CancellationToken ct);
+        Task<(IList<string> Hdids, int TotalHdids)> GetProtectedDependentHdidsAsync(int page, int pageSize, SortDirection sortDirection, CancellationToken ct = default);
     }
 }

@@ -64,7 +64,7 @@
                                    data-testid="broadcast-table-edit-btn" />
                 </MudTooltip>
                 <MudTooltip Text="Delete">
-                    <MudIconButton OnClick="@(() => DeleteBroadcast(context.Id))"
+                    <MudIconButton OnClick="@(() => DeleteBroadcastAsync(context.Id))"
                                    Icon="fas fa-trash"
                                    Color="@Color.Primary"
                                    data-testid="broadcast-table-delete-btn" />

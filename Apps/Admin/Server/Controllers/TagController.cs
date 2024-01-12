@@ -17,6 +17,8 @@ namespace HealthGateway.Admin.Server.Controllers
 {
     using System;
     using System.Collections.Generic;
+    using System.Threading;
+    using System.Threading.Tasks;
     using Asp.Versioning;
     using HealthGateway.Admin.Common.Models;
     using HealthGateway.Admin.Server.Services;
@@ -38,6 +40,7 @@ namespace HealthGateway.Admin.Server.Controllers
         /// <summary>
         /// Gets all admin tags.
         /// </summary>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The list of admin tags wrapped in a request result.</returns>
         /// <response code="200">Returns the list of admin tags.</response>
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
@@ -47,9 +50,9 @@ namespace HealthGateway.Admin.Server.Controllers
         /// </response>
         [HttpGet]
         [Route("[controller]")]
-        public RequestResult<IList<AdminTagView>> GetAll()
+        public async Task<RequestResult<IList<AdminTagView>>> GetAll(CancellationToken ct)
         {
-            RequestResult<IList<AdminTagView>> result = feedbackService.GetAllTags();
+            RequestResult<IList<AdminTagView>> result = await feedbackService.GetAllTagsAsync(ct);
             return result;
         }
 
@@ -57,6 +60,7 @@ namespace HealthGateway.Admin.Server.Controllers
         /// Creates a new admin tag.
         /// </summary>
         /// <param name="tagName">The tag name.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The newly created tag model.</returns>
         /// <response code="200">Returns the newly created tag model.</response>
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
@@ -66,9 +70,9 @@ namespace HealthGateway.Admin.Server.Controllers
         /// </response>
         [HttpPost]
         [Route("[controller]")]
-        public RequestResult<AdminTagView> CreateTag([FromBody] string tagName)
+        public async Task<RequestResult<AdminTagView>> CreateTag([FromBody] string tagName, CancellationToken ct)
         {
-            RequestResult<AdminTagView> result = feedbackService.CreateTag(tagName);
+            RequestResult<AdminTagView> result = await feedbackService.CreateTagAsync(tagName, ct);
             return result;
         }
 
@@ -76,6 +80,7 @@ namespace HealthGateway.Admin.Server.Controllers
         /// Deletes an admin tag.
         /// </summary>
         /// <param name="tag">The admin tag.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The deleted tag wrapped in a request result.</returns>
         /// <response code="200">Returns the deleted tag wrapped in a request result.</response>
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
@@ -85,9 +90,9 @@ namespace HealthGateway.Admin.Server.Controllers
         /// </response>
         [HttpDelete]
         [Route("[controller]")]
-        public RequestResult<AdminTagView> DeleteTag([FromBody] AdminTagView tag)
+        public async Task<RequestResult<AdminTagView>> DeleteTag([FromBody] AdminTagView tag, CancellationToken ct)
         {
-            RequestResult<AdminTagView> result = feedbackService.DeleteTag(tag);
+            RequestResult<AdminTagView> result = await feedbackService.DeleteTagAsync(tag, ct);
             return result;
         }
 
@@ -96,6 +101,7 @@ namespace HealthGateway.Admin.Server.Controllers
         /// </summary>
         /// <param name="feedbackId">The feedback id.</param>
         /// <param name="tagIds">A list of admin tag ids.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>Returns the user feedback view with the associated admin tag(s) wrapped in a request result.</returns>
         /// <response code="200">The user feedback containing the added tag model wrapped in a request result.</response>
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
@@ -105,9 +111,9 @@ namespace HealthGateway.Admin.Server.Controllers
         /// </response>
         [HttpPut]
         [Route("UserFeedback/{feedbackId}/[controller]")]
-        public RequestResult<UserFeedbackView> AssociateTags(Guid feedbackId, [FromBody] IList<Guid> tagIds)
+        public async Task<RequestResult<UserFeedbackView>> AssociateTags(Guid feedbackId, [FromBody] IList<Guid> tagIds, CancellationToken ct)
         {
-            RequestResult<UserFeedbackView> result = feedbackService.AssociateFeedbackTags(feedbackId, tagIds);
+            RequestResult<UserFeedbackView> result = await feedbackService.AssociateFeedbackTagsAsync(feedbackId, tagIds, ct);
             return result;
         }
     }

@@ -17,6 +17,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
 {
     using System;
     using System.Collections.Generic;
+    using System.Threading;
     using System.Threading.Tasks;
     using DeepEqual.Syntax;
     using HealthGateway.Common.Data.Models;
@@ -184,7 +185,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             Mock<IPersonalAccountsService> mockPersonalAccountsService = new();
 
             PersonalAccount mockPersonalAccount = new() { Id = AccountId, PatientIdentity = new PatientIdentity { Pid = Pid } };
-            mockPersonalAccountsService.Setup(s => s.GetPatientAccountAsync(Hdid)).ReturnsAsync(mockPersonalAccount);
+            mockPersonalAccountsService.Setup(s => s.GetPatientAccountAsync(Hdid, It.IsAny<CancellationToken>())).ReturnsAsync(mockPersonalAccount);
 
             return mockPersonalAccountsService.Object;
         }
@@ -193,9 +194,9 @@ namespace HealthGateway.GatewayApiTests.Services.Test
         {
             Mock<IWebAlertApi> mockWebAlertApi = new();
 
-            mockWebAlertApi.Setup(s => s.GetWebAlertsAsync(Pid)).ReturnsAsync(GetPhsaWebAlerts());
-            mockWebAlertApi.Setup(s => s.DeleteWebAlertsAsync(Pid)).Returns(Task.CompletedTask);
-            mockWebAlertApi.Setup(s => s.DeleteWebAlertAsync(Pid, WebAlertId)).Returns(Task.CompletedTask);
+            mockWebAlertApi.Setup(s => s.GetWebAlertsAsync(Pid, It.IsAny<CancellationToken>())).ReturnsAsync(GetPhsaWebAlerts());
+            mockWebAlertApi.Setup(s => s.DeleteWebAlertsAsync(Pid, It.IsAny<CancellationToken>())).Returns(Task.CompletedTask);
+            mockWebAlertApi.Setup(s => s.DeleteWebAlertAsync(Pid, WebAlertId, It.IsAny<CancellationToken>())).Returns(Task.CompletedTask);
 
             return new WebAlertService(
                 new Mock<ILogger<WebAlertService>>().Object,

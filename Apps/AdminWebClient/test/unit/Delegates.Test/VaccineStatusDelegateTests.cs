@@ -21,6 +21,7 @@ namespace HealthGateway.AdminWebClientTests.Delegates.Test
     using System.Linq;
     using System.Net;
     using System.Net.Http;
+    using System.Threading;
     using System.Threading.Tasks;
     using DeepEqual.Syntax;
     using HealthGateway.Admin.Api;
@@ -70,7 +71,7 @@ namespace HealthGateway.AdminWebClientTests.Delegates.Test
             };
 
             Mock<IImmunizationAdminApi> mockImmunizationApi = new();
-            mockImmunizationApi.Setup(a => a.GetVaccineStatus(It.IsAny<VaccineStatusQuery>(), this.accessToken)).ReturnsAsync(expectedPayload);
+            mockImmunizationApi.Setup(a => a.GetVaccineStatusAsync(It.IsAny<VaccineStatusQuery>(), this.accessToken, It.IsAny<CancellationToken>())).ReturnsAsync(expectedPayload);
 
             using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
             IVaccineStatusDelegate vaccineStatusDelegate = new RestVaccineStatusDelegate(
@@ -79,7 +80,7 @@ namespace HealthGateway.AdminWebClientTests.Delegates.Test
                 this.configuration);
 
             RequestResult<PhsaResult<VaccineStatusResult>> actualResult =
-                await vaccineStatusDelegate.GetVaccineStatusWithRetries(this.phn, this.dob, this.accessToken);
+                await vaccineStatusDelegate.GetVaccineStatusWithRetriesAsync(this.phn, this.dob, this.accessToken);
 
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
             expectedPayload.ShouldDeepEqual(actualResult.ResourcePayload);
@@ -96,7 +97,7 @@ namespace HealthGateway.AdminWebClientTests.Delegates.Test
             RequestResultError expectedError = GetRequestResultError();
 
             Mock<IImmunizationAdminApi> mockImmunizationApi = new();
-            mockImmunizationApi.Setup(a => a.GetVaccineStatus(It.IsAny<VaccineStatusQuery>(), this.accessToken)).ReturnsAsync(expectedPayload);
+            mockImmunizationApi.Setup(a => a.GetVaccineStatusAsync(It.IsAny<VaccineStatusQuery>(), this.accessToken, It.IsAny<CancellationToken>())).ReturnsAsync(expectedPayload);
 
             using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
             IVaccineStatusDelegate vaccineStatusDelegate = new RestVaccineStatusDelegate(
@@ -105,7 +106,7 @@ namespace HealthGateway.AdminWebClientTests.Delegates.Test
                 this.configuration);
 
             RequestResult<PhsaResult<VaccineStatusResult>> actualResult =
-                await vaccineStatusDelegate.GetVaccineStatusWithRetries(this.phn, this.dob, this.accessToken);
+                await vaccineStatusDelegate.GetVaccineStatusWithRetriesAsync(this.phn, this.dob, this.accessToken);
 
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
             expectedError.ShouldDeepEqual(actualResult.ResultError);
@@ -121,7 +122,7 @@ namespace HealthGateway.AdminWebClientTests.Delegates.Test
             RequestResultError expectedError = GetRequestResultError();
 
             Mock<IImmunizationAdminApi> mockImmunizationApi = new();
-            mockImmunizationApi.Setup(a => a.GetVaccineStatus(It.IsAny<VaccineStatusQuery>(), this.accessToken))
+            mockImmunizationApi.Setup(a => a.GetVaccineStatusAsync(It.IsAny<VaccineStatusQuery>(), this.accessToken, It.IsAny<CancellationToken>()))
                 .ThrowsAsync(new HttpRequestException(null, null, HttpStatusCode.BadRequest));
 
             using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
@@ -131,7 +132,7 @@ namespace HealthGateway.AdminWebClientTests.Delegates.Test
                 this.configuration);
 
             RequestResult<PhsaResult<VaccineStatusResult>> actualResult =
-                await vaccineStatusDelegate.GetVaccineStatusWithRetries(this.phn, this.dob, this.accessToken);
+                await vaccineStatusDelegate.GetVaccineStatusWithRetriesAsync(this.phn, this.dob, this.accessToken);
 
             Assert.Equal(ResultType.Error, actualResult.ResultStatus);
             expectedError.ShouldDeepEqual(actualResult.ResultError);

@@ -15,6 +15,9 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.JobScheduler.Jobs
 {
+    using System.Threading;
+    using System.Threading.Tasks;
+
     /// <summary>
     /// A Job to send emails that were not queued directly.
     /// </summary>
@@ -23,6 +26,8 @@ namespace HealthGateway.JobScheduler.Jobs
         /// <summary>
         /// Attempts to send any emails that haven't been sent.
         /// </summary>
-        void SendEmails();
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
+        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
+        Task SendEmailsAsync(CancellationToken ct = default);
     }
 }

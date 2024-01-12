@@ -16,6 +16,8 @@
 namespace HealthGateway.Database.Delegates
 {
     using System.Collections.Generic;
+    using System.Threading;
+    using System.Threading.Tasks;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
 
@@ -29,46 +31,52 @@ namespace HealthGateway.Database.Delegates
         /// </summary>
         /// <param name="hdId">The users health identifier id.</param>
         /// <param name="parentEntryId">The parent entry id.</param>
-        /// <returns>An IEnumerable of Comments wrapped in a DBResult.</returns>
-        DbResult<IList<Comment>> GetByParentEntry(string hdId, string parentEntryId);
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
+        /// <returns>An IList of Comments wrapped in a DBResult.</returns>
+        Task<DbResult<IList<Comment>>> GetByParentEntryAsync(string hdId, string parentEntryId, CancellationToken ct = default);
 
         /// <summary>
         /// Add the given note.
         /// </summary>
         /// <param name="comment">The comment to be added to the database.</param>
         /// <param name="commit">if true the transaction is persisted immediately.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A comment wrapped in a DBResult.</returns>
-        DbResult<Comment> Add(Comment comment, bool commit = true);
+        Task<DbResult<Comment>> AddAsync(Comment comment, bool commit = true, CancellationToken ct = default);
 
         /// <summary>
         /// Update the supplied note.
         /// </summary>
         /// <param name="comment">The comment to be updated in the database.</param>
         /// <param name="commit">if true the transaction is persisted immediately.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A comment wrapped in a DBResult.</returns>
-        DbResult<Comment> Update(Comment comment, bool commit = true);
+        Task<DbResult<Comment>> UpdateAsync(Comment comment, bool commit = true, CancellationToken ct = default);
 
         /// <summary>
         /// Deletes the supplied note.
         /// </summary>
         /// <param name="comment">The comment to be deleted in the database.</param>
         /// <param name="commit">if true the transaction is persisted immediately.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A comment wrapped in a DBResult.</returns>
-        DbResult<Comment> Delete(Comment comment, bool commit = true);
+        Task<DbResult<Comment>> DeleteAsync(Comment comment, bool commit = true, CancellationToken ct = default);
 
         /// <summary>
         /// Gets a list of comments ordered by the created datetime for the given HdId.
         /// </summary>
         /// <param name="hdId">The users health identifier id.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>An IEnumerable of Comments wrapped in a DBResult.</returns>
-        DbResult<IEnumerable<Comment>> GetAll(string hdId);
+        Task<DbResult<IEnumerable<Comment>>> GetAllAsync(string hdId, CancellationToken ct = default);
 
         /// <summary>
-        /// Gets a list of all the comments ordered by the CreatedDateTime in assending order.
+        /// Gets a list of all the comments ordered by the CreatedDateTime in ascending order.
         /// </summary>
         /// <param name="page">The starting offset for the query.</param>
         /// <param name="pageSize">The maximum amount of rows to return.</param>
-        /// <returns>A list of comments wrapped in a DBResult.</returns>
-        DbResult<IEnumerable<Comment>> GetAll(int page, int pageSize);
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
+        /// <returns>A list of comments.</returns>
+        Task<IList<Comment>> GetAllAsync(int page, int pageSize, CancellationToken ct = default);
     }
 }

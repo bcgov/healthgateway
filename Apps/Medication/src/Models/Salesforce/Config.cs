@@ -34,13 +34,13 @@ namespace HealthGateway.Medication.Models.Salesforce
         public Uri Endpoint { get; set; } = null!;
 
         /// <summary>
-        /// Gets or sets the Salesforce token Uri.
+        /// Gets or sets the URI for the client credentials grant.
         /// </summary>
         public Uri TokenUri { get; set; } = null!;
 
         /// <summary>
-        /// Gets or sets the total number of records to retrieve in one call.
+        /// Gets or sets the parameters for the client credentials grant.
         /// </summary>
-        public ClientCredentialsTokenRequest ClientAuthentication { get; set; } = new();
+        public ClientCredentialsRequestParameters ClientAuthentication { get; set; } = new();
     }
 }

@@ -17,6 +17,7 @@ namespace HealthGateway.AccountDataAccess.Patient.Strategy
 {
     using System;
     using System.Diagnostics;
+    using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.CacheProviders;
     using HealthGateway.Common.Constants;
@@ -59,8 +60,9 @@ namespace HealthGateway.AccountDataAccess.Patient.Strategy
         /// Returns patient model based on the implemented Strategy.
         /// </summary>
         /// <param name="request">The request parameter values to use in the query..</param>
+        /// <param name="ct">The cancellation token.</param>
         /// <returns>A <see cref="PatientQueryStrategy"/> class.</returns>
-        public abstract Task<PatientModel?> GetPatientAsync(PatientRequest request);
+        public abstract Task<PatientModel?> GetPatientAsync(PatientRequest request, CancellationToken ct = default);
 
         /// <summary>
         /// Returns the logger.
@@ -76,8 +78,9 @@ namespace HealthGateway.AccountDataAccess.Patient.Strategy
         /// </summary>
         /// <param name="identifier">The resource identifier used to determine the key to use.</param>
         /// <param name="identifierType">The type of patient identifier we are searching for.</param>
+        /// <param name="ct">The cancellation token.</param>
         /// <returns>The found Patient model or null.</returns>
-        protected PatientModel? GetFromCache(string identifier, PatientIdentifierType identifierType)
+        protected async Task<PatientModel?> GetFromCacheAsync(string identifier, PatientIdentifierType identifierType, CancellationToken ct)
         {
             using Activity? activity = Source.StartActivity();
             PatientModel? retPatient = null;
@@ -87,12 +90,12 @@ namespace HealthGateway.AccountDataAccess.Patient.Strategy
                 {
                     case PatientIdentifierType.Hdid:
                         this.logger.LogDebug("Querying Patient Cache by HDID");
-                        retPatient = this.cacheProvider.GetItem<PatientModel>($"{PatientCacheDomain}:HDID:{identifier}");
+                        retPatient = await this.cacheProvider.GetItemAsync<PatientModel>($"{PatientCacheDomain}:HDID:{identifier}", ct);
                         break;
 
                     case PatientIdentifierType.Phn:
                         this.logger.LogDebug("Querying Patient Cache by PHN");
-                        retPatient = this.cacheProvider.GetItem<PatientModel>($"{PatientCacheDomain}:PHN:{identifier}");
+                        retPatient = await this.cacheProvider.GetItemAsync<PatientModel>($"{PatientCacheDomain}:PHN:{identifier}", ct);
                         break;
                 }
 
@@ -109,12 +112,14 @@ namespace HealthGateway.AccountDataAccess.Patient.Strategy
         /// </summary>
         /// <param name="patient">The patient to cache.</param>
         /// <param name="disabledValidation">bool indicating if disabledValidation was set.</param>
-        protected void CachePatient(PatientModel? patient, bool disabledValidation)
+        /// <param name="ct">The cancellation token.</param>
+        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
+        protected async Task CachePatientAsync(PatientModel? patient, bool disabledValidation, CancellationToken ct)
         {
             // Only cache if validation is enabled (as some clients could get invalid data) and when successful.
             if (patient != null && !disabledValidation)
             {
-                this.CachePatient(patient);
+                await this.CachePatientAsync(patient, ct);
             }
         }
 
@@ -122,7 +127,9 @@ namespace HealthGateway.AccountDataAccess.Patient.Strategy
         /// Caches the Patient model if enabled.
         /// </summary>
         /// <param name="patientModel">The patient to cache.</param>
-        private void CachePatient(PatientModel patientModel)
+        /// <param name="ct">The cancellation token.</param>
+        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
+        private async Task CachePatientAsync(PatientModel patientModel, CancellationToken ct)
         {
             using Activity? activity = Source.StartActivity();
             string hdid = patientModel.Hdid;
@@ -132,12 +139,12 @@ namespace HealthGateway.AccountDataAccess.Patient.Strategy
                 TimeSpan expiry = TimeSpan.FromMinutes(this.cacheTtl);
                 if (!string.IsNullOrEmpty(patientModel.Hdid))
                 {
-                    this.cacheProvider.AddItem($"{PatientCacheDomain}:HDID:{patientModel.Hdid}", patientModel, expiry);
+                    await this.cacheProvider.AddItemAsync($"{PatientCacheDomain}:HDID:{patientModel.Hdid}", patientModel, expiry, ct);
                 }
 
                 if (!string.IsNullOrEmpty(patientModel.Phn))
                 {
-                    this.cacheProvider.AddItem($"{PatientCacheDomain}:PHN:{patientModel.Phn}", patientModel, expiry);
+                    await this.cacheProvider.AddItemAsync($"{PatientCacheDomain}:PHN:{patientModel.Phn}", patientModel, expiry, ct);
                 }
             }
             else

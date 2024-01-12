@@ -15,6 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Immunization.Controllers
 {
+    using System.Threading;
     using System.Threading.Tasks;
     using Asp.Versioning;
     using HealthGateway.Common.AccessManagement.Authorization.Policy;
@@ -56,6 +57,7 @@ namespace HealthGateway.Immunization.Controllers
         /// Requests the vaccine status for the supplied HDID.
         /// </summary>
         /// <param name="hdid">The patient's HDID.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The wrapped vaccine status.</returns>
         /// <response code="200">Returns the Vaccine Status.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
@@ -67,10 +69,10 @@ namespace HealthGateway.Immunization.Controllers
         [HttpGet]
         [Produces("application/json")]
         [Authorize(Policy = ImmunizationPolicy.Read)]
-        public async Task<RequestResult<VaccineStatus>> GetVaccineStatus([FromQuery] string hdid)
+        public async Task<RequestResult<VaccineStatus>> GetVaccineStatus([FromQuery] string hdid, CancellationToken ct)
         {
             this.logger.LogDebug("Getting vaccine status for HDID {Hdid}", hdid);
-            RequestResult<VaccineStatus> result = await this.vaccineStatusService.GetAuthenticatedVaccineStatus(hdid).ConfigureAwait(true);
+            RequestResult<VaccineStatus> result = await this.vaccineStatusService.GetAuthenticatedVaccineStatusAsync(hdid, ct);
             this.logger.LogDebug("Finished getting vaccine status for HDID {Hdid}", hdid);
 
             return result;
@@ -80,6 +82,7 @@ namespace HealthGateway.Immunization.Controllers
         /// Requests the COVID-19 Vaccine Proof for the supplied HDID if the user is the owner.
         /// </summary>
         /// <param name="hdid">The patient's HDID.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The PDF Vaccine Proof.</returns>
         /// <response code="200">Returns the Vaccine Proof.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
@@ -92,10 +95,10 @@ namespace HealthGateway.Immunization.Controllers
         [Produces("application/json")]
         [Route("pdf")]
         [Authorize(Policy = ImmunizationPolicy.Read)]
-        public async Task<RequestResult<VaccineProofDocument>> GetVaccineProof([FromQuery] string hdid)
+        public async Task<RequestResult<VaccineProofDocument>> GetVaccineProof([FromQuery] string hdid, CancellationToken ct)
         {
             this.logger.LogDebug("Getting  Vaccine Proof for HDID {Hdid}", hdid);
-            RequestResult<VaccineProofDocument> result = await this.vaccineStatusService.GetAuthenticatedVaccineProof(hdid).ConfigureAwait(true);
+            RequestResult<VaccineProofDocument> result = await this.vaccineStatusService.GetAuthenticatedVaccineProofAsync(hdid, ct);
             this.logger.LogDebug("Finished getting Vaccine Proof for HDID {Hdid}", hdid);
 
             return result;

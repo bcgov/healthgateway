@@ -37,7 +37,7 @@ namespace AccountDataAccessTest.Strategy
         /// GetPatientAsync by hdid - happy path.
         /// </summary>
         /// <param name="useCache">The value indicates whether cache should be used or not.</param>
-        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Theory]
         [InlineData(false)]
         [InlineData(true)]
@@ -72,7 +72,7 @@ namespace AccountDataAccessTest.Strategy
             cacheProvider.Setup(p => p.GetItem<PatientModel>($"{PatientCacheDomain}:HDID:{Hdid}")).Returns(cachedPatient);
 
             Mock<IClientRegistriesDelegate> clientRegistriesDelegate = new();
-            clientRegistriesDelegate.Setup(p => p.GetDemographicsAsync(OidType.Hdid, Hdid, false)).ReturnsAsync(patient);
+            clientRegistriesDelegate.Setup(p => p.GetDemographicsAsync(OidType.Hdid, Hdid, false, It.IsAny<CancellationToken>())).ReturnsAsync(patient);
 
             HdidEmpiStrategy hdidEmpiStrategy = new(
                 GetConfiguration(),

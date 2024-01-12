@@ -67,7 +67,7 @@ namespace HealthGateway.GatewayApi.Services
 
             this.logger.LogDebug("Starting GetPatient for identifier type: {IdentifierType} and patient data source: {Source}", identifierType, query.Source);
 
-            PatientModel? patientDetails = (await this.patientRepository.Query(query, ct).ConfigureAwait(true)).Items.SingleOrDefault();
+            PatientModel? patientDetails = (await this.patientRepository.QueryAsync(query, ct)).Items.SingleOrDefault();
 
             if (patientDetails == null)
             {

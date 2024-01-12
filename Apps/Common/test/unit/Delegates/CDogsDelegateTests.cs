@@ -20,6 +20,7 @@ namespace HealthGateway.CommonTests.Delegates
     using System.Net.Http;
     using System.Text;
     using System.Text.Json;
+    using System.Threading;
     using System.Threading.Tasks;
     using DeepEqual.Syntax;
     using HealthGateway.Common.Api;
@@ -67,7 +68,7 @@ namespace HealthGateway.CommonTests.Delegates
 
             Mock<ILogger<CDogsDelegate>> mockLogger = new();
             Mock<ICDogsApi> mockCdogsApi = new();
-            mockCdogsApi.Setup(s => s.GenerateDocumentAsync(It.IsAny<CDogsRequestModel>())).ReturnsAsync(httpResponseMessage);
+            mockCdogsApi.Setup(s => s.GenerateDocumentAsync(It.IsAny<CDogsRequestModel>(), It.IsAny<CancellationToken>())).ReturnsAsync(httpResponseMessage);
 
             ICDogsDelegate cdogsDelegate = new CDogsDelegate(mockLogger.Object, mockCdogsApi.Object);
 
@@ -101,7 +102,7 @@ namespace HealthGateway.CommonTests.Delegates
 
             Mock<ILogger<CDogsDelegate>> mockLogger = new();
             Mock<ICDogsApi> mockCdogsApi = new();
-            mockCdogsApi.Setup(s => s.GenerateDocumentAsync(It.IsAny<CDogsRequestModel>())).ReturnsAsync(httpResponseMessage);
+            mockCdogsApi.Setup(s => s.GenerateDocumentAsync(It.IsAny<CDogsRequestModel>(), It.IsAny<CancellationToken>())).ReturnsAsync(httpResponseMessage);
 
             ICDogsDelegate cdogsDelegate = new CDogsDelegate(mockLogger.Object, mockCdogsApi.Object);
 
@@ -129,7 +130,7 @@ namespace HealthGateway.CommonTests.Delegates
 
             Mock<ILogger<CDogsDelegate>> mockLogger = new();
             Mock<ICDogsApi> mockCdogsApi = new();
-            mockCdogsApi.Setup(s => s.GenerateDocumentAsync(It.IsAny<CDogsRequestModel>())).ThrowsAsync(new InvalidOperationException());
+            mockCdogsApi.Setup(s => s.GenerateDocumentAsync(It.IsAny<CDogsRequestModel>(), It.IsAny<CancellationToken>())).ThrowsAsync(new InvalidOperationException());
             ICDogsDelegate cdogsDelegate = new CDogsDelegate(mockLogger.Object, mockCdogsApi.Object);
 
             CDogsRequestModel request = GetRequestModel();

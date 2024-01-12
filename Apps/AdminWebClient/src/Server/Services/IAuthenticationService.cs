@@ -15,8 +15,9 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Admin.Services
 {
+    using System.Threading;
+    using System.Threading.Tasks;
     using HealthGateway.Admin.Models;
-    using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.Mvc;
 
     /// <summary>
@@ -27,8 +28,9 @@ namespace HealthGateway.Admin.Services
         /// <summary>
         /// Authenticates the request based on the current context.
         /// </summary>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The AuthData containing the token and user information.</returns>
-        AuthenticationData GetAuthenticationData();
+        Task<AuthenticationData> GetAuthenticationDataAsync(CancellationToken ct = default);
 
         /// <summary>
         /// Clears the authorization data from the context.
@@ -37,15 +39,10 @@ namespace HealthGateway.Admin.Services
         SignOutResult Logout();
 
         /// <summary>
-        /// Returns the authentication properties with the populated hint and redirect URL.
-        /// </summary>
-        /// <returns> The AuthenticationProperties.</returns>
-        /// <param name="redirectPath">The URI to redirect to after logon.</param>
-        AuthenticationProperties GetAuthenticationProperties(string redirectPath);
-
-        /// <summary>
         /// Sets last login date time for admin user profile.
         /// </summary>
-        void SetLastLoginDateTime();
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        Task SetLastLoginDateTimeAsync(CancellationToken ct = default);
     }
 }

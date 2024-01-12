@@ -15,6 +15,7 @@
 //-------------------------------------------------------------------------
 namespace HealthGateway.Patient.Controllers
 {
+    using System.Threading;
     using System.Threading.Tasks;
     using Asp.Versioning;
     using HealthGateway.Common.AccessManagement.Authorization.Policy;
@@ -60,6 +61,7 @@ namespace HealthGateway.Patient.Controllers
         /// </summary>
         /// <returns>The patient record.</returns>
         /// <param name="hdid">The patient hdid.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <response code="200">Returns the patient record.</response>
         /// <response code="401">the client must authenticate itself to get the requested response.</response>
         /// <response code="403">
@@ -71,15 +73,16 @@ namespace HealthGateway.Patient.Controllers
         [ApiVersion("1.0")]
         [Route("{hdid}")]
         [Authorize(Policy = PatientPolicy.Read)]
-        public async Task<RequestResult<PatientModel>> GetPatient(string hdid)
+        public async Task<RequestResult<PatientModel>> GetPatient(string hdid, CancellationToken ct)
         {
-            return await this.service.GetPatient(hdid).ConfigureAwait(true);
+            return await this.service.GetPatientAsync(hdid, ct: ct);
         }
 
         /// <summary>
         /// Gets a json of patient record.
         /// </summary>
         /// <param name="hdid">The patient hdid.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The patient record.</returns>
         /// <response code="200">Returns the patient record.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
@@ -99,9 +102,9 @@ namespace HealthGateway.Patient.Controllers
         [ApiVersion("2.0")]
         [Route("{hdid}")]
         [Authorize(Policy = PatientPolicy.Read)]
-        public async Task<ActionResult<PatientDetails>> GetPatientV2(string hdid)
+        public async Task<ActionResult<PatientDetails>> GetPatientV2(string hdid, CancellationToken ct)
         {
-            PatientDetails patientDetails = await this.serviceV2.GetPatientAsync(hdid).ConfigureAwait(true);
+            PatientDetails patientDetails = await this.serviceV2.GetPatientAsync(hdid, ct: ct);
             return this.Ok(patientDetails);
         }
     }

@@ -16,6 +16,8 @@
 namespace HealthGateway.GatewayApi.Services
 {
     using System.Collections.Generic;
+    using System.Threading;
+    using System.Threading.Tasks;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.GatewayApi.Models;
 
@@ -28,8 +30,9 @@ namespace HealthGateway.GatewayApi.Services
         /// Creates a note in the backend.
         /// </summary>
         /// <param name="userNote">The note to create.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A note wrapped in a RequestResult.</returns>
-        RequestResult<UserNote> CreateNote(UserNote userNote);
+        Task<RequestResult<UserNote>> CreateNoteAsync(UserNote userNote, CancellationToken ct = default);
 
         /// <summary>
         /// Gets all the notes for the given hdId.
@@ -37,22 +40,25 @@ namespace HealthGateway.GatewayApi.Services
         /// <param name="hdId">The users HDID.</param>
         /// <param name="page">The page of data to fetch indexed from 0.</param>
         /// <param name="pageSize">The amount of records per page.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A List of notes wrapped in a RequestResult.</returns>
-        RequestResult<IEnumerable<UserNote>> GetNotes(string hdId, int page = 0, int pageSize = 500);
+        Task<RequestResult<IEnumerable<UserNote>>> GetNotesAsync(string hdId, int page = 0, int pageSize = 500, CancellationToken ct = default);
 
         /// <summary>
         /// Updates the given note in the backend.
         /// Any changes to HDID will be ignored.
         /// </summary>
         /// <param name="userNote">The note to update.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The updated Note.</returns>
-        RequestResult<UserNote> UpdateNote(UserNote userNote);
+        Task<RequestResult<UserNote>> UpdateNoteAsync(UserNote userNote, CancellationToken ct = default);
 
         /// <summary>
         /// Deletes the given note from the backend.
         /// </summary>
         /// <param name="userNote">The note to delete.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The deleted note wrapped in a RequestResult.</returns>
-        RequestResult<UserNote> DeleteNote(UserNote userNote);
+        Task<RequestResult<UserNote>> DeleteNoteAsync(UserNote userNote, CancellationToken ct = default);
     }
 }

@@ -16,6 +16,7 @@
 namespace HealthGateway.GatewayApiTests.Services.Test.Mock
 {
     using System.Collections.Generic;
+    using System.Threading;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
@@ -30,11 +31,11 @@ namespace HealthGateway.GatewayApiTests.Services.Test.Mock
         /// <summary>
         /// Initializes a new instance of the <see cref="UserPreferenceDelegateMock"/> class.
         /// </summary>
-        /// <param name="readResult">readResult.</param>
+        /// <param name="userPreferences">readResult.</param>
         /// <param name="hdid">hdid.</param>
-        public UserPreferenceDelegateMock(DbResult<IEnumerable<UserPreference>> readResult, string hdid)
+        public UserPreferenceDelegateMock(IEnumerable<UserPreference> userPreferences, string hdid)
         {
-            this.Setup(s => s.GetUserPreferences(hdid)).Returns(readResult);
+            this.Setup(s => s.GetUserPreferencesAsync(hdid, It.IsAny<CancellationToken>())).ReturnsAsync(userPreferences);
         }
 
         /// <summary>
@@ -46,12 +47,12 @@ namespace HealthGateway.GatewayApiTests.Services.Test.Mock
         {
             if (action == TestConstants.UpdateAction)
             {
-                this.Setup(s => s.UpdateUserPreference(It.IsAny<UserPreference>(), It.IsAny<bool>())).Returns(readResult);
+                this.Setup(s => s.UpdateUserPreferenceAsync(It.IsAny<UserPreference>(), It.IsAny<bool>(), It.IsAny<CancellationToken>())).ReturnsAsync(readResult);
             }
 
             if (action == TestConstants.CreateAction)
             {
-                this.Setup(s => s.CreateUserPreference(It.IsAny<UserPreference>(), It.IsAny<bool>())).Returns(readResult);
+                this.Setup(s => s.CreateUserPreferenceAsync(It.IsAny<UserPreference>(), It.IsAny<bool>(), It.IsAny<CancellationToken>())).ReturnsAsync(readResult);
             }
         }
     }

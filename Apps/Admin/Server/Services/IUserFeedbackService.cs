@@ -17,6 +17,8 @@ namespace HealthGateway.Admin.Server.Services
 {
     using System;
     using System.Collections.Generic;
+    using System.Threading;
+    using System.Threading.Tasks;
     using HealthGateway.Admin.Common.Models;
     using HealthGateway.Common.Data.ViewModels;
 
@@ -28,42 +30,48 @@ namespace HealthGateway.Admin.Server.Services
         /// <summary>
         /// Retrieves the user feedback.
         /// </summary>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A list of user feedback wrapped in a request result.</returns>
-        RequestResult<IList<UserFeedbackView>> GetUserFeedback();
+        Task<RequestResult<IList<UserFeedbackView>>> GetUserFeedbackAsync(CancellationToken ct = default);
 
         /// <summary>
         /// Updates the user feedback.
         /// </summary>
         /// <param name="feedback">The user feedback to update.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>Returns the user feedback view with its associated admin tag(s) wrapped in a request result.</returns>
-        RequestResult<UserFeedbackView> UpdateFeedbackReview(UserFeedbackView feedback);
+        Task<RequestResult<UserFeedbackView>> UpdateFeedbackReviewAsync(UserFeedbackView feedback, CancellationToken ct = default);
 
         /// <summary>
         /// Retrieves the admin tags.
         /// </summary>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A list of admin tags wrapped in a request result.</returns>
-        RequestResult<IList<AdminTagView>> GetAllTags();
+        Task<RequestResult<IList<AdminTagView>>> GetAllTagsAsync(CancellationToken ct = default);
 
         /// <summary>
         /// Creates a new admin tag.
         /// </summary>
         /// <param name="tagName">The tag name.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The newly created admin tag wrapped in a request result.</returns>
-        RequestResult<AdminTagView> CreateTag(string tagName);
+        Task<RequestResult<AdminTagView>> CreateTagAsync(string tagName, CancellationToken ct = default);
 
         /// <summary>
         /// Deletes an admin tag.
         /// </summary>
         /// <param name="tag">The admin tag.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The deleted admin tag wrapped in a request result.</returns>
-        RequestResult<AdminTagView> DeleteTag(AdminTagView tag);
+        Task<RequestResult<AdminTagView>> DeleteTagAsync(AdminTagView tag, CancellationToken ct = default);
 
         /// <summary>
         /// Associates a collection of tags to a feedback item.
         /// </summary>
         /// <param name="userFeedbackId">The user feedback id to be associated to the tags.</param>
         /// <param name="adminTagIds">The admin tag ids.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>Returns the user feedback view with its associated admin tag(s) wrapped in a request result.</returns>
-        RequestResult<UserFeedbackView> AssociateFeedbackTags(Guid userFeedbackId, IList<Guid> adminTagIds);
+        Task<RequestResult<UserFeedbackView>> AssociateFeedbackTagsAsync(Guid userFeedbackId, IList<Guid> adminTagIds, CancellationToken ct = default);
     }
 }

@@ -16,21 +16,23 @@
 namespace HealthGateway.Medication.Services
 {
     using System.Collections.Generic;
+    using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Medication.Models;
 
     /// <summary>
-    /// The Medication data service.
+    /// The medication statement service.
     /// </summary>
     public interface IMedicationStatementService
     {
         /// <summary>
-        /// Gets the patient medication history.
+        /// Gets medication statements.
         /// </summary>
-        /// <param name="hdid">The hdid to retrieve records for.</param>
+        /// <param name="hdid">The patient's HDID.</param>
         /// <param name="protectiveWord">The protective word.</param>
-        /// <returns>A MedicationHistoryResponse models.</returns>
-        Task<RequestResult<IList<MedicationStatementHistory>>> GetMedicationStatementsHistory(string hdid, string? protectiveWord);
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
+        /// <returns>A list of medication statements wrapped in a RequestResult.</returns>
+        Task<RequestResult<IList<MedicationStatement>>> GetMedicationStatementsAsync(string hdid, string? protectiveWord, CancellationToken ct = default);
     }
 }

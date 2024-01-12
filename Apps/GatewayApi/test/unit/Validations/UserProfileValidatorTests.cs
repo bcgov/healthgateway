@@ -15,8 +15,12 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.GatewayApiTests.Validations
 {
+    using System.Threading;
+    using System.Threading.Tasks;
+    using FluentValidation.Results;
     using HealthGateway.Common.Data.Models;
     using HealthGateway.GatewayApi.Validations;
+    using Moq;
     using Xunit;
 
     /// <summary>
@@ -29,6 +33,7 @@ namespace HealthGateway.GatewayApiTests.Validations
         /// </summary>
         /// <param name="phoneNumber">Valid phone number.</param>
         /// <param name="comment">Reason for valid result.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Theory]
         [InlineData("3345678901", "Valid entry")]
         [InlineData("4345678901", "Valid entry")]
@@ -37,7 +42,7 @@ namespace HealthGateway.GatewayApiTests.Validations
         [InlineData("2507001000", "Valid entry")]
         [InlineData("", "Allow empty strings to clear profile of sms number")]
         [InlineData(null, "Allow null value to clear profile of sms number")]
-        public void ShouldBeValid(string? phoneNumber, string comment)
+        public async Task ShouldBeValid(string? phoneNumber, string comment)
         {
             UserProfile profile = new()
             {
@@ -45,8 +50,9 @@ namespace HealthGateway.GatewayApiTests.Validations
             };
 
             // Both methods of validating should result in the same output.
-            Assert.True(new UserProfileValidator().Validate(profile).IsValid, comment);
-            Assert.True(UserProfileValidator.ValidateUserProfileSmsNumber(phoneNumber), comment);
+            ValidationResult validationResult = await new UserProfileValidator().ValidateAsync(profile, It.IsAny<CancellationToken>());
+            Assert.True(validationResult.IsValid);
+            Assert.True(await UserProfileValidator.ValidateUserProfileSmsNumberAsync(phoneNumber), comment);
         }
 
         /// <summary>

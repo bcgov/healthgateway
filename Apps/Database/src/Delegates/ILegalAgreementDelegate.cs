@@ -15,9 +15,10 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Database.Delegates
 {
+    using System.Threading;
+    using System.Threading.Tasks;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.Models;
-    using HealthGateway.Database.Wrapper;
 
     /// <summary>
     /// Operations to be performed in the DB for the TermsOfService.
@@ -28,7 +29,8 @@ namespace HealthGateway.Database.Delegates
         /// Fetches the last active Legal Agreement from the database of the specified agreement type.
         /// </summary>
         /// <param name="agreementTypeCode">The agreement type to filter the result.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A DB result which encapsulates the return object and status.</returns>
-        DbResult<LegalAgreement> GetActiveByAgreementType(LegalAgreementType agreementTypeCode);
+        Task<LegalAgreement?> GetActiveByAgreementTypeAsync(LegalAgreementType agreementTypeCode, CancellationToken ct = default);
     }
 }

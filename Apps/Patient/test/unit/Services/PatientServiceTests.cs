@@ -201,14 +201,14 @@ namespace HealthGateway.PatientTests.Services
             Mock<IPatientRepository> patientRepository = new();
             if (patientDetailsQuery != null)
             {
-                patientRepository.Setup(p => p.Query(patientDetailsQuery, It.IsAny<CancellationToken>()))
+                patientRepository.Setup(p => p.QueryAsync(patientDetailsQuery, It.IsAny<CancellationToken>()))
                     .Throws(new ProblemDetailsException(ExceptionUtility.CreateProblemDetails(ErrorMessages.PhnInvalid, HttpStatusCode.NotFound, nameof(PatientRepository))));
             }
             else
             {
-                patientRepository.Setup(p => p.Query(new PatientDetailsQuery(null, Hdid, PatientDetailSource.All, true), It.IsAny<CancellationToken>()))
+                patientRepository.Setup(p => p.QueryAsync(new PatientDetailsQuery(null, Hdid, PatientDetailSource.All, true), It.IsAny<CancellationToken>()))
                     .ReturnsAsync(patientQueryResult);
-                patientRepository.Setup(p => p.Query(new PatientDetailsQuery(Phn, null, PatientDetailSource.All, true), It.IsAny<CancellationToken>()))
+                patientRepository.Setup(p => p.QueryAsync(new PatientDetailsQuery(Phn, null, PatientDetailSource.All, true), It.IsAny<CancellationToken>()))
                     .ReturnsAsync(patientQueryResult);
             }
 
