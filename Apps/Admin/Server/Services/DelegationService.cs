@@ -76,7 +76,7 @@ namespace HealthGateway.Admin.Server.Services
             RequestResult<PatientModel> dependentPatientResult = await patientService.GetPatientAsync(phn, PatientIdentifierType.Phn, ct: ct);
             this.ValidatePatientResult(dependentPatientResult);
 
-            ValidationResult? validationResults = await new DependentPatientValidator(this.maxDependentAge).ValidateAsync(dependentPatientResult.ResourcePayload, ct).ConfigureAwait(true);
+            ValidationResult? validationResults = await new DependentPatientValidator(this.maxDependentAge).ValidateAsync(dependentPatientResult.ResourcePayload, ct);
             if (!validationResults.IsValid)
             {
                 throw new ProblemDetailsException(ExceptionUtility.CreateProblemDetails($"Dependent age is above {this.maxDependentAge}", HttpStatusCode.BadRequest, nameof(DelegationService)));
@@ -90,7 +90,7 @@ namespace HealthGateway.Admin.Server.Services
                 delegationInfo.Dependent = dependentInfo;
 
                 // Get delegates from database
-                IEnumerable<ResourceDelegate> dbResourceDelegates = await this.SearchDelegates(dependentPatientInfo.HdId);
+                IEnumerable<ResourceDelegate> dbResourceDelegates = await this.SearchDelegatesAsync(dependentPatientInfo.HdId, ct);
 
                 List<DelegateInfo> delegates = new();
                 foreach (ResourceDelegate resourceDelegate in dbResourceDelegates)
@@ -196,7 +196,7 @@ namespace HealthGateway.Admin.Server.Services
                     });
             }
 
-            IEnumerable<ResourceDelegate> resourceDelegates = await this.SearchDelegates(dependent.HdId);
+            IEnumerable<ResourceDelegate> resourceDelegates = await this.SearchDelegatesAsync(dependent.HdId, ct);
 
             // Compare resource delegates with passed in delegate hdids to determine which resource delegates to remove
             IEnumerable<ResourceDelegate> resourceDelegatesToDelete = resourceDelegates.Where(r => delegateHdidList.All(a => a != r.ProfileHdid)).ToList();
@@ -204,7 +204,7 @@ namespace HealthGateway.Admin.Server.Services
             // Update dependent, allow delegation and resource delegate in database
             if (this.changeFeedEnabled)
             {
-                await delegationDelegate.UpdateDelegationAsync(dependent, resourceDelegatesToDelete, agentAudit, false);
+                await delegationDelegate.UpdateDelegationAsync(dependent, resourceDelegatesToDelete, agentAudit, false, ct);
                 IEnumerable<MessageEnvelope> events = new MessageEnvelope[]
                 {
                     new(new DependentProtectionAddedEvent(dependentHdid), dependentHdid),
@@ -214,7 +214,7 @@ namespace HealthGateway.Admin.Server.Services
             }
             else
             {
-                await delegationDelegate.UpdateDelegationAsync(dependent, resourceDelegatesToDelete, agentAudit);
+                await delegationDelegate.UpdateDelegationAsync(dependent, resourceDelegatesToDelete, agentAudit, ct: ct);
             }
 
             return autoMapper.Map<AgentAudit, AgentAction>(agentAudit);
@@ -249,7 +249,7 @@ namespace HealthGateway.Admin.Server.Services
 
             if (this.changeFeedEnabled)
             {
-                await delegationDelegate.UpdateDelegationAsync(dependent, [], agentAudit, false);
+                await delegationDelegate.UpdateDelegationAsync(dependent, [], agentAudit, false, ct);
 
                 MessageEnvelope[] events =
                 {
@@ -260,16 +260,16 @@ namespace HealthGateway.Admin.Server.Services
             }
             else
             {
-                await delegationDelegate.UpdateDelegationAsync(dependent, [], agentAudit);
+                await delegationDelegate.UpdateDelegationAsync(dependent, [], agentAudit, ct: ct);
             }
 
             return autoMapper.Map<AgentAudit, AgentAction>(agentAudit);
         }
 
-        private async Task<IEnumerable<ResourceDelegate>> SearchDelegates(string ownerHdid)
+        private async Task<IEnumerable<ResourceDelegate>> SearchDelegatesAsync(string ownerHdid, CancellationToken ct)
         {
             ResourceDelegateQuery query = new() { ByOwnerHdid = ownerHdid };
-            ResourceDelegateQueryResult result = await resourceDelegateDelegate.SearchAsync(query);
+            ResourceDelegateQueryResult result = await resourceDelegateDelegate.SearchAsync(query, ct);
             return result.Items.Select(c => c.ResourceDelegate);
         }
 

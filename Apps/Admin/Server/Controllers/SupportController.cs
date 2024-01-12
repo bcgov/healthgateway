@@ -67,7 +67,7 @@ namespace HealthGateway.Admin.Server.Controllers
         [ProducesResponseType(StatusCodes.Status502BadGateway, Type = typeof(ProblemDetails))]
         public async Task<IEnumerable<PatientSupportResult>> GetPatients([FromQuery] PatientQueryType queryType, [FromQuery] string queryString, CancellationToken ct)
         {
-            return await supportService.GetPatientsAsync(queryType, queryString, ct).ConfigureAwait(true);
+            return await supportService.GetPatientsAsync(queryType, queryString, ct);
         }
 
         /// <summary>

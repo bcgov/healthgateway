@@ -28,7 +28,6 @@ namespace HealthGateway.GatewayApi.Controllers
     using HealthGateway.Common.Utils;
     using HealthGateway.GatewayApi.Models;
     using HealthGateway.GatewayApi.Services;
-    using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
@@ -236,7 +235,7 @@ namespace HealthGateway.GatewayApi.Controllers
             HttpContext? httpContext = this.httpContextAccessor.HttpContext;
             if (httpContext != null)
             {
-                string? accessToken = await httpContext.GetTokenAsync("access_token").ConfigureAwait(true);
+                string? accessToken = await this.authenticationDelegate.FetchAuthenticatedUserTokenAsync(ct);
 
                 if (accessToken != null)
                 {
@@ -268,7 +267,7 @@ namespace HealthGateway.GatewayApi.Controllers
                 RequestResult<bool> result = await this.userSmsService.ValidateSmsAsync(hdid, validationCode, ct);
                 if (!result.ResourcePayload)
                 {
-                    await Task.Delay(5000, ct).ConfigureAwait(true);
+                    await Task.Delay(5000, ct);
                 }
 
                 return result;
@@ -293,7 +292,7 @@ namespace HealthGateway.GatewayApi.Controllers
         [HttpPut]
         [Route("{hdid}/email")]
         [Authorize(Policy = UserProfilePolicy.Write)]
-        public async Task<bool> UpdateUserEmail(string hdid, [FromBody] string emailAddress, CancellationToken ct = default)
+        public async Task<bool> UpdateUserEmail(string hdid, [FromBody] string emailAddress, CancellationToken ct)
         {
             return await this.userEmailService.UpdateUserEmailAsync(hdid, emailAddress, ct);
         }
@@ -315,7 +314,7 @@ namespace HealthGateway.GatewayApi.Controllers
         [HttpPut]
         [Route("{hdid}/sms")]
         [Authorize(Policy = UserProfilePolicy.Write)]
-        public async Task<bool> UpdateUserSmsNumberAsync(string hdid, [FromBody] string smsNumber, CancellationToken ct = default)
+        public async Task<bool> UpdateUserSmsNumberAsync(string hdid, [FromBody] string smsNumber, CancellationToken ct)
         {
             return await this.userSmsService.UpdateUserSmsAsync(hdid, smsNumber, ct);
         }
@@ -417,7 +416,7 @@ namespace HealthGateway.GatewayApi.Controllers
         [Authorize]
         public async Task<ActionResult<bool>> IsValidPhoneNumber(string phoneNumber, CancellationToken ct)
         {
-            return await this.userProfileService.IsPhoneNumberValid(phoneNumber, ct);
+            return await this.userProfileService.IsPhoneNumberValidAsync(phoneNumber, ct);
         }
 
         private async Task AddUserPreferences(UserProfileModel? profile, CancellationToken ct)

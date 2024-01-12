@@ -15,6 +15,7 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Admin.Services
 {
+    using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Admin.Models.CovidSupport;
     using HealthGateway.Common.Data.Models;
@@ -30,35 +31,40 @@ namespace HealthGateway.Admin.Services
         /// </summary>
         /// <param name="phn">The personal health number that matches the person to retrieve.</param>
         /// <param name="refresh">Whether the call should force cached data to be refreshed.</param>
-        /// <returns>The covid ionformation wrapped in a RequestResult.</returns>
-        Task<RequestResult<CovidInformation>> GetCovidInformation(string phn, bool refresh);
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
+        /// <returns>The covid information wrapped in a RequestResult.</returns>
+        Task<RequestResult<CovidInformation>> GetCovidInformationAsync(string phn, bool refresh, CancellationToken ct = default);
 
         /// <summary>
         /// Mails a document that represents a patient's vaccine card.
         /// </summary>
         /// <param name="request">The request information to retrieve patient information.</param>
-        /// <returns>A RequestResult with True if the request was sucessfull.</returns>
-        Task<RequestResult<bool>> MailVaccineCardAsync(MailDocumentRequest request);
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
+        /// <returns>A RequestResult with True if the request was successful.</returns>
+        Task<RequestResult<bool>> MailVaccineCardAsync(MailDocumentRequest request, CancellationToken ct = default);
 
         /// <summary>
         /// Gets a document that represents a patient's vaccine card and vaccine history.
         /// </summary>
         /// <param name="phn">The personal health number that matches the person to retrieve.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The encoded document.</returns>
-        Task<RequestResult<ReportModel>> RetrieveVaccineRecordAsync(string phn);
+        Task<RequestResult<ReportModel>> RetrieveVaccineRecordAsync(string phn, CancellationToken ct = default);
 
         /// <summary>
         /// Submits a covid therapy assessment request.
         /// </summary>
         /// <param name="request">The request containing.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>Returns the covid therapy assessment response.</returns>
-        Task<RequestResult<CovidAssessmentResponse>> SubmitCovidAssessmentAsync(CovidAssessmentRequest request);
+        Task<RequestResult<CovidAssessmentResponse>> SubmitCovidAssessmentAsync(CovidAssessmentRequest request, CancellationToken ct = default);
 
         /// <summary>
         /// Gets the covid therapy assessment details for the given phn.
         /// </summary>
         /// <param name="phn">The phn to associate the covid therapy assessment against.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>Returns the covid therapy assessment details.</returns>
-        Task<RequestResult<CovidAssessmentDetailsResponse>> GetCovidAssessmentDetailsAsync(string phn);
+        Task<RequestResult<CovidAssessmentDetailsResponse>> GetCovidAssessmentDetailsAsync(string phn, CancellationToken ct = default);
     }
 }

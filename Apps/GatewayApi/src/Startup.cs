@@ -178,7 +178,7 @@ namespace HealthGateway.GatewayApi
                         return;
                     }
 
-                    await next.Invoke().ConfigureAwait(true);
+                    await next.Invoke();
                 });
         }
     }

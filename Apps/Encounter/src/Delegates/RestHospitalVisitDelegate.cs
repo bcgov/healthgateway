@@ -20,6 +20,7 @@ namespace HealthGateway.Encounter.Delegates
     using System.Diagnostics;
     using System.Linq;
     using System.Net.Http;
+    using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.Data.ViewModels;
@@ -65,16 +66,16 @@ namespace HealthGateway.Encounter.Delegates
         private static ActivitySource Source { get; } = new(nameof(RestHospitalVisitDelegate));
 
         /// <inheritdoc/>
-        public async Task<RequestResult<PhsaResult<IEnumerable<HospitalVisit>>>> GetHospitalVisitsAsync(string hdid)
+        public async Task<RequestResult<PhsaResult<IEnumerable<HospitalVisit>>>> GetHospitalVisitsAsync(string hdid, CancellationToken ct = default)
         {
             using Activity? activity = Source.StartActivity();
             this.logger.LogDebug("Getting hospital visits for hdid: {Hdid}", hdid);
 
-            string? accessToken = await this.authenticationDelegate.FetchAuthenticatedUserTokenAsync();
+            string? accessToken = await this.authenticationDelegate.FetchAuthenticatedUserTokenAsync(ct);
 
             try
             {
-                PhsaResult<IEnumerable<HospitalVisit>> response = await this.hospitalVisitApi.GetHospitalVisitsAsync(hdid, this.phsaConfig.FetchSize, accessToken).ConfigureAwait(true);
+                PhsaResult<IEnumerable<HospitalVisit>> response = await this.hospitalVisitApi.GetHospitalVisitsAsync(hdid, this.phsaConfig.FetchSize, accessToken, ct);
 
                 return RequestResultFactory.Success(
                     new PhsaResult<IEnumerable<HospitalVisit>>

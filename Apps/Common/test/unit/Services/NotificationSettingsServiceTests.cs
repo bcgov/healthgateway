@@ -28,7 +28,6 @@ namespace HealthGateway.CommonTests.Services
     using HealthGateway.Common.Services;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
-    using HealthGateway.Database.Wrapper;
     using Microsoft.Extensions.Logging;
     using Moq;
     using Xunit;
@@ -43,7 +42,7 @@ namespace HealthGateway.CommonTests.Services
         /// <summary>
         /// QueueNotificationSettings - Happy Path.
         /// </summary>
-        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
         public async Task ShouldQueue()
         {
@@ -81,7 +80,7 @@ namespace HealthGateway.CommonTests.Services
         /// QueueNotificationSettings - InvalidOperationException.
         /// </summary>
         /// ///
-        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
         public async Task ShouldThrowIfNoVerification()
         {
@@ -98,17 +97,8 @@ namespace HealthGateway.CommonTests.Services
             Mock<ILogger<NotificationSettingsService>> mockLogger = new();
             Mock<IBackgroundJobClient> mockJobClient = new();
             Mock<IResourceDelegateDelegate> mockResourceDelegateDelegate = new();
-            DbResult<IEnumerable<ResourceDelegate>> dbResult = new()
-            {
-                Payload = new List<ResourceDelegate>
-                {
-                    new()
-                    {
-                        ProfileHdid = Hdid,
-                    },
-                },
-            };
-            mockResourceDelegateDelegate.Setup(s => s.Get(nsr.SubjectHdid, 0, 500)).Returns(dbResult);
+            IList<ResourceDelegate> payload = [new() { ProfileHdid = Hdid }];
+            mockResourceDelegateDelegate.Setup(s => s.GetAsync(nsr.SubjectHdid, 0, 500, It.IsAny<CancellationToken>())).ReturnsAsync(payload);
 
             INotificationSettingsService service = new NotificationSettingsService(
                 mockLogger.Object,
@@ -123,7 +113,7 @@ namespace HealthGateway.CommonTests.Services
         /// <summary>
         /// QueueNotificationSettings - Happy Path (Queue Verification).
         /// </summary>
-        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
         public async Task ShouldQueueVerifications()
         {

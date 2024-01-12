@@ -180,7 +180,7 @@ namespace HealthGateway.Encounter.Services
                     return result;
                 }
 
-                RequestResult<PhsaResult<IEnumerable<HospitalVisit>>> hospitalVisitResult = await this.hospitalVisitDelegate.GetHospitalVisitsAsync(hdid).ConfigureAwait(true);
+                RequestResult<PhsaResult<IEnumerable<HospitalVisit>>> hospitalVisitResult = await this.hospitalVisitDelegate.GetHospitalVisitsAsync(hdid, ct);
 
                 if (hospitalVisitResult.ResultStatus == ResultType.Success && hospitalVisitResult.ResourcePayload != null)
                 {

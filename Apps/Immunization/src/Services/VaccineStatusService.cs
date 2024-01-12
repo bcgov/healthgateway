@@ -229,7 +229,7 @@ namespace HealthGateway.Immunization.Services
         private async Task<RequestResult<VaccineStatus>> GetAuthenticatedVaccineStatusWithOptionalProofAsync(string hdid, bool includeVaccineProof, CancellationToken ct)
         {
             // Gets the current user access token and pass it along to PHSA
-            string? bearerToken = await this.authDelegate.FetchAuthenticatedUserTokenAsync();
+            string? bearerToken = await this.authDelegate.FetchAuthenticatedUserTokenAsync(ct);
 
             VaccineStatusQuery query = new()
             {

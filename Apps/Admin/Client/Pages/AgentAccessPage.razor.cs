@@ -138,7 +138,7 @@ public partial class AgentAccessPage : FluxorComponent
 
     private async Task SearchAsync()
     {
-        await this.Form.Validate().ConfigureAwait(true);
+        await this.Form.Validate();
         if (this.Form.IsValid)
         {
             this.ResetState();
@@ -152,7 +152,7 @@ public partial class AgentAccessPage : FluxorComponent
 
         AdminAgent agent = new();
 
-        await this.OpenDialogAsync(title, agent).ConfigureAwait(true);
+        await this.OpenDialogAsync(title, agent);
     }
 
     private async Task EditAsync(Guid id)
@@ -162,13 +162,13 @@ public partial class AgentAccessPage : FluxorComponent
         AdminAgent? agent = this.Agents.FirstOrDefault(c => c.Id == id);
         if (agent != null)
         {
-            await this.OpenDialogAsync(title, agent).ConfigureAwait(true);
+            await this.OpenDialogAsync(title, agent);
         }
     }
 
     private async Task DeleteAsync(Guid id)
     {
-        bool? delete = await this.DeleteConfirmation.Show().ConfigureAwait(true);
+        bool? delete = await this.DeleteConfirmation.Show();
         if (delete is true)
         {
             this.Dispatcher.Dispatch(new AgentAccessActions.DeleteAction { Id = id });
@@ -187,9 +187,9 @@ public partial class AgentAccessPage : FluxorComponent
         DialogParameters parameters = new() { ["Agent"] = agent };
         DialogOptions options = new() { DisableBackdropClick = true };
 
-        IDialogReference dialog = await this.Dialog.ShowAsync<AgentAccessDialog>(title, parameters, options).ConfigureAwait(true);
+        IDialogReference dialog = await this.Dialog.ShowAsync<AgentAccessDialog>(title, parameters, options);
 
-        await dialog.Result.ConfigureAwait(true);
+        await dialog.Result;
         this.IsModalShown = false;
     }
 

@@ -32,22 +32,25 @@ namespace HealthGateway.Database.Delegates
         /// <param name="blockedAccess">The blocked access object to delete.</param>
         /// <param name="agentAudit">The agent audit to create.</param>
         /// <param name="commit">Should commit, default to true.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
-        Task DeleteBlockedAccessAsync(BlockedAccess blockedAccess, AgentAudit agentAudit, bool commit = true);
+        Task DeleteBlockedAccessAsync(BlockedAccess blockedAccess, AgentAudit agentAudit, bool commit = true, CancellationToken ct = default);
 
         /// <summary>
         /// Fetches the blocked access by hdid from the database.
         /// </summary>
         /// <param name="hdid">The hdid to search by.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The blocked access or null if not found.</returns>
-        Task<BlockedAccess?> GetBlockedAccessAsync(string hdid);
+        Task<BlockedAccess?> GetBlockedAccessAsync(string hdid, CancellationToken ct = default);
 
         /// <summary>
         /// Fetches the blocked access's data sources from the database.
         /// </summary>
         /// <param name="hdid">The hdid to search by.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A <see cref="Task{TResult}"/> representing the result of the asynchronous operation.</returns>
-        Task<IEnumerable<DataSource>> GetDataSourcesAsync(string hdid);
+        Task<IEnumerable<DataSource>> GetDataSourcesAsync(string hdid, CancellationToken ct = default);
 
         /// <summary>
         /// Adds or updates the blocked access object including agent audit to the DB.
@@ -55,14 +58,15 @@ namespace HealthGateway.Database.Delegates
         /// <param name="blockedAccess">The blocked access object to add or update.</param>
         /// <param name="agentAudit">The agent audit to create.</param>
         /// <param name="commit">Should commit, default to true.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
-        Task UpdateBlockedAccessAsync(BlockedAccess blockedAccess, AgentAudit agentAudit, bool commit = true);
+        Task UpdateBlockedAccessAsync(BlockedAccess blockedAccess, AgentAudit agentAudit, bool commit = true, CancellationToken ct = default);
 
         /// <summary>
         /// Retrieves all blocked access records.
         /// </summary>
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A collection of records of user HDIDs with the data sources currently blocked.</returns>
-        Task<IList<BlockedAccess>> GetAllAsync(CancellationToken ct);
+        Task<IList<BlockedAccess>> GetAllAsync(CancellationToken ct = default);
     }
 }

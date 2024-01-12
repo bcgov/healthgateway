@@ -27,24 +27,22 @@ using HealthGateway.Database.Models;
 public interface IOutboxQueueDelegate
 {
     /// <summary>
-    /// Add items to outbox
+    /// Add items to outbox.
     /// </summary>
-    /// <param name="items">The items to add to the outbox queue</param>
-    /// <param name="ct">A cancellation token</param>
-    /// <returns>Awaitable task</returns>
-    Task Enqueue(IEnumerable<OutboxItem> items, CancellationToken ct = default);
+    /// <param name="items">The items to add to the outbox queue.</param>
+    void Enqueue(IEnumerable<OutboxItem> items);
 
     /// <summary>
-    /// Get and remove pending items from the outbox queue
+    /// Get and remove pending items from the outbox queue.
     /// </summary>
-    /// <param name="ct">A cancellation token</param>
-    /// <returns>An ordered list of queued outbox items by date ascending</returns>
-    Task<IEnumerable<OutboxItem>> Dequeue(CancellationToken ct = default);
+    /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
+    /// <returns>An ordered list of queued outbox items by date ascending.</returns>
+    Task<IEnumerable<OutboxItem>> DequeueAsync(CancellationToken ct = default);
 
     /// <summary>
-    /// Commit changes to the database
+    /// Commit changes to the database.
     /// </summary>
-    /// <param name="ct">A cancellation token</param>
-    /// <returns>Awaitable task</returns>
-    Task Commit(CancellationToken ct = default);
+    /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
+    /// <returns>A task representing the asynchronous operation.</returns>
+    Task CommitAsync(CancellationToken ct = default);
 }

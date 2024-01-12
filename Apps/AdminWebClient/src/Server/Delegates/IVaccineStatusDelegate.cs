@@ -16,6 +16,7 @@
 namespace HealthGateway.Admin.Delegates
 {
     using System;
+    using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.Data.Models.PHSA;
     using HealthGateway.Common.Data.ViewModels;
@@ -32,7 +33,8 @@ namespace HealthGateway.Admin.Delegates
         /// <param name="phn">The PHN identifying the patient.</param>
         /// <param name="dateOfBirth">The date of birth of the patient.</param>
         /// <param name="accessToken">The connection access token.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The vaccine status result for the given patient.</returns>
-        Task<RequestResult<PhsaResult<VaccineStatusResult>>> GetVaccineStatusWithRetries(string phn, DateTime dateOfBirth, string accessToken);
+        Task<RequestResult<PhsaResult<VaccineStatusResult>>> GetVaccineStatusWithRetriesAsync(string phn, DateTime dateOfBirth, string accessToken, CancellationToken ct = default);
     }
 }

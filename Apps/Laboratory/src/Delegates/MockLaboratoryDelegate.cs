@@ -82,7 +82,7 @@ namespace HealthGateway.Laboratory.Delegates
 
             retVal.TotalResultCount = mockData.Count;
             retVal.ResourcePayload = new() { Result = mockData };
-            await Task.Delay(0, ct).ConfigureAwait(true);
+            await Task.Delay(0, ct);
             return retVal;
         }
 
@@ -101,7 +101,7 @@ namespace HealthGateway.Laboratory.Delegates
                     Report = pdfData,
                 },
             };
-            await Task.Delay(0, ct).ConfigureAwait(true);
+            await Task.Delay(0, ct);
             return mockData;
         }
 

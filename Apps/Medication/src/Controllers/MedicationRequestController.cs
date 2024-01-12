@@ -65,7 +65,7 @@ namespace HealthGateway.Medication.Controllers
         [Produces("application/json")]
         [Route("{hdid}")]
         [Authorize(Policy = MedicationPolicy.MedicationRequestRead)]
-        public async Task<RequestResult<IList<MedicationRequest>>> GetMedicationRequests(string hdid, CancellationToken ct = default)
+        public async Task<RequestResult<IList<MedicationRequest>>> GetMedicationRequests(string hdid, CancellationToken ct)
         {
             return await this.medicationRequestService.GetMedicationRequestsAsync(hdid, ct);
         }

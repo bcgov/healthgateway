@@ -43,7 +43,7 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public async Task DeleteBlockedAccessAsync(BlockedAccess blockedAccess, AgentAudit agentAudit, bool commit = true)
+        public async Task DeleteBlockedAccessAsync(BlockedAccess blockedAccess, AgentAudit agentAudit, bool commit = true, CancellationToken ct = default)
         {
             this.logger.LogDebug("Blocked access version: {Version} for hdid: {Hdid}", blockedAccess.Version, blockedAccess.Hdid);
 
@@ -56,29 +56,26 @@ namespace HealthGateway.Database.Delegates
 
             this.dbContext.AgentAudit.Add(agentAudit);
 
-            await this.dbContext.SaveChangesAsync();
+            await this.dbContext.SaveChangesAsync(ct);
         }
 
         /// <inheritdoc/>
-        public async Task<BlockedAccess?> GetBlockedAccessAsync(string hdid)
+        public async Task<BlockedAccess?> GetBlockedAccessAsync(string hdid, CancellationToken ct = default)
         {
-            IQueryable<BlockedAccess> query = this.dbContext.BlockedAccess
-                .Where(d => d.Hdid == hdid);
-
-            return await query.SingleOrDefaultAsync();
+            return await this.dbContext.BlockedAccess
+                .Where(d => d.Hdid == hdid)
+                .SingleOrDefaultAsync(ct);
         }
 
         /// <inheritdoc/>
-        public async Task<IEnumerable<DataSource>> GetDataSourcesAsync(string hdid)
+        public async Task<IEnumerable<DataSource>> GetDataSourcesAsync(string hdid, CancellationToken ct = default)
         {
-            IQueryable<BlockedAccess> query = this.dbContext.BlockedAccess.Where(d => d.Hdid == hdid);
-            BlockedAccess? blockedAccess = await query.SingleOrDefaultAsync().ConfigureAwait(true);
-
-            return blockedAccess?.DataSources ?? new HashSet<DataSource>();
+            BlockedAccess? blockedAccess = await this.GetBlockedAccessAsync(hdid, ct);
+            return blockedAccess?.DataSources ?? [];
         }
 
         /// <inheritdoc/>
-        public async Task UpdateBlockedAccessAsync(BlockedAccess blockedAccess, AgentAudit agentAudit, bool commit = true)
+        public async Task UpdateBlockedAccessAsync(BlockedAccess blockedAccess, AgentAudit agentAudit, bool commit = true, CancellationToken ct = default)
         {
             if (blockedAccess.Version == 0)
             {
@@ -93,12 +90,12 @@ namespace HealthGateway.Database.Delegates
 
             if (commit)
             {
-                await this.dbContext.SaveChangesAsync();
+                await this.dbContext.SaveChangesAsync(ct);
             }
         }
 
         /// <inheritdoc/>
-        public async Task<IList<BlockedAccess>> GetAllAsync(CancellationToken ct)
+        public async Task<IList<BlockedAccess>> GetAllAsync(CancellationToken ct = default)
         {
             return await this.dbContext.BlockedAccess
                 .ToListAsync(ct);

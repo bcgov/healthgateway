@@ -98,7 +98,7 @@
             Color="@Color.Primary"
             TopMargin="Breakpoint.Always"
             Class="@(Dependent.Protected ? "visible" : "invisible")"
-            OnClick="@OpenAddDialog"
+            OnClick="@OpenAddDialogAsync"
             data-testid="add-button">
             Add
         </HgButton>
@@ -119,7 +119,7 @@
                 Variant="@Variant.Filled"
                 Color="@Color.Primary"
                 Disabled="@(!AnyUnsavedDelegationChanges)"
-                OnClick="@OpenProtectConfirmationDialog"
+                OnClick="@OpenProtectConfirmationDialogAsync"
                 data-testid="save-button">
                 Save
             </HgButton>

@@ -75,6 +75,6 @@ namespace HealthGateway.Admin.Server.Services
         /// <param name="endDateLocal">The local end date to query.</param>
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A stream representing a CSV of logged in user year of birth counts over a date range.</returns>
-        Task<Stream> GetYearOfBirthCountsAsync(DateOnly startDateLocal, DateOnly endDateLocal, CancellationToken ct);
+        Task<Stream> GetYearOfBirthCountsAsync(DateOnly startDateLocal, DateOnly endDateLocal, CancellationToken ct = default);
     }
 }

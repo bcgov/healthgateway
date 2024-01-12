@@ -110,7 +110,7 @@ namespace HealthGateway.Admin.Client.Components.Support
             this.Dispatcher.Dispatch(action);
         }
 
-        private async Task SaveChanges()
+        private async Task SaveChangesAsync()
         {
             const string title = "Confirm Update";
             DialogOptions options = new()
@@ -130,10 +130,9 @@ namespace HealthGateway.Admin.Client.Components.Support
                     PatientDetailsActions.BlockAccessSuccessAction>>(
                     title,
                     parameters,
-                    options)
-                .ConfigureAwait(true);
+                    options);
 
-            DialogResult result = await dialog.Result.ConfigureAwait(true);
+            DialogResult result = await dialog.Result;
             if (!result.Canceled)
             {
                 this.Snackbar.Add("Patient's dataset access has been updated.", Severity.Success);

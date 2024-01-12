@@ -153,7 +153,7 @@ namespace HealthGateway.Common.AccessManagement.Authentication
         }
 
         /// <inheritdoc/>
-        public async Task<string?> FetchAuthenticatedUserTokenAsync()
+        public async Task<string?> FetchAuthenticatedUserTokenAsync(CancellationToken ct = default)
         {
             HttpContext? httpContext = this.httpContextAccessor?.HttpContext;
             return await httpContext.GetTokenAsync("access_token");
@@ -244,7 +244,7 @@ namespace HealthGateway.Common.AccessManagement.Authentication
                 content.Headers.Add("Content-Type", "application/x-www-form-urlencoded");
                 HttpResponseMessage response = await client.PostAsync(tokenUri, content, ct);
                 response.EnsureSuccessStatusCode();
-                authModel = await response.Content.ReadFromJsonAsync<JwtModel>(cancellationToken: ct);
+                authModel = await response.Content.ReadFromJsonAsync<JwtModel>(ct);
             }
             catch (Exception e) when (e is HttpRequestException or InvalidOperationException or JsonException)
             {

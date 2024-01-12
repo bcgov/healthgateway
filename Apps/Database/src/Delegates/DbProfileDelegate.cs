@@ -53,7 +53,7 @@ namespace HealthGateway.Database.Delegates
         {
             this.logger.LogTrace("Inserting user profile to DB...");
             DbResult<UserProfile> result = new();
-            await this.dbContext.AddAsync(profile, ct);
+            this.dbContext.Add(profile);
             try
             {
                 if (commit)
@@ -123,30 +123,9 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public DbResult<UserProfile> GetUserProfile(string hdId)
-        {
-            this.logger.LogTrace("Getting user profile from DB... {HdId}", hdId);
-            DbResult<UserProfile> result = new();
-            UserProfile? profile = this.dbContext.UserProfile.Find(hdId);
-            if (profile != null)
-            {
-                result.Payload = profile;
-                result.Status = DbStatusCode.Read;
-            }
-            else
-            {
-                this.logger.LogInformation("Unable to find User by HDID {HdId}", hdId);
-                result.Status = DbStatusCode.NotFound;
-            }
-
-            this.logger.LogDebug("Finished getting user profile from DB");
-            return result;
-        }
-
-        /// <inheritdoc/>
         public async Task<UserProfile?> GetUserProfileAsync(string hdid, CancellationToken ct = default)
         {
-            return await this.dbContext.UserProfile.FindAsync(new object[] { hdid }, ct);
+            return await this.dbContext.UserProfile.FindAsync([hdid], ct);
         }
 
         /// <inheritdoc/>
@@ -159,7 +138,7 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public async Task<IList<UserProfile>> GetUserProfilesAsync(UserQueryType queryType, string queryString)
+        public async Task<IList<UserProfile>> GetUserProfilesAsync(UserQueryType queryType, string queryString, CancellationToken ct = default)
         {
             IQueryable<UserProfile> dbQuery = this.dbContext.UserProfile;
             dbQuery = queryType switch
@@ -170,22 +149,7 @@ namespace HealthGateway.Database.Delegates
             };
             dbQuery = dbQuery.GroupBy(user => user.HdId).Select(x => x.First());
 
-            return await dbQuery.ToArrayAsync().ConfigureAwait(true);
-        }
-
-        /// <inheritdoc/>
-        public DbResult<List<UserProfile>> GetAllUserProfilesAfter(DateTime filterDateTime, int page = 0, int pageSize = 500)
-        {
-            DbResult<List<UserProfile>> result = new();
-            int offset = page * pageSize;
-            result.Payload = this.dbContext.UserProfile
-                .Where(p => p.LastLoginDateTime < filterDateTime && p.ClosedDateTime == null && !string.IsNullOrWhiteSpace(p.Email))
-                .OrderBy(o => o.CreatedDateTime)
-                .Skip(offset)
-                .Take(pageSize)
-                .ToList();
-            result.Status = DbStatusCode.Read;
-            return result;
+            return await dbQuery.ToArrayAsync(ct);
         }
 
         /// <inheritdoc/>
@@ -305,13 +269,13 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public async Task<int> GetUserProfileCount(CancellationToken ct = default)
+        public async Task<int> GetUserProfileCountAsync(CancellationToken ct = default)
         {
             return await this.dbContext.UserProfile.CountAsync(ct);
         }
 
         /// <inheritdoc/>
-        public async Task<int> GetClosedUserProfileCount(CancellationToken ct = default)
+        public async Task<int> GetClosedUserProfileCountAsync(CancellationToken ct = default)
         {
             return await this.dbContext.UserProfileHistory
                 .Where(h => h.Operation == "DELETE" && !this.dbContext.UserProfile.Any(p => p.HdId == h.HdId))

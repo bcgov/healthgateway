@@ -141,13 +141,13 @@ namespace HealthGateway.Medication.Services
                 }
 
                 IList<MedicationStatement>? payload = this.autoMapper.Map<IList<MedicationStatement>>(response.ResourcePayload.Results);
-                await this.PopulateMedicationSummary(payload.Select(r => r.MedicationSummary).ToList(), ct);
+                await this.PopulateMedicationSummaryAsync(payload.Select(r => r.MedicationSummary).ToList(), ct);
 
                 return RequestResultFactory.Success(payload, response.TotalResultCount, response.PageIndex, response.PageSize);
             }
         }
 
-        private async Task PopulateMedicationSummary(List<MedicationSummary> medSummaries, CancellationToken ct = default)
+        private async Task PopulateMedicationSummaryAsync(List<MedicationSummary> medSummaries, CancellationToken ct = default)
         {
             using (Source.StartActivity())
             {

@@ -122,7 +122,7 @@ namespace HealthGateway.AccountDataAccess.Patient
                 UpdatedBy = authenticatedUserId,
             };
 
-            BlockedAccess blockedAccess = await this.blockedAccessDelegate.GetBlockedAccessAsync(command.Hdid).ConfigureAwait(true) ?? new()
+            BlockedAccess blockedAccess = await this.blockedAccessDelegate.GetBlockedAccessAsync(command.Hdid, ct) ?? new()
             {
                 Hdid = command.Hdid,
                 CreatedBy = authenticatedUserId,
@@ -139,11 +139,11 @@ namespace HealthGateway.AccountDataAccess.Patient
                 blockedAccess.DataSources = sources;
                 blockedAccess.CreatedDateTime = DateTime.UtcNow;
                 blockedAccess.UpdatedDateTime = DateTime.UtcNow;
-                await this.blockedAccessDelegate.UpdateBlockedAccessAsync(blockedAccess, agentAudit, !this.blockedDataSourcesChangeFeedEnabled);
+                await this.blockedAccessDelegate.UpdateBlockedAccessAsync(blockedAccess, agentAudit, !this.blockedDataSourcesChangeFeedEnabled, ct);
             }
             else
             {
-                await this.blockedAccessDelegate.DeleteBlockedAccessAsync(blockedAccess, agentAudit, !this.blockedDataSourcesChangeFeedEnabled);
+                await this.blockedAccessDelegate.DeleteBlockedAccessAsync(blockedAccess, agentAudit, !this.blockedDataSourcesChangeFeedEnabled, ct);
             }
 
             if (this.blockedDataSourcesChangeFeedEnabled)
@@ -156,7 +156,7 @@ namespace HealthGateway.AccountDataAccess.Patient
         /// <inheritdoc/>
         public async Task<BlockedAccess?> GetBlockedAccessRecordsAsync(string hdid, CancellationToken ct = default)
         {
-            return await this.blockedAccessDelegate.GetBlockedAccessAsync(hdid).ConfigureAwait(true);
+            return await this.blockedAccessDelegate.GetBlockedAccessAsync(hdid, ct);
         }
 
         /// <inheritdoc/>
@@ -169,7 +169,7 @@ namespace HealthGateway.AccountDataAccess.Patient
 
             IEnumerable<DataSource>? dataSources = await this.cacheProvider.GetOrSetAsync(
                 blockedAccessCacheKey,
-                () => this.blockedAccessDelegate.GetDataSourcesAsync(hdid),
+                () => this.blockedAccessDelegate.GetDataSourcesAsync(hdid, ct),
                 TimeSpan.FromMinutes(this.blockedAccessCacheTtl),
                 ct);
 

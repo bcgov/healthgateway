@@ -123,7 +123,7 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
                 {
                     context.Response.Headers.Append("X-Content-Type-Options", "nosniff");
                     context.Response.Headers.Append("X-Xss-Protection", "1; mode=block");
-                    await next().ConfigureAwait(true);
+                    await next();
                 });
 
             // Enable Cache control and set defaults
@@ -195,7 +195,7 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
                         async (context, next) =>
                         {
                             context.Request.PathBase = basePath;
-                            await next.Invoke().ConfigureAwait(true);
+                            await next.Invoke();
                         });
                     app.UsePathBase(basePath);
                 }
@@ -231,7 +231,7 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
                 async (context, next) =>
                 {
                     context.Response.Headers.Append("Content-Security-Policy", csp);
-                    await next().ConfigureAwait(true);
+                    await next();
                 });
         }
 
@@ -249,7 +249,7 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
                     async (context, next) =>
                     {
                         context.Response.Headers.Append("Permissions-Policy", policyValue);
-                        await next().ConfigureAwait(true);
+                        await next();
                     });
             }
         }
@@ -275,7 +275,7 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
                             MustRevalidate = true,
                         };
                     context.Response.Headers[HeaderNames.Pragma] = new StringValues("no-cache");
-                    await next().ConfigureAwait(true);
+                    await next();
                 });
         }
 

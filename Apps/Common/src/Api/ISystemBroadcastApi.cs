@@ -32,7 +32,7 @@ namespace HealthGateway.Common.Api
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A response containing the collection of broadcasts.</returns>
         [Get("/system-broadcasts")]
-        Task<IEnumerable<BroadcastResponse>> GetBroadcastsAsync(CancellationToken ct);
+        Task<IEnumerable<BroadcastResponse>> GetBroadcastsAsync(CancellationToken ct = default);
 
         /// <summary>
         /// Creates a broadcast.
@@ -41,7 +41,7 @@ namespace HealthGateway.Common.Api
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A response containing the broadcast that was created.</returns>
         [Post("/system-broadcasts")]
-        Task<BroadcastResponse> CreateBroadcastAsync([Body] BroadcastRequest request, CancellationToken ct);
+        Task<BroadcastResponse> CreateBroadcastAsync([Body] BroadcastRequest request, CancellationToken ct = default);
 
         /// <summary>
         /// Updates a broadcast.
@@ -51,7 +51,7 @@ namespace HealthGateway.Common.Api
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A response containing the broadcast that was updated.</returns>
         [Put("/system-broadcasts/{id}")]
-        Task<BroadcastResponse> UpdateBroadcastAsync(string id, [Body] BroadcastRequest request, CancellationToken ct);
+        Task<BroadcastResponse> UpdateBroadcastAsync(string id, [Body] BroadcastRequest request, CancellationToken ct = default);
 
         /// <summary>
         /// Deletes a broadcast.
@@ -60,6 +60,6 @@ namespace HealthGateway.Common.Api
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A response indicating success or failure.</returns>
         [Delete("/system-broadcasts/{id}")]
-        Task DeleteBroadcastAsync(string id, CancellationToken ct);
+        Task DeleteBroadcastAsync(string id, CancellationToken ct = default);
     }
 }

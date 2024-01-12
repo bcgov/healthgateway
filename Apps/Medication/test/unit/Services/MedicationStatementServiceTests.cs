@@ -64,7 +64,7 @@ namespace HealthGateway.MedicationTests.Services
         {
             Mock<IHttpContextAccessor> httpContextAccessorMock = this.GetHttpContextAccessorMock();
             Mock<IPatientService> patientDelegateMock = new();
-            patientDelegateMock.Setup(s => s.GetPatientPhn(this.hdid))
+            patientDelegateMock.Setup(s => s.GetPatientPhnAsync(this.hdid, It.IsAny<CancellationToken>()))
                 .Returns(
                     Task.FromResult(
                         new RequestResult<string>

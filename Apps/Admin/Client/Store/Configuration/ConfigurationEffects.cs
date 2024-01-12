@@ -32,7 +32,7 @@ namespace HealthGateway.Admin.Client.Store.Configuration
 
             try
             {
-                ExternalConfiguration response = await configApi.GetConfigurationAsync().ConfigureAwait(true);
+                ExternalConfiguration response = await configApi.GetConfigurationAsync();
                 logger.LogInformation("External configuration loaded successfully!");
                 dispatcher.Dispatch(new ConfigurationActions.LoadSuccessAction { Data = response });
             }

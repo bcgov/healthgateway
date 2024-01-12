@@ -17,6 +17,7 @@ namespace HealthGateway.Common.Services
 {
     using System;
     using System.Diagnostics;
+    using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.CacheProviders;
@@ -70,21 +71,21 @@ namespace HealthGateway.Common.Services
         private static ActivitySource Source { get; } = new(nameof(AccessTokenService));
 
         /// <inheritdoc/>
-        public async Task<RequestResult<TokenSwapResponse>> GetPhsaAccessToken()
+        public async Task<RequestResult<TokenSwapResponse>> GetPhsaAccessTokenAsync(CancellationToken ct = default)
         {
             using Activity? activity = Source.StartActivity();
             string? userId = this.authenticationDelegate.FetchAuthenticatedUserId();
             RequestResult<TokenSwapResponse> requestResult = new();
             string cacheKey = $"{TokenSwapCacheDomain}:{userId}";
-            TokenSwapResponse? cachedAccessToken = this.GetFromCache(cacheKey);
+            TokenSwapResponse? cachedAccessToken = await this.GetFromCacheAsync(cacheKey, ct);
 
             if (cachedAccessToken == null)
             {
-                string? accessToken = await this.authenticationDelegate.FetchAuthenticatedUserTokenAsync();
+                string? accessToken = await this.authenticationDelegate.FetchAuthenticatedUserTokenAsync(ct);
 
                 if (accessToken != null)
                 {
-                    requestResult = await this.SwapToken(cacheKey, accessToken).ConfigureAwait(true);
+                    requestResult = await this.SwapTokenAsync(cacheKey, accessToken, ct);
                 }
                 else
                 {
@@ -112,14 +113,15 @@ namespace HealthGateway.Common.Services
         /// </summary>
         /// <param name="cacheKey">The key to retrieve the token response from cache.</param>
         /// <param name="tokenSwapResponse">The token swap response to be cached.</param>
-        private void CacheAccessToken(string cacheKey, TokenSwapResponse tokenSwapResponse)
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
+        private async Task CacheAccessTokenAsync(string cacheKey, TokenSwapResponse tokenSwapResponse, CancellationToken ct)
         {
             using Activity? activity = Source.StartActivity();
             if (this.phsaConfigV2.TokenCacheEnabled)
             {
                 this.logger.LogDebug("Attempting to cache access token for cache key: {Key}", cacheKey);
                 TimeSpan? expires = tokenSwapResponse.ExpiresIn > 0 ? TimeSpan.FromSeconds(tokenSwapResponse.ExpiresIn - EarlyExpiry) : null;
-                this.cacheProvider.AddItem(cacheKey, tokenSwapResponse, expires);
+                await this.cacheProvider.AddItemAsync(cacheKey, tokenSwapResponse, expires, ct);
             }
             else
             {
@@ -133,14 +135,15 @@ namespace HealthGateway.Common.Services
         /// Attempts to get the token response from cache.
         /// </summary>
         /// <param name="cacheKey">The key to retrieve the token response from cache.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The found token response or null.</returns>
-        private TokenSwapResponse? GetFromCache(string cacheKey)
+        private async Task<TokenSwapResponse?> GetFromCacheAsync(string cacheKey, CancellationToken ct)
         {
             using Activity? activity = Source.StartActivity();
             TokenSwapResponse? tokenResponse = null;
             if (this.phsaConfigV2.TokenCacheEnabled)
             {
-                tokenResponse = this.cacheProvider.GetItem<TokenSwapResponse>(cacheKey);
+                tokenResponse = await this.cacheProvider.GetItemAsync<TokenSwapResponse>(cacheKey, ct);
                 this.logger.LogDebug("Cache key: {CacheKey} was {Found} found in cache", cacheKey, tokenResponse == null ? "not" : string.Empty);
             }
 
@@ -153,14 +156,15 @@ namespace HealthGateway.Common.Services
         /// </summary>
         /// <param name="cacheKey">The key to retrieve the token response from cache.</param>
         /// <param name="accessToken">The access token to swap for a new token.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The token response wrapped in a request result.</returns>
-        private async Task<RequestResult<TokenSwapResponse>> SwapToken(string cacheKey, string accessToken)
+        private async Task<RequestResult<TokenSwapResponse>> SwapTokenAsync(string cacheKey, string accessToken, CancellationToken ct)
         {
-            RequestResult<TokenSwapResponse> requestResult = await this.tokenSwapDelegate.SwapToken(accessToken).ConfigureAwait(true);
+            RequestResult<TokenSwapResponse> requestResult = await this.tokenSwapDelegate.SwapTokenAsync(accessToken, ct);
 
             if (requestResult.ResultStatus == ResultType.Success)
             {
-                this.CacheAccessToken(cacheKey, requestResult.ResourcePayload);
+                await this.CacheAccessTokenAsync(cacheKey, requestResult.ResourcePayload, ct);
             }
 
             return requestResult;

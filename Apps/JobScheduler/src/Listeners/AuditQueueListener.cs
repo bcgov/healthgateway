@@ -61,7 +61,7 @@ namespace HealthGateway.JobScheduler.Listeners
         /// Listens for Audit Events and writes them to the DB.
         /// </summary>
         /// <param name="stoppingToken">The cancellation token to use.</param>
-        /// <returns>The task.</returns>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             this.logger.LogInformation("Audit Queue Listener is starting");
@@ -70,24 +70,24 @@ namespace HealthGateway.JobScheduler.Listeners
             {
                 IDatabase redisDb = this.connectionMultiplexer.GetDatabase();
                 RedisValue auditValue = await redisDb.ListMoveAsync(
-                        $"{RedisAuditLogger.AuditQueuePrefix}:{RedisAuditLogger.ActiveQueueName}",
-                        $"{RedisAuditLogger.AuditQueuePrefix}:{RedisAuditLogger.ProcessingQueueName}",
-                        ListSide.Left,
-                        ListSide.Right).ConfigureAwait(true);
+                    $"{RedisAuditLogger.AuditQueuePrefix}:{RedisAuditLogger.ActiveQueueName}",
+                    $"{RedisAuditLogger.AuditQueuePrefix}:{RedisAuditLogger.ProcessingQueueName}",
+                    ListSide.Left,
+                    ListSide.Right);
                 if (auditValue.HasValue)
                 {
-                    await this.ProcessAuditEvent(redisDb, auditValue).ConfigureAwait(true);
+                    await this.ProcessAuditEventAsync(redisDb, auditValue, stoppingToken);
                 }
                 else
                 {
-                    await Task.Delay(SleepDuration, stoppingToken).ConfigureAwait(true);
+                    await Task.Delay(SleepDuration, stoppingToken);
                 }
             }
 
             this.logger.LogInformation("Audit Queue Listener has stopped");
         }
 
-        private async Task ProcessAuditEvent(IDatabase redisDb, RedisValue auditValue)
+        private async Task ProcessAuditEventAsync(IDatabase redisDb, RedisValue auditValue, CancellationToken ct)
         {
             this.logger.LogTrace("Start Processing Audit Event...");
             AuditEvent? auditEvent = JsonSerializer.Deserialize<AuditEvent>(auditValue.ToString());
@@ -97,8 +97,8 @@ namespace HealthGateway.JobScheduler.Listeners
                 {
                     using IServiceScope scope = this.services.CreateScope();
                     IWriteAuditEventDelegate writeAuditEventDelegate = scope.ServiceProvider.GetRequiredService<IWriteAuditEventDelegate>();
-                    writeAuditEventDelegate.WriteAuditEvent(auditEvent);
-                    await redisDb.ListRemoveAsync($"{RedisAuditLogger.AuditQueuePrefix}:{RedisAuditLogger.ProcessingQueueName}", auditValue).ConfigureAwait(true);
+                    await writeAuditEventDelegate.WriteAuditEventAsync(auditEvent, ct);
+                    await redisDb.ListRemoveAsync($"{RedisAuditLogger.AuditQueuePrefix}:{RedisAuditLogger.ProcessingQueueName}", auditValue);
                 }
                 catch (DataException e)
                 {

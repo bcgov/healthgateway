@@ -15,6 +15,7 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Common.Jobs
 {
+    using System.Threading;
     using System.Threading.Tasks;
 
     /// <summary>
@@ -26,7 +27,8 @@ namespace HealthGateway.Common.Jobs
         /// Sends an email immediately if Priority is standard or higher.
         /// </summary>
         /// <param name="notificationSettingsJson">The Notification settings serialized to send to PHSA.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        Task PushNotificationSettingsAsync(string notificationSettingsJson);
+        Task PushNotificationSettingsAsync(string notificationSettingsJson, CancellationToken ct = default);
     }
 }

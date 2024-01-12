@@ -31,8 +31,9 @@ public interface IAdminUserProfileDelegate
     /// Fetches the AdminUserProfile from the database.
     /// </summary>
     /// <param name="username">The unique username key to find.</param>
+    /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
     /// <returns>A DB result which encapsulates the return object and status.</returns>
-    DbResult<AdminUserProfile> GetAdminUserProfile(string username);
+    Task<DbResult<AdminUserProfile>> GetAdminUserProfileAsync(string username, CancellationToken ct = default);
 
     /// <summary>
     /// Returns Active AdminUserProfile objects from the database.
@@ -56,8 +57,9 @@ public interface IAdminUserProfileDelegate
     /// Creates an AdminUserProfile object in the database.
     /// </summary>
     /// <param name="profile">The profile to create.</param>
+    /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
     /// <returns>A DB result which encapsulates the return object and status.</returns>
-    DbResult<AdminUserProfile> Add(AdminUserProfile profile);
+    Task<DbResult<AdminUserProfile>> AddAsync(AdminUserProfile profile, CancellationToken ct = default);
 
     /// <summary>
     /// Updates the AdminUserProfile object in the DB.
@@ -66,6 +68,7 @@ public interface IAdminUserProfileDelegate
     /// </summary>
     /// <param name="profile">The profile to update.</param>
     /// <param name="commit">if true the transaction is persisted immediately.</param>
+    /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
     /// <returns>A DB result which encapsulates the return object and status.</returns>
-    DbResult<AdminUserProfile> Update(AdminUserProfile profile, bool commit = true);
+    Task<DbResult<AdminUserProfile>> UpdateAsync(AdminUserProfile profile, bool commit = true, CancellationToken ct = default);
 }

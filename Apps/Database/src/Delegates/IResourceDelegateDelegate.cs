@@ -42,21 +42,11 @@ namespace HealthGateway.Database.Delegates
         /// <summary>
         /// Gets the list of Resource Delegate records for a specific delegate Id from the database.
         /// </summary>
-        /// <param name="delegateId">The resource delegate to create.</param>
-        /// <param name="page">The page to start at.</param>
-        /// <param name="pageSize">The amount of rows to fetch per call.</param>
-        /// <returns>A list of resourceDelegates wrapped in a DBResult.</returns>
-        [SuppressMessage("Naming", "CA1716:Identifiers should not match keywords", Justification = "Team decision")]
-        DbResult<IEnumerable<ResourceDelegate>> Get(string delegateId, int page = 0, int pageSize = 500);
-
-        /// <summary>
-        /// Gets the list of Resource Delegate records for a specific delegate Id from the database.
-        /// </summary>
-        /// <param name="delegateId">The resource delegate to create.</param>
+        /// <param name="delegateId">The resource delegate to look up.</param>
         /// <param name="page">The page to start at.</param>
         /// <param name="pageSize">The amount of rows to fetch per call.</param>
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
-        /// <returns>A list of resourceDelegates wrapped in a DBResult.</returns>
+        /// <returns>A list of ResourceDelegates.</returns>
         Task<IList<ResourceDelegate>> GetAsync(string delegateId, int page = 0, int pageSize = 500, CancellationToken ct = default);
 
         /// <summary>
@@ -67,7 +57,7 @@ namespace HealthGateway.Database.Delegates
         /// <param name="page">The page to start at.</param>
         /// <param name="pageSize">The amount of rows to fetch per call.</param>
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
-        /// <returns>A list of resourceDelegates wrapped in a DBResult.</returns>
+        /// <returns>A list of ResourceDelegates.</returns>
         [SuppressMessage("Naming", "CA1716:Identifiers should not match keywords", Justification = "Team decision")]
         Task<IList<ResourceDelegate>> GetAsync(DateTime fromDate, DateTime? toDate, int page, int pageSize, CancellationToken ct = default);
 
@@ -109,15 +99,17 @@ namespace HealthGateway.Database.Delegates
         /// </summary>
         /// <param name="ownerId">The owner hdid.</param>
         /// <param name="delegateId">The delegated resource hdid.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A DB result which encapsulates the return record and status.</returns>
-        bool Exists(string ownerId, string delegateId);
+        Task<bool> ExistsAsync(string ownerId, string delegateId, CancellationToken ct = default);
 
         /// <summary>
         /// Search resource delegates by criteria specified in the query.
         /// </summary>
         /// <param name="query">The query criteria.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A <see cref="Task{TResult}"/> representing the result of the asynchronous operation.</returns>
-        public Task<ResourceDelegateQueryResult> SearchAsync(ResourceDelegateQuery query);
+        public Task<ResourceDelegateQueryResult> SearchAsync(ResourceDelegateQuery query, CancellationToken ct = default);
     }
 
     public record ResourceDelegateQuery

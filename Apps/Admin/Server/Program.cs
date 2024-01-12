@@ -120,7 +120,7 @@ namespace HealthGateway.Admin.Server
             app.MapControllers();
             app.MapFallbackToFile("index.html");
 
-            await app.RunAsync().ConfigureAwait(true);
+            await app.RunAsync();
         }
 
         private static void AddModules(IServiceCollection services, ConfigurationManager configuration, ILogger logger, IWebHostEnvironment environment)
@@ -169,7 +169,6 @@ namespace HealthGateway.Admin.Server
             services.AddTransient<IResourceDelegateDelegate, DbResourceDelegateDelegate>();
             services.AddTransient<ICommentDelegate, DbCommentDelegate>();
             services.AddTransient<IAdminTagDelegate, DbAdminTagDelegate>();
-            services.AddTransient<IFeedbackTagDelegate, DbFeedbackTagDelegate>();
             services.AddTransient<IVaccineProofDelegate, VaccineProofDelegate>();
             services.AddTransient<IAdminUserProfileDelegate, DbAdminUserProfileDelegate>();
             services.AddTransient<IAuthenticationDelegate, AuthenticationDelegate>();

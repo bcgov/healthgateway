@@ -57,7 +57,7 @@ namespace HealthGateway.Admin.Client.Components.Delegation
             this.Dispatcher.Dispatch(new DelegationActions.SetEditModeAction { Enabled = enabled });
         }
 
-        private async Task ToggleProtectedSwitch(bool? protect)
+        private async Task ToggleProtectedSwitchAsync(bool? protect)
         {
             if (protect == true)
             {
@@ -65,7 +65,7 @@ namespace HealthGateway.Admin.Client.Components.Delegation
             }
             else
             {
-                await this.OpenUnprotectConfirmationDialog().ConfigureAwait(true);
+                await this.OpenUnprotectConfirmationDialogAsync();
             }
         }
 
@@ -74,7 +74,7 @@ namespace HealthGateway.Admin.Client.Components.Delegation
             this.Dispatcher.Dispatch(new DelegationActions.UnprotectDependentAction { Reason = auditReason });
         }
 
-        private async Task OpenUnprotectConfirmationDialog()
+        private async Task OpenUnprotectConfirmationDialogAsync()
         {
             const string title = "Confirm Update";
             DialogParameters parameters = new()
@@ -95,10 +95,9 @@ namespace HealthGateway.Admin.Client.Components.Delegation
                     DelegationActions.UnprotectDependentSuccessAction>>(
                     title,
                     parameters,
-                    options)
-                .ConfigureAwait(true);
+                    options);
 
-            await dialog.Result.ConfigureAwait(true);
+            await dialog.Result;
         }
 
         private sealed record DependentRow

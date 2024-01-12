@@ -122,7 +122,7 @@ else
                         <MudIconButton Icon="fas fa-person-circle-question"
                                        Color="@Color.Tertiary"
                                        data-testid="feedback-person-search-button"
-                                       OnClick="() => NavigateToSupport(context.Hdid)" />
+                                       OnClick="() => NavigateToSupportAsync(context.Hdid)" />
                     }
                     @if (context.Email.Length > 0)
                     {

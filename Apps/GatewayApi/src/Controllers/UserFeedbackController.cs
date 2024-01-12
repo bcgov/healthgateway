@@ -66,7 +66,7 @@ namespace HealthGateway.GatewayApi.Controllers
         [HttpPost]
         [Route("{hdid}")]
         [Authorize(Policy = UserProfilePolicy.Write)]
-        public async Task<IActionResult> CreateUserFeedback(string hdid, [FromBody] UserFeedback? userFeedback, CancellationToken ct = default)
+        public async Task<IActionResult> CreateUserFeedback(string hdid, [FromBody] UserFeedback? userFeedback, CancellationToken ct)
         {
             if (userFeedback == null)
             {

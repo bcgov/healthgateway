@@ -135,7 +135,7 @@ namespace HealthGateway.Admin.Client.Pages
         {
             await base.OnInitializedAsync();
             this.ResetPatientSupportState();
-            await this.RepopulateQueryAndResults();
+            await this.RepopulateQueryAndResultsAsync();
             this.AuthenticationState = await this.AuthenticationStateProvider.GetAuthenticationStateAsync();
             this.ActionSubscriber.SubscribeToAction<PatientSupportActions.LoadSuccessAction>(this, this.CheckForSingleResult);
         }
@@ -188,7 +188,7 @@ namespace HealthGateway.Admin.Client.Pages
             this.Dispatcher.Dispatch(new PatientSupportActions.ResetStateAction());
         }
 
-        private async Task RepopulateQueryAndResults()
+        private async Task RepopulateQueryAndResultsAsync()
         {
             if (this.IsPreviousPagePatientDetails())
             {
@@ -207,7 +207,7 @@ namespace HealthGateway.Admin.Client.Pages
 
         private async Task SearchAsync()
         {
-            await this.Form.Validate().ConfigureAwait(true);
+            await this.Form.Validate();
             if (this.Form.IsValid)
             {
                 this.ResetPatientSupportState();

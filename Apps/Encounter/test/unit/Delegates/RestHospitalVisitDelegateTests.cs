@@ -20,6 +20,7 @@ namespace HealthGateway.EncounterTests.Delegates
     using System.Linq;
     using System.Net;
     using System.Net.Http;
+    using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.Data.Constants;
@@ -74,9 +75,9 @@ namespace HealthGateway.EncounterTests.Delegates
             };
 
             Mock<IAuthenticationDelegate> mockAuthDelegate = new();
-            mockAuthDelegate.Setup(s => s.FetchAuthenticatedUserTokenAsync()).ReturnsAsync(AccessToken);
+            mockAuthDelegate.Setup(s => s.FetchAuthenticatedUserTokenAsync(It.IsAny<CancellationToken>())).ReturnsAsync(AccessToken);
             Mock<IHospitalVisitApi> mockHospitalVisitApi = new();
-            mockHospitalVisitApi.Setup(s => s.GetHospitalVisitsAsync(It.IsAny<string>(), It.IsAny<int?>(), AccessToken)).ReturnsAsync(phsaResponse);
+            mockHospitalVisitApi.Setup(s => s.GetHospitalVisitsAsync(It.IsAny<string>(), It.IsAny<int?>(), AccessToken, It.IsAny<CancellationToken>())).ReturnsAsync(phsaResponse);
             IHospitalVisitDelegate hospitalVisitDelegate = new RestHospitalVisitDelegate(
                 mockAuthDelegate.Object,
                 mockHospitalVisitApi.Object,
@@ -107,9 +108,9 @@ namespace HealthGateway.EncounterTests.Delegates
             ApiException mockException = MockRefitExceptionHelper.CreateApiException(HttpStatusCode.Unauthorized, HttpMethod.Post);
 
             Mock<IAuthenticationDelegate> mockAuthDelegate = new();
-            mockAuthDelegate.Setup(s => s.FetchAuthenticatedUserTokenAsync()).ReturnsAsync(AccessToken);
+            mockAuthDelegate.Setup(s => s.FetchAuthenticatedUserTokenAsync(It.IsAny<CancellationToken>())).ReturnsAsync(AccessToken);
             Mock<IHospitalVisitApi> mockHospitalVisitApi = new();
-            mockHospitalVisitApi.Setup(s => s.GetHospitalVisitsAsync(It.IsAny<string>(), It.IsAny<int?>(), AccessToken)).ThrowsAsync(mockException);
+            mockHospitalVisitApi.Setup(s => s.GetHospitalVisitsAsync(It.IsAny<string>(), It.IsAny<int?>(), AccessToken, It.IsAny<CancellationToken>())).ThrowsAsync(mockException);
             IHospitalVisitDelegate hospitalVisitDelegate = new RestHospitalVisitDelegate(
                 mockAuthDelegate.Object,
                 mockHospitalVisitApi.Object,
@@ -139,9 +140,9 @@ namespace HealthGateway.EncounterTests.Delegates
             HttpRequestException mockException = MockRefitExceptionHelper.CreateHttpRequestException("Internal Server Error", HttpStatusCode.InternalServerError);
 
             Mock<IAuthenticationDelegate> mockAuthDelegate = new();
-            mockAuthDelegate.Setup(s => s.FetchAuthenticatedUserTokenAsync()).ReturnsAsync(AccessToken);
+            mockAuthDelegate.Setup(s => s.FetchAuthenticatedUserTokenAsync(It.IsAny<CancellationToken>())).ReturnsAsync(AccessToken);
             Mock<IHospitalVisitApi> mockHospitalVisitApi = new();
-            mockHospitalVisitApi.Setup(s => s.GetHospitalVisitsAsync(It.IsAny<string>(), It.IsAny<int?>(), AccessToken)).ThrowsAsync(mockException);
+            mockHospitalVisitApi.Setup(s => s.GetHospitalVisitsAsync(It.IsAny<string>(), It.IsAny<int?>(), AccessToken, It.IsAny<CancellationToken>())).ThrowsAsync(mockException);
             IHospitalVisitDelegate hospitalVisitDelegate = new RestHospitalVisitDelegate(
                 mockAuthDelegate.Object,
                 mockHospitalVisitApi.Object,

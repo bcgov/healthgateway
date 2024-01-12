@@ -70,7 +70,7 @@ namespace HealthGateway.Database.Delegates
         public async Task<Guid> InsertEmailAsync(Email email, bool shouldCommit = true, CancellationToken ct = default)
         {
             this.logger.LogTrace("Inserting email to DB..");
-            await this.dbContext.AddAsync(email, ct);
+            this.dbContext.Add(email);
             if (shouldCommit)
             {
                 await this.dbContext.SaveChangesAsync(ct);
@@ -90,7 +90,7 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public async Task<EmailTemplate?> GetEmailTemplateAsync(string templateName, CancellationToken ct)
+        public async Task<EmailTemplate?> GetEmailTemplateAsync(string templateName, CancellationToken ct = default)
         {
             this.logger.LogTrace("Getting email template {TemplateName} from DB... ", templateName);
             return await this.dbContext

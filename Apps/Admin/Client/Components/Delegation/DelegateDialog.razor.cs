@@ -68,9 +68,9 @@ public partial class DelegateDialog : FluxorComponent
         this.MudDialog.Cancel();
     }
 
-    private async Task HandleClickSearch()
+    private async Task HandleClickSearchAsync()
     {
-        await this.Form.Validate().ConfigureAwait(true);
+        await this.Form.Validate();
         if (this.Form.IsValid)
         {
             this.Dispatcher.Dispatch(new DelegationActions.DelegateSearchAction { Phn = this.Phn });

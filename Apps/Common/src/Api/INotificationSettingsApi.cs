@@ -15,6 +15,7 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Common.Api
 {
+    using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.Models;
     using Refit;
@@ -30,8 +31,13 @@ namespace HealthGateway.Common.Api
         /// <param name="request">The notification settings request to be sent.</param>
         /// <param name="hdid">The subject's HDID.</param>
         /// <param name="token">The bearer token to authorize the request.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The notification settings response received.</returns>
         [Put("/")]
-        Task<NotificationSettingsResponse> SetNotificationSettingsAsync([Body] NotificationSettingsRequest request, [Header("patient")] string hdid, [Authorize] string token);
+        Task<NotificationSettingsResponse> SetNotificationSettingsAsync(
+            [Body] NotificationSettingsRequest request,
+            [Header("patient")] string hdid,
+            [Authorize] string token,
+            CancellationToken ct = default);
     }
 }

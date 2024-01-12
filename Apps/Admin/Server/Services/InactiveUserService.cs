@@ -112,12 +112,12 @@ public class InactiveUserService : IInactiveUserService
             const int maxRecords = -1;
 
             List<UserRepresentation> adminUsers =
-                await this.keycloakAdminApi.GetUsersByRoleAsync(nameof(IdentityAccessRole.AdminUser), firstRecord, maxRecords, jwtModel.AccessToken, ct).ConfigureAwait(true);
+                await this.keycloakAdminApi.GetUsersByRoleAsync(nameof(IdentityAccessRole.AdminUser), firstRecord, maxRecords, jwtModel.AccessToken, ct);
             this.PopulateUserDetails(inactiveUsers, adminUsers, IdentityAccessRole.AdminUser);
             this.AddInactiveUser(inactiveUsers, activeUserProfiles, adminUsers, IdentityAccessRole.AdminUser);
 
             List<UserRepresentation> supportUsers =
-                await this.keycloakAdminApi.GetUsersByRoleAsync(nameof(IdentityAccessRole.SupportUser), firstRecord, maxRecords, jwtModel.AccessToken, ct).ConfigureAwait(true);
+                await this.keycloakAdminApi.GetUsersByRoleAsync(nameof(IdentityAccessRole.SupportUser), firstRecord, maxRecords, jwtModel.AccessToken, ct);
             this.PopulateUserDetails(inactiveUsers, supportUsers, IdentityAccessRole.SupportUser);
             this.AddInactiveUser(inactiveUsers, activeUserProfiles, supportUsers, IdentityAccessRole.SupportUser);
 

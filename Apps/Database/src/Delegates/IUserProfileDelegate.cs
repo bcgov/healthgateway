@@ -52,13 +52,6 @@ namespace HealthGateway.Database.Delegates
         Task<DbResult<UserProfile>> UpdateAsync(UserProfile profile, bool commit = true, CancellationToken ct = default);
 
         /// <summary>
-        /// Fetches the UserProfile from the database.
-        /// </summary>
-        /// <param name="hdId">The unique profile key to find.</param>
-        /// <returns>A DB result which encapsulates the return object and status.</returns>
-        DbResult<UserProfile> GetUserProfile(string hdId);
-
-        /// <summary>
         /// Fetches a UserProfile from the database by HDID.
         /// </summary>
         /// <param name="hdid">The unique profile key to find.</param>
@@ -79,18 +72,9 @@ namespace HealthGateway.Database.Delegates
         /// </summary>
         /// <param name="queryType">The type of query to perform.</param>
         /// <param name="queryString">The value to query on.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A DB result which encapsulates the return object and status.</returns>
-        Task<IList<UserProfile>> GetUserProfilesAsync(UserQueryType queryType, string queryString);
-
-        /// <summary>
-        /// Returns the list of all UserProfiles who have an email address and have
-        /// logged in before the lastLoggedIn date.
-        /// </summary>
-        /// <param name="filterDateTime">The profiles must have logged in prior to this date.</param>
-        /// <param name="page">The page to request, defaults to 0.</param>
-        /// <param name="pageSize">The amount of records to retrieve in 1 request, defaults to 500.</param>
-        /// <returns>A list of matching UserProfiles wrapped in a DBResult.</returns>
-        DbResult<List<UserProfile>> GetAllUserProfilesAfter(DateTime filterDateTime, int page = 0, int pageSize = 500);
+        Task<IList<UserProfile>> GetUserProfilesAsync(UserQueryType queryType, string queryString, CancellationToken ct = default);
 
         /// <summary>
         /// Returns the list of all UserProfiles who have a closed date earlier than the supplied filter datetime.
@@ -162,14 +146,14 @@ namespace HealthGateway.Database.Delegates
         /// </summary>
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The number of user profiles.</returns>
-        Task<int> GetUserProfileCount(CancellationToken ct = default);
+        Task<int> GetUserProfileCountAsync(CancellationToken ct = default);
 
         /// <summary>
         /// Retrieves the number of user profiles that have been closed and not re-opened.
         /// </summary>
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The number of user profiles that have been closed and not re-opened</returns>
-        Task<int> GetClosedUserProfileCount(CancellationToken ct = default);
+        Task<int> GetClosedUserProfileCountAsync(CancellationToken ct = default);
 
         /// <summary>
         /// Returns the list of logged in user year of birth counts over a date range.

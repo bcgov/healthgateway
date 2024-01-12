@@ -59,7 +59,7 @@ namespace HealthGateway.Database.Delegates
                 Status = DbStatusCode.Deferred,
             };
 
-            await this.dbContext.AddAsync(resourceDelegate, ct);
+            this.dbContext.Add(resourceDelegate);
             if (commit)
             {
                 try
@@ -84,20 +84,6 @@ namespace HealthGateway.Database.Delegates
             }
 
             this.logger.LogTrace("Finished inserting resource delegate to DB with id");
-            return result;
-        }
-
-        /// <inheritdoc/>
-        public DbResult<IEnumerable<ResourceDelegate>> Get(string delegateId, int page = 0, int pageSize = 500)
-        {
-            this.logger.LogTrace("Getting resource delegates from DB... {DelegateId}", delegateId);
-            DbResult<IEnumerable<ResourceDelegate>> result = DbDelegateHelper.GetPagedDbResult(
-                this.dbContext.ResourceDelegate
-                    .Where(resourceDelegate => resourceDelegate.ProfileHdid == delegateId)
-                    .OrderBy(resourceDelegate => resourceDelegate.CreatedDateTime),
-                page,
-                pageSize);
-            this.logger.LogTrace("Finished getting resource delegates from DB for Id {DelegateId}", delegateId);
             return result;
         }
 
@@ -156,8 +142,7 @@ namespace HealthGateway.Database.Delegates
                 Payload = await this.dbContext.ResourceDelegate
                     .Where(d => dependentArray.Contains(d.ResourceOwnerHdid))
                     .GroupBy(d => d.ResourceOwnerHdid)
-                    .ToDictionaryAsync(g => g.Key, g => g.Count(), ct)
-                    .ConfigureAwait(true),
+                    .ToDictionaryAsync(g => g.Key, g => g.Count(), ct),
                 Status = DbStatusCode.Read,
             };
             this.logger.LogTrace("Finished getting total delegate counts from DB");
@@ -193,13 +178,13 @@ namespace HealthGateway.Database.Delegates
         }
 
         /// <inheritdoc/>
-        public bool Exists(string ownerId, string delegateId)
+        public async Task<bool> ExistsAsync(string ownerId, string delegateId, CancellationToken ct = default)
         {
-            return this.dbContext.ResourceDelegate.Any(rd => rd.ResourceOwnerHdid == ownerId && rd.ProfileHdid == delegateId);
+            return await this.dbContext.ResourceDelegate.AnyAsync(rd => rd.ResourceOwnerHdid == ownerId && rd.ProfileHdid == delegateId, ct);
         }
 
         /// <inheritdoc/>
-        public async Task<ResourceDelegateQueryResult> SearchAsync(ResourceDelegateQuery query)
+        public async Task<ResourceDelegateQueryResult> SearchAsync(ResourceDelegateQuery query, CancellationToken ct = default)
         {
             IQueryable<ResourceDelegate> dbQuery = this.dbContext.ResourceDelegate;
             if (query.ByOwnerHdid != null)
@@ -230,11 +215,11 @@ namespace HealthGateway.Database.Delegates
                         rd => rd.ResourceOwnerHdid,
                         d => d.HdId,
                         (rd, d) => new ResourceDelegateQueryResultItem { ResourceDelegate = rd, Dependent = d.FirstOrDefault() })
-                    .ToListAsync();
+                    .ToListAsync(ct);
             }
             else
             {
-                items = await dbQuery.Select(rd => new ResourceDelegateQueryResultItem { ResourceDelegate = rd }).ToListAsync();
+                items = await dbQuery.Select(rd => new ResourceDelegateQueryResultItem { ResourceDelegate = rd }).ToListAsync(ct);
             }
 
             return new() { Items = items };

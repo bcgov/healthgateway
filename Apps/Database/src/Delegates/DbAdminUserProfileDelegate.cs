@@ -48,11 +48,11 @@ public class DbAdminUserProfileDelegate : IAdminUserProfileDelegate
     }
 
     /// <inheritdoc/>
-    public DbResult<AdminUserProfile> GetAdminUserProfile(string username)
+    public async Task<DbResult<AdminUserProfile>> GetAdminUserProfileAsync(string username, CancellationToken ct = default)
     {
         this.logger.LogTrace("Getting admin user profile from DB with Username: {Username}", username);
         DbResult<AdminUserProfile> result = new();
-        AdminUserProfile? profile = this.dbContext.AdminUserProfile.SingleOrDefault(profile => profile.Username == username);
+        AdminUserProfile? profile = await this.dbContext.AdminUserProfile.SingleOrDefaultAsync(profile => profile.Username == username, ct);
 
         if (profile != null)
         {
@@ -94,14 +94,14 @@ public class DbAdminUserProfileDelegate : IAdminUserProfileDelegate
     }
 
     /// <inheritdoc/>
-    public DbResult<AdminUserProfile> Add(AdminUserProfile profile)
+    public async Task<DbResult<AdminUserProfile>> AddAsync(AdminUserProfile profile, CancellationToken ct = default)
     {
         this.logger.LogTrace("Inserting admin user profile to DB... {Profile}", JsonSerializer.Serialize(profile));
         DbResult<AdminUserProfile> result = new();
         this.dbContext.Add(profile);
         try
         {
-            this.dbContext.SaveChanges();
+            await this.dbContext.SaveChangesAsync(ct);
             result.Payload = profile;
             result.Status = DbStatusCode.Created;
         }
@@ -116,10 +116,10 @@ public class DbAdminUserProfileDelegate : IAdminUserProfileDelegate
     }
 
     /// <inheritdoc/>
-    public DbResult<AdminUserProfile> Update(AdminUserProfile profile, bool commit = true)
+    public async Task<DbResult<AdminUserProfile>> UpdateAsync(AdminUserProfile profile, bool commit = true, CancellationToken ct = default)
     {
         this.logger.LogTrace("Updating admin user profile in DB... {Profile}", JsonSerializer.Serialize(profile));
-        DbResult<AdminUserProfile> result = this.GetAdminUserProfile(profile.Username);
+        DbResult<AdminUserProfile> result = await this.GetAdminUserProfileAsync(profile.Username, ct);
         if (result.Status == DbStatusCode.Read)
         {
             // Copy certain attributes into the fetched Admin User Profile
@@ -132,7 +132,7 @@ public class DbAdminUserProfileDelegate : IAdminUserProfileDelegate
             {
                 try
                 {
-                    this.dbContext.SaveChanges();
+                    await this.dbContext.SaveChangesAsync(ct);
                     result.Status = DbStatusCode.Updated;
                 }
                 catch (DbUpdateConcurrencyException e)

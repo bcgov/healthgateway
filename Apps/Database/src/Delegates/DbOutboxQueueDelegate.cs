@@ -43,23 +43,23 @@ public class DbOutboxQueueDelegate : IOutboxQueueDelegate
     }
 
     /// <inheritdoc/>
-    public async Task Commit(CancellationToken ct = default)
+    public async Task CommitAsync(CancellationToken ct = default)
     {
         await this.dbContext.SaveChangesAsync(ct);
     }
 
     /// <inheritdoc/>
-    public async Task<IEnumerable<OutboxItem>> Dequeue(CancellationToken ct = default)
+    public async Task<IEnumerable<OutboxItem>> DequeueAsync(CancellationToken ct = default)
     {
-        var results = await this.dbContext.Outbox.OrderBy(i => i.CreatedOn).ToListAsync(ct);
+        List<OutboxItem> results = await this.dbContext.Outbox.OrderBy(i => i.CreatedOn).ToListAsync(ct);
         this.dbContext.RemoveRange(results);
 
         return results;
     }
 
     /// <inheritdoc/>
-    public async Task Enqueue(IEnumerable<OutboxItem> items, CancellationToken ct = default)
+    public void Enqueue(IEnumerable<OutboxItem> items)
     {
-        await this.dbContext.AddRangeAsync(items, ct);
+        this.dbContext.AddRange(items);
     }
 }

@@ -332,7 +332,7 @@ namespace HealthGateway.GatewayApi.Services
             userProfile.ClosedDateTime = DateTime.UtcNow;
             userProfile.IdentityManagementId = userId;
             DbResult<UserProfile> updateResult = await this.userProfileDelegate.UpdateAsync(userProfile, ct: ct);
-            return await this.HandleUpdateUserProfileResult(updateResult, EmailTemplateName.AccountClosedTemplate, ct);
+            return await this.HandleUpdateUserProfileResultAsync(updateResult, EmailTemplateName.AccountClosedTemplate, ct);
         }
 
         /// <inheritdoc/>
@@ -357,7 +357,7 @@ namespace HealthGateway.GatewayApi.Services
             userProfile.ClosedDateTime = null;
             userProfile.IdentityManagementId = null;
             DbResult<UserProfile> updateResult = await this.userProfileDelegate.UpdateAsync(userProfile, true, ct);
-            await this.HandleUpdateUserProfileResult(updateResult, EmailTemplateName.AccountRecoveredTemplate, ct);
+            await this.HandleUpdateUserProfileResultAsync(updateResult, EmailTemplateName.AccountRecoveredTemplate, ct);
             return RequestResultFactory.Success(await this.BuildUserProfileModelAsync(updateResult.Payload, ct: ct));
         }
 
@@ -452,7 +452,7 @@ namespace HealthGateway.GatewayApi.Services
         }
 
         /// <inheritdoc/>
-        public async Task<bool> IsPhoneNumberValid(string phoneNumber, CancellationToken ct = default)
+        public async Task<bool> IsPhoneNumberValidAsync(string phoneNumber, CancellationToken ct = default)
         {
             return await UserProfileValidator.ValidateUserProfileSmsNumberAsync(phoneNumber, ct);
         }
@@ -523,7 +523,7 @@ namespace HealthGateway.GatewayApi.Services
                 ct);
         }
 
-        private async Task<RequestResult<UserProfileModel>> HandleUpdateUserProfileResult(DbResult<UserProfile> result, string emailTemplateName, CancellationToken ct)
+        private async Task<RequestResult<UserProfileModel>> HandleUpdateUserProfileResultAsync(DbResult<UserProfile> result, string emailTemplateName, CancellationToken ct)
         {
             if (result.Status == DbStatusCode.Updated)
             {

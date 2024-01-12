@@ -136,13 +136,13 @@ public partial class CommunicationsPage : FluxorComponent
     {
         const string title = "Create Notification";
         Broadcast broadcast = new();
-        await this.OpenBroadcastDialogAsync(title, broadcast).ConfigureAwait(true);
+        await this.OpenBroadcastDialogAsync(title, broadcast);
     }
 
     private async Task EditBroadcastAsync(ExtendedBroadcast broadcast)
     {
         const string title = "Edit Notification";
-        await this.OpenBroadcastDialogAsync(title, broadcast).ConfigureAwait(true);
+        await this.OpenBroadcastDialogAsync(title, broadcast);
     }
 
     private async Task OpenBroadcastDialogAsync(string title, Broadcast broadcast)
@@ -156,9 +156,9 @@ public partial class CommunicationsPage : FluxorComponent
 
         DialogParameters parameters = new() { [nameof(BroadcastDialog.Broadcast)] = broadcast };
         DialogOptions options = new() { DisableBackdropClick = true };
-        IDialogReference dialog = await this.Dialog.ShowAsync<BroadcastDialog>(title, parameters, options).ConfigureAwait(true);
+        IDialogReference dialog = await this.Dialog.ShowAsync<BroadcastDialog>(title, parameters, options);
 
-        await dialog.Result.ConfigureAwait(true);
+        await dialog.Result;
         this.IsModalShown = false;
     }
 
@@ -178,7 +178,7 @@ public partial class CommunicationsPage : FluxorComponent
             CommunicationStatusCode = CommunicationStatus.Draft,
         };
 
-        await this.OpenCommunicationDialogAsync(title, communication).ConfigureAwait(true);
+        await this.OpenCommunicationDialogAsync(title, communication);
     }
 
     private async Task EditCommunicationAsync(ExtendedCommunication communication)
@@ -191,7 +191,7 @@ public partial class CommunicationsPage : FluxorComponent
 
         string title = $"Edit {this.SelectedCommunicationName}";
 
-        await this.OpenCommunicationDialogAsync(title, communication).ConfigureAwait(true);
+        await this.OpenCommunicationDialogAsync(title, communication);
     }
 
     private async Task OpenCommunicationDialogAsync(string title, Communication communication)
@@ -205,9 +205,9 @@ public partial class CommunicationsPage : FluxorComponent
 
         DialogParameters parameters = new() { [nameof(CommunicationDialog.Communication)] = communication };
         DialogOptions options = new() { DisableBackdropClick = true };
-        IDialogReference dialog = await this.Dialog.ShowAsync<CommunicationDialog>(title, parameters, options).ConfigureAwait(true);
+        IDialogReference dialog = await this.Dialog.ShowAsync<CommunicationDialog>(title, parameters, options);
 
-        await dialog.Result.ConfigureAwait(true);
+        await dialog.Result;
         this.IsModalShown = false;
     }
 

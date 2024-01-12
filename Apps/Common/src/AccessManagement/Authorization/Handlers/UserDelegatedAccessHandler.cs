@@ -67,7 +67,7 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Handlers
         /// </summary>
         /// <param name="context">The authorization information.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        public override Task HandleAsync(AuthorizationHandlerContext context)
+        public override async Task HandleAsync(AuthorizationHandlerContext context)
         {
             IEnumerable<PersonalFhirRequirement> pendingRequirements = context.PendingRequirements.OfType<PersonalFhirRequirement>();
             foreach (PersonalFhirRequirement requirement in pendingRequirements)
@@ -85,7 +85,7 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Handlers
                     continue;
                 }
 
-                if (!this.IsDelegated(context, resourceHdid, requirement))
+                if (!await this.IsDelegatedAsync(context, resourceHdid, requirement))
                 {
                     this.logger.LogDebug("Non-owner access to {ResourceHdid} rejected", resourceHdid);
                     continue;
@@ -93,26 +93,25 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Handlers
 
                 context.Succeed(requirement);
             }
-
-            return Task.CompletedTask;
         }
 
         /// <summary>
-        /// Check if the authenticated user has delegated read to the patient resource being accessed.
+        /// Check if the authenticated user has delegated permission to access the resource.
         /// </summary>
         /// <param name="context">The authorization handler context.</param>
         /// <param name="resourceHdid">The health data resource subject identifier.</param>
         /// <param name="requirement">The Fhir requirement to satisfy.</param>
-        private bool IsDelegated(AuthorizationHandlerContext context, string resourceHdid, PersonalFhirRequirement requirement)
+        /// <returns>A boolean indicating if the user has delegated permission to access the resource.</returns>
+        private async Task<bool> IsDelegatedAsync(AuthorizationHandlerContext context, string resourceHdid, PersonalFhirRequirement requirement)
         {
             bool retVal = false;
             this.logger.LogInformation("Performing user delegation validation for resource {ResourceHdid}", resourceHdid);
             string? userHdid = context.User.FindFirst(c => c.Type == GatewayClaims.Hdid)?.Value;
             if (userHdid != null)
             {
-                if (this.resourceDelegateDelegate.Exists(resourceHdid, userHdid))
+                if (await this.resourceDelegateDelegate.ExistsAsync(resourceHdid, userHdid))
                 {
-                    if (this.IsExpired(resourceHdid))
+                    if (await this.IsExpiredAsync(resourceHdid))
                     {
                         this.logger.LogError("Performing Observation delegation on resource {ResourceHdid} failed as delegation is expired", resourceHdid);
                     }
@@ -136,7 +135,7 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Handlers
         /// </summary>
         /// <param name="resourceHdid">The resource hdid.</param>
         /// <returns>True if expired, false otherwise.</returns>
-        private bool IsExpired(string resourceHdid)
+        private async Task<bool> IsExpiredAsync(string resourceHdid)
         {
             if (!this.maxDependentAge.HasValue)
             {
@@ -144,7 +143,7 @@ namespace HealthGateway.Common.AccessManagement.Authorization.Handlers
                 return false;
             }
 
-            RequestResult<PatientModel> patientResult = Task.Run(async () => await this.patientService.GetPatientAsync(resourceHdid)).Result;
+            RequestResult<PatientModel> patientResult = await this.patientService.GetPatientAsync(resourceHdid);
 
             return patientResult.ResourcePayload!.Birthdate.AddYears(this.maxDependentAge.Value) < DateTime.Now;
         }

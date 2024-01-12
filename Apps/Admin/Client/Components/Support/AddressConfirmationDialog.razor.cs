@@ -274,9 +274,9 @@ public partial class AddressConfirmationDialog<TErrorAction, TSuccessAction> : F
         this.MudDialog.Cancel();
     }
 
-    private async Task HandleClickConfirm()
+    private async Task HandleClickConfirmAsync()
     {
-        await this.Form.Validate().ConfigureAwait(true);
+        await this.Form.Validate();
         if (!this.Form.IsValid)
         {
             return;

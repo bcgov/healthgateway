@@ -35,7 +35,7 @@ public partial class UnauthorizedPage : ComponentBase
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
-        AuthenticationState authState = await this.AuthenticationStateProvider.GetAuthenticationStateAsync().ConfigureAwait(true);
+        AuthenticationState authState = await this.AuthenticationStateProvider.GetAuthenticationStateAsync();
         if (authState.User.Identity is not { IsAuthenticated: true })
         {
             this.NavigationManager.NavigateTo("/login", replace: true);

@@ -48,7 +48,7 @@ namespace HealthGateway.MedicationTests.Controllers
             MedicationController controller = new(serviceMock.Object);
 
             // Act
-            RequestResult<MedicationInformation> actual = await controller.GetMedication(drugIdentifier);
+            RequestResult<MedicationInformation> actual = await controller.GetMedication(drugIdentifier, default);
 
             // Verify
             serviceMock.Verify(s => s.GetMedicationsAsync(new List<string> { paddedDin }, default), Times.Once());
@@ -89,7 +89,7 @@ namespace HealthGateway.MedicationTests.Controllers
             MedicationController controller = new(serviceMock.Object);
 
             // Act
-            RequestResult<MedicationInformation> actual = await controller.GetMedication(drugIdentifier);
+            RequestResult<MedicationInformation> actual = await controller.GetMedication(drugIdentifier, default);
 
             // Verify
             serviceMock.Verify(s => s.GetMedicationsAsync(new List<string> { paddedDin }, default), Times.Once());
@@ -112,7 +112,7 @@ namespace HealthGateway.MedicationTests.Controllers
             MedicationController controller = new(serviceMock.Object);
 
             // Act
-            RequestResult<IDictionary<string, MedicationInformation>> actual = await controller.GetMedications(drugIdentifiers);
+            RequestResult<IDictionary<string, MedicationInformation>> actual = await controller.GetMedications(drugIdentifiers, default);
 
             // Verify
             serviceMock.Verify(s => s.GetMedicationsAsync(paddedDinList, default), Times.Once());

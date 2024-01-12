@@ -67,7 +67,7 @@ namespace HealthGateway.Medication.Delegates
             this.authDelegate = authDelegate;
             this.autoMapper = autoMapper;
 
-            Config config = configuration.GetValue<Config>(Config.SalesforceConfigSectionKey) ?? new();
+            Config config = configuration.GetSection(Config.SalesforceConfigSectionKey).Get<Config>() ?? new();
             this.clientCredentialsRequest = new() { TokenUri = config.TokenUri, Parameters = config.ClientAuthentication };
         }
 

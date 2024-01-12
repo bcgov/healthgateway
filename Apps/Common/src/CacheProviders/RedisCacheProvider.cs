@@ -142,7 +142,8 @@ namespace HealthGateway.Common.CacheProviders
         }
 
         [SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "Team decision")]
-        private async Task<string?> GetItemJsonAsync(string key, CancellationToken ct = default)
+        [SuppressMessage("ReSharper", "UnusedParameter.Local", Justification = "Team decision")]
+        private async Task<string?> GetItemJsonAsync(string key, CancellationToken ct)
         {
             string? cacheStr = null;
             try

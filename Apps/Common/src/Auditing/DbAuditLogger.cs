@@ -18,6 +18,8 @@ namespace HealthGateway.Common.Auditing
     using System;
     using System.Diagnostics;
     using System.Diagnostics.CodeAnalysis;
+    using System.Threading;
+    using System.Threading.Tasks;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using Microsoft.Extensions.Logging;
@@ -45,18 +47,18 @@ namespace HealthGateway.Common.Auditing
 
         /// <inheritdoc/>
         [SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "Team Decision")]
-        public override void WriteAuditEvent(AuditEvent auditEvent)
+        public override async Task WriteAuditEventAsync(AuditEvent auditEvent, CancellationToken ct = default)
         {
-            this.logger.LogDebug(@"Begin WriteAuditEvent(auditEvent)");
+            this.logger.LogDebug("Begin WriteAuditEvent(auditEvent)");
             using Activity? activity = Source.StartActivity();
             try
             {
-                this.writeEventDelegate.WriteAuditEvent(auditEvent);
-                this.logger.LogDebug(@"Saved AuditEvent");
+                await this.writeEventDelegate.WriteAuditEventAsync(auditEvent, ct);
+                this.logger.LogDebug("Saved AuditEvent");
             }
             catch (Exception ex)
             {
-                this.logger.LogError(ex, @"In WriteAuditEvent");
+                this.logger.LogError(ex, "In WriteAuditEvent");
             }
 
             activity?.Stop();

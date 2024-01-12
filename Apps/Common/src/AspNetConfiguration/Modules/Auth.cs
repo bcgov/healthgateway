@@ -313,7 +313,7 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
                         };
                         options.Events = new JwtBearerEvents
                         {
-                            OnAuthenticationFailed = ctx => OnAuthenticationFailed(logger, ctx, auditLogger),
+                            OnAuthenticationFailed = ctx => OnAuthenticationFailedAsync(logger, ctx, auditLogger),
                         };
                     });
         }
@@ -441,8 +441,8 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
         /// <param name="logger">The logger to use.</param>
         /// <param name="context">The JWT authentication failed context.</param>
         /// <param name="auditLogger">The audit logger provider.</param>
-        /// <returns>An async task.</returns>
-        private static Task OnAuthenticationFailed(ILogger logger, AuthenticationFailedContext context, IAuditLogger auditLogger)
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+        private static async Task OnAuthenticationFailedAsync(ILogger logger, AuthenticationFailedContext context, IAuditLogger auditLogger)
         {
             logger.LogDebug("OnAuthenticationFailed...");
 
@@ -458,9 +458,7 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
             auditEvent.CreatedBy = nameof(StartupConfiguration);
             auditEvent.CreatedDateTime = DateTime.UtcNow;
 
-            auditLogger.WriteAuditEvent(auditEvent);
-
-            return Task.CompletedTask;
+            await auditLogger.WriteAuditEventAsync(auditEvent);
         }
     }
 }

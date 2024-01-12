@@ -43,8 +43,7 @@ public partial class NavigationConfirmation : FluxorComponent
     private async Task BlockNavigationAsync(LocationChangingContext context)
     {
         bool navigationConfirmed = await this.JsRuntime
-            .InvokeAsync<bool>("confirm", "Leave page? Changes you made may not be saved.")
-            .ConfigureAwait(true);
+            .InvokeAsync<bool>("confirm", "Leave page? Changes you made may not be saved.");
 
         if (!navigationConfirmed)
         {

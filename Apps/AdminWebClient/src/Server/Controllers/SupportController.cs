@@ -15,10 +15,14 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Admin.Controllers
 {
+    using System.Collections.Generic;
+    using System.Threading;
     using System.Threading.Tasks;
     using Asp.Versioning;
+    using HealthGateway.Admin.Models;
     using HealthGateway.Admin.Services;
     using HealthGateway.Common.Data.Constants;
+    using HealthGateway.Common.Data.ViewModels;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
 
@@ -48,6 +52,7 @@ namespace HealthGateway.Admin.Controllers
         /// </summary>
         /// <param name="queryType">The type of query to perform.</param>
         /// <param name="queryString">The value to query on.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A list of users matching the query.</returns>
         /// <response code="200">Returns the list of users matching the query.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
@@ -57,15 +62,16 @@ namespace HealthGateway.Admin.Controllers
         /// </response>
         [HttpGet]
         [Route("Users")]
-        public async Task<IActionResult> GetSupportUsers([FromQuery] PatientQueryType queryType, [FromQuery] string queryString)
+        public async Task<RequestResult<IEnumerable<PatientSupportDetails>>> GetSupportUsers([FromQuery] PatientQueryType queryType, [FromQuery] string queryString, CancellationToken ct)
         {
-            return new JsonResult(await this.supportService.GetPatientsAsync(queryType, queryString).ConfigureAwait(true));
+            return await this.supportService.GetPatientsAsync(queryType, queryString, ct);
         }
 
         /// <summary>
         /// Retrieves a list of message verifications matching the query.
         /// </summary>
         /// <param name="hdid">The hdid associated with the messaging verification.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A list of users matching the query.</returns>
         /// <response code="200">Returns the list of users matching the query.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
@@ -75,9 +81,9 @@ namespace HealthGateway.Admin.Controllers
         /// </response>
         [HttpGet]
         [Route("Verifications")]
-        public IActionResult GetMessageVerifications([FromQuery] string hdid)
+        public async Task<RequestResult<IEnumerable<MessagingVerificationModel>>> GetMessageVerifications([FromQuery] string hdid, CancellationToken ct)
         {
-            return new JsonResult(this.supportService.GetMessageVerifications(hdid));
+            return await this.supportService.GetMessageVerificationsAsync(hdid, ct);
         }
     }
 }

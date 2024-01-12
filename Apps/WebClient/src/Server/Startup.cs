@@ -169,7 +169,7 @@ namespace HealthGateway.WebClient.Server
                         return;
                     }
 
-                    await next.Invoke().ConfigureAwait(true);
+                    await next.Invoke();
                 });
         }
     }

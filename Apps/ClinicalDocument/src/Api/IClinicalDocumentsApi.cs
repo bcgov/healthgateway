@@ -34,7 +34,7 @@ namespace HealthGateway.ClinicalDocument.Api
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The clinical document records for the patient identifier.</returns>
         [Get("/patient/{pid}/health-data?Categories=4")]
-        Task<PhsaHealthDataResponse> GetClinicalDocumentRecordsAsync(string pid, CancellationToken ct);
+        Task<PhsaHealthDataResponse> GetClinicalDocumentRecordsAsync(string pid, CancellationToken ct = default);
 
         /// <summary>
         /// Retrieves clinical document file by patient identifier and file id.
@@ -44,6 +44,6 @@ namespace HealthGateway.ClinicalDocument.Api
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The clinical document file for the patient identifier and file id.</returns>
         [Get("/patient/{pid}/file/{id}")]
-        Task<EncodedMedia> GetClinicalDocumentFileAsync(Guid pid, string id, CancellationToken ct);
+        Task<EncodedMedia> GetClinicalDocumentFileAsync(Guid pid, string id, CancellationToken ct = default);
     }
 }

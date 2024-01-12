@@ -50,7 +50,7 @@ namespace HealthGateway.Database.Delegates
         {
             this.logger.LogTrace("Inserting event log to DB...");
             DbResult<EventLog> result = new();
-            await this.dbContext.AddAsync(eventLog, ct);
+            this.dbContext.Add(eventLog);
             if (commit)
             {
                 try

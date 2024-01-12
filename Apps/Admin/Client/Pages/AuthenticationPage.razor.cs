@@ -45,7 +45,7 @@ public partial class AuthenticationPage : ComponentBase
     /// <inheritdoc/>
     protected override async Task OnParametersSetAsync()
     {
-        AuthenticationState authState = await this.AuthenticationStateProvider.GetAuthenticationStateAsync().ConfigureAwait(true);
+        AuthenticationState authState = await this.AuthenticationStateProvider.GetAuthenticationStateAsync();
         if (this.Action == "logout-callback" && authState.User.Identity is { IsAuthenticated: true })
         {
             string loginPath = this.OptionsSnapshot.Get(Options.DefaultName).AuthenticationPaths.LogInPath;

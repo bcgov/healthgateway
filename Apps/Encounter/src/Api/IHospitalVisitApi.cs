@@ -16,6 +16,7 @@
 namespace HealthGateway.Encounter.Api
 {
     using System.Collections.Generic;
+    using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Encounter.Models.PHSA;
@@ -32,11 +33,12 @@ namespace HealthGateway.Encounter.Api
         /// <param name="subjectHdid">The Hdid to query hospital visits.</param>
         /// <param name="limit">The Limit to query hospital visits.</param>
         /// <param name="token">The bearer token to authorize the call.</param>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>
         /// The PHSA Result including the load state and the list of hospital visits for the user identified by
         /// the subject id in the query.
         /// </returns>
         [Get("/api/v1/HospitalVisits?subjectHdid={subjectHdid}&limit={limit}")]
-        Task<PhsaResult<IEnumerable<HospitalVisit>>> GetHospitalVisitsAsync(string subjectHdid, int? limit, [Authorize] string token);
+        Task<PhsaResult<IEnumerable<HospitalVisit>>> GetHospitalVisitsAsync(string subjectHdid, int? limit, [Authorize] string token, CancellationToken ct = default);
     }
 }

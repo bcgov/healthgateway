@@ -55,8 +55,9 @@ namespace HealthGateway.Common.AccessManagement.Authentication
         /// <summary>
         /// Fetches the access token for the authenticated user from the http context.
         /// </summary>
+        /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The access token for the user.</returns>
-        Task<string?> FetchAuthenticatedUserTokenAsync();
+        Task<string?> FetchAuthenticatedUserTokenAsync(CancellationToken ct = default);
 
         /// <summary>
         /// Fetches the HDID for the authenticated user from the http context.

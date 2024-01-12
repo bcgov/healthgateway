@@ -54,7 +54,7 @@ namespace HealthGateway.Database.Delegates
         {
             this.logger.LogTrace("Inserting rating to DB");
             DbResult<Rating> result = new();
-            await this.dbContext.AddAsync(rating, ct);
+            this.dbContext.Add(rating);
             try
             {
                 await this.dbContext.SaveChangesAsync(ct);

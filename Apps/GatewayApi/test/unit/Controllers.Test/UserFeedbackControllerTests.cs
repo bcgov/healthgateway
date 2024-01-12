@@ -60,7 +60,7 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
             userFeedbackServiceMock.Setup(s => s.CreateUserFeedbackAsync(It.IsAny<UserFeedback>(), It.IsAny<CancellationToken>())).ReturnsAsync(mockedDbResult);
 
             UserFeedbackController controller = new(userFeedbackServiceMock.Object);
-            IActionResult actualResult = await controller.CreateUserFeedback(Hdid, userFeedback);
+            IActionResult actualResult = await controller.CreateUserFeedback(Hdid, userFeedback, default);
 
             Assert.IsType<OkResult>(actualResult);
         }
@@ -89,7 +89,7 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
             userFeedbackServiceMock.Setup(s => s.CreateUserFeedbackAsync(It.IsAny<UserFeedback>(), It.IsAny<CancellationToken>())).ReturnsAsync(mockedDbResult);
 
             UserFeedbackController controller = new(userFeedbackServiceMock.Object);
-            IActionResult actualResult = await controller.CreateUserFeedback(Hdid, userFeedback);
+            IActionResult actualResult = await controller.CreateUserFeedback(Hdid, userFeedback, default);
 
             Assert.IsType<ConflictResult>(actualResult);
         }
@@ -110,9 +110,7 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
             userFeedbackServiceMock.Setup(s => s.CreateUserFeedbackAsync(It.IsAny<UserFeedback>(), It.IsAny<CancellationToken>())).ReturnsAsync(mockedDbResult);
 
             UserFeedbackController controller = new(userFeedbackServiceMock.Object);
-#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
-            IActionResult actualResult = await controller.CreateUserFeedback(Hdid, null);
-#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
+            IActionResult actualResult = await controller.CreateUserFeedback(Hdid, null, default);
 
             Assert.IsType<BadRequestResult>(actualResult);
         }

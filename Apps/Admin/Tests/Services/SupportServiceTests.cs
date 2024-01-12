@@ -888,7 +888,7 @@ namespace HealthGateway.Admin.Tests.Services
         private static Mock<IAuthenticationDelegate> GetAuthenticationDelegateMock(string? accessToken)
         {
             Mock<IAuthenticationDelegate> mock = new();
-            mock.Setup(d => d.FetchAuthenticatedUserTokenAsync()).ReturnsAsync(accessToken);
+            mock.Setup(d => d.FetchAuthenticatedUserTokenAsync(It.IsAny<CancellationToken>())).ReturnsAsync(accessToken);
             return mock;
         }
 
@@ -924,7 +924,7 @@ namespace HealthGateway.Admin.Tests.Services
         private static Mock<IResourceDelegateDelegate> GetResourceDelegateDelegateMock(ResourceDelegateQuery query, ResourceDelegateQueryResult result)
         {
             Mock<IResourceDelegateDelegate> mock = new();
-            mock.Setup(d => d.SearchAsync(query)).ReturnsAsync(result);
+            mock.Setup(d => d.SearchAsync(query, It.IsAny<CancellationToken>())).ReturnsAsync(result);
             return mock;
         }
 
@@ -932,21 +932,21 @@ namespace HealthGateway.Admin.Tests.Services
         {
             Mock<IUserProfileDelegate> mock = new();
             mock.Setup(u => u.GetUserProfileAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(profile);
-            mock.Setup(u => u.GetUserProfilesAsync(It.IsAny<UserQueryType>(), It.IsAny<string>())).ReturnsAsync(profiles ?? []);
+            mock.Setup(u => u.GetUserProfilesAsync(It.IsAny<UserQueryType>(), It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(profiles ?? []);
             return mock;
         }
 
         private static Mock<IImmunizationAdminDelegate> GetImmunizationAdminDelegateMock(VaccineDetails details)
         {
             Mock<IImmunizationAdminDelegate> mock = new();
-            mock.Setup(d => d.GetVaccineDetailsWithRetries(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>())).ReturnsAsync(details);
+            mock.Setup(d => d.GetVaccineDetailsWithRetriesAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<CancellationToken>())).ReturnsAsync(details);
             return mock;
         }
 
         private static Mock<IImmunizationAdminApi> GetImmunizationAdminApiMock(CovidAssessmentDetailsResponse response)
         {
             Mock<IImmunizationAdminApi> mock = new();
-            mock.Setup(d => d.GetCovidAssessmentDetails(It.IsAny<CovidAssessmentDetailsRequest>(), It.IsAny<string>())).ReturnsAsync(response);
+            mock.Setup(d => d.GetCovidAssessmentDetailsAsync(It.IsAny<CovidAssessmentDetailsRequest>(), It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(response);
             return mock;
         }
 

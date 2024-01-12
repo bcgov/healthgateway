@@ -40,9 +40,9 @@ namespace HealthGateway.Admin.Server.Services
         /// <inheritdoc/>
         public async Task<AllTimeCounts> GetAllTimeCountsAsync(CancellationToken ct = default)
         {
-            int userProfileCount = await userProfileDelegate.GetUserProfileCount(ct);
+            int userProfileCount = await userProfileDelegate.GetUserProfileCountAsync(ct);
             int dependentCount = await dependentDelegate.GetDependentCountAsync(ct);
-            int closedUserProfileCount = await userProfileDelegate.GetClosedUserProfileCount(ct);
+            int closedUserProfileCount = await userProfileDelegate.GetClosedUserProfileCountAsync(ct);
 
             return new()
             {

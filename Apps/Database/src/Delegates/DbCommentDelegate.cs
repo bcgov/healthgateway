@@ -71,7 +71,7 @@ namespace HealthGateway.Database.Delegates
                 Payload = comment,
                 Status = DbStatusCode.Deferred,
             };
-            await this.dbContext.Comment.AddAsync(comment, ct);
+            this.dbContext.Comment.Add(comment);
             if (commit)
             {
                 try

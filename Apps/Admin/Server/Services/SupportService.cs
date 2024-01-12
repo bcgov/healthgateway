@@ -87,10 +87,10 @@ namespace HealthGateway.Admin.Server.Services
             }
 
             Task<VaccineDetails>? getVaccineDetails =
-                query.IncludeCovidDetails ? this.GetVaccineDetails(patient, query.RefreshVaccineDetails) : null;
+                query.IncludeCovidDetails ? this.GetVaccineDetailsAsync(patient, query.RefreshVaccineDetails, ct) : null;
 
             Task<CovidAssessmentDetailsResponse>? getCovidAssessmentDetails =
-                query.IncludeCovidDetails ? immunizationAdminApi.GetCovidAssessmentDetails(new() { Phn = patient.Phn }, await this.GetAccessTokenAsync()) : null;
+                query.IncludeCovidDetails ? immunizationAdminApi.GetCovidAssessmentDetailsAsync(new() { Phn = patient.Phn }, await this.GetAccessTokenAsync(ct), ct) : null;
 
             IEnumerable<MessagingVerificationModel>? messagingVerifications =
                 query.IncludeMessagingVerifications ? await this.GetMessagingVerificationsAsync(patient.Hdid, ct) : null;
@@ -130,9 +130,9 @@ namespace HealthGateway.Admin.Server.Services
                 PatientQueryType.Dependent =>
                     await this.GetDelegateProfilesAsync(queryString, ct),
                 PatientQueryType.Email =>
-                    await userProfileDelegate.GetUserProfilesAsync(UserQueryType.Email, queryString),
+                    await userProfileDelegate.GetUserProfilesAsync(UserQueryType.Email, queryString, ct),
                 PatientQueryType.Sms =>
-                    await userProfileDelegate.GetUserProfilesAsync(UserQueryType.Sms, queryString),
+                    await userProfileDelegate.GetUserProfilesAsync(UserQueryType.Sms, queryString, ct),
                 _ =>
                     throw new ProblemDetailsException(ExceptionUtility.CreateProblemDetails($"Unknown {nameof(queryType)}", HttpStatusCode.BadRequest, nameof(SupportService))),
             };
@@ -196,7 +196,7 @@ namespace HealthGateway.Admin.Server.Services
         private async Task<IEnumerable<PatientSupportDependentInfo>> GetAllDependentInfoAsync(string delegateHdid, CancellationToken ct)
         {
             ResourceDelegateQuery query = new() { ByDelegateHdid = delegateHdid, IncludeDependent = true };
-            ResourceDelegateQueryResult result = await resourceDelegateDelegate.SearchAsync(query);
+            ResourceDelegateQueryResult result = await resourceDelegateDelegate.SearchAsync(query, ct);
             IEnumerable<Task<PatientSupportDependentInfo?>> tasks = result.Items.Select(r => this.GetDependentInfoAsync(r, ct));
             return (await Task.WhenAll(tasks)).OfType<PatientSupportDependentInfo>();
         }
@@ -215,20 +215,20 @@ namespace HealthGateway.Admin.Server.Services
             return dependentInfo;
         }
 
-        private async Task<VaccineDetails> GetVaccineDetails(PatientModel patient, bool refresh)
+        private async Task<VaccineDetails> GetVaccineDetailsAsync(PatientModel patient, bool refresh, CancellationToken ct)
         {
             if (!string.IsNullOrEmpty(patient.Phn) && patient.Birthdate != DateTime.MinValue)
             {
-                return await immunizationAdminDelegate.GetVaccineDetailsWithRetries(patient.Phn, await this.GetAccessTokenAsync(), refresh);
+                return await immunizationAdminDelegate.GetVaccineDetailsWithRetriesAsync(patient.Phn, await this.GetAccessTokenAsync(ct), refresh, ct);
             }
 
             logger.LogError("Patient PHN {PersonalHealthNumber} or DOB {Birthdate}) are invalid", patient.Phn, patient.Birthdate);
             throw new ProblemDetailsException(ExceptionUtility.CreateProblemDetails(ErrorMessages.PhnOrDateAndBirthInvalid, HttpStatusCode.BadRequest, nameof(SupportService)));
         }
 
-        private async Task<string> GetAccessTokenAsync()
+        private async Task<string> GetAccessTokenAsync(CancellationToken ct)
         {
-            string? accessToken = await authenticationDelegate.FetchAuthenticatedUserTokenAsync();
+            string? accessToken = await authenticationDelegate.FetchAuthenticatedUserTokenAsync(ct);
             return accessToken ?? throw new ProblemDetailsException(ExceptionUtility.CreateProblemDetails(ErrorMessages.CannotFindAccessToken, HttpStatusCode.Unauthorized, nameof(SupportService)));
         }
 
@@ -271,7 +271,7 @@ namespace HealthGateway.Admin.Server.Services
                 IncludeProfile = true,
                 TakeAmount = 25,
             };
-            ResourceDelegateQueryResult result = await resourceDelegateDelegate.SearchAsync(query);
+            ResourceDelegateQueryResult result = await resourceDelegateDelegate.SearchAsync(query, ct);
             return result.Items.Select(c => c.ResourceDelegate.UserProfile);
         }
     }

@@ -35,7 +35,7 @@ namespace HealthGateway.Admin.Client.Pages
         /// <inheritdoc/>
         protected override async Task OnInitializedAsync()
         {
-            AuthenticationState authState = await this.AuthenticationStateProvider.GetAuthenticationStateAsync().ConfigureAwait(true);
+            AuthenticationState authState = await this.AuthenticationStateProvider.GetAuthenticationStateAsync();
             ClaimsPrincipal user = authState.User;
 
             if (user.IsInRole(Roles.Admin) || user.IsInRole(Roles.Reviewer) || user.IsInRole(Roles.Analyst))

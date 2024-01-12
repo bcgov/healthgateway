@@ -176,7 +176,7 @@ namespace HealthGateway.Admin.Tests.Services
         /// <summary>
         /// Tests dependent should be protected given new dependent.
         /// </summary>
-        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
         public async Task ShouldProtectDependentGivenNewDependent()
         {
@@ -223,13 +223,14 @@ namespace HealthGateway.Admin.Tests.Services
                     It.Is<Dependent>(d => AssertProtectedDependant(expectedDependent, d)),
                     It.Is<IEnumerable<ResourceDelegate>>(rd => AssertProtectedDependentResourceDelegates(expectedDeletedResourceDelegates.ToList(), rd.ToList())),
                     It.Is<AgentAudit>(da => AssertAgentAudit(expectedAgentAudit, da)),
-                    It.Is<bool>(c => true)));
+                    It.Is<bool>(c => true),
+                    It.IsAny<CancellationToken>()));
         }
 
         /// <summary>
         /// Tests dependent should be protected given new dependent.
         /// </summary>
-        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
         public async Task ShouldUnprotectDependent()
         {
@@ -266,13 +267,14 @@ namespace HealthGateway.Admin.Tests.Services
                     It.Is<Dependent>(d => AssertProtectedDependant(expectedDependent, d)),
                     It.Is<IEnumerable<ResourceDelegate>>(rd => AssertProtectedDependentResourceDelegates(expectedDeletedResourceDelegates.ToList(), rd.ToList())),
                     It.Is<AgentAudit>(da => AssertAgentAudit(expectedAgentAudit, da)),
-                    It.Is<bool>(c => true)));
+                    It.Is<bool>(c => true),
+                    It.IsAny<CancellationToken>()));
         }
 
         /// <summary>
         /// Tests dependent should be protected given existing dependent.
         /// </summary>
-        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
         public async Task ShouldProtectDependentGivenExistingDependent()
         {
@@ -325,13 +327,14 @@ namespace HealthGateway.Admin.Tests.Services
                     It.Is<Dependent>(d => AssertProtectedDependant(expectedDependent, d)),
                     It.Is<IEnumerable<ResourceDelegate>>(rd => AssertProtectedDependentResourceDelegates(expectedDeletedResourceDelegates.ToList(), rd.ToList())),
                     It.Is<AgentAudit>(da => AssertAgentAudit(expectedAgentAudit, da)),
-                    It.Is<bool>(c => true)));
+                    It.Is<bool>(c => true),
+                    It.IsAny<CancellationToken>()));
         }
 
         /// <summary>
         /// Tests unprotect dependent throws problem details exception when dependent not found.
         /// </summary>
-        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
         public async Task ShouldUnprotectDependentThrowNotFoundException()
         {
@@ -739,7 +742,7 @@ namespace HealthGateway.Admin.Tests.Services
                 ],
             };
             Mock<IResourceDelegateDelegate> resourceDelegateDelegate = new();
-            resourceDelegateDelegate.Setup(r => r.SearchAsync(It.IsAny<ResourceDelegateQuery>())).ReturnsAsync(result);
+            resourceDelegateDelegate.Setup(r => r.SearchAsync(It.IsAny<ResourceDelegateQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(result);
 
             Mock<IDelegationDelegate> delegationDelegate = new();
             delegationDelegate.Setup(p => p.GetDependentAsync(DependentHdid, true, CancellationToken.None)).ReturnsAsync(protectedDependent);
@@ -772,7 +775,7 @@ namespace HealthGateway.Admin.Tests.Services
             authenticationDelegate.Setup(a => a.FetchAuthenticatedPreferredUsername()).Returns(authenticatedPreferredUsername);
 
             Mock<IResourceDelegateDelegate> resourceDelegateDelegate = new();
-            resourceDelegateDelegate.Setup(r => r.SearchAsync(new() { ByOwnerHdid = resourceOwnerHdid })).ReturnsAsync(resourceDelegateQueryResult);
+            resourceDelegateDelegate.Setup(r => r.SearchAsync(new() { ByOwnerHdid = resourceOwnerHdid }, It.IsAny<CancellationToken>())).ReturnsAsync(resourceDelegateQueryResult);
 
             delegationDelegate.Setup(p => p.GetDependentAsync(resourceOwnerHdid, true, CancellationToken.None)).ReturnsAsync(dependent);
 

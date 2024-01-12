@@ -35,7 +35,7 @@ namespace HealthGateway.Common.Api
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A list of UserRepresentation objects.</returns>
         [Get("/users?briefRepresentation=true&username={username}&exact=true")]
-        Task<List<UserRepresentation>> GetUsersByUsernameAsync(string username, [Authorize] string token, CancellationToken ct);
+        Task<List<UserRepresentation>> GetUsersByUsernameAsync(string username, [Authorize] string token, CancellationToken ct = default);
 
         /// <summary>
         /// Returns users for the role passed in.
@@ -47,7 +47,7 @@ namespace HealthGateway.Common.Api
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A List of UserRepresentation objects.</returns>
         [Get("/roles/{role}/users?first={first}&max={max}")]
-        Task<List<UserRepresentation>> GetUsersByRoleAsync(string role, int first, int max, [Authorize] string token, CancellationToken ct);
+        Task<List<UserRepresentation>> GetUsersByRoleAsync(string role, int first, int max, [Authorize] string token, CancellationToken ct = default);
 
         /// <summary>
         /// Look up User accounts by username, first or last name, or email.
@@ -59,7 +59,7 @@ namespace HealthGateway.Common.Api
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A List of UserRepresentation objects.</returns>
         [Get("/users?briefRepresentation=true&first={first}&max={max}&search={searchCriteria}")]
-        Task<List<UserRepresentation>> GetUsersSearchAsync(string searchCriteria, int first, int max, [Authorize] string token, CancellationToken ct);
+        Task<List<UserRepresentation>> GetUsersSearchAsync(string searchCriteria, int first, int max, [Authorize] string token, CancellationToken ct = default);
 
         /// <summary>
         /// Adds a user.
@@ -69,7 +69,7 @@ namespace HealthGateway.Common.Api
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>Returns true when user created.</returns>
         [Post("/users")]
-        Task AddUserAsync([Body] UserRepresentation userRepresentation, [Authorize] string token, CancellationToken ct);
+        Task AddUserAsync([Body] UserRepresentation userRepresentation, [Authorize] string token, CancellationToken ct = default);
 
         /// <summary>
         /// Get realm roles for user.
@@ -79,7 +79,7 @@ namespace HealthGateway.Common.Api
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A List of RoleRepresentation objects.</returns>
         [Get("/users/{userId}/role-mappings/realm")]
-        Task<List<RoleRepresentation>> GetUserRolesAsync(Guid userId, [Authorize] string token, CancellationToken ct);
+        Task<List<RoleRepresentation>> GetUserRolesAsync(Guid userId, [Authorize] string token, CancellationToken ct = default);
 
         /// <summary>
         /// Adds realm roles to user.
@@ -90,7 +90,7 @@ namespace HealthGateway.Common.Api
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>Returns true when roles added.</returns>
         [Post("/users/{userId}/role-mappings/realm")]
-        Task AddUserRolesAsync(Guid userId, [Body] IEnumerable<RoleRepresentation> roles, [Authorize] string token, CancellationToken ct);
+        Task AddUserRolesAsync(Guid userId, [Body] IEnumerable<RoleRepresentation> roles, [Authorize] string token, CancellationToken ct = default);
 
         /// <summary>
         /// Deletes realm roles from user.
@@ -101,7 +101,7 @@ namespace HealthGateway.Common.Api
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>Returns true when roles deleted.</returns>
         [Delete("/users/{userId}/role-mappings/realm")]
-        Task DeleteUserRolesAsync(Guid userId, [Body] IEnumerable<RoleRepresentation> roles, [Authorize] string token, CancellationToken ct);
+        Task DeleteUserRolesAsync(Guid userId, [Body] IEnumerable<RoleRepresentation> roles, [Authorize] string token, CancellationToken ct = default);
 
         /// <summary>
         /// Get all realm roles.
@@ -110,7 +110,7 @@ namespace HealthGateway.Common.Api
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>A list of RoleRepresentations.</returns>
         [Get("/roles")]
-        Task<List<RoleRepresentation>> GetRealmRolesAsync([Authorize] string token, CancellationToken ct);
+        Task<List<RoleRepresentation>> GetRealmRolesAsync([Authorize] string token, CancellationToken ct = default);
 
         /// <summary>
         /// Delete a User account from the Identity and Access Management system.
@@ -120,6 +120,6 @@ namespace HealthGateway.Common.Api
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>Returns true when user deleted.</returns>
         [Delete("/users/{userId}")]
-        Task DeleteUserAsync(Guid userId, [Authorize] string token, CancellationToken ct);
+        Task DeleteUserAsync(Guid userId, [Authorize] string token, CancellationToken ct = default);
     }
 }

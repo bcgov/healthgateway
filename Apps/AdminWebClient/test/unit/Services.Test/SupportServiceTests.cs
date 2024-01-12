@@ -33,8 +33,6 @@ namespace HealthGateway.AdminWebClientTests.Services.Test
     using HealthGateway.Common.Services;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
-    using HealthGateway.Database.Models;
-    using HealthGateway.Database.Wrapper;
     using Moq;
     using Xunit;
     using UserProfile = HealthGateway.Common.Data.Models.UserProfile;
@@ -187,14 +185,15 @@ namespace HealthGateway.AdminWebClientTests.Services.Test
         /// <summary>
         /// Gets Verifications by Hdid.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public void ShouldGetVerifications()
+        public async Task ShouldGetVerifications()
         {
             // Arrange
             ISupportService supportService = CreateSupportService(GetVerifications());
 
             // Act
-            RequestResult<IEnumerable<MessagingVerificationModel>> actualResult = supportService.GetMessageVerifications(Hdid);
+            RequestResult<IEnumerable<MessagingVerificationModel>> actualResult = await supportService.GetMessageVerificationsAsync(Hdid);
 
             // Assert
             Assert.Equal(ResultType.Success, actualResult.ResultStatus);
@@ -214,29 +213,20 @@ namespace HealthGateway.AdminWebClientTests.Services.Test
 
             Mock<IPatientService> patientServiceMock = new();
             patientServiceMock
-                .Setup(m => m.GetPatientHdid(It.Is<string>(phn => phn == dependentPhn)))
+                .Setup(m => m.GetPatientHdidAsync(It.Is<string>(phn => phn == dependentPhn), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(dependentHdid);
 
             Mock<IResourceDelegateDelegate> resourceDelegateDelegateMock = new();
             resourceDelegateDelegateMock
-                .Setup(d => d.SearchAsync(It.IsAny<ResourceDelegateQuery>()))
+                .Setup(d => d.SearchAsync(It.IsAny<ResourceDelegateQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(
-                    (ResourceDelegateQuery query) =>
+                    (ResourceDelegateQuery query, CancellationToken _) => new()
                     {
-                        // ensure a result is always returned from the database
-                        string[] items = query.ByOwnerHdid == dependentHdid
+                        Items = query.ByOwnerHdid == dependentHdid
                             ? expectedDelegateHdids
-                            : Array.Empty<string>();
-
-                        return new()
-                        {
-                            Items = items.Select(
-                                    i => new ResourceDelegateQueryResultItem
-                                    {
-                                        ResourceDelegate = new ResourceDelegate { ResourceOwnerHdid = dependentHdid, ProfileHdid = i },
-                                    })
-                                .ToList(),
-                        };
+                                .Select(i => new ResourceDelegateQueryResultItem { ResourceDelegate = new() { ResourceOwnerHdid = dependentHdid, ProfileHdid = i } })
+                                .ToList()
+                            : [],
                     });
 
             ISupportService supportService = CreateSupportService(patientServiceMock: patientServiceMock, resourceDelegateDelegateMock: resourceDelegateDelegateMock);
@@ -311,26 +301,17 @@ namespace HealthGateway.AdminWebClientTests.Services.Test
             };
         }
 
-        private static DbResult<UserProfile> GetUserProfile(DbStatusCode statusCode)
+        private static UserProfile? GetUserProfile(DbStatusCode statusCode)
         {
-            switch (statusCode)
+            return statusCode switch
             {
-                case DbStatusCode.NotFound:
-                    return new DbResult<UserProfile>
-                    {
-                        Status = DbStatusCode.NotFound,
-                    };
-                default:
-                    return new DbResult<UserProfile>
-                    {
-                        Status = DbStatusCode.Read,
-                        Payload = new UserProfile
-                        {
-                            HdId = Hdid,
-                            LastLoginDateTime = DateTime.UtcNow,
-                        },
-                    };
-            }
+                DbStatusCode.NotFound => null,
+                _ => new UserProfile
+                {
+                    HdId = Hdid,
+                    LastLoginDateTime = DateTime.UtcNow,
+                },
+            };
         }
 
         private static IList<UserProfile> GetUserProfiles()
@@ -374,7 +355,7 @@ namespace HealthGateway.AdminWebClientTests.Services.Test
 
         private static ISupportService CreateSupportService(
             RequestResult<PatientModel>? patientResult = null,
-            DbResult<UserProfile>? userProfileResult = null,
+            UserProfile? userProfileResult = null,
             IList<UserProfile>? userProfilesResult = null,
             IList<MessagingVerification>? verificationResult = null)
         {
@@ -389,8 +370,9 @@ namespace HealthGateway.AdminWebClientTests.Services.Test
             }
 
             Mock<IUserProfileDelegate> mockUserProfileDelegate = new();
-            mockUserProfileDelegate.Setup(u => u.GetUserProfile(It.IsAny<string>())).Returns(userProfileResult);
-            mockUserProfileDelegate.Setup(u => u.GetUserProfilesAsync(It.IsAny<UserQueryType>(), It.IsAny<string>())).ReturnsAsync(userProfilesResult ?? new List<UserProfile>());
+            mockUserProfileDelegate.Setup(u => u.GetUserProfileAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(userProfileResult);
+            mockUserProfileDelegate.Setup(u => u.GetUserProfilesAsync(It.IsAny<UserQueryType>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(userProfilesResult ?? new List<UserProfile>());
 
             return CreateSupportService(
                 mockUserProfileDelegate,
