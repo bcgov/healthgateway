@@ -164,7 +164,7 @@ namespace HealthGateway.Admin.Server.Services
             {
                 return await this.GetPatientAsync(query, ct);
             }
-            catch (ProblemDetailsException e) when (e.ProblemDetails?.StatusCode == HttpStatusCode.NotFound)
+            catch (ProblemDetailsException e) when (e.ProblemDetails?.Status == HttpStatusCode.NotFound)
             {
                 return null;
             }

@@ -28,13 +28,7 @@ namespace HealthGateway.Common.MapProfiles
         /// </summary>
         public ProblemDetailsProfile()
         {
-            this.CreateMap<HealthGateway.Common.Data.ErrorHandling.ProblemDetails, ProblemDetails>()
-                .ForMember(
-                    dest => dest.Status,
-                    opt => opt.MapFrom(src => (int)src.Status))
-                .ForMember(
-                    dest => dest.Type,
-                    opt => opt.MapFrom(src => src.Type));
+            this.CreateMap<HealthGateway.Common.Data.ErrorHandling.ProblemDetails, ProblemDetails>();
         }
     }
 }

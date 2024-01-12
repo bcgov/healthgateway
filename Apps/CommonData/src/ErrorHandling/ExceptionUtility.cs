@@ -36,15 +36,17 @@ namespace HealthGateway.Common.Data.ErrorHandling
             string detail,
             HttpStatusCode statusCode,
             string typeName,
-            [CallerMemberName] string memberName = "") =>
-            new()
+            [CallerMemberName] string memberName = "")
+        {
+            return new ProblemDetails
             {
-                ProblemType = "Health Gateway Exception",
+                Type = "Health Gateway Exception",
                 Title = "Error during processing",
                 Detail = detail,
-                StatusCode = statusCode,
+                Status = statusCode,
                 Instance = $"{typeName}.{memberName}",
             };
+        }
 
         /// <summary>
         /// Creates a problem details describing a validation error with 400 bad request status.
@@ -52,16 +54,20 @@ namespace HealthGateway.Common.Data.ErrorHandling
         /// <param name="memberName">The invalid member name.</param>
         /// <param name="details">The details of the validation error.</param>
         /// <returns>ProblemDetail instance with validation type and 400 http error.</returns>
-        public static ProblemDetails CreateValidationError(string memberName, string details) =>
-            CreateProblemDetails(details, HttpStatusCode.BadRequest, "Validation", memberName);
+        public static ProblemDetails CreateValidationError(string memberName, string details)
+        {
+            return CreateProblemDetails(details, HttpStatusCode.BadRequest, "Validation", memberName);
+        }
 
         /// <summary>
         /// Creates a problem details describing a not found error with 404 request status.
         /// </summary>
         /// <param name="details">The details of what was not found.</param>
         /// <returns>ProblemDetail instance with not found type and 404 status code.</returns>
-        public static ProblemDetails CreateNotFoundError(string details) =>
-            CreateProblemDetails(details, HttpStatusCode.NotFound, "NotFound");
+        public static ProblemDetails CreateNotFoundError(string details)
+        {
+            return CreateProblemDetails(details, HttpStatusCode.NotFound, "NotFound");
+        }
 
         /// <summary>
         /// Creates a problem details describing a not found error with 404 request status.
@@ -69,7 +75,9 @@ namespace HealthGateway.Common.Data.ErrorHandling
         /// <param name="type">The type of the server error</param>
         /// <param name="details">The details of what was not found.</param>
         /// <returns>ProblemDetail instance with not found type and 404 status code.</returns>
-        public static ProblemDetails CreateServerError(string type, string details) =>
-            CreateProblemDetails(details, HttpStatusCode.InternalServerError, type);
+        public static ProblemDetails CreateServerError(string type, string details)
+        {
+            return CreateProblemDetails(details, HttpStatusCode.InternalServerError, type);
+        }
     }
 }

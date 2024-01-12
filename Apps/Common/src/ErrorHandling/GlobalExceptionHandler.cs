@@ -30,17 +30,10 @@ namespace HealthGateway.Common.ErrorHandling
         /// <inheritdoc/>
         public async ValueTask<bool> TryHandleAsync(HttpContext httpContext, Exception exception, CancellationToken cancellationToken)
         {
-            // logger.LogError(exception, "Exception has occurred: {Message}", exception.Message);
-
             ProblemDetails problemDetails = new();
             if (exception is ProblemDetailsException problemDetailsException)
             {
-                problemDetails.Title = problemDetailsException.ProblemDetails?.Title;
-                problemDetails.Status = (int?)problemDetailsException.ProblemDetails?.StatusCode ?? StatusCodes.Status500InternalServerError;
-                problemDetails.Detail = problemDetailsException.ProblemDetails?.Detail;
-                problemDetails.Instance = problemDetailsException.ProblemDetails?.Instance;
-
-                // problemDetails = mapper.Map<ProblemDetailsException, ProblemDetails>(problemDetailsException);
+                problemDetails = mapper.Map<ProblemDetailsException, ProblemDetails>(problemDetailsException);
             }
             else
             {
@@ -50,7 +43,7 @@ namespace HealthGateway.Common.ErrorHandling
                 problemDetails.Instance = httpContext.Request.Path;
             }
 
-            httpContext.Response.StatusCode = problemDetails.Status ?? StatusCodes.Status304NotModified;
+            httpContext.Response.StatusCode = problemDetails.Status ?? StatusCodes.Status500InternalServerError;
             await httpContext.Response.WriteAsJsonAsync(problemDetails, cancellationToken);
 
             return true;
