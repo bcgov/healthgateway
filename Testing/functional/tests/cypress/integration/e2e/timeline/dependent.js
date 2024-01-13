@@ -113,7 +113,12 @@ function disabledDependentDatasetShouldNotBePresent(
         },
     });
 
-    cy.visit(`/dependents/${hdid}/timeline`);
+    cy.login(
+        Cypress.env("keycloak.username"),
+        Cypress.env("keycloak.password"),
+        AuthMethod.KeyCloak,
+        `/dependents/${hdid}/timeline`
+    );
     cy.checkTimelineHasLoaded();
 
     cy.log(

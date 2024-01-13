@@ -97,6 +97,7 @@ namespace HealthGateway.Database.Delegates
                     try
                     {
                         await this.dbContext.SaveChangesAsync(ct);
+                        result.Payload = userProfile;
                         result.Status = DbStatusCode.Updated;
                     }
                     catch (DbUpdateConcurrencyException e)
