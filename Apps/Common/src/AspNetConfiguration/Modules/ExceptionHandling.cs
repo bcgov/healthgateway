@@ -17,8 +17,8 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
 {
     using System.Diagnostics.CodeAnalysis;
     using HealthGateway.Common.ErrorHandling;
+    using HealthGateway.Common.MapProfiles;
     using Microsoft.AspNetCore.Builder;
-    using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.DependencyInjection;
 
     /// <summary>
@@ -31,9 +31,9 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
         /// Adds and configures the services required to use problem details.
         /// </summary>
         /// <param name="services">The service collection to add forward proxies into.</param>
-        /// <param name="environment">The environment the services are associated with.</param>
-        public static void ConfigureProblemDetails(IServiceCollection services, IWebHostEnvironment environment)
+        public static void ConfigureProblemDetails(IServiceCollection services)
         {
+            services.AddAutoMapper(typeof(ProblemDetailsProfile));
             services.AddExceptionHandler<GlobalExceptionHandler>();
             services.AddProblemDetails();
         }

@@ -54,6 +54,15 @@ namespace HealthGateway.Common.AspNetConfiguration
         public ILogger Logger { get; }
 
         /// <summary>
+        /// Configures the services required to use problem details.
+        /// </summary>
+        /// <param name="services">The service collection provider.</param>
+        public static void ConfigureProblemDetails(IServiceCollection services)
+        {
+            ExceptionHandling.ConfigureProblemDetails(services);
+        }
+
+        /// <summary>
         /// Configures the http services.
         /// </summary>
         /// <param name="services">The service collection provider.</param>
@@ -123,15 +132,6 @@ namespace HealthGateway.Common.AspNetConfiguration
         public void ConfigureSwaggerServices(IServiceCollection services)
         {
             SwaggerDoc.ConfigureSwaggerServices(services, this.Configuration);
-        }
-
-        /// <summary>
-        /// Configures the services required to use problem details.
-        /// </summary>
-        /// <param name="services">The service collection provider.</param>
-        public void ConfigureProblemDetails(IServiceCollection services)
-        {
-            ExceptionHandling.ConfigureProblemDetails(services, this.environment);
         }
 
         /// <summary>
@@ -214,7 +214,7 @@ namespace HealthGateway.Common.AspNetConfiguration
         /// If true, app will use development exception page. Should be false when using problem
         /// details middleware.
         /// </param>
-        public void UseHttp(IApplicationBuilder app, bool useExceptionPage = true)
+        public void UseHttp(IApplicationBuilder app, bool useExceptionPage = false)
         {
             HttpWeb.UseHttp(app, this.Logger, this.Configuration, this.environment, false, useExceptionPage);
         }

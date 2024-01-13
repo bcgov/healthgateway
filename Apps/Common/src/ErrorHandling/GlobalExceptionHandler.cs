@@ -21,19 +21,23 @@ namespace HealthGateway.Common.ErrorHandling
     using AutoMapper;
     using HealthGateway.Common.Data.ErrorHandling;
     using Microsoft.AspNetCore.Diagnostics;
+    using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Http;
+    using Microsoft.Extensions.Hosting;
     using ProblemDetails = Microsoft.AspNetCore.Mvc.ProblemDetails;
 
     /// <inheritdoc/>
-    internal sealed class GlobalExceptionHandler(IMapper mapper) : IExceptionHandler
+    internal sealed class GlobalExceptionHandler(IMapper mapper, IWebHostEnvironment environment) : IExceptionHandler
     {
         /// <inheritdoc/>
         public async ValueTask<bool> TryHandleAsync(HttpContext httpContext, Exception exception, CancellationToken cancellationToken)
         {
+            bool includeException = environment.IsDevelopment();
+
             ProblemDetails problemDetails = new();
             if (exception is ProblemDetailsException problemDetailsException)
             {
-                problemDetails = mapper.Map<ProblemDetailsException, ProblemDetails>(problemDetailsException);
+                problemDetails = mapper.Map<HealthGateway.Common.Data.ErrorHandling.ProblemDetails, ProblemDetails>(problemDetailsException.ProblemDetails);
             }
             else
             {
@@ -41,6 +45,24 @@ namespace HealthGateway.Common.ErrorHandling
                 problemDetails.Status = StatusCodes.Status500InternalServerError;
                 problemDetails.Detail = exception.Message;
                 problemDetails.Instance = httpContext.Request.Path;
+                problemDetails.Type = exception.GetType().ToString();
+            }
+
+            problemDetails.Extensions["traceId"] = httpContext.TraceIdentifier;
+            if (includeException)
+            {
+                problemDetails.Extensions["Exception"] = new
+                {
+                    exception.Message,
+                    exception.StackTrace,
+                    InnerMessage = exception.InnerException != null
+                        ? new
+                        {
+                            exception.InnerException.Message,
+                            exception.InnerException.StackTrace,
+                        }
+                        : null,
+                };
             }
 
             httpContext.Response.StatusCode = problemDetails.Status ?? StatusCodes.Status500InternalServerError;

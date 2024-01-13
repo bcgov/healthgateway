@@ -135,7 +135,7 @@ namespace HealthGateway.Admin.Server
             JobScheduler.ConfigureHangfireQueue(services, configuration);
             Patient.ConfigurePatientAccess(services, logger, configuration);
             PhsaV2.ConfigurePhsaV2Access(services, logger, configuration, PhsaConfigV2.AdminConfigurationSectionKey);
-            ExceptionHandling.ConfigureProblemDetails(services, environment);
+            ExceptionHandling.ConfigureProblemDetails(services);
             MessageBus.ConfigureMessageBus(services, configuration);
             Utility.ConfigureTracing(services, logger, configuration);
         }
