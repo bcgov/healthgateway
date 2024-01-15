@@ -31,6 +31,7 @@ namespace HealthGateway.GatewayApi
     using HealthGateway.Common.Utils;
     using HealthGateway.Common.Utils.Phsa;
     using HealthGateway.Database.Delegates;
+    using HealthGateway.Database.Events;
     using HealthGateway.GatewayApi.Api;
     using HealthGateway.GatewayApi.MapProfiles;
     using HealthGateway.GatewayApi.Services;
@@ -65,6 +66,10 @@ namespace HealthGateway.GatewayApi
         /// <param name="services">The injected services provider.</param>
         public void ConfigureServices(IServiceCollection services)
         {
+            // Add events
+            services.AddSingleton<UserProfileEventPublisher>();
+            services.AddScoped<UserProfileEventConsumer>();
+
             this.startupConfig.ConfigureProblemDetails(services);
             this.startupConfig.ConfigureForwardHeaders(services);
             this.startupConfig.ConfigureDatabaseServices(services);
