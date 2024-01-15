@@ -548,7 +548,7 @@ namespace HealthGateway.Admin.Tests.Services
                 ;
 
             // Assert
-            Assert.Equal(HttpStatusCode.BadRequest, exception.ProblemDetails?.StatusCode);
+            Assert.Equal(HttpStatusCode.BadRequest, exception.ProblemDetails?.Status);
         }
 
         /// <summary>

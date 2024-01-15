@@ -54,6 +54,15 @@ namespace HealthGateway.Common.AspNetConfiguration
         public ILogger Logger { get; }
 
         /// <summary>
+        /// Configures the services required to use problem details.
+        /// </summary>
+        /// <param name="services">The service collection provider.</param>
+        public static void ConfigureProblemDetails(IServiceCollection services)
+        {
+            ExceptionHandling.ConfigureProblemDetails(services);
+        }
+
+        /// <summary>
         /// Configures the http services.
         /// </summary>
         /// <param name="services">The service collection provider.</param>
@@ -123,15 +132,6 @@ namespace HealthGateway.Common.AspNetConfiguration
         public void ConfigureSwaggerServices(IServiceCollection services)
         {
             SwaggerDoc.ConfigureSwaggerServices(services, this.Configuration);
-        }
-
-        /// <summary>
-        /// Configures the services required to use problem details.
-        /// </summary>
-        /// <param name="services">The service collection provider.</param>
-        public void ConfigureProblemDetails(IServiceCollection services)
-        {
-            ExceptionHandling.ConfigureProblemDetails(services, this.environment);
         }
 
         /// <summary>

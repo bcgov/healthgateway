@@ -16,16 +16,10 @@
 namespace HealthGateway.Common.AspNetConfiguration.Modules
 {
     using System.Diagnostics.CodeAnalysis;
-    using System.Net;
-    using System.ServiceModel;
-    using Hellang.Middleware.ProblemDetails;
+    using HealthGateway.Common.ErrorHandling;
+    using HealthGateway.Common.MapProfiles;
     using Microsoft.AspNetCore.Builder;
-    using Microsoft.AspNetCore.Hosting;
-    using Microsoft.AspNetCore.Http;
-    using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.DependencyInjection;
-    using Microsoft.Extensions.Hosting;
-    using ProblemDetailsException = HealthGateway.Common.Data.ErrorHandling.ProblemDetailsException;
 
     /// <summary>
     /// Provides ASP.Net Services for exception handling.
@@ -37,26 +31,11 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
         /// Adds and configures the services required to use problem details.
         /// </summary>
         /// <param name="services">The service collection to add forward proxies into.</param>
-        /// <param name="environment">The environment the services are associated with.</param>
-        public static void ConfigureProblemDetails(IServiceCollection services, IWebHostEnvironment environment)
+        public static void ConfigureProblemDetails(IServiceCollection services)
         {
-            services.AddProblemDetails(
-                setup =>
-                {
-                    setup.IncludeExceptionDetails = (_, _) => environment.IsDevelopment();
-
-                    setup.Map<ProblemDetailsException>(
-                        exception => new ProblemDetails
-                        {
-                            Title = exception.ProblemDetails?.Title,
-                            Detail = exception.ProblemDetails?.Detail,
-                            Status = (int)(exception.ProblemDetails?.StatusCode ?? HttpStatusCode.InternalServerError),
-                            Type = exception.ProblemDetails?.ProblemType,
-                            Instance = exception.ProblemDetails?.Instance,
-                        });
-
-                    setup.MapToStatusCode<CommunicationException>(StatusCodes.Status502BadGateway);
-                });
+            services.AddAutoMapper(typeof(ProblemDetailsProfile));
+            services.AddExceptionHandler<GlobalExceptionHandler>();
+            services.AddProblemDetails();
         }
 
         /// <summary>
@@ -65,7 +44,7 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
         /// <param name="app">The application builder to use.</param>
         public static void UseProblemDetails(IApplicationBuilder app)
         {
-            app.UseProblemDetails();
+            app.UseExceptionHandler();
         }
     }
 }

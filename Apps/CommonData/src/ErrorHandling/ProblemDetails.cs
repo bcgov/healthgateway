@@ -27,7 +27,7 @@ namespace HealthGateway.Common.Data.ErrorHandling
         /// <summary>
         /// Gets or sets problem type.
         /// </summary>
-        public required string ProblemType { get; set; }
+        public required string Type { get; set; }
 
         /// <summary>
         /// Gets or sets detail.
@@ -47,6 +47,6 @@ namespace HealthGateway.Common.Data.ErrorHandling
         /// <summary>
         /// Gets or sets status code.
         /// </summary>
-        public required HttpStatusCode StatusCode { get; set; }
+        public required HttpStatusCode Status { get; set; }
     }
 }

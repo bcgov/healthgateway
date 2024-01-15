@@ -74,7 +74,7 @@ namespace HealthGateway.Patient
 
             Utility.ConfigureTracing(services, logger, configuration);
 
-            ExceptionHandling.ConfigureProblemDetails(services, environment);
+            ExceptionHandling.ConfigureProblemDetails(services);
 
             WebApplication app = builder.Build();
             RequestLoggingSettings requestLoggingSettings = new();
