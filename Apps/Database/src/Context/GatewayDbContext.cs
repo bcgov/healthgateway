@@ -182,6 +182,14 @@ namespace HealthGateway.Database.Context
                 .Property(e => e.ResultCode)
                 .HasConversion(auditTransactionResultConvertor);
 
+            // Create index on DIN
+            modelBuilder.Entity<DrugProduct>()
+                .HasIndex(p => p.DrugIdentificationNumber);
+
+            // Create index on DIN/PIN
+            modelBuilder.Entity<PharmaCareDrug>()
+                .HasIndex(p => p.DinPin);
+
             // Create Foreign keys for FileDownload
             modelBuilder.Entity<FileDownload>()
                 .HasOne<ProgramTypeCode>()
