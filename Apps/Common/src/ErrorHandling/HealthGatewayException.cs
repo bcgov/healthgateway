@@ -26,9 +26,26 @@ namespace HealthGateway.Common.ErrorHandling
         /// <summary>
         /// Initializes a new instance of the <see cref="HealthGatewayException"/> class.
         /// </summary>
+        public HealthGatewayException()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="HealthGatewayException"/> class.
+        /// </summary>
         /// <param name="message">Error message detailing the failure in question.</param>
         public HealthGatewayException(string message)
             : base(message)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="HealthGatewayException"/> class.
+        /// </summary>
+        /// <param name="message">Error message detailing the failure in question.</param>
+        /// <param name="innerException">An internal exception that results in a higher order failure.</param>
+        public HealthGatewayException(string message, Exception innerException)
+            : base(message, innerException)
         {
         }
 
@@ -40,6 +57,20 @@ namespace HealthGateway.Common.ErrorHandling
         /// <param name="errorCode">Concise code to indicate the cause of status code.</param>
         public HealthGatewayException(string message, HttpStatusCode statusCode, string? errorCode)
             : base(message)
+        {
+            this.StatusCode = statusCode;
+            this.ErrorCode = errorCode;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="HealthGatewayException"/> class.
+        /// </summary>
+        /// <param name="message">Error message detailing the failure in question.</param>
+        /// <param name="innerException">An internal exception that results in a higher order failure.</param>
+        /// <param name="statusCode">Http status code to return.</param>
+        /// <param name="errorCode">Concise code to indicate the cause of status code.</param>
+        public HealthGatewayException(string message, Exception innerException, HttpStatusCode statusCode, string? errorCode)
+            : base(message, innerException)
         {
             this.StatusCode = statusCode;
             this.ErrorCode = errorCode;
