@@ -31,6 +31,7 @@ namespace HealthGateway.GatewayApi
     using HealthGateway.Common.Utils;
     using HealthGateway.Common.Utils.Phsa;
     using HealthGateway.Database.Delegates;
+    using HealthGateway.Database.Events;
     using HealthGateway.GatewayApi.Api;
     using HealthGateway.GatewayApi.MapProfiles;
     using HealthGateway.GatewayApi.Services;
@@ -115,6 +116,9 @@ namespace HealthGateway.GatewayApi
             services.AddTransient<IResourceDelegateDelegate, DbResourceDelegateDelegate>();
             services.AddTransient<ICDogsDelegate, CDogsDelegate>();
             services.AddTransient<IApplicationSettingsDelegate, DbApplicationSettingsDelegate>();
+
+            // Add event publisher
+            services.AddSingleton<UserProfileEventPublisher>();
 
             // Add API Clients
             CDogsConfig cdogsConfig = new();
