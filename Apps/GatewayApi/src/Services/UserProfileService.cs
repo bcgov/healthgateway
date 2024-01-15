@@ -40,6 +40,7 @@ namespace HealthGateway.GatewayApi.Services
     using HealthGateway.Common.Services;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
+    using HealthGateway.Database.Events;
     using HealthGateway.Database.Models;
     using HealthGateway.Database.Wrapper;
     using HealthGateway.GatewayApi.MapUtils;
@@ -76,6 +77,7 @@ namespace HealthGateway.GatewayApi.Services
         private readonly bool accountsChangeFeedEnabled;
         private readonly bool notificationsChangeFeedEnabled;
         private readonly IMessageSender messageSender;
+        private readonly UserProfileEventPublisher userProfileEventPublisher;
         private readonly EmailTemplateConfig emailTemplateConfig;
 
         /// <summary>
@@ -99,6 +101,7 @@ namespace HealthGateway.GatewayApi.Services
         /// <param name="cacheProvider">The injected cache provider.</param>
         /// <param name="patientRepository">The injected patient repository.</param>
         /// <param name="messageSender">The message sender.</param>
+        /// <param name="userProfileEventPublisher">The user profile event publisher.</param>
 #pragma warning disable S107 // The number of DI parameters should be ignored
         public UserProfileService(
             ILogger<UserProfileService> logger,
@@ -118,7 +121,8 @@ namespace HealthGateway.GatewayApi.Services
             IApplicationSettingsDelegate applicationSettingsDelegate,
             ICacheProvider cacheProvider,
             IPatientRepository patientRepository,
-            IMessageSender messageSender)
+            IMessageSender messageSender,
+            UserProfileEventPublisher userProfileEventPublisher)
         {
             this.logger = logger;
             this.patientService = patientService;
@@ -140,6 +144,7 @@ namespace HealthGateway.GatewayApi.Services
             this.cacheProvider = cacheProvider;
             this.patientRepository = patientRepository;
             this.messageSender = messageSender;
+            this.userProfileEventPublisher = userProfileEventPublisher;
             ChangeFeedOptions? changeFeedConfiguration = configuration.GetSection(ChangeFeedOptions.ChangeFeed).Get<ChangeFeedOptions>();
             this.accountsChangeFeedEnabled = changeFeedConfiguration?.Accounts.Enabled ?? false;
             this.notificationsChangeFeedEnabled = changeFeedConfiguration?.Notifications.Enabled ?? false;
@@ -174,13 +179,8 @@ namespace HealthGateway.GatewayApi.Services
                 DateTime? birthDate = patientResult.ResourcePayload?.Birthdate;
                 userProfile.YearOfBirth = birthDate?.Year;
 
-                DbResult<UserProfile> updateResult = await this.userProfileDelegate.UpdateAsync(userProfile, ct: ct);
-
-                if (updateResult.Status != DbStatusCode.Updated)
-                {
-                    this.logger.LogError("Error updating user profile... {Hdid}", updateResult.Payload.HdId);
-                    return RequestResultFactory.ServiceError<UserProfileModel>(ErrorType.CommunicationInternal, ServiceType.Database, updateResult.Message);
-                }
+                // Raise event to update user profile.
+                await this.userProfileEventPublisher.OnUserLoggedIn(userProfile, ct);
 
                 this.logger.LogDebug("Finished updating user last login and year of birth... {Hdid}", hdid);
             }
