@@ -16,6 +16,7 @@
 namespace HealthGateway.Common.ErrorHandling
 {
     using System;
+    using System.ServiceModel;
     using System.Threading;
     using System.Threading.Tasks;
     using AutoMapper;
@@ -33,6 +34,7 @@ namespace HealthGateway.Common.ErrorHandling
         public async ValueTask<bool> TryHandleAsync(HttpContext httpContext, Exception exception, CancellationToken cancellationToken)
         {
             bool includeException = environment.IsDevelopment();
+            int? recommendedStatusCode = MapStatusCode(exception);
 
             ProblemDetails problemDetails = new();
             if (exception is ProblemDetailsException problemDetailsException)
@@ -42,7 +44,7 @@ namespace HealthGateway.Common.ErrorHandling
             else
             {
                 problemDetails.Title = "An unexpected error occurred!";
-                problemDetails.Status = StatusCodes.Status500InternalServerError;
+                problemDetails.Status = recommendedStatusCode;
                 problemDetails.Detail = exception.Message;
                 problemDetails.Instance = httpContext.Request.Path;
                 problemDetails.Type = exception.GetType().ToString();
@@ -51,7 +53,7 @@ namespace HealthGateway.Common.ErrorHandling
             problemDetails.Extensions["traceId"] = httpContext.TraceIdentifier;
             if (includeException)
             {
-                problemDetails.Extensions["Exception"] = new
+                problemDetails.Extensions["exception"] = new
                 {
                     exception.Message,
                     exception.StackTrace,
@@ -69,6 +71,17 @@ namespace HealthGateway.Common.ErrorHandling
             await httpContext.Response.WriteAsJsonAsync(problemDetails, cancellationToken);
 
             return true;
+        }
+
+        private static int? MapStatusCode(Exception exception)
+        {
+            int? statusCode = StatusCodes.Status500InternalServerError;
+            if (exception is CommunicationException)
+            {
+                statusCode = StatusCodes.Status502BadGateway;
+            }
+
+            return statusCode;
         }
     }
 }

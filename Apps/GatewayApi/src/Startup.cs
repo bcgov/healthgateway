@@ -160,7 +160,7 @@ namespace HealthGateway.GatewayApi
             ExceptionHandling.UseProblemDetails(app);
             this.startupConfig.UseForwardHeaders(app);
             this.startupConfig.UseSwagger(app);
-            this.startupConfig.UseHttp(app);
+            this.startupConfig.UseHttp(app, false);
             this.startupConfig.UseAuth(app);
             this.startupConfig.UseRest(app);
 

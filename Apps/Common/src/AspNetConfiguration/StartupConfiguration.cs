@@ -214,7 +214,7 @@ namespace HealthGateway.Common.AspNetConfiguration
         /// If true, app will use development exception page. Should be false when using problem
         /// details middleware.
         /// </param>
-        public void UseHttp(IApplicationBuilder app, bool useExceptionPage = false)
+        public void UseHttp(IApplicationBuilder app, bool useExceptionPage = true)
         {
             HttpWeb.UseHttp(app, this.Logger, this.Configuration, this.environment, false, useExceptionPage);
         }
