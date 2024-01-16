@@ -91,13 +91,14 @@ namespace HealthGateway.Database.Delegates
                 userProfile.YearOfBirth = profile.YearOfBirth;
                 userProfile.LastLoginClientCode = profile.LastLoginClientCode;
                 result.Status = DbStatusCode.Deferred;
+                result.Payload = userProfile;
+                this.dbContext.UserProfile.Update(userProfile);
 
                 if (commit)
                 {
                     try
                     {
                         await this.dbContext.SaveChangesAsync(ct);
-                        result.Payload = userProfile;
                         result.Status = DbStatusCode.Updated;
                     }
                     catch (DbUpdateConcurrencyException e)
