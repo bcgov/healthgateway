@@ -65,7 +65,7 @@ namespace HealthGateway.GatewayApi
         /// <param name="services">The injected services provider.</param>
         public void ConfigureServices(IServiceCollection services)
         {
-            this.startupConfig.ConfigureProblemDetails(services);
+            StartupConfiguration.ConfigureProblemDetails(services);
             this.startupConfig.ConfigureForwardHeaders(services);
             this.startupConfig.ConfigureDatabaseServices(services);
             this.startupConfig.ConfigureHttpServices(services);

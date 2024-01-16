@@ -202,7 +202,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
                 (await Should.ThrowAsync<ProblemDetailsException>(async () => await service.AddDependentAsync(this.mockParentHdid, addDependentRequest)))
                 .ShouldNotBeNull();
 
-            exception.ProblemDetails!.StatusCode.ShouldBe(HttpStatusCode.InternalServerError);
+            exception.ProblemDetails!.Status.ShouldBe(System.Net.HttpStatusCode.InternalServerError);
         }
 
         /// <summary>
