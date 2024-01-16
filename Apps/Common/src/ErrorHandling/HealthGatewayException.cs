@@ -16,48 +16,57 @@
 namespace HealthGateway.Common.ErrorHandling
 {
     using System;
+    using System.Diagnostics.CodeAnalysis;
     using System.Net;
 
     /// <summary>
     /// Exception class for Health Gateway.
     /// </summary>
+    [SuppressMessage("Design", "CA1032:Implement standard exception constructors", Justification = "The constructors should be explicit")]
     public class HealthGatewayException : Exception
     {
+        private readonly HttpStatusCode defaultStatusCode = HttpStatusCode.InternalServerError;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="HealthGatewayException"/> class.
+        /// </summary>
+        /// <param name="message">Error message detailing the failure in question.</param>
+        /// <param name="errorCode">A concise coded reason for the failure.</param>
+        public HealthGatewayException(string message, string? errorCode = ErrorCodes.ServerError)
+            : base(message)
+        {
+            this.SetErrorProperties(this.defaultStatusCode, errorCode);
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="HealthGatewayException"/> class.
+        /// </summary>
+        /// <param name="message">Error message detailing the failure in question.</param>
+        /// <param name="innerException">An internal exception that results in a higher order failure.</param>
+        /// <param name="errorCode">A concise coded reason for the failure.</param>
+        public HealthGatewayException(string message, Exception innerException, string errorCode = ErrorCodes.ServerError)
+            : base(message, innerException)
+        {
+            this.SetErrorProperties(this.defaultStatusCode, errorCode);
+        }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="HealthGatewayException"/> class.
         /// </summary>
         public HealthGatewayException()
         {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="HealthGatewayException"/> class.
-        /// </summary>
-        /// <param name="message">Error message detailing the failure in question.</param>
-        public HealthGatewayException(string message)
-            : base(message)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="HealthGatewayException"/> class.
-        /// </summary>
-        /// <param name="message">Error message detailing the failure in question.</param>
-        /// <param name="innerException">An internal exception that results in the higher order failure.</param>
-        public HealthGatewayException(string message, Exception innerException)
-            : base(message, innerException)
-        {
+            this.SetErrorProperties(this.defaultStatusCode, ErrorCodes.ServerError);
         }
 
         /// <summary>
         /// Gets or sets the error codes.
         /// </summary>
-        public string? ErrorCode { get; protected set; } = ErrorCodes.ServerError;
+        public string? ErrorCode { get; protected set; }
 
         /// <summary>
         /// Gets or sets the http status code.
         /// </summary>
-        public HttpStatusCode StatusCode { get; set; } = HttpStatusCode.InternalServerError;
+        public HttpStatusCode StatusCode { get; set; }
 
         /// <summary>
         /// Sets the error properties of the exception.
