@@ -43,47 +43,31 @@ namespace HealthGateway.Common.ErrorHandling
         /// Initializes a new instance of the <see cref="HealthGatewayException"/> class.
         /// </summary>
         /// <param name="message">Error message detailing the failure in question.</param>
-        /// <param name="innerException">An internal exception that results in a higher order failure.</param>
+        /// <param name="innerException">An internal exception that results in the higher order failure.</param>
         public HealthGatewayException(string message, Exception innerException)
             : base(message, innerException)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="HealthGatewayException"/> class.
-        /// </summary>
-        /// <param name="message">Error message details the failure in question.</param>
-        /// <param name="statusCode">Http status code to return.</param>
-        /// <param name="errorCode">Concise code to indicate the cause of status code.</param>
-        public HealthGatewayException(string message, HttpStatusCode statusCode, string? errorCode)
-            : base(message)
-        {
-            this.StatusCode = statusCode;
-            this.ErrorCode = errorCode;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="HealthGatewayException"/> class.
-        /// </summary>
-        /// <param name="message">Error message detailing the failure in question.</param>
-        /// <param name="innerException">An internal exception that results in a higher order failure.</param>
-        /// <param name="statusCode">Http status code to return.</param>
-        /// <param name="errorCode">Concise code to indicate the cause of status code.</param>
-        public HealthGatewayException(string message, Exception innerException, HttpStatusCode statusCode, string? errorCode)
-            : base(message, innerException)
-        {
-            this.StatusCode = statusCode;
-            this.ErrorCode = errorCode;
-        }
-
-        /// <summary>
         /// Gets or sets the error codes.
         /// </summary>
-        public string? ErrorCode { get; set; }
+        public string? ErrorCode { get; protected set; } = ErrorCodes.ServerError;
 
         /// <summary>
         /// Gets or sets the http status code.
         /// </summary>
         public HttpStatusCode StatusCode { get; set; } = HttpStatusCode.InternalServerError;
+
+        /// <summary>
+        /// Sets the error properties of the exception.
+        /// </summary>
+        /// <param name="statusCode">The HTTP status code to be reported in the API response.</param>
+        /// <param name="errorCode">Concise coded reason for the failure.</param>
+        protected void SetErrorProperties(HttpStatusCode statusCode, string errorCode)
+        {
+            this.StatusCode = statusCode;
+            this.ErrorCode = errorCode;
+        }
     }
 }
