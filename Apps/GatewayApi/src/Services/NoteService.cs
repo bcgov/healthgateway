@@ -118,7 +118,6 @@ namespace HealthGateway.GatewayApi.Services
             {
                 this.logger.LogInformation("First time note retrieval with key for user {Hdid}", hdId);
                 key = await this.EncryptFirstTimeAsync(profile, dbNotes.Payload, ct);
-                dbNotes = await this.noteDelegate.GetNotesAsync(hdId, offset, pageSize, ct);
             }
 
             if (dbNotes.Status != DbStatusCode.Read)
