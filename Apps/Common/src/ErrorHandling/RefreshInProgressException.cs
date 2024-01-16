@@ -29,7 +29,7 @@ namespace HealthGateway.Common.ErrorHandling
     public class RefreshInProgressException : HealthGatewayException
     {
         // Default private values
-        private readonly HttpStatusCode statusCode = HttpStatusCode.ServiceUnavailable;
+        private readonly HttpStatusCode defaultStatusCode = HttpStatusCode.ServiceUnavailable;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RefreshInProgressException"/> class.
@@ -39,7 +39,7 @@ namespace HealthGateway.Common.ErrorHandling
         public RefreshInProgressException(string message, string? errorCode = ErrorCodes.RefreshInProgress)
             : base(message)
         {
-            this.SetErrorProperties(this.statusCode, errorCode);
+            this.SetErrorProperties(this.defaultStatusCode, errorCode);
         }
 
         /// <summary>
@@ -51,7 +51,7 @@ namespace HealthGateway.Common.ErrorHandling
         public RefreshInProgressException(string message, System.Exception innerException, string? errorCode = ErrorCodes.RefreshInProgress)
             : base(message, innerException)
         {
-            this.SetErrorProperties(this.statusCode, errorCode);
+            this.SetErrorProperties(this.defaultStatusCode, errorCode);
         }
 
         /// <summary>
@@ -59,7 +59,7 @@ namespace HealthGateway.Common.ErrorHandling
         /// </summary>
         public RefreshInProgressException()
         {
-            this.SetErrorProperties(this.statusCode, ErrorCodes.RefreshInProgress);
+            this.SetErrorProperties(this.defaultStatusCode, ErrorCodes.RefreshInProgress);
         }
     }
 }

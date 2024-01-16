@@ -27,7 +27,7 @@ namespace HealthGateway.Common.ErrorHandling
     [SuppressMessage("Design", "CA1032:Implement standard exception constructors", Justification = "The constructors should be explicit")]
     public class NotFoundException : HealthGatewayException
     {
-        private readonly HttpStatusCode statusCode = HttpStatusCode.NotFound;
+        private readonly HttpStatusCode defaultStatusCode = HttpStatusCode.NotFound;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NotFoundException"/> class.
@@ -37,7 +37,7 @@ namespace HealthGateway.Common.ErrorHandling
         public NotFoundException(string message, string errorCode = ErrorCodes.RecordNotFound)
             : base(message)
         {
-            this.SetErrorProperties(this.statusCode, errorCode);
+            this.SetErrorProperties(this.defaultStatusCode, errorCode);
         }
 
         /// <summary>
@@ -49,7 +49,7 @@ namespace HealthGateway.Common.ErrorHandling
         public NotFoundException(string message, System.Exception innerException, string? errorCode = ErrorCodes.RecordNotFound)
             : base(message, innerException)
         {
-            this.SetErrorProperties(this.statusCode, errorCode);
+            this.SetErrorProperties(this.defaultStatusCode, errorCode);
         }
 
         /// <summary>
@@ -57,7 +57,7 @@ namespace HealthGateway.Common.ErrorHandling
         /// </summary>
         public NotFoundException()
         {
-            this.SetErrorProperties(this.statusCode, ErrorCodes.RecordNotFound);
+            this.SetErrorProperties(this.defaultStatusCode, ErrorCodes.RecordNotFound);
         }
     }
 }
