@@ -27,7 +27,7 @@ namespace HealthGateway.Common.ErrorHandling
     [SuppressMessage("Design", "CA1032:Implement standard exception constructors", Justification = "The constructors should be explicit")]
     public class AlreadyExistsException : HealthGatewayException
     {
-        private readonly HttpStatusCode statusCode = HttpStatusCode.Conflict;
+        private readonly HttpStatusCode deafaultStatusCode = HttpStatusCode.Conflict;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AlreadyExistsException"/> class.
@@ -37,7 +37,7 @@ namespace HealthGateway.Common.ErrorHandling
         public AlreadyExistsException(string message, string? errorCode = ErrorCodes.RecordAlreadyExists)
             : base(message)
         {
-            this.SetErrorProperties(this.statusCode, errorCode);
+            this.SetErrorProperties(this.deafaultStatusCode, errorCode);
         }
 
         /// <summary>
@@ -49,7 +49,7 @@ namespace HealthGateway.Common.ErrorHandling
         public AlreadyExistsException(string message, System.Exception innerException, string errorCode = ErrorCodes.RecordAlreadyExists)
             : base(message, innerException)
         {
-            this.SetErrorProperties(this.statusCode, errorCode);
+            this.SetErrorProperties(this.deafaultStatusCode, errorCode);
         }
 
         /// <summary>
@@ -57,7 +57,7 @@ namespace HealthGateway.Common.ErrorHandling
         /// </summary>
         public AlreadyExistsException()
         {
-            this.SetErrorProperties(this.statusCode, ErrorCodes.RecordAlreadyExists);
+            this.SetErrorProperties(this.deafaultStatusCode, ErrorCodes.RecordAlreadyExists);
         }
     }
 }
