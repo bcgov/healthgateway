@@ -35,6 +35,7 @@ namespace HealthGateway.Admin.Tests.Services
     using HealthGateway.Common.Data.Models.PHSA;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Delegates;
+    using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Models.PHSA;
     using Microsoft.Extensions.Configuration;
@@ -57,7 +58,7 @@ namespace HealthGateway.Admin.Tests.Services
         private static readonly IConfiguration Configuration = GetIConfigurationRoot();
 
         /// <summary>
-        /// Retrieve vaccine record async throws problem details exception given client registry records not found.
+        /// Retrieve vaccine record async throws exception given client registry records not found.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
@@ -78,12 +79,12 @@ namespace HealthGateway.Admin.Tests.Services
             }
 
             // Verify
-            ProblemDetailsException exception = await Assert.ThrowsAsync<ProblemDetailsException>(Actual);
-            Assert.Equal(ErrorMessages.ClientRegistryRecordsNotFound, exception.ProblemDetails!.Detail);
+            NotFoundException exception = await Assert.ThrowsAsync<NotFoundException>(Actual);
+            Assert.Equal(ErrorMessages.ClientRegistryRecordsNotFound, exception.Message);
         }
 
         /// <summary>
-        /// Retrieve vaccine record async throws problem details exception given BC Mail Plus returns empty payload for report.
+        /// Retrieve vaccine record async throws exception given BC Mail Plus returns empty payload for report.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
@@ -127,12 +128,12 @@ namespace HealthGateway.Admin.Tests.Services
             }
 
             // Verify
-            ProblemDetailsException exception = await Assert.ThrowsAsync<ProblemDetailsException>(Actual);
-            Assert.Equal(ErrorMessages.CannotGetVaccineProofPdf, exception.ProblemDetails!.Detail);
+            NotFoundException exception = await Assert.ThrowsAsync<NotFoundException>(Actual);
+            Assert.Equal(ErrorMessages.CannotGetVaccineProofPdf, exception.Message);
         }
 
         /// <summary>
-        /// Retrieve vaccine record async throws problem details exception given BC Mail Plus returns report with result error.
+        /// Retrieve vaccine record async throws exception given BC Mail Plus returns report with result error.
         /// payload.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
@@ -180,12 +181,12 @@ namespace HealthGateway.Admin.Tests.Services
             }
 
             // Verify
-            ProblemDetailsException exception = await Assert.ThrowsAsync<ProblemDetailsException>(Actual);
-            Assert.Equal(expected.ResultError.ResultMessage, exception.ProblemDetails!.Detail);
+            UpstreamServiceException exception = await Assert.ThrowsAsync<UpstreamServiceException>(Actual);
+            Assert.Equal(expected.ResultError.ResultMessage, exception.Message);
         }
 
         /// <summary>
-        /// Retrieve vaccine record async throws problem details exception given vaccine proof response has empty payload from BC
+        /// Retrieve vaccine record async throws exception given vaccine proof response has empty payload from BC
         /// Mail Plus.
         /// payload.
         /// </summary>
@@ -220,12 +221,12 @@ namespace HealthGateway.Admin.Tests.Services
             }
 
             // Verify
-            ProblemDetailsException exception = await Assert.ThrowsAsync<ProblemDetailsException>(Actual);
-            Assert.Equal(ErrorMessages.CannotGetVaccineProof, exception.ProblemDetails!.Detail);
+            NotFoundException exception = await Assert.ThrowsAsync<NotFoundException>(Actual);
+            Assert.Equal(ErrorMessages.CannotGetVaccineProof, exception.Message);
         }
 
         /// <summary>
-        /// Retrieve vaccine record async throws problem details exception given vaccine proof response has error from BC Mail
+        /// Retrieve vaccine record async throws exception given vaccine proof response has error from BC Mail
         /// Plus.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
@@ -259,12 +260,12 @@ namespace HealthGateway.Admin.Tests.Services
             }
 
             // Verify
-            ProblemDetailsException exception = await Assert.ThrowsAsync<ProblemDetailsException>(Actual);
-            Assert.Equal(expected.ResultError.ResultMessage, exception.ProblemDetails!.Detail);
+            NotFoundException exception = await Assert.ThrowsAsync<NotFoundException>(Actual);
+            Assert.Equal(expected.ResultError.ResultMessage, exception.Message);
         }
 
         /// <summary>
-        /// Retrieve vaccine record async throws problem details exception given vaccine state not found.
+        /// Retrieve vaccine record async throws exception given vaccine state not found.
         /// </summary>
         /// <param name="status">Value to parse into VaccineState.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
@@ -298,12 +299,12 @@ namespace HealthGateway.Admin.Tests.Services
             }
 
             // Verify
-            ProblemDetailsException exception = await Assert.ThrowsAsync<ProblemDetailsException>(Actual);
-            Assert.Equal(ErrorMessages.VaccineStatusNotFound, exception.ProblemDetails!.Detail);
+            NotFoundException exception = await Assert.ThrowsAsync<NotFoundException>(Actual);
+            Assert.Equal(ErrorMessages.VaccineStatusNotFound, exception.Message);
         }
 
         /// <summary>
-        /// Retrieve vaccine record async throws problem details exception given vaccine status result payload is empty.
+        /// Retrieve vaccine record async throws exception given vaccine status result payload is empty.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
@@ -338,7 +339,7 @@ namespace HealthGateway.Admin.Tests.Services
         }
 
         /// <summary>
-        /// Retrieve vaccine record async throws problem details exception given maximum retry attempts reached for vaccine status.
+        /// Retrieve vaccine record async throws exception given maximum retry attempts reached for vaccine status.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
@@ -365,7 +366,7 @@ namespace HealthGateway.Admin.Tests.Services
         }
 
         /// <summary>
-        /// Mail vaccine card async throws problem details exception given given vaccine status result payload is empty.
+        /// Mail vaccine card async throws exception given given vaccine status result payload is empty.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
@@ -402,7 +403,7 @@ namespace HealthGateway.Admin.Tests.Services
         }
 
         /// <summary>
-        /// Mail vaccine card async throws problem details exception given client registry records not found.
+        /// Mail vaccine card async throws exception given client registry records not found.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
@@ -425,12 +426,12 @@ namespace HealthGateway.Admin.Tests.Services
             }
 
             // Verify
-            ProblemDetailsException exception = await Assert.ThrowsAsync<ProblemDetailsException>(Actual);
-            Assert.Equal(ErrorMessages.ClientRegistryRecordsNotFound, exception.ProblemDetails!.Detail);
+            NotFoundException exception = await Assert.ThrowsAsync<NotFoundException>(Actual);
+            Assert.Equal(ErrorMessages.ClientRegistryRecordsNotFound, exception.Message);
         }
 
         /// <summary>
-        /// Mail vaccine card async throws problem details exception given vaccine proof response has error from BC Mail Plus.
+        /// Mail vaccine card async throws exception given vaccine proof response has error from BC Mail Plus.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
@@ -465,12 +466,12 @@ namespace HealthGateway.Admin.Tests.Services
             }
 
             // Verify
-            ProblemDetailsException exception = await Assert.ThrowsAsync<ProblemDetailsException>(Actual);
-            Assert.Equal(expected.ResultError.ResultMessage, exception.ProblemDetails!.Detail);
+            UpstreamServiceException exception = await Assert.ThrowsAsync<UpstreamServiceException>(Actual);
+            Assert.Equal(expected.ResultError.ResultMessage, exception.Message);
         }
 
         /// <summary>
-        /// Mail vaccine card async throws problem details exception given vaccine state not found.
+        /// Mail vaccine card async throws exception given vaccine state not found.
         /// </summary>
         /// <param name="status">Value to parse into VaccineState.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
@@ -506,12 +507,12 @@ namespace HealthGateway.Admin.Tests.Services
             }
 
             // Verify
-            ProblemDetailsException exception = await Assert.ThrowsAsync<ProblemDetailsException>(Actual);
-            Assert.Equal(ErrorMessages.VaccineStatusNotFound, exception.ProblemDetails!.Detail);
+            NotFoundException exception = await Assert.ThrowsAsync<NotFoundException>(Actual);
+            Assert.Equal(ErrorMessages.VaccineStatusNotFound, exception.Message);
         }
 
         /// <summary>
-        /// Mail vaccine card async throws problem details exception given maximum retry attempts reached for vaccine status.
+        /// Mail vaccine card async throws exception given maximum retry attempts reached for vaccine status.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
