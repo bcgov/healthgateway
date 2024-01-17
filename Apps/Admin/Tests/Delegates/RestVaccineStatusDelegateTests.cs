@@ -24,8 +24,8 @@ namespace HealthGateway.Admin.Tests.Delegates
     using HealthGateway.Admin.Server.Api;
     using HealthGateway.Admin.Server.Delegates;
     using HealthGateway.Common.Constants;
-    using HealthGateway.Common.Data.ErrorHandling;
     using HealthGateway.Common.Data.Models.PHSA;
+    using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Models.PHSA;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
@@ -44,7 +44,7 @@ namespace HealthGateway.Admin.Tests.Delegates
         private static readonly IConfiguration Configuration = GetIConfigurationRoot();
 
         /// <summary>
-        /// GGetVaccineStatusWithRetries throws problem details exception given maximum retry attempts reached.
+        /// GGetVaccineStatusWithRetries throws exception given maximum retry attempts reached.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
@@ -74,8 +74,8 @@ namespace HealthGateway.Admin.Tests.Delegates
             }
 
             // Verify
-            ProblemDetailsException exception = await Assert.ThrowsAsync<ProblemDetailsException>(Actual);
-            Assert.Equal(ErrorMessages.MaximumRetryAttemptsReached, exception.ProblemDetails!.Detail);
+            UpstreamServiceException exception = await Assert.ThrowsAsync<UpstreamServiceException>(Actual);
+            Assert.Equal(ErrorMessages.MaximumRetryAttemptsReached, exception.Message);
         }
 
         /// <summary>
