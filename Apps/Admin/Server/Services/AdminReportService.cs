@@ -23,6 +23,7 @@ namespace HealthGateway.Admin.Server.Services
     using HealthGateway.Admin.Common.Models.AdminReports;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ErrorHandling;
+    using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using Serilog;
@@ -49,7 +50,13 @@ namespace HealthGateway.Admin.Server.Services
                         {
                             patient = await patientRepository.QueryAsync(query, ct);
                         }
+
+                        // TODO: Consider v2 - Thrown as deep as ClientRegistriesDelegate (Remove when AccountDataAccess projects throw HealthGatewayExceptions)
                         catch (ProblemDetailsException e)
+                        {
+                            logger.Error("Error retrieving patient details for hdid {Hdid}: {EMessage}", hdid, e.Message);
+                        }
+                        catch (NotFoundException e)
                         {
                             logger.Error("Error retrieving patient details for hdid {Hdid}: {EMessage}", hdid, e.Message);
                         }
