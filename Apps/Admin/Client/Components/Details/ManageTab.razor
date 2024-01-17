@@ -1,13 +1,13 @@
 ﻿@using HealthGateway.Admin.Client.Components.Support
 @inherits Fluxor.Blazor.Web.Components.FluxorComponent
 
+<AuthorizeView Roles="@($"{Roles.Admin}, {Roles.Reviewer}")">
+    @if (!string.IsNullOrWhiteSpace(Hdid))
+    {
+        <DatasetAccessSection Data="@BlockedDataSources" IsLoading="@PatientSupportDetailsLoading" Hdid="@Hdid" CanEdit="@CanEditDatasetAccess" />
+    }
+</AuthorizeView>
 
-@if (CanViewDatasetAccess)
-{
-    <DatasetAccessSection Data="@BlockedDataSources" IsLoading="@PatientSupportDetailsLoading" Hdid="@Hdid" CanEdit="@CanEditDatasetAccess" />
-}
-
-@if (CanViewDependents)
-{
+<AuthorizeView Roles="@($"{Roles.Admin}, {Roles.Reviewer}")">
     <DependentTable Data="@Dependents" IsLoading="@PatientSupportDetailsLoading" />
-}
+</AuthorizeView>

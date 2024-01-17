@@ -29,6 +29,7 @@ namespace HealthGateway.Admin.Client.Pages
     using HealthGateway.Admin.Common.Constants;
     using HealthGateway.Admin.Common.Models;
     using HealthGateway.Common.Data.Constants;
+    using HealthGateway.Common.Data.Extensions;
     using HealthGateway.Common.Data.Utils;
     using HealthGateway.Common.Data.Validations;
     using Microsoft.AspNetCore.Components;
@@ -66,7 +67,7 @@ namespace HealthGateway.Admin.Client.Pages
         [Inject]
         private IJSRuntime JsRuntime { get; set; } = default!;
 
-        private List<PatientQueryType> QueryTypes => this.UserHasRole(Roles.Admin) || this.UserHasRole(Roles.Reviewer)
+        private List<PatientQueryType> QueryTypes => (this.AuthenticationState?.User).IsInAnyRole(Roles.Admin, Roles.Reviewer)
             ? [PatientQueryType.Phn, PatientQueryType.Email, PatientQueryType.Sms, PatientQueryType.Hdid, PatientQueryType.Dependent]
             : [PatientQueryType.Phn];
 
@@ -164,11 +165,6 @@ namespace HealthGateway.Admin.Client.Pages
             }
 
             base.Dispose(disposing);
-        }
-
-        private bool UserHasRole(string role)
-        {
-            return this.AuthenticationState?.User.IsInRole(role) == true;
         }
 
         private void Clear()

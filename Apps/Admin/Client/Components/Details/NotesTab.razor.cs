@@ -17,14 +17,11 @@ namespace HealthGateway.Admin.Client.Components.Details
 {
     using System.Collections.Generic;
     using System.Linq;
-    using System.Threading.Tasks;
     using Fluxor;
     using Fluxor.Blazor.Web.Components;
-    using HealthGateway.Admin.Client.Authorization;
     using HealthGateway.Admin.Client.Store.PatientDetails;
     using HealthGateway.Admin.Common.Models;
     using Microsoft.AspNetCore.Components;
-    using Microsoft.AspNetCore.Components.Authorization;
 
     /// <summary>
     /// Backing logic for the NotesTab component.
@@ -34,28 +31,9 @@ namespace HealthGateway.Admin.Client.Components.Details
         [Inject]
         private IState<PatientDetailsState> PatientDetailsState { get; set; } = default!;
 
-        [Inject]
-        private AuthenticationStateProvider AuthenticationStateProvider { get; set; } = default!;
-
-        private AuthenticationState? AuthenticationState { get; set; }
-
         private IEnumerable<AgentAction> AgentAuditHistory =>
             (this.PatientDetailsState.Value.AgentActions ?? []).OrderByDescending(a => a.TransactionDateTime);
 
         private bool PatientSupportDetailsLoading => this.PatientDetailsState.Value.IsLoading;
-
-        private bool CanViewAgentAuditHistory => this.UserHasRole(Roles.Admin) || this.UserHasRole(Roles.Reviewer);
-
-        /// <inheritdoc/>
-        protected override async Task OnInitializedAsync()
-        {
-            await base.OnInitializedAsync();
-            this.AuthenticationState = await this.AuthenticationStateProvider.GetAuthenticationStateAsync();
-        }
-
-        private bool UserHasRole(string role)
-        {
-            return this.AuthenticationState?.User.IsInRole(role) == true;
-        }
     }
 }
