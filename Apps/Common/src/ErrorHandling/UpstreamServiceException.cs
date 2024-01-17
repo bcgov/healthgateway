@@ -26,38 +26,38 @@ namespace HealthGateway.Common.ErrorHandling
     /// The default status code is 503.
     /// </summary>
     [SuppressMessage("Design", "CA1032:Implement standard exception constructors", Justification = "The constructors should be explicit")]
-    public class RefreshInProgressException : HealthGatewayException
+    public class UpstreamServiceException : HealthGatewayException
     {
         // Default private values
         private readonly HttpStatusCode defaultStatusCode = HttpStatusCode.ServiceUnavailable;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="RefreshInProgressException"/> class.
+        /// Initializes a new instance of the <see cref="UpstreamServiceException"/> class.
         /// </summary>
         /// <param name="message">Error message detailing the failure in question.</param>
         /// <param name="errorCode">A concise coded reason for the failure.</param>
-        public RefreshInProgressException(string message, string? errorCode = ErrorCodes.RefreshInProgress)
+        public UpstreamServiceException(string message, string? errorCode = ErrorCodes.RefreshInProgress)
             : base(message)
         {
             this.SetErrorProperties(this.defaultStatusCode, errorCode);
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="RefreshInProgressException"/> class.
+        /// Initializes a new instance of the <see cref="UpstreamServiceException"/> class.
         /// </summary>
         /// <param name="message">Error message detailing the failure in question.</param>
         /// <param name="innerException">An internal exception that results in a higher order failure.</param>
         /// <param name="errorCode">A concise coded reason for the failure.</param>
-        public RefreshInProgressException(string message, System.Exception innerException, string? errorCode = ErrorCodes.RefreshInProgress)
+        public UpstreamServiceException(string message, System.Exception innerException, string? errorCode = ErrorCodes.RefreshInProgress)
             : base(message, innerException)
         {
             this.SetErrorProperties(this.defaultStatusCode, errorCode);
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="RefreshInProgressException"/> class.
+        /// Initializes a new instance of the <see cref="UpstreamServiceException"/> class.
         /// </summary>
-        public RefreshInProgressException()
+        public UpstreamServiceException()
         {
             this.SetErrorProperties(this.defaultStatusCode, ErrorCodes.RefreshInProgress);
         }

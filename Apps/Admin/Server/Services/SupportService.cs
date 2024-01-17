@@ -39,6 +39,7 @@ namespace HealthGateway.Admin.Server.Services
     using HealthGateway.Common.Data.ErrorHandling;
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Data.ViewModels;
+    using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
@@ -134,7 +135,7 @@ namespace HealthGateway.Admin.Server.Services
                 PatientQueryType.Sms =>
                     await userProfileDelegate.GetUserProfilesAsync(UserQueryType.Sms, queryString, ct),
                 _ =>
-                    throw new ProblemDetailsException(ExceptionUtility.CreateProblemDetails($"Unknown {nameof(queryType)}", HttpStatusCode.BadRequest, nameof(SupportService))),
+                    throw new DataMismatchException($"Unknown {nameof(queryType)}", ErrorCodes.InvalidInput),
             };
 
             IEnumerable<Task<PatientSupportResult>> tasks = profiles.Select(profile => this.GetPatientSupportResultAsync(profile, ct));
@@ -151,7 +152,7 @@ namespace HealthGateway.Admin.Server.Services
         private async Task<PatientModel> GetPatientAsync(PatientDetailsQuery query, CancellationToken ct = default)
         {
             PatientModel? patient = (await patientRepository.QueryAsync(query, ct)).Items.SingleOrDefault();
-            return patient ?? throw new ProblemDetailsException(ExceptionUtility.CreateProblemDetails(ErrorMessages.ClientRegistryRecordsNotFound, HttpStatusCode.NotFound, nameof(SupportService)));
+            return patient ?? throw new NotFoundException(ErrorMessages.ClientRegistryRecordsNotFound);
         }
 
         private async Task<PatientModel?> TryGetPatientAsync(PatientIdentifierType identifierType, string queryString, CancellationToken ct)
@@ -164,7 +165,13 @@ namespace HealthGateway.Admin.Server.Services
             {
                 return await this.GetPatientAsync(query, ct);
             }
+
+            // TODO: Consider v2 - Remove once DataAccess projects updated to throw HealthGatewayException
             catch (ProblemDetailsException e) when (e.ProblemDetails?.Status == HttpStatusCode.NotFound)
+            {
+                return null;
+            }
+            catch (NotFoundException e)
             {
                 return null;
             }
@@ -223,13 +230,15 @@ namespace HealthGateway.Admin.Server.Services
             }
 
             logger.LogError("Patient PHN {PersonalHealthNumber} or DOB {Birthdate}) are invalid", patient.Phn, patient.Birthdate);
-            throw new ProblemDetailsException(ExceptionUtility.CreateProblemDetails(ErrorMessages.PhnOrDateAndBirthInvalid, HttpStatusCode.BadRequest, nameof(SupportService)));
+
+            // TODO: Consider different error code that doesn't allude to a user input error
+            throw new DataMismatchException(ErrorMessages.PhnOrDateAndBirthInvalid, ErrorCodes.InvalidInput);
         }
 
         private async Task<string> GetAccessTokenAsync(CancellationToken ct)
         {
             string? accessToken = await authenticationDelegate.FetchAuthenticatedUserTokenAsync(ct);
-            return accessToken ?? throw new ProblemDetailsException(ExceptionUtility.CreateProblemDetails(ErrorMessages.CannotFindAccessToken, HttpStatusCode.Unauthorized, nameof(SupportService)));
+            return accessToken ?? throw new UnauthorizedAccessException(ErrorMessages.CannotFindAccessToken);
         }
 
         private async Task<PatientSupportResult?> GetPatientSupportResultAsync(PatientIdentifierType identifierType, string identifier, CancellationToken ct)
