@@ -174,13 +174,8 @@ namespace HealthGateway.GatewayApi.Services
                 DateTime? birthDate = patientResult.ResourcePayload?.Birthdate;
                 userProfile.YearOfBirth = birthDate?.Year;
 
-                DbResult<UserProfile> updateResult = await this.userProfileDelegate.UpdateAsync(userProfile, ct: ct);
-
-                if (updateResult.Status != DbStatusCode.Updated)
-                {
-                    this.logger.LogError("Error updating user profile... {Hdid}", updateResult.Payload.HdId);
-                    return RequestResultFactory.ServiceError<UserProfileModel>(ErrorType.CommunicationInternal, ServiceType.Database, updateResult.Message);
-                }
+                // Try to update user profile with last login time; ignore any failures
+                await this.userProfileDelegate.UpdateAsync(userProfile, ct: ct);
 
                 this.logger.LogDebug("Finished updating user last login and year of birth... {Hdid}", hdid);
             }
