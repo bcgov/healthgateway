@@ -55,12 +55,12 @@ namespace HealthGateway.Common.Data.ErrorHandling
         public static ActionType Expired => new("EXPIRED");
 
         /// <summary>
-        /// Gets the general data validation error.
+        /// Gets the invalid data error.
         /// </summary>
         public static ActionType Invalid => new("INVALID");
 
         /// <summary>
-        /// Gets the general data validation error.
+        /// Gets the action that the data requires a refresh.
         /// </summary>
         public static ActionType Refresh => new("REFRESH");
 

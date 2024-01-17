@@ -44,5 +44,15 @@ namespace HealthGateway.Common.ErrorHandling
         /// The error code when a record is not found.
         /// </summary>
         public const string RecordNotFound = "RecordNotFound";
+
+        /// <summary>
+        /// The error code for an upstream service returning an error.
+        /// </summary>
+        public const string UpstreamError = "UpstreamError";
+
+        /// <summary>
+        /// The error code for invalid input or configuration.
+        /// </summary>
+        public const string InvalidInput = "InvalidInput";
     }
 }

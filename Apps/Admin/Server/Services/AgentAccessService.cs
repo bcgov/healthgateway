@@ -30,6 +30,7 @@ namespace HealthGateway.Admin.Server.Services
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.ErrorHandling;
     using HealthGateway.Common.Data.Utils;
+    using HealthGateway.Common.ErrorHandling;
     using Microsoft.Extensions.Logging;
     using Refit;
 
@@ -83,7 +84,7 @@ namespace HealthGateway.Admin.Server.Services
                 if (e.StatusCode == HttpStatusCode.Conflict)
                 {
                     this.logger.LogWarning(ErrorMessages.KeycloakUserAlreadyExists);
-                    throw new ProblemDetailsException(ExceptionUtility.CreateProblemDetails(ErrorMessages.KeycloakUserAlreadyExists, HttpStatusCode.Conflict, nameof(AgentAccessService)));
+                    throw new AlreadyExistsException(ErrorMessages.KeycloakUserAlreadyExists, ErrorCodes.RecordAlreadyExists);
                 }
 
                 this.logger.LogError(e, "Keycloak API call failed");
