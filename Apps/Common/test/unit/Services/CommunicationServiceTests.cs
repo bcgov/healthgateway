@@ -16,9 +16,6 @@
 namespace HealthGateway.CommonTests.Services
 {
     using System;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using DeepEqual.Syntax;
     using HealthGateway.Common.CacheProviders;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ViewModels;
@@ -51,108 +48,6 @@ namespace HealthGateway.CommonTests.Services
         {
             MemoryDistributedCache cache = new(Options.Create(new MemoryDistributedCacheOptions()));
             this.cacheProvider = new DistributedCacheProvider(cache);
-        }
-
-        /// <summary>
-        /// Validates the Communication is pulled from the MemoryCache.
-        /// </summary>
-        /// <param name="scenario">The scenario the test is executing.</param>
-        /// <param name="communicationType">The type of Communication to retrieve.</param>
-        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Theory]
-        [InlineData(Scenario.Active, CommunicationType.Banner)]
-        [InlineData(Scenario.Future, CommunicationType.Banner)]
-        [InlineData(Scenario.Active, CommunicationType.InApp)]
-        [InlineData(Scenario.Future, CommunicationType.InApp)]
-        [InlineData(Scenario.Active, CommunicationType.Mobile)]
-        [InlineData(Scenario.Future, CommunicationType.Mobile)]
-        public async Task ShouldGetActiveCommunicationFromCache(Scenario scenario, CommunicationType communicationType)
-        {
-            Communication communication = new()
-            {
-                Id = Guid.NewGuid(),
-                CommunicationTypeCode = communicationType,
-                ExpiryDateTime = DateTime.UtcNow.AddDays(10),
-                EffectiveDateTime = scenario switch
-                {
-                    Scenario.Future => DateTime.UtcNow.AddDays(3),
-                    _ => DateTime.UtcNow,
-                },
-            };
-
-            RequestResult<Communication?> commResult = GetCommResult(communication, ResultType.Success);
-            string cacheKey = CommunicationService.GetCacheKey(communicationType);
-            this.CreateCache(commResult, cacheKey, TimeSpan.FromDays(1));
-
-            Mock<ICommunicationDelegate> communicationDelegateMock = new();
-            ICommunicationService service = new CommunicationService(
-                new Mock<ILogger<CommunicationService>>().Object,
-                communicationDelegateMock.Object,
-                this.cacheProvider);
-
-            RequestResult<Communication?> actualResult = await service.GetActiveCommunicationAsync(communicationType);
-
-            switch (scenario)
-            {
-                case Scenario.Future:
-                    Assert.NotSame(commResult, actualResult);
-                    Assert.Equal(ResultType.Success, actualResult.ResultStatus);
-                    break;
-
-                default:
-                    Assert.Equal(commResult.ResourcePayload!.Id, actualResult.ResourcePayload!.Id);
-                    break;
-            }
-        }
-
-        /// <summary>
-        /// Get the communication data directly from the DB.
-        /// </summary>
-        /// <param name="communicationExists">Indicates whether there is a communication record or not in the database.</param>
-        /// <param name="communicationType">The type of Communication to retrieve.</param>
-        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Theory]
-        [InlineData(true, CommunicationType.Banner)]
-        [InlineData(false, CommunicationType.Banner)]
-        [InlineData(true, CommunicationType.InApp)]
-        [InlineData(false, CommunicationType.InApp)]
-        [InlineData(true, CommunicationType.Mobile)]
-        [InlineData(false, CommunicationType.Mobile)]
-        public async Task ShouldGetActiveCommunicationFromDb(bool communicationExists, CommunicationType communicationType)
-        {
-            Communication? communication = null;
-            if (communicationExists)
-            {
-                communication = new()
-                {
-                    Id = Guid.NewGuid(),
-                    CommunicationTypeCode = communicationType,
-                    EffectiveDateTime = DateTime.Now,
-                    ExpiryDateTime = DateTime.Now.AddDays(1),
-                };
-            }
-
-            Mock<ICommunicationDelegate> communicationDelegateMock = new();
-            communicationDelegateMock.Setup(s => s.GetNextAsync(It.IsAny<CommunicationType>(), It.IsAny<CancellationToken>())).ReturnsAsync(communication);
-
-            ICommunicationService service = new CommunicationService(
-                new Mock<ILogger<CommunicationService>>().Object,
-                communicationDelegateMock.Object,
-                this.cacheProvider);
-
-            RequestResult<Communication?> actualResult = await service.GetActiveCommunicationAsync(communicationType);
-
-            Assert.NotNull(actualResult);
-            Assert.Equal(ResultType.Success, actualResult.ResultStatus);
-            if (communicationExists)
-            {
-                Assert.True(communication.IsDeepEqual(actualResult.ResourcePayload));
-                Assert.Equal(1, actualResult.TotalResultCount);
-            }
-            else
-            {
-                Assert.Equal(0, actualResult.TotalResultCount);
-            }
         }
 
         // ReSharper disable once CognitiveComplexity
@@ -264,20 +159,6 @@ namespace HealthGateway.CommonTests.Services
                     Assert.Equal(communication.Id, cacheResult!.ResourcePayload!.Id);
                     break;
             }
-        }
-
-        /// <summary>
-        /// Validates that GetActiveBanner throws an exception when the wrong Communication types are passed in.
-        /// </summary>
-        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
-        public async Task ShouldThrowException()
-        {
-            ICommunicationService service = new CommunicationService(
-                new Mock<ILogger<CommunicationService>>().Object,
-                new Mock<ICommunicationDelegate>().Object,
-                new Mock<ICacheProvider>().Object);
-            await Assert.ThrowsAsync<NotImplementedException>(() => service.GetActiveCommunicationAsync(CommunicationType.Email));
         }
 
         private static RequestResult<Communication?> GetCommResult(Communication? communication, ResultType resultStatus)

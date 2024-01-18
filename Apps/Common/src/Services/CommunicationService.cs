@@ -22,7 +22,6 @@ namespace HealthGateway.Common.Services
     using HealthGateway.Common.CacheProviders;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ViewModels;
-    using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Models;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
@@ -70,7 +69,12 @@ namespace HealthGateway.Common.Services
         [SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "Team decision")]
         public async Task<RequestResult<Communication?>> GetActiveCommunicationAsync(CommunicationType communicationType, CancellationToken ct = default)
         {
-            RequestResult<Communication?>? cacheEntry = this.GetCommunicationFromCache(communicationType);
+            RequestResult<Communication?>? cacheEntry = new()
+            {
+                ResourcePayload = await this.communicationDelegate.GetNextAsync(communicationType, ct),
+                ResultStatus = ResultType.Success,
+            };
+            /* RequestResult<Communication?>? cacheEntry = this.GetCommunicationFromCache(communicationType);
             if (cacheEntry == null)
             {
                 this.logger.LogInformation("Active Communication not found in cache, getting from DB...");
@@ -92,7 +96,7 @@ namespace HealthGateway.Common.Services
                         },
                     };
                 }
-            }
+            } */
 
             if (DateTime.UtcNow < cacheEntry.ResourcePayload?.EffectiveDateTime)
             {
