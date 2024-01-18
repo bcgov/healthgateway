@@ -1,9 +1,9 @@
 @page "/patient-details"
 @layout MainLayout
 @attribute [Authorize(Roles = $"{Roles.Admin},{Roles.Reviewer},{Roles.Support}")]
+@using HealthGateway.Admin.Client.Components.Details
 @using HealthGateway.Admin.Client.Store.PatientDetails
 @using HealthGateway.Admin.Client.Store.PatientSupport
-@using HealthGateway.Admin.Client.Components.Details
 @inherits Fluxor.Blazor.Web.Components.FluxorComponent
 
 <PageTitle>Health Gateway Admin Patient Details</PageTitle>
@@ -65,24 +65,30 @@
             <MudTabPanel Text="Profile">
                 <ProfileTab Phn="@Phn" />
             </MudTabPanel>
-            @if (CanViewAccountDetails)
-            {
+
+            <AuthorizeView Roles="@($"{Roles.Admin}, {Roles.Reviewer}")">
                 <MudTabPanel Text="Account">
                     <AccountTab Phn="@Phn" />
                 </MudTabPanel>
-            }
-            @if (CanViewManageProfile && IsGatewayUser)
-            {
-                <MudTabPanel Text="Manage">
-                    <ManageTab Phn="@Phn" />
-                </MudTabPanel>
-            }
-            @if (CanViewNotes && IsGatewayUser)
-            {
-                <MudTabPanel Text="Notes">
-                    <NotesTab />
-                </MudTabPanel>
-            }
+            </AuthorizeView>
+
+            <AuthorizeView Roles="@($"{Roles.Admin}, {Roles.Reviewer}")">
+                @if (IsGatewayUser)
+                {
+                    <MudTabPanel Text="Manage">
+                        <ManageTab Phn="@Phn" />
+                    </MudTabPanel>
+                }
+            </AuthorizeView>
+
+            <AuthorizeView Roles="@Roles.Admin">
+                @if (IsGatewayUser)
+                {
+                    <MudTabPanel Text="Notes">
+                        <NotesTab />
+                    </MudTabPanel>
+                }
+            </AuthorizeView>
         </ChildContent>
     </HgTabs>
 }

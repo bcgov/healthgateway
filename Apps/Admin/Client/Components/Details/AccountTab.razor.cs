@@ -18,10 +18,8 @@ namespace HealthGateway.Admin.Client.Components.Details
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Threading.Tasks;
     using Fluxor;
     using Fluxor.Blazor.Web.Components;
-    using HealthGateway.Admin.Client.Authorization;
     using HealthGateway.Admin.Client.Services;
     using HealthGateway.Admin.Client.Store.PatientDetails;
     using HealthGateway.Admin.Client.Store.PatientSupport;
@@ -69,22 +67,6 @@ namespace HealthGateway.Admin.Client.Components.Details
 
         private bool PatientSupportDetailsLoading => this.PatientDetailsState.Value.IsLoading;
 
-        private bool CanViewHdid => this.UserHasRole(Roles.Admin) || this.UserHasRole(Roles.Reviewer);
-
-        private bool CanViewMessagingVerifications => this.UserHasRole(Roles.Admin) || this.UserHasRole(Roles.Reviewer);
-
         private bool IsDefaultPatientStatus => this.Patient?.Status == PatientStatus.Default;
-
-        /// <inheritdoc/>
-        protected override async Task OnInitializedAsync()
-        {
-            await base.OnInitializedAsync();
-            this.AuthenticationState = await this.AuthenticationStateProvider.GetAuthenticationStateAsync();
-        }
-
-        private bool UserHasRole(string role)
-        {
-            return this.AuthenticationState?.User.IsInRole(role) == true;
-        }
     }
 }

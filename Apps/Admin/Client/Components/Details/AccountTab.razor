@@ -7,12 +7,14 @@
         Account Details
     </MudText>
     <MudGrid Spacing="2">
-        @if (CanViewHdid && !string.IsNullOrWhiteSpace(Patient.Hdid))
-        {
-            <MudItem xs="12">
-                <HgField Label="HDID" Value="@Patient.Hdid" data-testid="patient-hdid" />
-            </MudItem>
-        }
+        <AuthorizeView Roles="@($"{Roles.Admin}, {Roles.Reviewer}")">
+            @if (!string.IsNullOrWhiteSpace(Patient.Hdid))
+            {
+                <MudItem xs="12">
+                    <HgField Label="HDID" Value="@Patient.Hdid" data-testid="patient-hdid" />
+                </MudItem>
+            }
+        </AuthorizeView>
 
         @if (IsDefaultPatientStatus)
         {
@@ -34,7 +36,9 @@
     </MudGrid>
 }
 
-@if (CanViewMessagingVerifications && IsDefaultPatientStatus)
-{
-    <MessageVerificationTable Data="@MessagingVerifications" IsLoading="@PatientSupportDetailsLoading" />
-}
+<AuthorizeView Roles="@($"{Roles.Admin}, {Roles.Reviewer}")">
+    @if (IsDefaultPatientStatus)
+    {
+        <MessageVerificationTable Data="@MessagingVerifications" IsLoading="@PatientSupportDetailsLoading" />
+    }
+</AuthorizeView>

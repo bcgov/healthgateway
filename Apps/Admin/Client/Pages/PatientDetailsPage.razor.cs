@@ -27,6 +27,7 @@ namespace HealthGateway.Admin.Client.Pages
     using HealthGateway.Admin.Common.Constants;
     using HealthGateway.Admin.Common.Models;
     using HealthGateway.Common.Data.Constants;
+    using HealthGateway.Common.Data.Extensions;
     using Microsoft.AspNetCore.Components;
     using Microsoft.AspNetCore.Components.Authorization;
     using Microsoft.AspNetCore.WebUtilities;
@@ -67,13 +68,7 @@ namespace HealthGateway.Admin.Client.Pages
 
         private bool IsGatewayUser => this.Patient?.Status == PatientStatus.Default;
 
-        private bool ShowStatusWarning => this.UserHasRole(Roles.Admin) || this.UserHasRole(Roles.Reviewer) || this.Patient?.Status != PatientStatus.NotUser;
-
-        private bool CanViewAccountDetails => this.UserHasRole(Roles.Admin) || this.UserHasRole(Roles.Reviewer);
-
-        private bool CanViewManageProfile => this.UserHasRole(Roles.Admin) || this.UserHasRole(Roles.Reviewer);
-
-        private bool CanViewNotes => this.UserHasRole(Roles.Admin);
+        private bool ShowStatusWarning => (this.AuthenticationState?.User).IsInAnyRole(Roles.Admin, Roles.Reviewer) || this.Patient?.Status != PatientStatus.NotUser;
 
         private AuthenticationState? AuthenticationState { get; set; }
 
@@ -116,11 +111,6 @@ namespace HealthGateway.Admin.Client.Pages
             }
 
             this.PreviousSearchedPhn = this.Phn;
-        }
-
-        private bool UserHasRole(string role)
-        {
-            return this.AuthenticationState?.User.IsInRole(role) == true;
         }
     }
 }

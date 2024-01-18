@@ -13,27 +13,26 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Admin.Client.Components.Details
+namespace HealthGateway.Common.Data.Extensions
 {
-    using System.Collections.Generic;
     using System.Linq;
-    using Fluxor;
-    using Fluxor.Blazor.Web.Components;
-    using HealthGateway.Admin.Client.Store.PatientDetails;
-    using HealthGateway.Admin.Common.Models;
-    using Microsoft.AspNetCore.Components;
+    using System.Security.Claims;
 
     /// <summary>
-    /// Backing logic for the NotesTab component.
+    /// Extension methods for <see cref="ClaimsPrincipal"/>.
     /// </summary>
-    public partial class NotesTab : FluxorComponent
+    public static class ClaimsPrincipalExtensions
     {
-        [Inject]
-        private IState<PatientDetailsState> PatientDetailsState { get; set; } = default!;
-
-        private IEnumerable<AgentAction> AgentAuditHistory =>
-            (this.PatientDetailsState.Value.AgentActions ?? []).OrderByDescending(a => a.TransactionDateTime);
-
-        private bool PatientSupportDetailsLoading => this.PatientDetailsState.Value.IsLoading;
+        /// <summary>
+        /// Returns a value that indicates whether the entity (user) represented by this claims principal is in any of the
+        /// specified roles.
+        /// </summary>
+        /// <param name="user">The claims principal in question.</param>
+        /// <param name="roles">The roles for which to check.</param>
+        /// <returns>true if claims principal is in any of the specified roles; otherwise, false.</returns>
+        public static bool IsInAnyRole(this ClaimsPrincipal? user, params string[] roles)
+        {
+            return user != null && roles.Any(user.IsInRole);
+        }
     }
 }

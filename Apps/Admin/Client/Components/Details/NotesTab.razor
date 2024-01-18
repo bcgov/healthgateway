@@ -1,7 +1,6 @@
 ﻿@using HealthGateway.Admin.Client.Components.AgentAudit
 @inherits Fluxor.Blazor.Web.Components.FluxorComponent
 
-@if (CanViewAgentAuditHistory)
-{
+<AuthorizeView Roles="@($"{Roles.Admin}, {Roles.Reviewer}")">
     <AgentAuditHistory Title="Notes" AgentActions="@AgentAuditHistory" IsLoading="@PatientSupportDetailsLoading" />
-}
+</AuthorizeView>
