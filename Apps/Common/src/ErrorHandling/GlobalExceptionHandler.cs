@@ -57,7 +57,7 @@ namespace HealthGateway.Common.ErrorHandling
                 {
                     exception.Message,
                     exception.StackTrace,
-                    InnerMessage = exception.InnerException != null
+                    InnerException = exception.InnerException != null
                         ? new
                         {
                             exception.InnerException.Message,
