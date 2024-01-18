@@ -8,16 +8,14 @@ describe("Unauthorized", () => {
         skipOn("localhost");
         cy.logout();
         cy.visit("/");
-
         cy.get("[data-testid=sign-in-btn]")
             .should("be.visible")
             .should("not.be.disabled")
             .click();
-
+        cy.get("#kc-page-title", { timeout: 10000 }).should("be.visible");
         cy.get("#username").should("be.visible").type(username);
         cy.get("#password").should("be.visible").type(password, { log: false });
         cy.get("input[name=login]").should("be.visible").click();
-
         cy.url().should("include", "/unauthorized");
     });
 });
