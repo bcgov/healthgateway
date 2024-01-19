@@ -73,10 +73,10 @@ namespace HealthGateway.Database.Delegates
         {
             this.logger.LogDebug("Getting list of PharmaCare drug products from DB");
             List<string> uniqueDrugIdentifiers = drugIdentifiers.Distinct().ToList();
-            DateTime now = DateTime.UtcNow;
+            DateOnly today = DateOnly.FromDateTime(DateTime.UtcNow);
 
             IList<PharmaCareDrug> pharmaCareDrugs = await this.dbContext.PharmaCareDrug
-                .Where(dp => uniqueDrugIdentifiers.Contains(dp.DinPin) && now > dp.EffectiveDate && now <= dp.EndDate)
+                .Where(dp => uniqueDrugIdentifiers.Contains(dp.DinPin) && today > dp.EffectiveDate && today <= dp.EndDate)
                 .ToListAsync(ct);
 
             IList<PharmaCareDrug> retVal = pharmaCareDrugs
