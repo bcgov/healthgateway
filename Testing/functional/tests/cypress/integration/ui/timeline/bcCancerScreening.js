@@ -34,9 +34,9 @@ describe("BC Cancer Screening cards", () => {
         );
         cy.checkTimelineHasLoaded();
     });
-    
+
     it("Should display different cards for different types", () => {
         testCard("BC Cancer Screening", "View Letter");
-        testCard("BC Cancer Result", "View PDF");
+        testCard("BC Cancer Result", "View Results");
     });
 });

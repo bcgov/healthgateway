@@ -31,8 +31,8 @@ export default class BcCancerScreeningTimelineEntry extends TimelineEntry {
             DateWrapper.fromIso(date)
         );
         this.isResult = isResult;
-        this.subtitle = `Programe: ${model.programName}`;
         this.fileId = model.fileId;
+        this.subtitle = `Program: Cervix Screening`;
         this.screeningType = model.eventType;
         this.setEntryProperties();
         this.getComments = getComments;
@@ -41,7 +41,7 @@ export default class BcCancerScreeningTimelineEntry extends TimelineEntry {
     private setEntryProperties(): void {
         if (this.screeningType === BcCancerScreeningType.Result) {
             this.title = "BC Cancer Result";
-            this.callToActionText = "View PDF";
+            this.callToActionText = "View Results";
             this.documentType = "Screening results";
             this.fileName = "bc_cancer_result";
             this.eventText = "BC Cancer Result PDF";
