@@ -55,6 +55,6 @@ namespace HealthGateway.ClinicalDocument.Models
         /// <summary>
         /// Gets or sets the service date.
         /// </summary>
-        public DateTime ServiceDate { get; set; }
+        public DateOnly ServiceDate { get; set; }
     }
 }

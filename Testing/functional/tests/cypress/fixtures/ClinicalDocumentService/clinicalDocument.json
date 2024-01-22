@@ -7,7 +7,7 @@
             "type": "Discharge summary",
             "facilityName": "Lions Gate Hospital",
             "discipline": "Cancer",
-            "serviceDate": "2021-11-15T01:52:59.6349624-08:00"
+            "serviceDate": "2021-11-15"
         },
         {
             "id": "35646fe4-0ed3-4138-84fb-df42b6494cf7",
@@ -16,7 +16,7 @@
             "type": "Consultation",
             "facilityName": "St. Paul's Hospital",
             "discipline": "CARDIOLOGY",
-            "serviceDate": "2021-12-28T22:44:31.2898235-08:00"
+            "serviceDate": "2021-12-28"
         }
     ],
     "totalResultCount": 2,
