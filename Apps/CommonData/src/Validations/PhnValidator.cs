@@ -31,9 +31,10 @@ namespace HealthGateway.Common.Data.Validations
         /// <summary>
         /// Initializes a new instance of the <see cref="PhnValidator"/> class.
         /// </summary>
-        public PhnValidator()
+        /// <param name="messageOverride">A custom error message on failure.</param>
+        public PhnValidator(string? messageOverride = null)
         {
-            this.RuleFor(v => v).NotEmpty().Must(IsValidInternal).WithMessage("PHN is not valid");
+            this.RuleFor(v => v).NotEmpty().Must(IsValidInternal).WithMessage(messageOverride ?? "PHN is not valid");
         }
 
         /// <summary>

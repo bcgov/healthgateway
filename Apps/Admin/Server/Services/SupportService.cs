@@ -19,7 +19,6 @@ namespace HealthGateway.Admin.Server.Services
     using System.Collections.Generic;
     using System.Globalization;
     using System.Linq;
-    using System.Net;
     using System.Threading;
     using System.Threading.Tasks;
     using AutoMapper;
@@ -36,7 +35,6 @@ namespace HealthGateway.Admin.Server.Services
     using HealthGateway.Common.CacheProviders;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.Constants;
-    using HealthGateway.Common.Data.ErrorHandling;
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.ErrorHandling;
@@ -165,13 +163,7 @@ namespace HealthGateway.Admin.Server.Services
             {
                 return await this.GetPatientAsync(query, ct);
             }
-
-            // TODO: Consider v2 - Remove once DataAccess projects updated to throw HealthGatewayException
-            catch (ProblemDetailsException e) when (e.ProblemDetails?.Status == HttpStatusCode.NotFound)
-            {
-                return null;
-            }
-            catch (NotFoundException e)
+            catch (NotFoundException)
             {
                 return null;
             }

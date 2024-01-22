@@ -24,6 +24,7 @@ namespace HealthGateway.Admin.Tests.Services
     using System.Threading.Tasks;
     using AutoMapper;
     using DeepEqual.Syntax;
+    using FluentValidation;
     using HealthGateway.AccountDataAccess.Audit;
     using HealthGateway.Admin.Common.Constants;
     using HealthGateway.Admin.Common.Models;
@@ -171,7 +172,7 @@ namespace HealthGateway.Admin.Tests.Services
             IDelegationService delegationService = this.GetDelegationService(patientResult);
 
             // Act and Assert
-            await Assert.ThrowsAsync<ProblemDetailsException>(() => delegationService.GetDelegateInformationAsync(DelegatePhn));
+            await Assert.ThrowsAsync<ValidationException>(() => delegationService.GetDelegateInformationAsync(DelegatePhn));
         }
 
         /// <summary>
@@ -373,7 +374,7 @@ namespace HealthGateway.Admin.Tests.Services
             RequestResult<PatientModel> patientResult2 = GetPatientResult(patient2);
 
             IDelegationService delegationService = this.GetDelegationService(dependentResult, delegateResult, protectedDependent, patientResult1, patientResult2, []);
-            await Assert.ThrowsAsync<ProblemDetailsException>(() => delegationService.GetDelegationInformationAsync(DependentPhn));
+            await Assert.ThrowsAsync<ValidationException>(() => delegationService.GetDelegationInformationAsync(DependentPhn));
         }
 
         /// <summary>

@@ -18,12 +18,11 @@ namespace HealthGateway.Admin.Server.Services
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Net;
     using System.ServiceModel;
     using System.Threading;
     using System.Threading.Tasks;
     using AutoMapper;
-    using FluentValidation.Results;
+    using FluentValidation;
     using HealthGateway.AccountDataAccess.Audit;
     using HealthGateway.Admin.Common.Constants;
     using HealthGateway.Admin.Common.Models;
@@ -78,11 +77,8 @@ namespace HealthGateway.Admin.Server.Services
             RequestResult<PatientModel> dependentPatientResult = await patientService.GetPatientAsync(phn, PatientIdentifierType.Phn, ct: ct);
             ValidatePatientResult(dependentPatientResult);
 
-            ValidationResult? validationResults = await new DependentPatientValidator(this.maxDependentAge).ValidateAsync(dependentPatientResult.ResourcePayload, ct);
-            if (!validationResults.IsValid)
-            {
-                throw new ProblemDetailsException(ExceptionUtility.CreateProblemDetails($"Dependent age is above {this.maxDependentAge}", HttpStatusCode.BadRequest, nameof(DelegationService)));
-            }
+            await new DependentPatientValidator(this.maxDependentAge, $"Dependent age is above {this.maxDependentAge}")
+                .ValidateAndThrowAsync(dependentPatientResult.ResourcePayload!, ct);
 
             DelegationInfo delegationInfo = new();
             if (dependentPatientResult.ResourcePayload != null)
@@ -139,11 +135,8 @@ namespace HealthGateway.Admin.Server.Services
             RequestResult<PatientModel> delegatePatientResult = await patientService.GetPatientAsync(phn, PatientIdentifierType.Phn, false, ct);
             ValidatePatientResult(delegatePatientResult);
 
-            ValidationResult? validationResults = await new DelegatePatientValidator(this.minDelegateAge).ValidateAsync(delegatePatientResult.ResourcePayload, ct);
-            if (!validationResults.IsValid)
-            {
-                throw new ProblemDetailsException(ExceptionUtility.CreateProblemDetails($"Delegate age is below {this.minDelegateAge}", HttpStatusCode.BadRequest, nameof(DelegationService)));
-            }
+            await new DelegatePatientValidator(this.minDelegateAge, $"Delegate age is below {this.minDelegateAge}")
+                .ValidateAndThrowAsync(delegatePatientResult.ResourcePayload!, ct);
 
             DelegateInfo delegateInfo = autoMapper.Map<DelegateInfo>(delegatePatientResult.ResourcePayload);
             return delegateInfo;

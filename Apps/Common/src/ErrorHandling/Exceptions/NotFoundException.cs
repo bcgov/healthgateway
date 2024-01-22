@@ -15,68 +15,50 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Common.ErrorHandling
 {
-    using System;
     using System.Diagnostics.CodeAnalysis;
     using System.Net;
+    using HealthGateway.Common.ErrorHandling.Exceptions;
 
+    /// <inheritdoc/>
     /// <summary>
-    /// Exception class for Health Gateway.
+    /// NotFoundException is used when a desired record is not found.
+    /// The default error code is RecordNotFound.
+    /// The default status code is 404.
     /// </summary>
     [SuppressMessage("Design", "CA1032:Implement standard exception constructors", Justification = "The constructors should be explicit")]
-    public class HealthGatewayException : Exception
+    public class NotFoundException : HealthGatewayException
     {
-        private readonly HttpStatusCode defaultStatusCode = HttpStatusCode.InternalServerError;
+        private readonly HttpStatusCode defaultStatusCode = HttpStatusCode.NotFound;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="HealthGatewayException"/> class.
+        /// Initializes a new instance of the <see cref="NotFoundException"/> class.
         /// </summary>
         /// <param name="message">Error message detailing the failure in question.</param>
         /// <param name="errorCode">A concise coded reason for the failure.</param>
-        public HealthGatewayException(string message, string? errorCode = ErrorCodes.ServerError)
+        public NotFoundException(string message, string errorCode = ErrorCodes.RecordNotFound)
             : base(message)
         {
             this.SetErrorProperties(this.defaultStatusCode, errorCode);
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="HealthGatewayException"/> class.
+        /// Initializes a new instance of the <see cref="NotFoundException"/> class.
         /// </summary>
         /// <param name="message">Error message detailing the failure in question.</param>
         /// <param name="innerException">An internal exception that results in a higher order failure.</param>
         /// <param name="errorCode">A concise coded reason for the failure.</param>
-        public HealthGatewayException(string message, Exception innerException, string errorCode = ErrorCodes.ServerError)
+        public NotFoundException(string message, System.Exception innerException, string? errorCode = ErrorCodes.RecordNotFound)
             : base(message, innerException)
         {
             this.SetErrorProperties(this.defaultStatusCode, errorCode);
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="HealthGatewayException"/> class.
+        /// Initializes a new instance of the <see cref="NotFoundException"/> class.
         /// </summary>
-        public HealthGatewayException()
+        public NotFoundException()
         {
-            this.SetErrorProperties(this.defaultStatusCode, ErrorCodes.ServerError);
-        }
-
-        /// <summary>
-        /// Gets or sets the error codes.
-        /// </summary>
-        public string? ErrorCode { get; protected set; }
-
-        /// <summary>
-        /// Gets or sets the http status code.
-        /// </summary>
-        public HttpStatusCode StatusCode { get; set; }
-
-        /// <summary>
-        /// Sets the error properties of the exception.
-        /// </summary>
-        /// <param name="statusCode">The HTTP status code to be reported in the API response.</param>
-        /// <param name="errorCode">Concise coded reason for the failure.</param>
-        protected void SetErrorProperties(HttpStatusCode statusCode, string errorCode)
-        {
-            this.StatusCode = statusCode;
-            this.ErrorCode = errorCode;
+            this.SetErrorProperties(this.defaultStatusCode, ErrorCodes.RecordNotFound);
         }
     }
 }

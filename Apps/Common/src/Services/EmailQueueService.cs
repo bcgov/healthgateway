@@ -21,7 +21,6 @@ namespace HealthGateway.Common.Services
     using System.Threading.Tasks;
     using Hangfire;
     using HealthGateway.Common.Constants;
-    using HealthGateway.Common.Data.ErrorHandling;
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Data.Utils;
     using HealthGateway.Common.ErrorHandling;
@@ -71,8 +70,7 @@ namespace HealthGateway.Common.Services
         /// <inheritdoc/>
         public async Task QueueNewEmailAsync(string toEmail, string templateName, Dictionary<string, string> keyValues, bool shouldCommit = true, CancellationToken ct = default)
         {
-            EmailTemplate emailTemplate = await this.GetEmailTemplateAsync(templateName, ct) ?? throw new ProblemDetailsException(
-                ExceptionUtility.CreateServerError($"{ServiceType.Database}:{ErrorType.CommunicationInternal}", ErrorMessages.EmailTemplateNotFound));
+            EmailTemplate emailTemplate = await this.GetEmailTemplateAsync(templateName, ct) ?? throw new NotFoundException(ErrorMessages.EmailTemplateNotFound);
             await this.QueueNewEmailAsync(toEmail, emailTemplate, keyValues, shouldCommit, ct);
         }
 
