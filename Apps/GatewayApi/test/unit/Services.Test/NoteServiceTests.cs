@@ -25,10 +25,10 @@ namespace HealthGateway.GatewayApiTests.Services.Test
     using DeepEqual.Syntax;
     using HealthGateway.AccountDataAccess.Patient;
     using HealthGateway.Common.Data.Constants;
-    using HealthGateway.Common.Data.ErrorHandling;
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.Delegates;
+    using HealthGateway.Common.ErrorHandling.Exceptions;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
@@ -145,7 +145,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             if (exceptionThrown)
             {
                 // Act and Assert
-                await Assert.ThrowsAsync<ProblemDetailsException>(() => service.GetNotesAsync(Hdid));
+                await Assert.ThrowsAsync<HealthGatewayException>(() => service.GetNotesAsync(Hdid));
             }
             else
             {

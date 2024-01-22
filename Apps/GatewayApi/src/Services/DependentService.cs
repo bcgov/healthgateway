@@ -30,6 +30,7 @@ namespace HealthGateway.GatewayApi.Services
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.ErrorHandling;
+    using HealthGateway.Common.ErrorHandling.Exceptions;
     using HealthGateway.Common.Factories;
     using HealthGateway.Common.Messaging;
     using HealthGateway.Common.Models;
@@ -133,7 +134,7 @@ namespace HealthGateway.GatewayApi.Services
             DbResult<ResourceDelegate> dbDependent = await this.resourceDelegateDelegate.InsertAsync(resourceDelegate, !this.dependentsChangeFeedEnabled, ct);
             if (dbDependent.Status == DbStatusCode.Error)
             {
-                throw new ProblemDetailsException(ExceptionUtility.CreateServerError($"{ServiceType.Database}:{ErrorType.CommunicationInternal}", dbDependent.Message));
+                throw new HealthGatewayException(dbDependent.Message, ErrorCodes.DatabaseError);
             }
 
             await this.UpdateNotificationSettingsAsync(dependentHdid, delegateHdid, false, ct);
@@ -236,7 +237,7 @@ namespace HealthGateway.GatewayApi.Services
             ResourceDelegate? resourceDelegate = (await this.resourceDelegateDelegate.GetAsync(dependent.DelegateId, 0, 500, ct)).FirstOrDefault(d => d.ResourceOwnerHdid == dependent.OwnerId);
             if (resourceDelegate == null)
             {
-                throw new ProblemDetailsException(ExceptionUtility.CreateNotFoundError($"Dependent {dependent.OwnerId} not found for delegate {dependent.DelegateId}"));
+                throw new NotFoundException($"Dependent {dependent.OwnerId} not found for delegate {dependent.DelegateId}");
             }
 
             // commit to the database if change feed is disabled; if change feed enabled, commit will happen when message sender is called
@@ -244,7 +245,7 @@ namespace HealthGateway.GatewayApi.Services
             DbResult<ResourceDelegate> dbDependent = await this.resourceDelegateDelegate.DeleteAsync(resourceDelegate, !this.dependentsChangeFeedEnabled, ct);
             if (dbDependent.Status == DbStatusCode.Error)
             {
-                throw new ProblemDetailsException(ExceptionUtility.CreateServerError($"{ServiceType.Database}:{ErrorType.CommunicationInternal}", dbDependent.Message));
+                throw new HealthGatewayException(dbDependent.Message, ErrorCodes.DatabaseError);
             }
 
             await this.UpdateNotificationSettingsAsync(dependent.OwnerId, dependent.DelegateId, true, ct);
@@ -337,8 +338,8 @@ namespace HealthGateway.GatewayApi.Services
 
         private async Task UpdateNotificationSettingsAsync(string dependentHdid, string delegateHdid, bool isDelete = false, CancellationToken ct = default)
         {
-            UserProfile delegateUserProfile = await this.userProfileDelegate.GetUserProfileAsync(delegateHdid, ct) ?? throw new ProblemDetailsException(
-                ExceptionUtility.CreateServerError($"{ServiceType.Database}:{ErrorType.CommunicationInternal}", ErrorMessages.DelegateUserProfileNotFound));
+            UserProfile delegateUserProfile = await this.userProfileDelegate.GetUserProfileAsync(delegateHdid, ct) ??
+                                              throw new NotFoundException(ErrorMessages.DelegateUserProfileNotFound);
 
             // Update the notification settings
             NotificationSettingsRequest request = new(delegateUserProfile, delegateUserProfile.Email, delegateUserProfile.SmsNumber)

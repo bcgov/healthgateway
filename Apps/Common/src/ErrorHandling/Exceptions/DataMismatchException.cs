@@ -17,6 +17,7 @@ namespace HealthGateway.Common.ErrorHandling
 {
     using System.Diagnostics.CodeAnalysis;
     using System.Net;
+    using HealthGateway.Common.ErrorHandling.Exceptions;
 
     /// <inheritdoc/>
     /// <summary>
@@ -27,17 +28,15 @@ namespace HealthGateway.Common.ErrorHandling
     [SuppressMessage("Design", "CA1032:Implement standard exception constructors", Justification = "The constructors should be explicit")]
     public class DataMismatchException : HealthGatewayException
     {
-        private readonly HttpStatusCode defaultStatusCode = HttpStatusCode.BadRequest;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="DataMismatchException"/> class.
         /// </summary>
         /// <param name="message">Error message detailing the failure in question.</param>
         /// <param name="errorCode">A concise coded reason for the failure.</param>
-        public DataMismatchException(string message, string? errorCode = ErrorCodes.RecordNotFound)
+        public DataMismatchException(string message, string? errorCode = ErrorCodes.InvalidData)
             : base(message)
         {
-            this.SetErrorProperties(this.defaultStatusCode, errorCode);
+            this.SetErrorProperties(MapErrorCodeToStatusCode(errorCode), errorCode);
         }
 
         /// <summary>
@@ -46,10 +45,10 @@ namespace HealthGateway.Common.ErrorHandling
         /// <param name="message">Error message detailing the failure in question.</param>
         /// <param name="innerException">An internal exception that results in a higher order failure.</param>
         /// <param name="errorCode">A concise coded reason for the failure.</param>
-        public DataMismatchException(string message, System.Exception innerException, string? errorCode = ErrorCodes.RecordNotFound)
+        public DataMismatchException(string message, System.Exception innerException, string? errorCode = ErrorCodes.InvalidData)
             : base(message, innerException)
         {
-            this.SetErrorProperties(this.defaultStatusCode, errorCode);
+            this.SetErrorProperties(MapErrorCodeToStatusCode(errorCode), errorCode);
         }
 
         /// <summary>
@@ -57,7 +56,12 @@ namespace HealthGateway.Common.ErrorHandling
         /// </summary>
         public DataMismatchException()
         {
-            this.SetErrorProperties(this.defaultStatusCode, ErrorCodes.RecordNotFound);
+            this.SetErrorProperties(MapErrorCodeToStatusCode(ErrorCodes.InvalidData), ErrorCodes.InvalidData);
+        }
+
+        private static HttpStatusCode MapErrorCodeToStatusCode(string errorCode)
+        {
+            return errorCode == ErrorCodes.InvalidData ? HttpStatusCode.UnprocessableEntity : HttpStatusCode.BadRequest;
         }
     }
 }

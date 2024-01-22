@@ -18,9 +18,10 @@ namespace AccountDataAccessTest
     using System.Globalization;
     using System.ServiceModel;
     using DeepEqual.Syntax;
+    using FluentValidation;
     using HealthGateway.AccountDataAccess.Patient;
     using HealthGateway.Common.Constants;
-    using HealthGateway.Common.Data.ErrorHandling;
+    using HealthGateway.Common.ErrorHandling;
     using Microsoft.Extensions.Logging;
     using Moq;
     using ServiceReference;
@@ -967,8 +968,8 @@ namespace AccountDataAccessTest
             }
 
             // Verify
-            ProblemDetailsException exception = await Assert.ThrowsAsync<ProblemDetailsException>(Actual);
-            Assert.Equal(ErrorMessages.ClientRegistryDoesNotReturnPerson, exception.ProblemDetails!.Detail);
+            NotFoundException exception = await Assert.ThrowsAsync<NotFoundException>(Actual);
+            Assert.Equal(ErrorMessages.ClientRegistryDoesNotReturnPerson, exception.Message);
         }
 
         /// <summary>
@@ -989,8 +990,8 @@ namespace AccountDataAccessTest
             }
 
             // Verify
-            ProblemDetailsException exception = await Assert.ThrowsAsync<ProblemDetailsException>(Actual);
-            Assert.Equal(ErrorMessages.PhnInvalid, exception.ProblemDetails!.Detail);
+            ValidationException exception = await Assert.ThrowsAsync<ValidationException>(Actual);
+            Assert.Equal(ErrorMessages.PhnInvalid, exception.Message);
         }
 
         private static IClientRegistriesDelegate GetClientRegistriesDelegate(
