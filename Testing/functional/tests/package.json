@@ -12,6 +12,7 @@
     "author": "",
     "license": "Apache-2.0",
     "devDependencies": {
+        "@cypress/skip-test": "^2.6.1",
         "cy-verify-downloads": "^0.1.17",
         "cypress": "^13.6.0",
         "cypress-multi-reporters": "^1.6.4",
