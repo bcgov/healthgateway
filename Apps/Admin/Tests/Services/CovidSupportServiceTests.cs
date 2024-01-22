@@ -19,7 +19,6 @@ namespace HealthGateway.Admin.Tests.Services
     using System.Collections.Generic;
     using System.Globalization;
     using System.Linq;
-    using System.Net;
     using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.AccountDataAccess.Patient;
@@ -30,7 +29,6 @@ namespace HealthGateway.Admin.Tests.Services
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.Constants;
-    using HealthGateway.Common.Data.ErrorHandling;
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Data.Models.PHSA;
     using HealthGateway.Common.Data.ViewModels;
@@ -334,8 +332,8 @@ namespace HealthGateway.Admin.Tests.Services
             }
 
             // Verify
-            ProblemDetailsException exception = await Assert.ThrowsAsync<ProblemDetailsException>(Actual);
-            Assert.Equal(ErrorMessages.CannotGetVaccineStatus, exception.ProblemDetails!.Detail);
+            NotFoundException exception = await Assert.ThrowsAsync<NotFoundException>(Actual);
+            Assert.Equal(ErrorMessages.CannotGetVaccineStatus, exception.Message);
         }
 
         /// <summary>
@@ -361,8 +359,8 @@ namespace HealthGateway.Admin.Tests.Services
             }
 
             // Verify
-            ProblemDetailsException exception = await Assert.ThrowsAsync<ProblemDetailsException>(Actual);
-            Assert.Equal(ErrorMessages.MaximumRetryAttemptsReached, exception.ProblemDetails!.Detail);
+            UpstreamServiceException exception = await Assert.ThrowsAsync<UpstreamServiceException>(Actual);
+            Assert.Equal(ErrorMessages.MaximumRetryAttemptsReached, exception.Message);
         }
 
         /// <summary>
@@ -398,8 +396,8 @@ namespace HealthGateway.Admin.Tests.Services
             }
 
             // Verify
-            ProblemDetailsException exception = await Assert.ThrowsAsync<ProblemDetailsException>(Actual);
-            Assert.Equal(ErrorMessages.CannotGetVaccineStatus, exception.ProblemDetails!.Detail);
+            NotFoundException exception = await Assert.ThrowsAsync<NotFoundException>(Actual);
+            Assert.Equal(ErrorMessages.CannotGetVaccineStatus, exception.Message);
         }
 
         /// <summary>
@@ -536,8 +534,8 @@ namespace HealthGateway.Admin.Tests.Services
             }
 
             // Verify
-            ProblemDetailsException exception = await Assert.ThrowsAsync<ProblemDetailsException>(Actual);
-            Assert.Equal(ErrorMessages.MaximumRetryAttemptsReached, exception.ProblemDetails!.Detail);
+            UpstreamServiceException exception = await Assert.ThrowsAsync<UpstreamServiceException>(Actual);
+            Assert.Equal(ErrorMessages.MaximumRetryAttemptsReached, exception.Message);
         }
 
         /// <summary>
@@ -807,12 +805,12 @@ namespace HealthGateway.Admin.Tests.Services
             {
                 mock.Setup(d => d.GetVaccineStatusWithRetriesAsync(It.IsAny<string>(), It.IsAny<DateTime>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
                     .Throws(
-                        new ProblemDetailsException(ExceptionUtility.CreateProblemDetails(ErrorMessages.MaximumRetryAttemptsReached, HttpStatusCode.BadRequest, nameof(RestVaccineStatusDelegate))));
+                        new UpstreamServiceException(ErrorMessages.MaximumRetryAttemptsReached, ErrorCodes.MaxRetriesReached));
             }
             else if (response.Result == null)
             {
                 mock.Setup(d => d.GetVaccineStatusWithRetriesAsync(It.IsAny<string>(), It.IsAny<DateTime>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                    .Throws(new ProblemDetailsException(ExceptionUtility.CreateProblemDetails(ErrorMessages.CannotGetVaccineStatus, HttpStatusCode.BadRequest, nameof(RestVaccineStatusDelegate))));
+                    .Throws(new NotFoundException(ErrorMessages.CannotGetVaccineStatus));
             }
             else
             {

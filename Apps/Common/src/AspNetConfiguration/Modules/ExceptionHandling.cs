@@ -17,7 +17,6 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
 {
     using System.Diagnostics.CodeAnalysis;
     using HealthGateway.Common.ErrorHandling;
-    using HealthGateway.Common.MapProfiles;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.Extensions.DependencyInjection;
 
@@ -33,7 +32,7 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
         /// <param name="services">The service collection to add forward proxies into.</param>
         public static void ConfigureProblemDetails(IServiceCollection services)
         {
-            services.AddAutoMapper(typeof(ProblemDetailsProfile));
+            services.AddExceptionHandler<ValidationExceptionHandler>();
             services.AddExceptionHandler<GlobalExceptionHandler>();
             services.AddProblemDetails();
         }

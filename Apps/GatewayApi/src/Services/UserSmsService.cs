@@ -17,16 +17,15 @@ namespace HealthGateway.GatewayApi.Services
 {
     using System;
     using System.Globalization;
-    using System.Net;
     using System.Security.Cryptography;
     using System.Text.RegularExpressions;
     using System.Threading;
     using System.Threading.Tasks;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.Constants;
-    using HealthGateway.Common.Data.ErrorHandling;
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Data.ViewModels;
+    using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Messaging;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Models.Events;
@@ -140,25 +139,10 @@ namespace HealthGateway.GatewayApi.Services
         {
             this.logger.LogTrace("Removing user sms number {Hdid}", hdid);
             string sanitizedSms = SanitizeSms(sms);
-            if (!await UserProfileValidator.ValidateUserProfileSmsNumberAsync(sanitizedSms, ct))
-            {
-                this.logger.LogWarning("Proposed sms number is not valid {SmsNumber}", sanitizedSms);
-                throw new ProblemDetailsException(
-                    ExceptionUtility.CreateProblemDetails(
-                        $"Proposed sms number is not valid {sanitizedSms}",
-                        HttpStatusCode.BadRequest,
-                        nameof(UserSmsService)));
-            }
+            await UserProfileValidator.ValidateSmsNumberAndThrowAsync(sanitizedSms, ct);
 
-            UserProfile? userProfile = await this.profileDelegate.GetUserProfileAsync(hdid, ct);
-            if (userProfile == null)
-            {
-                throw new ProblemDetailsException(
-                    ExceptionUtility.CreateProblemDetails(
-                        $"User profile not found for hdid {hdid}",
-                        HttpStatusCode.BadRequest,
-                        nameof(UserSmsService)));
-            }
+            UserProfile userProfile = await this.profileDelegate.GetUserProfileAsync(hdid, ct) ??
+                                      throw new NotFoundException($"User profile not found for hdid {hdid}");
 
             userProfile.SmsNumber = null;
             await this.profileDelegate.UpdateAsync(userProfile, ct: ct);

@@ -21,6 +21,7 @@ namespace HealthGateway.Admin.Server.Services
     using System.Net;
     using System.Threading;
     using System.Threading.Tasks;
+    using FluentValidation;
     using HealthGateway.Admin.Common.Constants;
     using HealthGateway.Admin.Common.Models;
     using HealthGateway.Common.AccessManagement.Administration.Models;
@@ -28,7 +29,6 @@ namespace HealthGateway.Admin.Server.Services
     using HealthGateway.Common.AccessManagement.Authentication.Models;
     using HealthGateway.Common.Api;
     using HealthGateway.Common.Constants;
-    using HealthGateway.Common.Data.ErrorHandling;
     using HealthGateway.Common.Data.Utils;
     using HealthGateway.Common.ErrorHandling;
     using Microsoft.Extensions.Logging;
@@ -84,7 +84,7 @@ namespace HealthGateway.Admin.Server.Services
                 if (e.StatusCode == HttpStatusCode.Conflict)
                 {
                     this.logger.LogWarning(ErrorMessages.KeycloakUserAlreadyExists);
-                    throw new AlreadyExistsException(ErrorMessages.KeycloakUserAlreadyExists, ErrorCodes.RecordAlreadyExists);
+                    throw new AlreadyExistsException(ErrorMessages.KeycloakUserAlreadyExists);
                 }
 
                 this.logger.LogError(e, "Keycloak API call failed");
@@ -96,11 +96,11 @@ namespace HealthGateway.Admin.Server.Services
             await this.keycloakAdminApi.AddUserRolesAsync(createdUser.UserId.GetValueOrDefault(), roles, jwtModel.AccessToken, ct);
 
             string[] splitString = createdUser.Username.Split('@');
-            if (splitString.Length != 2)
-            {
-                string errorMessage = $"Agent username format is invalid: {createdUser.Username}";
-                throw new ProblemDetailsException(ExceptionUtility.CreateProblemDetails(errorMessage, HttpStatusCode.InternalServerError, nameof(AgentAccessService)));
-            }
+            InlineValidator<string[]> validator = new();
+            validator.RuleFor(s => s)
+                .Must(s => s.Length == 2)
+                .WithMessage($"Agent username format is invalid: {createdUser.Username}");
+            await validator.ValidateAndThrowAsync(splitString, ct);
 
             string createdUserName = splitString[0];
             string createdIdentityProviderName = splitString[1];

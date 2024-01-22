@@ -28,9 +28,12 @@ namespace HealthGateway.Admin.Server.Validations
         /// Initializes a new instance of the <see cref="DependentPatientValidator"/> class.
         /// </summary>
         /// <param name="maxDependentAge">The maximum age of the dependent.</param>
-        public DependentPatientValidator(int maxDependentAge)
+        /// <param name="message">The error message on failure.</param>
+        public DependentPatientValidator(int maxDependentAge, string message)
         {
-            this.RuleFor(v => v.Birthdate).SetValidator(new AgeRangeValidator(youngerThan: maxDependentAge));
+            this.RuleFor(v => v.Birthdate)
+                .SetValidator(new AgeRangeValidator(youngerThan: maxDependentAge))
+                .WithMessage(message);
         }
     }
 }
