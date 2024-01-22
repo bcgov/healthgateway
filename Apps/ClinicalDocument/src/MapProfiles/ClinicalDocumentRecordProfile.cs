@@ -15,6 +15,7 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.ClinicalDocument.MapProfiles
 {
+    using System;
     using AutoMapper;
     using HealthGateway.ClinicalDocument.Models;
     using HealthGateway.ClinicalDocument.Models.PHSA;
@@ -29,7 +30,9 @@ namespace HealthGateway.ClinicalDocument.MapProfiles
         /// </summary>
         public ClinicalDocumentRecordProfile()
         {
-            this.CreateMap<PhsaClinicalDocumentRecord, ClinicalDocumentRecord>();
+            // ServiceDates specified with an empty time and +00:00 offset need ToUniversalTime() to return the correct day
+            this.CreateMap<PhsaClinicalDocumentRecord, ClinicalDocumentRecord>()
+                .ForMember(dest => dest.ServiceDate, opt => opt.MapFrom(src => DateOnly.FromDateTime(src.ServiceDate.ToUniversalTime())));
         }
     }
 }
