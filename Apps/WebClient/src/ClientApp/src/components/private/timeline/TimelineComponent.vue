@@ -699,7 +699,8 @@ setPageFromDate(linearDate.value);
                 variant="outlined"
                 border
             >
-                Only results from screening tests are available.
+                Only cervix screening results are available here. Check your lab
+                results for other screening tests.
                 <a
                     href="http://www.bccancer.bc.ca/screening"
                     target="_blank"
