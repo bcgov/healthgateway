@@ -18,23 +18,23 @@ namespace HealthGateway.GatewayApi.Models
     using System;
 
     /// <summary>
-    /// Model that provides Terms of service model.
+    /// Model for Terms of Service.
     /// </summary>
     public class TermsOfServiceModel
     {
         /// <summary>
-        /// Gets or sets the terms of service id.
+        /// Gets or sets the ID.
         /// </summary>
         public Guid? Id { get; set; }
 
         /// <summary>
-        /// Gets or sets the terms of service html.
+        /// Gets or sets the HTML content.
         /// </summary>
         public string? Content { get; set; }
 
         /// <summary>
-        /// Gets or sets the date the terms of service becomes active.
+        /// Gets or sets the date and time when these particular terms come into effect.
         /// </summary>
-        public DateTime? EffectiveDate { get; set; }
+        public DateTime? EffectiveDateTime { get; set; }
     }
 }
