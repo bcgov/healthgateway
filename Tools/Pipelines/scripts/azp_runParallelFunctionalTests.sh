@@ -37,8 +37,8 @@ TZ=America/Vancouver npx cypress run \
   --record \
   --key $CYPRESS_KEY \
   --parallel \
-  --ci-build-id "$buildId" \
-  --group "$buildId" \
+  --ci-build-id "$buildId-Parallel" \
+  --group "$buildId-Parallel" \
   --tag "$tags" \
   --spec "cypress/integration/ui/**/*,cypress/integration/e2e/**/!(auth.js)" \
   --headless \
