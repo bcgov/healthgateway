@@ -31,6 +31,7 @@ namespace HealthGateway.GatewayApi.MapProfiles
         {
             this.CreateMap<LegalAgreement, TermsOfServiceModel>()
                 .ForMember(dest => dest.Content, opt => opt.MapFrom(src => src.LegalText))
+                .ForMember(dest => dest.EffectiveDateTime, opt => opt.MapFrom(src => src.EffectiveDate))
                 .ReverseMap();
         }
     }

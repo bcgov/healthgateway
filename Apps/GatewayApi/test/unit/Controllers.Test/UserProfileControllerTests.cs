@@ -305,7 +305,7 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
             {
                 Id = Guid.NewGuid(),
                 Content = "abc",
-                EffectiveDate = DateTime.Today,
+                EffectiveDateTime = DateTime.Today,
             };
             RequestResult<TermsOfServiceModel> expectedResult = new()
             {
