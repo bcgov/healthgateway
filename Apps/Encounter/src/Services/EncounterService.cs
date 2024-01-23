@@ -26,12 +26,14 @@ namespace HealthGateway.Encounter.Services
     using HealthGateway.AccountDataAccess.Patient;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ErrorHandling;
+    using HealthGateway.Common.Data.Utils;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Models.ODR;
     using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Common.Services;
     using HealthGateway.Encounter.Delegates;
+    using HealthGateway.Encounter.MapUtils;
     using HealthGateway.Encounter.Models;
     using HealthGateway.Encounter.Models.ODR;
     using HealthGateway.Encounter.Models.PHSA;
@@ -49,6 +51,7 @@ namespace HealthGateway.Encounter.Services
         private readonly ILogger logger;
         private readonly IMspVisitDelegate mspVisitDelegate;
         private readonly IPatientService patientService;
+        private readonly IConfiguration configuration;
         private readonly PhsaConfig phsaConfig;
         private readonly IPatientRepository patientRepository;
         private readonly List<string> excludedFeeDescriptions;
@@ -82,6 +85,7 @@ namespace HealthGateway.Encounter.Services
             this.hospitalVisitDelegate = hospitalVisitDelegate;
             this.patientRepository = patientRepository;
             this.autoMapper = autoMapper;
+            this.configuration = configuration;
             this.phsaConfig = new PhsaConfig();
             configuration.Bind(PhsaConfig.ConfigurationSectionKey, this.phsaConfig);
             this.excludedFeeDescriptions = configuration.GetSection("MspVisit:ExcludedFeeDescriptions")
@@ -186,7 +190,8 @@ namespace HealthGateway.Encounter.Services
                 {
                     result.ResultStatus = ResultType.Success;
                     result.TotalResultCount = hospitalVisitResult.TotalResultCount;
-                    result.ResourcePayload.HospitalVisits = this.autoMapper.Map<IList<HospitalVisitModel>>(hospitalVisitResult.ResourcePayload.Result);
+                    result.ResourcePayload.HospitalVisits =
+                        HospitalVisitMapUtils.ToUiModels(hospitalVisitResult.ResourcePayload.Result, this.autoMapper, DateFormatter.GetLocalTimeZone(this.configuration));
                     result.PageIndex = hospitalVisitResult.PageIndex;
                     result.PageSize = hospitalVisitResult.PageSize;
                 }

@@ -429,6 +429,8 @@ namespace HealthGateway.EncounterTests.Services
                 { "PHSA:FetchSize", ConfigFetchSize },
                 { "PHSA:BackOffMilliseconds", ConfigBackOffMilliseconds },
                 { "MspVisit:ExcludedFeeDescriptions", "PRIMARY CARE PANEL REPORT,LFP DIRECT PATIENT CARE TIME,LFP INDIRECT PATIENT CARE TIME" },
+                { "TimeZone:UnixTimeZoneId", "America/Vancouver" },
+                { "TimeZone:WindowsTimeZoneId", "Pacific Standard Time" },
             };
 
             return new ConfigurationBuilder()
