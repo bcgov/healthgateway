@@ -36,8 +36,8 @@ TZ=America/Vancouver npx cypress run \
   --env "bcsc.password=$BCSC_PW,keycloak.password=$KEYCLOAK_PW,idir.password=$IDIR_PASSWORD,phoneNumber=$PHONENUMBER,keycloak.phsa.client=$KEYCLOAK_PHSA_CLIENT,keycloak.phsa.secret=$KEYCLOAK_PHSA_SECRET" \
   --record \
   --key $CYPRESS_KEY \
-  --ci-build-id "$buildId-Sequential" \
-  --group "$buildId-Sequential" \
+  --ci-build-id "$buildId-Auth" \
+  --group "$buildId-Auth" \
   --tag "$tags" \
   --spec "cypress/integration/e2e/authentication/auth.js" \
   --headless \

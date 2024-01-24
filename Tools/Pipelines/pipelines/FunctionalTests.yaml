@@ -44,13 +44,56 @@ jobs:
           PHSA_KEYCLOAK_DEVTOOLS_SECRET: $(phsa.keycloak.devtools.secret)
           REDIS_PASSWORD: $(redis.pw)
           REDIS_ENV: $(redis.env)
-
-  - job: "Admin_Tests"
-    displayName: "Admin Functional Tests"
+  - job: "Admin_Unauthorized_Tests"
+    displayName: "Admin Unauthorized Functional Tests"
     pool:
       vmImage: "ubuntu-latest"
     condition: and(succeeded(), eq(variables['Admin'], true))
     dependsOn: "Admin_Seed"
+    timeoutInMinutes: 5
+    steps:
+      - task: Bash@3
+        displayName: 'Run Admin Unauthorized Functional Tests'
+        inputs:
+          targetType: filePath
+          filePath: './Tools/Pipelines/scripts/azp_runAdminUnauthorizedFunctionalTests.sh'
+          arguments: Apps/Admin/Tests/Functional $(Build.BuildNumber)-$(System.JobAttempt) "dev,$(Build.Reason)"
+        env: # Required environment settings and secrets for admin tests
+          TERM: xterm
+          CYPRESS_ADMIN_KEY: $(cypress.admin.key)
+          KEYCLOAK_PW: $(keycloak.pw)
+          IDIR_PASSWORD: $(idir.password)
+          KEYCLOAK_ADMIN_SECRET: $(keycloak.admin.secret)
+  - job: "Admin_AgentAccess_Tests"
+    displayName: "Admin Agent Access Functional Tests"
+    pool:
+      vmImage: "ubuntu-latest"
+    condition: and(succeeded('Admin_Seed'), eq(variables['Admin'], true))
+    dependsOn:
+      - "Admin_Seed"
+      - "Admin_Unauthorized_Tests"
+    timeoutInMinutes: 5
+    steps:
+      - task: Bash@3
+        displayName: 'Run Admin Agent Access Functional Tests'
+        inputs:
+          targetType: filePath
+          filePath: './Tools/Pipelines/scripts/azp_runAdminAgentAccessFunctionalTests.sh'
+          arguments: Apps/Admin/Tests/Functional $(Build.BuildNumber)-$(System.JobAttempt) "dev,$(Build.Reason)"
+        env: # Required environment settings and secrets for admin tests
+          TERM: xterm
+          CYPRESS_ADMIN_KEY: $(cypress.admin.key)
+          KEYCLOAK_PW: $(keycloak.pw)
+          IDIR_PASSWORD: $(idir.password)
+          KEYCLOAK_ADMIN_SECRET: $(keycloak.admin.secret)
+  - job: "Admin_Tests"
+    displayName: "Admin Functional Tests"
+    pool:
+      vmImage: "ubuntu-latest"
+    condition: and(succeeded('Admin_Seed'), eq(variables['Admin'], true))
+    dependsOn:
+      - "Admin_Seed"
+      - "Admin_AgentAccess_Tests"
     strategy:
       parallel: 9
     timeoutInMinutes: 15
@@ -89,21 +132,19 @@ jobs:
           REDIS_PASSWORD: $(redis.pw)
           REDIS_ENV: $(redis.env)
 
-  - job: "HG_Sequential_Functional_Tests"
-    displayName: "HG Sequential Functional Tests"
+  - job: "HG_Auth_Functional_Tests"
+    displayName: "HG Auth Functional Tests"
     pool:
       vmImage: "ubuntu-latest"
     condition: and(succeeded('HG_Seed'), eq(variables['WebClient'], true))
     dependsOn: "HG_Seed"
-    strategy:
-      parallel: 1
-    timeoutInMinutes: 15
+    timeoutInMinutes: 5
     steps:
       - task: Bash@3
-        displayName: 'Run HG Sequential Functional Tests'
+        displayName: 'Run HG Auth Functional Tests'
         inputs:
           targetType: filePath
-          filePath: './Tools/Pipelines/scripts/azp_runSequentialFunctionalTests.sh'
+          filePath: './Tools/Pipelines/scripts/azp_runAuthFunctionalTests.sh'
           arguments: Testing/functional/tests $(Build.BuildNumber)-$(System.JobAttempt) "dev,$(Build.Reason)"
         env: # Required environment settings and secrets for HG tests
           TERM: xterm
@@ -115,23 +156,23 @@ jobs:
           KEYCLOAK_PHSA_CLIENT: $(keycloak.phsa.client)
           KEYCLOAK_PHSA_SECRET: $(keycloak.phsa.secret)
 
-  - job: "HG_Prallel_Functional_Tests"
-    displayName: "HG Parallel Functional Tests"
+  - job: "HG_Functional_Tests"
+    displayName: "HG Functional Tests"
     pool:
       vmImage: "ubuntu-latest"
     dependsOn:
       - "HG_Seed"
-      - "HG_Sequential_Functional_Tests"
+      - "HG_Auth_Functional_Tests"
     condition: and(succeeded('HG_Seed'), eq(variables['WebClient'], true))
     strategy:
       parallel: 9
     timeoutInMinutes: 15
     steps:
       - task: Bash@3
-        displayName: 'Run HG Parallel Functional Tests'
+        displayName: 'Run HG Functional Tests'
         inputs:
           targetType: filePath
-          filePath: './Tools/Pipelines/scripts/azp_runParallelFunctionalTests.sh'
+          filePath: './Tools/Pipelines/scripts/azp_runFunctionalTests.sh'
           arguments: Testing/functional/tests $(Build.BuildNumber)-$(System.JobAttempt) "dev,$(Build.Reason)"
         env: # Required environment settings and secrets for HG tests
           TERM: xterm
