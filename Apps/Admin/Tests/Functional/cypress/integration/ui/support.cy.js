@@ -106,7 +106,7 @@ describe("Support", () => {
         verifySearchInput("Sms", sms);
 
         performSearch("Email", email);
-        verifySingleSupportResult(emailHdid, emailPhn);
+        verifySupportTableResults(emailHdid, emailPhn, 2);
         verifySearchInput("Email", email);
     });
 

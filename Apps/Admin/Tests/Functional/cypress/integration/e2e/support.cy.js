@@ -40,10 +40,9 @@ describe("Support", () => {
         performSearch("SMS", sms);
         verifySupportTableResults(hdid, phn, 2);
         verifySearchInput("Sms", sms);
-        getTableRows("[data-testid=user-table]").should("have.length", 2);
 
         performSearch("Email", email);
-        verifySingleSupportResult(emailHdid, emailPhn);
+        verifySupportTableResults(emailHdid, emailPhn, 2);
         verifySearchInput("Email", email);
     });
 
