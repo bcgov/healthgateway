@@ -46,7 +46,7 @@ namespace HealthGateway.Common.ErrorHandling
         public const string RecordNotFound = "RecordNotFound";
 
         /// <summary>
-        /// The error code when a client registry does not valid data.
+        /// The error code when a service or database does not return valid data.
         /// </summary>
         public const string InvalidData = "InvalidData";
 
