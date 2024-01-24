@@ -26,7 +26,7 @@ export function verifySearchInput(queryType, queryString) {
 }
 
 export function verifySingleSupportResult(expectedHdid, expectedPhn) {
-    cy.url().should("include", "/patient-details");
+    cy.get("[data-testid=user-table]").should("not.exist");
     cy.get("[data-testid=patient-phn]")
         .should("be.visible")
         .contains(expectedPhn);
@@ -39,8 +39,6 @@ export function verifySingleSupportResult(expectedHdid, expectedPhn) {
     cy.get("[data-testid=patient-details-back-button]")
         .should("be.visible")
         .click();
-        cy.url().should("include", "/support");
-    getTableRows("[data-testid=user-table]").should("have.length", 1);
 }
 
 export function verifySupportTableResults(
