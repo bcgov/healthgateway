@@ -20,46 +20,44 @@ namespace HealthGateway.Common.ErrorHandling.Exceptions
 
     /// <inheritdoc/>
     /// <summary>
-    /// RefreshInProgressException is used when a upstream service reports that data is being refreshed and should be retried
-    /// later.
-    /// The default error code is RefreshInProgress.
-    /// The default status code is 503.
+    /// DatabaseException is used when a desired record is not found.
+    /// The default error code is RecordNotFound.
+    /// The default status code is 404.
     /// </summary>
     [SuppressMessage("Design", "CA1032:Implement standard exception constructors", Justification = "The constructors should be explicit")]
-    public class UpstreamServiceException : HealthGatewayException
+    public class DatabaseException : HealthGatewayException
     {
-        // Default private values
-        private readonly HttpStatusCode defaultStatusCode = HttpStatusCode.ServiceUnavailable;
+        private readonly HttpStatusCode defaultStatusCode = HttpStatusCode.InternalServerError;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="UpstreamServiceException"/> class.
+        /// Initializes a new instance of the <see cref="DatabaseException"/> class.
         /// </summary>
         /// <param name="message">Error message detailing the failure in question.</param>
         /// <param name="errorCode">A concise coded reason for the failure.</param>
-        public UpstreamServiceException(string message, string? errorCode = ErrorCodes.RefreshInProgress)
+        public DatabaseException(string message, string errorCode = ErrorCodes.DatabaseError)
             : base(message)
         {
             this.SetErrorProperties(this.defaultStatusCode, errorCode);
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="UpstreamServiceException"/> class.
+        /// Initializes a new instance of the <see cref="DatabaseException"/> class.
         /// </summary>
         /// <param name="message">Error message detailing the failure in question.</param>
         /// <param name="innerException">An internal exception that results in a higher order failure.</param>
         /// <param name="errorCode">A concise coded reason for the failure.</param>
-        public UpstreamServiceException(string message, System.Exception innerException, string? errorCode = ErrorCodes.RefreshInProgress)
+        public DatabaseException(string message, System.Exception innerException, string? errorCode = ErrorCodes.DatabaseError)
             : base(message, innerException)
         {
             this.SetErrorProperties(this.defaultStatusCode, errorCode);
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="UpstreamServiceException"/> class.
+        /// Initializes a new instance of the <see cref="DatabaseException"/> class.
         /// </summary>
-        public UpstreamServiceException()
+        public DatabaseException()
         {
-            this.SetErrorProperties(this.defaultStatusCode, ErrorCodes.RefreshInProgress);
+            this.SetErrorProperties(this.defaultStatusCode, ErrorCodes.DatabaseError);
         }
     }
 }

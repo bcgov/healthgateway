@@ -30,7 +30,7 @@ namespace HealthGateway.Admin.Server.Services
     using HealthGateway.Common.Api;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.Utils;
-    using HealthGateway.Common.ErrorHandling;
+    using HealthGateway.Common.ErrorHandling.Exceptions;
     using Microsoft.Extensions.Logging;
     using Refit;
 

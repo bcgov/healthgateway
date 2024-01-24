@@ -23,7 +23,7 @@ namespace HealthGateway.Common.ErrorHandling.Exceptions
     /// Exception class for Health Gateway.
     /// </summary>
     [SuppressMessage("Design", "CA1032:Implement standard exception constructors", Justification = "The constructors should be explicit")]
-    public class HealthGatewayException : Exception
+    public abstract class HealthGatewayException : Exception
     {
         private readonly HttpStatusCode defaultStatusCode = HttpStatusCode.InternalServerError;
 
@@ -32,7 +32,7 @@ namespace HealthGateway.Common.ErrorHandling.Exceptions
         /// </summary>
         /// <param name="message">Error message detailing the failure in question.</param>
         /// <param name="errorCode">A concise coded reason for the failure.</param>
-        public HealthGatewayException(string message, string? errorCode = ErrorCodes.ServerError)
+        protected HealthGatewayException(string message, string? errorCode = ErrorCodes.ServerError)
             : base(message)
         {
             this.SetErrorProperties(this.defaultStatusCode, errorCode);
@@ -44,7 +44,7 @@ namespace HealthGateway.Common.ErrorHandling.Exceptions
         /// <param name="message">Error message detailing the failure in question.</param>
         /// <param name="innerException">An internal exception that results in a higher order failure.</param>
         /// <param name="errorCode">A concise coded reason for the failure.</param>
-        public HealthGatewayException(string message, Exception innerException, string errorCode = ErrorCodes.ServerError)
+        protected HealthGatewayException(string message, Exception innerException, string errorCode = ErrorCodes.ServerError)
             : base(message, innerException)
         {
             this.SetErrorProperties(this.defaultStatusCode, errorCode);
@@ -53,7 +53,7 @@ namespace HealthGateway.Common.ErrorHandling.Exceptions
         /// <summary>
         /// Initializes a new instance of the <see cref="HealthGatewayException"/> class.
         /// </summary>
-        public HealthGatewayException()
+        protected HealthGatewayException()
         {
             this.SetErrorProperties(this.defaultStatusCode, ErrorCodes.ServerError);
         }

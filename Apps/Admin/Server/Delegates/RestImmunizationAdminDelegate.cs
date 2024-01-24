@@ -26,6 +26,7 @@ namespace HealthGateway.Admin.Server.Delegates
     using HealthGateway.Admin.Server.Models.Immunization;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.ErrorHandling;
+    using HealthGateway.Common.ErrorHandling.Exceptions;
     using HealthGateway.Common.Models.PHSA;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;

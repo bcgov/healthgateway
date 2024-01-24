@@ -13,11 +13,10 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // -------------------------------------------------------------------------
-namespace HealthGateway.Common.ErrorHandling
+namespace HealthGateway.Common.ErrorHandling.Exceptions
 {
     using System.Diagnostics.CodeAnalysis;
     using System.Net;
-    using HealthGateway.Common.ErrorHandling.Exceptions;
 
     /// <inheritdoc/>
     /// <summary>

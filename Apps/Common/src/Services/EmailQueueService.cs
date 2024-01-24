@@ -23,7 +23,7 @@ namespace HealthGateway.Common.Services
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Data.Utils;
-    using HealthGateway.Common.ErrorHandling;
+    using HealthGateway.Common.ErrorHandling.Exceptions;
     using HealthGateway.Common.Jobs;
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;

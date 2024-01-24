@@ -184,7 +184,7 @@ namespace HealthGateway.GatewayApi.Services
             DbResult<UserProfile> userProfileUpdateResult = await this.profileDelegate.UpdateAsync(profile, false, ct);
             if (userProfileUpdateResult.Status != DbStatusCode.Deferred)
             {
-                throw new HealthGatewayException(userProfileUpdateResult.Message, ErrorCodes.DatabaseError);
+                throw new DatabaseException(userProfileUpdateResult.Message);
             }
 
             foreach (Note note in dbNotes)
@@ -196,7 +196,7 @@ namespace HealthGateway.GatewayApi.Services
             DbResult<IEnumerable<Note>> batchUpdateResult = await this.noteDelegate.BatchUpdateAsync(dbNotes, ct: ct);
             if (batchUpdateResult.Status != DbStatusCode.Updated)
             {
-                throw new HealthGatewayException(batchUpdateResult.Message, ErrorCodes.DatabaseError);
+                throw new DatabaseException(batchUpdateResult.Message);
             }
 
             return key;

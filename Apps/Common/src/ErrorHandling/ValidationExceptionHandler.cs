@@ -37,7 +37,7 @@ namespace HealthGateway.Common.ErrorHandling
             if (exception is ValidationException validationException)
             {
                 ProblemDetails problemDetails = validationException.ToProblemDetails(httpContext, environment.IsDevelopment());
-                httpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
+                httpContext.Response.StatusCode = problemDetails.Status ?? StatusCodes.Status400BadRequest;
                 await httpContext.Response.WriteAsJsonAsync(problemDetails, cancellationToken);
                 return true;
             }

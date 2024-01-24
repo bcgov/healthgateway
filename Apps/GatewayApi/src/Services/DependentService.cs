@@ -134,7 +134,7 @@ namespace HealthGateway.GatewayApi.Services
             DbResult<ResourceDelegate> dbDependent = await this.resourceDelegateDelegate.InsertAsync(resourceDelegate, !this.dependentsChangeFeedEnabled, ct);
             if (dbDependent.Status == DbStatusCode.Error)
             {
-                throw new HealthGatewayException(dbDependent.Message, ErrorCodes.DatabaseError);
+                throw new DatabaseException(dbDependent.Message);
             }
 
             await this.UpdateNotificationSettingsAsync(dependentHdid, delegateHdid, false, ct);
@@ -245,7 +245,7 @@ namespace HealthGateway.GatewayApi.Services
             DbResult<ResourceDelegate> dbDependent = await this.resourceDelegateDelegate.DeleteAsync(resourceDelegate, !this.dependentsChangeFeedEnabled, ct);
             if (dbDependent.Status == DbStatusCode.Error)
             {
-                throw new HealthGatewayException(dbDependent.Message, ErrorCodes.DatabaseError);
+                throw new DatabaseException(dbDependent.Message);
             }
 
             await this.UpdateNotificationSettingsAsync(dependent.OwnerId, dependent.DelegateId, true, ct);

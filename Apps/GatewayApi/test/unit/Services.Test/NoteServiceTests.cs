@@ -145,7 +145,7 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             if (exceptionThrown)
             {
                 // Act and Assert
-                await Assert.ThrowsAsync<HealthGatewayException>(() => service.GetNotesAsync(Hdid));
+                await Assert.ThrowsAsync<DatabaseException>(() => service.GetNotesAsync(Hdid));
             }
             else
             {

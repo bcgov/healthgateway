@@ -20,6 +20,7 @@ namespace HealthGateway.Patient.Controllers
     using Asp.Versioning;
     using HealthGateway.Common.AccessManagement.Authorization.Policy;
     using HealthGateway.Common.ErrorHandling;
+    using HealthGateway.Common.ErrorHandling.Exceptions;
     using HealthGateway.Patient.Constants;
     using HealthGateway.Patient.Services;
     using Microsoft.AspNetCore.Authorization;

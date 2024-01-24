@@ -199,8 +199,8 @@ namespace HealthGateway.GatewayApiTests.Services.Test
             AddDependentRequest addDependentRequest = this.SetupMockInput();
             IDependentService service = this.SetupMockDependentService(addDependentRequest, insertResult);
 
-            HealthGatewayException exception =
-                (await Should.ThrowAsync<HealthGatewayException>(async () => await service.AddDependentAsync(this.mockParentHdid, addDependentRequest)))
+            DatabaseException exception =
+                (await Should.ThrowAsync<DatabaseException>(async () => await service.AddDependentAsync(this.mockParentHdid, addDependentRequest)))
                 .ShouldNotBeNull();
 
             exception.StatusCode.ShouldBe(HttpStatusCode.InternalServerError);

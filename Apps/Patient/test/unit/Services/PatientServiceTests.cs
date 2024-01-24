@@ -23,6 +23,7 @@ namespace HealthGateway.PatientTests.Services
     using HealthGateway.AccountDataAccess.Patient;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.ErrorHandling;
+    using HealthGateway.Common.ErrorHandling.Exceptions;
     using HealthGateway.Patient.Models;
     using HealthGateway.Patient.Services;
     using HealthGateway.PatientTests.Utils;

@@ -24,6 +24,7 @@ namespace HealthGateway.Patient.Services
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.ErrorHandling;
     using HealthGateway.Common.ErrorHandling;
+    using HealthGateway.Common.ErrorHandling.Exceptions;
     using HealthGateway.Patient.Models;
     using Microsoft.Extensions.Logging;
 

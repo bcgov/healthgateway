@@ -67,11 +67,11 @@ namespace HealthGateway.Common.ErrorHandling
             ProblemDetails problemDetails = TransformException(healthGatewayException, httpContext, includeException);
             problemDetails.Title = healthGatewayException switch
             {
-                DataMismatchException => "A data mismatch error occurred!",
-                NotFoundException => "A not found error occurred!",
-                AlreadyExistsException => "A record already exists error occurred!",
-                UpstreamServiceException => "An upstream service error occurred!",
-                _ => "An unexpected error occurred!",
+                DataMismatchException => "Data does not match.",
+                NotFoundException => "Record was not found",
+                AlreadyExistsException => "Record already exists.",
+                UpstreamServiceException => "An error occurred with an upstream service.",
+                _ => "An error occurred.",
             };
             problemDetails.Status = (int?)healthGatewayException.StatusCode;
             return problemDetails;
@@ -81,7 +81,7 @@ namespace HealthGateway.Common.ErrorHandling
         {
             ProblemDetails problemDetails = new()
             {
-                Title = "An unexpected error occurred!",
+                Title = "An error occurred.",
                 Detail = exception.Message,
                 Instance = httpContext.Request.Path,
                 Type = exception.GetType().ToString(),

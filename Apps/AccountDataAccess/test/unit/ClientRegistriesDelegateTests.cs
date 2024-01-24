@@ -21,7 +21,7 @@ namespace AccountDataAccessTest
     using FluentValidation;
     using HealthGateway.AccountDataAccess.Patient;
     using HealthGateway.Common.Constants;
-    using HealthGateway.Common.ErrorHandling;
+    using HealthGateway.Common.ErrorHandling.Exceptions;
     using Microsoft.Extensions.Logging;
     using Moq;
     using ServiceReference;
