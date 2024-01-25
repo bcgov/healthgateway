@@ -95,7 +95,7 @@ namespace HealthGateway.Admin.Server.Services
             await this.keycloakAdminApi.AddUserRolesAsync(createdUser.UserId.GetValueOrDefault(), roles, jwtModel.AccessToken, ct);
 
             string[] splitString = createdUser.Username.Split('@');
-            if (splitString.Length == 2)
+            if (splitString.Length != 2)
             {
                 throw new InvalidDataException($"Username {createdUser.Username} is not in the expected format");
             }

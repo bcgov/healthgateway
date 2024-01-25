@@ -220,7 +220,7 @@ namespace HealthGateway.Admin.Server.Services
             if (string.IsNullOrEmpty(patient.Phn) || patient.Birthdate == DateTime.MinValue)
             {
                 logger.LogError("Patient PHN {PersonalHealthNumber} or DOB {Birthdate}) are invalid", patient.Phn, patient.Birthdate);
-                throw new InvalidDataException(ErrorMessages.PhnOrDateAndBirthInvalid);
+                throw new InvalidDataException(ErrorMessages.PhnOrDateOfBirthInvalid);
             }
 
             return await immunizationAdminDelegate.GetVaccineDetailsWithRetriesAsync(patient.Phn, await this.GetAccessTokenAsync(ct), refresh, ct);

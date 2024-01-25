@@ -264,7 +264,7 @@ namespace HealthGateway.Admin.Tests.Services
 
             // Verify
             InvalidDataException exception = await Assert.ThrowsAsync<InvalidDataException>(Actual);
-            Assert.Equal(ErrorMessages.PhnOrDateAndBirthInvalid, exception.Message);
+            Assert.Equal(ErrorMessages.PhnOrDateOfBirthInvalid, exception.Message);
         }
 
         /// <summary>

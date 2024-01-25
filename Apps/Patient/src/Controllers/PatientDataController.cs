@@ -64,7 +64,6 @@ namespace HealthGateway.Patient.Controllers
         [ProducesResponseType(StatusCodes.Status502BadGateway)]
         public async Task<ActionResult<PatientDataResponse>> Get(string hdid, [FromQuery] PatientDataType[] patientDataTypes, CancellationToken ct)
         {
-            // TODO: Consider BadRequestException
             if (string.IsNullOrEmpty(hdid))
             {
                 throw new ValidationException("Hdid is missing");
