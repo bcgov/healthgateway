@@ -70,7 +70,7 @@ namespace HealthGateway.Common.Services
         /// <inheritdoc/>
         public async Task QueueNewEmailAsync(string toEmail, string templateName, Dictionary<string, string> keyValues, bool shouldCommit = true, CancellationToken ct = default)
         {
-            EmailTemplate emailTemplate = await this.GetEmailTemplateAsync(templateName, ct) ?? throw new NotFoundException(ErrorMessages.EmailTemplateNotFound);
+            EmailTemplate emailTemplate = await this.GetEmailTemplateAsync(templateName, ct) ?? throw new DatabaseException(ErrorMessages.EmailTemplateNotFound);
             await this.QueueNewEmailAsync(toEmail, emailTemplate, keyValues, shouldCommit, ct);
         }
 
