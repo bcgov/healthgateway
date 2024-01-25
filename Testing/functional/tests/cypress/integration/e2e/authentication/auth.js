@@ -1,7 +1,7 @@
 import { skipOn } from "@cypress/skip-test";
 const { AuthMethod } = require("../../../support/constants");
 
-describe("Authentication", { defaultCommandTimeout: 6000 }, () => {
+describe("Authentication", () => {
     beforeEach(() => {
         cy.configureSettings({});
     });
