@@ -18,8 +18,8 @@ namespace HealthGateway.Patient.Controllers
     using System.Threading;
     using System.Threading.Tasks;
     using Asp.Versioning;
+    using FluentValidation;
     using HealthGateway.Common.AccessManagement.Authorization.Policy;
-    using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.ErrorHandling.Exceptions;
     using HealthGateway.Patient.Constants;
     using HealthGateway.Patient.Services;
@@ -57,6 +57,7 @@ namespace HealthGateway.Patient.Controllers
         [HttpGet("{hdid}")]
         [Authorize(policy: PatientPolicy.Read)]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -66,12 +67,12 @@ namespace HealthGateway.Patient.Controllers
             // TODO: Consider BadRequestException
             if (string.IsNullOrEmpty(hdid))
             {
-                throw new DataMismatchException("Hdid is missing", ErrorCodes.InvalidInput);
+                throw new ValidationException("Hdid is missing");
             }
 
             if (patientDataTypes == null || patientDataTypes.Length == 0)
             {
-                throw new DataMismatchException("Must have at least one data type", ErrorCodes.InvalidInput);
+                throw new ValidationException("Must have at least one data type");
             }
 
             return await this.patientDataService.QueryAsync(new PatientDataQuery(hdid, patientDataTypes), ct);
@@ -96,12 +97,12 @@ namespace HealthGateway.Patient.Controllers
         {
             if (string.IsNullOrEmpty(hdid))
             {
-                throw new DataMismatchException("Hdid is missing", ErrorCodes.InvalidInput);
+                throw new ValidationException("Hdid is missing");
             }
 
             if (string.IsNullOrEmpty(fileId))
             {
-                throw new DataMismatchException("File id is missing", ErrorCodes.InvalidInput);
+                throw new ValidationException("File id is missing");
             }
 
             return await this.patientDataService.QueryAsync(new PatientFileQuery(hdid, fileId), ct) ??

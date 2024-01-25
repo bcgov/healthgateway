@@ -97,7 +97,7 @@ namespace HealthGateway.Admin.Server.Services
             string[] splitString = createdUser.Username.Split('@');
             if (splitString.Length == 2)
             {
-                throw new DataMismatchException($"Username {createdUser.Username} is not in the expected format");
+                throw new InvalidDataException($"Username {createdUser.Username} is not in the expected format");
             }
 
             string createdUserName = splitString[0];

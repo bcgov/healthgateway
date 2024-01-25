@@ -21,6 +21,7 @@ namespace HealthGateway.GatewayApi.Services
     using System.Globalization;
     using System.Threading;
     using System.Threading.Tasks;
+    using FluentValidation;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ErrorHandling;
@@ -202,7 +203,7 @@ namespace HealthGateway.GatewayApi.Services
                           || (await new OptionalEmailAddressValidator().ValidateAsync(emailAddress, ct))?.IsValid == true;
             if (!result)
             {
-                throw new DataMismatchException("Invalid email address {emailAddress}", ErrorCodes.InvalidInput);
+                throw new ValidationException("Invalid email address {emailAddress}");
             }
 
             this.logger.LogInformation("Removing email from user {Hdid}", hdid);
@@ -256,7 +257,7 @@ namespace HealthGateway.GatewayApi.Services
             };
 
             EmailTemplate emailTemplate = await this.emailQueueService.GetEmailTemplateAsync(EmailTemplateName.RegistrationTemplate, ct) ??
-                                          throw new NotFoundException(ErrorMessages.EmailTemplateNotFound);
+                                          throw new DatabaseException(ErrorMessages.EmailTemplateNotFound);
 
             MessagingVerification messageVerification = new()
             {

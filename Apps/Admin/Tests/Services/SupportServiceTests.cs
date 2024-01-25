@@ -39,7 +39,6 @@ namespace HealthGateway.Admin.Tests.Services
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.Models;
-    using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.ErrorHandling.Exceptions;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
@@ -264,7 +263,7 @@ namespace HealthGateway.Admin.Tests.Services
             }
 
             // Verify
-            DataMismatchException exception = await Assert.ThrowsAsync<DataMismatchException>(Actual);
+            InvalidDataException exception = await Assert.ThrowsAsync<InvalidDataException>(Actual);
             Assert.Equal(ErrorMessages.PhnOrDateAndBirthInvalid, exception.Message);
         }
 
@@ -545,7 +544,7 @@ namespace HealthGateway.Admin.Tests.Services
             ISupportService supportService = CreateSupportService();
 
             // Act
-            DataMismatchException exception = await Assert.ThrowsAsync<DataMismatchException>(async () => await supportService.GetPatientsAsync((PatientQueryType)99, Hdid))
+            InvalidDataException exception = await Assert.ThrowsAsync<InvalidDataException>(async () => await supportService.GetPatientsAsync((PatientQueryType)99, Hdid))
                 ;
 
             // Assert

@@ -29,7 +29,7 @@ namespace HealthGateway.Common.ErrorHandling.Exceptions
     public class UpstreamServiceException : HealthGatewayException
     {
         // Default private values
-        private readonly HttpStatusCode defaultStatusCode = HttpStatusCode.ServiceUnavailable;
+        private readonly HttpStatusCode defaultStatusCode = HttpStatusCode.BadGateway;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UpstreamServiceException"/> class.

@@ -145,7 +145,7 @@ namespace HealthGateway.Admin.Server.Services
 
             if (status == VaccinationStatus.Unknown)
             {
-                throw new DataMismatchException(ErrorMessages.VaccinationStatusUnknown);
+                throw new InvalidDataException(ErrorMessages.VaccinationStatusUnknown);
             }
 
             return status;

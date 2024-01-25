@@ -22,7 +22,6 @@ namespace HealthGateway.PatientTests.Services
     using FluentValidation;
     using HealthGateway.AccountDataAccess.Patient;
     using HealthGateway.Common.Constants;
-    using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.ErrorHandling.Exceptions;
     using HealthGateway.Patient.Models;
     using HealthGateway.Patient.Services;
@@ -116,7 +115,7 @@ namespace HealthGateway.PatientTests.Services
             }
 
             // Verify
-            DataMismatchException exception = await Assert.ThrowsAsync<DataMismatchException>(Actual);
+            InvalidDataException exception = await Assert.ThrowsAsync<InvalidDataException>(Actual);
             Assert.Equal(ErrorMessages.ClientRegistryReturnedDeceasedPerson, exception.Message);
         }
 
@@ -140,7 +139,7 @@ namespace HealthGateway.PatientTests.Services
             }
 
             // Verify
-            DataMismatchException exception = await Assert.ThrowsAsync<DataMismatchException>(Actual);
+            InvalidDataException exception = await Assert.ThrowsAsync<InvalidDataException>(Actual);
             Assert.Equal(ErrorMessages.InvalidServicesCard, exception.Message);
         }
 
@@ -163,7 +162,7 @@ namespace HealthGateway.PatientTests.Services
             }
 
             // Verify
-            DataMismatchException exception = await Assert.ThrowsAsync<DataMismatchException>(Actual);
+            InvalidDataException exception = await Assert.ThrowsAsync<InvalidDataException>(Actual);
             Assert.Equal(ErrorMessages.InvalidServicesCard, exception.Message);
         }
 

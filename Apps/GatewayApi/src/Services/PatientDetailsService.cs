@@ -80,13 +80,13 @@ namespace HealthGateway.GatewayApi.Services
             if (patientDetails.LegalName == null && patientDetails.CommonName == null)
             {
                 this.logger.LogWarning("Client Registry is unable to determine patient name due to missing legal name. Action Type: {ActionType}", ActionType.InvalidName.Value);
-                throw new DataMismatchException(ErrorMessages.InvalidServicesCard);
+                throw new InvalidDataException(ErrorMessages.InvalidServicesCard);
             }
 
             if (string.IsNullOrEmpty(patientDetails.Hdid) && string.IsNullOrEmpty(patientDetails.Phn) && !disableIdValidation)
             {
                 this.logger.LogWarning("Client Registry was unable to retrieve identifiers. Action Type: {ActionType}", ActionType.NoHdId.Value);
-                throw new DataMismatchException(ErrorMessages.InvalidServicesCard);
+                throw new InvalidDataException(ErrorMessages.InvalidServicesCard);
             }
 
             activity?.Stop();

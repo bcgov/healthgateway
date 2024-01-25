@@ -22,6 +22,7 @@ namespace HealthGateway.Admin.Server.Services
     using System.Threading;
     using System.Threading.Tasks;
     using AutoMapper;
+    using FluentValidation;
     using HealthGateway.AccountDataAccess.Audit;
     using HealthGateway.AccountDataAccess.Patient;
     using HealthGateway.Admin.Common.Constants;
@@ -37,7 +38,6 @@ namespace HealthGateway.Admin.Server.Services
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Data.ViewModels;
-    using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.ErrorHandling.Exceptions;
     using HealthGateway.Database.Constants;
     using HealthGateway.Database.Delegates;
@@ -134,7 +134,7 @@ namespace HealthGateway.Admin.Server.Services
                 PatientQueryType.Sms =>
                     await userProfileDelegate.GetUserProfilesAsync(UserQueryType.Sms, queryString, ct),
                 _ =>
-                    throw new DataMismatchException($"Unknown {nameof(queryType)}", ErrorCodes.InvalidInput),
+                    throw new ValidationException($"Unknown {nameof(queryType)}"),
             };
 
             IEnumerable<Task<PatientSupportResult>> tasks = profiles.Select(profile => this.GetPatientSupportResultAsync(profile, ct));
@@ -217,15 +217,13 @@ namespace HealthGateway.Admin.Server.Services
 
         private async Task<VaccineDetails> GetVaccineDetailsAsync(PatientModel patient, bool refresh, CancellationToken ct)
         {
-            if (!string.IsNullOrEmpty(patient.Phn) && patient.Birthdate != DateTime.MinValue)
+            if (string.IsNullOrEmpty(patient.Phn) || patient.Birthdate == DateTime.MinValue)
             {
-                return await immunizationAdminDelegate.GetVaccineDetailsWithRetriesAsync(patient.Phn, await this.GetAccessTokenAsync(ct), refresh, ct);
+                logger.LogError("Patient PHN {PersonalHealthNumber} or DOB {Birthdate}) are invalid", patient.Phn, patient.Birthdate);
+                throw new InvalidDataException(ErrorMessages.PhnOrDateAndBirthInvalid);
             }
 
-            logger.LogError("Patient PHN {PersonalHealthNumber} or DOB {Birthdate}) are invalid", patient.Phn, patient.Birthdate);
-
-            // TODO: Consider different error code that doesn't allude to a user input error
-            throw new DataMismatchException(ErrorMessages.PhnOrDateAndBirthInvalid, ErrorCodes.InvalidInput);
+            return await immunizationAdminDelegate.GetVaccineDetailsWithRetriesAsync(patient.Phn, await this.GetAccessTokenAsync(ct), refresh, ct);
         }
 
         private async Task<string> GetAccessTokenAsync(CancellationToken ct)

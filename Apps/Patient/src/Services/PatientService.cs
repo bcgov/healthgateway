@@ -23,7 +23,6 @@ namespace HealthGateway.Patient.Services
     using HealthGateway.AccountDataAccess.Patient;
     using HealthGateway.Common.Constants;
     using HealthGateway.Common.Data.ErrorHandling;
-    using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.ErrorHandling.Exceptions;
     using HealthGateway.Patient.Models;
     using Microsoft.Extensions.Logging;
@@ -79,7 +78,7 @@ namespace HealthGateway.Patient.Services
             if (patientDetails.IsDeceased == true)
             {
                 this.logger.LogWarning("Client Registry returned a person with the deceased indicator set to true. No PHN was populated. {ActionType}", ActionType.Deceased.Value);
-                throw new DataMismatchException(ErrorMessages.ClientRegistryReturnedDeceasedPerson);
+                throw new InvalidDataException(ErrorMessages.ClientRegistryReturnedDeceasedPerson);
             }
 
             if (patientDetails.CommonName == null)
@@ -88,14 +87,14 @@ namespace HealthGateway.Patient.Services
                 if (patientDetails.LegalName == null)
                 {
                     this.logger.LogWarning("Client Registry is unable to determine patient name due to missing legal name. Action Type: {ActionType}", ActionType.InvalidName.Value);
-                    throw new DataMismatchException(ErrorMessages.InvalidServicesCard);
+                    throw new InvalidDataException(ErrorMessages.InvalidServicesCard);
                 }
             }
 
             if (string.IsNullOrEmpty(patientDetails.Hdid) && string.IsNullOrEmpty(patientDetails.Phn) && !disableIdValidation)
             {
                 this.logger.LogWarning("Client Registry was unable to retrieve identifiers. Action Type: {ActionType}", ActionType.NoHdId.Value);
-                throw new DataMismatchException(ErrorMessages.InvalidServicesCard);
+                throw new InvalidDataException(ErrorMessages.InvalidServicesCard);
             }
 
             activity?.Stop();

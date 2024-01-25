@@ -25,42 +25,39 @@ namespace HealthGateway.Common.ErrorHandling.Exceptions
     /// The default status code is 400.
     /// </summary>
     [SuppressMessage("Design", "CA1032:Implement standard exception constructors", Justification = "The constructors should be explicit")]
-    public class DataMismatchException : HealthGatewayException
+    public class InvalidDataException : HealthGatewayException
     {
+        private readonly HttpStatusCode defaultStatusCode = HttpStatusCode.InternalServerError;
+
         /// <summary>
-        /// Initializes a new instance of the <see cref="DataMismatchException"/> class.
+        /// Initializes a new instance of the <see cref="InvalidDataException"/> class.
         /// </summary>
         /// <param name="message">Error message detailing the failure in question.</param>
         /// <param name="errorCode">A concise coded reason for the failure.</param>
-        public DataMismatchException(string message, string? errorCode = ErrorCodes.InvalidData)
+        public InvalidDataException(string message, string? errorCode = ErrorCodes.InvalidData)
             : base(message)
         {
-            this.SetErrorProperties(MapErrorCodeToStatusCode(errorCode), errorCode);
+            this.SetErrorProperties(this.defaultStatusCode, errorCode);
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DataMismatchException"/> class.
+        /// Initializes a new instance of the <see cref="InvalidDataException"/> class.
         /// </summary>
         /// <param name="message">Error message detailing the failure in question.</param>
         /// <param name="innerException">An internal exception that results in a higher order failure.</param>
         /// <param name="errorCode">A concise coded reason for the failure.</param>
-        public DataMismatchException(string message, System.Exception innerException, string? errorCode = ErrorCodes.InvalidData)
+        public InvalidDataException(string message, System.Exception innerException, string? errorCode = ErrorCodes.InvalidData)
             : base(message, innerException)
         {
-            this.SetErrorProperties(MapErrorCodeToStatusCode(errorCode), errorCode);
+            this.SetErrorProperties(this.defaultStatusCode, errorCode);
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DataMismatchException"/> class.
+        /// Initializes a new instance of the <see cref="InvalidDataException"/> class.
         /// </summary>
-        public DataMismatchException()
+        public InvalidDataException()
         {
-            this.SetErrorProperties(MapErrorCodeToStatusCode(ErrorCodes.InvalidData), ErrorCodes.InvalidData);
-        }
-
-        private static HttpStatusCode MapErrorCodeToStatusCode(string errorCode)
-        {
-            return errorCode == ErrorCodes.InvalidData ? HttpStatusCode.UnprocessableEntity : HttpStatusCode.BadRequest;
+            this.SetErrorProperties(this.defaultStatusCode, ErrorCodes.InvalidData);
         }
     }
 }

@@ -67,7 +67,7 @@ namespace HealthGateway.Common.ErrorHandling
             ProblemDetails problemDetails = TransformException(healthGatewayException, httpContext, includeException);
             problemDetails.Title = healthGatewayException switch
             {
-                DataMismatchException => "Data does not match.",
+                InvalidDataException => "Data does not match.",
                 NotFoundException => "Record was not found",
                 AlreadyExistsException => "Record already exists.",
                 UpstreamServiceException => "An error occurred with an upstream service.",

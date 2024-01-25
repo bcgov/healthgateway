@@ -18,7 +18,6 @@ namespace HealthGateway.Admin.Server.Services
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.ServiceModel;
     using System.Threading;
     using System.Threading.Tasks;
     using AutoMapper;
@@ -32,7 +31,6 @@ namespace HealthGateway.Admin.Server.Services
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ErrorHandling;
     using HealthGateway.Common.Data.ViewModels;
-    using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.ErrorHandling.Exceptions;
     using HealthGateway.Common.Messaging;
     using HealthGateway.Common.Models;
@@ -41,6 +39,7 @@ namespace HealthGateway.Admin.Server.Services
     using HealthGateway.Database.Delegates;
     using HealthGateway.Database.Models;
     using Microsoft.Extensions.Configuration;
+    using ValidationException = System.ComponentModel.DataAnnotations.ValidationException;
 
     /// <inheritdoc/>
     /// <param name="configuration">The injected configuration provider.</param>
@@ -267,9 +266,9 @@ namespace HealthGateway.Admin.Server.Services
             switch (patientResult)
             {
                 case { ResultStatus: ResultType.ActionRequired, ResultError: { ActionCode: { } } error } when error.ActionCode.Equals(ActionType.Validation):
-                    throw new DataMismatchException(error.ResultMessage);
+                    throw new ValidationException(error.ResultMessage);
                 case { ResultStatus: ResultType.Error, ResultError: { } error } when error.ResultMessage.StartsWith("Communication Exception", StringComparison.InvariantCulture):
-                    throw new CommunicationException(error.ResultMessage);
+                    throw new UpstreamServiceException(error.ResultMessage);
                 case { ResultStatus: ResultType.Error or ResultType.ActionRequired } or { ResourcePayload: null }:
                     throw new NotFoundException("Patient not found");
             }
