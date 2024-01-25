@@ -21,7 +21,6 @@ namespace HealthGateway.Admin.Server.Services
     using System.Net;
     using System.Threading;
     using System.Threading.Tasks;
-    using FluentValidation;
     using HealthGateway.Admin.Common.Constants;
     using HealthGateway.Admin.Common.Models;
     using HealthGateway.Common.AccessManagement.Administration.Models;
@@ -96,11 +95,10 @@ namespace HealthGateway.Admin.Server.Services
             await this.keycloakAdminApi.AddUserRolesAsync(createdUser.UserId.GetValueOrDefault(), roles, jwtModel.AccessToken, ct);
 
             string[] splitString = createdUser.Username.Split('@');
-            InlineValidator<string[]> validator = new();
-            validator.RuleFor(s => s)
-                .Must(s => s.Length == 2)
-                .WithMessage($"Agent username format is invalid: {createdUser.Username}");
-            await validator.ValidateAndThrowAsync(splitString, ct);
+            if (splitString.Length == 2)
+            {
+                throw new DataMismatchException($"Username {createdUser.Username} is not in the expected format");
+            }
 
             string createdUserName = splitString[0];
             string createdIdentityProviderName = splitString[1];
