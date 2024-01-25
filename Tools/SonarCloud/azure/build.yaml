@@ -7,7 +7,7 @@ schedules:
       include:
         - dev
 pool:
-  vmImage: "ubuntu-20.04"
+  vmImage: "ubuntu-latest"
 
 variables:
   - group: Secrets
