@@ -54,8 +54,8 @@ namespace HealthGateway.ImmunizationTests.Controllers.Test
                     PersonalHealthNumber = this.phn,
                     FirstName = "Bob",
                     LastName = "Test",
-                    Birthdate = DateTime.ParseExact(this.dob, "yyyy-MM-dd", CultureInfo.InvariantCulture),
-                    VaccineDate = DateTime.ParseExact(this.dov, "yyyy-MM-dd", CultureInfo.InvariantCulture),
+                    Birthdate = DateOnly.ParseExact(this.dob, "yyyy-MM-dd", CultureInfo.InvariantCulture),
+                    VaccineDate = DateOnly.ParseExact(this.dov, "yyyy-MM-dd", CultureInfo.InvariantCulture),
                 },
             };
 

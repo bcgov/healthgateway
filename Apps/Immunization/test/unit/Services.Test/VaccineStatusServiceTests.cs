@@ -45,8 +45,8 @@ namespace HealthGateway.ImmunizationTests.Services.Test
     {
         private readonly IMapper autoMapper = MapperUtil.InitializeAutoMapper();
         private readonly string phn = "9735353315";
-        private readonly DateTime dob = DateTime.Parse("1967-06-02", CultureInfo.InvariantCulture);
-        private readonly DateTime dov = DateTime.Parse("2021-07-04", CultureInfo.InvariantCulture);
+        private readonly DateOnly dob = DateOnly.Parse("1967-06-02", CultureInfo.InvariantCulture);
+        private readonly DateOnly dov = DateOnly.Parse("2021-07-04", CultureInfo.InvariantCulture);
         private readonly string accessToken = "XXDDXX";
         private readonly string hdid = "EXTRIOYFPNX35TWEBUAJ3DNFDFXSYTBC6J4M76GYE3HC5ER2NKWQ";
         private readonly IConfiguration configuration = GetIConfigurationRoot();
@@ -80,7 +80,7 @@ namespace HealthGateway.ImmunizationTests.Services.Test
                     {
                         FirstName = "Bob",
                         LastName = "Test",
-                        Birthdate = this.dob,
+                        Birthdate = this.dob.ToDateTime(TimeOnly.MinValue),
                         StatusIndicator = statusIndicator,
                         FederalVaccineProof = new(),
                     },
@@ -164,7 +164,7 @@ namespace HealthGateway.ImmunizationTests.Services.Test
                     {
                         FirstName = "Bob",
                         LastName = "Test",
-                        Birthdate = this.dob,
+                        Birthdate = this.dob.ToDateTime(TimeOnly.MinValue),
                         StatusIndicator = "DataMismatch",
                     },
                 },
@@ -251,7 +251,7 @@ namespace HealthGateway.ImmunizationTests.Services.Test
                     {
                         FirstName = "Bob",
                         LastName = "Test",
-                        Birthdate = this.dob,
+                        Birthdate = this.dob.ToDateTime(TimeOnly.MinValue),
                         StatusIndicator = "PartialDosesReceived",
                     },
                 },
@@ -344,7 +344,7 @@ namespace HealthGateway.ImmunizationTests.Services.Test
                     {
                         FirstName = "Bob",
                         LastName = "Test",
-                        Birthdate = this.dob,
+                        Birthdate = this.dob.ToDateTime(TimeOnly.MinValue),
                         StatusIndicator = "NotFound",
                     },
                 },
@@ -437,7 +437,7 @@ namespace HealthGateway.ImmunizationTests.Services.Test
                     {
                         FirstName = "Bob",
                         LastName = "Test",
-                        Birthdate = this.dob,
+                        Birthdate = this.dob.ToDateTime(TimeOnly.MinValue),
                         StatusIndicator = "PartialDosesReceived",
                         FederalVaccineProof = new()
                         {

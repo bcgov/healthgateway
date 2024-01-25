@@ -6,8 +6,8 @@
         "personalhealthnumber": "9735361219",
         "firstname": "ORIGANUM",
         "lastname": "EPISTEMICS",
-        "birthdate": "1994-06-09T00:00:00",
-        "vaccinedate": "2021-01-20T00:00:00",
+        "birthdate": "1994-06-09",
+        "vaccinedate": "2021-01-20",
         "doses": 2,
         "state": 2,
         "qrCode": {
