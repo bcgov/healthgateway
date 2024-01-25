@@ -33,7 +33,7 @@ namespace HealthGateway.Common.Models.PHSA
         /// Gets or sets the Forecast Create Date.
         /// </summary>
         [JsonPropertyName("forecastCreateDate")]
-        public DateTime ForecastCreateDate { get; set; }
+        public DateOnly ForecastCreateDate { get; set; }
 
         /// <summary>
         /// Gets or sets the Forecast Status.
@@ -51,13 +51,13 @@ namespace HealthGateway.Common.Models.PHSA
         /// Gets or sets the Eligible Date.
         /// </summary>
         [JsonPropertyName("eligibleDate")]
-        public DateTime EligibleDate { get; set; }
+        public DateOnly EligibleDate { get; set; }
 
         /// <summary>
         /// Gets or sets the Due Date.
         /// </summary>
         [JsonPropertyName("dueDate")]
-        public DateTime DueDate { get; set; }
+        public DateOnly DueDate { get; set; }
 
         /// <summary>
         /// Gets or sets the Vaccine Code.

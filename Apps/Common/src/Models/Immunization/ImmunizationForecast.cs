@@ -33,7 +33,7 @@ namespace HealthGateway.Common.Models.Immunization
         /// Gets or sets the Create Date.
         /// </summary>
         [JsonPropertyName("createDate")]
-        public DateTime CreateDate { get; set; }
+        public DateOnly CreateDate { get; set; }
 
         /// <summary>
         /// Gets or sets the Status.
@@ -51,12 +51,12 @@ namespace HealthGateway.Common.Models.Immunization
         /// Gets or sets the Eligible Date.
         /// </summary>
         [JsonPropertyName("eligibleDate")]
-        public DateTime EligibleDate { get; set; }
+        public DateOnly EligibleDate { get; set; }
 
         /// <summary>
         /// Gets or sets the Due Date.
         /// </summary>
         [JsonPropertyName("dueDate")]
-        public DateTime DueDate { get; set; }
+        public DateOnly DueDate { get; set; }
     }
 }
