@@ -32,6 +32,8 @@ namespace HealthGateway.Immunization.MapProfiles
         public VaccineStatusProfile()
         {
             this.CreateMap<VaccineStatusResult, VaccineStatus>()
+                .ForMember(dest => dest.Birthdate, opt => opt.MapFrom(src => src.Birthdate == null ? (DateOnly?)null : DateOnly.FromDateTime(src.Birthdate.Value)))
+                .ForMember(dest => dest.VaccineDate, opt => opt.MapFrom(src => src.VaccineDate == null ? (DateOnly?)null : DateOnly.FromDateTime(src.VaccineDate.Value)))
                 .ForMember(dest => dest.Doses, opt => opt.MapFrom(src => src.DoseCount))
                 .ForMember(dest => dest.State, opt => opt.MapFrom(src => Enum.Parse<VaccineState>(src.StatusIndicator)));
         }
