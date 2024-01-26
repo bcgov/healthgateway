@@ -24,6 +24,7 @@ namespace HealthGateway.Admin.Tests.Services
     using System.Threading.Tasks;
     using AutoMapper;
     using DeepEqual.Syntax;
+    using FluentValidation;
     using HealthGateway.AccountDataAccess.Audit;
     using HealthGateway.Admin.Common.Constants;
     using HealthGateway.Admin.Common.Models;
@@ -35,6 +36,7 @@ namespace HealthGateway.Admin.Tests.Services
     using HealthGateway.Common.Data.ErrorHandling;
     using HealthGateway.Common.Data.Models;
     using HealthGateway.Common.Data.ViewModels;
+    using HealthGateway.Common.ErrorHandling.Exceptions;
     using HealthGateway.Common.Messaging;
     using HealthGateway.Common.Models;
     using HealthGateway.Common.Services;
@@ -157,7 +159,7 @@ namespace HealthGateway.Admin.Tests.Services
         }
 
         /// <summary>
-        /// Tests get delegate information throws problem details exception when bad request is encountered.
+        /// Tests get delegate information throws exception when bad request is encountered.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
@@ -170,7 +172,7 @@ namespace HealthGateway.Admin.Tests.Services
             IDelegationService delegationService = this.GetDelegationService(patientResult);
 
             // Act and Assert
-            await Assert.ThrowsAsync<ProblemDetailsException>(() => delegationService.GetDelegateInformationAsync(DelegatePhn));
+            await Assert.ThrowsAsync<ValidationException>(() => delegationService.GetDelegateInformationAsync(DelegatePhn));
         }
 
         /// <summary>
@@ -332,7 +334,7 @@ namespace HealthGateway.Admin.Tests.Services
         }
 
         /// <summary>
-        /// Tests unprotect dependent throws problem details exception when dependent not found.
+        /// Tests unprotect dependent throws exception when dependent not found.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
@@ -352,7 +354,7 @@ namespace HealthGateway.Admin.Tests.Services
                 AuthenticatedPreferredUsername);
 
             // Act and Assert
-            await Assert.ThrowsAsync<ProblemDetailsException>(() => delegationService.UnprotectDependentAsync(invalidDependentHdid, It.IsAny<string>()));
+            await Assert.ThrowsAsync<NotFoundException>(() => delegationService.UnprotectDependentAsync(invalidDependentHdid, It.IsAny<string>()));
         }
 
         /// <summary>
@@ -372,7 +374,7 @@ namespace HealthGateway.Admin.Tests.Services
             RequestResult<PatientModel> patientResult2 = GetPatientResult(patient2);
 
             IDelegationService delegationService = this.GetDelegationService(dependentResult, delegateResult, protectedDependent, patientResult1, patientResult2, []);
-            await Assert.ThrowsAsync<ProblemDetailsException>(() => delegationService.GetDelegationInformationAsync(DependentPhn));
+            await Assert.ThrowsAsync<ValidationException>(() => delegationService.GetDelegationInformationAsync(DependentPhn));
         }
 
         /// <summary>
@@ -402,7 +404,7 @@ namespace HealthGateway.Admin.Tests.Services
                 new Mock<IAuditRepository>().Object,
                 this.autoMapper);
 
-            await Assert.ThrowsAsync<ProblemDetailsException>(() => delegationService.GetDelegationInformationAsync(DependentPhn));
+            await Assert.ThrowsAsync<NotFoundException>(() => delegationService.GetDelegationInformationAsync(DependentPhn));
         }
 
         /// <summary>

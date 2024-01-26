@@ -18,29 +18,31 @@ namespace HealthGateway.Common.ErrorHandling
     using System;
     using System.Threading;
     using System.Threading.Tasks;
+    using FluentValidation;
     using Microsoft.AspNetCore.Diagnostics;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Http;
+    using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Hosting;
-    using ProblemDetails = Microsoft.AspNetCore.Mvc.ProblemDetails;
 
     /// <inheritdoc/>
     /// <summary>
-    /// Transforms any exception into the appropriate problem details response.
+    /// Transform validation exceptions into a problem details response.
     /// </summary>
-    internal sealed class GlobalExceptionHandler(IWebHostEnvironment environment) : IExceptionHandler
+    public class ValidationExceptionHandler(IWebHostEnvironment environment) : IExceptionHandler
     {
         /// <inheritdoc/>
         public async ValueTask<bool> TryHandleAsync(HttpContext httpContext, Exception exception, CancellationToken cancellationToken)
         {
-            bool includeException = environment.IsDevelopment();
+            if (exception is ValidationException validationException)
+            {
+                ProblemDetails problemDetails = validationException.ToProblemDetails(httpContext, environment.IsDevelopment());
+                httpContext.Response.StatusCode = problemDetails.Status ?? StatusCodes.Status400BadRequest;
+                await httpContext.Response.WriteAsJsonAsync(problemDetails, cancellationToken);
+                return true;
+            }
 
-            ProblemDetails problemDetails = exception.ToProblemDetails(httpContext, includeException);
-
-            httpContext.Response.StatusCode = problemDetails.Status ?? StatusCodes.Status500InternalServerError;
-            await httpContext.Response.WriteAsJsonAsync(problemDetails, cancellationToken);
-
-            return true;
+            return false;
         }
     }
 }

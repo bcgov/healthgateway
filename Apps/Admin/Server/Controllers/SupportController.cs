@@ -83,13 +83,20 @@ namespace HealthGateway.Admin.Server.Controllers
         /// <param name="ct">A cancellation token.</param>
         /// <returns>Patient support details matching the query.</returns>
         /// <response code="200">Returns the patient support details matching the query.</response>
+        /// <response code="400">The Personal Health Number (PHN) in the request is not valid..</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
         /// <response code="403">
         /// The client does not have access rights to the content; that is, it is unauthorized, so the server
         /// is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.
         /// </response>
+        /// <response code="500">The patient data may be returned but not valid for this request.</response>
         [HttpGet]
         [Route("PatientSupportDetails")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<PatientSupportDetails> GetPatientSupportDetails(
             [FromQuery] ClientRegistryType queryType,
             [FromQuery] string queryString,
@@ -148,9 +155,18 @@ namespace HealthGateway.Admin.Server.Controllers
         /// The client does not have access rights to the content; that is, it is unauthorized, so the server
         /// is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.
         /// </response>
-        /// <response code="404">The patient could not be found for the personal health number..</response>
+        /// <response code="404">The vaccine status could not be found for the given personal health number.</response>
+        /// <response code="500">The vaccine result could not be retrieved due to an internal server error.</response>
+        /// <response code="502">An upstream error occurred.</response>
         [HttpPost]
         [Route("Patient/Document")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status502BadGateway)]
         public async Task MailVaccineCard([FromBody] MailDocumentRequest request, CancellationToken ct)
         {
             await covidSupportService.MailVaccineCardAsync(request, ct);
@@ -169,8 +185,17 @@ namespace HealthGateway.Admin.Server.Controllers
         /// The client does not have access rights to the content; that is, it is unauthorized, so the server
         /// is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.
         /// </response>
+        /// <response code="404">The vaccine status could not be found for the given personal health number.</response>
+        /// ///
+        /// <response code="500">The vaccine result could not be retrieved due to an internal server error.</response>
         [HttpGet]
         [Route("Patient/Document")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ReportModel> RetrieveVaccineRecord([FromQuery] string phn, CancellationToken ct)
         {
             return await covidSupportService.RetrieveVaccineRecordAsync(phn, ct);
@@ -193,6 +218,10 @@ namespace HealthGateway.Admin.Server.Controllers
         [Produces("application/json")]
         [Route("CovidAssessment")]
         [Authorize(Roles = "SupportUser,AdminUser")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status503ServiceUnavailable)]
         public async Task<CovidAssessmentResponse> SubmitCovidAssessment([FromBody] CovidAssessmentRequest request, CancellationToken ct)
         {
             return await covidSupportService.SubmitCovidAssessmentAsync(request, ct);

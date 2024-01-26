@@ -28,9 +28,12 @@ namespace HealthGateway.Admin.Server.Validations
         /// Initializes a new instance of the <see cref="DelegatePatientValidator"/> class.
         /// </summary>
         /// <param name="minDelegateAge">The minimum age of the delegate.</param>
-        public DelegatePatientValidator(int minDelegateAge)
+        /// <param name="message">The error message on failure.</param>
+        public DelegatePatientValidator(int minDelegateAge, string message = "The patient is too young to be a delegate.")
         {
-            this.RuleFor(v => v.Birthdate).SetValidator(new AgeRangeValidator(olderThan: minDelegateAge));
+            this.RuleFor(v => v.Birthdate)
+                .SetValidator(new AgeRangeValidator(olderThan: minDelegateAge))
+                .WithMessage(message);
         }
     }
 }

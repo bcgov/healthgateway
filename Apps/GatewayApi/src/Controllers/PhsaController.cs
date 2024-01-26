@@ -108,19 +108,23 @@ namespace HealthGateway.GatewayApi.Controllers
         /// <param name="ct"><see cref="CancellationToken"/> to manage the async request.</param>
         /// <returns>The patient record.</returns>
         /// <response code="200">Returns the patient record.</response>
+        /// <response code="400">The request HDID did not result in a valid PHN internally.</response>
         /// <response code="401">The client must authenticate itself to get the requested response.</response>
         /// <response code="404">The patient could not be found.</response>
         /// <response code="403">
         /// The client does not have access rights to the content; that is, it is unauthorized, so the server
         /// is refusing to give the requested resource. Unlike 401, the client's identity is known to the server.
         /// </response>
+        /// <response code="500">An internal error occured processing patient data.</response>
         /// <response code="502">Unable to get response from client registry.</response>
         [HttpGet]
         [Produces("application/json")]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status502BadGateway)]
         [Route("patients/{hdid}")]
         [Authorize(Policy = SystemDelegatedPatientPolicy.Read)]
