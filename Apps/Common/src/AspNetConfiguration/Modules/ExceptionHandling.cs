@@ -33,7 +33,7 @@ namespace HealthGateway.Common.AspNetConfiguration.Modules
         public static void ConfigureProblemDetails(IServiceCollection services)
         {
             services.AddExceptionHandler<ValidationExceptionHandler>();
-            services.AddExceptionHandler<GlobalExceptionHandler>();
+            services.AddExceptionHandler<DefaultExceptionHandler>();
             services.AddProblemDetails();
         }
 

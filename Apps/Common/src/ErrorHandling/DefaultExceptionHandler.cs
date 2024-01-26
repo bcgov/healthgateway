@@ -28,14 +28,14 @@ namespace HealthGateway.Common.ErrorHandling
     /// <summary>
     /// Transforms any exception into the appropriate problem details response.
     /// </summary>
-    internal sealed class GlobalExceptionHandler(IWebHostEnvironment environment) : IExceptionHandler
+    internal sealed class DefaultExceptionHandler(IWebHostEnvironment environment) : IExceptionHandler
     {
         /// <inheritdoc/>
         public async ValueTask<bool> TryHandleAsync(HttpContext httpContext, Exception exception, CancellationToken cancellationToken)
         {
             bool includeException = environment.IsDevelopment();
 
-            ProblemDetails problemDetails = exception.ToProblemDetails(httpContext, includeException);
+            ProblemDetails problemDetails = ExceptionUtilities.ToProblemDetails(exception, httpContext, includeException);
 
             httpContext.Response.StatusCode = problemDetails.Status ?? StatusCodes.Status500InternalServerError;
             await httpContext.Response.WriteAsJsonAsync(problemDetails, cancellationToken);

@@ -19,7 +19,6 @@ namespace HealthGateway.Admin.Tests.Services
     using System.Collections.Generic;
     using System.Globalization;
     using System.Linq;
-    using System.Net;
     using System.Threading;
     using System.Threading.Tasks;
     using AutoMapper;
@@ -538,17 +537,18 @@ namespace HealthGateway.Admin.Tests.Services
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
         [Fact]
-        public async Task GetPatientShouldThrowBadRequest()
+        public async Task GetPatientShouldValidationExceptionOnUnknownQueryType()
         {
             // Arrange
             ISupportService supportService = CreateSupportService();
 
             // Act
-            InvalidDataException exception = await Assert.ThrowsAsync<InvalidDataException>(async () => await supportService.GetPatientsAsync((PatientQueryType)99, Hdid))
+            FluentValidation.ValidationException exception =
+                    await Assert.ThrowsAsync<FluentValidation.ValidationException>(async () => await supportService.GetPatientsAsync((PatientQueryType)99, Hdid))
                 ;
 
             // Assert
-            Assert.Equal(HttpStatusCode.BadRequest, exception.StatusCode);
+            Assert.Contains(exception.Message, "Unknown queryType", StringComparison.InvariantCultureIgnoreCase);
         }
 
         /// <summary>
