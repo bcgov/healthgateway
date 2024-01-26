@@ -28,11 +28,6 @@ namespace HealthGateway.Medication.Models
         public string PrescriptionIdentifier { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the prescription status.
-        /// </summary>
-        public char PrescriptionStatus { get; set; }
-
-        /// <summary>
         /// Gets or sets the date the medication was dispensed.
         /// </summary>
         public DateOnly DispensedDate { get; set; }
@@ -46,16 +41,6 @@ namespace HealthGateway.Medication.Models
         /// Gets or sets the directions as prescribed.
         /// </summary>
         public string Directions { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Gets or sets the date the medication was entered.
-        /// </summary>
-        public DateTime? DateEntered { get; set; }
-
-        /// <summary>
-        /// Gets or sets the pharmacy ID.
-        /// </summary>
-        public string PharmacyId { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the medication summary.

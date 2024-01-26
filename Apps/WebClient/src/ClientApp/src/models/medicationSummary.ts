@@ -6,12 +6,8 @@ export default interface MedicationSummary {
     brandName: string;
     // Common or generic name of the medication.
     genericName: string;
-    // Max quantity for the medication statement.
-    maxDailyDosage?: number;
     // Quantity for the medication statement.
     quantity?: number;
-    // Drug medication discontinued date, if applicable.
-    drugDiscontinuedDate?: Date;
     // Manufacturer
     manufacturer?: string;
     // Form
