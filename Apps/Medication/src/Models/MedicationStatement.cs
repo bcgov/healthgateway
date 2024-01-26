@@ -35,7 +35,7 @@ namespace HealthGateway.Medication.Models
         /// <summary>
         /// Gets or sets the date the medication was dispensed.
         /// </summary>
-        public DateTime DispensedDate { get; set; }
+        public DateOnly DispensedDate { get; set; }
 
         /// <summary>
         /// Gets or sets the surname of the practitioner who prescribed the medication.

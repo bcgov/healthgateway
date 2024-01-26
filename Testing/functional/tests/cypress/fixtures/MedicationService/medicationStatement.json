@@ -3,7 +3,7 @@
         {
             "prescriptionIdentifier": "190959",
             "prescriptionStatus": "\u0000",
-            "dispensedDate": "2023-05-10T00:00:00",
+            "dispensedDate": "2023-05-10",
             "practitionerSurname": "COBB",
             "directions": "TEST",
             "dateEntered": null,
@@ -43,7 +43,7 @@
         {
             "prescriptionIdentifier": "1",
             "prescriptionStatus": "\u0000",
-            "dispensedDate": "2023-02-13T00:00:00",
+            "dispensedDate": "2023-02-13",
             "practitionerSurname": "CORN",
             "directions": "ODR gateway test 1",
             "dateEntered": null,
@@ -83,7 +83,7 @@
         {
             "prescriptionIdentifier": "9529523",
             "prescriptionStatus": "\u0000",
-            "dispensedDate": "2019-01-30T00:00:00",
+            "dispensedDate": "2019-01-30",
             "practitionerSurname": "PZVVPS",
             "directions": ".. SHAKE WELL .. DRINK 50MLS CARRY 80MLS DAILY DAILY  MAY BE POISONOUS TO OTHERS",
             "dateEntered": null,
@@ -123,7 +123,7 @@
         {
             "prescriptionIdentifier": "133920",
             "prescriptionStatus": "\u0000",
-            "dispensedDate": "2021-02-28T00:00:00",
+            "dispensedDate": "2021-02-28",
             "practitionerSurname": "PLJDDRV",
             "directions": "TAKE 2 TABLETS AT BEDTIME",
             "dateEntered": null,
@@ -163,7 +163,7 @@
         {
             "prescriptionIdentifier": "6787902",
             "prescriptionStatus": "\u0000",
-            "dispensedDate": "2019-12-25T00:00:00",
+            "dispensedDate": "2019-12-25",
             "practitionerSurname": "PZVVPS",
             "directions": "TAKE 2 TABLETS AT BEDTIME (DISPENSE WITH METHADONE MON/THURS)",
             "dateEntered": null,
@@ -203,7 +203,7 @@
         {
             "prescriptionIdentifier": "9528727",
             "prescriptionStatus": "\u0000",
-            "dispensedDate": "2018-02-25T00:00:00",
+            "dispensedDate": "2018-02-25",
             "practitionerSurname": "PZVVPS",
             "directions": ".. SHAKE WELL .. DRINK 50MLS CARRY 80MLS DAILY DAILY  MAY BE POISONOUS TO OTHERS",
             "dateEntered": null,
@@ -243,7 +243,7 @@
         {
             "prescriptionIdentifier": "6784060",
             "prescriptionStatus": "\u0000",
-            "dispensedDate": "2021-01-22T00:00:00",
+            "dispensedDate": "2021-01-22",
             "practitionerSurname": "PZVVPS",
             "directions": "TAKE 2 TABLETS AT BEDTIME (DISPENSE WITH METHADONE MON/THURS)",
             "dateEntered": null,
