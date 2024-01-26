@@ -52,7 +52,7 @@ namespace HealthGateway.MedicationTests.Controllers
                     {
                         PrescriptionIdentifier = "identifier",
                         PrescriptionStatus = 'M',
-                        DispensedDate = DateTime.Parse("09/28/2020", CultureInfo.CurrentCulture),
+                        DispensedDate = DateOnly.Parse("09/28/2020", CultureInfo.CurrentCulture),
                         DateEntered = DateTime.Parse("09/28/2020", CultureInfo.CurrentCulture),
                         Directions = "Directions",
                         DispensingPharmacy = new Pharmacy
