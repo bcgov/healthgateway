@@ -25,12 +25,14 @@ namespace HealthGateway.Laboratory.Services
     using HealthGateway.Common.AccessManagement.Authentication;
     using HealthGateway.Common.Data.Constants;
     using HealthGateway.Common.Data.ErrorHandling;
+    using HealthGateway.Common.Data.Utils;
     using HealthGateway.Common.Data.ViewModels;
     using HealthGateway.Common.ErrorHandling;
     using HealthGateway.Common.Factories;
     using HealthGateway.Common.Models.PHSA;
     using HealthGateway.Laboratory.Delegates;
     using HealthGateway.Laboratory.Factories;
+    using HealthGateway.Laboratory.MapUtils;
     using HealthGateway.Laboratory.Models;
     using HealthGateway.Laboratory.Models.PHSA;
     using Microsoft.Extensions.Configuration;
@@ -48,6 +50,7 @@ namespace HealthGateway.Laboratory.Services
 
         private readonly IAuthenticationDelegate authenticationDelegate;
         private readonly ILaboratoryDelegate laboratoryDelegate;
+        private readonly IConfiguration configuration;
         private readonly ILogger<LaboratoryService> logger;
         private readonly IMapper autoMapper;
         private readonly LaboratoryConfig labConfig;
@@ -70,6 +73,7 @@ namespace HealthGateway.Laboratory.Services
             IPatientRepository patientRepository,
             IMapper autoMapper)
         {
+            this.configuration = configuration;
             this.logger = logger;
             this.laboratoryDelegate = laboratoryDelegateFactory.CreateInstance();
             this.authenticationDelegate = authenticationDelegate;
@@ -176,10 +180,11 @@ namespace HealthGateway.Laboratory.Services
                 return RequestResultFactory.Error<LaboratoryOrderResult>(delegateResult.ResultError);
             }
 
+            TimeZoneInfo timeZone = DateFormatter.GetLocalTimeZone(this.configuration);
             return RequestResultFactory.Success(
                 new LaboratoryOrderResult
                 {
-                    LaboratoryOrders = this.autoMapper.Map<IEnumerable<PhsaLaboratoryOrder>, IEnumerable<LaboratoryOrder>>(delegateResult.ResourcePayload?.Result?.LabOrders),
+                    LaboratoryOrders = LaboratoryMapUtils.ToUiModels(delegateResult.ResourcePayload?.Result?.LabOrders ?? [], this.autoMapper, timeZone),
                     Loaded = !(loadState?.RefreshInProgress ?? false),
                     Queued = loadState?.Queued ?? false,
                 },
