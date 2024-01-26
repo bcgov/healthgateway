@@ -29,14 +29,15 @@ namespace HealthGateway.Common.ErrorHandling
     /// <summary>
     /// Transform validation exceptions into a problem details response.
     /// </summary>
-    public class ValidationExceptionHandler(IWebHostEnvironment environment) : IExceptionHandler
+    internal sealed class ValidationExceptionHandler(IWebHostEnvironment environment) : IExceptionHandler
     {
         /// <inheritdoc/>
         public async ValueTask<bool> TryHandleAsync(HttpContext httpContext, Exception exception, CancellationToken cancellationToken)
         {
             if (exception is ValidationException validationException)
             {
-                ProblemDetails problemDetails = validationException.ToProblemDetails(httpContext, environment.IsDevelopment());
+                ValidationProblemDetails problemDetails = (ValidationProblemDetails)ExceptionUtilities.ToProblemDetails(validationException, httpContext, environment.IsDevelopment());
+
                 httpContext.Response.StatusCode = problemDetails.Status ?? StatusCodes.Status400BadRequest;
                 await httpContext.Response.WriteAsJsonAsync(problemDetails, cancellationToken);
                 return true;
