@@ -15,6 +15,7 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Medication.MapProfiles
 {
+    using System;
     using AutoMapper;
     using HealthGateway.Medication.Models;
     using HealthGateway.Medication.Models.Salesforce;
@@ -29,7 +30,10 @@ namespace HealthGateway.Medication.MapProfiles
         /// </summary>
         public SpecialAuthorityRequestProfile()
         {
-            this.CreateMap<SpecialAuthorityRequest, MedicationRequest>();
+            this.CreateMap<SpecialAuthorityRequest, MedicationRequest>()
+                .ForMember(dest => dest.RequestedDate, opt => opt.MapFrom(src => DateOnly.FromDateTime(src.RequestedDate)))
+                .ForMember(dest => dest.EffectiveDate, opt => opt.MapFrom(src => src.EffectiveDate == null ? (DateOnly?)null : DateOnly.FromDateTime(src.EffectiveDate.Value)))
+                .ForMember(dest => dest.ExpiryDate, opt => opt.MapFrom(src => src.ExpiryDate == null ? (DateOnly?)null : DateOnly.FromDateTime(src.ExpiryDate.Value)));
         }
     }
 }
