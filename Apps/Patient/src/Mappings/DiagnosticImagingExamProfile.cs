@@ -15,6 +15,7 @@
 // -------------------------------------------------------------------------
 namespace HealthGateway.Patient.Mappings
 {
+    using System;
     using AutoMapper;
     using HealthGateway.PatientDataAccess;
     using DiagnosticImagingStatus = HealthGateway.Patient.Models.DiagnosticImagingStatus;
@@ -32,7 +33,10 @@ namespace HealthGateway.Patient.Mappings
             this.CreateMap<DiagnosticImagingExam, Services.DiagnosticImagingExam>()
                 .ForMember(
                     d => d.ExamStatus,
-                    opts => opts.MapFrom(s => MapDiagnosticImagingExamStatus(s.Status)));
+                    opts => opts.MapFrom(s => MapDiagnosticImagingExamStatus(s.Status)))
+                .ForMember(
+                    d => d.ExamDate,
+                    opts => opts.MapFrom(s => s.ExamDate == null ? (DateOnly?)null : DateOnly.FromDateTime(s.ExamDate.Value)));
         }
 
         private static DiagnosticImagingStatus MapDiagnosticImagingExamStatus(PatientDataAccess.DiagnosticImagingStatus status)

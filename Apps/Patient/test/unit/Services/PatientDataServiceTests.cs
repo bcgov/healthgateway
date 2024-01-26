@@ -85,7 +85,7 @@ namespace HealthGateway.PatientTests.Services
             DiagnosticImagingExam diagnosticImagingExam = new()
             {
                 BodyPart = "Some BodyPart",
-                ExamDate = DateTime.Parse("2020-01-01", CultureInfo.InvariantCulture),
+                ExamDate = DateOnly.Parse("2020-01-01", CultureInfo.InvariantCulture),
                 FileId = "Some FileId",
                 HealthAuthority = "Some HealthAuthority",
                 Modality = "Some Modality",
@@ -237,7 +237,7 @@ namespace HealthGateway.PatientTests.Services
             {
                 DiagnosticImagingExam actual = result.Items.ShouldHaveSingleItem().ShouldBeOfType<DiagnosticImagingExam>();
                 actual.BodyPart.ShouldBe(expected.BodyPart);
-                actual.ExamDate.ShouldBe(expected.ExamDate);
+                actual.ExamDate.ShouldBe(expected.ExamDate == null ? null : DateOnly.FromDateTime(expected.ExamDate.Value));
                 actual.FileId.ShouldBe(expected.FileId);
                 actual.HealthAuthority.ShouldBe(expected.HealthAuthority);
                 actual.Modality.ShouldBe(expected.Modality);
