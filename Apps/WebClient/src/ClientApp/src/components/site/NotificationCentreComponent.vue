@@ -21,7 +21,7 @@ enum AlertCategory {
     Medication = "Medications",
     Note = "MyNote",
     SpecialAuthority = "SpecialAuthority",
-    BcCancerScreening = "BcCancerScreening",
+    BcCancerScreening = "CancerScreening",
 }
 
 const router = useRouter();
