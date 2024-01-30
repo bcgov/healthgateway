@@ -4,13 +4,13 @@ import { computed, ref, watch } from "vue";
 import FeedbackComponent from "@/components/site/FeedbackComponent.vue";
 import { useAuthStore } from "@/stores/auth";
 import { useConfigStore } from "@/stores/config";
-import { useNavigationStore } from "@/stores/navigation";
+import { useLayoutStore } from "@/stores/layout";
 import { useUserStore } from "@/stores/user";
 
-const layoutStore = useNavigationStore();
+const layoutStore = useLayoutStore();
 const authStore = useAuthStore();
 const configStore = useConfigStore();
-const navigationStore = useNavigationStore();
+const navigationStore = useLayoutStore();
 const userStore = useUserStore();
 
 const collapsedOnDesktop = ref(false);

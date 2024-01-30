@@ -5,7 +5,7 @@ import HgIconButtonComponent from "@/components/common/HgIconButtonComponent.vue
 import CommentSectionComponent from "@/components/private/timeline/comment/CommentSectionComponent.vue";
 import TimelineEntry from "@/models/timeline/timelineEntry";
 import { EventName, useEventStore } from "@/stores/event";
-import { useNavigationStore } from "@/stores/navigation";
+import { useLayoutStore } from "@/stores/layout";
 
 interface Props {
     cardId: string;
@@ -33,7 +33,7 @@ const emit = defineEmits<{
     (e: "click-attachment-button"): void;
 }>();
 
-const layoutStore = useNavigationStore();
+const layoutStore = useLayoutStore();
 const eventStore = useEventStore();
 
 const detailsVisible = ref(props.isMobileDetails);

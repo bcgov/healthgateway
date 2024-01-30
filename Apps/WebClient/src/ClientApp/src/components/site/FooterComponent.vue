@@ -4,13 +4,13 @@ import { computed } from "vue";
 import { Path } from "@/constants/path";
 import { useAuthStore } from "@/stores/auth";
 import { useConfigStore } from "@/stores/config";
-import { useNavigationStore } from "@/stores/navigation";
+import { useLayoutStore } from "@/stores/layout";
 import { useUserStore } from "@/stores/user";
 
 const authStore = useAuthStore();
 const configStore = useConfigStore();
 const userStore = useUserStore();
-const layoutStore = useNavigationStore();
+const layoutStore = useLayoutStore();
 
 const isFooterShown = computed(
     () =>

@@ -2,9 +2,9 @@
 import { computed, ref } from "vue";
 
 import Process, { EnvironmentType } from "@/constants/process";
-import { useNavigationStore } from "@/stores/navigation";
+import { useLayoutStore } from "@/stores/layout";
 
-const layoutStore = useNavigationStore();
+const layoutStore = useLayoutStore();
 
 const host = ref(window.location.hostname.toLocaleUpperCase());
 

@@ -17,8 +17,8 @@ import { ILogger } from "@/services/interfaces";
 import { useAppStore } from "@/stores/app";
 import { useErrorStore } from "@/stores/error";
 import { EventName, useEventStore } from "@/stores/event";
+import { useLayoutStore } from "@/stores/layout";
 import { useLoadingStore } from "@/stores/loading";
-import { useNavigationStore } from "@/stores/navigation";
 import { useNoteStore } from "@/stores/note";
 import { useTimelineStore } from "@/stores/timeline";
 import { useUserStore } from "@/stores/user";
@@ -28,7 +28,7 @@ const defaultDateString = DateWrapper.today().toISODate();
 
 const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
 const appStore = useAppStore();
-const layoutStore = useNavigationStore();
+const layoutStore = useLayoutStore();
 const errorStore = useErrorStore();
 const eventStore = useEventStore();
 const loadingStore = useLoadingStore();

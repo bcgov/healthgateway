@@ -23,7 +23,7 @@ import RequestResult from "@/models/requestResult";
 import { Action, Actor, Destination, Origin, Text } from "@/plugins/extensions";
 import { ILogger, ITrackingService } from "@/services/interfaces";
 import { useErrorStore } from "@/stores/error";
-import { useNavigationStore } from "@/stores/navigation";
+import { useLayoutStore } from "@/stores/layout";
 import { useReportStore } from "@/stores/report";
 import EventDataUtility from "@/utility/eventDataUtility";
 
@@ -46,7 +46,7 @@ const trackingService = container.get<ITrackingService>(
 
 const reportStore = useReportStore();
 const errorStore = useErrorStore();
-const layoutStore = useNavigationStore();
+const layoutStore = useLayoutStore();
 
 const messageModal = ref<InstanceType<typeof MessageModalComponent>>();
 const recommendationsReportComponent =

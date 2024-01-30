@@ -9,7 +9,7 @@ import { computed, ref, watch } from "vue";
 
 import HgIconButtonComponent from "@/components/common/HgIconButtonComponent.vue";
 import { DateWrapper, IDateWrapper } from "@/models/dateWrapper";
-import { useNavigationStore } from "@/stores/navigation";
+import { useLayoutStore } from "@/stores/layout";
 import ValidationUtil from "@/utility/validationUtil";
 
 interface Props {
@@ -41,7 +41,7 @@ const maskOptions = {
     postProcess: (value: string) => value.toUpperCase(),
 };
 
-const layoutStore = useNavigationStore();
+const layoutStore = useLayoutStore();
 
 const internalValue = ref(fromIsoFormat(props.modelValue));
 

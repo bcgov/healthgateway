@@ -6,7 +6,7 @@ import { container } from "@/ioc/container";
 import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
 import { ILogger } from "@/services/interfaces";
 
-export const useNavigationStore = defineStore("navigation", () => {
+export const useLayoutStore = defineStore("layout", () => {
     const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
 
     const isSidebarOpenField = ref<boolean>();

@@ -21,7 +21,7 @@ import VaccinationStatus from "@/models/vaccinationStatus";
 import { Action, Actor, Format, Text, Type } from "@/plugins/extensions";
 import { ILogger, ITrackingService } from "@/services/interfaces";
 import { useConfigStore } from "@/stores/config";
-import { useNavigationStore } from "@/stores/navigation";
+import { useLayoutStore } from "@/stores/layout";
 import { useVaccinationStatusPublicStore } from "@/stores/vaccinationStatusPublic";
 import { phnMask } from "@/utility/masks";
 import ValidationUtil from "@/utility/validationUtil";
@@ -38,7 +38,7 @@ const trackingService = container.get<ITrackingService>(
     SERVICE_IDENTIFIER.TrackingService
 );
 
-const layoutStore = useNavigationStore();
+const layoutStore = useLayoutStore();
 const configStore = useConfigStore();
 const vaccinationStatusPublicStore = useVaccinationStatusPublicStore();
 

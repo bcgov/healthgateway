@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, useSlots } from "vue";
 
-import { useNavigationStore } from "@/stores/navigation";
+import { useLayoutStore } from "@/stores/layout";
 
 interface Props {
     title: string;
@@ -9,7 +9,7 @@ interface Props {
 defineProps<Props>();
 
 const slots = useSlots();
-const layoutStore = useNavigationStore();
+const layoutStore = useLayoutStore();
 
 const hasPrependSlot = computed(() => slots.prepend !== undefined);
 const hasAppendSlot = computed(() => slots.append !== undefined);

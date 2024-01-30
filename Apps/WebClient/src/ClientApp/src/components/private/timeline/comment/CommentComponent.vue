@@ -10,7 +10,7 @@ import type { UserComment } from "@/models/userComment";
 import { ILogger } from "@/services/interfaces";
 import { useAppStore } from "@/stores/app";
 import { useCommentStore } from "@/stores/comment";
-import { useNavigationStore } from "@/stores/navigation";
+import { useLayoutStore } from "@/stores/layout";
 import { useUserStore } from "@/stores/user";
 
 interface Props {
@@ -22,7 +22,7 @@ const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
 const userStore = useUserStore();
 const commentStore = useCommentStore();
 const appStore = useAppStore();
-const layoutStore = useNavigationStore();
+const layoutStore = useLayoutStore();
 
 const commentInput = ref("");
 const isEditMode = ref(false);

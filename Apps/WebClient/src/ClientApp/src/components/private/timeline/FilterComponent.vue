@@ -14,8 +14,8 @@ import { useHealthVisitStore } from "@/stores/healthVisit";
 import { useHospitalVisitStore } from "@/stores/hospitalVisit";
 import { useImmunizationStore } from "@/stores/immunization";
 import { useLabResultStore } from "@/stores/labResult";
+import { useLayoutStore } from "@/stores/layout";
 import { useMedicationStore } from "@/stores/medication";
-import { useNavigationStore } from "@/stores/navigation";
 import { useNoteStore } from "@/stores/note";
 import { usePatientDataStore } from "@/stores/patientData";
 import { useSpecialAuthorityRequestStore } from "@/stores/specialAuthorityRequest";
@@ -34,7 +34,7 @@ const props = withDefaults(defineProps<Props>(), {
     entryTypes: () => [],
 });
 
-const layoutStore = useNavigationStore();
+const layoutStore = useLayoutStore();
 const timelineStore = useTimelineStore();
 const clinicalDocumentStore = useClinicalDocumentStore();
 const covid19TestResultStore = useCovid19TestResultStore();

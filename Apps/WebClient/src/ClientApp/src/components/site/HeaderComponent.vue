@@ -11,18 +11,18 @@ import { SERVICE_IDENTIFIER } from "@/ioc/identifier";
 import { ILogger } from "@/services/interfaces";
 import { useAuthStore } from "@/stores/auth";
 import { useConfigStore } from "@/stores/config";
-import { useNavigationStore } from "@/stores/navigation";
+import { useLayoutStore } from "@/stores/layout";
 import { useNotificationStore } from "@/stores/notification";
 import { useUserStore } from "@/stores/user";
 
 const headerScrollThreshold = 100;
 
-const layoutStore = useNavigationStore();
+const layoutStore = useLayoutStore();
 const configStore = useConfigStore();
 const userStore = useUserStore();
 const notificationStore = useNotificationStore();
 const authStore = useAuthStore();
-const navigationStore = useNavigationStore();
+const navigationStore = useLayoutStore();
 
 const route = useRoute();
 const router = useRouter();

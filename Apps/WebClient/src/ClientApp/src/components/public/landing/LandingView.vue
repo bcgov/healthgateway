@@ -10,7 +10,7 @@ import { ServiceName } from "@/constants/serviceName";
 import { InfoTile } from "@/models/infoTile";
 import { useAuthStore } from "@/stores/auth";
 import { useConfigStore } from "@/stores/config";
-import { useNavigationStore } from "@/stores/navigation";
+import { useLayoutStore } from "@/stores/layout";
 import ConfigUtil from "@/utility/configUtil";
 
 enum PreviewDevice {
@@ -35,7 +35,7 @@ const serviceEntryTypes: EntryType[] = [EntryType.BcCancerScreening];
 
 const configStore = useConfigStore();
 const authStore = useAuthStore();
-const layoutStore = useNavigationStore();
+const layoutStore = useLayoutStore();
 
 const selectedPreviewDevice = ref(PreviewDevice.laptop);
 const { mdAndUp } = useDisplay();

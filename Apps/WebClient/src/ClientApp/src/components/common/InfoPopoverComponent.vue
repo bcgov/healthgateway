@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import HgButtonComponent from "@/components/common/HgButtonComponent.vue";
-import { useNavigationStore } from "@/stores/navigation";
+import { useLayoutStore } from "@/stores/layout";
 
-const layoutStore = useNavigationStore();
+const layoutStore = useLayoutStore();
 
 interface Props {
     buttonId?: string;

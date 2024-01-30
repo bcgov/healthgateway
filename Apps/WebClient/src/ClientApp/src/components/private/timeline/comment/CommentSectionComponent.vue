@@ -13,7 +13,7 @@ import TimelineEntry from "@/models/timeline/timelineEntry";
 import { UserComment } from "@/models/userComment";
 import { ILogger } from "@/services/interfaces";
 import { useCommentStore } from "@/stores/comment";
-import { useNavigationStore } from "@/stores/navigation";
+import { useLayoutStore } from "@/stores/layout";
 import { useUserStore } from "@/stores/user";
 
 interface Props {
@@ -41,7 +41,7 @@ const newComment: UserComment = {
 const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
 const userStore = useUserStore();
 const commentStore = useCommentStore();
-const layoutStore = useNavigationStore();
+const layoutStore = useLayoutStore();
 
 const showComments = ref(false);
 const isLoadingComments = ref(false);

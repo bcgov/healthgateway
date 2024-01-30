@@ -6,7 +6,7 @@ import ErrorCardComponent from "@/components/error/ErrorCardComponent.vue";
 import { entryTypeMap } from "@/constants/entryType";
 import TimelineEntry from "@/models/timeline/timelineEntry";
 import { EventName, useEventStore } from "@/stores/event";
-import { useNavigationStore } from "@/stores/navigation";
+import { useLayoutStore } from "@/stores/layout";
 
 interface Props {
     hdid: string;
@@ -16,9 +16,9 @@ withDefaults(defineProps<Props>(), {
     commentsAreEnabled: false,
 });
 
-const layoutStore = useNavigationStore();
+const layoutStore = useLayoutStore();
 const eventStore = useEventStore();
-const navigationStore = useNavigationStore();
+const navigationStore = useLayoutStore();
 
 const entry = ref<TimelineEntry>();
 const entryDate = ref("");
