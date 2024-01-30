@@ -40,13 +40,13 @@ export default class BcCancerScreeningTimelineEntry extends TimelineEntry {
 
     private setEntryProperties(): void {
         if (this.screeningType === BcCancerScreeningType.Result) {
-            this.title = "BC Cancer Result";
-            this.callToActionText = "View Results";
+            this.title = "BC Cancer Screening Result Notification";
+            this.callToActionText = "View Letter";
             this.documentType = "Screening results";
             this.fileName = "bc_cancer_result";
             this.eventText = "BC Cancer Result PDF";
         } else {
-            this.title = "BC Cancer Screening";
+            this.title = "BC Cancer Screening Reminder Notification";
             this.callToActionText = "View Letter";
             this.documentType = "Screening letter";
             this.fileName = "bc_cancer_screening";
