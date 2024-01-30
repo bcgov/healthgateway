@@ -130,7 +130,7 @@ namespace HealthGateway.PatientTests.Controllers
         {
             return new()
             {
-                Birthdate = MockedBirthDate,
+                Birthdate = DateOnly.FromDateTime(MockedBirthDate),
                 CommonName = new Name
                 {
                     GivenName = MockedFirstName,

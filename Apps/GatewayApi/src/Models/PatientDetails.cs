@@ -58,7 +58,7 @@ namespace HealthGateway.GatewayApi.Models
         /// Gets or sets the patient's date of birth.
         /// </summary>
         [JsonPropertyName("birthdate")]
-        public DateTime Birthdate { get; set; }
+        public DateOnly Birthdate { get; set; }
 
         /// <summary>
         /// Gets or sets the patient's gender.
