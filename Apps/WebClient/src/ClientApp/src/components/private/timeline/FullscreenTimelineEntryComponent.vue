@@ -18,7 +18,6 @@ withDefaults(defineProps<Props>(), {
 
 const layoutStore = useLayoutStore();
 const eventStore = useEventStore();
-const navigationStore = useLayoutStore();
 
 const entry = ref<TimelineEntry>();
 const entryDate = ref("");
@@ -36,7 +35,7 @@ function openDialog(incomingEntry: TimelineEntry): void {
     entryDate.value = incomingEntry.date.toISO();
 
     isVisible.value = true;
-    navigationStore.setHeaderState(false);
+    layoutStore.setHeaderState(false);
 }
 
 function closeDialog(): void {

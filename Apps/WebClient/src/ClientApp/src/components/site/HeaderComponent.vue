@@ -22,7 +22,6 @@ const configStore = useConfigStore();
 const userStore = useUserStore();
 const notificationStore = useNotificationStore();
 const authStore = useAuthStore();
-const navigationStore = useLayoutStore();
 
 const route = useRoute();
 const router = useRouter();
@@ -43,7 +42,7 @@ const isValidIdentityProvider = computed(
     () => userStore.isValidIdentityProvider
 );
 const isHeaderShown = computed(
-    () => navigationStore.isHeaderShown || isScrollNearBottom.value
+    () => layoutStore.isHeaderShown || isScrollNearBottom.value
 );
 const user = computed(() => userStore.user);
 const userIsRegistered = computed(() => userStore.userIsRegistered);
@@ -124,11 +123,11 @@ function testIfScrollIsNearBottom() {
 }
 
 function toggleSidebar(): void {
-    navigationStore.toggleSidebar();
+    layoutStore.toggleSidebar();
 }
 
 function setHeaderState(isOpen: boolean): void {
-    navigationStore.setHeaderState(isOpen);
+    layoutStore.setHeaderState(isOpen);
 }
 
 function handleNotificationCentreClick(): void {

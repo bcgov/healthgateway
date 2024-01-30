@@ -10,14 +10,13 @@ import { useUserStore } from "@/stores/user";
 const layoutStore = useLayoutStore();
 const authStore = useAuthStore();
 const configStore = useConfigStore();
-const navigationStore = useLayoutStore();
 const userStore = useUserStore();
 
 const collapsedOnDesktop = ref(false);
 const feedbackDialog = ref<InstanceType<typeof FeedbackComponent>>();
 
 const isMobile = computed(() => layoutStore.isMobile);
-const isSidebarOpen = computed(() => navigationStore.isSidebarOpen);
+const isSidebarOpen = computed(() => layoutStore.isSidebarOpen);
 const isDependentEnabled = computed(
     () => configStore.webConfig.featureToggleConfiguration.dependents.enabled
 );
@@ -40,7 +39,7 @@ const visibleOnMobile = computed({
     },
     set(value: boolean) {
         if (isSidebarOpen.value !== value) {
-            navigationStore.toggleSidebar();
+            layoutStore.toggleSidebar();
         }
     },
 });
