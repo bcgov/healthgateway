@@ -95,7 +95,7 @@ function downloadFile(): void {
                 v-if="props.entry.isResult"
                 data-testid="bc-cancer-result-body"
             >
-                Download your cervix screening result notification. They may
+                Download your cervix screening result notification. It may
                 include important information about next steps. If you have
                 questions,
                 <a
