@@ -21,17 +21,17 @@ namespace HealthGateway.Common.Data.Validations
     /// <summary>
     /// Validates date of birth.
     /// </summary>
-    public class DateOfBirthValidator : AbstractValidator<DateTime>
+    public class DateOfBirthValidator : AbstractValidator<DateOnly>
     {
-        private readonly DateTime referenceDate;
+        private readonly DateOnly referenceDate;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DateOfBirthValidator"/> class.
         /// </summary>
-        /// <param name="referenceDate">A reference point to validate against, defaults to UtcNow.</param>
-        public DateOfBirthValidator(DateTime? referenceDate = null)
+        /// <param name="referenceDate">A reference point to validate against, defaults to DateTime.Today.</param>
+        public DateOfBirthValidator(DateOnly? referenceDate = null)
         {
-            referenceDate ??= DateTime.UtcNow;
+            referenceDate ??= DateOnly.FromDateTime(DateTime.Today);
             this.referenceDate = referenceDate.Value;
 
             this.RuleFor(v => v).NotEmpty().Must(this.IsValidInternal).WithMessage("Invalid date");
@@ -42,15 +42,14 @@ namespace HealthGateway.Common.Data.Validations
         /// </summary>
         /// <param name="dateOfBirth">Date of birth to validate.</param>
         /// <returns>True if valid, false if not.</returns>
-        public static bool IsValid(DateTime dateOfBirth)
+        public static bool IsValid(DateOnly dateOfBirth)
         {
             return new DateOfBirthValidator().Validate(dateOfBirth).IsValid;
         }
 
-        private bool IsValidInternal(DateTime dob)
+        private bool IsValidInternal(DateOnly dob)
         {
-            bool isValid = dob.Date <= this.referenceDate.Date;
-            return isValid;
+            return dob <= this.referenceDate;
         }
     }
 }

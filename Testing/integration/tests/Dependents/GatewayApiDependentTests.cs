@@ -29,7 +29,7 @@ using Xunit.Categories;
 [IntegrationTest]
 public class GatewayApiDependentTests : ScenarioContextBase<GatewayApi.Program>
 {
-    private readonly DateTime dependentDob = DateTime.Parse("2014-Mar-15", CultureInfo.InstalledUICulture);
+    private readonly DateOnly dependentDob = DateOnly.Parse("2014-Mar-15", CultureInfo.InstalledUICulture);
     private readonly string dependentPhn = "9874307168";
     private readonly string dependentFirstName = "Sam";
     private readonly string dependentLastName = "Testfive";
