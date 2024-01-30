@@ -50,7 +50,7 @@ namespace HealthGateway.GatewayApi.Models
         /// <summary>
         /// Gets or sets the Date Of Birth.
         /// </summary>
-        public DateTime DateOfBirth { get; set; }
+        public DateOnly DateOfBirth { get; set; }
 
         /// <summary>
         /// Gets or sets the gender.

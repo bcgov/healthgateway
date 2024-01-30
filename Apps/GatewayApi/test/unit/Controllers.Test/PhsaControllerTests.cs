@@ -126,7 +126,7 @@ namespace HealthGateway.GatewayApiTests.Controllers.Test
                         DependentInformation = new DependentInformation
                         {
                             Phn = $"{dependentModels}-{i}",
-                            DateOfBirth = new DateTime(1980 + i, 1, 1, 0, 0, 0, DateTimeKind.Local),
+                            DateOfBirth = new DateOnly(1980 + i, 1, 1),
                             Gender = "Female",
                             FirstName = "first",
                             LastName = "last-{i}",
