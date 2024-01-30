@@ -18,6 +18,7 @@ import { useAppStore } from "@/stores/app";
 import { useErrorStore } from "@/stores/error";
 import { EventName, useEventStore } from "@/stores/event";
 import { useLoadingStore } from "@/stores/loading";
+import { useNavigationStore } from "@/stores/navigation";
 import { useNoteStore } from "@/stores/note";
 import { useTimelineStore } from "@/stores/timeline";
 import { useUserStore } from "@/stores/user";
@@ -27,6 +28,7 @@ const defaultDateString = DateWrapper.today().toISODate();
 
 const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
 const appStore = useAppStore();
+const layoutStore = useNavigationStore();
 const errorStore = useErrorStore();
 const eventStore = useEventStore();
 const loadingStore = useLoadingStore();
@@ -167,8 +169,8 @@ eventStore.subscribe(EventName.OpenNoteDialog, openDialog);
             persistent
             no-click-animation
             scrollable
-            :fullscreen="appStore.isMobile"
-            :width="appStore.isMobile ? 960 : 700"
+            :fullscreen="layoutStore.isMobile"
+            :width="layoutStore.isMobile ? 960 : 700"
         >
             <v-card :loading="isLoading">
                 <template #loader="{ isActive }">

@@ -12,8 +12,8 @@ import { DateWrapper } from "@/models/dateWrapper";
 import TimelineEntry from "@/models/timeline/timelineEntry";
 import { UserComment } from "@/models/userComment";
 import { ILogger } from "@/services/interfaces";
-import { useAppStore } from "@/stores/app";
 import { useCommentStore } from "@/stores/comment";
+import { useNavigationStore } from "@/stores/navigation";
 import { useUserStore } from "@/stores/user";
 
 interface Props {
@@ -41,7 +41,7 @@ const newComment: UserComment = {
 const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
 const userStore = useUserStore();
 const commentStore = useCommentStore();
-const appStore = useAppStore();
+const layoutStore = useNavigationStore();
 
 const showComments = ref(false);
 const isLoadingComments = ref(false);
@@ -65,7 +65,7 @@ for (const c of props.parentEntry.comments ?? []) {
 }
 
 function handleCommentExpandChange(): void {
-    if (appStore.isMobile) {
+    if (layoutStore.isMobile) {
         commentList.value?.$el.scrollIntoView({
             behavior: "smooth",
         });

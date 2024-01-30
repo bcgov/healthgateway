@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import HgButtonComponent from "@/components/common/HgButtonComponent.vue";
-import { useAppStore } from "@/stores/app";
+import { useNavigationStore } from "@/stores/navigation";
 
-const appStore = useAppStore();
+const layoutStore = useNavigationStore();
 
 interface Props {
     buttonId?: string;
@@ -44,7 +44,7 @@ withDefaults(defineProps<Props>(), {
         >
             <v-card
                 class="pa-2 text-body-2"
-                :width="appStore.isMobile ? 250 : 472"
+                :width="layoutStore.isMobile ? 250 : 472"
             >
                 <slot />
             </v-card>

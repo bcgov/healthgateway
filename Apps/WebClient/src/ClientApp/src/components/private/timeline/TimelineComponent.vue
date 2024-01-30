@@ -38,7 +38,6 @@ import TimelineEntry, { DateGroup } from "@/models/timeline/timelineEntry";
 import { TimelineFilterBuilder } from "@/models/timeline/timelineFilter";
 import { ILogger } from "@/services/interfaces";
 import { entryTypeToPatientDataTypeMap } from "@/services/restPatientDataService";
-import { useAppStore } from "@/stores/app";
 import { useClinicalDocumentStore } from "@/stores/clinicalDocument";
 import { useCommentStore } from "@/stores/comment";
 import { useCovid19TestResultStore } from "@/stores/covid19TestResult";
@@ -48,6 +47,7 @@ import { useHospitalVisitStore } from "@/stores/hospitalVisit";
 import { useImmunizationStore } from "@/stores/immunization";
 import { useLabResultStore } from "@/stores/labResult";
 import { useMedicationStore } from "@/stores/medication";
+import { useNavigationStore } from "@/stores/navigation";
 import { useNoteStore } from "@/stores/note";
 import { usePatientDataStore } from "@/stores/patientData";
 import { useSpecialAuthorityRequestStore } from "@/stores/specialAuthorityRequest";
@@ -75,7 +75,7 @@ enum FilterLabelType {
 const pageSize = 25;
 
 const logger = container.get<ILogger>(SERVICE_IDENTIFIER.Logger);
-const appStore = useAppStore();
+const layoutStore = useNavigationStore();
 const clinicalDocumentStore = useClinicalDocumentStore();
 const commentStore = useCommentStore();
 const covid19TestResultStore = useCovid19TestResultStore();
@@ -611,7 +611,7 @@ setPageFromDate(linearDate.value);
                             class="mr-1 mb-1"
                             :title="`${label} Filter`"
                             closable
-                            :size="appStore.isMobile ? 'small' : 'default'"
+                            :size="layoutStore.isMobile ? 'small' : 'default'"
                             @click:close="clearFilter(label, value)"
                         >
                             {{ value }}
@@ -741,8 +741,8 @@ setPageFromDate(linearDate.value);
                 v-model="currentPage"
                 data-testid="pagination"
                 :length="numberOfPages"
-                :total-visible="appStore.isMobile ? 3 : 8"
-                :density="appStore.isMobile ? 'comfortable' : 'default'"
+                :total-visible="layoutStore.isMobile ? 3 : 8"
+                :density="layoutStore.isMobile ? 'comfortable' : 'default'"
             />
         </div>
         <div

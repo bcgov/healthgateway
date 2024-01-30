@@ -2,13 +2,12 @@
 import { computed, ref, watch } from "vue";
 
 import FeedbackComponent from "@/components/site/FeedbackComponent.vue";
-import { useAppStore } from "@/stores/app";
 import { useAuthStore } from "@/stores/auth";
 import { useConfigStore } from "@/stores/config";
 import { useNavigationStore } from "@/stores/navigation";
 import { useUserStore } from "@/stores/user";
 
-const appStore = useAppStore();
+const layoutStore = useNavigationStore();
 const authStore = useAuthStore();
 const configStore = useConfigStore();
 const navigationStore = useNavigationStore();
@@ -17,7 +16,7 @@ const userStore = useUserStore();
 const collapsedOnDesktop = ref(false);
 const feedbackDialog = ref<InstanceType<typeof FeedbackComponent>>();
 
-const isMobile = computed(() => appStore.isMobile);
+const isMobile = computed(() => layoutStore.isMobile);
 const isSidebarOpen = computed(() => navigationStore.isSidebarOpen);
 const isDependentEnabled = computed(
     () => configStore.webConfig.featureToggleConfiguration.dependents.enabled

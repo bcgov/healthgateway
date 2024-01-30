@@ -20,8 +20,8 @@ import { DateWrapper, StringISODate } from "@/models/dateWrapper";
 import VaccinationStatus from "@/models/vaccinationStatus";
 import { Action, Actor, Format, Text, Type } from "@/plugins/extensions";
 import { ILogger, ITrackingService } from "@/services/interfaces";
-import { useAppStore } from "@/stores/app";
 import { useConfigStore } from "@/stores/config";
+import { useNavigationStore } from "@/stores/navigation";
 import { useVaccinationStatusPublicStore } from "@/stores/vaccinationStatusPublic";
 import { phnMask } from "@/utility/masks";
 import ValidationUtil from "@/utility/validationUtil";
@@ -38,7 +38,7 @@ const trackingService = container.get<ITrackingService>(
     SERVICE_IDENTIFIER.TrackingService
 );
 
-const appStore = useAppStore();
+const layoutStore = useNavigationStore();
 const configStore = useConfigStore();
 const vaccinationStatusPublicStore = useVaccinationStatusPublicStore();
 
@@ -371,8 +371,8 @@ watch(vaccineRecord, (value) => {
                     data-testid="vaccineCardFormTitle"
                     class="vaccine-card-form-title text-center font-weight-bold"
                     :class="{
-                        'text-h6': appStore.isMobile,
-                        'text-h5': !appStore.isMobile,
+                        'text-h6': layoutStore.isMobile,
+                        'text-h5': !layoutStore.isMobile,
                     }"
                 >
                     Get your proof of vaccination
